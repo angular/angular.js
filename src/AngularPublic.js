@@ -93,7 +93,6 @@
   $$CookieReaderProvider
 */
 
-
 /**
  * @ngdoc object
  * @name angular.version
@@ -115,7 +114,6 @@ var version = {
   dot: "NG_VERSION_DOT",
   codeName: '"NG_VERSION_CODENAME"'
 };
-
 
 function publishExternalAPI(angular) {
   extend(angular, {

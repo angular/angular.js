@@ -1,6 +1,5 @@
 'use strict';
 
-
 /**
  * Setup file for the Scenario.
  * Must be first in the compilation/bootstrap list.
@@ -228,7 +227,6 @@ function callerFile(offset) {
     return line || '';
   };
 }
-
 
 /**
  * Don't use the jQuery trigger method since it works incorrectly.

@@ -61,7 +61,6 @@ describe("ngAnimate $$animateJsDriver", function() {
       expect(args[1]).toBe('enter');
     }));
 
-
     it('should trigger two regular JS animations when a grouped animation is passed in',
       inject(function($rootScope) {
 

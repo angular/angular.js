@@ -29,12 +29,10 @@ describe('$$cookieWriter', function() {
     });
   });
 
-
   afterEach(function() {
     deleteAllCookies();
     expect(document.cookie).toEqual('');
   });
-
 
   describe('remove via $$cookieWriter(cookieName, undefined)', function() {
 
@@ -46,13 +44,11 @@ describe('$$cookieWriter', function() {
       expect(document.cookie).toEqual('');
     });
 
-
     it('should do nothing when an nonexisting cookie is being removed', function() {
       $$cookieWriter('doesntexist', undefined);
       expect(document.cookie).toEqual('');
     });
   });
-
 
   describe('put via $$cookieWriter(cookieName, string)', function() {
 
@@ -60,7 +56,6 @@ describe('$$cookieWriter', function() {
       $$cookieWriter('cookieName', 'cookie=Value');
       expect(document.cookie).toMatch(/cookieName=cookie%3DValue;? ?/);
     });
-
 
     it('should overwrite an existing unsynced cookie', function() {
       document.cookie = "cookie=new;path=/";

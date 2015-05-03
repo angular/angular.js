@@ -180,7 +180,6 @@ function $AriaProvider() {
   };
 }
 
-
 ngAriaModule.directive('ngShow', ['$aria', function($aria) {
   return $aria.$$watchExpr('ngShow', 'aria-hidden', true);
 }])

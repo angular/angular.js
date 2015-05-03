@@ -47,7 +47,6 @@ describe('ngController', function() {
     dealoc(element);
   });
 
-
   it('should instantiate controller and bind methods', inject(function($compile, $rootScope) {
     element = $compile('<div ng-controller="Greeter">{{greet(name)}}</div>')($rootScope);
     $rootScope.$digest();
@@ -66,13 +65,11 @@ describe('ngController', function() {
     expect(element.text()).toBe('works');
   }));
 
-
   it('should publish controller into scope from module', inject(function($compile, $rootScope) {
     element = $compile('<div ng-controller="PublicModule as p">{{p.mark}}</div>')($rootScope);
     $rootScope.$digest();
     expect(element.text()).toBe('works');
   }));
-
 
   it('should allow nested controllers', inject(function($compile, $rootScope) {
     element = $compile('<div ng-controller="Greeter"><div ng-controller="Child">{{greet(name)}}</div></div>')($rootScope);
@@ -85,7 +82,6 @@ describe('ngController', function() {
     expect(element.text()).toBe('Hello Adam!');
   }));
 
-
   it('should instantiate controller defined on scope', inject(function($compile, $rootScope) {
     $rootScope.VojtaGreeter = function($scope) {
       $scope.name = 'Vojta';
@@ -95,7 +91,6 @@ describe('ngController', function() {
     $rootScope.$digest();
     expect(element.text()).toBe('Vojta');
   }));
-
 
   it('should work with ngInclude on the same element', inject(function($compile, $rootScope, $httpBackend) {
     $rootScope.GreeterController = function($scope) {
@@ -108,7 +103,6 @@ describe('ngController', function() {
     $httpBackend.flush();
     expect(element.text()).toEqual('Vojta');
   }));
-
 
   it('should only instantiate the controller once with ngInclude on the same element',
       inject(function($compile, $rootScope, $httpBackend) {
@@ -133,7 +127,6 @@ describe('ngController', function() {
 
     expect(count).toBe(1);
   }));
-
 
   it('when ngInclude is on the same element, the content included content should get a child scope of the controller',
       inject(function($compile, $rootScope, $httpBackend) {

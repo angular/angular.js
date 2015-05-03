@@ -12,7 +12,6 @@ describe('$exceptionHandler', function() {
     });
   });
 
-
   it('should log errors with multiple arguments', function() {
     module(function($provide) {
       $provide.provider('$exceptionHandler', $ExceptionHandlerProvider);

@@ -44,7 +44,6 @@ var $sanitizeMinErr = angular.$$minErr('$sanitize');
  *
  */
 
-
 /**
  * @ngdoc service
  * @name $sanitize
@@ -162,7 +161,6 @@ function sanitizeText(chars) {
   return buf.join('');
 }
 
-
 // Regular Expressions for parsing tags and attributes
 var START_TAG_REGEXP =
        /^<((?:[a-zA-Z])[\w:-]*)((?:\s+[\w:-]+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*(\/?)\s*(>?)/,
@@ -176,7 +174,6 @@ var START_TAG_REGEXP =
   SURROGATE_PAIR_REGEXP = /[\uD800-\uDBFF][\uDC00-\uDFFF]/g,
   // Match everything outside of normal chars and " (quote character)
   NON_ALPHANUMERIC_REGEXP = /([^\#-~| |!])/g;
-
 
 // Good source of info about elements and attributes
 // http://dev.w3.org/html5/spec/Overview.html#semantics
@@ -261,7 +258,6 @@ function makeMap(str, lowercaseKeys) {
   }
   return obj;
 }
-
 
 /**
  * @example
@@ -517,7 +513,6 @@ function htmlSanitizeWriter(buf, uriValidator) {
       }
   };
 }
-
 
 // define ngSanitize module and register $sanitize service
 angular.module('ngSanitize', []).provider('$sanitize', $SanitizeProvider);

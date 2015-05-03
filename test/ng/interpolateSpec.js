@@ -12,7 +12,6 @@ describe('$interpolate', function() {
     expect(interpolateFn({})).toBe('some text');
   }));
 
-
   it('should return undefined when there are no bindings and textOnly is set to true',
       inject(function($interpolate) {
     expect($interpolate('some text', true)).toBeUndefined();
@@ -35,7 +34,6 @@ describe('$interpolate', function() {
     expect($interpolate('{{ false }}')({})).toEqual('false');
   }));
 
-
   it('should return interpolation function', inject(function($interpolate, $rootScope) {
     var interpolateFn = $interpolate('Hello {{name}}!');
 
@@ -48,11 +46,9 @@ describe('$interpolate', function() {
     expect(interpolateFn(scope)).toBe('Hello Bubu!');
   }));
 
-
   it('should ignore undefined model', inject(function($interpolate) {
     expect($interpolate("Hello {{'World'}}{{foo}}")({})).toBe('Hello World');
   }));
-
 
   it('should interpolate with undefined context', inject(function($interpolate) {
     expect($interpolate("Hello, world!{{bloop}}")()).toBe("Hello, world!");
@@ -155,12 +151,10 @@ describe('$interpolate', function() {
       obj = {foo: 'Hello', bar: 'World'};
     });
 
-
     it('should support escaping interpolation signs', inject(function($interpolate) {
       expect($interpolate('{{foo}} \\{\\{bar\\}\\}')(obj)).toBe('Hello {{bar}}');
       expect($interpolate('\\{\\{foo\\}\\} {{bar}}')(obj)).toBe('{{foo}} World');
     }));
-
 
     it('should unescape multiple expressions', inject(function($interpolate) {
       expect($interpolate('\\{\\{foo\\}\\}\\{\\{bar\\}\\} {{foo}}')(obj)).toBe('{{foo}}{{bar}} Hello');
@@ -168,7 +162,6 @@ describe('$interpolate', function() {
       expect($interpolate('\\{\\{foo\\}\\}{{foo}}\\{\\{bar\\}\\}')(obj)).toBe('{{foo}}Hello{{bar}}');
       expect($interpolate('{{foo}}\\{\\{foo\\}\\}{{bar}}\\{\\{bar\\}\\}{{foo}}')(obj)).toBe('Hello{{foo}}World{{bar}}Hello');
     }));
-
 
     it('should support escaping custom interpolation start/end symbols', function() {
       module(function($interpolateProvider) {
@@ -180,14 +173,12 @@ describe('$interpolate', function() {
       });
     });
 
-
     it('should unescape incomplete escaped expressions', inject(function($interpolate) {
       expect($interpolate('\\{\\{foo{{foo}}')(obj)).toBe('{{fooHello');
       expect($interpolate('\\}\\}foo{{foo}}')(obj)).toBe('}}fooHello');
       expect($interpolate('foo{{foo}}\\{\\{')(obj)).toBe('fooHello{{');
       expect($interpolate('foo{{foo}}\\}\\}')(obj)).toBe('fooHello}}');
     }));
-
 
     it('should not unescape markers within expressions', inject(function($interpolate) {
       expect($interpolate('{{"\\\\{\\\\{Hello, world!\\\\}\\\\}"}}')(obj)).toBe('\\{\\{Hello, world!\\}\\}');
@@ -198,7 +189,6 @@ describe('$interpolate', function() {
         'Lexer Error: Unexpected next character  at columns 0-0 [\\] in expression [\\{\\{foo\\}\\]');
     }));
 
-
     // This test demonstrates that the web-server is responsible for escaping every single instance
     // of interpolation start/end markers in an expression which they do not wish to evaluate,
     // because AngularJS will not protect them from being evaluated (due to the added complexity
@@ -207,7 +197,6 @@ describe('$interpolate', function() {
       expect($interpolate('\\{\\{Hello, {{bar}}!\\}\\}')(obj)).toBe('{{Hello, World!}}');
     }));
   });
-
 
   describe('interpolating in a trusted context', function() {
     var sce;
@@ -264,7 +253,6 @@ describe('$interpolate', function() {
                 "http://docs.angularjs.org/api/ng.$sce");
     }));
   });
-
 
   describe('provider', function() {
     beforeEach(module(function($interpolateProvider) {
@@ -338,7 +326,6 @@ describe('$interpolate', function() {
     }));
   });
 
-
   describe('isTrustedContext', function() {
     it('should NOT interpolate a multi-part expression when isTrustedContext is true', inject(function($interpolate) {
       var isTrustedContext = true;
@@ -369,7 +356,6 @@ describe('$interpolate', function() {
     }));
   });
 
-
   describe('startSymbol', function() {
 
     beforeEach(module(function($interpolateProvider) {
@@ -377,16 +363,13 @@ describe('$interpolate', function() {
       $interpolateProvider.startSymbol('((');
     }));
 
-
     it('should expose the startSymbol in config phase', module(function($interpolateProvider) {
       expect($interpolateProvider.startSymbol()).toBe('((');
     }));
 
-
     it('should expose the startSymbol in run phase', inject(function($interpolate) {
       expect($interpolate.startSymbol()).toBe('((');
     }));
-
 
     it('should not get confused by matching start and end symbols', function() {
       module(function($interpolateProvider) {
@@ -402,7 +385,6 @@ describe('$interpolate', function() {
     });
   });
 
-
   describe('endSymbol', function() {
 
     beforeEach(module(function($interpolateProvider) {
@@ -410,11 +392,9 @@ describe('$interpolate', function() {
       $interpolateProvider.endSymbol('))');
     }));
 
-
     it('should expose the endSymbol in config phase', module(function($interpolateProvider) {
       expect($interpolateProvider.endSymbol()).toBe('))');
     }));
-
 
     it('should expose the endSymbol in run phase', inject(function($interpolate) {
       expect($interpolate.endSymbol()).toBe('))');

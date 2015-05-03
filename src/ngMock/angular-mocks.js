@@ -40,7 +40,6 @@ angular.mock.$Browser = function() {
   self.$$completeOutstandingRequest = angular.noop;
   self.$$incOutstandingRequestCount = angular.noop;
 
-
   // register url polling fn
 
   self.onUrlChange = function(listener) {
@@ -70,7 +69,6 @@ angular.mock.$Browser = function() {
     return self.deferredNextId++;
   };
 
-
   /**
    * @name $browser#defer.now
    *
@@ -78,7 +76,6 @@ angular.mock.$Browser = function() {
    * Current milliseconds mock time.
    */
   self.defer.now = 0;
-
 
   self.defer.cancel = function(deferId) {
     var fnIndex;
@@ -94,7 +91,6 @@ angular.mock.$Browser = function() {
 
     return false;
   };
-
 
   /**
    * @name $browser#defer.flush
@@ -161,7 +157,6 @@ angular.mock.$Browser.prototype = {
     fn();
   }
 };
-
 
 /**
  * @ngdoc provider
@@ -256,7 +251,6 @@ angular.mock.$ExceptionHandlerProvider = function() {
 
   this.mode('rethrow');
 };
-
 
 /**
  * @ngdoc service
@@ -408,7 +402,6 @@ angular.mock.$LogProvider = function() {
   };
 };
 
-
 /**
  * @ngdoc service
  * @name $interval
@@ -539,7 +532,6 @@ angular.mock.$IntervalProvider = function() {
   }];
 };
 
-
 /* jshint -W101 */
 /* The R_ISO8061_STR regex is never going to fit into the 100 char limit!
  * This directive should go inside the anonymous function but a bug in JSHint means that it would
@@ -584,7 +576,6 @@ function padNumber(num, digits, trim) {
   }
   return neg + num;
 }
-
 
 /**
  * @ngdoc type
@@ -806,7 +797,6 @@ angular.mock.animate = angular.module('ngAnimateMock', ['ng'])
     }]);
 
   }]);
-
 
 /**
  * @ngdoc function
@@ -1035,19 +1025,16 @@ angular.mock.dump = function(object) {
          };
        }));
 
-
        afterEach(function() {
          $httpBackend.verifyNoOutstandingExpectation();
          $httpBackend.verifyNoOutstandingRequest();
        });
-
 
        it('should fetch authentication token', function() {
          $httpBackend.expectGET('/auth.py');
          var controller = createController();
          $httpBackend.flush();
        });
-
 
        it('should fail authentication', function() {
 
@@ -1059,7 +1046,6 @@ angular.mock.dump = function(object) {
          $httpBackend.flush();
          expect($rootScope.status).toBe('Failed...');
        });
-
 
        it('should send msg to server', function() {
          var controller = createController();
@@ -1076,7 +1062,6 @@ angular.mock.dump = function(object) {
          $httpBackend.flush();
          expect($rootScope.status).toBe('');
        });
-
 
        it('should send auth header', function() {
          var controller = createController();
@@ -1340,7 +1325,6 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
    */
   createShortMethods('when');
 
-
   /**
    * @ngdoc method
    * @name $httpBackend#expect
@@ -1379,7 +1363,6 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
     expectations.push(expectation);
     return chain;
   };
-
 
   /**
    * @ngdoc method
@@ -1488,7 +1471,6 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
    */
   createShortMethods('expect');
 
-
   /**
    * @ngdoc method
    * @name $httpBackend#flush
@@ -1516,7 +1498,6 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
     $httpBackend.verifyNoOutstandingExpectation(digest);
   };
 
-
   /**
    * @ngdoc method
    * @name $httpBackend#verifyNoOutstandingExpectation
@@ -1538,7 +1519,6 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
     }
   };
 
-
   /**
    * @ngdoc method
    * @name $httpBackend#verifyNoOutstandingRequest
@@ -1558,7 +1538,6 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
     }
   };
 
-
   /**
    * @ngdoc method
    * @name $httpBackend#resetExpectations
@@ -1573,7 +1552,6 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
   };
 
   return $httpBackend;
-
 
   function createShortMethods(prefix) {
     angular.forEach(['GET', 'DELETE', 'JSONP', 'HEAD'], function(method) {
@@ -1684,7 +1662,6 @@ function MockXhr() {
 
   this.abort = angular.noop;
 }
-
 
 /**
  * @ngdoc service
@@ -1856,7 +1833,6 @@ angular.mock.$ControllerDecorator = ['$delegate', function($delegate) {
     return $delegate(expression, locals, later, ident);
   };
 }];
-
 
 /**
  * @ngdoc module
@@ -2094,7 +2070,6 @@ angular.mock.e2e = {};
 angular.mock.e2e.$httpBackendDecorator =
   ['$rootScope', '$timeout', '$delegate', '$browser', createHttpBackendMock];
 
-
 /**
  * @ngdoc type
  * @name $rootScope.Scope
@@ -2147,7 +2122,6 @@ angular.mock.$RootScopeDecorator = ['$delegate', function($delegate) {
     return count;
   }
 
-
   /**
    * @ngdoc method
    * @name $rootScope.Scope#$countWatchers
@@ -2180,7 +2154,6 @@ angular.mock.$RootScopeDecorator = ['$delegate', function($delegate) {
   }
 }];
 
-
 if (window.jasmine || window.mocha) {
 
   var currentSpec = null,
@@ -2196,7 +2169,6 @@ if (window.jasmine || window.mocha) {
     }
     return angular.mock.$$annotate.apply(this, arguments);
   };
-
 
   (window.beforeEach || window.setup)(function() {
     annotatedFunctions = [];
@@ -2366,8 +2338,6 @@ if (window.jasmine || window.mocha) {
    * @param {...Function} fns any number of functions which will be injected using the injector.
    */
 
-
-
   var ErrorAddingDeclarationLocationStack = function(e, errorForStack) {
     this.message = e.message;
     this.name = e.name;
@@ -2423,7 +2393,6 @@ if (window.jasmine || window.mocha) {
       }
     }
   };
-
 
   angular.mock.inject.strictDi = function(value) {
     value = arguments.length ? !!value : true;

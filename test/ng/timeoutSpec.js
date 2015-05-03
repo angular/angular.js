@@ -4,7 +4,6 @@ describe('$timeout', function() {
 
   beforeEach(module(provideLog));
 
-
   it('should delegate functions to $browser.defer', inject(function($timeout, $browser) {
     var counter = 0;
     $timeout(function() { counter++; });
@@ -17,7 +16,6 @@ describe('$timeout', function() {
     expect(function() {$browser.defer.flush();}).toThrow('No deferred tasks to be flushed');
     expect(counter).toBe(1);
   }));
-
 
   it('should call $apply after each callback is executed', inject(function($timeout, $rootScope) {
     var applySpy = spyOn($rootScope, '$apply').andCallThrough();
@@ -36,7 +34,6 @@ describe('$timeout', function() {
     expect(applySpy.callCount).toBe(2);
   }));
 
-
   it('should NOT call $apply if skipApply is set to true', inject(function($timeout, $rootScope) {
     var applySpy = spyOn($rootScope, '$apply').andCallThrough();
 
@@ -46,7 +43,6 @@ describe('$timeout', function() {
     $timeout.flush();
     expect(applySpy).not.toHaveBeenCalled();
   }));
-
 
   it('should NOT call $evalAsync or $digest if invokeApply is set to false',
       inject(function($timeout, $rootScope) {
@@ -63,14 +59,12 @@ describe('$timeout', function() {
     expect(digestSpy).not.toHaveBeenCalled();
   }));
 
-
   it('should allow you to specify the delay time', inject(function($timeout, $browser) {
     var defer = spyOn($browser, 'defer');
     $timeout(noop, 123);
     expect(defer.callCount).toEqual(1);
     expect(defer.mostRecentCall.args[1]).toEqual(123);
   }));
-
 
   it('should return a promise which will be resolved with return value of the timeout callback',
       inject(function($timeout, log) {
@@ -82,7 +76,6 @@ describe('$timeout', function() {
     $timeout.flush();
     expect(log).toEqual(['timeout', 'promise success: buba']);
   }));
-
 
   it('should forget references to deferreds when callback called even if skipApply is true',
       inject(function($timeout, $browser) {
@@ -151,13 +144,11 @@ describe('$timeout', function() {
 
   }));
 
-
   describe('exception handling', function() {
 
     beforeEach(module(function($exceptionHandlerProvider) {
       $exceptionHandlerProvider.mode('log');
     }));
-
 
     it('should delegate exception to the $exceptionHandler service', inject(
         function($timeout, $exceptionHandler) {
@@ -167,7 +158,6 @@ describe('$timeout', function() {
       $timeout.flush();
       expect($exceptionHandler.errors).toEqual(["Test Error"]);
     }));
-
 
     it('should call $apply even if an exception is thrown in callback', inject(
         function($timeout, $rootScope) {
@@ -180,7 +170,6 @@ describe('$timeout', function() {
       expect(applySpy).toHaveBeenCalled();
     }));
 
-
     it('should reject the timeout promise when an exception is thrown in the timeout callback',
         inject(function($timeout, log) {
       var promise = $timeout(function() { throw "Some Error"; });
@@ -190,7 +179,6 @@ describe('$timeout', function() {
 
       expect(log).toEqual('error: Some Error');
     }));
-
 
     it('should pass the timeout arguments in the timeout callback even if an exception is thrown',
         inject(function($timeout, log) {
@@ -210,7 +198,6 @@ describe('$timeout', function() {
       expect(log).toEqual('error: Some Arguments; error: Are Meant To Be Thrown');
     }));
 
-
     it('should forget references to relevant deferred even when exception is thrown',
         inject(function($timeout, $browser) {
       // $browser.defer.cancel is only called on cancel if the deferred object is still referenced
@@ -224,7 +211,6 @@ describe('$timeout', function() {
       expect(cancelSpy).not.toHaveBeenCalled();
     }));
   });
-
 
   describe('cancel', function() {
     it('should cancel tasks', inject(function($timeout) {
@@ -251,7 +237,6 @@ describe('$timeout', function() {
       expect(task4).not.toHaveBeenCalled();
     }));
 
-
     it('should cancel the promise', inject(function($timeout, log) {
       var promise = $timeout(noop);
       promise.then(function(value) { log('promise success: ' + value); },
@@ -264,7 +249,6 @@ describe('$timeout', function() {
 
       expect(log).toEqual(['promise error: canceled']);
     }));
-
 
     it('should return true if a task was successfully canceled', inject(function($timeout) {
       var task1 = jasmine.createSpy('task1'),
@@ -279,11 +263,9 @@ describe('$timeout', function() {
       expect($timeout.cancel(promise2)).toBe(true);
     }));
 
-
     it('should not throw a runtime exception when given an undefined promise', inject(function($timeout) {
       expect($timeout.cancel()).toBe(false);
     }));
-
 
     it('should forget references to relevant deferred', inject(function($timeout, $browser) {
       // $browser.defer.cancel is only called on cancel if the deferred object is still referenced

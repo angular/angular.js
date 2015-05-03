@@ -1,6 +1,5 @@
 'use strict';
 
-
 describe('ngBindHtml', function() {
   beforeEach(module('ngSanitize'));
 
@@ -10,7 +9,6 @@ describe('ngBindHtml', function() {
     $rootScope.$digest();
     expect(angular.lowercase(element.html())).toEqual('<div>hello</div>');
   }));
-
 
   it('should reset html when value is null or undefined', inject(function($compile, $rootScope) {
     var element = $compile('<div ng-bind-html="html"></div>')($rootScope);

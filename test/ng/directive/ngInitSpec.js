@@ -3,17 +3,14 @@
 describe('ngInit', function() {
   var element;
 
-
   afterEach(function() {
     dealoc(element);
   });
-
 
   it("should init model", inject(function($rootScope, $compile) {
     element = $compile('<div ng-init="a=123"></div>')($rootScope);
     expect($rootScope.a).toEqual(123);
   }));
-
 
   it("should be evaluated before ngInclude", inject(function($rootScope, $templateCache, $compile) {
     $templateCache.put('template1.tpl', '<span>1</span>');
@@ -25,7 +22,6 @@ describe('ngInit', function() {
     expect($rootScope.template).toEqual('template2.tpl');
     expect(element.find('span').text()).toEqual('2');
   }));
-
 
   it("should be evaluated after ngController", function() {
     module(function($controllerProvider) {

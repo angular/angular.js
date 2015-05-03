@@ -14,7 +14,6 @@ describe('ngList', function() {
     helper.dealoc();
   });
 
-
   beforeEach(inject(function(_$rootScope_) {
     $rootScope = _$rootScope_;
   }));
@@ -30,7 +29,6 @@ describe('ngList', function() {
     helper.changeInputValueTo('1, 2, 3');
     expect($rootScope.list).toEqual(['1', '2', '3']);
   });
-
 
   it("should not clobber text if model changes due to itself", function() {
     // When the user types 'a,b' the 'a,' stage parses to ['a'] but if the
@@ -55,14 +53,12 @@ describe('ngList', function() {
     expect($rootScope.list).toEqual(['a', 'b']);
   });
 
-
   it('should convert empty string to an empty array', function() {
     helper.compileInput('<input type="text" ng-model="list" ng-list />');
 
     helper.changeInputValueTo('');
     expect($rootScope.list).toEqual([]);
   });
-
 
   it('should be invalid if required and empty', function() {
     var inputElm = helper.compileInput('<input type="text" ng-list ng-model="list" required>');
@@ -84,7 +80,6 @@ describe('ngList', function() {
       helper.changeInputValueTo('a:b');
       expect($rootScope.list).toEqual(['a', 'b']);
     });
-
 
     it("should join the list back together with the custom separator", function() {
       var inputElm = helper.compileInput('<input type="text" ng-model="list" ng-list=" : " />');
@@ -139,4 +134,3 @@ describe('ngList', function() {
     });
   });
 });
-

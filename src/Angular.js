@@ -143,7 +143,6 @@ var hasOwnProperty = Object.prototype.hasOwnProperty;
  */
 var uppercase = function(string) {return isString(string) ? string.toUpperCase() : string;};
 
-
 var manualLowercase = function(s) {
   /* jshint bitwise: false */
   return isString(s)
@@ -157,7 +156,6 @@ var manualUppercase = function(s) {
       : s;
 };
 
-
 // String#toLowerCase and String#toUpperCase don't produce correct results in browsers with Turkish
 // locale, for this reason we need to detect this case and redefine lowercase/uppercase methods
 // with correct but slower alternatives.
@@ -165,7 +163,6 @@ if ('i' !== 'I'.toLowerCase()) {
   lowercase = manualLowercase;
   uppercase = manualUppercase;
 }
-
 
 var
     msie,             // holds major version number for IE, or NaN if UA is not IE.
@@ -187,7 +184,6 @@ var
  * http://msdn.microsoft.com/en-us/library/ie/cc196988(v=vs.85).aspx
  */
 msie = document.documentMode;
-
 
 /**
  * @private
@@ -284,7 +280,6 @@ function forEachSorted(obj, iterator, context) {
   return keys;
 }
 
-
 /**
  * when using forEach the params are value, key, but it is often useful to have key, value.
  * @param {function(string, *)} iteratorFn
@@ -308,7 +303,6 @@ function nextUid() {
   return ++uid;
 }
 
-
 /**
  * Set or clear the hashkey for an object.
  * @param obj object
@@ -321,7 +315,6 @@ function setHashKey(obj, h) {
     delete obj.$$hashKey;
   }
 }
-
 
 function baseExtend(dst, objs, deep) {
   var h = dst.$$hashKey;
@@ -369,7 +362,6 @@ function extend(dst) {
   return baseExtend(dst, slice.call(arguments, 1), false);
 }
 
-
 /**
 * @ngdoc function
 * @name angular.merge
@@ -392,12 +384,9 @@ function merge(dst) {
   return baseExtend(dst, slice.call(arguments, 1), true);
 }
 
-
-
 function toInt(str) {
   return parseInt(str, 10);
 }
-
 
 function inherit(parent, extra) {
   return extend(Object.create(parent), extra);
@@ -422,7 +411,6 @@ function inherit(parent, extra) {
 function noop() {}
 noop.$inject = [];
 
-
 /**
  * @ngdoc function
  * @name angular.identity
@@ -444,7 +432,6 @@ noop.$inject = [];
 function identity($) {return $;}
 identity.$inject = [];
 
-
 function valueFn(value) {return function() {return value;};}
 
 /**
@@ -461,7 +448,6 @@ function valueFn(value) {return function() {return value;};}
  */
 function isUndefined(value) {return typeof value === 'undefined';}
 
-
 /**
  * @ngdoc function
  * @name angular.isDefined
@@ -475,7 +461,6 @@ function isUndefined(value) {return typeof value === 'undefined';}
  * @returns {boolean} True if `value` is defined.
  */
 function isDefined(value) {return typeof value !== 'undefined';}
-
 
 /**
  * @ngdoc function
@@ -495,7 +480,6 @@ function isObject(value) {
   return value !== null && typeof value === 'object';
 }
 
-
 /**
  * @ngdoc function
  * @name angular.isString
@@ -509,7 +493,6 @@ function isObject(value) {
  * @returns {boolean} True if `value` is a `String`.
  */
 function isString(value) {return typeof value === 'string';}
-
 
 /**
  * @ngdoc function
@@ -531,7 +514,6 @@ function isString(value) {return typeof value === 'string';}
  */
 function isNumber(value) {return typeof value === 'number';}
 
-
 /**
  * @ngdoc function
  * @name angular.isDate
@@ -547,7 +529,6 @@ function isNumber(value) {return typeof value === 'number';}
 function isDate(value) {
   return toString.call(value) === '[object Date]';
 }
-
 
 /**
  * @ngdoc function
@@ -577,7 +558,6 @@ var isArray = Array.isArray;
  */
 function isFunction(value) {return typeof value === 'function';}
 
-
 /**
  * Determines if a value is a regular expression object.
  *
@@ -588,7 +568,6 @@ function isFunction(value) {return typeof value === 'function';}
 function isRegExp(value) {
   return toString.call(value) === '[object RegExp]';
 }
-
 
 /**
  * Checks if `obj` is a window object.
@@ -601,42 +580,34 @@ function isWindow(obj) {
   return obj && obj.window === obj;
 }
 
-
 function isScope(obj) {
   return obj && obj.$evalAsync && obj.$watch;
 }
-
 
 function isFile(obj) {
   return toString.call(obj) === '[object File]';
 }
 
-
 function isFormData(obj) {
   return toString.call(obj) === '[object FormData]';
 }
-
 
 function isBlob(obj) {
   return toString.call(obj) === '[object Blob]';
 }
 
-
 function isBoolean(value) {
   return typeof value === 'boolean';
 }
-
 
 function isPromiseLike(obj) {
   return obj && isFunction(obj.then);
 }
 
-
 var TYPED_ARRAY_REGEXP = /^\[object (Uint8(Clamped)?)|(Uint16)|(Uint32)|(Int8)|(Int16)|(Int32)|(Float(32)|(64))Array\]$/;
 function isTypedArray(value) {
   return TYPED_ARRAY_REGEXP.test(toString.call(value));
 }
-
 
 var trim = function(value) {
   return isString(value) ? value.trim() : value;
@@ -649,7 +620,6 @@ var escapeForRegexp = function(s) {
   return s.replace(/([-()\[\]{}+?*.$\^|,:#<!\\])/g, '\\$1').
            replace(/\x08/g, '\\x08');
 };
-
 
 /**
  * @ngdoc function
@@ -680,7 +650,6 @@ function makeMap(str) {
   }
   return obj;
 }
-
 
 function nodeName_(element) {
   return lowercase(element.nodeName || (element[0] && element[0].nodeName));
@@ -860,7 +829,6 @@ function shallowCopy(src, dst) {
   return dst || src;
 }
 
-
 /**
  * @ngdoc function
  * @name angular.equals
@@ -1012,7 +980,6 @@ function sliceArgs(args, startIndex) {
   return slice.call(args, startIndex || 0);
 }
 
-
 /* jshint -W101 */
 /**
  * @ngdoc function
@@ -1052,7 +1019,6 @@ function bind(self, fn) {
   }
 }
 
-
 function toJsonReplacer(key, value) {
   var val = value;
 
@@ -1068,7 +1034,6 @@ function toJsonReplacer(key, value) {
 
   return val;
 }
-
 
 /**
  * @ngdoc function
@@ -1093,7 +1058,6 @@ function toJson(obj, pretty) {
   return JSON.stringify(obj, toJsonReplacer, pretty);
 }
 
-
 /**
  * @ngdoc function
  * @name angular.fromJson
@@ -1112,12 +1076,10 @@ function fromJson(json) {
       : json;
 }
 
-
 function timezoneToOffset(timezone, fallback) {
   var requestedTimezoneOffset = Date.parse('Jan 01, 1970 00:00:00 ' + timezone) / 60000;
   return isNaN(requestedTimezoneOffset) ? fallback : requestedTimezoneOffset;
 }
-
 
 function addDateMinutes(date, minutes) {
   date = new Date(date.getTime());
@@ -1125,13 +1087,11 @@ function addDateMinutes(date, minutes) {
   return date;
 }
 
-
 function convertTimezoneToLocal(date, timezone, reverse) {
   reverse = reverse ? -1 : 1;
   var timezoneOffset = timezoneToOffset(timezone, date.getTimezoneOffset());
   return addDateMinutes(date, reverse * (timezoneOffset - date.getTimezoneOffset()));
 }
-
 
 /**
  * @returns {string} Returns the string representation of the element.
@@ -1155,7 +1115,6 @@ function startingTag(element) {
 
 }
 
-
 /////////////////////////////////////////////////
 
 /**
@@ -1173,7 +1132,6 @@ function tryDecodeURIComponent(value) {
     // Ignore any invalid uri component
   }
 }
-
 
 /**
  * Parses an escaped url query string into key-value pairs.
@@ -1216,7 +1174,6 @@ function toKeyValue(obj) {
   return parts.length ? parts.join('&') : '';
 }
 
-
 /**
  * We need our custom method because encodeURIComponent is too aggressive and doesn't follow
  * http://www.ietf.org/rfc/rfc3986.txt with regards to the character set (pchar) allowed in path
@@ -1234,7 +1191,6 @@ function encodeUriSegment(val) {
              replace(/%3D/gi, '=').
              replace(/%2B/gi, '+');
 }
-
 
 /**
  * This method is intended for encoding *key* or *value* parts of query component. We need a custom
@@ -1720,7 +1676,6 @@ function getBlockNodes(nodes) {
 
   return jqLite(blockNodes);
 }
-
 
 /**
  * Creates a new object without a prototype. This object is useful for lookup without having to

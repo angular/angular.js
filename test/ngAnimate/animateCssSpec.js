@@ -324,7 +324,6 @@ describe("ngAnimate $animateCss", function() {
           animator.start();
           triggerAnimationStartFrame();
 
-
           transitionProgress(element, 10);
           assertAnimationComplete(false);
 
@@ -342,7 +341,6 @@ describe("ngAnimate $animateCss", function() {
           var animator = $animateCss(element, options);
           animator.start();
           triggerAnimationStartFrame();
-
 
           transitionProgress(element, 1, 10);
           assertAnimationComplete(false);
@@ -381,7 +379,6 @@ describe("ngAnimate $animateCss", function() {
           animator.start();
           triggerAnimationStartFrame();
 
-
           keyframeProgress(element, 1);
           assertAnimationComplete(false);
 
@@ -399,7 +396,6 @@ describe("ngAnimate $animateCss", function() {
           var animator = $animateCss(element, options);
           animator.start();
           triggerAnimationStartFrame();
-
 
           keyframeProgress(element, 1, 1);
           assertAnimationComplete(false);
@@ -420,7 +416,6 @@ describe("ngAnimate $animateCss", function() {
           animator.start();
           triggerAnimationStartFrame();
 
-
           keyframeProgress(element, 1, 1);
           assertAnimationComplete(false);
 
@@ -440,7 +435,6 @@ describe("ngAnimate $animateCss", function() {
           var animator = $animateCss(element, options);
           animator.start();
           triggerAnimationStartFrame();
-
 
           transitionProgress(element, 10);
           keyframeProgress(element, 10);
@@ -469,7 +463,6 @@ describe("ngAnimate $animateCss", function() {
           var animator = $animateCss(element, options);
           animator.start();
           triggerAnimationStartFrame();
-
 
           transitionProgress(element, 1, 10);
           keyframeProgress(element, 1, 10);
@@ -675,7 +668,6 @@ describe("ngAnimate $animateCss", function() {
             $animateCss(element, { event: 'enter', structural: true }).start();
             triggerAnimationStartFrame();
 
-
             expect(element).toHaveClass('ng-enter-active');
           }
         }));
@@ -705,7 +697,6 @@ describe("ngAnimate $animateCss", function() {
           }
         }));
 
-
         it("should ignore animation staggers if only transition animations were detected",
           inject(function($animateCss, $document, $rootElement) {
 
@@ -720,7 +711,6 @@ describe("ngAnimate $animateCss", function() {
 
             $animateCss(element, { event: 'enter', structural: true }).start();
             triggerAnimationStartFrame();
-
 
             expect(element).toHaveClass('ng-enter-active');
           }
@@ -740,7 +730,6 @@ describe("ngAnimate $animateCss", function() {
 
             var animator = $animateCss(elm, { event: 'enter', structural: true }).start();
             triggerAnimationStartFrame();
-
 
             expect(elm).toHaveClass('ng-enter-active');
           }
@@ -917,7 +906,6 @@ describe("ngAnimate $animateCss", function() {
           animator.start();
           triggerAnimationStartFrame();
 
-
           expect(element).toHaveClass('ng-enter');
           expect(element).toHaveClass('ng-enter-active');
 
@@ -939,7 +927,6 @@ describe("ngAnimate $animateCss", function() {
           var animator = $animateCss(element, { event: 'enter', structural: true });
           animator.start();
           triggerAnimationStartFrame();
-
 
           expect(element).toHaveClass('ng-enter');
           expect(element).toHaveClass('ng-enter-active');
@@ -1187,7 +1174,6 @@ describe("ngAnimate $animateCss", function() {
           animator.start();
           triggerAnimationStartFrame();
 
-
           browserTrigger(element, 'transitionend',
             { timeStamp: Date.now() + 1000, elapsedTime: 1 });
 
@@ -1317,7 +1303,6 @@ describe("ngAnimate $animateCss", function() {
           animator.start();
           triggerAnimationStartFrame();
 
-
           expect(element.attr('style')).not.toContain('transition-delay');
           expect(element.css('transition-property')).toContain('all');
           expect(element.css('transition-duration')).toContain('10s');
@@ -1338,7 +1323,6 @@ describe("ngAnimate $animateCss", function() {
           to: fakeStyle
         }).start();
         triggerAnimationStartFrame();
-
 
         expect(element).toHaveClass('ng-enter');
         expect(element).toHaveClass('ng-leave');
@@ -1390,7 +1374,6 @@ describe("ngAnimate $animateCss", function() {
           animator.start();
           triggerAnimationStartFrame();
 
-
           expect(element).toHaveClass('class-' + event + '-active');
         });
       });
@@ -1410,7 +1393,6 @@ describe("ngAnimate $animateCss", function() {
           var animator = $animateCss(element, options);
           animator.start();
           triggerAnimationStartFrame();
-
 
           browserTrigger(element, 'transitionend',
             { timeStamp: Date.now() + 1000, elapsedTime: 10 });
@@ -1541,7 +1523,6 @@ describe("ngAnimate $animateCss", function() {
           animator.start();
           triggerAnimationStartFrame();
 
-
           expect(element.css(prefix + 'animation-duration')).toEqual('5s');
         }));
 
@@ -1559,7 +1540,6 @@ describe("ngAnimate $animateCss", function() {
           var animator = $animateCss(element, options);
           animator.start();
           triggerAnimationStartFrame();
-
 
           browserTrigger(element, 'animationend',
             { timeStamp: Date.now() + 5000, elapsedTime: 5 });
@@ -1581,7 +1561,6 @@ describe("ngAnimate $animateCss", function() {
           var animator = $animateCss(element, options);
           animator.start();
           triggerAnimationStartFrame();
-
 
           expect(element.css(prefix + 'animation-delay')).toEqual('5s');
 
@@ -1648,7 +1627,6 @@ describe("ngAnimate $animateCss", function() {
           animator.start();
           triggerAnimationStartFrame();
 
-
           var prop = element.css('transition-delay');
           expect(prop).toEqual('500s');
         }));
@@ -1690,7 +1668,6 @@ describe("ngAnimate $animateCss", function() {
           animator.start();
           triggerAnimationStartFrame();
 
-
           var prop = element.css('transition-delay');
           expect(prop).toEqual('500s');
         }));
@@ -1715,7 +1692,6 @@ describe("ngAnimate $animateCss", function() {
           animator.start();
           triggerAnimationStartFrame();
 
-
           var prop = element.css('transition-delay');
           expect(prop).toEqual('0s');
         }));
@@ -1734,7 +1710,6 @@ describe("ngAnimate $animateCss", function() {
           var animator = $animateCss(element, options);
           animator.start();
           triggerAnimationStartFrame();
-
 
           expect(element.css(prefix + 'animation-delay')).toEqual('400s');
           expect(element.attr('style')).not.toContain('transition-delay');
@@ -1758,7 +1733,6 @@ describe("ngAnimate $animateCss", function() {
           expect(element.attr('style')).not.toContain('animation-delay');
           animator.start();
           triggerAnimationStartFrame();
-
 
           expect(element.css(prefix + 'animation-delay')).toEqual('10s');
           expect(element.css('transition-delay')).toEqual('10s');
@@ -1903,7 +1877,6 @@ describe("ngAnimate $animateCss", function() {
           animator.start();
           triggerAnimationStartFrame();
 
-
           var style = element.attr('style');
           expect(element.css('transition-duration')).toMatch('5.5s');
           expect(element.css('transition-property')).toMatch('all');
@@ -1980,7 +1953,6 @@ describe("ngAnimate $animateCss", function() {
           animator.start();
           triggerAnimationStartFrame();
 
-
           var detectedStyle = element.attr('style');
           expect(detectedStyle).toContain('5.5s');
           expect(detectedStyle).toContain('my_animation');
@@ -2012,7 +1984,6 @@ describe("ngAnimate $animateCss", function() {
           animator.start();
           triggerAnimationStartFrame();
 
-
           var detectedStyle = element.attr('style');
           expect(detectedStyle).toContain('50s');
           expect(detectedStyle).toContain('my_animation');
@@ -2032,7 +2003,6 @@ describe("ngAnimate $animateCss", function() {
 
           animator.start();
           triggerAnimationStartFrame();
-
 
           expect(element.css(prefix + 'animation-delay')).toEqual('50s');
           expect(element.css(prefix + 'animation-duration')).toEqual('5.5s');
@@ -2107,7 +2077,6 @@ describe("ngAnimate $animateCss", function() {
           animator.start();
           triggerAnimationStartFrame();
 
-
           browserTrigger(element, 'transitionend',
             { timeStamp: Date.now() + 10000, elapsedTime: 10 });
 
@@ -2150,7 +2119,6 @@ describe("ngAnimate $animateCss", function() {
           animator.start();
           triggerAnimationStartFrame();
 
-
           var style = element.attr('style');
           expect(element.css('transition-duration')).toMatch('2.5s');
           expect(element.css('transition-property')).toMatch('all');
@@ -2170,7 +2138,6 @@ describe("ngAnimate $animateCss", function() {
           var animator = $animateCss(element, options);
           animator.start();
           triggerAnimationStartFrame();
-
 
           var style = element.attr('style');
           expect(style).toContain('transition');
@@ -2221,7 +2188,6 @@ describe("ngAnimate $animateCss", function() {
           var animator = $animateCss(element, options);
           animator.start();
           triggerAnimationStartFrame();
-
 
           expect(element.css('transition-delay')).toEqual('5s');
 
@@ -2298,7 +2264,6 @@ describe("ngAnimate $animateCss", function() {
           animator.start();
           triggerAnimationStartFrame();
 
-
           var style = element.attr('style');
           expect(element.css('transition-duration')).toMatch('1s');
           expect(element.css('transition-property')).toMatch('all');
@@ -2324,7 +2289,6 @@ describe("ngAnimate $animateCss", function() {
           var animator = $animateCss(element, options);
           animator.start();
           triggerAnimationStartFrame();
-
 
           expect(element.css('transition-duration')).toMatch('10s');
           expect(element.css(prefix + 'animation-duration')).toEqual('10s');

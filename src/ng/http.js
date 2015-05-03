@@ -118,7 +118,6 @@ function parseHeaders(headers) {
   return parsed;
 }
 
-
 /**
  * Returns a function that provides access to parsed headers.
  *
@@ -149,7 +148,6 @@ function headersGetter(headers) {
   };
 }
 
-
 /**
  * Chain all given functions
  *
@@ -173,11 +171,9 @@ function transformData(data, headers, status, fns) {
   return data;
 }
 
-
 function isSuccess(status) {
   return 200 <= status && status < 300;
 }
-
 
 /**
  * @ngdoc provider
@@ -1069,9 +1065,7 @@ function $HttpProvider() {
          */
     $http.defaults = defaults;
 
-
     return $http;
-
 
     function createShortMethods(names) {
       forEach(arguments, function(name) {
@@ -1084,7 +1078,6 @@ function $HttpProvider() {
       });
     }
 
-
     function createShortMethodsWithData(name) {
       forEach(arguments, function(name) {
         $http[name] = function(url, data, config) {
@@ -1096,7 +1089,6 @@ function $HttpProvider() {
         };
       });
     }
-
 
     /**
      * Makes the request.
@@ -1114,7 +1106,6 @@ function $HttpProvider() {
 
       $http.pendingRequests.push(config);
       promise.then(removePendingReq, removePendingReq);
-
 
       if ((config.cache || defaults.cache) && config.cache !== false &&
           (config.method === 'GET' || config.method === 'JSONP')) {
@@ -1143,7 +1134,6 @@ function $HttpProvider() {
         }
       }
 
-
       // if we won't have the response in cache, set the xsrf headers and
       // send the request to the backend
       if (isUndefined(cachedResp)) {
@@ -1159,7 +1149,6 @@ function $HttpProvider() {
       }
 
       return promise;
-
 
       /**
        * Callback registered to $httpBackend():
@@ -1189,7 +1178,6 @@ function $HttpProvider() {
         }
       }
 
-
       /**
        * Resolves the raw $http promise.
        */
@@ -1215,7 +1203,6 @@ function $HttpProvider() {
         if (idx !== -1) $http.pendingRequests.splice(idx, 1);
       }
     }
-
 
     function buildUrl(url, serializedParams) {
       if (serializedParams.length > 0) {

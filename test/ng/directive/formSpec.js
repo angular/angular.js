@@ -29,13 +29,11 @@ describe('form', function() {
     dealoc(doc);
   });
 
-
   it('should instantiate form and attach it to DOM', function() {
     doc = $compile('<form>')(scope);
     expect(doc.data('$formController')).toBeTruthy();
     expect(doc.data('$formController') instanceof FormController).toBe(true);
   });
-
 
   it('should remove form control references from the form when nested control is removed from the DOM', function() {
     doc = $compile(
@@ -100,7 +98,6 @@ describe('form', function() {
     expect(scope.myForm.nestedForm.alias).toBeDefined();
   });
 
-
   it('should publish form to scope when name attr is defined', function() {
     doc = $compile('<form name="myForm"></form>')(scope);
     expect(scope.myForm).toBeTruthy();
@@ -108,14 +105,12 @@ describe('form', function() {
     expect(doc.data('$formController')).toEqual(scope.myForm);
   });
 
-
   it('should support expression in form name', function() {
     doc = $compile('<form name="obj.myForm"></form>')(scope);
 
     expect(scope.obj).toBeDefined();
     expect(scope.obj.myForm).toBeTruthy();
   });
-
 
   it('should support two forms on a single scope', function() {
     doc = $compile(
@@ -149,7 +144,6 @@ describe('form', function() {
     expect(scope.formB.$error.required).toBeFalsy();
   });
 
-
   it('should publish widgets', function() {
     doc = jqLite('<form name="form"><input type="text" name="w1" ng-model="some" /></form>');
     $compile(doc)(scope);
@@ -161,7 +155,6 @@ describe('form', function() {
     expect(widget.$valid).toBe(true);
     expect(widget.$invalid).toBe(false);
   });
-
 
   it('should throw an exception if an input has name="hasOwnProperty"', function() {
     doc = jqLite(
@@ -301,7 +294,6 @@ describe('form', function() {
       });
     });
 
-
     it('should prevent the default when the form is destroyed by a submission via a click event',
         inject(function($timeout) {
       doc = jqLite('<div>' +
@@ -357,7 +349,6 @@ describe('form', function() {
       });
     }));
 
-
     it('should NOT prevent form submission if action attribute present', function() {
       var callback = jasmine.createSpy('submit').andCallFake(function(event) {
         expect(event.isDefaultPrevented()).toBe(false);
@@ -371,7 +362,6 @@ describe('form', function() {
       expect(callback).toHaveBeenCalledOnce();
     });
   });
-
 
   describe('nested forms', function() {
 
@@ -410,7 +400,6 @@ describe('form', function() {
       expect(parent.$submitted).toBeTruthy();
     });
 
-
     it('should deregister a child form when its DOM is removed', function() {
       doc = jqLite(
         '<form name="parent">' +
@@ -434,7 +423,6 @@ describe('form', function() {
       expect(parent.$error.required).toBeFalsy();
     });
 
-
     it('should deregister a child form whose name is an expression when its DOM is removed', function() {
       doc = jqLite(
         '<form name="parent">' +
@@ -457,7 +445,6 @@ describe('form', function() {
       expect(scope.child.form).toBeUndefined();
       expect(parent.$error.required).toBeFalsy();
     });
-
 
     it('should deregister a input when it is removed from DOM', function() {
       doc = jqLite(
@@ -609,7 +596,6 @@ describe('form', function() {
     });
   });
 
-
   describe('validation', function() {
 
     beforeEach(function() {
@@ -620,7 +606,6 @@ describe('form', function() {
 
       scope.$digest();
     });
-
 
     it('should have ng-valid/ng-invalid css class', function() {
       expect(doc).toBeValid();
@@ -729,7 +714,6 @@ describe('form', function() {
       expect(input1).toBeDirty();
       expect(input2).toBeDirty();
 
-
       formCtrl.$setPristine();
       scope.$digest();
       expect(form).toBePristine();
@@ -742,7 +726,6 @@ describe('form', function() {
       expect(input2Ctrl.$pristine).toBe(true);
       expect(input2Ctrl.$dirty).toBe(false);
     });
-
 
     it('should reset pristine state of anonymous form controls', function() {
 
@@ -772,7 +755,6 @@ describe('form', function() {
       expect(inputCtrl.$pristine).toBe(true);
       expect(inputCtrl.$dirty).toBe(false);
     });
-
 
     it('should reset pristine state of nested forms', function() {
 
@@ -846,7 +828,6 @@ describe('form', function() {
     });
   });
 
-
   it('should rename nested form controls when interpolated name changes', function() {
     scope.idA = 'A';
     scope.idB = 'X';
@@ -878,7 +859,6 @@ describe('form', function() {
     expect(formA.nestedX).toBeUndefined();
     expect(formA.nestedY).toBe(formX);
   });
-
 
   it('should rename forms with no parent when interpolated name changes', function() {
     var element = $compile('<form name="name{{nameID}}"></form>')(scope);

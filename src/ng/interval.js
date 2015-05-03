@@ -1,11 +1,9 @@
 'use strict';
 
-
 function $IntervalProvider() {
   this.$get = ['$rootScope', '$window', '$q', '$$q',
        function($rootScope,   $window,   $q,   $$q) {
     var intervals = {};
-
 
      /**
       * @ngdoc service
@@ -165,7 +163,6 @@ function $IntervalProvider() {
 
       return promise;
     }
-
 
      /**
       * @ngdoc method

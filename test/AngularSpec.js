@@ -382,7 +382,6 @@ describe('angular', function() {
       expect(hashKey(dst)).not.toEqual(hashKey(src));
     });
 
-
     it('should retain the previous $$hashKey', function() {
       var src,dst,h;
       src = {};
@@ -396,7 +395,6 @@ describe('angular', function() {
       expect(hashKey(dst)).toEqual(h);
     });
 
-
     it('should work when extending with itself', function() {
       var src,dst,h;
       dst = src = {};
@@ -406,7 +404,6 @@ describe('angular', function() {
       expect(hashKey(dst)).toEqual(h);
     });
   });
-
 
   describe('merge', function() {
     it('should recursively copy objects into dst from left to right', function() {
@@ -423,7 +420,6 @@ describe('angular', function() {
       });
     });
 
-
     it('should replace primitives with objects', function() {
       var dst = { foo: "bloop" };
       var src = { foo: { bar: { baz: "bloop" }}};
@@ -436,7 +432,6 @@ describe('angular', function() {
         }
       });
     });
-
 
     it('should replace null values in destination with objects', function() {
       var dst = { foo: null };
@@ -451,7 +446,6 @@ describe('angular', function() {
       });
     });
 
-
     it('should copy references to functions by value rather than merging', function() {
       function fn() {}
       var dst = { foo: 1 };
@@ -461,7 +455,6 @@ describe('angular', function() {
         foo: fn
       });
     });
-
 
     it('should create a new array if destination property is a non-object and source property is an array', function() {
       var dst = { foo: NaN };
@@ -473,7 +466,6 @@ describe('angular', function() {
       expect(dst.foo).not.toBe(src.foo);
     });
   });
-
 
   describe('shallow copy', function() {
     it('should make a copy', function() {
@@ -653,7 +645,6 @@ describe('angular', function() {
     });
   });
 
-
   describe('csp', function() {
     var originalFunction;
 
@@ -666,17 +657,14 @@ describe('angular', function() {
       delete csp.isActive_;
     });
 
-
     it('should return the false when CSP is not enabled (the default)', function() {
       expect(csp()).toBe(false);
     });
-
 
     it('should return true if CSP is autodetected via CSP v1.1 securityPolicy.isActive property', function() {
       window.Function = function() { throw new Error('CSP test'); };
       expect(csp()).toBe(true);
     });
-
 
     it('should return the true when CSP is enabled manually via [ng-csp]', function() {
       spyOn(document, 'querySelector').andCallFake(function(selector) {
@@ -684,7 +672,6 @@ describe('angular', function() {
       });
       expect(csp()).toBe(true);
     });
-
 
     it('should return the true when CSP is enabled manually via [data-ng-csp]', function() {
       spyOn(document, 'querySelector').andCallFake(function(selector) {
@@ -694,7 +681,6 @@ describe('angular', function() {
       expect(document.querySelector).toHaveBeenCalledWith('[data-ng-csp]');
     });
   });
-
 
   describe('jq', function() {
     var element;
@@ -783,7 +769,6 @@ describe('angular', function() {
     });
   });
 
-
   describe('parseKeyValue', function() {
     it('should parse a string into key-value pairs', function() {
       expect(parseKeyValue('')).toEqual({});
@@ -813,7 +798,6 @@ describe('angular', function() {
       toEqual({flag1: [true,'value','value2',true]});
     });
 
-
     it('should ignore properties higher in the prototype chain', function() {
       expect(parseKeyValue('toString=123')).toEqual({
         'toString': '123'
@@ -842,7 +826,6 @@ describe('angular', function() {
     });
   });
 
-
   describe('forEach', function() {
     it('should iterate over *own* object properties', function() {
       function MyObj() {
@@ -859,7 +842,6 @@ describe('angular', function() {
       expect(log).toEqual(['bar:barVal', 'baz:bazVal']);
     });
 
-
     it('should not break if obj is an array we override hasOwnProperty', function() {
       /* jshint -W001 */
       var obj = [];
@@ -873,8 +855,6 @@ describe('angular', function() {
       expect(log).toEqual(['0:1', '1:2']);
     });
 
-
-
     it('should handle JQLite and jQuery objects like arrays', function() {
       var jqObject = jqLite("<p><span>s1</span><span>s2</span></p>").find("span"),
           log = [];
@@ -883,16 +863,13 @@ describe('angular', function() {
       expect(log).toEqual(['0:s1', '1:s2']);
     });
 
-
     it('should handle NodeList objects like arrays', function() {
       var nodeList = jqLite("<p><span>a</span><span>b</span><span>c</span></p>")[0].childNodes,
           log = [];
 
-
       forEach(nodeList, function(value, key) { log.push(key + ':' + value.innerHTML); });
       expect(log).toEqual(['0:a', '1:b', '2:c']);
     });
-
 
     it('should handle HTMLCollection objects like arrays', function() {
       document.body.innerHTML = "<p>" +
@@ -941,7 +918,6 @@ describe('angular', function() {
       expect(log).toEqual(['0:b', '1:a', '2:r']);
     });
 
-
     it('should handle objects with length property as objects', function() {
       var obj = {
           'foo': 'bar',
@@ -952,7 +928,6 @@ describe('angular', function() {
       forEach(obj, function(value, key) { log.push(key + ':' + value); });
       expect(log).toEqual(['foo:bar', 'length:2']);
     });
-
 
     it('should handle objects of custom types with length property as objects', function() {
       function CustomType() {
@@ -967,7 +942,6 @@ describe('angular', function() {
       expect(log).toEqual(['length:2', 'foo:bar']);
     });
 
-
     it('should not invoke the iterator for indexed properties which are not present in the collection', function() {
       var log = [];
       var collection = [];
@@ -978,7 +952,6 @@ describe('angular', function() {
       expect(log.length).toBe(1);
       expect(log[0]).toBe('SPARSE5');
     });
-
 
     describe('ES spec api compliance', function() {
 
@@ -997,46 +970,37 @@ describe('angular', function() {
         expect(expectedSize).toBe(0);
       }
 
-
       it('should follow the ES spec when called with array', function() {
         testForEachSpec(2, [1,2]);
       });
-
 
       it('should follow the ES spec when called with arguments', function() {
         testForEachSpec(2, (function() { return arguments; }(1,2)));
       });
 
-
       it('should follow the ES spec when called with string', function() {
         testForEachSpec(2, '12');
       });
-
 
       it('should follow the ES spec when called with jQuery/jqLite', function() {
         testForEachSpec(2, jqLite("<span>a</span><span>b</span>"));
       });
 
-
       it('should follow the ES spec when called with childNodes NodeList', function() {
         testForEachSpec(2, jqLite("<p><span>a</span><span>b</span></p>")[0].childNodes);
       });
-
 
       it('should follow the ES spec when called with getElementsByTagName HTMLCollection', function() {
         testForEachSpec(2, jqLite("<p><span>a</span><span>b</span></p>")[0].getElementsByTagName("*"));
       });
 
-
       it('should follow the ES spec when called with querySelectorAll HTMLCollection', function() {
         testForEachSpec(2, jqLite("<p><span>a</span><span>b</span></p>")[0].querySelectorAll("*"));
       });
 
-
       it('should follow the ES spec when called with JSON', function() {
         testForEachSpec(2, {a: 1, b: 2});
       });
-
 
       it('should follow the ES spec when called with function', function() {
         function f() {}
@@ -1046,7 +1010,6 @@ describe('angular', function() {
       });
     });
   });
-
 
   describe('encodeUriSegment', function() {
     it('should correctly encode uri segment and not encode chars defined as pchar set in rfc3986',
@@ -1068,7 +1031,6 @@ describe('angular', function() {
         toEqual('%2F;%20%2F;');
     });
   });
-
 
   describe('encodeUriQuery', function() {
     it('should correctly encode uri query and not encode chars defined as pchar set in rfc3986',
@@ -1107,7 +1069,6 @@ describe('angular', function() {
     });
   });
 
-
   describe('angularInit', function() {
     var bootstrapSpy;
     var element;
@@ -1129,12 +1090,10 @@ describe('angular', function() {
       bootstrapSpy = jasmine.createSpy('bootstrapSpy');
     });
 
-
     it('should do nothing when not found', function() {
       angularInit(element, bootstrapSpy);
       expect(bootstrapSpy).not.toHaveBeenCalled();
     });
-
 
     it('should look for ngApp directive as attr', function() {
       var appElement = jqLite('<div ng-app="ABC"></div>')[0];
@@ -1143,14 +1102,12 @@ describe('angular', function() {
       expect(bootstrapSpy).toHaveBeenCalledOnceWith(appElement, ['ABC'], jasmine.any(Object));
     });
 
-
     it('should look for ngApp directive using querySelectorAll', function() {
       var appElement = jqLite('<div x-ng-app="ABC"></div>')[0];
       element.querySelector['[x-ng-app]'] = appElement;
       angularInit(element, bootstrapSpy);
       expect(bootstrapSpy).toHaveBeenCalledOnceWith(appElement, ['ABC'], jasmine.any(Object));
     });
-
 
     it('should bootstrap anonymously', function() {
       var appElement = jqLite('<div x-ng-app></div>')[0];
@@ -1159,13 +1116,11 @@ describe('angular', function() {
       expect(bootstrapSpy).toHaveBeenCalledOnceWith(appElement, [], jasmine.any(Object));
     });
 
-
     it('should bootstrap if the annotation is on the root element', function() {
       var appElement = jqLite('<div ng-app=""></div>')[0];
       angularInit(appElement, bootstrapSpy);
       expect(bootstrapSpy).toHaveBeenCalledOnceWith(appElement, [], jasmine.any(Object));
     });
-
 
     it('should complain if app module cannot be found', function() {
       var appElement = jqLite('<div ng-app="doesntexist"></div>')[0];
@@ -1178,7 +1133,6 @@ describe('angular', function() {
                    'misspelled the module name or forgot to load it\\.')
       );
     });
-
 
     it('should complain if an element has already been bootstrapped', function() {
       var element = jqLite('<div>bootstrap me!</div>');
@@ -1193,7 +1147,6 @@ describe('angular', function() {
       dealoc(element);
     });
 
-
     it('should complain if manually bootstrapping a document whose <html> element has already been bootstrapped', function() {
       angular.bootstrap(document.getElementsByTagName('html')[0]);
       expect(function() {
@@ -1204,7 +1157,6 @@ describe('angular', function() {
 
       dealoc(document);
     });
-
 
     it('should bootstrap in strict mode when ng-strict-di attribute is specified', function() {
       bootstrapSpy = spyOn(angular, 'bootstrap').andCallThrough();
@@ -1222,7 +1174,6 @@ describe('angular', function() {
       dealoc(appElement);
     });
   });
-
 
   describe('angular service', function() {
     it('should override services', function() {
@@ -1244,7 +1195,6 @@ describe('angular', function() {
 
   });
 
-
   describe('isDate', function() {
     it('should return true for Date object', function() {
       expect(isDate(new Date())).toBe(true);
@@ -1257,7 +1207,6 @@ describe('angular', function() {
       expect(isDate({})).toBe(false);
     });
   });
-
 
   describe('isRegExp', function() {
     it('should return true for RegExp object', function() {
@@ -1274,7 +1223,6 @@ describe('angular', function() {
     });
   });
 
-
   describe('isWindow', function() {
     it('should return true for the Window object', function() {
       expect(isWindow(window)).toBe(true);
@@ -1289,7 +1237,6 @@ describe('angular', function() {
       expect(isWindow(document)).toBe(false);
     });
   });
-
 
   describe('compile', function() {
     it('should link to existing node and create scope', inject(function($rootScope, $compile) {
@@ -1334,7 +1281,6 @@ describe('angular', function() {
     }));
   });
 
-
   describe('nodeName_', function() {
     it('should correctly detect node name with "namespace" when xmlns is defined', function() {
       var div = jqLite('<div xmlns:ngtest="http://angularjs.org/">' +
@@ -1358,7 +1304,6 @@ describe('angular', function() {
     });
   });
 
-
   describe('nextUid()', function() {
     it('should return new id per call', function() {
       var seen = {};
@@ -1372,7 +1317,6 @@ describe('angular', function() {
       }
     });
   });
-
 
   describe('version', function() {
     it('version should have full/major/minor/dot/codeName properties', function() {
@@ -1407,7 +1351,6 @@ describe('angular', function() {
       expect(element.html()).toBe('{{1+2}}');
       dealoc(element);
     });
-
 
     describe('deferred bootstrap', function() {
       var originalName = window.name,
@@ -1456,7 +1399,6 @@ describe('angular', function() {
         expect(window.name).toEqual('');
       });
 
-
       it('should load extra modules', function() {
         element = jqLite('<div>{{1+2}}</div>');
         window.name = 'NG_DEFER_BOOTSTRAP!';
@@ -1474,7 +1416,6 @@ describe('angular', function() {
         expect(element.injector().get('foo')).toEqual('bar');
       });
 
-
       it('should not defer bootstrap without window.name cue', function() {
         angular.bootstrap(element, []);
         angular.module('addedModule', []).value('foo', 'bar');
@@ -1485,7 +1426,6 @@ describe('angular', function() {
 
         expect(element.injector().get('$http')).toBeDefined();
       });
-
 
       it('should restore the original window.name after bootstrap', function() {
         window.name = 'NG_DEFER_BOOTSTRAP!my custom name';
@@ -1500,7 +1440,6 @@ describe('angular', function() {
       });
     });
   });
-
 
   describe('startingElementHtml', function() {
     it('should show starting element tag only', function() {
@@ -1522,13 +1461,11 @@ describe('angular', function() {
       expect(snake_case('alanBobCharles')).toEqual('alan_bob_charles');
     });
 
-
     it('should allow separator to be overridden', function() {
       expect(snake_case('ABC', '&')).toEqual('a&b&c');
       expect(snake_case('alanBobCharles', '&')).toEqual('alan&bob&charles');
     });
   });
-
 
   describe('fromJson', function() {
 
@@ -1540,7 +1477,6 @@ describe('angular', function() {
     });
   });
 
-
   describe('toJson', function() {
 
     it('should delegate to JSON.stringify', function() {
@@ -1549,7 +1485,6 @@ describe('angular', function() {
       expect(toJson({})).toEqual('{}');
       expect(spy).toHaveBeenCalled();
     });
-
 
     it('should format objects pretty', function() {
       expect(toJson({a: 1, b: 2}, true)).
@@ -1566,26 +1501,21 @@ describe('angular', function() {
           toBe('{\n  "a": 1,\n  "b": 2\n}');
     });
 
-
     it('should not serialize properties starting with $$', function() {
       expect(toJson({$$some:'value'}, false)).toEqual('{}');
     });
-
 
     it('should serialize properties starting with $', function() {
       expect(toJson({$few: 'v'}, false)).toEqual('{"$few":"v"}');
     });
 
-
     it('should not serialize $window object', function() {
       expect(toJson(window)).toEqual('"$WINDOW"');
     });
 
-
     it('should not serialize $document object', function() {
       expect(toJson(document)).toEqual('"$DOCUMENT"');
     });
-
 
     it('should not serialize scope instances', inject(function($rootScope) {
       expect(toJson({key: $rootScope})).toEqual('{"key":"$SCOPE"}');

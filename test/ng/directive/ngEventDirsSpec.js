@@ -3,11 +3,9 @@
 describe('event directives', function() {
   var element;
 
-
   afterEach(function() {
     dealoc(element);
   });
-
 
   describe('ngSubmit', function() {
 

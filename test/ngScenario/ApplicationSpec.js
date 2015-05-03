@@ -15,12 +15,10 @@ describe('angular.scenario.Application', function() {
     app = new angular.scenario.Application(frames);
   });
 
-
   afterEach(function() {
     _jQuery('iframe').off(); // cleanup any leftover onload handlers
     document.body.innerHTML = '';
   });
-
 
   it('should return new $window and $document after navigateTo', function() {
     var called;

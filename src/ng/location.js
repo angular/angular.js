@@ -4,7 +4,6 @@ var PATH_MATCH = /^([^\?#]*)(\?([^#]*))?(#(.*))?$/,
     DEFAULT_PORTS = {'http': 80, 'https': 443, 'ftp': 21};
 var $locationMinErr = minErr('$location');
 
-
 /**
  * Encode path using encodeUriSegment, ignoring forward slashes
  *
@@ -30,7 +29,6 @@ function parseAbsoluteUrl(absoluteUrl, locationObj) {
   locationObj.$$port = toInt(parsedUrl.port) || DEFAULT_PORTS[parsedUrl.protocol] || null;
 }
 
-
 function parseAppUrl(relativeUrl, locationObj) {
   var prefixed = (relativeUrl.charAt(0) !== '/');
   if (prefixed) {
@@ -48,7 +46,6 @@ function parseAppUrl(relativeUrl, locationObj) {
   }
 }
 
-
 /**
  *
  * @param {string} begin
@@ -62,7 +59,6 @@ function beginsWith(begin, whole) {
   }
 }
 
-
 function stripHash(url) {
   var index = url.indexOf('#');
   return index == -1 ? url : url.substr(0, index);
@@ -72,7 +68,6 @@ function trimEmptyHash(url) {
   return url.replace(/(#.+)|#$/, '$1');
 }
 
-
 function stripFile(url) {
   return url.substr(0, stripHash(url).lastIndexOf('/') + 1);
 }
@@ -81,7 +76,6 @@ function stripFile(url) {
 function serverBase(url) {
   return url.substring(0, url.indexOf('/', url.indexOf('//') + 2));
 }
-
 
 /**
  * LocationHtml5Url represents an url
@@ -96,7 +90,6 @@ function LocationHtml5Url(appBase, basePrefix) {
   basePrefix = basePrefix || '';
   var appBaseNoFile = stripFile(appBase);
   parseAbsoluteUrl(appBase, this);
-
 
   /**
    * Parse given html5 (regular) url string into properties
@@ -160,7 +153,6 @@ function LocationHtml5Url(appBase, basePrefix) {
   };
 }
 
-
 /**
  * LocationHashbangUrl represents url
  * This object is exposed as $location service when developer doesn't opt into html5 mode.
@@ -174,7 +166,6 @@ function LocationHashbangUrl(appBase, hashPrefix) {
   var appBaseNoFile = stripFile(appBase);
 
   parseAbsoluteUrl(appBase, this);
-
 
   /**
    * Parse given hashbang url into properties
@@ -264,7 +255,6 @@ function LocationHashbangUrl(appBase, hashPrefix) {
   };
 }
 
-
 /**
  * LocationHashbangUrl represents url
  * This object is exposed as $location service when html5 history api is enabled but the browser
@@ -314,7 +304,6 @@ function LocationHashbangInHtml5Url(appBase, hashPrefix) {
   };
 
 }
-
 
 var locationPrototype = {
 
@@ -631,13 +620,11 @@ forEach([LocationHashbangInHtml5Url, LocationHashbangUrl, LocationHtml5Url], fun
   };
 });
 
-
 function locationGetter(property) {
   return function() {
     return this[property];
   };
 }
-
 
 function locationGetterSetter(property, preprocess) {
   return function(value) {
@@ -651,7 +638,6 @@ function locationGetterSetter(property, preprocess) {
     return this;
   };
 }
-
 
 /**
  * @ngdoc service
@@ -879,7 +865,6 @@ function $LocationProvider() {
         }
       }
     });
-
 
     // rewrite hashbang url <> html5 url
     if (trimEmptyHash($location.absUrl()) != trimEmptyHash(initialUrl)) {

@@ -132,7 +132,6 @@ JQLite._data = function(node) {
 
 function jqNextId() { return ++jqId; }
 
-
 var SPECIAL_CHARS_REGEXP = /([\:\-\_]+(.))/g;
 var MOZ_HACK_REGEXP = /^moz([A-Z])/;
 var MOUSE_EVENT_MAP= { mouseleave: "mouseout", mouseenter: "mouseover"};
@@ -169,7 +168,6 @@ var wrapMap = {
 wrapMap.optgroup = wrapMap.option;
 wrapMap.tbody = wrapMap.tfoot = wrapMap.colgroup = wrapMap.caption = wrapMap.thead;
 wrapMap.th = wrapMap.td;
-
 
 function jqLiteIsTextNode(html) {
   return !HTML_REGEXP.test(html);
@@ -328,7 +326,6 @@ function jqLiteRemoveData(element, name) {
   }
 }
 
-
 function jqLiteExpandoStore(element, createIfNecessary) {
   var expandoId = element.ng339,
       expandoStore = expandoId && jqCache[expandoId];
@@ -340,7 +337,6 @@ function jqLiteExpandoStore(element, createIfNecessary) {
 
   return expandoStore;
 }
-
 
 function jqLiteData(element, key, value) {
   if (jqLiteAcceptsData(element)) {
@@ -402,7 +398,6 @@ function jqLiteAddClass(element, cssClasses) {
   }
 }
 
-
 function jqLiteAddNodes(root, elements) {
   // THIS CODE IS VERY HOT. Don't make changes without benchmarking.
 
@@ -427,7 +422,6 @@ function jqLiteAddNodes(root, elements) {
     }
   }
 }
-
 
 function jqLiteController(element, name) {
   return jqLiteInheritedData(element, '$' + (name || 'ngController') + 'Controller');
@@ -465,7 +459,6 @@ function jqLiteRemove(element, keepData) {
   var parent = element.parentNode;
   if (parent) parent.removeChild(element);
 }
-
 
 function jqLiteDocumentLoaded(action, win) {
   win = win || window;
@@ -1019,7 +1012,6 @@ forEach({
   JQLite.prototype.bind = JQLite.prototype.on;
   JQLite.prototype.unbind = JQLite.prototype.off;
 });
-
 
 // Provider for private $$jqLite service
 function $$jqLiteProvider() {

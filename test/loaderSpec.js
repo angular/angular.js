@@ -8,12 +8,10 @@ describe('module loader', function() {
     setupModuleLoader(window);
   });
 
-
   it('should set up namespace', function() {
     expect(window.angular).toBeDefined();
     expect(window.angular.module).toBeDefined();
   });
-
 
   it('should not override existing namespace', function() {
     var angular = window.angular;
@@ -23,7 +21,6 @@ describe('module loader', function() {
     expect(window.angular).toBe(angular);
     expect(window.angular.module).toBe(module);
   });
-
 
   it('should record calls', function() {
     var otherModule = window.angular.module('other', []);
@@ -63,11 +60,9 @@ describe('module loader', function() {
     expect(myModule._runBlocks).toEqual(['runBlock']);
   });
 
-
   it('should allow module redefinition', function() {
     expect(window.angular.module('a', [])).not.toBe(window.angular.module('a', []));
   });
-
 
   it('should complain of no module', function() {
     expect(function() {

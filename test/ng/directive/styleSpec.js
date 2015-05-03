@@ -3,11 +3,9 @@
 describe('style', function() {
   var element;
 
-
   afterEach(function() {
     dealoc(element);
   });
-
 
   it('should compile style element without binding', inject(function($compile, $rootScope) {
     element = jqLite('<style type="text/css">.header{font-size:1.5em; h3{font-size:1.5em}}</style>');
@@ -16,7 +14,6 @@ describe('style', function() {
 
     expect(element[0].innerHTML).toBe('.header{font-size:1.5em; h3{font-size:1.5em}}');
   }));
-
 
   it('should compile style element with one simple bind', inject(function($compile, $rootScope) {
     element = jqLite('<style type="text/css">.some-container{ width: {{elementWidth}}px; }</style>');
@@ -32,7 +29,6 @@ describe('style', function() {
     expect(element[0].innerHTML).toBe('.some-container{ width: 200px; }');
   }));
 
-
   it('should compile style element with one bind', inject(function($compile, $rootScope) {
     element = jqLite('<style type="text/css">.header{ h3 { font-size: {{fontSize}}em }}</style>');
     $compile(element)($rootScope);
@@ -46,7 +42,6 @@ describe('style', function() {
 
     expect(element[0].innerHTML).toBe('.header{ h3 { font-size: 1.5em }}');
   }));
-
 
   it('should compile style element with two binds', inject(function($compile, $rootScope) {
     element = jqLite('<style type="text/css">.header{ h3 { font-size: {{fontSize}}{{unit}} }}</style>');
@@ -62,7 +57,6 @@ describe('style', function() {
 
     expect(element[0].innerHTML).toBe('.header{ h3 { font-size: 1.5em }}');
   }));
-
 
   it('should compile content of element with style attr', inject(function($compile, $rootScope) {
     element = jqLite('<div style="some">{{bind}}</div>');

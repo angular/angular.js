@@ -6,7 +6,6 @@ describe('Filter: orderBy', function() {
     orderBy = orderByFilter = $filter('orderBy');
   }));
 
-
   describe('(Arrays)', function() {
     it('should return sorted array if predicate is not provided', function() {
       expect(orderBy([2, 1, 3])).toEqual([1, 2, 3]);
@@ -22,13 +21,11 @@ describe('Filter: orderBy', function() {
       expect(orderBy([2, 1, 3], ['-'])).toEqual([3, 2, 1]);
     });
 
-
     it('shouldSortArrayInReverse', function() {
       expect(orderBy([{a:15}, {a:2}], 'a', true)).toEqualData([{a:15}, {a:2}]);
       expect(orderBy([{a:15}, {a:2}], 'a', "T")).toEqualData([{a:15}, {a:2}]);
       expect(orderBy([{a:15}, {a:2}], 'a', "reverse")).toEqualData([{a:15}, {a:2}]);
     });
-
 
     it('should sort inherited from array', function() {
       function BaseCollection() {}
@@ -43,13 +40,11 @@ describe('Filter: orderBy', function() {
       expect(orderBy(child, 'a', true)).toEqualData([{a:15}, {a:2}]);
     });
 
-
     it('should sort array by predicate', function() {
       expect(orderBy([{a:15, b:1}, {a:2, b:1}], ['a', 'b'])).toEqualData([{a:2, b:1}, {a:15, b:1}]);
       expect(orderBy([{a:15, b:1}, {a:2, b:1}], ['b', 'a'])).toEqualData([{a:2, b:1}, {a:15, b:1}]);
       expect(orderBy([{a:15, b:1}, {a:2, b:1}], ['+b', '-a'])).toEqualData([{a:15, b:1}, {a:2, b:1}]);
     });
-
 
     it('should sort array by date predicate', function() {
       // same dates
@@ -89,7 +84,6 @@ describe('Filter: orderBy', function() {
       ]);
     });
 
-
     it('should use function', function() {
       expect(
         orderBy(
@@ -97,7 +91,6 @@ describe('Filter: orderBy', function() {
           function(value) { return value.a; })).
       toEqual([{a:2, b:1},{a:15, b:1}]);
     });
-
 
     it('should support string predicates with names containing non-identifier characters', function() {
       /*jshint -W008 */
@@ -107,14 +100,12 @@ describe('Filter: orderBy', function() {
         .toEqualData([{"원": 31000}, {"원": 76000}, {"원": 156000}]);
     });
 
-
     it('should throw if quoted string predicate is quoted incorrectly', function() {
       /*jshint -W008 */
       expect(function() {
         return orderBy([{"Tip %": .15}, {"Tip %": .25}, {"Tip %": .40}], '"Tip %\'');
       }).toThrow();
     });
-
 
     it('should not reverse array of objects with no predicate', function() {
       var array = [
@@ -126,7 +117,6 @@ describe('Filter: orderBy', function() {
       expect(orderBy(array)).toEqualData(array);
     });
 
-
     it('should not reverse array of objects with null prototype and no predicate', function() {
       var array = [2,1,4,3].map(function(id) {
         var obj = Object.create(null);
@@ -135,7 +125,6 @@ describe('Filter: orderBy', function() {
       });
       expect(orderBy(array)).toEqualData(array);
     });
-
 
     it('should sort nulls as Array.prototype.sort', function() {
       var array = [
@@ -153,7 +142,6 @@ describe('Filter: orderBy', function() {
     });
   });
 
-
   describe('(Array-Like Objects)', function() {
     function arrayLike(args) {
       var result = {};
@@ -165,7 +153,6 @@ describe('Filter: orderBy', function() {
       return result;
     }
 
-
     beforeEach(inject(function($filter) {
       orderBy = function(collection) {
         var args = Array.prototype.slice.call(arguments, 0);
@@ -173,7 +160,6 @@ describe('Filter: orderBy', function() {
         return orderByFilter.apply(null, args);
       };
     }));
-
 
     it('should return sorted array if predicate is not provided', function() {
       expect(orderBy([2, 1, 3])).toEqual([1, 2, 3]);
@@ -189,20 +175,17 @@ describe('Filter: orderBy', function() {
       expect(orderBy([2, 1, 3], ['-'])).toEqual([3, 2, 1]);
     });
 
-
     it('shouldSortArrayInReverse', function() {
       expect(orderBy([{a:15}, {a:2}], 'a', true)).toEqualData([{a:15}, {a:2}]);
       expect(orderBy([{a:15}, {a:2}], 'a', "T")).toEqualData([{a:15}, {a:2}]);
       expect(orderBy([{a:15}, {a:2}], 'a', "reverse")).toEqualData([{a:15}, {a:2}]);
     });
 
-
     it('should sort array by predicate', function() {
       expect(orderBy([{a:15, b:1}, {a:2, b:1}], ['a', 'b'])).toEqualData([{a:2, b:1}, {a:15, b:1}]);
       expect(orderBy([{a:15, b:1}, {a:2, b:1}], ['b', 'a'])).toEqualData([{a:2, b:1}, {a:15, b:1}]);
       expect(orderBy([{a:15, b:1}, {a:2, b:1}], ['+b', '-a'])).toEqualData([{a:15, b:1}, {a:2, b:1}]);
     });
-
 
     it('should sort array by date predicate', function() {
       // same dates
@@ -232,7 +215,6 @@ describe('Filter: orderBy', function() {
               { a:new Date('01/01/2014'), b:3 }]);
     });
 
-
     it('should use function', function() {
       expect(
         orderBy(
@@ -240,7 +222,6 @@ describe('Filter: orderBy', function() {
           function(value) { return value.a; })).
       toEqual([{a:2, b:1},{a:15, b:1}]);
     });
-
 
     it('should support string predicates with names containing non-identifier characters', function() {
       /*jshint -W008 */
@@ -250,14 +231,12 @@ describe('Filter: orderBy', function() {
         .toEqualData([{"원": 31000}, {"원": 76000}, {"원": 156000}]);
     });
 
-
     it('should throw if quoted string predicate is quoted incorrectly', function() {
       /*jshint -W008 */
       expect(function() {
         return orderBy([{"Tip %": .15}, {"Tip %": .25}, {"Tip %": .40}], '"Tip %\'');
       }).toThrow();
     });
-
 
     it('should not reverse array of objects with no predicate', function() {
       var array = [
@@ -269,7 +248,6 @@ describe('Filter: orderBy', function() {
       expect(orderBy(array)).toEqualData(array);
     });
 
-
     it('should not reverse array of objects with null prototype and no predicate', function() {
       var array = [2,1,4,3].map(function(id) {
         var obj = Object.create(null);
@@ -278,7 +256,6 @@ describe('Filter: orderBy', function() {
       });
       expect(orderBy(array)).toEqualData(array);
     });
-
 
     it('should sort nulls as Array.prototype.sort', function() {
       var array = [

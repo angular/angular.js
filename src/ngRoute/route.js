@@ -241,7 +241,6 @@ function $RouteProvider() {
     return this;
   };
 
-
   this.$get = ['$rootScope',
                '$location',
                '$routeParams',
@@ -619,7 +618,6 @@ function $RouteProvider() {
           });
       }
     }
-
 
     /**
      * @returns {Object} the current active route, by matching it against the URL

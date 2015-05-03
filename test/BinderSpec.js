@@ -295,7 +295,6 @@ describe('Binder', function() {
     assertHidden(element);
   }));
 
-
   it('BindClass', inject(function($rootScope, $compile) {
     element = $compile('<div ng-class="clazz"/>')($rootScope);
 

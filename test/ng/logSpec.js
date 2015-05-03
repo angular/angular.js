@@ -10,8 +10,6 @@ function initService(debugEnabled) {
 describe('$log', function() {
   var $window, logger, log, warn, info, error, debug;
 
-
-
   beforeEach(module(function($provide) {
     $window = {navigator: {}, document: {}};
     logger = '';
@@ -44,7 +42,6 @@ describe('$log', function() {
     }
   ));
 
-
   it('should use console.log() if other not present', inject(
     function() {
       $window.console = {log: log};
@@ -58,7 +55,6 @@ describe('$log', function() {
       expect(logger).toEqual('log;log;log;log;log;');
     }
   ));
-
 
   it('should use noop if no console', inject(
     function($log) {
@@ -156,19 +152,16 @@ describe('$log', function() {
       }}});
     });
 
-
     it('should pass error if does not have trace', function() {
       $log.error('abc', e);
       expect(errorArgs).toEqual(['abc', e]);
     });
-
 
     it('should print stack', function() {
       e.stack = 'stack';
       $log.error('abc', e);
       expect(errorArgs).toEqual(['abc', 'stack']);
     });
-
 
     it('should print line', function() {
       e.message = 'message';

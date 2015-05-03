@@ -28,19 +28,16 @@ describe('$$cookieReader', function() {
     });
   });
 
-
   afterEach(function() {
     deleteAllCookies();
     expect(document.cookie).toEqual('');
   });
-
 
   describe('get via $$cookieReader()[cookieName]', function() {
 
     it('should return undefined for nonexistent cookie', function() {
       expect($$cookieReader().nonexistent).not.toBeDefined();
     });
-
 
     it('should return a value for an existing cookie', function() {
       document.cookie = "foo=bar=baz;path=/";
@@ -60,7 +57,6 @@ describe('$$cookieReader', function() {
       expect($$cookieReader()['cookie2=bar;baz']).toEqual('val=ue');
     });
 
-
     it('should preserve leading & trailing spaces in names and values', function() {
       document.cookie = '%20cookie%20name%20=%20cookie%20value%20';
       expect($$cookieReader()[' cookie name ']).toEqual(' cookie value ');
@@ -79,7 +75,6 @@ describe('$$cookieReader', function() {
     });
   });
 
-
   describe('getAll via $$cookieReader()', function() {
 
     it('should return cookies as hash', function() {
@@ -88,12 +83,10 @@ describe('$$cookieReader', function() {
       expect($$cookieReader()).toEqual({'foo1':'bar1', 'foo2':'bar2'});
     });
 
-
     it('should return empty hash if no cookies exist', function() {
       expect($$cookieReader()).toEqual({});
     });
   });
-
 
   it('should initialize cookie cache with existing cookies', function() {
     document.cookie = "existingCookie=existingValue;path=/";
@@ -101,4 +94,3 @@ describe('$$cookieReader', function() {
   });
 
 });
-

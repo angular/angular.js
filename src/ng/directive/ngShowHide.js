@@ -176,7 +176,6 @@ var ngShowDirective = ['$animate', function($animate) {
   };
 }];
 
-
 /**
  * @ngdoc directive
  * @name ngHide

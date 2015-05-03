@@ -470,7 +470,6 @@ describe("ngAnimate $$animateCssDriver", function() {
         });
       });
 
-
       it("should provide an explicit delay setting in the options provided to $animateCss for anchor animations",
         inject(function($rootElement) {
 

@@ -134,11 +134,9 @@ describe('$anchorScroll', function() {
     dealoc($document);
   }));
 
-
   describe('when explicitly called', function() {
 
     beforeEach(createMockWindow());
-
 
     describe('and implicitly using `$location.hash()`', function() {
 
@@ -146,48 +144,40 @@ describe('$anchorScroll', function() {
         changeHashAndScroll(''),
         expectScrollingToTop));
 
-
       it('should not scroll if hash does not match any element', inject(
         addElements('id=one', 'id=two'),
         changeHashAndScroll('non-existing'),
         expectNoScrolling()));
-
 
       it('should scroll to anchor element with name', inject(
         addElements('a name=abc'),
         changeHashAndScroll('abc'),
         expectScrollingTo('a name=abc')));
 
-
       it('should not scroll to other than anchor element with name', inject(
         addElements('input name=xxl', 'select name=xxl', 'form name=xxl'),
         changeHashAndScroll('xxl'),
         expectNoScrolling()));
-
 
       it('should scroll to anchor even if other element with given name exist', inject(
         addElements('input name=some', 'a name=some'),
         changeHashAndScroll('some'),
         expectScrollingTo('a name=some')));
 
-
       it('should scroll to element with id with precedence over name', inject(
         addElements('name=abc', 'id=abc'),
         changeHashAndScroll('abc'),
         expectScrollingTo('id=abc')));
 
-
       it('should scroll to top if hash == "top" and no matching element', inject(
         changeHashAndScroll('top'),
         expectScrollingToTop));
-
 
       it('should scroll to element with id "top" if present', inject(
         addElements('id=top'),
         changeHashAndScroll('top'),
         expectScrollingTo('id=top')));
     });
-
 
     describe('and specifying a hash', function() {
 
@@ -199,7 +189,6 @@ describe('$anchorScroll', function() {
         expectScrollingTo('id=one'),
         unspyOnJQLiteDocumentLoaded()));
 
-
       it('should ignore `$location.hash()` if `hash` is passed as argument', inject(
         spyOnJQLiteDocumentLoaded(),
         addElements('id=one', 'id=two'),
@@ -208,46 +197,38 @@ describe('$anchorScroll', function() {
         expectScrollingTo('id=two'),
         unspyOnJQLiteDocumentLoaded()));
 
-
       it('should scroll to top of the window if empty hash', inject(
         callAnchorScroll(''),
         expectScrollingToTop));
-
 
       it('should not scroll if hash does not match any element', inject(
         addElements('id=one', 'id=two'),
         callAnchorScroll('non-existing'),
         expectNoScrolling()));
 
-
       it('should scroll to anchor element with name', inject(
         addElements('a name=abc'),
         callAnchorScroll('abc'),
         expectScrollingTo('a name=abc')));
-
 
       it('should not scroll to other than anchor element with name', inject(
         addElements('input name=xxl', 'select name=xxl', 'form name=xxl'),
         callAnchorScroll('xxl'),
         expectNoScrolling()));
 
-
       it('should scroll to anchor even if other element with given name exist', inject(
         addElements('input name=some', 'a name=some'),
         callAnchorScroll('some'),
         expectScrollingTo('a name=some')));
-
 
       it('should scroll to element with id with precedence over name', inject(
         addElements('name=abc', 'id=abc'),
         callAnchorScroll('abc'),
         expectScrollingTo('id=abc')));
 
-
       it('should scroll to top if hash == "top" and no matching element', inject(
         callAnchorScroll('top'),
         expectScrollingToTop));
-
 
       it('should scroll to element with id "top" if present', inject(
         addElements('id=top'),
@@ -255,7 +236,6 @@ describe('$anchorScroll', function() {
         expectScrollingTo('id=top')));
     });
   });
-
 
   describe('watcher', function() {
 
@@ -271,7 +251,6 @@ describe('$anchorScroll', function() {
         $anchorScrollProvider.disableAutoScrolling();
       };
     }
-
 
     beforeEach(createMockWindow());
 
@@ -289,7 +268,6 @@ describe('$anchorScroll', function() {
         );
       });
 
-
       it('should scroll to element when hash change in html5 mode with no history api', function() {
         module(initLocation({html5Mode: true, historyApi: false}));
         inject(
@@ -299,12 +277,10 @@ describe('$anchorScroll', function() {
         );
       });
 
-
       it('should not scroll to the top if $anchorScroll is initializing and location hash is empty',
         inject(
           expectNoScrolling())
       );
-
 
       it('should not scroll when element does not exist', function() {
         module(initLocation({html5Mode: false, historyApi: false}));
@@ -315,7 +291,6 @@ describe('$anchorScroll', function() {
         );
       });
 
-
       it('should scroll when html5 mode with history api', function() {
         module(initLocation({html5Mode: true, historyApi: true}));
         inject(
@@ -324,7 +299,6 @@ describe('$anchorScroll', function() {
           expectScrollingTo('id=some')
         );
       });
-
 
       it('should not scroll when auto-scrolling is disabled', function() {
         module(
@@ -337,7 +311,6 @@ describe('$anchorScroll', function() {
           expectNoScrolling()
         );
       });
-
 
       it('should scroll when called explicitly (even if auto-scrolling is disabled)', function() {
         module(
@@ -370,7 +343,6 @@ describe('$anchorScroll', function() {
     });
 
   });
-
 
   describe('yOffset', function() {
 
@@ -420,7 +392,6 @@ describe('$anchorScroll', function() {
 
     beforeEach(createMockWindow());
 
-
     describe('and body with no border/margin/padding', function() {
 
       describe('when set as a fixed number', function() {
@@ -429,14 +400,12 @@ describe('$anchorScroll', function() {
 
         beforeEach(inject(setYOffset(yOffsetNumber)));
 
-
         it('should scroll with vertical offset', inject(
           addElements('id=some'),
           mockBoundingClientRect({0: [0]}),
           changeHashTo('some'),
           expectScrollingWithOffset('id=some', yOffsetNumber)
         ));
-
 
         it('should use the correct vertical offset when changing `yOffset` at runtime', inject(
           addElements('id=some'),
@@ -445,7 +414,6 @@ describe('$anchorScroll', function() {
           setYOffset(yOffsetNumber - 10),
           callAnchorScroll(),
           expectScrollingWithOffset({'id=some': 2}, [yOffsetNumber, yOffsetNumber - 10])));
-
 
         it('should adjust the vertical offset for elements near the end of the page', function() {
 
@@ -458,7 +426,6 @@ describe('$anchorScroll', function() {
             expectScrollingWithOffset('id=some2', targetAdjustedOffset));
         });
       });
-
 
       describe('when set as a function', function() {
 
@@ -495,7 +462,6 @@ describe('$anchorScroll', function() {
         });
       });
 
-
       describe('when set as a jqLite element', function() {
 
         var elemBottom = 50;
@@ -510,7 +476,6 @@ describe('$anchorScroll', function() {
           };
         }
 
-
         it('should scroll with vertical offset when `position === fixed`', inject(
           createAndSetYOffsetElement('fixed'),
           addElements('id=some'),
@@ -518,13 +483,11 @@ describe('$anchorScroll', function() {
           changeHashTo('some'),
           expectScrollingWithOffset('id=some', elemBottom)));
 
-
         it('should scroll without vertical offset when `position !== fixed`', inject(
           createAndSetYOffsetElement('absolute', elemBottom),
           expectScrollingWithoutOffset('id=some')));
       });
     });
-
 
     describe('and body with border/margin/padding', function() {
 
@@ -536,13 +499,11 @@ describe('$anchorScroll', function() {
 
       beforeEach(inject(setYOffset(yOffsetNumber)));
 
-
       it('should scroll with vertical offset', inject(
         addElements('id=some'),
         mockBoundingClientRect({0: [yOffsetNumber - necessaryYOffset]}),
         changeHashTo('some'),
         expectScrollingWithOffset('id=some', necessaryYOffset)));
-
 
       it('should use the correct vertical offset when changing `yOffset` at runtime', inject(
         addElements('id=some'),
@@ -554,7 +515,6 @@ describe('$anchorScroll', function() {
         setYOffset(yOffsetNumber - 10),
         callAnchorScroll(),
         expectScrollingWithOffset({'id=some': 2}, [necessaryYOffset, necessaryYOffset - 10])));
-
 
       it('should adjust the vertical offset for elements near the end of the page', function() {
 
@@ -568,7 +528,6 @@ describe('$anchorScroll', function() {
       });
     });
 
-
     describe('and body with border/margin/padding and boxSizing', function() {
 
       var borderWidth = 4;
@@ -579,13 +538,11 @@ describe('$anchorScroll', function() {
 
       beforeEach(inject(setYOffset(yOffsetNumber)));
 
-
       it('should scroll with vertical offset', inject(
         addElements('id=some'),
         mockBoundingClientRect({0: [yOffsetNumber - necessaryYOffset]}),
         changeHashTo('some'),
         expectScrollingWithOffset('id=some', necessaryYOffset)));
-
 
       it('should use the correct vertical offset when changing `yOffset` at runtime', inject(
         addElements('id=some'),
@@ -597,7 +554,6 @@ describe('$anchorScroll', function() {
         setYOffset(yOffsetNumber - 10),
         callAnchorScroll(),
         expectScrollingWithOffset({'id=some': 2}, [necessaryYOffset, necessaryYOffset - 10])));
-
 
       it('should adjust the vertical offset for elements near the end of the page', function() {
 

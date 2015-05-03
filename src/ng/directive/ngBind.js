@@ -67,7 +67,6 @@ var ngBindDirective = ['$compile', function($compile) {
   };
 }];
 
-
 /**
  * @ngdoc directive
  * @name ngBindTemplate
@@ -134,7 +133,6 @@ var ngBindTemplateDirective = ['$interpolate', '$compile', function($interpolate
     }
   };
 }];
-
 
 /**
  * @ngdoc directive

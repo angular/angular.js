@@ -28,11 +28,9 @@ describe('a', function() {
     $rootScope = _$rootScope_;
   }));
 
-
   afterEach(function() {
     dealoc(element);
   });
-
 
   it('should prevent default action to be executed when href is empty', function() {
     var orgLocation = document.location.href,
@@ -58,7 +56,6 @@ describe('a', function() {
     expect(document.location.href).toEqual(orgLocation);
   });
 
-
   it('should prevent IE for changing text content when setting attribute', function() {
     // see issue #1949
     element = jqLite('<a href="">hello@you</a>');
@@ -67,7 +64,6 @@ describe('a', function() {
 
     expect(element.text()).toBe('hello@you');
   });
-
 
   it('should not link and hookup an event if href is present at compile', function() {
     var jq = jQuery || jqLite;
@@ -80,7 +76,6 @@ describe('a', function() {
 
     expect(jq.prototype.on).not.toHaveBeenCalled();
   });
-
 
   it('should not preventDefault if anchor element is replaced with href-containing element', function() {
     spyOn(jqLite.prototype, 'on').andCallThrough();
@@ -98,7 +93,6 @@ describe('a', function() {
     expect(preventDefault).not.toHaveBeenCalled();
   });
 
-
   it('should preventDefault if anchor element is replaced with element without href attribute', function() {
     spyOn(jqLite.prototype, 'on').andCallThrough();
     element = $compile('<a link-not="https://www.google.com">')($rootScope);
@@ -114,7 +108,6 @@ describe('a', function() {
 
     expect(preventDefault).toHaveBeenCalled();
   });
-
 
   if (isDefined(window.SVGElement)) {
     describe('SVGAElement', function() {
@@ -142,7 +135,6 @@ describe('a', function() {
         expect(preventDefaultCalled).toEqual(true);
         expect(document.location.href).toEqual(orgLocation);
       });
-
 
       it('should not link and hookup an event if xlink:href is present at compile', function() {
         var jq = jQuery || jqLite;

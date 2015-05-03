@@ -14,7 +14,6 @@ function classDirective(name, selector) {
           ngClassWatchAction(scope.$eval(attr[name]));
         });
 
-
         if (name !== 'ngClass') {
           scope.$watch('$index', function($index, old$index) {
             // jshint bitwise: false
@@ -282,7 +281,6 @@ function classDirective(name, selector) {
        });
      </file>
    </example>
-
 
    ## ngClass and pre-existing CSS3 Transitions/Animations
    The ngClass directive still supports CSS3 Transitions/Animations even if they do not follow the ngAnimate CSS naming structure.

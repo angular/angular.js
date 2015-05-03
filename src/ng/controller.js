@@ -2,7 +2,6 @@
 
 var $controllerMinErr = minErr('$controller');
 
-
 var CNTRL_REG = /^(\S+)(\s+as\s+(\w+))?$/;
 function identifierForController(controller, ident) {
   if (ident && isString(ident)) return ident;
@@ -11,7 +10,6 @@ function identifierForController(controller, ident) {
     if (match) return match[3];
   }
 }
-
 
 /**
  * @ngdoc provider
@@ -52,7 +50,6 @@ function $ControllerProvider() {
   this.allowGlobals = function() {
     globals = true;
   };
-
 
   this.$get = ['$injector', '$window', function($injector, $window) {
 

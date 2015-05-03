@@ -82,7 +82,6 @@ describe('sanitizeUri', function() {
       expect(sanitizeImg(testUrl)).toBe('unsafe:javascript:doEvilStuff()');
     });
 
-
     it('should not sanitize valid urls', function() {
       testUrl = "foo/bar";
       expect(sanitizeImg(testUrl)).toBe('foo/bar');
@@ -139,7 +138,6 @@ describe('sanitizeUri', function() {
 
   });
 
-
   describe('a[href] sanitization', function() {
 
     it('should sanitize javascript: urls', inject(function() {
@@ -147,12 +145,10 @@ describe('sanitizeUri', function() {
       expect(sanitizeHref(testUrl)).toBe('unsafe:javascript:doEvilStuff()');
     }));
 
-
     it('should sanitize data: urls', inject(function() {
       testUrl = "data:evilPayload";
       expect(sanitizeHref(testUrl)).toBe('unsafe:data:evilPayload');
     }));
-
 
     it('should sanitize obfuscated javascript: urls', inject(function() {
       // case-sensitive
@@ -183,12 +179,10 @@ describe('sanitizeUri', function() {
       );
     }));
 
-
     it('should sanitize ngHref bindings as well', inject(function() {
       testUrl = "javascript:doEvilStuff()";
       expect(sanitizeHref(testUrl)).toBe('unsafe:javascript:doEvilStuff()');
     }));
-
 
     it('should not sanitize valid urls', inject(function() {
       testUrl = "foo/bar";

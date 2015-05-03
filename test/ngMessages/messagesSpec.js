@@ -255,7 +255,6 @@ describe('ngMessages', function() {
       expect(messageChildren(element).length).toBe(0);
       expect(trim(element.text())).toEqual('');
 
-
       $rootScope.$apply(function() {
         $rootScope.col = {
           blue: 0,
@@ -371,7 +370,6 @@ describe('ngMessages', function() {
     expect(messageChildren(element).length).toBe(1);
     expect(trim(element.text())).toEqual("Enter something");
   }));
-
 
   it('should render animations when the active/inactive classes are added/removed', function() {
     module('ngAnimate');

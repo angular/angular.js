@@ -14,11 +14,9 @@ describe('validators', function() {
     helper.dealoc();
   });
 
-
   beforeEach(inject(function(_$rootScope_) {
     $rootScope = _$rootScope_;
   }));
-
 
   describe('pattern', function() {
 
@@ -41,7 +39,6 @@ describe('validators', function() {
       expect(inputElm).toBeInvalid();
     });
 
-
     it('should listen on ng-pattern when pattern is observed', function() {
       var value, patternVal = /^\w+$/;
       var inputElm = helper.compileInput('<input type="text" ng-model="value" ng-pattern="pat" attr-capture />');
@@ -56,7 +53,6 @@ describe('validators', function() {
       expect(value).toBe(patternVal);
     });
 
-
     it('should validate in-lined pattern with modifiers', function() {
       var inputElm = helper.compileInput('<input type="text" ng-model="value" ng-pattern="/^abc?$/i" />');
 
@@ -66,7 +62,6 @@ describe('validators', function() {
       helper.changeInputValueTo('xx');
       expect(inputElm).toBeInvalid();
     });
-
 
     it('should validate pattern from scope', function() {
       $rootScope.regexp = /^\d\d\d-\d\d-\d\d\d\d$/;
@@ -98,7 +93,6 @@ describe('validators', function() {
       expect(inputElm).toBeInvalid();
     });
 
-
     it('should perform validations when the ngPattern scope value changes', function() {
       $rootScope.regexp = /^[a-z]+$/;
       var inputElm = helper.compileInput('<input type="text" ng-model="value" ng-pattern="regexp" />');
@@ -125,7 +119,6 @@ describe('validators', function() {
       expect(inputElm).toBeValid();
     });
 
-
     it('should register "pattern" with the model validations when the pattern attribute is used', function() {
       var inputElm = helper.compileInput('<input type="text" name="input" ng-model="value" pattern="^\\d+$" />');
 
@@ -138,14 +131,12 @@ describe('validators', function() {
       expect($rootScope.form.input.$error.pattern).not.toBe(true);
     });
 
-
     it('should not throw an error when scope pattern can\'t be found', function() {
       expect(function() {
         var inputElm = helper.compileInput('<input type="text" ng-model="foo" ng-pattern="fooRegexp" />');
         $rootScope.$apply("foo = 'bar'");
       }).not.toThrowMatching(/^\[ngPattern:noregexp\] Expected fooRegexp to be a RegExp but was/);
     });
-
 
     it('should throw an error when the scope pattern is not a regular expression', function() {
       expect(function() {
@@ -156,7 +147,6 @@ describe('validators', function() {
         });
       }).toThrowMatching(/^\[ngPattern:noregexp\] Expected fooRegexp to be a RegExp but was/);
     });
-
 
     it('should be invalid if entire string does not match pattern', function() {
       var inputElm = helper.compileInput('<input type="text" name="test" ng-model="value" pattern="\\d{4}">');
@@ -173,7 +163,6 @@ describe('validators', function() {
       expect(inputElm).not.toBeValid();
     });
 
-
     it('should be cope with patterns that start with ^', function() {
       var inputElm = helper.compileInput('<input type="text" name="test" ng-model="value" pattern="^\\d{4}">');
       helper.changeInputValueTo('1234');
@@ -188,7 +177,6 @@ describe('validators', function() {
       expect($rootScope.form.test.$error.pattern).toBe(true);
       expect(inputElm).not.toBeValid();
     });
-
 
     it('should be cope with patterns that end with $', function() {
       var inputElm = helper.compileInput('<input type="text" name="test" ng-model="value" pattern="\\d{4}$">');
@@ -206,7 +194,6 @@ describe('validators', function() {
     });
   });
 
-
   describe('minlength', function() {
 
     it('should invalidate values that are shorter than the given minlength', function() {
@@ -219,7 +206,6 @@ describe('validators', function() {
       expect(inputElm).toBeValid();
     });
 
-
     it('should listen on ng-minlength when minlength is observed', function() {
       var value = 0;
       var inputElm = helper.compileInput('<input type="text" ng-model="value" ng-minlength="min" attr-capture />');
@@ -231,7 +217,6 @@ describe('validators', function() {
 
       expect(value).toBe(5);
     });
-
 
     it('should observe the standard minlength attribute and register it as a validator on the model', function() {
       var inputElm = helper.compileInput('<input type="text" name="input" ng-model="value" minlength="{{ min }}" />');
@@ -246,7 +231,6 @@ describe('validators', function() {
       expect(inputElm).toBeValid();
       expect($rootScope.form.input.$error.minlength).not.toBe(true);
     });
-
 
     it('should validate when the model is initalized as a number', function() {
       $rootScope.value = 12345;
@@ -270,7 +254,6 @@ describe('validators', function() {
     });
   });
 
-
   describe('maxlength', function() {
 
     it('should invalidate values that are longer than the given maxlength', function() {
@@ -283,7 +266,6 @@ describe('validators', function() {
       expect(inputElm).toBeValid();
     });
 
-
     it('should only accept empty values when maxlength is 0', function() {
       var inputElm = helper.compileInput('<input type="text" ng-model="value" ng-maxlength="0" />');
 
@@ -294,7 +276,6 @@ describe('validators', function() {
       expect(inputElm).toBeInvalid();
     });
 
-
     it('should accept values of any length when maxlength is negative', function() {
       var inputElm = helper.compileInput('<input type="text" ng-model="value" ng-maxlength="-1" />');
 
@@ -304,7 +285,6 @@ describe('validators', function() {
       helper.changeInputValueTo('aaaaaaaaaa');
       expect(inputElm).toBeValid();
     });
-
 
     it('should accept values of any length when maxlength is non-numeric', function() {
       var inputElm = helper.compileInput('<input type="text" ng-model="value" ng-maxlength="{{maxlength}}" />');
@@ -327,7 +307,6 @@ describe('validators', function() {
       expect(inputElm).toBeValid();
     });
 
-
     it('should listen on ng-maxlength when maxlength is observed', function() {
       var value = 0;
       var inputElm = helper.compileInput('<input type="text" ng-model="value" ng-maxlength="max" attr-capture />');
@@ -339,7 +318,6 @@ describe('validators', function() {
 
       expect(value).toBe(10);
     });
-
 
     it('should observe the standard maxlength attribute and register it as a validator on the model', function() {
       var inputElm = helper.compileInput('<input type="text" name="input" ng-model="value" maxlength="{{ max }}" />');
@@ -355,7 +333,6 @@ describe('validators', function() {
       expect($rootScope.form.input.$error.maxlength).not.toBe(true);
     });
 
-
     it('should assign the correct model after an observed validator became valid', function() {
       var inputElm = helper.compileInput('<input type="text" name="input" ng-model="value" maxlength="{{ max }}" />');
 
@@ -367,7 +344,6 @@ describe('validators', function() {
       expect($rootScope.value).toBe('12345');
     });
 
-
     it('should assign the correct model after an observed validator became invalid', function() {
       var inputElm = helper.compileInput('<input type="text" name="input" ng-model="value" maxlength="{{ max }}" />');
 
@@ -378,7 +354,6 @@ describe('validators', function() {
       $rootScope.$apply('max = 1');
       expect($rootScope.value).toBeUndefined();
     });
-
 
     it('should leave the value as invalid if observed maxlength changed, but is still invalid', function() {
       var inputElm = helper.compileInput('<input type="text" name="input" ng-model="value" maxlength="{{ max }}" />');
@@ -396,7 +371,6 @@ describe('validators', function() {
       expect($rootScope.value).toBeUndefined();
     });
 
-
     it('should not notify if observed maxlength changed, but is still invalid', function() {
       var inputElm = helper.compileInput('<input type="text" name="input" ng-model="value" ng-change="ngChangeSpy()" ' +
                    'maxlength="{{ max }}" />');
@@ -410,13 +384,11 @@ describe('validators', function() {
       expect($rootScope.ngChangeSpy).not.toHaveBeenCalled();
     });
 
-
     it('should leave the model untouched when validating before model initialization', function() {
       $rootScope.value = '12345';
       var inputElm = helper.compileInput('<input type="text" name="input" ng-model="value" minlength="3" />');
       expect($rootScope.value).toBe('12345');
     });
-
 
     it('should validate when the model is initalized as a number', function() {
       $rootScope.value = 12345;
@@ -440,7 +412,6 @@ describe('validators', function() {
     });
   });
 
-
   describe('required', function() {
 
     it('should allow bindings via ngRequired', function() {
@@ -450,7 +421,6 @@ describe('validators', function() {
 
       helper.changeInputValueTo('');
       expect(inputElm).toBeValid();
-
 
       $rootScope.$apply("required = true");
       expect(inputElm).toBeInvalid();
@@ -465,7 +435,6 @@ describe('validators', function() {
       expect(inputElm).toBeValid();
     });
 
-
     it('should invalid initial value with bound required', function() {
       var inputElm = helper.compileInput('<input type="text" ng-model="value" required="{{required}}" />');
 
@@ -473,7 +442,6 @@ describe('validators', function() {
 
       expect(inputElm).toBeInvalid();
     });
-
 
     it('should be $invalid but $pristine if not touched', function() {
       var inputElm = helper.compileInput('<input type="text" ng-model="name" name="alias" required />');
@@ -488,7 +456,6 @@ describe('validators', function() {
       expect(inputElm).toBeDirty();
     });
 
-
     it('should allow empty string if not required', function() {
       var inputElm = helper.compileInput('<input type="text" ng-model="foo" />');
       helper.changeInputValueTo('a');
@@ -496,12 +463,10 @@ describe('validators', function() {
       expect($rootScope.foo).toBe('');
     });
 
-
     it('should set $invalid when model undefined', function() {
       var inputElm = helper.compileInput('<input type="text" ng-model="notDefined" required />');
       expect(inputElm).toBeInvalid();
     });
-
 
     it('should consider bad input as an error before any other errors are considered', function() {
       var inputElm = helper.compileInput('<input type="text" ng-model="value" required />', { badInput: true });
@@ -516,7 +481,6 @@ describe('validators', function() {
       expect(inputElm).toHaveClass('ng-invalid-parse');
       expect(inputElm).toBeInvalid(); // invalid because of the number validator
     });
-
 
     it('should allow `false` as a valid value when the input type is not "checkbox"', function() {
       var inputElm = helper.compileInput('<input type="radio" ng-value="true" ng-model="answer" required />' +

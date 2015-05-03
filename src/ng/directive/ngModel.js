@@ -16,7 +16,6 @@ var VALID_CLASS = 'ng-valid',
     TOUCHED_CLASS = 'ng-touched',
     PENDING_CLASS = 'ng-pending';
 
-
 var $ngModelMinErr = new minErr('ngModel');
 
 /**
@@ -237,7 +236,6 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
   this.$$success = {}; // keep valid keys here
   this.$pending = undefined; // keep pending keys here
   this.$name = $interpolate($attr.name || '', false)($scope);
-
 
   var parsedNgModel = $parse($attr.ngModel),
       parsedNgModelAssign = parsedNgModel.assign,
@@ -838,7 +836,6 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
   });
 }];
 
-
 /**
  * @ngdoc directive
  * @name ngModel
@@ -1063,8 +1060,6 @@ var ngModelDirective = ['$rootScope', function($rootScope) {
   };
 }];
 
-
-
 'use strict';
 
 var DEFAULT_REGEXP = /(\s+|^)default(\s+|$)/;
@@ -1249,8 +1244,6 @@ var ngModelOptionsDirective = function() {
     }]
   };
 };
-
-
 
 // helper methods
 function addSetValidityMethod(context) {

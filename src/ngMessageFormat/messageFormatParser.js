@@ -103,7 +103,6 @@ MessageFormatParser.prototype.searchRe = function searchRe(re) {
   return this.matchRe(re, true);
 };
 
-
 MessageFormatParser.prototype.consumeRe = function consumeRe(re) {
   // Without the sticky flag, we can't use the .test() method to consume a
   // match at the current index.  Instead, we'll use the slower .exec() method
@@ -390,8 +389,6 @@ MessageFormatParser.prototype.ruleEndMustacheInInterpolationOrMessage = function
   this.interpolationParts.addExpressionFn(expressionFn);
   this.rule = this.ruleInInterpolationOrMessageText;
 };
-
-
 
 var INTERP_END_RE = /\s*}}/g;
 MessageFormatParser.prototype.ruleEndMustache = function ruleEndMustache() {

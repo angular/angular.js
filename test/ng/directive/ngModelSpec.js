@@ -30,11 +30,9 @@ describe('ngModel', function() {
       });
     }));
 
-
     afterEach(function() {
       dealoc(element);
     });
-
 
     it('should init the properties', function() {
       expect(ctrl.$untouched).toBe(true);
@@ -52,7 +50,6 @@ describe('ngModel', function() {
 
       expect(ctrl.$name).toBe('testAlias');
     });
-
 
     describe('setValidity', function() {
 
@@ -80,13 +77,11 @@ describe('ngModel', function() {
         expect(ctrl.$pending).toBeUndefined();
       }
 
-
       it('should propagate validity to the parent form', function() {
         expect(parentFormCtrl.$setValidity).not.toHaveBeenCalled();
         ctrl.$setValidity('ERROR', false);
         expect(parentFormCtrl.$setValidity).toHaveBeenCalledOnceWith('ERROR', false, ctrl);
       });
-
 
       it('should transition from states correctly', function() {
         expectCleared();
@@ -103,7 +98,6 @@ describe('ngModel', function() {
         ctrl.$setValidity('someError', null);
         expectCleared();
       });
-
 
       it('should set valid/invalid with multiple errors', function() {
         ctrl.$setValidity('first', false);
@@ -156,7 +150,6 @@ describe('ngModel', function() {
         expect(ctrl.$dirty).toBe(true);
       });
 
-
       it('should set parent form to its dirty state', function() {
         ctrl.$setDirty();
         expect(parentFormCtrl.$setDirty).toHaveBeenCalled();
@@ -192,7 +185,6 @@ describe('ngModel', function() {
         expect(ctrl.$viewValue).toBe('some-val');
       });
 
-
       it('should pipeline all registered parsers and set result to $modelValue', function() {
         var log = [];
 
@@ -211,7 +203,6 @@ describe('ngModel', function() {
         expect(ctrl.$modelValue).toBe('init-a-b');
       });
 
-
       it('should fire viewChangeListeners when the value changes in the view (even if invalid)',
           function() {
         var spy = jasmine.createSpy('viewChangeListener');
@@ -226,7 +217,6 @@ describe('ngModel', function() {
         expect(spy).toHaveBeenCalledOnce();
       });
 
-
       it('should reset the model when the view is invalid', function() {
         ctrl.$setViewValue('aaaa');
         expect(ctrl.$modelValue).toBe('aaaa');
@@ -238,7 +228,6 @@ describe('ngModel', function() {
         expect(ctrl.$modelValue).toBeUndefined();
       });
 
-
       it('should not reset the model when the view is invalid due to an external validator', function() {
         ctrl.$setViewValue('aaaa');
         expect(ctrl.$modelValue).toBe('aaaa');
@@ -247,7 +236,6 @@ describe('ngModel', function() {
         ctrl.$setViewValue('bbbb');
         expect(ctrl.$modelValue).toBe('bbbb');
       });
-
 
       it('should not reset the view when the view is invalid', function() {
         // this test fails when the view changes the model and
@@ -277,7 +265,6 @@ describe('ngModel', function() {
         expect(scope.value).toBeUndefined();
       });
 
-
       it('should call parentForm.$setDirty only when pristine', function() {
         ctrl.$setViewValue('');
         expect(ctrl.$pristine).toBe(false);
@@ -290,7 +277,6 @@ describe('ngModel', function() {
         expect(ctrl.$dirty).toBe(true);
         expect(parentFormCtrl.$setDirty).not.toHaveBeenCalled();
       });
-
 
       it('should remove all other errors when any parser returns undefined', function() {
         var a, b, val = function(val, x) {
@@ -339,14 +325,12 @@ describe('ngModel', function() {
         expect(ctrl.$error).toEqual({ high: true });
       });
 
-
       it('should not remove external validators when a parser failed', function() {
         ctrl.$parsers.push(function(v) { return undefined; });
         ctrl.$setValidity('externalError', false);
         ctrl.$setViewValue('someValue');
         expect(ctrl.$error).toEqual({ externalError: true, parse: true });
       });
-
 
       it('should remove all non-parse-related CSS classes from the form when a parser fails',
         inject(function($compile, $rootScope) {
@@ -384,7 +368,6 @@ describe('ngModel', function() {
         dealoc(element);
       }));
 
-
       it('should set the ng-invalid-parse and ng-valid-parse CSS class when parsers fail and pass', function() {
         var pass = true;
         ctrl.$parsers.push(function(v) {
@@ -403,7 +386,6 @@ describe('ngModel', function() {
         expect(input).not.toHaveClass('ng-valid-parse');
         expect(input).toHaveClass('ng-invalid-parse');
       });
-
 
       it('should update the model after all async validators resolve', inject(function($q) {
         var defer;
@@ -438,14 +420,12 @@ describe('ngModel', function() {
       }));
     });
 
-
     describe('model -> view', function() {
 
       it('should set the value to $modelValue', function() {
         scope.$apply('value = 10');
         expect(ctrl.$modelValue).toBe(10);
       });
-
 
       it('should pipeline all registered formatters in reversed order and set result to $viewValue',
           function() {
@@ -466,7 +446,6 @@ describe('ngModel', function() {
         expect(ctrl.$viewValue).toBe('5');
       });
 
-
       it('should $render only if value changed', function() {
         spyOn(ctrl, '$render');
 
@@ -479,7 +458,6 @@ describe('ngModel', function() {
         expect(ctrl.$render).not.toHaveBeenCalled();
       });
 
-
       it('should clear the view even if invalid', function() {
         spyOn(ctrl, '$render');
 
@@ -487,7 +465,6 @@ describe('ngModel', function() {
         scope.$apply('value = 5');
         expect(ctrl.$render).toHaveBeenCalledOnce();
       });
-
 
       it('should render immediately even if there are async validators', inject(function($q) {
         spyOn(ctrl, '$render');
@@ -499,7 +476,6 @@ describe('ngModel', function() {
         expect(ctrl.$viewValue).toBe(5);
         expect(ctrl.$render).toHaveBeenCalledOnce();
       }));
-
 
       it('should not rerender nor validate in case view value is not changed', function() {
         ctrl.$formatters.push(function(value) {
@@ -513,7 +489,6 @@ describe('ngModel', function() {
         expect(ctrl.$validators.spyValidator).toHaveBeenCalledOnce();
         expect(ctrl.$render).toHaveBeenCalledOnce();
       });
-
 
       it('should always format the viewValue as a string for a blank input type when the value is present',
         inject(function($compile, $rootScope, $sniffer) {
@@ -531,7 +506,6 @@ describe('ngModel', function() {
         dealoc(form);
       }));
 
-
       it('should always format the viewValue as a string for a `text` input type when the value is present',
         inject(function($compile, $rootScope, $sniffer) {
 
@@ -546,7 +520,6 @@ describe('ngModel', function() {
 
         dealoc(form);
       }));
-
 
       it('should always format the viewValue as a string for an `email` input type when the value is present',
         inject(function($compile, $rootScope, $sniffer) {
@@ -563,7 +536,6 @@ describe('ngModel', function() {
         dealoc(form);
       }));
 
-
       it('should always format the viewValue as a string for a `url` input type when the value is present',
         inject(function($compile, $rootScope, $sniffer) {
 
@@ -578,7 +550,6 @@ describe('ngModel', function() {
 
         dealoc(form);
       }));
-
 
       it('should set NaN as the $modelValue when an asyncValidator is present',
         inject(function($q) {
@@ -603,7 +574,6 @@ describe('ngModel', function() {
       }));
     });
 
-
     describe('validation', function() {
 
       describe('$validate', function() {
@@ -626,7 +596,6 @@ describe('ngModel', function() {
           expect(ctrl.$valid).toBe(true);
         });
 
-
         it('should pass the last parsed modelValue to the validators', function() {
           ctrl.$parsers.push(function(modelValue) {
             return modelValue + 'def';
@@ -645,7 +614,6 @@ describe('ngModel', function() {
           expect(ctrl.$validators.test).toHaveBeenCalledWith('abcdef', 'abc');
         });
 
-
         it('should set the model to undefined when it becomes invalid', function() {
           var valid = true;
           ctrl.$validators.test = function(modelValue, viewValue) {
@@ -660,7 +628,6 @@ describe('ngModel', function() {
 
           expect(scope.value).toBeUndefined();
         });
-
 
         it('should update the model when it becomes valid', function() {
           var valid = true;
@@ -680,7 +647,6 @@ describe('ngModel', function() {
           expect(scope.value).toBe('abc');
         });
 
-
         it('should not update the model when it is valid, but there is a parse error', function() {
           ctrl.$parsers.push(function(modelValue) {
             return undefined;
@@ -699,7 +665,6 @@ describe('ngModel', function() {
           expect(scope.value).toBeUndefined();
         });
 
-
         it('should not set an invalid model to undefined when validity is the same', function() {
           ctrl.$validators.test = function() {
             return false;
@@ -713,7 +678,6 @@ describe('ngModel', function() {
           expect(ctrl.$valid).toBe(false);
           expect(scope.value).toBe('invalid');
         });
-
 
         it('should not change a model that has a formatter', function() {
           ctrl.$validators.test = function() {
@@ -731,7 +695,6 @@ describe('ngModel', function() {
           expect(scope.value).toBe('abc');
         });
 
-
         it('should not change a model that has a parser', function() {
           ctrl.$validators.test = function() {
             return true;
@@ -747,7 +710,6 @@ describe('ngModel', function() {
           expect(scope.value).toBe('abc');
         });
       });
-
 
       describe('view -> model update', function() {
 
@@ -767,7 +729,6 @@ describe('ngModel', function() {
           expect(captures).toEqual(['MY-VALUE', 'my-value']);
         });
 
-
         it('should always perform validations using the formatted view value', function() {
           var captures;
           ctrl.$validators.raw = function() {
@@ -783,7 +744,6 @@ describe('ngModel', function() {
 
           expect(captures).toEqual(['matias', 'matias...']);
         });
-
 
         it('should only perform validations if the view value is different', function() {
           var count = 0;
@@ -801,7 +761,6 @@ describe('ngModel', function() {
           expect(count).toBe(2);
         });
       });
-
 
       it('should perform validations twice each time the model value changes within a digest', function() {
         var count = 0;
@@ -822,7 +781,6 @@ describe('ngModel', function() {
         scope.$apply('value = ""');
         expect(count).toBe(3);
       });
-
 
       it('should only validate to true if all validations are true', function() {
         var curry = function(v) {
@@ -845,7 +803,6 @@ describe('ngModel', function() {
         expect(ctrl.$valid).toBe(true);
       });
 
-
       it('should register invalid validations on the $error object', function() {
         var curry = function(v) {
           return function() {
@@ -864,7 +821,6 @@ describe('ngModel', function() {
         expect(ctrl.$error.tooLong).toBe(true);
         expect(ctrl.$error.notNumeric).not.toBe(true);
       });
-
 
       it('should render a validator asynchronously when a promise is returned', inject(function($q) {
         var defer;
@@ -896,7 +852,6 @@ describe('ngModel', function() {
         expect(ctrl.$pending).toBeUndefined();
       }));
 
-
       it('should throw an error when a promise is not returned for an asynchronous validator', inject(function($q) {
         ctrl.$asyncValidators.async = function(value) {
           return true;
@@ -907,7 +862,6 @@ describe('ngModel', function() {
         }).toThrowMinErr("ngModel", "$asyncValidators",
           "Expected asynchronous validator to return a promise but got 'true' instead.");
       }));
-
 
       it('should only run the async validators once all the sync validators have passed',
         inject(function($q) {
@@ -961,7 +915,6 @@ describe('ngModel', function() {
         expect(ctrl.$invalid).toBe(false);
       }));
 
-
       it('should ignore expired async validation promises once delivered', inject(function($q) {
         var defer, oldDefer, newDefer;
         ctrl.$asyncValidators.async = function(value) {
@@ -983,7 +936,6 @@ describe('ngModel', function() {
         expect(ctrl.$invalid).toBe(true);
         expect(ctrl.$pending).toBeUndefined();
       }));
-
 
       it('should clear and ignore all pending promises when the model value changes', inject(function($q) {
         ctrl.$validators.sync = function(value) {
@@ -1018,7 +970,6 @@ describe('ngModel', function() {
         expect(isObject(ctrl.$pending)).toBe(false);
       }));
 
-
       it('should clear and ignore all pending promises when a parser fails', inject(function($q) {
         var failParser = false;
         ctrl.$parsers.push(function(value) {
@@ -1050,7 +1001,6 @@ describe('ngModel', function() {
         expect(isObject(ctrl.$pending)).toBe(false);
       }));
 
-
       it('should clear all errors from async validators if a parser fails', inject(function($q) {
         var failParser = false;
         ctrl.$parsers.push(function(value) {
@@ -1070,7 +1020,6 @@ describe('ngModel', function() {
         expect(ctrl.$error).toEqual({parse: true});
       }));
 
-
       it('should clear all errors from async validators if a sync validator fails', inject(function($q) {
         var failValidator = false;
         ctrl.$validators.sync = function(value) {
@@ -1089,7 +1038,6 @@ describe('ngModel', function() {
         ctrl.$setViewValue('1..2..3');
         expect(ctrl.$error).toEqual({sync: true});
       }));
-
 
       it('should re-evaluate the form validity state once the asynchronous promise has been delivered',
         inject(function($compile, $rootScope, $q) {
@@ -1154,7 +1102,6 @@ describe('ngModel', function() {
         dealoc(element);
       }));
 
-
       it('should minimize janky setting of classes during $validate() and ngModelWatch', inject(function($animate, $compile, $rootScope) {
         var addClass = $animate.addClass;
         var removeClass = $animate.removeClass;
@@ -1194,7 +1141,6 @@ describe('ngModel', function() {
         dealoc(element);
       }));
 
-
       it('should always use the most recent $viewValue for validation', function() {
         ctrl.$parsers.push(function(value) {
           if (value && value.substr(-1) === 'b') {
@@ -1217,7 +1163,6 @@ describe('ngModel', function() {
         expect(ctrl.$validators.mock).toHaveBeenCalledWith('a', 'a');
         expect(ctrl.$validators.mock.calls.length).toEqual(2);
       });
-
 
       it('should validate even if the modelValue did not change', function() {
         ctrl.$parsers.push(function(value) {
@@ -1337,7 +1282,6 @@ describe('ngModel', function() {
     });
   });
 
-
   describe('CSS classes', function() {
     var EMAIL_REGEXP = /^[a-z0-9!#$%&'*+\/=?^_`{|}~.-]+@[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)*$/i;
 
@@ -1378,7 +1322,6 @@ describe('ngModel', function() {
       dealoc(element);
     }));
 
-
     it('should set invalid classes on init', inject(function($compile, $rootScope) {
       var element = $compile('<input type="email" ng-model="value" required />')($rootScope);
       $rootScope.$digest();
@@ -1390,7 +1333,6 @@ describe('ngModel', function() {
     }));
 
   });
-
 
   describe('custom formatter and parser that are added by a directive in post linking', function() {
     var inputElm, scope;
@@ -1411,11 +1353,9 @@ describe('ngModel', function() {
       });
     }));
 
-
     afterEach(function() {
       dealoc(inputElm);
     });
-
 
     function createInput(type) {
       inject(function($compile, $rootScope) {
@@ -1423,7 +1363,6 @@ describe('ngModel', function() {
         inputElm = $compile('<input type="' + type + '" ng-model="val" custom-format/>')($rootScope);
       });
     }
-
 
     it('should use them after the builtin ones for text inputs', function() {
       createInput('text');
@@ -1435,7 +1374,6 @@ describe('ngModel', function() {
       expect(scope.val).toEqual({part: 'b'});
     });
 
-
     it('should use them after the builtin ones for number inputs', function() {
       createInput('number');
       scope.$apply('val = {part: 1}');
@@ -1445,7 +1383,6 @@ describe('ngModel', function() {
       browserTrigger(inputElm, 'change');
       expect(scope.val).toEqual({part: 2});
     });
-
 
     it('should use them after the builtin ones for date inputs', function() {
       createInput('date');
@@ -1459,7 +1396,6 @@ describe('ngModel', function() {
       expect(scope.val).toEqual({part: new Date(2001, 11, 9)});
     });
   });
-
 
   describe('$touched', function() {
 
@@ -1480,7 +1416,6 @@ describe('ngModel', function() {
       dealoc(element);
     }));
 
-
     it('should not cause a digest on "blur" event if control is already touched',
         inject(function($compile, $rootScope) {
 
@@ -1498,7 +1433,6 @@ describe('ngModel', function() {
 
       dealoc(element);
     }));
-
 
     it('should digest asynchronously on "blur" event if a apply is already in progress',
         inject(function($compile, $rootScope) {
@@ -1525,7 +1459,6 @@ describe('ngModel', function() {
       dealoc(element);
     }));
   });
-
 
   describe('nested in a form', function() {
 
@@ -1562,7 +1495,6 @@ describe('ngModel', function() {
 
       dealoc(element);
     }));
-
 
     it('should register/deregister a nested ngModel with parent form when entering or leaving DOM with animations',
         function() {
@@ -1606,7 +1538,6 @@ describe('ngModel', function() {
       });
     });
 
-
     it('should keep previously defined watches consistent when changes in validity are made',
      inject(function($compile, $rootScope) {
 
@@ -1630,7 +1561,6 @@ describe('ngModel', function() {
     }));
   });
 
-
   describe('animations', function() {
 
     function findElementAnimations(element, queue) {
@@ -1645,7 +1575,6 @@ describe('ngModel', function() {
       return animations;
     }
 
-
     function assertValidAnimation(animation, event, classNameA, classNameB) {
       expect(animation.event).toBe(event);
       expect(animation.args[1]).toBe(classNameA);
@@ -1654,9 +1583,7 @@ describe('ngModel', function() {
 
     var doc, input, scope, model;
 
-
     beforeEach(module('ngAnimateMock'));
-
 
     beforeEach(inject(function($rootScope, $compile, $rootElement, $animate) {
       scope = $rootScope.$new();
@@ -1671,11 +1598,9 @@ describe('ngModel', function() {
       model = scope.myForm.myInput;
     }));
 
-
     afterEach(function() {
       dealoc(input);
     });
-
 
     it('should trigger an animation when invalid', inject(function($animate) {
       model.$setValidity('required', false);
@@ -1685,7 +1610,6 @@ describe('ngModel', function() {
       assertValidAnimation(animations[1], 'addClass', 'ng-invalid');
       assertValidAnimation(animations[2], 'addClass', 'ng-invalid-required');
     }));
-
 
     it('should trigger an animation when valid', inject(function($animate) {
       model.$setValidity('required', false);
@@ -1701,7 +1625,6 @@ describe('ngModel', function() {
       assertValidAnimation(animations[3], 'removeClass', 'ng-invalid-required');
     }));
 
-
     it('should trigger an animation when dirty', inject(function($animate) {
       model.$setViewValue('some dirty value');
 
@@ -1709,7 +1632,6 @@ describe('ngModel', function() {
       assertValidAnimation(animations[0], 'removeClass', 'ng-pristine');
       assertValidAnimation(animations[1], 'addClass', 'ng-dirty');
     }));
-
 
     it('should trigger an animation when pristine', inject(function($animate) {
       model.$setPristine();
@@ -1719,7 +1641,6 @@ describe('ngModel', function() {
       assertValidAnimation(animations[1], 'addClass', 'ng-pristine');
     }));
 
-
     it('should trigger an animation when untouched', inject(function($animate) {
       model.$setUntouched();
 
@@ -1728,7 +1649,6 @@ describe('ngModel', function() {
       expect(animations[0].args[2]).toBe('ng-touched');
     }));
 
-
     it('should trigger an animation when touched', inject(function($animate) {
       model.$setTouched();
 
@@ -1736,7 +1656,6 @@ describe('ngModel', function() {
       assertValidAnimation(animations[0], 'setClass', 'ng-touched', 'ng-untouched');
       expect(animations[0].args[2]).toBe('ng-untouched');
     }));
-
 
     it('should trigger custom errors as addClass/removeClass when invalid/valid', inject(function($animate) {
       model.$setValidity('custom-error', false);
@@ -1758,7 +1677,6 @@ describe('ngModel', function() {
   });
 });
 
-
 describe('ngModelOptions attributes', function() {
 
   var helper, $rootScope, $compile, $timeout, $q;
@@ -1771,14 +1689,12 @@ describe('ngModelOptions attributes', function() {
     helper.dealoc();
   });
 
-
   beforeEach(inject(function(_$compile_, _$rootScope_, _$timeout_, _$q_) {
     $compile = _$compile_;
     $rootScope = _$rootScope_;
     $timeout = _$timeout_;
     $q = _$q_;
   }));
-
 
   it('should allow overriding the model update trigger event on text inputs', function() {
     var inputElm = helper.compileInput(
@@ -1792,7 +1708,6 @@ describe('ngModelOptions attributes', function() {
     expect($rootScope.name).toEqual('a');
   });
 
-
   it('should not dirty the input if nothing was changed before updateOn trigger', function() {
     var inputElm = helper.compileInput(
         '<input type="text" ng-model="name" name="alias" ' +
@@ -1802,7 +1717,6 @@ describe('ngModelOptions attributes', function() {
     browserTrigger(inputElm, 'blur');
     expect($rootScope.form.alias.$pristine).toBeTruthy();
   });
-
 
   it('should allow overriding the model update trigger event on text areas', function() {
     var inputElm = helper.compileInput(
@@ -1815,7 +1729,6 @@ describe('ngModelOptions attributes', function() {
     browserTrigger(inputElm, 'blur');
     expect($rootScope.name).toEqual('a');
   });
-
 
   it('should bind the element to a list of events', function() {
     var inputElm = helper.compileInput(
@@ -1834,7 +1747,6 @@ describe('ngModelOptions attributes', function() {
     expect($rootScope.name).toEqual('b');
   });
 
-
   it('should allow keeping the default update behavior on text inputs', function() {
     var inputElm = helper.compileInput(
         '<input type="text" ng-model="name" name="alias" ' +
@@ -1844,7 +1756,6 @@ describe('ngModelOptions attributes', function() {
     helper.changeInputValueTo('a');
     expect($rootScope.name).toEqual('a');
   });
-
 
   it('should allow sharing options between multiple inputs', function() {
     $rootScope.options = {updateOn: 'default'};
@@ -1862,7 +1773,6 @@ describe('ngModelOptions attributes', function() {
     expect($rootScope.name2).toEqual('b');
   });
 
-
   it('should hold a copy of the options object', function() {
     $rootScope.options = {updateOn: 'default'};
     var inputElm = helper.compileInput(
@@ -1872,7 +1782,6 @@ describe('ngModelOptions attributes', function() {
     expect($rootScope.options).toEqual({updateOn: 'default'});
     expect($rootScope.form.alias.$options).not.toBe($rootScope.options);
   });
-
 
   it('should allow overriding the model update trigger event on checkboxes', function() {
     var inputElm = helper.compileInput(
@@ -1890,7 +1799,6 @@ describe('ngModelOptions attributes', function() {
     expect($rootScope.checkbox).toBe(true);
   });
 
-
   it('should allow keeping the default update behavior on checkboxes', function() {
     var inputElm = helper.compileInput(
         '<input type="checkbox" ng-model="checkbox" ' +
@@ -1903,7 +1811,6 @@ describe('ngModelOptions attributes', function() {
     browserTrigger(inputElm, 'click');
     expect($rootScope.checkbox).toBe(false);
   });
-
 
   it('should allow overriding the model update trigger event on radio buttons', function() {
     var inputElm = helper.compileInput(
@@ -1926,7 +1833,6 @@ describe('ngModelOptions attributes', function() {
 
   });
 
-
   it('should allow keeping the default update behavior on radio buttons', function() {
     var inputElm = helper.compileInput(
         '<input type="radio" ng-model="color" value="white" ' +
@@ -1944,7 +1850,6 @@ describe('ngModelOptions attributes', function() {
     expect($rootScope.color).toBe('blue');
   });
 
-
   it('should trigger only after timeout in text inputs', function() {
     var inputElm = helper.compileInput(
         '<input type="text" ng-model="name" name="alias" ' +
@@ -1961,7 +1866,6 @@ describe('ngModelOptions attributes', function() {
     expect($rootScope.name).toEqual('c');
   });
 
-
   it('should trigger only after timeout in checkboxes', function() {
     var inputElm = helper.compileInput(
         '<input type="checkbox" ng-model="checkbox" ' +
@@ -1975,7 +1879,6 @@ describe('ngModelOptions attributes', function() {
     $timeout.flush(9000);
     expect($rootScope.checkbox).toBe(true);
   });
-
 
   it('should trigger only after timeout in radio buttons', function() {
     var inputElm = helper.compileInput(
@@ -1998,7 +1901,6 @@ describe('ngModelOptions attributes', function() {
 
   });
 
-
   it('should not trigger digest while debouncing', function() {
     var inputElm = helper.compileInput(
         '<input type="text" ng-model="name" name="alias" ' +
@@ -2014,7 +1916,6 @@ describe('ngModelOptions attributes', function() {
     $timeout.flush(10000);
     expect(watchSpy).toHaveBeenCalled();
   });
-
 
   it('should allow selecting different debounce timeouts for each event',
     function() {
@@ -2040,7 +1941,6 @@ describe('ngModelOptions attributes', function() {
     expect($rootScope.name).toEqual('b');
   });
 
-
   it('should allow selecting different debounce timeouts for each event on checkboxes', function() {
     var inputElm = helper.compileInput('<input type="checkbox" ng-model="checkbox" ' +
       'ng-model-options="{ ' +
@@ -2063,7 +1963,6 @@ describe('ngModelOptions attributes', function() {
     expect($rootScope.checkbox).toBe(false);
   });
 
-
   it('should allow selecting 0 for non-default debounce timeouts for each event on checkboxes', function() {
     var inputElm = helper.compileInput('<input type="checkbox" ng-model="checkbox" ' +
       'ng-model-options="{ ' +
@@ -2083,7 +1982,6 @@ describe('ngModelOptions attributes', function() {
     $timeout.flush(0);
     expect($rootScope.checkbox).toBe(false);
   });
-
 
   it('should inherit model update settings from ancestor elements', function() {
     var doc = $compile(
@@ -2105,7 +2003,6 @@ describe('ngModelOptions attributes', function() {
     dealoc(doc);
   });
 
-
   it('should flush debounced events when calling $commitViewValue directly', function() {
     var inputElm = helper.compileInput(
       '<input type="text" ng-model="name" name="alias" ' +
@@ -2116,7 +2013,6 @@ describe('ngModelOptions attributes', function() {
     $rootScope.form.alias.$commitViewValue();
     expect($rootScope.name).toEqual('a');
   });
-
 
   it('should cancel debounced events when calling $commitViewValue', function() {
     var inputElm = helper.compileInput(
@@ -2132,7 +2028,6 @@ describe('ngModelOptions attributes', function() {
     expect($rootScope.form.alias.$pristine).toBeTruthy();
   });
 
-
   it('should reset input val if rollbackViewValue called during pending update', function() {
     var inputElm = helper.compileInput(
       '<input type="text" ng-model="name" name="alias" ' +
@@ -2146,7 +2041,6 @@ describe('ngModelOptions attributes', function() {
     expect(inputElm.val()).toBe('');
   });
 
-
   it('should allow canceling pending updates', function() {
     var inputElm = helper.compileInput(
       '<input type="text" ng-model="name" name="alias" ' +
@@ -2159,7 +2053,6 @@ describe('ngModelOptions attributes', function() {
     browserTrigger(inputElm, 'blur');
     expect($rootScope.name).toEqual(undefined);
   });
-
 
   it('should allow canceling debounced updates', function() {
     var inputElm = helper.compileInput(
@@ -2175,7 +2068,6 @@ describe('ngModelOptions attributes', function() {
     expect($rootScope.name).toEqual(undefined);
   });
 
-
   it('should handle model updates correctly even if rollbackViewValue is not invoked', function() {
     var inputElm = helper.compileInput(
       '<input type="text" ng-model="name" name="alias" ' +
@@ -2186,7 +2078,6 @@ describe('ngModelOptions attributes', function() {
     browserTrigger(inputElm, 'blur');
     expect($rootScope.name).toBe('b');
   });
-
 
   it('should reset input val if rollbackViewValue called during debounce', function() {
     var inputElm = helper.compileInput(
@@ -2201,7 +2092,6 @@ describe('ngModelOptions attributes', function() {
     expect(inputElm.val()).toBe('');
   });
 
-
   it('should not try to invoke a model if getterSetter is false', function() {
     var inputElm = helper.compileInput(
       '<input type="text" ng-model="name" ' +
@@ -2213,7 +2103,6 @@ describe('ngModelOptions attributes', function() {
     expect(inputElm.val()).toBe('a');
   });
 
-
   it('should not try to invoke a model if getterSetter is not set', function() {
     var inputElm = helper.compileInput('<input type="text" ng-model="name" />');
 
@@ -2222,7 +2111,6 @@ describe('ngModelOptions attributes', function() {
     expect(spy).not.toHaveBeenCalled();
     expect(inputElm.val()).toBe('a');
   });
-
 
   it('should try to invoke a function model if getterSetter is true', function() {
     var inputElm = helper.compileInput(
@@ -2241,7 +2129,6 @@ describe('ngModelOptions attributes', function() {
     expect($rootScope.name).toBe(spy);
   });
 
-
   it('should assign to non-function models if getterSetter is true', function() {
     var inputElm = helper.compileInput(
       '<input type="text" ng-model="name" ' +
@@ -2253,20 +2140,17 @@ describe('ngModelOptions attributes', function() {
     expect($rootScope.name).toBe('d');
   });
 
-
   it('should fail on non-assignable model binding if getterSetter is false', function() {
     expect(function() {
       var inputElm = helper.compileInput('<input type="text" ng-model="accessor(user, \'name\')" />');
     }).toThrowMinErr('ngModel', 'nonassign', 'Expression \'accessor(user, \'name\')\' is non-assignable.');
   });
 
-
   it('should not fail on non-assignable model binding if getterSetter is true', function() {
     var inputElm = helper.compileInput(
       '<input type="text" ng-model="accessor(user, \'name\')" ' +
         'ng-model-options="{ getterSetter: true }" />');
   });
-
 
   it('should invoke a model in the correct context if getterSetter is true', function() {
     var inputElm = helper.compileInput(
@@ -2297,7 +2181,6 @@ describe('ngModelOptions attributes', function() {
     expect($rootScope.someService.getterSetter).toHaveBeenCalledWith();
   });
 
-
   it('should assign invalid values to the scope if allowInvalid is true', function() {
     var inputElm = helper.compileInput('<input type="text" name="input" ng-model="value" maxlength="1" ' +
                  'ng-model-options="{allowInvalid: true}" />');
@@ -2306,7 +2189,6 @@ describe('ngModelOptions attributes', function() {
     expect($rootScope.value).toBe('12345');
     expect(inputElm).toBeInvalid();
   });
-
 
   it('should not assign not parsable values to the scope if allowInvalid is true', function() {
     var inputElm = helper.compileInput('<input type="number" name="input" ng-model="value" ' +
@@ -2319,7 +2201,6 @@ describe('ngModelOptions attributes', function() {
     expect($rootScope.value).toBeUndefined();
     expect(inputElm).toBeInvalid();
   });
-
 
   it('should update the scope before async validators execute if allowInvalid is true', function() {
     var inputElm = helper.compileInput('<input type="text" name="input" ng-model="value" ' +
@@ -2339,7 +2220,6 @@ describe('ngModelOptions attributes', function() {
     expect(inputElm).toBeInvalid();
   });
 
-
   it('should update the view before async validators execute if allowInvalid is true', function() {
     var inputElm = helper.compileInput('<input type="text" name="input" ng-model="value" ' +
                  'ng-model-options="{allowInvalid: true}" />');
@@ -2357,7 +2237,6 @@ describe('ngModelOptions attributes', function() {
     expect(inputElm.val()).toBe('12345');
     expect(inputElm).toBeInvalid();
   });
-
 
   it('should not call ng-change listeners twice if the model did not change with allowInvalid', function() {
     var inputElm = helper.compileInput('<input type="text" name="input" ng-model="value" ' +

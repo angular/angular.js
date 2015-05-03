@@ -583,7 +583,6 @@ describe("angular.scenario.dsl", function() {
         };
       }));
 
-
       it('should select binding in interpolation', function() {
         compile('<span>{{ foo.bar }}</span>');
         $root.dsl.binding('foo.bar');
@@ -703,8 +702,6 @@ describe("angular.scenario.dsl", function() {
         chain.enter('foo');
         expect(_jQuery('input[x-ng-model="test.input"]').val()).toEqual('foo');
       });
-
-
 
       it('should return error if no input exists', function() {
         var chain = $root.dsl.input('test.input');

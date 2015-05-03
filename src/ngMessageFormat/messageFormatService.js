@@ -107,7 +107,6 @@ var $$interpolateDecorator = ['$$messageFormat', '$delegate', function $$interpo
   return interpolate;
 }];
 
-
 /**
  * @ngdoc module
  * @name ngMessageFormat

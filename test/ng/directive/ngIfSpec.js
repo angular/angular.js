@@ -212,7 +212,6 @@ describe('ngIf and transcludes', function() {
     });
   });
 
-
   it('should use the correct transcluded scope', function() {
     module(function($compileProvider) {
       $compileProvider.directive('iso', valueFn({

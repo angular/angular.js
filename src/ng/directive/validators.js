@@ -19,7 +19,6 @@ var requiredDirective = function() {
   };
 };
 
-
 var patternDirective = function() {
   return {
     restrict: 'A',
@@ -49,7 +48,6 @@ var patternDirective = function() {
     }
   };
 };
-
 
 var maxlengthDirective = function() {
   return {

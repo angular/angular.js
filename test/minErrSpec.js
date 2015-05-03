@@ -77,7 +77,6 @@ describe('minErr', function() {
     expect(myError.message).toMatch(/^\[test:26\] This Fooooo is \{1\} on \{2\}/);
   });
 
-
   it('should pass through the message if no interpolation is needed', function() {
     var myError = testError('26', 'Something horrible happened!');
     expect(myError.message).toMatch(/^\[test:26\] Something horrible happened!/);
@@ -90,14 +89,12 @@ describe('minErr', function() {
     expect(myNamespacedError.message).toMatch(/^\[test:26\] That is a Bar/);
   });
 
-
   it('should accept an optional 2nd argument to construct custom errors', function() {
     var normalMinErr = minErr('normal');
     expect(normalMinErr('acode', 'aproblem') instanceof TypeError).toBe(false);
     var typeMinErr = minErr('type', TypeError);
     expect(typeMinErr('acode', 'aproblem') instanceof TypeError).toBe(true);
   });
-
 
   it('should include a properly formatted error reference URL in the message', function() {
     // to avoid maintaining the root URL in two locations, we only validate the parameters

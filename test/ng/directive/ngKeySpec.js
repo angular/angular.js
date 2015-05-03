@@ -35,4 +35,3 @@ describe('ngKeyup and ngKeydown directives', function() {
   }));
 
 });
-

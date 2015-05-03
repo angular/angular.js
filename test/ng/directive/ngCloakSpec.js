@@ -3,11 +3,9 @@
 describe('ngCloak', function() {
   var element;
 
-
   afterEach(function() {
     dealoc(element);
   });
-
 
   it('should get removed when an element is compiled', inject(function($rootScope, $compile) {
     element = jqLite('<div ng-cloak></div>');
@@ -15,7 +13,6 @@ describe('ngCloak', function() {
     $compile(element);
     expect(element.attr('ng-cloak')).toBeUndefined();
   }));
-
 
   it('should remove ngCloak class from a compiled element with attribute', inject(
       function($rootScope, $compile) {
@@ -31,7 +28,6 @@ describe('ngCloak', function() {
     expect(element.hasClass('ng-cloak')).toBe(false);
     expect(element.hasClass('bar')).toBe(true);
   }));
-
 
   it('should remove ngCloak class from a compiled element', inject(function($rootScope, $compile) {
     element = jqLite('<div class="foo ng-cloak bar"></div>');

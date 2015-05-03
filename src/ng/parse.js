@@ -36,7 +36,6 @@ var $parseMinErr = minErr('$parse');
 //
 // See https://docs.angularjs.org/guide/security
 
-
 function ensureSafeMemberName(name, fullExpression) {
   if (name === "__defineGetter__" || name === "__defineSetter__"
       || name === "__lookupGetter__" || name === "__lookupSetter__"
@@ -97,9 +96,7 @@ var OPERATORS = createMap();
 forEach('+ - * / % === !== == != < > <= >= && || ! = |'.split(' '), function(operator) { OPERATORS[operator] = true; });
 var ESCAPE = {"n":"\n", "f":"\f", "r":"\r", "t":"\t", "v":"\v", "'":"'", '"':'"'};
 
-
 /////////////////////////////////////////
-
 
 /**
  * @constructor
@@ -586,7 +583,6 @@ AST.prototype = {
     }
     return false;
   },
-
 
   /* `undefined` is not a constant, it is an identifier,
    * but using it as an identifier is not supported
@@ -1217,7 +1213,6 @@ ASTCompiler.prototype = {
   }
 };
 
-
 function ASTInterpreter(astBuilder, $filter) {
   this.astBuilder = astBuilder;
   this.$filter = $filter;
@@ -1683,7 +1678,6 @@ function getValueOf(value) {
  *        set to a function to change its value on the given context.
  *
  */
-
 
 /**
  * @ngdoc provider

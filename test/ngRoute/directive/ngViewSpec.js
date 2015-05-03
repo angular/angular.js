@@ -11,11 +11,9 @@ describe('ngView', function() {
     };
   }));
 
-
   afterEach(function() {
     dealoc(element);
   });
-
 
   it('should do nothing when no routes are defined',
       inject(function($rootScope, $compile, $location) {
@@ -23,7 +21,6 @@ describe('ngView', function() {
     $rootScope.$digest();
     expect(element.text()).toEqual('');
   }));
-
 
   it('should instantiate controller after compiling the content', function() {
     var log = [], controllerScope,
@@ -55,7 +52,6 @@ describe('ngView', function() {
     });
   });
 
-
   it('should instantiate the associated controller when an empty template is downloaded', function() {
     var log = [], controllerScope,
         Ctrl = function($scope) {
@@ -79,7 +75,6 @@ describe('ngView', function() {
     });
   });
 
-
   it('should instantiate controller with an alias', function() {
     var log = [], controllerScope,
         Ctrl = function($scope) {
@@ -100,7 +95,6 @@ describe('ngView', function() {
     });
   });
 
-
   it('should support string controller declaration', function() {
     var MyCtrl = jasmine.createSpy('MyCtrl');
 
@@ -118,7 +112,6 @@ describe('ngView', function() {
       expect(MyCtrl).toHaveBeenCalledWith(element.children().scope());
     });
   });
-
 
   it('should load content via xhr when route changes', function() {
     module(function($routeProvider) {
@@ -142,7 +135,6 @@ describe('ngView', function() {
       expect(element.text()).toEqual('angular is da best');
     });
   });
-
 
   it('should use inline content route changes', function() {
     module(function($routeProvider) {
@@ -168,7 +160,6 @@ describe('ngView', function() {
     });
   });
 
-
   it('should remove all content when location changes to an unknown route', function() {
     module(function($routeProvider) {
       $routeProvider.when('/foo', {templateUrl: 'myUrl1'});
@@ -186,7 +177,6 @@ describe('ngView', function() {
       expect(element.text()).toEqual('');
     });
   });
-
 
   it('should chain scopes and propagate evals to the child scope', function() {
     module(function($routeProvider) {
@@ -207,7 +197,6 @@ describe('ngView', function() {
       expect(element.text()).toEqual('new parent');
     });
   });
-
 
   it('should be possible to nest ngView in ngInclude', function() {
 
@@ -233,7 +222,6 @@ describe('ngView', function() {
     });
   });
 
-
   it('should initialize view template after the view controller was initialized even when ' +
      'templates were cached', function() {
      //this is a test for a regression that was introduced by making the ng-view cache sync
@@ -244,7 +232,6 @@ describe('ngView', function() {
     module(function($routeProvider) {
       $routeProvider.when('/foo', {controller: ParentCtrl, templateUrl: 'viewPartial.html'});
     });
-
 
     inject(function($rootScope, $compile, $location, $httpBackend, $route) {
       $rootScope.log = [];
@@ -275,7 +262,6 @@ describe('ngView', function() {
     });
   });
 
-
   it('should discard pending xhr callbacks if a new route is requested before the current ' +
       'finished loading',  function() {
     // this is a test for a bad race condition that affected feedback
@@ -299,7 +285,6 @@ describe('ngView', function() {
       expect(element.text()).toEqual('2');
     });
   });
-
 
   it('should be async even if served from cache', function() {
     module(function($routeProvider) {
@@ -381,7 +366,6 @@ describe('ngView', function() {
     });
   });
 
-
   it('should destroy previous scope if multiple route changes occur before server responds',
       function() {
     var log = [];
@@ -420,7 +404,6 @@ describe('ngView', function() {
       expect($rootScope.$$childTail).toBeNull();
     });
   });
-
 
   it('should $destroy scope after update and reload',  function() {
     // this is a regression of bug, where $route doesn't copy scope when only updating
@@ -467,7 +450,6 @@ describe('ngView', function() {
     });
   });
 
-
   it('should evaluate onload expression after linking the content', function() {
     module(function($routeProvider) {
       $routeProvider.when('/foo', {templateUrl: 'tpl.html'});
@@ -482,7 +464,6 @@ describe('ngView', function() {
       expect($rootScope.load).toHaveBeenCalledOnce();
     });
   });
-
 
   it('should set $scope and $controllerController on the view elements (except for non-element nodes)', function() {
     function MyCtrl($scope) {
@@ -677,7 +658,6 @@ describe('ngView animations', function() {
     dealoc(body);
     dealoc(element);
   });
-
 
   beforeEach(module(function($provide, $routeProvider) {
     $routeProvider.when('/foo', {controller: angular.noop, templateUrl: '/foo.html'});
@@ -880,7 +860,6 @@ describe('ngView animations', function() {
     );
   });
 
-
   describe('autoscroll', function() {
     var autoScrollSpy;
 
@@ -922,7 +901,6 @@ describe('ngView animations', function() {
       expect(autoScrollSpy).toHaveBeenCalledOnce();
     }));
 
-
     it('should call $anchorScroll if autoscroll evaluates to true', inject(
         compileAndLink('<div><ng:view src="tpl" autoscroll="value"></ng:view></div>'),
         function($rootScope, $animate, $timeout, $location) {
@@ -936,7 +914,6 @@ describe('ngView animations', function() {
       expect(autoScrollSpy).toHaveBeenCalledOnce();
     }));
 
-
     it('should not call $anchorScroll if autoscroll attribute is not present', inject(
         compileAndLink('<div><ng:view></ng:view></div>'),
         function($rootScope, $location, $animate, $timeout) {
@@ -948,7 +925,6 @@ describe('ngView animations', function() {
 
       expect(autoScrollSpy).not.toHaveBeenCalled();
     }));
-
 
     it('should not call $anchorScroll if autoscroll evaluates to false', inject(
         compileAndLink('<div><ng:view autoscroll="value"></ng:view></div>'),
@@ -962,7 +938,6 @@ describe('ngView animations', function() {
 
       expect(autoScrollSpy).not.toHaveBeenCalled();
     }));
-
 
     it('should only call $anchorScroll after the "enter" animation completes', inject(
       compileAndLink('<div><ng:view autoscroll></ng:view></div>'),

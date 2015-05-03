@@ -3,11 +3,9 @@
 describe('ngSwitch', function() {
   var element;
 
-
   afterEach(function() {
     dealoc(element);
   });
-
 
   it('should switch on value change', inject(function($rootScope, $compile) {
     element = $compile(
@@ -34,7 +32,6 @@ describe('ngSwitch', function() {
     $rootScope.$apply();
     expect(element.text()).toEqual('true:misko');
   }));
-
 
   it('should show all switch-whens that match the current value', inject(function($rootScope, $compile) {
     element = $compile(
@@ -65,7 +62,6 @@ describe('ngSwitch', function() {
     expect(element.text()).toEqual('true:misko');
   }));
 
-
   it('should show all elements between start and end markers that match the current value',
       inject(function($rootScope, $compile) {
     element = $compile(
@@ -91,7 +87,6 @@ describe('ngSwitch', function() {
     expect(element.find('li').eq(2).text()).toBe('F');
   }));
 
-
   it('should switch on switch-when-default', inject(function($rootScope, $compile) {
     element = $compile(
       '<ng:switch on="select">' +
@@ -104,7 +99,6 @@ describe('ngSwitch', function() {
     $rootScope.$apply();
     expect(element.text()).toEqual('one');
   }));
-
 
   it('should show all default elements between start and end markers when no match',
       inject(function($rootScope, $compile) {
@@ -131,7 +125,6 @@ describe('ngSwitch', function() {
     expect(element.find('li').eq(2).text()).toBe('F');
   }));
 
-
   it('should show all switch-when-default', inject(function($rootScope, $compile) {
     element = $compile(
       '<ul ng-switch="select">' +
@@ -145,7 +138,6 @@ describe('ngSwitch', function() {
     $rootScope.$apply();
     expect(element.text()).toEqual('one');
   }));
-
 
   it('should always display the elements that do not match a switch',
       inject(function($rootScope, $compile) {
@@ -163,7 +155,6 @@ describe('ngSwitch', function() {
     $rootScope.$apply();
     expect(element.text()).toEqual('always one ');
   }));
-
 
   it('should display the elements that do not have ngSwitchWhen nor ' +
      'ngSwitchDefault at the position specified in the template, when the ' +
@@ -186,7 +177,6 @@ describe('ngSwitch', function() {
     $rootScope.$apply();
     expect(element.text()).toEqual('12368');
   }));
-
 
   it('should display the elements that do not have ngSwitchWhen nor ' +
      'ngSwitchDefault at the position specified in the template when the ' +
@@ -237,7 +227,6 @@ describe('ngSwitch', function() {
     expect(child2).not.toBe(child1);
   }));
 
-
   it("should interoperate with other transclusion directives like ngRepeat", inject(function($rootScope, $compile) {
     element = $compile(
       '<div ng-switch="value">' +
@@ -262,7 +251,6 @@ describe('ngSwitch', function() {
 
   }));
 
-
   it('should not leak jq data when compiled but not attached to parent when parent is destroyed',
       inject(function($rootScope, $compile) {
     element = $compile(
@@ -276,7 +264,6 @@ describe('ngSwitch', function() {
     // element now contains only empty repeater. this element is dealocated by local afterEach.
     // afterwards a global afterEach will check for leaks in jq data cache object
   }));
-
 
   it('should properly support case labels with different numbers of transclude fns', inject(function($rootScope, $compile) {
     element = $compile(
@@ -386,7 +373,6 @@ describe('ngSwitch animation', function() {
         expect(item.element.text()).toBe('one');
       })
     );
-
 
     it('should fire off the leave animation',
       inject(function($compile, $rootScope, $animate) {

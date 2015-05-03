@@ -324,7 +324,6 @@ function Browser(window, document, $log, $sniffer) {
     return timeoutId;
   };
 
-
   /**
    * @name $browser#defer.cancel
    *
