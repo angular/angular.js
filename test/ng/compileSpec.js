@@ -2762,6 +2762,23 @@ describe('$compile', function() {
     }));
 
 
+    it('should handle consecutive text elements as a single text element', inject(function($rootScope, $compile) {
+      window.addMutationObserver = function() {
+        if (!window.MutationObserver) {
+          return;
+        }
+        new window.MutationObserver(function() {}).observe(document.body, {
+          childList: true,
+          subtree: true
+        });
+      };
+      var base = jqLite('<div>&mdash; {{ "This doesn\'t." }}</div>');
+      element = $compile(base)($rootScope);
+      $rootScope.$digest();
+      expect(element.text()).toBe("— This doesn't.");
+    }));
+
+
     it('should support custom start/end interpolation symbols in template and directive template',
         function() {
       module(function($interpolateProvider, $compileProvider) {
