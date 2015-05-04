@@ -221,11 +221,14 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
     };
 
     function queueAnimation(element, event, options) {
+      var node, parent;
       element = stripCommentsFromElement(element);
-      var node = element[0];
+      if (element) {
+        node = element[0];
+        parent = element.parent();
+      }
 
       options = prepareAnimationOptions(options);
-      var parent = element.parent();
 
       // we create a fake runner with a working promise.
       // These methods will become available after the digest has passed
@@ -235,7 +238,7 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
       // a jqLite wrapper that contains only comment nodes... If this
       // happens then there is no way we can perform an animation
       if (!node) {
-        runner.end();
+        close();
         return runner;
       }
 
