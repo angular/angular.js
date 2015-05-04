@@ -734,6 +734,29 @@ describe('$$animation', function() {
       expect(element).not.toHaveClass('ng-animate');
     }));
 
+
+    it('should apply the `ng-animate` and temporary CSS classes before the driver is invoked', function() {
+      var capturedElementClasses;
+
+      module(function($provide) {
+        $provide.factory('mockedTestDriver', function() {
+          return function(details) {
+            capturedElementClasses = details.element.attr('class');
+          };
+        });
+      });
+
+      inject(function($$animation, $rootScope) {
+        $$animation(element, 'enter', {
+          tempClasses: 'temp-class-name'
+        });
+        $rootScope.$digest();
+
+        expect(capturedElementClasses).toMatch(/\bng-animate\b/);
+        expect(capturedElementClasses).toMatch(/\btemp-class-name\b/);
+      });
+    });
+
     it('should perform the DOM operation at the end of the animation if the driver doesn\'t run it already',
       inject(function($$animation, $rootScope) {
 
