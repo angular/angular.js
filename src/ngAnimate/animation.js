@@ -62,7 +62,7 @@ var $$AnimationProvider = ['$animateProvider', function($animateProvider) {
         event: event,
         structural: isStructural,
         options: options,
-        start: start,
+        beforeStart: beforeStart,
         close: close
       });
 
@@ -88,15 +88,19 @@ var $$AnimationProvider = ['$animateProvider', function($animateProvider) {
         animationQueue.length = 0;
 
         forEach(groupAnimations(animations), function(animationEntry) {
-          var startFn = animationEntry.start;
-          var closeFn = animationEntry.close;
+          // it's important that we apply the `ng-animate` CSS class and the
+          // temporary classes before we do any driver invoking since these
+          // CSS classes may be required for proper CSS detection.
+          animationEntry.beforeStart();
+
           var operation = invokeFirstDriver(animationEntry);
-          var startAnimation = operation && operation.start; /// TODO(matsko): only recognize operation.start()
-          if (!startAnimation) {
+          var triggerAnimationStart = operation && operation.start; /// TODO(matsko): only recognize operation.start()
+
+          var closeFn = animationEntry.close;
+          if (!triggerAnimationStart) {
             closeFn();
           } else {
-            startFn();
-            var animationRunner = startAnimation();
+            var animationRunner = triggerAnimationStart();
             animationRunner.done(function(status) {
               closeFn(!status);
             });
@@ -173,9 +177,9 @@ var $$AnimationProvider = ['$animateProvider', function($animateProvider) {
           if (!anchorGroups[lookupKey]) {
             var group = anchorGroups[lookupKey] = {
               // TODO(matsko): double-check this code
-              start: function() {
-                fromAnimation.start();
-                toAnimation.start();
+              beforeStart: function() {
+                fromAnimation.beforeStart();
+                toAnimation.beforeStart();
               },
               close: function() {
                 fromAnimation.close();
@@ -241,7 +245,7 @@ var $$AnimationProvider = ['$animateProvider', function($animateProvider) {
         }
       }
 
-      function start() {
+      function beforeStart() {
         element.addClass(NG_ANIMATE_CLASSNAME);
         if (tempClasses) {
           $$jqLite.addClass(element, tempClasses);
