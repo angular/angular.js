@@ -31,6 +31,46 @@ describe('$$rAF', function() {
     expect(present).toBe(true);
   }));
 
+  it('should only consume only one RAF if multiple async functions are registered before the first frame kicks in', inject(function($$rAF) {
+    if (!$$rAF.supported) return;
+
+    //we need to create our own injector to work around the ngMock overrides
+    var rafLog = [];
+    var injector = createInjector(['ng', function($provide) {
+      $provide.value('$window', {
+        location: window.location,
+        history: window.history,
+        webkitRequestAnimationFrame: function(fn) {
+          rafLog.push(fn);
+        }
+      });
+    }]);
+
+    $$rAF = injector.get('$$rAF');
+
+    var log = [];
+    function logFn() {
+      log.push(log.length);
+    }
+
+    $$rAF(logFn);
+    $$rAF(logFn);
+    $$rAF(logFn);
+
+    expect(log).toEqual([]);
+    expect(rafLog.length).toBe(1);
+
+    rafLog[0]();
+
+    expect(log).toEqual([0,1,2]);
+    expect(rafLog.length).toBe(1);
+
+    $$rAF(logFn);
+
+    expect(log).toEqual([0,1,2]);
+    expect(rafLog.length).toBe(2);
+  }));
+
   describe('$timeout fallback', function() {
     it("it should use a $timeout incase native rAF isn't suppored", function() {
       var timeoutSpy = jasmine.createSpy('callback');
