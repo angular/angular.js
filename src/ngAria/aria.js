@@ -14,7 +14,7 @@
  *
  * ## Usage
  *
- * For ngAria to do its magic, simply include the module as a dependency. The directives supported
+ * For ngAria to do its magic, simply include the module 'ngAria' as a dependency. The directives supported
  * by ngAria are:
  * `ngModel`, `ngDisabled`, `ngShow`, `ngHide`, `ngClick`, `ngDblClick`, and `ngMessages`.
  *
