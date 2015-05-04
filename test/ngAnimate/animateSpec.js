@@ -245,6 +245,47 @@ describe("animations", function() {
       expect(capturedAnimation).toBeFalsy();
     }));
 
+    it('should not attempt to perform an animation on a text node element',
+      inject(function($rootScope, $animate) {
+
+      element.html('hello there');
+      var textNode = jqLite(element[0].firstChild);
+
+      $animate.addClass(textNode, 'some-class');
+      $rootScope.$digest();
+
+      expect(capturedAnimation).toBeFalsy();
+    }));
+
+    it('should perform the leave domOperation if a text node is used',
+      inject(function($rootScope, $animate) {
+
+      element.html('hello there');
+      var textNode = jqLite(element[0].firstChild);
+      var parentNode = textNode[0].parentNode;
+
+      $animate.leave(textNode);
+      $rootScope.$digest();
+      expect(capturedAnimation).toBeFalsy();
+      expect(textNode[0].parentNode).not.toBe(parentNode);
+    }));
+
+    it('should perform the leave domOperation if a comment node is used',
+      inject(function($rootScope, $animate, $document) {
+
+      var doc = $document[0];
+
+      element.html('hello there');
+      var commentNode = jqLite(doc.createComment('test comment'));
+      var parentNode = element[0];
+      parentNode.appendChild(commentNode[0]);
+
+      $animate.leave(commentNode);
+      $rootScope.$digest();
+      expect(capturedAnimation).toBeFalsy();
+      expect(commentNode[0].parentNode).not.toBe(parentNode);
+    }));
+
     it('enter() should issue an enter animation and fire the DOM operation right away before the animation kicks off', inject(function($animate, $rootScope) {
       expect(parent.children().length).toBe(0);
 
