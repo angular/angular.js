@@ -1069,6 +1069,36 @@ describe("ngAnimate $animateCss", function() {
           expect(count.normal).toBe(3);
         }));
 
+        it("should cache the post-quiet state detection and flush one frame after the animation is complete",
+          inject(function($animateCss, $document, $rootElement, $$rAF) {
+
+          var i, animator, elms = [];
+          for (i = 0; i < 5; i++) {
+            var elm = jqLite('<div>' + i + '</div>');
+            $rootElement.append(elm);
+            animator = $animateCss(elm, { to: {color:'green'}, duration: 0.5 });
+            var runner = animator.start();
+            elms.push(elm);
+          }
+
+          expect(count.normal).toBe(2); //first + stagger
+          triggerAnimationStartFrame();
+
+          expect(count.normal).toBe(3); //first + stagger + post-quiet
+          for (i = 0; i < elms.length; i++) {
+            browserTrigger(elms[i], 'transitionend',
+              { timeStamp: Date.now() + 1000, elapsedTime: 1 });
+          }
+
+          $$rAF.flush();
+
+          for (i = 0; i < elms.length; i++) {
+            animator = $animateCss(elms[i], { to: {color:'red'}, duration: 0.8 });
+          }
+
+          expect(count.normal).toBe(5); //first + stagger + post-quiet + first + stagger
+        }));
+
         it("should cache frequent calls to getComputedStyle for stagger animations before the next animation frame kicks in",
           inject(function($animateCss, $document, $rootElement, $$rAF) {
 
