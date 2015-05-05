@@ -2,6 +2,7 @@
 
 var $animateMinErr = minErr('$animate');
 var ELEMENT_NODE = 1;
+var TEXT_NODE = 3;
 
 function mergeClasses(a,b) {
   if (!a && !b) return '';
@@ -12,10 +13,10 @@ function mergeClasses(a,b) {
   return a + ' ' + b;
 }
 
-function extractElementNode(element) {
+function extractNonCommentNode(element) {
   for (var i = 0; i < element.length; i++) {
     var elm = element[i];
-    if (elm.nodeType === ELEMENT_NODE) {
+    if (elm.nodeType === ELEMENT_NODE || elm.nodeType === TEXT_NODE) {
       return elm;
     }
   }
@@ -241,7 +242,7 @@ var $AnimateProvider = ['$provide', function($provide) {
       // from the dom sometime before this code runs then let's
       // just stick to using the parent element as the anchor
       if (afterElement) {
-        var afterNode = extractElementNode(afterElement);
+        var afterNode = extractNonCommentNode(afterElement);
         if (afterNode && !afterNode.parentNode && !afterNode.previousElementSibling) {
           afterElement = null;
         }

@@ -129,6 +129,20 @@ describe("animations", function() {
       };
     }));
 
+    it('should animate text nodes', function() {
+      module(function($animateProvider) {
+        $animateProvider.classNameFilter(/only-allow-this-animation/);
+      });
+      inject(function($animate, $rootScope, $compile) {
+        var newWrapper = angular.element('<span>new text</span>');
+        $compile(newWrapper.contents())($rootScope);
+        var oldContents = element.contents();
+        var newContents = newWrapper.contents();
+        $animate.enter(newContents, element);
+        $animate.leave(oldContents);
+      });
+    });
+
     it('should animate only the specified CSS className matched within $animateProvider.classNameFilter', function() {
       module(function($animateProvider) {
         $animateProvider.classNameFilter(/only-allow-this-animation/);
