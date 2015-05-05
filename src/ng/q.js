@@ -515,23 +515,61 @@ function qFactory(nextTick, exceptionHandler) {
 
   function all(promises) {
     var deferred = new Deferred(),
-        counter = 0,
-        results = isArray(promises) ? [] : {};
+        counter  = 0,
+        results  = isArray(promises) ? [] : {};
 
     forEach(promises, function(promise, key) {
       counter++;
       when(promise).then(function(value) {
-        if (results.hasOwnProperty(key)) return;
         results[key] = value;
         if (!(--counter)) deferred.resolve(results);
       }, function(reason) {
-        if (results.hasOwnProperty(key)) return;
         deferred.reject(reason);
       });
     });
 
+    // Empty promises array
     if (counter === 0) {
       deferred.resolve(results);
+    }
+
+    return deferred.promise;
+  }
+
+  /**
+   * @ngdoc method
+   * @name $q#any
+   * @kind function
+   *
+   * @description
+   * Combines multiple promises into a single promise that is resolved when any of the input
+   * promises are resolved.
+   *
+   * @param {Array.<Promise>|Object.<Promise>} promises An array or hash of promises.
+   * @returns {Promise} Returns a single promise that will be resolved with the first
+   *   resolved promise value.
+   *   If all of the promises are resolved with a rejection, this resulting promise will be rejected
+   *   with an array/hash of values, each value corresponding to the promise at the same index/key
+   *   in the `promises` array/hash.
+   */
+  function any(promises) {
+    var deferred = new Deferred(),
+        counter  = 0,
+        rejects  = isArray(promises) ? [] : {};
+
+    forEach(promises, function(promise, key) {
+      counter++;
+      when(promise).then(function(value) {
+        deferred.resolve(value);
+      }, function(reason) {
+        rejects[key] = reason;
+        if (!(--counter)) deferred.reject(rejects);
+      });
+    });
+
+    // Empty promises array
+    if (counter === 0) {
+      deferred.resolve(rejects);
     }
 
     return deferred.promise;
@@ -566,6 +604,7 @@ function qFactory(nextTick, exceptionHandler) {
   $Q.reject = reject;
   $Q.when = when;
   $Q.all = all;
+  $Q.any = any;
 
   return $Q;
 }

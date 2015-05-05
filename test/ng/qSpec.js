@@ -184,7 +184,7 @@ describe('q', function() {
   beforeEach(function() {
     q = qFactory(mockNextTick.nextTick, noop),
     defer = q.defer;
-    deferred =  defer();
+    deferred = defer();
     promise = deferred.promise;
     log = [];
     mockNextTick.queue = [];
@@ -1813,15 +1813,145 @@ describe('q', function() {
     });
   });
 
+  describe('any (array)', function() {
+    it('should resolve nothing as undefined', function() {
+      var result = 'not empty';
+      var promise = q.any([]).then(function(r) { result = r; });
+      mockNextTick.flush();
+      expect(result).toEqual([]);
+    });
+
+    it('should reject after all promises are rejected', function() {
+      var deferred1 = defer(),
+          deferred2 = defer();
+
+      q.any([promise, deferred1.promise, deferred2.promise]).then(success(), error());
+      syncReject(deferred1, 'oops1');
+      expect(logStr()).toBe('');
+      syncReject(deferred2, 'oops2');
+      expect(logStr()).toBe('');
+      syncReject(deferred, 'oops3');
+      expect(logStr()).toBe('error(["oops3","oops1","oops2"])->reject(["oops3","oops1","oops2"])');
+    });
+
+    it('should return the first resolved promise', function() {
+      var deferred1 = defer(),
+          deferred2 = defer();
+
+      q.any([promise, deferred1.promise, deferred2.promise]).then(success(), error());
+      syncReject(deferred1, 'oops1');
+      expect(logStr()).toBe('');
+      syncResolve(deferred2, 'oi');
+      expect(logStr()).toBe('success(oi)->oi');
+      syncReject(deferred, 'oops2');
+      expect(logStr()).toBe('success(oi)->oi');
+    });
+
+    it('should not forward notifications from individual promises to the combined promise',
+        function() {
+      var deferred1 = defer(),
+          deferred2 = defer();
+
+      q.any([promise, deferred1.promise, deferred2.promise]).then(success(), error(), progress());
+      expect(logStr()).toBe('');
+      deferred.notify('x');
+      deferred2.notify('y');
+      expect(logStr()).toBe('');
+      mockNextTick.flush();
+      expect(logStr()).toBe('');
+    });
+
+    it('should ignore multiple resolutions of an (evil) array promise', function() {
+      var evilPromise = {
+        then: function(success, error) {
+          evilPromise.success = success;
+          evilPromise.error = error;
+        }
+      };
+
+      q.any([promise, evilPromise]).then(success(), error());
+      expect(logStr()).toBe('');
+
+      evilPromise.error('arghhh');
+      evilPromise.success('first');
+      evilPromise.success('muhaha');
+      expect(logStr()).toBe('');
+
+      syncResolve(deferred, 'done');
+      expect(logStr()).toBe('success(done)->done');
+    });
+  });
+
+  describe('any (hash)', function() {
+    it('should resolve nothing as undefined', function() {
+      var result = 'not empty';
+      var promise = q.any({}).then(function(r) { result = r; });
+      mockNextTick.flush();
+      expect(result).toEqual({});
+    });
+
+    it('should reject after all promises are rejected', function() {
+      var deferred1 = defer(),
+          deferred2 = defer();
+
+      q.any({pt: promise, ptbr: deferred1.promise, en: deferred2.promise}).then(success(), error());
+      syncReject(deferred1, 'oops1');
+      expect(logStr()).toBe('');
+      syncReject(deferred2, 'oops2');
+      expect(logStr()).toBe('');
+      syncReject(deferred, 'oops3');
+      expect(logStr()).toBe('error({"ptbr":"oops1","en":"oops2","pt":"oops3"})->reject({"ptbr":"oops1","en":"oops2","pt":"oops3"})');
+    });
+
+    it('should return the first resolved promise', function() {
+      var deferred1 = defer(),
+          deferred2 = defer();
+
+      q.any({pt: promise, ptbr: deferred1.promise, en: deferred2.promise}).then(success(), error());
+      syncReject(deferred1, 'oops1');
+      expect(logStr()).toBe('');
+      syncResolve(deferred2, 'oi');
+      expect(logStr()).toBe('success(oi)->oi');
+      syncReject(deferred, 'oops2');
+      expect(logStr()).toBe('success(oi)->oi');
+    });
+
+    it('should ignore multiple resolutions of an (evil) array promise', function() {
+      var evilPromise = {
+        then: function(success, error) {
+          evilPromise.success = success;
+          evilPromise.error = error;
+        }
+      };
+
+      q.any({pt: promise, ptbr: evilPromise}).then(success(), error());
+      expect(logStr()).toBe('');
+
+      evilPromise.error('arghhh');
+      evilPromise.success('first');
+      evilPromise.success('muhaha');
+      expect(logStr()).toBe('');
+
+      syncResolve(deferred, 'done');
+      expect(logStr()).toBe('success(done)->done');
+    });
+
+    it('should handle correctly situation when given the same promise several times', function() {
+      q.any({first: promise, second: promise, third: promise}).then(success(), error());
+      expect(logStr()).toBe('');
+
+      syncReject(deferred, 'ops');
+      expect(logStr()).toBe('error({"first":"ops","second":"ops","third":"ops"})->reject({"first":"ops","second":"ops","third":"ops"})');
+    });
+  });
 
   describe('all (array)', function() {
-    it('should resolve all or nothing', function() {
+    it('should resolve nothing as empty array', function() {
       var result;
       q.all([]).then(function(r) { result = r; });
       mockNextTick.flush();
       expect(result).toEqual([]);
     });
-
 
     it('should take an array of promises and return a promise for an array of results', function() {
       var deferred1 = defer(),
@@ -1837,7 +1967,6 @@ describe('q', function() {
       expect(logStr()).toBe('success(["hi","hola","cau"])->["hi","hola","cau"]');
     });
 
-
     it('should reject the derived promise if at least one of the promises in the array is rejected',
         function() {
       var deferred1 = defer(),
@@ -1850,7 +1979,6 @@ describe('q', function() {
       syncReject(deferred1, 'oops');
       expect(logStr()).toBe('error(oops)->reject(oops)');
     });
-
 
     it('should not forward notifications from individual promises to the combined promise',
         function() {
@@ -1865,7 +1993,6 @@ describe('q', function() {
       mockNextTick.flush();
       expect(logStr()).toBe('');
     });
-
 
     it('should ignore multiple resolutions of an (evil) array promise', function() {
       var evilPromise = {
@@ -1889,13 +2016,12 @@ describe('q', function() {
   });
 
   describe('all (hash)', function() {
-    it('should resolve all or nothing', function() {
+    it('should resolve nothing as empty array', function() {
       var result;
       q.all({}).then(function(r) { result = r; });
       mockNextTick.flush();
       expect(result).toEqual({});
     });
-
 
     it('should take a hash of promises and return a promise for a hash of results', function() {
       var deferred1 = defer(),
@@ -1911,7 +2037,6 @@ describe('q', function() {
       expect(logStr()).toBe('success({"en":"hi","es":"hola","fr":"salut"})->{"en":"hi","es":"hola","fr":"salut"}');
     });
 
-
     it('should reject the derived promise if at least one of the promises in the hash is rejected',
         function() {
       var deferred1 = defer(),
@@ -1924,7 +2049,6 @@ describe('q', function() {
       syncReject(deferred1, 'oops');
       expect(logStr()).toBe('error(oops)->reject(oops)');
     });
-
 
     it('should ignore multiple resolutions of an (evil) hash promise', function() {
       var evilPromise = {
