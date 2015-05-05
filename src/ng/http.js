@@ -82,7 +82,7 @@ function $HttpParamSerializerJQLikeProvider() {
           parts.push(encodeUriQuery(prefix) + '=' + encodeUriQuery(serializeValue(toSerialize)));
         }
       }
-    }
+    };
   };
 }
 
