@@ -20,6 +20,7 @@
     "isElement": false,
 
     "ELEMENT_NODE": false,
+    "NG_ANIMATE_CLASSNAME": false,
     "NG_ANIMATE_CHILDREN_DATA": false,
 
     "assertArg": false,

@@ -148,6 +148,27 @@ describe("animations", function() {
       });
     });
 
+    it('should throw a minErr if a regex value is used which partially contains or fully matches the `ng-animate` CSS class', function() {
+      module(function($animateProvider) {
+        assertError(/ng-animate/, true);
+        assertError(/first ng-animate last/, true);
+        assertError(/ng-animate-special/, false);
+        assertError(/first ng-animate-special last/, false);
+        assertError(/first ng-animate ng-animate-special last/, true);
+
+        function assertError(regex, bool) {
+          var expectation = expect(function() {
+            $animateProvider.classNameFilter(regex);
+          });
+
+          var message = '$animateProvider.classNameFilter(regex) prohibits accepting a regex value which matches/contains the "ng-animate" CSS class.';
+
+          bool ? expectation.toThrowMinErr('$animate', 'nongcls', message)
+               : expectation.not.toThrowMinErr('$animate', 'nongcls', message);
+        }
+      });
+    });
+
     it('should complete the leave DOM operation in case the classNameFilter fails', function() {
       module(function($animateProvider) {
         $animateProvider.classNameFilter(/memorable-animation/);
