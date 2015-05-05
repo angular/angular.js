@@ -1,7 +1,6 @@
 'use strict';
 
 var $$AnimationProvider = ['$animateProvider', function($animateProvider) {
-  var NG_ANIMATE_CLASSNAME = 'ng-animate';
   var NG_ANIMATE_REF_ATTR = 'ng-animate-ref';
 
   var drivers = this.drivers = [];
