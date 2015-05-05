@@ -19,7 +19,7 @@ Angular supports i18n/l10n for {@link ng.filter:date date}, {@link ng.filter:num
 {@link ng.filter:currency currency} filters.
 
 Localizable pluralization is supported via the {@link ng.directive:ngPluralize `ngPluralize`
-directive}.  Additionally, you can use <a href="#MessageFormat">MessageFormat extensions</a> to
+directive}.  Additionally, you can use {@link guide/i18n#messageformat-extensions MessageFormat extensions} to
 `$interpolate` for localizable pluralization and gender support in all interpolations via the
 `ngMessageFormat` module.
 
@@ -142,7 +142,7 @@ displaying the date with a timezone specified by the developer.
 
 
 <a name="MessageFormat"></a>
-## MessageFormat extensions 
+## MessageFormat extensions
 
 You can write localizable plural and gender based messages in Angular interpolation expressions and
 `$interpolate` calls.
