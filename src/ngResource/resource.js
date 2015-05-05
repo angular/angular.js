@@ -389,7 +389,6 @@ angular.module('ngResource', ['ng']).
           replace(/%2B/gi, '+');
       }
 
-
       /**
        * This method is intended for encoding *key* or *value* parts of query component. We need a
        * custom method because encodeURIComponent is too aggressive and encodes stuff that doesn't
@@ -466,7 +465,6 @@ angular.module('ngResource', ['ng']).
           // replace escaped `/\.` with `/.`
           config.url = url.replace(/\/\\\./, '/.');
 
-
           // set params - delegate param encoding to $http
           forEach(params, function(value, key) {
             if (!self.urlParams[key]) {
@@ -476,7 +474,6 @@ angular.module('ngResource', ['ng']).
           });
         }
       };
-
 
       function resourceFactory(url, paramDefaults, actions, options) {
         var route = new Route(url, options);
@@ -637,7 +634,6 @@ angular.module('ngResource', ['ng']).
             // instance call
             return promise;
           };
-
 
           Resource.prototype['$' + name] = function(params, success, error) {
             if (isFunction(params)) {

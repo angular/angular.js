@@ -33,7 +33,6 @@ describe('private mocks', function() {
         expect(handlerSpy).toHaveBeenCalledWith('c');
       });
 
-
       it('should call `it` for each key-value pair an object', function() {
         spyOn(window, 'it');
 
@@ -43,7 +42,6 @@ describe('private mocks', function() {
         expect(window.it).toHaveBeenCalledWith('should do stuff with "b"', jasmine.any(Function));
         expect(window.it).toHaveBeenCalledWith('should do stuff with "c"', jasmine.any(Function));
       });
-
 
       it('should pass each key-value pair in an object to the handler', function() {
         var handlerSpy = jasmine.createSpy('handler');
@@ -55,7 +53,6 @@ describe('private mocks', function() {
         expect(handlerSpy).toHaveBeenCalledWith(2);
         expect(handlerSpy).toHaveBeenCalledWith(3);
       });
-
 
       it('should call handler with correct `this`', function() {
         var handlerSpy = jasmine.createSpy('handler');
@@ -71,7 +68,6 @@ describe('private mocks', function() {
       });
     });
 
-
     describe('tthey', function() {
       it('should call `iit` for each item in an array', function() {
         spyOn(window, 'iit');
@@ -82,7 +78,6 @@ describe('private mocks', function() {
         expect(window.iit).toHaveBeenCalledWith('should do stuff with "b"', jasmine.any(Function));
         expect(window.iit).toHaveBeenCalledWith('should do stuff with "c"', jasmine.any(Function));
       });
-
 
       it('should pass each item in an array to the handler', function() {
         var handlerSpy = jasmine.createSpy('handler');
@@ -95,7 +90,6 @@ describe('private mocks', function() {
         expect(handlerSpy).toHaveBeenCalledWith('c');
       });
 
-
       it('should call `it` for each key-value pair an object', function() {
         spyOn(window, 'iit');
 
@@ -105,7 +99,6 @@ describe('private mocks', function() {
         expect(window.iit).toHaveBeenCalledWith('should do stuff with "b"', jasmine.any(Function));
         expect(window.iit).toHaveBeenCalledWith('should do stuff with "c"', jasmine.any(Function));
       });
-
 
       it('should pass each key-value pair in an object to the handler', function() {
         var handlerSpy = jasmine.createSpy('handler');
@@ -117,7 +110,6 @@ describe('private mocks', function() {
         expect(handlerSpy).toHaveBeenCalledWith(2);
         expect(handlerSpy).toHaveBeenCalledWith(3);
       });
-
 
       it('should call handler with correct `this`', function() {
         var handlerSpy = jasmine.createSpy('handler');
@@ -133,7 +125,6 @@ describe('private mocks', function() {
       });
     });
 
-
     describe('xthey', function() {
       it('should call `xit` for each item in an array', function() {
         spyOn(window, 'xit');
@@ -144,7 +135,6 @@ describe('private mocks', function() {
         expect(window.xit).toHaveBeenCalledWith('should do stuff with "b"', jasmine.any(Function));
         expect(window.xit).toHaveBeenCalledWith('should do stuff with "c"', jasmine.any(Function));
       });
-
 
       it('should pass each item in an array to the handler', function() {
         var handlerSpy = jasmine.createSpy('handler');
@@ -157,7 +147,6 @@ describe('private mocks', function() {
         expect(handlerSpy).toHaveBeenCalledWith('c');
       });
 
-
       it('should call `it` for each key-value pair an object', function() {
         spyOn(window, 'xit');
 
@@ -167,7 +156,6 @@ describe('private mocks', function() {
         expect(window.xit).toHaveBeenCalledWith('should do stuff with "b"', jasmine.any(Function));
         expect(window.xit).toHaveBeenCalledWith('should do stuff with "c"', jasmine.any(Function));
       });
-
 
       it('should pass each key-value pair in an object to the handler', function() {
         var handlerSpy = jasmine.createSpy('handler');
@@ -179,7 +167,6 @@ describe('private mocks', function() {
         expect(handlerSpy).toHaveBeenCalledWith(2);
         expect(handlerSpy).toHaveBeenCalledWith(3);
       });
-
 
       it('should call handler with correct `this`', function() {
         var handlerSpy = jasmine.createSpy('handler');
@@ -195,7 +182,6 @@ describe('private mocks', function() {
       });
     });
   });
-
 
   describe('createMockStyleSheet', function() {
 

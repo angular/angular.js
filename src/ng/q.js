@@ -490,7 +490,6 @@ function qFactory(nextTick, exceptionHandler) {
    * @returns {Promise} Returns a promise of the passed value or promise
    */
 
-
   var when = function(value, callback, errback, progressBack) {
     var result = new Deferred();
     result.resolve(value);

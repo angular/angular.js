@@ -13,7 +13,6 @@ describe('Filter: limitTo', function() {
     limitTo = $filter('limitTo');
   }));
 
-
   it('should return the first X items when X is positive', function() {
     expect(limitTo(items, 3)).toEqual(['a', 'b', 'c']);
     expect(limitTo(items, '3')).toEqual(['a', 'b', 'c']);
@@ -104,7 +103,6 @@ describe('Filter: limitTo', function() {
     expect(limitTo(undefined, 1)).toEqual(undefined);
     expect(limitTo({}, 1)).toEqual({});
   });
-
 
   it('should return a copy of input array if X is exceeds array length', function() {
     expect(limitTo(items, 9)).toEqual(items);

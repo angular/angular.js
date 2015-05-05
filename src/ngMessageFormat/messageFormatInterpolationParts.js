@@ -71,7 +71,6 @@ InterpolationParts.prototype.getResult = function getResult(expressionValues) {
   return this.textParts.join('');
 };
 
-
 InterpolationParts.prototype.toParsedFn = function toParsedFn(mustHaveExpression, originalText) {
   var self = this;
   this.flushPartialText();

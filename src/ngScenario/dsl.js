@@ -243,7 +243,6 @@ angular.scenario.dsl('input', function() {
   };
 });
 
-
 /**
  * Usage:
  *    repeater('#products table', 'Product List').count() number of rows

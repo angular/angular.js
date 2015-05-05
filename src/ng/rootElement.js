@@ -12,5 +12,4 @@
  * published, and can be retrieved using `$rootElement.injector()`.
  */
 
-
 // the implementation is in angular.bootstrap

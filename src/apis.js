@@ -1,6 +1,5 @@
 'use strict';
 
-
 /**
  * Computes a hash of an 'obj'.
  * Hash of a:

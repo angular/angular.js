@@ -25,7 +25,6 @@
  * are expensive to construct.
  */
 
-
 /**
  * @ngdoc provider
  * @name $rootScopeProvider
@@ -54,7 +53,6 @@
  *
  * @param {number} limit The number of digest iterations.
  */
-
 
 /**
  * @ngdoc service
@@ -314,8 +312,6 @@ function $RootScopeProvider() {
            scope.$digest();
            expect(scope.counter).toEqual(2);
 
-
-
            // Using a function as a watchExpression
            var food;
            scope.foodCounter = 0;
@@ -483,7 +479,6 @@ function $RootScopeProvider() {
           }
         };
       },
-
 
       /**
        * @ngdoc method
@@ -835,7 +830,6 @@ function $RootScopeProvider() {
         }
       },
 
-
       /**
        * @ngdoc event
        * @name $rootScope.Scope#$destroy
@@ -1133,7 +1127,6 @@ function $RootScopeProvider() {
         };
       },
 
-
       /**
        * @ngdoc method
        * @name $rootScope.Scope#$emit
@@ -1205,7 +1198,6 @@ function $RootScopeProvider() {
 
         return event;
       },
-
 
       /**
        * @ngdoc method
@@ -1291,7 +1283,6 @@ function $RootScopeProvider() {
     var applyAsyncQueue = $rootScope.$$applyAsyncQueue = [];
 
     return $rootScope;
-
 
     function beginPhase(phase) {
       if ($rootScope.$$phase) {

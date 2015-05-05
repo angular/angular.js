@@ -9,7 +9,6 @@
 var urlParsingNode = document.createElement("a");
 var originUrl = urlResolve(window.location.href);
 
-
 /**
  *
  * Implementation Notes for non-IE browsers

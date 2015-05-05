@@ -53,7 +53,6 @@
  * ```
  */
 
-
 /**
  * @ngdoc module
  * @name auto
@@ -307,9 +306,6 @@ function annotate(fn, strictDi, name) {
  * @returns {Array.<string>} The names of the services which the function requires.
  */
 
-
-
-
 /**
  * @ngdoc service
  * @name $provide
@@ -479,7 +475,6 @@ function annotate(fn, strictDi, name) {
  * ```
  */
 
-
 /**
  * @ngdoc method
  * @name $provide#service
@@ -521,7 +516,6 @@ function annotate(fn, strictDi, name) {
  * ```
  */
 
-
 /**
  * @ngdoc method
  * @name $provide#value
@@ -554,7 +548,6 @@ function annotate(fn, strictDi, name) {
  * ```
  */
 
-
 /**
  * @ngdoc method
  * @name $provide#constant
@@ -581,7 +574,6 @@ function annotate(fn, strictDi, name) {
  *   });
  * ```
  */
-
 
 /**
  * @ngdoc method
@@ -613,7 +605,6 @@ function annotate(fn, strictDi, name) {
  * ```
  */
 
-
 function createInjector(modulesToLoad, strictDi) {
   strictDi = (strictDi === true);
   var INSTANTIATING = {},
@@ -643,7 +634,6 @@ function createInjector(modulesToLoad, strictDi) {
             var provider = providerInjector.get(serviceName + providerSuffix, caller);
             return instanceInjector.invoke(provider.$get, provider, undefined, serviceName);
           }));
-
 
   forEach(loadModules(modulesToLoad), function(fn) { instanceInjector.invoke(fn || noop); });
 

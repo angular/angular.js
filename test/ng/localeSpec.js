@@ -9,7 +9,6 @@ describe('$locale', function() {
     expect($locale.id).toBe('en-us');
   });
 
-
   it('should have NUMBER_FORMATS', function() {
     var numberFormats = $locale.NUMBER_FORMATS;
     expect(numberFormats).toBeDefined();
@@ -27,7 +26,6 @@ describe('$locale', function() {
     });
   });
 
-
   it('should have DATETIME_FORMATS', function() {
     var datetime = $locale.DATETIME_FORMATS;
     expect(datetime).toBeDefined();
@@ -37,7 +35,6 @@ describe('$locale', function() {
     expect(datetime.MONTH.length).toBe(12);
     expect(datetime.AMPMS.length).toBe(2);
   });
-
 
   it('should return correct plural types', function() {
     expect($locale.pluralCat(-1)).toBe('other');

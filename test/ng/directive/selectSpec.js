@@ -20,12 +20,10 @@ describe('select', function() {
     formElement = element = null;
   }));
 
-
   afterEach(function() {
     scope.$destroy(); //disables unknown option work during destruction
     dealoc(formElement);
   });
-
 
   beforeEach(function() {
     this.addMatchers({
@@ -65,7 +63,6 @@ describe('select', function() {
 
   });
 
-
   describe('select-one', function() {
 
     it('should compile children of a select without a ngModel, but not create a model for it',
@@ -83,7 +80,6 @@ describe('select', function() {
       expect(element.text()).toBe('foobarC');
     });
 
-
     it('should not interfere with selection via selected attr if ngModel directive is not present',
         function() {
       compile('<select>' +
@@ -93,7 +89,6 @@ describe('select', function() {
               '</select>');
       expect(element).toEqualSelect('not me', ['me!'], 'nah');
     });
-
 
     it('should require', function() {
       compile(
@@ -131,7 +126,6 @@ describe('select', function() {
       expect(scope.log).toEqual('change;');
     });
 
-
     it('should not be invalid if no require', function() {
       compile(
         '<select name="select" ng-model="selection">' +
@@ -142,7 +136,6 @@ describe('select', function() {
       expect(element).toBeValid();
       expect(element).toBePristine();
     });
-
 
     it('should work with repeated value options', function() {
       scope.robots = ['c3p0', 'r2d2'];
@@ -170,7 +163,6 @@ describe('select', function() {
       expect(scope.robot).toBe('r2d2+');
     });
 
-
     it('should interpolate select names', function() {
       scope.robots = ['c3p0', 'r2d2'];
       scope.name = 'r2d2';
@@ -184,7 +176,6 @@ describe('select', function() {
       expect(scope.name).toBe('c3p0');
     });
 
-
     it('should rename select controls in form when interpolated name changes', function() {
       scope.nameID = "A";
       compile('<select ng-model="name" name="name{{nameID}}"></select>');
@@ -197,7 +188,6 @@ describe('select', function() {
       expect(scope.form.nameB.$name).toBe('nameB');
     });
 
-
     describe('empty option', function() {
 
       it('should allow empty option to be added and removed dynamically', function() {
@@ -209,7 +199,6 @@ describe('select', function() {
                 '</selec>');
         expect(element).toEqualSelect(['? string: ?']);
 
-
         scope.dynamicOptions = [
           { val: '', display: '--select--' },
           { val: 'x', display: 'robot x' },
@@ -218,22 +207,18 @@ describe('select', function() {
         scope.$digest();
         expect(element).toEqualSelect([''], 'x', 'y');
 
-
         scope.robot = 'x';
         scope.$digest();
         expect(element).toEqualSelect('', ['x'], 'y');
-
 
         scope.dynamicOptions.shift();
         scope.$digest();
         expect(element).toEqualSelect(['x'], 'y');
 
-
         scope.robot = undefined;
         scope.$digest();
         expect(element).toEqualSelect([unknownValue(undefined)], 'x', 'y');
       });
-
 
     it('should cope with a dynamic empty option added to a static empty option', function() {
         scope.dynamicOptions = [];
@@ -258,7 +243,6 @@ describe('select', function() {
         scope.$digest();
         expect(element).toEqualSelect([''], '', 'x', 'y');
 
-
         scope.dynamicOptions = [];
         scope.$digest();
         expect(element).toEqualSelect(['']);
@@ -274,7 +258,6 @@ describe('select', function() {
         expect(element).toEqualSelect([''], 'x', 'y');
       });
 
-
       it('should support defining an empty option anywhere in the option list', function() {
         compile('<select ng-model="robot">' +
                   '<option value="x">robot x</option>' +
@@ -284,7 +267,6 @@ describe('select', function() {
 
         expect(element).toEqualSelect('x', [''], 'y');
       });
-
 
       it('should set the model to empty string when empty option is selected', function() {
         scope.robot = 'x';
@@ -299,7 +281,6 @@ describe('select', function() {
         expect(element).toEqualSelect([''], 'x', 'y');
         expect(scope.robot).toBe('');
       });
-
 
       it('should remove unknown option when model is undefined', function() {
         scope.robot = 'other';
@@ -317,7 +298,6 @@ describe('select', function() {
         expect(element).toEqualSelect([''], 'x', 'y');
       });
 
-
       describe('interactions with repeated options', function() {
 
         it('should select empty option when model is undefined', function() {
@@ -328,7 +308,6 @@ describe('select', function() {
                   '</select>');
           expect(element).toEqualSelect([''], 'c3p0', 'r2d2');
         });
-
 
         it('should set model to empty string when selected', function() {
           scope.robots = ['c3p0', 'r2d2'];
@@ -345,7 +324,6 @@ describe('select', function() {
           expect(element).toEqualSelect([''], 'c3p0', 'r2d2');
           expect(scope.robot).toBe('');
         });
-
 
         it('should not break if both the select and repeater models change at once', function() {
           scope.robots = ['c3p0', 'r2d2'];
@@ -366,7 +344,6 @@ describe('select', function() {
       });
     });
 
-
     describe('unknown option', function() {
 
       it("should insert&select temporary unknown option when no options-model match", function() {
@@ -382,13 +359,11 @@ describe('select', function() {
         });
         expect(element).toEqualSelect('c3p0', ['r2d2']);
 
-
         scope.$apply(function() {
           scope.robot = "wallee";
         });
         expect(element).toEqualSelect([unknownValue('wallee')], 'c3p0', 'r2d2');
       });
-
 
       it("should NOT insert temporary unknown option when model is undefined and empty options " +
           "is present", function() {
@@ -417,7 +392,6 @@ describe('select', function() {
         expect(element).toEqualSelect([''], 'c3p0', 'r2d2');
       });
 
-
       it("should insert&select temporary unknown option when no options-model match, empty " +
           "option is present and model is defined", function() {
         scope.robot = 'wallee';
@@ -434,7 +408,6 @@ describe('select', function() {
         });
         expect(element).toEqualSelect('', 'c3p0', ['r2d2']);
       });
-
 
       describe('interactions with repeated options', function() {
 
@@ -458,7 +431,6 @@ describe('select', function() {
           expect(scope.robot).toBe('r2d2');
         });
 
-
         it('should work with empty option and repeated options', function() {
           compile('<select ng-model="robot">' +
                     '<option value="">--select--</option>' +
@@ -479,7 +451,6 @@ describe('select', function() {
           expect(element).toEqualSelect('', 'c3p0', ['r2d2']);
           expect(scope.robot).toBe('r2d2');
         });
-
 
         it('should insert unknown element when repeater shrinks and selected option is unavailable',
             function() {
@@ -514,7 +485,6 @@ describe('select', function() {
     });
 
   });
-
 
   describe('selectController.hasOption', function() {
 
@@ -553,7 +523,6 @@ describe('select', function() {
         expect(selectCtrl.hasOption('2')).toBe(true);
       });
 
-
       it('should return false for options popped via ngRepeat', function() {
         scope.robots = [
           {value: 1, label: 'c3p0'},
@@ -572,7 +541,6 @@ describe('select', function() {
         expect(selectCtrl.hasOption('2')).toBe(false);
       });
 
-
       it('should return true for options added via ngRepeat', function() {
         scope.robots = [
           {value: 2, label: 'r2d2'}
@@ -590,7 +558,6 @@ describe('select', function() {
         expect(selectCtrl.hasOption('2')).toBe(true);
       });
 
-
       it('should keep all the options when changing the model', function() {
 
         compile('<select ng-model="mySelect"><option ng-repeat="o in [\'A\',\'B\',\'C\']">{{o}}</option></select>');
@@ -607,7 +574,6 @@ describe('select', function() {
         expect(element).toEqualSelectWithOptions({'': ['A', 'B', 'C']});
       });
     });
-
 
     describe('grouped options', function() {
 
@@ -648,7 +614,6 @@ describe('select', function() {
         expect(element).toEqualSelectWithOptions({'': [''], 'first':['B', 'C'], 'second': ['D', 'E']});
       });
 
-
       it('should be able to detect when elements move from a following group', function() {
         scope.values = [{name: 'A'}];
         scope.groups = [
@@ -684,7 +649,6 @@ describe('select', function() {
         expect(selectCtrl.hasOption('E')).toBe(true);
         expect(element).toEqualSelectWithOptions({'': [''], 'first':['B', 'C', 'D'], 'second': ['E']});
       });
-
 
       it('should be able to detect when an element is replaced with an element from a previous group', function() {
         scope.values = [{name: 'A'}];
@@ -724,7 +688,6 @@ describe('select', function() {
         expect(element).toEqualSelectWithOptions({'': ['', 'A'], 'first':['B', 'C'], 'second': ['D', 'E']});
       });
 
-
       it('should be able to detect when element is replaced with an element from a following group', function() {
         scope.values = [{name: 'A'}];
         scope.groups = [
@@ -761,7 +724,6 @@ describe('select', function() {
         expect(element).toEqualSelectWithOptions({'': ['', 'A'], 'first':['B', 'D'], 'second': ['E']});
       });
 
-
       it('should be able to detect when an element is removed', function() {
         scope.values = [{name: 'A'}];
         scope.groups = [
@@ -795,7 +757,6 @@ describe('select', function() {
         expect(selectCtrl.hasOption('E')).toBe(true);
         expect(element).toEqualSelectWithOptions({'': ['', 'A'], 'first':['B', 'C'], 'second': ['E']});
       });
-
 
       it('should be able to detect when a group is removed', function() {
         scope.values = [{name: 'A'}];
@@ -905,7 +866,6 @@ describe('select', function() {
       expect(element).toBeDirty();
     });
 
-
     describe('calls to $render', function() {
 
       var ngModelCtrl;
@@ -920,7 +880,6 @@ describe('select', function() {
         ngModelCtrl = element.controller('ngModel');
         spyOn(ngModelCtrl, '$render').andCallThrough();
       });
-
 
       it('should call $render once when the reference to the viewValue changes', function() {
         scope.$apply(function() {
@@ -938,7 +897,6 @@ describe('select', function() {
         });
         expect(ngModelCtrl.$render.calls.length).toBe(3);
       });
-
 
       it('should call $render once when the viewValue deep-changes', function() {
         scope.$apply(function() {
@@ -960,7 +918,6 @@ describe('select', function() {
     });
 
   });
-
 
   describe('option', function() {
 

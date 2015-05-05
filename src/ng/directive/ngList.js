@@ -1,6 +1,5 @@
 'use strict';
 
-
 /**
  * @ngdoc directive
  * @name ngList

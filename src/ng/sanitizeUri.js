@@ -32,7 +32,6 @@ function $$SanitizeUriProvider() {
     return aHrefSanitizationWhitelist;
   };
 
-
   /**
    * @description
    * Retrieves or overrides the default regular expression that is used for whitelisting of safe

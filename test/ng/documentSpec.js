@@ -2,11 +2,9 @@
 
 describe('$document', function() {
 
-
   it("should inject $document", inject(function($document) {
     expect($document).toEqual(jqLite(document));
   }));
-
 
   it('should be able to mock $document object', function() {
     module({$document: {}});
@@ -16,7 +14,6 @@ describe('$document', function() {
       $httpBackend.flush();
     });
   });
-
 
   it('should be able to mock $document array', function() {
     module({$document: [{}]});

@@ -348,7 +348,6 @@ describe("animations", function() {
       expect(element[0].childNodes.length).toBeLessThan(3);
     }));
 
-
     it('addClass() should issue an addClass animation with the correct DOM operation', inject(function($animate, $rootScope) {
       parent.append(element);
       options.foo = 'bar';

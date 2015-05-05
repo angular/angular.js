@@ -2,7 +2,6 @@
 
 ngRouteModule.provider('$routeParams', $RouteParamsProvider);
 
-
 /**
  * @ngdoc service
  * @name $routeParams

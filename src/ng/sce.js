@@ -52,7 +52,6 @@ function adjustMatcher(matcher) {
   }
 }
 
-
 function adjustMatchers(matchers) {
   var adjustedMatchers = [];
   if (isDefined(matchers)) {
@@ -62,7 +61,6 @@ function adjustMatchers(matchers) {
   }
   return adjustedMatchers;
 }
-
 
 /**
  * @ngdoc service
@@ -210,7 +208,6 @@ function $SceDelegateProvider() {
     if ($injector.has('$sanitize')) {
       htmlSanitizer = $injector.get('$sanitize');
     }
-
 
     function matchUrl(matcher, parsedUrl) {
       if (matcher === 'self') {
@@ -378,7 +375,6 @@ function $SceDelegateProvider() {
              valueOf: valueOf };
   }];
 }
-
 
 /**
  * @ngdoc provider
@@ -681,7 +677,6 @@ function $SceProvider() {
     }
     return enabled;
   };
-
 
   /* Design notes on the default implementation for SCE.
    *

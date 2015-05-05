@@ -198,7 +198,6 @@
  *     then the `disabled` attribute will be set on the element
  */
 
-
 /**
  * @ngdoc directive
  * @name ngChecked
@@ -233,7 +232,6 @@
  *     then special attribute "checked" will be set on the element
  */
 
-
 /**
  * @ngdoc directive
  * @name ngReadonly
@@ -267,7 +265,6 @@
  * @param {expression} ngReadonly If the {@link guide/expression expression} is truthy,
  *     then special attribute "readonly" will be set on the element
  */
-
 
 /**
  * @ngdoc directive

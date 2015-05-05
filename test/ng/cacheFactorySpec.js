@@ -6,20 +6,17 @@ describe('$cacheFactory', function() {
     expect($cacheFactory).toBeDefined();
   }));
 
-
   it('should return a new cache whenever called', inject(function($cacheFactory) {
     var cache1 = $cacheFactory('cache1');
     var cache2 = $cacheFactory('cache2');
     expect(cache1).not.toEqual(cache2);
   }));
 
-
   it('should complain if the cache id is being reused', inject(function($cacheFactory) {
     $cacheFactory('cache1');
     expect(function() { $cacheFactory('cache1'); }).
       toThrowMinErr("$cacheFactory", "iid", "CacheId 'cache1' is already taken!");
   }));
-
 
   describe('info', function() {
 
@@ -33,7 +30,6 @@ describe('$cacheFactory', function() {
       expect($cacheFactory.info()).toEqual({cache1: {id: 'cache1', size: 1}});
     }));
   });
-
 
   describe('get', function() {
 
@@ -54,7 +50,6 @@ describe('$cacheFactory', function() {
       cache = $cacheFactory('test');
     }));
 
-
     describe('put, get & remove', function() {
 
       it('should add cache entries via add and retrieve them via get', inject(function($cacheFactory) {
@@ -65,7 +60,6 @@ describe('$cacheFactory', function() {
         expect(cache.get('key1')).toBe('bar');
       }));
 
-
       it('should ignore put if the value is undefined', inject(function($cacheFactory) {
         cache.put();
         cache.put('key1');
@@ -73,7 +67,6 @@ describe('$cacheFactory', function() {
 
         expect(cache.info().size).toBe(0);
       }));
-
 
       it('should remove entries via remove', inject(function($cacheFactory) {
         cache.put('k1', 'foo');
@@ -90,11 +83,9 @@ describe('$cacheFactory', function() {
         expect(cache.get('k2')).toBeUndefined();
       }));
 
-
       it('should return undefined when entry does not exist', inject(function($cacheFactory) {
         expect(cache.remove('non-existent')).toBeUndefined();
       }));
-
 
       it('should stringify keys', inject(function($cacheFactory) {
         cache.put('123', 'foo');
@@ -107,13 +98,11 @@ describe('$cacheFactory', function() {
         expect(cache.info().size).toBe(0);
       }));
 
-
       it("should return value from put", inject(function($cacheFactory) {
         var obj = {};
         expect(cache.put('k1', obj)).toBe(obj);
       }));
     });
-
 
     describe('info', function() {
 
@@ -133,12 +122,10 @@ describe('$cacheFactory', function() {
         expect(cache.info().size).toBe(0);
       }));
 
-
       it('should return cache id', inject(function($cacheFactory) {
         expect(cache.info().id).toBe('test');
       }));
     });
-
 
     describe('removeAll', function() {
 
@@ -157,7 +144,6 @@ describe('$cacheFactory', function() {
       }));
     });
 
-
     describe('destroy', function() {
 
       it('should make the cache unusable and remove references to it from $cacheFactory', inject(function($cacheFactory) {
@@ -173,7 +159,6 @@ describe('$cacheFactory', function() {
       }));
     });
   });
-
 
   describe('LRU cache', function() {
 
@@ -193,7 +178,6 @@ describe('$cacheFactory', function() {
       expect(cache.info().size).toBe(5);
     }));
 
-
     describe('eviction', function() {
       var cache;
 
@@ -204,14 +188,12 @@ describe('$cacheFactory', function() {
         cache.put('id1', 1);
       }));
 
-
       it('should kick out the first entry on put', inject(function($cacheFactory) {
         cache.put('id2', 2);
         expect(cache.get('id0')).toBeUndefined();
         expect(cache.get('id1')).toBe(1);
         expect(cache.get('id2')).toBe(2);
       }));
-
 
       it('should refresh an entry via get', inject(function($cacheFactory) {
         cache.get('id0');
@@ -221,7 +203,6 @@ describe('$cacheFactory', function() {
         expect(cache.get('id2')).toBe(2);
       }));
 
-
       it('should refresh an entry via put', inject(function($cacheFactory) {
         cache.put('id0', '00');
         cache.put('id2', 2);
@@ -230,7 +211,6 @@ describe('$cacheFactory', function() {
         expect(cache.get('id2')).toBe(2);
       }));
 
-
       it('should not purge an entry if another one was removed', inject(function($cacheFactory) {
         cache.remove('id1');
         cache.put('id2', 2);
@@ -238,7 +218,6 @@ describe('$cacheFactory', function() {
         expect(cache.get('id1')).toBeUndefined();
         expect(cache.get('id2')).toBe(2);
       }));
-
 
       it('should purge the next entry if the stalest one was removed', inject(function($cacheFactory) {
         cache.remove('id0');
@@ -249,7 +228,6 @@ describe('$cacheFactory', function() {
         expect(cache.get('id2')).toBe(2);
         expect(cache.get('id3')).toBe(3);
       }));
-
 
       it('should correctly recreate the linked list if all cache entries were removed', inject(function($cacheFactory) {
         cache.remove('id0');
@@ -263,7 +241,6 @@ describe('$cacheFactory', function() {
         expect(cache.get('id3')).toBe(3);
         expect(cache.get('id4')).toBe(4);
       }));
-
 
       it('should blow away the entire cache via removeAll and start evicting when full', inject(function($cacheFactory) {
         cache.put('id0', 0);
@@ -281,7 +258,6 @@ describe('$cacheFactory', function() {
         expect(cache.get('id3')).toBe(3);
         expect(cache.get('id4')).toBe(4);
       }));
-
 
       it('should correctly refresh and evict items if operations are chained', inject(function($cacheFactory) {
         cache = $cacheFactory('cache2', {capacity: 3});

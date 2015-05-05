@@ -183,7 +183,6 @@ describe('SCE', function() {
     }));
   });
 
-
   describe('replace $sceDelegate', function() {
     it('should override the default $sce.trustAs/valueOf/etc.', function() {
       module(function($provide) {
@@ -202,7 +201,6 @@ describe('SCE', function() {
       });
     });
   });
-
 
   describe('$sce.parseAs', function($sce) {
     it('should parse constant literals as trusted', inject(function($sce) {
@@ -510,4 +508,3 @@ describe('SCE', function() {
     });
   });
 });
-

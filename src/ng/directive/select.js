@@ -42,14 +42,12 @@ var SelectController =
     if (self.unknownOption.parent()) self.unknownOption.remove();
   };
 
-
   // Read the value of the select control, the implementation of this changes depending
   // upon whether the select can have multiple values and whether ngOptions is at work.
   self.readValue = function readSingleValue() {
     self.removeUnknownOption();
     return $element.val();
   };
-
 
   // Write the value to the select control, the implementation of this changes depending
   // upon whether the select can have multiple values and whether ngOptions is at work.
@@ -67,7 +65,6 @@ var SelectController =
       }
     }
   };
-
 
   // Tell the select control that an option, with the given value, has been added
   self.addOption = function(value, element) {
@@ -206,7 +203,6 @@ var selectDirective = function() {
     }
   };
 };
-
 
 // The option directive is purely designed to communicate the existence (or lack of)
 // of dynamically created (and destroyed) option elements to their containing select

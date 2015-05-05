@@ -23,7 +23,6 @@ describe('$sniffer', function() {
     });
   });
 
-
   describe('hasEvent', function() {
     var mockDocument, mockDivElement, $sniffer;
 
@@ -36,20 +35,17 @@ describe('$sniffer', function() {
       $sniffer = sniffer({}, mockDocument);
     });
 
-
     it('should return true if "onchange" is present in a div element', function() {
       mockDivElement = {onchange: noop};
 
       expect($sniffer.hasEvent('change')).toBe(true);
     });
 
-
     it('should return false if "oninput" is not present in a div element', function() {
       mockDivElement = {};
 
       expect($sniffer.hasEvent('input')).toBe(false);
     });
-
 
     it('should only create the element once', function() {
       mockDivElement = {};
@@ -61,7 +57,6 @@ describe('$sniffer', function() {
       expect(mockDocument.createElement).toHaveBeenCalledOnce();
     });
 
-
     it('should claim that IE9 doesn\'t have support for "oninput"', function() {
       // IE9 implementation is fubared, so it's better to pretend that it doesn't have the support
       // IE10+ implementation is fubared when mixed with placeholders
@@ -71,13 +66,11 @@ describe('$sniffer', function() {
     });
   });
 
-
   describe('csp', function() {
     it('should be false by default', function() {
       expect(sniffer({}).csp).toBe(false);
     });
   });
-
 
   describe('vendorPrefix', function() {
 
@@ -288,7 +281,6 @@ describe('$sniffer', function() {
     });
 
   });
-
 
   describe('history', function() {
     it('should be true on Boxee box with an older version of Webkit', function() {

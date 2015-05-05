@@ -202,7 +202,6 @@ describe('$route', function() {
     });
   });
 
-
   it('should route and fire change event correctly whenever the case insensitive flag is utilized', function() {
     var log = '',
         lastRoute,
@@ -314,7 +313,6 @@ describe('$route', function() {
     });
   });
 
-
   describe('should match a route that contains special chars in the path', function() {
     beforeEach(module(function($routeProvider) {
       $routeProvider.when('/$test.23/foo*(bar)/:baz', {templateUrl: 'test.html'});
@@ -366,7 +364,6 @@ describe('$route', function() {
     });
   });
 
-
   describe('should match a route that contains optional params in the path', function() {
     beforeEach(module(function($routeProvider) {
       $routeProvider.when('/test/:opt?/:baz/edit', {templateUrl: 'test.html'});
@@ -391,7 +388,6 @@ describe('$route', function() {
     }));
   });
 
-
   it('should change route even when only search param changes', function() {
     module(function($routeProvider) {
       $routeProvider.when('/test', {templateUrl: 'test.html'});
@@ -411,7 +407,6 @@ describe('$route', function() {
       expect(callback).toHaveBeenCalled();
     });
   });
-
 
   it('should allow routes to be defined with just templates without controllers', function() {
     module(function($routeProvider) {
@@ -434,7 +429,6 @@ describe('$route', function() {
     });
   });
 
-
   it('should chain whens and otherwise', function() {
     module(function($routeProvider) {
       $routeProvider.when('/foo', {templateUrl: 'foo.html'}).
@@ -451,7 +445,6 @@ describe('$route', function() {
       expect($route.current.templateUrl).toBe('baz.html');
     });
   });
-
 
   it('should skip routes with incomplete params', function() {
     module(function($routeProvider) {
@@ -496,7 +489,6 @@ describe('$route', function() {
     });
   });
 
-
   describe('otherwise', function() {
 
     it('should handle unknown routes with "otherwise" route definition', function() {
@@ -531,7 +523,6 @@ describe('$route', function() {
       });
     });
 
-
     it('should update $route.current and $route.next when default route is matched', function() {
       module(function($routeProvider) {
         $routeProvider.when('/foo', {templateUrl: 'foo.html'});
@@ -545,12 +536,10 @@ describe('$route', function() {
           nextRoute = next;
         });
 
-
         // init
         $rootScope.$on('$routeChangeStart', onChangeSpy);
         expect($route.current).toBeUndefined();
         expect(onChangeSpy).not.toHaveBeenCalled();
-
 
         // match otherwise route
         $location.path('/unknownRoute');
@@ -583,7 +572,6 @@ describe('$route', function() {
       });
     });
 
-
     it('should interpret a string as a redirect route', function() {
       module(function($routeProvider) {
         $routeProvider.when('/foo', {templateUrl: 'foo.html'});
@@ -600,7 +588,6 @@ describe('$route', function() {
       });
     });
   });
-
 
   describe('events', function() {
     it('should not fire $routeChangeStart/Success during bootstrap (if no route)', function() {
@@ -664,7 +651,6 @@ describe('$route', function() {
       });
     });
 
-
     it('should fire $routeChangeError event on resolution error', function() {
       var deferA;
 
@@ -692,7 +678,6 @@ describe('$route', function() {
         expect(log).toEqual('before();failed(MyError);');
       });
     });
-
 
     it('should fetch templates', function() {
       module(function($routeProvider) {
@@ -783,7 +768,6 @@ describe('$route', function() {
       });
     });
 
-
     it('should drop in progress route change when new route change occurs', function() {
       module(function($routeProvider) {
         $routeProvider.
@@ -812,7 +796,6 @@ describe('$route', function() {
         expect(log).not.toContain('$after(r1.html);');
       });
     });
-
 
     it('should throw an error when a template is not found', function() {
       module(function($routeProvider, $exceptionHandlerProvider) {
@@ -847,7 +830,6 @@ describe('$route', function() {
       });
     });
 
-
     it('should catch local factory errors', function() {
       var myError = new Error('MyError');
       module(function($routeProvider, $exceptionHandlerProvider) {
@@ -868,7 +850,6 @@ describe('$route', function() {
       });
     });
   });
-
 
   it('should match route with and without trailing slash', function() {
     module(function($routeProvider) {
@@ -898,7 +879,6 @@ describe('$route', function() {
       expect($route.current.templateUrl).toBe('bar.html');
     });
   });
-
 
   describe('redirection', function() {
     it('should support redirection via redirectTo property by updating $location', function() {
@@ -932,7 +912,6 @@ describe('$route', function() {
       });
     });
 
-
     it('should interpolate route vars in the redirected path from original path', function() {
       module(function($routeProvider) {
         $routeProvider.when('/foo/:id/foo/:subid/:extraId', {redirectTo: '/bar/:id/:subid/23'});
@@ -956,7 +935,6 @@ describe('$route', function() {
       });
     });
 
-
     it('should interpolate route vars in the redirected path from original search', function() {
       module(function($routeProvider) {
         $routeProvider.when('/bar/:id/:subid/:subsubid', {templateUrl: 'bar.html'});
@@ -972,7 +950,6 @@ describe('$route', function() {
         expect($route.current.templateUrl).toEqual('bar.html');
       });
     });
-
 
     it('should properly interpolate optional and eager route vars ' +
        'when redirecting from path with trailing slash', function() {
@@ -996,7 +973,6 @@ describe('$route', function() {
       });
     });
 
-
     it('should allow custom redirectTo function to be used', function() {
       function customRedirectFn(routePathParams, path, search) {
         expect(routePathParams).toEqual({id: 'id3'});
@@ -1018,7 +994,6 @@ describe('$route', function() {
       });
     });
 
-
     it('should replace the url when redirecting',  function() {
       module(function($routeProvider) {
         $routeProvider.when('/bar/:id', {templateUrl: 'bar.html'});
@@ -1036,7 +1011,6 @@ describe('$route', function() {
       });
     });
   });
-
 
   describe('reloadOnSearch', function() {
     it('should reload a route when reloadOnSearch is enabled and .search() changes', function() {
@@ -1061,7 +1035,6 @@ describe('$route', function() {
         expect($routeParams).toEqual({foo:'bar'});
       });
     });
-
 
     it('should not reload a route when reloadOnSearch is disabled and only .search() changes', function() {
       var routeChange = jasmine.createSpy('route change'),
@@ -1093,7 +1066,6 @@ describe('$route', function() {
       });
     });
 
-
     it('should reload reloadOnSearch route when url differs only in route path param', function() {
       var routeChange = jasmine.createSpy('route change');
 
@@ -1124,7 +1096,6 @@ describe('$route', function() {
         expect(routeChange).not.toHaveBeenCalled();
       });
     });
-
 
     it('should update params when reloadOnSearch is disabled and .search() changes', function() {
       var routeParamsWatcher = jasmine.createSpy('routeParamsWatcher');
@@ -1166,7 +1137,6 @@ describe('$route', function() {
       });
     });
 
-
     it('should allow using a function as a template', function() {
       var customTemplateWatcher = jasmine.createSpy('customTemplateWatcher');
 
@@ -1188,7 +1158,6 @@ describe('$route', function() {
         expect(customTemplateWatcher).toHaveBeenCalledWith({id: 'id3'});
       });
     });
-
 
     it('should allow using a function as a templateUrl', function() {
       var customTemplateUrlWatcher = jasmine.createSpy('customTemplateUrlWatcher');
@@ -1314,7 +1283,6 @@ describe('$route', function() {
         expect($location.path()).toEqual('/bar/5/6/3/4');
       });
     });
-
 
     it('should update query params when new properties are not in path', function() {
       var routeChangeSpy = jasmine.createSpy('route change');

@@ -4,12 +4,10 @@ describe('ngPluralize', function() {
   var element,
     elementAlt;
 
-
   afterEach(function() {
     dealoc(element);
     dealoc(elementAlt);
   });
-
 
   describe('deal with pluralized strings without offset', function() {
     beforeEach(inject(function($rootScope, $compile) {
@@ -28,7 +26,6 @@ describe('ngPluralize', function() {
                          "when-other='You have {} new emails'>" +
           '</ng:pluralize>')($rootScope);
     }));
-
 
     it('should show single/plural strings', inject(function($rootScope) {
       $rootScope.email = 0;
@@ -81,7 +78,6 @@ describe('ngPluralize', function() {
       expect(element.text()).toBe('You have negative email. Whohoo!');
       expect(elementAlt.text()).toBe('You have negative email. Whohoo!');
     }));
-
 
     it('should show single/plural strings with mal-formed inputs', inject(
       function($log, $rootScope) {
@@ -142,7 +138,6 @@ describe('ngPluralize', function() {
       }
     ));
   });
-
 
   describe('edge cases', function() {
     it('should be able to handle empty strings as possible values', inject(function($rootScope, $compile) {
@@ -294,7 +289,6 @@ describe('ngPluralize', function() {
     }));
   });
 
-
   describe('interpolation', function() {
 
     it('should support custom interpolation symbols', function() {
@@ -342,7 +336,6 @@ describe('ngPluralize', function() {
     });
   });
 
-
   describe('bind-once', function() {
     it('should support for `count` to be a one-time expression',
       inject(function($compile, $rootScope) {
@@ -383,7 +376,6 @@ describe('ngPluralize', function() {
         expect(elementAlt.text()).toBe('You have 3 new emails');
       })
     );
-
 
     it('should still update other embedded expressions',
       inject(function($compile, $rootScope) {

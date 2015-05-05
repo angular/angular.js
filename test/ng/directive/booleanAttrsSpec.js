@@ -7,7 +7,6 @@ describe('boolean attr directives', function() {
     dealoc(element);
   });
 
-
   it('should properly evaluate 0 as false', inject(function($rootScope, $compile) {
     // jQuery does not treat 0 as false, when setting attr()
     element = $compile('<button ng-disabled="isDisabled">Button</button>')($rootScope);
@@ -19,7 +18,6 @@ describe('boolean attr directives', function() {
     expect(element.attr('disabled')).toBeTruthy();
   }));
 
-
   it('should bind disabled', inject(function($rootScope, $compile) {
     element = $compile('<button ng-disabled="isDisabled">Button</button>')($rootScope);
     $rootScope.isDisabled = false;
@@ -30,7 +28,6 @@ describe('boolean attr directives', function() {
     expect(element.attr('disabled')).toBeTruthy();
   }));
 
-
   it('should bind checked', inject(function($rootScope, $compile) {
     element = $compile('<input type="checkbox" ng-checked="isChecked" />')($rootScope);
     $rootScope.isChecked = false;
@@ -40,7 +37,6 @@ describe('boolean attr directives', function() {
     $rootScope.$digest();
     expect(element.attr('checked')).toBeTruthy();
   }));
-
 
   it('should not bind checked when ngModel is present', inject(function($rootScope, $compile) {
     // test for https://github.com/angular/angular.js/issues/10662
@@ -57,7 +53,6 @@ describe('boolean attr directives', function() {
     expect($rootScope.value).toBe('true');
   }));
 
-
   it('should bind selected', inject(function($rootScope, $compile) {
     element = $compile('<select><option value=""></option><option ng-selected="isSelected">Greetings!</option></select>')($rootScope);
     jqLite(document.body).append(element);
@@ -69,7 +64,6 @@ describe('boolean attr directives', function() {
     expect(element.children()[1].selected).toBeTruthy();
   }));
 
-
   it('should bind readonly', inject(function($rootScope, $compile) {
     element = $compile('<input type="text" ng-readonly="isReadonly" />')($rootScope);
     $rootScope.isReadonly=false;
@@ -80,7 +74,6 @@ describe('boolean attr directives', function() {
     expect(element.attr('readOnly')).toBeTruthy();
   }));
 
-
   it('should bind open', inject(function($rootScope, $compile) {
     element = $compile('<details ng-open="isOpen"></details>')($rootScope);
     $rootScope.isOpen=false;
@@ -90,7 +83,6 @@ describe('boolean attr directives', function() {
     $rootScope.$digest();
     expect(element.attr('open')).toBeTruthy();
   }));
-
 
   describe('multiple', function() {
     it('should NOT bind to multiple via ngMultiple', inject(function($rootScope, $compile) {
@@ -103,7 +95,6 @@ describe('boolean attr directives', function() {
       expect(element.attr('multiple')).toBeFalsy(); // ignore
     }));
 
-
     it('should throw an exception if binding to multiple attribute', inject(function($rootScope, $compile) {
       expect(function() {
         $compile('<select multiple="{{isMultiple}}"></select>');
@@ -113,7 +104,6 @@ describe('boolean attr directives', function() {
     }));
   });
 });
-
 
 describe('ngSrc', function() {
   it('should interpolate the expression and bind to src with raw same-domain value',
@@ -131,7 +121,6 @@ describe('ngSrc', function() {
         dealoc(element);
       }));
 
-
   it('should interpolate the expression and bind to src with a trusted value', inject(function($compile, $rootScope, $sce) {
     var element = $compile('<div ng-src="{{id}}"></div>')($rootScope);
 
@@ -146,7 +135,6 @@ describe('ngSrc', function() {
     dealoc(element);
   }));
 
-
   it('should NOT interpolate a multi-part expression for non-img src attribute', inject(function($compile, $rootScope) {
     expect(function() {
       var element = $compile('<div ng-src="some/{{id}}"></div>')($rootScope);
@@ -157,7 +145,6 @@ describe('ngSrc', function() {
           "when a trusted value is required.  See http://docs.angularjs.org/api/ng.$sce");
   }));
 
-
   it('should interpolate a multi-part expression for regular attributes', inject(function($compile, $rootScope) {
     var element = $compile('<div foo="some/{{id}}"></div>')($rootScope);
     $rootScope.$digest();
@@ -167,7 +154,6 @@ describe('ngSrc', function() {
     });
     expect(element.attr('foo')).toEqual('some/1');
   }));
-
 
   it('should NOT interpolate a wrongly typed expression', inject(function($compile, $rootScope, $sce) {
     expect(function() {
@@ -180,7 +166,6 @@ describe('ngSrc', function() {
             "$interpolate", "interr", "Can't interpolate: {{id}}\nError: [$sce:insecurl] Blocked " +
                 "loading resource from url not allowed by $sceDelegate policy.  URL: http://somewhere");
   }));
-
 
   if (msie) {
     it('should update the element property as well as the attribute', inject(
@@ -212,7 +197,6 @@ describe('ngSrc', function() {
   }
 });
 
-
 describe('ngSrcset', function() {
   it('should interpolate the expression and bind to srcset', inject(function($compile, $rootScope) {
     var element = $compile('<div ng-srcset="some/{{id}} 2x"></div>')($rootScope);
@@ -229,14 +213,12 @@ describe('ngSrcset', function() {
   }));
 });
 
-
 describe('ngHref', function() {
   var element;
 
   afterEach(function() {
     dealoc(element);
   });
-
 
   it('should interpolate the expression and bind to href', inject(function($compile, $rootScope) {
     element = $compile('<div ng-href="some/{{id}}"></div>')($rootScope);
@@ -249,7 +231,6 @@ describe('ngHref', function() {
     expect(element.attr('href')).toEqual('some/1');
   }));
 
-
   it('should bind href and merge with other attrs', inject(function($rootScope, $compile) {
     element = $compile('<a ng-href="{{url}}" rel="{{rel}}"></a>')($rootScope);
     $rootScope.url = 'http://server';
@@ -258,7 +239,6 @@ describe('ngHref', function() {
     expect(element.attr('href')).toEqual('http://server');
     expect(element.attr('rel')).toEqual('REL');
   }));
-
 
   it('should bind href even if no interpolation', inject(function($rootScope, $compile) {
     element = $compile('<a ng-href="http://server"></a>')($rootScope);
@@ -296,7 +276,6 @@ describe('ngHref', function() {
         });
         expect(child.attr('xlink:href')).toEqual('some/1');
       }));
-
 
       it('should bind xlink:href even if no interpolation', inject(function($rootScope, $compile) {
         element = $compile('<svg><a ng-href="http://server"></a></svg>')($rootScope);

@@ -83,7 +83,6 @@ afterEach(function() {
     }
   }
 
-
   // copied from Angular.js
   // we need this method here so that we can run module tests with wrapped angular.js
   function forEachSorted(obj, iterator, context) {
@@ -94,7 +93,6 @@ afterEach(function() {
     return keys;
   }
 });
-
 
 function dealoc(obj) {
   var jqCache = angular.element.cache;
@@ -130,7 +128,6 @@ function dealoc(obj) {
   }
 }
 
-
 function jqLiteCacheSize() {
   var size = 0;
   forEach(jqLite.cache, function() { size++; });
@@ -141,7 +138,6 @@ jqLiteCacheSize.initSize = 0;
 function jqLiteCacheSizeInit() {
   jqLiteCacheSize.initSize = jqLiteCacheSize.initSize + jqLiteCacheSize();
 }
-
 
 /**
  * @param {DOMElement} element
@@ -252,7 +248,6 @@ function sortedHtml(element, showNgClass) {
   return html;
 }
 
-
 function childrenTagsOf(element) {
   var tags = [];
 
@@ -262,7 +257,6 @@ function childrenTagsOf(element) {
 
   return tags;
 }
-
 
 // TODO(vojta): migrate these helpers into jasmine matchers
 /**a

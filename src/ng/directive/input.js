@@ -689,7 +689,6 @@ var inputType = {
    */
   'number': numberInputType,
 
-
   /**
    * @ngdoc input
    * @name input[url]
@@ -784,7 +783,6 @@ var inputType = {
    */
   'url': urlInputType,
 
-
   /**
    * @ngdoc input
    * @name input[email]
@@ -878,7 +876,6 @@ var inputType = {
    */
   'email': emailInputType,
 
-
   /**
    * @ngdoc input
    * @name input[radio]
@@ -940,7 +937,6 @@ var inputType = {
       </example>
    */
   'radio': radioInputType,
-
 
   /**
    * @ngdoc input
@@ -1417,7 +1413,6 @@ function checkboxInputType(scope, element, attr, ctrl, $sniffer, $browser, $filt
   });
 }
 
-
 /**
  * @ngdoc directive
  * @name textarea
@@ -1446,7 +1441,6 @@ function checkboxInputType(scope, element, attr, ctrl, $sniffer, $browser, $filt
  *    interaction with the input element.
  * @param {boolean=} [ngTrim=true] If set to false Angular will not automatically trim the input.
  */
-
 
 /**
  * @ngdoc directive
@@ -1595,8 +1589,6 @@ var inputDirective = ['$browser', '$sniffer', '$filter', '$parse',
   };
 }];
 
-
-
 var CONSTANT_VALUE_REGEXP = /^(true|false|\d+)$/;
 /**
  * @ngdoc directive
@@ -1674,6 +1666,3 @@ var ngValueDirective = function() {
     }
   };
 };
-
-
-

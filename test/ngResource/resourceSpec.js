@@ -31,7 +31,6 @@ describe("resource", function() {
     callback = jasmine.createSpy();
   }));
 
-
   afterEach(function() {
     $httpBackend.verifyNoOutstandingExpectation();
   });
@@ -95,7 +94,6 @@ describe("resource", function() {
     $httpBackend.flush();
   });
 
-
   it("should build resource", function() {
     expect(typeof CreditCard).toBe('function');
     expect(typeof CreditCard.get).toBe('function');
@@ -104,7 +102,6 @@ describe("resource", function() {
     expect(typeof CreditCard['delete']).toBe('function');
     expect(typeof CreditCard.query).toBe('function');
   });
-
 
   describe('shallow copy', function() {
     /* global shallowClearAndCopy */
@@ -115,7 +112,6 @@ describe("resource", function() {
       expect(copy.key).toBe(original.key);
     });
 
-
     it('should omit "$$"-prefixed properties', function() {
       var original = {$$some: true, $$: true};
       var clone = {};
@@ -125,7 +121,6 @@ describe("resource", function() {
       expect(clone.$$).toBeUndefined();
     });
 
-
     it('should copy "$"-prefixed properties from copy', function() {
       var original = {$some: true};
       var clone = {};
@@ -133,7 +128,6 @@ describe("resource", function() {
       expect(shallowClearAndCopy(original, clone)).toBe(clone);
       expect(clone.$some).toBe(original.$some);
     });
-
 
     it('should omit properties from prototype chain', function() {
       var original, clone = {};
@@ -149,12 +143,10 @@ describe("resource", function() {
     });
   });
 
-
   it('should default to empty parameters', function() {
     $httpBackend.expect('GET', 'URL').respond({});
     $resource('URL').query();
   });
-
 
   it('should ignore slashes of undefinend parameters', function() {
     var R = $resource('/Path/:a/:b/:c');
@@ -228,7 +220,6 @@ describe("resource", function() {
     R.get({a: 'foo'});
   });
 
-
   it('should correctly encode url params', function() {
     var R = $resource('/Path/:a');
 
@@ -263,7 +254,6 @@ describe("resource", function() {
     $httpBackend.expect('GET', '/Path/null').respond('{}');
     R.get({a: 'null'});
   });
-
 
   it('should implicitly strip trailing slashes from URLs by default', function() {
     var R = $resource('http://localhost:8080/Path/:a/');
@@ -309,7 +299,6 @@ describe("resource", function() {
     R.get({a: 'foo'});
   });
 
-
   it('should allow relative paths in resource url', function() {
     var R = $resource(':relativePath');
     $httpBackend.expect('GET', 'data.json').respond('{}');
@@ -322,13 +311,11 @@ describe("resource", function() {
     R.get({ myresource: 'pear+apple', from: '2012-04-01', to: '2012-04-29', histlen: 3  });
   });
 
-
   it('should encode & in url params', function() {
     var R = $resource('/Path/:a');
     $httpBackend.expect('GET', '/Path/doh&foo?bar=baz%261').respond('{}');
     R.get({a: 'doh&foo', bar: 'baz&1'});
   });
-
 
   it('should build resource with default param', function() {
     $httpBackend.expect('GET', '/Order/123/Line/456.visa?minimum=0.05').respond({id: 'abc'});
@@ -338,7 +325,6 @@ describe("resource", function() {
     $httpBackend.flush();
     expect(item).toEqualData({id:'abc'});
   });
-
 
   it('should support @_property lookups with underscores', function() {
     $httpBackend.expect('GET', '/Order/123').respond({_id: {_key:'123'}, count: 0});
@@ -352,7 +338,6 @@ describe("resource", function() {
     expect(item).toEqualData({_id: {_key: '123'}, count: 1});
   });
 
-
   it('should not pass default params between actions', function() {
     var R = $resource('/Path', {}, {get: {method: 'GET', params: {objId: '1'}}, perform: {method: 'GET'}});
 
@@ -362,7 +347,6 @@ describe("resource", function() {
     R.get({});
     R.perform({});
   });
-
 
   it("should build resource with action default param overriding default param", function() {
     $httpBackend.expect('GET', '/Customer/123').respond({id: 'abc'});
@@ -374,7 +358,6 @@ describe("resource", function() {
     expect(item).toEqualData({id: 'abc'});
   });
 
-
   it('should build resource with action default param reading the value from instance', function() {
     $httpBackend.expect('POST', '/Customer/123').respond();
     var R = $resource('/Customer/:id', {}, {post: {method: 'POST', params: {id: '@id'}}});
@@ -385,7 +368,6 @@ describe("resource", function() {
     inst.$post();
   });
 
-
   it('should not throw TypeError on null default params', function() {
     $httpBackend.expect('GET', '/Path').respond('{}');
     var R = $resource('/Path', {param: null}, {get: {method: 'GET'}});
@@ -394,7 +376,6 @@ describe("resource", function() {
       R.get({});
     }).not.toThrow();
   });
-
 
   it('should handle multiple params with same name', function() {
     var R = $resource('/:id/:id');
@@ -405,13 +386,11 @@ describe("resource", function() {
     R.get({id:1});
   });
 
-
   it('should throw an exception if a param is called "hasOwnProperty"', function() {
     expect(function() {
       $resource('/:hasOwnProperty').get();
     }).toThrowMinErr('$resource','badname', "hasOwnProperty is not a valid parameter name");
   });
-
 
   it("should create resource", function() {
     $httpBackend.expect('POST', '/CreditCard', '{"name":"misko"}').respond({id: 123, name: 'misko'});
@@ -427,7 +406,6 @@ describe("resource", function() {
     expect(callback.mostRecentCall.args[1]()).toEqual({});
   });
 
-
   it("should read resource", function() {
     $httpBackend.expect('GET', '/CreditCard/123').respond({id: 123, number: '9876'});
     var cc = CreditCard.get({id: 123}, callback);
@@ -442,7 +420,6 @@ describe("resource", function() {
     expect(callback.mostRecentCall.args[1]()).toEqual({});
   });
 
-
   it('should send correct headers', function() {
     $httpBackend.expectPUT('/CreditCard/123', undefined, function(headers) {
       return headers['If-None-Match'] == "*";
@@ -450,7 +427,6 @@ describe("resource", function() {
 
     CreditCard.conditionalPut({id: {key:123}});
   });
-
 
   it("should read partial resource", function() {
     $httpBackend.expect('GET', '/CreditCard').respond([{id:{key:123}}]);
@@ -471,7 +447,6 @@ describe("resource", function() {
     expect(cc.number).toEqual('9876');
   });
 
-
   it("should update resource", function() {
     $httpBackend.expect('POST', '/CreditCard/123', '{"id":{"key":123},"name":"misko"}').
                  respond({id: {key: 123}, name: 'rama'});
@@ -481,7 +456,6 @@ describe("resource", function() {
     expect(callback).not.toHaveBeenCalled();
     $httpBackend.flush();
   });
-
 
   it("should query resource", function() {
     $httpBackend.expect('GET', '/CreditCard?key=value').respond([{id: 1}, {id: 2}]);
@@ -496,7 +470,6 @@ describe("resource", function() {
     expect(callback.mostRecentCall.args[1]()).toEqual({});
   });
 
-
   it("should have all arguments optional", function() {
     $httpBackend.expect('GET', '/CreditCard').respond([{id:1}]);
 
@@ -507,7 +480,6 @@ describe("resource", function() {
     expect(ccs).toEqualData([{id:1}]);
     expect(log).toEqual('cb;');
   });
-
 
   it('should delete resource and call callback', function() {
     $httpBackend.expect('DELETE', '/CreditCard/123').respond({});
@@ -528,12 +500,10 @@ describe("resource", function() {
     expect(callback.mostRecentCall.args[1]()).toEqual({});
   });
 
-
   it('should post charge verb', function() {
     $httpBackend.expect('POST', '/CreditCard/123!charge?amount=10', '{"auth":"abc"}').respond({success: 'ok'});
     CreditCard.charge({id:123, amount:10}, {auth:'abc'}, callback);
   });
-
 
   it('should post charge verb on instance', function() {
     $httpBackend.expect('POST', '/CreditCard/123!charge?amount=10',
@@ -542,7 +512,6 @@ describe("resource", function() {
     var card = new CreditCard({id:{key:123}, name:'misko'});
     card.$charge({amount:10}, callback);
   });
-
 
   it("should patch a resource", function() {
     $httpBackend.expectPATCH('/CreditCard/123', '{"name":"igor"}').
@@ -556,7 +525,6 @@ describe("resource", function() {
     expect(callback).toHaveBeenCalled();
     expect(card).toEqualData({id: 123, name: 'rama'});
   });
-
 
   it('should create on save', function() {
     $httpBackend.expect('POST', '/CreditCard', '{"name":"misko"}').respond({id: 123}, {header1: 'a'});
@@ -577,7 +545,6 @@ describe("resource", function() {
     expect(callback.mostRecentCall.args[1]()).toEqual({header1: 'a'});
   });
 
-
   it('should not mutate the resource object if response contains no body', function() {
     var data = {id:{key:123}, number:'9876'};
     $httpBackend.expect('GET', '/CreditCard/123').respond(data);
@@ -594,7 +561,6 @@ describe("resource", function() {
     expect(idBefore).toEqual(cc.id);
   });
 
-
   it('should bind default parameters', function() {
     $httpBackend.expect('GET', '/CreditCard/123.visa?minimum=0.05').respond({id: 123});
     var Visa = CreditCard.bind({verb:'.visa', minimum:0.05});
@@ -603,11 +569,9 @@ describe("resource", function() {
     expect(visa).toEqualData({id:123});
   });
 
-
   it('should support dynamic default parameters (global)', function() {
     var currentGroup = 'students',
         Person = $resource('/Person/:group/:id', { group: function() { return currentGroup; }});
-
 
     $httpBackend.expect('GET', '/Person/students/fedor').respond({id: 'fedor', email: 'f@f.com'});
 
@@ -616,7 +580,6 @@ describe("resource", function() {
 
     expect(fedor).toEqualData({id: 'fedor', email: 'f@f.com'});
   });
-
 
   it('should support dynamic default parameters (action specific)', function() {
     var currentGroup = 'students',
@@ -634,7 +597,6 @@ describe("resource", function() {
 
     expect(fedor).toEqualData({id: 'fedor', email: 'f@f.com'});
   });
-
 
   it('should exercise full stack', function() {
     var Person = $resource('/Person/:id');
@@ -678,11 +640,9 @@ describe("resource", function() {
 
     var $rootScope;
 
-
     beforeEach(inject(function(_$rootScope_) {
       $rootScope = _$rootScope_;
     }));
-
 
     describe('single resource', function() {
 
@@ -699,7 +659,6 @@ describe("resource", function() {
         expect(callback.mostRecentCall.args[0]).toBe(cc);
       });
 
-
       it('should keep $promise around after resolution', function() {
         $httpBackend.expect('GET', '/CreditCard/123').respond({id: 123, number: '9876'});
         var cc = CreditCard.get({id: 123});
@@ -715,7 +674,6 @@ describe("resource", function() {
         expect(callback).toHaveBeenCalledOnce();
       });
 
-
       it('should keep the original promise after instance action', function() {
         $httpBackend.expect('GET', '/CreditCard/123').respond({id: 123, number: '9876'});
         $httpBackend.expect('POST', '/CreditCard/123').respond({id: 123, number: '9876'});
@@ -729,7 +687,6 @@ describe("resource", function() {
         expect(cc.$promise).toBe(originalPromise);
       });
 
-
       it('should allow promise chaining', function() {
         $httpBackend.expect('GET', '/CreditCard/123').respond({id: 123, number: '9876'});
         var cc = CreditCard.get({id: 123});
@@ -739,7 +696,6 @@ describe("resource", function() {
 
         expect(callback).toHaveBeenCalledOnceWith('new value');
       });
-
 
       it('should allow $promise error callback registration', function() {
         $httpBackend.expect('GET', '/CreditCard/123').respond(404, 'resource not found');
@@ -753,7 +709,6 @@ describe("resource", function() {
         expect(response.data).toEqual('resource not found');
         expect(response.status).toEqual(404);
       });
-
 
       it('should add $resolved boolean field to the result object', function() {
         $httpBackend.expect('GET', '/CreditCard/123').respond({id: 123, number: '9876'});
@@ -769,7 +724,6 @@ describe("resource", function() {
         expect(cc.$resolved).toBe(true);
       });
 
-
       it('should set $resolved field to true when an error occurs', function() {
         $httpBackend.expect('GET', '/CreditCard/123').respond(404, 'resource not found');
         var cc = CreditCard.get({id: 123});
@@ -779,7 +733,6 @@ describe("resource", function() {
         expect(callback).toHaveBeenCalledOnce();
         expect(cc.$resolved).toBe(true);
       });
-
 
       it('should keep $resolved true in all subsequent interactions', function() {
         $httpBackend.expect('GET', '/CreditCard/123').respond({id: 123, number: '9876'});
@@ -793,7 +746,6 @@ describe("resource", function() {
         $httpBackend.flush();
         expect(cc.$resolved).toBe(true);
       });
-
 
       it('should return promise from action method calls', function() {
         $httpBackend.expect('GET', '/CreditCard/123').respond({id: 123, number: '9876'});
@@ -816,7 +768,6 @@ describe("resource", function() {
         expect(callback).toHaveBeenCalledOnce();
         expect(cc).toEqualData({id: 1, number: '9'});
       });
-
 
       it('should allow parsing a value from headers', function() {
         // https://github.com/angular/angular.js/pull/2607#issuecomment-17759933
@@ -876,7 +827,6 @@ describe("resource", function() {
       });
     });
 
-
     describe('resource collection', function() {
 
       it('should add $promise to the result object', function() {
@@ -891,7 +841,6 @@ describe("resource", function() {
         expect(callback).toHaveBeenCalledOnce();
         expect(callback.mostRecentCall.args[0]).toBe(ccs);
       });
-
 
       it('should keep $promise around after resolution', function() {
         $httpBackend.expect('GET', '/CreditCard?key=value').respond([{id: 1}, {id: 2}]);
@@ -908,7 +857,6 @@ describe("resource", function() {
         expect(callback).toHaveBeenCalledOnce();
       });
 
-
       it('should allow promise chaining', function() {
         $httpBackend.expect('GET', '/CreditCard?key=value').respond([{id: 1}, {id: 2}]);
         var ccs = CreditCard.query({key: 'value'});
@@ -918,7 +866,6 @@ describe("resource", function() {
 
         expect(callback).toHaveBeenCalledOnceWith('new value');
       });
-
 
       it('should allow $promise error callback registration', function() {
         $httpBackend.expect('GET', '/CreditCard?key=value').respond(404, 'resource not found');
@@ -933,7 +880,6 @@ describe("resource", function() {
         expect(response.status).toEqual(404);
       });
 
-
       it('should add $resolved boolean field to the result object', function() {
         $httpBackend.expect('GET', '/CreditCard?key=value').respond([{id: 1}, {id: 2}]);
         var ccs = CreditCard.query({key: 'value'}, callback);
@@ -947,7 +893,6 @@ describe("resource", function() {
 
         expect(ccs.$resolved).toBe(true);
       });
-
 
       it('should set $resolved field to true when an error occurs', function() {
         $httpBackend.expect('GET', '/CreditCard?key=value').respond(404, 'resource not found');
@@ -988,7 +933,6 @@ describe("resource", function() {
       expect(response.config).toBeDefined();
     });
 
-
     it('should allow per action responseError interceptor that gets full response', function() {
       CreditCard = $resource('/CreditCard', {}, {
         query: {
@@ -1017,7 +961,6 @@ describe("resource", function() {
     });
   });
 
-
   describe('failure mode', function() {
     var ERROR_CODE = 500,
         ERROR_RESPONSE = 'Server Error',
@@ -1030,7 +973,6 @@ describe("resource", function() {
       });
     });
 
-
     it('should call the error callback if provided on non 2xx response', function() {
       $httpBackend.expect('GET', '/CreditCard/123').respond(ERROR_CODE, ERROR_RESPONSE);
 
@@ -1039,7 +981,6 @@ describe("resource", function() {
       expect(errorCB).toHaveBeenCalledOnce();
       expect(callback).not.toHaveBeenCalled();
     });
-
 
     it('should call the error callback if provided on non 2xx response (without data)', function() {
       $httpBackend.expect('GET', '/CreditCard').respond(ERROR_CODE, ERROR_RESPONSE);
@@ -1253,7 +1194,6 @@ describe("resource", function() {
       expect(item).toEqualData({id: 'abc'});
     });
 
-
     it('should support overriding url template with a new template ending in param', function() {
       //    url parameter in action, parameter ending the string
       $httpBackend.expect('GET', '/Customer/123').respond({id: 'abc'});
@@ -1281,7 +1221,6 @@ describe("resource", function() {
       $httpBackend.flush();
       expect(item).toEqualData({id: 'abc'});
     });
-
 
     it('should support overriding url template with a new template ending in string', function() {
       $httpBackend.expect('GET', '/Customer/123/pay').respond({id: 'abc'});
@@ -1312,7 +1251,6 @@ describe('resource', function() {
     $httpBackend = $injector.get('$httpBackend');
     $resource = $injector.get('$resource');
   }));
-
 
   it('should fail if action expects an object but response is an array', function() {
     var successSpy = jasmine.createSpy('successSpy');
@@ -1347,6 +1285,5 @@ describe('resource', function() {
         /^\[\$resource:badcfg\] Error in resource configuration for action `get`\. Expected response to contain an object but got an array \(Request: GET \/Customer\/123\)/
       );
   });
-
 
 });

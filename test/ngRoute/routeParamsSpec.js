@@ -4,7 +4,6 @@ describe('$routeParams', function() {
 
   beforeEach(module('ngRoute'));
 
-
   it('should publish the params into a service',  function() {
     module(function($routeProvider) {
       $routeProvider.when('/foo', {});
@@ -76,6 +75,5 @@ describe('$routeParams', function() {
 
     });
   });
-
 
 });

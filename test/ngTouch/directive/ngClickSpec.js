@@ -14,7 +14,6 @@ describe('ngClick (touch)', function() {
     return time;
   }
 
-
   beforeEach(function() {
     module('ngTouch');
     orig_now = Date.now;
@@ -27,7 +26,6 @@ describe('ngClick (touch)', function() {
     Date.now = orig_now;
   });
 
-
   it('should get called on a tap', inject(function($rootScope, $compile) {
     element = $compile('<div ng-click="tapped = true"></div>')($rootScope);
     $rootScope.$digest();
@@ -37,7 +35,6 @@ describe('ngClick (touch)', function() {
     browserTrigger(element, 'touchend');
     expect($rootScope.tapped).toEqual(true);
   }));
-
 
   it('should pass event object', inject(function($rootScope, $compile) {
     element = $compile('<div ng-click="event = $event"></div>')($rootScope);
@@ -76,7 +73,6 @@ describe('ngClick (touch)', function() {
     }));
   }
 
-
   it('should not click if the touch is held too long', inject(function($rootScope, $compile, $rootElement) {
     element = $compile('<div ng-click="count = count + 1"></div>')($rootScope);
     $rootElement.append(element);
@@ -102,7 +98,6 @@ describe('ngClick (touch)', function() {
     expect($rootScope.count).toBe(0);
   }));
 
-
   it('should not click if the touchend is too far away', inject(function($rootScope, $compile, $rootElement) {
     element = $compile('<div ng-click="tapped = true"></div>')($rootScope);
     $rootElement.append(element);
@@ -123,7 +118,6 @@ describe('ngClick (touch)', function() {
 
     expect($rootScope.tapped).toBeUndefined();
   }));
-
 
   it('should not prevent click if a touchmove comes before touchend', inject(function($rootScope, $compile, $rootElement) {
     element = $compile('<div ng-click="tapped = true"></div>')($rootScope);
@@ -195,7 +189,6 @@ describe('ngClick (touch)', function() {
       $document.find('body').empty();
     }));
 
-
     it('should cancel the following click event', inject(function($rootScope, $compile, $rootElement, $document) {
       element = $compile('<div ng-click="count = count + 1"></div>')($rootScope);
       $rootElement.append(element);
@@ -231,7 +224,6 @@ describe('ngClick (touch)', function() {
 
       expect($rootScope.count).toBe(1);
     }));
-
 
     it('should cancel the following click event even when the element has changed', inject(
         function($rootScope, $compile, $rootElement) {
@@ -278,7 +270,6 @@ describe('ngClick (touch)', function() {
       expect($rootScope.count1).toBe(1);
       expect($rootScope.count2).toBe(0);
     }));
-
 
     it('should not cancel clicks on distant elements', inject(function($rootScope, $compile, $rootElement) {
       $rootElement.append(
@@ -374,7 +365,6 @@ describe('ngClick (touch)', function() {
       expect($rootScope.count2).toBe(1);
     }));
 
-
     it('should not cancel clicks that come long after', inject(function($rootScope, $compile) {
       element1 = $compile('<div ng-click="count = count + 1"></div>')($rootScope);
 
@@ -408,7 +398,6 @@ describe('ngClick (touch)', function() {
 
       expect($rootScope.count).toBe(2);
     }));
-
 
     describe('when clicking on a label immediately following a touch event', function() {
       var touch = function(element, x, y) {
@@ -452,14 +441,12 @@ describe('ngClick (touch)', function() {
         $rootScope.$digest();
       }));
 
-
       afterEach(function() {
         dealoc(label);
         dealoc(input);
         dealoc(otherElement);
         dealoc(container);
       });
-
 
       it('should not cancel input clicks with (0,0) coordinates', function() {
         touch(otherElement, 100, 100);
@@ -471,7 +458,6 @@ describe('ngClick (touch)', function() {
         expect($rootScope.selection).toBe('radio1');
       });
 
-
       it('should not cancel input clicks with negative coordinates', function() {
         touch(otherElement, 100, 100);
 
@@ -481,7 +467,6 @@ describe('ngClick (touch)', function() {
 
         expect($rootScope.selection).toBe('radio1');
       });
-
 
       it('should not cancel input clicks with positive coordinates identical to label click', function() {
         touch(otherElement, 100, 100);
@@ -493,7 +478,6 @@ describe('ngClick (touch)', function() {
         expect($rootScope.selection).toBe('radio1');
       });
 
-
       it('should cancel input clicks with positive coordinates different than label click', function() {
         touch(otherElement, 100, 100);
 
@@ -503,7 +487,6 @@ describe('ngClick (touch)', function() {
 
         expect($rootScope.selection).toBe('initial');
       });
-
 
       it('should blur the other element on click', function() {
         var blurSpy = spyOn(otherElement, 'blur');
@@ -517,7 +500,6 @@ describe('ngClick (touch)', function() {
     });
   });
 
-
   describe('click fallback', function() {
 
     it('should treat a click as a tap on desktop', inject(function($rootScope, $compile) {
@@ -529,7 +511,6 @@ describe('ngClick (touch)', function() {
       expect($rootScope.tapped).toEqual(true);
     }));
 
-
     it('should pass event object', inject(function($rootScope, $compile) {
       element = $compile('<div ng-click="event = $event"></div>')($rootScope);
       $rootScope.$digest();
@@ -538,7 +519,6 @@ describe('ngClick (touch)', function() {
       expect($rootScope.event).toBeDefined();
     }));
   });
-
 
   describe('disabled state', function() {
     it('should not trigger click if ngDisabled is true', inject(function($rootScope, $compile) {
@@ -626,7 +606,6 @@ describe('ngClick (touch)', function() {
       expect($rootScope.event).toBeDefined();
     }));
   });
-
 
   describe('the normal click event', function() {
     it('should be capturable by other handlers', inject(function($rootScope, $compile) {

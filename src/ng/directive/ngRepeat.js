@@ -312,7 +312,6 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
     return block.clone[block.clone.length - 1];
   };
 
-
   return {
     restrict: 'A',
     multiElement: true,

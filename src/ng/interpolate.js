@@ -31,7 +31,6 @@ $interpolateMinErr.interr = function(text, err) {
     $interpolateProvider.endSymbol('//');
   });
 
-
   customInterpolationApp.controller('DemoController', function() {
       this.label = "This binding is brought you by // interpolation symbols.";
   });
@@ -86,7 +85,6 @@ function $InterpolateProvider() {
       return endSymbol;
     }
   };
-
 
   this.$get = ['$parse', '$exceptionHandler', '$sce', function($parse, $exceptionHandler, $sce) {
     var startSymbolLength = startSymbol.length,
@@ -314,7 +312,6 @@ function $InterpolateProvider() {
       }
     }
 
-
     /**
      * @ngdoc method
      * @name $interpolate#startSymbol
@@ -329,7 +326,6 @@ function $InterpolateProvider() {
     $interpolate.startSymbol = function() {
       return startSymbol;
     };
-
 
     /**
      * @ngdoc method
@@ -349,5 +345,3 @@ function $InterpolateProvider() {
     return $interpolate;
   }];
 }
-
-

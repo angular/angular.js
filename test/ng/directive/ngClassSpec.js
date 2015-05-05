@@ -11,7 +11,6 @@ describe('ngClass', function() {
     dealoc(element);
   });
 
-
   it('should add new and remove old classes dynamically', inject(function($rootScope, $compile) {
     element = $compile('<div class="existing" ng-class="dynClass"></div>')($rootScope);
     $rootScope.dynClass = 'A';
@@ -32,7 +31,6 @@ describe('ngClass', function() {
     expect(element.hasClass('B')).toBe(false);
   }));
 
-
   it('should support adding multiple classes via an array', inject(function($rootScope, $compile) {
     element = $compile('<div class="existing" ng-class="[\'A\', \'B\']"></div>')($rootScope);
     $rootScope.$digest();
@@ -40,7 +38,6 @@ describe('ngClass', function() {
     expect(element.hasClass('A')).toBeTruthy();
     expect(element.hasClass('B')).toBeTruthy();
   }));
-
 
   it('should support adding multiple classes conditionally via a map of class names to boolean ' +
       'expressions', inject(function($rootScope, $compile) {
@@ -89,7 +86,6 @@ describe('ngClass', function() {
     })
   );
 
-
   it('should support adding multiple classes via a space delimited string', inject(function($rootScope, $compile) {
     element = $compile('<div class="existing" ng-class="\'A B\'"></div>')($rootScope);
     $rootScope.$digest();
@@ -97,7 +93,6 @@ describe('ngClass', function() {
     expect(element.hasClass('A')).toBeTruthy();
     expect(element.hasClass('B')).toBeTruthy();
   }));
-
 
   it('should support adding multiple classes via a space delimited string inside an array', inject(function($rootScope, $compile) {
     element = $compile('<div class="existing" ng-class="[\'A B\', \'C\']"></div>')($rootScope);
@@ -107,7 +102,6 @@ describe('ngClass', function() {
     expect(element.hasClass('B')).toBeTruthy();
     expect(element.hasClass('C')).toBeTruthy();
   }));
-
 
   it('should preserve class added post compilation with pre-existing classes', inject(function($rootScope, $compile) {
     element = $compile('<div class="existing" ng-class="dynClass"></div>')($rootScope);
@@ -125,7 +119,6 @@ describe('ngClass', function() {
     expect(element.hasClass('newClass')).toBe(true);
   }));
 
-
   it('should preserve class added post compilation without pre-existing classes"', inject(function($rootScope, $compile) {
     element = $compile('<div ng-class="dynClass"></div>')($rootScope);
     $rootScope.dynClass = 'A';
@@ -141,7 +134,6 @@ describe('ngClass', function() {
     expect(element.hasClass('newClass')).toBe(true);
   }));
 
-
   it('should preserve other classes with similar name"', inject(function($rootScope, $compile) {
     element = $compile('<div class="ui-panel ui-selected" ng-class="dynCls"></div>')($rootScope);
     $rootScope.dynCls = 'panel';
@@ -151,14 +143,12 @@ describe('ngClass', function() {
     expect(element[0].className).toBe('ui-panel ui-selected foo');
   }));
 
-
   it('should not add duplicate classes', inject(function($rootScope, $compile) {
     element = $compile('<div class="panel bar" ng-class="dynCls"></div>')($rootScope);
     $rootScope.dynCls = 'panel';
     $rootScope.$digest();
     expect(element[0].className).toBe('panel bar');
   }));
-
 
   it('should remove classes even if it was specified via class attribute', inject(function($rootScope, $compile) {
     element = $compile('<div class="panel bar" ng-class="dynCls"></div>')($rootScope);
@@ -168,7 +158,6 @@ describe('ngClass', function() {
     $rootScope.$digest();
     expect(element[0].className).toBe('bar window');
   }));
-
 
   it('should remove classes even if they were added by another code', inject(function($rootScope, $compile) {
     element = $compile('<div ng-class="dynCls"></div>')($rootScope);
@@ -180,14 +169,12 @@ describe('ngClass', function() {
     expect(element[0].className).toBe('');
   }));
 
-
   it('should convert undefined and null values to an empty string', inject(function($rootScope, $compile) {
     element = $compile('<div ng-class="dynCls"></div>')($rootScope);
     $rootScope.dynCls = [undefined, null];
     $rootScope.$digest();
     expect(element[0].className).toBe('');
   }));
-
 
   it('should ngClass odd/even', inject(function($rootScope, $compile) {
     element = $compile('<ul><li ng-repeat="i in [0,1]" class="existing" ng-class-odd="\'odd\'" ng-class-even="\'even\'"></li><ul>')($rootScope);
@@ -199,7 +186,6 @@ describe('ngClass', function() {
     expect(e2.hasClass('existing')).toBeTruthy();
     expect(e2.hasClass('even')).toBeTruthy();
   }));
-
 
   it('should allow both ngClass and ngClassOdd/Even on the same element', inject(function($rootScope, $compile) {
     element = $compile('<ul>' +
@@ -217,7 +203,6 @@ describe('ngClass', function() {
     expect(e2.hasClass('even')).toBeTruthy();
     expect(e2.hasClass('odd')).toBeFalsy();
   }));
-
 
   it("should allow ngClassOdd/Even on the same element with overlapping classes", inject(function($rootScope, $compile, $animate) {
       var className;
@@ -274,7 +259,6 @@ describe('ngClass', function() {
     expect(e2.hasClass('D')).toBeFalsy();
   }));
 
-
   it('should reapply ngClass when interpolated class attribute changes', inject(function($rootScope, $compile) {
     element = $compile('<div class="one {{cls}} three" ng-class="{four: four}"></div>')($rootScope);
 
@@ -307,7 +291,6 @@ describe('ngClass', function() {
     expect(element.hasClass('too')).toBeFalsy();
   }));
 
-
   it('should not mess up class value due to observing an interpolated class attribute', inject(function($rootScope, $compile) {
     $rootScope.foo = true;
     $rootScope.$watch("anything", function() {
@@ -317,7 +300,6 @@ describe('ngClass', function() {
     $rootScope.$digest();
     expect(element.hasClass('foo')).toBe(false);
   }));
-
 
   it('should update ngClassOdd/Even when an item is added to the model', inject(function($rootScope, $compile) {
     element = $compile('<ul>' +
@@ -340,7 +322,6 @@ describe('ngClass', function() {
     expect(e4.hasClass('odd')).toBeFalsy();
   }));
 
-
   it('should update ngClassOdd/Even when model is changed by filtering', inject(function($rootScope, $compile) {
     element = $compile('<ul>' +
       '<li ng-repeat="i in items track by $index" ' +
@@ -361,7 +342,6 @@ describe('ngClass', function() {
     expect(e2.hasClass('even')).toBeTruthy();
     expect(e2.hasClass('odd')).toBeFalsy();
   }));
-
 
   it('should update ngClassOdd/Even when model is changed by sorting', inject(function($rootScope, $compile) {
     element = $compile('<ul>' +

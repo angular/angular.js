@@ -50,7 +50,6 @@ function $SnifferProvider() {
       }
     }
 
-
     return {
       // Android has history.pushState, but it does not update location correctly
       // so let's not use the history API at all.

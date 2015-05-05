@@ -3,11 +3,9 @@
 describe('scriptDirective', function() {
   var element;
 
-
   afterEach(function() {
     dealoc(element);
   });
-
 
   it('should populate $templateCache with contents of a ng-template script element', inject(
       function($compile, $templateCache) {
@@ -19,7 +17,6 @@ describe('scriptDirective', function() {
         expect($templateCache.get('/ignore')).toBeUndefined();
       }
   ));
-
 
   it('should not compile scripts', inject(function($compile, $templateCache, $rootScope) {
     var doc = jqLite('<div></div>');

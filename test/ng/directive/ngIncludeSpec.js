@@ -7,13 +7,11 @@ describe('ngInclude', function() {
     dealoc(element);
   });
 
-
   function putIntoCache(url, content) {
     return function($templateCache) {
       $templateCache.put(url, [200, content, {}]);
     };
   }
-
 
   it('should trust and use literal urls', inject(function(
       $rootScope, $httpBackend, $compile) {
@@ -25,7 +23,6 @@ describe('ngInclude', function() {
     dealoc($rootScope);
   }));
 
-
   it('should trust and use trusted urls', inject(function($rootScope, $httpBackend, $compile, $sce) {
     element = $compile('<div><div ng-include="fooUrl"></div></div>')($rootScope);
     $httpBackend.expect('GET', 'http://foo.bar/url').respond('template text');
@@ -35,7 +32,6 @@ describe('ngInclude', function() {
     expect(element.text()).toEqual('template text');
     dealoc($rootScope);
   }));
-
 
   it('should include an external file', inject(putIntoCache('myUrl', '{{name}}'),
       function($rootScope, $compile) {
@@ -50,7 +46,6 @@ describe('ngInclude', function() {
     body.empty();
   }));
 
-
   it('should support ng-include="src" syntax', inject(putIntoCache('myUrl', '{{name}}'),
       function($rootScope, $compile) {
     element = jqLite('<div><div ng-include="url"></div></div>');
@@ -62,7 +57,6 @@ describe('ngInclude', function() {
     expect(element.text()).toEqual('Alibaba');
     jqLite(document.body).empty();
   }));
-
 
   it('should NOT use untrusted URL expressions ', inject(putIntoCache('myUrl', '{{name}} text'),
       function($rootScope, $compile, $sce) {
@@ -77,7 +71,6 @@ describe('ngInclude', function() {
     jqLite(document.body).empty();
   }));
 
-
   it('should NOT use mistyped expressions ', inject(putIntoCache('myUrl', '{{name}} text'),
       function($rootScope, $compile, $sce) {
     element = jqLite('<ng:include src="url"></ng:include>');
@@ -90,7 +83,6 @@ describe('ngInclude', function() {
         /Blocked loading resource from url not allowed by \$sceDelegate policy.  URL: http:\/\/example.com\/myUrl.*/);
     jqLite(document.body).empty();
   }));
-
 
   it('should remove previously included text if a falsy value is bound to src', inject(
         putIntoCache('myUrl', '{{name}}'),
@@ -142,7 +134,6 @@ describe('ngInclude', function() {
     expect(contentLoadedSpy).toHaveBeenCalledOnceWith(jasmine.any(Object), 'url');
   }));
 
-
   it('should fire $includeContentError event when content request fails', inject(
       function($rootScope, $compile, $httpBackend, $templateCache) {
     var contentLoadedSpy = jasmine.createSpy('content loaded'),
@@ -165,7 +156,6 @@ describe('ngInclude', function() {
     expect(element.children('div').contents().length).toBe(0);
   }));
 
-
   it('should evaluate onload expression when a partial is loaded', inject(
       putIntoCache('myUrl', 'my partial'),
       function($rootScope, $compile) {
@@ -180,7 +170,6 @@ describe('ngInclude', function() {
     expect(element.text()).toEqual('my partial');
     expect($rootScope.loaded).toBe(true);
   }));
-
 
   it('should create child scope and destroy old one', inject(
         function($rootScope, $compile, $httpBackend) {
@@ -212,7 +201,6 @@ describe('ngInclude', function() {
     expect($rootScope.$$childHead).toBeFalsy();
   }));
 
-
   it('should do xhr request and cache it',
       inject(function($rootScope, $httpBackend, $compile) {
     element = $compile('<div><ng:include src="url"></ng:include></div>')($rootScope);
@@ -233,7 +221,6 @@ describe('ngInclude', function() {
     dealoc($rootScope);
   }));
 
-
   it('should clear content when error during xhr request',
       inject(function($httpBackend, $compile, $rootScope) {
     element = $compile('<div><ng:include src="url">content</ng:include></div>')($rootScope);
@@ -245,7 +232,6 @@ describe('ngInclude', function() {
 
     expect(element.text()).toBe('');
   }));
-
 
   it('should be async even if served from cache', inject(
         putIntoCache('myUrl', 'my partial'),
@@ -264,7 +250,6 @@ describe('ngInclude', function() {
     $rootScope.$digest();
     expect(element.text()).toBe('my partial');
   }));
-
 
   it('should discard pending xhr callbacks if a new template is requested before the current ' +
       'finished loading', inject(function($rootScope, $compile, $httpBackend) {
@@ -288,7 +273,6 @@ describe('ngInclude', function() {
     expect(log).toEqual({ url2: true });
   }));
 
-
   it('should compile only the content', inject(function($compile, $rootScope, $templateCache) {
     // regression
 
@@ -309,7 +293,6 @@ describe('ngInclude', function() {
     $rootScope.$digest();
     dealoc(element);
   }));
-
 
   it('should not break attribute bindings on the same element', inject(function($compile, $rootScope, $httpBackend) {
     // regression #3793
@@ -336,7 +319,6 @@ describe('ngInclude', function() {
     expect(element.find('span').attr('foo')).toBe('#/fooUrl2');
   }));
 
-
   it('should exec scripts when jQuery is included', inject(function($compile, $rootScope, $httpBackend) {
     if (!jQuery) {
       return;
@@ -356,7 +338,6 @@ describe('ngInclude', function() {
 
     delete window._ngIncludeCausesScriptToRun;
   }));
-
 
   it('should construct SVG template elements with correct namespace', function() {
     if (!window.SVGRectElement) return;
@@ -378,7 +359,6 @@ describe('ngInclude', function() {
     });
   });
 
-
   it('should compile only the template content of an SVG template', function() {
     if (!window.SVGRectElement) return;
     module(function($compileProvider) {
@@ -396,7 +376,6 @@ describe('ngInclude', function() {
       expect(element.find('a').length).toBe(0);
     });
   });
-
 
   describe('autoscroll', function() {
     var autoScrollSpy;
@@ -434,7 +413,6 @@ describe('ngInclude', function() {
       expect(autoScrollSpy).toHaveBeenCalledOnce();
     }));
 
-
     it('should call $anchorScroll if autoscroll evaluates to true',
       inject(function($rootScope, $compile, $animate, $timeout) {
 
@@ -470,7 +448,6 @@ describe('ngInclude', function() {
       expect(autoScrollSpy.callCount).toBe(3);
     }));
 
-
     it('should not call $anchorScroll if autoscroll attribute is not present', inject(
         compileAndLink('<div><ng:include src="tpl"></ng:include></div>'),
         function($rootScope, $animate, $timeout) {
@@ -483,7 +460,6 @@ describe('ngInclude', function() {
       $animate.triggerCallbacks();
       expect(autoScrollSpy).not.toHaveBeenCalled();
     }));
-
 
     it('should not call $anchorScroll if autoscroll evaluates to false',
       inject(function($rootScope, $compile, $animate, $timeout) {

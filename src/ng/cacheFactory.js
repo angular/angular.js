@@ -199,7 +199,6 @@ function $CacheFactoryProvider() {
           return data[key];
         },
 
-
         /**
          * @ngdoc method
          * @name $cacheFactory.Cache#remove
@@ -227,7 +226,6 @@ function $CacheFactoryProvider() {
           size--;
         },
 
-
         /**
          * @ngdoc method
          * @name $cacheFactory.Cache#removeAll
@@ -242,7 +240,6 @@ function $CacheFactoryProvider() {
           lruHash = {};
           freshEnd = staleEnd = null;
         },
-
 
         /**
          * @ngdoc method
@@ -259,7 +256,6 @@ function $CacheFactoryProvider() {
           lruHash = null;
           delete caches[cacheId];
         },
-
 
         /**
          * @ngdoc method
@@ -282,7 +278,6 @@ function $CacheFactoryProvider() {
         }
       };
 
-
       /**
        * makes the `entry` the freshEnd of the LRU linked list
        */
@@ -301,7 +296,6 @@ function $CacheFactoryProvider() {
         }
       }
 
-
       /**
        * bidirectionally links two entries of the LRU linked list
        */
@@ -312,7 +306,6 @@ function $CacheFactoryProvider() {
         }
       }
     }
-
 
   /**
    * @ngdoc method
@@ -331,7 +324,6 @@ function $CacheFactoryProvider() {
       return info;
     };
 
-
   /**
    * @ngdoc method
    * @name $cacheFactory#get
@@ -345,7 +337,6 @@ function $CacheFactoryProvider() {
     cacheFactory.get = function(cacheId) {
       return caches[cacheId];
     };
-
 
     return cacheFactory;
   };
@@ -399,4 +390,3 @@ function $TemplateCacheProvider() {
     return $cacheFactory('templates');
   }];
 }
-

@@ -197,7 +197,6 @@ describe('browser', function() {
     });
   });
 
-
   describe('defer', function() {
     it('should execute fn asynchroniously via setTimeout', function() {
       var callback = jasmine.createSpy('deferred');
@@ -209,7 +208,6 @@ describe('browser', function() {
       expect(callback).toHaveBeenCalledOnce();
     });
 
-
     it('should update outstandingRequests counter', function() {
       var callback = jasmine.createSpy('deferred');
 
@@ -220,7 +218,6 @@ describe('browser', function() {
       expect(callback).toHaveBeenCalledOnce();
     });
 
-
     it('should return unique deferId', function() {
       var deferId1 = browser.defer(noop),
           deferId2 = browser.defer(noop);
@@ -229,7 +226,6 @@ describe('browser', function() {
       expect(deferId2).toBeDefined();
       expect(deferId1).not.toEqual(deferId2);
     });
-
 
     describe('cancel', function() {
       it('should allow tasks to be canceled with returned deferId', function() {
@@ -247,7 +243,6 @@ describe('browser', function() {
       });
     });
   });
-
 
   describe('url', function() {
     var pushState, replaceState, locationReplace;
@@ -334,7 +329,6 @@ describe('browser', function() {
       expect(fakeWindow.location.href).toEqual('http://server/');
     });
 
-
     it('should use location.replace and not use replaceState when the url only changed in the hash fragment to please IE10/11', function() {
       sniffer.history = true;
       browser.url('http://server/#123', true);
@@ -345,7 +339,6 @@ describe('browser', function() {
       expect(replaceState).not.toHaveBeenCalled();
       expect(fakeWindow.location.href).toEqual('http://server/');
     });
-
 
     it('should return $browser to allow chaining', function() {
       expect(browser.url('http://any.com')).toBe(browser);
@@ -648,7 +641,6 @@ describe('browser', function() {
       }
     });
 
-
     it("should stop calling callbacks when application has been torn down", function() {
       sniffer.history = true;
       browser.onUrlChange(callback);
@@ -665,7 +657,6 @@ describe('browser', function() {
     });
 
   });
-
 
   describe('baseHref', function() {
     var jqDocHead;

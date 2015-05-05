@@ -1,6 +1,5 @@
 'use strict';
 
-
 describe('$compile', function() {
   function isUnknownElement(el) {
     return !!el.toString().match(/Unknown/);
@@ -129,7 +128,6 @@ describe('$compile', function() {
       };
     });
 
-
     return function(_$compile_, _$rootScope_) {
       $rootScope = _$rootScope_;
       $compile = _$compile_;
@@ -144,7 +142,6 @@ describe('$compile', function() {
   afterEach(function() {
     dealoc(element);
   });
-
 
   describe('configuration', function() {
 
@@ -227,7 +224,6 @@ describe('$compile', function() {
       inject(function($compile) {});
     });
   });
-
 
   describe('svg namespace transcludes', function() {
     // this method assumes some sort of sized SVG element is being inspected.
@@ -360,7 +356,6 @@ describe('$compile', function() {
     });
   });
 
-
   describe('compile phase', function() {
 
     it('should attach scope to the document node when it is compiled explicitly', inject(function($document) {
@@ -376,7 +371,6 @@ describe('$compile', function() {
       expect(text[0].nodeName).toEqual('SPAN');
       expect(element.find('span').text()).toEqual('A<a>B</a>C');
     }));
-
 
     it('should not wrap root whitespace text nodes in spans', function() {
       element = jqLite(
@@ -419,7 +413,6 @@ describe('$compile', function() {
       expect(jqLiteCacheSize()).toEqual(0);
     });
 
-
     it('should not blow up when elements with no childNodes property are compiled', inject(
         function($compile, $rootScope) {
       // it turns out that when a browser plugin is bound to an DOM element (typically <object>),
@@ -444,7 +437,6 @@ describe('$compile', function() {
       expect(element.html()).toBe("3");
     }));
 
-
     describe('multiple directives per element', function() {
       it('should allow multiple directives per element', inject(function($compile, $rootScope, log) {
         element = $compile(
@@ -453,19 +445,16 @@ describe('$compile', function() {
         expect(log).toEqual('L; M; H');
       }));
 
-
       it('should recurse to children', inject(function($compile, $rootScope) {
         element = $compile('<div>0<a set="hello">1</a>2<b set="angular">3</b>4</div>')($rootScope);
         expect(element.text()).toEqual('0hello2angular4');
       }));
-
 
       it('should allow directives in classes', inject(function($compile, $rootScope, log) {
         element = $compile('<div class="greet: angular; log:123;"></div>')($rootScope);
         expect(element.html()).toEqual('Hello angular');
         expect(log).toEqual('123');
       }));
-
 
       it('should allow directives in SVG element classes', inject(function($compile, $rootScope, log) {
         if (!window.SVGElement) return;
@@ -477,7 +466,6 @@ describe('$compile', function() {
         expect(log).toEqual('123');
       }));
 
-
       it('should ignore not set CSS classes on SVG elements', inject(function($compile, $rootScope, log) {
         if (!window.SVGElement) return;
         // According to spec SVG element className property is readonly, but only FF
@@ -486,7 +474,6 @@ describe('$compile', function() {
         $rootScope.$digest();
         expect(element.text()).toEqual('1');
       }));
-
 
       it('should receive scope, element, and attributes', function() {
         var injector;
@@ -544,7 +531,6 @@ describe('$compile', function() {
           expect(ie($exceptionHandler.errors[2][1])).
               toEqual('<div class="ng-scope" factory-error linking-error template-error>');
 
-
           // crazy stuff to make IE happy
           function ie(text) {
             var list = [],
@@ -572,7 +558,6 @@ describe('$compile', function() {
         });
       });
 
-
       it('should allow changing the template structure after the current node', function() {
         module(function() {
           directive('after', valueFn({
@@ -588,7 +573,6 @@ describe('$compile', function() {
           expect(log).toEqual('LOG');
         });
       });
-
 
       it('should allow changing the template structure after the current node inside ngRepeat', function() {
         module(function() {
@@ -606,7 +590,6 @@ describe('$compile', function() {
           expect(log).toEqual('LOG; LOG');
         });
       });
-
 
       it('should allow modifying the DOM structure in post link fn', function() {
         module(function() {
@@ -636,7 +619,6 @@ describe('$compile', function() {
         }));
       });
 
-
       describe('terminal', function() {
 
         it('should prevent further directives from running', inject(function($rootScope, $compile) {
@@ -644,7 +626,6 @@ describe('$compile', function() {
             expect(element.text()).toEqual('OK');
           }
         ));
-
 
         it('should prevent further directives from running, but finish current priority level',
           inject(function($rootScope, $compile, log) {
@@ -657,7 +638,6 @@ describe('$compile', function() {
           })
         );
       });
-
 
       describe('restrict', function() {
 
@@ -709,7 +689,6 @@ describe('$compile', function() {
           });
         });
 
-
         it('should use EA rule as the default', function() {
           module(function() {
             directive('defaultDir', function(log) {
@@ -735,7 +714,6 @@ describe('$compile', function() {
           });
         });
       });
-
 
       describe('template', function() {
 
@@ -816,20 +794,17 @@ describe('$compile', function() {
           }));
         }));
 
-
         it('should replace element with template', inject(function($compile, $rootScope) {
           element = $compile('<div><div replace>ignore</div><div>')($rootScope);
           expect(element.text()).toEqual('Replace!');
           expect(element.find('div').attr('compiled')).toEqual('COMPILED');
         }));
 
-
         it('should append element with template', inject(function($compile, $rootScope) {
           element = $compile('<div><div append>ignore</div><div>')($rootScope);
           expect(element.text()).toEqual('Append!');
           expect(element.find('div').attr('compiled')).toEqual('COMPILED');
         }));
-
 
         it('should compile template when replacing', inject(function($compile, $rootScope, log) {
           element = $compile('<div><div replace medium-log>ignore</div><div>')($rootScope);
@@ -838,14 +813,12 @@ describe('$compile', function() {
           expect(log).toEqual('LOG; HIGH; MEDIUM');
         }));
 
-
         it('should compile template when appending', inject(function($compile, $rootScope, log) {
           element = $compile('<div><div append medium-log>ignore</div><div>')($rootScope);
           $rootScope.$digest();
           expect(element.text()).toEqual('Append!');
           expect(log).toEqual('LOG; HIGH; MEDIUM');
         }));
-
 
         it('should merge attributes including style attr', inject(function($compile, $rootScope) {
           element = $compile(
@@ -886,7 +859,6 @@ describe('$compile', function() {
           expect(element.text()).toEqual('Replace!Replace!');
         }));
 
-
         it('should play nice with repeater when appending', inject(function($compile, $rootScope) {
           element = $compile(
             '<div>' +
@@ -895,7 +867,6 @@ describe('$compile', function() {
           $rootScope.$digest();
           expect(element.text()).toEqual('Append!Append!');
         }));
-
 
         it('should handle interpolated css class from replacing directive', inject(
             function($compile, $rootScope) {
@@ -927,7 +898,6 @@ describe('$compile', function() {
           expect(element).toHaveClass('three');
           expect(element).toHaveClass('log'); // merged from replace directive template
         }));
-
 
         it('should merge interpolated css class with ngRepeat',
             inject(function($compile, $rootScope) {
@@ -1159,7 +1129,6 @@ describe('$compile', function() {
         });
       });
 
-
       describe('template as function', function() {
 
         beforeEach(module(function() {
@@ -1177,14 +1146,12 @@ describe('$compile', function() {
           }));
         }));
 
-
         it('should evaluate `template` when defined as fn and use returned string as template', inject(
             function($compile, $rootScope) {
           element = $compile('<div my-directive="some value">original content<div>')($rootScope);
           expect(element.text()).toEqual('template content');
         }));
       });
-
 
       describe('templateUrl', function() {
 
@@ -1225,7 +1192,6 @@ describe('$compile', function() {
                 throw new Error('lError');
               }
             }));
-
 
             directive('iHello', valueFn({
               restrict: 'CAM',
@@ -1326,7 +1292,6 @@ describe('$compile', function() {
 
               $rootScope.$digest();
 
-
               expect(sortedHtml(element)).
                   toEqual('<div><b class="hello"></b><b class="cau"><span>Cau!</span></b></div>');
 
@@ -1339,7 +1304,6 @@ describe('$compile', function() {
             }
         ));
 
-
         it('should inline template via $http and cache it in $templateCache', inject(
             function($compile, $httpBackend, $templateCache, $rootScope) {
               $httpBackend.expect('GET', 'hello.html').respond('<span>Hello!</span>');
@@ -1350,14 +1314,12 @@ describe('$compile', function() {
 
               $rootScope.$digest();
 
-
               expect(sortedHtml(element)).toBe('<div><b class="i-hello"></b><span class="i-cau">Cau!</span></div>');
 
               $httpBackend.flush();
               expect(sortedHtml(element)).toBe('<div><span class="i-hello">Hello!</span><span class="i-cau">Cau!</span></div>');
             }
         ));
-
 
         it('should compile, link and flush the template append', inject(
             function($compile, $templateCache, $rootScope, $browser) {
@@ -1372,7 +1334,6 @@ describe('$compile', function() {
             }
         ));
 
-
         it('should compile, link and flush the template inline', inject(
             function($compile, $templateCache, $rootScope) {
               $templateCache.put('hello.html', '<span>Hello, {{name}}!</span>');
@@ -1384,7 +1345,6 @@ describe('$compile', function() {
               expect(sortedHtml(element)).toBe('<div><span class="i-hello">Hello, Elvis!</span></div>');
             }
         ));
-
 
         it('should compile, flush and link the template append', inject(
             function($compile, $templateCache, $rootScope) {
@@ -1400,7 +1360,6 @@ describe('$compile', function() {
             }
         ));
 
-
         it('should compile, flush and link the template inline', inject(
             function($compile, $templateCache, $rootScope) {
               $templateCache.put('hello.html', '<span>Hello, {{name}}!</span>');
@@ -1414,7 +1373,6 @@ describe('$compile', function() {
             }
         ));
 
-
         it('should compile template when replacing element in another template',
             inject(function($compile, $templateCache, $rootScope) {
           $templateCache.put('hello.html', '<div replace></div>');
@@ -1427,7 +1385,6 @@ describe('$compile', function() {
             toEqual('<div><b class="hello"><span replace="">Hello, Elvis!</span></b></div>');
         }));
 
-
         it('should compile template when replacing root element',
             inject(function($compile, $templateCache, $rootScope) {
               $rootScope.name = 'Elvis';
@@ -1438,7 +1395,6 @@ describe('$compile', function() {
               expect(sortedHtml(element)).
                   toEqual('<span replace="">Hello, Elvis!</span>');
             }));
-
 
         it('should resolve widgets after cloning in append mode', function() {
           module(function($exceptionHandlerProvider) {
@@ -1574,7 +1530,6 @@ describe('$compile', function() {
           });
         });
 
-
         it('should be implicitly terminal and not compile placeholder content in append', inject(
             function($compile, $templateCache, $rootScope, log) {
               // we can't compile the contents because that would result in a memory leak
@@ -1585,7 +1540,6 @@ describe('$compile', function() {
               expect(log).toEqual('');
             }
         ));
-
 
         it('should be implicitly terminal and not compile placeholder content in inline', inject(
             function($compile, $templateCache, $rootScope, log) {
@@ -1598,7 +1552,6 @@ describe('$compile', function() {
             }
         ));
 
-
         it('should throw an error and clear element content if the template fails to load', inject(
             function($compile, $httpBackend, $rootScope) {
               $httpBackend.expect('GET', 'hello.html').respond(404, 'Not Found!');
@@ -1610,7 +1563,6 @@ describe('$compile', function() {
               expect(sortedHtml(element)).toBe('<div><b class="hello"></b></div>');
             }
         ));
-
 
         it('should prevent multiple templates per element', function() {
           module(function() {
@@ -1633,7 +1585,6 @@ describe('$compile', function() {
           });
         });
 
-
         it('should copy classes from pre-template node into linked element', function() {
           module(function() {
             directive('test', valueFn({
@@ -1652,7 +1603,6 @@ describe('$compile', function() {
             expect(element).toHaveClass('clonefn-class');
           });
         });
-
 
         describe('delay compile / linking functions until after template is resolved', function() {
           var template;
@@ -1707,7 +1657,6 @@ describe('$compile', function() {
             expect(span.text()).toEqual('3');
           }));
 
-
           it('should flush after link inline', inject(
               function($compile, $rootScope, $httpBackend, log) {
             $httpBackend.expect('GET', 'second.html').respond('<div i-third>{{1+2}}</div>');
@@ -1731,7 +1680,6 @@ describe('$compile', function() {
 
             expect(div.text()).toEqual('3');
           }));
-
 
           it('should flush before link append', inject(
               function($compile, $rootScope, $httpBackend, log) {
@@ -1757,7 +1705,6 @@ describe('$compile', function() {
 
             expect(span.text()).toEqual('3');
           }));
-
 
           it('should flush before link inline', inject(
               function($compile, $rootScope, $httpBackend, log) {
@@ -1785,7 +1732,6 @@ describe('$compile', function() {
           }));
         });
 
-
         it('should allow multiple elements in template', inject(function($compile, $httpBackend) {
           $httpBackend.expect('GET', 'hello.html').respond('before <b>mid</b> after');
           element = jqLite('<div hello></div>');
@@ -1793,7 +1739,6 @@ describe('$compile', function() {
           $httpBackend.flush();
           expect(element.text()).toEqual('before mid after');
         }));
-
 
         it('should work when directive is on the root element', inject(
           function($compile, $httpBackend, $rootScope) {
@@ -1807,7 +1752,6 @@ describe('$compile', function() {
           }
         ));
 
-
         it('should work when directive is in a repeater', inject(
           function($compile, $httpBackend, $rootScope) {
             $httpBackend.expect('GET', 'hello.html').
@@ -1819,7 +1763,6 @@ describe('$compile', function() {
             expect(element.text()).toEqual('i=1;i=2;');
           }
         ));
-
 
         it("should fail if replacing and template doesn't have a single root element", function() {
           module(function($exceptionHandlerProvider) {
@@ -1856,7 +1799,6 @@ describe('$compile', function() {
           });
         });
 
-
         it('should resume delayed compilation without duplicates when in a repeater', function() {
           // this is a test for a regression
           // scope creation, isolate watcher setup, controller instantiation, etc should happen
@@ -1888,7 +1830,6 @@ describe('$compile', function() {
             expect(element.text()).toBe('boom!1|boom!2|');
           });
         });
-
 
         it('should support templateUrl with replace', function() {
           // a regression https://github.com/angular/angular.js/issues/3792
@@ -2092,7 +2033,6 @@ describe('$compile', function() {
 
       });
 
-
       describe('templateUrl as function', function() {
 
         beforeEach(module(function() {
@@ -2110,7 +2050,6 @@ describe('$compile', function() {
           }));
         }));
 
-
         it('should evaluate `templateUrl` when defined as fn and use returned value as url', inject(
             function($compile, $rootScope, $templateCache) {
           $templateCache.put('my-directive.html', '<div id="templateContent">template content</span>');
@@ -2122,7 +2061,6 @@ describe('$compile', function() {
           expect(element.text()).toEqual('template content');
         }));
       });
-
 
       describe('scope', function() {
         var iscope;
@@ -2233,13 +2171,11 @@ describe('$compile', function() {
           });
         }));
 
-
         it('should allow creation of new scopes', inject(function($rootScope, $compile, log) {
           element = $compile('<div><span scope><a log></a></span></div>')($rootScope);
           expect(log).toEqual('2; log-2-1; LOG');
           expect(element.find('span').hasClass('ng-scope')).toBe(true);
         }));
-
 
         it('should allow creation of new isolated scopes for directives', inject(
             function($rootScope, $compile, log) {
@@ -2249,7 +2185,6 @@ describe('$compile', function() {
           expect(iscope.$parent).toBe($rootScope);
           expect(iscope.name).toBeUndefined();
         }));
-
 
         it('should allow creation of new scopes for directives with templates', inject(
             function($rootScope, $compile, log, $httpBackend) {
@@ -2263,7 +2198,6 @@ describe('$compile', function() {
           expect(element.find('span').scope().$id).toBe(2);
         }));
 
-
         it('should allow creation of new scopes for replace directives with templates', inject(
             function($rootScope, $compile, log, $httpBackend) {
           $httpBackend.expect('GET', 'trscope.html').
@@ -2276,7 +2210,6 @@ describe('$compile', function() {
           expect(element.text()).toBe('Jozo; scopeId: 2');
           expect(element.find('a').scope().$id).toBe(2);
         }));
-
 
         it('should allow creation of new scopes for replace directives with templates in a repeater',
             inject(function($rootScope, $compile, log, $httpBackend) {
@@ -2292,7 +2225,6 @@ describe('$compile', function() {
           expect(element.find('a').scope().$id).toBe(3);
         }));
 
-
         it('should allow creation of new isolated scopes for directives with templates', inject(
             function($rootScope, $compile, log, $httpBackend) {
           $httpBackend.expect('GET', 'tiscope.html').respond('<a log></a>');
@@ -2303,7 +2235,6 @@ describe('$compile', function() {
           expect(iscope.$parent).toBe($rootScope);
           expect(iscope.name).toBeUndefined();
         }));
-
 
         it('should correctly create the scope hierachy', inject(
           function($rootScope, $compile, log) {
@@ -2321,7 +2252,6 @@ describe('$compile', function() {
             expect(log).toEqual('2; 3; log-3-2; LOG; log-2-1; LOG; 4; log-4-1; LOG');
           })
         );
-
 
         it('should allow more than one new scope directives per element, but directives should share' +
             'the scope', inject(
@@ -2359,7 +2289,6 @@ describe('$compile', function() {
           });
         });
 
-
         it('should create new scope even at the root of the template', inject(
           function($rootScope, $compile, log) {
             element = $compile('<div scope-a></div>')($rootScope);
@@ -2367,14 +2296,12 @@ describe('$compile', function() {
           })
         );
 
-
         it('should create isolate scope even at the root of the template', inject(
           function($rootScope, $compile, log) {
             element = $compile('<div iscope></div>')($rootScope);
             expect(log).toEqual('2');
           })
         );
-
 
         describe('scope()/isolate() scope getters', function() {
 
@@ -2388,7 +2315,6 @@ describe('$compile', function() {
             );
           });
 
-
           describe('with new scope directives', function() {
 
             it('should return the new scope at the directive element', inject(
@@ -2398,14 +2324,12 @@ describe('$compile', function() {
               })
             );
 
-
             it('should return the new scope for children in the original template', inject(
               function($rootScope, $compile) {
                 element = $compile('<div scope><a></a></div>')($rootScope);
                 expect(element.find('a').scope().$parent).toBe($rootScope);
               })
             );
-
 
             it('should return the new scope for children in the directive template', inject(
               function($rootScope, $compile, $httpBackend) {
@@ -2424,7 +2348,6 @@ describe('$compile', function() {
             );
           });
 
-
           describe('with isolate scope directives', function() {
 
             it('should return the root scope for directives at the root element', inject(
@@ -2433,7 +2356,6 @@ describe('$compile', function() {
                 expect(element.scope()).toBe($rootScope);
               })
             );
-
 
             it('should return the non-isolate scope at the directive element', inject(
               function($rootScope, $compile) {
@@ -2445,14 +2367,12 @@ describe('$compile', function() {
               })
             );
 
-
             it('should return the isolate scope for children in the original template', inject(
               function($rootScope, $compile) {
                 element = $compile('<div iscope><a></a></div>')($rootScope);
                 expect(element.find('a').scope()).toBe($rootScope); //xx
               })
             );
-
 
             it('should return the isolate scope for children in directive template', inject(
               function($rootScope, $compile, $httpBackend) {
@@ -2474,7 +2394,6 @@ describe('$compile', function() {
             );
           });
 
-
           describe('with isolate scope directives and directives that manually create a new scope', function() {
 
             it('should return the new scope at the directive element', inject(
@@ -2487,7 +2406,6 @@ describe('$compile', function() {
                 expect(directiveElement.scope()).not.toBe(directiveElement.isolateScope());
               })
             );
-
 
             it('should return the isolate scope for child elements', inject(
               function($rootScope, $compile, $httpBackend) {
@@ -2518,7 +2436,6 @@ describe('$compile', function() {
     });
   });
 
-
   describe('interpolation', function() {
     var observeSpy, directiveAttrs, deregisterObserver;
 
@@ -2538,7 +2455,6 @@ describe('$compile', function() {
       }));
     }));
 
-
     it('should compile and link both attribute and text bindings', inject(
         function($rootScope, $compile) {
           $rootScope.name = 'angular';
@@ -2548,7 +2464,6 @@ describe('$compile', function() {
           expect(element.attr('name')).toEqual('attr: angular');
         })
     );
-
 
     it('should one-time bind if the expression starts with two colons', inject(
         function($rootScope, $compile) {
@@ -2581,7 +2496,6 @@ describe('$compile', function() {
           expect(element.attr('name')).toEqual('attr: angular');
         })
     );
-
 
     it('should process attribute interpolation in pre-linking phase at priority 100', function() {
       module(function() {
@@ -2669,7 +2583,6 @@ describe('$compile', function() {
         });
       });
 
-
       it('should occur if `debugInfoEnabled` is true', function() {
         module(function($compileProvider) {
           $compileProvider.debugInfoEnabled(true);
@@ -2695,7 +2608,6 @@ describe('$compile', function() {
       expect(observeSpy).toHaveBeenCalledOnceWith('bound-value');
     }));
 
-
     it('should return a deregistration function while observing an attribute', inject(function($rootScope, $compile) {
       $compile('<div some-attr="{{value}}" observer></div>')($rootScope);
 
@@ -2707,7 +2619,6 @@ describe('$compile', function() {
       expect(observeSpy).not.toHaveBeenCalledWith('new-value');
     }));
 
-
     it('should set interpolated attrs to initial interpolation value', inject(function($rootScope, $compile) {
       // we need the interpolated attributes to be initialized so that linking fn in a component
       // can access the value during link
@@ -2716,14 +2627,12 @@ describe('$compile', function() {
       expect(directiveAttrs.someAttr).toBe($rootScope.whatever);
     }));
 
-
     it('should allow directive to replace interpolated attributes before attr interpolation compilation', inject(
         function($compile, $rootScope) {
       element = $compile('<div some-attr="foo-{{1+1}}" replace-some-attr></div>')($rootScope);
       $rootScope.$digest();
       expect(element.attr('some-attr')).toEqual('bar-2');
     }));
-
 
     it('should call observer of non-interpolated attr through $evalAsync',
       inject(function($rootScope, $compile) {
@@ -2735,7 +2644,6 @@ describe('$compile', function() {
         expect(observeSpy).toHaveBeenCalled();
       })
     );
-
 
     it('should delegate exceptions to $exceptionHandler', function() {
       observeSpy = jasmine.createSpy('$observe attr').andThrow('ERROR');
@@ -2760,7 +2668,6 @@ describe('$compile', function() {
       });
     });
 
-
     it('should translate {{}} in terminal nodes', inject(function($rootScope, $compile) {
       element = $compile('<select ng:model="x"><option value="">Greet {{name}}!</option></select>')($rootScope);
       $rootScope.$digest();
@@ -2775,7 +2682,6 @@ describe('$compile', function() {
                   '<option value="">Greet Misko!</option>' +
                 '</select>');
     }));
-
 
     it('should support custom start/end interpolation symbols in template and directive template',
         function() {
@@ -2796,7 +2702,6 @@ describe('$compile', function() {
       });
     });
 
-
     it('should support custom start/end interpolation symbols in async directive template',
         function() {
       module(function($interpolateProvider, $compileProvider) {
@@ -2816,7 +2721,6 @@ describe('$compile', function() {
         expect(element.text()).toBe('AHOJ|ahoj|AHOJ');
       });
     });
-
 
     it('should make attributes observable for terminal directives', function() {
       module(function() {
@@ -2844,7 +2748,6 @@ describe('$compile', function() {
     });
   });
 
-
   describe('link phase', function() {
 
     beforeEach(module(function() {
@@ -2869,7 +2772,6 @@ describe('$compile', function() {
       });
     }));
 
-
     it('should not store linkingFns for noop branches', inject(function($rootScope, $compile) {
       element = jqLite('<div name="{{a}}"><span>ignore</span></div>');
       var linkingFn = $compile(element);
@@ -2880,14 +2782,12 @@ describe('$compile', function() {
       linkingFn($rootScope);
     }));
 
-
     it('should compile from top to bottom but link from bottom up', inject(
         function($compile, $rootScope, log) {
           element = $compile('<a b><c></c></a>')($rootScope);
           expect(log).toEqual('tA; tB; tC; preA; preB; preC; postC; postB; postA');
         }
     ));
-
 
     it('should support link function on directive object', function() {
       module(function() {
@@ -2923,7 +2823,6 @@ describe('$compile', function() {
     });
   });
 
-
   describe('attrs', function() {
 
     it('should allow setting of attributes', function() {
@@ -2943,7 +2842,6 @@ describe('$compile', function() {
         expect(element.attr('disabled')).toEqual('disabled');
       });
     });
-
 
     it('should read boolean attributes as boolean only on control elements', function() {
       var value;
@@ -2980,7 +2878,6 @@ describe('$compile', function() {
         expect(value).toEqual('some text');
       });
     });
-
 
     it('should create new instance of attr for each template stamping', function() {
       module(function($provide) {
@@ -3032,7 +2929,6 @@ describe('$compile', function() {
       });
     });
 
-
     it('should properly $observe inside ng-repeat', function() {
       var spies = [];
 
@@ -3067,7 +2963,6 @@ describe('$compile', function() {
       });
     });
 
-
     describe('$set', function() {
       var attr;
       beforeEach(function() {
@@ -3086,13 +2981,11 @@ describe('$compile', function() {
         });
       });
 
-
       it('should set attributes', function() {
         attr.$set('ngMyAttr', 'value');
         expect(element.attr('ng-my-attr')).toEqual('value');
         expect(attr.ngMyAttr).toEqual('value');
       });
-
 
       it('should allow overriding of attribute name and remember the name', function() {
         attr.$set('ngOther', '123', true, 'other');
@@ -3103,7 +2996,6 @@ describe('$compile', function() {
         expect(element.attr('other')).toEqual('246');
         expect(attr.ngOther).toEqual('246');
       });
-
 
       it('should remove attribute', function() {
         attr.$set('ngMyAttr', 'value');
@@ -3117,7 +3009,6 @@ describe('$compile', function() {
         expect(element.attr('ng-my-attr')).toBe(undefined);
       });
 
-
       it('should not set DOM element attr if writeAttr false', function() {
         attr.$set('test', 'value', false);
 
@@ -3126,7 +3017,6 @@ describe('$compile', function() {
       });
     });
   });
-
 
   describe('isolated locals', function() {
     var componentScope, regularScope;
@@ -3169,7 +3059,6 @@ describe('$compile', function() {
       });
     }));
 
-
     it('should give other directives the parent scope', inject(function($rootScope) {
       compile('<div><input type="text" my-component store-scope ng-model="value"></div>');
       $rootScope.$apply(function() {
@@ -3179,7 +3068,6 @@ describe('$compile', function() {
       expect(componentScope).not.toBe(regularScope);
       expect(componentScope.$parent).toBe(regularScope);
     }));
-
 
     it('should not give the isolate scope to other directive template', function() {
       module(function() {
@@ -3200,7 +3088,6 @@ describe('$compile', function() {
         expect(element.html()).toBe('value: from-parent');
       });
     });
-
 
     it('should not give the isolate scope to other directive template (with templateUrl)', function() {
       module(function() {
@@ -3223,7 +3110,6 @@ describe('$compile', function() {
       });
     });
 
-
     it('should not give the isolate scope to regular child elements', function() {
       inject(function($rootScope) {
         compile('<div my-component>value: {{value}}</div>');
@@ -3236,7 +3122,6 @@ describe('$compile', function() {
       });
     });
 
-
     it('should update parent scope when "="-bound NaN changes', inject(function($compile, $rootScope) {
       $rootScope.num = NaN;
       compile('<div my-component reference="num"></div>');
@@ -3247,7 +3132,6 @@ describe('$compile', function() {
       expect($rootScope.num).toBe(64);
     }));
 
-
     it('should update isolate scope when "="-bound NaN changes', inject(function($compile, $rootScope) {
       $rootScope.num = NaN;
       compile('<div my-component reference="num"></div>');
@@ -3257,7 +3141,6 @@ describe('$compile', function() {
       $rootScope.$apply(function(scope) { scope.num = 64; });
       expect(isolateScope.reference).toBe(64);
     }));
-
 
     it('should be able to bind attribute names which are present in Object.prototype', function() {
       module(function() {
@@ -3287,20 +3170,17 @@ describe('$compile', function() {
       });
     });
 
-
     it('should not initialize scope value if optional expression binding is not passed', inject(function($compile) {
       compile('<div my-component></div>');
       var isolateScope = element.isolateScope();
       expect(isolateScope.optExpr).toBeUndefined();
     }));
 
-
     it('should not initialize scope value if optional expression binding with Object.prototype name is not passed', inject(function($compile) {
       compile('<div my-component></div>');
       var isolateScope = element.isolateScope();
       expect(isolateScope.constructor).toBe($rootScope.constructor);
     }));
-
 
     it('should initialize scope value if optional expression binding is passed', inject(function($compile) {
       compile('<div my-component opt-expr="value = \'did!\'"></div>');
@@ -3310,7 +3190,6 @@ describe('$compile', function() {
       expect($rootScope.value).toBe('did!');
     }));
 
-
     it('should initialize scope value if optional expression binding with Object.prototype name is passed', inject(function($compile) {
       compile('<div my-component constructor="value = \'did!\'"></div>');
       var isolateScope = element.isolateScope();
@@ -3318,7 +3197,6 @@ describe('$compile', function() {
       expect(isolateScope.constructor()).toBe('did!');
       expect($rootScope.value).toBe('did!');
     }));
-
 
     describe('bind-once', function() {
 
@@ -3495,7 +3373,6 @@ describe('$compile', function() {
 
     });
 
-
     describe('attribute', function() {
       it('should copy simple attribute', inject(function() {
         compile('<div><span my-component attr="some text">');
@@ -3523,7 +3400,6 @@ describe('$compile', function() {
       }));
     });
 
-
     describe('object reference', function() {
       it('should update local when origin changes', inject(function() {
         compile('<div><span my-component ref="name">');
@@ -3542,7 +3418,6 @@ describe('$compile', function() {
         expect(componentScope.ref).toBe($rootScope.name);
         expect(componentScope.refAlias).toBe($rootScope.name);
       }));
-
 
       it('should update local when both change', inject(function() {
         compile('<div><span my-component ref="name">');
@@ -3657,7 +3532,6 @@ describe('$compile', function() {
           test('undefined', undefined);
           test("'someString'", 'someString');
 
-
           function test(literalString, literalValue) {
             compile('<div><span my-component reference="' + literalString + '">');
 
@@ -3672,7 +3546,6 @@ describe('$compile', function() {
       });
 
     });
-
 
     describe('optional object reference', function() {
       it('should update local when origin changes', inject(function() {
@@ -3699,7 +3572,6 @@ describe('$compile', function() {
         expect(componentScope.optreference).toBe(undefined);
       }));
     });
-
 
     describe('collection object reference', function() {
       it('should update isolate scope when origin scope changes', inject(function() {
@@ -3746,7 +3618,6 @@ describe('$compile', function() {
         expect($rootScope.collection[2]).toEqual(newItem);
       }));
     });
-
 
     describe('executable expression', function() {
       it('should allow expression execution with locals', inject(function() {
@@ -3796,7 +3667,6 @@ describe('$compile', function() {
       expect(componentScope.$$isolateBindings).toBe(first$$isolateBindings);
     }));
 
-
     it('should expose isolate scope variables on controller with controllerAs when bindToController is true', function() {
       var controllerCalled = false;
       module(function($compileProvider) {
@@ -3834,7 +3704,6 @@ describe('$compile', function() {
       });
     });
 
-
     it('should update @-bindings on controller when bindToController and attribute change observed', function() {
       module(function($compileProvider) {
         $compileProvider.directive('atBinding', valueFn({
@@ -3859,7 +3728,6 @@ describe('$compile', function() {
         expect(p.text()).toBe('Test: Kittens');
       });
     });
-
 
     it('should expose isolate scope variables on controller with controllerAs when bindToController is true', function() {
       var controllerCalled = false;
@@ -3900,7 +3768,6 @@ describe('$compile', function() {
       });
     });
 
-
     it('should throw noctrl when missing controller', function() {
       module(function($compileProvider) {
         $compileProvider.directive('noCtrl', valueFn({
@@ -3921,7 +3788,6 @@ describe('$compile', function() {
             'Cannot bind to controller without directive \'noCtrl\'s controller.');
       });
     });
-
 
     it('should throw noident when missing controllerAs directive property', function() {
       module(function($compileProvider) {
@@ -3944,7 +3810,6 @@ describe('$compile', function() {
       });
     });
 
-
     it('should throw noident when missing controller identifier', function() {
       module(function($compileProvider, $controllerProvider) {
         $controllerProvider.register('myCtrl', function() {});
@@ -3966,7 +3831,6 @@ describe('$compile', function() {
         'Cannot bind to controller without identifier for directive \'noIdent\'.');
       });
     });
-
 
     it('should bind to controller via object notation (isolate scope)', function() {
       var controllerCalled = false;
@@ -4007,7 +3871,6 @@ describe('$compile', function() {
       });
     });
 
-
     it('should bind to controller via object notation (new scope)', function() {
       var controllerCalled = false;
       module(function($compileProvider, $controllerProvider) {
@@ -4047,7 +3910,6 @@ describe('$compile', function() {
       });
     });
 
-
     it('should put controller in scope when controller identifier present but not using controllerAs', function() {
       var controllerCalled = false;
       var myCtrl;
@@ -4073,7 +3935,6 @@ describe('$compile', function() {
         expect(childScope.theCtrl).toBe(myCtrl);
       });
     });
-
 
     it('should re-install controllerAs and bindings for returned value from controller (new scope)', function() {
       var controllerCalled = false;
@@ -4127,7 +3988,6 @@ describe('$compile', function() {
         childScope.theCtrl.test();
       });
     });
-
 
     it('should re-install controllerAs and bindings for returned value from controller (isolate scope)', function() {
       var controllerCalled = false;
@@ -4183,7 +4043,6 @@ describe('$compile', function() {
     });
   });
 
-
   describe('controller', function() {
     it('should get required controller', function() {
       module(function() {
@@ -4221,7 +4080,6 @@ describe('$compile', function() {
       });
     });
 
-
     it('should respect explicit return value from controller', function() {
       var expectedController;
       module(function() {
@@ -4246,7 +4104,6 @@ describe('$compile', function() {
         expect(element.data('$logControllerPropController')).toBe(expectedController);
       });
     });
-
 
     it('should get explicit return value of required parent controller', function() {
       var expectedController;
@@ -4276,7 +4133,6 @@ describe('$compile', function() {
       });
     });
 
-
     it('should respect explicit controller return value when using controllerAs', function() {
       module(function() {
         directive('main', function() {
@@ -4298,7 +4154,6 @@ describe('$compile', function() {
         expect(element.text()).toBe('template:george');
       });
     });
-
 
     it('transcluded children should receive explicit return value of parent controller', function() {
       var expectedController;
@@ -4335,7 +4190,6 @@ describe('$compile', function() {
       });
     });
 
-
     it('explicit controller return values are ignored if they are primitives', function() {
       module(function() {
         directive('logControllerProp', function(log) {
@@ -4357,7 +4211,6 @@ describe('$compile', function() {
       });
     });
 
-
     it('should get required parent controller', function() {
       module(function() {
         directive('nested', function(log) {
@@ -4375,7 +4228,6 @@ describe('$compile', function() {
         expect(log).toEqual('true; false');
       });
     });
-
 
     it('should get required parent controller when the question mark precedes the ^^', function() {
       module(function() {
@@ -4395,7 +4247,6 @@ describe('$compile', function() {
       });
     });
 
-
     it('should throw if required parent is not found', function() {
       module(function() {
         directive('nested', function() {
@@ -4412,7 +4263,6 @@ describe('$compile', function() {
         }).toThrowMinErr('$compile', 'ctreq', "Controller 'nested', required by directive 'nested', can't be found!");
       });
     });
-
 
     it('should get required controller via linkingFn (template)', function() {
       module(function() {
@@ -4438,7 +4288,6 @@ describe('$compile', function() {
         expect(log).toEqual('dirAController.name: dirA');
       });
     });
-
 
     it('should get required controller via linkingFn (templateUrl)', function() {
       module(function() {
@@ -4466,7 +4315,6 @@ describe('$compile', function() {
         expect(log).toEqual('dirAController.name: dirA');
       });
     });
-
 
     it('should require controller of an isolate directive from a non-isolate directive on the ' +
         'same element', function() {
@@ -4498,7 +4346,6 @@ describe('$compile', function() {
       });
     });
 
-
     it('should give the isolate scope to the controller of another replaced directives in the template', function() {
       module(function() {
         directive('testDirective', function() {
@@ -4521,7 +4368,6 @@ describe('$compile', function() {
         expect(element[0].checked).toBe(true);
       });
     });
-
 
     it('should share isolate scope with replaced directives (template)', function() {
       var normalScope;
@@ -4557,7 +4403,6 @@ describe('$compile', function() {
         expect(element.text()).toEqual('WORKS');
       });
     });
-
 
     it('should share isolate scope with replaced directives (templateUrl)', function() {
       var normalScope;
@@ -4595,7 +4440,6 @@ describe('$compile', function() {
       });
     });
 
-
     it('should not get confused about where to use isolate scope when a replaced directive is used multiple times',
         function() {
 
@@ -4630,7 +4474,6 @@ describe('$compile', function() {
       });
     });
 
-
     it('should require controller of a non-isolate directive from an isolate directive on the ' +
        'same element', function() {
       var NonIsolateController = function() {};
@@ -4661,7 +4504,6 @@ describe('$compile', function() {
       });
     });
 
-
     it('should support controllerAs', function() {
       module(function() {
         directive('main', function() {
@@ -4684,7 +4526,6 @@ describe('$compile', function() {
       });
     });
 
-
     it('should support controller alias', function() {
       module(function($controllerProvider) {
         $controllerProvider.register('MainCtrl', function() {
@@ -4705,8 +4546,6 @@ describe('$compile', function() {
         expect(element.text()).toBe('lucas');
       });
     });
-
-
 
     it('should require controller on parent element',function() {
       module(function() {
@@ -4732,7 +4571,6 @@ describe('$compile', function() {
       });
     });
 
-
     it("should throw an error if required controller can't be found",function() {
       module(function() {
         directive('dep', function(log) {
@@ -4751,7 +4589,6 @@ describe('$compile', function() {
       });
     });
 
-
     it("should pass null if required controller can't be found and is optional",function() {
       module(function() {
         directive('dep', function(log) {
@@ -4768,7 +4605,6 @@ describe('$compile', function() {
         expect(log).toEqual('dep:null');
       });
     });
-
 
     it("should pass null if required controller can't be found and is optional with the question mark on the right",function() {
       module(function() {
@@ -4787,7 +4623,6 @@ describe('$compile', function() {
       });
     });
 
-
     it('should have optional controller on current element', function() {
       module(function() {
         directive('dep', function(log) {
@@ -4804,7 +4639,6 @@ describe('$compile', function() {
         expect(log).toEqual('dep:false');
       });
     });
-
 
     it('should support multiple controllers', function() {
       module(function() {
@@ -4828,7 +4662,6 @@ describe('$compile', function() {
         expect(log).toEqual('dep:c1-c2');
       });
     });
-
 
     it('should instantiate the controller just once when template/templateUrl', function() {
       var syncCtrlSpy = jasmine.createSpy('sync controller'),
@@ -4868,8 +4701,6 @@ describe('$compile', function() {
       });
     });
 
-
-
     it('should instantiate controllers in the parent->child order when transluction, templateUrl and replacement ' +
         'are in the mix', function() {
       // When a child controller is in the transclusion that replaces the parent element that has a directive with
@@ -4908,7 +4739,6 @@ describe('$compile', function() {
       });
     });
 
-
     it('should instantiate the controller after the isolate scope bindings are initialized (with template)', function() {
       module(function() {
         var Ctrl = function($scope, log) {
@@ -4934,7 +4764,6 @@ describe('$compile', function() {
         expect(log).toEqual('myFoo=bar');
       });
     });
-
 
     it('should instantiate the controller after the isolate scope bindings are initialized (with templateUrl)', function() {
       module(function() {
@@ -4962,7 +4791,6 @@ describe('$compile', function() {
         expect(log).toEqual('myFoo=bar');
       });
     });
-
 
     it('should instantiate controllers in the parent->child->baby order when nested transluction, templateUrl and ' +
         'replacement are in the mix', function() {
@@ -5012,7 +4840,6 @@ describe('$compile', function() {
       });
     });
 
-
     it('should allow controller usage in pre-link directive functions with templateUrl', function() {
       module(function() {
         var Ctrl = function(log) {
@@ -5045,7 +4872,6 @@ describe('$compile', function() {
       });
     });
 
-
     it('should allow controller usage in pre-link directive functions with a template', function() {
       module(function() {
         var Ctrl = function(log) {
@@ -5076,7 +4902,6 @@ describe('$compile', function() {
       });
     });
 
-
     it('should throw ctreq with correct directive name, regardless of order', function() {
       module(function($compileProvider) {
         $compileProvider.directive('aDir', valueFn({
@@ -5097,7 +4922,6 @@ describe('$compile', function() {
       });
     });
   });
-
 
   describe('transclude', function() {
 
@@ -5126,7 +4950,6 @@ describe('$compile', function() {
           expect(jqLite(element.find('span')[1]).text()).toEqual(';');
         });
       });
-
 
       it('should transclude transcluded content', function() {
         module(function() {
@@ -5160,7 +4983,6 @@ describe('$compile', function() {
         });
       });
 
-
       it('should only allow one content transclusion per element', function() {
         module(function() {
           directive('first', valueFn({
@@ -5177,14 +4999,11 @@ describe('$compile', function() {
         });
       });
 
-
-
       it('should not leak if two "element" transclusions are on the same element (with debug info)', function() {
         if (jQuery) {
           // jQuery 2.x doesn't expose the cache storage.
           return;
         }
-
 
         module(function($compileProvider) {
           $compileProvider.debugInfoEnabled(true);
@@ -5210,13 +5029,11 @@ describe('$compile', function() {
         });
       });
 
-
       it('should not leak if two "element" transclusions are on the same element (without debug info)', function() {
         if (jQuery) {
           // jQuery 2.x doesn't expose the cache storage.
           return;
         }
-
 
         module(function($compileProvider) {
           $compileProvider.debugInfoEnabled(false);
@@ -5241,7 +5058,6 @@ describe('$compile', function() {
           expect(jqLiteCacheSize()).toEqual(0);
         });
       });
-
 
       it('should not leak if two "element" transclusions are on the same element (with debug info)', function() {
         if (jQuery) {
@@ -5390,7 +5206,6 @@ describe('$compile', function() {
         });
       }
 
-
       it('should add a $$transcluded property onto the transcluded scope', function() {
         module(function() {
           directive('trans', function() {
@@ -5410,7 +5225,6 @@ describe('$compile', function() {
         });
       });
 
-
       it('should clear contents of the ng-translude element before appending transcluded content', function() {
         module(function() {
           directive('trans', function() {
@@ -5427,7 +5241,6 @@ describe('$compile', function() {
         });
       });
 
-
       it('should throw on an ng-transclude element inside no transclusion directive', function() {
         inject(function($rootScope, $compile) {
           // we need to do this because different browsers print empty attributes differently
@@ -5442,7 +5255,6 @@ describe('$compile', function() {
           }
         });
       });
-
 
       it('should not pass transclusion into a template directive when the directive didn\'t request transclusion', function() {
 
@@ -5475,7 +5287,6 @@ describe('$compile', function() {
               'Illegal use of ngTransclude directive in the template! No parent directive that requires a transclusion found. Element: <div class="bar" ng-transclude="">');
         });
       });
-
 
       it('should not pass transclusion into a templateUrl directive', function() {
 
@@ -5513,7 +5324,6 @@ describe('$compile', function() {
         });
       });
 
-
       it('should expose transcludeFn in compile fn even for templateUrl', function() {
         module(function() {
           directive('transInCompile', valueFn({
@@ -5541,7 +5351,6 @@ describe('$compile', function() {
         });
       });
 
-
       it('should make the result of a transclusion available to the parent directive in post-linking phase' +
           '(template)', function() {
         module(function() {
@@ -5566,7 +5375,6 @@ describe('$compile', function() {
           expect(log).toEqual('pre(); post(unicorn!)');
         });
       });
-
 
       it('should make the result of a transclusion available to the parent directive in post-linking phase' +
           '(templateUrl)', function() {
@@ -5598,7 +5406,6 @@ describe('$compile', function() {
         });
       });
 
-
       it('should make the result of a transclusion available to the parent *replace* directive in post-linking phase' +
           '(template)', function() {
         module(function() {
@@ -5624,7 +5431,6 @@ describe('$compile', function() {
           expect(log).toEqual('pre(); post(unicorn!)');
         });
       });
-
 
       it('should make the result of a transclusion available to the parent *replace* directive in post-linking phase' +
           ' (templateUrl)', function() {
@@ -5761,7 +5567,6 @@ describe('$compile', function() {
 
       });
 
-
       // see issue https://github.com/angular/angular.js/issues/9413
       describe('passing a parent bound transclude function to the link ' +
           'function returned from `$compile`', function() {
@@ -5817,7 +5622,6 @@ describe('$compile', function() {
           });
         });
 
-
         it('should preserve the bound scope when using recursive transclusion', function() {
 
           directive('recursiveTransclude', valueFn({
@@ -5855,7 +5659,6 @@ describe('$compile', function() {
         });
       });
 
-
       // see issue https://github.com/angular/angular.js/issues/9095
       describe('removing a transcluded element', function() {
 
@@ -5867,7 +5670,6 @@ describe('$compile', function() {
             };
           });
         }));
-
 
         it('should not leak the transclude scope when the transcluded content is an element transclusion directive',
               inject(function($compile, $rootScope) {
@@ -5899,7 +5701,6 @@ describe('$compile', function() {
           expect($rootScope.$countChildScopes()).toBe(0);
         }));
 
-
         it('should not leak the transclude scope when the transcluded content is an multi-element transclusion directive',
               inject(function($compile, $rootScope) {
 
@@ -5930,7 +5731,6 @@ describe('$compile', function() {
           // Expected scopes: $rootScope
           expect($rootScope.$countChildScopes()).toBe(0);
         }));
-
 
         it('should not leak the transclude scope if the transcluded contains only comments',
               inject(function($compile, $rootScope) {
@@ -6011,7 +5811,6 @@ describe('$compile', function() {
         }));
       });
 
-
       describe('nested transcludes', function() {
 
         beforeEach(module(function($compileProvider) {
@@ -6056,7 +5855,6 @@ describe('$compile', function() {
           $templateCache.put('asyncAsync', '<div noop><div async><div ng-transclude></div></div></div>');
         }));
 
-
         it('should allow nested transclude directives with sync template containing sync template', inject(function($compile, $rootScope) {
           element = $compile('<div sync-sync>transcluded content</div>')($rootScope);
           $rootScope.$digest();
@@ -6081,7 +5879,6 @@ describe('$compile', function() {
           expect(element.text()).toEqual('transcluded content');
         }));
 
-
         it('should not leak memory with nested transclusion', function() {
           inject(function($compile, $rootScope) {
             var size;
@@ -6104,7 +5901,6 @@ describe('$compile', function() {
           });
         });
       });
-
 
       describe('nested isolated scope transcludes', function() {
         beforeEach(module(function($compileProvider) {
@@ -6145,7 +5941,6 @@ describe('$compile', function() {
           $templateCache.put('transAsync', '<div ng-transclude></div>');
           $templateCache.put('isoAsync', '<trans-async><span ng-transclude></span></trans-async>');
         }));
-
 
         it('should pass the outer scope to the transclude on the isolated template sync-sync', inject(function($compile, $rootScope) {
 
@@ -6211,7 +6006,6 @@ describe('$compile', function() {
       });
     });
 
-
     describe('element transclusion', function() {
 
       it('should support basic element transclusion', function() {
@@ -6258,7 +6052,6 @@ describe('$compile', function() {
         });
       });
 
-
       it('should only allow one element transclusion per element when directives have different priorities', function() {
         // we restart compilation in this case and we need to remember the duplicates during the second compile
         // regression #3893
@@ -6277,7 +6070,6 @@ describe('$compile', function() {
           }).toThrowMinErr('$compile', 'multidir', /Multiple directives \[first, second\] asking for transclusion on: <div .+/);
         });
       });
-
 
       it('should only allow one element transclusion per element when async replace directive is in the mix', function() {
         module(function() {
@@ -6302,7 +6094,6 @@ describe('$compile', function() {
         });
       });
 
-
       it('should support transcluded element on root content', function() {
         var comment;
         module(function() {
@@ -6324,7 +6115,6 @@ describe('$compile', function() {
           expect(nodeName_(comment)).toBe('#comment');
         });
       });
-
 
       it('should terminate compilation only for element trasclusion', function() {
         module(function() {
@@ -6348,7 +6138,6 @@ describe('$compile', function() {
           expect(log).toEqual('compile:elementTrans; compile:regularTrans; regular');
         });
       });
-
 
       it('should instantiate high priority controllers only once, but low priority ones each time we transclude',
           function() {
@@ -6548,7 +6337,6 @@ describe('$compile', function() {
       expect(element.text()).toBe('-->|x|');
     }));
 
-
     // See https://github.com/angular/angular.js/issues/7183
     it("should pass transclusion through to template of a 'replace' directive", function() {
       module(function() {
@@ -6599,7 +6387,6 @@ describe('$compile', function() {
 
     });
   });
-
 
   describe('img[src] sanitization', function() {
 
@@ -7019,7 +6806,6 @@ describe('$compile', function() {
         expect(log.toArray()).toEqual(['TEST', 'TEST']);
       }));
 
-
       it('should provide post-digest value in asynchronous directive link functions when after overridden attribute',
           inject(function(log, $rootScope, $compile) {
         $rootScope.test = "TEST";
@@ -7118,7 +6904,6 @@ describe('$compile', function() {
         });
       });
 
-
       it('should keep attributes ending with -end single-element directives', function() {
         module(function($compileProvider) {
           $compileProvider.directive('dashEnder', function(log) {
@@ -7138,7 +6923,6 @@ describe('$compile', function() {
     });
 
   });
-
 
   describe('when an attribute has an underscore-separated name', function() {
 
@@ -7183,7 +6967,6 @@ describe('$compile', function() {
       expect(spans.eq(1)).toBeHidden();
     }));
 
-
     it('should group on compile function', inject(function($compile, $rootScope) {
       $rootScope.show = false;
       element = $compile(
@@ -7194,7 +6977,6 @@ describe('$compile', function() {
       $rootScope.$digest();
       expect(element.text()).toEqual('1A1B;2A2B;');
     }));
-
 
     it('should support grouping over text nodes', inject(function($compile, $rootScope) {
       $rootScope.show = false;
@@ -7208,7 +6990,6 @@ describe('$compile', function() {
       expect(element.text()).toEqual('1A:1B;2A:2B;');
     }));
 
-
     it('should group on $root compile function', inject(function($compile, $rootScope) {
       $rootScope.show = false;
       element = $compile(
@@ -7220,7 +7001,6 @@ describe('$compile', function() {
       element = jqLite(element[0].parentNode.childNodes); // reset because repeater is top level.
       expect(element.text()).toEqual('1A1B;2A2B;');
     }));
-
 
     it('should group on nested groups', function() {
       module(function($compileProvider) {
@@ -7246,7 +7026,6 @@ describe('$compile', function() {
       });
     });
 
-
     it('should group on nested groups of same directive', inject(function($compile, $rootScope) {
       $rootScope.show = false;
       element = $compile(
@@ -7260,7 +7039,6 @@ describe('$compile', function() {
       element = jqLite(element[0].parentNode.childNodes); // reset because repeater is top level.
       expect(element.text()).toEqual('1(2-23-3)1;2(2-23-3)2;');
     }));
-
 
     it('should set up and destroy the transclusion scopes correctly',
           inject(function($compile, $rootScope) {
@@ -7337,7 +7115,6 @@ describe('$compile', function() {
       expect(ngIf2Scope.$$destroyed).toEqual(true);
     }));
 
-
     it('should set up and destroy the transclusion scopes correctly',
           inject(function($compile, $rootScope) {
       element = $compile(
@@ -7384,7 +7161,6 @@ describe('$compile', function() {
       // What is happening here??
       // We seem to have a repeater scope which doesn't actually match to any element
       expect(ngRepeatScope.$parent.$id).toEqual($rootScope.$id);
-
 
       // Now remove the first ngIf element from the first item in the repeater
       $rootScope.$apply('val1 = false');
@@ -7450,7 +7226,6 @@ describe('$compile', function() {
       });
     });
 
-
     it('should correctly collect ranges on multiple directives on a single element', function() {
       module(function($compileProvider) {
         $compileProvider.directive('emptyDirective', function() {
@@ -7486,7 +7261,6 @@ describe('$compile', function() {
       });
     });
 
-
     it('should throw error if unterminated (containing termination as a child)', function() {
       module(function($compileProvider) {
         $compileProvider.directive('foo', function() {
@@ -7504,7 +7278,6 @@ describe('$compile', function() {
         }).toThrowMinErr("$compile", "uterdir", "Unterminated attribute, found 'foo-start' but no matching 'foo-end' found.");
       });
     });
-
 
     it('should support data- and x- prefix', inject(function($compile, $rootScope) {
       $rootScope.show = false;

@@ -16,7 +16,6 @@
  * {@link ngCookies.$cookieStore `$cookieStore`} for usage.
  */
 
-
 angular.module('ngCookies', ['ng']).
   /**
    * @ngdoc provider

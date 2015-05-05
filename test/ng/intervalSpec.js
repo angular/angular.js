@@ -85,7 +85,6 @@ describe('$interval', function() {
     expect(applySpy.callCount).toBe(3);
   }));
 
-
   it('should NOT call $apply if invokeApply is set to false',
       inject(function($interval, $rootScope, $window) {
     var applySpy = spyOn($rootScope, '$apply').andCallThrough();
@@ -96,7 +95,6 @@ describe('$interval', function() {
     $window.flush(2000);
     expect(applySpy).not.toHaveBeenCalled();
   }));
-
 
   it('should NOT call $evalAsync or $digest if invokeApply is set to false',
       inject(function($interval, $rootScope, $window, $timeout) {
@@ -114,7 +112,6 @@ describe('$interval', function() {
     expect(digestSpy).not.toHaveBeenCalled();
   }));
 
-
   it('should allow you to specify the delay time', inject(function($interval, $window) {
     var counter = 0;
     $interval(function() { counter++; }, 123);
@@ -128,7 +125,6 @@ describe('$interval', function() {
     expect(counter).toBe(1);
   }));
 
-
   it('should allow you to specify a number of iterations', inject(function($interval, $window) {
     var counter = 0;
     $interval(function() {counter++;}, 1000, 2);
@@ -140,7 +136,6 @@ describe('$interval', function() {
     $window.flush(1000);
     expect(counter).toBe(2);
   }));
-
 
   it('should allow you to specify a number of arguments', inject(function($interval, $window) {
     var task1 = jasmine.createSpy('task1'),
@@ -166,7 +161,6 @@ describe('$interval', function() {
 
   }));
 
-
   it('should return a promise which will be updated with the count on each iteration',
       inject(function($interval, $window) {
     var log = [],
@@ -183,7 +177,6 @@ describe('$interval', function() {
     $window.flush(1000);
     expect(log).toEqual(['tick', 'promise update: 0', 'tick', 'promise update: 1']);
   }));
-
 
   it('should return a promise which will be resolved after the specified number of iterations',
       inject(function($interval, $window) {
@@ -205,12 +198,10 @@ describe('$interval', function() {
 
   }));
 
-
   describe('exception handling', function() {
     beforeEach(module(function($exceptionHandlerProvider) {
       $exceptionHandlerProvider.mode('log');
     }));
-
 
     it('should delegate exception to the $exceptionHandler service', inject(
         function($interval, $exceptionHandler, $window) {
@@ -224,7 +215,6 @@ describe('$interval', function() {
       expect($exceptionHandler.errors).toEqual(["Test Error", "Test Error"]);
     }));
 
-
     it('should call $apply even if an exception is thrown in callback', inject(
         function($interval, $rootScope, $window) {
       var applySpy = spyOn($rootScope, '$apply').andCallThrough();
@@ -235,7 +225,6 @@ describe('$interval', function() {
       $window.flush(1000);
       expect(applySpy).toHaveBeenCalled();
     }));
-
 
     it('should still update the interval promise when an exception is thrown',
         inject(function($interval, $window) {
@@ -250,7 +239,6 @@ describe('$interval', function() {
       expect(log).toEqual(['promise update: 0']);
     }));
   });
-
 
   describe('cancel', function() {
     it('should cancel tasks', inject(function($interval, $window) {
@@ -272,7 +260,6 @@ describe('$interval', function() {
       expect(task3).not.toHaveBeenCalled();
     }));
 
-
     it('should cancel the promise', inject(function($interval, $rootScope, $window) {
       var promise = $interval(noop, 1000),
           log = [];
@@ -290,7 +277,6 @@ describe('$interval', function() {
       expect(log).toEqual(['promise update: 0', 'promise error: canceled']);
     }));
 
-
     it('should return true if a task was successfully canceled',
         inject(function($interval, $window) {
       var task1 = jasmine.createSpy('task1'),
@@ -304,7 +290,6 @@ describe('$interval', function() {
       expect($interval.cancel(promise1)).toBe(false);
       expect($interval.cancel(promise2)).toBe(true);
     }));
-
 
     it('should not throw a runtime exception when given an undefined promise',
         inject(function($interval) {

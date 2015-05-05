@@ -120,7 +120,6 @@ beforeEach(function() {
       return this.actual.callCount == 1;
     },
 
-
     toHaveBeenCalledOnceWith: function() {
       var expectedArgs = jasmine.util.argsToArray(arguments);
 
@@ -157,7 +156,6 @@ beforeEach(function() {
 
       return this.actual.callCount === 1 && this.env.contains_(this.actual.argsForCall, expectedArgs);
     },
-
 
     toBeOneOf: function() {
       return Array.prototype.indexOf.call(arguments, this.actual) !== -1;
@@ -229,7 +227,6 @@ beforeEach(function() {
   });
 });
 
-
 // TODO(vojta): remove this once Jasmine in Karma gets updated
 // https://github.com/pivotal/jasmine/blob/c40b64a24c607596fa7488f2a0ddb98d063c872a/src/core/Matchers.js#L217-L246
 // This toThrow supports RegExps.
@@ -263,7 +260,6 @@ jasmine.Matchers.prototype.toThrow = function(expected) {
 
   return result;
 };
-
 
 /**
  * Create jasmine.Spy on given method, but ignore calls without arguments

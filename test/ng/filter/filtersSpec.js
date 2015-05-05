@@ -130,14 +130,12 @@ describe('filters', function() {
     }));
   });
 
-
   describe('number', function() {
     var number;
 
     beforeEach(inject(function($rootScope) {
       number = filter('number');
     }));
-
 
     it('should do basic filter', function() {
       /* jshint -W008 */
@@ -414,7 +412,6 @@ describe('filters', function() {
       expect(date(morning, 'yy/xxx')).toEqual('10/xxx');
     });
 
-
     it('should support various iso8061 date strings with timezone as input', function() {
       var format = 'yyyy-MM-dd ss';
 
@@ -436,7 +433,6 @@ describe('filters', function() {
       //no minutes
       expect(date('2003-09-10T13Z', format)).toEqual('2003-09-' + localDay + ' 00');
     });
-
 
     it('should parse iso8061 date strings without timezone as local time', function() {
       var format = 'yyyy-MM-dd HH-mm-ss';

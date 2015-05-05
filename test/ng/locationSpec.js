@@ -12,7 +12,6 @@ describe('$location', function() {
     jqLite(document).off('click');
   });
 
-
   describe('File Protocol', function() {
     /* global urlParsingNode: true */
     var urlParsingNodePlaceholder;
@@ -43,7 +42,6 @@ describe('$location', function() {
       urlParsingNode = urlParsingNodePlaceholder;
     }));
 
-
     it('should not include the drive name in path() on WIN', function() {
       //See issue #4680 for details
       url = new LocationHashbangUrl('file:///base', '#!');
@@ -52,7 +50,6 @@ describe('$location', function() {
       expect(url.path()).toBe('/foo');
     });
 
-
     it('should include the drive name if it was provided in the input url', function() {
       url = new LocationHashbangUrl('file:///base', '#!');
       url.$$parse('file:///base#!/C:/foo?a=b&c#hash');
@@ -60,7 +57,6 @@ describe('$location', function() {
       expect(url.path()).toBe('/C:/foo');
     });
   });
-
 
   it('should not infinitely digest when using a semicolon in initial path', function() {
     module(function($windowProvider, $locationProvider, $browserProvider, $documentProvider) {
@@ -116,7 +112,6 @@ describe('$location', function() {
       url.$$parse('http://www.domain.com:9877/path/b?search=a&b=c&d#hash');
     });
 
-
     it('should provide common getters', function() {
       expect(url.absUrl()).toBe('http://www.domain.com:9877/path/b?search=a&b=c&d#hash');
       expect(url.protocol()).toBe('http');
@@ -127,7 +122,6 @@ describe('$location', function() {
       expect(url.hash()).toBe('hash');
       expect(url.url()).toBe('/path/b?search=a&b=c&d#hash');
     });
-
 
     it('path() should change path', function() {
       url.path('/new/path');
@@ -160,13 +154,11 @@ describe('$location', function() {
       expect(url.absUrl()).toBe('http://www.domain.com:9877/path/b?x=y&c#hash');
     });
 
-
     it('search() should accept object', function() {
       url.search({one: 1, two: true});
       expect(url.search()).toEqual({one: 1, two: true});
       expect(url.absUrl()).toBe('http://www.domain.com:9877/path/b?one=1&two#hash');
     });
-
 
     it('search() should copy object', function() {
       var obj = {one: 1, two: true, three: null};
@@ -177,7 +169,6 @@ describe('$location', function() {
       expect(url.absUrl()).toBe('http://www.domain.com:9877/path/b?one=1&two#hash');
     });
 
-
     it('search() should change single parameter', function() {
       url.search({id: 'old', preserved: true});
       url.search('id', 'new');
@@ -185,14 +176,12 @@ describe('$location', function() {
       expect(url.search()).toEqual({id: 'new', preserved: true});
     });
 
-
     it('search() should remove single parameter', function() {
       url.search({id: 'old', preserved: true});
       url.search('id', null);
 
       expect(url.search()).toEqual({preserved: true});
     });
-
 
     it('search() should remove multiple parameters', function() {
       url.search({one: 1, two: true});
@@ -202,13 +191,11 @@ describe('$location', function() {
       expect(url.absUrl()).toBe('http://www.domain.com:9877/path/b#hash');
     });
 
-
     it('search() should accept numeric keys', function() {
       url.search({1: 'one', 2: 'two'});
       expect(url.search()).toEqual({'1': 'one', '2': 'two'});
       expect(url.absUrl()).toBe('http://www.domain.com:9877/path/b?1=one&2=two#hash');
     });
-
 
     it('search() should handle multiple value', function() {
       url.search('a&b');
@@ -222,14 +209,12 @@ describe('$location', function() {
       expect(url.search()).toEqual({});
     });
 
-
     it('search() should handle single value', function() {
       url.search('ignore');
       expect(url.search()).toEqual({ignore: true});
       url.search(1);
       expect(url.search()).toEqual({1: true});
     });
-
 
     it('search() should throw error an incorrect argument', function() {
       expect(function() {
@@ -240,13 +225,11 @@ describe('$location', function() {
       }).toThrowMinErr('$location', 'isrcharg', 'The first argument of the `$location#search()` call must be a string or an object.');
     });
 
-
     it('hash() should change hash fragment', function() {
       url.hash('new-hash');
       expect(url.hash()).toBe('new-hash');
       expect(url.absUrl()).toBe('http://www.domain.com:9877/path/b?search=a&b=c&d#new-hash');
     });
-
 
     it('hash() should accept numeric parameter', function() {
       url.hash(5);
@@ -266,7 +249,6 @@ describe('$location', function() {
       expect(url.absUrl()).toBe('http://www.domain.com:9877/path/b?search=a&b=c&d');
     });
 
-
     it('url() should change the path, search and hash', function() {
       url.url('/some/path?a=b&c=d#hhh');
       expect(url.url()).toBe('/some/path?a=b&c=d#hhh');
@@ -276,7 +258,6 @@ describe('$location', function() {
       expect(url.hash()).toBe('hhh');
     });
 
-
     it('url() should change only hash when no search and path specified', function() {
       url.url('#some-hash');
 
@@ -285,7 +266,6 @@ describe('$location', function() {
       expect(url.absUrl()).toBe('http://www.domain.com:9877/path/b?search=a&b=c&d#some-hash');
     });
 
-
     it('url() should change only search and hash when no path specified', function() {
       url.url('?a=b');
 
@@ -293,7 +273,6 @@ describe('$location', function() {
       expect(url.hash()).toBe('');
       expect(url.path()).toBe('/path/b');
     });
-
 
     it('url() should reset search and hash when only path specified', function() {
       url.url('/new/path');
@@ -311,7 +290,6 @@ describe('$location', function() {
       expect(url.hash()).toBe('');
     });
 
-
     it('replace should set $$replace flag and return itself', function() {
       expect(url.$$replace).toBe(false);
 
@@ -319,7 +297,6 @@ describe('$location', function() {
       expect(url.$$replace).toBe(true);
       expect(url.replace()).toBe(url);
     });
-
 
     it('should parse new url', function() {
       url = new LocationHtml5Url('http://host.com/');
@@ -331,7 +308,6 @@ describe('$location', function() {
       expect(url.path()).toBe('/base');
     });
 
-
     it('should prefix path with forward-slash', function() {
       url = new LocationHtml5Url('http://server/');
       url.path('b');
@@ -340,7 +316,6 @@ describe('$location', function() {
       expect(url.absUrl()).toBe('http://server/b');
     });
 
-
     it('should set path to forward-slash when empty', function() {
       url = new LocationHtml5Url('http://server/');
       url.$$parse('http://server/');
@@ -348,14 +323,12 @@ describe('$location', function() {
       expect(url.absUrl()).toBe('http://server/');
     });
 
-
     it('setters should return Url object to allow chaining', function() {
       expect(url.path('/any')).toBe(url);
       expect(url.search('')).toBe(url);
       expect(url.hash('aaa')).toBe(url);
       expect(url.url('/some')).toBe(url);
     });
-
 
     it('should not preserve old properties when parsing new url', function() {
       url.$$parse('http://www.domain.com:9877/a');
@@ -386,7 +359,6 @@ describe('$location', function() {
       expect(url.absUrl()).toBe('http://server/base/new/path?a');
     });
 
-
     it('should throw error when invalid server url given', function() {
       url = new LocationHtml5Url('http://server.org/base/abc', '/base');
 
@@ -395,7 +367,6 @@ describe('$location', function() {
       }).toThrowMinErr('$location', 'ipthprfx', 'Invalid url "http://other.server.org/path#/path", missing path prefix "http://server.org/base/".');
     });
 
-
     it('should throw error when invalid base url given', function() {
       url = new LocationHtml5Url('http://server.org/base/abc', '/base');
 
@@ -403,7 +374,6 @@ describe('$location', function() {
         url.$$parse('http://server.org/path#/path');
       }).toThrowMinErr('$location', 'ipthprfx', 'Invalid url "http://server.org/path#/path", missing path prefix "http://server.org/base/".');
     });
-
 
     describe('state', function() {
       it('should set $$state and return itself', function() {
@@ -434,7 +404,6 @@ describe('$location', function() {
       });
     });
 
-
     describe('encoding', function() {
 
       it('should encode special characters', function() {
@@ -448,7 +417,6 @@ describe('$location', function() {
         expect(url.absUrl()).toBe('http://www.domain.com:9877/a%20%3C%3E%23?i%20j=%3C%3E%23#%3C%3E%23');
       });
 
-
       it('should not encode !$:@', function() {
         url.path('/!$:@');
         url.search('');
@@ -456,7 +424,6 @@ describe('$location', function() {
 
         expect(url.absUrl()).toBe('http://www.domain.com:9877/!$:@#!$:@');
       });
-
 
       it('should decode special characters', function() {
         url = new LocationHtml5Url('http://host.com/');
@@ -480,14 +447,12 @@ describe('$location', function() {
     });
   });
 
-
   describe('HashbangUrl', function() {
 
     beforeEach(function() {
       url = new LocationHashbangUrl('http://www.server.org:1234/base', '#!');
       url.$$parse('http://www.server.org:1234/base#!/path?a=b&c#hash');
     });
-
 
     it('should parse hashbang url into path and search', function() {
       expect(url.protocol()).toBe('http');
@@ -498,7 +463,6 @@ describe('$location', function() {
       expect(url.hash()).toBe('hash');
     });
 
-
     it('absUrl() should return hashbang url', function() {
       expect(url.absUrl()).toBe('http://www.server.org:1234/base#!/path?a=b&c#hash');
 
@@ -507,7 +471,6 @@ describe('$location', function() {
       url.hash('hhh');
       expect(url.absUrl()).toBe('http://www.server.org:1234/base#!/new/path?one=1#hhh');
     });
-
 
     it('should preserve query params in base', function() {
       url = new LocationHashbangUrl('http://www.server.org:1234/base?base=param', '#');
@@ -520,7 +483,6 @@ describe('$location', function() {
       expect(url.absUrl()).toBe('http://www.server.org:1234/base?base=param#/new/path?one=1#hhh');
     });
 
-
     it('should prefix path with forward-slash', function() {
       url = new LocationHashbangUrl('http://host.com/base', '#');
       url.$$parse('http://host.com/base#path');
@@ -532,7 +494,6 @@ describe('$location', function() {
       expect(url.absUrl()).toBe('http://host.com/base#/wrong');
     });
 
-
     it('should set path to forward-slash when empty', function() {
       url = new LocationHashbangUrl('http://server/base', '#!');
       url.$$parse('http://server/base');
@@ -542,7 +503,6 @@ describe('$location', function() {
       expect(url.absUrl()).toBe('http://server/base#!/aaa');
     });
 
-
     it('should not preserve old properties when parsing new url', function() {
       url.$$parse('http://www.server.org:1234/base#!/');
 
@@ -551,7 +511,6 @@ describe('$location', function() {
       expect(url.hash()).toBe('');
       expect(url.absUrl()).toBe('http://www.server.org:1234/base#!/');
     });
-
 
     it('should insert default hashbang if a hash is given with no hashbang prefix', function() {
 
@@ -573,7 +532,6 @@ describe('$location', function() {
       expect(url.hash()).toBe('');
     });
 
-
     describe('encoding', function() {
 
       it('should encode special characters', function() {
@@ -587,7 +545,6 @@ describe('$location', function() {
         expect(url.absUrl()).toBe('http://www.server.org:1234/base#!/a%20%3C%3E%23?i%20j=%3C%3E%23#%3C%3E%23');
       });
 
-
       it('should not encode !$:@', function() {
         url.path('/!$:@');
         url.search('');
@@ -595,7 +552,6 @@ describe('$location', function() {
 
         expect(url.absUrl()).toBe('http://www.server.org:1234/base#!/!$:@#!$:@');
       });
-
 
       it('should decode special characters', function() {
         url = new LocationHashbangUrl('http://host.com/a', '#');
@@ -605,13 +561,11 @@ describe('$location', function() {
         expect(url.hash()).toBe('x <>#');
       });
 
-
       it('should return decoded characters for search specified in URL', function() {
         var locationUrl = new LocationHtml5Url('http://host.com/');
         locationUrl.$$parse('http://host.com/?q=1%2F2%203');
         expect(locationUrl.search()).toEqual({'q': '1/2 3'});
       });
-
 
       it('should return decoded characters for search specified with setter', function() {
         var locationUrl = new LocationHtml5Url('http://host.com/');
@@ -644,7 +598,6 @@ describe('$location', function() {
       });
     });
   });
-
 
   function initService(options) {
     return module(function($provide, $locationProvider) {
@@ -687,7 +640,6 @@ describe('$location', function() {
     beforeEach(initService({html5Mode:false,hashPrefix: '!',supportHistory: true}));
     beforeEach(inject(initBrowser({url:'http://new.com/a/b#!',basePath: 'http://new.com/a/b'})));
 
-
     it('should update $location when browser url changes', inject(function($browser, $location) {
       spyOn($location, '$$parse').andCallThrough();
       $browser.url('http://new.com/a/b#!/aaa');
@@ -697,13 +649,11 @@ describe('$location', function() {
       expect($location.$$parse).toHaveBeenCalledOnce();
     }));
 
-
     // location.href = '...' fires hashchange event synchronously, so it might happen inside $apply
     it('should not $apply when browser url changed inside $apply', inject(
         function($rootScope, $browser, $location) {
       var OLD_URL = $browser.url(),
           NEW_URL = 'http://new.com/a/b#!/new';
-
 
       $rootScope.$apply(function() {
         $browser.url(NEW_URL);
@@ -734,7 +684,6 @@ describe('$location', function() {
       expect($location.absUrl()).toBe(NEW_URL);
     }));
 
-
     it('should update browser when $location changes', inject(function($rootScope, $browser, $location) {
       var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
       $location.path('/new/path');
@@ -744,7 +693,6 @@ describe('$location', function() {
       expect($browserUrl).toHaveBeenCalledOnce();
       expect($browser.url()).toBe('http://new.com/a/b#!/new/path');
     }));
-
 
     it('should update browser only once per $apply cycle', inject(function($rootScope, $browser, $location) {
       var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
@@ -759,7 +707,6 @@ describe('$location', function() {
       expect($browser.url()).toBe('http://new.com/a/b#!/new/path?a=b');
     }));
 
-
     it('should replace browser url when url was replaced at least once',
         inject(function($rootScope, $location, $browser) {
       var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
@@ -770,7 +717,6 @@ describe('$location', function() {
       expect($browserUrl.mostRecentCall.args).toEqual(['http://new.com/a/b#!/n/url', true, null]);
       expect($location.$$replace).toBe(false);
     }));
-
 
     it('should always reset replace flag after running watch', inject(function($rootScope, $location) {
       // init watches
@@ -792,7 +738,6 @@ describe('$location', function() {
       $rootScope.$apply();
       expect($location.$$replace).toBe(false);
     }));
-
 
     it('should update the browser if changed from within a watcher', inject(function($rootScope, $location, $browser) {
       $rootScope.$watch(function() { return true; }, function() {
@@ -920,7 +865,6 @@ describe('$location', function() {
       }));
   });
 
-
   // html5 history is disabled
   describe('disabled history', function() {
 
@@ -938,7 +882,6 @@ describe('$location', function() {
       );
     });
 
-
     it('should use hashbang url without hash prefix', function() {
       initService({html5Mode:false,hashPrefix: ''});
       inject(
@@ -953,7 +896,6 @@ describe('$location', function() {
       );
     });
   });
-
 
   // html5 history enabled, but not supported by browser
   describe('history on old browser', function() {
@@ -976,7 +918,6 @@ describe('$location', function() {
       );
     });
 
-
     it('should redirect to hashbang url when new url given', function() {
       initService({html5Mode:true,hashPrefix: '!'});
       inject(
@@ -997,7 +938,6 @@ describe('$location', function() {
       );
     });
   });
-
 
   // html5 history enabled and supported by browser
   describe('history on new browser', function() {
@@ -1020,7 +960,6 @@ describe('$location', function() {
       );
     });
 
-
     it('should rewrite when hashbang url given', function() {
       initService({html5Mode:true,hashPrefix: '!',supportHistory: true});
       inject(
@@ -1035,7 +974,6 @@ describe('$location', function() {
         }
       );
     });
-
 
     it('should rewrite when hashbang url given (without hash prefix)', function() {
       initService({html5Mode:true,hashPrefix: '',supportHistory: true});
@@ -1057,13 +995,11 @@ describe('$location', function() {
       expect(match[1]).toBe('/path');
     });
 
-
     it('should parse path with search', function() {
       var match = PATH_MATCH.exec('/ppp/a?a=b&c');
       expect(match[1]).toBe('/ppp/a');
       expect(match[3]).toBe('a=b&c');
     });
-
 
     it('should parse path with hash', function() {
       var match = PATH_MATCH.exec('/ppp/a#abc?');
@@ -1071,13 +1007,11 @@ describe('$location', function() {
       expect(match[5]).toBe('abc?');
     });
 
-
     it('should parse path with both search and hash', function() {
       var match = PATH_MATCH.exec('/ppp/a?a=b&c#abc/d?');
       expect(match[3]).toBe('a=b&c');
     });
   });
-
 
   describe('link rewriting', function() {
 
@@ -1157,7 +1091,6 @@ describe('$location', function() {
       dealoc(document.body);
     });
 
-
     it('should rewrite rel link to new url when history enabled on new browser', function() {
       configureService({linkHref: 'link?a#b', html5Mode: true, supportHist: true});
       inject(
@@ -1169,7 +1102,6 @@ describe('$location', function() {
         }
       );
     });
-
 
     it('should do nothing if already on the same URL', function() {
       configureService({linkHref: '/base/', html5Mode: true, supportHist: true});
@@ -1197,7 +1129,6 @@ describe('$location', function() {
       );
     });
 
-
     it('should rewrite abs link to new url when history enabled on new browser', function() {
       configureService({linkHref: '/base/link?a#b', html5Mode: true, supportHist: true});
       inject(
@@ -1209,7 +1140,6 @@ describe('$location', function() {
         }
       );
     });
-
 
     it('should rewrite rel link to hashbang url when history enabled on old browser', function() {
       configureService({linkHref: 'link?a#b', html5Mode: true, supportHist: false});
@@ -1223,7 +1153,6 @@ describe('$location', function() {
       );
     });
 
-
     // Regression (gh-7721)
     it('should not throw when clicking anchor with no href attribute when history enabled on old browser', function() {
       configureService({linkHref: null, html5Mode: true, supportHist: false});
@@ -1236,7 +1165,6 @@ describe('$location', function() {
         }
       );
     });
-
 
     it('should produce relative paths correctly when $location.path() is "/" when history enabled on old browser', function() {
       configureService({linkHref: 'partial1', html5Mode: true, supportHist: false});
@@ -1253,7 +1181,6 @@ describe('$location', function() {
       );
     });
 
-
     it('should rewrite abs link to hashbang url when history enabled on old browser', function() {
       configureService({linkHref: '/base/link?a#b', html5Mode: true, supportHist: false});
       inject(
@@ -1265,7 +1192,6 @@ describe('$location', function() {
         }
       );
     });
-
 
     it('should not rewrite full url links to different domain', function() {
       configureService({linkHref: 'http://www.dot.abc/a?b=c', html5Mode: true});
@@ -1279,7 +1205,6 @@ describe('$location', function() {
       );
     });
 
-
     it('should not rewrite links with target="_blank"', function() {
       configureService({linkHref: 'base/a?b=c', html5Mode: true, supportHist: true, attrs: 'target="_blank"'});
       inject(
@@ -1291,7 +1216,6 @@ describe('$location', function() {
         }
       );
     });
-
 
     it('should not rewrite links with target specified', function() {
       configureService({linkHref: 'base/a?b=c', html5Mode: true, supportHist: true, attrs: 'target="some-frame"'});
@@ -1305,7 +1229,6 @@ describe('$location', function() {
       );
     });
 
-
     it('should not rewrite links with `javascript:` URI', function() {
       configureService({linkHref: ' jAvAsCrIpT:throw new Error("Boom!")', html5Mode: true, supportHist: true, relLink: true});
       inject(
@@ -1317,7 +1240,6 @@ describe('$location', function() {
         }
       );
     });
-
 
     it('should not rewrite links with `mailto:` URI', function() {
       configureService({linkHref: ' mAiLtO:foo@bar.com', html5Mode: true, supportHist: true, relLink: true});
@@ -1331,7 +1253,6 @@ describe('$location', function() {
       );
     });
 
-
     it('should not rewrite links when rewriting links is disabled', function() {
       configureService({linkHref: 'link?a#b', html5Mode: {enabled: true, rewriteLinks:false}, supportHist: true});
       inject(
@@ -1344,7 +1265,6 @@ describe('$location', function() {
       );
     });
 
-
     it('should rewrite full url links to same domain and base path', function() {
       configureService({linkHref: 'http://host.com/base/new', html5Mode: true});
       inject(
@@ -1356,7 +1276,6 @@ describe('$location', function() {
         }
       );
     });
-
 
     it('should rewrite when clicked span inside link', function() {
       configureService({linkHref: 'some/link', html5Mode: true, supportHist: true, attrs: '', content: '<span>link</span>'});
@@ -1372,7 +1291,6 @@ describe('$location', function() {
       );
     });
 
-
     it('should not rewrite when link to different base path when history enabled on new browser',
         function() {
       configureService({linkHref: '/other_base/link', html5Mode: true, supportHist: true});
@@ -1385,7 +1303,6 @@ describe('$location', function() {
         }
       );
     });
-
 
     it('should not rewrite when link to different base path when history enabled on old browser',
         function() {
@@ -1400,7 +1317,6 @@ describe('$location', function() {
       );
     });
 
-
     it('should not rewrite when link to different base path when history disabled', function() {
       configureService({linkHref: '/other_base/link', html5Mode: false});
       inject(
@@ -1412,7 +1328,6 @@ describe('$location', function() {
         }
       );
     });
-
 
     it('should not rewrite when full link to different base path when history enabled on new browser',
         function() {
@@ -1427,7 +1342,6 @@ describe('$location', function() {
       );
     });
 
-
     it('should not rewrite when full link to different base path when history enabled on old browser',
         function() {
       configureService({linkHref: 'http://host.com/other_base/link', html5Mode: true, supportHist: false});
@@ -1440,7 +1354,6 @@ describe('$location', function() {
         }
       );
     });
-
 
     it('should not rewrite when full link to different base path when history disabled', function() {
       configureService({linkHref: 'http://host.com/other_base/link', html5Mode: false});
@@ -1500,7 +1413,6 @@ describe('$location', function() {
       );
     });
 
-
     it('should not rewrite when clicked with meta pressed', function() {
       configureService({linkHref: 'base/a?b=c', html5Mode: true, supportHist: true});
       inject(
@@ -1547,7 +1459,6 @@ describe('$location', function() {
       );
     });
 
-
     it('should not rewrite when clicked with shift pressed', function() {
       configureService({linkHref: 'base/a?b=c', html5Mode: true, supportHist: true});
       inject(
@@ -1559,7 +1470,6 @@ describe('$location', function() {
         }
       );
     });
-
 
     it('should not mess up hash urls when clicking on links in hashbang mode', function() {
       var base;
@@ -1580,7 +1490,6 @@ describe('$location', function() {
         var av1 = $rootElement.find('a').eq(0);
         var av2 = $rootElement.find('a').eq(1);
 
-
         browserTrigger(av1, 'click');
         expect($browser.url()).toEqual(base + '#/view1');
 
@@ -1590,7 +1499,6 @@ describe('$location', function() {
         $rootElement.remove();
       });
     });
-
 
     it('should not mess up hash urls when clicking on links in hashbang mode with a prefix',
         function() {
@@ -1612,7 +1520,6 @@ describe('$location', function() {
         var av1 = $rootElement.find('a').eq(0);
         var av2 = $rootElement.find('a').eq(1);
 
-
         browserTrigger(av1, 'click');
         expect($browser.url()).toEqual(base + '#!/view1');
 
@@ -1620,7 +1527,6 @@ describe('$location', function() {
         expect($browser.url()).toEqual(base + '#!/view2');
       });
     });
-
 
     it('should not intercept clicks outside the current hash prefix', function() {
       var base, clickHandler;
@@ -1646,12 +1552,10 @@ describe('$location', function() {
           isDefaultPrevented: jasmine.createSpy().andReturn(false)
         };
 
-
         clickHandler(event);
         expect(event.preventDefault).not.toHaveBeenCalled();
       });
     });
-
 
     it('should not intercept hash link clicks outside the app base url space', function() {
       var base, clickHandler;
@@ -1677,12 +1581,10 @@ describe('$location', function() {
           isDefaultPrevented: jasmine.createSpy().andReturn(false)
         };
 
-
         clickHandler(event);
         expect(event.preventDefault).not.toHaveBeenCalled();
       });
     });
-
 
     // regression https://github.com/angular/angular.js/issues/1058
     it('should not throw if element was removed', inject(function($document, $rootElement, $location) {
@@ -1697,7 +1599,6 @@ describe('$location', function() {
       });
       browserTrigger(button, 'click');
     }));
-
 
     it('should not throw when clicking an SVGAElement link', function() {
       var base;
@@ -1723,7 +1624,6 @@ describe('$location', function() {
       });
     });
   });
-
 
   describe('location cancellation', function() {
     it('should fire $before/afterLocationChange event', inject(function($location, $browser, $rootScope, $log) {
@@ -1751,7 +1651,6 @@ describe('$location', function() {
       expect($location.url()).toEqual('/somePath');
       expect($browser.url()).toEqual('http://server/#/somePath');
     }));
-
 
     it('should allow $locationChangeStart event cancellation', inject(function($location, $browser, $rootScope, $log) {
       expect($browser.url()).toEqual('http://server/');
@@ -1883,7 +1782,6 @@ describe('$location', function() {
           $log.info('after', newUrl, oldUrl);
         });
 
-
         $browser.url('http://server/#/somePath');
         $browser.poll();
 
@@ -1968,7 +1866,6 @@ describe('$location', function() {
         var log = '',
             link = $rootElement.find('a');
 
-
         $rootScope.$on('$locationChangeStart', function(event) {
           event.preventDefault();
           log += '$locationChangeStart';
@@ -1985,7 +1882,6 @@ describe('$location', function() {
         dealoc($rootElement);
       });
     });
-
 
     it('should listen on click events on href and prevent browser default in html5 mode', function() {
       module(function($locationProvider, $provide) {
@@ -2053,7 +1949,6 @@ describe('$location', function() {
     return undefined;
   }
 
-
   describe('html5Mode', function() {
     it('should set enabled,  requireBase and rewriteLinks when called with object', function() {
       module(function($locationProvider) {
@@ -2067,7 +1962,6 @@ describe('$location', function() {
 
       inject(function() {});
     });
-
 
     it('should only overwrite existing properties if values are boolean', function() {
       module(function($locationProvider) {
@@ -2087,7 +1981,6 @@ describe('$location', function() {
       inject(function() {});
     });
 
-
     it('should not set unknown input properties to html5Mode object', function() {
       module(function($locationProvider) {
         $locationProvider.html5Mode({
@@ -2103,7 +1996,6 @@ describe('$location', function() {
 
       inject(function() {});
     });
-
 
     it('should default to enabled:false, requireBase:true and rewriteLinks:true', function() {
       module(function($locationProvider) {
@@ -2141,7 +2033,6 @@ describe('$location', function() {
       expect(parseLinkAndReturn(location, 'someIgnoredAbsoluteHref', '#test')).toEqual('http://server/pre/otherPath#test');
     });
 
-
     it('should complain if no base tag present', function() {
       module(function($locationProvider) {
         $locationProvider.html5Mode(true);
@@ -2155,7 +2046,6 @@ describe('$location', function() {
           "$location in HTML5 mode requires a <base> tag to be present!");
       });
     });
-
 
     it('should not complain if baseOptOut set to true in html5Mode', function() {
       module(function($locationProvider) {
@@ -2178,7 +2068,6 @@ describe('$location', function() {
       expect(location.state({a: 2}).state()).toEqual({a: 2});
     });
   });
-
 
   function throwOnState(location) {
     expect(function() {
@@ -2224,7 +2113,6 @@ describe('$location', function() {
       expect(location.absUrl()).toBe('http://server/pre/index.html#/foo/bar');
     });
 
-
     it("should prefix hash url with / if one was originally missing", function() {
       location = new LocationHashbangUrl('http://server/pre/index.html', '#');
 
@@ -2232,7 +2120,6 @@ describe('$location', function() {
       expect(location.url()).toBe('/not-starting-with-slash');
       expect(location.absUrl()).toBe('http://server/pre/index.html#/not-starting-with-slash');
     });
-
 
     it('should not strip stuff from path just because it looks like Windows drive when it\'s not',
         function() {
@@ -2247,7 +2134,6 @@ describe('$location', function() {
       throwOnState(location);
     });
   });
-
 
   describe('LocationHashbangInHtml5Url', function() {
     /* global LocationHashbangInHtml5Url: false */

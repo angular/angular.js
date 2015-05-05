@@ -10,7 +10,6 @@ describe('parser', function() {
     getterFnCacheExpensive = createMap();
   });
 
-
   describe('lexer', function() {
     var lex;
 
@@ -241,7 +240,6 @@ describe('parser', function() {
       expect(createAst('')).toEqual({type: 'Program', body: []});
     });
 
-
     it('should understand identifiers', function() {
       expect(createAst('foo')).toEqual(
         {
@@ -255,7 +253,6 @@ describe('parser', function() {
         }
       );
     });
-
 
     it('should understand non-computed member expressions', function() {
       expect(createAst('foo.bar')).toEqual(
@@ -275,7 +272,6 @@ describe('parser', function() {
         }
       );
     });
-
 
     it('should associate non-computed member expressions left-to-right', function() {
       expect(createAst('foo.bar.baz')).toEqual(
@@ -301,7 +297,6 @@ describe('parser', function() {
       );
     });
 
-
     it('should understand computed member expressions', function() {
       expect(createAst('foo[bar]')).toEqual(
         {
@@ -320,7 +315,6 @@ describe('parser', function() {
         }
       );
     });
-
 
     it('should associate computed member expressions left-to-right', function() {
       expect(createAst('foo[bar][baz]')).toEqual(
@@ -346,7 +340,6 @@ describe('parser', function() {
       );
     });
 
-
     it('should understand call expressions', function() {
       expect(createAst('foo()')).toEqual(
         {
@@ -364,7 +357,6 @@ describe('parser', function() {
         }
       );
     });
-
 
     it('should parse call expression arguments', function() {
       expect(createAst('foo(bar, baz)')).toEqual(
@@ -386,7 +378,6 @@ describe('parser', function() {
         }
       );
     });
-
 
     it('should parse call expression left-to-right', function() {
       expect(createAst('foo(bar, baz)(man, shell)')).toEqual(
@@ -416,7 +407,6 @@ describe('parser', function() {
       );
     });
 
-
     it('should keep the context when having superfluous parenthesis', function() {
       expect(createAst('(foo)(bar, baz)')).toEqual(
         {
@@ -437,7 +427,6 @@ describe('parser', function() {
         }
       );
     });
-
 
     it('should treat member expressions and call expression with the same precedence', function() {
       expect(createAst('foo.bar[baz]()')).toEqual(
@@ -516,7 +505,6 @@ describe('parser', function() {
       );
     });
 
-
     it('should understand literals', function() {
       // In a strict sense, `undefined` is not a literal but an identifier
       forEach({'123': 123, '"123"': '123', 'true': true, 'false': false, 'null': null, 'undefined': undefined}, function(value, expression) {
@@ -534,7 +522,6 @@ describe('parser', function() {
       });
     });
 
-
     it('should understand the `this` expression', function() {
       expect(createAst('this')).toEqual(
         {
@@ -548,7 +535,6 @@ describe('parser', function() {
         }
       );
     });
-
 
     it('should not confuse `this`, `undefined`, `true`, `false`, `null` when used as identfiers', function() {
       forEach(['this', 'undefined', 'true', 'false', 'null'], function(identifier) {
@@ -571,18 +557,15 @@ describe('parser', function() {
       });
     });
 
-
     it('should throw when trying to use non-identifiers as identifiers', function() {
       expect(function() { createAst('foo.)'); }).toThrowMinErr('$parse', 'syntax',
           "Syntax Error: Token ')' is not a valid identifier at column 5 of the expression [foo.)");
     });
 
-
     it('should throw when all tokens are not consumed', function() {
       expect(function() { createAst('foo bar'); }).toThrowMinErr('$parse', 'syntax',
           "Syntax Error: Token 'bar' is an unexpected token at column 5 of the expression [foo bar] starting at [bar]");
     });
-
 
     it('should understand the unary operators `-`, `+` and `!`', function() {
       forEach(['-', '+', '!'], function(operator) {
@@ -604,7 +587,6 @@ describe('parser', function() {
         );
       });
     });
-
 
     it('should handle all unary operators with the same precedence', function() {
       forEach([['+', '-', '!'], ['-', '!', '+'], ['!', '+', '-']], function(operators) {
@@ -637,7 +619,6 @@ describe('parser', function() {
       });
     });
 
-
     it('should be able to understand binary operators', function() {
       forEach(['*', '/', '%', '+', '-', '<', '>', '<=', '>=', '==','!=','===','!=='], function(operator) {
         expect(createAst('foo' + operator + 'bar')).toEqual(
@@ -658,7 +639,6 @@ describe('parser', function() {
         );
       });
     });
-
 
     it('should associate binary operators with the same precendence left-to-right', function() {
       var operatorsByPrecedence = [['*', '/', '%'], ['+', '-'], ['<', '>', '<=', '>='], ['==','!=','===','!==']];
@@ -690,7 +670,6 @@ describe('parser', function() {
         });
       });
     });
-
 
     it('should give higher prcedence to member calls than to unary expressions', function() {
       forEach(['!', '+', '-'], function(operator) {
@@ -759,7 +738,6 @@ describe('parser', function() {
       });
     });
 
-
     it('should give higher precedence to unary operators over multiplicative operators', function() {
       forEach(['!', '+', '-'], function(op1) {
         forEach(['*', '/', '%'], function(op2) {
@@ -792,7 +770,6 @@ describe('parser', function() {
         });
       });
     });
-
 
     it('should give binary operators their right precedence', function() {
       var operatorsByPrecedence = [['*', '/', '%'], ['+', '-'], ['<', '>', '<=', '>='], ['==','!=','===','!==']];
@@ -830,8 +807,6 @@ describe('parser', function() {
       }
     });
 
-
-
     it('should understand logical operators', function() {
       forEach(['||', '&&'], function(operator) {
         expect(createAst('foo' + operator + 'bar')).toEqual(
@@ -852,7 +827,6 @@ describe('parser', function() {
         );
       });
     });
-
 
     it('should associate logical operators left-to-right', function() {
       forEach(['||', '&&'], function(op) {
@@ -880,8 +854,6 @@ describe('parser', function() {
       });
     });
 
-
-
     it('should understand ternary operators', function() {
       expect(createAst('foo?bar:baz')).toEqual(
         {
@@ -900,7 +872,6 @@ describe('parser', function() {
         }
       );
     });
-
 
     it('should associate the conditional operator right-to-left', function() {
       expect(createAst('foo0?foo1:foo2?bar0?bar1:bar2:man0?man1:man2')).toEqual(
@@ -936,7 +907,6 @@ describe('parser', function() {
       );
     });
 
-
     it('should understand assignment operator', function() {
       // Currently, only `=` is supported
       expect(createAst('foo=bar')).toEqual(
@@ -956,7 +926,6 @@ describe('parser', function() {
         }
       );
     });
-
 
     it('should associate assignments right-to-left', function() {
       // Currently, only `=` is supported
@@ -982,7 +951,6 @@ describe('parser', function() {
         }
       );
     });
-
 
     it('should give higher precedence to equality than to the logical `and` operator', function() {
       forEach(['==','!=','===','!=='], function(operator) {
@@ -1015,7 +983,6 @@ describe('parser', function() {
       });
     });
 
-
     it('should give higher precedence to logical `and` than to logical `or`', function() {
       expect(createAst('foo&&bar||man&&shell')).toEqual(
         {
@@ -1045,8 +1012,6 @@ describe('parser', function() {
       );
     });
 
-
-
     it('should give higher precedence to the logical `or` than to the conditional operator', function() {
       expect(createAst('foo||bar?man:shell')).toEqual(
         {
@@ -1071,7 +1036,6 @@ describe('parser', function() {
       );
     });
 
-
     it('should give higher precedence to the conditional operator than to assignment operators', function() {
       expect(createAst('foo=bar?man:shell')).toEqual(
         {
@@ -1095,7 +1059,6 @@ describe('parser', function() {
         }
       );
     });
-
 
     it('should understand array literals', function() {
       expect(createAst('[]')).toEqual(
@@ -1183,7 +1146,6 @@ describe('parser', function() {
         }
       );
     });
-
 
     it('should understand objects', function() {
       expect(createAst('{}')).toEqual(
@@ -1310,7 +1272,6 @@ describe('parser', function() {
       );
     });
 
-
     it('should understand multiple expressions', function() {
       expect(createAst('foo = bar; man = shell')).toEqual(
         {
@@ -1339,7 +1300,6 @@ describe('parser', function() {
       );
     });
 
-
     // This is non-standard syntax
     it('should understand filters', function() {
       expect(createAst('foo | bar')).toEqual(
@@ -1362,7 +1322,6 @@ describe('parser', function() {
       );
     });
 
-
     it('should understand filters with extra parameters', function() {
       expect(createAst('foo | bar:baz')).toEqual(
         {
@@ -1384,7 +1343,6 @@ describe('parser', function() {
         }
       );
     });
-
 
     it('should associate filters right-to-left', function() {
       expect(createAst('foo | bar:man | shell')).toEqual(
@@ -1674,7 +1632,6 @@ describe('parser', function() {
   beforeEach(module(['$filterProvider', function(filterProvider) {
     $filterProvider = filterProvider;
   }]));
-
 
   forEach([true, false], function(cspEnabled) {
     describe('csp: ' + cspEnabled, function() {
@@ -2187,7 +2144,6 @@ describe('parser', function() {
         expect(scope.$eval('true || false || run()')).toBe(true);
       });
 
-
       it('should support method calls on primitive types', function() {
         scope.empty = '';
         scope.zero = 0;
@@ -2204,7 +2160,6 @@ describe('parser', function() {
         expect(scope.$eval('a + \n b.c + \r "\td" + \t \r\n\r "\r\n\n"')).toEqual("abc\td\r\n\n");
       });
 
-
       // https://github.com/angular/angular.js/issues/10968
       it('should evaluate arrays literals initializers left-to-right', inject(function($parse) {
         var s = {c:function() {return {b: 1}; }};
@@ -2220,7 +2175,6 @@ describe('parser', function() {
         var s = {c:function() {return {b: 1}; }};
         expect($parse("e=1;{x: a=c(), y: d=a.b+1}")(s)).toEqual({x: {b: 1}, y: 2});
       }));
-
 
       describe('sandboxing', function() {
         describe('Function constructor', function() {
@@ -2692,7 +2646,6 @@ describe('parser', function() {
         expect(scope.$eval('fn().anotherFn()')).toBe(true);
       });
 
-
       it('should call the function once when it is part of the context', function() {
         var count = 0;
         scope.fn = function() {
@@ -2703,7 +2656,6 @@ describe('parser', function() {
         expect(count).toBe(1);
       });
 
-
       it('should call the function once when it is not part of the context', function() {
         var count = 0;
         scope.fn = function() {
@@ -2713,7 +2665,6 @@ describe('parser', function() {
         expect(scope.$eval('fn()()')).toBe('lucas');
         expect(count).toBe(1);
       });
-
 
       it('should call the function once when it is part of the context on assignments', function() {
         var count = 0;
@@ -2727,7 +2678,6 @@ describe('parser', function() {
         expect(count).toBe(1);
       });
 
-
       it('should call the function once when it is part of the context on array lookups', function() {
         var count = 0;
         var element = [];
@@ -2740,7 +2690,6 @@ describe('parser', function() {
         expect(count).toBe(1);
       });
 
-
       it('should call the function once when it is part of the context on array lookup function', function() {
         var count = 0;
         var element = [{anotherFn: function() { return 'lucas';} }];
@@ -2751,7 +2700,6 @@ describe('parser', function() {
         expect(scope.$eval('fn()[0].anotherFn()')).toBe('lucas');
         expect(count).toBe(1);
       });
-
 
       it('should call the function once when it is part of the context on property lookup function', function() {
         var count = 0;
@@ -2764,7 +2712,6 @@ describe('parser', function() {
         expect(count).toBe(1);
       });
 
-
       it('should call the function once when it is part of a sub-expression', function() {
         var count = 0;
         scope.element = [{}];
@@ -2776,7 +2723,6 @@ describe('parser', function() {
         expect(scope.element[0].name).toBe('lucas');
         expect(count).toBe(1);
       });
-
 
       describe('assignable', function() {
         it('should expose assignment function', inject(function($parse) {
@@ -2991,7 +2937,6 @@ describe('parser', function() {
 
         });
       });
-
 
       describe('watched $parse expressions', function() {
 
@@ -3478,7 +3423,6 @@ describe('parser', function() {
           $rootScope.a = { b: { c: { d: { e: { f: null } } } } };
           expect($rootScope.$eval('a.b.c.d.e.f.g')).toBeUndefined();
         }));
-
 
         it('should return undefined if the return value of a function invocation is undefined',
             inject(function($rootScope) {

@@ -124,7 +124,6 @@ function currencyFilter($locale) {
    </example>
  */
 
-
 numberFilter.$inject = ['$locale'];
 function numberFilter($locale) {
   var formats = $locale.NUMBER_FORMATS;
@@ -239,7 +238,6 @@ function padNumber(num, digits, trim) {
   }
   return neg + num;
 }
-
 
 function dateGetter(name, size, offset, trim) {
   offset = offset || 0;
@@ -442,7 +440,6 @@ var DATE_FORMATS_SPLIT = /((?:[^yMdHhmsaZEwG']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|
 dateFilter.$inject = ['$locale'];
 function dateFilter($locale) {
 
-
   var R_ISO8601_STR = /^(\d{4})-?(\d\d)-?(\d\d)(?:T(\d\d)(?::?(\d\d)(?::?(\d\d)(?:\.(\d+))?)?)?(Z|([+-])(\d\d):?(\d\d))?)?$/;
                      // 1        2       3         4          5          6          7          8  9     10      11
   function jsonStringToDate(string) {
@@ -468,7 +465,6 @@ function dateFilter($locale) {
     }
     return string;
   }
-
 
   return function(date, format, timezone) {
     var text = '',
@@ -515,7 +511,6 @@ function dateFilter($locale) {
   };
 }
 
-
 /**
  * @ngdoc filter
  * @name json
@@ -556,7 +551,6 @@ function jsonFilter() {
   };
 }
 
-
 /**
  * @ngdoc filter
  * @name lowercase
@@ -566,7 +560,6 @@ function jsonFilter() {
  * @see angular.lowercase
  */
 var lowercaseFilter = valueFn(lowercase);
-
 
 /**
  * @ngdoc filter

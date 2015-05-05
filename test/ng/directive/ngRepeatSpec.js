@@ -7,7 +7,6 @@ describe('ngRepeat', function() {
     $compileProvider = _$compileProvider_;
   }));
 
-
   beforeEach(module(function($exceptionHandlerProvider) {
     $exceptionHandlerProvider.mode('log');
   }));
@@ -18,7 +17,6 @@ describe('ngRepeat', function() {
     scope = $rootScope.$new();
   }));
 
-
   afterEach(function() {
     if ($exceptionHandler.errors.length) {
       dump(jasmine.getEnv().currentSpec.getFullName());
@@ -28,7 +26,6 @@ describe('ngRepeat', function() {
     }
     dealoc(element);
   });
-
 
   it('should iterate over an array of objects', function() {
     element = $compile(
@@ -93,7 +90,6 @@ describe('ngRepeat', function() {
     expect(element.find('li').length).toEqual(3);
     expect(element.text()).toEqual('misko;shyam;adam;');
   });
-
 
   it('should iterate over an array-like object', function() {
     element = $compile(
@@ -183,7 +179,6 @@ describe('ngRepeat', function() {
       expect(element.find('li')[1]).toBe(li0);
     });
 
-
     it('should track using build in $id function', function() {
       element = $compile(
           '<ul>' +
@@ -200,7 +195,6 @@ describe('ngRepeat', function() {
       expect(element.find('li')[1]).toBe(li0);
     });
 
-
     it('should still filter when track is present', function() {
       scope.isIgor = function(item) {
         return item.name === 'igor';
@@ -214,7 +208,6 @@ describe('ngRepeat', function() {
 
       expect(element.find('li').text()).toBe('igor;');
     });
-
 
     it('should track using provided function when a filter is present', function() {
       scope.newArray = function(items) {
@@ -247,7 +240,6 @@ describe('ngRepeat', function() {
       expect(element.find('li')[0]).toBe(li1);
       expect(element.find('li')[1]).toBe(li0);
     });
-
 
     it('should iterate over an array of primitives', function() {
       element = $compile(
@@ -330,7 +322,6 @@ describe('ngRepeat', function() {
       expect(element.find('li').length).toEqual(2);
       expect(element.text()).toEqual('89;23;');
     });
-
 
     it('should iterate over object with changing primitive property values', function() {
       // test for issue #933
@@ -427,7 +418,6 @@ describe('ngRepeat', function() {
       expect(trim(element.text())).toEqual('No results found...');
     });
 
-
     it('should support alias identifiers containing reserved words', inject(function($exceptionHandler) {
       scope.x = 'bl';
       scope.items = [
@@ -456,7 +446,6 @@ describe('ngRepeat', function() {
         dealoc(element);
       });
     }));
-
 
     it('should throw if alias identifier is not a simple identifier', inject(function($exceptionHandler) {
       scope.x = 'bl';
@@ -506,7 +495,6 @@ describe('ngRepeat', function() {
     }));
   });
 
-
   it('should allow expressions over multiple lines', function() {
     element = $compile(
       '<ul>' +
@@ -521,7 +509,6 @@ describe('ngRepeat', function() {
 
     expect(element.text()).toEqual('igor/misko/');
   });
-
 
   it('should strip white space characters correctly', function() {
     element = $compile(
@@ -538,7 +525,6 @@ describe('ngRepeat', function() {
     expect(element.text()).toEqual('misko/');
   });
 
-
   it('should not ngRepeat over parent properties', function() {
     var Class = function() {};
     Class.prototype.abc = function() {};
@@ -554,7 +540,6 @@ describe('ngRepeat', function() {
     expect(element.text()).toEqual('name:value;');
   });
 
-
   it('should error on wrong parsing of ngRepeat', function() {
     element = jqLite('<ul><li ng-repeat="i dont parse"></li></ul>');
     $compile(element)(scope);
@@ -562,14 +547,12 @@ describe('ngRepeat', function() {
         toMatch(/^\[ngRepeat:iexp\] Expected expression in form of '_item_ in _collection_\[ track by _id_\]' but got 'i dont parse'\./);
   });
 
-
   it("should throw error when left-hand-side of ngRepeat can't be parsed", function() {
     element = jqLite('<ul><li ng-repeat="i dont parse in foo"></li></ul>');
     $compile(element)(scope);
     expect($exceptionHandler.errors.shift()[0].message).
       toMatch(/^\[ngRepeat:iidexp\] '_item_' in '_item_ in _collection_' should be an identifier or '\(_key_, _value_\)' expression, but got 'i dont parse'\./);
   });
-
 
   it('should expose iterator offset as $index when iterating over arrays',
       function() {
@@ -591,7 +574,6 @@ describe('ngRepeat', function() {
     scope.$digest();
     expect(element.text()).toEqual('misko:m:0|shyam:s:1|frodo:f:2|');
   });
-
 
   it('should expose iterator position as $first, $middle and $last when iterating over arrays',
       function() {
@@ -622,7 +604,6 @@ describe('ngRepeat', function() {
     expect(element.text()).toEqual('misko:true-false-true|');
   });
 
-
   it('should expose iterator position as $even and $odd when iterating over arrays',
       function() {
     element = $compile(
@@ -648,7 +629,6 @@ describe('ngRepeat', function() {
     expect(element.text()).toBe('shyam:true-false|doug:false-true|');
   });
 
-
   it('should expose iterator position as $first, $middle and $last when iterating over objects',
       function() {
     element = $compile(
@@ -673,7 +653,6 @@ describe('ngRepeat', function() {
     expect(element.text()).toEqual('misko:m:true-false-true|');
   });
 
-
   it('should expose iterator position as $even and $odd when iterating over objects',
       function() {
     element = $compile(
@@ -694,7 +673,6 @@ describe('ngRepeat', function() {
     expect(element.text()).toBe('misko:m:true-false|doug:d:false-true|');
   });
 
-
   it('should calculate $first, $middle and $last when we filter out properties from an obj', function() {
     element = $compile(
         '<ul>' +
@@ -710,7 +688,6 @@ describe('ngRepeat', function() {
         'frodo:f:false-false-true|');
   });
 
-
   it('should calculate $even and $odd when we filter out properties from an obj', function() {
     element = $compile(
         '<ul>' +
@@ -725,7 +702,6 @@ describe('ngRepeat', function() {
         'frodo:f:false-true|');
   });
 
-
   it('should ignore $ and $$ properties', function() {
     element = $compile('<ul><li ng-repeat="i in items">{{i}}|</li></ul>')(scope);
     scope.items = ['a', 'b', 'c'];
@@ -735,7 +711,6 @@ describe('ngRepeat', function() {
 
     expect(element.text()).toEqual('a|b|c|');
   });
-
 
   it('should repeat over nested arrays', function() {
     element = $compile(
@@ -750,7 +725,6 @@ describe('ngRepeat', function() {
     expect(element.text()).toEqual('a|b|Xc|d|X');
   });
 
-
   it('should ignore non-array element properties when iterating over an array', function() {
     element = $compile('<ul><li ng-repeat="item in array">{{item}}|</li></ul>')(scope);
     scope.array = ['a', 'b', 'c'];
@@ -760,7 +734,6 @@ describe('ngRepeat', function() {
 
     expect(element.text()).toBe('a|b|c|');
   });
-
 
   it('should iterate over non-existent elements of a sparse array', function() {
     element = $compile('<ul><li ng-repeat="item in array track by $index">{{item}}|</li></ul>')(scope);
@@ -772,7 +745,6 @@ describe('ngRepeat', function() {
     expect(element.text()).toBe('a|b|||c||d|');
   });
 
-
   it('should iterate over all kinds of types', function() {
     element = $compile('<ul><li ng-repeat="item in array">{{item}}|</li></ul>')(scope);
     scope.array = ['a', 1, null, undefined, {}];
@@ -780,7 +752,6 @@ describe('ngRepeat', function() {
 
     expect(element.text()).toMatch(/a\|1\|\|\|\{\s*\}\|/);
   });
-
 
   it('should preserve data on move of elements', function() {
     element = $compile('<ul><li ng-repeat="item in array">{{item}}|</li></ul>')(scope);
@@ -798,7 +769,6 @@ describe('ngRepeat', function() {
     expect(lis.eq(0).data('mark')).toEqual('b');
     expect(lis.eq(1).data('mark')).toEqual('a');
   });
-
 
   describe('nesting in replaced directive templates', function() {
 
@@ -829,7 +799,6 @@ describe('ngRepeat', function() {
           '</div>'
       );
     }));
-
 
     it('should work when placed on a non-root element of attr directive with ASYNC replaced template',
         inject(function($templateCache, $compile, $rootScope) {
@@ -862,7 +831,6 @@ describe('ngRepeat', function() {
       );
     }));
 
-
     it('should work when placed on a root element of attr directive with SYNC replaced template',
         inject(function($templateCache, $compile, $rootScope) {
       $compileProvider.directive('replaceMeWithRepeater', function() {
@@ -890,7 +858,6 @@ describe('ngRepeat', function() {
       expect(angular.mock.dump(element)).toBe('<!-- ngRepeat: i in items -->');
       expect(logs.length).toBe(0);
     }));
-
 
     it('should work when placed on a root element of attr directive with ASYNC replaced template',
         inject(function($templateCache, $compile, $rootScope) {
@@ -921,7 +888,6 @@ describe('ngRepeat', function() {
       expect(logs.length).toBe(0);
     }));
 
-
     it('should work when placed on a root element of element directive with SYNC replaced template',
         inject(function($templateCache, $compile, $rootScope) {
       $compileProvider.directive('replaceMeWithRepeater', function() {
@@ -936,7 +902,6 @@ describe('ngRepeat', function() {
       $rootScope.$apply();
       expect(element.text()).toBe('123');
     }));
-
 
     it('should work when placed on a root element of element directive with ASYNC replaced template',
         inject(function($templateCache, $compile, $rootScope) {
@@ -1009,7 +974,6 @@ describe('ngRepeat', function() {
     check();
   }));
 
-
   it('should remove whole block even if the number of elements inside it changes', inject(
       function($compile, $rootScope) {
 
@@ -1041,7 +1005,6 @@ describe('ngRepeat', function() {
       'div', 'span', 'p'
     ]);
   }));
-
 
   it('should move whole block even if the number of elements inside it changes', inject(
       function($compile, $rootScope) {
@@ -1077,7 +1040,6 @@ describe('ngRepeat', function() {
     ]);
   }));
 
-
   describe('stability', function() {
     var a, b, c, d, lis;
 
@@ -1096,7 +1058,6 @@ describe('ngRepeat', function() {
       lis = element.find('li');
     });
 
-
     it('should preserve the order of elements', function() {
       scope.items = [a, c, d];
       scope.$digest();
@@ -1105,7 +1066,6 @@ describe('ngRepeat', function() {
       expect(newElements[1]).toEqual(lis[2]);
       expect(newElements[2]).not.toEqual(lis[1]);
     });
-
 
     it('should throw error on adding existing duplicates and recover', function() {
       scope.items = [a, a, a];
@@ -1127,7 +1087,6 @@ describe('ngRepeat', function() {
       expect(newElements.length).toEqual(0);
     });
 
-
     it('should throw error on new duplicates and recover', function() {
       scope.items = [d, d, d];
       scope.$digest();
@@ -1148,7 +1107,6 @@ describe('ngRepeat', function() {
       expect(newElements.length).toEqual(0);
     });
 
-
     it('should reverse items when the collection is reversed', function() {
       scope.items = [a, b, c];
       scope.$digest();
@@ -1162,7 +1120,6 @@ describe('ngRepeat', function() {
       expect(newElements[1]).toEqual(lis[1]);
       expect(newElements[2]).toEqual(lis[0]);
     });
-
 
     it('should reuse elements even when model is composed of primitives', function() {
       // rebuilding repeater from scratch can be expensive, we should try to avoid it even for
@@ -1203,7 +1160,6 @@ describe('ngRepeat', function() {
     });
   });
 
-
   describe('compatibility', function() {
 
     it('should allow mixing ngRepeat and another element transclusion directive', function() {
@@ -1223,7 +1179,6 @@ describe('ngRepeat', function() {
       });
     });
 
-
     it('should allow mixing ngRepeat with ngInclude', inject(function($compile, $rootScope, $httpBackend) {
       $httpBackend.whenGET('someTemplate.html').respond('<p>some template; </p>');
       element = $compile('<div><div ng-repeat="i in [1,2]" ng-include="\'someTemplate.html\'"></div></div>')($rootScope);
@@ -1232,14 +1187,12 @@ describe('ngRepeat', function() {
       expect(element.text()).toBe('some template; some template; ');
     }));
 
-
     it('should allow mixing ngRepeat with ngIf', inject(function($compile, $rootScope) {
       element = $compile('<div><div ng-repeat="i in [1,2,3,4]" ng-if="i % 2 == 0">{{i}};</div></div>')($rootScope);
       $rootScope.$digest();
       expect(element.text()).toBe('2;4;');
     }));
   });
-
 
   describe('ngRepeatStart', function() {
     it('should grow multi-node repeater', inject(function($compile, $rootScope) {
@@ -1260,7 +1213,6 @@ describe('ngRepeat', function() {
       $rootScope.$digest();
       expect(element.text()).toEqual('T1:D1;T2:D2;T3:D3;');
     }));
-
 
     it('should not clobber ng-if when updating collection', inject(function($compile, $rootScope) {
       $rootScope.values = [1, 2, 3];
@@ -1313,7 +1265,6 @@ describe('ngRepeat and transcludes', function() {
     });
   });
 
-
   it('should use the correct transcluded scope', function() {
     module(function($compileProvider) {
       $compileProvider.directive('iso', valueFn({
@@ -1332,7 +1283,6 @@ describe('ngRepeat and transcludes', function() {
     });
   });
 
-
   it('should set the state before linking', function() {
     module(function($compileProvider) {
       $compileProvider.directive('assertA', valueFn(function(scope) {
@@ -1347,7 +1297,6 @@ describe('ngRepeat and transcludes', function() {
       dealoc(element);
     });
   });
-
 
   it('should work with svg elements when the svg container is transcluded', function() {
     module(function($compileProvider) {

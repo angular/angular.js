@@ -118,7 +118,6 @@ function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDoc
       timeout.then(timeoutRequest);
     }
 
-
     function timeoutRequest() {
       jsonpDone && jsonpDone();
       xhr && xhr.abort();

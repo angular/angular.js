@@ -170,7 +170,6 @@ function FormController(element, attrs, $scope, $animate, $interpolate) {
     arrayRemove(controls, control);
   };
 
-
   /**
    * @ngdoc method
    * @name form.FormController#$setValidity

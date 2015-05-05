@@ -28,7 +28,6 @@
  * - "compositeLinkFn" - function that aggregates all linking fns for a compilation root (nodeList)
  */
 
-
 /**
  * @ngdoc service
  * @name $compile
@@ -867,7 +866,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
     return this;
   };
 
-
   /**
    * @ngdoc method
    * @name $compileProvider#aHrefSanitizationWhitelist
@@ -896,7 +894,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       return $$sanitizeUriProvider.aHrefSanitizationWhitelist();
     }
   };
-
 
   /**
    * @ngdoc method
@@ -997,7 +994,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
        * @param {string} name Name to normalize
        */
       $normalize: directiveNormalize,
-
 
       /**
        * @ngdoc method
@@ -1158,7 +1154,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         });
       },
 
-
       /**
        * @ngdoc method
        * @name $compile.directive.Attributes#$observe
@@ -1196,7 +1191,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       }
     };
 
-
     function safeAddClass($element, className) {
       try {
         $element.addClass(className);
@@ -1205,7 +1199,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         // SVG element, where class name is read-only.
       }
     }
-
 
     var startSymbol = $interpolate.startSymbol(),
         endSymbol = $interpolate.endSymbol(),
@@ -1386,7 +1379,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       function compositeLinkFn(scope, nodeList, $rootElement, parentBoundTranscludeFn) {
         var nodeLinkFn, childLinkFn, node, childScope, i, ii, idx, childBoundTranscludeFn;
         var stableNodeList;
-
 
         if (nodeLinkFnFound) {
           // copy nodeList so that if a nodeLinkFn removes or adds an element at this DOM level our
@@ -1869,7 +1861,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         }
       }
 
-
       function getControllers(directiveName, require, $element, elementControllers) {
         var value;
 
@@ -2111,7 +2102,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       return match;
     }
 
-
     /**
      * looks up the directive and returns true if it is a multi-element directive,
      * and therefore requires DOM nodes between -start and -end markers to be grouped
@@ -2173,7 +2163,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         }
       });
     }
-
 
     function compileTemplateUrl(directives, $compileNode, tAttrs,
         $rootElement, childTranscludeFn, preLinkFns, postLinkFns, previousCompileContext) {
@@ -2289,7 +2278,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       };
     }
 
-
     /**
      * Sorting function for bound directives.
      */
@@ -2300,14 +2288,12 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       return a.index - b.index;
     }
 
-
     function assertNoDuplicate(what, previousDirective, directive, element) {
       if (previousDirective) {
         throw $compileMinErr('multidir', 'Multiple directives [{0}, {1}] asking for {2} on: {3}',
             previousDirective.name, directive.name, what, startingTag(element));
       }
     }
-
 
     function addTextInterpolateDirective(directives, text) {
       var interpolateFn = $interpolate(text, true);
@@ -2335,7 +2321,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       }
     }
 
-
     function wrapTemplate(type, template) {
       type = lowercase(type || 'html');
       switch (type) {
@@ -2348,7 +2333,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         return template;
       }
     }
-
 
     function getTrustedContext(node, attrNormalizedName) {
       if (attrNormalizedName == "srcdoc") {
@@ -2364,7 +2348,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       }
     }
 
-
     function addAttrInterpolateDirective(node, directives, value, name, allOrNothing) {
       var trustedContext = getTrustedContext(node, name);
       allOrNothing = ALL_OR_NOTHING_ATTRS[name] || allOrNothing;
@@ -2373,7 +2356,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
       // no interpolation found -> ignore
       if (!interpolateFn) return;
-
 
       if (name === "multiple" && nodeName_(node) === "select") {
         throw $compileMinErr("selmulti",
@@ -2433,7 +2415,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           }
       });
     }
-
 
     /**
      * This is a special jqLite.replaceWith, which can replace items which
@@ -2518,11 +2499,9 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       elementsToRemove.length = 1;
     }
 
-
     function cloneAndAnnotateFn(fn, annotation) {
       return extend(function() { return fn.apply(null, arguments); }, fn, annotation);
     }
-
 
     function invokeLinkFn(linkFn, scope, $element, attrs, controllers, transcludeFn) {
       try {
@@ -2531,7 +2510,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         $exceptionHandler(e, startingTag($element));
       }
     }
-
 
     // Set up $watches for isolate scope and controller bindings. This process
     // only occurs for isolate scopes and new scopes with controllerAs.
@@ -2662,7 +2640,6 @@ function directiveNormalize(name) {
  * needed to do reverse lookup from normalized name back to actual name.
  */
 
-
 /**
  * @ngdoc method
  * @name $compile.directive.Attributes#$set
@@ -2677,8 +2654,6 @@ function directiveNormalize(name) {
  *          property to the original name.
  * @param {string} value Value to set the attribute to. The value can be an interpolated string.
  */
-
-
 
 /**
  * Closure compiler type information

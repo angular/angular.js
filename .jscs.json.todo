@@ -7,7 +7,6 @@
   "validateParameterSeparator": ", ", // Re-assert this rule when JSCS allows multiple spaces
   "requireCurlyBraces": ["if", "else", "for", "while", "do", "try", "catch"],
   "disallowImplicitTypeConversion": ["string"],
-  "disallowMultipleLineBreaks": true,
   "validateJSDoc": {
     "checkParamNames": true,
     "requireParamTypes": true

@@ -14,7 +14,6 @@ describe('ngChange', function() {
     helper.dealoc();
   });
 
-
   beforeEach(inject(function(_$rootScope_) {
     $rootScope = _$rootScope_;
   }));
@@ -30,7 +29,6 @@ describe('ngChange', function() {
     expect($rootScope.change).toHaveBeenCalledOnce();
   });
 
-
   it('should not $eval the expression if changed from model', function() {
     helper.compileInput('<input type="text" ng-model="value" ng-change="change()" />');
 
@@ -39,7 +37,6 @@ describe('ngChange', function() {
 
     expect($rootScope.change).not.toHaveBeenCalled();
   });
-
 
   it('should $eval ngChange expression on checkbox', function() {
     var inputElm = helper.compileInput('<input type="checkbox" ng-model="foo" ng-change="changeFn()">');
@@ -50,7 +47,6 @@ describe('ngChange', function() {
     browserTrigger(inputElm, 'click');
     expect($rootScope.changeFn).toHaveBeenCalledOnce();
   });
-
 
   it('should be able to change the model and via that also update the view', function() {
     var inputElm = helper.compileInput('<input type="text" ng-model="value" ng-change="value=\'b\'" />');

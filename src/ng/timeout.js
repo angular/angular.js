@@ -1,12 +1,10 @@
 'use strict';
 
-
 function $TimeoutProvider() {
   this.$get = ['$rootScope', '$browser', '$q', '$$q', '$exceptionHandler',
        function($rootScope,   $browser,   $q,   $$q,   $exceptionHandler) {
 
     var deferreds = {};
-
 
      /**
       * @ngdoc service
@@ -69,7 +67,6 @@ function $TimeoutProvider() {
 
       return promise;
     }
-
 
      /**
       * @ngdoc method

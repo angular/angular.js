@@ -3,11 +3,9 @@
 describe('ngBind*', function() {
   var element;
 
-
   afterEach(function() {
     dealoc(element);
   });
-
 
   describe('ngBind', function() {
 
@@ -19,7 +17,6 @@ describe('ngBind*', function() {
       expect(element.hasClass('ng-binding')).toEqual(true);
       expect(element.text()).toEqual('misko');
     }));
-
 
     it('should set text to blank if undefined', inject(function($rootScope, $compile) {
       element = $compile('<div ng-bind="a"></div>')($rootScope);
@@ -33,7 +30,6 @@ describe('ngBind*', function() {
       $rootScope.$digest();
       expect(element.text()).toEqual('');
     }));
-
 
     it('should suppress rendering of falsy values', inject(function($rootScope, $compile) {
       element = $compile('<div><span ng-bind="null"></span>' +
@@ -84,7 +80,6 @@ describe('ngBind*', function() {
     }));
   });
 
-
   describe('ngBindTemplate', function() {
 
     it('should ngBindTemplate', inject(function($rootScope, $compile) {
@@ -94,7 +89,6 @@ describe('ngBind*', function() {
       expect(element.hasClass('ng-binding')).toEqual(true);
       expect(element.text()).toEqual('Hello Misko!');
     }));
-
 
     it('should one-time bind the expressions that start with ::', inject(function($rootScope, $compile) {
       element = $compile('<div ng-bind-template="{{::hello}} {{::name}}!"></div>')($rootScope);
@@ -111,14 +105,12 @@ describe('ngBind*', function() {
       expect($rootScope.$$watchers.length).toEqual(0);
     }));
 
-
     it('should render object as JSON ignore $$', inject(function($rootScope, $compile) {
       element = $compile('<pre>{{ {key:"value", $$key:"hide"}  }}</pre>')($rootScope);
       $rootScope.$digest();
       expect(fromJson(element.text())).toEqual({key:'value'});
     }));
   });
-
 
   describe('ngBindHtml', function() {
 
@@ -128,7 +120,6 @@ describe('ngBind*', function() {
       }).toThrowMinErr('$parse', 'syntax',
         "Syntax Error: Token '{' invalid key at column 2 of the expression [{{myHtml}}] starting at [{myHtml}}]");
     }));
-
 
     describe('SCE disabled', function() {
       beforeEach(function() {
@@ -154,7 +145,6 @@ describe('ngBind*', function() {
         expect(element.text()).toEqual('hello');
       }));
     });
-
 
     describe('SCE enabled', function() {
       it('should NOT set html for untrusted values', inject(function($rootScope, $compile) {

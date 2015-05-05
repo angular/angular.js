@@ -188,8 +188,6 @@ var ngOptionsMinErr = minErr('ngOptions');
             </select>
           </label><br/>
 
-
-
           Select <button ng-click="myColor = { name:'not in list', shade: 'other' }">bogus</button>.
           <br/>
           <hr/>
@@ -226,7 +224,6 @@ var NG_OPTIONS_REGEXP = /^\s*([\s\S]+?)(?:\s+as\s+([\s\S]+?))?(?:\s+group\s+by\s
                         // 8: collection expression
                         // 9: track by expression
 // jshint maxlen: 100
-
 
 var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
 
@@ -279,7 +276,6 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
       return locals;
     };
 
-
     function Option(selectValue, viewValue, label, group, disabled) {
       this.selectValue = selectValue;
       this.viewValue = viewValue;
@@ -327,7 +323,6 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
         var optionValues = valuesFn(scope) || [];
         var optionValuesKeys;
 
-
         if (!keyName && isArrayLike(optionValues)) {
           optionValuesKeys = optionValues;
         } else {
@@ -373,7 +368,6 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
     };
   }
 
-
   // we can't just jqLite('<option>') since jqLite is not smart enough
   // to create it in <select> and IE barfs otherwise.
   var optionTemplate = document.createElement('option'),
@@ -410,7 +404,6 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
       var options;
       var ngOptions = parseOptionsExpression(attr.ngOptions, selectElement, scope);
 
-
       var renderEmptyOption = function() {
         if (!providedEmptyOption) {
           selectElement.prepend(emptyOption);
@@ -426,7 +419,6 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
         }
       };
 
-
       var renderUnknownOption = function() {
         selectElement.prepend(unknownOption);
         selectElement.val('?');
@@ -437,7 +429,6 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
       var removeUnknownOption = function() {
         unknownOption.remove();
       };
-
 
       selectCtrl.writeValue = function writeNgOptionsValue(value) {
         var option = options.getOptionFromViewValue(value);
@@ -474,14 +465,12 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
         return null;
       };
 
-
       // Update the controller methods for multiple selectable options
       if (multiple) {
 
         ngModelCtrl.$isEmpty = function(value) {
           return !value || value.length === 0;
         };
-
 
         selectCtrl.writeValue = function writeNgOptionsMultiple(value) {
           options.items.forEach(function(option) {
@@ -496,7 +485,6 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
           }
         };
 
-
         selectCtrl.readValue = function readNgOptionsMultiple() {
           var selectedValues = selectElement.val() || [],
               selections = [];
@@ -509,7 +497,6 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
           return selections;
         };
       }
-
 
       if (providedEmptyOption) {
 
@@ -541,7 +528,6 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
       }
       // ------------------------------------------------------------------ //
 
-
       function updateOptionElement(option, element) {
         option.element = element;
         element.disabled = option.disabled;
@@ -572,7 +558,6 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
         return element;
       }
 
-
       function removeExcessElements(current) {
         var next;
         while (current) {
@@ -581,7 +566,6 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
           current = next;
         }
       }
-
 
       function skipEmptyAndUnknownOptions(current) {
         var emptyOption_ = emptyOption && emptyOption[0];
@@ -596,7 +580,6 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
         }
         return current;
       }
-
 
       function updateOptions() {
 
@@ -667,7 +650,6 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
             currentElement = optionElement.nextSibling;
           }
         });
-
 
         // Now remove all excess options and group
         Object.keys(groupMap).forEach(function(key) {

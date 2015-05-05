@@ -59,7 +59,6 @@ describe('$aria', function() {
     });
   });
 
-
   describe('aria-hidden when disabled', function() {
     beforeEach(configAriaProvider({
       ariaHidden: false

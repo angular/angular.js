@@ -6,7 +6,6 @@ describe('$httpBackend', function() {
   var $backend, $browser, callbacks,
       xhr, fakeDocument, callback;
 
-
   beforeEach(inject(function($injector) {
     callbacks = {counter: 0};
     $browser = $injector.get('$browser');
@@ -31,7 +30,6 @@ describe('$httpBackend', function() {
     $backend = createHttpBackend($browser, createMockXhr, $browser.defer, callbacks, fakeDocument);
     callback = jasmine.createSpy('done');
   }));
-
 
   it('should do basics - open async xhr and send data', function() {
     $backend('GET', '/some-url', 'some-data', noop);
@@ -89,7 +87,6 @@ describe('$httpBackend', function() {
     xhr.onload();
     expect(callback).toHaveBeenCalledOnce();
   });
-
 
   it('should normalize IE\'s 1223 status code into 204', function() {
     callback.andCallFake(function(status) {
@@ -169,7 +166,6 @@ describe('$httpBackend', function() {
     expect(callback).toHaveBeenCalledOnce();
   });
 
-
   it('should abort request on timeout promise resolution', inject(function($timeout) {
     callback.andCallFake(function(status, response) {
       expect(status).toBe(-1);
@@ -187,7 +183,6 @@ describe('$httpBackend', function() {
     expect(callback).toHaveBeenCalledOnce();
   }));
 
-
   it('should not abort resolved request on timeout promise resolution', inject(function($timeout) {
     callback.andCallFake(function(status, response) {
       expect(status).toBe(200);
@@ -204,7 +199,6 @@ describe('$httpBackend', function() {
     $timeout.flush();
     expect(xhr.abort).not.toHaveBeenCalled();
   }));
-
 
   it('should cancel timeout on completion', function() {
     callback.andCallFake(function(status, response) {
@@ -225,12 +219,10 @@ describe('$httpBackend', function() {
     expect(xhr.abort).not.toHaveBeenCalled();
   });
 
-
   it('should set withCredentials', function() {
     $backend('GET', '/some.url', null, callback, {}, null, true);
     expect(MockXhr.$$lastInstance.withCredentials).toBe(true);
   });
-
 
   describe('responseType', function() {
 
@@ -249,7 +241,6 @@ describe('$httpBackend', function() {
 
       expect(callback).toHaveBeenCalledOnce();
     });
-
 
     it('should read responseText if response was not defined', function() {
       //  old browsers like IE8, don't support responseType, so they always respond with responseText
@@ -271,11 +262,9 @@ describe('$httpBackend', function() {
     });
   });
 
-
   describe('JSONP', function() {
 
     var SCRIPT_URL = /([^\?]*)\?cb=angular\.callbacks\.(.*)/;
-
 
     it('should add script tag for JSONP request', function() {
       callback.andCallFake(function(status, response) {
@@ -296,11 +285,9 @@ describe('$httpBackend', function() {
       expect(callback).toHaveBeenCalledOnce();
     });
 
-
     it('should clean up the callback and remove the script', function() {
       $backend('JSONP', 'http://example.org/path?cb=JSON_CALLBACK', null, callback);
       expect(fakeDocument.$$scripts.length).toBe(1);
-
 
       var script = fakeDocument.$$scripts.shift(),
           callbackId = script.src.match(SCRIPT_URL)[2];
@@ -312,7 +299,6 @@ describe('$httpBackend', function() {
       expect(fakeDocument.body.removeChild).toHaveBeenCalledOnceWith(script);
     });
 
-
     it('should set url to current location if not specified or empty string', function() {
       $backend('JSONP', undefined, null, callback);
       expect(fakeDocument.$$scripts[0].src).toBe($browser.url());
@@ -321,7 +307,6 @@ describe('$httpBackend', function() {
       $backend('JSONP', '', null, callback);
       expect(fakeDocument.$$scripts[0].src).toBe($browser.url());
     });
-
 
     it('should abort request on timeout and replace callback with noop', function() {
       callback.andCallFake(function(status, response) {
@@ -342,7 +327,6 @@ describe('$httpBackend', function() {
       expect(callbacks[callbackId]).toBe(angular.noop);
     });
 
-
     // TODO(vojta): test whether it fires "async-start"
     // TODO(vojta): test whether it fires "async-end" on both success and error
   });
@@ -355,7 +339,6 @@ describe('$httpBackend', function() {
       xhr.responseText = content;
       xhr.onload();
     }
-
 
     it('should convert 0 to 200 if content and file protocol', function() {
       $backend = createHttpBackend($browser, createMockXhr);
@@ -429,7 +412,6 @@ describe('$httpBackend', function() {
       }
     });
 
-
     it('should return original backend status code if different from 0', function() {
       $backend = createHttpBackend($browser, createMockXhr);
 
@@ -439,7 +421,6 @@ describe('$httpBackend', function() {
 
       expect(callback).toHaveBeenCalled();
       expect(callback.mostRecentCall.args[0]).toBe(201);
-
 
       // request to file://
       $backend('POST', 'file://rest_api/create_whatever', null, callback);
@@ -457,4 +438,3 @@ describe('$httpBackend', function() {
     });
   });
 });
-

@@ -135,7 +135,6 @@ function setupModuleLoader(window) {
            */
           name: name,
 
-
           /**
            * @ngdoc method
            * @name angular.Module#provider

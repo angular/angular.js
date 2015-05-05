@@ -143,7 +143,6 @@
   </example>
  */
 
-
 /**
  * @ngdoc event
  * @name ngInclude#$includeContentRequested
@@ -155,7 +154,6 @@
  * @param {String} src URL of content to load.
  */
 
-
 /**
  * @ngdoc event
  * @name ngInclude#$includeContentLoaded
@@ -166,7 +164,6 @@
  * @param {Object} angularEvent Synthetic event object.
  * @param {String} src URL of content to load.
  */
-
 
 /**
  * @ngdoc event

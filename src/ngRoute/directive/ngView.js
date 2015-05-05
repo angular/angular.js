@@ -3,7 +3,6 @@
 ngRouteModule.directive('ngView', ngViewFactory);
 ngRouteModule.directive('ngView', ngViewFillContentFactory);
 
-
 /**
  * @ngdoc directive
  * @name ngView
@@ -168,7 +167,6 @@ ngRouteModule.directive('ngView', ngViewFillContentFactory);
       </file>
     </example>
  */
-
 
 /**
  * @ngdoc event
