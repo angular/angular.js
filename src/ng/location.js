@@ -413,7 +413,7 @@ var locationPrototype = {
    * This method is getter only.
    *
    * Return host of current url.
-   * 
+   *
    * Note: compared to the non-angular version `location.host` which returns `hostname:port`, this returns the `hostname` portion only.
    *
    *
@@ -421,7 +421,7 @@ var locationPrototype = {
    * // given url http://example.com/#/some/path?foo=bar&baz=xoxo
    * var host = $location.host();
    * // => "example.com"
-   * 
+   *
    * // given url http://user:password@example.com:8080/#/some/path?foo=bar&baz=xoxo
    * host = $location.host();
    * // => "example.com"
