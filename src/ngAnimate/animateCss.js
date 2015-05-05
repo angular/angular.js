@@ -424,7 +424,7 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
       var KEY = "$$ngAnimateParentKey";
       var parentNode = node.parentNode;
       var parentID = parentNode[KEY] || (parentNode[KEY] = ++parentCounter);
-      return parentID + '-' + node.getAttribute('class') + '-' + extraClasses;
+      return parentID + '-' + (node.getAttribute('class') || '') + '-' + (extraClasses || '');
     }
 
     function computeCachedCssStyles(node, className, cacheKey, properties) {
@@ -472,6 +472,11 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
       return stagger || {};
     }
 
+    function flushGCSCache() {
+      gcsLookup.flush();
+      gcsStaggerLookup.flush();
+    }
+
     var bod = $document[0].body;
     var cancelLastRAFRequest;
     var rafWaitQueue = [];
@@ -482,8 +487,7 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
       rafWaitQueue.push(callback);
       cancelLastRAFRequest = $$rAF(function() {
         cancelLastRAFRequest = null;
-        gcsLookup.flush();
-        gcsStaggerLookup.flush();
+        flushGCSCache();
 
         //the line below will force the browser to perform a repaint so
         //that all the animated elements within the animation frame will
@@ -514,7 +518,7 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
           ? Math.max(aD, tD)
           : (aD || tD);
       timings.maxDuration = Math.max(
-          timings.animationDuration * timings.animationIterationCount,
+          (timings.animationDuration * timings.animationIterationCount) || 0,
           timings.transitionDuration);
 
       return timings;
@@ -525,7 +529,7 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
       options = prepareAnimationOptions(options);
 
       var temporaryStyles = [];
-      var classes = element.attr('class');
+      var classes = element.attr('class') || '';
       var styles = packageStyles(options);
       var animationClosed;
       var animationPaused;
@@ -649,7 +653,7 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
 
       var timings = computeTimings(node, fullClassName, cacheKey);
       var relativeDelay = timings.maxDelay;
-      maxDelay = Math.max(relativeDelay, 0);
+      maxDelay = Math.max(relativeDelay || 0, 0);
       maxDuration = timings.maxDuration;
 
       var flags = {};
@@ -715,6 +719,11 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
         start: function() {
           if (animationClosed) return;
 
+          // the code below will wait until the first RAF has passed. By waiting
+          // we allow multiple similar animations to be grouped together to allow
+          // for stagger calculations. This waiting phase is known as the quiet
+          // phase and any code that runs after is known as "post-quiet" code.
+
           runnerHost = {
             end: endFn,
             cancel: cancelFn,
@@ -764,6 +773,10 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
 
         applyAnimationClasses(element, options);
         applyAnimationStyles(element, options);
+
+        // we need to clear the cache since the post-quiet state may add and remove CSS
+        // classes which contain follow-up animation data which will be cached.
+        $$rAF(flushGCSCache);
 
         // the reason why we have this option is to allow a synchronous closing callback
         // that is fired as SOON as the animation ends (when the CSS is removed) or if
@@ -860,7 +873,7 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
 
             timings = computeTimings(node, fullClassName, cacheKey);
             relativeDelay = timings.maxDelay;
-            maxDelay = Math.max(relativeDelay, 0);
+            maxDelay = Math.max(relativeDelay || 0, 0);
             maxDuration = timings.maxDuration;
 
             if (maxDuration === 0) {
@@ -877,7 +890,7 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
                   ? parseFloat(options.delay)
                   : relativeDelay;
 
-            maxDelay = Math.max(relativeDelay, 0);
+            maxDelay = Math.max(relativeDelay || 0, 0);
 
             var delayStyle;
             if (flags.applyTransitionDelay) {
