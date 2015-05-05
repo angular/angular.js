@@ -36,6 +36,7 @@
   isUndefined: true,
   isDefined: true,
   isObject: true,
+  isBlankObject: true,
   isString: true,
   isNumber: true,
   isDate: true,
@@ -175,6 +176,7 @@ var
     splice            = [].splice,
     push              = [].push,
     toString          = Object.prototype.toString,
+    getPrototypeOf    = Object.getPrototypeOf,
     ngMinErr          = minErr('ng'),
 
     /** @name angular */
@@ -267,9 +269,22 @@ function forEach(obj, iterator, context) {
       }
     } else if (obj.forEach && obj.forEach !== forEach) {
         obj.forEach(iterator, context, obj);
-    } else {
+    } else if (isBlankObject(obj)) {
+      // createMap() fast path --- Safe to avoid hasOwnProperty check because prototype chain is empty
+      for (key in obj) {
+        iterator.call(context, obj[key], key, obj);
+      }
+    } else if (typeof obj.hasOwnProperty === 'function') {
+      // Slow path for objects inheriting Object.prototype, hasOwnProperty check needed
       for (key in obj) {
         if (obj.hasOwnProperty(key)) {
+          iterator.call(context, obj[key], key, obj);
+        }
+      }
+    } else {
+      // Slow path for objects which do not have a method `hasOwnProperty`
+      for (key in obj) {
+        if (hasOwnProperty.call(obj, key)) {
           iterator.call(context, obj[key], key, obj);
         }
       }
@@ -495,6 +510,16 @@ function isDefined(value) {return typeof value !== 'undefined';}
 function isObject(value) {
   // http://jsperf.com/isobject4
   return value !== null && typeof value === 'object';
+}
+
+
+/**
+ * Determine if a value is an object with a null prototype
+ *
+ * @returns {boolean} True if `value` is an `Object` with a null prototype
+ */
+function isBlankObject(value) {
+  return value !== null && typeof value === 'object' && !getPrototypeOf(value);
 }
 
 
@@ -781,7 +806,7 @@ function copy(source, destination, stackSource, stackDest) {
         destination = new RegExp(source.source, source.toString().match(/[^\/]*$/)[0]);
         destination.lastIndex = source.lastIndex;
       } else if (isObject(source)) {
-        var emptyObject = Object.create(Object.getPrototypeOf(source));
+        var emptyObject = Object.create(getPrototypeOf(source));
         destination = copy(source, emptyObject, stackSource, stackDest);
       }
     }
@@ -800,7 +825,7 @@ function copy(source, destination, stackSource, stackDest) {
       stackDest.push(destination);
     }
 
-    var result;
+    var result, key;
     if (isArray(source)) {
       destination.length = 0;
       for (var i = 0; i < source.length; i++) {
@@ -820,21 +845,40 @@ function copy(source, destination, stackSource, stackDest) {
           delete destination[key];
         });
       }
-      for (var key in source) {
-        if (source.hasOwnProperty(key)) {
-          result = copy(source[key], null, stackSource, stackDest);
-          if (isObject(source[key])) {
-            stackSource.push(source[key]);
-            stackDest.push(result);
+      if (isBlankObject(source)) {
+        // createMap() fast path --- Safe to avoid hasOwnProperty check because prototype chain is empty
+        for (key in source) {
+          putValue(key, source[key], destination, stackSource, stackDest);
+        }
+      } else if (source && typeof source.hasOwnProperty === 'function') {
+        // Slow path, which must rely on hasOwnProperty
+        for (key in source) {
+          if (source.hasOwnProperty(key)) {
+            putValue(key, source[key], destination, stackSource, stackDest);
           }
-          destination[key] = result;
+        }
+      } else {
+        // Slowest path --- hasOwnProperty can't be called as a method
+        for (key in source) {
+          if (hasOwnProperty.call(source, key)) {
+            putValue(key, source[key], destination, stackSource, stackDest);
+          }
         }
       }
       setHashKey(destination,h);
     }
-
   }
   return destination;
+
+  function putValue(key, val, destination, stackSource, stackDest) {
+    // No context allocation, trivial outer scope, easily inlined
+    var result = copy(val, null, stackSource, stackDest);
+    if (isObject(val)) {
+      stackSource.push(val);
+      stackDest.push(result);
+    }
+    destination[key] = result;
+  }
 }
 
 /**
@@ -915,14 +959,14 @@ function equals(o1, o2) {
       } else {
         if (isScope(o1) || isScope(o2) || isWindow(o1) || isWindow(o2) ||
           isArray(o2) || isDate(o2) || isRegExp(o2)) return false;
-        keySet = {};
+        keySet = createMap();
         for (key in o1) {
           if (key.charAt(0) === '$' || isFunction(o1[key])) continue;
           if (!equals(o1[key], o2[key])) return false;
           keySet[key] = true;
         }
         for (key in o2) {
-          if (!keySet.hasOwnProperty(key) &&
+          if (!(key in keySet) &&
               key.charAt(0) !== '$' &&
               o2[key] !== undefined &&
               !isFunction(o2[key])) return false;
