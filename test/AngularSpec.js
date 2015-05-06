@@ -24,6 +24,12 @@ describe('angular', function() {
       expect(copy([], arr)).toBe(arr);
     });
 
+    it("should copy objects with no prototype", function() {
+      var obj = Object.create(null);
+      obj.value = 0;
+      expect(copy({}, obj)).toBe(obj);
+    });
+
     it("should preserve prototype chaining", function() {
       var GrandParentProto = {};
       var ParentProto = Object.create(GrandParentProto);
