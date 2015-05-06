@@ -37,6 +37,9 @@
     "removeFromArray": false,
     "stripCommentsFromElement": false,
     "extractElementNode": false,
-    "getDomNode": false
+
+    "getDomNode": false,
+    "getSharedTokens": false,
+    "getUniqueTokens": false
   }
 }

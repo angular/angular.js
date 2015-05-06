@@ -35,17 +35,14 @@ var $$AnimateCssDriverProvider = ['$$animationProvider', function($$animationPro
       return classes.replace(/\bng-\S+\b/g, '');
     }
 
-    function getUniqueValues(a, b) {
-      if (isString(a)) a = a.split(' ');
-      if (isString(b)) b = b.split(' ');
-      return a.filter(function(val) {
-        return b.indexOf(val) === -1;
-      }).join(' ');
+    function getClassVal(element) {
+      return element.attr('class') || '';
     }
 
-    function prepareAnchoredAnimation(classes, outAnchor, inAnchor) {
+    function prepareAnchoredAnimation(sharedAnimationClasses, outAnchor, inAnchor) {
+      var classes = [sharedAnimationClasses, getSharedTokens(getClassVal(outAnchor), getClassVal(inAnchor))].join(' ');
       var clone = jqLite(getDomNode(outAnchor).cloneNode(true));
-      var startingClasses = filterCssClasses(clone.attr('class') || '');
+      var startingClasses = filterCssClasses(getClassVal(clone));
       var anchorClasses = pendClasses(classes, NG_ANIMATE_ANCHOR_SUFFIX);
 
       outAnchor.addClass(NG_ANIMATE_SHIM_CLASS_NAME);
@@ -142,7 +139,7 @@ var $$AnimateCssDriverProvider = ['$$animationProvider', function($$animationPro
 
       function prepareInAnimation() {
         var endingClasses = filterCssClasses(inAnchor.attr('class'));
-        var classes = getUniqueValues(endingClasses, startingClasses);
+        var classes = getUniqueTokens(endingClasses, startingClasses);
         return $animateCss(clone, {
           to: calculateAnchorStyles(inAnchor),
           addClass: NG_IN_ANCHOR_CLASS_NAME + ' ' + classes,

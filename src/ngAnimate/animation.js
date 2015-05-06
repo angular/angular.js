@@ -181,7 +181,7 @@ var $$AnimationProvider = ['$animateProvider', function($animateProvider) {
                 fromAnimation.close();
                 toAnimation.close();
               },
-              classes: cssClassesIntersection(fromAnimation.classes, toAnimation.classes),
+              classes: getSharedTokens(fromAnimation.classes, toAnimation.classes),
               from: fromAnimation,
               to: toAnimation,
               anchors: [] // TODO(matsko): change to reference nodes
@@ -204,26 +204,6 @@ var $$AnimationProvider = ['$animateProvider', function($animateProvider) {
         });
 
         return preparedAnimations;
-      }
-
-      function cssClassesIntersection(a,b) {
-        a = a.split(' ');
-        b = b.split(' ');
-        var matches = [];
-
-        for (var i = 0; i < a.length; i++) {
-          var aa = a[i];
-          if (aa.substring(0,3) === 'ng-') continue;
-
-          for (var j = 0; j < b.length; j++) {
-            if (aa === b[j]) {
-              matches.push(aa);
-              break;
-            }
-          }
-        }
-
-        return matches.join(' ');
       }
 
       function invokeFirstDriver(animationDetails) {

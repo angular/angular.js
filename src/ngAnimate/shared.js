@@ -249,3 +249,31 @@ function resolveElementClasses(existing, toAdd, toRemove) {
 function getDomNode(element) {
   return (element instanceof angular.element) ? element[0] : element;
 }
+
+function getSharedTokens(a,b) {
+  a = a.split(' ');
+  b = b.split(' ');
+  var matches = [];
+
+  for (var i = 0; i < a.length; i++) {
+    var aa = a[i];
+    if (aa.substring(0,3) === 'ng-') continue;
+
+    for (var j = 0; j < b.length; j++) {
+      if (aa === b[j]) {
+        matches.push(aa);
+        break;
+      }
+    }
+  }
+
+  return matches.join(' ');
+}
+
+function getUniqueTokens(a, b) {
+  if (isString(a)) a = a.split(' ');
+  if (isString(b)) b = b.split(' ');
+  return a.filter(function(val) {
+    return b.indexOf(val) === -1;
+  }).join(' ');
+}
