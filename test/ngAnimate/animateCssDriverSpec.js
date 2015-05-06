@@ -802,9 +802,9 @@ describe("ngAnimate $$animateCssDriver", function() {
         captureLog.pop().runner.end();
         $$rAF.flush();
 
-        var outAnimation = captureLog.pop();
-        var clonedAnchor = outAnimation.element;
-        var details = outAnimation.args[1];
+        var inAnimation = captureLog.pop();
+        var clonedAnchor = inAnimation.element;
+        var details = inAnimation.args[1];
 
         var addedClasses = details.addClass.split(' ');
         var removedClasses = details.removeClass.split(' ');
@@ -817,6 +817,11 @@ describe("ngAnimate $$animateCssDriver", function() {
 
         expect(removedClasses).not.toContain('brown');
         expect(removedClasses).not.toContain('black');
+
+        expect(removedClasses).not.toContain('red');
+        expect(removedClasses).not.toContain('blue');
+
+        inAnimation.runner.end();
 
         expect(clonedAnchor).toHaveClass('red');
         expect(clonedAnchor).toHaveClass('blue');
