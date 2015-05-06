@@ -428,9 +428,11 @@
  * called `ng-animate-ref`.
  *
  * Let's say for example we have two views that are managed by `ng-view` and we want to show
- * that there is a relationship between two components situated in different views. By using the
+ * that there is a relationship between two components situated in within these views. By using the
  * `ng-animate-ref` attribute we can identify that the two components are paired together and we
  * can then attach an animation, which is triggered when the view changes.
+ *
+ * Say for example we have the following template code:
  *
  * ```html
  * <!-- index.html -->
@@ -439,46 +441,70 @@
  *
  * <!-- home.html -->
  * <a href="#/banner-page">
- *   <img src="./banner.jpg" ng-animate-ref="banner">
+ *   <img src="./banner.jpg" class="banner" ng-animate-ref="banner">
  * </a>
  *
  * <!-- banner-page.html -->
- * <img src="./banner.jpg" ng-animate-ref="banner">
+ * <img src="./banner.jpg" class="banner" ng-animate-ref="banner">
  * ```
  *
  * Now, when the view changes (once the link is clicked), ngAnimate will examine the
  * HTML contents to see if there is a match reference between any components in the view
- * that is leaving and the view that is entering. It will then attempt to trigger a CSS
- * animation on the `.view-animation-anchor` CSS class (notice how `.view-animation` is
- * a shared CSS class on the ng-view element? This means that view-animation will apply to
- * both the enter and leave animations).
+ * that is leaving and the view that is entering. It will scan both the view which is being
+ * removed (leave) and inserted (enter) to see if there are any paired DOM elements that
+ * contain a matching ref value.
  *
- * The two images match since they share the same ref value. ngAnimate will now apply a
- * suffixed version of each of the shared CSS classes with `-anchor`. Therefore we will
- * have a shared class of `view-animation-anchor` which we can use to setup our transition animation.
+ * The two images match since they share the same ref value. ngAnimate will now create a
+ * transport element (which is a clone of the first image element) and it will then attempt
+ * to animate to the position of the second image element in the next view. For the animation to
+ * work a special CSS class called `ng-anchor` will be added to the transported element.
  *
- * We can now attach a transition onto the `.view-animation-anchor` CSS class and then
+ * We can now attach a transition onto the `.banner.ng-anchor` CSS class and then
  * ngAnimate will handle the entire transition for us as well as the addition and removal of
  * any changes of CSS classes between the elements:
  *
  * ```css
- * .view-animation-anchor {
+ * .banner.ng-anchor {
  *   /&#42; this animation will last for 1 second since there are
  *          two phases to the animation (an `in` and an `out` phase) &#42;/
  *   transition:0.5s linear all;
  * }
  * ```
  *
- * There are two stages for an anchor animation: `out` and `in`. The `out` stage happens first and that
- * is when the element is animated away from its origin. Once that animation is over then the `in` stage
- * occurs which animates the element to its destination. The reason why there are two animations is to
- * give enough time for the enter animation on the new element to be ready.
+ * We also **must** include animations for the views that are being entered and removed
+ * (otherwise anchoring wouldn't be possible since the new view would be inserted right away).
+ *
+ * ```css
+ * .view-animation.ng-enter, .view-animation.ng-leave {
+ *   transition:0.5s linear all;
+ *   position:fixed;
+ *   left:0;
+ *   top:0;
+ *   width:100%;
+ * }
+ * .view-animation.ng-enter {
+ *   transform:translateX(100%);
+ * }
+ * .view-animation.ng-leave,
+ * .view-animation.ng-enter.ng-enter-active {
+ *   transform:translateX(0%);
+ * }
+ * .view-animation.ng-leave.ng-leave-active {
+ *   transform:translateX(-100%);
+ * }
+ * ```
+ *
+ * Now we can jump back to the anchor animation. When the animation happens, there are two stages that occur:
+ * an `out` and an `in` stage. The `out` stage happens first and that is when the element is animated away
+ * from its origin. Once that animation is over then the `in` stage occurs which animates the
+ * element to its destination. The reason why there are two animations is to give enough time
+ * for the enter animation on the new element to be ready.
  *
  * The example above sets up a transition for both the in and out phases, but we can also target the out or
  * in phases directly via `ng-anchor-out` and `ng-anchor-in`.
  *
  * ```css
- * .view-animation-anchor.ng-anchor-out {
+ * .banner.ng-anchor-out {
  *   transition: 0.5s linear all;
  *
  *   /&#42; the scale will be applied during the out animation,
@@ -486,7 +512,7 @@
  *   transform: scale(1.2);
  * }
  *
- * .view-animation-anchor.ng-anchor-in {
+ * .banner.ng-anchor-in {
  *   transition: 1s linear all;
  * }
  * ```
@@ -580,21 +606,21 @@
         width:100%;
         min-height:500px;
       }
-      .view.ng-enter {
+      .view.ng-enter, .view.ng-leave,
+      .record.ng-anchor {
         transition:0.5s linear all;
+      }
+      .view.ng-enter {
         transform:translateX(100%);
       }
-      .view.ng-enter.ng-enter-active {
+      .view.ng-enter.ng-enter-active, .view.ng-leave {
         transform:translateX(0%);
-      }
-      .view.ng-leave {
-        transition:0.5s linear all;
       }
       .view.ng-leave.ng-leave-active {
         transform:translateX(-100%);
       }
-      .view-anchor {
-        transition:0.5s linear all;
+      .record.ng-anchor-out {
+        background:red;
       }
     </file>
   </example>

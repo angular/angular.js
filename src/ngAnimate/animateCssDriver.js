@@ -5,7 +5,6 @@ var $$AnimateCssDriverProvider = ['$$animationProvider', function($$animationPro
 
   var NG_ANIMATE_SHIM_CLASS_NAME = 'ng-animate-shim';
   var NG_ANIMATE_ANCHOR_CLASS_NAME = 'ng-anchor';
-  var NG_ANIMATE_ANCHOR_SUFFIX = '-anchor';
 
   var NG_OUT_ANCHOR_CLASS_NAME = 'ng-anchor-out';
   var NG_IN_ANCHOR_CLASS_NAME = 'ng-anchor-in';
@@ -46,13 +45,11 @@ var $$AnimateCssDriverProvider = ['$$animationProvider', function($$animationPro
     function prepareAnchoredAnimation(classes, outAnchor, inAnchor) {
       var clone = jqLite(getDomNode(outAnchor).cloneNode(true));
       var startingClasses = filterCssClasses(getClassVal(clone));
-      var anchorClasses = pendClasses(classes, NG_ANIMATE_ANCHOR_SUFFIX);
 
       outAnchor.addClass(NG_ANIMATE_SHIM_CLASS_NAME);
       inAnchor.addClass(NG_ANIMATE_SHIM_CLASS_NAME);
 
       clone.addClass(NG_ANIMATE_ANCHOR_CLASS_NAME);
-      clone.addClass(anchorClasses);
 
       rootBodyElement.append(clone);
 
