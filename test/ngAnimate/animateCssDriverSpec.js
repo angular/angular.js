@@ -709,6 +709,58 @@ describe("ngAnimate $$animateCssDriver", function() {
         expect(hasAll(addedClasses, ['yes', 'no', 'maybe'])).toBe(true);
       }));
 
+      it("should create a cloned anchor with all the shared CSS classes between both anchor elements suffixed with an -anchor CSS class",
+        inject(function($rootElement, $$rAF) {
+
+        var fromAnchor = jqLite('<div class="zero one two three"></div>');
+        from.append(fromAnchor);
+        var toAnchor = jqLite('<div class="zero two four six"></div>');
+        to.append(toAnchor);
+
+        $rootElement.append(fromAnchor);
+        $rootElement.append(toAnchor);
+
+        driver({
+          from: fromAnimation,
+          to: toAnimation,
+          anchors: [{
+            'out': fromAnchor,
+            'in': toAnchor
+          }]
+        }).start();
+
+        var clone = jqLite($rootElement[0].querySelector('.ng-animate-anchor'));
+        expect(clone).toHaveClass('zero-anchor');
+        expect(clone).toHaveClass('two-anchor');
+      }));
+
+      it("should create a cloned anchor with all the provided CSS classes within the animation driver suffixed with an -anchor CSS class",
+        inject(function($rootElement, $$rAF) {
+
+        var fromAnchor = jqLite('<div></div>');
+        from.append(fromAnchor);
+        var toAnchor = jqLite('<div></div>');
+        to.append(toAnchor);
+
+        $rootElement.append(fromAnchor);
+        $rootElement.append(toAnchor);
+
+        driver({
+          from: fromAnimation,
+          to: toAnimation,
+          classes: 'red green blue',
+          anchors: [{
+            'out': fromAnchor,
+            'in': toAnchor
+          }]
+        }).start();
+
+        var clone = jqLite($rootElement[0].querySelector('.ng-animate-anchor'));
+        expect(clone).toHaveClass('red-anchor');
+        expect(clone).toHaveClass('green-anchor');
+        expect(clone).toHaveClass('blue-anchor');
+      }));
+
       it("should remove the classes of the starting anchor from the cloned anchor node during the in animation and also add the classes of the destination anchor within the same animation",
         inject(function($rootElement, $$rAF) {
 
