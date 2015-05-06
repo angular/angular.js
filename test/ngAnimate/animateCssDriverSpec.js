@@ -599,7 +599,7 @@ describe("ngAnimate $$animateCssDriver", function() {
         expect(anchorDetails.event).toBeFalsy();
       }));
 
-      it("should add the `ng-animate-anchor` class to the cloned anchor element",
+      it("should add the `ng-anchor` class to the cloned anchor element",
         inject(function($rootElement, $$rAF) {
 
         var fromAnchor = jqLite('<div></div>');
@@ -620,7 +620,7 @@ describe("ngAnimate $$animateCssDriver", function() {
         }).start();
 
         var clonedAnchor = captureLog.pop().element;
-        expect(clonedAnchor).toHaveClass('ng-animate-anchor');
+        expect(clonedAnchor).toHaveClass('ng-anchor');
       }));
 
       it("should add and remove the `ng-animate-shim` class on the in anchor element during the animation",
