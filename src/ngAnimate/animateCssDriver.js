@@ -45,7 +45,7 @@ var $$AnimateCssDriverProvider = ['$$animationProvider', function($$animationPro
 
     function prepareAnchoredAnimation(classes, outAnchor, inAnchor) {
       var clone = jqLite(getDomNode(outAnchor).cloneNode(true));
-      var startingClasses = filterCssClasses(clone.attr('class') || '');
+      var startingClasses = filterCssClasses(getClassVal(clone));
       var anchorClasses = pendClasses(classes, NG_ANIMATE_ANCHOR_SUFFIX);
 
       outAnchor.addClass(NG_ANIMATE_SHIM_CLASS_NAME);
@@ -140,13 +140,19 @@ var $$AnimateCssDriverProvider = ['$$animationProvider', function($$animationPro
         });
       }
 
+      function getClassVal(element) {
+        return element.attr('class') || '';
+      }
+
       function prepareInAnimation() {
-        var endingClasses = filterCssClasses(inAnchor.attr('class'));
-        var classes = getUniqueValues(endingClasses, startingClasses);
+        var endingClasses = filterCssClasses(getClassVal(inAnchor));
+        var toAdd = getUniqueValues(endingClasses, startingClasses);
+        var toRemove = getUniqueValues(startingClasses, endingClasses);
+
         return $animateCss(clone, {
           to: calculateAnchorStyles(inAnchor),
-          addClass: NG_IN_ANCHOR_CLASS_NAME + ' ' + classes,
-          removeClass: NG_OUT_ANCHOR_CLASS_NAME + ' ' + startingClasses,
+          addClass: NG_IN_ANCHOR_CLASS_NAME + ' ' + toAdd,
+          removeClass: NG_OUT_ANCHOR_CLASS_NAME + ' ' + toRemove,
           delay: true
         });
       }
