@@ -4,7 +4,7 @@ var $$AnimateCssDriverProvider = ['$$animationProvider', function($$animationPro
   $$animationProvider.drivers.push('$$animateCssDriver');
 
   var NG_ANIMATE_SHIM_CLASS_NAME = 'ng-animate-shim';
-  var NG_ANIMATE_ANCHOR_CLASS_NAME = 'ng-animate-anchor';
+  var NG_ANIMATE_ANCHOR_CLASS_NAME = 'ng-anchor';
   var NG_ANIMATE_ANCHOR_SUFFIX = '-anchor';
 
   var NG_OUT_ANCHOR_CLASS_NAME = 'ng-anchor-out';
