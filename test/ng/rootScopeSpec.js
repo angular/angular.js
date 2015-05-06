@@ -829,6 +829,22 @@ describe('Scope', function() {
           }).not.toThrow();
         });
 
+        it('should not cause an illegal invocation exception when objectEquality is used on an object with a DOM object', function() {
+
+          $rootScope.domObj = {dom: document.body};
+          $rootScope.domObj2 = document.body;
+          $rootScope.jQueryObj = angular.element(document.body);
+
+          $rootScope.$watch('domObj', function() {}, true);
+          $rootScope.$watch('domObj2', function() {}, true);
+          $rootScope.$watch('jQueryObj', function() {}, true);
+
+          expect(function() {
+            $rootScope.$digest();
+          }).not.toThrow();
+
+        });
+
       });
     });
 
