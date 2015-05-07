@@ -645,7 +645,7 @@ function createInjector(modulesToLoad, strictDi) {
           }));
 
 
-  forEach(loadModules(modulesToLoad), function(fn) { instanceInjector.invoke(fn || noop); });
+  forEach(loadModules(modulesToLoad), function(fn) { if (fn) instanceInjector.invoke(fn); });
 
   return instanceInjector;
 
