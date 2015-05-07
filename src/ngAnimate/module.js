@@ -364,7 +364,7 @@
  *   return {
  *     enter: function(element, doneFn) {
  *       var animation = $animateCss(element, {
- *         event: 'enter'
+ *         event: 'ng-enter'
  *       });
  *
  *       if (animation) {
@@ -390,7 +390,7 @@
  *   return {
  *     enter: function(element, doneFn) {
  *       var animation = $animateCss(element, {
- *         event: 'enter',
+ *         event: 'ng-enter',
  *         addClass: 'maroon-setting',
  *         from: { height:0 },
  *         to: { height: 200 }
