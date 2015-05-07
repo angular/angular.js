@@ -486,6 +486,54 @@ describe("animations", function() {
       });
     });
 
+    they('$prop() shouldn\'t blow up when a function is passed as the options param',
+      ['enter', 'move', 'leave', 'addClass', 'removeClass', 'setClass', 'animate'], function(event) {
+
+      inject(function($animate, $rootScope, $document) {
+        var element = $document[0].createElement('div');
+        element.setAttribute('id', 'crazy-man');
+        if (event !== 'enter' && event !== 'move') {
+          parent.append(element);
+        }
+
+        var fakeOption = function() { };
+
+        switch (event) {
+          case 'enter':
+          case 'move':
+            $animate[event](element, parent, parent2, fakeOption);
+            break;
+
+          case 'addClass':
+            $animate.addClass(element, 'klass', fakeOption);
+            break;
+
+          case 'removeClass':
+            element.className = 'klass';
+            $animate.removeClass(element, 'klass', fakeOption);
+            break;
+
+          case 'setClass':
+            element.className = 'two';
+            $animate.setClass(element, 'one', 'two', fakeOption);
+            break;
+
+          case 'leave':
+            $animate.leave(element, fakeOption);
+            break;
+
+          case 'animate':
+            var toStyles = { color: 'red' };
+            $animate.animate(element, {}, toStyles, 'klass', fakeOption);
+            break;
+        }
+
+        $rootScope.$digest();
+        var options = capturedAnimation[2];
+        expect(isObject(options)).toBeTruthy();
+      });
+    });
+
     describe('addClass / removeClass', function() {
       it('should not perform an animation if there are no valid CSS classes to add',
         inject(function($animate, $rootScope) {
