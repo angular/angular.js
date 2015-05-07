@@ -104,6 +104,14 @@ describe("ngAnimate $$animateCssDriver", function() {
         driver({ element: element });
         expect(capturedAnimation[1].applyClassesEarly).toBeFalsy();
       }));
+
+      it("should not provide a `method` as an option value if the animation is not structural", inject(function() {
+        driver({ element: element, structural: true, event: 'superman' });
+        expect(capturedAnimation[1].event).toBe('superman');
+
+        driver({ element: element, event: 'batman' });
+        expect(capturedAnimation[1].event).toBeFalsy();
+      }));
     });
 
     describe("anchored animations", function() {
@@ -214,7 +222,9 @@ describe("ngAnimate $$animateCssDriver", function() {
             'out': jqLite('<div></div>')
           };
 
+          fromAnimation.structural = true;
           fromAnimation.element.append(anchorAnimation['out']);
+          toAnimation.structural = true;
           toAnimation.element.append(anchorAnimation['in']);
 
           var animator = driver({
@@ -240,6 +250,9 @@ describe("ngAnimate $$animateCssDriver", function() {
         captureFn = function(element, details) {
           element.addClass(details.event);
         };
+
+        fromAnimation.structural = true;
+        toAnimation.structural = true;
 
         var runner = driver({
           from: fromAnimation,
@@ -267,6 +280,9 @@ describe("ngAnimate $$animateCssDriver", function() {
           });
         });
         inject(function() {
+          fromAnimation.structural = true;
+          toAnimation.structural = true;
+
           var runner = driver({
             from: fromAnimation,
             to: toAnimation
@@ -907,8 +923,11 @@ describe("ngAnimate $$animateCssDriver", function() {
       it("should pass the provided domOperation into $animateCss to be run right after the element is animated if a leave animation is present",
         inject(function($rootElement, $$rAF) {
 
+        toAnimation.structural = true;
         toAnimation.event = 'enter';
         toAnimation.options = {};
+
+        fromAnimation.structural = true;
         fromAnimation.event = 'leave';
         fromAnimation.options = {};
 

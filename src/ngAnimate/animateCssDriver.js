@@ -226,20 +226,20 @@ var $$AnimateCssDriverProvider = ['$$animationProvider', function($$animationPro
       var element = animationDetails.element;
       var options = animationDetails.options || {};
 
-      options.structural = animationDetails.structural;
+      if (animationDetails.structural) {
+        // structural animations ensure that the CSS classes are always applied
+        // before the detection starts.
+        options.structural = options.applyClassesEarly = true;
 
-      // structural animations ensure that the CSS classes are always applied
-      // before the detection starts.
-      options.applyClassesEarly = options.structural;
-
-      // we special case the leave animation since we want to ensure that
-      // the element is removed as soon as the animation is over. Otherwise
-      // a flicker might appear or the element may not be removed until all
-      // the other animations have completed themselves (which would then
-      // leave a pending element in the background).
-      options.event = animationDetails.event;
-      if (options.event === 'leave') {
-        options.onDone = options.domOperation;
+        // we special case the leave animation since we want to ensure that
+        // the element is removed as soon as the animation is over. Otherwise
+        // a flicker might appear or the element may not be removed at all
+        options.event = animationDetails.event;
+        if (options.event === 'leave') {
+          options.onDone = options.domOperation;
+        }
+      } else {
+        options.event = null;
       }
 
       var animator = $animateCss(element, options);
