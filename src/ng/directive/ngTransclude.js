@@ -8,7 +8,8 @@
  * @description
  * Directive that marks the insertion point for the transcluded DOM of the nearest parent directive that uses transclusion.
  *
- * Existing content of the element that this directive is placed on will be removed before the transcluded content is inserted if transcluded content exists. In other case the content will be saved and used as content by default.
+ * Existing content of the element that this directive is placed on will be removed before the transcluded content
+ * is inserted if transcluded content exists. In other case the content will be saved and used as content by default.
  *
  * @element ANY
  *
