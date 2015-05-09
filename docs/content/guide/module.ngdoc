@@ -140,7 +140,7 @@ The above is a suggestion. Tailor it to your needs.
 # Module Loading & Dependencies
 
 A module is a collection of configuration and run blocks which get applied to the application
-during the bootstrap process. In its simplest form the module consist of a collection of two kinds
+during the bootstrap process. In its simplest form the module consists of a collection of two kinds
 of blocks:
 
   1. **Configuration blocks** - get executed during the provider registrations and configuration
