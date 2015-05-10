@@ -1,0 +1,146 @@
+.main-nav {
+  height: 56px;
+  min-height: 56px;
+  padding: 0px ($unit * 2);
+  box-shadow: 0px 2px 5px 0 rgba($coal, 0.26);
+
+  @media handheld and (max-width: $phone-breakpoint),
+  screen and (max-device-width: $phone-breakpoint),
+  screen and (max-width: $tablet-breakpoint) {
+    padding: 0px 0px 0px ($unit * 2);
+  }
+
+  h1 {
+    margin: 0px ($unit * 10) 0px 0px;
+    padding: 0px;
+    height: 36px;
+    width: 136px;
+    float: left;
+
+    @media handheld and (max-width: $phone-breakpoint),
+    screen and (max-device-width: $phone-breakpoint),
+    screen and (max-width: $tablet-breakpoint) {
+      margin: 0;
+    }
+
+    a {
+      background: url('/resources/images/logos/standard/logo-nav.png') 0px 8px no-repeat;
+      display: block;
+      height: 56px;
+      width: 135px;
+      overflow: hidden;
+      text-indent: -3000px;
+
+      @media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min-device-pixel-ratio: 2) {
+        background: url('/resources/images/logos/standard/logo-nav@2x.png') 0px 8px no-repeat;
+        background-size: 135px 36px;
+      }
+    }
+  }
+
+  ul {
+    list-style-type: none;
+    margin: 0px;
+    padding: 0px;
+
+    li {
+      margin: 0px 0px 0px 0px;
+    }
+
+    .main-nav-button {
+      @media handheld and (max-width: $phone-breakpoint),
+      screen and (max-device-width: $phone-breakpoint),
+      screen and (max-width: $tablet-breakpoint) {
+        display: block;
+        float: none;
+        line-height: $unit * 6;
+        text-align: left;
+        font-size: 14px;
+        padding: 0px ($unit * 5);
+
+        &.has-icon {
+          padding: 0px ($unit * 5);
+          position: static;
+        }
+
+        .icon {
+          display: none;
+        }
+      }
+    }
+
+    @media handheld and (max-width: $phone-breakpoint),
+    screen and (max-device-width: $phone-breakpoint),
+    screen and (max-width: $tablet-breakpoint) {
+      box-shadow: 0px 2px 5px rgba(0, 0, 0, .3);
+      float: none;
+      position: absolute;
+      top: 56px;
+      right: 0px;
+      left: 0px;
+      z-index: $layer-6;
+      background: $ocean;
+      display: none;
+
+      li {
+        display: block;
+        float: none;
+      }
+    }
+  }
+
+
+  // NAV BUTTON STYLES
+  .main-nav-button {
+    line-height: 56px;
+    display: inline-block;
+    color: $snow;
+    text-decoration: none;
+    padding: 0px ($unit * 2);
+    text-transform: uppercase;
+    font-family: $brand-font;
+    font-weight: 400;
+    font-size: 16px;
+    border: none;
+    background: none;
+    border-radius: 0;
+    position: relative;
+
+    &:hover {
+      background: $ocean;
+    }
+
+    // ICONS
+    &.has-icon {
+      position: relative;
+      padding-left: 30px + ($unit * 2);
+    }
+
+    .icon {
+      font-size: 22px;
+      position: absolute;
+      top: 15px;
+      left: ($unit * 2);
+      z-index: $layer-1;
+    }
+  }
+
+  // DROPDOWN TRIGGER BUTTON
+  .main-nav-mobile-trigger {
+    display: none;
+    padding: 0px (24px + $unit) 0px $unit;
+    font-size: 14px;
+
+    .icon {
+      left: auto;
+      right: ($unit );
+      opacity: .56;
+    }
+
+    @media handheld and (max-width: $phone-breakpoint),
+    screen and (max-device-width: $phone-breakpoint),
+    screen and (max-width: $tablet-breakpoint) {
+      display: inline-block;
+    }
+  }
+}

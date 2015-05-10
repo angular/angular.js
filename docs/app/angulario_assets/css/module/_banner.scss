@@ -1,0 +1,59 @@
+/*
+* Banner
+*
+* Addtional announcements that generally follow a hero
+*/
+
+.banner {
+  background: $mist;
+  padding: ($unit * 4) ($unit * 4) ($unit * 4) ($unit * 12);
+  min-height: $unit * 12;
+
+  @media handheld and (max-width: $phone-breakpoint),
+  screen and (max-device-width: $phone-breakpoint),
+  screen and (max-width: $tablet-breakpoint) {
+    padding: $unit * 2;
+  }
+
+  &.is-centered {
+    text-align: center;
+  }
+
+  .button {
+    @media handheld and (max-width: $phone-breakpoint),
+    screen and (max-device-width: $phone-breakpoint),
+    screen and (max-width: $tablet-breakpoint) {
+      display: block;
+    }
+  }
+
+  .banner-ng-annoucement {
+    background: url('/resources/images/logos/ng-conf/ng-conf-shield.png') 0px 0px no-repeat;
+    padding-left: 68px;
+    margin-right: $unit * 3;
+    display: inline-block;
+
+    @media handheld and (max-width: $phone-breakpoint),
+    screen and (max-device-width: $phone-breakpoint),
+    screen and (max-width: $tablet-breakpoint) {
+      background: none;
+      padding-left: 0px;
+      margin: 0px 0px $unit 0px;
+    }
+  }
+
+  h3 {
+    opacity: .87;
+    line-height: 34px;
+    margin: 0;
+  }
+
+  h4 {
+    line-height: 24px;
+  }
+
+  p,
+  h4 {
+    margin: 0px;
+  }
+}

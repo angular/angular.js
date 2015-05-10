@@ -1,0 +1,179 @@
+/*
+* Embedded Code
+*
+* Style for embedded code examples
+*/
+
+.cp_embed_iframe {
+  overflow: hidden;
+
+  @media handheld and (max-width: $phone-breakpoint),
+  screen and (max-device-width: $phone-breakpoint),
+  screen and (max-width: $tablet-breakpoint) {
+    width: 240px !important;
+  }
+}
+
+
+/*
+* Code Snippets
+*
+* These Code snippets are transformed by prettify and the code
+* below represents a custom theme that works with their formatting.
+*/
+
+.prettyprint {
+  background: $steel;
+  font-family: $mono-font;
+  color: $snow;
+  overflow: hidden;
+  position: relative;
+  padding: 0px;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 24px;
+  margin-bottom: $unit * 3;
+  border-radius: 4px;
+  box-shadow: 0px 2px 5px rgba($coal, .3);
+  padding: ($unit * 2) ($unit * 4);
+
+  &.linenums,
+  &[class^="linenums:"],
+  &[class*=" linenums:"]  {
+    padding: 0px;
+  }
+
+  &.is-showcase {
+    border: 4px solid $regal;
+  }
+
+  code {
+    background: none;
+    font-size: 15px;
+  }
+
+  ol {
+    background: $steel;
+    padding: ($unit * 2) ($unit * 4) ($unit * 2) ($unit * 7);
+    margin: 0px;
+    overflow: auto;
+    border-radius: 3px;
+    font-weight: 600;
+    font-size: 15px;
+
+    li {
+      color: $metal;
+      background: none;
+      margin-bottom: 5px;
+      line-height: normal;
+      list-style-type: decimal;
+      font-size: 12px;
+
+      &:last-child {
+        margin-bottom: 0px;
+      }
+
+      code {
+        background: none;
+        font-size: 15px;
+      }
+    }
+  }
+
+
+  /*
+  * Screen Colors
+  *
+  */
+
+  .pnk,
+  .blk {
+    border-radius: 2px;
+    padding: 2px 4px;
+  }
+  .pnk {
+    background: $squid;
+    color: $snow;
+  }
+  .blk {
+    background: $coal;
+  }
+  .otl {
+    outline: 1px solid rgba(snow, .56);
+  }
+  .kwd {
+    color: $mist;
+  }
+  .typ,
+  .tag {
+    color: $squid;
+  }
+  .str,
+  .atv {
+    color: darken($sunshine, 10%);
+  }
+  .atn {
+    color: darken($cactus, 10%);
+  }
+  .com {
+    color: $tin;
+  }
+  .lit {
+    color: darken($sunshine, 10%);
+  }
+  .pun {
+    color: $snow;
+  }
+  .pln {
+    color: $snow;
+  }
+  .dec {
+    color: $grape;
+  }
+
+
+  /*
+  * Print Colors
+  *
+  */
+
+  @media print {
+    background: $snow;
+    border: none;
+    box-shadow: none;
+
+    ol {
+      background: $snow;
+    }
+
+    .kwd {
+      color: $steel;
+    }
+    .typ,
+    .tag {
+      color: $ruby;
+    }
+    .str,
+    .atv {
+      color: darken($sunshine, 10%);
+    }
+    .atn {
+      color: darken($cactus, 10%);
+    }
+    .com {
+      color: $cloud;
+    }
+    .lit {
+      color: darken($sunshine, 10%);
+    }
+    .pun {
+      color: $coal;
+    }
+    .pln {
+      color: $coal;
+    }
+    .dec {
+      color: darken($grape, 5%);
+    }
+  }
+}

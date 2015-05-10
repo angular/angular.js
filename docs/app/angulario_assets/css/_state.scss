@@ -1,0 +1,24 @@
+/*
+* States
+*
+* Utility classes for different element states
+*/
+
+.is-hidden {
+  display: none !important;
+}
+
+.is-visible {
+  display: block !important;
+}
+
+.is-visually-hidden {
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
+  opacity: 0.01;
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+  z-index: $layer-1;
+}

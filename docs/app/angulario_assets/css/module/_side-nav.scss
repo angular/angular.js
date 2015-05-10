@@ -1,0 +1,221 @@
+/*
+* Side Navigation
+*
+*/
+
+.side-nav {
+  background: $mist;
+  box-shadow: 3px 0px 6px rgba($coal, .3);
+  width: 232px;
+  bottom: 0px;
+  overflow: auto;
+
+  @media handheld and (max-width: $phone-breakpoint),
+  screen and (max-device-width: $phone-breakpoint),
+  screen and (max-width: $tablet-breakpoint) {
+    box-shadow: 0px 3px 6px rgba($coal, .3);
+    width: auto;
+    left: 0px;
+    right: 0px;
+    bottom: auto;
+  }
+
+
+  // SEARCH BOX
+  .side-nav-search {
+    background: $tin;
+    padding: $unit;
+    height: $unit * 6;
+    border-bottom: 1px solid $fog;
+    position: relative;
+
+    @media handheld and (max-width: $phone-breakpoint),
+    screen and (max-device-width: $phone-breakpoint),
+    screen and (max-width: $tablet-breakpoint) {
+      border-bottom: none;
+      padding-right: $unit * 14;
+    }
+
+    input {
+      border: none;
+      border-radius: 200px;
+      width: 100%;
+      box-sizing: border-box;
+      height: 30px;
+      padding: 0px $unit;
+      margin: 0px;
+      font-size: 14px !important;
+      display: inline-block;
+    }
+
+    .mobile-trigger {
+      position: absolute;
+      top: $unit;
+      right: $unit;
+      border: none;
+      background: darken($tin, 5%);
+      color: $snow;
+      padding-right: $unit * 4;
+      display: none;
+
+      @media handheld and (max-width: $phone-breakpoint),
+      screen and (max-device-width: $phone-breakpoint),
+      screen and (max-width: $tablet-breakpoint) {
+        display: inline-block;
+      }
+
+      .icon {
+        position: absolute;
+        top: 5px;
+        right: $unit;
+        z-index: $layer-1;
+        font-size: 20px;
+        opacity: .87;
+      }
+    }
+  }
+
+
+  // PRIMARY SIDENAV BUTTON
+  .side-nav-primary {
+    list-style-type: none;
+    margin: 0px;
+    padding: 0px;
+
+    @media handheld and (max-width: $phone-breakpoint),
+    screen and (max-device-width: $phone-breakpoint),
+    screen and (max-width: $tablet-breakpoint) {
+      display: none;
+    }
+
+    > li {
+      margin: 0px;
+      padding: 0px;
+      border-bottom: 1px solid $fog;
+
+      &.is-selected  {
+        > a {
+          background: $fog;
+          color: $regal;
+
+          .side-nav-icon {
+            color: $regal;
+          }
+        }
+      }
+
+      > a {
+        line-height: ($unit * 6) - 1;
+        padding: 0px ($unit * 2) 0px ($unit * 6);
+        color: $metal;
+        font-size: 14px;
+        text-align: left;
+        font-weight: 400;
+        position: relative;
+        text-decoration: none;
+        display: block;
+        text-transform: uppercase;
+      }
+
+      .side-nav-icon {
+        position: absolute;
+        top: 0px;
+        left: 16px;
+        z-index: $layer-1;
+        font-size: 19px;
+        color: $cloud;
+        line-height: 47px;
+      }
+    }
+  }
+
+
+  // SECONDARY SIDENAV BUTTON
+  .side-nav-secondary {
+    @extend .side-nav-primary;
+    background: $fog;
+    box-shadow: inset 0px 2px 2px rgba($coal, .24);
+
+    @media handheld and (max-width: $phone-breakpoint),
+    screen and (max-device-width: $phone-breakpoint),
+    screen and (max-width: $tablet-breakpoint) {
+      display: none;
+    }
+
+    &.is-ordered {
+
+      > li {
+        line-height: 40px;
+        vertical-align: top;
+
+        > a {
+          padding: 0px ($unit * 2) 0px ($unit * 3);
+          text-transform: none;
+          font-size: 14px;
+        }
+      }
+    }
+
+    > li {
+      border-bottom: none;
+
+      &.is-selected  {
+        > a {
+          background: transparent;
+          color: $regal;
+        }
+      }
+
+      > a {
+        line-height: ($unit * 5) - 1;
+        padding: 0px ($unit * 2) 0px ($unit * 4);
+        font-size: 13px;
+      }
+
+      .side-nav-icon {
+        position: absolute;
+        top: 0px;
+        left: 16px;
+        z-index: $layer-1;
+        font-size: 19px;
+        color: $cloud;
+        line-height: 47px;
+      }
+    }
+  }
+
+  // SECONDARY SIDENAV BUTTON
+  .side-nav-tertiary {
+    padding-bottom: ($unit * 1);
+    margin: 0px;
+    padding: 0px;
+
+    > li {
+      margin: 0px;
+
+      &.is-selected  {
+        > a {
+          background: darken($fog, 3%);
+          color: $blueberry;
+        }
+      }
+
+      > a {
+        line-height: ($unit * 3) - 1;
+        font-size: 13px;
+        text-transform: none;
+        text-align: left;
+        margin: 0px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+        text-decoration: none;
+        font-weight: 400;
+        padding: 0px $unit 0px ($unit * 7);
+        line-height: 34px;
+        color: $metal;
+      }
+    }
+  }
+}

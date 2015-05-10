@@ -1,0 +1,26 @@
+.alert {
+  box-shadow: 0px 2px 5px rgba($coal, 0.3);
+  border-width: 2px;
+  border-style: solid;
+  padding: $unit ($unit * 2);
+  line-height: $unit * 4;
+  font-size: 14px;
+  border-radius: 4px;
+  color: $steel;
+  margin-bottom: $unit * 3;
+
+  &.is-critical {
+    border-color: $cardinal;
+    background: $peach;
+  }
+
+  &.is-important {
+    border-color: $citrus;
+    background: $sand;
+  }
+
+  &.is-helpful {
+    border-color: $blueberry;
+    background: $light;
+  }
+}

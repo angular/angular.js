@@ -1,0 +1,79 @@
+.bio-card {
+  margin: 0px 0px ($unit * 4) 0px;
+  position: relative;
+  cursor: pointer;
+  box-shadow: 0px 2px 5px 0 rgba(0, 0, 0, 0.26);
+  background: $snow;
+  transition: all .3s;
+
+  &:hover {
+    transform: translate3d(0,-3px,0);
+    box-shadow: 0px 8px 16px 0 rgba(0, 0, 0, 0.4);
+
+    nav {
+      opacity: 1;
+    }
+  }
+
+
+  // HEADER
+
+  header {
+    position: relative;
+    overflow: hidden;
+    border-radius: 2px 2px 0px 0px;
+
+    nav {
+      transition: opacity .5s;
+      position: absolute;
+      bottom: 3px;
+      left: 0;
+      right: 0;
+      z-index: $layer-1;
+      padding: $unit;
+      background: rgba($steel, .4);
+      opacity: 0;
+
+      button {
+        font-size: 14px;
+        color: $snow;
+        text-transform: uppercase;
+        opacity: .87;
+        background: none;
+        border: none;
+      }
+
+      a {
+        color: $snow;
+        font-size: 20px;
+        text-decoration: none;
+        opacity: .87;
+        margin-right: $unit;
+        float: right;
+      }
+    }
+  }
+
+
+  // MAIN CONTENT
+
+  h3 {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: $metal;
+    text-transform: uppercase;
+    font-size: 18px;
+    margin-bottom: $unit;
+  }
+
+  p {
+    white-space: nowrap;
+    overflow: hidden;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 24px;
+    margin: 0;
+    text-overflow: ellipsis;
+  }
+}

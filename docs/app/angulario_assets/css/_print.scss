@@ -1,0 +1,33 @@
+@media print {
+
+  /*
+  * Print Styles
+  *
+  */
+
+  // HIDE FOR PRINT
+  .side-nav,
+  .main-nav,
+  .main-footer,
+  .cta-bar {
+    display: none !important;
+  }
+
+  // ZERO OUT MARGIN & PADDING
+  .l-offset-nav,
+  .l-offset-side-nav {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  // BACKGROUND FOR PRINT
+  .hero {
+    background: none !important;
+  }
+
+  //COLOR DARK
+  .hero-title,
+  .hero-subtitle {
+    color: $steel;
+  }
+}

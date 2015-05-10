@@ -1,0 +1,46 @@
+.callout {
+  @extend .alert;
+  padding: 0px;
+
+  header {
+    color: $snow;
+    padding: 0px ($unit * 2);
+    line-height: $unit * 4;
+    font-size: 14px;
+    font-weight: 500;
+    text-transform: uppercase;
+  }
+
+  p {
+    padding: $unit * 2;
+    margin: 0px;
+    font-size: 14px;
+  }
+
+  &.is-critical {
+    border-color: $cardinal;
+    background: $peach;
+
+    header {
+      background: $cardinal;
+    }
+  }
+
+  &.is-important {
+    border-color: $citrus;
+    background: $sand;
+
+    header {
+      background: $citrus;
+    }
+  }
+
+  &.is-helpful {
+    border-color: $blueberry;
+    background: $light;
+
+    header {
+      background: $blueberry;
+    }
+  }
+}

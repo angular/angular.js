@@ -1,0 +1,75 @@
+/*
+* Button Styles
+*
+*/
+
+.button {
+  display: inline-block;
+  line-height: $unit * 4;
+  padding: 0px ($unit * 2);
+  font-size: 14px;
+  font-weight: 400;
+  border-radius: 3px;
+  text-decoration: none;
+  text-transform: uppercase;
+  overflow: hidden;
+  border: none;
+
+  // SIZES
+  &.button-small {
+    font-size: 12px;
+    line-height: $unit * 3;
+    padding: 0px ($unit * 1);
+  }
+
+  &.button-large {
+    font-size: 15px;
+    line-height: $unit * 6;
+    padding: 0px ($unit * 3);
+  }
+
+  &.button-x-large {
+    font-size: 16px;
+    line-height: $unit * 7;
+    padding: 0px ($unit * 3);
+  }
+
+
+  // COLORS
+
+  &.button-secondary {
+    background: $fog;
+    color: rgba($snow, .87);
+  }
+
+  &.button-plain {
+    background: $snow;
+    color: rgba($steel, .87);
+  }
+
+  &.button-subtle {
+    background: $mist;
+    color: darken($cloud, 10%);
+  }
+
+  &.button-navy {
+    background: $ocean;
+    color: rgba($snow, .87);
+  }
+
+  &.button-banner {
+    background: $metal;
+    color: rgba($snow, .87);
+  }
+
+  &.button-shield {
+    background: $regal url('/resources/images/logos/inverse/shield/22.png') 24px 13px no-repeat;
+    color: rgba($snow, .87);
+    padding-left: 54px;
+
+    @media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min-device-pixel-ratio: 2) {
+      background: $regal url('/resources/images/logos/inverse/shield/22@2x.png') 24px 13px no-repeat;
+      background-size: 22px 22px;
+    }
+  }
+}

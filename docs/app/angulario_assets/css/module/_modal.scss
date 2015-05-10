@@ -1,0 +1,17 @@
+.modal {
+  h3 {
+    margin-bottom: $unit;
+  }
+
+  img {
+    float: left;
+    margin: 0px ($unit * 3) ($unit * 3) 0px;
+    border-radius: 4px;
+  }
+
+  .button {
+    margin-bottom: $unit * 3;
+    margin-right: $unit;
+    color: $blueberry;
+  }
+}

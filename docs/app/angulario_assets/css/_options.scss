@@ -1,0 +1,86 @@
+/*
+* Typography
+*
+* Only the fonts listed below should be used throughout the site.
+*/
+
+$brand-font: 'Roboto', "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+$mono-font: Monaco, "Lucida Console", monospace;
+
+
+/*
+* Metrics
+*
+* Metrics based on material design 8pt unit
+*/
+
+$unit: 8px;
+$phone-breakpoint: 480px;
+$tablet-breakpoint: 800px;
+
+
+/*
+* Layer Stacking
+*
+* The approved range that can be used for layering (z-indexes)
+*/
+
+$layer-1: 1;
+$layer-2: 2;
+$layer-3: 3;
+$layer-4: 4;
+$layer-5: 5;
+$layer-6: 6;
+$layer-7: 7;
+$layer-8: 8;
+$layer-9: 9;
+$layer-10: 10;
+
+
+/*
+* Colors
+*
+* Colors are ordered from light to dark (top to bottom).
+* Do not use hex codes directly in other Sass files. The
+* following colors are the only approved colors for this site.
+*/
+
+// GREEN COLORS
+$cactus: #8BC34A;
+
+// YELLOW
+$sunshine: #FFF59D;
+
+// ORANGE
+$sand: #FFF8E1;
+$citrus: #FF8F00;
+
+// RED COLORS
+$peach: #ffebee;
+$squid: #EF3872;
+$cardinal: #E23237;
+$ruby: #B52E31;
+
+// BLUE COLORS
+$light: #E3F2FD;
+$sky: #0085D3;
+$regal: #0273D4;
+$blueberry: #0262C2;
+$ocean: #0143A3;
+
+//PURPLE
+$grape: #9575CD;
+
+// DARK GRAY COLORS
+$coal: #000000;
+$steel: #253238;
+$silver: #36474F;
+$platinum: #445A64;
+$metal: #536E7A;
+$tin: #8FA4AE;
+
+// LIGHT GRAY COLORS
+$cloud: #AFBEC5;
+$fog: #CFD8DC;
+$mist: #ECEFF1;
+$snow: #FFFFFF;

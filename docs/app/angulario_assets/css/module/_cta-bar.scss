@@ -1,0 +1,20 @@
+/*
+* CTA Bar (Call to action)
+*
+* Call to action located at the bottom of most pages
+*/
+
+.cta-bar {
+  text-align: center;
+
+  .button {
+    margin: 0px $unit;
+
+    @media handheld and (max-width: $phone-breakpoint),
+    screen and (max-device-width: $phone-breakpoint),
+    screen and (max-width: $tablet-breakpoint) {
+      margin: ($unit * 2) 0px;
+      display: block;
+    }
+  }
+}

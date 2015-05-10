@@ -1,0 +1,24 @@
+.jump-nav {
+  position: absolute;
+  top: $unit * 8;
+  right: $unit * 6;
+  width: $unit * 20;
+  z-index: $layer-1;
+
+  ul {
+    list-style-type: none;
+    padding: 0px;
+    margin: 0px;
+  }
+
+  li {
+    padding: 0px;
+    margin: 0px;
+    border-bottom: 1px solid $fog;
+
+    a.button {
+      display: block;
+      text-align: left;
+    }
+  }
+}
