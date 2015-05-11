@@ -1203,6 +1203,43 @@ describe("ngAnimate $animateCss", function() {
       });
     });
 
+    it('should avoid applying the same cache to an element a follow-up animation is run on the same element',
+      inject(function($animateCss, $rootElement, $document) {
+
+      function endTransition(element, elapsedTime) {
+        browserTrigger(element, 'transitionend',
+          { timeStamp: Date.now(), elapsedTime: elapsedTime });
+      }
+
+      function startAnimation(element, duration, color) {
+        $animateCss(element, {
+          duration: duration,
+          to: { background: color }
+        }).start();
+        triggerAnimationStartFrame();
+      }
+
+      var element = jqLite('<div></div>');
+      $rootElement.append(element);
+      jqLite($document[0].body).append($rootElement);
+
+      startAnimation(element, 0.5, 'red');
+      expect(element.attr('style')).toContain('transition');
+
+      endTransition(element, 0.5);
+      expect(element.attr('style')).not.toContain('transition');
+
+      startAnimation(element, 0.8, 'blue');
+      expect(element.attr('style')).toContain('transition');
+
+      // Trigger an extra transitionend event that matches the original transition
+      endTransition(element, 0.5);
+      expect(element.attr('style')).toContain('transition');
+
+      endTransition(element, 0.8);
+      expect(element.attr('style')).not.toContain('transition');
+    }));
+
     it('should apply a custom temporary class when a non-structural animation is used',
       inject(function($animateCss, $rootElement, $document) {
 
