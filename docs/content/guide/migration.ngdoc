@@ -15,16 +15,17 @@ which drives many of these changes.
 
 # Migrating from 1.3 to 1.4
 
-Angular 1.4 fixes the major animation issues and introduces some breaking changes for `cookies`, `ngMessages`,
-`$compile`, `ngRepeat`, `ngOptions `and some fixes to core filters: `limitTo` and `filter`.
+Angular 1.4 fixes major animation issues and introduces a new API for `ngCookies`. Further, there
+are changes to `ngMessages`, `$compile`, `ngRepeat`, `ngOptions `and some fixes to core filters:
+`limitTo` and `filter`.
 
 The reason for the ngAnimate refactor was to fix timing issues and to expose new APIs to allow
 for developers to construct more versatile animations.  We now have access to `$animateCss`
-and the many timing-oriented bugs were fixed which resulted in more smoother animations.
+and the many timing-oriented bugs were fixed which results in smoother animations.
 If animation is something of interest, then please read over the breaking changes below for animations when
 `ngAnimate` is used.
 
-ngMessages has also been upgraded to allow for dynamic message resolution. This handy feature allows for developers
+`ngMessages` has been upgraded to allow for dynamic message resolution. This handy feature allows for developers
 to render error messages with ngMessages that are listed with a directive such as ngRepeat. A great usecase for this
 involves pulling error message data from a server and then displaying that data via the mechanics of ngMessages. Be
 sure to read the breaking change involved with `ngMessagesInclude` to upgrade your template code.
@@ -38,14 +39,14 @@ relatively straightforward otherwise.
 
 ## Animation (`ngAnimate`)
 
-Animation in 1.4 have been refactored internally and the API has stayed much the same. There are, however,
-some breaking changes that need to be addressed when any Angular animation code is upgraded to work in 1.4.
+Animations in 1.4 have been refactored internally, but the API has stayed much the same. There are, however,
+some breaking changes that need to be addressed when upgrading to 1.4.
 
 Due to [c8700f04](https://github.com/angular/angular.js/commit/c8700f04fb6fb5dc21ac24de8665c0476d6db5ef),
 JavaSript and CSS animations can no longer be run in
 parallel. With earlier versions of ngAnimate, both CSS and JS animations
 would be run together when multiple animations were detected. This
-feature has now been removed, however, the same effect, with even more
+feature has been removed, however, the same effect, with even more
 possibilities, can be achieved by injecting `$animateCss` into a
 JavaScript-defined animation and creating custom CSS-based animations
 from there.
@@ -138,12 +139,15 @@ class based animations (animations triggered via ngClass) in order to ensure tha
 ## Forms (`ngMessages`, `ngOptions`)
 
 ### ngMessages
-The ngMessages module has also been subject to an internal refactor to allow the feature to be more flexible
-and compatible with dynamic message data. The ngMessage directive now supports a new attribute called `ng-message-exp`
-which will evaluate an expression and will keep track of that expression as it changes in order to re-evaluate
-the listed messages.
+The ngMessages module has also been subject to an internal refactor to allow it to be more flexible
+and compatible with dynamic message data. The `ngMessage` directive now supports a new attribute
+called `ng-message-exp` which will evaluate an expression and will keep track of that expression
+as it changes in order to re-evaluate the listed messages.
 
-There is only one breaking change. Please consider the following when including remote message templates via `ng-messages-include`:
+[Click here to learn more about dynamic ng-messages](https://docs.angularjs.org/api/ngMessages#dynamic-messaging)
+
+There is only one breaking change. Please consider the following when including remote
+message templates via `ng-messages-include`:
 
 Due to [c9a4421f](https://github.com/angular/angular.js/commit/c9a4421fc3c97448527eadef1f42eb2f487ec2e0),
 the `ngMessagesInclude` attribute has now been removed and cannot be used in the same element containing
@@ -168,11 +172,14 @@ before and after it.
 
 ### ngOptions
 
+The `ngOptions` directive has also been refactored and as a result some long-standing bugs
+have been fixed. The breaking changes are comparatively minor and should not affect most applications.
+
 Due to [7fda214c](https://github.com/angular/angular.js/commit/7fda214c4f65a6a06b25cf5d5aff013a364e9cef),
-when `ngOptions` renders the option values within the DOM, the resulting HTML code is different. Normally this
-should not affect your application at all, however, if your code relies on inspecing the value property of `<option>`
-elements (that `ngOptions` generates) then be sure to read the details
-[here](https://github.com/angular/angular.js/commit/7fda214c4f65a6a06b25cf5d5aff013a364e9cef).
+when `ngOptions` renders the option values within the DOM, the resulting HTML code is different.
+Normally this should not affect your application at all, however, if your code relies on inspecting
+the value property of `<option>` elements (that `ngOptions` generates) then be sure to [read the details]
+(https://github.com/angular/angular.js/commit/7fda214c4f65a6a06b25cf5d5aff013a364e9cef).
 
 Due to [7fda214c](https://github.com/angular/angular.js/commit/7fda214c4f65a6a06b25cf5d5aff013a364e9cef),
 when iterating over an object's properties using the `(key, value) in obj` syntax
@@ -181,8 +188,6 @@ attempt to create a deterministic ordering since browsers don't guarantee the or
 But in practice this is not what people want and so this change iterates over properties
 in the order they are returned by Object.keys(obj), which is almost always the order
 in which the properties were defined.
-
-
 
 
 ## Templating (`ngRepeat`, `$compile`)
@@ -218,9 +223,15 @@ is marked as optional and the attribute is not specified, no function will be ad
 
 Due to [38fbe3ee](https://github.com/angular/angular.js/commit/38fbe3ee8370fc449b82d80df07b5c2ed2cd5fbe),
 `$cookies` will no longer expose properties that represent the current browser cookie
-values.
+values. `$cookies` no longer polls the browser for changes to the cookies and ***no longer copies
+cookie values onto the `$cookies` object***.
 
-The new API on `$cookies` includes:
+This was changed because the polling is expensive and caused issues with the `$cookies` properties
+not synchronizing correctly with the actual browser cookie values (The reason the polling
+was originally added was to allow communication between different tabs,
+but there are better ways to do this today, for example `localStorage`.)
+
+The new API on `$cookies` is as follows:
 
  * `get`
  * `put`
@@ -229,17 +240,8 @@ The new API on `$cookies` includes:
  * `getAll`
  * `remove`
 
-The new API no longer polls the browser for changes to the cookies and no longer copy
-cookie values onto the `$cookies` object.
-
-The polling is expensive and caused issues with the `$cookies` properties not
-synchronizing correctly with the actual browser cookie values.
-
-The reason the polling was originally added was to allow communication between
-different tabs, but there are better ways to do this today (for example `localStorage`).
-
-Now you must explictly use the methods above in order to access cookie data. This also means that
-you can no longer watch the any properties on `$cookies` for changes to detect for any changes
+You must explictly use the methods above in order to access cookie data. This also means that
+you can no longer watch the properties on `$cookies` to detect changes
 that occur on the browsers cookies.
 
 This feature is generally only needed if a 3rd party library was programmatically
@@ -293,8 +295,8 @@ $http.get(url, {
 
 ### `filter` filter
 Due to [cea8e751](https://github.com/angular/angular.js/commit/cea8e75144e6910b806b63a6ec2a6d118316fddd),
-the `filter` filter will throw an error when a non array. Beforehand it would silently ignore the error
-and return an empty array. This is not the behavior anymore.
+the `filter` filter will throw an error when used with a non-array. Beforehand it would silently
+return an empty array.
 
 If necessary, this can be worked around by converting an object to an array,
 using a filter such as https://github.com/petebacondarwin/angular-toArrayFilter.
