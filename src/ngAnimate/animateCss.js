@@ -621,7 +621,7 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
 
       var timings = computeTimings(node, fullClassName, cacheKey);
       var relativeDelay = timings.maxDelay;
-      maxDelay = Math.max(relativeDelay, 0);
+      maxDelay = Math.max(relativeDelay, 0) || 0;
       maxDuration = timings.maxDuration;
 
       var flags = {};
@@ -660,7 +660,7 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
       // we need to recalculate the delay value since we used a pre-emptive negative
       // delay value and the delay value is required for the final event checking. This
       // property will ensure that this will happen after the RAF phase has passed.
-      if (timings.transitionDuration > 0) {
+      if (options.duration == null && timings.transitionDuration > 0) {
         flags.recalculateTimingStyles = flags.recalculateTimingStyles || isFirst;
       }
 
@@ -849,7 +849,7 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
 
             timings = computeTimings(node, fullClassName, cacheKey);
             relativeDelay = timings.maxDelay;
-            maxDelay = Math.max(relativeDelay, 0);
+            maxDelay = Math.max(relativeDelay, 0) || 0;
             maxDuration = timings.maxDuration;
 
             if (maxDuration === 0) {
@@ -866,7 +866,7 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
                   ? parseFloat(options.delay)
                   : relativeDelay;
 
-            maxDelay = Math.max(relativeDelay, 0);
+            maxDelay = Math.max(relativeDelay, 0) || 0;
 
             var delayStyle;
             if (flags.applyTransitionDelay) {
