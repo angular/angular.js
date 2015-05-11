@@ -5,8 +5,8 @@ describe('ngClick (touch)', function() {
 
   // TODO(braden): Once we have other touch-friendly browsers on CI, allow them here.
   // Currently Firefox and IE refuse to fire touch events.
-  var chrome = /chrome/.test(navigator.userAgent.toLowerCase());
-  if (!chrome) {
+  // Enable iPhone for manual testing.
+  if (!/chrome|iphone/i.test(navigator.userAgent)) {
     return;
   }
 
@@ -47,6 +47,34 @@ describe('ngClick (touch)', function() {
     browserTrigger(element, 'touchend');
     expect($rootScope.event).toBeDefined();
   }));
+
+  if (window.jQuery) {
+    it('should not unwrap a jQuery-wrapped event object on click', inject(function($rootScope, $compile) {
+      element = $compile('<div ng-click="event = $event"></div>')($rootScope);
+      $rootScope.$digest();
+
+      browserTrigger(element, 'click', {
+        keys: [],
+        x: 10,
+        y: 10
+      });
+      expect($rootScope.event.originalEvent).toBeDefined();
+      expect($rootScope.event.originalEvent.clientX).toBe(10);
+      expect($rootScope.event.originalEvent.clientY).toBe(10);
+    }));
+
+    it('should not unwrap a jQuery-wrapped event object on touchstart/touchend',
+        inject(function($rootScope, $compile, $rootElement) {
+      element = $compile('<div ng-click="event = $event"></div>')($rootScope);
+      $rootElement.append(element);
+      $rootScope.$digest();
+
+      browserTrigger(element, 'touchstart');
+      browserTrigger(element, 'touchend');
+
+      expect($rootScope.event.originalEvent).toBeDefined();
+    }));
+  }
 
 
   it('should not click if the touch is held too long', inject(function($rootScope, $compile, $rootElement) {
@@ -97,7 +125,7 @@ describe('ngClick (touch)', function() {
   }));
 
 
-  it('should not click if a touchmove comes before touchend', inject(function($rootScope, $compile, $rootElement) {
+  it('should not prevent click if a touchmove comes before touchend', inject(function($rootScope, $compile, $rootElement) {
     element = $compile('<div ng-click="tapped = true"></div>')($rootScope);
     $rootElement.append(element);
     $rootScope.$digest();
@@ -112,11 +140,11 @@ describe('ngClick (touch)', function() {
     browserTrigger(element, 'touchmove');
     browserTrigger(element, 'touchend',{
       keys: [],
-      x: 400,
-      y: 400
+      x: 15,
+      y: 15
     });
 
-    expect($rootScope.tapped).toBeUndefined();
+    expect($rootScope.tapped).toEqual(true);
   }));
 
   it('should add the CSS class while the element is held down, and then remove it', inject(function($rootScope, $compile, $rootElement) {
@@ -143,6 +171,18 @@ describe('ngClick (touch)', function() {
     expect($rootScope.tapped).toBe(true);
   }));
 
+  it('should click when target element is an SVG', inject(
+    function($rootScope, $compile, $rootElement) {
+      element = $compile('<svg ng-click="tapped = true"></svg>')($rootScope);
+      $rootElement.append(element);
+      $rootScope.$digest();
+
+      browserTrigger(element, 'touchstart');
+      browserTrigger(element, 'touchend');
+      browserTrigger(element, 'click', {x:1, y:1});
+
+      expect($rootScope.tapped).toEqual(true);
+  }));
 
   describe('the clickbuster', function() {
     var element1, element2;
@@ -462,6 +502,17 @@ describe('ngClick (touch)', function() {
         click(input, 11, 11);
 
         expect($rootScope.selection).toBe('initial');
+      });
+
+
+      it('should blur the other element on click', function() {
+        var blurSpy = spyOn(otherElement, 'blur');
+        touch(otherElement, 10, 10);
+
+        time = 500;
+        click(label, 10, 10);
+
+        expect(blurSpy).toHaveBeenCalled();
       });
     });
   });

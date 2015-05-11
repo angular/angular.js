@@ -109,7 +109,7 @@ function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDoc
         }
       }
 
-      xhr.send(post || null);
+      xhr.send(post);
     }
 
     if (timeout > 0) {

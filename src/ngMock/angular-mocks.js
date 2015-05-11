@@ -57,6 +57,7 @@ angular.mock.$Browser = function() {
     return listener;
   };
 
+  self.$$applicationDestroyed = angular.noop;
   self.$$checkUrlChange = angular.noop;
 
   self.deferredFns = [];
@@ -763,13 +764,14 @@ angular.mock.animate = angular.module('ngAnimateMock', ['ng'])
       };
     });
 
-    $provide.decorator('$animate', ['$delegate', '$$asyncCallback', '$timeout', '$browser',
-                            function($delegate,   $$asyncCallback,   $timeout,   $browser) {
+    $provide.decorator('$animate', ['$delegate', '$$asyncCallback', '$timeout', '$browser', '$$rAF',
+                            function($delegate,   $$asyncCallback,   $timeout,   $browser,   $$rAF) {
       var animate = {
         queue: [],
         cancel: $delegate.cancel,
         enabled: $delegate.enabled,
         triggerCallbackEvents: function() {
+          $$rAF.flush();
           $$asyncCallback.flush();
         },
         triggerCallbackPromise: function() {
@@ -1756,7 +1758,7 @@ angular.mock.$RAFDecorator = ['$delegate', function($delegate) {
       queue[i]();
     }
 
-    queue = [];
+    queue = queue.slice(i);
   };
 
   return rafFn;

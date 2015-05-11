@@ -204,7 +204,7 @@ module.exports = function(grunt) {
         src: util.wrap(files['angularModules']['ngResource'], 'module')
       },
       messageformat: {
-        dest: 'build/angular-messageFormat.js',
+        dest: 'build/angular-message-format.js',
         src: util.wrap(files['angularModules']['ngMessageFormat'], 'module')
       },
       messages: {
@@ -239,7 +239,7 @@ module.exports = function(grunt) {
       animate: 'build/angular-animate.js',
       cookies: 'build/angular-cookies.js',
       loader: 'build/angular-loader.js',
-      messageformat: 'build/angular-messageFormat.js',
+      messageformat: 'build/angular-message-format.js',
       messages: 'build/angular-messages.js',
       touch: 'build/angular-touch.js',
       resource: 'build/angular-resource.js',

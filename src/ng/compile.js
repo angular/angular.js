@@ -621,8 +621,8 @@
       }]);
     </script>
     <div ng-controller="GreeterController">
-      <input ng-model="name"> <br>
-      <textarea ng-model="html"></textarea> <br>
+      <input ng-model="name"> <br/>
+      <textarea ng-model="html"></textarea> <br/>
       <div compile="html"></div>
     </div>
    </file>
@@ -659,7 +659,7 @@
  *  * `cloneAttachFn` - If `cloneAttachFn` is provided, then the link function will clone the
  *  `template` and call the `cloneAttachFn` function allowing the caller to attach the
  *  cloned elements to the DOM document at the appropriate place. The `cloneAttachFn` is
- *  called as: <br> `cloneAttachFn(clonedElement, scope)` where:
+ *  called as: <br/> `cloneAttachFn(clonedElement, scope)` where:
  *
  *      * `clonedElement` - is a clone of the original `element` passed into the compiler.
  *      * `scope` - is the current scope with which the linking function is working with.
@@ -801,6 +801,11 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
     var letter = name.charAt(0);
     if (!letter || letter !== lowercase(letter)) {
       throw $compileMinErr('baddir', "Directive name '{0}' is invalid. The first character must be a lowercase letter", name);
+    }
+    if (name !== name.trim()) {
+      throw $compileMinErr('baddir',
+            "Directive name '{0}' is invalid. The name should not contain leading or trailing whitespaces",
+            name);
     }
   }
 

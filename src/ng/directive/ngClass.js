@@ -39,7 +39,9 @@ function classDirective(name, selector) {
         }
 
         function digestClassCounts(classes, count) {
-          var classCounts = element.data('$classCounts') || {};
+          // Use createMap() to prevent class assumptions involving property
+          // names in Object.prototype
+          var classCounts = element.data('$classCounts') || createMap();
           var classesToUpdate = [];
           forEach(classes, function(className) {
             if (count > 0 || classCounts[className]) {
@@ -161,21 +163,34 @@ function classDirective(name, selector) {
    <example>
      <file name="index.html">
        <p ng-class="{strike: deleted, bold: important, red: error}">Map Syntax Example</p>
-       <input type="checkbox" ng-model="deleted"> deleted (apply "strike" class)<br>
-       <input type="checkbox" ng-model="important"> important (apply "bold" class)<br>
-       <input type="checkbox" ng-model="error"> error (apply "red" class)
+       <label>
+          <input type="checkbox" ng-model="deleted">
+          deleted (apply "strike" class)
+       </label><br>
+       <label>
+          <input type="checkbox" ng-model="important">
+          important (apply "bold" class)
+       </label><br>
+       <label>
+          <input type="checkbox" ng-model="error">
+          error (apply "red" class)
+       </label>
        <hr>
        <p ng-class="style">Using String Syntax</p>
-       <input type="text" ng-model="style" placeholder="Type: bold strike red">
+       <input type="text" ng-model="style"
+              placeholder="Type: bold strike red" aria-label="Type: bold strike red">
        <hr>
        <p ng-class="[style1, style2, style3]">Using Array Syntax</p>
-       <input ng-model="style1" placeholder="Type: bold, strike or red"><br>
-       <input ng-model="style2" placeholder="Type: bold, strike or red"><br>
-       <input ng-model="style3" placeholder="Type: bold, strike or red"><br>
+       <input ng-model="style1"
+              placeholder="Type: bold, strike or red" aria-label="Type: bold, strike or red"><br>
+       <input ng-model="style2"
+              placeholder="Type: bold, strike or red" aria-label="Type: bold, strike or red 2"><br>
+       <input ng-model="style3"
+              placeholder="Type: bold, strike or red" aria-label="Type: bold, strike or red 3"><br>
        <hr>
        <p ng-class="[style4, {orange: warning}]">Using Array and Map Syntax</p>
-       <input ng-model="style4" placeholder="Type: bold, strike"><br>
-       <input type="checkbox" ng-model="warning"> warning (apply "orange" class)
+       <input ng-model="style4" placeholder="Type: bold, strike" aria-label="Type: bold, strike"><br>
+       <label><input type="checkbox" ng-model="warning"> warning (apply "orange" class)</label>
      </file>
      <file name="style.css">
        .strike {
@@ -275,8 +290,8 @@ function classDirective(name, selector) {
    The ngClass directive still supports CSS3 Transitions/Animations even if they do not follow the ngAnimate CSS naming structure.
    Upon animation ngAnimate will apply supplementary CSS classes to track the start and end of an animation, but this will not hinder
    any pre-existing CSS transitions already on the element. To get an idea of what happens during a class-based animation, be sure
-   to view the step by step details of {@link ng.$animate#addClass $animate.addClass} and
-   {@link ng.$animate#removeClass $animate.removeClass}.
+   to view the step by step details of {@link $animate#addClass $animate.addClass} and
+   {@link $animate#removeClass $animate.removeClass}.
  */
 var ngClassDirective = classDirective('', true);
 

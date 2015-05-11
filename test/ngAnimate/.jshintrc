@@ -1,0 +1,13 @@
+{
+  "extends": "../.jshintrc",
+  "browser": true,
+  "newcap": false,
+  "globals": {
+    "mergeAnimationOptions": false,
+    "prepareAnimationOptions": false,
+    "applyAnimationStyles": false,
+    "applyAnimationFromStyles": false,
+    "applyAnimationToStyles": false,
+    "applyAnimationClassesFactory": false
+  }
+}

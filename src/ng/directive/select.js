@@ -42,19 +42,6 @@ var SelectController =
     if (self.unknownOption.parent()) self.unknownOption.remove();
   };
 
-  // Here we find the option that represents the "empty" value, i.e. the option with a value
-  // of `""`.  This option needs to be accessed (to select it directly) when setting the value
-  // of the select to `""` because IE9 will not automatically select the option.
-  //
-  // Additionally, the `ngOptions` directive uses this option to allow the application developer
-  // to provide their own custom "empty" option when the viewValue does not match any of the
-  // option values.
-  for (var i = 0, children = $element.children(), ii = children.length; i < ii; i++) {
-    if (children[i].value === '') {
-      self.emptyOption = children.eq(i);
-      break;
-    }
-  }
 
   // Read the value of the select control, the implementation of this changes depending
   // upon whether the select can have multiple values and whether ngOptions is at work.
@@ -83,8 +70,11 @@ var SelectController =
 
 
   // Tell the select control that an option, with the given value, has been added
-  self.addOption = function(value) {
+  self.addOption = function(value, element) {
     assertNotHasOwnProperty(value, '"option value"');
+    if (value === '') {
+      self.emptyOption = element;
+    }
     var count = optionsMap.get(value) || 0;
     optionsMap.put(value, count + 1);
   };
@@ -95,6 +85,9 @@ var SelectController =
     if (count) {
       if (count === 1) {
         optionsMap.remove(value);
+        if (value === '') {
+          self.emptyOption = undefined;
+        }
       } else {
         optionsMap.put(value, count - 1);
       }
@@ -133,12 +126,6 @@ var SelectController =
  * Optionally, a single hard-coded `<option>` element, with the value set to an empty string, can
  * be nested into the `<select>` element. This element will then represent the `null` or "not selected"
  * option. See example below for demonstration.
- *
- * <div class="alert alert-warning">
- * **Note:** By default, `ngModel` compares by reference, not value. This is important when binding to an
- * array of objects. See an example [in this jsfiddle](http://jsfiddle.net/qWzTb/). When using `track by`
- * in an `ngOptions` expression, however, deep equality checks will be performed.
- * </div>
  *
  */
 var selectDirective = function() {

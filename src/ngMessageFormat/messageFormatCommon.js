@@ -5,11 +5,11 @@
 // This file is compiled with Closure compiler's ADVANCED_OPTIMIZATIONS flag! Be wary of using
 // constructs incompatible with that mode.
 
-var $interpolateMinErr = angular['$interpolateMinErr'];
+var $interpolateMinErr = window['angular']['$interpolateMinErr'];
 
-var noop = angular['noop'],
-    isFunction = angular['isFunction'],
-    toJson = angular['toJson'];
+var noop = window['angular']['noop'],
+    isFunction = window['angular']['isFunction'],
+    toJson = window['angular']['toJson'];
 
 function stringify(value) {
   if (value == null /* null/undefined */) { return ''; }
@@ -51,8 +51,8 @@ function parseTextLiteral(text) {
     return unwatch;
   };
   PARSE_CACHE_FOR_TEXT_LITERALS[text] = parsedFn;
-  parsedFn.exp = text; // Needed to pretend to be $interpolate for tests copied from interpolateSpec.js
-  parsedFn.expressions = []; // Require this to call $compile.$$addBindingInfo() which allows Protractor to find elements by binding.
+  parsedFn['exp'] = text; // Needed to pretend to be $interpolate for tests copied from interpolateSpec.js
+  parsedFn['expressions'] = []; // Require this to call $compile.$$addBindingInfo() which allows Protractor to find elements by binding.
   return parsedFn;
 }
 

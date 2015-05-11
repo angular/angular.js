@@ -189,7 +189,7 @@ describe('browser', function() {
     }
   });
 
-  describe('outstading requests', function() {
+  describe('outstanding requests', function() {
     it('should process callbacks immedietly with no outstanding requests', function() {
       var callback = jasmine.createSpy('callback');
       browser.notifyWhenNoOutstandingRequests(callback);
@@ -647,6 +647,23 @@ describe('browser', function() {
         };
       }
     });
+
+
+    it("should stop calling callbacks when application has been torn down", function() {
+      sniffer.history = true;
+      browser.onUrlChange(callback);
+      fakeWindow.location.href = 'http://server/new';
+
+      browser.$$applicationDestroyed();
+
+      fakeWindow.fire('popstate');
+      expect(callback).not.toHaveBeenCalled();
+
+      fakeWindow.fire('hashchange');
+      fakeWindow.setTimeout.flush();
+      expect(callback).not.toHaveBeenCalled();
+    });
+
   });
 
 

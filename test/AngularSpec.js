@@ -370,6 +370,21 @@ describe('angular', function() {
       expect(copy(undefined, [1,2,3])).toEqual([]);
       expect(copy({0: 1, 1: 2}, [1,2,3])).toEqual([1,2]);
     });
+
+    it('should copy objects with no prototype parent', function() {
+      var obj = extend(Object.create(null), {
+        a: 1,
+        b: 2,
+        c: 3
+      });
+      var dest = copy(obj);
+
+      expect(Object.getPrototypeOf(dest)).toBe(null);
+      expect(dest.a).toBe(1);
+      expect(dest.b).toBe(2);
+      expect(dest.c).toBe(3);
+      expect(Object.keys(dest)).toEqual(['a', 'b', 'c']);
+    });
   });
 
   describe("extend", function() {
@@ -650,6 +665,38 @@ describe('angular', function() {
 
     it('should return false when comparing an object and a Date', function() {
       expect(equals({}, new Date())).toBe(false);
+    });
+
+    it('should safely compare objects with no prototype parent', function() {
+      var o1 = extend(Object.create(null), {
+        a: 1, b: 2, c: 3
+      });
+      var o2 = extend(Object.create(null), {
+        a: 1, b: 2, c: 3
+      });
+      expect(equals(o1, o2)).toBe(true);
+      o2.c = 2;
+      expect(equals(o1, o2)).toBe(false);
+    });
+
+
+    it('should safely compare objects which shadow Object.prototype.hasOwnProperty', function() {
+      /* jshint -W001 */
+      var o1 = {
+        hasOwnProperty: true,
+        a: 1,
+        b: 2,
+        c: 3
+      };
+      var o2 = {
+        hasOwnProperty: true,
+        a: 1,
+        b: 2,
+        c: 3
+      };
+      expect(equals(o1, o2)).toBe(true);
+      o1.hasOwnProperty = function() {};
+      expect(equals(o1, o2)).toBe(false);
     });
   });
 
@@ -977,6 +1024,42 @@ describe('angular', function() {
       });
       expect(log.length).toBe(1);
       expect(log[0]).toBe('SPARSE5');
+    });
+
+
+    it('should safely iterate through objects with no prototype parent', function() {
+      var obj = extend(Object.create(null), {
+        a: 1, b: 2, c: 3
+      });
+      var log = [];
+      var self = {};
+      forEach(obj, function(val, key, collection) {
+        expect(this).toBe(self);
+        expect(collection).toBe(obj);
+        log.push(key + '=' + val);
+      }, self);
+      expect(log.length).toBe(3);
+      expect(log).toEqual(['a=1', 'b=2', 'c=3']);
+    });
+
+
+    it('should safely iterate through objects which shadow Object.prototype.hasOwnProperty', function() {
+      /* jshint -W001 */
+      var obj = {
+        hasOwnProperty: true,
+        a: 1,
+        b: 2,
+        c: 3
+      };
+      var log = [];
+      var self = {};
+      forEach(obj, function(val, key, collection) {
+        expect(this).toBe(self);
+        expect(collection).toBe(obj);
+        log.push(key + '=' + val);
+      }, self);
+      expect(log.length).toBe(4);
+      expect(log).toEqual(['hasOwnProperty=true', 'a=1', 'b=2', 'c=3']);
     });
 
 

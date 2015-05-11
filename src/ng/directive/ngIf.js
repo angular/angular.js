@@ -46,7 +46,7 @@
  * @example
   <example module="ngAnimate" deps="angular-animate.js" animations="true">
     <file name="index.html">
-      Click me: <input type="checkbox" ng-model="checked" ng-init="checked=true" /><br/>
+      <label>Click me: <input type="checkbox" ng-model="checked" ng-init="checked=true" /></label><br/>
       Show when checked:
       <span ng-if="checked" class="animate-if">
         This is removed when the checkbox is unchecked.
