@@ -507,6 +507,45 @@ describe("animations", function() {
       });
     });
 
+    it('should throw an error when a callback function is passed as the options param', inject(function($animate, $rootScope, $document) {
+
+        var invalidCallback = function() { };
+        var element = $document[0].createElement('div');
+        element.setAttribute('id', 'crazy-man');
+
+        expect(function() {
+          $animate.enter(element, parent, parent2, invalidCallback);
+        }).toThrowMinErr('$animate', 'nocb', 'Do not pass a callback to animate methods');
+
+        expect(function() {
+          $animate.move(element, parent, parent2, invalidCallback);
+        }).toThrowMinErr('$animate', 'nocb', 'Do not pass a callback to animate methods');
+
+        parent.append(element);
+
+        expect(function() {
+          $animate.addClass(element, 'klass', invalidCallback);
+        }).toThrowMinErr('$animate', 'nocb', 'Do not pass a callback to animate methods');
+
+        element.className = 'klass';
+        expect(function() {
+          $animate.removeClass(element, 'klass', invalidCallback);
+        }).toThrowMinErr('$animate', 'nocb', 'Do not pass a callback to animate methods');
+
+        expect(function() {
+          $animate.setClass(element, 'one', 'two', invalidCallback);
+        }).toThrowMinErr('$animate', 'nocb', 'Do not pass a callback to animate methods');
+
+        expect(function() {
+          $animate.leave(element, invalidCallback);
+        }).toThrowMinErr('$animate', 'nocb', 'Do not pass a callback to animate methods');
+
+        var toStyles = { color: 'red' };
+        expect(function() {
+          $animate.animate(element, {}, toStyles, 'klass', invalidCallback);
+        }).toThrowMinErr('$animate', 'nocb', 'Do not pass a callback to animate methods');
+    }));
+
     describe('addClass / removeClass', function() {
       it('should not perform an animation if there are no valid CSS classes to add',
         inject(function($animate, $rootScope) {
