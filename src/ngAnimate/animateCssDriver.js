@@ -234,10 +234,12 @@ var $$AnimateCssDriverProvider = ['$$animationProvider', function($$animationPro
 
       // we special case the leave animation since we want to ensure that
       // the element is removed as soon as the animation is over. Otherwise
-      // a flicker might appear or the element may not be removed at all
+      // a flicker might appear or the element may not be removed until all
+      // the other animations have completed themselves (which would then
+      // leave a pending element in the background).
       options.event = animationDetails.event;
-      if (options.event === 'leave' && animationDetails.domOperation) {
-        options.onDone = animationDetails.domOperation;
+      if (options.event === 'leave') {
+        options.onDone = options.domOperation;
       }
 
       var animator = $animateCss(element, options);
