@@ -908,10 +908,12 @@ describe("ngAnimate $$animateCssDriver", function() {
         inject(function($rootElement, $$rAF) {
 
         toAnimation.event = 'enter';
+        toAnimation.options = {};
         fromAnimation.event = 'leave';
+        fromAnimation.options = {};
 
         var leaveOp = function() { };
-        fromAnimation.domOperation = leaveOp;
+        fromAnimation.options.domOperation = leaveOp;
 
         driver({
           from: fromAnimation,
