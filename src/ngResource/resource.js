@@ -161,6 +161,7 @@ function shallowClearAndCopy(src, dst) {
  *   - **`interceptor`** - `{Object=}` - The interceptor object has two optional methods -
  *     `response` and `responseError`. Both `response` and `responseError` interceptors get called
  *     with `http response` object. See {@link ng.$http $http interceptors}.
+ * 
  *
  * @param {Object} options Hash with custom settings that should extend the
  *   default `$resourceProvider` behavior.  The only supported option is
@@ -179,6 +180,15 @@ function shallowClearAndCopy(src, dst) {
  *     'remove': {method:'DELETE'},
  *     'delete': {method:'DELETE'} };
  *   ```
+ *  You can provide your own set of methods by configuring the $resourceProvider like this:
+ * ```js
+ *     $resourceProvider.defaults.actions = {
+ *        create: {method: 'POST'},
+ *        read:   {method: 'GET', isArray:true},
+ *        update: {method: 'PUT'},
+ *        delete: {method: 'DELETE'}
+ *      };
+ * ```
  *
  *   Calling these methods invoke an {@link ng.$http} with the specified http method,
  *   destination and parameters. When the data is returned from the server then the object is an
