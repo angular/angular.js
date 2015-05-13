@@ -57,6 +57,31 @@ describe('$aria', function() {
       scope.$apply('val = true');
       expect(element.attr('aria-hidden')).toBe('userSetValue');
     });
+
+    it('should always set aria-hidden to a boolean value', function() {
+      compileElement('<div ng-hide="val"></div>');
+
+      scope.$apply('val = "test angular"');
+      expect(element.attr('aria-hidden')).toBe('true');
+
+      scope.$apply('val = null');
+      expect(element.attr('aria-hidden')).toBe('false');
+
+      scope.$apply('val = {}');
+      expect(element.attr('aria-hidden')).toBe('true');
+
+
+      compileElement('<div ng-show="val"></div>');
+
+      scope.$apply('val = "test angular"');
+      expect(element.attr('aria-hidden')).toBe('false');
+
+      scope.$apply('val = null');
+      expect(element.attr('aria-hidden')).toBe('true');
+
+      scope.$apply('val = {}');
+      expect(element.attr('aria-hidden')).toBe('false');
+    });
   });
 
 
@@ -318,6 +343,20 @@ describe('$aria', function() {
 
       scope.$apply('val = true');
       expectAriaAttrOnEachElement(element, 'aria-disabled', 'userSetValue');
+    });
+
+
+    it('should always set aria-disabled to a boolean value', function() {
+      compileElement('<div ng-disabled="val"></div>');
+
+      scope.$apply('val = "test angular"');
+      expect(element.attr('aria-disabled')).toBe('true');
+
+      scope.$apply('val = null');
+      expect(element.attr('aria-disabled')).toBe('false');
+
+      scope.$apply('val = {}');
+      expect(element.attr('aria-disabled')).toBe('true');
     });
   });
 
