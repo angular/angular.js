@@ -36,7 +36,8 @@ function $TemplateRequestProvider() {
 
       var httpOptions = {
         cache: $templateCache,
-        transformResponse: transformResponse
+        transformResponse: transformResponse,
+        headers: { 'Accept': 'text/html, text/ng-template' }
       };
 
       return $http.get(tpl, httpOptions)
