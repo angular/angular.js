@@ -1083,7 +1083,7 @@ angular.mock.dump = function(object) {
          $httpBackend.flush();
 
          $httpBackend.expectPOST('/add-msg.py', undefined, function(headers) {
-           // check if the header was send, if it wasn't the expectation won't
+           // check if the header was sent, if it wasn't the expectation won't
            // match the request and the test will fail
            return headers['Authorization'] == 'xxx';
          }).respond(201, '');
