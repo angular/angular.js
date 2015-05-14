@@ -39,7 +39,7 @@ In general, we recommend against this because it can create unintended XSS vecto
 
 However, it's ok to mix server-side templating in the bootstrap template (`index.html`) as long
 as user input cannot be used on the server to output html that would then be processed by Angular
-in a way that would cause allow for arbitrary code execution.
+in a way that would allow for arbitrary code execution.
 
 For instance, you can use server-side templating to dynamically generate CSS, URLs, etc, but not
 for generating templates that are bootstrapped/compiled by Angular.
