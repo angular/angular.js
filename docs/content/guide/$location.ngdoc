@@ -693,7 +693,7 @@ A path should always begin with forward slash (`/`); the `$location.path()` sett
 forward slash if it is missing.
 
 Note that the `!` prefix in the hashbang mode is not part of `$location.path()`; it is actually
-hashPrefix.
+`hashPrefix`.
 
 ## Crawling your app
 
