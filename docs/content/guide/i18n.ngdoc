@@ -305,7 +305,7 @@ matching is **case-sensitive**.
 
 #### Selection Keywords
 
-Selection keywords are simple words like "male" and "female".  The keyword, "other", and it's
+Selection keywords are simple words like "male" and "female".  The keyword, "other", and its
 corresponding message are required while others are optional.  It is used when the Angular
 expression does not match (case-insensitively) any of the other keywords specified.
 
