@@ -223,7 +223,7 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
     function queueAnimation(element, event, options) {
       var node, parent;
       element = stripCommentsFromElement(element);
-      if (element) {
+      if (element && element.length) {
         node = getDomNode(element);
         parent = element.parent();
       }
