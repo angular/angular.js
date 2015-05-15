@@ -83,6 +83,9 @@
  * - [`val()`](http://api.jquery.com/val/)
  * - [`wrap()`](http://api.jquery.com/wrap/)
  *
+ * ## jQuery/jqLite Animation
+ * In jqLite the [jQuery FX animation engine](https://code.google.com/p/jqlite/wiki/Extensions) is supported as a plug-in, but isn't recommended for heavy use due to limited mobile processor power.
+ * 
  * ## jQuery/jqLite Extras
  * Angular also provides the following additional methods and events to both jQuery and jqLite:
  *
