@@ -242,6 +242,9 @@ var jqLite = angular.element;
  * {@link ngAnimate Click here} to learn how to use JavaScript animations or to learn more about ngAnimate.
  */
 angular.module('ngMessages', [])
+    .constant('ngMessagesConfig', {
+      multiple: false
+    })
 
    /**
     * @ngdoc directive
@@ -315,7 +318,7 @@ angular.module('ngMessages', [])
     *   </file>
     * </example>
     */
-   .directive('ngMessages', ['$animate', function($animate) {
+   .directive('ngMessages', ['$animate', 'ngMessagesConfig', function($animate, ngMessagesConfig) {
      var ACTIVE_CLASS = 'ng-active';
      var INACTIVE_CLASS = 'ng-inactive';
 
@@ -336,7 +339,7 @@ angular.module('ngMessages', [])
            cachedCollection = collection;
 
            // this is true if the attribute is empty or if the attribute value is truthy
-           var multiple = isAttrTruthy($scope, $attrs.ngMessagesMultiple) ||
+           var multiple = ngMessagesConfg.Multiple || isAttrTruthy($scope, $attrs.ngMessagesMultiple) ||
                           isAttrTruthy($scope, $attrs.multiple);
 
            var unmatchedMessages = [];
