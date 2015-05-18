@@ -1029,6 +1029,22 @@ describe("animations", function() {
 
         expect(runner1).not.toBe(runner2);
       }));
+
+      it('should properly cancel out animations when the same class is added/removed within the same digest',
+        inject(function($animate, $rootScope) {
+
+        parent.append(element);
+        $animate.addClass(element, 'red');
+        $animate.removeClass(element, 'red');
+        $rootScope.$digest();
+
+        expect(capturedAnimation).toBeFalsy();
+
+        $animate.addClass(element, 'blue');
+        $rootScope.$digest();
+
+        expect(capturedAnimation[2].addClass).toBe('blue');
+      }));
     });
 
     describe('should merge', function() {
