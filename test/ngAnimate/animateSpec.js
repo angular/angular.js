@@ -1003,6 +1003,18 @@ describe("animations", function() {
         expect(enterComplete).toBe(true);
       }));
 
+      it('should cancel the previous structural animation if a follow-up structural animation takes over before the postDigest',
+        inject(function($animate, $$rAF) {
+
+        var enterDone = jasmine.createSpy('enter animation done');
+        $animate.enter(element, parent).done(enterDone);
+        expect(enterDone).not.toHaveBeenCalled();
+
+        $animate.leave(element);
+        $$rAF.flush();
+        expect(enterDone).toHaveBeenCalled();
+      }));
+
       it('should skip the class-based animation entirely if there is an active structural animation',
         inject(function($animate, $rootScope) {
 
@@ -1152,12 +1164,20 @@ describe("animations", function() {
       it('class-based animations, however it should also cancel former structural animations in the process',
         inject(function($animate, $rootScope) {
 
-        element.addClass('green');
+        element.addClass('green lime');
 
         $animate.enter(element, parent);
         $animate.addClass(element, 'red');
         $animate.removeClass(element, 'green');
+
         $animate.leave(element);
+        $animate.addClass(element, 'pink');
+        $animate.removeClass(element, 'lime');
+
+        expect(element).toHaveClass('red');
+        expect(element).not.toHaveClass('green');
+        expect(element).not.toHaveClass('pink');
+        expect(element).toHaveClass('lime');
 
         $rootScope.$digest();
 
@@ -1168,8 +1188,8 @@ describe("animations", function() {
         expect(element.parent()[0]).toEqual(parent[0]);
 
         options = capturedAnimation[2];
-        expect(options.addClass).toEqual('red');
-        expect(options.removeClass).toEqual('green');
+        expect(options.addClass).toEqual('pink');
+        expect(options.removeClass).toEqual('lime');
       }));
 
       it('should retain the instance to the very first runner object when multiple element-level animations are issued',
