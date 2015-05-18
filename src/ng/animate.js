@@ -424,6 +424,8 @@ var $AnimateProvider = ['$provide', function($provide) {
        */
       enter: function(element, parent, after, options) {
         assertNoCallback(options);
+        parent = parent && jqLite(parent);
+        after = after && jqLite(after);
         parent = parent || after.parent();
         domInsert(element, parent, after);
         return $$animateQueue.push(element, 'enter', options);
@@ -449,6 +451,8 @@ var $AnimateProvider = ['$provide', function($provide) {
        */
       move: function(element, parent, after, options) {
         assertNoCallback(options);
+        parent = parent && jqLite(parent);
+        after = after && jqLite(after);
         parent = parent || after.parent();
         domInsert(element, parent, after);
         return $$animateQueue.push(element, 'move', options);
