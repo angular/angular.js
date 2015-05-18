@@ -394,6 +394,13 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
             runner.end();
           }
 
+          // in the event that the element animation was not cancelled or a follow-up animation
+          // isn't allowed to animate from here then we need to clear the state of the element
+          // so that any future animations won't read the expired animation data.
+          if (!isValidAnimation) {
+            clearElementAnimationState(element);
+          }
+
           return;
         }
 
