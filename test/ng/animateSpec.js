@@ -216,6 +216,32 @@ describe("$animate", function() {
 
       expect(element).toHaveClass('ng-hide');
     }));
+
+    they("should accept an unwrapped \"parent\" element for the $prop event",
+      ['enter', 'move'], function(method) {
+
+      inject(function($document, $animate, $rootElement) {
+        var element = jqLite('<div></div>');
+        var parent = $document[0].createElement('div');
+        $rootElement.append(parent);
+
+        $animate[method](element, parent);
+        expect(element[0].parentNode).toBe(parent);
+      });
+    });
+
+    they("should accept an unwrapped \"after\" element for the $prop event",
+      ['enter', 'move'], function(method) {
+
+      inject(function($document, $animate, $rootElement) {
+        var element = jqLite('<div></div>');
+        var after = $document[0].createElement('div');
+        $rootElement.append(after);
+
+        $animate[method](element, null, after);
+        expect(element[0].previousSibling).toBe(after);
+      });
+    });
   });
 
   describe('CSS class DOM manipulation', function() {
