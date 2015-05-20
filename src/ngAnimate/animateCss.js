@@ -392,9 +392,9 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
   var gcsStaggerLookup = createLocalCacheLookup();
 
   this.$get = ['$window', '$$jqLite', '$$AnimateRunner', '$timeout',
-               '$document', '$sniffer', '$$rAF',
+               '$document', '$sniffer', '$$rAFScheduler',
        function($window,   $$jqLite,   $$AnimateRunner,   $timeout,
-                $document,   $sniffer,   $$rAF) {
+                $document,   $sniffer,   $$rAFScheduler) {
 
     var applyAnimationClasses = applyAnimationClassesFactory($$jqLite);
 
@@ -452,15 +452,10 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
     }
 
     var bod = getDomNode($document).body;
-    var cancelLastRAFRequest;
     var rafWaitQueue = [];
     function waitUntilQuiet(callback) {
-      if (cancelLastRAFRequest) {
-        cancelLastRAFRequest(); //cancels the request
-      }
       rafWaitQueue.push(callback);
-      cancelLastRAFRequest = $$rAF(function() {
-        cancelLastRAFRequest = null;
+      $$rAFScheduler.waitUntilQuiet(function() {
         gcsLookup.flush();
         gcsStaggerLookup.flush();
 
