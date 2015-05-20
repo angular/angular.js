@@ -64,7 +64,18 @@ or the filter expression is changed).
 
   <file name="script.js">
     angular.module('FilterInControllerModule', []).
-      controller('FilterController', ['filterFilter', function(filterFilter) {
+      filter('name', function () {
+        return function (names, value) {
+          var matches = [];
+          for(var i=0; i<names.length; i++) {
+            if (names[i].match(value)) {
+              matches.push(names[i]);
+            }
+          }
+          return matches;
+        };
+      }).
+      controller('FilterController', ['nameFilter', function(nameFilter) {
         this.array = [
           {name: 'Tobias'},
           {name: 'Jeff'},
@@ -73,7 +84,7 @@ or the filter expression is changed).
           {name: 'James'},
           {name: 'Brad'}
         ];
-        this.filteredArray = filterFilter(this.array, 'a');
+        this.filteredArray = nameFilter(this.array, 'a');
       }]);
   </file>
 </example>
