@@ -58,7 +58,7 @@
     "marked": "~0.3.0",
     "node-html-encoder": "0.0.2",
     "promises-aplus-tests": "~2.1.0",
-    "protractor": "^2.0.0",
+    "protractor": "^2.1.0",
     "q": "~1.0.0",
     "q-io": "^1.10.9",
     "qq": "^0.3.5",
