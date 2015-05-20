@@ -57,6 +57,24 @@ function shallowClearAndCopy(src, dst) {
  * <div doc-module-components="ngResource"></div>
  *
  * See {@link ngResource.$resource `$resource`} for usage.
+ *
+ * See {@link ngResource.$resourceProvider `$resourceProvider`} for usage.
+ */
+
+/**
+ * @ngdoc provider
+ * @name $resourceProvider
+ *
+ * @description
+ *
+ * Use for configuring {@link ngResource.$resource `$resource`} in module configuration phase.
+ *
+ * ## Example
+ * See {@link ngResource.$resourceProvider#defaults `Properties`} for configuring `ngResource`.
+ *
+ * ## Dependencies
+ * Requires {@link ngResource `ngResource`} module to be installed.
+ *
  */
 
 /**
@@ -349,6 +367,52 @@ angular.module('ngResource', ['ng']).
   provider('$resource', function() {
     var provider = this;
 
+    /**
+     * @ngdoc property
+     * @name $resourceProvider#defaults
+     * @description
+     * A configuration object for `$resource` instances.
+     *
+     * Properties of this object are initialized with a set of values that satisfies a wide range of use cases.
+     * User can also choose to override these properties in application configuration phase.
+     *
+     * Property `stripTrailingSlashes`, default to true, strips trailing slashes from
+     * calculated URLs.
+     *
+     * Property `actions` is an object that sets up high level methods/aliases on `$resource` object
+     * based on standard HTTP methods. Users can supply an "actions" object with method aliases that
+     * comply with alternative conventions.
+     *
+     * To add your own set of configurations, set it up like so:
+     * ```
+     * angular.module('myApp').config(['resourceProvider', function ($resourceProvider){
+     *
+     *    // Provide your own set of actions on $resource factory.
+     *    // The following comments are Angular's default actions, which are being
+     *    // replaced by an object that includes a PUT method as shown.
+     *    //  { 'get':    {method:'GET'},
+     *    //	'save':   {method:'POST'},
+     *    //	'query':  {method:'GET', isArray:true},
+     *    //	'remove': {method:'DELETE'},
+     *    //	'delete': {method:'DELETE'} };
+     *
+     *    $resourceProvider.defaults.actions = {
+     *        create:{method: 'POST'},
+     *        save:	 {method: 'POST'},
+     *        update:{method: 'PUT'},
+     *        get:	 {method: 'GET'},
+     *        query:    {method: 'GET', isArray:true},
+     *        remove:   {method: 'DELETE'},
+     *        delete:   {method: 'DELETE'}
+     *    };
+     *
+     *    // Don't strip trailing slashes from calculated URLs.
+     *    // Consult your application server's configuration to work in concert with this setting.
+     *    $resourceProvider.defaults.stripTrailingSlashes = false;
+     * }]);
+     * ```
+     *
+     */
     this.defaults = {
       // Strip slashes by default
       stripTrailingSlashes: true,
@@ -363,6 +427,22 @@ angular.module('ngResource', ['ng']).
       }
     };
 
+    /**
+     * @ngdoc method
+     * @name $resourceProvider#$get
+     * @description Method used by angular DI system to create a `$resourceProvider` instance.
+     *
+     * User applications shouldn't need to call this method directly.
+     * This shows the fact that {@link ngResource.$resource $resource}
+     * is a high level service built by leveraging {@link ng.$http $http} service.
+     *
+     * @param {Object} $http An instance of {@link ng.$http $http} service.
+     *
+     * @param {Object} $q An instance {@link ng.$q $q}, Angular's implementation of deferred API.
+     *
+     *
+     * @returns {Function} A factory function, when invoked, returns a $resource object.
+     */
     this.$get = ['$http', '$q', function($http, $q) {
 
       var noop = angular.noop,
