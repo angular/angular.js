@@ -2817,44 +2817,6 @@ describe("ngAnimate", function() {
       });
 
       describe("options", function() {
-        it('should throw an error when a callback function is passed as the options param',
-          inject(function($animate, $rootScope, $document, $rootElement) {
-
-          var invalidCallback = function() { };
-          var element = jqLite('<div></div>');
-          element.attr('id', 'crazy-man');
-          var parent = jqLite('<div></div>');
-          var parent2 = jqLite('<div></div>');
-          $rootElement.append(parent);
-          $rootElement.append(parent2);
-
-          expect(function() {
-            $animate.enter(element, parent, parent2, invalidCallback);
-          }).toThrowMinErr('$animate', 'nocb', 'Do not pass a callback to animate methods');
-
-          expect(function() {
-            $animate.move(element, parent, parent2, invalidCallback);
-          }).toThrowMinErr('$animate', 'nocb', 'Do not pass a callback to animate methods');
-
-          parent.append(element);
-
-          expect(function() {
-            $animate.addClass(element, 'klass', invalidCallback);
-          }).toThrowMinErr('$animate', 'nocb', 'Do not pass a callback to animate methods');
-
-          element.className = 'klass';
-          expect(function() {
-            $animate.removeClass(element, 'klass', invalidCallback);
-          }).toThrowMinErr('$animate', 'nocb', 'Do not pass a callback to animate methods');
-
-          expect(function() {
-            $animate.setClass(element, 'one', 'two', invalidCallback);
-          }).toThrowMinErr('$animate', 'nocb', 'Do not pass a callback to animate methods');
-
-          expect(function() {
-            $animate.leave(element, invalidCallback);
-          }).toThrowMinErr('$animate', 'nocb', 'Do not pass a callback to animate methods');
-        }));
 
         it('should add and remove the temporary className value is provided', function() {
           var captures = {};

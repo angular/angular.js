@@ -548,8 +548,6 @@ angular.module('ngAnimate', ['ng'])
             options.tempClasses = options.tempClasses.split(/\s+/);
           }
           return options;
-        } else {
-          $delegate.$$assertNoCallback(options);
         }
       }
 
