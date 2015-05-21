@@ -3304,7 +3304,7 @@ goog.i18n.DateTimeSymbols_pt = {
     '4º trimestre'],
   AMPMS: ['AM', 'PM'],
   DATEFORMATS: ['EEEE, d \'de\' MMMM \'de\' y', 'd \'de\' MMMM \'de\' y',
-    'd \'de\' MMM \'de\' y', 'dd/MM/yy'],
+    'd \'de\' MMM \'de\' y', 'dd/MM/yyyy'],
   TIMEFORMATS: ['HH:mm:ss zzzz', 'HH:mm:ss z', 'HH:mm:ss', 'HH:mm'],
   DATETIMEFORMATS: ['{1} {0}', '{1} {0}', '{1} {0}', '{1} {0}'],
   FIRSTDAYOFWEEK: 6,
