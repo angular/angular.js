@@ -226,7 +226,7 @@ var inputType = {
     * The timezone to be used to read/write the `Date` instance in the model can be defined using
     * {@link ng.directive:ngModelOptions ngModelOptions}. By default, this is the timezone of the browser.
     *
-    * @param {string} ngModel Assignable angular expression to data-bind to.
+    * @param {Date} ngModel Assignable angular expression to data-bind to.
     * @param {string=} name Property name of the form under which the control is published.
     * @param {string=} min Sets the `min` validation error key if the value entered is less than `min`. This must be a
     * valid ISO datetime format (yyyy-MM-ddTHH:mm:ss).
@@ -1674,6 +1674,3 @@ var ngValueDirective = function() {
     }
   };
 };
-
-
-
