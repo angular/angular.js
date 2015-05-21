@@ -3349,7 +3349,7 @@ goog.i18n.DateTimeSymbols_pt_PT = {
     '4.º trimestre'],
   AMPMS: ['da manhã', 'da tarde'],
   DATEFORMATS: ['EEEE, d \'de\' MMMM \'de\' y', 'd \'de\' MMMM \'de\' y',
-    'dd/MM/y', 'dd/MM/yy'],
+    'dd/MM/y', 'dd/MM/yyyy'],
   TIMEFORMATS: ['HH:mm:ss zzzz', 'HH:mm:ss z', 'HH:mm:ss', 'HH:mm'],
   DATETIMEFORMATS: ['{1} \'às\' {0}', '{1} \'às\' {0}', '{1}, {0}',
     '{1}, {0}'],
