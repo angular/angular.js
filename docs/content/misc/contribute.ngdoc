@@ -153,7 +153,7 @@ grunt test:unit --browsers Opera,Firefox
 
 Note there should be _no spaces between browsers_. `Opera, Firefox` is INVALID.
 
-During development it's however more productive to continuously run unit tests every time the source or test files
+During development, however, it's more productive to continuously run unit tests every time the source or test files
 change. To execute tests in this mode run:
 
 1. To start the Karma server, capture Chrome browser and run unit tests, run:

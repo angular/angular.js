@@ -170,6 +170,12 @@ var $AnimateProvider = ['$provide', function($provide) {
      * page}.
      */
     return {
+      $$assertNoCallback: function(param) {
+        if (isFunction(param)) {
+          throw $animateMinErr('nocb', 'Do not pass a callback to animate methods');
+        }
+      },
+
       animate: function(element, from, to) {
         applyStyles(element, { from: from, to: to });
         return asyncPromise();
@@ -192,6 +198,8 @@ var $AnimateProvider = ['$provide', function($provide) {
        * @return {Promise} the animation callback promise
        */
       enter: function(element, parent, after, options) {
+        this.$$assertNoCallback(options);
+
         applyStyles(element, options);
         after ? after.after(element)
               : parent.prepend(element);
@@ -210,6 +218,8 @@ var $AnimateProvider = ['$provide', function($provide) {
        * @return {Promise} the animation callback promise
        */
       leave: function(element, options) {
+        this.$$assertNoCallback(options);
+
         applyStyles(element, options);
         element.remove();
         return asyncPromise();
@@ -312,6 +322,8 @@ var $AnimateProvider = ['$provide', function($provide) {
        * @return {Promise} the animation callback promise
        */
       setClass: function(element, add, remove, options) {
+        this.$$assertNoCallback(options);
+
         var self = this;
         var STORAGE_KEY = '$$animateClasses';
         var createdCache = false;
