@@ -859,8 +859,8 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
  * - Registering the control with its parent {@link ng.directive:form form}.
  *
  * Note: `ngModel` will try to bind to the property given by evaluating the expression on the
- * current scope. If the property doesn't already exist on this scope, it will be created
- * implicitly and added to the scope.
+ * current scope. If the property doesn't already exist on this scope, and if it doesn't exist on any of its parent scopes, it will be created
+ * implicitly and added to the current scope.
  *
  * For best practices on using `ngModel`, see:
  *
