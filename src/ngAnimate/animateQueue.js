@@ -366,6 +366,7 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
 
       if (!isValidAnimation) {
         close();
+        clearElementAnimationState(element);
         return runner;
       }
 
