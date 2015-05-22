@@ -739,6 +739,9 @@ function arrayRemove(array, value) {
  *   are deleted and then all elements/properties from the source are copied to it.
  * * If `source` is not an object or array (inc. `null` and `undefined`), `source` is returned.
  * * If `source` is identical to 'destination' an exception will be thrown.
+ * 
+ * **Note:** If you desire to keep same constructor for new copy, you can do following:
+ * `angular.copy(source, new source.constructor());`
  *
  * @param {*} source The source that will be used to make a copy.
  *                   Can be any type, including primitives, `null`, and `undefined`.
