@@ -978,22 +978,27 @@ function equals(o1, o2) {
   return false;
 }
 
+var unsafeEval = function() { /* jshint ignore:line */
+  if (isDefined(unsafeEval.isActive_)) return unsafeEval.isActive_;
+
+  var active = true;
+  try {
+    /* jshint -W031, -W054 */
+    new Function('');
+    /* jshint +W031, +W054 */
+  } catch (e) {
+    active = false;
+  }
+  return (unsafeEval.isActive_ = active);
+};
+
 var csp = function() {
   if (isDefined(csp.isActive_)) return csp.isActive_;
 
   var active = !!(document.querySelector('[ng-csp]') ||
                   document.querySelector('[data-ng-csp]'));
 
-  if (!active) {
-    try {
-      /* jshint -W031, -W054 */
-      new Function('');
-      /* jshint +W031, +W054 */
-    } catch (e) {
-      active = true;
-    }
-  }
-
+  active = active || !unsafeEval();
   return (csp.isActive_ = active);
 };
 

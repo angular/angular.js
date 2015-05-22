@@ -711,6 +711,7 @@ describe('angular', function() {
     afterEach(function() {
       window.Function = originalFunction;
       delete csp.isActive_;
+      delete unsafeEval.isActive_;
     });
 
 

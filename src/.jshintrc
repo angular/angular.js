@@ -65,6 +65,7 @@
     "shallowCopy": false,
     "equals": false,
     "csp": false,
+    "unsafeEval": false,
     "concat": false,
     "sliceArgs": false,
     "bind": false,

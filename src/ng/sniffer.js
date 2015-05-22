@@ -79,6 +79,7 @@ function $SnifferProvider() {
         return eventSupport[event];
       },
       csp: csp(),
+      unsafeEval: unsafeEval(),
       vendorPrefix: vendorPrefix,
       transitions: transitions,
       animations: animations,
