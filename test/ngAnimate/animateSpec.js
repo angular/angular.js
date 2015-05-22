@@ -1015,29 +1015,27 @@ describe("animations", function() {
         expect(enterDone).toHaveBeenCalled();
       }));
 
-      it('should cancel the previously running removeClass animation if a follow-up addClass animation is using the same class value',
+      it('should cancel the previously running addClass animation if a follow-up removeClass animation is using the same class value',
         inject(function($animate, $rootScope, $$rAF) {
 
         parent.append(element);
         var runner = $animate.addClass(element, 'active-class');
         $rootScope.$digest();
 
-        var closed = false;
-        runner.done(function(status) {
-          closed = true;
-        });
+        var doneHandler = jasmine.createSpy('addClass done');
+        runner.done(doneHandler);
 
         $$rAF.flush();
 
-        expect(closed).toBe(false);
+        expect(doneHandler).not.toHaveBeenCalled();
 
         $animate.removeClass(element, 'active-class');
         $rootScope.$digest();
 
-        expect(closed).toBe(true);
+        expect(doneHandler).toHaveBeenCalled();
       }));
 
-      it('should cancel the previously running addClass animation if a follow-up removeClass animation is using the same class value',
+      it('should cancel the previously running removeClass animation if a follow-up addClass animation is using the same class value',
         inject(function($animate, $rootScope, $$rAF) {
 
         element.addClass('active-class');
@@ -1045,19 +1043,17 @@ describe("animations", function() {
         var runner = $animate.removeClass(element, 'active-class');
         $rootScope.$digest();
 
-        var closed = false;
-        runner.done(function(status) {
-          closed = true;
-        });
+        var doneHandler = jasmine.createSpy('addClass done');
+        runner.done(doneHandler);
 
         $$rAF.flush();
 
-        expect(closed).toBe(false);
+        expect(doneHandler).not.toHaveBeenCalled();
 
         $animate.addClass(element, 'active-class');
         $rootScope.$digest();
 
-        expect(closed).toBe(true);
+        expect(doneHandler).toHaveBeenCalled();
       }));
 
       it('should skip the class-based animation entirely if there is an active structural animation',
