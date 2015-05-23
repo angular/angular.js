@@ -92,6 +92,13 @@ function Browser(window, document, $log, $sniffer) {
   cacheState();
   lastHistoryState = cachedState;
 
+  self.forceReloadLocationUpdate = function(url) {
+    if (reloadLocation) {
+      reloadLocation = url;
+    }
+  };
+
+
   /**
    * @name $browser#url
    *
