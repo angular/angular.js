@@ -996,6 +996,49 @@ describe('$location', function() {
         }
       );
     });
+
+
+    function mockUpBrowser(options) {
+      module(function($windowProvider, $browserProvider) {
+        $windowProvider.$get = function() {
+          var win = {};
+          angular.extend(win, window);
+          win.addEventListener = angular.noop;
+          win.removeEventListener = angular.noop;
+          win.location = {
+            href: options.initialUrl,
+            replace: function(val) {
+              win.location.href = val;
+            }
+          };
+          return win;
+        };
+        $browserProvider.$get = function($document, $window, $log, $sniffer) {
+          /* global Browser: false */
+          var b = new Browser($window, $document, $log, $sniffer);
+          b.baseHref = function() {
+            return options.baseHref;
+          };
+          return b;
+        };
+      });
+    }
+
+
+    it('should not get caught in infinite digest when replacing empty path with slash', function() {
+      initService({html5Mode:true,supportHistory:false});
+      mockUpBrowser({initialUrl:'http://server/base', baseHref:'/base/'});
+      inject(
+        function($browser, $location, $rootScope, $window) {
+          $rootScope.$on('$locationChangeSuccess', function() {
+            if ($location.path() !== '/') {
+                $location.path('/').replace();
+            }
+          });
+          $rootScope.$digest();
+        }
+      );
+    });
   });
 
 
