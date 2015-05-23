@@ -621,7 +621,7 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
 
       var timings = computeTimings(node, fullClassName, cacheKey);
       var relativeDelay = timings.maxDelay;
-      maxDelay = Math.max(relativeDelay, 0);
+      maxDelay = Math.max(relativeDelay, 0) || 0;
       maxDuration = timings.maxDuration;
 
       var flags = {};
@@ -849,7 +849,7 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
 
             timings = computeTimings(node, fullClassName, cacheKey);
             relativeDelay = timings.maxDelay;
-            maxDelay = Math.max(relativeDelay, 0);
+            maxDelay = Math.max(relativeDelay, 0) || 0;
             maxDuration = timings.maxDuration;
 
             if (maxDuration === 0) {
@@ -866,7 +866,7 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
                   ? parseFloat(options.delay)
                   : relativeDelay;
 
-            maxDelay = Math.max(relativeDelay, 0);
+            maxDelay = Math.max(relativeDelay, 0) || 0;
 
             var delayStyle;
             if (flags.applyTransitionDelay) {
