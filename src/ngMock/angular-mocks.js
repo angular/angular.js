@@ -36,6 +36,7 @@ angular.mock.$Browser = function($sniffer) {
   self.$$lastUrl = self.$$url; // used by url polling fn
   self.$$reloadLocation = null;
   self.$$sniffer = $sniffer;
+  self.$$simulateLocationUpdate = false;
   self.pollFns = [];
 
   // TODO(vojta): remove this temporary api
@@ -48,9 +49,11 @@ angular.mock.$Browser = function($sniffer) {
   self.onUrlChange = function(listener) {
     self.pollFns.push(
       function() {
-        if (self.$$lastUrl !== self.$$url || self.$$state !== self.$$lastState) {
-          self.$$lastUrl = self.$$url;
+        var currUrl = self.$$reloadLocation || self.$$url;
+        if (self.$$simulateLocationUpdate || self.$$lastUrl !== currUrl || self.$$state !== self.$$lastState) {
+          self.$$lastUrl = currUrl;
           self.$$lastState = self.$$state;
+          self.$$simulateLocationUpdate = false;
           listener(self.$$url, self.$$state);
         }
       }
@@ -152,7 +155,7 @@ angular.mock.$Browser.prototype = {
       state = null;
     }
     if (url) {
-      var sameState = this.$$state === state;
+      var sameState = this.$$lastState === state;
 
       if (this.$$lastUrl === url && (!this.$$sniffer.history || sameState)) {
         return this;
@@ -163,16 +166,20 @@ angular.mock.$Browser.prototype = {
       index = url.indexOf('#');
       var urlStripped = (index === -1 ? url : url.substr(0, index));
 
+      this.$$lastState = angular.copy(state);
+
       var sameBase = this.$$lastUrl && lastUrlStripped === urlStripped;
       if (this.$$sniffer.history && (!sameBase || !sameState)) {
         // Native pushState serializes & copies the object; simulate it.
         this.$$state = angular.copy(state);
+        this.$$lastState = this.$$state;
       }
       if (!sameBase) {
         this.$$reloadLocation = url;
       }
       this.$$url = url;
       this.$$lastUrl = url;
+      this.$$simulateLocationUpdate = true;
 
       return this;
     }
