@@ -40,6 +40,19 @@ function splitClasses(classes) {
   return obj;
 }
 
+// if any other type of options value besides an Object value is
+// passed into the $animate.method() animation then this helper code
+// will be run which will ignore it. While this patch is not the
+// greatest solution to this, a lot of existing plugins depend on
+// $animate to either call the callback (< 1.2) or return a promise
+// that can be changed. This helper function ensures that the options
+// are wiped clean incase a callback function is provided.
+function prepareAnimateOptions(options) {
+  return isObject(options)
+      ? options
+      : {};
+}
+
 var $$CoreAnimateRunnerProvider = function() {
   this.$get = ['$q', '$$rAF', function($q, $$rAF) {
     function AnimateRunner() {}
@@ -420,7 +433,7 @@ var $AnimateProvider = ['$provide', function($provide) {
         after = after && jqLite(after);
         parent = parent || after.parent();
         domInsert(element, parent, after);
-        return $$animateQueue.push(element, 'enter', options);
+        return $$animateQueue.push(element, 'enter', prepareAnimateOptions(options));
       },
 
       /**
@@ -446,7 +459,7 @@ var $AnimateProvider = ['$provide', function($provide) {
         after = after && jqLite(after);
         parent = parent || after.parent();
         domInsert(element, parent, after);
-        return $$animateQueue.push(element, 'move', options);
+        return $$animateQueue.push(element, 'move', prepareAnimateOptions(options));
       },
 
       /**
@@ -463,7 +476,7 @@ var $AnimateProvider = ['$provide', function($provide) {
        * @return {Promise} the animation callback promise
        */
       leave: function(element, options) {
-        return $$animateQueue.push(element, 'leave', options, function() {
+        return $$animateQueue.push(element, 'leave', prepareAnimateOptions(options), function() {
           element.remove();
         });
       },
@@ -487,7 +500,7 @@ var $AnimateProvider = ['$provide', function($provide) {
        * @return {Promise} the animation callback promise
        */
       addClass: function(element, className, options) {
-        options = options || {};
+        options = prepareAnimateOptions(options);
         options.addClass = mergeClasses(options.addclass, className);
         return $$animateQueue.push(element, 'addClass', options);
       },
@@ -511,7 +524,7 @@ var $AnimateProvider = ['$provide', function($provide) {
        * @return {Promise} the animation callback promise
        */
       removeClass: function(element, className, options) {
-        options = options || {};
+        options = prepareAnimateOptions(options);
         options.removeClass = mergeClasses(options.removeClass, className);
         return $$animateQueue.push(element, 'removeClass', options);
       },
@@ -536,7 +549,7 @@ var $AnimateProvider = ['$provide', function($provide) {
        * @return {Promise} the animation callback promise
        */
       setClass: function(element, add, remove, options) {
-        options = options || {};
+        options = prepareAnimateOptions(options);
         options.addClass = mergeClasses(options.addClass, add);
         options.removeClass = mergeClasses(options.removeClass, remove);
         return $$animateQueue.push(element, 'setClass', options);
@@ -564,7 +577,7 @@ var $AnimateProvider = ['$provide', function($provide) {
        * @return {Promise} the animation callback promise
        */
       animate: function(element, from, to, className, options) {
-        options = options || {};
+        options = prepareAnimateOptions(options);
         options.from = options.from ? extend(options.from, from) : from;
         options.to   = options.to   ? extend(options.to, to)     : to;
 
