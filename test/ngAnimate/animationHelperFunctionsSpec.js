@@ -30,6 +30,57 @@ describe("animation option helper functions", function() {
       var options2 = {};
       expect(prepareAnimationOptions(options2)).not.toBe(options);
     }));
+
+    they('should append a "px" value to the $prop styles if they are provided as number values',
+      ['from', 'to'], function(phase) {
+
+      inject(function() {
+        var options = {};
+        options[phase] = {};
+        options[phase].height = 200;
+        options[phase].width = '200';
+        options[phase].border = '1px solid red';
+
+        options = prepareAnimationOptions(options);
+        expect(options[phase].height).toBe('200px');
+        expect(options[phase].width).toBe('200');
+        expect(options[phase].border).toBe('1px solid red');
+      });
+    });
+
+    it('should ignore appending a "px" to the from/to styles when a style with a value of `0` is provided',
+      inject(function() {
+
+      var options = {
+        from: {},
+        to: {}
+      };
+
+      options.from.width = 0;
+      options.to.height = 0;
+
+      options = prepareAnimationOptions(options);
+      expect(options.from.width).toBe(0);
+      expect(options.to.height).toBe(0);
+    }));
+
+    they('should ignore appending a "px" to the styles value when a $prop style is provided with a numerical value',
+      ['z-index', 'zIndex'], function(prop) {
+
+      inject(function() {
+        var options = {
+          from: {},
+          to: {}
+        };
+
+        options.from[prop] = 2;
+        options.to[prop] = 10;
+
+        options = prepareAnimationOptions(options);
+        expect(options.from[prop]).toBe(2);
+        expect(options.to[prop]).toBe(10);
+      });
+    });
   });
 
   describe('applyAnimationStyles', function() {

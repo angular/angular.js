@@ -12,6 +12,7 @@ var isUndefined = angular.isUndefined;
 var isDefined   = angular.isDefined;
 var isFunction  = angular.isFunction;
 var isElement   = angular.isElement;
+var isNumber    = angular.isNumber;
 
 var ELEMENT_NODE = 1;
 var COMMENT_NODE = 8;
@@ -144,8 +145,38 @@ function prepareAnimationOptions(options) {
       domOperation = noop;
     };
     options.$$prepared = true;
+
+    if (options.from) {
+      options.from = pixelifyNumericStyles(options.from);
+    }
+
+    if (options.to) {
+      options.to = pixelifyNumericStyles(options.to);
+    }
   }
   return options;
+}
+
+function pixelifyNumericStyles(styles) {
+  for (var prop in styles) {
+    // this should satisfy `z-index` and `zIndex` since
+    // both values are always numeric, but don't require a
+    // `px` prefix.
+    if (prop.charAt(0) === 'z') continue;
+
+    var value = styles[prop];
+
+    // some styles may use a `0` value as a default to clear
+    // the style property entirely. Since transitions are able
+    // to animate directly from zero (without a px value) then
+    // it fine to leave this style as is without the px suffix.
+    if (value === 0) continue;
+
+    if (isNumber(value)) {
+      styles[prop] = value + 'px';
+    }
+  }
+  return styles;
 }
 
 function applyAnimationStyles(element, options) {
