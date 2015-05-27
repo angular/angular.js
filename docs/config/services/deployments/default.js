@@ -33,7 +33,8 @@ module.exports = function defaultDeployment(getComponentPath) {
       'css/docs.css',
       'css/animations.css',
       'font-awesome/css/font-awesome.css',
-      '//fonts.googleapis.com/css?family=Roboto:400,400italic,500,700'
+      '//fonts.googleapis.com/css?family=Roboto:400,400italic,500,700',
+      'css/angular_io.css'
     ]
   };
 };
