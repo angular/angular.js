@@ -482,6 +482,8 @@ describe('ngRepeat', function() {
         '$last',
         '$even',
         '$odd',
+        '$prev',
+        '$next',
         'obj[key]',
         'obj["key"]',
         'obj[\'key\']',
@@ -673,7 +675,6 @@ describe('ngRepeat', function() {
     expect(element.text()).toEqual('misko:m:true-false-true|');
   });
 
-
   it('should expose iterator position as $even and $odd when iterating over objects',
       function() {
     element = $compile(
@@ -694,6 +695,54 @@ describe('ngRepeat', function() {
     expect(element.text()).toBe('misko:m:true-false|doug:d:false-true|');
   });
 
+  it('should expose iterator position as $first, $prev, $next and $last when iterating over arrays',
+      function() {
+    element = $compile(
+      '<ul>' +
+        '<li ng-repeat="item in items">{{item}}:{{$first}}-{{$prev}}-{{$next}}-{{$last}}|</li>' +
+      '</ul>')(scope);
+    scope.items = ['misko', 'shyam', 'doug'];
+    scope.$digest();
+    expect(element.text()).
+        toEqual('misko:true--1-false|shyam:false-0-2-false|doug:false-1--true|');
+
+    scope.items.push('frodo');
+    scope.$digest();
+    expect(element.text()).
+        toEqual('misko:true--1-false|' +
+                'shyam:false-0-2-false|' +
+                'doug:false-1-3-false|' +
+                'frodo:false-2--true|');
+
+    scope.items.pop();
+    scope.items.pop();
+    scope.$digest();
+    expect(element.text()).toEqual('misko:true--1-false|shyam:false-0--true|');
+
+    scope.items.pop();
+    scope.$digest();
+    expect(element.text()).toEqual('misko:true---true|');
+  });
+
+  it('should expose iterator position as $first, $prev, $next and $last when iterating over objects',
+      function() {
+    element = $compile(
+      '<ul>' +
+        '<li ng-repeat="(key, val) in items">{{key}}:{{val}}:{{$first}}-{{$prev}}-{{$next}}-{{$last}}|</li>' +
+      '</ul>')(scope);
+    scope.items = {'misko':'m', 'shyam':'s', 'doug':'d'};
+    scope.$digest();
+    expect(element.text()).
+        toEqual('misko:m:true--shyam-false|' + 
+                'shyam:s:false-misko-doug-false|' +
+                'doug:d:false-shyam--true|');
+    delete scope.items.doug;
+    scope.$digest();
+    expect(element.text()).toEqual('misko:m:true--shyam-false|shyam:s:false-misko--true|');
+    delete scope.items.shyam;
+    scope.$digest();
+    expect(element.text()).toEqual('misko:m:true---true|');
+  });
 
   it('should calculate $first, $middle and $last when we filter out properties from an obj', function() {
     element = $compile(

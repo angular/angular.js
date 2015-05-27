@@ -19,6 +19,8 @@
  * | `$last`   | {@type boolean} | true if the repeated element is last in the iterator.                       |
  * | `$even`   | {@type boolean} | true if the iterator position `$index` is even (otherwise false).           |
  * | `$odd`    | {@type boolean} | true if the iterator position `$index` is odd (otherwise false).            |
+ * | `$prev`   | {@type number} {@type string} {@type null} | previous index/key of the iterator position `$index` (null if `$index` is `$first`).  |
+ * | `$next`   | {@type number} {@type string} {@type null} | next index/key of the iterator position `$index` (null if `$index` is `$last`).        |
  *
  * Creating aliases for these properties is possible with {@link ng.directive:ngInit `ngInit`}.
  * This may be useful when, for instance, nesting ngRepeats.
@@ -291,7 +293,7 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
   var NG_REMOVED = '$$NG_REMOVED';
   var ngRepeatMinErr = minErr('ngRepeat');
 
-  var updateScope = function(scope, index, valueIdentifier, value, keyIdentifier, key, arrayLength) {
+  var updateScope = function(scope, index, valueIdentifier, value, keyIdentifier, key, arrayLength, prev, next) {
     // TODO(perf): generate setters to shave off ~40ms or 1-1.5%
     scope[valueIdentifier] = value;
     if (keyIdentifier) scope[keyIdentifier] = key;
@@ -302,6 +304,8 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
     // jshint bitwise: false
     scope.$odd = !(scope.$even = (index&1) === 0);
     // jshint bitwise: true
+    scope.$prev = prev;
+    scope.$next = next;
   };
 
   var getBlockStart = function(block) {
@@ -398,6 +402,7 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
               nextBlockMap = createMap(),
               collectionLength,
               key, value, // key/value of iteration
+              prev, next,
               trackById,
               trackByIdFn,
               collectionKeys,
@@ -471,6 +476,8 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
           for (index = 0; index < collectionLength; index++) {
             key = (collection === collectionKeys) ? index : collectionKeys[index];
             value = collection[key];
+            prev = (index > 0 ? ((collection === collectionKeys) ? (index - 1) : collectionKeys[index - 1]) : null);
+            next = (index < collectionLength - 1 ? ((collection === collectionKeys) ? (index + 1) : collectionKeys[index + 1]) : null);
             block = nextBlockOrder[index];
 
             if (block.scope) {
@@ -489,7 +496,7 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
                 $animate.move(getBlockNodes(block.clone), null, jqLite(previousNode));
               }
               previousNode = getBlockEnd(block);
-              updateScope(block.scope, index, valueIdentifier, value, keyIdentifier, key, collectionLength);
+              updateScope(block.scope, index, valueIdentifier, value, keyIdentifier, key, collectionLength, prev, next);
             } else {
               // new item which we don't know about
               $transclude(function ngRepeatTransclude(clone, scope) {
@@ -506,7 +513,7 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
                 // by a directive with templateUrl when its template arrives.
                 block.clone = clone;
                 nextBlockMap[block.id] = block;
-                updateScope(block.scope, index, valueIdentifier, value, keyIdentifier, key, collectionLength);
+                updateScope(block.scope, index, valueIdentifier, value, keyIdentifier, key, collectionLength, prev, next);
               });
             }
           }
