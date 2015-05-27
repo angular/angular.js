@@ -1227,6 +1227,34 @@ describe("animations", function() {
     });
   });
 
+  they('should allow an animation to run on the $prop element', ['$rootElement', 'body'], function(name) {
+    var capturedAnimation;
+
+    module(function($provide) {
+      $provide.factory('$rootElement', function($document) {
+        return jqLite($document[0].querySelector('html'));
+      });
+      $provide.factory('$$animation', function($$AnimateRunner) {
+        return function(element, method, options) {
+          capturedAnimation = arguments;
+          return new $$AnimateRunner();
+        };
+      });
+    });
+    inject(function($animate, $rootScope, $document, $rootElement) {
+      $animate.enabled(true);
+
+      var body = jqLite($document[0].body);
+      var targetElement = name === 'body' ? body : $rootElement;
+
+      $animate.addClass(targetElement, 'red');
+      $rootScope.$digest();
+
+      expect(capturedAnimation[0]).toBe(targetElement);
+      expect(capturedAnimation[1]).toBe('addClass');
+    });
+  });
+
   describe('[ng-animate-children]', function() {
     var parent, element, child, capturedAnimation, captureLog;
     beforeEach(module(function($provide) {
