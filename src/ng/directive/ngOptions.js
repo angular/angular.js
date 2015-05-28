@@ -303,6 +303,13 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
         values = values || [];
 
         Object.keys(values).forEach(function getWatchable(key) {
+          if (isString(values[key]) &&
+              values[key].charAt(0) == '$' &&
+              values[key].charAt(1) == '$'
+          ) {
+            return;
+          }
+
           var locals = getLocals(values[key], key);
           var selectValue = getTrackByValueFn(values[key], locals);
           watchedArray.push(selectValue);
@@ -348,6 +355,12 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
         var optionValuesLength = optionValuesKeys.length;
 
         for (var index = 0; index < optionValuesLength; index++) {
+          if (isString(optionValuesKeys[index]) &&
+              optionValuesKeys[index].charAt(0) === '$' &&
+              optionValuesKeys[index].charAt(1) === '$'
+          ) {
+            continue;
+          }
           var key = (optionValues === optionValuesKeys) ? index : optionValuesKeys[index];
           var value = optionValues[key];
           var locals = getLocals(value, key);

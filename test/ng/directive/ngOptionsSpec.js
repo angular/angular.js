@@ -922,6 +922,25 @@ describe('ngOptions', function() {
       expect(scope.selected).toEqual([20]);
       expect(element).toEqualSelectValue([20], true);
     });
+
+
+    it('should ignore array values beginning with $$', function() {
+      scope.arr = ['one', 'two', '$$hashKey'];
+
+      scope.modify = function(item) {
+        return item;
+      };
+
+      spyOn(scope, 'modify');
+
+      createSelect({
+        'ng-model': 'selected',
+        'multiple': false,
+        'ng-options': 'item as modify(item) for item in arr'
+      });
+
+      expect(scope.modify).not.toHaveBeenCalledWith('$$hashKey');
+    });
   });
 
 
