@@ -1,43 +1,44 @@
 "use strict";
 
-module.exports = function jqueryDeployment(getVersion) {
+module.exports = function jqueryDeployment(getComponentPath) {
   return {
     name: 'jquery',
     examples: {
       commonFiles: {
         scripts: [
-          '../../components/jquery-' + getVersion('jquery') + '/jquery.js',
+          '../../' + getComponentPath('jquery'),
           '../../../angular.js'
         ]
       },
       dependencyPath: '../../../'
     },
     scripts: [
-      'components/jquery-' + getVersion('jquery') + '/jquery.js',
-      '../angular.min.js',
-      '../angular-resource.min.js',
-      '../angular-route.min.js',
-      '../angular-cookies.min.js',
-      '../angular-sanitize.min.js',
-      '../angular-touch.min.js',
-      '../angular-animate.min.js',
-      'components/marked-' + getVersion('marked', 'node_modules', 'package.json') + '/lib/marked.js',
-      'js/angular-bootstrap/bootstrap.min.js',
-      'js/angular-bootstrap/dropdown-toggle.min.js',
-      'components/lunr.js-' + getVersion('lunr.js') + '/lunr.min.js',
-      'components/google-code-prettify-' + getVersion('google-code-prettify') + '/src/prettify.js',
-      'components/google-code-prettify-' + getVersion('google-code-prettify') + '/src/lang-css.js',
+      getComponentPath('jquery'),
+      getComponentPath('hammerjs', 'hammer.js'),
+      getComponentPath('angular'),
+      getComponentPath('angular-animate'),
+      getComponentPath('angular-aria'),
+      getComponentPath('angular-material'),
+      getComponentPath('angular-sanitize'),
+      getComponentPath('marked', 'lib/marked.js', 'node_modules', 'package.json'),
+      getComponentPath('lunr.js', 'lunr.min.js'),
+      getComponentPath('google-code-prettify', 'src/prettify.js'),
+      getComponentPath('google-code-prettify', 'src/lang-css.js'),
       'js/versions-data.js',
       'js/pages-data.js',
       'js/nav-data.js',
       'js/docs.min.js'
     ],
     stylesheets: [
-      'components/bootstrap-' + getVersion('bootstrap') + '/css/bootstrap.min.css',
-      'components/open-sans-fontface-' + getVersion('open-sans-fontface') + '/open-sans.css',
+      getComponentPath('angular-material', 'angular-material.css'),
+      getComponentPath('angular-material', 'themes/grey-theme.css'),
+      getComponentPath('angular-material', 'themes/red-theme.css'),
       'css/prettify-theme.css',
       'css/docs.css',
-      'css/animations.css'
+      'css/animations.css',
+      'font-awesome/css/font-awesome.css',
+      '//fonts.googleapis.com/css?family=Roboto:400,400italic,500,700',
+      'css/angular_io.css'
     ]
   };
 };

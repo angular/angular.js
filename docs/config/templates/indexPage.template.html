@@ -69,172 +69,310 @@
   </script>
 </head>
 <body>
-  <div id="wrapper">
-    <header scroll-y-offset-element class="header header-fixed">
-      <section class="navbar navbar-inverse docs-navbar-primary" ng-controller="DocsSearchCtrl">
-        <div class="container">
-          <div class="row">
-            <div class="col-md-9 header-branding">
-              <a class="brand navbar-brand" href="http://angularjs.org">
-                <img width="117" height="30" class="logo" ng-src="img/angularjs-for-header-only.svg">
-              </a>
-              <ul class="nav navbar-nav">
-                <li class="divider-vertical"></li>
-                <li><a href="http://angularjs.org"><i class="icon-home icon-white"></i> Home</a></li>
-                <li class="divider-vertical"></li>
-                <li class="dropdown">
-                  <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                    <i class="icon-eye-open icon-white"></i> Learn <b class="caret"></b>
-                  </a>
-                  <ul class="dropdown-menu">
-                    <li class="disabled"><a href="http://angularjs.org/">Why AngularJS?</a></li>
-                    <li><a href="http://www.youtube.com/user/angularjs">Watch</a></li>
-                    <li><a href="tutorial">Tutorial</a></li>
-                    <li><a href="http://builtwith.angularjs.org/">Case Studies</a></li>
-                    <li><a href="https://github.com/angular/angular-seed">Seed App project template</a></li>
-                    <li><a href="misc/faq">FAQ</a></li>
-                  </ul>
-                </li>
-                <li class="divider-vertical"></li>
-                <li class="dropdown active">
-                  <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                    <i class="icon-book icon-white"></i> Develop <b class="caret"></b>
-                  </a>
-                  <ul class="dropdown-menu">
-                    <li><a href="tutorial">Tutorial</a></li>
-                    <li><a href="guide">Developer Guide</a></li>
-                    <li><a href="api">API Reference</a></li>
-                    <li><a href="error">Error Reference</a></li>
-                    <li><a href="misc/contribute">Contribute</a></li>
-                    <li><a href="http://code.angularjs.org/">Download</a></li>
-                  </ul>
-                </li>
-                <li class="divider-vertical"></li>
-                <li class="dropdown">
-                  <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                    <i class="icon-comment icon-white"></i> Discuss <b class="caret"></b>
-                  </a>
-                  <ul class="dropdown-menu">
-                    <li><a href="http://blog.angularjs.org">Blog</a></li>
-                    <li><a href="http://groups.google.com/group/angular">Mailing List</a></li>
-                    <li><a href="http://webchat.freenode.net/?channels=angularjs&uio=d4">Chat Room</a></li>
-                    <li class="divider"></li>
-                    <li><a href="https://twitter.com/#!/angularjs">Twitter</a></li>
-                    <li><a href="https://plus.google.com/110323587230527980117">Google+</a></li>
-                    <li class="divider"></li>
-                    <li><a href="https://github.com/angular/angular.js">GitHub</a></li>
-                    <li><a href="https://github.com/angular/angular.js/issues">Issue Tracker</a></li>
-                  </ul>
-                </li>
-                <li class="divider-vertical"></li>
-              </ul>
-            </div>
-            <form ng-class="{focus:focus}" class="navbar-search col-md-3 docs-search" ng-submit="submit()">
-              <span class="glyphicon glyphicon-search search-icon"></span>
-              <input type="text"
-                     name="as_q"
-                     class="search-query"
-                     placeholder="Click or press / to search"
-                     ng-focus="focus=true"
-                     ng-blur="focus=false"
-                     ng-change="search(q)"
-                     ng-model="q"
-                     docs-search-input
-                     autocomplete="off" />
-            </form>
-          </div>
-        </div>
-        <div class="search-results-container" ng-show="hasResults">
-          <div class="container">
-            <div class="search-results-frame">
-              <div ng-repeat="(key, value) in results" class="search-results-group" ng-class="colClassName + ' col-group-' + key">
-                <h4 class="search-results-group-heading">{{ key }}</h4>
-                <div class="search-results">
-                  <div ng-repeat="item in value" class="search-result">
-                    - <a ng-click="hideResults()" ng-href="{{ item.path }}">{{ item.name }}</a>
-                  </div>
-                </div>
+
+  <div class="viewport" layout="column" layout-fill>
+
+    <!-- HEADER -->
+    <md-toolbar
+        class="md-whiteframe-z2"
+        layout="row"
+        layout-align="start center"
+        md-theme="grey"
+        ng-controller="HeaderController as header">
+
+      <!-- LEFT SIDENAV TOGGLE -->
+      <md-button
+          aria-label="Toggle table of contents"
+          class="stretched toolbar-btn"
+          ng-click="vu.openSidenav('toc')"
+          ng-if="!vu.media('gt-sm')">
+        <i class="fa fa-bars"></i>
+      </md-button>
+
+      <!-- LOGO -->
+      <!-- FIXME: While changing sizes, the logo flashes stretched/shrinked. -->
+      <!--        Seems like the `src` is adapting quicker than the `width`. -->
+      <div
+          class="logo-container"
+          layout="row"
+          layout-align="center"
+          ng-attr-flex="{{vu.getFlex('toc')}}">
+        <img
+            alt="AngularJS logo"
+            class="logo"
+            height="60"
+            ng-src="//docs.angularjs.org/{{vu.media('gt-sm')?'img/angularjs-for-header-only.svg':'favicon.ico'}}"
+            width="{{vu.media('gt-sm')?'210':'85'}}"
+        />
+      </div>
+
+      <!-- MENUS -->
+      <md-list class="md-toolbar-tools" flex="" layout="row">
+        <md-item
+            class="clickable stretched"
+            layout="row"
+            layout-align="center center">
+          <md-item-content>
+            <a href="//angularjs.org"><i class="icon-home icon-white"></i> Home</a>
+          </md-item-content>
+        </md-item>
+        <md-item
+            class="clickable stretched"
+            layout="row"
+            layout-align="center center">
+          <md-item-content>
+            <a href="" responsive-menu rm-items="header.learnItems">
+              <i class="icon-eye-open icon-white"></i> Learn <b class="caret"></b>
+            </a>
+          </md-item-content>
+        </md-item>
+        <md-item
+            class="active clickable stretched"
+            layout="row"
+            layout-align="center center">
+          <md-item-content>
+            <a href="" responsive-menu rm-items="header.developItems">
+              <i class="icon-book icon-white"></i> Develop <b class="caret"></b>
+            </a>
+          </md-item-content>
+        </md-item>
+        <md-item
+            class="clickable stretched"
+            layout="row"
+            layout-align="center center">
+          <md-item-content>
+            <a href="" responsive-menu rm-items="header.discussItems">
+              <i class="icon-comment icon-white"></i> Discuss <b class="caret"></b>
+            </a>
+          </md-item-content>
+        </md-item>
+      </md-list>
+
+      <!-- SEARCH FAB -->
+      <!-- FIXME: Add the icon -->
+      <md-button
+          aria-label="Search"
+          class="md-fab md-primary toolbar-fab"
+          md-theme="red"
+          ng-click="vu.openSidenav('search')"
+          ng-if="!vu.media('gt-lg')">
+        <i class="fa fa-search"></i>
+      </md-button>
+
+    </md-toolbar>
+
+    <!-- BODY -->
+    <div flex="" layout="row">
+
+      <!-- LEFT SIDENAV (TOC) -->
+      <!-- TODO: Have a separate controller for this section ? -->
+      <!-- TODO: Add proper classes in CSS (those returned by `navClass`/`linkClass`) -->
+      <!-- TODO: Test appearance of nav-items with extras -->
+      <md-sidenav
+          class="md-sidenav-left md-whiteframe-z2"
+          id="sidenav-toc"
+          md-component-id="toc"
+          md-is-locked-open="vu.media('gt-sm')"
+          md-theme="red"
+          ng-attr-flex="{{vu.getFlex('toc')}}">
+        <md-content>
+          <md-list layout="column">
+            <md-item>
+              <md-subheader class="tight">
+                <h2>Version Picker</h2>
+              </md-subheader>
+              <div ng-controller="DocsVersionsCtrl" class="picker version-picker">
+                <select ng-options="v as ('v' + v.version + (v.isSnapshot ? ' (snapshot)' : '')) group by getGroupName(v) for v in docs_versions"
+                        ng-model="docs_version"
+                        ng-change="jumpToDocsVersion(docs_version)"
+                        class="docs-version-jump">
+                </select>
               </div>
-            </div>
-            <a href="" ng-click="hideResults()" class="search-close">
-              <span class="glyphicon glyphicon-remove search-close-icon"></span> Close
-            </a>
-          </div>
-        </div>
-      </section>
-      <section class="sup-header">
-        <div class="container main-grid main-header-grid">
-          <div class="grid-left">
-            <div ng-controller="DocsVersionsCtrl" class="picker version-picker">
-              <select ng-options="v as ('v' + v.version + (v.isSnapshot ? ' (snapshot)' : '')) group by getGroupName(v) for v in docs_versions"
-                      ng-model="docs_version"
-                      ng-change="jumpToDocsVersion(docs_version)"
-                      class="docs-version-jump">
-              </select>
-            </div>
-          </div>
-          <div class="grid-right">
-            <ul class="nav-breadcrumb">
-              <li ng-repeat="crumb in breadcrumb" class="nav-breadcrumb-entry naked-list">
-                <span class="divider"> /</span>
-                <a ng-href="{{crumb.url}}">{{crumb.name}}</a>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </section>
-    </header>
+            </md-item>
+            <md-item ng-repeat="navGroup in currentArea.navGroups track by navGroup.name">
+              <md-subheader class="tight">
+                <h2><a href="{{navGroup.href}}" xng-class="navClass(navGroup)">{{navGroup.name}}</a></h2>
+              </md-subheader>
+              <md-list>
+                <md-item
+                    layout="row"
+                    xng-class="navClass(navItem)"
+                    ng-repeat="navItem in navGroup.navItems">
+                  <md-button
+                      flex=""
+                      ng-class="{'md-primary':isCurrentPath(navItem.extra.href)}"
+                      xng-class="navClass(navItem.extra)"
+                      ng-click="vu.closeSidenav('toc')"
+                      ng-href="{{navItem.extra.href}}"
+                      ng-if="navItem.extra.href">
+                    {{navItem.extra.text}}
+                    <i class="icon-{{navItem.extra.icon}}" ng-if="navItem.extra.icon"></i>
+                  </md-button>
+                  <md-button
+                      flex=""
+                      ng-class="{'md-primary':isCurrentPath(navItem.href)}"
+                      xng-class="linkClass(navItem)"
+                      ng-click="vu.closeSidenav('toc')"
+                      ng-href="{{navItem.href}}">
+                    {{navItem.name}}
+                  </md-button>
+                </md-item>
+              </md-list>
+              <md-divider ng-if-start="!$last"></md-divider>
+              <br ng-if-end="" />
+            </md-item>
+          </md-list>
+        </md-content>
+      </md-sidenav>
 
-    <section role="main" class="container main-body">
-      <div class="main-grid main-body-grid">
-        <div class="grid-left">
-          <a class="btn toc-toggle visible-xs" ng-click="toc=!toc">Show / Hide Table of Contents</a>
-          <div class="side-navigation" ng-show="toc==true">
-            <ul class="nav-list naked-list">
-              <li ng-repeat="navGroup in currentArea.navGroups track by navGroup.name" class="nav-index-group">
-                <a href="{{ navGroup.href }}" ng-class="navClass(navGroup)" class="nav-index-group-heading">{{ navGroup.name }}</a>
-                <ul class="aside-nav">
-                  <li ng-repeat="navItem in navGroup.navItems" ng-class="navClass(navItem)" class="nav-index-listing">
-                    <a ng-if="navItem.extra.href" ng-class="navClass(navItem.extra)" href="{{navItem.extra.href}}">
-                      {{navItem.extra.text}}<i ng-if="navItem.extra.icon" class="icon-{{navItem.extra.icon}}"></i>
-                    </a>
-                    <a tabindex="2" ng-class="linkClass(navItem)" href="{{navItem.href}}">{{navItem.name}}</a>
-                  </li>
-                </ul>
-              </li>
-            </ul>
-            <a href="" ng-click="toc=false" class="toc-close visible-xs">
-              <span class="glyphicon glyphicon-remove toc-close-icon"></span> Close
-            </a>
-          </div>
-        </div>
-        <div class="grid-right">
+      <!-- LEFT SIDENAV PLACEHOLDER -->
+      <div ng-if="vu.media('gt-sm')" flex="{{vu.getFlex('toc')}}"></div>
+
+      <!-- CONTENT WRAPPER -->
+      <div class="positioned" flex="" layout="column">
+
+        <!-- CONTENT -->
+        <md-content flex="">
+
+          <!-- TOP ANCHOR -->
+          <div id="top-anchor"></div>
+
+          <!-- LOADER -->
           <div id="loading" ng-show="loading">Loading...</div>
-          <div ng-hide="loading" ng-include="partialPath" autoscroll></div>
+
+          <!-- Breadcrumb Back Button -->
+          <div ng-if="breadcrumb.length > 1" layout="row">
+            <md-button
+                class="md-primary md-raised back-breadcrumb"
+                href="{{breadcrumb[breadcrumb.length-2].url}}"
+                md-theme="red"
+                ng-mouseenter="bttHovered=true"
+                ng-mouseleave="bttHovered=false"
+                ng-style="{opacity:bttHovered?'1.0':null}">
+                Back to {{breadcrumb[breadcrumb.length-2].name}}
+            </md-button>
+          </div>
+
+          <!-- MAIN CONTENT AREA -->
+          <md-content
+              class="content-area md-padding"
+              ng-hide="loading"
+              ng-include="partialPath"
+              autoscroll>
+          </md-content>
+
+          <!-- FOOTER -->
+          <md-toolbar
+              class="footer reverse-whiteframe-z1"
+              layout="row"
+              layout-align="start center"
+              md-theme="grey"
+              ng-controller="FooterController as footer">
+            <div flex="5"></div>
+            <div
+                class="stretched"
+                flex="90"
+                layout="column"
+                layout-align="space-around start">
+              <span></span>
+              <span class="stretched">
+                Super-powered by Google &copy;2010-2015
+                (<a
+                    href="htps://github.com/angular/angular.js/blob/master/CHANGELOG.md#{{footer.versionNumber}}"
+                    ng-bind-template="v{{footer.version}}">
+                 </a>)
+              </span>
+              <span class="stretched">
+                Code licensed under
+                <a href="https://github.com/angular/angular.js/blob/master/LICENSE" target="_blank">The MIT License</a>.
+                Documentation licensed under
+                <a href="//creativecommons.org/licenses/by/3.0/" target="_blank">CC BY 3.0</a>.
+              </span>
+              <span></span>
+            </div>
+          </md-toolbar>
+
+        </md-content>
+
+        <!-- BACK-TO-TOP BUTTON -->
+        <md-button
+            class="md-primary md-raised back-to-top"
+            href=""
+            md-theme="red"
+            ng-mouseenter="bttHovered=true"
+            ng-mouseleave="bttHovered=false"
+            ng-style="{opacity:bttHovered?'1.0':null}"
+            scroll-to="#top-anchor">
+            Back to top
+        </md-button>
+
+      </div>
+
+      <!-- RIGHT SIDENAV PLACEHOLDER -->
+      <div ng-if="vu.media('gt-lg')" flex="{{vu.getFlex('search')}}"></div>
+
+      <!-- RIGHT SIDENAV (SEARCH) -->
+      <!-- TODO: Put a directive on the sidenav to perform certain actions when opening/closing -->
+      <!--       E.g. focus the search-field when opening, clearing it when closing etc -->
+      <md-sidenav
+          class="md-sidenav-right md-whiteframe-z2"
+          id="sidenav-search"
+          layout="column"
+          md-component-id="search"
+          md-is-locked-open="vu.media('gt-lg')"
+          md-theme="red"
+          ng-attr-flex="{{vu.getFlex('search')}}">
+        <div ng-controller="DocsSearchController">
+
+          <!-- SEARCH HEADER -->
+          <md-toolbar class="md-whiteframe-z2" md-theme="grey">
+            <form ng-submit="submit()">
+              <md-text-float
+                  label="Search"
+                  layout-margin=""
+                  md-fid="search-field"
+                  md-theme="red"
+                  ng-model="q"
+                  ng-model-options="{
+                      updateOn: 'default blur',
+                      debounce: {default: 333, blur: 0}
+                  }"
+                  type="text">
+                  <!-- docs-search-input // TODO: Do we still need this directive -->
+              </md-text-float>
+            </form>
+          </md-toolbar>
+
+          <!-- SEARCH RESULTS -->
+          <md-content class="md-padding">
+            <h2>Results</h2>
+            <md-list>
+              <md-item ng-repeat="(key, value) in results">
+                <md-item-content layout="column" layout-align="start start">
+                  <h2>{{key}}</h2>
+                  <md-list>
+                    <md-item ng-repeat="item in value">
+                      <md-item-content
+                          class="clickable"
+                          ng-click="hideResults(item.path)"
+                          ng-mouseenter="hovered=true"
+                          ng-mouseleave="hovered=false">
+                        <div class="md-tile-left"><i class="fa fa-anchor"></i></div>
+                        <div class="md-tile-content"><md-button ng-class="{'md-primary':hovered}">{{item.name}}</md-button></div>
+                      </md-item-content>
+                    </md-item>
+                  </md-list>
+                </md-item-content>
+                <md-divider ng-if="!$last"></md-divider>
+              </md-item>
+            </md-list>
+            <i ng-if="!hasResults">No results</i>
+          </md-content>
         </div>
-      </div>
-    </section>
+      </md-sidenav>
 
-    <footer class="footer">
-      <div class="container">
-        <p class="pull-right"><a back-to-top>Back to top</a></p>
+    </div>
 
-        <p>
-          Super-powered by Google  ©2010-2015
-          ( <a id="version"
-               ng-href="https://github.com/angular/angular.js/blob/master/CHANGELOG.md#{{versionNumber}}"
-               ng-bind-template="v{{version}}">
-            </a>
-          )
-        </p>
-        <p>
-          Code licensed under the
-          <a href="https://github.com/angular/angular.js/blob/master/LICENSE" target="_blank">The
-            MIT License</a>. Documentation licensed under <a
-              href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.
-        </p>
-      </div>
-    </footer>
   </div>
 </body>
 </html>

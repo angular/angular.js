@@ -17,6 +17,7 @@ module.exports = new Package('angularjs', [
 .factory(require('./services/errorNamespaceMap'))
 .factory(require('./services/getMinerrInfo'))
 .factory(require('./services/getVersion'))
+.factory(require('./services/getComponentPath'))
 .factory(require('./services/gitData'))
 
 .factory(require('./services/deployments/debug'))
