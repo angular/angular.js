@@ -58,6 +58,14 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
     return currentAnimation.state === RUNNING_STATE && newAnimation.structural;
   });
 
+  rules.cancel.push(function(element, newAnimation, currentAnimation) {
+    var nO = newAnimation.options;
+    var cO = currentAnimation.options;
+
+    // if the exact same CSS class is added/removed then it's safe to cancel it
+    return (nO.addClass && nO.addClass === cO.removeClass) || (nO.removeClass && nO.removeClass === cO.addClass);
+  });
+
   this.$get = ['$$rAF', '$rootScope', '$rootElement', '$document', '$$HashMap',
                '$$animation', '$$AnimateRunner', '$templateRequest', '$$jqLite',
        function($$rAF,   $rootScope,   $rootElement,   $document,   $$HashMap,
@@ -292,6 +300,7 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
         structural: isStructural,
         element: element,
         event: event,
+        close: close,
         options: options,
         runner: runner
       };
@@ -311,8 +320,17 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
         var cancelAnimationFlag = isAllowed('cancel', element, newAnimation, existingAnimation);
         if (cancelAnimationFlag) {
           if (existingAnimation.state === RUNNING_STATE) {
+            // this will end the animation right away and it is safe
+            // to do so since the animation is already running and the
+            // runner callback code will run in async
             existingAnimation.runner.end();
+          } else if (existingAnimation.structural) {
+            // this means that the animation is queued into a digest, but
+            // hasn't started yet. Therefore it is safe to run the close
+            // method which will call the runner methods in async.
+            existingAnimation.close();
           } else {
+            // this will merge the existing animation options into this new follow-up animation
             mergeAnimationOptions(element, newAnimation.options, existingAnimation.options);
           }
         } else {
@@ -348,10 +366,13 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
 
       if (!isValidAnimation) {
         close();
+        clearElementAnimationState(element);
         return runner;
       }
 
-      closeParentClassBasedAnimations(parent);
+      if (isStructural) {
+        closeParentClassBasedAnimations(parent);
+      }
 
       // the counter keeps track of cancelled animations
       var counter = (existingAnimation.counter || 0) + 1;
@@ -394,6 +415,13 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
             runner.end();
           }
 
+          // in the event that the element animation was not cancelled or a follow-up animation
+          // isn't allowed to animate from here then we need to clear the state of the element
+          // so that any future animations won't read the expired animation data.
+          if (!isValidAnimation) {
+            clearElementAnimationState(element);
+          }
+
           return;
         }
 
@@ -403,7 +431,9 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
             ? 'setClass'
             : animationDetails.event;
 
-        closeParentClassBasedAnimations(parentElement);
+        if (animationDetails.structural) {
+          closeParentClassBasedAnimations(parentElement);
+        }
 
         markElementAnimationState(element, RUNNING_STATE);
         var realRunner = $$animation(element, event, animationDetails.options);
