@@ -1,7 +1,7 @@
 Using AngularJS with the Closure Compiler
 =========================================
 
-The Closure Compiler project contains externs definitions for AngularJS
+The Closure Compiler project contains externs definitions for AngularJS.
 JavaScript in its `contrib/externs` directory.
 
 The definitions contain externs for use with the Closure compiler (aka
