@@ -92,10 +92,18 @@
          [ <a href="" ng-click="predicate=''">unsorted</a> ]
          <table class="friend">
            <tr>
-             <th><a href="" ng-click="predicate = 'name'; reverse=false">Name</a>
-                 (<a href="" ng-click="predicate = '-name'; reverse=false">^</a>)</th>
-             <th><a href="" ng-click="predicate = 'phone'; reverse=!reverse">Phone Number</a></th>
-             <th><a href="" ng-click="predicate = 'age'; reverse=!reverse">Age</a></th>
+             <th>
+               <a href="" ng-click="predicate == 'name' ? reverse = !reverse : reverse = false; predicate='name';">Name</a>
+               <span ng-show="predicate == 'name'"><span ng-show="reverse">&#9660;</span><span ng-show="!reverse">&#9650;</span></span>
+             </th>
+             <th>
+               <a href="" ng-click="predicate == 'phone' ? reverse = !reverse : reverse = false; predicate='phone';">Phone Number</a>
+               <span ng-show="predicate == 'phone'"><span ng-show="reverse">&#9660;</span><span ng-show="!reverse">&#9650;</span></span>
+             </th>
+             <th>
+               <a href="" ng-click="predicate == 'age' ? reverse = !reverse : reverse = false; predicate='age';">Age</a>
+               <span ng-show="predicate == 'age'"><span ng-show="reverse">&#9660;</span><span ng-show="!reverse">&#9650;</span></span>
+             </th>
            </tr>
            <tr ng-repeat="friend in friends | orderBy:predicate:reverse">
              <td>{{friend.name}}</td>
