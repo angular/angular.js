@@ -458,6 +458,15 @@ describe('$http', function() {
           expect(httpPromise.success(callback)).toBe(httpPromise);
         });
 
+        it('should continue promise chain with promise returned in HttpPromise callback', function() {
+          $httpBackend.expect('GET', '/url/a').respond(200);
+          $http({url: '/url/a', method: 'GET'}).success(function() {
+            $httpBackend.expect('GET', '/url/b').respond(400);
+            return $http({url: '/url/b', method:  'GET'});
+          }).error(function(data, status) {
+            expect(status).toEqual(400);
+          });
+        });
 
         it('should error if the callback is not a function', function() {
           expect(function() {

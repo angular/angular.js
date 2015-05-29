@@ -911,7 +911,7 @@ function $HttpProvider() {
         assertArgFn(fn, 'fn');
 
         promise.then(function(response) {
-          fn(response.data, response.status, response.headers, config);
+          return fn(response.data, response.status, response.headers, config);
         });
         return promise;
       };
@@ -920,7 +920,7 @@ function $HttpProvider() {
         assertArgFn(fn, 'fn');
 
         promise.then(null, function(response) {
-          fn(response.data, response.status, response.headers, config);
+          return fn(response.data, response.status, response.headers, config);
         });
         return promise;
       };
