@@ -1423,8 +1423,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
             if (nodeLinkFn.transcludeOnThisElement) {
               childBoundTranscludeFn = createBoundTranscludeFn(
-                  scope, nodeLinkFn.transclude, parentBoundTranscludeFn,
-                  nodeLinkFn.elementTranscludeOnThisElement);
+                  scope, nodeLinkFn.transclude, parentBoundTranscludeFn);
 
             } else if (!nodeLinkFn.templateOnThisElement && parentBoundTranscludeFn) {
               childBoundTranscludeFn = parentBoundTranscludeFn;
@@ -1446,7 +1445,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       }
     }
 
-    function createBoundTranscludeFn(scope, transcludeFn, previousBoundTranscludeFn, elementTransclusion) {
+    function createBoundTranscludeFn(scope, transcludeFn, previousBoundTranscludeFn) {
 
       var boundTranscludeFn = function(transcludedScope, cloneFn, controllers, futureParentElement, containingScope) {
 
@@ -1837,7 +1836,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
       nodeLinkFn.scope = newScopeDirective && newScopeDirective.scope === true;
       nodeLinkFn.transcludeOnThisElement = hasTranscludeDirective;
-      nodeLinkFn.elementTranscludeOnThisElement = hasElementTranscludeDirective;
       nodeLinkFn.templateOnThisElement = hasTemplate;
       nodeLinkFn.transclude = childTranscludeFn;
 
