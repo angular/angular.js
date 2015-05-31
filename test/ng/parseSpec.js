@@ -1745,6 +1745,10 @@ describe('parser', function() {
         expect(scope.$eval("0&&2")).toEqual(0 && 2);
         expect(scope.$eval("0||2")).toEqual(0 || 2);
         expect(scope.$eval("0||1&&2")).toEqual(0 || 1 && 2);
+        expect(scope.$eval("true&&a")).toEqual(true && undefined);
+        expect(scope.$eval("true&&a.b")).toEqual(true && undefined);
+        expect(scope.$eval("false||a")).toEqual(false || undefined);
+        expect(scope.$eval("false||a.b")).toEqual(false || undefined);
       });
 
       it('should parse ternary', function() {
