@@ -983,6 +983,8 @@ ASTCompiler.prototype = {
             }
           }
           recursionFn(intoId);
+        }, function() {
+          self.assign(intoId, 'undefined');
         });
       }, !!create);
       break;
