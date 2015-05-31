@@ -97,12 +97,20 @@ describe("ngAnimate $$animateCssDriver", function() {
         expect(isFunction(runner.start)).toBeTruthy();
       }));
 
-      it("should signal $animateCss to apply the classes early when an event is present", inject(function() {
+      it("should signal $animateCss to apply the classes early when animation is structural", inject(function() {
         driver({ element: element, structural: true });
         expect(capturedAnimation[1].applyClassesEarly).toBeTruthy();
 
         driver({ element: element });
         expect(capturedAnimation[1].applyClassesEarly).toBeFalsy();
+      }));
+
+      it("should only set the event value if the animation is structural", inject(function() {
+        driver({ element: element, structural: true, event: 'superman' });
+        expect(capturedAnimation[1].event).toBe('superman');
+
+        driver({ element: element, event: 'batman' });
+        expect(capturedAnimation[1].event).toBeFalsy();
       }));
     });
 
@@ -214,7 +222,9 @@ describe("ngAnimate $$animateCssDriver", function() {
             'out': jqLite('<div></div>')
           };
 
+          fromAnimation.structural = true;
           fromAnimation.element.append(anchorAnimation['out']);
+          toAnimation.structural = true;
           toAnimation.element.append(anchorAnimation['in']);
 
           var animator = driver({
@@ -240,6 +250,9 @@ describe("ngAnimate $$animateCssDriver", function() {
         captureFn = function(element, details) {
           element.addClass(details.event);
         };
+
+        fromAnimation.structural = true;
+        toAnimation.structural = true;
 
         var runner = driver({
           from: fromAnimation,
@@ -267,6 +280,9 @@ describe("ngAnimate $$animateCssDriver", function() {
           });
         });
         inject(function() {
+          fromAnimation.structural = true;
+          toAnimation.structural = true;
+
           var runner = driver({
             from: fromAnimation,
             to: toAnimation
@@ -907,11 +923,16 @@ describe("ngAnimate $$animateCssDriver", function() {
       it("should pass the provided domOperation into $animateCss to be run right after the element is animated if a leave animation is present",
         inject(function($rootElement, $$rAF) {
 
+        toAnimation.structural = true;
         toAnimation.event = 'enter';
+        toAnimation.options = {};
+
+        fromAnimation.structural = true;
         fromAnimation.event = 'leave';
+        fromAnimation.options = {};
 
         var leaveOp = function() { };
-        fromAnimation.domOperation = leaveOp;
+        fromAnimation.options.domOperation = leaveOp;
 
         driver({
           from: fromAnimation,

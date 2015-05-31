@@ -425,6 +425,23 @@ describe('Filter: filter', function() {
       toThrowMinErr('filter', 'notarray', 'Expected array but received: {"toString":null,"valueOf":null}');
   });
 
+  it('should not throw an error if used with an array like object', function() {
+    function getArguments() {
+      return arguments;
+    }
+    var argsObj = getArguments({name: 'Misko'}, {name: 'Igor'}, {name: 'Brad'});
+
+    var nodeList = jqLite("<p><span>Misko</span><span>Igor</span><span>Brad</span></p>")[0].childNodes;
+    function nodeFilterPredicate(node) {
+      return node.innerHTML.indexOf("I") !== -1;
+    }
+
+    expect(filter(argsObj, 'i').length).toBe(2);
+    expect(filter('abc','b').length).toBe(1);
+    expect(filter(nodeList, nodeFilterPredicate).length).toBe(1);
+
+  });
+
 
   it('should return undefined when the array is undefined', function() {
     expect(filter(undefined, {})).toBeUndefined();
