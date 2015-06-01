@@ -320,8 +320,13 @@ angular.module('ngMessages', [])
      var INACTIVE_CLASS = 'ng-inactive';
 
      return {
-       require: 'ngMessages',
        restrict: 'AE',
+       bindToController: {
+         ngMessages: '@',
+         forAttr: '@for'
+         },
+       scope: true,
+       controllerAs: 'ngMessagesController',
        controller: ['$element', '$scope', '$attrs', function($element, $scope, $attrs) {
          var ctrl = this;
          var latestKey = 0;
@@ -384,7 +389,7 @@ angular.module('ngMessages', [])
               : $animate.setClass($element, INACTIVE_CLASS, ACTIVE_CLASS);
          };
 
-         $scope.$watchCollection($attrs.ngMessages || $attrs['for'], ctrl.render);
+         $scope.$watchCollection(ctrl.ngMessages || ctrl.forAttr, ctrl.render);
 
          this.reRender = function() {
            if (!renderLater) {
