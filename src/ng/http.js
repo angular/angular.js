@@ -7,7 +7,7 @@ var JSON_ENDS = {
   '[': /]$/,
   '{': /}$/
 };
-var JSON_PROTECTION_PREFIX = /^\)\]\}',?\n/;
+var JSON_PROTECTION_PREFIX = /^\)\]\}',?\r?\n/;
 
 function serializeValue(v) {
   if (isObject(v)) {
