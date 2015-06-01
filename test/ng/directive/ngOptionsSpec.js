@@ -1176,6 +1176,26 @@ describe('ngOptions', function() {
 
     });
 
+    it('should not set view value again if the tracked property of the model has not changed when using trackBy', function() {
+
+      createSelect({
+        'ng-model': 'selected',
+        'ng-options': 'item for item in arr track by item.id'
+      });
+
+      scope.$apply(function() {
+        scope.selected = {id: 10, label: 'ten'};
+      });
+
+      spyOn(element.controller('ngModel'), '$setViewValue');
+
+      scope.$apply(function() {
+        scope.arr[0] = {id: 10, label: 'ten'};
+      });
+
+      expect(element.controller('ngModel').$setViewValue).not.toHaveBeenCalled();
+    });
+
     it('should not re-render if a property of the model is changed when not using trackBy', function() {
 
       createSelect({
