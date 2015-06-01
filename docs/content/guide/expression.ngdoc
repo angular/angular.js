@@ -303,6 +303,9 @@ then the expression is not fulfilled and will remain watched.
      keep dirty-checking the watch in the future digest loops by following the same
      algorithm starting from step 1
 
+#### Special case for object literals
+
+Unlike simple values, object-literals are watched until every key is defined. See http://www.bennadel.com/blog/2760-one-time-data-bindings-for-object-literal-expressions-in-angularjs-1-3.htm
 
 ### How to benefit from one-time binding
 
