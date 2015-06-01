@@ -2231,6 +2231,45 @@ describe('$compile', function() {
               }}
             };
           });
+          directive('prototypeMethodNameAsScopeVarA', function() {
+            return {
+              scope: {
+                'constructor': '=?',
+                'valueOf': '='
+              },
+              restrict: 'AE',
+              template: '<span></span>'
+            };
+          });
+          directive('prototypeMethodNameAsScopeVarB', function() {
+            return {
+              scope: {
+                'constructor': '@?',
+                'valueOf': '@'
+              },
+              restrict: 'AE',
+              template: '<span></span>'
+            };
+          });
+          directive('prototypeMethodNameAsScopeVarC', function() {
+            return {
+              scope: {
+                'constructor': '&?',
+                'valueOf': '&'
+              },
+              restrict: 'AE',
+              template: '<span></span>'
+            };
+          });
+          directive('watchAsScopeVar', function() {
+            return {
+              scope: {
+                'watch': '='
+              },
+              restrict: 'AE',
+              template: '<span></span>'
+            };
+          });
         }));
 
 
@@ -2471,6 +2510,118 @@ describe('$compile', function() {
                 expect(element.find('span').scope()).toBe(element.isolateScope());
                 expect(element.isolateScope()).not.toBe($rootScope);
               })
+            );
+
+            it('should handle "=" bindings with same method names in Object.prototype correctly when not present', inject(
+              function($rootScope, $compile) {
+                var func = function() {
+                  element = $compile(
+                    '<div prototype-method-name-as-scope-var-a></div>'
+                  )($rootScope);
+                };
+
+                expect(func).not.toThrow();
+                expect(element.find('span').scope()).toBe(element.isolateScope());
+                expect(element.isolateScope()).not.toBe($rootScope);
+                expect(element.isolateScope()['constructor']).toBe($rootScope.constructor);
+                expect(element.isolateScope()['valueOf']).toBeUndefined();
+              })
+            );
+
+            it('should handle "=" bindings with same method names in Object.prototype correctly when present', inject(
+                function($rootScope, $compile) {
+                  $rootScope.constructor = 'constructor';
+                  $rootScope.valueOf = 'valueOf';
+                  var func = function() {
+                    element = $compile(
+                      '<div prototype-method-name-as-scope-var-a constructor="constructor" value-of="valueOf"></div>'
+                    )($rootScope);
+                  };
+
+                  expect(func).not.toThrow();
+                  expect(element.find('span').scope()).toBe(element.isolateScope());
+                  expect(element.isolateScope()).not.toBe($rootScope);
+                  expect(element.isolateScope()['constructor']).toBe('constructor');
+                  expect(element.isolateScope()['valueOf']).toBe('valueOf');
+                })
+            );
+
+            it('should handle "@" bindings with same method names in Object.prototype correctly when not present', inject(
+                function($rootScope, $compile) {
+                  var func = function() {
+                    element = $compile('<div prototype-method-name-as-scope-var-b></div>')($rootScope);
+                  };
+
+                  expect(func).not.toThrow();
+                  expect(element.find('span').scope()).toBe(element.isolateScope());
+                  expect(element.isolateScope()).not.toBe($rootScope);
+                  expect(element.isolateScope()['constructor']).toBe($rootScope.constructor);
+                  expect(element.isolateScope()['valueOf']).toBeUndefined();
+                })
+            );
+
+            it('should handle "@" bindings with same method names in Object.prototype correctly when present', inject(
+                function($rootScope, $compile) {
+                  var func = function() {
+                    element = $compile(
+                      '<div prototype-method-name-as-scope-var-b constructor="constructor" value-of="valueOf"></div>'
+                    )($rootScope);
+                  };
+
+                  expect(func).not.toThrow();
+                  expect(element.find('span').scope()).toBe(element.isolateScope());
+                  expect(element.isolateScope()).not.toBe($rootScope);
+                  expect(element.isolateScope()['constructor']).toBe('constructor');
+                  expect(element.isolateScope()['valueOf']).toBe('valueOf');
+                })
+            );
+
+            it('should handle "&" bindings with same method names in Object.prototype correctly when not present', inject(
+                function($rootScope, $compile) {
+                  var func = function() {
+                    element = $compile('<div prototype-method-name-as-scope-var-c></div>')($rootScope);
+                  };
+
+                  expect(func).not.toThrow();
+                  expect(element.find('span').scope()).toBe(element.isolateScope());
+                  expect(element.isolateScope()).not.toBe($rootScope);
+                  expect(element.isolateScope()['constructor']).toBe($rootScope.constructor);
+                  expect(element.isolateScope()['valueOf']()).toBeUndefined();
+                })
+            );
+
+            it('should handle "&" bindings with same method names in Object.prototype correctly when present', inject(
+                function($rootScope, $compile) {
+                  $rootScope.constructor = function() { return 'constructor'; };
+                  $rootScope.valueOf = function() { return 'valueOf'; };
+                  var func = function() {
+                    element = $compile(
+                      '<div prototype-method-name-as-scope-var-c constructor="constructor()" value-of="valueOf()"></div>'
+                    )($rootScope);
+                  };
+
+                  expect(func).not.toThrow();
+                  expect(element.find('span').scope()).toBe(element.isolateScope());
+                  expect(element.isolateScope()).not.toBe($rootScope);
+                  expect(element.isolateScope()['constructor']()).toBe('constructor');
+                  expect(element.isolateScope()['valueOf']()).toBe('valueOf');
+                })
+            );
+
+            it('should not throw exception when using "watch" as binding in Firefox', inject(
+                function($rootScope, $compile) {
+                  $rootScope.watch = 'watch';
+                  var func = function() {
+                    element = $compile(
+                      '<div watch-as-scope-var watch="watch"></div>'
+                    )($rootScope);
+                  };
+
+                  expect(func).not.toThrow();
+                  expect(element.find('span').scope()).toBe(element.isolateScope());
+                  expect(element.isolateScope()).not.toBe($rootScope);
+                  expect(element.isolateScope()['watch']).toBe('watch');
+                })
             );
           });
 
