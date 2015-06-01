@@ -80,7 +80,7 @@ function currencyFilter($locale) {
  * @description
  * Formats a number as text.
  *
- * If the input is not a number an empty string is returned.
+ * If the input is not a number an empty string is returned but null or undefined, these values will be passed through.
  *
  * If the input is an infinite (Infinity/-Infinity) the Infinity symbol '∞' is returned.
  *
