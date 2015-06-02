@@ -93,8 +93,12 @@ function defaultHttpResponseTransform(data, headers) {
 
     if (tempData) {
       var contentType = headers('Content-Type');
-      if ((contentType && (contentType.indexOf(APPLICATION_JSON) === 0)) || isJsonLike(tempData)) {
+      if (contentType && (contentType.indexOf(APPLICATION_JSON) === 0)) {
         data = fromJson(tempData);
+      } else if (isJsonLike(tempData)) {
+        try {
+          data = fromJson(tempData);
+        } catch(e) {}
       }
     }
   }
