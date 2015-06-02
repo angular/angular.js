@@ -51,7 +51,7 @@ var jqLite = angular.element;
  *
  * ```javascript
  * <!-- keep in mind that ngModel automatically sets these error flags -->
- * myField.$error = { minlength : true, required : false };
+ * myField.$error = { minlength : true, required : true };
  * ```
  *
  * Then the `required` message will be displayed first. When required is false then the `minlength` message
