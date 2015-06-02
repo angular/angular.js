@@ -97,6 +97,13 @@
  *    </div>
  * ```
  *
+ * Note that `track by` must be the last expression in your repeater:
+ * ```html
+ *    <div ng-repeat="model in collection | orderBy: 'id' | limitTo: 10 track by model.id">
+ *      {{model.name}}
+ *    </div>
+ * ```
+ *
  * # Special repeat start and end points
  * To repeat a series of elements instead of just one parent element, ngRepeat (as well as other ng directives) supports extending
  * the range of the repeater by defining explicit start and end points by using **ng-repeat-start** and **ng-repeat-end** respectively.
