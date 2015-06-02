@@ -83,9 +83,23 @@
                   {name:'Mike', phone:'555-4321', age:21},
                   {name:'Adam', phone:'555-5678', age:35},
                   {name:'Julie', phone:'555-8765', age:29}];
-             $scope.predicate = '-age';
+             $scope.predicate = 'age';
+             $scope.reverse = true;
+             $scope.order = function(predicate) {
+               $scope.reverse = ($scope.predicate === predicate) ? !$scope.reverse : false;
+               $scope.predicate = predicate;
+             };
            }]);
        </script>
+       <style type="text/css">
+         SPAN.sortorder:after {
+           content: '\25b2';
+         }
+      
+         SPAN.sortorder.reverse:after {
+           content: '\25bc';
+         }
+       </style>
        <div ng-controller="ExampleController">
          <pre>Sorting predicate = {{predicate}}; reverse = {{reverse}}</pre>
          <hr/>
@@ -93,16 +107,16 @@
          <table class="friend">
            <tr>
              <th>
-               <a href="" ng-click="predicate == 'name' ? reverse = !reverse : reverse = false; predicate='name';">Name</a>
-               <span ng-show="predicate == 'name'"><span ng-show="reverse">&#9660;</span><span ng-show="!reverse">&#9650;</span></span>
+               <a href="" ng-click="order('name')">Name</a>
+               <span class="sortorder" ng-show="predicate === 'name'" ng-class="{reverse:reverse}"></span>
              </th>
              <th>
-               <a href="" ng-click="predicate == 'phone' ? reverse = !reverse : reverse = false; predicate='phone';">Phone Number</a>
-               <span ng-show="predicate == 'phone'"><span ng-show="reverse">&#9660;</span><span ng-show="!reverse">&#9650;</span></span>
+               <a href="" ng-click="order('phone')">Phone Number</a>
+               <span class="sortorder" ng-show="predicate === 'phone'" ng-class="{reverse:reverse}"></span>
              </th>
              <th>
-               <a href="" ng-click="predicate == 'age' ? reverse = !reverse : reverse = false; predicate='age';">Age</a>
-               <span ng-show="predicate == 'age'"><span ng-show="reverse">&#9660;</span><span ng-show="!reverse">&#9650;</span></span>
+               <a href="" ng-click="order('age')">Age</a>
+               <span class="sortorder" ng-show="predicate === 'age'" ng-class="{reverse:reverse}"></span>
              </th>
            </tr>
            <tr ng-repeat="friend in friends | orderBy:predicate:reverse">
