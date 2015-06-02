@@ -73,6 +73,7 @@ var angularFiles = {
     'src/ng/directive/ngStyle.js',
     'src/ng/directive/ngSwitch.js',
     'src/ng/directive/ngTransclude.js',
+    'src/ng/directive/ngTranscludeSelect.js',
     'src/ng/directive/script.js',
     'src/ng/directive/select.js',
     'src/ng/directive/style.js',
