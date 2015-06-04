@@ -697,7 +697,8 @@ function $HttpProvider() {
      *
      * The name of the headers can be specified using the xsrfHeaderName and xsrfCookieName
      * properties of either $httpProvider.defaults at config-time, $http.defaults at run-time,
-     * or the per-request config object.
+     * or the per-request config object. In environments where multiple sites can set cookies
+     * for your domain, we recommend using a unique cookie name for each site.
      *
      *
      * @param {object} config Object describing the request to be made and how it should be
