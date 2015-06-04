@@ -316,10 +316,10 @@ Here are three example cases.
 When interpolating text or attributes:
 
 ```html
-  <div name="attr: {{::color}}">text: {{::name}}</div>
+  <div name="attr: {{::color}}">text: {{::name | uppercase}}</div>
 ```
 
-When using a directive with bidirectional binding and the parameters will not change:
+When using a directive with bidirectional binding and parameters that will not change:
 
 ```js
 someModule.directive('someDirective', function() {
@@ -342,7 +342,6 @@ When using a directive that takes an expression:
 
 ```html
 <ul>
-  <li ng-repeat="item in ::items">{{item.name}};</li>
+  <li ng-repeat="item in ::items | orderBy:'name'">{{item.name}};</li>
 </ul>
 ```
-
