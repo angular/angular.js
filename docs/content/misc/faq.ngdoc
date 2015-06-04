@@ -194,7 +194,7 @@ Conditionally showing and hiding things using jQuery is a common pattern in othe
 `ng-show` (and `ng-hide`) conditionally show and hide elements based on boolean expressions.
 Describe the conditions for showing and hiding an element in terms of `$scope` variables:
 
-    <div ng-show="!loggedIn">Click <a href="#/login">here</a> to log in</div>
+    <div ng-show="!loggedIn"><a href="#/login">Click here to log in</a></div>
 
 Note also the counterpart `ng-hide` and similar `ng-disabled`.
 Note especially the powerful `ng-switch` that should be used instead of several mutually exclusive `ng-show`s.
