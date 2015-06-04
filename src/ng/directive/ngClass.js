@@ -135,7 +135,8 @@ function classDirective(name, selector) {
  * names.
  *
  * 2. If the expression evaluates to an object, then for each key-value pair of the
- * object with a truthy value the corresponding key is used as a class name.
+ * object with a truthy value the corresponding key is used as a class name.  Classes with dashes must be 
+ * enclosed in single quotes as object keys (e.g. ng-class="{'my-class': expression}").
  *
  * 3. If the expression evaluates to an array, each element of the array should either be a string as in
  * type 1 or an object as in type 2. This means that you can mix strings and objects together in an array
@@ -162,10 +163,10 @@ function classDirective(name, selector) {
  * @example Example that demonstrates basic bindings via ngClass directive.
    <example>
      <file name="index.html">
-       <p ng-class="{strike: deleted, bold: important, red: error}">Map Syntax Example</p>
+       <p ng-class="{'strike-out': deleted, bold: important, red: error}">Map Syntax Example</p>
        <label>
           <input type="checkbox" ng-model="deleted">
-          deleted (apply "strike" class)
+          deleted (apply "strike-out" class)
        </label><br>
        <label>
           <input type="checkbox" ng-model="important">
@@ -178,22 +179,22 @@ function classDirective(name, selector) {
        <hr>
        <p ng-class="style">Using String Syntax</p>
        <input type="text" ng-model="style"
-              placeholder="Type: bold strike red" aria-label="Type: bold strike red">
+              placeholder="Type: bold strike-out red" aria-label="Type: bold strike-out red">
        <hr>
        <p ng-class="[style1, style2, style3]">Using Array Syntax</p>
        <input ng-model="style1"
-              placeholder="Type: bold, strike or red" aria-label="Type: bold, strike or red"><br>
+              placeholder="Type: bold, strike-out or red" aria-label="Type: bold, strike-out or red"><br>
        <input ng-model="style2"
-              placeholder="Type: bold, strike or red" aria-label="Type: bold, strike or red 2"><br>
+              placeholder="Type: bold, strike or red" aria-label="Type: bold, strike-out or red 2"><br>
        <input ng-model="style3"
-              placeholder="Type: bold, strike or red" aria-label="Type: bold, strike or red 3"><br>
+              placeholder="Type: bold, strike or red" aria-label="Type: bold, strike-out or red 3"><br>
        <hr>
        <p ng-class="[style4, {orange: warning}]">Using Array and Map Syntax</p>
-       <input ng-model="style4" placeholder="Type: bold, strike" aria-label="Type: bold, strike"><br>
+       <input ng-model="style4" placeholder="Type: bold, strike-out" aria-label="Type: bold, strike-out"><br>
        <label><input type="checkbox" ng-model="warning"> warning (apply "orange" class)</label>
      </file>
      <file name="style.css">
-       .strike {
+       .strike-out {
            text-decoration: line-through;
        }
        .bold {
@@ -231,9 +232,9 @@ function classDirective(name, selector) {
        it('array example should have 3 classes', function() {
          expect(ps.get(2).getAttribute('class')).toBe('');
          element(by.model('style1')).sendKeys('bold');
-         element(by.model('style2')).sendKeys('strike');
+         element(by.model('style2')).sendKeys('strike-out');
          element(by.model('style3')).sendKeys('red');
-         expect(ps.get(2).getAttribute('class')).toBe('bold strike red');
+         expect(ps.get(2).getAttribute('class')).toBe('bold strike-out   red');
        });
 
        it('array with map example should have 2 classes', function() {
