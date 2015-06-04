@@ -92,11 +92,10 @@
            }]);
        </script>
        <style type="text/css">
-         SPAN.sortorder:after {
+         .sortorder:after {
            content: '\25b2';
          }
-      
-         SPAN.sortorder.reverse:after {
+         .sortorder.reverse:after {
            content: '\25bc';
          }
        </style>
