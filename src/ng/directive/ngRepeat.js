@@ -378,7 +378,7 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
       return function ngRepeatLink($scope, $element, $attr, ctrl, $transclude) {
 
         if (trackByExpGetter) {
-          trackByIdExpFn = function(key, value, index) {
+          var trackByIdExpFn = function(key, value, index) {
             // assign key, value, and $index to the locals so that they can be used in hash functions
             if (keyIdentifier) hashFnLocals[keyIdentifier] = key;
             hashFnLocals[valueIdentifier] = value;
