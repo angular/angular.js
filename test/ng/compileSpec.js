@@ -4592,6 +4592,41 @@ describe('$compile', function() {
     });
 
 
+    it('should correctly assign controller return values for multiple directives', function() {
+      var directiveController, otherDirectiveController;
+      module(function() {
+
+        directive('myDirective', function(log) {
+          return {
+            scope: true,
+            controller: function($scope) {
+              return directiveController = {
+                foo: 'bar'
+              };
+            }
+          };
+        });
+
+        directive('myOtherDirective', function(log) {
+          return {
+            controller: function($scope) {
+              return otherDirectiveController = {
+                baz: 'luh'
+              };
+            }
+          };
+        });
+
+      });
+
+      inject(function(log, $compile, $rootScope) {
+        element = $compile('<my-directive my-other-directive></my-directive>')($rootScope);
+        expect(element.data('$myDirectiveController')).toBe(directiveController);
+        expect(element.data('$myOtherDirectiveController')).toBe(otherDirectiveController);
+      });
+    });
+
+
     it('should get required parent controller', function() {
       module(function() {
         directive('nested', function(log) {
