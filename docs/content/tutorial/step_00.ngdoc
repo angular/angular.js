@@ -91,22 +91,22 @@ being the element on which the `ngApp` directive was defined.
 
           Nothing here {{'yet' + '!'}}
 
-  This line demonstrates two core features of Angular's templating capabilities:
+This line demonstrates two core features of Angular's templating capabilities:
 
-    * a binding, denoted by double-curlies `{{ }}`
-    * a simple expression `'yet' + '!'` used in this binding.
+  * a binding, denoted by double-curlies `{{ }}`
+  * a simple expression `'yet' + '!'` used in this binding.
 
-  The binding tells Angular that it should evaluate an expression and insert the result into the
-  DOM in place of the binding. Rather than a one-time insert, as we'll see in the next steps, a
-  binding will result in efficient continuous updates whenever the result of the expression
-  evaluation changes.
+The binding tells Angular that it should evaluate an expression and insert the result into the
+DOM in place of the binding. Rather than a one-time insert, as we'll see in the next steps, a
+binding will result in efficient continuous updates whenever the result of the expression
+evaluation changes.
 
-  {@link guide/expression Angular expression} is a JavaScript-like code snippet that is
-  evaluated by Angular in the context of the current model scope, rather than within the scope of
-  the global context (`window`).
+{@link guide/expression Angular expression} is a JavaScript-like code snippet that is
+evaluated by Angular in the context of the current model scope, rather than within the scope of
+the global context (`window`).
 
-  As expected, once this template is processed by Angular, the html page contains the text:
-  "Nothing here yet!".
+As expected, once this template is processed by Angular, the html page contains the text:
+"Nothing here yet!".
 
 ## Bootstrapping AngularJS apps
 
