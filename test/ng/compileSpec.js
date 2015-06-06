@@ -5592,8 +5592,13 @@ describe('$compile', function() {
             expect(privateData.events.click).toBeDefined();
             expect(privateData.events.click[0]).toBeDefined();
 
+            //Ensure the angular $destroy event is still sent
+            var destroyCount = 0;
+            element.find("div").on("$destroy", function() { destroyCount++; });
+
             $rootScope.$apply('xs = null');
 
+            expect(destroyCount).toBe(2);
             expect(firstRepeatedElem.data('$scope')).not.toBeDefined();
             privateData = jQuery._data(firstRepeatedElem[0]);
             expect(privateData && privateData.events).not.toBeDefined();
@@ -5614,9 +5619,7 @@ describe('$compile', function() {
 
             testCleanup();
 
-            // The initial ng-repeat div is dumped after parsing hence we expect cleanData
-            // count to be one larger than size of the iterated array.
-            expect(cleanedCount).toBe(xs.length + 1);
+            expect(cleanedCount).toBe(xs.length);
 
             // Restore the previous jQuery.cleanData.
             jQuery.cleanData = currentCleanData;
