@@ -270,6 +270,7 @@ It is good to run the end to end tests whenever you make changes to the HTML vie
 that the application as a whole is executing correctly.  It is very common to run End to End tests
 before pushing a new commit of changes to a remote repository.
 
+Now that you have set up your local machine, let's get started with the tutorial: {@link step_00 Step 0 - Bootstrapping}
 
 [git]: http://git-scm.com/
 [node]: http://nodejs.org/
