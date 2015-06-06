@@ -2261,7 +2261,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                 // it was cloned therefore we have to clone as well.
                 linkNode = jqLiteClone(compileNode);
               }
-              replaceWith(linkRootElement, jqLite(beforeTemplateLinkNode), linkNode);
+              replaceWith(linkRootElement, [beforeTemplateLinkNode], linkNode);
 
               // Copy in CSS classes from original node
               safeAddClass(jqLite(linkNode), oldClasses);
@@ -2454,60 +2454,60 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
      *
      * @param {JqLite=} $rootElement The root of the compile tree. Used so that we can replace nodes
      *                               in the root of the tree.
-     * @param {JqLite} elementsToRemove The jqLite element which we are going to replace. We keep
-     *                                  the shell, but replace its DOM node reference.
+     * @param {JqLite|Array} elementsToRemove The elements which we are going to replace. We keep
+     *                                        the shell, but replace its DOM node reference.
      * @param {Node} newNode The new DOM node.
      */
     function replaceWith($rootElement, elementsToRemove, newNode) {
       var firstElementToRemove = elementsToRemove[0],
           removeCount = elementsToRemove.length,
           parent = firstElementToRemove.parentNode,
-          i, ii;
+          i;
 
-      if ($rootElement) {
-        for (i = 0, ii = $rootElement.length; i < ii; i++) {
-          if ($rootElement[i] == firstElementToRemove) {
-            $rootElement[i++] = newNode;
-            for (var j = i, j2 = j + removeCount - 1,
-                     jj = $rootElement.length;
-                 j < jj; j++, j2++) {
-              if (j2 < jj) {
-                $rootElement[j] = $rootElement[j2];
-              } else {
-                delete $rootElement[j];
-              }
-            }
-            $rootElement.length -= removeCount - 1;
+      if ($rootElement && (i = indexOf.call($rootElement, firstElementToRemove)) !== -1) {
+        if (removeCount === 1) {
+          $rootElement[i] = newNode;
+        } else {
+          $rootElement.splice(i, removeCount, newNode);
+        }
 
-            // If the replaced element is also the jQuery .context then replace it
-            // .context is a deprecated jQuery api, so we should set it only when jQuery set it
-            // http://api.jquery.com/context/
-            if ($rootElement.context === firstElementToRemove) {
-              $rootElement.context = newNode;
-            }
-            break;
-          }
+        // If the replaced element is also the jQuery .context then replace it
+        // .context is a deprecated jQuery api, so we should set it only when jQuery set it
+        // http://api.jquery.com/context/
+        if ($rootElement.context === firstElementToRemove) {
+          $rootElement.context = newNode;
         }
       }
 
+      // Add new node to the parent in place of the firstElementToRemove
       if (parent) {
         parent.replaceChild(newNode, firstElementToRemove);
       }
 
-      // TODO(perf): what's this document fragment for? is it needed? can we at least reuse it?
-      var fragment = document.createDocumentFragment();
-      fragment.appendChild(firstElementToRemove);
+      // If multiple elements are being replaced they will be placed into a temporary fragment
+      // so they can still be traversed via .nextSibling or .parent.children while detached.
+      // This also detaches the elementsToRemove if they have a parent.
+      if (removeCount > 1) {
+        var fragment = document.createDocumentFragment();
+        for (i = 0; i < removeCount; i++) {
+          fragment.appendChild(elementsToRemove[i]);
+        }
+      }
 
       // Copy over user data (that includes Angular's $scope etc.). Don't copy private
       // data here because there's no public interface in jQuery to do that and copying over
       // event listeners (which is the main use of private data) wouldn't work anyway.
-      jqLite(newNode).data(jqLite(firstElementToRemove).data());
+      if (jqLite.hasData(firstElementToRemove)) {
+        jqLite.data(newNode, jqLite.data(firstElementToRemove));
+      }
 
       // Remove data of the replaced element. We cannot just call .remove()
       // on the element it since that would deallocate scope that is needed
       // for the new node. Instead, remove the data "manually".
       if (!jQuery) {
-        delete jqLite.cache[firstElementToRemove[jqLite.expando]];
+        for (i = 0; i < removeCount; i++) {
+          delete jqLite.cache[elementsToRemove[i][jqLite.expando]];
+        }
       } else {
         // jQuery 2.x doesn't expose the data storage. Use jQuery.cleanData to clean up after
         // the replaced element. The cleanData version monkey-patched by Angular would cause
@@ -2517,18 +2517,15 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         // example is jQuery UI). Instead, set a flag indicating scope destroying should be
         // skipped this one time.
         skipDestroyOnNextJQueryCleanData = true;
-        jQuery.cleanData([firstElementToRemove]);
+        jQuery.cleanData(elementsToRemove);
       }
 
-      for (var k = 1, kk = elementsToRemove.length; k < kk; k++) {
-        var element = elementsToRemove[k];
-        jqLite(element).remove(); // must do this way to clean up expando
-        fragment.appendChild(element);
-        delete elementsToRemove[k];
+      //Modify elementsToRemove jqLite/Array replacing all content with the newnode
+      if (removeCount === 1) {
+        elementsToRemove[0] = newNode;
+      } else {
+        elementsToRemove.splice(0, removeCount, newNode);
       }
-
-      elementsToRemove[0] = newNode;
-      elementsToRemove.length = 1;
     }
 
 

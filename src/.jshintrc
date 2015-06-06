@@ -60,6 +60,7 @@
     "isElement": false,
     "makeMap": false,
     "includes": false,
+    "indexOf": false,
     "arrayRemove": false,
     "copy": false,
     "shallowCopy": false,
