@@ -2494,9 +2494,13 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         parent.replaceChild(newNode, firstElementToRemove);
       }
 
-      // TODO(perf): what's this document fragment for? is it needed? can we at least reuse it?
-      var fragment = document.createDocumentFragment();
-      fragment.appendChild(firstElementToRemove);
+      // If multiple elements are being replaced put them into a temporary fragment
+      // so they can still be traversed with .nextSibling or .parent.children while detached.
+      var fragment;
+      if (removeCount > 1) {
+        fragment = document.createDocumentFragment();
+        fragment.appendChild(firstElementToRemove);
+      }
 
       // Copy over user data (that includes Angular's $scope etc.). Don't copy private
       // data here because there's no public interface in jQuery to do that and copying over
