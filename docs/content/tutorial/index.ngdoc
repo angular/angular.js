@@ -129,7 +129,8 @@ Once you have Node.js installed on your machine you can download the tool depend
 npm install
 ```
 
-This command will download the following tools, into the `node_modules` directory:
+This command reads angular-phonecat's `package.json` file and downloads the following tools
+into the `node_modules` directory:
 
 - [Bower][bower] - client-side code package manager
 - [Http-Server][http-server] - simple local static web server
