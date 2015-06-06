@@ -405,10 +405,13 @@ describe('jqLite', function() {
     it('should provide the non-wrapped data calls', function() {
       var node = document.createElement('div');
 
+      expect(jqLite.hasData(node)).toBe(false);
       expect(jqLite.data(node, "foo")).toBeUndefined();
+      expect(jqLite.hasData(node)).toBe(false);
 
       jqLite.data(node, "foo", "bar");
 
+      expect(jqLite.hasData(node)).toBe(true);
       expect(jqLite.data(node, "foo")).toBe("bar");
       expect(jqLite(node).data("foo")).toBe("bar");
 
@@ -421,6 +424,9 @@ describe('jqLite', function() {
       jqLite.removeData(node);
       jqLite.removeData(node);
       expect(jqLite.data(node, "bar")).toBeUndefined();
+
+      jqLite(node).remove();
+      expect(jqLite.hasData(node)).toBe(false);
     });
 
     it('should emit $destroy event if element removed via remove()', function() {
