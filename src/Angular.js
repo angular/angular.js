@@ -869,8 +869,8 @@ function copy(source, destination, stackSource, stackDest) {
     }
   }
   return destination;
-
-  function putValue(key, val, destination, stackSource, stackDest) {
+}
+function putValue(key, val, destination, stackSource, stackDest) {
     // No context allocation, trivial outer scope, easily inlined
     var result = copy(val, null, stackSource, stackDest);
     if (isObject(val)) {
@@ -879,8 +879,6 @@ function copy(source, destination, stackSource, stackDest) {
     }
     destination[key] = result;
   }
-}
-
 /**
  * Creates a shallow copy of an object, an array or a primitive.
  *
