@@ -309,6 +309,21 @@ Now, instead of returning empty object/array, it returns unchanged input.
 
 
 
+## HTML tag `select`
+
+### Numeric `option` values
+In case your code is using something like this:
+    <select ng-model="vm.entity.OrderQuantity">
+        <option value="100">100</option>
+        <option value="200">200</option>
+        <option value="300">300</option>
+    </select>
+and `vm.entity.OrderQuantity` is a numeric value, you have to fix the issue, since the provided value is not selected.
+
+For solutions see http://stackoverflow.com/questions/30582906
+
+
+
 
 # Migrating from 1.2 to 1.3
 
