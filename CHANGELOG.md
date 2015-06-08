@@ -1209,7 +1209,23 @@ But in practice this is not what people want and so this change iterates over pr
 in the order they are returned by Object.keys(obj), which is almost always the order
 in which the properties were defined.
 
+- **select:** due to [7fda214c](https://github.com/angular/angular.js/commit/7fda214c4f65a6a06b25cf5d5aff013a364e9cef),
 
+the `select` directive will now use strict comparison of the `ngModel` scope value against `option`
+values to determine which option is selected. This means `Number` scope values will not be matched
+against numeric option strings.
+In Angular 1.3.x, setting `scope.x = 200` would select the `option` with the value 200 in the following `select`:
+
+```
+<select ng-model="x">
+  <option value="100">100</option>
+  <option value="200">200</option>
+</select>
+```
+
+In Angular 1.4.x, the 'unknown option' will be selected. To remedy this, you can either initialize
+the model as a string - `scope.x = '200'` - or implement a parser on `ngModel` that converts
+the option string value to a `Number`.
 
 <a name="1.3.9"></a>
 # 1.3.9 multidimensional-awareness (2015-01-13)
