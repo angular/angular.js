@@ -66,10 +66,10 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
     return (nO.addClass && nO.addClass === cO.removeClass) || (nO.removeClass && nO.removeClass === cO.addClass);
   });
 
-  this.$get = ['$$rAF', '$rootScope', '$rootElement', '$document', '$$HashMap',
-               '$$animation', '$$AnimateRunner', '$templateRequest', '$$jqLite',
-       function($$rAF,   $rootScope,   $rootElement,   $document,   $$HashMap,
-                $$animation,   $$AnimateRunner,   $templateRequest,   $$jqLite) {
+  this.$get = ['$$rAF', '$rootScope', '$rootElement', '$$HashMap', '$$animation',
+               '$$AnimateRunner', '$templateRequest', '$$jqLite',
+       function($$rAF,   $rootScope,   $rootElement,   $$HashMap,   $$animation,
+                $$AnimateRunner,   $templateRequest,   $$jqLite) {
 
     var activeAnimationsLookup = new $$HashMap();
     var disabledElementsLookup = new $$HashMap();
@@ -105,7 +105,7 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
       }
     );
 
-    var bodyElement = jqLite($document[0].body);
+    var bodyElement = jqLite(document.body);
 
     var callbackRegistry = {};
 
