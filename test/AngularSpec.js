@@ -313,10 +313,18 @@ describe('angular', function() {
     it('should throw an exception if a Scope is being copied', inject(function($rootScope) {
       expect(function() { copy($rootScope.$new()); }).
           toThrowMinErr("ng", "cpws", "Can't copy! Making copies of Window or Scope instances is not supported.");
+      expect(function() { copy({child: $rootScope.$new()}, {}); }).
+          toThrowMinErr("ng", "cpws", "Can't copy! Making copies of Window or Scope instances is not supported.");
+      expect(function() { copy([$rootScope.$new()]); }).
+          toThrowMinErr("ng", "cpws", "Can't copy! Making copies of Window or Scope instances is not supported.");
     }));
 
     it('should throw an exception if a Window is being copied', function() {
       expect(function() { copy(window); }).
+          toThrowMinErr("ng", "cpws", "Can't copy! Making copies of Window or Scope instances is not supported.");
+      expect(function() { copy({child: window}); }).
+          toThrowMinErr("ng", "cpws", "Can't copy! Making copies of Window or Scope instances is not supported.");
+      expect(function() { copy([window], []); }).
           toThrowMinErr("ng", "cpws", "Can't copy! Making copies of Window or Scope instances is not supported.");
     });
 
@@ -334,6 +342,11 @@ describe('angular', function() {
       hashKey(src);
       dst = copy(src);
       expect(hashKey(dst)).not.toEqual(hashKey(src));
+
+      src = {foo: {}};
+      hashKey(src.foo);
+      dst = copy(src);
+      expect(hashKey(src.foo)).not.toEqual(hashKey(dst.foo));
     });
 
     it('should retain the previous $$hashKey when copying object with hashKey', function() {
