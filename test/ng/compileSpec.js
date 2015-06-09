@@ -5844,7 +5844,9 @@ describe('$compile', function() {
 
             testCleanup();
 
-            expect(cleanedCount).toBe(xs.length);
+            // The ng-repeat template is removed/cleaned (the +1)
+            // and each clone of the ng-repeat template is also removed (xs.length)
+            expect(cleanedCount).toBe(xs.length + 1);
 
             // Restore the previous jQuery.cleanData.
             jQuery.cleanData = currentCleanData;
@@ -8586,5 +8588,127 @@ describe('$compile', function() {
         expect(element.hasClass('dice')).toBe(false);
         expect(element.hasClass('fire')).toBe(true);
       }));
+  });
+
+  describe('element replacement', function() {
+    it('should broadcast $destroy only on removed elements, not replaced', function() {
+      var linkCalls = [];
+      var destroyCalls = [];
+
+      module(function($compileProvider) {
+        $compileProvider.directive('replace', function() {
+          return {
+            multiElement: true,
+            replace: true,
+            templateUrl: 'template123'
+          };
+        });
+
+        $compileProvider.directive('foo', function() {
+          return {
+            priority: 1, // before the replace directive
+            link: function($scope, $element, $attrs) {
+              linkCalls.push($attrs.foo);
+              $element.on('$destroy', function() {
+                destroyCalls.push($attrs.foo);
+              });
+            }
+          };
+        });
+      });
+
+      inject(function($compile, $templateCache, $rootScope) {
+        $templateCache.put('template123', '<p></p>');
+
+        $compile(
+          '<div replace-start foo="1"><span foo="1.1"></span></div>' +
+          '<div foo="2"><span foo="2.1"></span></div>' +
+          '<div replace-end foo="3"><span foo="3.1"></span></div>'
+        )($rootScope);
+
+        expect(linkCalls).toEqual(['2', '3']);
+        expect(destroyCalls).toEqual([]);
+        $rootScope.$apply();
+        expect(linkCalls).toEqual(['2', '3', '1']);
+        expect(destroyCalls).toEqual(['2', '3']);
+      });
+    });
+
+    function getAll($root) {
+      // check for .querySelectorAll to support comment nodes
+      return [$root[0]].concat($root[0].querySelectorAll ? sliceArgs($root[0].querySelectorAll('*')) : []);
+    }
+
+    function testCompileLinkDataCleanup(template) {
+      inject(function($compile, $rootScope) {
+        var toCompile = jqLite(template);
+
+        var preCompiledChildren = getAll(toCompile);
+        forEach(preCompiledChildren, function(element, i) {
+          jqLite.data(element, 'foo', 'template#' + i);
+        });
+
+        var linkedElements = $compile(toCompile)($rootScope);
+        $rootScope.$apply();
+        linkedElements.remove();
+
+        forEach(preCompiledChildren, function(element, i) {
+          expect(jqLite.hasData(element)).toBe(false, "template#" + i);
+        });
+        forEach(getAll(linkedElements), function(element, i) {
+          expect(jqLite.hasData(element)).toBe(false, "linked#" + i);
+        });
+      });
+    }
+    it('should clean data of element-transcluded link-cloned elements', function() {
+      testCompileLinkDataCleanup('<div><div ng-repeat-start="i in [1,2]"><span></span></div><div ng-repeat-end></div></div>');
+    });
+    it('should clean data of element-transcluded elements', function() {
+      testCompileLinkDataCleanup('<div ng-if-start="false"><span><span/></div><span></span><div ng-if-end><span></span></div>');
+    });
+
+    function testReplaceElementCleanup(dirOptions) {
+      var template = '<div></div>';
+      module(function($compileProvider) {
+        $compileProvider.directive('theDir', function() {
+          return {
+            multiElement: true,
+            replace: dirOptions.replace,
+            transclude: dirOptions.transclude,
+            template: dirOptions.asyncTemplate ? undefined : template,
+            templateUrl: dirOptions.asyncTemplate ? 'the-dir-template-url' : undefined
+          };
+        });
+      });
+      inject(function($templateCache, $compile, $rootScope) {
+        $templateCache.put('the-dir-template-url', template);
+
+        testCompileLinkDataCleanup(
+          '<div>' +
+          '<div the-dir-start><span></span></div>' +
+          '<div><span></span><span></span></div>' +
+          '<div the-dir-end><span></span></div>' +
+          '</div>'
+        );
+      });
+    }
+    it('should clean data of elements removed for directive template', function() {
+      testReplaceElementCleanup({});
+    });
+    it('should clean data of elements removed for directive templateUrl', function() {
+      testReplaceElementCleanup({asyncTmeplate: true});
+    });
+    it('should clean data of elements transcluded into directive template', function() {
+      testReplaceElementCleanup({transclude: true});
+    });
+    it('should clean data of elements transcluded into directive templateUrl', function() {
+      testReplaceElementCleanup({transclude: true, asyncTmeplate: true});
+    });
+    it('should clean data of elements replaced with directive template', function() {
+      testReplaceElementCleanup({replace: true});
+    });
+    it('should clean data of elements replaced with directive templateUrl', function() {
+      testReplaceElementCleanup({replace: true, asyncTemplate: true});
+    });
   });
 });
