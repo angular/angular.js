@@ -2998,7 +2998,7 @@ describe('$compile', function() {
 
       // Create and register the MutationObserver
       var observer = new window.MutationObserver(noop);
-      observer.observe(document.body, {childList: true, sublist: true});
+      observer.observe(document.body, {childList: true, subtree: true});
 
       // Run the actual test
       var base = jqLite('<div>&mdash; {{ "This doesn\'t." }}</div>');
