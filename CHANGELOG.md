@@ -1223,9 +1223,19 @@ In Angular 1.3.x, setting `scope.x = 200` would select the `option` with the val
 </select>
 ```
 
-In Angular 1.4.x, the 'unknown option' will be selected. To remedy this, you can either initialize
-the model as a string - `scope.x = '200'` - or implement a parser on `ngModel` that converts
-the option string value to a `Number`.
+In Angular 1.4.x, the 'unknown option' will be selected.
+To remedy this, you can simply initialize the model as a string: `scope.x = '200'`, or if you want to
+keep the model as a `Number`, you can do the conversion via `$formatters` and `$parsers` on `ngModel`:
+
+```js
+ngModelCtrl.$parsers.push(function(value) {
+  return parseInt(value, 10); // Convert option value to number
+});
+
+ngModelCtrl.$formatters.push(function(value) {
+  return value.toString(); // Convert scope value to string
+});
+```
 
 <a name="1.3.9"></a>
 # 1.3.9 multidimensional-awareness (2015-01-13)

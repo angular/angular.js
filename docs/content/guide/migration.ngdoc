@@ -178,8 +178,8 @@ have been fixed. The breaking changes are comparatively minor and should not aff
 Due to [7fda214c](https://github.com/angular/angular.js/commit/7fda214c4f65a6a06b25cf5d5aff013a364e9cef),
 when `ngOptions` renders the option values within the DOM, the resulting HTML code is different.
 Normally this should not affect your application at all, however, if your code relies on inspecting
-the value property of `<option>` elements (that `ngOptions` generates) then be sure to [read the details]
-(https://github.com/angular/angular.js/commit/7fda214c4f65a6a06b25cf5d5aff013a364e9cef).
+the value property of `<option>` elements (that `ngOptions` generates) then be sure
+to [read the details](https://github.com/angular/angular.js/commit/7fda214c4f65a6a06b25cf5d5aff013a364e9cef).
 
 Due to [7fda214c](https://github.com/angular/angular.js/commit/7fda214c4f65a6a06b25cf5d5aff013a364e9cef),
 when iterating over an object's properties using the `(key, value) in obj` syntax
@@ -205,9 +205,19 @@ In Angular 1.3.x, setting `scope.x = 200` would select the option with the value
 </select>
 ```
 
-In Angular 1.4.x, the 'unknown option' will be selected. To remedy this, you can either initialize
-the model as a string - `scope.x = '200'` - or implement a parser on `ngModel` that converts
-the option string value to a `Number`.
+In Angular 1.4.x, the 'unknown option' will be selected.
+To remedy this, you can simply initialize the model as a string: `scope.x = '200'`, or if you want to
+keep the model as a `Number`, you can do the conversion via `$formatters` and `$parsers` on `ngModel`:
+
+```js
+ngModelCtrl.$parsers.push(function(value) {
+  return parseInt(value, 10); // Convert option value to number
+});
+
+ngModelCtrl.$formatters.push(function(value) {
+  return value.toString(); // Convert scope value to string
+});
+```
 
 ## Templating (`ngRepeat`, `$compile`)
 
