@@ -23,13 +23,17 @@ function $HttpParamSerializerProvider() {
    * @name $httpParamSerializer
    * @description
    *
-   * Default $http params serializer that converts objects to a part of a request URL
+   * Default {@link $http `$http`} params serializer that converts objects to strings
    * according to the following rules:
+   *
    * * `{'foo': 'bar'}` results in `foo=bar`
    * * `{'foo': Date.now()}` results in `foo=2015-04-01T09%3A50%3A49.262Z` (`toISOString()` and encoded representation of a Date object)
    * * `{'foo': ['bar', 'baz']}` results in `foo=bar&foo=baz` (repeated key for each array element)
    * * `{'foo': {'bar':'baz'}}` results in `foo=%7B%22bar%22%3A%22baz%22%7D"` (stringified and encoded representation of an object)
+   *
+   * Note that serializer will sort the request parameters alphabetically.
    * */
+
   this.$get = function() {
     return function ngParamSerializer(params) {
       if (!params) return '';
@@ -56,7 +60,43 @@ function $HttpParamSerializerJQLikeProvider() {
    * @name $httpParamSerializerJQLike
    * @description
    *
-   * Alternative $http params serializer that follows jQuery's [`param()`](http://api.jquery.com/jquery.param/) method logic.
+   * Alternative {@link $http `$http`} params serializer that follows
+   * jQuery's [`param()`](http://api.jquery.com/jquery.param/) method logic.
+   * The serializer will also sort the params alphabetically.
+   *
+   * To use it for serializing `$http` request parameters, set it as the `paramSerializer` property:
+   *
+   * ```js
+   * $http({
+   *   url: myUrl,
+   *   method: 'GET',
+   *   params: myParams,
+   *   paramSerializer: '$httpParamSerializerJQLike'
+   * });
+   * ```
+   *
+   * It is also possible to set it as the default `paramSerializer` in the
+   * {@link $httpProvider#defaults `$httpProvider`}.
+   *
+   * Additionally, you can inject the serializer and use it explicitly, for example to serialize
+   * form data for submission:
+   *
+   * ```js
+   * .controller(function($http, $httpParamSerializerJQLike) {
+   *   //...
+   *
+   *   $http({
+   *     url: myUrl,
+   *     method: 'POST',
+   *     data: $httpParamSerializerJQLike(myData),
+   *     headers: {
+   *       'Content-Type': 'application/x-www-form-urlencoded'
+   *     }
+   *   });
+   *
+   * });
+   * ```
+   *
    * */
   this.$get = function() {
     return function jQueryLikeParamSerializer(params) {
@@ -230,10 +270,11 @@ function $HttpProvider() {
    *     - **`defaults.headers.put`**
    *     - **`defaults.headers.patch`**
    *
-   * - **`defaults.paramSerializer`** - {string|function(Object<string,string>):string} - A function used to prepare string representation
-   * of request parameters (specified as an object).
-   * If specified as string, it is interpreted as a function registered with the {@link auto.$injector $injector}.
-   * Defaults to {@link ng.$httpParamSerializer $httpParamSerializer}.
+   *
+   * - **`defaults.paramSerializer`** - `{string|function(Object<string,string>):string}` - A function
+   *  used to the prepare string representation of request parameters (specified as an object).
+   *  If specified as string, it is interpreted as a function registered with the {@link auto.$injector $injector}.
+   *  Defaults to {@link ng.$httpParamSerializer $httpParamSerializer}.
    *
    **/
   var defaults = this.defaults = {
@@ -708,9 +749,8 @@ function $HttpProvider() {
      *
      *    - **method** – `{string}` – HTTP method (e.g. 'GET', 'POST', etc)
      *    - **url** – `{string}` – Absolute or relative URL of the resource that is being requested.
-     *    - **params** – `{Object.<string|Object>}` – Map of strings or objects which will be turned
-     *      to `?key1=value1&key2=value2` after the url. If the value is not a string, it will be
-     *      JSONified.
+     *    - **params** – `{Object.<string|Object>}` – Map of strings or objects which will be serialized
+     *      with the `paramSerializer` and appended as GET parameters.
      *    - **data** – `{string|Object}` – Data to be sent as the request message data.
      *    - **headers** – `{Object}` – Map of strings or functions which return strings representing
      *      HTTP headers to send to the server. If the return value of a function is null, the
@@ -728,10 +768,14 @@ function $HttpProvider() {
      *      transform function or an array of such functions. The transform function takes the http
      *      response body, headers and status and returns its transformed (typically deserialized) version.
      *      See {@link ng.$http#overriding-the-default-transformations-per-request
-     *      Overriding the Default Transformations}
-     *    - **paramSerializer** - {string|function(Object<string,string>):string} - A function used to prepare string representation
-     *      of request parameters (specified as an object).
-     *      Is specified as string, it is interpreted as function registered in with the {$injector}.
+     *      Overriding the Default TransformationjqLiks}
+     *    - **paramSerializer** - `{string|function(Object<string,string>):string}` - A function used to
+     *      prepare the string representation of request parameters (specified as an object).
+     *      If specified as string, it is interpreted as function registered with the
+     *      {@link $injector $injector}, which means you can create your own serializer
+     *      by registering it as a {@link auto.$provide#service service}.
+     *      The default serializer is the {@link $httpParamSerializer $httpParamSerializer};
+     *      alternatively, you can use the {@link $httpParamSerializerJQLike $httpParamSerializerJQLike}
      *    - **cache** – `{boolean|Cache}` – If true, a default $http cache will be used to cache the
      *      GET request, otherwise if a cache instance built with
      *      {@link ng.$cacheFactory $cacheFactory}, this cache will be used for
