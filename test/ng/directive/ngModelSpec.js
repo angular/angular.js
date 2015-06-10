@@ -1091,6 +1091,31 @@ describe('ngModel', function() {
       }));
 
 
+      it('should be possible to extend Object prototype and still be able to do form validation',
+        inject(function($compile, $rootScope) {
+        Object.prototype.someThing = function() {};
+        var element = $compile('<form name="myForm">' +
+                                 '<input type="text" name="username" ng-model="username" minlength="10" required />' +
+                               '</form>')($rootScope);
+        var inputElm = element.find('input');
+
+        var formCtrl = $rootScope.myForm;
+        var usernameCtrl = formCtrl.username;
+
+        $rootScope.$digest();
+        expect(usernameCtrl.$invalid).toBe(true);
+        expect(formCtrl.$invalid).toBe(true);
+
+        usernameCtrl.$setViewValue('valid-username');
+        $rootScope.$digest();
+
+        expect(usernameCtrl.$invalid).toBe(false);
+        expect(formCtrl.$invalid).toBe(false);
+        delete Object.prototype.someThing;
+
+        dealoc(element);
+      }));
+
       it('should re-evaluate the form validity state once the asynchronous promise has been delivered',
         inject(function($compile, $rootScope, $q) {
 
