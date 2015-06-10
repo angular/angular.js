@@ -185,6 +185,7 @@ var ngSwitchDirective = ['$animate', function($animate) {
 var ngSwitchWhenDirective = ngDirective({
   transclude: 'element',
   priority: 1200,
+  terminal: true,
   require: '^ngSwitch',
   multiElement: true,
   link: function(scope, element, attrs, ctrl, $transclude) {
@@ -196,6 +197,7 @@ var ngSwitchWhenDirective = ngDirective({
 var ngSwitchDefaultDirective = ngDirective({
   transclude: 'element',
   priority: 1200,
+  terminal: true,
   require: '^ngSwitch',
   multiElement: true,
   link: function(scope, element, attr, ctrl, $transclude) {
