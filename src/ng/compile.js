@@ -1498,7 +1498,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
             attr = nAttrs[j];
             name = attr.name;
-            value = trim(attr.value);
+            value = attr.value;
 
             // support ngAttr attribute binding
             ngAttrName = directiveNormalize(name);
