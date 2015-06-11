@@ -780,9 +780,6 @@ describe('$location', function() {
         inject(function($rootScope, $injector, $browser) {
           var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
 
-          $browser.url('http://server/app');
-          $browser.poll();
-
           var $location = $injector.get('$location');
           updatePathOnLocationChangeSuccessTo('/Home');
 
@@ -799,9 +796,6 @@ describe('$location', function() {
         mockUpBrowser({initialUrl:'http://server/app/', baseHref:'/app/'});
         inject(function($rootScope, $injector, $browser) {
           var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
-
-          $browser.url('http://server/app');
-          $browser.poll();
 
           var $location = $injector.get('$location');
           updatePathOnLocationChangeSuccessTo('/');
@@ -820,9 +814,6 @@ describe('$location', function() {
         inject(function($rootScope, $injector, $browser) {
           var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
 
-          $browser.url('http://server/app/');
-          $browser.poll();
-
           var $location = $injector.get('$location');
           updatePathOnLocationChangeSuccessTo('/Home');
 
@@ -839,9 +830,6 @@ describe('$location', function() {
         mockUpBrowser({initialUrl:'http://server/app/', baseHref:'/app/'});
         inject(function($rootScope, $injector, $browser) {
           var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
-
-          $browser.url('http://server/app/');
-          $browser.poll();
 
           var $location = $injector.get('$location');
           updatePathOnLocationChangeSuccessTo('/');
