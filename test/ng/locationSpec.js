@@ -663,6 +663,22 @@ describe('$location', function() {
       });
     });
 
+
+    it('should not get caught in infinite digest when replacing path in locationChangeSuccess handler', function() {
+      initService({html5Mode:true,supportHistory:false});
+      mockUpBrowser({initialUrl:'http://server/base/home', baseHref:'/base/'});
+      inject(
+        function($browser, $location, $rootScope, $window) {
+          $rootScope.$on('$locationChangeSuccess', function() {
+            if ($location.path() !== '/') {
+                $location.path('/').replace();
+            }
+          });
+          $rootScope.$digest();
+        }
+      );
+    });
+
     it('should not infinitely digest when using a semicolon in initial path', function() {
       initService({html5Mode:true,supportHistory:true});
       mockUpBrowser({initialUrl:'http://localhost:9876/;jsessionid=foo', baseHref:'/'});
@@ -672,6 +688,162 @@ describe('$location', function() {
         }).not.toThrow();
       });
     });
+
+
+    function updatePathOnLocationChangeSuccessTo(newPath) {
+      inject(function($rootScope, $location) {
+        $rootScope.$on('$locationChangeSuccess', function(event, newUrl, oldUrl) {
+          $location.path(newPath);
+        });
+      });
+    }
+
+
+    describe('location watch for hashbang browsers', function() {
+
+      it('should not infinite $digest when going to base URL without trailing slash when $locationChangeSuccess watcher changes path to /Home', function() {
+        initService({html5Mode: true, supportHistory: false});
+        mockUpBrowser({initialUrl:'http://server/app/', baseHref:'/app/'});
+        inject(function($rootScope, $location, $browser) {
+          var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+
+          updatePathOnLocationChangeSuccessTo('/Home');
+
+          $rootScope.$digest();
+
+          expect($browser.url()).toEqual('http://server/app/#/Home');
+          expect($location.path()).toEqual('/Home');
+          expect($browserUrl.calls.length).toEqual(1);
+        });
+      });
+
+      it('should not infinite $digest when going to base URL without trailing slash when $locationChangeSuccess watcher changes path to /', function() {
+        initService({html5Mode: true, supportHistory: false});
+        mockUpBrowser({initialUrl:'http://server/app/Home', baseHref:'/app/'});
+        inject(function($rootScope, $location, $browser, $window) {
+          var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+
+          updatePathOnLocationChangeSuccessTo('/');
+
+          $rootScope.$digest();
+
+          expect($browser.url()).toEqual('http://server/app/#/');
+          expect($location.path()).toEqual('/');
+          expect($browserUrl.calls.length).toEqual(1);
+          expect($browserUrl.calls[0].args).toEqual(['http://server/app/#/', false, null]);
+        });
+      });
+
+      it('should not infinite $digest when going to base URL with trailing slash when $locationChangeSuccess watcher changes path to /Home', function() {
+        initService({html5Mode: true, supportHistory: false});
+        mockUpBrowser({initialUrl:'http://server/app/', baseHref:'/app/'});
+        inject(function($rootScope, $location, $browser) {
+          var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+
+          updatePathOnLocationChangeSuccessTo('/Home');
+          $rootScope.$digest();
+
+          expect($browser.url()).toEqual('http://server/app/#/Home');
+          expect($location.path()).toEqual('/Home');
+          expect($browserUrl.calls.length).toEqual(1);
+          expect($browserUrl.calls[0].args).toEqual(['http://server/app/#/Home', false, null]);
+        });
+      });
+
+      it('should not infinite $digest when going to base URL with trailing slash when $locationChangeSuccess watcher changes path to /', function() {
+        initService({html5Mode: true, supportHistory: false});
+        mockUpBrowser({initialUrl:'http://server/app/', baseHref:'/app/'});
+        inject(function($rootScope, $location, $browser) {
+          var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+
+          updatePathOnLocationChangeSuccessTo('/');
+          $rootScope.$digest();
+
+          expect($browser.url()).toEqual('http://server/app/#/');
+          expect($location.path()).toEqual('/');
+          expect($browserUrl.calls.length).toEqual(1);
+        });
+      });
+    });
+
+
+    describe('location watch for HTML5 browsers', function() {
+      beforeEach(initService({html5Mode: true, supportHistory: true}));
+      beforeEach(inject(initBrowser({basePath: '/app/'})));
+
+      it('should not infinite $digest when going to base URL without trailing slash when $locationChangeSuccess watcher changes path to /Home', function() {
+        inject(function($rootScope, $injector, $browser) {
+          var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+
+          $browser.url('http://server/app');
+          $browser.poll();
+
+          var $location = $injector.get('$location');
+          updatePathOnLocationChangeSuccessTo('/Home');
+
+          $rootScope.$digest();
+
+          expect($browser.url()).toEqual('http://server/app/Home');
+          expect($location.path()).toEqual('/Home');
+          expect($browserUrl.calls.length).toEqual(3);
+        });
+      });
+
+      it('should not infinite $digest when going to base URL without trailing slash when $locationChangeSuccess watcher changes path to /', function() {
+        inject(function($rootScope, $injector, $browser) {
+          var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+
+          $browser.url('http://server/app');
+          $browser.poll();
+
+          var $location = $injector.get('$location');
+          updatePathOnLocationChangeSuccessTo('/');
+
+          $rootScope.$digest();
+
+          expect($browser.url()).toEqual('http://server/app/');
+          expect($location.path()).toEqual('/');
+          expect($browserUrl.calls.length).toEqual(2);
+        });
+      });
+
+      it('should not infinite $digest when going to base URL with trailing slash when $locationChangeSuccess watcher changes path to /Home', function() {
+        inject(function($rootScope, $injector, $browser) {
+          var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+
+          $browser.url('http://server/app/');
+          $browser.poll();
+
+          var $location = $injector.get('$location');
+          updatePathOnLocationChangeSuccessTo('/Home');
+
+          $rootScope.$digest();
+
+          expect($browser.url()).toEqual('http://server/app/Home');
+          expect($location.path()).toEqual('/Home');
+          expect($browserUrl.calls.length).toEqual(2);
+        });
+      });
+
+      it('should not infinite $digest when going to base URL with trailing slash when $locationChangeSuccess watcher changes path to /', function() {
+        inject(function($rootScope, $injector, $browser) {
+          var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+
+          $browser.url('http://server/app/');
+          $browser.poll();
+
+          var $location = $injector.get('$location');
+          updatePathOnLocationChangeSuccessTo('/');
+
+          $rootScope.$digest();
+
+          expect($browser.url()).toEqual('http://server/app/');
+          expect($location.path()).toEqual('/');
+          expect($browserUrl.calls.length).toEqual(1);
+        });
+      });
+    });
+
   });
 
   describe('wiring', function() {
@@ -1037,6 +1209,49 @@ describe('$location', function() {
         initBrowser({url:'http://domain.com/base/index.html',basePath: '/base/index.html'}),
         function($browser, $location) {
           expect($browser.url()).toBe('http://domain.com/base/index.html#!/index.html');
+        }
+      );
+    });
+
+
+    function mockUpBrowser(options) {
+      module(function($windowProvider, $browserProvider) {
+        $windowProvider.$get = function() {
+          var win = {};
+          angular.extend(win, window);
+          win.addEventListener = angular.noop;
+          win.removeEventListener = angular.noop;
+          win.location = {
+            href: options.initialUrl,
+            replace: function(val) {
+              //win.location.href = val;
+            }
+          };
+          return win;
+        };
+        $browserProvider.$get = function($document, $window, $log, $sniffer) {
+          /* global Browser: false */
+          var b = new Browser($window, $document, $log, $sniffer);
+          b.baseHref = function() {
+            return options.baseHref;
+          };
+          return b;
+        };
+      });
+    }
+
+
+    it('should not get caught in infinite digest when replacing empty path with slash', function() {
+      initService({html5Mode:true,supportHistory:false});
+      mockUpBrowser({initialUrl:'http://server/base', baseHref:'/base/'});
+      inject(
+        function($browser, $location, $rootScope, $window) {
+          $rootScope.$on('$locationChangeSuccess', function() {
+            if ($location.path() !== '/') {
+                $location.path('/').replace();
+            }
+          });
+          $rootScope.$digest();
         }
       );
     });
