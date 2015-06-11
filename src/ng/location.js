@@ -891,7 +891,7 @@ function $LocationProvider() {
       $browser.url($location.absUrl(), true);
     }
 
-    var initializing = true;
+    var initializing = true, previousOldUrl = null, previousNewUrl = null;
 
     // update $location when $browser url changes
     $browser.onUrlChange(function(newUrl, newState) {
@@ -934,26 +934,35 @@ function $LocationProvider() {
       if (initializing || urlOrStateChanged) {
         initializing = false;
 
-        $rootScope.$evalAsync(function() {
-          var newUrl = $location.absUrl();
-          var defaultPrevented = $rootScope.$broadcast('$locationChangeStart', newUrl, oldUrl,
-              $location.$$state, oldState).defaultPrevented;
+        if ((previousOldUrl !== oldUrl) || (previousNewUrl !== newUrl)) {
+          previousOldUrl = oldUrl, previousNewUrl = newUrl;
 
-          // if the location was changed by a `$locationChangeStart` handler then stop
-          // processing this location change
-          if ($location.absUrl() !== newUrl) return;
+          $rootScope.$evalAsync(function() {
+            var newUrl = $location.absUrl();
+            var defaultPrevented = $rootScope.$broadcast('$locationChangeStart', newUrl, oldUrl,
+                $location.$$state, oldState).defaultPrevented;
 
-          if (defaultPrevented) {
-            $location.$$parse(oldUrl);
-            $location.$$state = oldState;
-          } else {
-            if (urlOrStateChanged) {
-              setBrowserUrlWithFallback(newUrl, currentReplace,
-                                        oldState === $location.$$state ? null : $location.$$state);
+            // if the location was changed by a `$locationChangeStart` handler then stop
+            // processing this location change
+            if ($location.absUrl() !== newUrl) return;
+
+            if (defaultPrevented) {
+              $location.$$parse(oldUrl);
+              $location.$$state = oldState;
+            } else {
+              if (urlOrStateChanged) {
+                setBrowserUrlWithFallback(newUrl, currentReplace,
+                                          oldState === $location.$$state ? null : $location.$$state);
+              }
+              afterLocationChange(oldUrl, oldState);
             }
-            afterLocationChange(oldUrl, oldState);
-          }
-        });
+          });
+        } else {
+          $browser.forceReloadLocationUpdate(newUrl);
+          previousOldUrl = previousNewUrl = false;
+        }
+      } else {
+        previousOldUrl = previousNewUrl = false;
       }
 
       $location.$$replace = false;

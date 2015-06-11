@@ -23,17 +23,20 @@ angular.mock = {};
  * that there are several helper methods available which can be used in tests.
  */
 angular.mock.$BrowserProvider = function() {
-  this.$get = function() {
-    return new angular.mock.$Browser();
-  };
+  this.$get = ['$sniffer', function($sniffer) {
+    return new angular.mock.$Browser($sniffer);
+  }];
 };
 
-angular.mock.$Browser = function() {
+angular.mock.$Browser = function($sniffer) {
   var self = this;
 
   this.isMock = true;
   self.$$url = "http://server/";
   self.$$lastUrl = self.$$url; // used by url polling fn
+  self.$$reloadLocation = null;
+  self.$$sniffer = $sniffer;
+  self.$$simulateLocationUpdate = false;
   self.pollFns = [];
 
   // TODO(vojta): remove this temporary api
@@ -46,9 +49,11 @@ angular.mock.$Browser = function() {
   self.onUrlChange = function(listener) {
     self.pollFns.push(
       function() {
-        if (self.$$lastUrl !== self.$$url || self.$$state !== self.$$lastState) {
-          self.$$lastUrl = self.$$url;
+        var currUrl = self.$$reloadLocation || self.$$url;
+        if (self.$$simulateLocationUpdate || self.$$lastUrl !== currUrl || self.$$state !== self.$$lastState) {
+          self.$$lastUrl = currUrl;
           self.$$lastState = self.$$state;
+          self.$$simulateLocationUpdate = false;
           listener(self.$$url, self.$$state);
         }
       }
@@ -150,20 +155,43 @@ angular.mock.$Browser.prototype = {
       state = null;
     }
     if (url) {
+      var sameState = this.$$lastState === state;
+
+      if (this.$$lastUrl === url && (!this.$$sniffer.history || sameState)) {
+        return this;
+      }
+
+      var index = this.$$lastUrl.indexOf('#');
+      var lastUrlStripped = (index === -1 ? this.$$lastUrl : this.$$lastUrl.substr(0, index));
+      index = url.indexOf('#');
+      var urlStripped = (index === -1 ? url : url.substr(0, index));
+
+      this.$$lastState = angular.copy(state);
+
+      var sameBase = this.$$lastUrl && lastUrlStripped === urlStripped;
+      if (this.$$sniffer.history && (!sameBase || !sameState)) {
+        // Native pushState serializes & copies the object; simulate it.
+        this.$$state = angular.copy(state);
+        this.$$lastState = this.$$state;
+      }
+      if (!sameBase) {
+        this.$$reloadLocation = url;
+      }
       this.$$url = url;
-      // Native pushState serializes & copies the object; simulate it.
-      this.$$state = angular.copy(state);
+      this.$$lastUrl = url;
+      this.$$simulateLocationUpdate = true;
+
       return this;
     }
 
-    return this.$$url;
+    return this.$$reloadLocation || this.$$url;
   },
 
   state: function() {
     return this.$$state;
   },
 
-  cookies:  function(name, value) {
+  cookies: function(name, value) {
     if (name) {
       if (angular.isUndefined(value)) {
         delete this.cookieHash[name];
@@ -184,6 +212,12 @@ angular.mock.$Browser.prototype = {
 
   notifyWhenNoOutstandingRequests: function(fn) {
     fn();
+  },
+  
+  forceReloadLocationUpdate: function(url) {
+    if (this.$$reloadLocation) {
+      this.$$reloadLocation = url;
+    }
   }
 };
 
