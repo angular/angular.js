@@ -2989,6 +2989,53 @@ describe('input', function() {
       expect(inputElm[0].checked).toBe(false);
       expect(inputElm[1].checked).toBe(false);
     });
+
+
+    it('should allow the use of ngTrim', function() {
+      $rootScope.some = 11;
+      var inputElm = helper.compileInput(
+          '<input type="radio" ng-model="value" value="opt1" />' +
+          '<input type="radio" ng-model="value" value="  opt2  " />' +
+          '<input type="radio" ng-model="value" ng-trim="false" value="  opt3  " />' +
+          '<input type="radio" ng-model="value" ng-trim="false" value="{{some}}" />' +
+          '<input type="radio" ng-model="value" ng-trim="false" value="  {{some}}  " />');
+
+      $rootScope.$apply(function() {
+        $rootScope.value = 'blue';
+        $rootScope.some = 'blue';
+      });
+
+      expect(inputElm[0].checked).toBe(false);
+      expect(inputElm[1].checked).toBe(false);
+      expect(inputElm[2].checked).toBe(false);
+      expect(inputElm[3].checked).toBe(true);
+      expect(inputElm[4].checked).toBe(false);
+
+      browserTrigger(inputElm[1], 'click');
+      expect($rootScope.value).toBe('opt2');
+      browserTrigger(inputElm[2], 'click');
+      expect($rootScope.value).toBe('  opt3  ');
+      browserTrigger(inputElm[3], 'click');
+      expect($rootScope.value).toBe('blue');
+      browserTrigger(inputElm[4], 'click');
+      expect($rootScope.value).toBe('  blue  ');
+
+      $rootScope.$apply("value = '  opt2  '");
+      expect(inputElm[1].checked).toBe(false);
+      $rootScope.$apply("value = 'opt2'");
+      expect(inputElm[1].checked).toBe(true);
+      $rootScope.$apply("value = '  opt3  '");
+      expect(inputElm[2].checked).toBe(true);
+      $rootScope.$apply("value = 'opt3'");
+      expect(inputElm[2].checked).toBe(false);
+
+      $rootScope.$apply("value = 'blue'");
+      expect(inputElm[3].checked).toBe(true);
+      expect(inputElm[4].checked).toBe(false);
+      $rootScope.$apply("value = '  blue  '");
+      expect(inputElm[3].checked).toBe(false);
+      expect(inputElm[4].checked).toBe(true);
+    });
   });
 
 
