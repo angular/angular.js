@@ -2330,6 +2330,9 @@ describe('$location', function() {
       $windowProvider.$get = function() {
         var win = {};
         angular.extend(win, window);
+        // Ensure `window` is a reference to the mock global object, so that
+        // jqLite does the right thing.
+        win.window = win;
         win.history = {
           state: options.state || null,
           replaceState: function(state, title, url) {
