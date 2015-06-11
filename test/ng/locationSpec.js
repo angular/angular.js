@@ -2330,6 +2330,9 @@ describe('$location', function() {
       $windowProvider.$get = function() {
         var win = {};
         angular.extend(win, window);
+        // Work around Window `length` attribute which prevents jqLite() from
+        // wrapping around the Window node
+        delete win.length;
         win.history = {
           state: options.state || null,
           replaceState: function(state, title, url) {
