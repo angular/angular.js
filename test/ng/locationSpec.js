@@ -404,6 +404,12 @@ describe('$location', function() {
       }).toThrowMinErr('$location', 'ipthprfx', 'Invalid url "http://server.org/path#/path", missing path prefix "http://server.org/base/".');
     });
 
+    it('should throw error when base url given with wrong case', function() {
+      url = new LocationHtml5Url('http://server.org/base/abc', '/base');
+      expect(function() {
+        url.$$parse('http://server.org/Base/efg');
+      }).toThrowMinErr('$location', 'wrgcase', 'Invalid url "http://server.org/Base/efg", base path is expected case sensitive');
+    });
 
     describe('state', function() {
       it('should set $$state and return itself', function() {
@@ -573,6 +579,13 @@ describe('$location', function() {
       expect(url.hash()).toBe('');
     });
 
+    it('should throw error when base of hashbang url given with wrong case', function() {
+      url = new LocationHashbangUrl('http://www.server.org:1234/base', '#!');
+      expect(function() {
+        url.$$parse('http://www.server.org:1234/Base#!/path?a=b&c#hash');
+      }).toThrowMinErr('$location', 'wrgcase',
+        'Invalid url "http://www.server.org:1234/Base#!/path?a=b&c#hash", base path is expected case sensitive');
+    });
 
     describe('encoding', function() {
 
@@ -687,7 +700,6 @@ describe('$location', function() {
     beforeEach(initService({html5Mode:false,hashPrefix: '!',supportHistory: true}));
     beforeEach(inject(initBrowser({url:'http://new.com/a/b#!',basePath: 'http://new.com/a/b'})));
 
-
     it('should update $location when browser url changes', inject(function($browser, $location) {
       spyOn($location, '$$parse').andCallThrough();
       $browser.url('http://new.com/a/b#!/aaa');
@@ -801,6 +813,15 @@ describe('$location', function() {
 
       $rootScope.$digest();
       expect($browser.url()).toBe('http://new.com/a/b#!/changed');
+    }));
+
+    it('should throw error when case of base url is not matched', inject(function($browser, $location) {
+      spyOn($location, '$$parse').andCallThrough();
+      expect(function() {
+        $browser.url('http://new.com/A/b#!/aaa');
+        $browser.poll();
+      }).toThrowMinErr('$location', 'wrgcase',
+        'Invalid url "http://new.com/A/b#!/aaa", base path is expected case sensitive');
     }));
   });
 
@@ -2177,6 +2198,13 @@ describe('$location', function() {
     it('should support state', function() {
       expect(location.state({a: 2}).state()).toEqual({a: 2});
     });
+
+    iit('should throw error when case of base url is not matched',
+          function() {
+      expect(function () {
+        location.$$parse('http://server/Pre/index.html');
+      }).toThrowMinErr('$location', 'wrgcase', 'Invalid url "http://server/Pre/index.html", base path is expected case sensitive');
+    });
   });
 
 
@@ -2246,6 +2274,14 @@ describe('$location', function() {
     it('should throw on url(urlString, stateObject)', function() {
       throwOnState(location);
     });
+
+    iit('should throw error when case of base url is not matched',
+        function() {
+      location = new LocationHashbangUrl('http://server/pre/index.html', '#');
+      expect(function () {
+        location.$$parse('http://server/Pre/index.html');
+      }).toThrowMinErr('$location', 'wrgcase', 'Invalid url "http://server/Pre/index.html", base path is expected case sensitive');
+    });
   });
 
 
@@ -2275,6 +2311,13 @@ describe('$location', function() {
 
     it('should throw on url(urlString, stateObject)', function() {
       throwOnState(location);
+    });
+
+    iit('should throw error when case of base url is not matched',
+      function() {
+        expect(function () {
+            location.$$parse('http://server/Pre/index.html');
+        }).toThrowMinErr('$location', 'wrgcase', 'Invalid url "http://server/Pre/index.html", base path is expected case sensitive');
     });
   });
 });
