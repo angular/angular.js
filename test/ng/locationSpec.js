@@ -787,7 +787,7 @@ describe('$location', function() {
 
           expect($browser.url()).toEqual('http://server/app/Home');
           expect($location.path()).toEqual('/Home');
-          expect($browserUrl.calls.length).toEqual(3);
+          expect($browserUrl.calls.length).toEqual(1);
         });
       });
 
@@ -804,7 +804,7 @@ describe('$location', function() {
 
           expect($browser.url()).toEqual('http://server/app/');
           expect($location.path()).toEqual('/');
-          expect($browserUrl.calls.length).toEqual(2);
+          expect($browserUrl.calls.length).toEqual(0);
         });
       });
 
@@ -821,7 +821,7 @@ describe('$location', function() {
 
           expect($browser.url()).toEqual('http://server/app/Home');
           expect($location.path()).toEqual('/Home');
-          expect($browserUrl.calls.length).toEqual(2);
+          expect($browserUrl.calls.length).toEqual(1);
         });
       });
 
@@ -838,7 +838,7 @@ describe('$location', function() {
 
           expect($browser.url()).toEqual('http://server/app/');
           expect($location.path()).toEqual('/');
-          expect($browserUrl.calls.length).toEqual(1);
+          expect($browserUrl.calls.length).toEqual(0);
         });
       });
     });
