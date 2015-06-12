@@ -2237,7 +2237,8 @@ if (window.jasmine || window.mocha) {
 
     if (injector) {
       injector.get('$rootElement').off();
-      injector.get('$browser').pollFns.length = 0;
+      var $browser = injector.get('$browser');
+      if ($browser.pollFns) $browser.pollFns.length = 0;
     }
 
     // clean up jquery's fragment cache
