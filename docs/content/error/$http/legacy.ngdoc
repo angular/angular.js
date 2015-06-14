@@ -1,0 +1,45 @@
+@ngdoc error
+@name $http:legacy
+@fullName The `success` and `error` methods on the promise returned from `$http` have been disabled.
+@description
+
+This error occurs when the legacy promise extensions (`success` and `error`)
+{@link $httpProvider#useLegacyPromiseExtensions legacy `$http` promise extensions} have been disabled.
+
+To resolve this error, either turn on the legacy extensions by adding
+`$httpProvider.useLegacyPromiseExtensions(true);` to your application's configuration; or refactor you
+use of `$http` to use `.then()` rather than `.success()` and `.error()`.
+
+For example if you code looked like this:
+
+```js
+// Simple GET request example :
+$http.get('/someUrl').
+   success(function(data, status, headers, config) {
+      // This callback will be called asynchronously
+      // when the response is available
+  }).
+  error(function(data, status, headers, config) {
+    // called asynchronously if an error occurs
+    // or server returns response with an error status.
+  });
+```
+
+then you would change it to look like:
+
+```js
+// Simple GET request example :
+$http.get('/someUrl').
+  then(function(response) {
+    // (The response object contains the data, status, headers and config properties)
+    // This callback will be called asynchronously
+    // when the response is available.
+  }, function(response) {
+    // called asynchronously if an error occurs
+    // or server returns response with an error status.
+  });
+```
+
+For more information, see the
+{@link $httpProvider#useLegacyPromiseExtensions `$httpProvider.useLegacyPromiseExtensions`}
+documentation.
