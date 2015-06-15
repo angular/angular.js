@@ -54,7 +54,7 @@ function prepareAnimateOptions(options) {
 }
 
 var $$CoreAnimateRunnerProvider = function() {
-  this.$get = ['$q', '$$rAF', function($q, $$rAF) {
+  this.$get = ['$q', '$$rAF', function(Q, $$rAF) {
     function AnimateRunner() {}
     AnimateRunner.all = noop;
     AnimateRunner.chain = noop;
@@ -65,7 +65,7 @@ var $$CoreAnimateRunnerProvider = function() {
       pause: noop,
       complete: noop,
       then: function(pass, fail) {
-        return new $q(function(resolve) {
+        return new Q(function(resolve) {
           $$rAF(function() {
             resolve();
           });
