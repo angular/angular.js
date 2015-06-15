@@ -430,7 +430,7 @@ To get the desired behaviour you need to iterate using the object form of the `n
 ## Breaking Changes
 
 - **$animate:** due to [c8700f04](https://github.com/angular/angular.js/commit/c8700f04fb6fb5dc21ac24de8665c0476d6db5ef),
-  JavaSript and CSS animations can no longer be run in
+  JavaScript and CSS animations can no longer be run in
 parallel. With earlier versions of ngAnimate, both CSS and JS animations
 would be run together when multiple animations were detected. This
 feature has now been removed, however, the same effect, with even more
