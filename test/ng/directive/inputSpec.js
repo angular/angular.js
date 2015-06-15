@@ -1917,6 +1917,71 @@ describe('input', function() {
     });
 
 
+    it('should parse exponential notation', function() {
+      var inputElm = helper.compileInput('<input type="number" name="alias" ng-model="value" />');
+
+      // #.###e+##
+      $rootScope.form.alias.$setViewValue("1.23214124123412412e+26");
+      expect(inputElm).toBeValid();
+      expect($rootScope.value).toBe(1.23214124123412412e+26);
+
+      // #.###e##
+      $rootScope.form.alias.$setViewValue("1.23214124123412412e26");
+      expect(inputElm).toBeValid();
+      expect($rootScope.value).toBe(1.23214124123412412e26);
+
+      // #.###e-##
+      $rootScope.form.alias.$setViewValue("1.23214124123412412e-26");
+      expect(inputElm).toBeValid();
+      expect($rootScope.value).toBe(1.23214124123412412e-26);
+
+      // ####e+##
+      $rootScope.form.alias.$setViewValue("123214124123412412e+26");
+      expect(inputElm).toBeValid();
+      expect($rootScope.value).toBe(123214124123412412e26);
+
+      // ####e##
+      $rootScope.form.alias.$setViewValue("123214124123412412e26");
+      expect(inputElm).toBeValid();
+      expect($rootScope.value).toBe(123214124123412412e26);
+
+      // ####e-##
+      $rootScope.form.alias.$setViewValue("123214124123412412e-26");
+      expect(inputElm).toBeValid();
+      expect($rootScope.value).toBe(123214124123412412e-26);
+
+      // #.###E+##
+      $rootScope.form.alias.$setViewValue("1.23214124123412412E+26");
+      expect(inputElm).toBeValid();
+      expect($rootScope.value).toBe(1.23214124123412412e+26);
+
+      // #.###E##
+      $rootScope.form.alias.$setViewValue("1.23214124123412412E26");
+      expect(inputElm).toBeValid();
+      expect($rootScope.value).toBe(1.23214124123412412e26);
+
+      // #.###E-##
+      $rootScope.form.alias.$setViewValue("1.23214124123412412E-26");
+      expect(inputElm).toBeValid();
+      expect($rootScope.value).toBe(1.23214124123412412e-26);
+
+      // ####E+##
+      $rootScope.form.alias.$setViewValue("123214124123412412E+26");
+      expect(inputElm).toBeValid();
+      expect($rootScope.value).toBe(123214124123412412e26);
+
+      // ####E##
+      $rootScope.form.alias.$setViewValue("123214124123412412E26");
+      expect(inputElm).toBeValid();
+      expect($rootScope.value).toBe(123214124123412412e26);
+
+      // ####E-##
+      $rootScope.form.alias.$setViewValue("123214124123412412E-26");
+      expect(inputElm).toBeValid();
+      expect($rootScope.value).toBe(123214124123412412e-26);
+    });
+
+
     describe('min', function() {
 
       it('should validate', function() {
