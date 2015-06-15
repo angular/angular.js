@@ -65,7 +65,7 @@ var $$CoreAnimateRunnerProvider = function() {
       pause: noop,
       complete: noop,
       then: function(pass, fail) {
-        return $q(function(resolve) {
+        return new $q(function(resolve) {
           $$rAF(function() {
             resolve();
           });
