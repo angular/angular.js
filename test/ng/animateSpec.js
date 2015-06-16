@@ -216,6 +216,108 @@ describe("$animate", function() {
 
       expect(element).toHaveClass('ng-hide');
     }));
+
+    they("should accept an unwrapped \"parent\" element for the $prop event",
+      ['enter', 'move'], function(method) {
+
+      inject(function($document, $animate, $rootElement) {
+        var element = jqLite('<div></div>');
+        var parent = $document[0].createElement('div');
+        $rootElement.append(parent);
+
+        $animate[method](element, parent);
+        expect(element[0].parentNode).toBe(parent);
+      });
+    });
+
+    they("should accept an unwrapped \"after\" element for the $prop event",
+      ['enter', 'move'], function(method) {
+
+      inject(function($document, $animate, $rootElement) {
+        var element = jqLite('<div></div>');
+        var after = $document[0].createElement('div');
+        $rootElement.append(after);
+
+        $animate[method](element, null, after);
+        expect(element[0].previousSibling).toBe(after);
+      });
+    });
+
+    they('$prop() should operate using a native DOM element',
+      ['enter', 'move', 'leave', 'addClass', 'removeClass', 'setClass', 'animate'], function(event) {
+
+      var captureSpy = jasmine.createSpy();
+
+      module(function($provide) {
+        $provide.value('$$animateQueue', {
+          push: captureSpy
+        });
+      });
+
+      inject(function($animate, $rootScope, $document, $rootElement) {
+        var element = jqLite('<div></div>');
+        var parent2 = jqLite('<div></div>');
+        var parent = $rootElement;
+        parent.append(parent2);
+
+        if (event !== 'enter' && event !== 'move') {
+          parent.append(element);
+        }
+
+        var fn, invalidOptions = function() { };
+
+        switch (event) {
+          case 'enter':
+          case 'move':
+            fn = function() {
+              $animate[event](element, parent, parent2, invalidOptions);
+            };
+            break;
+
+          case 'addClass':
+            fn = function() {
+              $animate.addClass(element, 'klass', invalidOptions);
+            };
+            break;
+
+          case 'removeClass':
+            element.className = 'klass';
+            fn = function() {
+              $animate.removeClass(element, 'klass', invalidOptions);
+            };
+            break;
+
+          case 'setClass':
+            element.className = 'two';
+            fn = function() {
+              $animate.setClass(element, 'one', 'two', invalidOptions);
+            };
+            break;
+
+          case 'leave':
+            fn = function() {
+              $animate.leave(element, invalidOptions);
+            };
+            break;
+
+          case 'animate':
+            var toStyles = { color: 'red' };
+            fn = function() {
+              $animate.animate(element, {}, toStyles, 'klass', invalidOptions);
+            };
+            break;
+        }
+
+        expect(function() {
+          fn();
+          $rootScope.$digest();
+        }).not.toThrow();
+
+        var optionsArg = captureSpy.mostRecentCall.args[2];
+        expect(optionsArg).not.toBe(invalidOptions);
+        expect(isObject(optionsArg)).toBeTruthy();
+      });
+    });
   });
 
   describe('CSS class DOM manipulation', function() {

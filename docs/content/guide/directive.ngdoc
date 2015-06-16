@@ -51,7 +51,7 @@ In the following example, we say that the `<input>` element **matches** the `ngM
 The following also **matches** `ngModel`:
 
 ```html
-<input data-ng:model="foo">
+<input data-ng-model="foo">
 ```
 
 ### Normalization

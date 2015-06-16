@@ -104,8 +104,8 @@
  */
 angular.module('ngSanitize').filter('linky', ['$sanitize', function($sanitize) {
   var LINKY_URL_REGEXP =
-        /((ftp|https?):\/\/|(www\.)|(mailto:)?[A-Za-z0-9._%+-]+@)\S*[^\s.;,(){}<>"”’]/,
-      MAILTO_REGEXP = /^mailto:/;
+        /((ftp|https?):\/\/|(www\.)|(mailto:)?[A-Za-z0-9._%+-]+@)\S*[^\s.;,(){}<>"”’]/i,
+      MAILTO_REGEXP = /^mailto:/i;
 
   return function(text, target) {
     if (!text) return text;

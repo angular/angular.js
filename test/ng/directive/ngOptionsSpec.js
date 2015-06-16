@@ -448,6 +448,41 @@ describe('ngOptions', function() {
   });
 
 
+  it('should not watch array properties that start with $ or $$', function() {
+    createSelect({
+      'ng-options': 'value as createLabel(value) for value in array',
+      'ng-model': 'selected'
+    });
+    scope.createLabel = jasmine.createSpy('createLabel').andCallFake(function(value) { return value; });
+    scope.array = ['a', 'b', 'c'];
+    scope.array.$$private = 'do not watch';
+    scope.array.$property = 'do not watch';
+    scope.selected = 'b';
+    scope.$digest();
+
+    expect(scope.createLabel).toHaveBeenCalledWith('a');
+    expect(scope.createLabel).toHaveBeenCalledWith('b');
+    expect(scope.createLabel).toHaveBeenCalledWith('c');
+    expect(scope.createLabel).not.toHaveBeenCalledWith('do not watch');
+  });
+
+
+  it('should not watch object properties that start with $ or $$', function() {
+    createSelect({
+      'ng-options': 'key as createLabel(key) for (key, value) in object',
+      'ng-model': 'selected'
+    });
+    scope.createLabel = jasmine.createSpy('createLabel').andCallFake(function(value) { return value; });
+    scope.object = {'regularProperty': 'visible', '$$private': 'invisible', '$property': 'invisible'};
+    scope.selected = 'regularProperty';
+    scope.$digest();
+
+    expect(scope.createLabel).toHaveBeenCalledWith('regularProperty');
+    expect(scope.createLabel).not.toHaveBeenCalledWith('$$private');
+    expect(scope.createLabel).not.toHaveBeenCalledWith('$property');
+  });
+
+
   it('should allow expressions over multiple lines', function() {
     scope.isNotFoo = function(item) {
       return item.name !== 'Foo';
@@ -1174,6 +1209,26 @@ describe('ngOptions', function() {
       // update render due to equality watch
       expect(element.controller('ngModel').$render).toHaveBeenCalled();
 
+    });
+
+    it('should not set view value again if the tracked property of the model has not changed when using trackBy', function() {
+
+      createSelect({
+        'ng-model': 'selected',
+        'ng-options': 'item for item in arr track by item.id'
+      });
+
+      scope.$apply(function() {
+        scope.selected = {id: 10, label: 'ten'};
+      });
+
+      spyOn(element.controller('ngModel'), '$setViewValue');
+
+      scope.$apply(function() {
+        scope.arr[0] = {id: 10, label: 'ten'};
+      });
+
+      expect(element.controller('ngModel').$setViewValue).not.toHaveBeenCalled();
     });
 
     it('should not re-render if a property of the model is changed when not using trackBy', function() {

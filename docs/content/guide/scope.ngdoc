@@ -5,7 +5,7 @@
 
 # What are Scopes?
 
-{@link ng.$rootScope.Scope scope} is an object that refers to the application
+{@link ng.$rootScope.Scope Scope} is an object that refers to the application
 model. It is an execution context for {@link expression expressions}. Scopes are
 arranged in hierarchical structure which mimic the DOM structure of the application. Scopes can
 watch {@link guide/expression expressions} and propagate events.

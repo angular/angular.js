@@ -176,7 +176,8 @@
  * unless you really need a digest to kick off afterwards.
  *
  * Keep in mind that, to make this easier, ngAnimate has tweaked the JS animations API to recognize when a runner instance is returned from $animateCss
- * (so there is no need to call `runner.done(doneFn)` inside of your JavaScript animation code). Check the [animation code above](#usage) to see how this works.
+ * (so there is no need to call `runner.done(doneFn)` inside of your JavaScript animation code).
+ * Check the {@link ngAnimate.$animateCss#usage animation code above} to see how this works.
  *
  * @param {DOMElement} element the element that will be animated
  * @param {object} options the animation-related options that will be applied during the animation
@@ -392,9 +393,9 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
   var gcsStaggerLookup = createLocalCacheLookup();
 
   this.$get = ['$window', '$$jqLite', '$$AnimateRunner', '$timeout',
-               '$document', '$sniffer', '$$rAF',
+               '$document', '$sniffer', '$$rAFScheduler',
        function($window,   $$jqLite,   $$AnimateRunner,   $timeout,
-                $document,   $sniffer,   $$rAF) {
+                $document,   $sniffer,   $$rAFScheduler) {
 
     var applyAnimationClasses = applyAnimationClassesFactory($$jqLite);
 
@@ -452,15 +453,10 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
     }
 
     var bod = getDomNode($document).body;
-    var cancelLastRAFRequest;
     var rafWaitQueue = [];
     function waitUntilQuiet(callback) {
-      if (cancelLastRAFRequest) {
-        cancelLastRAFRequest(); //cancels the request
-      }
       rafWaitQueue.push(callback);
-      cancelLastRAFRequest = $$rAF(function() {
-        cancelLastRAFRequest = null;
+      $$rAFScheduler.waitUntilQuiet(function() {
         gcsLookup.flush();
         gcsStaggerLookup.flush();
 
@@ -665,7 +661,7 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
       // we need to recalculate the delay value since we used a pre-emptive negative
       // delay value and the delay value is required for the final event checking. This
       // property will ensure that this will happen after the RAF phase has passed.
-      if (timings.transitionDuration > 0) {
+      if (options.duration == null && timings.transitionDuration > 0) {
         flags.recalculateTimingStyles = flags.recalculateTimingStyles || isFirst;
       }
 

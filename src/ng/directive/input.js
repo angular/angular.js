@@ -13,7 +13,7 @@
 var ISO_DATE_REGEXP = /\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+([+-][0-2]\d:[0-5]\d|Z)/;
 var URL_REGEXP = /^(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?$/;
 var EMAIL_REGEXP = /^[a-z0-9!#$%&'*+\/=?^_`{|}~.-]+@[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)*$/i;
-var NUMBER_REGEXP = /^\s*(\-|\+)?(\d+|(\d*(\.\d*)))\s*$/;
+var NUMBER_REGEXP = /^\s*(\-|\+)?(\d+|(\d*(\.\d*)))([eE][+-]?\d+)?\s*$/;
 var DATE_REGEXP = /^(\d{4})-(\d{2})-(\d{2})$/;
 var DATETIMELOCAL_REGEXP = /^(\d{4})-(\d\d)-(\d\d)T(\d\d):(\d\d)(?::(\d\d)(\.\d{1,3})?)?$/;
 var WEEK_REGEXP = /^(\d{4})-W(\d\d)$/;
@@ -46,9 +46,13 @@ var inputType = {
    *    as in the ngPattern directive.
    * @param {string=} ngPattern Sets `pattern` validation error key if the ngModel value does not match
    *    a RegExp found by evaluating the Angular expression given in the attribute value.
-   *    If the expression evaluates to a RegExp object then this is used directly.
-   *    If the expression is a string then it will be converted to a RegExp after wrapping it in `^` and `$`
-   *    characters. For instance, `"abc"` will be converted to `new RegExp('^abc$')`.
+   *    If the expression evaluates to a RegExp object, then this is used directly.
+   *    If the expression evaluates to a string, then it will be converted to a RegExp
+   *    after wrapping it in `^` and `$` characters. For instance, `"abc"` will be converted to
+   *    `new RegExp('^abc$')`.<br />
+   *    **Note:** Avoid using the `g` flag on the RegExp, as it will cause each successive search to
+   *    start at the index of the last search's match, thus not taking the whole input value into
+   *    account.
    * @param {string=} ngChange Angular expression to be executed when input changes due to user
    *    interaction with the input element.
    * @param {boolean=} [ngTrim=true] If set to false Angular will not automatically trim the input.
@@ -608,6 +612,16 @@ var inputType = {
    * error docs for more information and an example of how to convert your model if necessary.
    * </div>
    *
+   * ## Issues with HTML5 constraint validation
+   *
+   * In browsers that follow the
+   * [HTML5 specification](https://html.spec.whatwg.org/multipage/forms.html#number-state-%28type=number%29),
+   * `input[number]` does not work as expected with {@link ngModelOptions `ngModelOptions.allowInvalid`}.
+   * If a non-number is entered in the input, the browser will report the value as an empty string,
+   * which means the view / model values in `ngModel` and subsequently the scope value
+   * will also be an empty string.
+   *
+   *
    * @param {string} ngModel Assignable angular expression to data-bind to.
    * @param {string=} name Property name of the form under which the control is published.
    * @param {string=} min Sets the `min` validation error key if the value entered is less than `min`.
@@ -626,9 +640,13 @@ var inputType = {
    *    as in the ngPattern directive.
    * @param {string=} ngPattern Sets `pattern` validation error key if the ngModel value does not match
    *    a RegExp found by evaluating the Angular expression given in the attribute value.
-   *    If the expression evaluates to a RegExp object then this is used directly.
-   *    If the expression is a string then it will be converted to a RegExp after wrapping it in `^` and `$`
-   *    characters. For instance, `"abc"` will be converted to `new RegExp('^abc$')`.
+   *    If the expression evaluates to a RegExp object, then this is used directly.
+   *    If the expression evaluates to a string, then it will be converted to a RegExp
+   *    after wrapping it in `^` and `$` characters. For instance, `"abc"` will be converted to
+   *    `new RegExp('^abc$')`.<br />
+   *    **Note:** Avoid using the `g` flag on the RegExp, as it will cause each successive search to
+   *    start at the index of the last search's match, thus not taking the whole input value into
+   *    account.
    * @param {string=} ngChange Angular expression to be executed when input changes due to user
    *    interaction with the input element.
    *
@@ -720,9 +738,13 @@ var inputType = {
    *    as in the ngPattern directive.
    * @param {string=} ngPattern Sets `pattern` validation error key if the ngModel value does not match
    *    a RegExp found by evaluating the Angular expression given in the attribute value.
-   *    If the expression evaluates to a RegExp object then this is used directly.
-   *    If the expression is a string then it will be converted to a RegExp after wrapping it in `^` and `$`
-   *    characters. For instance, `"abc"` will be converted to `new RegExp('^abc$')`.
+   *    If the expression evaluates to a RegExp object, then this is used directly.
+   *    If the expression evaluates to a string, then it will be converted to a RegExp
+   *    after wrapping it in `^` and `$` characters. For instance, `"abc"` will be converted to
+   *    `new RegExp('^abc$')`.<br />
+   *    **Note:** Avoid using the `g` flag on the RegExp, as it will cause each successive search to
+   *    start at the index of the last search's match, thus not taking the whole input value into
+   *    account.
    * @param {string=} ngChange Angular expression to be executed when input changes due to user
    *    interaction with the input element.
    *
@@ -815,9 +837,13 @@ var inputType = {
    *    as in the ngPattern directive.
    * @param {string=} ngPattern Sets `pattern` validation error key if the ngModel value does not match
    *    a RegExp found by evaluating the Angular expression given in the attribute value.
-   *    If the expression evaluates to a RegExp object then this is used directly.
-   *    If the expression is a string then it will be converted to a RegExp after wrapping it in `^` and `$`
-   *    characters. For instance, `"abc"` will be converted to `new RegExp('^abc$')`.
+   *    If the expression evaluates to a RegExp object, then this is used directly.
+   *    If the expression evaluates to a string, then it will be converted to a RegExp
+   *    after wrapping it in `^` and `$` characters. For instance, `"abc"` will be converted to
+   *    `new RegExp('^abc$')`.<br />
+   *    **Note:** Avoid using the `g` flag on the RegExp, as it will cause each successive search to
+   *    start at the index of the last search's match, thus not taking the whole input value into
+   *    account.
    * @param {string=} ngChange Angular expression to be executed when input changes due to user
    *    interaction with the input element.
    *
@@ -1439,9 +1465,15 @@ function checkboxInputType(scope, element, attr, ctrl, $sniffer, $browser, $filt
  * @param {number=} ngMaxlength Sets `maxlength` validation error key if the value is longer than
  *    maxlength. Setting the attribute to a negative or non-numeric value, allows view values of any
  *    length.
- * @param {string=} ngPattern Sets `pattern` validation error key if the value does not match the
- *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
- *    patterns defined as scope expressions.
+ * @param {string=} ngPattern Sets `pattern` validation error key if the ngModel value does not match
+ *    a RegExp found by evaluating the Angular expression given in the attribute value.
+ *    If the expression evaluates to a RegExp object, then this is used directly.
+ *    If the expression evaluates to a string, then it will be converted to a RegExp
+ *    after wrapping it in `^` and `$` characters. For instance, `"abc"` will be converted to
+ *    `new RegExp('^abc$')`.<br />
+ *    **Note:** Avoid using the `g` flag on the RegExp, as it will cause each successive search to
+ *    start at the index of the last search's match, thus not taking the whole input value into
+ *    account.
  * @param {string=} ngChange Angular expression to be executed when input changes due to user
  *    interaction with the input element.
  * @param {boolean=} [ngTrim=true] If set to false Angular will not automatically trim the input.
@@ -1472,9 +1504,15 @@ function checkboxInputType(scope, element, attr, ctrl, $sniffer, $browser, $filt
  * @param {number=} ngMaxlength Sets `maxlength` validation error key if the value is longer than
  *    maxlength. Setting the attribute to a negative or non-numeric value, allows view values of any
  *    length.
- * @param {string=} ngPattern Sets `pattern` validation error key if the value does not match the
- *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
- *    patterns defined as scope expressions.
+ * @param {string=} ngPattern Sets `pattern` validation error key if the ngModel value does not match
+ *    a RegExp found by evaluating the Angular expression given in the attribute value.
+ *    If the expression evaluates to a RegExp object, then this is used directly.
+ *    If the expression evaluates to a string, then it will be converted to a RegExp
+ *    after wrapping it in `^` and `$` characters. For instance, `"abc"` will be converted to
+ *    `new RegExp('^abc$')`.<br />
+ *    **Note:** Avoid using the `g` flag on the RegExp, as it will cause each successive search to
+ *    start at the index of the last search's match, thus not taking the whole input value into
+ *    account.
  * @param {string=} ngChange Angular expression to be executed when input changes due to user
  *    interaction with the input element.
  * @param {boolean=} [ngTrim=true] If set to false Angular will not automatically trim the input.

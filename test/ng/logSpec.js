@@ -1,12 +1,6 @@
 /* global $LogProvider: false */
 'use strict';
 
-function initService(debugEnabled) {
-    return module(function($logProvider) {
-      $logProvider.debugEnabled(debugEnabled);
-    });
-  }
-
 describe('$log', function() {
   var $window, logger, log, warn, info, error, debug;
 
@@ -178,4 +172,11 @@ describe('$log', function() {
       expect(errorArgs).toEqual(['abc', 'message\nsourceURL:123']);
     });
   });
+
+  function initService(debugEnabled) {
+    return module(function($logProvider) {
+      $logProvider.debugEnabled(debugEnabled);
+    });
+  }
+
 });

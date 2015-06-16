@@ -230,13 +230,16 @@ describe('$http', function() {
           });
         });
         inject(function($http, $httpBackend, $rootScope) {
-          var config = { method: 'get', url: '/url', headers: { foo: 'bar'} };
+          var config = { headers: { foo: 'bar'} };
+          var configCopy = angular.copy(config);
           $httpBackend.expect('GET', '/intercepted').respond('');
-          $http.get('/url');
+          $http.get('/url', config);
           $rootScope.$apply();
-          expect(config.method).toEqual('get');
-          expect(config.url).toEqual('/url');
-          expect(config.headers.foo).toEqual('bar');
+          expect(config).toEqual(configCopy);
+          $httpBackend.expect('POST', '/intercepted').respond('');
+          $http.post('/url', {bar: 'baz'}, config);
+          $rootScope.$apply();
+          expect(config).toEqual(configCopy);
         });
       });
 

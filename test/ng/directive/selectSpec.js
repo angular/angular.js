@@ -404,7 +404,7 @@ describe('select', function() {
         scope.$apply(function() {
           scope.robot = null;
         });
-        expect(element).toEqualSelect([unknownValue(null)], '', 'c3p0', 'r2d2');
+        expect(element).toEqualSelect([''], 'c3p0', 'r2d2');
 
         scope.$apply(function() {
           scope.robot = 'r2d2';

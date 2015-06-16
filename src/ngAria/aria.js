@@ -14,8 +14,8 @@
  *
  * ## Usage
  *
- * For ngAria to do its magic, simply include the module as a dependency. The directives supported
- * by ngAria are:
+ * For ngAria to do its magic, simply include the module `ngAria` as a dependency. The following
+ * directives are supported:
  * `ngModel`, `ngDisabled`, `ngShow`, `ngHide`, `ngClick`, `ngDblClick`, and `ngMessages`.
  *
  * Below is a more detailed breakdown of the attributes handled by ngAria:
@@ -115,9 +115,8 @@ function $AriaProvider() {
       var ariaCamelName = attr.$normalize(ariaAttr);
       if (config[ariaCamelName] && !attr[ariaCamelName]) {
         scope.$watch(attr[attrName], function(boolVal) {
-          if (negate) {
-            boolVal = !boolVal;
-          }
+          // ensure boolean value
+          boolVal = negate ? !boolVal : !!boolVal;
           elem.attr(ariaAttr, boolVal);
         });
       }
@@ -265,13 +264,23 @@ ngAriaModule.directive('ngShow', ['$aria', function($aria) {
                 elem.attr('role', 'slider');
               }
               if ($aria.config('ariaValue')) {
-                if (attr.min && !elem.attr('aria-valuemin')) {
-                  elem.attr('aria-valuemin', attr.min);
+                var needsAriaValuemin = !elem.attr('aria-valuemin') &&
+                    (attr.hasOwnProperty('min') || attr.hasOwnProperty('ngMin'));
+                var needsAriaValuemax = !elem.attr('aria-valuemax') &&
+                    (attr.hasOwnProperty('max') || attr.hasOwnProperty('ngMax'));
+                var needsAriaValuenow = !elem.attr('aria-valuenow');
+
+                if (needsAriaValuemin) {
+                  attr.$observe('min', function ngAriaValueMinReaction(newVal) {
+                    elem.attr('aria-valuemin', newVal);
+                  });
                 }
-                if (attr.max && !elem.attr('aria-valuemax')) {
-                  elem.attr('aria-valuemax', attr.max);
+                if (needsAriaValuemax) {
+                  attr.$observe('max', function ngAriaValueMinReaction(newVal) {
+                    elem.attr('aria-valuemax', newVal);
+                  });
                 }
-                if (!elem.attr('aria-valuenow')) {
+                if (needsAriaValuenow) {
                   scope.$watch(ngAriaWatchModelValue, function ngAriaValueNowReaction(newVal) {
                     elem.attr('aria-valuenow', newVal);
                   });

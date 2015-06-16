@@ -3,6 +3,7 @@
 /* global angularAnimateModule: true,
 
    $$rAFMutexFactory,
+   $$rAFSchedulerFactory,
    $$AnimateChildrenDirective,
    $$AnimateRunnerFactory,
    $$AnimateQueueProvider,
@@ -71,7 +72,7 @@
  *   opacity:0;
  * }
  *
- * /&#42; The starting CSS styles for the enter animation &#42;/
+ * /&#42; The finishing CSS styles for the enter animation &#42;/
  * .fade.ng-enter.ng-enter-active {
  *   opacity:1;
  * }
@@ -742,6 +743,7 @@ angular.module('ngAnimate', [])
   .directive('ngAnimateChildren', $$AnimateChildrenDirective)
 
   .factory('$$rAFMutex', $$rAFMutexFactory)
+  .factory('$$rAFScheduler', $$rAFSchedulerFactory)
 
   .factory('$$AnimateRunner', $$AnimateRunnerFactory)
 

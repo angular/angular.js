@@ -34,9 +34,11 @@
  *     `{name: {first: 'John', last: 'Doe'}}` will **not** be matched by `{name: 'John'}`, but
  *     **will** be matched by `{$: 'John'}`.
  *
- *   - `function(value, index)`: A predicate function can be used to write arbitrary filters. The
- *     function is called for each element of `array`. The final result is an array of those
- *     elements that the predicate returned true for.
+ *   - `function(value, index, array)`: A predicate function can be used to write arbitrary filters.
+ *     The function is called for each element of the array, with the element, its index, and
+ *     the entire array itself as arguments.
+ *
+ *     The final result is an array of those elements that the predicate returned true for.
  *
  * @param {function(actual, expected)|true|undefined} comparator Comparator which is used in
  *     determining if the expected value (from the filter expression) and actual value (from
@@ -127,7 +129,7 @@
  */
 function filterFilter() {
   return function(array, expression, comparator) {
-    if (!isArray(array)) {
+    if (!isArrayLike(array)) {
       if (array == null) {
         return array;
       } else {
@@ -157,7 +159,7 @@ function filterFilter() {
         return array;
     }
 
-    return array.filter(predicateFn);
+    return Array.prototype.filter.call(array, predicateFn);
   };
 }
 
