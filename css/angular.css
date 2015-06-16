@@ -17,3 +17,7 @@ ng\:form {
 .ng-anchor {
   position:absolute;
 }
+
+.ng-invisible:not(.ng-invisible-animate) {
+	visibility: hidden !important;
+}
