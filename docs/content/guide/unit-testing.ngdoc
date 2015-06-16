@@ -261,8 +261,10 @@ myModule.filter('length', function() {
 
 describe('length filter', function() {
 
+  var $filter;
+
   beforeEach(inject(function(_$filter_){
-    $filter= _$filter_;
+    $filter = _$filter_;
   }));
 
   it('returns 0 when given null', function() {
