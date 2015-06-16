@@ -36,6 +36,17 @@ beforeEach(function() {
     return hidden;
   }
 
+  function isNgElementInvisible(element) {
+    // we need to check element.getAttribute for SVG nodes
+    var invisible = true;
+    forEach(angular.element(element), function(element) {
+      if ((' '  + (element.getAttribute('class') || '') + ' ').indexOf(' ng-invisible ') === -1) {
+        invisible = false;
+      }
+    });
+    return invisible;
+  }
+
   this.addMatchers({
     toBeInvalid: cssMatcher('ng-invalid', 'ng-valid'),
     toBeValid: cssMatcher('ng-valid', 'ng-invalid'),
@@ -53,10 +64,20 @@ beforeEach(function() {
           "Expected element " + (this.isNot ? "" : "not ") + "to have 'ng-hide' class");
       return !isNgElementHidden(this.actual);
     },
+    toBeVisible: function() {
+      this.message = valueFn(
+          "Expected element " + (this.isNot ? "not " : "") + "to have 'ng-invisible' class");
+      return !isNgElementInvisible(this.actual);
+    },
     toBeHidden: function() {
       this.message = valueFn(
           "Expected element " + (this.isNot ? "not " : "") + "to have 'ng-hide' class");
       return isNgElementHidden(this.actual);
+    },
+    toBeInvisible: function() {
+      this.message = valueFn(
+          "Expected element " + (this.isNot ? "not " : "") + "to have 'ng-invisible' class");
+      return isNgElementInvisible(this.actual);
     },
 
     toEqual: function(expected) {
