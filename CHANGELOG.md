@@ -1,3 +1,75 @@
+<a name="1.4.1"></a>
+# 1.4.1 hyperionic-illumination (2015-06-16)
+
+
+## Bug Fixes
+
+- **$compile:**
+  - workaround for IE11 MutationObserver
+  ([f3b1d0b7](https://github.com/angular/angular.js/commit/f3b1d0b723298a5f8ea21d0704405649cce1b5fc),
+   [#11781](https://github.com/angular/angular.js/issues/11781))
+  - prevent exception when using `watch` as isolated scope binding property in Firefox
+  ([a6339d30](https://github.com/angular/angular.js/commit/a6339d30d1379689da5eec9647a953f64821f8b0),
+   [#11627](https://github.com/angular/angular.js/issues/11627))
+- **$location:** do not get caught in infinite digest in IE9 when redirecting in `$locationChangeSuccess`
+  ([91b60226](https://github.com/angular/angular.js/commit/91b602263b96b6fce1331208462e18eb647f4d60),
+   [#11439](https://github.com/angular/angular.js/issues/11439), [#11675](https://github.com/angular/angular.js/issues/11675), [#11935](https://github.com/angular/angular.js/issues/11935), [#12083](https://github.com/angular/angular.js/issues/12083))
+- **$parse:**
+  - set null reference properties to `undefined`
+  ([71fc3f4f](https://github.com/angular/angular.js/commit/71fc3f4fa0cd12eff335d57efed7c033554749f4),
+   [#12099](https://github.com/angular/angular.js/issues/12099))
+  ([d19504a1](https://github.com/angular/angular.js/commit/d19504a179355d7801d59a8db0285a1322e04601),
+   [#11959](https://github.com/angular/angular.js/issues/11959))
+- **$sanitize:** dont not remove `tabindex` attribute
+  ([799353c7](https://github.com/angular/angular.js/commit/799353c75de28e6fbf52dac6e0721e85b578575a),
+   [#8371](https://github.com/angular/angular.js/issues/8371), [#5853](https://github.com/angular/angular.js/issues/5853))
+- **compile:** assign controller return values correctly for multiple directives
+  ([8caf1802](https://github.com/angular/angular.js/commit/8caf1802e0e93389dec626ef35e04a302aa6c39d),
+   [#12029](https://github.com/angular/angular.js/issues/12029), [#12036](https://github.com/angular/angular.js/issues/12036))
+- **copy:** do not copy the same object twice
+  ([0e622f7b](https://github.com/angular/angular.js/commit/0e622f7b5bc3d5d0ab0fbc1a1bc69404bd7216d5))
+- **forms:** parse exponential notation in `numberInputType` directive
+  ([ebd0fbba](https://github.com/angular/angular.js/commit/ebd0fbba8ff90bee0cd016d574643d56a7f81ed0),
+   [#12121](https://github.com/angular/angular.js/issues/12121), [#12122](https://github.com/angular/angular.js/issues/12122))
+- **linky:** allow case insensitive scheme detection
+  ([8dc09e6d](https://github.com/angular/angular.js/commit/8dc09e6dabb84c2c611cdc9e40adfac989648200),
+   [#12073](https://github.com/angular/angular.js/issues/12073), [#12073](https://github.com/angular/angular.js/issues/12073))
+- **ngAria:**
+  - update `aria-valuemin/max` when `min/max` change
+  ([ebaa0f59](https://github.com/angular/angular.js/commit/ebaa0f598501702ae64d59ada0ae492eaf0e2db6),
+   [#11770](https://github.com/angular/angular.js/issues/11770), [#11774](https://github.com/angular/angular.js/issues/11774))
+  - ensure boolean values for aria-hidden and aria-disabled
+  ([59273354](https://github.com/angular/angular.js/commit/59273354b57dd8d1ad2cd2f4740ffa8923e480f9),
+   [#11365](https://github.com/angular/angular.js/issues/11365))
+- **ngModel:** ignore Object.prototype properties on the form validation object
+  ([0934b76b](https://github.com/angular/angular.js/commit/0934b76b72cec86093414834ac4cb7f0946b651d),
+   [#12066](https://github.com/angular/angular.js/issues/12066))
+- **ngOptions:**
+  - do not watch properties starting with $
+  ([34a6da24](https://github.com/angular/angular.js/commit/34a6da24c17356d4ffc70aec3f621a140a9a61ab),
+   [#11930](https://github.com/angular/angular.js/issues/11930), [#12010](https://github.com/angular/angular.js/issues/12010))
+  - use reference check only when not using trackBy
+  ([d7dc14dc](https://github.com/angular/angular.js/commit/d7dc14dc0cdeb9c187d227e19acc8aca7df9d740),
+   [#11936](https://github.com/angular/angular.js/issues/11936), [#11996](https://github.com/angular/angular.js/issues/11996))
+
+
+## Features
+
+- **$compile:** show module name during `multidir` error
+  ([351fe4b7](https://github.com/angular/angular.js/commit/351fe4b79c50a45a11af2fcd2aa7b6fd3b70058d),
+   [#11775](https://github.com/angular/angular.js/issues/11775))
+- **$q:** $q.resolve as an alias for $q.when
+  ([3ef52980](https://github.com/angular/angular.js/commit/3ef529806fef28b41ca4af86a330f39a95699cf6),
+   [#11944](https://github.com/angular/angular.js/issues/11944), [#11987](https://github.com/angular/angular.js/issues/11987))
+
+
+## Performance Improvements
+
+- **$compile:** avoid jquery data calls when there is no data
+  ([9efb0d5e](https://github.com/angular/angular.js/commit/9efb0d5ee961b57c8fc144a3138a15955e4010e2))
+
+
+
 <a name="1.3.16"></a>
 # 1.3.16 cookie-oatmealification (2015-06-05)
 
