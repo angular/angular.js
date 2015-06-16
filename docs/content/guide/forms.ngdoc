@@ -491,7 +491,7 @@ The following example shows how to add two-way data-binding to contentEditable e
         link: function(scope, elm, attrs, ctrl) {
           // view -> model
           elm.on('blur', function() {
-              ctrl.$setViewValue(elm.html());
+            ctrl.$setViewValue(elm.html());
           });
 
           // model -> view
