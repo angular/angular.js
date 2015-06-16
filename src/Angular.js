@@ -464,6 +464,11 @@ identity.$inject = [];
 
 function valueFn(value) {return function() {return value;};}
 
+function hasCustomToString(obj) {
+  return isFunction(obj.toString) && obj.toString !== Object.prototype.toString;
+}
+
+
 /**
  * @ngdoc function
  * @name angular.isUndefined

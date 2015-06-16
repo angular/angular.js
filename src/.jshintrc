@@ -55,6 +55,7 @@
     "isBlob": false,
     "isBoolean": false,
     "isPromiseLike": false,
+    "hasCustomToString": false,
     "trim": false,
     "escapeForRegexp": false,
     "isElement": false,
