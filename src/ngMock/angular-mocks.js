@@ -2197,11 +2197,26 @@ if (window.jasmine || window.mocha) {
     return angular.mock.$$annotate.apply(this, arguments);
   };
 
-
-  (window.beforeEach || window.setup)(function() {
+  var doSetUp = function doSetUp() {
     annotatedFunctions = [];
     currentSpec = this;
-  });
+  };
+
+  // Hook `before` to provide the same module and injector configuration as
+  // `beforeEach`, knowing that `afterEach` will undo all of this (so it is not
+  // necessary to hook `after`).
+  if (window.before) {
+    // Mocha BDD, Exports, and QUnit interfaces.
+    window.before(doSetUp);
+  } else if (window.beforeAll) {
+    // Jasmine 2.1+ interface.
+    window.beforeAll(doSetUp);
+  } else if (window.suiteSetup) {
+    // Mocha TDD interface.
+    window.suiteSetup(doSetUp);
+  }
+
+  (window.beforeEach || window.setup)(doSetUp);
 
   (window.afterEach || window.teardown)(function() {
     var injector = currentSpec.$injector;
