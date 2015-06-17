@@ -1756,6 +1756,90 @@ describe('Scope', function() {
     });
 
 
+    describe('$once', function() {
+
+      it('should add listener for both $emit and $broadcast events', inject(function($rootScope) {
+        var log = 0,
+            child = $rootScope.$new();
+
+        function eventFn() {
+          log += 1;
+        }
+
+        child.$once('abc', eventFn);
+        expect(log).toEqual(0);
+
+        child.$emit('abc');
+        expect(log).toEqual(1);
+
+        child.$once('xyz', eventFn);
+        child.$broadcast('xyz');
+        expect(log).toEqual(2);
+      }));
+
+      it('should increment ancestor $$listenerCount entries', inject(function($rootScope) {
+        var child1 = $rootScope.$new(),
+            child2 = child1.$new(),
+            spy = jasmine.createSpy();
+
+        $rootScope.$once('event1', spy);
+        expect($rootScope.$$listenerCount).toEqual({event1: 1});
+
+        child1.$once('event1', spy);
+        expect($rootScope.$$listenerCount).toEqual({event1: 2});
+        expect(child1.$$listenerCount).toEqual({event1: 1});
+
+        child2.$once('event2', spy);
+        expect($rootScope.$$listenerCount).toEqual({event1: 2, event2: 1});
+        expect(child1.$$listenerCount).toEqual({event1: 1, event2: 1});
+        expect(child2.$$listenerCount).toEqual({event2: 1});
+      }));
+
+
+      describe('deregistration', function() {
+
+        it('should automatically deregister the listener upon being called', inject(function($rootScope) {
+          var log = '',
+              child = $rootScope.$new();
+
+          function eventFn() {
+            log += 'X';
+          }
+
+          child.$once('abc', eventFn);
+          expect(log).toEqual('');
+
+          child.$emit('abc');
+          expect(log).toEqual('X');
+
+          log = '';
+          child.$emit('abc');
+          child.$broadcast('abc');
+          expect(log).toEqual('');
+          expect($rootScope.$$listenerCount['abc']).toBeUndefined();
+        }));
+
+
+        it('should automatically decrement ancestor $$listenerCount entries', inject(function($rootScope) {
+          var child = $rootScope.$new(),
+              spy = jasmine.createSpy();
+
+          $rootScope.$once('myEvent', spy);
+          expect($rootScope.$$listenerCount).toEqual({myEvent: 1});
+
+          child.$once('myEvent', spy);
+          expect($rootScope.$$listenerCount).toEqual({myEvent: 2});
+          expect(child.$$listenerCount).toEqual({myEvent: 1});
+
+          child.$emit('myEvent', 'data');
+
+          expect($rootScope.$$listenerCount).toEqual({});
+          expect(child.$$listenerCount).toEqual({});
+        }));
+      });
+    });
+
+
     describe('$emit', function() {
       var log, child, grandChild, greatGrandChild;
 
