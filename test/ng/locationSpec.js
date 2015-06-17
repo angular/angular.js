@@ -989,6 +989,18 @@ describe('$location', function() {
         expect($browser.url()).toBe('http://new.com/a/b#!/changed');
       });
     });
+
+
+    it('should not infinitely digest if hash is set when there is no hashPrefix', function() {
+      initService({html5Mode:false, hashPrefix:'', supportHistory:true});
+      mockUpBrowser({initialUrl:'http://new.com/a/b', baseHref:'/a/b'});
+      inject(function($rootScope, $browser, $location) {
+        $location.hash('test');
+
+        $rootScope.$digest();
+        expect($browser.url()).toBe('http://new.com/a/b##test');
+      });
+    });
   });
 
   describe('wiring in html5 mode', function() {
@@ -2507,17 +2519,11 @@ describe('$location', function() {
         win.history = {
           state: options.state || null,
           replaceState: function(state, title, url) {
-            // console.log('REPLACESTATE');
-            // console.log('CURRENT', win.location.href, win.history.state);
-            // console.log('NEW', url, state);
             win.history.state = copy(state);
             if (url) win.location.href = url;
             jqLite(win).triggerHandler('popstate');
           },
           pushState: function(state, title, url) {
-            // console.log('PUSHSTATE');
-            // console.log('CURRENT', win.location.href, win.history.state);
-            // console.log('NEW', url, state);
             win.history.state = copy(state);
             if (url) win.location.href = url;
             jqLite(win).triggerHandler('popstate');
@@ -2529,6 +2535,9 @@ describe('$location', function() {
           get href() { return parser.href; },
           set href(val) { parser.href = val; },
           get hash() { return parser.hash; },
+          // The parser correctly strips on a single preceding hash character if necessary
+          // before joining the fragment onto the href by a new hash character
+          // See hash setter spec: https://url.spec.whatwg.org/#urlutils-and-urlutilsreadonly-members
           set hash(val) { parser.hash = val; },
 
           replace: function(val) {
