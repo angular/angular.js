@@ -11,11 +11,13 @@
   - prevent exception when using `watch` as isolated scope binding property in Firefox
   ([a6339d30](https://github.com/angular/angular.js/commit/a6339d30d1379689da5eec9647a953f64821f8b0),
    [#11627](https://github.com/angular/angular.js/issues/11627))
+  - assign controller return values correctly for multiple directives
+  ([8caf1802](https://github.com/angular/angular.js/commit/8caf1802e0e93389dec626ef35e04a302aa6c39d),
+   [#12029](https://github.com/angular/angular.js/issues/12029), [#12036](https://github.com/angular/angular.js/issues/12036))
 - **$location:** do not get caught in infinite digest in IE9 when redirecting in `$locationChangeSuccess`
   ([91b60226](https://github.com/angular/angular.js/commit/91b602263b96b6fce1331208462e18eb647f4d60),
    [#11439](https://github.com/angular/angular.js/issues/11439), [#11675](https://github.com/angular/angular.js/issues/11675), [#11935](https://github.com/angular/angular.js/issues/11935), [#12083](https://github.com/angular/angular.js/issues/12083))
-- **$parse:**
-  - set null reference properties to `undefined`
+- **$parse:** set null reference properties to `undefined`
   ([71fc3f4f](https://github.com/angular/angular.js/commit/71fc3f4fa0cd12eff335d57efed7c033554749f4),
    [#12099](https://github.com/angular/angular.js/issues/12099))
   ([d19504a1](https://github.com/angular/angular.js/commit/d19504a179355d7801d59a8db0285a1322e04601),
@@ -23,9 +25,6 @@
 - **$sanitize:** do not remove `tabindex` attribute
   ([799353c7](https://github.com/angular/angular.js/commit/799353c75de28e6fbf52dac6e0721e85b578575a),
    [#8371](https://github.com/angular/angular.js/issues/8371), [#5853](https://github.com/angular/angular.js/issues/5853))
-- **compile:** assign controller return values correctly for multiple directives
-  ([8caf1802](https://github.com/angular/angular.js/commit/8caf1802e0e93389dec626ef35e04a302aa6c39d),
-   [#12029](https://github.com/angular/angular.js/issues/12029), [#12036](https://github.com/angular/angular.js/issues/12036))
 - **copy:** do not copy the same object twice
   ([0e622f7b](https://github.com/angular/angular.js/commit/0e622f7b5bc3d5d0ab0fbc1a1bc69404bd7216d5))
 - **forms:** parse exponential notation in `numberInputType` directive
