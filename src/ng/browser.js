@@ -63,7 +63,7 @@ function Browser(window, document, $log, $sniffer) {
 
   function getHash(url) {
     var index = url.indexOf('#');
-    return index === -1 ? '' : url.substr(index + 1);
+    return index === -1 ? '' : url.substr(index);
   }
 
   /**
