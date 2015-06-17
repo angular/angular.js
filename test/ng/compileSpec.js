@@ -2521,10 +2521,17 @@ describe('$compile', function() {
                 };
 
                 expect(func).not.toThrow();
-                expect(element.find('span').scope()).toBe(element.isolateScope());
-                expect(element.isolateScope()).not.toBe($rootScope);
-                expect(element.isolateScope()['constructor']).toBe($rootScope.constructor);
-                expect(element.isolateScope()['valueOf']).toBeUndefined();
+                var scope = element.isolateScope();
+                expect(element.find('span').scope()).toBe(scope);
+                expect(scope).not.toBe($rootScope);
+
+                // Not shadowed because optional
+                expect(scope.constructor).toBe($rootScope.constructor);
+                expect(scope.hasOwnProperty('constructor')).toBe(false);
+
+                // Shadowed with undefined because not optional
+                expect(scope.valueOf).toBeUndefined();
+                expect(scope.hasOwnProperty('valueOf')).toBe(true);
               })
             );
 
@@ -2539,10 +2546,13 @@ describe('$compile', function() {
                   };
 
                   expect(func).not.toThrow();
-                  expect(element.find('span').scope()).toBe(element.isolateScope());
-                  expect(element.isolateScope()).not.toBe($rootScope);
-                  expect(element.isolateScope()['constructor']).toBe('constructor');
-                  expect(element.isolateScope()['valueOf']).toBe('valueOf');
+                  var scope = element.isolateScope();
+                  expect(element.find('span').scope()).toBe(scope);
+                  expect(scope).not.toBe($rootScope);
+                  expect(scope.constructor).toBe('constructor');
+                  expect(scope.hasOwnProperty('constructor')).toBe(true);
+                  expect(scope.valueOf).toBe('valueOf');
+                  expect(scope.hasOwnProperty('valueOf')).toBe(true);
                 })
             );
 
@@ -2553,10 +2563,17 @@ describe('$compile', function() {
                   };
 
                   expect(func).not.toThrow();
-                  expect(element.find('span').scope()).toBe(element.isolateScope());
-                  expect(element.isolateScope()).not.toBe($rootScope);
-                  expect(element.isolateScope()['constructor']).toBe($rootScope.constructor);
-                  expect(element.isolateScope()['valueOf']).toBeUndefined();
+                  var scope = element.isolateScope();
+                  expect(element.find('span').scope()).toBe(scope);
+                  expect(scope).not.toBe($rootScope);
+
+                  // Does not shadow value because optional
+                  expect(scope.constructor).toBe($rootScope.constructor);
+                  expect(scope.hasOwnProperty('constructor')).toBe(false);
+
+                  // Shadows value because not optional
+                  expect(scope.valueOf).toBeUndefined();
+                  expect(scope.hasOwnProperty('valueOf')).toBe(true);
                 })
             );
 
@@ -3554,6 +3571,31 @@ describe('$compile', function() {
     }));
 
 
+    it('should not overwrite @-bound property each digest when not present', function() {
+      module(function($compileProvider) {
+        $compileProvider.directive('testDir', valueFn({
+          scope: {prop: '@'},
+          controller: function($scope) {
+            $scope.prop = $scope.prop || 'default';
+            this.getProp = function() {
+             return $scope.prop;
+            };
+          },
+          controllerAs: 'ctrl',
+          template: '<p></p>'
+        }));
+      });
+      inject(function($compile, $rootScope) {
+        element = $compile('<div test-dir></div>')($rootScope);
+        var scope = element.isolateScope();
+        expect(scope.ctrl.getProp()).toBe('default');
+
+        $rootScope.$digest();
+        expect(scope.ctrl.getProp()).toBe('default');
+      });
+    });
+
+
     describe('bind-once', function() {
 
       function countWatches(scope) {
@@ -4413,6 +4455,34 @@ describe('$compile', function() {
         expect(childScope.theCtrl).not.toBe(myCtrl);
         expect(childScope.theCtrl.constructor).toBe(MyCtrl);
         childScope.theCtrl.test();
+      });
+    });
+
+    it('should not overwrite @-bound property each digest when not present', function() {
+      module(function($compileProvider) {
+        $compileProvider.directive('testDir', valueFn({
+          scope: {},
+          bindToController: {
+            prop: '@'
+          },
+          controller: function() {
+            var self = this;
+            this.prop = this.prop || 'default';
+            this.getProp = function() {
+             return self.prop;
+            };
+          },
+          controllerAs: 'ctrl',
+          template: '<p></p>'
+        }));
+      });
+      inject(function($compile, $rootScope) {
+        element = $compile('<div test-dir></div>')($rootScope);
+        var scope = element.isolateScope();
+        expect(scope.ctrl.getProp()).toBe('default');
+
+        $rootScope.$digest();
+        expect(scope.ctrl.getProp()).toBe('default');
       });
     });
   });
