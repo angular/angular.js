@@ -20,7 +20,7 @@
    [#12099](https://github.com/angular/angular.js/issues/12099))
   ([d19504a1](https://github.com/angular/angular.js/commit/d19504a179355d7801d59a8db0285a1322e04601),
    [#11959](https://github.com/angular/angular.js/issues/11959))
-- **$sanitize:** dont not remove `tabindex` attribute
+- **$sanitize:** do not remove `tabindex` attribute
   ([799353c7](https://github.com/angular/angular.js/commit/799353c75de28e6fbf52dac6e0721e85b578575a),
    [#8371](https://github.com/angular/angular.js/issues/8371), [#5853](https://github.com/angular/angular.js/issues/5853))
 - **compile:** assign controller return values correctly for multiple directives
