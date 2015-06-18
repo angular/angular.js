@@ -233,6 +233,13 @@ describe('$httpBackend', function() {
     expect(MockXhr.$$lastInstance.withCredentials).toBe(true);
   });
 
+  it('should call $xhrFactory with method and url', function() {
+    var mockXhrFactory = jasmine.createSpy('mockXhrFactory').andCallFake(createMockXhr);
+    $backend = createHttpBackend($browser, mockXhrFactory, $browser.defer, callbacks, fakeDocument);
+    $backend('GET', '/some-url', 'some-data', noop);
+    expect(mockXhrFactory).toHaveBeenCalledWith('GET', '/some-url');
+  });
+
 
   describe('responseType', function() {
 
