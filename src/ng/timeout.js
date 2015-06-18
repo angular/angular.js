@@ -93,3 +93,18 @@ function $TimeoutProvider() {
     return timeout;
   }];
 }
+
+/**
+ * @example
+ * 
+ * ```js
+ *  var app = angular.module("app", []);
+ *  app.controller("MyController", function($scope, $timeout){
+ *      $timeout(function(){
+ *      // your code goes here, and will run after the delay specified below as "3000"
+ *          console.log('I was bad, so I needed a timeout.');
+ *      },3000);
+ *  });
+ * ```
+ * 
+ * /
