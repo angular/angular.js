@@ -1040,14 +1040,17 @@ function $RootScopeProvider() {
       $apply: function(expr) {
         try {
           beginPhase('$apply');
-          return this.$eval(expr);
-        } catch (e) {
+          try {
+            return this.$eval(expr);
+          } finally {
+            clearPhase();
+          }
+        } catch(e) {
           $exceptionHandler(e);
         } finally {
-          clearPhase();
           try {
             $rootScope.$digest();
-          } catch (e) {
+          } catch(e) {
             $exceptionHandler(e);
             throw e;
           }
