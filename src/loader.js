@@ -271,6 +271,16 @@ function setupModuleLoader(window) {
 
           /**
            * @ngdoc method
+           * @name angular.Module#component
+           * @module ng
+           * @param {string} name Component name, used as a directive name
+           * @param {object=} bindings
+           * @param {string|function} controller used for component
+           */
+          component: invokeLaterAndSetModuleName('$compileProvider', 'component'),
+
+          /**
+           * @ngdoc method
            * @name angular.Module#directive
            * @module ng
            * @param {string|Object} name Directive name, or an object map of directives where the

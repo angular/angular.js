@@ -814,6 +814,52 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
   /**
    * @ngdoc method
+   * @name $compileProvider#component
+   * @kind function
+   *
+   * @description
+   * Register a new component with the compiler.
+   *
+   * A component is a shorthand for a directive with a controller, template, and a
+   * new scope.
+   *
+   * @returns {ng.$compileProvider} Self for chaining.
+   */
+  this.component = registerComponent;
+  function registerComponent(name, bindings, controller) {
+    if (isString(name)) {
+      assertValidDirectiveName(name);
+      if (arguments.length < 3) {
+        controller = bindings;
+        bindings = controller.bindings || null;
+      }
+      return registerDirective(name, valueFn({
+        controller: controller,
+        controllerAs: controller.controllerAs || '$' + name,
+        scope: controller.isolate ? {} : true,
+        bindToController: bindings,
+        template: controller.template || false,
+        templateUrl: controller.templateUrl || false
+      }, true));
+    } else {
+      forEach(name, function(value, name) {
+        var controller = null;
+        var bindings = null;
+        if (isArray(value) || isFunction(value)) {
+          controller = value;
+          bindings = value.bindings || null;
+        } else if (isObject(value)) {
+          controller = value.controller || null;
+          bindings = value.bindings || null;
+        }
+        return registerComponent(name, bindings, controller);
+      });
+    }
+    return this;
+  }
+
+  /**
+   * @ngdoc method
    * @name $compileProvider#directive
    * @kind function
    *
@@ -827,7 +873,10 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
    *    {@link guide/directive} for more info.
    * @returns {ng.$compileProvider} Self for chaining.
    */
-   this.directive = function registerDirective(name, directiveFactory) {
+  this.directive = function callRegisterDirective(name, directiveFactory) {
+    return registerDirective(name, directiveFactory, false);
+  };
+   function registerDirective(name, directiveFactory, isComponent) {
     assertNotHasOwnProperty(name, 'directive');
     if (isString(name)) {
       assertValidDirectiveName(name);
@@ -850,6 +899,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                 directive.name = directive.name || name;
                 directive.require = directive.require || (directive.controller && directive.name);
                 directive.restrict = directive.restrict || 'EA';
+                directive.component = !!isComponent;
                 var bindings = directive.$$bindings =
                     parseDirectiveBindings(directive, directive.name);
                 if (isObject(bindings.isolateScope)) {
@@ -869,7 +919,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       forEach(name, reverseParams(registerDirective));
     }
     return this;
-  };
+  }
 
 
   /**
