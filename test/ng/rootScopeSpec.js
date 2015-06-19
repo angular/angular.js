@@ -1505,6 +1505,22 @@ describe('Scope', function() {
       }));
 
 
+      it('should not clear the state when calling $apply during an $apply', inject(
+          function($rootScope) {
+        $rootScope.$apply(function() {
+          expect(function() {
+            $rootScope.$apply();
+          }).toThrowMinErr('$rootScope', 'inprog', '$apply already in progress');
+          expect(function() {
+            $rootScope.$apply();
+          }).toThrowMinErr('$rootScope', 'inprog', '$apply already in progress');
+        });
+        expect(function() {
+          $rootScope.$apply();
+        }).not.toThrow();
+      }));
+
+
       it('should throw an exception if $apply is called while flushing evalAsync queue', inject(
           function($rootScope) {
         expect(function() {
