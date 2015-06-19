@@ -161,6 +161,8 @@ function shallowClearAndCopy(src, dst) {
  *   - **`interceptor`** - `{Object=}` - The interceptor object has two optional methods -
  *     `response` and `responseError`. Both `response` and `responseError` interceptors get called
  *     with `http response` object. See {@link ng.$http $http interceptors}.
+ *   - **`hasBody`** - `{boolean}` - whether to send a body with the given request or not (not
+ *     required for POST,PUT,PATCH)
  *
  * @param {Object} options Hash with custom settings that should extend the
  *   default `$resourceProvider` behavior.  The only supported option is
@@ -511,7 +513,7 @@ angular.module('ngResource', ['ng']).
         };
 
         forEach(actions, function(action, name) {
-          var hasBody = /^(POST|PUT|PATCH)$/i.test(action.method);
+          var hasBody = /^(POST|PUT|PATCH)$/i.test(action.method) || action.hasBody === true;
 
           Resource[name] = function(a1, a2, a3, a4) {
             var params = {}, data, success, error;
