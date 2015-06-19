@@ -76,7 +76,7 @@ that you break your application to multiple modules like this:
     initialization code.
 
 We've also
-[written a document](http://blog.angularjs.org/2014/02/an-angularjs-style-guide-and-best.html)
+[written a document](http://angularjs.blogspot.com/2014/02/an-angularjs-style-guide-and-best.html)
 on how we organize large apps at Google.
 
 The above is a suggestion. Tailor it to your needs.
