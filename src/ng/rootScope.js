@@ -128,7 +128,7 @@ function $RootScopeProvider() {
          // still old value, since watches have not been called yet
          expect(scope.greeting).toEqual(undefined);
 
-         scope.$digest(); // fire all  the watches
+         scope.$digest(); // fire all the watches
          expect(scope.greeting).toEqual('Hello Misko!');
      * ```
      *
