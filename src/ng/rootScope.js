@@ -1109,19 +1109,7 @@ function $RootScopeProvider() {
        * @returns {function()} Returns a deregistration function for this listener.
        */
       $on: function(name, listener) {
-        var namedListeners = this.$$listeners[name];
-        if (!namedListeners) {
-          this.$$listeners[name] = namedListeners = [];
-        }
-        namedListeners.push(listener);
-
-        var current = this;
-        do {
-          if (!current.$$listenerCount[name]) {
-            current.$$listenerCount[name] = 0;
-          }
-          current.$$listenerCount[name]++;
-        } while ((current = current.$parent));
+        registerListener(this, name, listener);
 
         var self = this;
         return function() {
@@ -1163,19 +1151,7 @@ function $RootScopeProvider() {
           listener.apply(self, arguments);
         };
 
-        var namedListeners = this.$$listeners[name];
-        if (!namedListeners) {
-          this.$$listeners[name] = namedListeners = [];
-        }
-        namedListeners.push(modifiedListener);
-
-        var current = this;
-        do {
-          if (!current.$$listenerCount[name]) {
-            current.$$listenerCount[name] = 0;
-          }
-          current.$$listenerCount[name]++;
-        } while ((current = current.$parent));
+        registerListener(this, name, modifiedListener);
       },
 
       /**
@@ -1363,6 +1339,22 @@ function $RootScopeProvider() {
           delete current.$$listenerCount[name];
         }
       } while ((current = current.$parent));
+    }
+
+    function registerListener(current, name, listener) {
+      var namedListeners = current.$$listeners[name];
+        if (!namedListeners) {
+          current.$$listeners[name] = namedListeners = [];
+        }
+        namedListeners.push(listener);
+
+        do {
+          if (!current.$$listenerCount[name]) {
+            current.$$listenerCount[name] = 0;
+          }
+          current.$$listenerCount[name]++;
+        } while ((current = current.$parent));
+
     }
 
     function deregisterListener(current, name, listener) {
