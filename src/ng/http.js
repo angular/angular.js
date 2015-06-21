@@ -253,7 +253,7 @@ function $HttpProvider() {
    *
    * - **`defaults.cache`** - {Object} - an object built with {@link ng.$cacheFactory `$cacheFactory`}
    * that will provide the cache for all requests who set their `cache` property to `true`.
-   * If you set the `default.cache = false` then only requests that specify their own custom
+   * If you set the `defaults.cache = false` then only requests that specify their own custom
    * cache object will be cached. See {@link $http#caching $http Caching} for more information.
    *
    * - **`defaults.xsrfCookieName`** - {string} - Name of cookie containing the XSRF token.
