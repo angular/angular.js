@@ -97,6 +97,76 @@ describe('basic usage', function() {
     $httpBackend.flush();
   });
 
+  it('should include a request body when calling custom method with hasBody is true', function() {
+    var instant = {name: 'info.txt'};
+    var condition = {at: '2038-01-19 03:14:08'};
+
+    $httpBackend.expect('CREATE', '/fooresource', instant).respond({fid: 42});
+    $httpBackend.expect('DELETE', '/fooresource', condition).respond({});
+
+    var r = $resource('/fooresource', {}, {
+      create: {method: 'CREATE', hasBody: true},
+      delete: {method: 'DELETE', hasBody: true}
+    });
+
+    var creationResponse = r.create(instant);
+    var deleteResponse = r.delete(condition);
+
+    $httpBackend.flush();
+
+    expect(creationResponse.fid).toBe(42);
+    expect(deleteResponse.$resolved).toBe(true);
+  });
+
+  it('should not include a request body if hasBody is false on POST, PUT and PATCH', function() {
+    function verifyRequest(method, url, data) {
+      expect(data).toBeUndefined();
+      return [200, {id: 42}];
+    }
+
+    $httpBackend.expect('POST', '/foo').respond(verifyRequest);
+    $httpBackend.expect('PUT', '/foo').respond(verifyRequest);
+    $httpBackend.expect('PATCH', '/foo').respond(verifyRequest);
+
+    var R = $resource('/foo', {}, {
+      post: {method: 'POST', hasBody: false},
+      put: {method: 'PUT', hasBody: false},
+      patch: {method: 'PATCH', hasBody: false}
+    });
+
+    var postResponse = R.post();
+    var putResponse = R.put();
+    var patchResponse = R.patch();
+
+    $httpBackend.flush();
+
+    expect(postResponse.id).toBe(42);
+    expect(putResponse.id).toBe(42);
+    expect(patchResponse.id).toBe(42);
+  });
+
+  it('should expect a body if hasBody is true', function() {
+    var username = 'yathos';
+    var loginRequest = {name: username, password: 'Smile'};
+    var user = {id: 1, name: username};
+
+    $httpBackend.expect('LOGIN', '/user/me', loginRequest).respond(user);
+
+    $httpBackend.expect('LOGOUT', '/user/me', null).respond(null);
+
+    var UserService = $resource('/user/me', {}, {
+      login: {method: 'LOGIN', hasBody: true},
+      logout: {method: 'LOGOUT', hasBody: false}
+    });
+
+    var loginResponse = UserService.login(loginRequest);
+    var logoutResponse = UserService.logout();
+
+    $httpBackend.flush();
+
+    expect(loginResponse.id).toBe(user.id);
+    expect(logoutResponse.$resolved).toBe(true);
+  });
 
   it('should build resource', function() {
     expect(typeof CreditCard).toBe('function');
