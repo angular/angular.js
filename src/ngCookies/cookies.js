@@ -12,8 +12,7 @@
  *
  * <div doc-module-components="ngCookies"></div>
  *
- * See {@link ngCookies.$cookies `$cookies`} and
- * {@link ngCookies.$cookieStore `$cookieStore`} for usage.
+ * See {@link ngCookies.$cookies `$cookies`} for usage.
  */
 
 
@@ -60,9 +59,11 @@ angular.module('ngCookies', ['ng']).
      * @description
      * Provides read/write access to browser's cookies.
      *
-     * BREAKING CHANGE: `$cookies` no longer exposes properties that represent the
-     * current browser cookie values. Now you must use the get/put/remove/etc. methods
-     * as described below.
+     * <div class="alert alert-info">
+     * Up until Angular 1.3, `$cookies` exposed properties that represented the
+     * current browser cookie values. In version 1.4, this behavior has changed, and
+     * `$cookies` now provides a standard api of getters, setters etc.
+     * </div>
      *
      * Requires the {@link ngCookies `ngCookies`} module to be installed.
      *
