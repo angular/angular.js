@@ -709,7 +709,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
   };
 
   this.$$writeModelToScope = function() {
-    ngModelSet($scope, ctrl.$modelValue);
+    ngModelSet($scope, modelValueGetter(ctrl.$modelValue));
     forEach(ctrl.$viewChangeListeners, function(listener) {
       try {
         listener();
@@ -806,43 +806,80 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
     }
   };
 
-  // model -> value
-  // Note: we cannot use a normal scope.$watch as we want to detect the following:
-  // 1. scope value is 'a'
-  // 2. user enters 'b'
-  // 3. ng-change kicks in and reverts scope value to 'a'
-  //    -> scope value did not change since the last digest as
-  //       ng-change executes in apply phase
-  // 4. view should be changed back to 'a'
-  $scope.$watch(function ngModelWatch() {
+  this.$$setupModelWatch = function() {
+    // model -> value
+    // Note: we cannot use a normal scope.$watch as we want to detect the following:
+    // 1. scope value is 'a'
+    // 2. user enters 'b'
+    // 3. ng-change kicks in and reverts scope value to 'a'
+    //    -> scope value did not change since the last digest as
+    //       ng-change executes in apply phase
+    // 4. view should be changed back to 'a'
+
+    // options.deepWatch
+    // options.collection
+
+    setModelValueHelpers();
+    $scope.$watch(ngModelWatch);
+  };
+
+  var modelValueGetter = function modelValueGetter(modelValue) {
+    return modelValue;
+  };
+
+  var modelValueChanged = function modelValueChanged(newModelValue, currentModelValue) {
+    return newModelValue !== currentModelValue;
+  };
+
+  /**
+   * If ngModelOptions deepWatch is true, then the model must be copied after every view / scope
+   * change, so we can correctly detect changes to it with .equals(). Otherwise, the ctrl.$modelValue
+   * and the scope value are the same, and we cannot detect differences to them properly
+   */
+  function setModelValueHelpers() {
+    if (ctrl.$options && ctrl.$options.deepWatch)  {
+      modelValueGetter = function modelValueGetter(modelValue) {
+        return copy(modelValue);
+      };
+
+      modelValueChanged = function modelValueChanged(newModelValue, currentModelValue) {
+        return !equals(newModelValue, currentModelValue);
+      };
+    }
+  }
+
+  function ngModelWatch() {
     var modelValue = ngModelGet($scope);
 
     // if scope model value and ngModel value are out of sync
-    // TODO(perf): why not move this to the action fn?
-    if (modelValue !== ctrl.$modelValue &&
+    if (modelValueChanged(modelValue, ctrl.$modelValue) &&
        // checks for NaN is needed to allow setting the model to NaN when there's an asyncValidator
        (ctrl.$modelValue === ctrl.$modelValue || modelValue === modelValue)
     ) {
-      ctrl.$modelValue = ctrl.$$rawModelValue = modelValue;
-      parserValid = undefined;
-
-      var formatters = ctrl.$formatters,
-          idx = formatters.length;
-
-      var viewValue = modelValue;
-      while (idx--) {
-        viewValue = formatters[idx](viewValue);
-      }
-      if (ctrl.$viewValue !== viewValue) {
-        ctrl.$viewValue = ctrl.$$lastCommittedViewValue = viewValue;
-        ctrl.$render();
-
-        ctrl.$$runValidators(modelValue, viewValue, noop);
-      }
+      modelToViewAction(modelValue);
     }
-
     return modelValue;
-  });
+  }
+
+  function modelToViewAction(modelValue) {
+    ctrl.$modelValue = ctrl.$$rawModelValue = modelValueGetter(modelValue);
+    parserValid = undefined;
+
+    var formatters = ctrl.$formatters,
+        idx = formatters.length;
+
+    var viewValue = modelValue;
+    while (idx--) {
+      viewValue = formatters[idx](viewValue);
+    }
+    if (ctrl.$viewValue !== viewValue) {
+      ctrl.$viewValue = ctrl.$$lastCommittedViewValue = viewValue;
+      ctrl.$render();
+
+      ctrl.$$runValidators(modelValue, viewValue, noop);
+    }
+  }
+
 }];
 
 
@@ -1032,6 +1069,7 @@ var ngModelDirective = ['$rootScope', function($rootScope) {
               formCtrl = ctrls[1] || modelCtrl.$$parentForm;
 
           modelCtrl.$$setOptions(ctrls[2] && ctrls[2].$options);
+          modelCtrl.$$setupModelWatch();
 
           // notify others, especially parent forms
           formCtrl.$addControl(modelCtrl);

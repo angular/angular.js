@@ -30,6 +30,7 @@ describe('ngModel', function() {
 
       //Assign the mocked parentFormCtrl to the model controller
       ctrl.$$parentForm = parentFormCtrl;
+      ctrl.$$setupModelWatch();
     }));
 
 
@@ -1790,6 +1791,26 @@ describe('ngModelOptions attributes', function() {
 
   var helper, $rootScope, $compile, $timeout, $q;
 
+  beforeEach(module(function($compileProvider) {
+    $compileProvider.directive('formatObject', function() {
+      return {
+        require: 'ngModel',
+        link: function(scope, element, attrs, ngModelCtrl) {
+          ngModelCtrl.$formatters.push(function(value) {
+            return value.a + '-' + value.b;
+          });
+          ngModelCtrl.$parsers.push(function(value) {
+            var split = value.split('-');
+            return {
+              a: split[0],
+              b: split[1]
+            };
+          });
+        }
+      };
+    });
+  }));
+
   beforeEach(function() {
     helper = getInputCompileHelper(this);
   });
@@ -2401,5 +2422,28 @@ describe('ngModelOptions attributes', function() {
     helper.changeInputValueTo('input2');
     expect($rootScope.value).toBe('modelValue');
     expect($rootScope.changed).toHaveBeenCalledOnce();
+  });
+
+
+  it('should watch the model with object equality if deepWatch is true', function() {
+    $rootScope.value = {
+      a: 'alpha',
+      b: 'beta',
+    };
+
+    var input = helper.compileInput('<input type="text" format-object ng-model="value" ' +
+      'ng-model-options="{deepWatch:  true}" >');
+
+    expect(input.val()).toBe('alpha-beta');
+
+    helper.changeInputValueTo('alpha-omega');
+    expect($rootScope.value).toEqual({
+      a: 'alpha',
+      b: 'omega'
+    });
+
+    $rootScope.value.b = 'gamma';
+    $rootScope.$digest();
+    expect(input.val()).toBe('alpha-gamma');
   });
 });
