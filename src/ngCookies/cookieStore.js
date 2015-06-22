@@ -15,7 +15,7 @@ angular.module('ngCookies').
  * Requires the {@link ngCookies `ngCookies`} module to be installed.
  *
  * <div class="alert alert-danger">
- * **Note:** The $cookieStore service is deprecated.
+ * **Note:** The $cookieStore service is **deprecated**.
  * Please use the {@link ngCookies.$cookies `$cookies`} service instead.
  * </div>
  *
