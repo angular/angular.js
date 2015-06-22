@@ -888,6 +888,26 @@ describe('select', function() {
         expect(scope.selected).toBe(20);
       });
 
+      it('should support single select with array source with matching label and id', function() {
+        createSelect({
+          'ng-model': 'selected.id',
+          'ng-options': 'item.id as item.label for item in arrTmp'
+        }, true);
+
+        scope.arrTmp = [];
+        var arr = [{id: 10, label: 'ten'}, {id:20, label: 'twenty'}, {id: 30, label: '10'}, {id:40, label: '20'}];
+
+        scope.$apply(function() {
+          scope.selected = {id: 20};
+        });
+        expect(element.val()).toBe('');
+
+        scope.$apply(function() {
+          scope.arrTmp = arr;
+        });
+        expect(element.val()).toBe('1');
+      });
+
 
       it('should support multi select with array source', function() {
         createSelect({

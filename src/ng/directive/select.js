@@ -715,13 +715,15 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
             }
             optionGroup[0].element.remove();
           }
-          forEach(labelMap, function(count, label) {
-            if (count > 0) {
-              selectCtrl.addOption(label);
-            } else if (count < 0) {
-              selectCtrl.removeOption(label);
-            }
-          });
+          if (!anySelected) {
+            forEach(labelMap, function(count, label) {
+              if (count > 0) {
+                selectCtrl.addOption(label);
+              } else if (count < 0) {
+                selectCtrl.removeOption(label);
+              }
+            });
+          }
         }
       }
     }
