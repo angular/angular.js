@@ -787,6 +787,8 @@ function $HttpProvider() {
      *      for more information.
      *    - **responseType** - `{string}` - see
      *      [requestType](https://developer.mozilla.org/en-US/docs/DOM/XMLHttpRequest#responseType).
+     *    - **createXhr** - `{function(method)}` - a function that constructs the XHR object. Use this
+     *      to create customized or non-standard XHR objects.
      *
      * @returns {HttpPromise} Returns a {@link ng.$q promise} object with the
      *   standard `then` method and two http specific methods: `success` and `error`. The `then`
@@ -905,7 +907,8 @@ function $HttpProvider() {
         method: 'get',
         transformRequest: defaults.transformRequest,
         transformResponse: defaults.transformResponse,
-        paramSerializer: defaults.paramSerializer
+        paramSerializer: defaults.paramSerializer,
+        createXhr: defaults.createXhr
       }, requestConfig);
 
       config.headers = mergeHeaders(requestConfig);
@@ -1220,7 +1223,7 @@ function $HttpProvider() {
         }
 
         $httpBackend(config.method, url, reqData, done, reqHeaders, config.timeout,
-            config.withCredentials, config.responseType);
+            config.withCredentials, config.responseType, config.createXhr);
       }
 
       return promise;

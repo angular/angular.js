@@ -1896,6 +1896,57 @@ describe('$http', function() {
 
     $httpBackend.verifyNoOutstandingExpectation = noop;
   });
+
+  it('should pass createXhr', function() {
+    var $httpBackend = jasmine.createSpy('$httpBackend');
+    var dummyCreateXhr = function() {};
+
+    $httpBackend.andCallFake(function(m, u, d, c, h, t, wc, rt, createXhr) {
+      expect(createXhr).toBe(dummyCreateXhr);
+    });
+
+    module(function($provide) {
+      $provide.value('$httpBackend', $httpBackend);
+    });
+
+    inject(function($http, $rootScope) {
+      $http({
+        method: 'GET',
+        url: 'some.html',
+        createXhr: dummyCreateXhr
+      });
+      $rootScope.$digest();
+      expect($httpBackend).toHaveBeenCalledOnce();
+    });
+
+    $httpBackend.verifyNoOutstandingExpectation = noop;
+  });
+
+  it('should use createXhr from default', function() {
+    var $httpBackend = jasmine.createSpy('$httpBackend');
+    var dummyCreateXhr = function() {};
+
+    $httpBackend.andCallFake(function(m, u, d, c, h, t, wc, rt, createXhr) {
+      expect(createXhr).toBe(dummyCreateXhr);
+    });
+
+    module(function($provide) {
+      $provide.value('$httpBackend', $httpBackend);
+    });
+
+    inject(function($http, $rootScope) {
+      $http.defaults.createXhr = dummyCreateXhr;
+      $http({
+        method: 'GET',
+        url: 'some.html'
+      });
+      $rootScope.$digest();
+      expect($httpBackend).toHaveBeenCalledOnce();
+    });
+
+    $httpBackend.verifyNoOutstandingExpectation = noop;
+  });
+
 });
 
 
