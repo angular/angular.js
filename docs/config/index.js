@@ -10,14 +10,14 @@ var Package = require('dgeni').Package;
 module.exports = new Package('angularjs', [
   require('dgeni-packages/ngdoc'),
   require('dgeni-packages/nunjucks'),
-  require('dgeni-packages/examples')
+  require('dgeni-packages/examples'),
+  require('dgeni-packages/git')
 ])
 
 
 .factory(require('./services/errorNamespaceMap'))
 .factory(require('./services/getMinerrInfo'))
 .factory(require('./services/getVersion'))
-.factory(require('./services/gitData'))
 
 .factory(require('./services/deployments/debug'))
 .factory(require('./services/deployments/default'))
@@ -25,7 +25,6 @@ module.exports = new Package('angularjs', [
 .factory(require('./services/deployments/production'))
 
 .factory(require('./inline-tag-defs/type'))
-
 
 .processor(require('./processors/error-docs'))
 .processor(require('./processors/index-page'))
