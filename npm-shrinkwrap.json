@@ -3667,8 +3667,8 @@
       }
     },
     "dgeni-packages": {
-      "version": "0.10.15",
-      "from": "dgeni-packages@0.10.15",
+      "version": "0.10.17",
+      "from": "dgeni-packages@0.10.17",
       "dependencies": {
         "catharsis": {
           "version": "0.8.7",
@@ -10008,7 +10008,7 @@
     },
     "protractor": {
       "version": "2.1.0",
-      "from": "protractor@2.1.0",
+      "from": "https://registry.npmjs.org/protractor/-/protractor-2.1.0.tgz",
       "resolved": "https://registry.npmjs.org/protractor/-/protractor-2.1.0.tgz",
       "dependencies": {
         "request": {
@@ -10302,7 +10302,7 @@
         },
         "jasminewd2": {
           "version": "0.0.5",
-          "from": "jasminewd2@0.0.5",
+          "from": "https://registry.npmjs.org/jasminewd2/-/jasminewd2-0.0.5.tgz",
           "resolved": "https://registry.npmjs.org/jasminewd2/-/jasminewd2-0.0.5.tgz"
         },
         "jasmine": {

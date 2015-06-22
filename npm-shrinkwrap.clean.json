@@ -2385,7 +2385,7 @@
       }
     },
     "dgeni-packages": {
-      "version": "0.10.15",
+      "version": "0.10.17",
       "dependencies": {
         "catharsis": {
           "version": "0.8.7",
