@@ -3578,7 +3578,7 @@ describe('$compile', function() {
           controller: function($scope) {
             $scope.prop = $scope.prop || 'default';
             this.getProp = function() {
-             return $scope.prop;
+              return $scope.prop;
             };
           },
           controllerAs: 'ctrl',
@@ -4458,31 +4458,61 @@ describe('$compile', function() {
       });
     });
 
-    it('should not overwrite @-bound property each digest when not present', function() {
-      module(function($compileProvider) {
-        $compileProvider.directive('testDir', valueFn({
-          scope: {},
-          bindToController: {
-            prop: '@'
-          },
-          controller: function() {
-            var self = this;
-            this.prop = this.prop || 'default';
-            this.getProp = function() {
-             return self.prop;
-            };
-          },
-          controllerAs: 'ctrl',
-          template: '<p></p>'
-        }));
-      });
-      inject(function($compile, $rootScope) {
-        element = $compile('<div test-dir></div>')($rootScope);
-        var scope = element.isolateScope();
-        expect(scope.ctrl.getProp()).toBe('default');
+    describe('should not overwrite @-bound property each digest when not present', function() {
+      it('when creating new scope', function() {
+        module(function($compileProvider) {
+          $compileProvider.directive('testDir', valueFn({
+            scope: true,
+            bindToController: {
+              prop: '@'
+            },
+            controller: function() {
+              var self = this;
+              this.prop = this.prop || 'default';
+              this.getProp = function() {
+                return self.prop;
+              };
+            },
+            controllerAs: 'ctrl',
+            template: '<p></p>'
+          }));
+        });
+        inject(function($compile, $rootScope) {
+          element = $compile('<div test-dir></div>')($rootScope);
+          var scope = element.scope();
+          expect(scope.ctrl.getProp()).toBe('default');
 
-        $rootScope.$digest();
-        expect(scope.ctrl.getProp()).toBe('default');
+          $rootScope.$digest();
+          expect(scope.ctrl.getProp()).toBe('default');
+        });
+      });
+
+      it('when creating isolate scope', function() {
+        module(function($compileProvider) {
+          $compileProvider.directive('testDir', valueFn({
+            scope: {},
+            bindToController: {
+              prop: '@'
+            },
+            controller: function() {
+              var self = this;
+              this.prop = this.prop || 'default';
+              this.getProp = function() {
+                return self.prop;
+              };
+            },
+            controllerAs: 'ctrl',
+            template: '<p></p>'
+          }));
+        });
+        inject(function($compile, $rootScope) {
+          element = $compile('<div test-dir></div>')($rootScope);
+          var scope = element.isolateScope();
+          expect(scope.ctrl.getProp()).toBe('default');
+
+          $rootScope.$digest();
+          expect(scope.ctrl.getProp()).toBe('default');
+        });
       });
     });
   });
