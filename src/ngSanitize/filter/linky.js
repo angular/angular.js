@@ -8,7 +8,7 @@
  * @kind function
  *
  * @description
- * Finds links in text input and turns them into html links. Supports http/https/ftp/mailto and
+ * Finds links in text input and turns them into html links. Supports http/https/ftp/tel/mailto and
  * plain email address links.
  *
  * Requires the {@link ngSanitize `ngSanitize`} module to be installed.
@@ -29,6 +29,7 @@
              $scope.snippet =
                'Pretty text with some links:\n'+
                'http://angularjs.org/,\n'+
+               'call tel:28091891 now,\n'+
                'mailto:us@somewhere.org,\n'+
                'another@somewhere.org,\n'+
                'and one more: ftp://127.0.0.1/.';
@@ -71,15 +72,15 @@
      <file name="protractor.js" type="protractor">
        it('should linkify the snippet with urls', function() {
          expect(element(by.id('linky-filter')).element(by.binding('snippet | linky')).getText()).
-             toBe('Pretty text with some links: http://angularjs.org/, us@somewhere.org, ' +
-                  'another@somewhere.org, and one more: ftp://127.0.0.1/.');
-         expect(element.all(by.css('#linky-filter a')).count()).toEqual(4);
+             toBe('Pretty text with some links: http://angularjs.org/, call 28091891 now, ' +
+                  'us@somewhere.org, another@somewhere.org, and one more: ftp://127.0.0.1/.');
+         expect(element.all(by.css('#linky-filter a')).count()).toEqual(5);
        });
 
        it('should not linkify snippet without the linky filter', function() {
          expect(element(by.id('escaped-html')).element(by.binding('snippet')).getText()).
-             toBe('Pretty text with some links: http://angularjs.org/, mailto:us@somewhere.org, ' +
-                  'another@somewhere.org, and one more: ftp://127.0.0.1/.');
+             toBe('Pretty text with some links: http://angularjs.org/, call tel:28091891 now, ' +
+                  'mailto:us@somewhere.org, another@somewhere.org, and one more: ftp://127.0.0.1/.');
          expect(element.all(by.css('#escaped-html a')).count()).toEqual(0);
        });
 
@@ -104,8 +105,8 @@
  */
 angular.module('ngSanitize').filter('linky', ['$sanitize', function($sanitize) {
   var LINKY_URL_REGEXP =
-        /((ftp|https?):\/\/|(www\.)|(mailto:)?[A-Za-z0-9._%+-]+@)\S*[^\s.;,(){}<>"”’]/i,
-      MAILTO_REGEXP = /^mailto:/i;
+        /((ftp|https?):\/\/|(www\.)|(tel:)[0-9]+|(mailto:)?[A-Za-z0-9._%+-]+@)\S*[^\s.;,(){}<>"”’]/i,
+      MAILTO_TEL_REGEXP = /^(mailto|tel):/i;
 
   return function(text, target) {
     if (!text) return text;
@@ -117,13 +118,13 @@ angular.module('ngSanitize').filter('linky', ['$sanitize', function($sanitize) {
     while ((match = raw.match(LINKY_URL_REGEXP))) {
       // We can not end in these as they are sometimes found at the end of the sentence
       url = match[0];
-      // if we did not match ftp/http/www/mailto then assume mailto
-      if (!match[2] && !match[4]) {
+      // if we did not match ftp/http/www/tel/mailto then assume mailto
+      if (!match[2] && !match[4] && !match[5]) {
         url = (match[3] ? 'http://' : 'mailto:') + url;
       }
       i = match.index;
       addText(raw.substr(0, i));
-      addLink(url, match[0].replace(MAILTO_REGEXP, ''));
+      addLink(url, match[0].replace(MAILTO_TEL_REGEXP, ''));
       raw = raw.substring(i + match[0].length);
     }
     addText(raw);

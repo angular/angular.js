@@ -1,8 +1,9 @@
 angular.module('errors', ['ngSanitize'])
 
 .filter('errorLink', ['$sanitize', function ($sanitize) {
-  var LINKY_URL_REGEXP = /((ftp|https?):\/\/|(mailto:)?[A-Za-z0-9._%+-]+@)\S*[^\s\.\;\,\(\)\{\}<>]/g,
-      MAILTO_REGEXP = /^mailto:/,
+  var LINKY_URL_REGEXP =
+        /((ftp|https?):\/\/|(www\.)|(tel:)[0-9]+|(mailto:)?[A-Za-z0-9._%+-]+@)\S*[^\s.;,(){}<>"”’]/ig,
+      MAILTO_TEL_REGEXP = /^(mailto|tel):/i,
       STACK_TRACE_REGEXP = /:\d+:\d+$/;
 
   var truncate = function (text, nchars) {
@@ -22,11 +23,11 @@ angular.module('errors', ['ngSanitize'])
         return url;
       }
 
-      // if we did not match ftp/http/mailto then assume mailto
-      if (!/^((ftp|https?):\/\/|mailto:)/.test(url)) url = 'mailto:' + url;
+      // if we did not match ftp/http/www/tel/mailto then assume mailto
+      if (!/^((ftp|https?):\/\/|tel:|mailto:)/i.test(url)) url = 'mailto:' + url;
 
       return '<a' + targetHtml + ' href="' + url +'">' +
-                truncate(url.replace(MAILTO_REGEXP, ''), 60) +
+                truncate(url.replace(MAILTO_TEL_REGEXP, ''), 60) +
               '</a>';
     }));
   };

@@ -44,6 +44,13 @@ describe('linky', function() {
       toEqual('my email is &#34;<a href="mailto:me@example.com">me@example.com</a>&#34;');
   });
 
+  it('should handle tel:', function() {
+    expect(linky("tel:28091891")).
+                    toEqual('<a href="tel:28091891">28091891</a>');
+    expect(linky("call tel:28091891 now")).
+      toEqual('call <a href="tel:28091891">28091891</a> now');
+  });
+
   it('should handle quotes in the email', function() {
     expect(linky('foo@"bar".com')).toEqual('<a href="mailto:foo@&#34;bar&#34;.com">foo@&#34;bar&#34;.com</a>');
   });
