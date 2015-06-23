@@ -448,7 +448,7 @@ describe('ngOptions', function() {
   });
 
 
-  it('should not watch array properties that start with $ or $$', function() {
+  it('should not watch non-numeric array properties', function() {
     createSelect({
       'ng-options': 'value as createLabel(value) for value in array',
       'ng-model': 'selected'
@@ -457,6 +457,8 @@ describe('ngOptions', function() {
     scope.array = ['a', 'b', 'c'];
     scope.array.$$private = 'do not watch';
     scope.array.$property = 'do not watch';
+    scope.array.other = 'do not watch';
+    scope.array.fn = function() {};
     scope.selected = 'b';
     scope.$digest();
 
@@ -464,6 +466,7 @@ describe('ngOptions', function() {
     expect(scope.createLabel).toHaveBeenCalledWith('b');
     expect(scope.createLabel).toHaveBeenCalledWith('c');
     expect(scope.createLabel).not.toHaveBeenCalledWith('do not watch');
+    expect(scope.createLabel).not.toHaveBeenCalledWith(jasmine.any(Function));
   });
 
 
@@ -481,7 +484,6 @@ describe('ngOptions', function() {
     expect(scope.createLabel).not.toHaveBeenCalledWith('$$private');
     expect(scope.createLabel).not.toHaveBeenCalledWith('$property');
   });
-
 
   it('should allow expressions over multiple lines', function() {
     scope.isNotFoo = function(item) {
