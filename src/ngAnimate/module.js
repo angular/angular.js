@@ -402,7 +402,7 @@
  *
  * ```css
  * /&#42; the transition tells ngAnimate to make the animation happen &#42;/
- * .slide.ng-enter { transition:0.5s linear all; }
+ * .slide.ng-animate { transition:0.5s linear all; }
  *
  * /&#42; this extra CSS class will be absorbed into the transition
  * since the $animateCss code is adding the class &#42;/
