@@ -661,6 +661,49 @@ describe('ngMessages', function() {
   );
 
 
+  describe('default message', function() {
+    it('should render a default message when no message matches', inject(function($rootScope, $compile) {
+      element = $compile('<div ng-messages="col">' +
+                         '  <div ng-message="val">Message is set</div>' +
+                         '  <div ng-message-default>Default message is set</div>' +
+                         '</div>')($rootScope);
+      $rootScope.$digest();
+
+      expect(element.text().trim()).toBe('Default message is set');
+
+      $rootScope.$apply(function() {
+        $rootScope.col = { val: true };
+      });
+
+      expect(element.text().trim()).toBe('Message is set');
+    }));
+
+    it('should handle a default message with ngIf', inject(function($rootScope, $compile) {
+      element = $compile('<div ng-messages="col">' +
+                         '  <div ng-message="val">Message is set</div>' +
+                         '  <div ng-if="default" ng-message-default>Default message is set</div>' +
+                         '</div>')($rootScope);
+      $rootScope.default = true;
+      $rootScope.$digest();
+
+      expect(element.text().trim()).toBe('Default message is set');
+
+      $rootScope.$apply('default = false');
+
+      expect(element.text().trim()).toBe('');
+
+      $rootScope.$apply('default = true');
+
+      expect(element.text().trim()).toBe('Default message is set');
+
+      $rootScope.$apply(function() {
+        $rootScope.col = { val: true };
+      });
+
+      expect(element.text().trim()).toBe('Message is set');
+    }));
+  });
+
   describe('when including templates', function() {
     they('should work with a dynamic collection model which is managed by ngRepeat',
       {'<div ng-messages-include="...">': '<div ng-messages="item">' +
