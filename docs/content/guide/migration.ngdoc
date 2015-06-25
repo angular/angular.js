@@ -88,10 +88,10 @@ element.on('$animate:before', function(e, data) {
 element.off('$animate:before', fn);
 
 // 1.4+
-$animate.on(element, 'enter', function(data) {
+$animate.on('enter', element, function(data) {
   //...
 });
-$animate.off(element, 'enter', fn);
+$animate.off('enter', element, fn);
 ```
 
 Due to [c8700f04](https://github.com/angular/angular.js/commit/c8700f04fb6fb5dc21ac24de8665c0476d6db5ef),
