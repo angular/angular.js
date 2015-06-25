@@ -21,7 +21,7 @@ var jqLite = angular.element;
  * sequencing based on the order of how the messages are defined in the template.
  *
  * Currently, the ngMessages module only contains the code for the `ngMessages`, `ngMessagesInclude`
- * `ngMessage` and `ngMessageExp` directives.
+ * `ngMessage`, `ngMessageExp` and `ngMessageDefault` directives.
  *
  * # Usage
  * The `ngMessages` directive listens on a key/value collection which is set on the ngMessages attribute.
@@ -239,6 +239,19 @@ var jqLite = angular.element;
  * .some-message.ng-leave.ng-leave-active {}
  * ```
  *
+ * ## Displaying a default message
+ * If the ngMessages renders no inner ngMessage directive (that is to say when the key values does not
+ * match the attribute value present on each ngMessage directive), then it will render a default message
+ * using the ngMessageDefault directive.
+ *
+ * ```html
+ * <div ng-messages="myForm.myField.$error" role="alert">
+ *   <div ng-message="required">This field is required</div>
+ *   <div ng-message="minlength">This field is too short</div>
+ *   <div ng-message-default>This is a default message</div>
+ * </div>
+ * ```
+ *
  * {@link ngAnimate Click here} to learn how to use JavaScript animations or to learn more about ngAnimate.
  */
 angular.module('ngMessages', [])
@@ -260,6 +273,9 @@ angular.module('ngMessages', [])
     * at a time and this depends on the prioritization of the messages within the template. (This can
     * be changed by using the `ng-messages-multiple` or `multiple` attribute on the directive container.)
     *
+    * A default message can also be displayed when no `ngMessage` directive is inserted, using the
+    * `ngMessageDefault` directive.
+    *
     * A remote template can also be used to promote message reusability and messages can also be
     * overridden.
     *
@@ -272,6 +288,7 @@ angular.module('ngMessages', [])
     *   <ANY ng-message="stringValue">...</ANY>
     *   <ANY ng-message="stringValue1, stringValue2, ...">...</ANY>
     *   <ANY ng-message-exp="expressionValue">...</ANY>
+    *   <ANY ng-message-default>...</ANY>
     * </ANY>
     *
     * <!-- or by using element directives -->
@@ -279,6 +296,7 @@ angular.module('ngMessages', [])
     *   <ng-message when="stringValue">...</ng-message>
     *   <ng-message when="stringValue1, stringValue2, ...">...</ng-message>
     *   <ng-message when-exp="expressionValue">...</ng-message>
+    *   <ng-message-default>...</ng-message-default>
     * </ng-messages>
     * ```
     *
@@ -307,6 +325,7 @@ angular.module('ngMessages', [])
     *         <div ng-message="required">You did not enter a field</div>
     *         <div ng-message="minlength">Your field is too short</div>
     *         <div ng-message="maxlength">Your field is too long</div>
+    *         <div ng-message-default>This is a default message</div>
     *       </div>
     *     </form>
     *   </file>
@@ -379,9 +398,17 @@ angular.module('ngMessages', [])
              messageCtrl.detach();
            });
 
-           unmatchedMessages.length !== totalMessages
-              ? $animate.setClass($element, ACTIVE_CLASS, INACTIVE_CLASS)
-              : $animate.setClass($element, INACTIVE_CLASS, ACTIVE_CLASS);
+           if (unmatchedMessages.length !== totalMessages) {
+             // Unset default message if setted
+             if (ctrl.default) { ctrl.default.detach(); }
+
+             $animate.setClass($element, ACTIVE_CLASS, INACTIVE_CLASS);
+           } else {
+             // Set default message when no other one matched
+             if (ctrl.default) { ctrl.default.attach(); }
+
+             $animate.setClass($element, INACTIVE_CLASS, ACTIVE_CLASS);
+           }
          };
 
          $scope.$watchCollection($attrs.ngMessages || $attrs['for'], ctrl.render);
@@ -397,23 +424,32 @@ angular.module('ngMessages', [])
            }
          };
 
-         this.register = function(comment, messageCtrl) {
-           var nextKey = latestKey.toString();
-           messages[nextKey] = {
-             message: messageCtrl
-           };
-           insertMessageNode($element[0], comment, nextKey);
-           comment.$$ngMessageNode = nextKey;
-           latestKey++;
+         this.register = function(comment, messageCtrl, isDefault) {
+           if (isDefault) {
+            ctrl.default = messageCtrl;
+           } else {
+            var nextKey = latestKey.toString();
+            messages[nextKey] = {
+              message: messageCtrl
+            };
+            insertMessageNode($element[0], comment, nextKey);
+            comment.$$ngMessageNode = nextKey;
+            latestKey++;
+           }
 
            ctrl.reRender();
          };
 
-         this.deregister = function(comment) {
-           var key = comment.$$ngMessageNode;
-           delete comment.$$ngMessageNode;
-           removeMessageNode($element[0], comment, key);
-           delete messages[key];
+         this.deregister = function(comment, isDefault) {
+           if (isDefault) {
+            delete ctrl.default;
+           } else {
+            var key = comment.$$ngMessageNode;
+            delete comment.$$ngMessageNode;
+            removeMessageNode($element[0], comment, key);
+            delete messages[key];
+           }
+
            ctrl.reRender();
          };
 
@@ -594,7 +630,43 @@ angular.module('ngMessages', [])
     *
     * @param {expression} ngMessageExp|whenExp an expression value corresponding to the message key.
     */
-  .directive('ngMessageExp', ngMessageDirectiveFactory('A'));
+  .directive('ngMessageExp', ngMessageDirectiveFactory('A'))
+
+   /**
+    * @ngdoc directive
+    * @name ngMessageDefault
+    * @restrict AE
+    * @scope
+    *
+    * @description
+    * `ngMessageDefault` is a directive with the purpose to show and hide a default message.
+    * For `ngMessageDefault` to operate, no `ngMessage` inner directive should be displayed
+    * in the parent `ngMessages` directive.
+    *
+    * More information about using `ngMessageDefault` can be found in the
+    * {@link module:ngMessages `ngMessages` module documentation}.
+    *
+    * @usage
+    * ```html
+    * <!-- using attribute directives -->
+    * <ANY ng-messages="expression" role="alert">
+    *   <ANY ng-message="stringValue">...</ANY>
+    *   <ANY ng-message="stringValue1, stringValue2, ...">...</ANY>
+    *   <ANY ng-message-default>...</ANY>
+    * </ANY>
+    *
+    * <!-- or by using element directives -->
+    * <ng-messages for="expression" role="alert">
+    *   <ng-message when="stringValue">...</ng-message>
+    *   <ng-message when="stringValue1, stringValue2, ...">...</ng-message>
+    *   <ng-message-default>...</ng-message-default>
+    * </ng-messages>
+    * ```
+    *
+    * @param {expression} ngMessageDefault|when no ngMessage matches.
+    */
+  .directive('ngMessageDefault', ngMessageDefaultDirectiveFactory('AE'));
+
 
 function ngMessageDirectiveFactory(restrict) {
   return ['$animate', function($animate) {
@@ -667,4 +739,48 @@ function ngMessageDirectiveFactory(restrict) {
           : collection.hasOwnProperty(key);
     }
   }
+}
+
+function ngMessageDefaultDirectiveFactory(restrict) {
+  return ['$animate', function($animate) {
+    return {
+      restrict: 'AE',
+      transclude: 'element',
+      terminal: true,
+      require: '^^ngMessages',
+      link: function(scope, element, attrs, ngMessagesCtrl, $transclude) {
+        var commentNode = element[0];
+
+        var currentElement, messageCtrl;
+        ngMessagesCtrl.register(commentNode, messageCtrl = {
+          attach: function() {
+            if (!currentElement) {
+              $transclude(scope, function(elm) {
+                $animate.enter(elm, null, element);
+                currentElement = elm;
+
+                // in the event that the parent element is destroyed
+                // by any other structural directive then it's time
+                // to deregister the default message (boolean set to true)
+                // from the controller
+                currentElement.on('$destroy', function() {
+                  if (currentElement) {
+                    ngMessagesCtrl.deregister(commentNode, true);
+                    messageCtrl.detach();
+                  }
+                });
+              });
+            }
+          },
+          detach: function() {
+            if (currentElement) {
+              var elm = currentElement;
+              currentElement = null;
+              $animate.leave(elm);
+            }
+          }
+        }, true); // boolean set to true to specify default message
+      }
+    };
+  }];
 }
