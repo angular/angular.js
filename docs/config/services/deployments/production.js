@@ -1,9 +1,8 @@
 "use strict";
 
-var versionInfo = require('../../../../lib/versions/version-info');
-var cdnUrl = "//ajax.googleapis.com/ajax/libs/angularjs/" + versionInfo.cdnVersion;
+module.exports = function productionDeployment(getVersion, versionInfo) {
+  var cdnUrl = "//ajax.googleapis.com/ajax/libs/angularjs/" + versionInfo.cdnVersion;
 
-module.exports = function productionDeployment(getVersion) {
   return {
     name: 'production',
     examples: {
