@@ -338,6 +338,13 @@ describe("resource", function() {
   });
 
 
+  it('should handle url encoding in mapped params', function() {
+    var R = $resource('/api/myapp/resource?from=:from');
+    $httpBackend.expect('GET', '/api/myapp/resource?from=bar%20%26%20blanks').respond({});
+    R.get({from: 'bar & blanks'});
+  });
+
+
   it('should build resource with default param', function() {
     $httpBackend.expect('GET', '/Order/123/Line/456.visa?minimum=0.05').respond({id: 'abc'});
     var LineItem = $resource('/Order/:orderId/Line/:id:verb',
