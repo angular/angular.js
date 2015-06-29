@@ -433,7 +433,9 @@ angular.module('ngResource', ['ng']).
             }
             if (!(new RegExp("^\\d+$").test(param)) && param &&
               (new RegExp("(^|[^\\\\]):" + param + "(\\W|$)").test(url))) {
-              urlParams[param] = true;
+              urlParams[param] = {
+                isQueryParamValue: (new RegExp("\\?.*=:" + param + "(?:\\W|$)")).test(url)
+              };
             }
           });
           url = url.replace(/\\:/g, ':');
@@ -443,10 +445,14 @@ angular.module('ngResource', ['ng']).
           });
 
           params = params || {};
-          forEach(self.urlParams, function(_, urlParam) {
+          forEach(self.urlParams, function(paramInfo, urlParam) {
             val = params.hasOwnProperty(urlParam) ? params[urlParam] : self.defaults[urlParam];
             if (angular.isDefined(val) && val !== null) {
-              encodedVal = encodeUriSegment(val);
+              if (paramInfo.isQueryParamValue) {
+                encodedVal = encodeUriQuery(val, true);
+              } else {
+                encodedVal = encodeUriSegment(val);
+              }
               url = url.replace(new RegExp(":" + urlParam + "(\\W|$)", "g"), function(match, p1) {
                 return encodedVal + p1;
               });
