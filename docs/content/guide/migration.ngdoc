@@ -246,6 +246,9 @@ Due to [6a38dbfd](https://github.com/angular/angular.js/commit/6a38dbfd3c34c8f9e
 previously, '&' expressions would always set up a function in the isolate scope. Now, if the binding
 is marked as optional and the attribute is not specified, no function will be added to the isolate scope.
 
+Due to [62d514b](https://github.com/angular/angular.js/commit/62d514b06937cc7dd86e973ea11165c88343b42d),
+returning an object from a controller constructor function will now override the scope. Views that use the
+controllerAs method will no longer get the this reference, but the returned object. 
 
 
 ## Cookies (`ngCookies`)
