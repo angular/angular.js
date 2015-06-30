@@ -624,7 +624,7 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
       // transition delay to allow for the transition to naturally do it's thing. The beauty here is
       // that if there is no transition defined then nothing will happen and this will also allow
       // other transitions to be stacked on top of each other without any chopping them out.
-      if (isFirst) {
+      if (isFirst && !options.skipBlocking) {
         blockTransitions(node, SAFE_FAST_FORWARD_DURATION_VALUE);
       }
 
@@ -683,11 +683,12 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
       }
 
       applyAnimationFromStyles(element, options);
-      if (!flags.blockTransition) {
+
+      if (flags.blockTransition || flags.blockKeyframeAnimation) {
+        applyBlocking(maxDuration);
+      } else if (!options.skipBlocking) {
         blockTransitions(node, false);
       }
-
-      applyBlocking(maxDuration);
 
       // TODO(matsko): for 1.5 change this code to have an animator object for better debugging
       return {
