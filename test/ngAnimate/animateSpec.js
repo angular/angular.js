@@ -25,12 +25,12 @@ describe("animations", function() {
       });
     });
 
-    inject(function($animate, $rootScope, $document) {
+    inject(function($animate, $rootScope, $$body) {
       $animate.enabled(true);
 
       element = jqLite('<div></div>');
 
-      $animate.enter(element, jqLite($document[0].body));
+      $animate.enter(element, $$body);
       $rootScope.$digest();
 
       expect(capturedAnimation).toBeTruthy();
@@ -115,7 +115,7 @@ describe("animations", function() {
         return overriddenAnimationRunner || defaultFakeAnimationRunner;
       });
 
-      return function($document, $rootElement, $q, $animate, $$AnimateRunner) {
+      return function($rootElement, $q, $animate, $$AnimateRunner, $$body) {
         defaultFakeAnimationRunner = new $$AnimateRunner();
         $animate.enabled(true);
 
@@ -125,7 +125,7 @@ describe("animations", function() {
 
         $rootElement.append(parent);
         $rootElement.append(parent2);
-        jqLite($document[0].body).append($rootElement);
+        $$body.append($rootElement);
       };
     }));
 
@@ -745,7 +745,7 @@ describe("animations", function() {
       }));
 
       it("should disable all child animations for atleast one RAF when a structural animation is issued",
-        inject(function($animate, $rootScope, $compile, $document, $rootElement, $$rAF, $$AnimateRunner) {
+        inject(function($animate, $rootScope, $compile, $$body, $rootElement, $$rAF, $$AnimateRunner) {
 
         element = $compile(
           '<div><div class="if-animation" ng-if="items.length">' +
@@ -755,7 +755,7 @@ describe("animations", function() {
           '</div></div>'
         )($rootScope);
 
-        jqLite($document[0].body).append($rootElement);
+        $$body.append($rootElement);
         $rootElement.append(element);
 
         var runner = new $$AnimateRunner();
@@ -1239,8 +1239,8 @@ describe("animations", function() {
           return new $$AnimateRunner();
         };
       });
-      return function($rootElement, $document, $animate) {
-        jqLite($document[0].body).append($rootElement);
+      return function($rootElement, $$body, $animate) {
+        $$body.append($rootElement);
         parent  = jqLite('<div class="parent"></div>');
         element = jqLite('<div class="element"></div>');
         child   = jqLite('<div class="child"></div>');
@@ -1344,15 +1344,14 @@ describe("animations", function() {
     }));
 
     it('should allow an element to pinned elsewhere and still be available in animations',
-      inject(function($animate, $compile, $document, $rootElement, $rootScope) {
+      inject(function($animate, $compile, $$body, $rootElement, $rootScope) {
 
-      var body = jqLite($document[0].body);
       var innerParent = jqLite('<div></div>');
-      body.append(innerParent);
+      $$body.append(innerParent);
       innerParent.append($rootElement);
 
       var element = jqLite('<div></div>');
-      body.append(element);
+      $$body.append(element);
 
       $animate.addClass(element, 'red');
       $rootScope.$digest();
@@ -1368,17 +1367,16 @@ describe("animations", function() {
     }));
 
     it('should adhere to the disabled state of the hosted parent when an element is pinned',
-      inject(function($animate, $compile, $document, $rootElement, $rootScope) {
+      inject(function($animate, $compile, $$body, $rootElement, $rootScope) {
 
-      var body = jqLite($document[0].body);
       var innerParent = jqLite('<div></div>');
-      body.append(innerParent);
+      $$body.append(innerParent);
       innerParent.append($rootElement);
       var innerChild = jqLite('<div></div>');
       $rootElement.append(innerChild);
 
       var element = jqLite('<div></div>');
-      body.append(element);
+      $$body.append(element);
 
       $animate.pin(element, innerChild);
 
@@ -1413,18 +1411,17 @@ describe("animations", function() {
         };
       });
 
-      return function($document, $rootElement, $animate) {
-        body = jqLite($document[0].body);
-        body.append($rootElement);
+      return function($$body, $rootElement, $animate) {
+        $$body.append($rootElement);
         $animate.enabled(true);
       };
     }));
 
     it('should trigger a callback for an enter animation',
-      inject(function($animate, $rootScope, $$rAF, $rootElement) {
+      inject(function($animate, $rootScope, $$rAF, $rootElement, $$body) {
 
       var callbackTriggered = false;
-      $animate.on('enter', body, function() {
+      $animate.on('enter', $$body, function() {
         callbackTriggered = true;
       });
 
@@ -1438,12 +1435,12 @@ describe("animations", function() {
     }));
 
     it('should fire the callback with the signature of (element, phase, data)',
-      inject(function($animate, $rootScope, $$rAF, $rootElement) {
+      inject(function($animate, $rootScope, $$rAF, $rootElement, $$body) {
 
       var capturedElement;
       var capturedPhase;
       var capturedData;
-      $animate.on('enter', body,
+      $animate.on('enter', $$body,
         function(element, phase, data) {
 
         capturedElement = element;
@@ -1502,13 +1499,13 @@ describe("animations", function() {
     }));
 
     it('should remove all the event-based event listeners when $animate.off(event) is called',
-      inject(function($animate, $rootScope, $$rAF, $rootElement) {
+      inject(function($animate, $rootScope, $$rAF, $rootElement, $$body) {
 
       element = jqLite('<div></div>');
 
       var count = 0;
       $animate.on('enter', element, counter);
-      $animate.on('enter', body, counter);
+      $animate.on('enter', $$body, counter);
 
       function counter(element, phase) {
         count++;
@@ -1530,13 +1527,13 @@ describe("animations", function() {
     }));
 
     it('should remove the container-based event listeners when $animate.off(event, container) is called',
-      inject(function($animate, $rootScope, $$rAF, $rootElement) {
+      inject(function($animate, $rootScope, $$rAF, $rootElement, $$body) {
 
       element = jqLite('<div></div>');
 
       var count = 0;
       $animate.on('enter', element, counter);
-      $animate.on('enter', body, counter);
+      $animate.on('enter', $$body, counter);
 
       function counter(element, phase) {
         if (phase === 'start') {
@@ -1550,7 +1547,7 @@ describe("animations", function() {
 
       expect(count).toBe(2);
 
-      $animate.off('enter', body);
+      $animate.off('enter', $$body);
 
       $animate.enter(element, $rootElement);
       $rootScope.$digest();
@@ -1596,13 +1593,13 @@ describe("animations", function() {
     }));
 
     it('should fire a `start` callback when the animation starts with the matching element',
-      inject(function($animate, $rootScope, $$rAF, $rootElement) {
+      inject(function($animate, $rootScope, $$rAF, $rootElement, $$body) {
 
       element = jqLite('<div></div>');
 
       var capturedState;
       var capturedElement;
-      $animate.on('enter', body, function(element, phase) {
+      $animate.on('enter', $$body, function(element, phase) {
         capturedState = phase;
         capturedElement = element;
       });
@@ -1616,13 +1613,13 @@ describe("animations", function() {
     }));
 
     it('should fire a `close` callback when the animation ends with the matching element',
-      inject(function($animate, $rootScope, $$rAF, $rootElement) {
+      inject(function($animate, $rootScope, $$rAF, $rootElement, $$body) {
 
       element = jqLite('<div></div>');
 
       var capturedState;
       var capturedElement;
-      $animate.on('enter', body, function(element, phase) {
+      $animate.on('enter', $$body, function(element, phase) {
         capturedState = phase;
         capturedElement = element;
       });

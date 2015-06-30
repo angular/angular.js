@@ -468,12 +468,12 @@ describe('ngClass animations', function() {
         };
       });
     });
-    inject(function($compile, $rootScope, $browser, $rootElement, $animate, $timeout, $document, $$rAF) {
+    inject(function($compile, $rootScope, $browser, $rootElement, $animate, $timeout, $$body, $$rAF) {
       $animate.enabled(true);
 
       $rootScope.val = 'crazy';
       element = angular.element('<div ng-class="val"></div>');
-      jqLite($document[0].body).append($rootElement);
+      $$body.append($rootElement);
 
       $compile(element)($rootScope);
 
