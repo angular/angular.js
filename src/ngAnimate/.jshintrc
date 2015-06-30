@@ -20,8 +20,29 @@
     "isElement": false,
 
     "ELEMENT_NODE": false,
+    "COMMENT_NODE": false,
     "NG_ANIMATE_CLASSNAME": false,
     "NG_ANIMATE_CHILDREN_DATA": false,
+
+    "ADD_CLASS_SUFFIX": false,
+    "REMOVE_CLASS_SUFFIX": false,
+    "EVENT_CLASS_PREFIX": false,
+    "ACTIVE_CLASS_SUFFIX": false,
+
+    "TRANSITION_DURATION_PROP": false,
+    "TRANSITION_DELAY_PROP": false,
+    "TRANSITION_PROP": false,
+    "PROPERTY_KEY": false,
+    "DURATION_KEY": false,
+    "DELAY_KEY": false,
+    "TIMING_KEY": false,
+    "ANIMATION_DURATION_PROP": false,
+    "ANIMATION_DELAY_PROP": false,
+    "ANIMATION_PROP": false,
+    "ANIMATION_ITERATION_COUNT_KEY": false,
+    "SAFE_FAST_FORWARD_DURATION_VALUE": false,
+    "TRANSITIONEND_EVENT": false,
+    "ANIMATIONEND_EVENT": false,
 
     "assertArg": false,
     "isPromiseLike": false,
@@ -38,6 +59,13 @@
     "removeFromArray": false,
     "stripCommentsFromElement": false,
     "extractElementNode": false,
-    "getDomNode": false
+    "getDomNode": false,
+
+    "applyGeneratedPreparationClasses": false,
+    "clearGeneratedClasses": false,
+    "blockTransitions": false,
+    "blockKeyframeAnimations": false,
+    "applyInlineStyle": false,
+    "concatWithSpace": false
   }
 }

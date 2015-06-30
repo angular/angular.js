@@ -406,6 +406,28 @@ describe('$$animation', function() {
         args = removeListen.mostRecentCall.args[0];
         expect(args).toBe('$destroy');
       }));
+
+      it('should always sort parent-element animations to run in order of parent-to-child DOM structure',
+        inject(function($$animation, $$rAF, $rootScope) {
+
+        var child = jqLite('<div></div>');
+        var grandchild = jqLite('<div></div>');
+
+        element.append(child);
+        child.append(grandchild);
+
+        $$animation(grandchild, 'enter');
+        $$animation(child, 'enter');
+        $$animation(element, 'enter');
+
+        expect(captureLog.length).toBe(0);
+
+        $rootScope.$digest();
+
+        expect(captureLog[0].element).toBe(element);
+        expect(captureLog[1].element).toBe(child);
+        expect(captureLog[2].element).toBe(grandchild);
+      }));
     });
 
     describe("grouped", function() {
@@ -677,6 +699,36 @@ describe('$$animation', function() {
         toAnchors[0].remove();
 
         expect(runnerLog).toEqual([]);
+      }));
+
+      it('should prepare a parent-element animation to run first before the anchored animation',
+        inject(function($$animation, $$rAF, $rootScope, $rootElement) {
+
+        fromAnchors[0].attr('ng-animate-ref', 'shared');
+        toAnchors[0].attr('ng-animate-ref', 'shared');
+
+        var parent = jqLite('<div></div>');
+        parent.append(fromElement);
+        parent.append(toElement);
+        $rootElement.append(parent);
+
+        fromElement.addClass('group-1');
+        toElement.addClass('group-1');
+
+        // issued first
+        $$animation(toElement, 'enter');
+        $$animation(fromElement, 'leave');
+
+        // issued second
+        $$animation(parent, 'addClass', { addClass: 'red' });
+
+        expect(captureLog.length).toBe(0);
+
+        $rootScope.$digest();
+
+        expect(captureLog[0].element).toBe(parent);
+        expect(captureLog[1].from.element).toBe(fromElement);
+        expect(captureLog[1].to.element).toBe(toElement);
       }));
     });
   });
