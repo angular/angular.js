@@ -1296,7 +1296,7 @@ describe('$compile', function() {
         ));
 
         it('should not load cross domain templates by default', inject(
-          function($compile, $httpBackend, $rootScope, $sce) {
+          function($compile, $rootScope) {
             expect(function() {
               $compile('<div class="crossDomainTemplate"></div>')($rootScope);
             }).toThrowMinErr('$sce', 'insecurl', 'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: http://example.com/should-not-load.html');
@@ -1304,7 +1304,7 @@ describe('$compile', function() {
         ));
 
         it('should trust what is already in the template cache', inject(
-          function($compile, $httpBackend, $rootScope, $templateCache, $sce) {
+          function($compile, $httpBackend, $rootScope, $templateCache) {
             $httpBackend.expect('GET', 'http://example.com/should-not-load.html').respond('<span>example.com/remote-version</span>');
             $templateCache.put('http://example.com/should-not-load.html', '<span>example.com/cached-version</span>');
             element = $compile('<div class="crossDomainTemplate"></div>')($rootScope);
