@@ -86,24 +86,58 @@ var $$AnimationProvider = ['$animateProvider', function($animateProvider) {
         // now any future animations will be in another postDigest
         animationQueue.length = 0;
 
-        forEach(groupAnimations(animations), function(animationEntry) {
-          // it's important that we apply the `ng-animate` CSS class and the
-          // temporary classes before we do any driver invoking since these
-          // CSS classes may be required for proper CSS detection.
-          animationEntry.beforeStart();
+        var groupedAnimations = groupAnimations(animations);
+        var sortedAnimations = [];
 
-          var operation = invokeFirstDriver(animationEntry);
-          var triggerAnimationStart = operation && operation.start; /// TODO(matsko): only recognize operation.start()
+        var finalIndex = groupedAnimations.length - 1;
 
-          var closeFn = animationEntry.close;
-          if (!triggerAnimationStart) {
-            closeFn();
-          } else {
-            var animationRunner = triggerAnimationStart();
-            animationRunner.done(function(status) {
-              closeFn(!status);
+        forEach(groupedAnimations, function(animationEntry, index) {
+          sortedAnimations.push({
+            node: getDomNode(animationEntry.from ? animationEntry.from.element : animationEntry.element),
+            fn: triggerAnimationStart
+          });
+
+          if (index === finalIndex) {
+            // we need to sort each of the animations in order of parent to child
+            // relationships. This ensures that the child classes are applied at the
+            // right time.
+            sortedAnimations.sort(function(a,b) {
+              return b.node.contains(a.node);
+            }).forEach(function(entry) {
+              entry.fn();
             });
-            updateAnimationRunners(animationEntry, animationRunner);
+          }
+
+          function triggerAnimationStart() {
+            // it's important that we apply the `ng-animate` CSS class and the
+            // temporary classes before we do any driver invoking since these
+            // CSS classes may be required for proper CSS detection.
+            animationEntry.beforeStart();
+
+            var startAnimationFn, closeFn = animationEntry.close;
+
+            // in the event that the element was removed before the digest runs or
+            // during the RAF sequencing then we should not trigger the animation.
+            var targetElement = animationEntry.anchors
+                ? (animationEntry.from.element || animationEntry.to.element)
+                : animationEntry.element;
+
+            if (getRunner(targetElement)) {
+              var operation = invokeFirstDriver(animationEntry);
+              if (operation) {
+                startAnimationFn = operation.start;
+              }
+            }
+
+            if (!startAnimationFn) {
+              closeFn();
+            } else {
+              var animationRunner = startAnimationFn();
+              animationRunner.done(function(status) {
+                closeFn(!status);
+              });
+              updateAnimationRunners(animationEntry, animationRunner);
+            }
           }
         });
       });

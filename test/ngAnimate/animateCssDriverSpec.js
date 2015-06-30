@@ -97,11 +97,11 @@ describe("ngAnimate $$animateCssDriver", function() {
         expect(isFunction(runner.start)).toBeTruthy();
       }));
 
-      it("should signal $animateCss to apply the classes early when animation is structural", inject(function() {
-        driver({ element: element, structural: true });
-        expect(capturedAnimation[1].applyClassesEarly).toBeTruthy();
-
+      it("should not signal $animateCss to apply the classes early when animation is structural", inject(function() {
         driver({ element: element });
+        expect(capturedAnimation[1].applyClassesEarly).toBeFalsy();
+
+        driver({ element: element, structural: true });
         expect(capturedAnimation[1].applyClassesEarly).toBeFalsy();
       }));
 

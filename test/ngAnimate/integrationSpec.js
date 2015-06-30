@@ -4,7 +4,7 @@ describe('ngAnimate integration tests', function() {
 
   beforeEach(module('ngAnimate'));
 
-  var html, ss;
+  var element, html, ss;
   beforeEach(module(function() {
     return function($rootElement, $document, $window, $animate) {
       $animate.enabled(true);
@@ -19,6 +19,11 @@ describe('ngAnimate integration tests', function() {
     };
   }));
 
+  afterEach(function() {
+    dealoc(element);
+    ss.destroy();
+  });
+
   describe('CSS animations', function() {
     if (!browserSupportsCssAnimations()) return;
 
@@ -26,7 +31,7 @@ describe('ngAnimate integration tests', function() {
       ['enter', 'leave', 'move', 'addClass', 'removeClass', 'setClass'], function(event) {
 
       inject(function($animate, $compile, $rootScope, $rootElement, $$rAF) {
-        var element = jqLite('<div class="animate-me"></div>');
+        element = jqLite('<div class="animate-me"></div>');
         $compile(element)($rootScope);
 
         var className = 'klass';
@@ -105,6 +110,117 @@ describe('ngAnimate integration tests', function() {
         expect(animationCompleted).toBe(true);
       });
     });
+
+    it('should always synchronously add css classes in order for child animations to animate properly',
+      inject(function($animate, $compile, $rootScope, $rootElement, $$rAF, $document) {
+
+      ss.addRule('.animations-enabled .animate-me.ng-enter', 'transition:2s linear all;');
+
+      element = jqLite('<div ng-class="{\'animations-enabled\':exp}"></div>');
+      var child = jqLite('<div ng-if="exp" class="animate-me"></div>');
+
+      element.append(child);
+      $rootElement.append(element);
+      jqLite($document[0].body).append($rootElement);
+
+      $compile(element)($rootScope);
+
+      $rootScope.exp = true;
+      $rootScope.$digest();
+
+      child = element.find('div');
+
+      expect(element).toHaveClass('animations-enabled');
+      expect(child).toHaveClass('ng-enter');
+
+      $$rAF.flush();
+
+      expect(child).toHaveClass('ng-enter-active');
+
+      browserTrigger(child, 'transitionend', { timeStamp: Date.now(), elapsedTime: 2 });
+
+      expect(child).not.toHaveClass('ng-enter-active');
+      expect(child).not.toHaveClass('ng-enter');
+    }));
+
+    it('should synchronously add/remove ng-class expressions in time for other animations to run on the same element',
+      inject(function($animate, $compile, $rootScope, $rootElement, $$rAF, $document) {
+
+      ss.addRule('.animate-me.ng-enter.on', 'transition:2s linear all;');
+
+      element = jqLite('<div><div ng-if="exp" ng-class="{on:exp2}" class="animate-me"></div></div>');
+
+      $rootElement.append(element);
+      jqLite($document[0].body).append($rootElement);
+
+      $compile(element)($rootScope);
+
+      $rootScope.exp = true;
+      $rootScope.$digest();
+      $$rAF.flush();
+
+      var child = element.find('div');
+
+      expect(child).not.toHaveClass('on');
+      expect(child).not.toHaveClass('ng-enter');
+
+      $rootScope.exp = false;
+      $rootScope.$digest();
+
+      $rootScope.exp = true;
+      $rootScope.exp2 = true;
+      $rootScope.$digest();
+
+      child = element.find('div');
+
+      expect(child).toHaveClass('on');
+      expect(child).toHaveClass('ng-enter');
+
+      $$rAF.flush();
+
+      expect(child).toHaveClass('ng-enter-active');
+
+      browserTrigger(child, 'transitionend', { timeStamp: Date.now(), elapsedTime: 2 });
+
+      expect(child).not.toHaveClass('ng-enter-active');
+      expect(child).not.toHaveClass('ng-enter');
+    }));
+
+    it('should animate ng-class and a structural animation in parallel on the same element',
+      inject(function($animate, $compile, $rootScope, $rootElement, $$rAF, $document) {
+
+      ss.addRule('.animate-me.ng-enter', 'transition:2s linear all;');
+      ss.addRule('.animate-me.expand', 'transition:5s linear all; font-size:200px;');
+
+      element = jqLite('<div><div ng-if="exp" ng-class="{expand:exp2}" class="animate-me"></div></div>');
+
+      $rootElement.append(element);
+      jqLite($document[0].body).append($rootElement);
+
+      $compile(element)($rootScope);
+
+      $rootScope.exp = true;
+      $rootScope.exp2 = true;
+      $rootScope.$digest();
+
+      var child = element.find('div');
+
+      expect(child).toHaveClass('ng-enter');
+      expect(child).toHaveClass('expand-add');
+      expect(child).toHaveClass('expand');
+
+      $$rAF.flush();
+
+      expect(child).toHaveClass('ng-enter-active');
+      expect(child).toHaveClass('expand-add-active');
+
+      browserTrigger(child, 'transitionend', { timeStamp: Date.now(), elapsedTime: 2 });
+
+      expect(child).not.toHaveClass('ng-enter-active');
+      expect(child).not.toHaveClass('ng-enter');
+      expect(child).not.toHaveClass('expand-add-active');
+      expect(child).not.toHaveClass('expand-add');
+    }));
   });
 
   describe('JS animations', function() {
@@ -128,7 +244,7 @@ describe('ngAnimate integration tests', function() {
       });
 
       inject(function($animate, $compile, $rootScope, $rootElement, $$rAF) {
-        var element = jqLite('<div class="animate-me"></div>');
+        element = jqLite('<div class="animate-me"></div>');
         $compile(element)($rootScope);
 
         var className = 'klass';
@@ -184,6 +300,134 @@ describe('ngAnimate integration tests', function() {
 
         $rootScope.$digest();
         expect(animationCompleted).toBe(true);
+      });
+    });
+
+    they('should not wait for a parent\'s classes to resolve if a $prop is animation used for children',
+      ['beforeAddClass', 'beforeRemoveClass', 'beforeSetClass'], function(phase) {
+
+      var capturedChildClasses;
+      var endParentAnimationFn;
+
+      module(function($animateProvider) {
+        $animateProvider.register('.parent-man', function() {
+          var animateFactory = {};
+          animateFactory[phase] = function(element, addClass, removeClass, done) {
+            // this will wait until things are over
+            endParentAnimationFn = done;
+          };
+          return animateFactory;
+        });
+
+        $animateProvider.register('.child-man', function() {
+          return {
+            enter: function(element, done) {
+              capturedChildClasses = element.parent().attr('class');
+              done();
+            }
+          };
+        });
+      });
+
+      inject(function($animate, $compile, $rootScope, $rootElement) {
+        element = jqLite('<div class="parent-man"></div>');
+        var child = jqLite('<div class="child-man"></div>');
+
+        html(element);
+        $compile(element)($rootScope);
+
+        $animate.enter(child, element);
+        switch (phase) {
+          case 'beforeAddClass':
+            $animate.addClass(element, 'cool');
+            break;
+
+          case 'beforeSetClass':
+            $animate.setClass(element, 'cool');
+            break;
+
+          case 'beforeRemoveClass':
+            element.addClass('cool');
+            $animate.removeClass(element, 'cool');
+            break;
+        }
+
+        $rootScope.$digest();
+
+        expect(endParentAnimationFn).toBeTruthy();
+
+        // the spaces are used so that ` cool ` can be matched instead
+        // of just a substring like `cool-add`.
+        var safeClassMatchString = ' ' + capturedChildClasses + ' ';
+        if (phase === 'beforeRemoveClass') {
+          expect(safeClassMatchString).toContain(' cool ');
+        } else {
+          expect(safeClassMatchString).not.toContain(' cool ');
+        }
+      });
+    });
+
+    they('should have the parent\'s classes already applied in time for the children if $prop is used',
+      ['addClass', 'removeClass', 'setClass'], function(phase) {
+
+      var capturedChildClasses;
+      var endParentAnimationFn;
+
+      module(function($animateProvider) {
+        $animateProvider.register('.parent-man', function() {
+          var animateFactory = {};
+          animateFactory[phase] = function(element, addClass, removeClass, done) {
+            // this will wait until things are over
+            endParentAnimationFn = done;
+          };
+          return animateFactory;
+        });
+
+        $animateProvider.register('.child-man', function() {
+          return {
+            enter: function(element, done) {
+              capturedChildClasses = element.parent().attr('class');
+              done();
+            }
+          };
+        });
+      });
+
+      inject(function($animate, $compile, $rootScope, $rootElement) {
+        element = jqLite('<div class="parent-man"></div>');
+        var child = jqLite('<div class="child-man"></div>');
+
+        html(element);
+        $compile(element)($rootScope);
+
+        $animate.enter(child, element);
+        switch (phase) {
+          case 'addClass':
+            $animate.addClass(element, 'cool');
+            break;
+
+          case 'setClass':
+            $animate.setClass(element, 'cool');
+            break;
+
+          case 'removeClass':
+            element.addClass('cool');
+            $animate.removeClass(element, 'cool');
+            break;
+        }
+
+        $rootScope.$digest();
+
+        expect(endParentAnimationFn).toBeTruthy();
+
+        // the spaces are used so that ` cool ` can be matched instead
+        // of just a substring like `cool-add`.
+        var safeClassMatchString = ' ' + capturedChildClasses + ' ';
+        if (phase === 'removeClass') {
+          expect(safeClassMatchString).not.toContain(' cool ');
+        } else {
+          expect(safeClassMatchString).toContain(' cool ');
+        }
       });
     });
   });

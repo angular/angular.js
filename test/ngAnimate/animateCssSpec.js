@@ -1419,7 +1419,7 @@ describe("ngAnimate $animateCss", function() {
 
           // just to prove it works
           data.skipBlocking = false;
-          var animator = $animateCss(element, { addClass: 'test' });
+          $animateCss(element, { addClass: 'test' });
           expect(blockSpy).toHaveBeenCalled();
         });
       });
