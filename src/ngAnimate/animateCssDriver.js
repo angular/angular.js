@@ -9,13 +9,13 @@ var $$AnimateCssDriverProvider = ['$$animationProvider', function($$animationPro
   var NG_OUT_ANCHOR_CLASS_NAME = 'ng-anchor-out';
   var NG_IN_ANCHOR_CLASS_NAME = 'ng-anchor-in';
 
-  this.$get = ['$animateCss', '$rootScope', '$$AnimateRunner', '$rootElement', '$document', '$sniffer',
-       function($animateCss,   $rootScope,   $$AnimateRunner,   $rootElement,   $document,   $sniffer) {
+  this.$get = ['$animateCss', '$rootScope', '$$AnimateRunner', '$rootElement', '$$body', '$sniffer',
+       function($animateCss,   $rootScope,   $$AnimateRunner,   $rootElement,   $$body,   $sniffer) {
 
     // only browsers that support these properties can render animations
     if (!$sniffer.animations && !$sniffer.transitions) return noop;
 
-    var bodyNode = getDomNode($document).body;
+    var bodyNode = getDomNode($$body);
     var rootNode = getDomNode($rootElement);
 
     var rootBodyElement = jqLite(bodyNode.parentNode === rootNode ? bodyNode : rootNode);

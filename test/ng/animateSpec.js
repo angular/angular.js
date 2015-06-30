@@ -68,10 +68,10 @@ describe("$animate", function() {
       expect(element).toBeHidden();
     }));
 
-    it("should run each method and return a promise", inject(function($animate, $document) {
+    it("should run each method and return a promise", inject(function($animate, $document, $$body) {
       var element = jqLite('<div></div>');
       var move   = jqLite('<div></div>');
-      var parent = jqLite($document[0].body);
+      var parent = $$body;
       parent.append(move);
 
       expect($animate.enter(element, parent)).toBeAPromise();
