@@ -315,7 +315,7 @@ function jqLiteOff(element, type, fn, unsupported) {
 }
 
 function jqLiteRemoveData(element, name) {
-  if(element == undefined) {
+  if (element === null) {
     return;
   }
   var expandoId = element.ng339;
