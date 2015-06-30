@@ -1678,6 +1678,45 @@ describe("ngAnimate $animateCss", function() {
         $rootElement.append(element);
       }));
 
+      describe("[$$skipPreparationClasses]", function() {
+        it('should not apply and remove the preparation classes to the element when true',
+          inject(function($animateCss) {
+
+          var options = {
+            duration: 3000,
+            to: fakeStyle,
+            event: 'event',
+            structural: true,
+            addClass: 'klass',
+            $$skipPreparationClasses: true
+          };
+
+          var animator = $animateCss(element, options);
+
+          expect(element).not.toHaveClass('klass-add');
+          expect(element).not.toHaveClass('ng-event');
+
+          var runner = animator.start();
+          triggerAnimationStartFrame();
+
+          expect(element).not.toHaveClass('klass-add');
+          expect(element).not.toHaveClass('ng-event');
+
+          expect(element).toHaveClass('klass-add-active');
+          expect(element).toHaveClass('ng-event-active');
+
+          element.addClass('klass-add ng-event');
+
+          runner.end();
+
+          expect(element).toHaveClass('klass-add');
+          expect(element).toHaveClass('ng-event');
+
+          expect(element).not.toHaveClass('klass-add-active');
+          expect(element).not.toHaveClass('ng-event-active');
+        }));
+      });
+
       describe("[duration]", function() {
         it("should be applied for a transition directly", inject(function($animateCss, $rootElement) {
           var element = jqLite('<div></div>');
