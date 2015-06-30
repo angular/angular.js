@@ -83,7 +83,8 @@ function $AriaProvider() {
     ariaMultiline: true,
     ariaValue: true,
     tabindex: true,
-    bindKeypress: true
+    bindKeypress: true,
+    bindRoleForClick: true
   };
 
   /**
@@ -102,6 +103,8 @@ function $AriaProvider() {
    *  - **tabindex** – `{boolean}` – Enables/disables tabindex tags
    *  - **bindKeypress** – `{boolean}` – Enables/disables keypress event binding on `&lt;div&gt;` and
    *    `&lt;li&gt;` elements with ng-click
+   *  - **bindRoleForClick** – `{boolean}` – Adds role=button to non-interactive elements like `div`
+   *    using ng-click, making them more accessible to users of assistive technologies
    *
    * @description
    * Enables/disables various ARIA attributes
@@ -346,7 +349,10 @@ ngAriaModule.directive('ngShow', ['$aria', function($aria) {
             return true;
           }
         }
-        if (!elem.attr('role') && !isNodeOneOf(elem, nodeBlackList)) {
+
+        if ($aria.config('bindRoleForClick')
+            && !elem.attr('role')
+              && !isNodeOneOf(elem, nodeBlackList)) {
           elem.attr('role', 'button');
         }
 
