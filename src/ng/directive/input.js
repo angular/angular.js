@@ -138,9 +138,15 @@ var inputType = {
      * @param {string} ngModel Assignable angular expression to data-bind to.
      * @param {string=} name Property name of the form under which the control is published.
      * @param {string=} min Sets the `min` validation error key if the value entered is less than `min`. This must be a
-     * valid ISO date string (yyyy-MM-dd).
+     *   valid ISO date string (yyyy-MM-dd). If you want this attribute to be data-bound use interpolation
+     *   (e.g. `min="{{minDate | date:'yyyy-MM-dd'}}"`). Unlike `ngMin`, this will instruct native HTML5 date inputs
+     *   to restrict user input appropriately.
      * @param {string=} max Sets the `max` validation error key if the value entered is greater than `max`. This must be
-     * a valid ISO date string (yyyy-MM-dd).
+     *   a valid ISO date string (yyyy-MM-dd). If you want this attribute to be data-bound use interpolation
+     *   (e.g. `max="{{maxDate | date:'yyyy-MM-dd'}}"`). Unlike `ngMax`, this will instruct native HTML5 date inputs
+     *   to restrict user input appropriately.
+     * @param {date=} ngMin Sets the `min` validation constraint to the date value that the `ngMin` expression evaluates to.
+     * @param {date=} ngMax Sets the `max` validation constraint to the date value that the `ngMax` expression evaluates to.
      * @param {string=} required Sets `required` validation error key if the value is not entered.
      * @param {string=} ngRequired Adds `required` attribute and `required` validation constraint to
      *    the element when the ngRequired expression evaluates to true. Use `ngRequired` instead of
@@ -233,9 +239,15 @@ var inputType = {
     * @param {string} ngModel Assignable angular expression to data-bind to.
     * @param {string=} name Property name of the form under which the control is published.
     * @param {string=} min Sets the `min` validation error key if the value entered is less than `min`. This must be a
-    * valid ISO datetime format (yyyy-MM-ddTHH:mm:ss).
+    *   valid ISO datetime format (yyyy-MM-ddTHH:mm:ss). If you want this attribute to be data-bound use
+    *   interpolation (e.g. `min="{{minDatetimeLocal | date:'yyyy-MM-ddTHH:mm:ss'}}"`). Unlike `ngMin`, this will instruct
+    *   native HTML5 date inputs to restrict user input appropriately.
     * @param {string=} max Sets the `max` validation error key if the value entered is greater than `max`. This must be
-    * a valid ISO datetime format (yyyy-MM-ddTHH:mm:ss).
+    *   a valid ISO datetime format (yyyy-MM-ddTHH:mm:ss). If you want this attribute to be data-bound use
+    *   interpolation (e.g. `max="{{maxDatetimeLocal | date:'yyyy-MM-ddTHH:mm:ss'}}"`). Unlike `ngMax`, this will instruct
+    *   native HTML5 date inputs to restrict user input appropriately.
+    * @param {date=} ngMin Sets the `min` validation constraint to the date value that the `ngMin` expression evaluates to.
+    * @param {date=} ngMax Sets the `max` validation constraint to the date value that the `ngMax` expression evaluates to.
     * @param {string=} required Sets `required` validation error key if the value is not entered.
     * @param {string=} ngRequired Adds `required` attribute and `required` validation constraint to
     *    the element when the ngRequired expression evaluates to true. Use `ngRequired` instead of
@@ -329,9 +341,13 @@ var inputType = {
    * @param {string} ngModel Assignable angular expression to data-bind to.
    * @param {string=} name Property name of the form under which the control is published.
    * @param {string=} min Sets the `min` validation error key if the value entered is less than `min`. This must be a
-   * valid ISO time format (HH:mm:ss).
+   *   valid ISO time format (HH:mm:ss). If you want this attribute to be data-bound use interpolation
+   *   (e.g. `min="{{minTime | date:'HH:mm:ss'}}"`).
    * @param {string=} max Sets the `max` validation error key if the value entered is greater than `max`. This must be a
-   * valid ISO time format (HH:mm:ss).
+   *   valid ISO time format (HH:mm:ss). If you want this attribute to be data-bound use interpolation
+   *   (e.g. `max="{{maxTime | date:'HH:mm:ss'}}"`).
+   * @param {date=} ngMin Sets the `min` validation constraint to the date value that the `ngMin` expression evaluates to.
+   * @param {date=} ngMax Sets the `max` validation constraint to the date value that the `ngMax` expression evaluates to.
    * @param {string=} required Sets `required` validation error key if the value is not entered.
    * @param {string=} ngRequired Adds `required` attribute and `required` validation constraint to
    *    the element when the ngRequired expression evaluates to true. Use `ngRequired` instead of
@@ -424,9 +440,15 @@ var inputType = {
     * @param {string} ngModel Assignable angular expression to data-bind to.
     * @param {string=} name Property name of the form under which the control is published.
     * @param {string=} min Sets the `min` validation error key if the value entered is less than `min`. This must be a
-    * valid ISO week format (yyyy-W##).
+    *   valid ISO week format (yyyy-W##). If you want this attribute to be data-bound use interpolation
+    *   (e.g. `min="{{minWeek | date:'yyyy-Www'}}"`). Unlike `ngMin`, this will instruct native HTML5 date inputs
+    *   to restrict user input appropriately.
     * @param {string=} max Sets the `max` validation error key if the value entered is greater than `max`. This must be
-    * a valid ISO week format (yyyy-W##).
+    * a valid ISO week format (yyyy-W##). If you want this attribute to be data-bound use interpolation
+    *   (e.g. `max="{{maxWeek | date:'yyyy-Www'}}"`). Unlike `ngMax`, this will instruct native HTML5 date inputs
+    *   to restrict user input appropriately.
+    * @param {date=} ngMin Sets the `min` validation constraint to the date value that the `ngMin` expression evaluates to.
+    * @param {date=} ngMax Sets the `max` validation constraint to the date value that the `ngMax` expression evaluates to.
     * @param {string=} required Sets `required` validation error key if the value is not entered.
     * @param {string=} ngRequired Adds `required` attribute and `required` validation constraint to
     *    the element when the ngRequired expression evaluates to true. Use `ngRequired` instead of
@@ -521,9 +543,16 @@ var inputType = {
    * @param {string} ngModel Assignable angular expression to data-bind to.
    * @param {string=} name Property name of the form under which the control is published.
    * @param {string=} min Sets the `min` validation error key if the value entered is less than `min`. This must be
-   * a valid ISO month format (yyyy-MM).
+   *   a valid ISO month format (yyyy-MM). If you want this attribute to be data-bound use interpolation
+   *   (e.g. `min="{{minMonth | date:'yyyy-MM'}}"`). Unlike `ngMin`, this will instruct native HTML5 date inputs
+   *   to restrict user input appropriately.
    * @param {string=} max Sets the `max` validation error key if the value entered is greater than `max`. This must
-   * be a valid ISO month format (yyyy-MM).
+   *   be a valid ISO month format (yyyy-MM). If you want this attribute to be data-bound use interpolation
+   *   (e.g. `max="{{maxMonth | date:'yyyy-MM'}}"`). Unlike `ngMax`, this will instruct native HTML5 date inputs
+   *   to restrict user input appropriately.
+   * @param {date=} ngMin Sets the `min` validation constraint to the date value that the `ngMin` expression evaluates to.
+   * @param {date=} ngMax Sets the `max` validation constraint to the date value that the `ngMax` expression evaluates to.
+
    * @param {string=} required Sets `required` validation error key if the value is not entered.
    * @param {string=} ngRequired Adds `required` attribute and `required` validation constraint to
    *    the element when the ngRequired expression evaluates to true. Use `ngRequired` instead of
