@@ -15,6 +15,7 @@ var angularFiles = {
     'src/ng/anchorScroll.js',
     'src/ng/animate.js',
     'src/ng/asyncCallback.js',
+    'src/ng/body.js',
     'src/ng/browser.js',
     'src/ng/cacheFactory.js',
     'src/ng/compile.js',
