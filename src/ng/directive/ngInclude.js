@@ -178,14 +178,17 @@
  * @param {Object} angularEvent Synthetic event object.
  * @param {String} src URL of content to load.
  */
-var ngIncludeDirective = ['$templateRequest', '$anchorScroll', '$animate', '$sce',
-                  function($templateRequest,   $anchorScroll,   $animate,   $sce) {
+var ngIncludeDirective = ['$templateRequest', '$anchorScroll', '$animate', '$sce', '$compile',
+                  function($templateRequest,   $anchorScroll,   $animate,   $sce, $compile) {
+
+  var linkFns = {};
+
   return {
     restrict: 'ECA',
     priority: 400,
     terminal: true,
     transclude: 'element',
-    controller: angular.noop,
+    controller: noop,
     compile: function(element, attr) {
       var srcExp = attr.ngInclude || attr.src,
           onloadExp = attr.onload || '',
@@ -230,6 +233,9 @@ var ngIncludeDirective = ['$templateRequest', '$anchorScroll', '$animate', '$sce
               if (thisChangeId !== changeCounter) return;
               var newScope = scope.$new();
               ctrl.template = response;
+
+              // Compile and cache the template
+              ctrl.linkFn = linkFns[src] = linkFns[src] || $compile(jqLiteBuildFragment(ctrl.template, document).childNodes);
 
               // Note: This will also link all children of ng-include that were contained in the original
               // html. If that content contains controllers, ... they could pollute/change the scope.
@@ -288,8 +294,10 @@ var ngIncludeFillContentDirective = ['$compile',
           return;
         }
 
-        $element.html(ctrl.template);
-        $compile($element.contents())(scope);
+        $element.empty();
+        ctrl.linkFn(scope, function(clone) {
+          $element.append(clone);
+        }, {futureParentElement: $element});
       }
     };
   }];
