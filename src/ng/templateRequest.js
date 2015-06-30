@@ -20,7 +20,7 @@ var $compileMinErr = minErr('$compile');
  * @property {number} totalPendingRequests total amount of pending template requests being downloaded.
  */
 function $TemplateRequestProvider() {
-  this.$get = ['$templateCache', '$http', '$q', function($templateCache, $http, $q) {
+  this.$get = ['$templateCache', '$http', '$q', '$sce', function($templateCache, $http, $q, $sce) {
     function handleRequestFn(tpl, ignoreRequestError) {
       handleRequestFn.totalPendingRequests++;
 
@@ -38,6 +38,10 @@ function $TemplateRequestProvider() {
         cache: $templateCache,
         transformResponse: transformResponse
       };
+
+      if (!isDefined($templateCache.get(tpl))) {
+        tpl = $sce.getTrustedResourceUrl(tpl);
+      }
 
       return $http.get(tpl, httpOptions)
         ['finally'](function() {
