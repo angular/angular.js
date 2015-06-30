@@ -88,6 +88,7 @@ var angularFiles = {
   'angularModules': {
     'ngAnimate': [
       'src/ngAnimate/shared.js',
+      'src/ngAnimate/body.js',
       'src/ngAnimate/rafScheduler.js',
       'src/ngAnimate/animateChildrenDirective.js',
       'src/ngAnimate/animateCss.js',

@@ -2,6 +2,7 @@
 
 /* global angularAnimateModule: true,
 
+   $$BodyProvider,
    $$rAFMutexFactory,
    $$rAFSchedulerFactory,
    $$AnimateChildrenDirective,
@@ -741,6 +742,8 @@
  * Click here {@link ng.$animate $animate to learn more about animations with `$animate`}.
  */
 angular.module('ngAnimate', [])
+  .provider('$$body', $$BodyProvider)
+
   .directive('ngAnimateChildren', $$AnimateChildrenDirective)
 
   .factory('$$rAFMutex', $$rAFMutexFactory)
