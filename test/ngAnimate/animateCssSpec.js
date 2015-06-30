@@ -1423,7 +1423,7 @@ describe("ngAnimate $animateCss", function() {
       they('should not place a CSS transition block if options.skipBlocking is provided',
         ['enter', 'leave', 'move', 'addClass', 'removeClass'], function(event) {
 
-        inject(function($animateCss, $rootElement, $$body) {
+        inject(function($animateCss, $rootElement, $$body, $window) {
           var element = jqLite('<div></div>');
           $rootElement.append(element);
           $$body.append($rootElement);
@@ -1441,14 +1441,23 @@ describe("ngAnimate $animateCss", function() {
             data.event = event;
           }
 
+          var blockSpy = spyOn($window, 'blockTransitions').andCallThrough();
+
           data.skipBlocking = true;
           var animator = $animateCss(element, data);
+
+          expect(blockSpy).not.toHaveBeenCalled();
 
           expect(element.attr('style')).toBeFalsy();
           animator.start();
           triggerAnimationStartFrame();
 
           expect(element.attr('style')).toBeFalsy();
+
+          // just to prove it works
+          data.skipBlocking = false;
+          var animator = $animateCss(element, { addClass: 'test' });
+          expect(blockSpy).toHaveBeenCalled();
         });
       });
 
