@@ -69,7 +69,9 @@ describe("ngAnimate $$animateCssDriver", function() {
       element = jqLite('<div></div>');
 
       return function($$animateCssDriver, $document, $window) {
-        driver = $$animateCssDriver;
+        driver = function(details, cb) {
+          return $$animateCssDriver(details, cb || noop);
+        };
         ss = createMockStyleSheet($document, $window);
       };
     }));
@@ -97,11 +99,11 @@ describe("ngAnimate $$animateCssDriver", function() {
         expect(isFunction(runner.start)).toBeTruthy();
       }));
 
-      it("should signal $animateCss to apply the classes early when animation is structural", inject(function() {
-        driver({ element: element, structural: true });
-        expect(capturedAnimation[1].applyClassesEarly).toBeTruthy();
-
+      it("should not signal $animateCss to apply the classes early when animation is structural", inject(function() {
         driver({ element: element });
+        expect(capturedAnimation[1].applyClassesEarly).toBeFalsy();
+
+        driver({ element: element, structural: true });
         expect(capturedAnimation[1].applyClassesEarly).toBeFalsy();
       }));
 
