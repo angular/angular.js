@@ -16,8 +16,56 @@ var isElement   = angular.isElement;
 var ELEMENT_NODE = 1;
 var COMMENT_NODE = 8;
 
+var ADD_CLASS_SUFFIX = '-add';
+var REMOVE_CLASS_SUFFIX = '-remove';
+var EVENT_CLASS_PREFIX = 'ng-';
+var ACTIVE_CLASS_SUFFIX = '-active';
+
 var NG_ANIMATE_CLASSNAME = 'ng-animate';
 var NG_ANIMATE_CHILDREN_DATA = '$$ngAnimateChildren';
+
+// Detect proper transitionend/animationend event names.
+var CSS_PREFIX = '', TRANSITION_PROP, TRANSITIONEND_EVENT, ANIMATION_PROP, ANIMATIONEND_EVENT;
+
+// If unprefixed events are not supported but webkit-prefixed are, use the latter.
+// Otherwise, just use W3C names, browsers not supporting them at all will just ignore them.
+// Note: Chrome implements `window.onwebkitanimationend` and doesn't implement `window.onanimationend`
+// but at the same time dispatches the `animationend` event and not `webkitAnimationEnd`.
+// Register both events in case `window.onanimationend` is not supported because of that,
+// do the same for `transitionend` as Safari is likely to exhibit similar behavior.
+// Also, the only modern browser that uses vendor prefixes for transitions/keyframes is webkit
+// therefore there is no reason to test anymore for other vendor prefixes:
+// http://caniuse.com/#search=transition
+if (window.ontransitionend === undefined && window.onwebkittransitionend !== undefined) {
+  CSS_PREFIX = '-webkit-';
+  TRANSITION_PROP = 'WebkitTransition';
+  TRANSITIONEND_EVENT = 'webkitTransitionEnd transitionend';
+} else {
+  TRANSITION_PROP = 'transition';
+  TRANSITIONEND_EVENT = 'transitionend';
+}
+
+if (window.onanimationend === undefined && window.onwebkitanimationend !== undefined) {
+  CSS_PREFIX = '-webkit-';
+  ANIMATION_PROP = 'WebkitAnimation';
+  ANIMATIONEND_EVENT = 'webkitAnimationEnd animationend';
+} else {
+  ANIMATION_PROP = 'animation';
+  ANIMATIONEND_EVENT = 'animationend';
+}
+
+var DURATION_KEY = 'Duration';
+var PROPERTY_KEY = 'Property';
+var DELAY_KEY = 'Delay';
+var TIMING_KEY = 'TimingFunction';
+var ANIMATION_ITERATION_COUNT_KEY = 'IterationCount';
+var ANIMATION_PLAYSTATE_KEY = 'PlayState';
+var SAFE_FAST_FORWARD_DURATION_VALUE = 9999;
+
+var ANIMATION_DELAY_PROP = ANIMATION_PROP + DELAY_KEY;
+var ANIMATION_DURATION_PROP = ANIMATION_PROP + DURATION_KEY;
+var TRANSITION_DELAY_PROP = TRANSITION_PROP + DELAY_KEY;
+var TRANSITION_DURATION_PROP = TRANSITION_PROP + DURATION_KEY;
 
 var isPromiseLike = function(p) {
   return p && p.then ? true : false;
@@ -172,6 +220,11 @@ function mergeAnimationOptions(element, target, newOptions) {
   var toRemove = (target.removeClass || '') + ' ' + (newOptions.removeClass || '');
   var classes = resolveElementClasses(element.attr('class'), toAdd, toRemove);
 
+  if (newOptions.preparationClasses) {
+    target.preparationClasses = concatWithSpace(newOptions.preparationClasses, target.preparationClasses);
+    delete newOptions.preparationClasses;
+  }
+
   extend(target, newOptions);
 
   if (classes.addClass) {
@@ -249,4 +302,60 @@ function resolveElementClasses(existing, toAdd, toRemove) {
 
 function getDomNode(element) {
   return (element instanceof angular.element) ? element[0] : element;
+}
+
+function applyGeneratedPreparationClasses(element, event, options) {
+  var classes = '';
+  if (event) {
+    classes = pendClasses(event, EVENT_CLASS_PREFIX, true);
+  }
+  if (options.addClass) {
+    classes = concatWithSpace(classes, pendClasses(options.addClass, ADD_CLASS_SUFFIX));
+  }
+  if (options.removeClass) {
+    classes = concatWithSpace(classes, pendClasses(options.removeClass, REMOVE_CLASS_SUFFIX));
+  }
+  if (classes.length) {
+    options.preparationClasses = classes;
+    element.addClass(classes);
+  }
+}
+
+function clearGeneratedClasses(element, options) {
+  if (options.preparationClasses) {
+    element.removeClass(options.preparationClasses);
+    options.preparationClasses = null;
+  }
+  if (options.activeClasses) {
+    element.removeClass(options.activeClasses);
+    options.activeClasses = null;
+  }
+}
+
+function blockTransitions(node, duration) {
+  // we use a negative delay value since it performs blocking
+  // yet it doesn't kill any existing transitions running on the
+  // same element which makes this safe for class-based animations
+  var value = duration ? '-' + duration + 's' : '';
+  applyInlineStyle(node, [TRANSITION_DELAY_PROP, value]);
+  return [TRANSITION_DELAY_PROP, value];
+}
+
+function blockKeyframeAnimations(node, applyBlock) {
+  var value = applyBlock ? 'paused' : '';
+  var key = ANIMATION_PROP + ANIMATION_PLAYSTATE_KEY;
+  applyInlineStyle(node, [key, value]);
+  return [key, value];
+}
+
+function applyInlineStyle(node, styleTuple) {
+  var prop = styleTuple[0];
+  var value = styleTuple[1];
+  node.style[prop] = value;
+}
+
+function concatWithSpace(a,b) {
+  if (!a) return b;
+  if (!b) return a;
+  return a + ' ' + b;
 }

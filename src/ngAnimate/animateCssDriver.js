@@ -9,8 +9,8 @@ var $$AnimateCssDriverProvider = ['$$animationProvider', function($$animationPro
   var NG_OUT_ANCHOR_CLASS_NAME = 'ng-anchor-out';
   var NG_IN_ANCHOR_CLASS_NAME = 'ng-anchor-in';
 
-  this.$get = ['$animateCss', '$rootScope', '$$AnimateRunner', '$rootElement', '$$body', '$sniffer',
-       function($animateCss,   $rootScope,   $$AnimateRunner,   $rootElement,   $$body,   $sniffer) {
+  this.$get = ['$animateCss', '$rootScope', '$$AnimateRunner', '$rootElement', '$$body', '$sniffer', '$$jqLite',
+       function($animateCss,   $rootScope,   $$AnimateRunner,   $rootElement,   $$body,   $sniffer,   $$jqLite) {
 
     // only browsers that support these properties can render animations
     if (!$sniffer.animations && !$sniffer.transitions) return noop;
@@ -20,13 +20,15 @@ var $$AnimateCssDriverProvider = ['$$animationProvider', function($$animationPro
 
     var rootBodyElement = jqLite(bodyNode.parentNode === rootNode ? bodyNode : rootNode);
 
-    return function initDriverFn(animationDetails) {
+    var applyAnimationClasses = applyAnimationClassesFactory($$jqLite);
+
+    return function initDriverFn(animationDetails, onBeforeClassesAppliedCb) {
       return animationDetails.from && animationDetails.to
           ? prepareFromToAnchorAnimation(animationDetails.from,
                                          animationDetails.to,
                                          animationDetails.classes,
                                          animationDetails.anchors)
-          : prepareRegularAnimation(animationDetails);
+          : prepareRegularAnimation(animationDetails, onBeforeClassesAppliedCb);
     };
 
     function filterCssClasses(classes) {
@@ -170,8 +172,8 @@ var $$AnimateCssDriverProvider = ['$$animationProvider', function($$animationPro
     }
 
     function prepareFromToAnchorAnimation(from, to, classes, anchors) {
-      var fromAnimation = prepareRegularAnimation(from);
-      var toAnimation = prepareRegularAnimation(to);
+      var fromAnimation = prepareRegularAnimation(from, noop);
+      var toAnimation = prepareRegularAnimation(to, noop);
 
       var anchorAnimations = [];
       forEach(anchors, function(anchor) {
@@ -222,24 +224,40 @@ var $$AnimateCssDriverProvider = ['$$animationProvider', function($$animationPro
       };
     }
 
-    function prepareRegularAnimation(animationDetails) {
+    function prepareRegularAnimation(animationDetails, onBeforeClassesAppliedCb) {
       var element = animationDetails.element;
       var options = animationDetails.options || {};
 
+      // since the ng-EVENT, class-ADD and class-REMOVE classes are applied inside
+      // of the animateQueue pre and postDigest stages then there is no need to add
+      // then them here as well.
+      options.$$skipPreparationClasses = true;
+
+      // during the pre/post digest stages inside of animateQueue we also performed
+      // the blocking (transition:-9999s) so there is no point in doing that again.
+      options.skipBlocking = true;
+
       if (animationDetails.structural) {
-        // structural animations ensure that the CSS classes are always applied
-        // before the detection starts.
-        options.structural = options.applyClassesEarly = true;
+        options.event = animationDetails.event;
 
         // we special case the leave animation since we want to ensure that
         // the element is removed as soon as the animation is over. Otherwise
         // a flicker might appear or the element may not be removed at all
-        options.event = animationDetails.event;
-        if (options.event === 'leave') {
+        if (animationDetails.event === 'leave') {
           options.onDone = options.domOperation;
         }
-      } else {
-        options.event = null;
+      }
+
+      // we apply the classes right away since the pre-digest took care of the
+      // preparation classes.
+      onBeforeClassesAppliedCb(element);
+      applyAnimationClasses(element, options);
+
+      // We assign the preparationClasses as the actual animation event since
+      // the internals of $animateCss will just suffix the event token values
+      // with `-active` to trigger the animation.
+      if (options.preparationClasses) {
+        options.event = concatWithSpace(options.event, options.preparationClasses);
       }
 
       var animator = $animateCss(element, options);
