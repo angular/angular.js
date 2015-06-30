@@ -32,7 +32,7 @@ subsystem takes care of the rest.
 
 <example module="myServiceModule">
   <file name="index.html">
-    <div id="simple" ng-controller="MyController">
+    <div id="simple" ng-app="myServiceModule" ng-controller="MyController">
       <p>Let's try this simple notify service, injected into the controller...</p>
       <input ng-init="message='test'" ng-model="message" >
       <button ng-click="callNotify(message);">NOTIFY</button>
