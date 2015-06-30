@@ -19,15 +19,11 @@ var $$AnimationProvider = ['$animateProvider', function($animateProvider) {
     return element.data(RUNNER_STORAGE_KEY);
   }
 
-  this.$get = ['$$jqLite', '$rootScope', '$injector', '$$AnimateRunner', '$$rAFScheduler',
-       function($$jqLite,   $rootScope,   $injector,   $$AnimateRunner,   $$rAFScheduler) {
+  this.$get = ['$$jqLite', '$rootScope', '$injector', '$$AnimateRunner',
+       function($$jqLite,   $rootScope,   $injector,   $$AnimateRunner) {
 
     var animationQueue = [];
     var applyAnimationClasses = applyAnimationClassesFactory($$jqLite);
-
-    var totalPendingClassBasedAnimations = 0;
-    var totalActiveClassBasedAnimations = 0;
-    var classBasedAnimationsQueue = [];
 
     // TODO(matsko): document the signature in a better way
     return function(element, event, options) {
@@ -57,19 +53,12 @@ var $$AnimationProvider = ['$animateProvider', function($animateProvider) {
         options.tempClasses = null;
       }
 
-      var classBasedIndex;
-      if (!isStructural) {
-        classBasedIndex = totalPendingClassBasedAnimations;
-        totalPendingClassBasedAnimations += 1;
-      }
-
       animationQueue.push({
         // this data is used by the postDigest code and passed into
         // the driver step function
         element: element,
         classes: classes,
         event: event,
-        classBasedIndex: classBasedIndex,
         structural: isStructural,
         options: options,
         beforeStart: beforeStart,
@@ -84,16 +73,13 @@ var $$AnimationProvider = ['$animateProvider', function($animateProvider) {
       if (animationQueue.length > 1) return runner;
 
       $rootScope.$$postDigest(function() {
-        totalActiveClassBasedAnimations = totalPendingClassBasedAnimations;
-        totalPendingClassBasedAnimations = 0;
-        classBasedAnimationsQueue.length = 0;
-
         var animations = [];
         forEach(animationQueue, function(entry) {
           // the element was destroyed early on which removed the runner
           // form its storage. This means we can't animate this element
           // at all and it already has been closed due to destruction.
-          if (getRunner(entry.element)) {
+          var elm = entry.element;
+          if (getRunner(elm) && getDomNode(elm).parentNode) {
             animations.push(entry);
           }
         });
@@ -102,58 +88,23 @@ var $$AnimationProvider = ['$animateProvider', function($animateProvider) {
         animationQueue.length = 0;
 
         forEach(groupAnimations(animations), function(animationEntry) {
-          if (animationEntry.structural) {
-            triggerAnimationStart();
+          // it's important that we apply the `ng-animate` CSS class and the
+          // temporary classes before we do any driver invoking since these
+          // CSS classes may be required for proper CSS detection.
+          animationEntry.beforeStart();
+
+          var operation = invokeFirstDriver(animationEntry);
+          var triggerAnimationStart = operation && operation.start; /// TODO(matsko): only recognize operation.start()
+
+          var closeFn = animationEntry.close;
+          if (!triggerAnimationStart) {
+            closeFn();
           } else {
-            classBasedAnimationsQueue.push({
-              node: getDomNode(animationEntry.element),
-              fn: triggerAnimationStart
+            var animationRunner = triggerAnimationStart();
+            animationRunner.done(function(status) {
+              closeFn(!status);
             });
-
-            if (animationEntry.classBasedIndex === totalActiveClassBasedAnimations - 1) {
-              // we need to sort each of the animations in order of parent to child
-              // relationships. This ensures that the child classes are applied at the
-              // right time.
-              classBasedAnimationsQueue = classBasedAnimationsQueue.sort(function(a,b) {
-                return b.node.contains(a.node);
-              }).map(function(entry) {
-                return entry.fn;
-              });
-
-              $$rAFScheduler(classBasedAnimationsQueue);
-            }
-          }
-
-          function triggerAnimationStart() {
-            // it's important that we apply the `ng-animate` CSS class and the
-            // temporary classes before we do any driver invoking since these
-            // CSS classes may be required for proper CSS detection.
-            animationEntry.beforeStart();
-
-            var startAnimationFn, closeFn = animationEntry.close;
-
-            // in the event that the element was removed before the digest runs or
-            // during the RAF sequencing then we should not trigger the animation.
-            var targetElement = animationEntry.anchors
-                ? (animationEntry.from.element || animationEntry.to.element)
-                : animationEntry.element;
-
-            if (getRunner(targetElement) && getDomNode(targetElement).parentNode) {
-              var operation = invokeFirstDriver(animationEntry);
-              if (operation) {
-                startAnimationFn = operation.start;
-              }
-            }
-
-            if (!startAnimationFn) {
-              closeFn();
-            } else {
-              var animationRunner = startAnimationFn();
-              animationRunner.done(function(status) {
-                closeFn(!status);
-              });
-              updateAnimationRunners(animationEntry, animationRunner);
-            }
+            updateAnimationRunners(animationEntry, animationRunner);
           }
         });
       });
@@ -225,7 +176,7 @@ var $$AnimationProvider = ['$animateProvider', function($animateProvider) {
           var lookupKey = from.animationID.toString();
           if (!anchorGroups[lookupKey]) {
             var group = anchorGroups[lookupKey] = {
-              structural: true,
+              // TODO(matsko): double-check this code
               beforeStart: function() {
                 fromAnimation.beforeStart();
                 toAnimation.beforeStart();
