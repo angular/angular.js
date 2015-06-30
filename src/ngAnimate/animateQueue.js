@@ -369,9 +369,7 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
         return runner;
       }
 
-      if (isStructural) {
-        closeParentClassBasedAnimations(parent);
-      }
+      closeParentClassBasedAnimations(parent);
 
       // the counter keeps track of cancelled animations
       var counter = (existingAnimation.counter || 0) + 1;
@@ -430,9 +428,7 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
             ? 'setClass'
             : animationDetails.event;
 
-        if (animationDetails.structural) {
-          closeParentClassBasedAnimations(parentElement);
-        }
+        closeParentClassBasedAnimations(parentElement);
 
         markElementAnimationState(element, RUNNING_STATE);
         var realRunner = $$animation(element, event, animationDetails.options);
