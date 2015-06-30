@@ -7184,14 +7184,6 @@ describe('$compile', function() {
           "Please use the ng- versions (such as ng-click instead of onclick) instead.");
     }));
 
-    it('should pass through arbitrary values on onXYZ event attributes that contain a hyphen', inject(function($compile, $rootScope) {
-      /* jshint scripturl:true */
-      element = $compile('<button on-click="{{onClickJs}}"></script>')($rootScope);
-      $rootScope.onClickJs = 'javascript:doSomething()';
-      $rootScope.$apply();
-      expect(element.attr('on-click')).toEqual('javascript:doSomething()');
-    }));
-
     it('should pass through arbitrary values on "on" and "data-on" attributes', inject(function($compile, $rootScope) {
       element = $compile('<button data-on="{{dataOnVar}}"></script>')($rootScope);
       $rootScope.dataOnVar = 'data-on text';
@@ -7521,6 +7513,35 @@ describe('$compile', function() {
       });
     });
 
+  });
+
+
+  describe('event attribute binding', function() {
+
+    it('should work with different syntaxes', inject(function($compile, $rootScope) {
+      $rootScope.clicked = false;
+      $rootScope.onClick = function() {
+        $rootScope.clicked = true;
+      };
+      element = $compile('<div (click)="onClick()"></div>')($rootScope);
+      browserTrigger(element, 'click');
+      expect($rootScope.clicked).toBe(true);
+
+      $rootScope.clicked = false;
+      element = $compile('<div (^click)="onClick()"></div>')($rootScope);
+      browserTrigger(element, 'click');
+      expect($rootScope.clicked).toBe(true);
+
+      $rootScope.clicked = false;
+      element = $compile('<div on-click="onClick()"></div>')($rootScope);
+      browserTrigger(element, 'click');
+      expect($rootScope.clicked).toBe(true);
+
+      $rootScope.clicked = false;
+      element = $compile('<div onbubble-click="onClick()"></div>')($rootScope);
+      browserTrigger(element, 'click');
+      expect($rootScope.clicked).toBe(true);
+    }));
   });
 
 

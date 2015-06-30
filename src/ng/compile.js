@@ -728,7 +728,9 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       COMMENT_DIRECTIVE_REGEXP = /^\s*directive\:\s*([\w\-]+)\s+(.*)$/,
       CLASS_DIRECTIVE_REGEXP = /(([\w\-]+)(?:\:([^;]+))?;?)/,
       ALL_OR_NOTHING_ATTRS = makeMap('ngSrc,ngSrcset,src,srcset'),
-      REQUIRE_PREFIX_REGEXP = /^(?:(\^\^?)?(\?)?(\^\^?)?)?/;
+      REQUIRE_PREFIX_REGEXP = /^(?:(\^\^?)?(\?)?(\^\^?)?)?/,
+      EVENT_DIRECTIVE_REGEXP = /\(\^?([\w]+)\)$/,
+      ON_EVENT_DIRECTIVE_REGEXP = /^on(?:bubble)?-([\w]+)$/;
 
   // Ref: http://developers.whatwg.org/webappapis.html#event-handler-idl-attributes
   // The assumption is that future DOM event attribute names will begin with
@@ -1491,7 +1493,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
               directiveNormalize(nodeName_(node)), 'E', maxPriority, ignoreDirective);
 
           // iterate over the attributes
-          for (var attr, name, nName, ngAttrName, value, isNgAttr, nAttrs = node.attributes,
+          for (var attr, name, nName, ngAttrName, value, isNgAttr, isEventAttr, nAttrs = node.attributes,
                    j = 0, jj = nAttrs && nAttrs.length; j < jj; j++) {
             var attrStartName = false;
             var attrEndName = false;
@@ -1509,6 +1511,17 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                 });
             }
 
+            // support (event), (^event), on-event, and onbubble-event bindings
+            if (isEventAttr = EVENT_DIRECTIVE_REGEXP.test(ngAttrName)) {
+              name = name.replace(EVENT_DIRECTIVE_REGEXP, function(match, event) {
+                return event.toLowerCase();
+              });
+            } else if (isEventAttr = ON_EVENT_DIRECTIVE_REGEXP.test(name)) {
+              name = name.replace(ON_EVENT_DIRECTIVE_REGEXP, function(match, event) {
+                return event.toLowerCase();
+              });
+            }
+
             var directiveNName = ngAttrName.replace(/(Start|End)$/, '');
             if (directiveIsMultiElement(directiveNName)) {
               if (ngAttrName === directiveNName + 'Start') {
@@ -1520,13 +1533,14 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
             nName = directiveNormalize(name.toLowerCase());
             attrsMap[nName] = name;
-            if (isNgAttr || !attrs.hasOwnProperty(nName)) {
+            if (isNgAttr || isEventAttr || !attrs.hasOwnProperty(nName)) {
                 attrs[nName] = value;
                 if (getBooleanAttrName(node, nName)) {
                   attrs[nName] = true; // presence means true
                 }
             }
             addAttrInterpolateDirective(node, directives, value, nName, isNgAttr);
+            addEventBindingDirective(directives, nName, isEventAttr);
             addDirective(directives, nName, 'A', maxPriority, ignoreDirective, attrStartName,
                           attrEndName);
           }
@@ -2451,6 +2465,24 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
               }
             };
           }
+      });
+    }
+
+
+    function addEventBindingDirective(directives, eventName, isEventDirective) {
+      if (!isEventDirective) return;
+
+      directives.push({
+        compile: function(tElement, tAttr) {
+          var eventExpr = $parse(tAttr[eventName]);
+          return function(scope, element, attr) {
+            element.on(eventName, function(event) {
+              eventExpr(scope, {
+                $event: event
+              });
+            });
+          };
+        }
       });
     }
 
