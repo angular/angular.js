@@ -66,9 +66,9 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
     return (nO.addClass && nO.addClass === cO.removeClass) || (nO.removeClass && nO.removeClass === cO.addClass);
   });
 
-  this.$get = ['$$rAF', '$rootScope', '$rootElement', '$document', '$$HashMap',
+  this.$get = ['$$rAF', '$rootScope', '$rootElement', '$document', '$$body', '$$HashMap',
                '$$animation', '$$AnimateRunner', '$templateRequest', '$$jqLite',
-       function($$rAF,   $rootScope,   $rootElement,   $document,   $$HashMap,
+       function($$rAF,   $rootScope,   $rootElement,   $document,   $$body,   $$HashMap,
                 $$animation,   $$AnimateRunner,   $templateRequest,   $$jqLite) {
 
     var activeAnimationsLookup = new $$HashMap();
@@ -104,8 +104,6 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
         });
       }
     );
-
-    var bodyElement = jqLite($document[0].body);
 
     var callbackRegistry = {};
 
@@ -581,7 +579,7 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
         if (!bodyElementDetected) {
           // we also need to ensure that the element is or will be apart of the body element
           // otherwise it is pointless to even issue an animation to be rendered
-          bodyElementDetected = isMatchingElement(parentElement, bodyElement);
+          bodyElementDetected = isMatchingElement(parentElement, $$body);
         }
 
         parentElement = parentElement.parent();
