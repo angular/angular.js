@@ -200,8 +200,8 @@
  * * `stagger` - A numeric time value representing the delay between successively animated elements
  * ({@link ngAnimate#css-staggering-animations Click here to learn how CSS-based staggering works in ngAnimate.})
  * * `staggerIndex` - The numeric index representing the stagger item (e.g. a value of 5 is equal to the sixth item in the stagger; therefore when a
- * `stagger` option value of `0.1` is used then there will be a stagger delay of `600ms`)
- * `applyClassesEarly` - Whether or not the classes being added or removed will be used when detecting the animation. This is set by `$animate` when enter/leave/move animations are fired to ensure that the CSS classes are resolved in time. (Note that this will prevent any transitions from occuring on the classes being added and removed.)
+ * * `stagger` option value of `0.1` is used then there will be a stagger delay of `600ms`)
+ * * `applyClassesEarly` - Whether or not the classes being added or removed will be used when detecting the animation. This is set by `$animate` when enter/leave/move animations are fired to ensure that the CSS classes are resolved in time. (Note that this will prevent any transitions from occuring on the classes being added and removed.)
  *
  * @return {object} an object with start and end methods and details about the animation.
  *
@@ -556,9 +556,9 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
         addRemoveClassName = '';
       }
 
-      var setupClasses = [structuralClassName, addRemoveClassName].join(' ').trim();
-      var fullClassName = classes + ' ' + setupClasses;
-      var activeClasses = pendClasses(setupClasses, '-active');
+      var preparationClasses = [structuralClassName, addRemoveClassName].join(' ').trim();
+      var fullClassName = classes + ' ' + preparationClasses;
+      var activeClasses = pendClasses(preparationClasses, '-active');
       var hasToStyles = styles.to && Object.keys(styles.to).length > 0;
       var containsKeyframeAnimation = (options.keyframeStyle || '').length > 0;
 
@@ -567,7 +567,7 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
       // unless there a is raw keyframe value that is applied to the element.
       if (!containsKeyframeAnimation
            && !hasToStyles
-           && !setupClasses) {
+           && !preparationClasses) {
         return closeAndReturnNoopAnimator();
       }
 
@@ -582,10 +582,12 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
         };
       } else {
         cacheKey = gcsHashFn(node, fullClassName);
-        stagger = computeCachedCssStaggerStyles(node, setupClasses, cacheKey, DETECT_STAGGER_CSS_PROPERTIES);
+        stagger = computeCachedCssStaggerStyles(node, preparationClasses, cacheKey, DETECT_STAGGER_CSS_PROPERTIES);
       }
 
-      $$jqLite.addClass(element, setupClasses);
+      if (!options.$$skipPreparationClasses) {
+        $$jqLite.addClass(element, preparationClasses);
+      }
 
       var applyOnlyDuration;
 
@@ -731,7 +733,9 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
         animationClosed = true;
         animationPaused = false;
 
-        $$jqLite.removeClass(element, setupClasses);
+        if (!options.$$skipPreparationClasses) {
+          $$jqLite.removeClass(element, preparationClasses);
+        }
         $$jqLite.removeClass(element, activeClasses);
 
         blockKeyframeAnimations(node, false);
@@ -858,7 +862,7 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
           $$jqLite.addClass(element, activeClasses);
 
           if (flags.recalculateTimingStyles) {
-            fullClassName = node.className + ' ' + setupClasses;
+            fullClassName = node.className + ' ' + preparationClasses;
             cacheKey = gcsHashFn(node, fullClassName);
 
             timings = computeTimings(node, fullClassName, cacheKey);
