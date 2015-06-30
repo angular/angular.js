@@ -750,6 +750,18 @@ describe('$aria', function() {
     });
   });
 
+  describe('actions when bindRoleForClick is set to false', function() {
+    beforeEach(configAriaProvider({
+      bindRoleForClick: false
+    }));
+    beforeEach(injectScopeAndCompiler);
+
+    it('should not add a button role', function() {
+      compileElement('<radio-group ng-click="something"></radio-group>');
+      expect(element.attr('role')).toBeUndefined();
+    });
+  });
+
   describe('actions when bindKeypress is set to false', function() {
     beforeEach(configAriaProvider({
       bindKeypress: false
