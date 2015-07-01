@@ -199,6 +199,8 @@ format that includes a **type**, a **scope** and a **subject**:
 <footer>
 ```
 
+The **header** is mandatory and the **scope** of the header is optional.
+
 Any line of the commit message cannot be longer 100 characters! This allows the message to be easier
 to read on github as well as in various git tools.
 
