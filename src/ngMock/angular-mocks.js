@@ -764,15 +764,14 @@ angular.mock.animate = angular.module('ngAnimateMock', ['ng'])
       };
     });
 
-    $provide.decorator('$animate', ['$delegate', '$$asyncCallback', '$timeout', '$browser', '$$rAF',
-                            function($delegate,   $$asyncCallback,   $timeout,   $browser,   $$rAF) {
+    $provide.decorator('$animate', ['$delegate', '$timeout', '$browser', '$$rAF',
+                            function($delegate,   $timeout,   $browser,   $$rAF) {
       var animate = {
         queue: [],
         cancel: $delegate.cancel,
         enabled: $delegate.enabled,
         triggerCallbackEvents: function() {
           $$rAF.flush();
-          $$asyncCallback.flush();
         },
         triggerCallbackPromise: function() {
           $timeout.flush(0);
@@ -1764,20 +1763,6 @@ angular.mock.$RAFDecorator = ['$delegate', function($delegate) {
   return rafFn;
 }];
 
-angular.mock.$AsyncCallbackDecorator = ['$delegate', function($delegate) {
-  var callbacks = [];
-  var addFn = function(fn) {
-    callbacks.push(fn);
-  };
-  addFn.flush = function() {
-    angular.forEach(callbacks, function(fn) {
-      fn();
-    });
-    callbacks = [];
-  };
-  return addFn;
-}];
-
 /**
  *
  */
@@ -1884,7 +1869,6 @@ angular.module('ngMock', ['ng']).provider({
 }).config(['$provide', function($provide) {
   $provide.decorator('$timeout', angular.mock.$TimeoutDecorator);
   $provide.decorator('$$rAF', angular.mock.$RAFDecorator);
-  $provide.decorator('$$asyncCallback', angular.mock.$AsyncCallbackDecorator);
   $provide.decorator('$rootScope', angular.mock.$RootScopeDecorator);
   $provide.decorator('$controller', angular.mock.$ControllerDecorator);
 }]);
