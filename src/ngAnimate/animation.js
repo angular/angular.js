@@ -138,7 +138,7 @@ var $$AnimationProvider = ['$animateProvider', function($animateProvider) {
                 ? (animationEntry.from.element || animationEntry.to.element)
                 : animationEntry.element;
 
-            if (getRunner(targetElement)) {
+            if (getRunner(targetElement) && getDomNode(targetElement).parentNode) {
               var operation = invokeFirstDriver(animationEntry);
               if (operation) {
                 startAnimationFn = operation.start;
