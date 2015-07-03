@@ -51,6 +51,43 @@ describe("ngAnimate $animateCss", function() {
   describe('when active', function() {
     if (!browserSupportsCssAnimations()) return;
 
+    it("should silently quit the animation and not throw when an element has no parent during preparation",
+      inject(function($animateCss, $$rAF, $rootScope, $document, $rootElement) {
+
+      var element = jqLite('<div></div>');
+      expect(function() {
+        $animateCss(element, {
+          duration: 1000,
+          event: 'fake',
+          to: fakeStyle
+        }).start();
+      }).not.toThrow();
+
+      expect(element).not.toHaveClass('fake');
+      triggerAnimationStartFrame();
+      expect(element).not.toHaveClass('fake-active');
+    }));
+
+    it("should silently quit the animation and not throw when an element has no parent before starting",
+      inject(function($animateCss, $$rAF, $rootScope, $document, $rootElement) {
+
+      var element = jqLite('<div></div>');
+      jqLite($document[0].body).append($rootElement);
+      $rootElement.append(element);
+
+      $animateCss(element, {
+        duration: 1000,
+        addClass: 'wait-for-it',
+        to: fakeStyle
+      }).start();
+
+      element.remove();
+
+      expect(function() {
+        triggerAnimationStartFrame();
+      }).not.toThrow();
+    }));
+
     describe("rAF usage", function() {
       it("should buffer all requests into a single requestAnimationFrame call",
         inject(function($animateCss, $$rAF, $rootScope, $document, $rootElement) {
