@@ -80,8 +80,10 @@ describe('$$animation', function() {
         };
       });
 
-      inject(function($$animation, $rootScope) {
+      inject(function($$animation, $rootScope, $rootElement) {
         element = jqLite('<div></div>');
+        $rootElement.append(element);
+
         $$animation(element, 'enter');
         $rootScope.$digest();
 
@@ -109,7 +111,8 @@ describe('$$animation', function() {
       }));
 
       it("should obtain the element, event, the provided options and the domOperation",
-        inject(function($$animation, $rootScope) {
+        inject(function($$animation, $rootScope, $rootElement) {
+        $rootElement.append(element);
 
         var options = {};
         options.foo = 'bar';
@@ -132,9 +135,11 @@ describe('$$animation', function() {
       }));
 
       it("should obtain the classes string which is a combination of className, addClass and removeClass",
-        inject(function($$animation, $rootScope) {
+        inject(function($$animation, $rootScope, $rootElement) {
 
         element.addClass('blue red');
+        $rootElement.append(element);
+
         $$animation(element, 'enter', {
           addClass: 'green',
           removeClass: 'orange',
@@ -165,8 +170,9 @@ describe('$$animation', function() {
         });
       });
 
-      inject(function($$animation, $rootScope) {
+      inject(function($$animation, $rootScope, $rootElement) {
         element = jqLite('<div></div>');
+        $rootElement.append(element);
         $$animation(element, 'enter');
         $rootScope.$digest();
         expect(log).toEqual(['second', 'first']);
@@ -237,8 +243,10 @@ describe('$$animation', function() {
         });
       });
 
-      inject(function($$animation, $rootScope) {
+      inject(function($$animation, $rootScope, $rootElement) {
         element = jqLite('<div></div>');
+        $rootElement.append(element);
+
         var runner = $$animation(element, 'enter');
         $rootScope.$digest();
 
@@ -791,6 +799,8 @@ describe('$$animation', function() {
     it('should temporarily assign the provided CSS class for the duration of the animation',
       inject(function($rootScope, $$animation) {
 
+      parent.append(element);
+
       $$animation(element, 'enter', {
         tempClasses: 'temporary fudge'
       });
@@ -809,6 +819,8 @@ describe('$$animation', function() {
     it('should add and remove the ng-animate CSS class when the animation is active',
       inject(function($$animation, $rootScope) {
 
+      parent.append(element);
+
       $$animation(element, 'enter');
       $rootScope.$digest();
       expect(element).toHaveClass('ng-animate');
@@ -823,6 +835,8 @@ describe('$$animation', function() {
     it('should apply the `ng-animate` and temporary CSS classes before the driver is invoked', function() {
       var capturedElementClasses;
 
+      parent.append(element);
+
       module(function($provide) {
         $provide.factory('mockedTestDriver', function() {
           return function(details) {
@@ -832,6 +846,8 @@ describe('$$animation', function() {
       });
 
       inject(function($$animation, $rootScope) {
+        parent.append(element);
+
         $$animation(element, 'enter', {
           tempClasses: 'temp-class-name'
         });
@@ -844,6 +860,8 @@ describe('$$animation', function() {
 
     it('should perform the DOM operation at the end of the animation if the driver doesn\'t run it already',
       inject(function($$animation, $rootScope) {
+
+      parent.append(element);
 
       var domOperationFired = false;
       $$animation(element, 'enter', {

@@ -497,6 +497,10 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
 
     function init(element, options) {
       var node = getDomNode(element);
+      if (!node || !node.parentNode) {
+        return closeAndReturnNoopAnimator();
+      }
+
       options = prepareAnimationOptions(options);
 
       var temporaryStyles = [];
@@ -782,6 +786,10 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
 
       function start() {
         if (animationClosed) return;
+        if (!node.parentNode) {
+          close();
+          return;
+        }
 
         var startTime, events = [];
 
