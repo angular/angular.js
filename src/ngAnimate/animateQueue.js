@@ -185,6 +185,7 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
       push: function(element, event, options, domOperation) {
         options = options || {};
         options.domOperation = domOperation;
+        options.hasDomOpreation = !isUndefined(domOperation);
         return queueAnimation(element, event, options);
       },
 

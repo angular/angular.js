@@ -171,8 +171,15 @@ function mergeAnimationOptions(element, target, newOptions) {
   var toAdd = (target.addClass || '') + ' ' + (newOptions.addClass || '');
   var toRemove = (target.removeClass || '') + ' ' + (newOptions.removeClass || '');
   var classes = resolveElementClasses(element.attr('class'), toAdd, toRemove);
+  var targetDomOperation = target.hasDomOpreation ? target.domOperation : null;
 
   extend(target, newOptions);
+
+  // TODO : proper fix is to maintain all animation callback in array and call at last,but now only leave has the callback so no issue with this.
+  if (targetDomOperation) {
+    target.hasDomOpreation = true;
+    target.domOperation = targetDomOperation;
+  }
 
   if (classes.addClass) {
     target.addClass = classes.addClass;
