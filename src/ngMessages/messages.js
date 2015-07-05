@@ -665,10 +665,10 @@ angular.module('ngMessages', [])
     *
     * @param {expression} ngMessageDefault|when no ngMessage matches.
     */
-  .directive('ngMessageDefault', ngMessageDefaultDirectiveFactory('AE'));
+  .directive('ngMessageDefault', ngMessageDirectiveFactory('AE', true));
 
 
-function ngMessageDirectiveFactory(restrict) {
+function ngMessageDirectiveFactory(restrict, isDefault) {
   return ['$animate', function($animate) {
     return {
       restrict: 'AE',
@@ -676,25 +676,28 @@ function ngMessageDirectiveFactory(restrict) {
       terminal: true,
       require: '^^ngMessages',
       link: function(scope, element, attrs, ngMessagesCtrl, $transclude) {
-        var commentNode = element[0];
+        var commentNode, records, staticExp, dynamicExp;
 
-        var records;
-        var staticExp = attrs.ngMessage || attrs.when;
-        var dynamicExp = attrs.ngMessageExp || attrs.whenExp;
-        var assignRecords = function(items) {
-          records = items
-              ? (isArray(items)
-                    ? items
-                    : items.split(/[\s,]+/))
-              : null;
-          ngMessagesCtrl.reRender();
-        };
+        if (!isDefault) {
+          commentNode = element[0];
+          staticExp = attrs.ngMessage || attrs.when;
+          dynamicExp = attrs.ngMessageExp || attrs.whenExp;
 
-        if (dynamicExp) {
-          assignRecords(scope.$eval(dynamicExp));
-          scope.$watchCollection(dynamicExp, assignRecords);
-        } else {
-          assignRecords(staticExp);
+          var assignRecords = function(items) {
+            records = items
+                ? (isArray(items)
+                      ? items
+                      : items.split(/[\s,]+/))
+                : null;
+            ngMessagesCtrl.reRender();
+          };
+
+          if (dynamicExp) {
+            assignRecords(scope.$eval(dynamicExp));
+            scope.$watchCollection(dynamicExp, assignRecords);
+          } else {
+            assignRecords(staticExp);
+          }
         }
 
         var currentElement, messageCtrl;
@@ -713,7 +716,7 @@ function ngMessageDirectiveFactory(restrict) {
                 // to deregister the message from the controller
                 currentElement.on('$destroy', function() {
                   if (currentElement) {
-                    ngMessagesCtrl.deregister(commentNode);
+                    ngMessagesCtrl.deregister(commentNode, isDefault);
                     messageCtrl.detach();
                   }
                 });
@@ -727,7 +730,7 @@ function ngMessageDirectiveFactory(restrict) {
               $animate.leave(elm);
             }
           }
-        });
+        }, isDefault);
       }
     };
   }];
@@ -739,48 +742,4 @@ function ngMessageDirectiveFactory(restrict) {
           : collection.hasOwnProperty(key);
     }
   }
-}
-
-function ngMessageDefaultDirectiveFactory(restrict) {
-  return ['$animate', function($animate) {
-    return {
-      restrict: 'AE',
-      transclude: 'element',
-      terminal: true,
-      require: '^^ngMessages',
-      link: function(scope, element, attrs, ngMessagesCtrl, $transclude) {
-        var commentNode = element[0];
-
-        var currentElement, messageCtrl;
-        ngMessagesCtrl.register(commentNode, messageCtrl = {
-          attach: function() {
-            if (!currentElement) {
-              $transclude(scope, function(elm) {
-                $animate.enter(elm, null, element);
-                currentElement = elm;
-
-                // in the event that the parent element is destroyed
-                // by any other structural directive then it's time
-                // to deregister the default message (boolean set to true)
-                // from the controller
-                currentElement.on('$destroy', function() {
-                  if (currentElement) {
-                    ngMessagesCtrl.deregister(commentNode, true);
-                    messageCtrl.detach();
-                  }
-                });
-              });
-            }
-          },
-          detach: function() {
-            if (currentElement) {
-              var elm = currentElement;
-              currentElement = null;
-              $animate.leave(elm);
-            }
-          }
-        }, true); // boolean set to true to specify default message
-      }
-    };
-  }];
 }
