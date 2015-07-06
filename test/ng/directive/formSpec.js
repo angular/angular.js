@@ -58,6 +58,43 @@ describe('form', function() {
     expect(form.alias).toBeUndefined();
   });
 
+
+  it('should ignore changes in manually removed controls', function() {
+    doc = $compile(
+      '<form name="myForm">' +
+        '<input name="control" ng-maxlength="1" ng-model="value" store-model-ctrl/>' +
+      '</form>')(scope);
+
+    var form = scope.myForm;
+
+    var input = doc.find('input').eq(0);
+    var inputController = input.controller('ngModel');
+
+    changeInputValue(input, 'ab');
+    scope.$apply();
+
+    expect(form.$error.maxlength).toBeTruthy();
+    expect(form.$dirty).toBe(true);
+    expect(form.$error.maxlength[0].$name).toBe('control');
+
+    // remove control
+    form.$removeControl(form.control);
+    expect(form.control).toBeUndefined();
+    expect(form.$error.maxlength).toBeFalsy();
+
+    inputController.$setPristine();
+    expect(form.$dirty).toBe(true);
+
+    form.$setPristine();
+
+    changeInputValue(input, 'abc');
+    scope.$apply();
+
+    expect(form.$error.maxlength).toBeFalsy();
+    expect(form.$dirty).toBe(false);
+  });
+
+
   it('should remove scope reference when form with no parent form is removed from the DOM', function() {
     var formController;
     scope.ctrl = {};
