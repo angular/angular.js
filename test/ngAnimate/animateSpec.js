@@ -1206,6 +1206,24 @@ describe("animations", function() {
         expect(r1).toBe(r2);
         expect(r2).toBe(r3);
       }));
+
+      it('should not skip or miss the animations when animations are executed sequential',
+        inject(function($animate, $rootScope, $$rAF, $rootElement) {
+
+        element = jqLite('<div></div>');
+
+        $rootElement.append(element);
+
+        $animate.addClass(element, 'rclass');
+        $animate.removeClass(element, 'rclass');
+        $animate.addClass(element, 'rclass');
+        $animate.removeClass(element, 'rclass');
+
+        $rootScope.$digest();
+        $$rAF.flush();
+
+        expect(element).not.toHaveClass('rclass');
+      }));
     });
   });
 
