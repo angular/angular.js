@@ -1,3 +1,58 @@
+<a name="1.4.2"></a>
+# 1.4.2 nebular-readjustment (2015-07-06)
+
+## Bug Fixes
+
+- **$browser:** prevent infinite digest if changing hash when there is no hashPrefix
+  ([f81ff3be](https://github.com/angular/angular.js/commit/f81ff3beb0c9d19d494c5878086fb57476442b8b),
+   [#10423](https://github.com/angular/angular.js/issues/10423), [#12145](https://github.com/angular/angular.js/issues/12145))
+- **$compile:**
+  - throw error when requestng new and isolate scopes (async)
+  ([6333d65b](https://github.com/angular/angular.js/commit/6333d65b76e0796cfbab8a2953af0c8014dba2e1),
+   [#12215](https://github.com/angular/angular.js/issues/12215), [#12217](https://github.com/angular/angular.js/issues/12217))
+- **$location:** allow navigating outside the original base URL
+  ([6903b5ec](https://github.com/angular/angular.js/commit/6903b5ec4c04ed6b7c80ef7d638c48639ccdc4bb),
+   [#11302](https://github.com/angular/angular.js/issues/11302), [#4776](https://github.com/angular/angular.js/issues/4776))
+- **merge:** treat dates as atomic values instead of objects.
+  ([6cbbd966](https://github.com/angular/angular.js/commit/6cbbd966479448591f819cbf904e0a3b757613dc),
+   [#11720](https://github.com/angular/angular.js/issues/11720), [#11720](https://github.com/angular/angular.js/issues/11720))
+- **ngOptions:** only watch numeric properties of an array
+  ([14638f4a](https://github.com/angular/angular.js/commit/14638f4a60053b085565e597fc74bd31cf0d372b))
+- **orderBy:** ensure correct ordering with arrays of objects and no predicate
+  ([48e1f560](https://github.com/angular/angular.js/commit/48e1f5605edd32a63318fd78f5165c7d1f1a20f9),
+   [#11866](https://github.com/angular/angular.js/issues/11866), [#11312](https://github.com/angular/angular.js/issues/11312), [#4282](https://github.com/angular/angular.js/issues/4282))
+
+
+## Features
+
+- **ngAria:** add option to disable role=button
+  ([1f5e42e8](https://github.com/angular/angular.js/commit/1f5e42e8821217026ef36a46d36f84d7cd32830a),
+   [#11580](https://github.com/angular/angular.js/issues/11580), [#12234](https://github.com/angular/angular.js/issues/12234))
+
+
+
+<a name="1.3.17"></a>
+# 1.3.17 tsktskskly-euouae (2015-07-06)
+
+
+## Bug Fixes
+
+- **$browser:** prevent infinite digest if changing hash when there is no hashPrefix
+  ([61a3fb67](https://github.com/angular/angular.js/commit/61a3fb676a186e22564fb0181c17647b35ca4e5e),
+   [#10423](https://github.com/angular/angular.js/issues/10423), [#12145](https://github.com/angular/angular.js/issues/12145))
+- **$location:**
+  - allow navigating outside the original base URL
+  ([0bb57d53](https://github.com/angular/angular.js/commit/0bb57d538f25a1b6f20025d87a451c39671b59aa),
+   [#11302](https://github.com/angular/angular.js/issues/11302), [#4776](https://github.com/angular/angular.js/issues/4776))
+  - do not get caught in infinite digest in IE9
+  ([f486ebe8](https://github.com/angular/angular.js/commit/f486ebe80b6d7854d3eb9029f14d94299cf493cb),
+   [#11439](https://github.com/angular/angular.js/issues/11439), [#11675](https://github.com/angular/angular.js/issues/11675), [#11935](https://github.com/angular/angular.js/issues/11935), [#12083](https://github.com/angular/angular.js/issues/12083))
+- **linky:** allow case insensitive scheme detection
+  ([6b28aef1](https://github.com/angular/angular.js/commit/6b28aef1c537bfb2da21820d6ca154344efe266e),
+   [#12073](https://github.com/angular/angular.js/issues/12073), [#12074](https://github.com/angular/angular.js/issues/12074))
+
+
+
 <a name="1.4.1"></a>
 # 1.4.1 hyperionic-illumination (2015-06-16)
 
