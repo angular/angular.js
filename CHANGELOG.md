@@ -1,3 +1,25 @@
+<a name="1.3.17"></a>
+# 1.3.17 tsktskskly-euouae (2015-07-06)
+
+
+## Bug Fixes
+
+- **$browser:** prevent infinite digest if changing hash when there is no hashPrefix
+  ([61a3fb67](https://github.com/angular/angular.js/commit/61a3fb676a186e22564fb0181c17647b35ca4e5e),
+   [#10423](https://github.com/angular/angular.js/issues/10423), [#12145](https://github.com/angular/angular.js/issues/12145))
+- **$location:**
+  - allow navigating outside the original base URL
+  ([0bb57d53](https://github.com/angular/angular.js/commit/0bb57d538f25a1b6f20025d87a451c39671b59aa),
+   [#11302](https://github.com/angular/angular.js/issues/11302), [#4776](https://github.com/angular/angular.js/issues/4776))
+  - do not get caught in infinite digest in IE9
+  ([f486ebe8](https://github.com/angular/angular.js/commit/f486ebe80b6d7854d3eb9029f14d94299cf493cb),
+   [#11439](https://github.com/angular/angular.js/issues/11439), [#11675](https://github.com/angular/angular.js/issues/11675), [#11935](https://github.com/angular/angular.js/issues/11935), [#12083](https://github.com/angular/angular.js/issues/12083))
+- **linky:** allow case insensitive scheme detection
+  ([6b28aef1](https://github.com/angular/angular.js/commit/6b28aef1c537bfb2da21820d6ca154344efe266e),
+   [#12073](https://github.com/angular/angular.js/issues/12073), [#12074](https://github.com/angular/angular.js/issues/12074))
+
+
+
 <a name="1.3.16"></a>
 # 1.3.16 cookie-oatmealification (2015-06-05)
 
