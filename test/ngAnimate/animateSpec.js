@@ -1781,5 +1781,86 @@ describe("animations", function() {
       expect(isElementRemoved).toBe(true);
     }));
 
+    it('leave : should trigger a callback for an leave animation',
+      inject(function($animate, $rootScope, $$rAF, $rootElement, $document) {
+
+      var callbackTriggered = false;
+      $animate.on('leave', jqLite($document[0].body), function() {
+        callbackTriggered = true;
+      });
+
+      element = jqLite('<div></div>');
+      $rootElement.append(element);
+      $animate.leave(element, $rootElement);
+      $rootScope.$digest();
+
+      $$rAF.flush();
+
+      expect(callbackTriggered).toBe(true);
+    }));
+
+    it('leave : should not fire a callback if the element is outside of the given container',
+      inject(function($animate, $rootScope, $$rAF, $rootElement) {
+
+      var callbackTriggered = false;
+      var innerContainer = jqLite('<div></div>');
+      $rootElement.append(innerContainer);
+
+      $animate.on('leave', innerContainer,
+        function(element, phase, data) {
+        callbackTriggered = true;
+      });
+
+      element = jqLite('<div></div>');
+      $rootElement.append(element);
+      $animate.leave(element, $rootElement);
+      $rootScope.$digest();
+
+      expect(callbackTriggered).toBe(false);
+    }));
+
+    it('leave : should fire a `start` callback when the animation starts with the matching element',
+      inject(function($animate, $rootScope, $$rAF, $rootElement, $document) {
+
+      element = jqLite('<div></div>');
+
+      var capturedState;
+      var capturedElement;
+      $animate.on('leave', jqLite($document[0].body), function(element, phase) {
+        capturedState = phase;
+        capturedElement = element;
+      });
+
+      $rootElement.append(element);
+      $animate.leave(element, $rootElement);
+      $rootScope.$digest();
+      $$rAF.flush();
+
+      expect(capturedState).toBe('start');
+      expect(capturedElement).toBe(element);
+    }));
+
+    it('leave : should fire a `close` callback when the animation ends with the matching element',
+      inject(function($animate, $rootScope, $$rAF, $rootElement, $document) {
+
+      element = jqLite('<div></div>');
+
+      var capturedState;
+      var capturedElement;
+      $animate.on('leave', jqLite($document[0].body), function(element, phase) {
+        capturedState = phase;
+        capturedElement = element;
+      });
+
+      $rootElement.append(element);
+      var runner = $animate.leave(element, $rootElement);
+      $rootScope.$digest();
+      runner.end();
+      $$rAF.flush();
+
+      expect(capturedState).toBe('close');
+      expect(capturedElement).toBe(element);
+    }));
+
   });
 });
