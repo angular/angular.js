@@ -3618,6 +3618,33 @@ describe('$compile', function() {
     });
 
 
+    it('should ignore optional "="-bound property if value is the emptry string', function() {
+      module(function($compileProvider) {
+        $compileProvider.directive('testDir', valueFn({
+          scope: {prop: '=?'},
+          controller: function($scope) {
+            $scope.prop = $scope.prop || 'default';
+            this.getProp = function() {
+              return $scope.prop;
+            };
+          },
+          controllerAs: 'ctrl',
+          template: '<p></p>'
+        }));
+      });
+      inject(function($compile, $rootScope) {
+        element = $compile('<div test-dir></div>')($rootScope);
+        var scope = element.isolateScope();
+        expect(scope.ctrl.getProp()).toBe('default');
+        $rootScope.$digest();
+        expect(scope.ctrl.getProp()).toBe('default');
+        scope.prop = 'foop';
+        $rootScope.$digest();
+        expect(scope.ctrl.getProp()).toBe('foop');
+      });
+    });
+
+
     describe('bind-once', function() {
 
       function countWatches(scope) {

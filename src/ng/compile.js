@@ -2591,6 +2591,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
               if (optional) break;
               attrs[attrName] = void 0;
             }
+            if (optional && !attrs[attrName]) break;
 
             parentGet = $parse(attrs[attrName]);
             if (parentGet.literal) {
