@@ -354,6 +354,8 @@ function baseExtend(dst, objs, deep) {
       if (deep && isObject(src)) {
         if (isDate(src)) {
           dst[key] = new Date(src.valueOf());
+        } else if (isElement(src)) {
+          dst[key] = src[0] ? jqLite(src).clone()[0] : jqLite(src).clone();
         } else {
           if (!isObject(dst[key])) dst[key] = isArray(src) ? [] : {};
           baseExtend(dst[key], [src], true);
