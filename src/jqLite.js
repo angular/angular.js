@@ -65,7 +65,7 @@
  * - [`html()`](http://api.jquery.com/html/)
  * - [`next()`](http://api.jquery.com/next/) - Does not support selectors
  * - [`on()`](http://api.jquery.com/on/) - Does not support namespaces, selectors or eventData
- * - [`off()`](http://api.jquery.com/off/) - Does not support namespaces or selectors
+ * - [`off()`](http://api.jquery.com/off/) - Does not support namespaces, selectors or event object as parameter
  * - [`one()`](http://api.jquery.com/one/) - Does not support namespaces or selectors
  * - [`parent()`](http://api.jquery.com/parent/) - Does not support selectors
  * - [`prepend()`](http://api.jquery.com/prepend/)
@@ -79,7 +79,7 @@
  * - [`text()`](http://api.jquery.com/text/)
  * - [`toggleClass()`](http://api.jquery.com/toggleClass/)
  * - [`triggerHandler()`](http://api.jquery.com/triggerHandler/) - Passes a dummy event object to handlers.
- * - [`unbind()`](http://api.jquery.com/unbind/) - Does not support namespaces
+ * - [`unbind()`](http://api.jquery.com/unbind/) - Does not support namespaces or event object as parameter
  * - [`val()`](http://api.jquery.com/val/)
  * - [`wrap()`](http://api.jquery.com/wrap/)
  *
