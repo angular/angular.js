@@ -535,6 +535,17 @@ describe('angular', function() {
 
       expect(dst.date).toBe(src.date);
     });
+
+    it('should copy elements by reference', function() {
+      var src = { element: document.createElement('div'),
+        jqObject: jqLite("<p><span>s1</span><span>s2</span></p>").find("span") };
+      var dst = {};
+
+      extend(dst, src);
+
+      expect(dst.element).toBe(src.element);
+      expect(dst.jqObject).toBe(src.jqObject);
+    });
   });
 
 
@@ -624,6 +635,21 @@ describe('angular', function() {
       expect(dst.regexp).not.toBe(src.regexp);
       expect(isRegExp(dst.regexp)).toBe(true);
       expect(dst.regexp.toString()).toBe(src.regexp.toString());
+    });
+
+
+    it('should copy(clone) elements', function() {
+      var src = { element: document.createElement('div'),
+        jqObject: jqLite("<p><span>s1</span><span>s2</span></p>").find("span") };
+      var dst = {};
+
+      merge(dst, src);
+
+      expect(dst.element).not.toBe(src.element);
+      expect(dst.jqObject).not.toBe(src.jqObject);
+
+      expect(isElement(dst.element)).toBeTruthy();
+      expect(isElement(dst.jqObject)).toBeTruthy();
     });
   });
 
