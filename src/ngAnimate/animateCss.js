@@ -924,7 +924,7 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
 
           startTime = Date.now();
           element.on(events.join(' '), onAnimationProgress);
-          $timeout(onAnimationExpired, maxDelayTime + CLOSING_TIME_BUFFER * maxDurationTime);
+          $timeout(onAnimationExpired, maxDelayTime + CLOSING_TIME_BUFFER * maxDurationTime, false);
 
           applyAnimationToStyles(element, options);
         }
