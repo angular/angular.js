@@ -484,7 +484,7 @@ function qFactory(nextTick, exceptionHandler) {
    * @description
    * Wraps an object that might be a value or a (3rd party) then-able promise into a $q promise.
    * This is useful when you are dealing with an object that might or might not be a promise, or if
-   * the promise comes from a source that can't be trusted.
+   * the promise comes from a source that can't be trusted to conform to this API.
    *
    * @param {*} value Value or a promise
    * @returns {Promise} Returns a promise of the passed value or promise
