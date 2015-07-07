@@ -35,6 +35,12 @@ describe('injector', function() {
   });
 
 
+  it('should check its modulesToLoad argument', function() {
+    expect(function() { angular.injector('test'); })
+        .toThrowMinErr('ng', 'areq');
+  });
+
+
   it('should resolve dependency graph and instantiate all services just once', function() {
     var log = [];
 
