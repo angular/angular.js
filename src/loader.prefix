@@ -5,3 +5,4 @@
  */
 'use strict';
 (function() {
+    function isFunction(value) {return typeof value === 'function';};
