@@ -55,7 +55,7 @@ the applications.
       }]);
   </file>
   <file name="index.html">
-    <div ng-controller="MyController">
+    <div ng-app="scopeExample" ng-controller="MyController">
       Your name:
         <input type="text" ng-model="username">
         <button ng-click='sayHello()'>greet</button>
@@ -126,7 +126,7 @@ a diagram depicting the scope boundaries.
 
 <example module="scopeExample">
   <file name="index.html">
-  <div class="show-scope-demo">
+  <div ng-app="scopeExample" class="show-scope-demo">
     <div ng-controller="GreetController">
       Hello {{name}}!
     </div>
@@ -203,7 +203,7 @@ ng.$rootScope.Scope#$emit emitted} to scope parents.
       }]);
   </file>
   <file name="index.html">
-    <div ng-controller="EventController">
+    <div ng-app="EventExample" ng-controller="EventController">
       Root scope <tt>MyEvent</tt> count: {{count}}
       <ul>
         <li ng-repeat="i in [1]" ng-controller="EventController">
