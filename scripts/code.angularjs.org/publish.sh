@@ -23,22 +23,26 @@ function init {
 }
 
 function prepare {
-  if [[  $IS_SNAPSHOT_BUILD ]]; then
-    # nothing to prepare for snapshot builds as
-    # code.angularjs.org will fetch the current snapshot from
-    # the build server during publish
-    exit 0
-  fi
 
   echo "-- Cloning code.angularjs.org"
-  git clone git@github.com:angular/code.angularjs.org.git $REPO_DIR
+  git clone git@github.com:angular/code.angularjs.org.git $REPO_DIR --depth=1
 
-  #
-  # copy the files from the build
-  #
   echo "-- Updating code.angularjs.org"
-  mkdir $REPO_DIR/$NEW_VERSION
-  cp -r $BUILD_DIR/* $REPO_DIR/$NEW_VERSION/
+
+  if [[  $IS_SNAPSHOT_BUILD ]]; then
+    #
+    # update the snapshot folder
+    #
+    rm -rf $REPO_DIR/snapshot
+    mkdir $REPO_DIR/snapshot
+    cp -r $BUILD_DIR/* $REPO_DIR/snapshot/
+  else
+    #
+    # copy the files from the build
+    #
+    mkdir $REPO_DIR/$NEW_VERSION
+    cp -r $BUILD_DIR/* $REPO_DIR/$NEW_VERSION/
+  fi
 
   #
   # commit
@@ -49,13 +53,6 @@ function prepare {
   git commit -m "v$NEW_VERSION"
 }
 
-
-function _update_snapshot() {
-  for backend in "$@" ; do
-    echo "-- Updating snapshot version: backend=$backend"
-    curl -G --data-urlencode "ver=$NEW_VERSION" http://$backend:8003/fetchLatestSnapshot.php
-  done
-}
 
 function _update_code() {
   cd $REPO_DIR
@@ -74,12 +71,7 @@ function publish {
   # the currently serving Compute Engine backends.
   # code.angularjs.org is served out of port 8003 on these backends.
   backends=("$(dig backends.angularjs.org +short TXT | python -c 'print raw_input()[1:-1].replace(",", "\n")')")
-
-  if [[  $IS_SNAPSHOT_BUILD ]]; then
-    _update_snapshot ${backends[@]}
-  else
-    _update_code ${backends[@]}
-  fi
+  _update_code ${backends[@]}
 }
 
 source $(dirname $0)/../utils.inc

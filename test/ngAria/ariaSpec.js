@@ -57,6 +57,31 @@ describe('$aria', function() {
       scope.$apply('val = true');
       expect(element.attr('aria-hidden')).toBe('userSetValue');
     });
+
+    it('should always set aria-hidden to a boolean value', function() {
+      compileElement('<div ng-hide="val"></div>');
+
+      scope.$apply('val = "test angular"');
+      expect(element.attr('aria-hidden')).toBe('true');
+
+      scope.$apply('val = null');
+      expect(element.attr('aria-hidden')).toBe('false');
+
+      scope.$apply('val = {}');
+      expect(element.attr('aria-hidden')).toBe('true');
+
+
+      compileElement('<div ng-show="val"></div>');
+
+      scope.$apply('val = "test angular"');
+      expect(element.attr('aria-hidden')).toBe('false');
+
+      scope.$apply('val = null');
+      expect(element.attr('aria-hidden')).toBe('true');
+
+      scope.$apply('val = {}');
+      expect(element.attr('aria-hidden')).toBe('false');
+    });
   });
 
 
@@ -319,6 +344,20 @@ describe('$aria', function() {
       scope.$apply('val = true');
       expectAriaAttrOnEachElement(element, 'aria-disabled', 'userSetValue');
     });
+
+
+    it('should always set aria-disabled to a boolean value', function() {
+      compileElement('<div ng-disabled="val"></div>');
+
+      scope.$apply('val = "test angular"');
+      expect(element.attr('aria-disabled')).toBe('true');
+
+      scope.$apply('val = null');
+      expect(element.attr('aria-disabled')).toBe('false');
+
+      scope.$apply('val = {}');
+      expect(element.attr('aria-disabled')).toBe('true');
+    });
   });
 
   describe('aria-disabled when disabled', function() {
@@ -510,6 +549,36 @@ describe('$aria', function() {
       expectAriaAttrOnEachElement(element, 'aria-valuemin', 'userSetValue2');
       expectAriaAttrOnEachElement(element, 'aria-valuemax', 'userSetValue3');
     });
+
+
+    it('should update `aria-valuemin/max` when `min/max` changes dynamically', function() {
+      scope.$apply('min = 25; max = 75');
+      compileElement('<input type="range" ng-model="val" min="{{min}}" max="{{max}}" />');
+
+      expect(element.attr('aria-valuemin')).toBe('25');
+      expect(element.attr('aria-valuemax')).toBe('75');
+
+      scope.$apply('min = 0');
+      expect(element.attr('aria-valuemin')).toBe('0');
+
+      scope.$apply('max = 100');
+      expect(element.attr('aria-valuemax')).toBe('100');
+    });
+
+
+    it('should update `aria-valuemin/max` when `ng-min/ng-max` changes dynamically', function() {
+      scope.$apply('min = 25; max = 75');
+      compileElement('<input type="range" ng-model="val" ng-min="min" ng-max="max" />');
+
+      expect(element.attr('aria-valuemin')).toBe('25');
+      expect(element.attr('aria-valuemax')).toBe('75');
+
+      scope.$apply('min = 0');
+      expect(element.attr('aria-valuemin')).toBe('0');
+
+      scope.$apply('max = 100');
+      expect(element.attr('aria-valuemax')).toBe('100');
+    });
   });
 
   describe('announcing ngMessages', function() {
@@ -598,7 +667,7 @@ describe('$aria', function() {
 
     var clickFn;
 
-    it('should a trigger click from the keyboard', function() {
+    it('should trigger a click from the keyboard', function() {
       scope.someAction = function() {};
 
       var elements = $compile('<section>' +
@@ -615,6 +684,28 @@ describe('$aria', function() {
 
       divElement.triggerHandler({type: 'keypress', keyCode: 32});
       liElement.triggerHandler({type: 'keypress', keyCode: 32});
+
+      expect(clickFn).toHaveBeenCalledWith('div');
+      expect(clickFn).toHaveBeenCalledWith('li');
+    });
+
+    it('should trigger a click in browsers that provide event.which instead of event.keyCode', function() {
+      scope.someAction = function() {};
+
+      var elements = $compile('<section>' +
+      '<div class="div-click" ng-click="someAction(\'div\')" tabindex="0"></div>' +
+      '<ul><li ng-click="someAction( \'li\')" tabindex="0"></li></ul>' +
+      '</section>')(scope);
+
+      scope.$digest();
+
+      clickFn = spyOn(scope, 'someAction');
+
+      var divElement = elements.find('div');
+      var liElement = elements.find('li');
+
+      divElement.triggerHandler({type: 'keypress', which: 32});
+      liElement.triggerHandler({type: 'keypress', which: 32});
 
       expect(clickFn).toHaveBeenCalledWith('div');
       expect(clickFn).toHaveBeenCalledWith('li');
@@ -656,6 +747,18 @@ describe('$aria', function() {
       expect(element.text()).toBe('');
       element.triggerHandler({ type: 'keypress', keyCode: 13 });
       expect(element.text()).toBe('');
+    });
+  });
+
+  describe('actions when bindRoleForClick is set to false', function() {
+    beforeEach(configAriaProvider({
+      bindRoleForClick: false
+    }));
+    beforeEach(injectScopeAndCompiler);
+
+    it('should not add a button role', function() {
+      compileElement('<radio-group ng-click="something"></radio-group>');
+      expect(element.attr('role')).toBeUndefined();
     });
   });
 

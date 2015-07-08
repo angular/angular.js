@@ -42,6 +42,7 @@ $provide.value("$locale", {
       "\u0253.Ys",
       "mb.Ys"
     ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "dim\u0254\u0301di",
       "\u014bg\u0254nd\u025b",
@@ -78,6 +79,10 @@ $provide.value("$locale", {
       "may",
       "tin",
       "el\u00e1"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE d MMMM y",
     "longDate": "d MMMM y",

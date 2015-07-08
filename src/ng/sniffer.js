@@ -18,7 +18,7 @@ function $SnifferProvider() {
   this.$get = ['$window', '$document', function($window, $document) {
     var eventSupport = {},
         android =
-          int((/android (\d+)/.exec(lowercase(($window.navigator || {}).userAgent)) || [])[1]),
+          toInt((/android (\d+)/.exec(lowercase(($window.navigator || {}).userAgent)) || [])[1]),
         boxee = /Boxee/i.test(($window.navigator || {}).userAgent),
         document = $document[0] || {},
         vendorPrefix,
@@ -45,8 +45,8 @@ function $SnifferProvider() {
       animations  = !!(('animation' in bodyStyle) || (vendorPrefix + 'Animation' in bodyStyle));
 
       if (android && (!transitions ||  !animations)) {
-        transitions = isString(document.body.style.webkitTransition);
-        animations = isString(document.body.style.webkitAnimation);
+        transitions = isString(bodyStyle.webkitTransition);
+        animations = isString(bodyStyle.webkitAnimation);
       }
     }
 

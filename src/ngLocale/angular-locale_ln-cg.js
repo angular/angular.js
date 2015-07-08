@@ -24,6 +24,7 @@ $provide.value("$locale", {
       "lib\u00f3so ya",
       "nsima ya Y"
     ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "s\u00e1nz\u00e1 ya yambo",
       "s\u00e1nz\u00e1 ya m\u00edbal\u00e9",
@@ -60,6 +61,10 @@ $provide.value("$locale", {
       "\u0254tb",
       "nvb",
       "dsb"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE d MMMM y",
     "longDate": "d MMMM y",

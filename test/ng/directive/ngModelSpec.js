@@ -1091,6 +1091,31 @@ describe('ngModel', function() {
       }));
 
 
+      it('should be possible to extend Object prototype and still be able to do form validation',
+        inject(function($compile, $rootScope) {
+        Object.prototype.someThing = function() {};
+        var element = $compile('<form name="myForm">' +
+                                 '<input type="text" name="username" ng-model="username" minlength="10" required />' +
+                               '</form>')($rootScope);
+        var inputElm = element.find('input');
+
+        var formCtrl = $rootScope.myForm;
+        var usernameCtrl = formCtrl.username;
+
+        $rootScope.$digest();
+        expect(usernameCtrl.$invalid).toBe(true);
+        expect(formCtrl.$invalid).toBe(true);
+
+        usernameCtrl.$setViewValue('valid-username');
+        $rootScope.$digest();
+
+        expect(usernameCtrl.$invalid).toBe(false);
+        expect(formCtrl.$invalid).toBe(false);
+        delete Object.prototype.someThing;
+
+        dealoc(element);
+      }));
+
       it('should re-evaluate the form validity state once the asynchronous promise has been delivered',
         inject(function($compile, $rootScope, $q) {
 
@@ -1156,17 +1181,17 @@ describe('ngModel', function() {
 
 
       it('should minimize janky setting of classes during $validate() and ngModelWatch', inject(function($animate, $compile, $rootScope) {
-        var addClass = $animate.$$addClassImmediately;
-        var removeClass = $animate.$$removeClassImmediately;
+        var addClass = $animate.addClass;
+        var removeClass = $animate.removeClass;
         var addClassCallCount = 0;
         var removeClassCallCount = 0;
         var input;
-        $animate.$$addClassImmediately = function(element, className) {
+        $animate.addClass = function(element, className) {
           if (input && element[0] === input[0]) ++addClassCallCount;
           return addClass.call($animate, element, className);
         };
 
-        $animate.$$removeClassImmediately = function(element, className) {
+        $animate.removeClass = function(element, className) {
           if (input && element[0] === input[0]) ++removeClassCallCount;
           return removeClass.call($animate, element, className);
         };
@@ -1843,6 +1868,34 @@ describe('ngModelOptions attributes', function() {
 
     helper.changeInputValueTo('a');
     expect($rootScope.name).toEqual('a');
+  });
+
+
+  it('should allow sharing options between multiple inputs', function() {
+    $rootScope.options = {updateOn: 'default'};
+    var inputElm = helper.compileInput(
+        '<input type="text" ng-model="name1" name="alias1" ' +
+          'ng-model-options="options"' +
+        '/>' +
+        '<input type="text" ng-model="name2" name="alias2" ' +
+          'ng-model-options="options"' +
+        '/>');
+
+    helper.changeGivenInputTo(inputElm.eq(0), 'a');
+    helper.changeGivenInputTo(inputElm.eq(1), 'b');
+    expect($rootScope.name1).toEqual('a');
+    expect($rootScope.name2).toEqual('b');
+  });
+
+
+  it('should hold a copy of the options object', function() {
+    $rootScope.options = {updateOn: 'default'};
+    var inputElm = helper.compileInput(
+        '<input type="text" ng-model="name" name="alias" ' +
+          'ng-model-options="options"' +
+        '/>');
+    expect($rootScope.options).toEqual({updateOn: 'default'});
+    expect($rootScope.form.alias.$options).not.toBe($rootScope.options);
   });
 
 

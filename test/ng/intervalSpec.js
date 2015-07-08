@@ -142,6 +142,31 @@ describe('$interval', function() {
   }));
 
 
+  it('should allow you to specify a number of arguments', inject(function($interval, $window) {
+    var task1 = jasmine.createSpy('task1'),
+        task2 = jasmine.createSpy('task2'),
+        task3 = jasmine.createSpy('task3');
+    $interval(task1, 1000, 2, true, 'Task1');
+    $interval(task2, 1000, 2, true, 'Task2');
+    $interval(task3, 1000, 2, true, 'I', 'am', 'a', 'Task3', 'spy');
+
+    $window.flush(1000);
+    expect(task1).toHaveBeenCalledWith('Task1');
+    expect(task2).toHaveBeenCalledWith('Task2');
+    expect(task3).toHaveBeenCalledWith('I', 'am', 'a', 'Task3', 'spy');
+
+    task1.reset();
+    task2.reset();
+    task3.reset();
+
+    $window.flush(1000);
+    expect(task1).toHaveBeenCalledWith('Task1');
+    expect(task2).toHaveBeenCalledWith('Task2');
+    expect(task3).toHaveBeenCalledWith('I', 'am', 'a', 'Task3', 'spy');
+
+  }));
+
+
   it('should return a promise which will be updated with the count on each iteration',
       inject(function($interval, $window) {
     var log = [],

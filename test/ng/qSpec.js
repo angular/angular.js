@@ -1643,6 +1643,14 @@ describe('q', function() {
     });
 
 
+    describe('resolve', function() {
+      it('should be an alias of the "when" function', function() {
+        expect(q.resolve).toBeDefined();
+        expect(q.resolve).toEqual(q.when);
+      });
+    });
+
+
     describe('optional callbacks', function() {
       it('should not require success callback and propagate resolution', function() {
         q.when('hi', null, error()).then(success(2), error());

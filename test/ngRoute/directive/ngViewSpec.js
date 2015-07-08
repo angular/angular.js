@@ -813,7 +813,7 @@ describe('ngView animations', function() {
         });
       });
 
-      inject(function($rootScope, $compile, $location, $route, $timeout, $rootElement, $sniffer, $animate) {
+      inject(function($rootScope, $compile, $location, $route, $timeout, $rootElement, $sniffer, $animate, $$rAF) {
         element = $compile(html('<div><ng:view onload="load()" class="my-animation"></ng:view></div>'))($rootScope);
         $animate.enabled(true);
 
@@ -836,6 +836,8 @@ describe('ngView animations', function() {
 
         expect($animate.queue.shift().event).toBe('enter'); //ngRepeat 3
         expect($animate.queue.shift().event).toBe('enter'); //ngRepeat 4
+
+        $$rAF.flush();
 
         expect(element.text()).toEqual('34');
 

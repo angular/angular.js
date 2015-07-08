@@ -493,18 +493,18 @@ var formDirectiveFactory = function(isNgForm) {
             var parentFormCtrl = controller.$$parentForm;
 
             if (nameAttr) {
-              setter(scope, null, controller.$name, controller, controller.$name);
+              setter(scope, controller.$name, controller, controller.$name);
               attr.$observe(nameAttr, function(newValue) {
                 if (controller.$name === newValue) return;
-                setter(scope, null, controller.$name, undefined, controller.$name);
+                setter(scope, controller.$name, undefined, controller.$name);
                 parentFormCtrl.$$renameControl(controller, newValue);
-                setter(scope, null, controller.$name, controller, controller.$name);
+                setter(scope, controller.$name, controller, controller.$name);
               });
             }
             formElement.on('$destroy', function() {
               parentFormCtrl.$removeControl(controller);
               if (nameAttr) {
-                setter(scope, null, attr[nameAttr], undefined, controller.$name);
+                setter(scope, attr[nameAttr], undefined, controller.$name);
               }
               extend(controller, nullFormCtrl); //stop propagating child destruction handlers upwards
             });

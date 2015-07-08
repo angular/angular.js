@@ -3,6 +3,7 @@
 /**
  * @ngdoc directive
  * @name ngRepeat
+ * @multiElement
  *
  * @description
  * The `ngRepeat` directive instantiates a template once per item from a collection. Each template
@@ -23,6 +24,7 @@
  * Creating aliases for these properties is possible with {@link ng.directive:ngInit `ngInit`}.
  * This may be useful when, for instance, nesting ngRepeats.
  *
+ *
  * # Iterating over object properties
  *
  * It is possible to get `ngRepeat` to iterate over the properties of an object using the following
@@ -32,18 +34,19 @@
  * <div ng-repeat="(key, value) in myObj"> ... </div>
  * ```
  *
- * You need to be aware that the JavaScript specification does not define what order
- * it will return the keys for an object. In order to have a guaranteed deterministic order
- * for the keys, Angular versions up to and including 1.3 **sort the keys alphabetically**.
+ * You need to be aware that the JavaScript specification does not define the order of keys
+ * returned for an object. (To mitigate this in Angular 1.3 the `ngRepeat` directive
+ * used to sort the keys alphabetically.)
+ *
+ * Version 1.4 removed the alphabetic sorting. We now rely on the order returned by the browser
+ * when running `for key in myObj`. It seems that browsers generally follow the strategy of providing
+ * keys in the order in which they were defined, although there are exceptions when keys are deleted
+ * and reinstated. See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/delete#Cross-browser_issues
  *
  * If this is not desired, the recommended workaround is to convert your object into an array
  * that is sorted into the order that you prefer before providing it to `ngRepeat`.  You could
  * do this with a filter such as [toArrayFilter](http://ngmodules.org/modules/angular-toArrayFilter)
  * or implement a `$watch` on the object yourself.
- *
- * In version 1.4 we will remove the sorting, since it seems that browsers generally follow the
- * strategy of providing keys in the order in which they were defined, although there are exceptions
- * when keys are deleted and reinstated.
  *
  *
  * # Tracking and Duplicates
@@ -93,6 +96,15 @@
  *    <div ng-repeat="obj in collection track by $id(obj)">
  *      {{obj.prop}}
  *    </div>
+ * ```
+ *
+ * <div class="alert alert-warning">
+ * **Note:** `track by` must always be the last expression:
+ * </div>
+ * ```
+ * <div ng-repeat="model in collection | orderBy: 'id' as filtered_result track by model.id">
+ *     {{model.name}}
+ * </div>
  * ```
  *
  * # Special repeat start and end points
@@ -166,8 +178,9 @@
  *     which can be used to associate the objects in the collection with the DOM elements. If no tracking expression
  *     is specified, ng-repeat associates elements by identity. It is an error to have
  *     more than one tracking expression value resolve to the same key. (This would mean that two distinct objects are
- *     mapped to the same DOM element, which is not possible.)  If filters are used in the expression, they should be
- *     applied before the tracking expression.
+ *     mapped to the same DOM element, which is not possible.)
+ *
+ *     Note that the tracking expression must come last, after any filters, and the alias expression.
  *
  *     For example: `item in items` is equivalent to `item in items track by $id(item)`. This implies that the DOM elements
  *     will be associated by item identity in the array.
@@ -191,6 +204,11 @@
  *     For example: `item in items | filter:x as results` will store the fragment of the repeated items as `results`, but only after
  *     the items have been processed through the filter.
  *
+ *     Please note that `as [variable name] is not an operator but rather a part of ngRepeat micro-syntax so it can be used only at the end
+ *     (and not as operator, inside an expression).
+ *
+ *     For example: `item in items | filter : x | orderBy : order | limitTo : limit as results` .
+ *
  * @example
  * This example initializes the scope to a list of names and
  * then uses `ngRepeat` to display every person:
@@ -209,7 +227,7 @@
         {name:'Samantha', age:60, gender:'girl'}
       ]">
         I have {{friends.length}} friends. They are:
-        <input type="search" ng-model="q" placeholder="filter friends..." />
+        <input type="search" ng-model="q" placeholder="filter friends..." aria-label="filter friends" />
         <ul class="example-animate-container">
           <li class="animate-repeat" ng-repeat="friend in friends | filter:q as results">
             [{{$index + 1}}] {{friend.name}} who is {{friend.age}} years old.
@@ -407,14 +425,13 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
             trackByIdFn = trackByIdExpFn || trackByIdArrayFn;
           } else {
             trackByIdFn = trackByIdExpFn || trackByIdObjFn;
-            // if object, extract keys, sort them and use to determine order of iteration over obj props
+            // if object, extract keys, in enumeration order, unsorted
             collectionKeys = [];
             for (var itemKey in collection) {
-              if (collection.hasOwnProperty(itemKey) && itemKey.charAt(0) != '$') {
+              if (collection.hasOwnProperty(itemKey) && itemKey.charAt(0) !== '$') {
                 collectionKeys.push(itemKey);
               }
             }
-            collectionKeys.sort();
           }
 
           collectionLength = collectionKeys.length;
@@ -510,4 +527,3 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
     }
   };
 }];
-

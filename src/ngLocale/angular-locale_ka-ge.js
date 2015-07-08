@@ -24,6 +24,7 @@ $provide.value("$locale", {
       "\u10eb\u10d5. \u10ec.",
       "\u10d0\u10ee. \u10ec."
     ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "\u10d8\u10d0\u10dc\u10d5\u10d0\u10e0\u10d8",
       "\u10d7\u10d4\u10d1\u10d4\u10e0\u10d5\u10d0\u10da\u10d8",
@@ -60,6 +61,10 @@ $provide.value("$locale", {
       "\u10dd\u10e5\u10e2",
       "\u10dc\u10dd\u10d4",
       "\u10d3\u10d4\u10d9"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE, dd MMMM, y",
     "longDate": "d MMMM, y",

@@ -192,7 +192,7 @@ is set to `true`. The parse error is stored in `ngModel.$error.parse`.
             required>Change me!</div>
         <span ng-show="myForm.myWidget.$error.required">Required!</span>
        <hr>
-       <textarea ng-model="userContent"></textarea>
+       <textarea ng-model="userContent" aria-label="Dynamic textarea"></textarea>
       </form>
     </file>
     <file name="protractor.js" type="protractor">
@@ -286,10 +286,10 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    * * `$rollbackViewValue()` is called.  If we are rolling back the view value to the last
    *   committed value then `$render()` is called to update the input control.
    * * The value referenced by `ng-model` is changed programmatically and both the `$modelValue` and
-   *   the `$viewValue` are different to last time.
+   *   the `$viewValue` are different from last time.
    *
    * Since `ng-model` does not do a deep watch, `$render()` is only invoked if the values of
-   * `$modelValue` and `$viewValue` are actually different to their previous value. If `$modelValue`
+   * `$modelValue` and `$viewValue` are actually different from their previous value. If `$modelValue`
    * or `$viewValue` are objects (rather than a string or number) then `$render()` will not be
    * invoked if you only change a property on the objects.
    */
@@ -306,7 +306,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    *
    * The default `$isEmpty` function checks whether the value is `undefined`, `''`, `null` or `NaN`.
    *
-   * You can override this for input directives whose concept of being empty is different to the
+   * You can override this for input directives whose concept of being empty is different from the
    * default. The `checkboxInputType` directive does this because in its case a value of `false`
    * implies empty.
    *
@@ -474,12 +474,14 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    *        <p>Now see what happens if you start typing then press the Escape key</p>
    *
    *       <form name="myForm" ng-model-options="{ updateOn: 'blur' }">
-   *         <p>With $rollbackViewValue()</p>
-   *         <input name="myInput1" ng-model="myValue" ng-keydown="resetWithCancel($event)"><br/>
+   *         <p id="inputDescription1">With $rollbackViewValue()</p>
+   *         <input name="myInput1" aria-describedby="inputDescription1" ng-model="myValue"
+   *                ng-keydown="resetWithCancel($event)"><br/>
    *         myValue: "{{ myValue }}"
    *
-   *         <p>Without $rollbackViewValue()</p>
-   *         <input name="myInput2" ng-model="myValue" ng-keydown="resetWithoutCancel($event)"><br/>
+   *         <p id="inputDescription2">Without $rollbackViewValue()</p>
+   *         <input name="myInput2" aria-describedby="inputDescription2" ng-model="myValue"
+   *                ng-keydown="resetWithoutCancel($event)"><br/>
    *         myValue: "{{ myValue }}"
    *       </form>
    *     </div>
@@ -943,10 +945,13 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
            background: red;
          }
        </style>
-       Update input to see transitions when valid/invalid.
-       Integer is a valid value.
+       <p id="inputDescription">
+        Update input to see transitions when valid/invalid.
+        Integer is a valid value.
+       </p>
        <form name="testForm" ng-controller="ExampleController">
-         <input ng-model="val" ng-pattern="/^\d+$/" name="anim" class="my-input" />
+         <input ng-model="val" ng-pattern="/^\d+$/" name="anim" class="my-input"
+                aria-describedby="inputDescription" />
        </form>
      </file>
  * </example>
@@ -956,7 +961,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
  * Sometimes it's helpful to bind `ngModel` to a getter/setter function.  A getter/setter is a
  * function that returns a representation of the model when called with zero arguments, and sets
  * the internal state of a model when called with an argument. It's sometimes useful to use this
- * for models that have an internal representation that's different than what the model exposes
+ * for models that have an internal representation that's different from what the model exposes
  * to the view.
  *
  * <div class="alert alert-success">
@@ -976,10 +981,11 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
      <file name="index.html">
        <div ng-controller="ExampleController">
          <form name="userForm">
-           Name:
-           <input type="text" name="userName"
-                  ng-model="user.name"
-                  ng-model-options="{ getterSetter: true }" />
+           <label>Name:
+             <input type="text" name="userName"
+                    ng-model="user.name"
+                    ng-model-options="{ getterSetter: true }" />
+           </label>
          </form>
          <pre>user.name = <span ng-bind="user.name()"></span></pre>
        </div>
@@ -1073,7 +1079,7 @@ var DEFAULT_REGEXP = /(\s+|^)default(\s+|$)/;
  * takes place when a timer expires; this timer will be reset after another change takes place.
  *
  * Given the nature of `ngModelOptions`, the value displayed inside input fields in the view might
- * be different than the value in the actual model. This means that if you update the model you
+ * be different from the value in the actual model. This means that if you update the model you
  * should also invoke {@link ngModel.NgModelController `$rollbackViewValue`} on the relevant input field in
  * order to make sure it is synchronized with the model and that any debounced action is canceled.
  *
@@ -1095,14 +1101,16 @@ var DEFAULT_REGEXP = /(\s+|^)default(\s+|$)/;
  *   - `debounce`: integer value which contains the debounce model update value in milliseconds. A
  *     value of 0 triggers an immediate update. If an object is supplied instead, you can specify a
  *     custom value for each event. For example:
- *     `ng-model-options="{ updateOn: 'default blur', debounce: {'default': 500, 'blur': 0} }"`
+ *     `ng-model-options="{ updateOn: 'default blur', debounce: { 'default': 500, 'blur': 0 } }"`
  *   - `allowInvalid`: boolean value which indicates that the model can be set with values that did
  *     not validate correctly instead of the default behavior of setting the model to undefined.
  *   - `getterSetter`: boolean value which determines whether or not to treat functions bound to
        `ngModel` as getters/setters.
  *   - `timezone`: Defines the timezone to be used to read/write the `Date` instance in the model for
- *     `<input type="date">`, `<input type="time">`, ... . Right now, the only supported value is `'UTC'`,
- *     otherwise the default timezone of the browser will be used.
+ *     `<input type="date">`, `<input type="time">`, ... . It understands UTC/GMT and the
+ *     continental US time zone abbreviations, but for general use, use a time zone offset, for
+ *     example, `'+0430'` (4 hours, 30 minutes east of the Greenwich meridian)
+ *     If not specified, the timezone of the browser will be used.
  *
  * @example
 
@@ -1114,14 +1122,15 @@ var DEFAULT_REGEXP = /(\s+|^)default(\s+|$)/;
     <file name="index.html">
       <div ng-controller="ExampleController">
         <form name="userForm">
-          Name:
-          <input type="text" name="userName"
-                 ng-model="user.name"
-                 ng-model-options="{ updateOn: 'blur' }"
-                 ng-keyup="cancel($event)" /><br />
-
-          Other data:
-          <input type="text" ng-model="user.data" /><br />
+          <label>Name:
+            <input type="text" name="userName"
+                   ng-model="user.name"
+                   ng-model-options="{ updateOn: 'blur' }"
+                   ng-keyup="cancel($event)" />
+          </label><br />
+          <label>Other data:
+            <input type="text" ng-model="user.data" />
+          </label><br />
         </form>
         <pre>user.name = <span ng-bind="user.name"></span></pre>
       </div>
@@ -1169,11 +1178,13 @@ var DEFAULT_REGEXP = /(\s+|^)default(\s+|$)/;
     <file name="index.html">
       <div ng-controller="ExampleController">
         <form name="userForm">
-          Name:
-          <input type="text" name="userName"
-                 ng-model="user.name"
-                 ng-model-options="{ debounce: 1000 }" />
-          <button ng-click="userForm.userName.$rollbackViewValue(); user.name=''">Clear</button><br />
+          <label>Name:
+            <input type="text" name="userName"
+                   ng-model="user.name"
+                   ng-model-options="{ debounce: 1000 }" />
+          </label>
+          <button ng-click="userForm.userName.$rollbackViewValue(); user.name=''">Clear</button>
+          <br />
         </form>
         <pre>user.name = <span ng-bind="user.name"></span></pre>
       </div>
@@ -1192,10 +1203,11 @@ var DEFAULT_REGEXP = /(\s+|^)default(\s+|$)/;
     <file name="index.html">
       <div ng-controller="ExampleController">
         <form name="userForm">
-          Name:
-          <input type="text" name="userName"
-                 ng-model="user.name"
-                 ng-model-options="{ getterSetter: true }" />
+          <label>Name:
+            <input type="text" name="userName"
+                   ng-model="user.name"
+                   ng-model-options="{ getterSetter: true }" />
+          </label>
         </form>
         <pre>user.name = <span ng-bind="user.name()"></span></pre>
       </div>
@@ -1222,7 +1234,7 @@ var ngModelOptionsDirective = function() {
     restrict: 'A',
     controller: ['$scope', '$attrs', function($scope, $attrs) {
       var that = this;
-      this.$options = $scope.$eval($attrs.ngModelOptions);
+      this.$options = copy($scope.$eval($attrs.ngModelOptions));
       // Allow adding/overriding bound events
       if (this.$options.updateOn !== undefined) {
         this.$options.updateOnDefault = false;
@@ -1339,7 +1351,9 @@ function addSetValidityMethod(context) {
 function isObjectEmpty(obj) {
   if (obj) {
     for (var prop in obj) {
-      return false;
+      if (obj.hasOwnProperty(prop)) {
+        return false;
+      }
     }
   }
   return true;

@@ -2,6 +2,17 @@
 
 var $controllerMinErr = minErr('$controller');
 
+
+var CNTRL_REG = /^(\S+)(\s+as\s+(\w+))?$/;
+function identifierForController(controller, ident) {
+  if (ident && isString(ident)) return ident;
+  if (isString(controller)) {
+    var match = CNTRL_REG.exec(controller);
+    if (match) return match[3];
+  }
+}
+
+
 /**
  * @ngdoc provider
  * @name $controllerProvider
@@ -14,9 +25,7 @@ var $controllerMinErr = minErr('$controller');
  */
 function $ControllerProvider() {
   var controllers = {},
-      globals = false,
-      CNTRL_REG = /^(\S+)(\s+as\s+(\w+))?$/;
-
+      globals = false;
 
   /**
    * @ngdoc method
@@ -124,8 +133,16 @@ function $ControllerProvider() {
           addIdentifier(locals, identifier, instance, constructor || expression.name);
         }
 
-        return extend(function() {
-          $injector.invoke(expression, instance, locals, constructor);
+        var instantiate;
+        return instantiate = extend(function() {
+          var result = $injector.invoke(expression, instance, locals, constructor);
+          if (result !== instance && (isObject(result) || isFunction(result))) {
+            instance = result;
+            if (identifier) {
+              // If result changed, re-assign controllerAs value to scope.
+              addIdentifier(locals, identifier, instance, constructor || expression.name);
+            }
+          }
           return instance;
         }, {
           instance: instance,

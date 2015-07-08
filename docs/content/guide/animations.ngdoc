@@ -253,7 +253,7 @@ The table below explains in detail which animation events are triggered
 | {@link ng.directive:ngClass#animations ngClass or &#123;&#123;class&#125;&#125;}    | add and remove                           |
 | {@link ng.directive:ngShow#animations ngShow & ngHide}                              | add and remove (the ng-hide class value) |
 
-For a full breakdown of the steps involved during each animation event, refer to the {@link ngAnimate.$animate API docs}.
+For a full breakdown of the steps involved during each animation event, refer to the {@link ng.$animate API docs}.
 
 ## How do I use animations in my own directives?
 
@@ -276,6 +276,6 @@ myModule.directive('my-directive', ['$animate', function($animate) {
 
 ## More about animations
 
-For a full breakdown of each method available on `$animate`, see the {@link ngAnimate.$animate API documentation}.
+For a full breakdown of each method available on `$animate`, see the {@link ng.$animate API documentation}.
 
 To see a complete demo, see the {@link tutorial/step_12 animation step within the AngularJS phonecat tutorial}.

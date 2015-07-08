@@ -42,6 +42,7 @@ $provide.value("$locale", {
       "SK",
       "BK"
     ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "ndz\u0254\u0300\u014b\u0254\u0300n\u00f9m",
       "ndz\u0254\u0300\u014b\u0254\u0300k\u0197\u0300z\u00f9\u0294",
@@ -78,6 +79,10 @@ $provide.value("$locale", {
       "l\u0254m",
       "kaa",
       "fwo"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE d MMMM y",
     "longDate": "d MMMM y",

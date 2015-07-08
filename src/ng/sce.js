@@ -424,7 +424,7 @@ function $SceDelegateProvider() {
  * Here's an example of a binding in a privileged context:
  *
  * ```
- * <input ng-model="userHtml">
+ * <input ng-model="userHtml" aria-label="User input">
  * <div ng-bind-html="userHtml"></div>
  * ```
  *
@@ -808,7 +808,7 @@ function $SceProvider() {
      * escaping.
      *
      * @param {string} type The kind of context in which this value is safe for use.  e.g. url,
-     *   resource_url, html, js and css.
+     *   resourceUrl, html, js and css.
      * @param {*} value The value that that should be considered trusted/safe.
      * @returns {*} A value that can be used to stand in for the provided `value` in places
      * where Angular expects a $sce.trustAs() return value.

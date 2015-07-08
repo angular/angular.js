@@ -1,0 +1,12 @@
+@ngdoc error
+@name $interpolate:reqarg
+@fullName Missing required argument for MessageFormat
+@description
+
+You must specify the MessageFormat function that you're using right after the
+comma following the Angular expression.  Currently, the supported functions are
+"plural" and "select" (for gender selections.)
+
+For more information about the MessageFormat syntax in interpolation
+expressions, please refer to MessageFormat extensions section at
+{@link guide/i18n#MessageFormat Angular i18n MessageFormat}

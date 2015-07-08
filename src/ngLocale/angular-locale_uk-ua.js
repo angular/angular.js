@@ -42,6 +42,7 @@ $provide.value("$locale", {
       "\u0434\u043e \u043d.\u0435.",
       "\u043d.\u0435."
     ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "\u0441\u0456\u0447\u043d\u044f",
       "\u043b\u044e\u0442\u043e\u0433\u043e",
@@ -78,6 +79,10 @@ $provide.value("$locale", {
       "\u0436\u043e\u0432\u0442.",
       "\u043b\u0438\u0441\u0442.",
       "\u0433\u0440\u0443\u0434."
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE, d MMMM y '\u0440'.",
     "longDate": "d MMMM y '\u0440'.",

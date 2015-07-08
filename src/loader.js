@@ -146,7 +146,7 @@ function setupModuleLoader(window) {
            * @description
            * See {@link auto.$provide#provider $provide.provider()}.
            */
-          provider: invokeLater('$provide', 'provider'),
+          provider: invokeLaterAndSetModuleName('$provide', 'provider'),
 
           /**
            * @ngdoc method
@@ -157,7 +157,7 @@ function setupModuleLoader(window) {
            * @description
            * See {@link auto.$provide#factory $provide.factory()}.
            */
-          factory: invokeLater('$provide', 'factory'),
+          factory: invokeLaterAndSetModuleName('$provide', 'factory'),
 
           /**
            * @ngdoc method
@@ -168,7 +168,7 @@ function setupModuleLoader(window) {
            * @description
            * See {@link auto.$provide#service $provide.service()}.
            */
-          service: invokeLater('$provide', 'service'),
+          service: invokeLaterAndSetModuleName('$provide', 'service'),
 
           /**
            * @ngdoc method
@@ -193,6 +193,18 @@ function setupModuleLoader(window) {
            */
           constant: invokeLater('$provide', 'constant', 'unshift'),
 
+           /**
+           * @ngdoc method
+           * @name angular.Module#decorator
+           * @module ng
+           * @param {string} The name of the service to decorate.
+           * @param {Function} This function will be invoked when the service needs to be
+           *                                    instantiated and should return the decorated service instance.
+           * @description
+           * See {@link auto.$provide#decorator $provide.decorator()}.
+           */
+          decorator: invokeLaterAndSetModuleName('$provide', 'decorator'),
+
           /**
            * @ngdoc method
            * @name angular.Module#animation
@@ -206,7 +218,7 @@ function setupModuleLoader(window) {
            *
            *
            * Defines an animation hook that can be later used with
-           * {@link ngAnimate.$animate $animate} service and directives that use this service.
+           * {@link $animate $animate} service and directives that use this service.
            *
            * ```js
            * module.animation('.animation-name', function($inject1, $inject2) {
@@ -225,7 +237,7 @@ function setupModuleLoader(window) {
            * See {@link ng.$animateProvider#register $animateProvider.register()} and
            * {@link ngAnimate ngAnimate module} for more information.
            */
-          animation: invokeLater('$animateProvider', 'register'),
+          animation: invokeLaterAndSetModuleName('$animateProvider', 'register'),
 
           /**
            * @ngdoc method
@@ -243,7 +255,7 @@ function setupModuleLoader(window) {
            * (`myapp_subsection_filterx`).
            * </div>
            */
-          filter: invokeLater('$filterProvider', 'register'),
+          filter: invokeLaterAndSetModuleName('$filterProvider', 'register'),
 
           /**
            * @ngdoc method
@@ -255,7 +267,7 @@ function setupModuleLoader(window) {
            * @description
            * See {@link ng.$controllerProvider#register $controllerProvider.register()}.
            */
-          controller: invokeLater('$controllerProvider', 'register'),
+          controller: invokeLaterAndSetModuleName('$controllerProvider', 'register'),
 
           /**
            * @ngdoc method
@@ -268,7 +280,7 @@ function setupModuleLoader(window) {
            * @description
            * See {@link ng.$compileProvider#directive $compileProvider.directive()}.
            */
-          directive: invokeLater('$compileProvider', 'directive'),
+          directive: invokeLaterAndSetModuleName('$compileProvider', 'directive'),
 
           /**
            * @ngdoc method
@@ -315,6 +327,19 @@ function setupModuleLoader(window) {
           if (!queue) queue = invokeQueue;
           return function() {
             queue[insertMethod || 'push']([provider, method, arguments]);
+            return moduleInstance;
+          };
+        }
+
+        /**
+         * @param {string} provider
+         * @param {string} method
+         * @returns {angular.Module}
+         */
+        function invokeLaterAndSetModuleName(provider, method) {
+          return function(recipeName, factoryFunction) {
+            if (factoryFunction && isFunction(factoryFunction)) factoryFunction.$$moduleName = name;
+            invokeQueue.push([provider, method, arguments]);
             return moduleInstance;
           };
         }

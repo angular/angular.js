@@ -5,7 +5,7 @@ var $resourceMinErr = angular.$$minErr('$resource');
 // Helper functions and regex to lookup a dotted path on an object
 // stopping at undefined/null.  The path must be composed of ASCII
 // identifiers (just like $parse)
-var MEMBER_NAME_REGEX = /^(\.[a-zA-Z_$][0-9a-zA-Z_$]*)+$/;
+var MEMBER_NAME_REGEX = /^(\.[a-zA-Z_$@][0-9a-zA-Z_$@]*)+$/;
 
 function isValidDottedPath(path) {
   return (path != null && path !== '' && path !== 'hasOwnProperty' &&
@@ -85,7 +85,7 @@ function shallowClearAndCopy(src, dst) {
      }]);
  * ```
  *
- * @param {string} url A parametrized URL template with parameters prefixed by `:` as in
+ * @param {string} url A parameterized URL template with parameters prefixed by `:` as in
  *   `/user/:username`. If you are using a URL with a port number (e.g.
  *   `http://example.com:8080/api`), it will be respected.
  *
@@ -209,7 +209,8 @@ function shallowClearAndCopy(src, dst) {
  *   - non-GET instance actions:  `instance.$action([parameters], [success], [error])`
  *
  *
- *   Success callback is called with (value, responseHeaders) arguments. Error callback is called
+ *   Success callback is called with (value, responseHeaders) arguments, where the value is
+ *   the populated resource instance or collection object. The error callback is called
  *   with (httpResponse) argument.
  *
  *   Class actions return empty instance (with additional properties below).
@@ -581,8 +582,8 @@ angular.module('ngResource', ['ng']).
                 if (angular.isArray(data) !== (!!action.isArray)) {
                   throw $resourceMinErr('badcfg',
                       'Error in resource configuration for action `{0}`. Expected response to ' +
-                      'contain an {1} but got an {2}', name, action.isArray ? 'array' : 'object',
-                    angular.isArray(data) ? 'array' : 'object');
+                      'contain an {1} but got an {2} (Request: {3} {4})', name, action.isArray ? 'array' : 'object',
+                    angular.isArray(data) ? 'array' : 'object', httpConfig.method, httpConfig.url);
                 }
                 // jshint +W018
                 if (action.isArray) {

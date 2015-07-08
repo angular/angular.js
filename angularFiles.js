@@ -40,6 +40,7 @@ var angularFiles = {
     'src/ng/timeout.js',
     'src/ng/urlUtils.js',
     'src/ng/window.js',
+    'src/ng/cookieReader.js',
 
     'src/ng/filter.js',
     'src/ng/filter/filter.js',
@@ -65,6 +66,7 @@ var angularFiles = {
     'src/ng/directive/ngList.js',
     'src/ng/directive/ngModel.js',
     'src/ng/directive/ngNonBindable.js',
+    'src/ng/directive/ngOptions.js',
     'src/ng/directive/ngPluralize.js',
     'src/ng/directive/ngRepeat.js',
     'src/ng/directive/ngShowHide.js',
@@ -85,10 +87,29 @@ var angularFiles = {
 
   'angularModules': {
     'ngAnimate': [
-      'src/ngAnimate/animate.js'
+      'src/ngAnimate/shared.js',
+      'src/ngAnimate/rafScheduler.js',
+      'src/ngAnimate/animateChildrenDirective.js',
+      'src/ngAnimate/animateCss.js',
+      'src/ngAnimate/animateCssDriver.js',
+      'src/ngAnimate/animateJs.js',
+      'src/ngAnimate/animateJsDriver.js',
+      'src/ngAnimate/animateQueue.js',
+      'src/ngAnimate/animateRunner.js',
+      'src/ngAnimate/animation.js',
+      'src/ngAnimate/module.js'
     ],
     'ngCookies': [
-      'src/ngCookies/cookies.js'
+      'src/ngCookies/cookies.js',
+      'src/ngCookies/cookieStore.js',
+      'src/ngCookies/cookieWriter.js'
+    ],
+    'ngMessageFormat': [
+      'src/ngMessageFormat/messageFormatCommon.js',
+      'src/ngMessageFormat/messageFormatSelector.js',
+      'src/ngMessageFormat/messageFormatInterpolationParts.js',
+      'src/ngMessageFormat/messageFormatParser.js',
+      'src/ngMessageFormat/messageFormatService.js'
     ],
     'ngMessages': [
       'src/ngMessages/messages.js'
@@ -161,7 +182,7 @@ var angularFiles = {
     'src/publishExternalApis.js',
     '@angularSrcModules',
     '@angularScenario',
-    '@angularTest',
+    '@angularTest'
   ],
 
   'karmaExclude': [
@@ -180,6 +201,7 @@ var angularFiles = {
     '@angularSrcModules',
     'src/ngScenario/browserTrigger.js',
     'test/helpers/*.js',
+    'test/ngMessageFormat/*.js',
     'test/ngMock/*.js',
     'test/ngCookies/*.js',
     'test/ngRoute/**/*.js',
@@ -196,7 +218,7 @@ var angularFiles = {
     'src/publishExternalApis.js',
     '@angularSrcModules',
     '@angularScenario',
-    '@angularTest',
+    '@angularTest'
   ],
 
   'karmaJqueryExclude': [
@@ -208,6 +230,7 @@ var angularFiles = {
 
 angularFiles['angularSrcModules'] = [].concat(
   angularFiles['angularModules']['ngAnimate'],
+  angularFiles['angularModules']['ngMessageFormat'],
   angularFiles['angularModules']['ngMessages'],
   angularFiles['angularModules']['ngCookies'],
   angularFiles['angularModules']['ngResource'],

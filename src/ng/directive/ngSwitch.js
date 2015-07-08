@@ -130,7 +130,6 @@
  */
 var ngSwitchDirective = ['$animate', function($animate) {
   return {
-    restrict: 'EA',
     require: 'ngSwitch',
 
     // asks for $scope to fool the BC controller module

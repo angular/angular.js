@@ -86,6 +86,7 @@ function $RootScopeProvider() {
           this.$$childHead = this.$$childTail = null;
       this.$$listeners = {};
       this.$$listenerCount = {};
+      this.$$watchersCount = 0;
       this.$id = nextUid();
       this.$$ChildScope = null;
     }
@@ -152,6 +153,7 @@ function $RootScopeProvider() {
       this.$$destroyed = false;
       this.$$listeners = {};
       this.$$listenerCount = {};
+      this.$$watchersCount = 0;
       this.$$isolateBindings = null;
     }
 
@@ -361,11 +363,11 @@ function $RootScopeProvider() {
        *     comparing for reference equality.
        * @returns {function()} Returns a deregistration function for this listener.
        */
-      $watch: function(watchExp, listener, objectEquality) {
+      $watch: function(watchExp, listener, objectEquality, prettyPrintExpression) {
         var get = $parse(watchExp);
 
         if (get.$$watchDelegate) {
-          return get.$$watchDelegate(this, listener, objectEquality, get);
+          return get.$$watchDelegate(this, listener, objectEquality, get, watchExp);
         }
         var scope = this,
             array = scope.$$watchers,
@@ -373,7 +375,7 @@ function $RootScopeProvider() {
               fn: listener,
               last: initWatchVal,
               get: get,
-              exp: watchExp,
+              exp: prettyPrintExpression || watchExp,
               eq: !!objectEquality
             };
 
@@ -389,9 +391,12 @@ function $RootScopeProvider() {
         // we use unshift since we use a while loop in $digest for speed.
         // the while loop reads in reverse order.
         array.unshift(watcher);
+        incrementWatchersCount(this, 1);
 
         return function deregisterWatch() {
-          arrayRemove(array, watcher);
+          if (arrayRemove(array, watcher) >= 0) {
+            incrementWatchersCount(scope, -1);
+          }
           lastDirtyWatch = null;
         };
       },
@@ -799,7 +804,7 @@ function $RootScopeProvider() {
             // Insanity Warning: scope depth-first traversal
             // yes, this code is a bit crazy, but it works and we have tests to prove it!
             // this piece should be kept in sync with the traversal in $broadcast
-            if (!(next = (current.$$childHead ||
+            if (!(next = ((current.$$watchersCount && current.$$childHead) ||
                 (current !== target && current.$$nextSibling)))) {
               while (current !== target && !(next = current.$$nextSibling)) {
                 current = current.$parent;
@@ -866,22 +871,27 @@ function $RootScopeProvider() {
        * clean up DOM bindings before an element is removed from the DOM.
        */
       $destroy: function() {
-        // we can't destroy the root scope or a scope that has been already destroyed
+        // We can't destroy a scope that has been already destroyed.
         if (this.$$destroyed) return;
         var parent = this.$parent;
 
         this.$broadcast('$destroy');
         this.$$destroyed = true;
-        if (this === $rootScope) return;
 
+        if (this === $rootScope) {
+          //Remove handlers attached to window when $rootScope is removed
+          $browser.$$applicationDestroyed();
+        }
+
+        incrementWatchersCount(this, -this.$$watchersCount);
         for (var eventName in this.$$listenerCount) {
           decrementListenerCount(this, this.$$listenerCount[eventName], eventName);
         }
 
         // sever all the references to parent scopes (after this cleanup, the current scope should
         // not be retained by any of our references and should be eligible for garbage collection)
-        if (parent.$$childHead == this) parent.$$childHead = this.$$nextSibling;
-        if (parent.$$childTail == this) parent.$$childTail = this.$$prevSibling;
+        if (parent && parent.$$childHead == this) parent.$$childHead = this.$$nextSibling;
+        if (parent && parent.$$childTail == this) parent.$$childTail = this.$$prevSibling;
         if (this.$$prevSibling) this.$$prevSibling.$$nextSibling = this.$$nextSibling;
         if (this.$$nextSibling) this.$$nextSibling.$$prevSibling = this.$$prevSibling;
 
@@ -1295,6 +1305,11 @@ function $RootScopeProvider() {
       $rootScope.$$phase = null;
     }
 
+    function incrementWatchersCount(current, count) {
+      do {
+        current.$$watchersCount += count;
+      } while ((current = current.$parent));
+    }
 
     function decrementListenerCount(current, count, name) {
       do {

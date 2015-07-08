@@ -28,14 +28,14 @@
     "manualUppercase": false,
     "isArrayLike": false,
     "forEach": false,
-    "sortedKeys": false,
     "forEachSorted": false,
     "reverseParams": false,
     "nextUid": false,
     "setHashKey": false,
     "extend": false,
-    "int": false,
+    "toInt": false,
     "inherit": false,
+    "merge": false,
     "noop": false,
     "identity": false,
     "valueFn": false,
@@ -55,6 +55,7 @@
     "isBlob": false,
     "isBoolean": false,
     "isPromiseLike": false,
+    "hasCustomToString": false,
     "trim": false,
     "escapeForRegexp": false,
     "isElement": false,
@@ -71,6 +72,8 @@
     "toJsonReplacer": false,
     "toJson": false,
     "fromJson": false,
+    "convertTimezoneToLocal": false,
+    "timezoneToOffset": false,
     "startingTag": false,
     "tryDecodeURIComponent": false,
     "parseKeyValue": false,
@@ -153,6 +156,9 @@
     /* urlUtils.js */
     "urlResolve": false,
     "urlIsSameOrigin": false,
+
+    /* ng/controller.js */
+    "identifierForController": false,
 
     /* ng/compile.js */
     "directiveNormalize": false,

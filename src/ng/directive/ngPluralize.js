@@ -54,6 +54,9 @@
  * <span ng-non-bindable>`{{personCount}}`</span>. The closed braces `{}` is a placeholder
  * for <span ng-non-bindable>{{numberExpression}}</span>.
  *
+ * If no rule is defined for a category, then an empty string is displayed and a warning is generated.
+ * Note that some locales define more categories than `one` and `other`. For example, fr-fr defines `few` and `many`.
+ *
  * # Configuring ngPluralize with offset
  * The `offset` attribute allows further customization of pluralized text, which can result in
  * a better user experience. For example, instead of the message "4 people are viewing this document",
@@ -100,9 +103,9 @@
             }]);
         </script>
         <div ng-controller="ExampleController">
-          Person 1:<input type="text" ng-model="person1" value="Igor" /><br/>
-          Person 2:<input type="text" ng-model="person2" value="Misko" /><br/>
-          Number of People:<input type="text" ng-model="personCount" value="1" /><br/>
+          <label>Person 1:<input type="text" ng-model="person1" value="Igor" /></label><br/>
+          <label>Person 2:<input type="text" ng-model="person2" value="Misko" /></label><br/>
+          <label>Number of People:<input type="text" ng-model="personCount" value="1" /></label><br/>
 
           <!--- Example with simple pluralization rules for en locale --->
           Without Offset:
@@ -172,12 +175,11 @@
       </file>
     </example>
  */
-var ngPluralizeDirective = ['$locale', '$interpolate', function($locale, $interpolate) {
+var ngPluralizeDirective = ['$locale', '$interpolate', '$log', function($locale, $interpolate, $log) {
   var BRACE = /{}/g,
       IS_WHEN = /^when(Minus)?(.+)$/;
 
   return {
-    restrict: 'EA',
     link: function(scope, element, attr) {
       var numberExp = attr.count,
           whenExp = attr.$attr.when && element.attr(attr.$attr.when), // we have {{}} in attrs
@@ -214,9 +216,18 @@ var ngPluralizeDirective = ['$locale', '$interpolate', function($locale, $interp
 
         // If both `count` and `lastCount` are NaN, we don't need to re-register a watch.
         // In JS `NaN !== NaN`, so we have to exlicitly check.
-        if ((count !== lastCount) && !(countIsNaN && isNaN(lastCount))) {
+        if ((count !== lastCount) && !(countIsNaN && isNumber(lastCount) && isNaN(lastCount))) {
           watchRemover();
-          watchRemover = scope.$watch(whensExpFns[count], updateElementText);
+          var whenExpFn = whensExpFns[count];
+          if (isUndefined(whenExpFn)) {
+            if (newVal != null) {
+              $log.debug("ngPluralize: no rule defined for '" + count + "' in " + whenExp);
+            }
+            watchRemover = noop;
+            updateElementText();
+          } else {
+            watchRemover = scope.$watch(whenExpFn, updateElementText);
+          }
           lastCount = count;
         }
       });

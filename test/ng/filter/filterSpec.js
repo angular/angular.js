@@ -280,7 +280,7 @@ describe('Filter: filter', function() {
     expect(filter(items, expr, true).length).toBe(1);
     expect(filter(items, expr, true)[0]).toBe(items[0]);
 
-    // Inherited function proprties
+    // Inherited function properties
     function Item(text) {
         this.text = text;
     }
@@ -408,30 +408,75 @@ describe('Filter: filter', function() {
   });
 
 
+  it('should throw an error when is not used with an array', function() {
+    var item = {'not': 'array'};
+    expect(function() { filter(item, {}); }).
+      toThrowMinErr('filter', 'notarray', 'Expected array but received: {"not":"array"}');
+
+    item = Object.create(null);
+    expect(function() { filter(item, {}); }).
+      toThrowMinErr('filter', 'notarray', 'Expected array but received: {}');
+
+    item = {
+      toString: null,
+      valueOf: null
+    };
+    expect(function() { filter(item, {}); }).
+      toThrowMinErr('filter', 'notarray', 'Expected array but received: {"toString":null,"valueOf":null}');
+  });
+
+  it('should not throw an error if used with an array like object', function() {
+    function getArguments() {
+      return arguments;
+    }
+    var argsObj = getArguments({name: 'Misko'}, {name: 'Igor'}, {name: 'Brad'});
+
+    var nodeList = jqLite("<p><span>Misko</span><span>Igor</span><span>Brad</span></p>")[0].childNodes;
+    function nodeFilterPredicate(node) {
+      return node.innerHTML.indexOf("I") !== -1;
+    }
+
+    expect(filter(argsObj, 'i').length).toBe(2);
+    expect(filter('abc','b').length).toBe(1);
+    expect(filter(nodeList, nodeFilterPredicate).length).toBe(1);
+
+  });
+
+
+  it('should return undefined when the array is undefined', function() {
+    expect(filter(undefined, {})).toBeUndefined();
+  });
+
+
+  it('should return null when the value of the array is null', function() {
+    var item = null;
+    expect(filter(item, {})).toBe(null);
+  });
+
+
   it('should not throw an error if property is null when comparing object', function() {
-      var items = [
-          { office:1, people: {name:'john'}},
-          { office:2, people: {name:'jane'}},
-          { office:3, people: null}
-      ];
-      var f = { };
-      expect(filter(items, f).length).toBe(3);
+    var items = [
+        { office:1, people: {name:'john'}},
+        { office:2, people: {name:'jane'}},
+        { office:3, people: null}
+    ];
+    var f = { };
+    expect(filter(items, f).length).toBe(3);
 
-      f = { people:null };
-      expect(filter(items, f).length).toBe(1);
+    f = { people:null };
+    expect(filter(items, f).length).toBe(1);
 
-      f = { people: {}};
-      expect(filter(items, f).length).toBe(2);
+    f = { people: {}};
+    expect(filter(items, f).length).toBe(2);
 
-      f = { people:{ name: '' }};
-      expect(filter(items, f).length).toBe(2);
+    f = { people:{ name: '' }};
+    expect(filter(items, f).length).toBe(2);
 
-      f = { people:{ name:'john' }};
-      expect(filter(items, f).length).toBe(1);
+    f = { people:{ name:'john' }};
+    expect(filter(items, f).length).toBe(1);
 
-      f = { people:{ name:'j' }};
-      expect(filter(items, f).length).toBe(2);
-
+    f = { people:{ name:'j' }};
+    expect(filter(items, f).length).toBe(2);
   });
 
 
@@ -488,10 +533,46 @@ describe('Filter: filter', function() {
     });
 
 
-    it('not consider `object === "[object Object]"` in non-strict comparison', function() {
+    it('not consider objects without a custom `toString` in non-strict comparison', function() {
       var items = [{test: {}}];
       var expr = '[object';
       expect(filter(items, expr).length).toBe(0);
+    });
+
+
+    it('should consider objects with custom `toString()` in non-strict comparison', function() {
+      var obj = new Date(1970, 0);
+      var items = [{test: obj}];
+      expect(filter(items, '1970').length).toBe(1);
+      expect(filter(items, 1970).length).toBe(1);
+
+      obj = {
+        toString: function() { return 'custom'; }
+      };
+      items = [{test: obj}];
+      expect(filter(items, 'custom').length).toBe(1);
+    });
+
+
+    it('should cope with objects that have no `toString()` in non-strict comparison', function() {
+      var obj = Object.create(null);
+      var items = [{test: obj}];
+      expect(function() {
+        filter(items, 'foo');
+      }).not.toThrow();
+      expect(filter(items, 'foo').length).toBe(0);
+    });
+
+
+    it('should cope with objects where `toString` is not a function in non-strict comparison', function() {
+      var obj = {
+        toString: 'moo'
+      };
+      var items = [{test: obj}];
+      expect(function() {
+        filter(items, 'foo');
+      }).not.toThrow();
+      expect(filter(items, 'foo').length).toBe(0);
     });
 
 

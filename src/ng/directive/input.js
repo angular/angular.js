@@ -13,7 +13,7 @@
 var ISO_DATE_REGEXP = /\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+([+-][0-2]\d:[0-5]\d|Z)/;
 var URL_REGEXP = /^(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?$/;
 var EMAIL_REGEXP = /^[a-z0-9!#$%&'*+\/=?^_`{|}~.-]+@[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)*$/i;
-var NUMBER_REGEXP = /^\s*(\-|\+)?(\d+|(\d*(\.\d*)))\s*$/;
+var NUMBER_REGEXP = /^\s*(\-|\+)?(\d+|(\d*(\.\d*)))([eE][+-]?\d+)?\s*$/;
 var DATE_REGEXP = /^(\d{4})-(\d{2})-(\d{2})$/;
 var DATETIMELOCAL_REGEXP = /^(\d{4})-(\d\d)-(\d\d)T(\d\d):(\d\d)(?::(\d\d)(\.\d{1,3})?)?$/;
 var WEEK_REGEXP = /^(\d{4})-W(\d\d)$/;
@@ -46,9 +46,13 @@ var inputType = {
    *    as in the ngPattern directive.
    * @param {string=} ngPattern Sets `pattern` validation error key if the ngModel value does not match
    *    a RegExp found by evaluating the Angular expression given in the attribute value.
-   *    If the expression evaluates to a RegExp object then this is used directly.
-   *    If the expression is a string then it will be converted to a RegExp after wrapping it in `^` and `$`
-   *    characters. For instance, `"abc"` will be converted to `new RegExp('^abc$')`.
+   *    If the expression evaluates to a RegExp object, then this is used directly.
+   *    If the expression evaluates to a string, then it will be converted to a RegExp
+   *    after wrapping it in `^` and `$` characters. For instance, `"abc"` will be converted to
+   *    `new RegExp('^abc$')`.<br />
+   *    **Note:** Avoid using the `g` flag on the RegExp, as it will cause each successive search to
+   *    start at the index of the last search's match, thus not taking the whole input value into
+   *    account.
    * @param {string=} ngChange Angular expression to be executed when input changes due to user
    *    interaction with the input element.
    * @param {boolean=} [ngTrim=true] If set to false Angular will not automatically trim the input.
@@ -68,13 +72,16 @@ var inputType = {
              }]);
          </script>
          <form name="myForm" ng-controller="ExampleController">
-           Single word: <input type="text" name="input" ng-model="example.text"
-                               ng-pattern="example.word" required ng-trim="false">
-           <span class="error" ng-show="myForm.input.$error.required">
-             Required!</span>
-           <span class="error" ng-show="myForm.input.$error.pattern">
-             Single word only!</span>
-
+           <label>Single word:
+             <input type="text" name="input" ng-model="example.text"
+                    ng-pattern="example.word" required ng-trim="false">
+           </label>
+           <div role="alert">
+             <span class="error" ng-show="myForm.input.$error.required">
+               Required!</span>
+             <span class="error" ng-show="myForm.input.$error.pattern">
+               Single word only!</span>
+           </div>
            <tt>text = {{example.text}}</tt><br/>
            <tt>myForm.input.$valid = {{myForm.input.$valid}}</tt><br/>
            <tt>myForm.input.$error = {{myForm.input.$error}}</tt><br/>
@@ -153,13 +160,15 @@ var inputType = {
             }]);
        </script>
        <form name="myForm" ng-controller="DateController as dateCtrl">
-          Pick a date in 2013:
+          <label for="exampleInput">Pick a date in 2013:</label>
           <input type="date" id="exampleInput" name="input" ng-model="example.value"
               placeholder="yyyy-MM-dd" min="2013-01-01" max="2013-12-31" required />
-          <span class="error" ng-show="myForm.input.$error.required">
-              Required!</span>
-          <span class="error" ng-show="myForm.input.$error.date">
-              Not a valid date!</span>
+          <div role="alert">
+            <span class="error" ng-show="myForm.input.$error.required">
+                Required!</span>
+            <span class="error" ng-show="myForm.input.$error.date">
+                Not a valid date!</span>
+           </div>
            <tt>value = {{example.value | date: "yyyy-MM-dd"}}</tt><br/>
            <tt>myForm.input.$valid = {{myForm.input.$valid}}</tt><br/>
            <tt>myForm.input.$error = {{myForm.input.$error}}</tt><br/>
@@ -246,13 +255,15 @@ var inputType = {
           }]);
       </script>
       <form name="myForm" ng-controller="DateController as dateCtrl">
-        Pick a date between in 2013:
+        <label for="exampleInput">Pick a date between in 2013:</label>
         <input type="datetime-local" id="exampleInput" name="input" ng-model="example.value"
             placeholder="yyyy-MM-ddTHH:mm:ss" min="2001-01-01T00:00:00" max="2013-12-31T00:00:00" required />
-        <span class="error" ng-show="myForm.input.$error.required">
-            Required!</span>
-        <span class="error" ng-show="myForm.input.$error.datetimelocal">
-            Not a valid date!</span>
+        <div role="alert">
+          <span class="error" ng-show="myForm.input.$error.required">
+              Required!</span>
+          <span class="error" ng-show="myForm.input.$error.datetimelocal">
+              Not a valid date!</span>
+        </div>
         <tt>value = {{example.value | date: "yyyy-MM-ddTHH:mm:ss"}}</tt><br/>
         <tt>myForm.input.$valid = {{myForm.input.$valid}}</tt><br/>
         <tt>myForm.input.$error = {{myForm.input.$error}}</tt><br/>
@@ -340,13 +351,15 @@ var inputType = {
         }]);
      </script>
      <form name="myForm" ng-controller="DateController as dateCtrl">
-        Pick a between 8am and 5pm:
+        <label for="exampleInput">Pick a between 8am and 5pm:</label>
         <input type="time" id="exampleInput" name="input" ng-model="example.value"
             placeholder="HH:mm:ss" min="08:00:00" max="17:00:00" required />
-        <span class="error" ng-show="myForm.input.$error.required">
-            Required!</span>
-        <span class="error" ng-show="myForm.input.$error.time">
-            Not a valid date!</span>
+        <div role="alert">
+          <span class="error" ng-show="myForm.input.$error.required">
+              Required!</span>
+          <span class="error" ng-show="myForm.input.$error.time">
+              Not a valid date!</span>
+        </div>
         <tt>value = {{example.value | date: "HH:mm:ss"}}</tt><br/>
         <tt>myForm.input.$valid = {{myForm.input.$valid}}</tt><br/>
         <tt>myForm.input.$error = {{myForm.input.$error}}</tt><br/>
@@ -433,13 +446,17 @@ var inputType = {
         }]);
       </script>
       <form name="myForm" ng-controller="DateController as dateCtrl">
-        Pick a date between in 2013:
-        <input id="exampleInput" type="week" name="input" ng-model="example.value"
-            placeholder="YYYY-W##" min="2012-W32" max="2013-W52" required />
-        <span class="error" ng-show="myForm.input.$error.required">
-            Required!</span>
-        <span class="error" ng-show="myForm.input.$error.week">
-            Not a valid date!</span>
+        <label>Pick a date between in 2013:
+          <input id="exampleInput" type="week" name="input" ng-model="example.value"
+                 placeholder="YYYY-W##" min="2012-W32"
+                 max="2013-W52" required />
+        </label>
+        <div role="alert">
+          <span class="error" ng-show="myForm.input.$error.required">
+              Required!</span>
+          <span class="error" ng-show="myForm.input.$error.week">
+              Not a valid date!</span>
+        </div>
         <tt>value = {{example.value | date: "yyyy-Www"}}</tt><br/>
         <tt>myForm.input.$valid = {{myForm.input.$valid}}</tt><br/>
         <tt>myForm.input.$error = {{myForm.input.$error}}</tt><br/>
@@ -526,13 +543,15 @@ var inputType = {
         }]);
      </script>
      <form name="myForm" ng-controller="DateController as dateCtrl">
-       Pick a month in 2013:
+       <label for="exampleInput">Pick a month in 2013:</label>
        <input id="exampleInput" type="month" name="input" ng-model="example.value"
           placeholder="yyyy-MM" min="2013-01" max="2013-12" required />
-       <span class="error" ng-show="myForm.input.$error.required">
-          Required!</span>
-       <span class="error" ng-show="myForm.input.$error.month">
-          Not a valid month!</span>
+       <div role="alert">
+         <span class="error" ng-show="myForm.input.$error.required">
+            Required!</span>
+         <span class="error" ng-show="myForm.input.$error.month">
+            Not a valid month!</span>
+       </div>
        <tt>value = {{example.value | date: "yyyy-MM"}}</tt><br/>
        <tt>myForm.input.$valid = {{myForm.input.$valid}}</tt><br/>
        <tt>myForm.input.$error = {{myForm.input.$error}}</tt><br/>
@@ -593,6 +612,16 @@ var inputType = {
    * error docs for more information and an example of how to convert your model if necessary.
    * </div>
    *
+   * ## Issues with HTML5 constraint validation
+   *
+   * In browsers that follow the
+   * [HTML5 specification](https://html.spec.whatwg.org/multipage/forms.html#number-state-%28type=number%29),
+   * `input[number]` does not work as expected with {@link ngModelOptions `ngModelOptions.allowInvalid`}.
+   * If a non-number is entered in the input, the browser will report the value as an empty string,
+   * which means the view / model values in `ngModel` and subsequently the scope value
+   * will also be an empty string.
+   *
+   *
    * @param {string} ngModel Assignable angular expression to data-bind to.
    * @param {string=} name Property name of the form under which the control is published.
    * @param {string=} min Sets the `min` validation error key if the value entered is less than `min`.
@@ -611,9 +640,13 @@ var inputType = {
    *    as in the ngPattern directive.
    * @param {string=} ngPattern Sets `pattern` validation error key if the ngModel value does not match
    *    a RegExp found by evaluating the Angular expression given in the attribute value.
-   *    If the expression evaluates to a RegExp object then this is used directly.
-   *    If the expression is a string then it will be converted to a RegExp after wrapping it in `^` and `$`
-   *    characters. For instance, `"abc"` will be converted to `new RegExp('^abc$')`.
+   *    If the expression evaluates to a RegExp object, then this is used directly.
+   *    If the expression evaluates to a string, then it will be converted to a RegExp
+   *    after wrapping it in `^` and `$` characters. For instance, `"abc"` will be converted to
+   *    `new RegExp('^abc$')`.<br />
+   *    **Note:** Avoid using the `g` flag on the RegExp, as it will cause each successive search to
+   *    start at the index of the last search's match, thus not taking the whole input value into
+   *    account.
    * @param {string=} ngChange Angular expression to be executed when input changes due to user
    *    interaction with the input element.
    *
@@ -629,12 +662,16 @@ var inputType = {
              }]);
          </script>
          <form name="myForm" ng-controller="ExampleController">
-           Number: <input type="number" name="input" ng-model="example.value"
-                          min="0" max="99" required>
-           <span class="error" ng-show="myForm.input.$error.required">
-             Required!</span>
-           <span class="error" ng-show="myForm.input.$error.number">
-             Not valid number!</span>
+           <label>Number:
+             <input type="number" name="input" ng-model="example.value"
+                    min="0" max="99" required>
+          </label>
+           <div role="alert">
+             <span class="error" ng-show="myForm.input.$error.required">
+               Required!</span>
+             <span class="error" ng-show="myForm.input.$error.number">
+               Not valid number!</span>
+           </div>
            <tt>value = {{example.value}}</tt><br/>
            <tt>myForm.input.$valid = {{myForm.input.$valid}}</tt><br/>
            <tt>myForm.input.$error = {{myForm.input.$error}}</tt><br/>
@@ -701,9 +738,13 @@ var inputType = {
    *    as in the ngPattern directive.
    * @param {string=} ngPattern Sets `pattern` validation error key if the ngModel value does not match
    *    a RegExp found by evaluating the Angular expression given in the attribute value.
-   *    If the expression evaluates to a RegExp object then this is used directly.
-   *    If the expression is a string then it will be converted to a RegExp after wrapping it in `^` and `$`
-   *    characters. For instance, `"abc"` will be converted to `new RegExp('^abc$')`.
+   *    If the expression evaluates to a RegExp object, then this is used directly.
+   *    If the expression evaluates to a string, then it will be converted to a RegExp
+   *    after wrapping it in `^` and `$` characters. For instance, `"abc"` will be converted to
+   *    `new RegExp('^abc$')`.<br />
+   *    **Note:** Avoid using the `g` flag on the RegExp, as it will cause each successive search to
+   *    start at the index of the last search's match, thus not taking the whole input value into
+   *    account.
    * @param {string=} ngChange Angular expression to be executed when input changes due to user
    *    interaction with the input element.
    *
@@ -719,11 +760,15 @@ var inputType = {
              }]);
          </script>
          <form name="myForm" ng-controller="ExampleController">
-           URL: <input type="url" name="input" ng-model="url.text" required>
-           <span class="error" ng-show="myForm.input.$error.required">
-             Required!</span>
-           <span class="error" ng-show="myForm.input.$error.url">
-             Not valid url!</span>
+           <label>URL:
+             <input type="url" name="input" ng-model="url.text" required>
+           <label>
+           <div role="alert">
+             <span class="error" ng-show="myForm.input.$error.required">
+               Required!</span>
+             <span class="error" ng-show="myForm.input.$error.url">
+               Not valid url!</span>
+           </div>
            <tt>text = {{url.text}}</tt><br/>
            <tt>myForm.input.$valid = {{myForm.input.$valid}}</tt><br/>
            <tt>myForm.input.$error = {{myForm.input.$error}}</tt><br/>
@@ -792,9 +837,13 @@ var inputType = {
    *    as in the ngPattern directive.
    * @param {string=} ngPattern Sets `pattern` validation error key if the ngModel value does not match
    *    a RegExp found by evaluating the Angular expression given in the attribute value.
-   *    If the expression evaluates to a RegExp object then this is used directly.
-   *    If the expression is a string then it will be converted to a RegExp after wrapping it in `^` and `$`
-   *    characters. For instance, `"abc"` will be converted to `new RegExp('^abc$')`.
+   *    If the expression evaluates to a RegExp object, then this is used directly.
+   *    If the expression evaluates to a string, then it will be converted to a RegExp
+   *    after wrapping it in `^` and `$` characters. For instance, `"abc"` will be converted to
+   *    `new RegExp('^abc$')`.<br />
+   *    **Note:** Avoid using the `g` flag on the RegExp, as it will cause each successive search to
+   *    start at the index of the last search's match, thus not taking the whole input value into
+   *    account.
    * @param {string=} ngChange Angular expression to be executed when input changes due to user
    *    interaction with the input element.
    *
@@ -810,11 +859,15 @@ var inputType = {
              }]);
          </script>
            <form name="myForm" ng-controller="ExampleController">
-             Email: <input type="email" name="input" ng-model="email.text" required>
-             <span class="error" ng-show="myForm.input.$error.required">
-               Required!</span>
-             <span class="error" ng-show="myForm.input.$error.email">
-               Not valid email!</span>
+             <label>Email:
+               <input type="email" name="input" ng-model="email.text" required>
+             </label>
+             <div role="alert">
+               <span class="error" ng-show="myForm.input.$error.required">
+                 Required!</span>
+               <span class="error" ng-show="myForm.input.$error.email">
+                 Not valid email!</span>
+             </div>
              <tt>text = {{email.text}}</tt><br/>
              <tt>myForm.input.$valid = {{myForm.input.$valid}}</tt><br/>
              <tt>myForm.input.$error = {{myForm.input.$error}}</tt><br/>
@@ -860,12 +913,15 @@ var inputType = {
    * HTML radio button.
    *
    * @param {string} ngModel Assignable angular expression to data-bind to.
-   * @param {string} value The value to which the expression should be set when selected.
+   * @param {string} value The value to which the `ngModel` expression should be set when selected.
+   *    Note that `value` only supports `string` values, i.e. the scope model needs to be a string,
+   *    too. Use `ngValue` if you need complex models (`number`, `object`, ...).
    * @param {string=} name Property name of the form under which the control is published.
    * @param {string=} ngChange Angular expression to be executed when input changes due to user
    *    interaction with the input element.
-   * @param {string} ngValue Angular expression which sets the value to which the expression should
-   *    be set when selected.
+   * @param {string} ngValue Angular expression to which `ngModel` will be be set when the radio
+   *    is selected. Should be used instead of the `value` attribute if you need
+   *    a non-string `ngModel` (`boolean`, `array`, ...).
    *
    * @example
       <example name="radio-input-directive" module="radioExample">
@@ -883,9 +939,18 @@ var inputType = {
              }]);
          </script>
          <form name="myForm" ng-controller="ExampleController">
-           <input type="radio" ng-model="color.name" value="red">  Red <br/>
-           <input type="radio" ng-model="color.name" ng-value="specialValue"> Green <br/>
-           <input type="radio" ng-model="color.name" value="blue"> Blue <br/>
+           <label>
+             <input type="radio" ng-model="color.name" value="red">
+             Red
+           </label><br/>
+           <label>
+             <input type="radio" ng-model="color.name" ng-value="specialValue">
+             Green
+           </label><br/>
+           <label>
+             <input type="radio" ng-model="color.name" value="blue">
+             Blue
+           </label><br/>
            <tt>color = {{color.name | json}}</tt><br/>
           </form>
           Note that `ng-value="specialValue"` sets radio item's value to be the value of `$scope.specialValue`.
@@ -933,9 +998,13 @@ var inputType = {
              }]);
          </script>
          <form name="myForm" ng-controller="ExampleController">
-           Value1: <input type="checkbox" ng-model="checkboxModel.value1"> <br/>
-           Value2: <input type="checkbox" ng-model="checkboxModel.value2"
-                          ng-true-value="'YES'" ng-false-value="'NO'"> <br/>
+           <label>Value1:
+             <input type="checkbox" ng-model="checkboxModel.value1">
+           </label><br/>
+           <label>Value2:
+             <input type="checkbox" ng-model="checkboxModel.value2"
+                    ng-true-value="'YES'" ng-false-value="'NO'">
+            </label><br/>
            <tt>value1 = {{checkboxModel.value1}}</tt><br/>
            <tt>value2 = {{checkboxModel.value2}}</tt><br/>
           </form>
@@ -1160,8 +1229,8 @@ function createDateInputType(type, regexp, parseDate, format) {
         // parser/formatter in the processing chain so that the model
         // contains some different data format!
         var parsedDate = parseDate(value, previousDate);
-        if (timezone === 'UTC') {
-          parsedDate.setMinutes(parsedDate.getMinutes() - parsedDate.getTimezoneOffset());
+        if (timezone) {
+          parsedDate = convertTimezoneToLocal(parsedDate, timezone);
         }
         return parsedDate;
       }
@@ -1174,9 +1243,8 @@ function createDateInputType(type, regexp, parseDate, format) {
       }
       if (isValidDate(value)) {
         previousDate = value;
-        if (previousDate && timezone === 'UTC') {
-          var timezoneOffset = 60000 * previousDate.getTimezoneOffset();
-          previousDate = new Date(previousDate.getTime() + timezoneOffset);
+        if (previousDate && timezone) {
+          previousDate = convertTimezoneToLocal(previousDate, timezone, true);
         }
         return $filter('date')(value, format, timezone);
       } else {
@@ -1400,9 +1468,15 @@ function checkboxInputType(scope, element, attr, ctrl, $sniffer, $browser, $filt
  * @param {number=} ngMaxlength Sets `maxlength` validation error key if the value is longer than
  *    maxlength. Setting the attribute to a negative or non-numeric value, allows view values of any
  *    length.
- * @param {string=} ngPattern Sets `pattern` validation error key if the value does not match the
- *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
- *    patterns defined as scope expressions.
+ * @param {string=} ngPattern Sets `pattern` validation error key if the ngModel value does not match
+ *    a RegExp found by evaluating the Angular expression given in the attribute value.
+ *    If the expression evaluates to a RegExp object, then this is used directly.
+ *    If the expression evaluates to a string, then it will be converted to a RegExp
+ *    after wrapping it in `^` and `$` characters. For instance, `"abc"` will be converted to
+ *    `new RegExp('^abc$')`.<br />
+ *    **Note:** Avoid using the `g` flag on the RegExp, as it will cause each successive search to
+ *    start at the index of the last search's match, thus not taking the whole input value into
+ *    account.
  * @param {string=} ngChange Angular expression to be executed when input changes due to user
  *    interaction with the input element.
  * @param {boolean=} [ngTrim=true] If set to false Angular will not automatically trim the input.
@@ -1433,9 +1507,15 @@ function checkboxInputType(scope, element, attr, ctrl, $sniffer, $browser, $filt
  * @param {number=} ngMaxlength Sets `maxlength` validation error key if the value is longer than
  *    maxlength. Setting the attribute to a negative or non-numeric value, allows view values of any
  *    length.
- * @param {string=} ngPattern Sets `pattern` validation error key if the value does not match the
- *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
- *    patterns defined as scope expressions.
+ * @param {string=} ngPattern Sets `pattern` validation error key if the ngModel value does not match
+ *    a RegExp found by evaluating the Angular expression given in the attribute value.
+ *    If the expression evaluates to a RegExp object, then this is used directly.
+ *    If the expression evaluates to a string, then it will be converted to a RegExp
+ *    after wrapping it in `^` and `$` characters. For instance, `"abc"` will be converted to
+ *    `new RegExp('^abc$')`.<br />
+ *    **Note:** Avoid using the `g` flag on the RegExp, as it will cause each successive search to
+ *    start at the index of the last search's match, thus not taking the whole input value into
+ *    account.
  * @param {string=} ngChange Angular expression to be executed when input changes due to user
  *    interaction with the input element.
  * @param {boolean=} [ngTrim=true] If set to false Angular will not automatically trim the input.
@@ -1453,26 +1533,36 @@ function checkboxInputType(scope, element, attr, ctrl, $sniffer, $browser, $filt
        </script>
        <div ng-controller="ExampleController">
          <form name="myForm">
-           User name: <input type="text" name="userName" ng-model="user.name" required>
-           <span class="error" ng-show="myForm.userName.$error.required">
-             Required!</span><br>
-           Last name: <input type="text" name="lastName" ng-model="user.last"
-             ng-minlength="3" ng-maxlength="10">
-           <span class="error" ng-show="myForm.lastName.$error.minlength">
-             Too short!</span>
-           <span class="error" ng-show="myForm.lastName.$error.maxlength">
-             Too long!</span><br>
+           <label>
+              User name:
+              <input type="text" name="userName" ng-model="user.name" required>
+           </label>
+           <div role="alert">
+             <span class="error" ng-show="myForm.userName.$error.required">
+              Required!</span>
+           </div>
+           <label>
+              Last name:
+              <input type="text" name="lastName" ng-model="user.last"
+              ng-minlength="3" ng-maxlength="10">
+           </label>
+           <div role="alert">
+             <span class="error" ng-show="myForm.lastName.$error.minlength">
+               Too short!</span>
+             <span class="error" ng-show="myForm.lastName.$error.maxlength">
+               Too long!</span>
+           </div>
          </form>
          <hr>
          <tt>user = {{user}}</tt><br/>
-         <tt>myForm.userName.$valid = {{myForm.userName.$valid}}</tt><br>
-         <tt>myForm.userName.$error = {{myForm.userName.$error}}</tt><br>
-         <tt>myForm.lastName.$valid = {{myForm.lastName.$valid}}</tt><br>
-         <tt>myForm.lastName.$error = {{myForm.lastName.$error}}</tt><br>
-         <tt>myForm.$valid = {{myForm.$valid}}</tt><br>
-         <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br>
-         <tt>myForm.$error.minlength = {{!!myForm.$error.minlength}}</tt><br>
-         <tt>myForm.$error.maxlength = {{!!myForm.$error.maxlength}}</tt><br>
+         <tt>myForm.userName.$valid = {{myForm.userName.$valid}}</tt><br/>
+         <tt>myForm.userName.$error = {{myForm.userName.$error}}</tt><br/>
+         <tt>myForm.lastName.$valid = {{myForm.lastName.$valid}}</tt><br/>
+         <tt>myForm.lastName.$error = {{myForm.lastName.$error}}</tt><br/>
+         <tt>myForm.$valid = {{myForm.$valid}}</tt><br/>
+         <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br/>
+         <tt>myForm.$error.minlength = {{!!myForm.$error.minlength}}</tt><br/>
+         <tt>myForm.$error.maxlength = {{!!myForm.$error.maxlength}}</tt><br/>
        </div>
       </file>
       <file name="protractor.js" type="protractor">

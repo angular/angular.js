@@ -42,6 +42,7 @@ $provide.value("$locale", {
       "BCE",
       "CE"
     ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "Mutarama",
       "Gashyantare",
@@ -78,6 +79,10 @@ $provide.value("$locale", {
       "ukw.",
       "ugu.",
       "uku."
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE, y MMMM dd",
     "longDate": "y MMMM d",

@@ -17,7 +17,7 @@ var $compileMinErr = minErr('$compile');
  * @param {string|TrustedResourceUrl} tpl The HTTP request template URL
  * @param {boolean=} ignoreRequestError Whether or not to ignore the exception when the request fails or the template is empty
  *
- * @return {Promise} the HTTP Promise for the given.
+ * @return {Promise} a promise for the HTTP response data of the given URL.
  *
  * @property {number} totalPendingRequests total amount of pending template requests being downloaded.
  */
@@ -55,12 +55,14 @@ function $TemplateRequestProvider() {
           handleRequestFn.totalPendingRequests--;
         })
         .then(function(response) {
+          $templateCache.put(tpl, response.data);
           return response.data;
         }, handleError);
 
       function handleError(resp) {
         if (!ignoreRequestError) {
-          throw $compileMinErr('tpload', 'Failed to load template: {0}', tpl);
+          throw $compileMinErr('tpload', 'Failed to load template: {0} (HTTP status: {1} {2})',
+            tpl, resp.status, resp.statusText);
         }
         return $q.reject(resp);
       }

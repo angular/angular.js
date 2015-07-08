@@ -129,7 +129,8 @@ Once you have Node.js installed on your machine you can download the tool depend
 npm install
 ```
 
-This command will download the following tools, into the `node_modules` directory:
+This command reads angular-phonecat's `package.json` file and downloads the following tools
+into the `node_modules` directory:
 
 - [Bower][bower] - client-side code package manager
 - [Http-Server][http-server] - simple local static web server
@@ -198,7 +199,7 @@ http://localhost:8000/app/index.html
 
 <div class="alert alert-info">
 To serve the web app on a different ip address or port, edit the "start" script within package.json.
-You can `-a` to set the address and `-p` to set the port.
+You can use `-a` to set the address and `-p` to set the port.
 </div>
 
 ### Running Unit Tests
@@ -270,6 +271,7 @@ It is good to run the end to end tests whenever you make changes to the HTML vie
 that the application as a whole is executing correctly.  It is very common to run End to End tests
 before pushing a new commit of changes to a remote repository.
 
+Now that you have set up your local machine, let's get started with the tutorial: {@link step_00 Step 0 - Bootstrapping}
 
 [git]: http://git-scm.com/
 [node]: http://nodejs.org/

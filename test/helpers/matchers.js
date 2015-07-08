@@ -165,7 +165,7 @@ beforeEach(function() {
 
     toHaveClass: function(clazz) {
       this.message = function() {
-        return "Expected '" + angular.mock.dump(this.actual) + "' to have class '" + clazz + "'.";
+        return "Expected '" + angular.mock.dump(this.actual) + "'" + (this.isNot ? " not " : "") + " to have class '" + clazz + "'.";
       };
       var classes = clazz.trim().split(/\s+/);
       for (var i = 0; i < classes.length; ++i) {

@@ -42,6 +42,7 @@ $provide.value("$locale", {
       "KHAI",
       "BHAI"
     ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "Janairu",
       "Faburairu",
@@ -78,6 +79,10 @@ $provide.value("$locale", {
       "Okt",
       "Nuw",
       "Dis"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE, d MMMM, y",
     "longDate": "d MMMM, y",

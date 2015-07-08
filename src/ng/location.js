@@ -27,7 +27,7 @@ function parseAbsoluteUrl(absoluteUrl, locationObj) {
 
   locationObj.$$protocol = parsedUrl.protocol;
   locationObj.$$host = parsedUrl.hostname;
-  locationObj.$$port = int(parsedUrl.port) || DEFAULT_PORTS[parsedUrl.protocol] || null;
+  locationObj.$$port = toInt(parsedUrl.port) || DEFAULT_PORTS[parsedUrl.protocol] || null;
 }
 
 
@@ -381,8 +381,9 @@ var locationPrototype = {
    * @return {string} url
    */
   url: function(url) {
-    if (isUndefined(url))
+    if (isUndefined(url)) {
       return this.$$url;
+    }
 
     var match = PATH_MATCH.exec(url);
     if (match[1] || url === '') this.path(decodeURIComponent(match[1]));
@@ -629,8 +630,9 @@ forEach([LocationHashbangInHtml5Url, LocationHashbangUrl, LocationHtml5Url], fun
    * @return {object} state
    */
   Location.prototype.state = function(state) {
-    if (!arguments.length)
+    if (!arguments.length) {
       return this.$$state;
+    }
 
     if (Location !== LocationHtml5Url || !this.$$html5) {
       throw $locationMinErr('nostate', 'History API state support is available only ' +
@@ -655,8 +657,9 @@ function locationGetter(property) {
 
 function locationGetterSetter(property, preprocess) {
   return function(value) {
-    if (isUndefined(value))
+    if (isUndefined(value)) {
       return this[property];
+    }
 
     this[property] = preprocess(value);
     this.$$compose();

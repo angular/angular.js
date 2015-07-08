@@ -551,12 +551,8 @@ describe('input', function() {
 
       expect(inputElm.val()).toBe('2013-01');
 
-      try {
-        //set to text for browsers with datetime-local validation.
-        inputElm[0].setAttribute('type', 'text');
-      } catch (e) {
-        //for IE8
-      }
+      //set to text for browsers with datetime-local validation.
+      inputElm[0].setAttribute('type', 'text');
 
       helper.changeInputValueTo('stuff');
       expect(inputElm.val()).toBe('stuff');
@@ -613,6 +609,19 @@ describe('input', function() {
     });
 
 
+    it('should use any timezone if specified in the options', function() {
+      var inputElm = helper.compileInput('<input type="month" ng-model="value" ng-model-options="{timezone: \'+0500\'}" />');
+
+      helper.changeInputValueTo('2013-07');
+      expect(+$rootScope.value).toBe(Date.UTC(2013, 5, 30, 19, 0, 0));
+
+      $rootScope.$apply(function() {
+        $rootScope.value = new Date(Date.UTC(2014, 5, 30, 19, 0, 0));
+      });
+      expect(inputElm.val()).toBe('2014-07');
+    });
+
+
     it('should label parse errors as `month`', function() {
       var inputElm = helper.compileInput('<input type="month" ng-model="val" name="alias" />', {
         valid: false,
@@ -634,6 +643,17 @@ describe('input', function() {
       helper.changeInputValueTo('2013-12');
       expect(+$rootScope.value).toBe(Date.UTC(2013, 11, 1, 1, 0, 0, 0));
       expect(inputElm.val()).toBe('2013-12');
+    });
+
+    it('should only change the month of a bound date in any timezone', function() {
+      var inputElm = helper.compileInput('<input type="month" ng-model="value" ng-model-options="{timezone: \'+0500\'}" />');
+
+      $rootScope.$apply(function() {
+        $rootScope.value = new Date(Date.UTC(2013, 6, 31, 20, 0, 0));
+      });
+      helper.changeInputValueTo('2013-09');
+      expect(+$rootScope.value).toBe(Date.UTC(2013, 7, 31, 20, 0, 0));
+      expect(inputElm.val()).toBe('2013-09');
     });
 
     describe('min', function() {
@@ -752,12 +772,8 @@ describe('input', function() {
 
       expect(inputElm.val()).toBe('2013-W02');
 
-      try {
-        //set to text for browsers with datetime-local validation.
-        inputElm[0].setAttribute('type', 'text');
-      } catch (e) {
-        //for IE8
-      }
+      //set to text for browsers with datetime-local validation.
+      inputElm[0].setAttribute('type', 'text');
 
       helper.changeInputValueTo('stuff');
       expect(inputElm.val()).toBe('stuff');
@@ -809,6 +825,19 @@ describe('input', function() {
 
       $rootScope.$apply(function() {
         $rootScope.value = new Date(Date.UTC(2014, 0, 17));
+      });
+      expect(inputElm.val()).toBe('2014-W03');
+    });
+
+
+    it('should use any timezone if specified in the options', function() {
+      var inputElm = helper.compileInput('<input type="week" ng-model="value" ng-model-options="{timezone: \'+0500\'}" />');
+
+      helper.changeInputValueTo('2013-W03');
+      expect(+$rootScope.value).toBe(Date.UTC(2013, 0, 16, 19, 0, 0));
+
+      $rootScope.$apply(function() {
+        $rootScope.value = new Date(Date.UTC(2014, 0, 16, 19, 0, 0));
       });
       expect(inputElm.val()).toBe('2014-W03');
     });
@@ -928,12 +957,8 @@ describe('input', function() {
 
       expect(inputElm.val()).toBe('2009-01-06T16:25:00.000');
 
-      try {
-        //set to text for browsers with datetime-local validation.
-        inputElm[0].setAttribute('type', 'text');
-      } catch (e) {
-        //for IE8
-      }
+      //set to text for browsers with datetime-local validation.
+      inputElm[0].setAttribute('type', 'text');
 
       helper.changeInputValueTo('stuff');
       expect(inputElm.val()).toBe('stuff');
@@ -987,6 +1012,30 @@ describe('input', function() {
         $rootScope.value = new Date(Date.UTC(2001, 0, 1, 1, 2, 0));
       });
       expect(inputElm.val()).toBe('2001-01-01T01:02:00.000');
+    });
+
+
+    it('should use any timezone if specified in the options', function() {
+      var inputElm = helper.compileInput('<input type="datetime-local" ng-model="value" ng-model-options="{timezone: \'+0500\'}" />');
+
+      helper.changeInputValueTo('2000-01-01T06:02');
+      expect(+$rootScope.value).toBe(Date.UTC(2000, 0, 1, 1, 2, 0));
+
+      $rootScope.$apply(function() {
+        $rootScope.value = new Date(Date.UTC(2001, 0, 1, 1, 2, 0));
+      });
+      expect(inputElm.val()).toBe('2001-01-01T06:02:00.000');
+    });
+
+
+    it('should fallback to default timezone in case an unknown timezone was passed', function() {
+      var inputElm = helper.compileInput(
+        '<input type="datetime-local" ng-model="value1" ng-model-options="{timezone: \'WTF\'}" />' +
+        '<input type="datetime-local" ng-model="value2" />');
+
+      helper.changeGivenInputTo(inputElm.eq(0), '2000-01-01T06:02');
+      helper.changeGivenInputTo(inputElm.eq(1), '2000-01-01T06:02');
+      expect($rootScope.value1).toEqual($rootScope.value2);
     });
 
 
@@ -1216,12 +1265,8 @@ describe('input', function() {
 
       expect(inputElm.val()).toBe('16:25:00.000');
 
-      try {
-        //set to text for browsers with time validation.
-        inputElm[0].setAttribute('type', 'text');
-      } catch (e) {
-        //for IE8
-      }
+      //set to text for browsers with time validation.
+      inputElm[0].setAttribute('type', 'text');
 
       helper.changeInputValueTo('stuff');
       expect(inputElm.val()).toBe('stuff');
@@ -1273,6 +1318,19 @@ describe('input', function() {
 
       $rootScope.$apply(function() {
         $rootScope.value = new Date(Date.UTC(1971, 0, 1, 23, 2, 0));
+      });
+      expect(inputElm.val()).toBe('23:02:00.000');
+    });
+
+
+    it('should use any timezone if specified in the options', function() {
+      var inputElm = helper.compileInput('<input type="time" ng-model="value" ng-model-options="{timezone: \'+0500\'}" />');
+
+      helper.changeInputValueTo('23:02:00');
+      expect(+$rootScope.value).toBe(Date.UTC(1970, 0, 1, 18, 2, 0));
+
+      $rootScope.$apply(function() {
+        $rootScope.value = new Date(Date.UTC(1971, 0, 1, 18, 2, 0));
       });
       expect(inputElm.val()).toBe('23:02:00.000');
     });
@@ -1497,12 +1555,8 @@ describe('input', function() {
 
       expect(inputElm.val()).toBe('2014-09-14');
 
-      try {
-        //set to text for browsers with date validation.
-        inputElm[0].setAttribute('type', 'text');
-      } catch (e) {
-        //for IE8
-      }
+      //set to text for browsers with date validation.
+      inputElm[0].setAttribute('type', 'text');
 
       helper.changeInputValueTo('1-2-3');
       expect(inputElm.val()).toBe('1-2-3');
@@ -1554,6 +1608,19 @@ describe('input', function() {
 
       $rootScope.$apply(function() {
         $rootScope.value = new Date(Date.UTC(2001, 0, 1));
+      });
+      expect(inputElm.val()).toBe('2001-01-01');
+    });
+
+
+    it('should use any timezone if specified in the options', function() {
+      var inputElm = helper.compileInput('<input type="date" ng-model="value" ng-model-options="{timezone: \'+0500\'}" />');
+
+      helper.changeInputValueTo('2000-01-01');
+      expect(+$rootScope.value).toBe(Date.UTC(1999, 11, 31, 19, 0, 0));
+
+      $rootScope.$apply(function() {
+        $rootScope.value = new Date(Date.UTC(2000, 11, 31, 19, 0, 0));
       });
       expect(inputElm.val()).toBe('2001-01-01');
     });
@@ -1756,12 +1823,10 @@ describe('input', function() {
       $rootScope.$apply('age = 123');
       expect(inputElm.val()).toBe('123');
 
-      try {
-        // to allow non-number values, we have to change type so that
-        // the browser which have number validation will not interfere with
-        // this test. IE8 won't allow it hence the catch.
-        inputElm[0].setAttribute('type', 'text');
-      } catch (e) {}
+      // to allow non-number values, we have to change type so that
+      // the browser which have number validation will not interfere with
+      // this test.
+      inputElm[0].setAttribute('type', 'text');
 
       helper.changeInputValueTo('123X');
       expect(inputElm.val()).toBe('123X');
@@ -1849,6 +1914,71 @@ describe('input', function() {
         $rootScope.value = 'one';
         var inputElm = helper.compileInput('<input type="number" ng-model="value" />');
       }).toThrowMinErr('ngModel', 'numfmt', "Expected `one` to be a number");
+    });
+
+
+    it('should parse exponential notation', function() {
+      var inputElm = helper.compileInput('<input type="number" name="alias" ng-model="value" />');
+
+      // #.###e+##
+      $rootScope.form.alias.$setViewValue("1.23214124123412412e+26");
+      expect(inputElm).toBeValid();
+      expect($rootScope.value).toBe(1.23214124123412412e+26);
+
+      // #.###e##
+      $rootScope.form.alias.$setViewValue("1.23214124123412412e26");
+      expect(inputElm).toBeValid();
+      expect($rootScope.value).toBe(1.23214124123412412e26);
+
+      // #.###e-##
+      $rootScope.form.alias.$setViewValue("1.23214124123412412e-26");
+      expect(inputElm).toBeValid();
+      expect($rootScope.value).toBe(1.23214124123412412e-26);
+
+      // ####e+##
+      $rootScope.form.alias.$setViewValue("123214124123412412e+26");
+      expect(inputElm).toBeValid();
+      expect($rootScope.value).toBe(123214124123412412e26);
+
+      // ####e##
+      $rootScope.form.alias.$setViewValue("123214124123412412e26");
+      expect(inputElm).toBeValid();
+      expect($rootScope.value).toBe(123214124123412412e26);
+
+      // ####e-##
+      $rootScope.form.alias.$setViewValue("123214124123412412e-26");
+      expect(inputElm).toBeValid();
+      expect($rootScope.value).toBe(123214124123412412e-26);
+
+      // #.###E+##
+      $rootScope.form.alias.$setViewValue("1.23214124123412412E+26");
+      expect(inputElm).toBeValid();
+      expect($rootScope.value).toBe(1.23214124123412412e+26);
+
+      // #.###E##
+      $rootScope.form.alias.$setViewValue("1.23214124123412412E26");
+      expect(inputElm).toBeValid();
+      expect($rootScope.value).toBe(1.23214124123412412e26);
+
+      // #.###E-##
+      $rootScope.form.alias.$setViewValue("1.23214124123412412E-26");
+      expect(inputElm).toBeValid();
+      expect($rootScope.value).toBe(1.23214124123412412e-26);
+
+      // ####E+##
+      $rootScope.form.alias.$setViewValue("123214124123412412E+26");
+      expect(inputElm).toBeValid();
+      expect($rootScope.value).toBe(123214124123412412e26);
+
+      // ####E##
+      $rootScope.form.alias.$setViewValue("123214124123412412E26");
+      expect(inputElm).toBeValid();
+      expect($rootScope.value).toBe(123214124123412412e26);
+
+      // ####E-##
+      $rootScope.form.alias.$setViewValue("123214124123412412E-26");
+      expect(inputElm).toBeValid();
+      expect($rootScope.value).toBe(123214124123412412e-26);
     });
 
 
@@ -2189,7 +2319,7 @@ describe('input', function() {
         var value = 0;
         var inputElm = helper.compileInput('<input type="number" ng-model="value" ng-minlength="min" attr-capture />');
         helper.attrs.$observe('minlength', function(v) {
-          value = int(helper.attrs.minlength);
+          value = toInt(helper.attrs.minlength);
         });
 
         $rootScope.$apply(function() {
@@ -2235,7 +2365,7 @@ describe('input', function() {
         var value = 0;
         var inputElm = helper.compileInput('<input type="number" ng-model="value" ng-maxlength="max" attr-capture />');
         helper.attrs.$observe('maxlength', function(v) {
-          value = int(helper.attrs.maxlength);
+          value = toInt(helper.attrs.maxlength);
         });
 
         $rootScope.$apply(function() {
@@ -2641,117 +2771,4 @@ describe('input', function() {
       dealoc(inputElm);
     });
   });
-});
-
-describe('NgModel animations', function() {
-  beforeEach(module('ngAnimateMock'));
-
-  function findElementAnimations(element, queue) {
-    var node = element[0];
-    var animations = [];
-    for (var i = 0; i < queue.length; i++) {
-      var animation = queue[i];
-      if (animation.element[0] == node) {
-        animations.push(animation);
-      }
-    }
-    return animations;
-  }
-
-  function assertValidAnimation(animation, event, classNameA, classNameB) {
-    expect(animation.event).toBe(event);
-    expect(animation.args[1]).toBe(classNameA);
-    if (classNameB) expect(animation.args[2]).toBe(classNameB);
-  }
-
-  var doc, input, scope, model;
-  beforeEach(inject(function($rootScope, $compile, $rootElement, $animate) {
-    scope = $rootScope.$new();
-    doc = jqLite('<form name="myForm">' +
-                 '  <input type="text" ng-model="input" name="myInput" />' +
-                 '</form>');
-    $rootElement.append(doc);
-    $compile(doc)(scope);
-    $animate.queue = [];
-
-    input = doc.find('input');
-    model = scope.myForm.myInput;
-  }));
-
-  afterEach(function() {
-    dealoc(input);
-  });
-
-  it('should trigger an animation when invalid', inject(function($animate) {
-    model.$setValidity('required', false);
-
-    var animations = findElementAnimations(input, $animate.queue);
-    assertValidAnimation(animations[0], 'removeClass', 'ng-valid');
-    assertValidAnimation(animations[1], 'addClass', 'ng-invalid');
-    assertValidAnimation(animations[2], 'addClass', 'ng-invalid-required');
-  }));
-
-  it('should trigger an animation when valid', inject(function($animate) {
-    model.$setValidity('required', false);
-
-    $animate.queue = [];
-
-    model.$setValidity('required', true);
-
-    var animations = findElementAnimations(input, $animate.queue);
-    assertValidAnimation(animations[0], 'addClass', 'ng-valid');
-    assertValidAnimation(animations[1], 'removeClass', 'ng-invalid');
-    assertValidAnimation(animations[2], 'addClass', 'ng-valid-required');
-    assertValidAnimation(animations[3], 'removeClass', 'ng-invalid-required');
-  }));
-
-  it('should trigger an animation when dirty', inject(function($animate) {
-    model.$setViewValue('some dirty value');
-
-    var animations = findElementAnimations(input, $animate.queue);
-    assertValidAnimation(animations[0], 'removeClass', 'ng-pristine');
-    assertValidAnimation(animations[1], 'addClass', 'ng-dirty');
-  }));
-
-  it('should trigger an animation when pristine', inject(function($animate) {
-    model.$setPristine();
-
-    var animations = findElementAnimations(input, $animate.queue);
-    assertValidAnimation(animations[0], 'removeClass', 'ng-dirty');
-    assertValidAnimation(animations[1], 'addClass', 'ng-pristine');
-  }));
-
-  it('should trigger an animation when untouched', inject(function($animate) {
-    model.$setUntouched();
-
-    var animations = findElementAnimations(input, $animate.queue);
-    assertValidAnimation(animations[0], 'setClass', 'ng-untouched');
-    expect(animations[0].args[2]).toBe('ng-touched');
-  }));
-
-  it('should trigger an animation when touched', inject(function($animate) {
-    model.$setTouched();
-
-    var animations = findElementAnimations(input, $animate.queue);
-    assertValidAnimation(animations[0], 'setClass', 'ng-touched', 'ng-untouched');
-    expect(animations[0].args[2]).toBe('ng-untouched');
-  }));
-
-  it('should trigger custom errors as addClass/removeClass when invalid/valid', inject(function($animate) {
-    model.$setValidity('custom-error', false);
-
-    var animations = findElementAnimations(input, $animate.queue);
-    assertValidAnimation(animations[0], 'removeClass', 'ng-valid');
-    assertValidAnimation(animations[1], 'addClass', 'ng-invalid');
-    assertValidAnimation(animations[2], 'addClass', 'ng-invalid-custom-error');
-
-    $animate.queue = [];
-    model.$setValidity('custom-error', true);
-
-    animations = findElementAnimations(input, $animate.queue);
-    assertValidAnimation(animations[0], 'addClass', 'ng-valid');
-    assertValidAnimation(animations[1], 'removeClass', 'ng-invalid');
-    assertValidAnimation(animations[2], 'addClass', 'ng-valid-custom-error');
-    assertValidAnimation(animations[3], 'removeClass', 'ng-invalid-custom-error');
-  }));
 });

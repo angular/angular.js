@@ -60,7 +60,7 @@ var maxlengthDirective = function() {
 
       var maxlength = -1;
       attr.$observe('maxlength', function(value) {
-        var intVal = int(value);
+        var intVal = toInt(value);
         maxlength = isNaN(intVal) ? -1 : intVal;
         ctrl.$validate();
       });
@@ -80,7 +80,7 @@ var minlengthDirective = function() {
 
       var minlength = 0;
       attr.$observe('minlength', function(value) {
-        minlength = int(value) || 0;
+        minlength = toInt(value) || 0;
         ctrl.$validate();
       });
       ctrl.$validators.minlength = function(modelValue, viewValue) {

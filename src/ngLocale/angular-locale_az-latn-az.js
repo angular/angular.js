@@ -24,6 +24,7 @@ $provide.value("$locale", {
       "e.\u0259.",
       "b.e."
     ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "yanvar",
       "fevral",
@@ -60,6 +61,10 @@ $provide.value("$locale", {
       "okt",
       "noy",
       "dek"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "d MMMM y, EEEE",
     "longDate": "d MMMM y",
