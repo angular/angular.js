@@ -24,7 +24,7 @@ $provide.value("$locale", {
       "a. C.",
       "d. C."
     ],
-    "FIRSTDAYOFWEEK": 0,
+    "FIRSTDAYOFWEEK": 1,
     "MONTH": [
       "enero",
       "febrero",
@@ -34,37 +34,37 @@ $provide.value("$locale", {
       "junio",
       "julio",
       "agosto",
-      "setiembre",
+      "septiembre",
       "octubre",
       "noviembre",
       "diciembre"
     ],
     "SHORTDAY": [
-      "dom.",
-      "lun.",
-      "mar.",
-      "mi\u00e9.",
-      "jue.",
-      "vie.",
+      "dom",
+      "lun",
+      "mar",
+      "mi\u00e9",
+      "jue",
+      "vie",
       "s\u00e1b."
     ],
     "SHORTMONTH": [
-      "ene.",
-      "feb.",
-      "mar.",
-      "abr.",
-      "may.",
-      "jun.",
-      "jul.",
-      "ago.",
-      "set.",
-      "oct.",
-      "nov.",
-      "dic."
+      "ene",
+      "feb",
+      "mar",
+      "abr",
+      "may",
+      "jun",
+      "jul",
+      "ago",
+      "sep",
+      "oct",
+      "nov",
+      "dic"
     ],
     "WEEKENDRANGE": [
-      5,
-      6
+      6,
+      0
     ],
     "fullDate": "EEEE, d 'de' MMMM 'de' y",
     "longDate": "d 'de' MMMM 'de' y",
