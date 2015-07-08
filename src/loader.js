@@ -23,6 +23,10 @@ function setupModuleLoader(window) {
   // We need to expose `angular.$$minErr` to modules such as `ngResource` that reference it during bootstrap
   angular.$$minErr = angular.$$minErr || minErr;
 
+  ensure(angular, 'isFunction', function() {
+    return function isFunction(value) {return typeof value === 'function';};
+  });
+
   return ensure(angular, 'module', function() {
     /** @type {Object.<string, angular.Module>} */
     var modules = {};

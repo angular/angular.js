@@ -86,4 +86,7 @@ describe('module loader', function() {
   it('should expose `$$minErr` on the `angular` object', function() {
     expect(window.angular.$$minErr).toEqual(jasmine.any(Function));
   });
+
+  it('should set up namespace', function() {
+    expect(window.angular.isFunction).toBeDefined();});
 });
