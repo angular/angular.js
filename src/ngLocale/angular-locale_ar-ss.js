@@ -76,7 +76,7 @@ $provide.value("$locale", {
     "shortTime": "h:mm a"
   },
   "NUMBER_FORMATS": {
-    "CURRENCY_SYM": "SSP",
+    "CURRENCY_SYM": "\u00a3",
     "DECIMAL_SEP": "\u066b",
     "GROUP_SEP": "\u066c",
     "PATTERNS": [

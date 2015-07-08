@@ -123,9 +123,6 @@ module.exports = function(grunt) {
       ngCookies: {
         files: { src: 'src/ngCookies/**/*.js' },
       },
-      ngLocale: {
-        files: { src: 'src/ngLocale/**/*.js' },
-      },
       ngMessageFormat: {
         files: { src: 'src/ngMessageFormat/**/*.js' },
       },
