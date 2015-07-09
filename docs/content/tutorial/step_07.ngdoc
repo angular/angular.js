@@ -313,7 +313,7 @@ to various URLs and verify that the correct view was rendered.
    it('should redirect index.html to index.html#/phones', function() {
     browser.get('app/index.html');
     browser.getLocationAbsUrl().then(function(url) {
-        expect(url.split('#')[1]).toBe('/phones');
+        expect(url).toEqual('/phones');
       });
   });
 
