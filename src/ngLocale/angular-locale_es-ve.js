@@ -34,7 +34,7 @@ $provide.value("$locale", {
       "junio",
       "julio",
       "agosto",
-      "setiembre",
+      "septiembre",
       "octubre",
       "noviembre",
       "diciembre"
@@ -57,7 +57,7 @@ $provide.value("$locale", {
       "jun.",
       "jul.",
       "ago.",
-      "set.",
+      "sep.",
       "oct.",
       "nov.",
       "dic."
@@ -76,7 +76,7 @@ $provide.value("$locale", {
     "shortTime": "h:mm a"
   },
   "NUMBER_FORMATS": {
-    "CURRENCY_SYM": "Bs",
+    "CURRENCY_SYM": "Bsf.",
     "DECIMAL_SEP": ",",
     "GROUP_SEP": ".",
     "PATTERNS": [
