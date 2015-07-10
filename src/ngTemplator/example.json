@@ -1,0 +1,134 @@
+[
+  {
+    "section": "container-fluid",
+    "template": "sections/container-fluid.html",
+    "rows": [
+      {
+        "template": "components/navbar/top-fixed.html",
+        "logo": "bower-components/angular/angularlogo.png",
+        "title": "Angular Templaminator",
+        "buttons": [
+          {
+            "label": "home",
+            "link": "#/",
+            "type": "single"
+          },
+          {
+            "type": "dropdown",
+            "label": "snipets",
+            "link": "#/snipets",
+            "dropdown": [              
+			  {
+                "label": "post",
+                "link": "#post"
+              },
+              {
+                "label": "carousel",
+                "link": "#carousel"
+              },
+              {
+                "label": "snipets",
+                "link": "#snipets"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+ 
+  {
+    "title": "components > jumbotron ",
+    "section": "container",
+    "id": "post",
+    "template": "sections/container-fluid.html",
+    "rows": [
+      {
+        "template": "components/jumbotron/custom.html",
+        "grid": "col-md-6",
+        "title": "Title of my blog post",
+        "date": "19 de June de 2015",
+        "autor": "This is a good name",
+        "buttons": [
+          {
+            "label": "download",
+            "link": "#/",
+            "type": "single"
+          }],
+        "paragrafo": "Contrary to popular belief, Lorem Ipsum is not simply random text",
+        "wysiwyg": "Contrary to popular belief, Lorem Ipsum is not simply random text.<br/>It has roots in a piece of classical Latin comes from a line in<br/><p>Contrary to popular belief, Lorem Ipsum is not simply random text.<br/>It has roots in a piece of classical Latin comes from a line in</p> section 1.10.32<br/>Contrary to popular belief, Lorem Ipsum is not simply random text.<br/>It has roots in a piece of classical Latin comes from a line in section 1.10.32."
+      }
+    ]
+  },
+ 
+  {
+    "title": "components > blog > post ",
+    "section": "container",
+    "id": "post",
+    "template": "sections/container.html",
+    "rows": [
+      {
+        "template": "components/blog/post.html",
+        "grid": "col-md-6",
+        "title": "Title of my blog post",
+        "date": "19 de June de 2015",
+        "autor": "This is a good name",
+       
+        "blockquote": "Contrary to popular belief, Lorem Ipsum is not simply random text",
+        "wysiwyg": "Contrary to popular belief, Lorem Ipsum is not simply random text.<br/>It has roots in a piece of classical Latin comes from a line in<br/><p>Contrary to popular belief, Lorem Ipsum is not simply random text.<br/>It has roots in a piece of classical Latin comes from a line in</p> section 1.10.32<br/>Contrary to popular belief, Lorem Ipsum is not simply random text.<br/>It has roots in a piece of classical Latin comes from a line in section 1.10.32."
+      }
+    ]
+  },
+  {
+    "title": "components > blog > post ",
+    "section": "container",
+    "id": "post",
+    "template": "sections/container.html",
+    "rows": [
+      {
+        "template": "components/blog/post.html",
+        "grid": "col-md-6",
+        "title": "Title of my blog post",
+        "date": "19 de June de 2015",
+        "autor": "This is a good name",
+        "blockquote": "Contrary to popular belief, Lorem Ipsum is not simply random text",
+        "wysiwyg": "Contrary to popular belief, Lorem Ipsum is not simply random text.<br/>It has roots in a piece of classical Latin comes from a line in<br/><p>Contrary to popular belief, Lorem Ipsum is not simply random text.<br/>It has roots in a piece of classical Latin comes from a line in</p> section 1.10.32<br/>Contrary to popular belief, Lorem Ipsum is not simply random text.<br/>It has roots in a piece of classical Latin comes from a line in section 1.10.32."
+      }
+    ]
+  },
+  {
+    "title": "components > carousel ",
+    "id": "carousel",
+    "section": "container",
+    "template": "sections/container.html",
+    "rows": [
+      {
+        "grid": "col-md-12",
+        "template": "components/carousel/carousel.html",
+        "title": "Tema 1",
+        "autor": "temp-photo.jpg",
+        "slides": [
+          {
+            "active": "true",
+            "headline": "Carousel Bootstrap From JSON",
+            "text": "The best template generator",
+            "image": "images.jpg"
+          },
+          {
+            "active": "false",
+            "headline": "Carousel Bootstrap From JSON",
+            "text": "The best template generator",
+            "image": "images.jpg"
+          },
+          {
+            "active": "false",
+            "headline": "Carousel Bootstrap From JSON",
+            "text": "The best template generator",
+            "image": "images.jpg"
+          }
+        ]
+      }
+    ]
+  }
+  
+]
