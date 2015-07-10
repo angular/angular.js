@@ -29,7 +29,7 @@ templator.controller('LayoutCtrl', function (GetSections) {
     };
     ctrl.fetchContent();
 });
-templator.directive('renderTemplaminator', function ($http,$compile,$sce, GetTemplate) {
+templator.directive('renderTemplator', function ($http,$compile,$sce, GetTemplate) {
 	var linker = function (scope, element, attrs) {	
 	    var codex = JSON.stringify(scope.content, null, 4);
 			scope.content.code = codex;
