@@ -1,0 +1,8 @@
+<div class="jumbotron ng-scope">
+      <div class="container">
+        <h1>{{content.title}}</h1>
+        <p>{{content.paragrafo}}</p>
+        <p>
+        <a class="btn btn-primary btn-lg" href="{{content.buttons[0].link}}" role="button" >{{content.buttons[0].label}}</a></p>
+      </div>
+    </div>
