@@ -5,7 +5,7 @@ templator.config(function ($sceDelegateProvider) {
 });
 templator.service('GetSections', function ($http) {
     var getData = function () {
-        return $http.get('example.json');
+        return $http.get('template.json');
     };
     return {
         getData: getData
