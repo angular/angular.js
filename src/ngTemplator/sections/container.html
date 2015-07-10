@@ -1,0 +1,17 @@
+<div class="container"  ng-controller="LayoutCtrl as ctrl" id="{{content.id}}">
+<div style="margin-top:75px" ></div>
+	<div class="row">
+		<div class="panel panel-default">
+	  		<div class="panel-body">
+	    		<div class="page-header"><h3>Template: {{content.title}}</h3></div>
+				<render-templaminator  ng-repeat="row in content.rows" content="row"></render-templaminator>
+				<div style="clear:both"></div>
+				<HR/>
+				<B>#CODE JSON IN ANGULAR TEMPLAMINATOR > template HTML > bootstrap > {{content.title}}  </B>
+				
+				<pre class="pre_code" ng-repeat="row in content.rows">{{row.code}}</pre>
+			</div>
+		</div>
+	</div>
+</div>
+
