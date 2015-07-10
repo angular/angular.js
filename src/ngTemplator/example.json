@@ -4,7 +4,7 @@
     "template": "sections/container-fluid.html",
     "rows": [
       {
-        "template": "components/navbar/top-fixed.html",
+        "template": "components/top-fixed.html",
         "logo": "bower-components/angular/angularlogo.png",
         "title": "Angular Templaminator",
         "buttons": [
@@ -44,7 +44,7 @@
     "template": "sections/container-fluid.html",
     "rows": [
       {
-        "template": "components/jumbotron/custom.html",
+        "template": "components/jumbotron.html",
         "grid": "col-md-6",
         "title": "Title of my blog post",
         "date": "19 de June de 2015",
@@ -68,7 +68,7 @@
     "template": "sections/container.html",
     "rows": [
       {
-        "template": "components/blog/post.html",
+        "template": "components/post.html",
         "grid": "col-md-6",
         "title": "Title of my blog post",
         "date": "19 de June de 2015",
@@ -86,47 +86,13 @@
     "template": "sections/container.html",
     "rows": [
       {
-        "template": "components/blog/post.html",
+        "template": "components/post.html",
         "grid": "col-md-6",
         "title": "Title of my blog post",
         "date": "19 de June de 2015",
         "autor": "This is a good name",
         "blockquote": "Contrary to popular belief, Lorem Ipsum is not simply random text",
         "wysiwyg": "Contrary to popular belief, Lorem Ipsum is not simply random text.<br/>It has roots in a piece of classical Latin comes from a line in<br/><p>Contrary to popular belief, Lorem Ipsum is not simply random text.<br/>It has roots in a piece of classical Latin comes from a line in</p> section 1.10.32<br/>Contrary to popular belief, Lorem Ipsum is not simply random text.<br/>It has roots in a piece of classical Latin comes from a line in section 1.10.32."
-      }
-    ]
-  },
-  {
-    "title": "components > carousel ",
-    "id": "carousel",
-    "section": "container",
-    "template": "sections/container.html",
-    "rows": [
-      {
-        "grid": "col-md-12",
-        "template": "components/carousel/carousel.html",
-        "title": "Tema 1",
-        "autor": "temp-photo.jpg",
-        "slides": [
-          {
-            "active": "true",
-            "headline": "Carousel Bootstrap From JSON",
-            "text": "The best template generator",
-            "image": "images.jpg"
-          },
-          {
-            "active": "false",
-            "headline": "Carousel Bootstrap From JSON",
-            "text": "The best template generator",
-            "image": "images.jpg"
-          },
-          {
-            "active": "false",
-            "headline": "Carousel Bootstrap From JSON",
-            "text": "The best template generator",
-            "image": "images.jpg"
-          }
-        ]
       }
     ]
   }
