@@ -11,7 +11,7 @@ Supported formats:
 1. `__name__`
 2. `__name__ as __identifier__`
 
-N'either `__name__` or `__identifier__` may contain spaces.
+Neither `__name__` or `__identifier__` may contain spaces.
 
 Example of incorrect usage that leads to this error:
 ```html
