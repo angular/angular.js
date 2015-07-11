@@ -42,20 +42,20 @@ $provide.value("$locale", {
       "pr. Kr.",
       "p. Kr."
     ],
-    "FIRSTDAYOFWEEK": 0,
+    "FIRSTDAYOFWEEK": 1,
     "MONTH": [
-      "sije\u010dnja",
-      "velja\u010de",
-      "o\u017eujka",
-      "travnja",
-      "svibnja",
-      "lipnja",
-      "srpnja",
-      "kolovoza",
-      "rujna",
-      "listopada",
-      "studenoga",
-      "prosinca"
+      "sije\u010danj",
+      "velja\u010da",
+      "o\u017eujak",
+      "travanj",
+      "svibanj",
+      "lipanj",
+      "srpanj",
+      "kolovoz",
+      "rujan",
+      "listopad",
+      "studeni",
+      "prosinac"
     ],
     "SHORTDAY": [
       "ned",
