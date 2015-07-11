@@ -95,6 +95,8 @@ and failing to satisfy its validity.
         <input type="button" ng-click="reset()" value="Reset" />
         <input type="submit" ng-click="update(user)" value="Save" />
       </form>
+      <pre>form = {{user | json}}</pre>
+      <pre>master = {{master | json}}</pre>
     </div>
 
     <style type="text/css">
@@ -183,6 +185,8 @@ didn't interact with a control
         <input type="button" ng-click="reset(form)" value="Reset" />
         <input type="submit" ng-click="update(user)" value="Save" />
       </form>
+      <pre>form = {{user | json}}</pre>
+      <pre>master = {{master | json}}</pre>
     </div>
   </file>
 
