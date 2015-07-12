@@ -110,12 +110,14 @@ function $HttpParamSerializerJQLikeProvider() {
       return parts.join('&');
 
       function serialize(toSerialize, prefix, topLevel) {
-        if (toSerialize === null || isUndefined(toSerialize)) return;
+        if (toSerialize === null || isUndefined(toSerialize) || isFunction(toSerialize)) return;
         if (isArray(toSerialize)) {
           forEach(toSerialize, function(value, index) {
             serialize(value, prefix + '[' + (isObject(value) ? index : '') + ']');
           });
-        } else if (isObject(toSerialize) && !isDate(toSerialize)) {
+        } else if (isFunction(toSerialize.toJSON)) {
+          serialize(toSerialize.toJSON(), prefix, topLevel);
+        } else if (isObject(toSerialize)) {
           forEachSorted(toSerialize, function(value, key) {
             serialize(value, prefix +
                 (topLevel ? '' : '[') +

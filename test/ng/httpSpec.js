@@ -2274,6 +2274,37 @@ describe('$http param serializers', function() {
       expect(jqrSer({someDate: new Date('2014-07-15T17:30:00.000Z')})).toEqual('someDate=2014-07-15T17:30:00.000Z');
     });
 
+    it('should ignore functions', function() {
+      expect(jqrSer({
+        foo: {
+          a: 'b',
+          c: function() {
+            return 'd';
+          }
+        }
+      })).toEqual('foo%5Ba%5D=b');
+    });
+
+    it('should honor toJSON function', function() {
+      expect(jqrSer({
+        foo: {
+          a: 'b',
+          toJSON: function() {
+            return {
+              e: 'f',
+              g: 'h'
+            };
+          }
+        },
+        bar: {
+          c: 'd',
+          toJSON: function() {
+            return 'baz';
+          }
+        }
+      })).toEqual('bar=baz&foo%5Be%5D=f&foo%5Bg%5D=h');
+    });
+
   });
 
   describe('default array serialization', function() {
