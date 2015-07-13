@@ -10,8 +10,11 @@ In Angular, a Controller is defined by a JavaScript **constructor function** tha
 
 When a Controller is attached to the DOM via the {@link ng.directive:ngController ng-controller}
 directive, Angular will instantiate a new Controller object, using the specified Controller's
-**constructor function**. A new **child scope** will be available as an injectable parameter to the
-Controller's constructor function as `$scope`.
+**constructor function**. A new **child scope** will created made available as an injectable parameter
+to the Controller's constructor function as `$scope`.
+
+If the controller has been attached using the `controller as` syntax then the controller instance will
+be assigned to a property on the new scope.
 
 Use controllers to:
 
