@@ -560,7 +560,10 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
 
       // there is no way we can trigger an animation since no styles and
       // no classes are being applied which would then trigger a transition
-      if (!containsKeyframeAnimation && !hasToStyles && !setupClasses) {
+      // is there a raw keyframe value that is applied to the element
+      if (!containsKeyframeAnimation
+           && !hasToStyles
+           && !setupClasses) {
         return closeAndReturnNoopAnimator();
       }
 
