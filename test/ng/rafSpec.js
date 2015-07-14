@@ -71,6 +71,64 @@ describe('$$rAF', function() {
     expect(rafLog.length).toBe(2);
   }));
 
+  it('should buffer repeated calls to RAF into segments denoted by a limit which is placed on the provider', inject(function($$rAF) {
+    if (!$$rAF.supported) return;
+
+    var BUFFER_LIMIT = 5;
+
+    //we need to create our own injector to work around the ngMock overrides
+    var rafLog = [];
+    var injector = createInjector(['ng', function($provide, $$rAFProvider) {
+      $$rAFProvider.$$bufferLimit = BUFFER_LIMIT;
+      $provide.value('$window', {
+        location: window.location,
+        history: window.history,
+        webkitCancelAnimationFrame: noop,
+        webkitRequestAnimationFrame: function(fn) {
+          rafLog.push(fn);
+        }
+      });
+    }]);
+
+    $$rAF = injector.get('$$rAF');
+
+    var log = [];
+    function logFn() {
+      log.push(log.length);
+    }
+
+    for (var i = 0; i < 8; i++) {
+      $$rAF(logFn);
+    }
+
+    expect(log).toEqual([]);
+    expect(rafLog.length).toBe(2);
+
+    $$rAF(logFn);
+    expect(rafLog.length).toBe(2);
+
+    $$rAF(logFn);
+    expect(rafLog.length).toBe(2);
+
+    $$rAF(logFn);
+    expect(rafLog.length).toBe(3);
+
+    rafLog.shift()();
+    expect(log).toEqual([0,1,2,3,4]);
+
+    rafLog.shift()();
+    expect(log).toEqual([0,1,2,3,4,5,6,7,8,9]);
+
+    rafLog.shift()();
+    expect(log).toEqual([0,1,2,3,4,5,6,7,8,9,10]);
+
+    expect(rafLog.length).toBe(0);
+  }));
+
+  it('should set a default buffer limit of 10', module(function($$rAF) {
+    expect($$rAF.$$bufferLimit).toBe(10);
+  }));
+
   describe('$timeout fallback', function() {
     it("it should use a $timeout incase native rAF isn't suppored", function() {
       var timeoutSpy = jasmine.createSpy('callback');
