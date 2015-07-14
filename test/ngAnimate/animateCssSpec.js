@@ -2054,7 +2054,7 @@ describe("ngAnimate $animateCss", function() {
         });
       });
 
-      describe("[transtionStyle]", function() {
+      describe("[transitionStyle]", function() {
         it("should apply the transition directly onto the element and animate accordingly",
           inject(function($animateCss, $rootElement) {
 
@@ -2129,6 +2129,29 @@ describe("ngAnimate $animateCss", function() {
           expect(element.css('transition-property')).toMatch('color');
           expect(style).toContain('ease-in');
         }));
+
+        it("should only execute the animation if any CSS to styles are mixed into together",
+          inject(function($animateCss, $rootElement) {
+
+          var options = {
+            transitionStyle: '6s 4s ease-out all'
+          };
+
+          $animateCss(element, options).start();
+          triggerAnimationStartFrame();
+
+          expect(element.css(prefix + 'transition-delay')).not.toEqual('4s');
+          expect(element.css(prefix + 'transition-duration')).not.toEqual('6s');
+          expect(element.css(prefix + 'transition-timing-function')).not.toEqual('ease-out');
+
+          options.to = { color: 'brown' };
+          $animateCss(element, options).start();
+          triggerAnimationStartFrame();
+
+          expect(element.css(prefix + 'transition-delay')).toEqual('4s');
+          expect(element.css(prefix + 'transition-duration')).toEqual('6s');
+          expect(element.css(prefix + 'transition-timing-function')).toEqual('ease-out');
+        }));
       });
 
       describe("[keyframeStyle]", function() {
@@ -2201,6 +2224,23 @@ describe("ngAnimate $animateCss", function() {
 
 
           expect(element.css(prefix + 'animation-delay')).toEqual('50s');
+          expect(element.css(prefix + 'animation-duration')).toEqual('5.5s');
+          expect(element.css(prefix + 'animation-name')).toEqual('my_animation');
+        }));
+
+        it("should be able to execute the animation if it is the only provided value",
+          inject(function($animateCss, $rootElement) {
+
+          var options = {
+            keyframeStyle: 'my_animation 5.5s 10s'
+          };
+
+          var animator = $animateCss(element, options);
+
+          animator.start();
+          triggerAnimationStartFrame();
+
+          expect(element.css(prefix + 'animation-delay')).toEqual('10s');
           expect(element.css(prefix + 'animation-duration')).toEqual('5.5s');
           expect(element.css(prefix + 'animation-name')).toEqual('my_animation');
         }));
