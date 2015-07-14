@@ -2204,6 +2204,23 @@ describe("ngAnimate $animateCss", function() {
           expect(element.css(prefix + 'animation-duration')).toEqual('5.5s');
           expect(element.css(prefix + 'animation-name')).toEqual('my_animation');
         }));
+
+        it("should be able to execute the animation if it is the only provided value",
+          inject(function($animateCss, $rootElement) {
+
+          var options = {
+            keyframeStyle: 'my_animation 5.5s 10s'
+          };
+
+          var animator = $animateCss(element, options);
+
+          animator.start();
+          triggerAnimationStartFrame();
+
+          expect(element.css(prefix + 'animation-delay')).toEqual('10s');
+          expect(element.css(prefix + 'animation-duration')).toEqual('5.5s');
+          expect(element.css(prefix + 'animation-name')).toEqual('my_animation');
+        }));
       });
 
       describe("[from] and [to]", function() {
