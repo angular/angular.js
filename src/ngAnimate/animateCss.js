@@ -556,10 +556,11 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
       var fullClassName = classes + ' ' + setupClasses;
       var activeClasses = pendClasses(setupClasses, '-active');
       var hasToStyles = styles.to && Object.keys(styles.to).length > 0;
+      var containsKeyframeAnimation = (options.keyframeStyle || '').length > 0;
 
       // there is no way we can trigger an animation since no styles and
       // no classes are being applied which would then trigger a transition
-      if (!hasToStyles && !setupClasses) {
+      if (!containsKeyframeAnimation && !hasToStyles && !setupClasses) {
         return closeAndReturnNoopAnimator();
       }
 
