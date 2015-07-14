@@ -1703,11 +1703,11 @@ function $ParseProvider() {
 
   this.$get = ['$filter', '$sniffer', function($filter, $sniffer) {
     var $parseOptions = {
-          csp: $sniffer.csp,
+          csp: $sniffer.csp && $sniffer.csp.noUnsafeEval,
           expensiveChecks: false
         },
         $parseOptionsExpensive = {
-          csp: $sniffer.csp,
+          csp: $sniffer.csp && $sniffer.csp.noUnsafeEval,
           expensiveChecks: true
         };
 
