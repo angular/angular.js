@@ -2130,7 +2130,7 @@ describe("ngAnimate $animateCss", function() {
           expect(style).toContain('ease-in');
         }));
 
-        it("should only execute the animation if any CSS to styles are mixed into together",
+        it("should execute the animation only if there is any provided CSS styling to go with the transition",
           inject(function($animateCss, $rootElement) {
 
           var options = {
@@ -2142,7 +2142,6 @@ describe("ngAnimate $animateCss", function() {
 
           expect(element.css(prefix + 'transition-delay')).not.toEqual('4s');
           expect(element.css(prefix + 'transition-duration')).not.toEqual('6s');
-          expect(element.css(prefix + 'transition-timing-function')).not.toEqual('ease-out');
 
           options.to = { color: 'brown' };
           $animateCss(element, options).start();
@@ -2150,7 +2149,6 @@ describe("ngAnimate $animateCss", function() {
 
           expect(element.css(prefix + 'transition-delay')).toEqual('4s');
           expect(element.css(prefix + 'transition-duration')).toEqual('6s');
-          expect(element.css(prefix + 'transition-timing-function')).toEqual('ease-out');
         }));
       });
 
