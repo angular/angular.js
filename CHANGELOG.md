@@ -1,5 +1,5 @@
 <a name="1.4.3"></a>
-# 1.4.3 foam-acceleration (2015-07-06)
+# 1.4.3 foam-acceleration (2015-07-15)
 
 
 ## Bug Fixes
