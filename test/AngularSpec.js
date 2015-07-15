@@ -994,6 +994,12 @@ describe('angular', function() {
         'toString': '123'
       });
     });
+
+    it('should ignore badly escaped = characters', function() {
+      expect(parseKeyValue('test=a=b')).toEqual({
+          'test': 'a=b'
+      });
+    });
   });
 
   describe('toKeyValue', function() {
