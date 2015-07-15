@@ -53,10 +53,12 @@
  *
  *
  * * No declaration means that Angular will assume that you can do inline styles, but it will do
- * a runtime check for unsafe-eval. E.g. `<body>`.
+ * a runtime check for unsafe-eval. E.g. `<body>`. This is backwardly compatible with previous versions
+ * of Angular.
  *
  * * A simple `ng-csp` (or `data-ng-csp`) attribute will tell Angular to deactivate both inline
- * styles and unsafe eval. E.g. `<body ng-csp>`.
+ * styles and unsafe eval. E.g. `<body ng-csp>`. This is backwardly compatible with previous versions
+ * of Angular.
  *
  * * Specifying only `no-unsafe-eval` tells Angular that we must not use eval, but that we can inject
  * inline styles. E.g. `<body ng-csp="no-unsafe-eval">`.
@@ -65,8 +67,8 @@
  * run eval - no automcatic check for unsafe eval will occur. E.g. `<body ng-csp="no-inline-style">`
  *
  * * Specifying both `no-unsafe-eval` and `no-inline-style` tells Angular that we must not inject
- * styles nor use eval, which is the same as an empty: ng-csp, except that no runtime check for
- * unsafe eval will occur. E.g.`<body ng-csp="no-inline-style;no-unsafe-eval">`
+ * styles nor use eval, which is the same as an empty: ng-csp.
+ * E.g.`<body ng-csp="no-inline-style;no-unsafe-eval">`
  *
  * @example
  * This example shows how to apply the `ngCsp` directive to the `html` tag.
