@@ -785,43 +785,77 @@ describe('angular', function() {
 
 
   describe('csp', function() {
+
+    function mockCspElement(cspAttrName, cspAttrValue) {
+      return spyOn(document, 'querySelector').andCallFake(function(selector) {
+        if (selector == '[' + cspAttrName + ']') {
+          var html = '<div ' + cspAttrName + (cspAttrValue ? ('="' + cspAttrValue + '" ') : '') + '></div>';
+          return jqLite(html)[0];
+        }
+      });
+
+    }
+
     var originalFunction;
 
     beforeEach(function() {
-      originalFunction = window.Function;
+      spyOn(window, 'Function');
     });
 
     afterEach(function() {
-      window.Function = originalFunction;
-      delete csp.isActive_;
+      delete csp.rules;
     });
 
 
-    it('should return the false when CSP is not enabled (the default)', function() {
-      expect(csp()).toBe(false);
+    it('should return the false for all rules when CSP is not enabled (the default)', function() {
+      expect(csp()).toEqual({ noUnsafeEval: false, noInlineStyle: false });
     });
 
 
-    it('should return true if CSP is autodetected via CSP v1.1 securityPolicy.isActive property', function() {
-      window.Function = function() { throw new Error('CSP test'); };
-      expect(csp()).toBe(true);
+    it('should return true for noUnsafeEval if eval causes a CSP security policy error', function() {
+      window.Function.andCallFake(function() { throw new Error('CSP test'); });
+      expect(csp()).toEqual({ noUnsafeEval: true, noInlineStyle: false });
+      expect(window.Function).toHaveBeenCalledWith('');
     });
 
 
-    it('should return the true when CSP is enabled manually via [ng-csp]', function() {
-      spyOn(document, 'querySelector').andCallFake(function(selector) {
-        if (selector == '[ng-csp]') return {};
-      });
-      expect(csp()).toBe(true);
+    it('should return true for all rules when CSP is enabled manually via empty `ng-csp` attribute', function() {
+      var spy = mockCspElement('ng-csp');
+      expect(csp()).toEqual({ noUnsafeEval: true, noInlineStyle: true });
+      expect(spy).toHaveBeenCalledWith('[ng-csp]');
+      expect(window.Function).not.toHaveBeenCalled();
     });
 
 
-    it('should return the true when CSP is enabled manually via [data-ng-csp]', function() {
-      spyOn(document, 'querySelector').andCallFake(function(selector) {
-        if (selector == '[data-ng-csp]') return {};
-      });
-      expect(csp()).toBe(true);
-      expect(document.querySelector).toHaveBeenCalledWith('[data-ng-csp]');
+    it('should return true when CSP is enabled manually via [data-ng-csp]', function() {
+      var spy = mockCspElement('data-ng-csp');
+      expect(csp()).toEqual({ noUnsafeEval: true, noInlineStyle: true });
+      expect(spy).toHaveBeenCalledWith('[data-ng-csp]');
+      expect(window.Function).not.toHaveBeenCalled();
+    });
+
+
+    it('should return true for noUnsafeEval if it is specified in the `ng-csp` attribute value', function() {
+      var spy = mockCspElement('ng-csp', 'no-unsafe-eval');
+      expect(csp()).toEqual({ noUnsafeEval: true, noInlineStyle: false });
+      expect(spy).toHaveBeenCalledWith('[ng-csp]');
+      expect(window.Function).not.toHaveBeenCalled();
+    });
+
+
+    it('should return true for noInlineStyle if it is specified in the `ng-csp` attribute value', function() {
+      var spy = mockCspElement('ng-csp', 'no-inline-style');
+      expect(csp()).toEqual({ noUnsafeEval: false, noInlineStyle: true });
+      expect(spy).toHaveBeenCalledWith('[ng-csp]');
+      expect(window.Function).not.toHaveBeenCalled();
+    });
+
+
+    it('should return true for all styles if they are all specified in the `ng-csp` attribute value', function() {
+      var spy = mockCspElement('ng-csp', 'no-inline-style;no-unsafe-eval');
+      expect(csp()).toEqual({ noUnsafeEval: true, noInlineStyle: true });
+      expect(spy).toHaveBeenCalledWith('[ng-csp]');
+      expect(window.Function).not.toHaveBeenCalled();
     });
   });
 

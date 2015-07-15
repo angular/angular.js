@@ -73,8 +73,11 @@ describe('$sniffer', function() {
 
 
   describe('csp', function() {
-    it('should be false by default', function() {
-      expect(sniffer({}).csp).toBe(false);
+    it('should have all rules set to false by default', function() {
+      var csp = sniffer({}).csp;
+      forEach(Object.keys(csp), function(key) {
+        expect(csp[key]).toEqual(false);
+      });
     });
   });
 
