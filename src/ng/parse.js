@@ -1701,13 +1701,14 @@ function $ParseProvider() {
   var cacheDefault = createMap();
   var cacheExpensive = createMap();
 
-  this.$get = ['$filter', '$sniffer', function($filter, $sniffer) {
+  this.$get = ['$filter', function($filter) {
+    var noUnsafeEval = csp().noUnsafeEval;
     var $parseOptions = {
-          csp: $sniffer.csp,
+          csp: noUnsafeEval,
           expensiveChecks: false
         },
         $parseOptionsExpensive = {
-          csp: $sniffer.csp,
+          csp: noUnsafeEval,
           expensiveChecks: true
         };
 

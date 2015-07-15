@@ -20,7 +20,6 @@
   ngClassDirective,
   ngClassEvenDirective,
   ngClassOddDirective,
-  ngCspDirective,
   ngCloakDirective,
   ngControllerDirective,
   ngFormDirective,
