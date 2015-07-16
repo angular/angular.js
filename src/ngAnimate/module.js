@@ -387,6 +387,7 @@
  *     enter: function(element, doneFn) {
  *       var runner = $animateCss(element, {
  *         event: 'enter',
+ *         structural: true,
  *         addClass: 'maroon-setting',
  *         from: { height:0 },
  *         to: { height: 200 }
