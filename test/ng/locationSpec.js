@@ -46,7 +46,7 @@ describe('$location', function() {
 
     it('should not include the drive name in path() on WIN', function() {
       //See issue #4680 for details
-      var locationUrl = new LocationHashbangUrl('file:///base', '#!');
+      var locationUrl = new LocationHashbangUrl('file:///base', 'file:///', '#!');
       locationUrl.$$parse('file:///base#!/foo?a=b&c#hash');
 
       expect(locationUrl.path()).toBe('/foo');
@@ -54,7 +54,7 @@ describe('$location', function() {
 
 
     it('should include the drive name if it was provided in the input url', function() {
-      var locationUrl = new LocationHashbangUrl('file:///base', 'file:///base', '#!');
+      var locationUrl = new LocationHashbangUrl('file:///base', 'file:///', '#!');
       locationUrl.$$parse('file:///base#!/C:/foo?a=b&c#hash');
 
       expect(locationUrl.path()).toBe('/C:/foo');
