@@ -303,8 +303,8 @@ goog.i18n.currency.CurrencyInfo = {
   'KRW': [0, '\u20A9', 'KR₩'],
   'LKR': [2, 'Rs', 'SLRs'],
   'LTL': [2, 'Lt', 'Lt'],
-  'LVL': [2, 'Ls', 'Ls'],
   'MNT': [0, '\u20AE', 'MN₮'],
+  'MVR': [2, 'Rf', 'MVR'],
   'MXN': [2, '$', 'Mex$'],
   'MYR': [2, 'RM', 'RM'],
   'NOK': [50, 'kr', 'NOkr'],
@@ -339,6 +339,7 @@ goog.i18n.currency.CurrencyInfo = {
 goog.i18n.currency.CurrencyInfoTier2 = {
   'AFN': [48, 'Af.', 'AFN'],
   'AMD': [0, 'Dram', 'dram'],
+  'ANG': [2, 'NAf.', 'ANG'],
   'AOA': [2, 'Kz', 'Kz'],
   'ARS': [2, '$', 'AR$'],
   'AWG': [2, 'Afl.', 'Afl.'],
@@ -414,6 +415,7 @@ goog.i18n.currency.CurrencyInfoTier2 = {
   'SLL': [0, 'SLL', 'SLL'],
   'SOS': [0, 'SOS', 'SOS'],
   'SRD': [2, '$', 'SR$'],
+  'SSP': [2, '£', 'SSP'],
   'STD': [0, 'Db', 'Db'],
   'SYP': [0, '£', 'SY£'],
   'SZL': [2, 'SZL', 'SZL'],
@@ -430,5 +432,6 @@ goog.i18n.currency.CurrencyInfoTier2 = {
   'XCD': [2, '$', 'EC$'],
   'XOF': [0, 'CFA', 'CFA'],
   'XPF': [0, 'FCFP', 'FCFP'],
-  'ZMK': [0, 'ZMK', 'ZMK']
+  'ZMW': [0, 'ZMW', 'ZMW'],
+  'ZWD': [0, '$', 'Z$']
 };
