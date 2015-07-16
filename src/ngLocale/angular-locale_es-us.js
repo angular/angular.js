@@ -34,7 +34,7 @@ $provide.value("$locale", {
       "junio",
       "julio",
       "agosto",
-      "setiembre",
+      "septiembre",
       "octubre",
       "noviembre",
       "diciembre"
@@ -57,7 +57,7 @@ $provide.value("$locale", {
       "jun.",
       "jul.",
       "ago.",
-      "set.",
+      "sept.",
       "oct.",
       "nov.",
       "dic."
@@ -68,8 +68,8 @@ $provide.value("$locale", {
     ],
     "fullDate": "EEEE, d 'de' MMMM 'de' y",
     "longDate": "d 'de' MMMM 'de' y",
-    "medium": "d 'de' MMM 'de' y h:mm:ss a",
-    "mediumDate": "d 'de' MMM 'de' y",
+    "medium": "d MMM y h:mm:ss a",
+    "mediumDate": "d MMM y",
     "mediumTime": "h:mm:ss a",
     "short": "d/M/yy h:mm a",
     "shortDate": "d/M/yy",
@@ -97,7 +97,7 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "\u00a4-",
+        "negPre": "-\u00a4",
         "negSuf": "",
         "posPre": "\u00a4",
         "posSuf": ""

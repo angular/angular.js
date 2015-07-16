@@ -94,7 +94,7 @@ $provide.value("$locale", {
     "shortTime": "HH:mm"
   },
   "NUMBER_FORMATS": {
-    "CURRENCY_SYM": "ANG",
+    "CURRENCY_SYM": "NAf.",
     "DECIMAL_SEP": ",",
     "GROUP_SEP": ".",
     "PATTERNS": [
@@ -115,8 +115,8 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "\u00a4\u00a0",
-        "negSuf": "-",
+        "negPre": "\u00a4\u00a0-",
+        "negSuf": "",
         "posPre": "\u00a4\u00a0",
         "posSuf": ""
       }

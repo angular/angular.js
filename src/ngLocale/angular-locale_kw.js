@@ -26,13 +26,13 @@ $provide.value("$locale", {
       "p.m."
     ],
     "DAY": [
-      "De Sul",
-      "De Lun",
-      "De Merth",
-      "De Merher",
-      "De Yow",
-      "De Gwener",
-      "De Sadorn"
+      "dy Sul",
+      "dy Lun",
+      "dy Meurth",
+      "dy Merher",
+      "dy Yow",
+      "dy Gwener",
+      "dy Sadorn"
     ],
     "ERANAMES": [
       "RC",
@@ -44,18 +44,18 @@ $provide.value("$locale", {
     ],
     "FIRSTDAYOFWEEK": 0,
     "MONTH": [
-      "Mys Genver",
-      "Mys Whevrel",
-      "Mys Merth",
-      "Mys Ebrel",
-      "Mys Me",
-      "Mys Efan",
-      "Mys Gortheren",
-      "Mye Est",
-      "Mys Gwyngala",
-      "Mys Hedra",
-      "Mys Du",
-      "Mys Kevardhu"
+      "mis Genver",
+      "mis Hwevrer",
+      "mis Meurth",
+      "mis Ebrel",
+      "mis Me",
+      "mis Metheven",
+      "mis Gortheren",
+      "mis Est",
+      "mis Gwynngala",
+      "mis Hedra",
+      "mis Du",
+      "mis Kevardhu"
     ],
     "SHORTDAY": [
       "Sul",
@@ -68,11 +68,11 @@ $provide.value("$locale", {
     ],
     "SHORTMONTH": [
       "Gen",
-      "Whe",
-      "Mer",
+      "Hwe",
+      "Meu",
       "Ebr",
       "Me",
-      "Efn",
+      "Met",
       "Gor",
       "Est",
       "Gwn",
@@ -115,7 +115,7 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "\u00a4-",
+        "negPre": "-\u00a4",
         "negSuf": "",
         "posPre": "\u00a4",
         "posSuf": ""
