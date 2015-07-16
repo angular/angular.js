@@ -22,8 +22,8 @@ function getVF(n, opt_precision) {
 $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": [
-      "am",
-      "pm"
+      "AM",
+      "PM"
     ],
     "DAY": [
       "Sunday",
@@ -84,7 +84,7 @@ $provide.value("$locale", {
       5,
       6
     ],
-    "fullDate": "EEEE d MMMM y",
+    "fullDate": "EEEE, d MMMM y",
     "longDate": "d MMMM y",
     "medium": "dd-MMM-y h:mm:ss a",
     "mediumDate": "dd-MMM-y",
@@ -99,7 +99,7 @@ $provide.value("$locale", {
     "GROUP_SEP": ",",
     "PATTERNS": [
       {
-        "gSize": 2,
+        "gSize": 3,
         "lgSize": 3,
         "maxFrac": 3,
         "minFrac": 0,
@@ -110,14 +110,14 @@ $provide.value("$locale", {
         "posSuf": ""
       },
       {
-        "gSize": 2,
+        "gSize": 3,
         "lgSize": 3,
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "\u00a4\u00a0-",
+        "negPre": "-\u00a4",
         "negSuf": "",
-        "posPre": "\u00a4\u00a0",
+        "posPre": "\u00a4",
         "posSuf": ""
       }
     ]
