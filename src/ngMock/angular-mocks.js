@@ -755,11 +755,23 @@ angular.mock.animate = angular.module('ngAnimateMock', ['ng'])
 
   .config(['$provide', function($provide) {
 
-    $provide.decorator('$animate', ['$delegate', '$timeout', '$browser', '$$rAF',
-                            function($delegate,   $timeout,   $browser,   $$rAF) {
+    $provide.factory('$$forceReflow', function() {
+      function reflowFn() {
+        reflowFn.totalReflows++;
+      }
+      reflowFn.totalReflows = 0;
+      return reflowFn;
+    });
+
+    $provide.decorator('$animate', ['$delegate', '$timeout', '$browser', '$$rAF', '$$forceReflow',
+                            function($delegate,   $timeout,   $browser,   $$rAF,   $$forceReflow) {
+
       var animate = {
         queue: [],
         cancel: $delegate.cancel,
+        get reflows() {
+          return $$forceReflow.totalReflows;
+        },
         enabled: $delegate.enabled,
         triggerCallbackEvents: function() {
           $$rAF.flush();
