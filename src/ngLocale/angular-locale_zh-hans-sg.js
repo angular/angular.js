@@ -71,9 +71,9 @@ $provide.value("$locale", {
     "medium": "y\u5e74M\u6708d\u65e5 ah:mm:ss",
     "mediumDate": "y\u5e74M\u6708d\u65e5",
     "mediumTime": "ah:mm:ss",
-    "short": "dd/MM/yy ahh:mm",
+    "short": "dd/MM/yy ah:mm",
     "shortDate": "dd/MM/yy",
-    "shortTime": "ahh:mm"
+    "shortTime": "ah:mm"
   },
   "NUMBER_FORMATS": {
     "CURRENCY_SYM": "$",

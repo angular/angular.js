@@ -18,7 +18,7 @@ $provide.value("$locale", {
     ],
     "ERANAMES": [
       "antes de Cristo",
-      "anno D\u00f3mini"
+      "despu\u00e9s de Cristo"
     ],
     "ERAS": [
       "a. C.",
@@ -68,8 +68,8 @@ $provide.value("$locale", {
     ],
     "fullDate": "EEEE, d 'de' MMMM 'de' y",
     "longDate": "d 'de' MMMM 'de' y",
-    "medium": "d 'de' MMM 'de' y H:mm:ss",
-    "mediumDate": "d 'de' MMM 'de' y",
+    "medium": "d MMM y H:mm:ss",
+    "mediumDate": "d MMM y",
     "mediumTime": "H:mm:ss",
     "short": "d/M/yy H:mm",
     "shortDate": "d/M/yy",

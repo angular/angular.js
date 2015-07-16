@@ -86,12 +86,12 @@ $provide.value("$locale", {
     ],
     "fullDate": "EEEE, d \u05d1MMMM y",
     "longDate": "d \u05d1MMMM y",
-    "medium": "d \u05d1MMM y HH:mm:ss",
+    "medium": "d \u05d1MMM y H:mm:ss",
     "mediumDate": "d \u05d1MMM y",
-    "mediumTime": "HH:mm:ss",
-    "short": "d.M.y HH:mm",
+    "mediumTime": "H:mm:ss",
+    "short": "d.M.y H:mm",
     "shortDate": "d.M.y",
-    "shortTime": "HH:mm"
+    "shortTime": "H:mm"
   },
   "NUMBER_FORMATS": {
     "CURRENCY_SYM": "\u20aa",
