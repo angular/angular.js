@@ -860,7 +860,6 @@ describe('$location', function() {
       });
     });
 
-
     // location.href = '...' fires hashchange event synchronously, so it might happen inside $apply
     it('should not $apply when browser url changed inside $apply', function() {
       initService({html5Mode:false,hashPrefix: '!',supportHistory: true});
@@ -1148,6 +1147,19 @@ describe('$location', function() {
 
         expect($browserUrl).toHaveBeenCalledOnce();
         expect($browserUrl.mostRecentCall.args).toEqual(['http://new.com/a/b/bar', false, null]);
+      });
+    });
+
+    it('should force a page reload if navigating outside of the application base href', function() {
+      initService({html5Mode:true, supportHistory: true});
+      mockUpBrowser({initialUrl:'http://new.com/a/b/', baseHref:'/a/b/'});
+
+      inject(function($window, $browser, $location) {
+        $window.location.href = 'http://new.com/a/outside.html';
+        spyOn($window.location, '$$setHref');
+        expect($window.location.$$setHref).not.toHaveBeenCalled();
+        $browser.$$checkUrlChange();
+        expect($window.location.$$setHref).toHaveBeenCalledWith('http://new.com/a/outside.html');
       });
     });
   });
@@ -2540,8 +2552,10 @@ describe('$location', function() {
         win.addEventListener = angular.noop;
         win.removeEventListener = angular.noop;
         win.location = {
-          get href() { return parser.href; },
-          set href(val) { parser.href = val; },
+          get href() { return this.$$getHref(); },
+          $$getHref: function() { return parser.href; },
+          set href(val) { this.$$setHref(val); },
+          $$setHref: function(val) { parser.href = val; },
           get hash() { return parser.hash; },
           // The parser correctly strips on a single preceding hash character if necessary
           // before joining the fragment onto the href by a new hash character
