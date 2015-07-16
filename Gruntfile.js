@@ -175,7 +175,8 @@ module.exports = function(grunt) {
       },
       angular: {
         dest: 'build/angular.js',
-        src: util.wrap([files['angularSrc']], 'angular'),
+        src: util.wrap([files['angularSrc']], 'angular')
+                 .concat('src/ngLocale/angular-locale_en-us.js'),
         styles: {
           css: ['css/angular.css'],
           generateCspCssFile: true,
