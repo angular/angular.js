@@ -101,7 +101,7 @@ describe('filters', function() {
 
     it('should do basic currency filtering', function() {
       expect(currency(0)).toEqual('$0.00');
-      expect(currency(-999)).toEqual('($999.00)');
+      expect(currency(-999)).toEqual('-$999.00');
       expect(currency(1234.5678, "USD$")).toEqual('USD$1,234.57');
       expect(currency(1234.5678, "USD$", 0)).toEqual('USD$1,235');
     });
