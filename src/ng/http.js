@@ -190,7 +190,7 @@ function parseHeaders(headers) {
  *   - if called with no arguments returns an object containing all headers.
  */
 function headersGetter(headers) {
-  var headersObj;
+  var headersObj = isObject(headers) ? headers : undefined;
 
   return function(name) {
     if (!headersObj) headersObj =  parseHeaders(headers);
