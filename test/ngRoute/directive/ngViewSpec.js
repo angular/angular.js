@@ -79,6 +79,29 @@ describe('ngView', function() {
     });
   });
 
+  it('should instantiate the associated controller and inject $element into the locals', function() {
+    var capturedElement,
+        Ctrl = function($element) {
+          capturedElement = $element;
+        };
+
+    module(function($routeProvider) {
+      $routeProvider.when('/element-page', {templateUrl: '/page.html', controller: Ctrl});
+    });
+
+    inject(function($route, $rootScope, $templateCache, $location) {
+      $templateCache.put('/page.html', [200, '', {}]);
+      $location.path('/element-page');
+
+      expect(function() {
+        $rootScope.$digest();
+      }).not.toThrow();
+
+      expect(capturedElement).toBeDefined();
+      expect(capturedElement[0].nodeName).toBe('NG:VIEW');
+    });
+  });
+
 
   it('should instantiate controller with an alias', function() {
     var log = [], controllerScope,

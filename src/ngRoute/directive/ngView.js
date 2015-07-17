@@ -263,6 +263,7 @@ function ngViewFillContentFactory($compile, $controller, $route) {
       var current = $route.current,
           locals = current.locals;
 
+      locals.$element = $element;
       $element.html(locals.$template);
 
       var link = $compile($element.contents());
