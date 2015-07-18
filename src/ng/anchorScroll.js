@@ -231,7 +231,7 @@ function $AnchorScrollProvider() {
           var elemTop = elem.getBoundingClientRect().top;
           $window.scrollBy(0, elemTop - offset);
         }
-      } else {
+      } else if ($window) {
         $window.scrollTo(0, 0);
       }
     }
