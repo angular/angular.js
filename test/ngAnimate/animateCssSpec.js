@@ -1277,6 +1277,25 @@ describe("ngAnimate $animateCss", function() {
       expect(element.attr('style')).not.toContain('transition');
     }));
 
+    it("should clear cache if no animation so follow-up animation on the same element will not be from cache",
+      inject(function($animateCss, $rootElement, $$body, $$rAF) {
+        var element = jqLite('<div class="rclass"></div>');
+        var options = {
+          event: 'enter',
+          structural: true
+        };
+        $rootElement.append(element);
+        $$body.append($rootElement);
+        var animator = $animateCss(element, options);
+        expect(animator.$$willAnimate).toBeFalsy();
+
+        $$rAF.flush();
+        ss.addRule('.ng-enter', '-webkit-animation:3.5s keyframe_animation;' +
+                                        'animation:3.5s keyframe_animation;');
+        animator = $animateCss(element, options);
+        expect(animator.$$willAnimate).toBeTruthy();
+    }));
+
     it('should apply a custom temporary class when a non-structural animation is used',
       inject(function($animateCss, $rootElement, $$body) {
 
