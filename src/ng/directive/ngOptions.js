@@ -64,7 +64,7 @@ var ngOptionsMinErr = minErr('ngOptions');
  * Consider the following example:
  *
  * ```html
- * <select ng-options="item.subItem as item.label for item in values track by item.id" ng-model="selected">
+ * <select ng-options="item.subItem as item.label for item in values track by item.id" ng-model="selected"></select>
  * ```
  *
  * ```js
