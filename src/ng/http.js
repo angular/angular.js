@@ -108,8 +108,8 @@ function $HttpParamSerializerJQLikeProvider() {
       function serialize(toSerialize, prefix, topLevel) {
         if (toSerialize === null || isUndefined(toSerialize)) return;
         if (isArray(toSerialize)) {
-          forEach(toSerialize, function(value) {
-            serialize(value, prefix + '[]');
+          forEach(toSerialize, function(value, index) {
+            serialize(value, prefix + '[' + (isObject(value) ? index : '') + ']');
           });
         } else if (isObject(toSerialize) && !isDate(toSerialize)) {
           forEachSorted(toSerialize, function(value, key) {

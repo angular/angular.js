@@ -2022,8 +2022,14 @@ describe('$http param serializers', function() {
 
     it('should serialize nested objects by repeating param name with [key] suffix', function() {
       expect(jqrSer({a: ['b', {c: 'd'}], e: {f: 'g', 'h': ['i', 'j']}})).toEqual(
-         'a%5B%5D=b&a%5B%5D%5Bc%5D=d&e%5Bf%5D=g&e%5Bh%5D%5B%5D=i&e%5Bh%5D%5B%5D=j');
-         //a[]=b&a[][c]=d&e[f]=g&e[h][]=i&e[h][]=j
+         'a%5B%5D=b&a%5B1%5D%5Bc%5D=d&e%5Bf%5D=g&e%5Bh%5D%5B%5D=i&e%5Bh%5D%5B%5D=j');
+         //a[]=b&a[1][c]=d&e[f]=g&e[h][]=i&e[h][]=j
+    });
+
+    it('should serialize objects inside array elements using their index', function() {
+      expect(jqrSer({a: ['b', 'c'], d: [{e: 'f', g: 'h'}, 'i', {j: 'k'}]})).toEqual(
+         'a%5B%5D=b&a%5B%5D=c&d%5B0%5D%5Be%5D=f&d%5B0%5D%5Bg%5D=h&d%5B%5D=i&d%5B2%5D%5Bj%5D=k');
+         //a[]=b&a[]=c&d[0][e]=f&d[0][g]=h&d[]=i&d[2][j]=k
     });
   });
 
