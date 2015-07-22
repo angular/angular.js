@@ -235,7 +235,7 @@ describe('$httpBackend', function() {
 
 
     it('should read responseText if response was not defined', function() {
-      //  old browsers like IE8, don't support responseType, so they always respond with responseText
+      //  old browsers like IE9, don't support responseType, so they always respond with responseText
 
       $backend('GET', '/whatever', null, callback, {}, null, null, 'blob');
 

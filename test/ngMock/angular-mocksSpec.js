@@ -719,8 +719,6 @@ describe('ngMock', function() {
 
     it('should serialize scope that has overridden "hasOwnProperty"', inject(function($rootScope, $sniffer) {
       /* jshint -W001 */
-      // MS IE8 just doesn't work for this kind of thing, since "for ... in" doesn't return
-      // things like hasOwnProperty even if it is explicitly defined on the actual object!
       $rootScope.hasOwnProperty = 'X';
       expect(d($rootScope)).toMatch(/Scope\(.*\): \{/);
       expect(d($rootScope)).toMatch(/hasOwnProperty: "X"/);
@@ -905,10 +903,6 @@ describe('ngMock', function() {
         });
       });
 
-
-      // We don't run the following tests on IE8.
-      // IE8 throws "Object does not support this property or method." error,
-      // when thrown from a function defined on window (which `inject` is).
 
       it('should not change thrown Errors', inject(function($sniffer) {
         expect(function() {
