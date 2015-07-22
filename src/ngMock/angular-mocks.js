@@ -2010,6 +2010,17 @@ function MockXhr() {
   };
 
   this.abort = angular.noop;
+
+  this.$$events = {};
+  this.addEventListener = function(name, listener) {
+    if (angular.isUndefined(this.$$events[name])) this.$$events[name] = [];
+    this.$$events[name].push(listener);
+  };
+
+  this.upload = {
+    $$events: {},
+    addEventListener: this.addEventListener
+  };
 }
 
 
