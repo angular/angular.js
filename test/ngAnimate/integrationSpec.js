@@ -306,7 +306,7 @@ describe('ngAnimate integration tests', function() {
       });
     });
 
-    it('should not issue any reflows for class-based animations if none of them have children with queued animations', function() {
+    it('should only issue one reflow for class-based animations if none of them have children with queued animations', function() {
       module('ngAnimateMock');
       inject(function($animate, $compile, $rootScope, $rootElement, $$rAF, $document) {
         element = jqLite(
@@ -328,11 +328,35 @@ describe('ngAnimate integration tests', function() {
 
         $rootScope.exp = true;
         $rootScope.$digest();
-        expect($animate.reflows).toBe(0);
+        expect($animate.reflows).toBe(1);
 
         $rootScope.exp2 = true;
         $rootScope.$digest();
+        expect($animate.reflows).toBe(2);
+      });
+    });
+
+    it('should always issue atleast one reflow incase there are no parent class-based animations', function() {
+      module('ngAnimateMock');
+      inject(function($animate, $compile, $rootScope, $rootElement, $$rAF, $document) {
+        element = jqLite(
+          '<div ng-repeat="item in items" ng-class="{someAnimation:exp}">' +
+            '{{ item }}' +
+          '</div>'
+        );
+
+        $rootElement.append(element);
+        jqLite($document[0].body).append($rootElement);
+
+        $compile(element)($rootScope);
+        $rootScope.$digest();
         expect($animate.reflows).toBe(0);
+
+        $rootScope.exp = true;
+        $rootScope.items = [1,2,3,4,5,6,7,8,9,10];
+        $rootScope.$digest();
+
+        expect($animate.reflows).toBe(1);
       });
     });
   });

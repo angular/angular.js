@@ -106,7 +106,16 @@ var $$AnimationProvider = ['$animateProvider', function($animateProvider) {
           result = result.concat(row);
         }
 
-        return result;
+        var terminalAnimations = [];
+        var parentAnimations = [];
+        forEach(result, function(result) {
+          if (result.terminal) {
+            terminalAnimations.push(result.fn);
+          } else {
+            parentAnimations.push(result.fn);
+          }
+        });
+        return [parentAnimations, terminalAnimations];
       }
     }
 
@@ -220,11 +229,23 @@ var $$AnimationProvider = ['$animateProvider', function($animateProvider) {
         var anim = sortAnimations(toBeSortedAnimations);
         var finalLevel = anim.length - 1;
 
-        forEach(anim, function(entry) {
-          if (!entry.terminal) {
+        // sortAnimations will return two lists of animations. The first list
+        // is all of the parent animations that are likely class-based and the
+        // second list is a collection of the rest. Before we run the second
+        // list we must ensure that atleast one reflow has been passed such that
+        // the preparation classes (ng-enter, class-add, etc...) have been applied
+        // to their associated element.
+        if (anim[0].length) {
+          forEach(anim[0], function(triggerAnimation) {
             $$forceReflow();
-          }
-          entry.fn();
+            triggerAnimation();
+          });
+        } else {
+          $$forceReflow();
+        }
+
+        forEach(anim[1], function(triggerAnimation) {
+          triggerAnimation();
         });
       });
 
