@@ -1245,7 +1245,7 @@ function tryDecodeURIComponent(value) {
 
 /**
  * Parses an escaped url query string into key-value pairs.
- * @returns {Object.<string,boolean|Array>}
+ * @returns {Object.<string,boolean|string|Array>}
  */
 function parseKeyValue(/**string*/keyValue) {
   var obj = {}, key_value, key;
