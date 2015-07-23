@@ -243,6 +243,15 @@ describe('injector', function() {
     });
 
 
+    // Only Chrome and Firefox support this syntax.
+    if (/chrome|firefox/i.test(navigator.userAgent)) {
+      it('should be possible to annotate functions that are declared using ES6 syntax', function() {
+        // The function is generated using `eval` as just having the ES6 syntax can break some browsers.  
+        expect(annotate(eval('({ fn(x) { return; } })').fn)).toEqual(['x']);
+      });
+    }
+
+
     it('should publish annotate API', function() {
       expect(angular.mock.$$annotate).toBe(annotate);
       spyOn(angular.mock, '$$annotate').andCallThrough();
