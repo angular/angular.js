@@ -69,6 +69,7 @@ var angularFiles = {
     'src/ng/directive/ngPluralize.js',
     'src/ng/directive/ngRepeat.js',
     'src/ng/directive/ngShowHide.js',
+    'src/ng/directive/ngSrcAlt.js',
     'src/ng/directive/ngStyle.js',
     'src/ng/directive/ngSwitch.js',
     'src/ng/directive/ngTransclude.js',

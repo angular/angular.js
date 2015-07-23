@@ -185,6 +185,7 @@ function publishExternalAPI(angular) {
             ngRepeat: ngRepeatDirective,
             ngShow: ngShowDirective,
             ngStyle: ngStyleDirective,
+            ngSrcAlt: ngSrcAltDirective,
             ngSwitch: ngSwitchDirective,
             ngSwitchWhen: ngSwitchWhenDirective,
             ngSwitchDefault: ngSwitchDefaultDirective,
