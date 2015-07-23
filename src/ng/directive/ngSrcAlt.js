@@ -16,13 +16,13 @@ var ngSrcAltDirective = ngDirective({
     restrict: 'A',
     priority: 99, // it needs to run after the attributes are interpolated
     link: function ($scope, $element, $attr) {
-        var regex_isString = /(^['"]|['"]$)/g,
-            isValue = regex_isString.test($attr.ngSrcAlt);
         $element.bind('error', function () {
-            var value = isValue ? $attr.ngSrcAlt.replace(regex_isString, '') : $scope[$attr.ngSrcAlt];
-            if ($attr.src !== value) {
-                $attr.$set('src', value);
+            $attr.$set('src', $attr['ngSrcAlt']);
+
+            if (msie) {
+                $element.prop('src-alt', $attr['src']);
             }
         });
+
     }
 });
