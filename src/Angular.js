@@ -1231,7 +1231,7 @@ function startingTag(element) {
  *
  * @private
  * @param str value potential URI component to check.
- * @returns {boolean} True if `value` can be decoded
+ * @returns {string|undefined} Decoded URI Component or undefined if failed
  * with the decodeURIComponent function.
  */
 function tryDecodeURIComponent(value) {
