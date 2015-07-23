@@ -402,11 +402,11 @@ function $HttpProvider() {
      * ```js
      *   // Simple GET request example :
      *   $http.get('/someUrl').
-     *     success(function(data, status, headers, config) {
+     *     success(function(data, status, headers, config, statusText) {
      *       // this callback will be called asynchronously
      *       // when the response is available
      *     }).
-     *     error(function(data, status, headers, config) {
+     *     error(function(data, status, headers, config, statusText) {
      *       // called asynchronously if an error occurs
      *       // or server returns response with an error status.
      *     });
@@ -415,11 +415,11 @@ function $HttpProvider() {
      * ```js
      *   // Simple POST request example (passing data) :
      *   $http.post('/someUrl', {msg:'hello word!'}).
-     *     success(function(data, status, headers, config) {
+     *     success(function(data, status, headers, config, statusText) {
      *       // this callback will be called asynchronously
      *       // when the response is available
      *     }).
-     *     error(function(data, status, headers, config) {
+     *     error(function(data, status, headers, config, statusText) {
      *       // called asynchronously if an error occurs
      *       // or server returns response with an error status.
      *     });
