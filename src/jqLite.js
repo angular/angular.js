@@ -133,7 +133,7 @@ JQLite._data = function(node) {
 function jqNextId() { return ++jqId; }
 
 
-var SPECIAL_CHARS_REGEXP = /([\:\-\_]+(.))/g;
+var SPECIAL_CHARS_REGEXP = /((?:^|[\:\-\_])[\:\-\_]*(.))/g;
 var MOZ_HACK_REGEXP = /^moz([A-Z])/;
 var MOUSE_EVENT_MAP= { mouseleave: "mouseout", mouseenter: "mouseover"};
 var jqLiteMinErr = minErr('jqLite');
@@ -146,7 +146,7 @@ var jqLiteMinErr = minErr('jqLite');
 function camelCase(name) {
   return name.
     replace(SPECIAL_CHARS_REGEXP, function(_, separator, letter, offset) {
-      return offset ? letter.toUpperCase() : letter;
+      return offset ? letter.toUpperCase() : letter.toLowerCase();
     }).
     replace(MOZ_HACK_REGEXP, 'Moz$1');
 }

@@ -2013,8 +2013,15 @@ describe('jqLite', function() {
 
     it('should covert browser specific css properties', function() {
       expect(camelCase('-moz-foo-bar')).toBe('MozFooBar');
+      expect(camelCase('MozFooBar')).toBe('MozFooBar');
       expect(camelCase('-webkit-foo-bar')).toBe('webkitFooBar');
       expect(camelCase('-webkit-foo-bar')).toBe('webkitFooBar');
+    });
+
+    it('should convert strings that start with an upper-case letter', function() {
+      expect(camelCase('Foo_Bar')).toBe('fooBar');
+      expect(camelCase('Foo-Bar')).toBe('fooBar');
+      expect(camelCase('FooBar')).toBe('fooBar');
     });
   });
 
