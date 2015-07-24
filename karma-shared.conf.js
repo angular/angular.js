@@ -17,7 +17,9 @@ module.exports = function(config, specificOptions) {
       testName: specificOptions.testName || 'AngularJS',
       startConnect: true,
       options: {
-        'selenium-version': '2.41.0'
+        // We need selenium version +2.46 for Firefox 39 and the last selenium version for OS X is 2.45.
+        // TODO: Uncomment when there is a selenium 2.46 available for OS X.
+        // 'selenium-version': '2.46.0'
       }
     },
 
@@ -35,12 +37,12 @@ module.exports = function(config, specificOptions) {
       'SL_Chrome': {
         base: 'SauceLabs',
         browserName: 'chrome',
-        version: '39'
+        version: '43'
       },
       'SL_Firefox': {
         base: 'SauceLabs',
         browserName: 'firefox',
-        version: '31'
+        version: '39'
       },
       'SL_Safari': {
         base: 'SauceLabs',
