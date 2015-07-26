@@ -1,0 +1,7 @@
+{
+  "name": "example-error-$rootScope-inprog",
+  "files": [
+    "index-production.html",
+    "app.js"
+  ]
+}

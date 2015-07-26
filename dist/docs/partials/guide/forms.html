@@ -1,0 +1,382 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/guide/forms.ngdoc?message=docs(guide%2FForms)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<p>Controls (<code>input</code>, <code>select</code>, <code>textarea</code>) are ways for a user to enter data.
+A Form is a collection of controls for the purpose of grouping related controls together.</p>
+<p>Form and controls provide validation services, so that the user can be notified of invalid input.
+This provides a better user experience, because the user gets instant feedback on how to
+correct the error. Keep in mind that while client-side validation plays an important role
+in providing good user experience, it can easily be circumvented and thus can not be trusted.
+Server-side validation is still necessary for a secure application.</p>
+<h1 id="simple-form">Simple form</h1>
+<p>The key directive in understanding two-way data-binding is <a href="api/ng/directive/ngModel">ngModel</a>.
+The <code>ngModel</code> directive provides the two-way data-binding by synchronizing the model to the view,
+as well as view to the model. In addition it provides an <a href="api/ng/type/ngModel.NgModelController">API</a>
+for other directives to augment its behavior.</p>
+<p>
+
+<div>
+  <a ng-click="openPlunkr('examples/example-example31', $event)" class="btn pull-right">
+    <i class="glyphicon glyphicon-edit">&nbsp;</i>
+    Edit in Plunker</a>
+
+  <div class="runnable-example"
+      path="examples/example-example31"
+      module="formExample">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;div ng-controller=&quot;ExampleController&quot;&gt;&#10;  &lt;form novalidate class=&quot;simple-form&quot;&gt;&#10;    Name: &lt;input type=&quot;text&quot; ng-model=&quot;user.name&quot; /&gt;&lt;br /&gt;&#10;    E-mail: &lt;input type=&quot;email&quot; ng-model=&quot;user.email&quot; /&gt;&lt;br /&gt;&#10;    Gender: &lt;input type=&quot;radio&quot; ng-model=&quot;user.gender&quot; value=&quot;male&quot; /&gt;male&#10;    &lt;input type=&quot;radio&quot; ng-model=&quot;user.gender&quot; value=&quot;female&quot; /&gt;female&lt;br /&gt;&#10;    &lt;input type=&quot;button&quot; ng-click=&quot;reset()&quot; value=&quot;Reset&quot; /&gt;&#10;    &lt;input type=&quot;submit&quot; ng-click=&quot;update(user)&quot; value=&quot;Save&quot; /&gt;&#10;  &lt;/form&gt;&#10;  &lt;pre&gt;form = {{user | json}}&lt;/pre&gt;&#10;  &lt;pre&gt;master = {{master | json}}&lt;/pre&gt;&#10;&lt;/div&gt;&#10;&#10;&lt;script&gt;&#10;  angular.module(&#39;formExample&#39;, [])&#10;    .controller(&#39;ExampleController&#39;, [&#39;$scope&#39;, function($scope) {&#10;      $scope.master = {};&#10;&#10;      $scope.update = function(user) {&#10;        $scope.master = angular.copy(user);&#10;      };&#10;&#10;      $scope.reset = function() {&#10;        $scope.user = angular.copy($scope.master);&#10;      };&#10;&#10;      $scope.reset();&#10;    }]);&#10;&lt;/script&gt;</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-example31/index.html" name="example-example31"></iframe>
+  </div>
+</div>
+
+
+</p>
+<p>Note that <code>novalidate</code> is used to disable browser&#39;s native form validation.</p>
+<p>The value of <code>ngModel</code> won&#39;t be set unless it passes validation for the input field.
+For example: inputs of type <code>email</code> must have a value in the form of <code>user@domain</code>.</p>
+<h1 id="using-css-classes">Using CSS classes</h1>
+<p>To allow styling of form as well as controls, <code>ngModel</code>  adds these CSS classes:</p>
+<ul>
+<li><code>ng-valid</code>: the model is valid</li>
+<li><code>ng-invalid</code>: the model is invalid</li>
+<li><code>ng-valid-[key]</code>: for each valid key added by <code>$setValidity</code></li>
+<li><code>ng-invalid-[key]</code>: for each invalid key added by <code>$setValidity</code></li>
+<li><code>ng-pristine</code>: the control hasn&#39;t been interacted with yet</li>
+<li><code>ng-dirty</code>: the control has been interacted with</li>
+<li><code>ng-touched</code>: the control has been blurred</li>
+<li><code>ng-untouched</code>: the control hasn&#39;t been blurred</li>
+<li><code>ng-pending</code>: any <code>$asyncValidators</code> are unfulfilled</li>
+</ul>
+<p>The following example uses the CSS to display validity of each form control.
+In the example both <code>user.name</code> and <code>user.email</code> are required, but are rendered
+with red background only after the input is blurred (loses focus).
+This ensures that the user is not distracted with an error until after interacting with the control,
+and failing to satisfy its validity.</p>
+<p>
+
+<div>
+  <a ng-click="openPlunkr('examples/example-example32', $event)" class="btn pull-right">
+    <i class="glyphicon glyphicon-edit">&nbsp;</i>
+    Edit in Plunker</a>
+
+  <div class="runnable-example"
+      path="examples/example-example32"
+      module="formExample">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;div ng-controller=&quot;ExampleController&quot;&gt;&#10;  &lt;form novalidate class=&quot;css-form&quot;&gt;&#10;    Name: &lt;input type=&quot;text&quot; ng-model=&quot;user.name&quot; required /&gt;&lt;br /&gt;&#10;    E-mail: &lt;input type=&quot;email&quot; ng-model=&quot;user.email&quot; required /&gt;&lt;br /&gt;&#10;    Gender: &lt;input type=&quot;radio&quot; ng-model=&quot;user.gender&quot; value=&quot;male&quot; /&gt;male&#10;    &lt;input type=&quot;radio&quot; ng-model=&quot;user.gender&quot; value=&quot;female&quot; /&gt;female&lt;br /&gt;&#10;    &lt;input type=&quot;button&quot; ng-click=&quot;reset()&quot; value=&quot;Reset&quot; /&gt;&#10;    &lt;input type=&quot;submit&quot; ng-click=&quot;update(user)&quot; value=&quot;Save&quot; /&gt;&#10;  &lt;/form&gt;&#10;&lt;/div&gt;&#10;&#10;&lt;style type=&quot;text/css&quot;&gt;&#10;  .css-form input.ng-invalid.ng-touched {&#10;    background-color: #FA787E;&#10;  }&#10;&#10;  .css-form input.ng-valid.ng-touched {&#10;    background-color: #78FA89;&#10;  }&#10;&lt;/style&gt;&#10;&#10;&lt;script&gt;&#10;  angular.module(&#39;formExample&#39;, [])&#10;    .controller(&#39;ExampleController&#39;, [&#39;$scope&#39;, function($scope) {&#10;      $scope.master = {};&#10;&#10;      $scope.update = function(user) {&#10;        $scope.master = angular.copy(user);&#10;      };&#10;&#10;      $scope.reset = function() {&#10;        $scope.user = angular.copy($scope.master);&#10;      };&#10;&#10;      $scope.reset();&#10;    }]);&#10;&lt;/script&gt;</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-example32/index.html" name="example-example32"></iframe>
+  </div>
+</div>
+
+
+</p>
+<h1 id="binding-to-form-and-control-state">Binding to form and control state</h1>
+<p>A form is an instance of <a href="api/ng/type/form.FormController">FormController</a>.
+The form instance can optionally be published into the scope using the <code>name</code> attribute.</p>
+<p>Similarly, an input control that has the <a href="api/ng/directive/ngModel">ngModel</a> directive holds an
+instance of <a href="api/ng/type/ngModel.NgModelController">NgModelController</a>. Such a control instance
+can be published as a property of the form instance using the <code>name</code> attribute on the input control.
+The name attribute specifies the name of the property on the form instance.</p>
+<p>This implies that the internal state of both the form and the control is available for binding in
+the view using the standard binding primitives.</p>
+<p>This allows us to extend the above example with these features:</p>
+<ul>
+<li>Custom error message displayed after the user interacted with a control (i.e. when <code>$touched</code> is set)</li>
+<li>Custom error message displayed upon submitting the form (<code>$submitted</code> is set), even if the user
+didn&#39;t interact with a control</li>
+</ul>
+<p>
+
+<div>
+  <a ng-click="openPlunkr('examples/example-example33', $event)" class="btn pull-right">
+    <i class="glyphicon glyphicon-edit">&nbsp;</i>
+    Edit in Plunker</a>
+
+  <div class="runnable-example"
+      path="examples/example-example33"
+      module="formExample">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;div ng-controller=&quot;ExampleController&quot;&gt;&#10;  &lt;form name=&quot;form&quot; class=&quot;css-form&quot; novalidate&gt;&#10;    Name:&#10;    &lt;input type=&quot;text&quot; ng-model=&quot;user.name&quot; name=&quot;uName&quot; required=&quot;&quot; /&gt;&#10;    &lt;br /&gt;&#10;    &lt;div ng-show=&quot;form.$submitted || form.uName.$touched&quot;&gt;&#10;      &lt;div ng-show=&quot;form.uName.$error.required&quot;&gt;Tell us your name.&lt;/div&gt;&#10;    &lt;/div&gt;&#10;&#10;    E-mail:&#10;    &lt;input type=&quot;email&quot; ng-model=&quot;user.email&quot; name=&quot;uEmail&quot; required=&quot;&quot; /&gt;&#10;    &lt;br /&gt;&#10;    &lt;div ng-show=&quot;form.$submitted || form.uEmail.$touched&quot;&gt;&#10;      &lt;span ng-show=&quot;form.uEmail.$error.required&quot;&gt;Tell us your email.&lt;/span&gt;&#10;      &lt;span ng-show=&quot;form.uEmail.$error.email&quot;&gt;This is not a valid email.&lt;/span&gt;&#10;    &lt;/div&gt;&#10;&#10;    Gender:&#10;    &lt;input type=&quot;radio&quot; ng-model=&quot;user.gender&quot; value=&quot;male&quot; /&gt;male&#10;    &lt;input type=&quot;radio&quot; ng-model=&quot;user.gender&quot; value=&quot;female&quot; /&gt;female&#10;    &lt;br /&gt;&#10;    &lt;input type=&quot;checkbox&quot; ng-model=&quot;user.agree&quot; name=&quot;userAgree&quot; required=&quot;&quot; /&gt;&#10;&#10;    I agree:&#10;    &lt;input ng-show=&quot;user.agree&quot; type=&quot;text&quot; ng-model=&quot;user.agreeSign&quot; required=&quot;&quot; /&gt;&#10;    &lt;br /&gt;&#10;    &lt;div ng-show=&quot;form.$submitted || form.userAgree.$touched&quot;&gt;&#10;      &lt;div ng-show=&quot;!user.agree || !user.agreeSign&quot;&gt;Please agree and sign.&lt;/div&gt;&#10;    &lt;/div&gt;&#10;&#10;    &lt;input type=&quot;button&quot; ng-click=&quot;reset(form)&quot; value=&quot;Reset&quot; /&gt;&#10;    &lt;input type=&quot;submit&quot; ng-click=&quot;update(user)&quot; value=&quot;Save&quot; /&gt;&#10;  &lt;/form&gt;&#10;&lt;/div&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="script.js"
+      language="js"
+      type="js">
+      <pre><code>angular.module(&#39;formExample&#39;, [])&#10;.controller(&#39;ExampleController&#39;, [&#39;$scope&#39;, function($scope) {&#10;  $scope.master = {};&#10;&#10;  $scope.update = function(user) {&#10;    $scope.master = angular.copy(user);&#10;  };&#10;&#10;  $scope.reset = function(form) {&#10;    if (form) {&#10;      form.$setPristine();&#10;      form.$setUntouched();&#10;    }&#10;    $scope.user = angular.copy($scope.master);&#10;  };&#10;&#10;  $scope.reset();&#10;}]);</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-example33/index.html" name="example-example33"></iframe>
+  </div>
+</div>
+
+
+</p>
+<h1 id="custom-model-update-triggers">Custom model update triggers</h1>
+<p>By default, any change to the content will trigger a model update and form validation. You can
+override this behavior using the <a href="api/ng/directive/ngModelOptions">ngModelOptions</a> directive to
+bind only to specified list of events. I.e. <code>ng-model-options=&quot;{ updateOn: &#39;blur&#39; }&quot;</code> will update
+and validate only after the control loses focus. You can set several events using a space delimited
+list. I.e. <code>ng-model-options=&quot;{ updateOn: &#39;mousedown blur&#39; }&quot;</code></p>
+<p><img alt="animation showing debounced input" src="img/guide/forms-update-on-blur.gif"></p>
+<p>If you want to keep the default behavior and just add new events that may trigger the model update
+and validation, add &quot;default&quot; as one of the specified events.</p>
+<p>I.e. <code>ng-model-options=&quot;{ updateOn: &#39;default blur&#39; }&quot;</code></p>
+<p>The following example shows how to override immediate updates. Changes on the inputs within the form
+will update the model only when the control loses focus (blur event).</p>
+<p>
+
+<div>
+  <a ng-click="openPlunkr('examples/example-example34', $event)" class="btn pull-right">
+    <i class="glyphicon glyphicon-edit">&nbsp;</i>
+    Edit in Plunker</a>
+
+  <div class="runnable-example"
+      path="examples/example-example34"
+      module="customTriggerExample">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;div ng-controller=&quot;ExampleController&quot;&gt;&#10;  &lt;form&gt;&#10;    Name:&#10;    &lt;input type=&quot;text&quot; ng-model=&quot;user.name&quot; ng-model-options=&quot;{ updateOn: &#39;blur&#39; }&quot; /&gt;&lt;br /&gt;&#10;    Other data:&#10;    &lt;input type=&quot;text&quot; ng-model=&quot;user.data&quot; /&gt;&lt;br /&gt;&#10;  &lt;/form&gt;&#10;  &lt;pre&gt;username = &quot;{{user.name}}&quot;&lt;/pre&gt;&#10;  &lt;pre&gt;userdata = &quot;{{user.data}}&quot;&lt;/pre&gt;&#10;&lt;/div&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="script.js"
+      language="js"
+      type="js">
+      <pre><code>angular.module(&#39;customTriggerExample&#39;, [])&#10;.controller(&#39;ExampleController&#39;, [&#39;$scope&#39;, function($scope) {&#10;  $scope.user = {};&#10;}]);</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-example34/index.html" name="example-example34"></iframe>
+  </div>
+</div>
+
+
+</p>
+<h1 id="non-immediate-debounced-model-updates">Non-immediate (debounced) model updates</h1>
+<p>You can delay the model update/validation by using the <code>debounce</code> key with the
+<a href="api/ng/directive/ngModelOptions">ngModelOptions</a> directive. This delay will also apply to
+parsers, validators and model flags like <code>$dirty</code> or <code>$pristine</code>.</p>
+<p><img alt="animation showing debounced input" src="img/guide/forms-debounce.gif"></p>
+<p>I.e. <code>ng-model-options=&quot;{ debounce: 500 }&quot;</code> will wait for half a second since
+the last content change before triggering the model update and form validation.</p>
+<p>If custom triggers are used, custom debouncing timeouts can be set for each event using an object
+in <code>debounce</code>. This can be useful to force immediate updates on some specific circumstances
+(like blur events).</p>
+<p>I.e. <code>ng-model-options=&quot;{ updateOn: &#39;default blur&#39;, debounce: { default: 500, blur: 0 } }&quot;</code></p>
+<p>If those attributes are added to an element, they will be applied to all the child elements and
+controls that inherit from it unless they are overridden.</p>
+<p>This example shows how to debounce model changes. Model will be updated only 250 milliseconds
+after last change.</p>
+<p>
+
+<div>
+  <a ng-click="openPlunkr('examples/example-example35', $event)" class="btn pull-right">
+    <i class="glyphicon glyphicon-edit">&nbsp;</i>
+    Edit in Plunker</a>
+
+  <div class="runnable-example"
+      path="examples/example-example35"
+      module="debounceExample">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;div ng-controller=&quot;ExampleController&quot;&gt;&#10;  &lt;form&gt;&#10;    Name:&#10;    &lt;input type=&quot;text&quot; ng-model=&quot;user.name&quot; ng-model-options=&quot;{ debounce: 250 }&quot; /&gt;&lt;br /&gt;&#10;  &lt;/form&gt;&#10;  &lt;pre&gt;username = &quot;{{user.name}}&quot;&lt;/pre&gt;&#10;&lt;/div&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="script.js"
+      language="js"
+      type="js">
+      <pre><code>angular.module(&#39;debounceExample&#39;, [])&#10;.controller(&#39;ExampleController&#39;, [&#39;$scope&#39;, function($scope) {&#10;  $scope.user = {};&#10;}]);</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-example35/index.html" name="example-example35"></iframe>
+  </div>
+</div>
+
+
+</p>
+<h1 id="custom-validation">Custom Validation</h1>
+<p>Angular provides basic implementation for most common HTML5 <a href="api/ng/directive/input">input</a>
+types: (<a href="api/ng/input/input[text]">text</a>, <a href="api/ng/input/input[number]">number</a>, <a href="api/ng/input/input[url]">url</a>,
+<a href="api/ng/input/input[email]">email</a>, <a href="api/ng/input/input[date]">date</a>, <a href="api/ng/input/input[radio]">radio</a>, <a href="api/ng/input/input[checkbox]">checkbox</a>),
+as well as some directives for validation (<code>required</code>, <code>pattern</code>, <code>minlength</code>, <code>maxlength</code>,
+<code>min</code>, <code>max</code>).</p>
+<p>With a custom directive, you can add your own validation functions to the <code>$validators</code> object on
+the <a href="api/ng/type/ngModel.NgModelController"><code>ngModelController</code></a>. To get a hold of the controller,
+you require it in the directive as shown in the example below.</p>
+<p>Each function in the <code>$validators</code> object receives the <code>modelValue</code> and the <code>viewValue</code>
+as parameters. Angular will then call <code>$setValidity</code> internally with the function&#39;s return value
+(<code>true</code>: valid, <code>false</code>: invalid). The validation functions are executed every time an input
+is changed (<code>$setViewValue</code> is called) or whenever the bound <code>model</code> changes.
+Validation happens after successfully running <code>$parsers</code> and <code>$formatters</code>, respectively.
+Failed validators are stored by key in
+<a href="api/ng/type/ngModel.NgModelController#$error"><code>ngModelController.$error</code></a>.</p>
+<p>Additionally, there is the <code>$asyncValidators</code> object which handles asynchronous validation,
+such as making an <code>$http</code> request to the backend. Functions added to the object must return
+a promise that must be <code>resolved</code> when valid or <code>rejected</code> when invalid.
+In-progress async validations are stored by key in
+<a href="api/ng/type/ngModel.NgModelController#$pending"><code>ngModelController.$pending</code></a>.</p>
+<p>In the following example we create two directives:</p>
+<ul>
+<li><p>An <code>integer</code> directive that validates whether the input is a valid integer. For example,
+<code>1.23</code> is an invalid value, since it contains a fraction. Note that we validate the viewValue
+(the string value of the control), and not the modelValue. This is because input[number] converts
+the viewValue to a number when running the <code>$parsers</code>.</p>
+</li>
+<li><p>A <code>username</code> directive that asynchronously checks if a user-entered value is already taken.
+We mock the server request with a <code>$q</code> deferred.</p>
+</li>
+</ul>
+<p>
+
+<div>
+  <a ng-click="openPlunkr('examples/example-example36', $event)" class="btn pull-right">
+    <i class="glyphicon glyphicon-edit">&nbsp;</i>
+    Edit in Plunker</a>
+
+  <div class="runnable-example"
+      path="examples/example-example36"
+      module="form-example1">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;form name=&quot;form&quot; class=&quot;css-form&quot; novalidate&gt;&#10;  &lt;div&gt;&#10;    Size (integer 0 - 10):&#10;    &lt;input type=&quot;number&quot; ng-model=&quot;size&quot; name=&quot;size&quot;&#10;           min=&quot;0&quot; max=&quot;10&quot; integer /&gt;{{size}}&lt;br /&gt;&#10;    &lt;span ng-show=&quot;form.size.$error.integer&quot;&gt;The value is not a valid integer!&lt;/span&gt;&#10;    &lt;span ng-show=&quot;form.size.$error.min || form.size.$error.max&quot;&gt;&#10;      The value must be in range 0 to 10!&lt;/span&gt;&#10;  &lt;/div&gt;&#10;&#10;  &lt;div&gt;&#10;    Username:&#10;    &lt;input type=&quot;text&quot; ng-model=&quot;name&quot; name=&quot;name&quot; username /&gt;{{name}}&lt;br /&gt;&#10;    &lt;span ng-show=&quot;form.name.$pending.username&quot;&gt;Checking if this name is available...&lt;/span&gt;&#10;    &lt;span ng-show=&quot;form.name.$error.username&quot;&gt;This username is already taken!&lt;/span&gt;&#10;  &lt;/div&gt;&#10;&#10;&lt;/form&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="script.js"
+      language="js"
+      type="js">
+      <pre><code>var app = angular.module(&#39;form-example1&#39;, []);&#10;&#10;var INTEGER_REGEXP = /^\-?\d+$/;&#10;app.directive(&#39;integer&#39;, function() {&#10;  return {&#10;    require: &#39;ngModel&#39;,&#10;    link: function(scope, elm, attrs, ctrl) {&#10;      ctrl.$validators.integer = function(modelValue, viewValue) {&#10;        if (ctrl.$isEmpty(modelValue)) {&#10;          // consider empty models to be valid&#10;          return true;&#10;        }&#10;&#10;        if (INTEGER_REGEXP.test(viewValue)) {&#10;          // it is valid&#10;          return true;&#10;        }&#10;&#10;        // it is invalid&#10;        return false;&#10;      };&#10;    }&#10;  };&#10;});&#10;&#10;app.directive(&#39;username&#39;, function($q, $timeout) {&#10;  return {&#10;    require: &#39;ngModel&#39;,&#10;    link: function(scope, elm, attrs, ctrl) {&#10;    var usernames = [&#39;Jim&#39;, &#39;John&#39;, &#39;Jill&#39;, &#39;Jackie&#39;];&#10;&#10;      ctrl.$asyncValidators.username = function(modelValue, viewValue) {&#10;&#10;        if (ctrl.$isEmpty(modelValue)) {&#10;          // consider empty model valid&#10;          return $q.when();&#10;        }&#10;&#10;        var def = $q.defer();&#10;&#10;        $timeout(function() {&#10;          // Mock a delayed response&#10;          if (usernames.indexOf(modelValue) === -1) {&#10;            // The username is available&#10;            def.resolve();&#10;          } else {&#10;            def.reject();&#10;          }&#10;&#10;        }, 2000);&#10;&#10;        return def.promise;&#10;      };&#10;    }&#10;  };&#10;});</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-example36/index.html" name="example-example36"></iframe>
+  </div>
+</div>
+
+
+</p>
+<h1 id="modifying-built-in-validators">Modifying built-in validators</h1>
+<p>Since Angular itself uses <code>$validators</code>, you can easily replace or remove built-in validators,
+should you find it necessary. The following example shows you how to overwrite the email validator
+in <code>input[email]</code> from a custom directive so that it requires a specific top-level domain,
+<code>example.com</code> to be present.
+Note that you can alternatively use <code>ng-pattern</code> to further restrict the validation.</p>
+<p>
+
+<div>
+  <a ng-click="openPlunkr('examples/example-example37', $event)" class="btn pull-right">
+    <i class="glyphicon glyphicon-edit">&nbsp;</i>
+    Edit in Plunker</a>
+
+  <div class="runnable-example"
+      path="examples/example-example37"
+      module="form-example-modify-validators">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;form name=&quot;form&quot; class=&quot;css-form&quot; novalidate&gt;&#10;  &lt;div&gt;&#10;    Overwritten Email:&#10;    &lt;input type=&quot;email&quot; ng-model=&quot;myEmail&quot; overwrite-email name=&quot;overwrittenEmail&quot; /&gt;&#10;    &lt;span ng-show=&quot;form.overwrittenEmail.$error.email&quot;&gt;This email format is invalid!&lt;/span&gt;&lt;br&gt;&#10;    Model: {{myEmail}}&#10;    &lt;/div&gt;&#10;&lt;/form&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="script.js"
+      language="js"
+      type="js">
+      <pre><code>var app = angular.module(&#39;form-example-modify-validators&#39;, []);&#10;&#10;app.directive(&#39;overwriteEmail&#39;, function() {&#10;  var EMAIL_REGEXP = /^[a-z0-9!#$%&amp;&#39;*+/=?^_`{|}~.-]+@example\.com$/i;&#10;&#10;  return {&#10;    require: &#39;ngModel&#39;,&#10;    restrict: &#39;&#39;,&#10;    link: function(scope, elm, attrs, ctrl) {&#10;      // only apply the validator if ngModel is present and Angular has added the email validator&#10;      if (ctrl &amp;&amp; ctrl.$validators.email) {&#10;&#10;        // this will overwrite the default Angular email validator&#10;        ctrl.$validators.email = function(modelValue) {&#10;          return ctrl.$isEmpty(modelValue) || EMAIL_REGEXP.test(modelValue);&#10;        };&#10;      }&#10;    }&#10;  };&#10;});</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-example37/index.html" name="example-example37"></iframe>
+  </div>
+</div>
+
+
+</p>
+<h1 id="implementing-custom-form-controls-using-ngmodel-">Implementing custom form controls (using <code>ngModel</code>)</h1>
+<p>Angular implements all of the basic HTML form controls (<a href="api/ng/directive/input">input</a>,
+<a href="api/ng/directive/select">select</a>, <a href="api/ng/directive/textarea">textarea</a>),
+which should be sufficient for most cases. However, if you need more flexibility,
+you can write your own form control as a directive.</p>
+<p>In order for custom control to work with <code>ngModel</code> and to achieve two-way data-binding it needs to:</p>
+<ul>
+<li>implement <code>$render</code> method, which is responsible for rendering the data after it passed the
+<a href="api/ng/type/ngModel.NgModelController#$formatters"><code>NgModelController.$formatters</code></a>,</li>
+<li>call <code>$setViewValue</code> method, whenever the user interacts with the control and model
+needs to be updated. This is usually done inside a DOM Event listener.</li>
+</ul>
+<p>See <a href="guide/directive"><code>$compileProvider.directive</code></a> for more info.</p>
+<p>The following example shows how to add two-way data-binding to contentEditable elements.</p>
+<p>
+
+<div>
+  <a ng-click="openPlunkr('examples/example-example38', $event)" class="btn pull-right">
+    <i class="glyphicon glyphicon-edit">&nbsp;</i>
+    Edit in Plunker</a>
+
+  <div class="runnable-example"
+      path="examples/example-example38"
+      module="form-example2">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;div contentEditable=&quot;true&quot; ng-model=&quot;content&quot; title=&quot;Click to edit&quot;&gt;Some&lt;/div&gt;&#10;&lt;pre&gt;model = {{content}}&lt;/pre&gt;&#10;&#10;&lt;style type=&quot;text/css&quot;&gt;&#10;  div[contentEditable] {&#10;    cursor: pointer;&#10;    background-color: #D0D0D0;&#10;  }&#10;&lt;/style&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="script.js"
+      language="js"
+      type="js">
+      <pre><code>angular.module(&#39;form-example2&#39;, []).directive(&#39;contenteditable&#39;, function() {&#10;  return {&#10;    require: &#39;ngModel&#39;,&#10;    link: function(scope, elm, attrs, ctrl) {&#10;      // view -&gt; model&#10;      elm.on(&#39;blur&#39;, function() {&#10;        scope.$apply(function() {&#10;          ctrl.$setViewValue(elm.html());&#10;        });&#10;      });&#10;&#10;      // model -&gt; view&#10;      ctrl.$render = function() {&#10;        elm.html(ctrl.$viewValue);&#10;      };&#10;&#10;      // load init value from DOM&#10;      ctrl.$setViewValue(elm.html());&#10;    }&#10;  };&#10;});</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-example38/index.html" name="example-example38"></iframe>
+  </div>
+</div>
+
+
+</p>
+
+

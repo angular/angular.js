@@ -1,0 +1,9 @@
+{
+  "name": "example-NgModelController",
+  "files": [
+    "index-production.html",
+    "style.css",
+    "script.js",
+    "protractor.js"
+  ]
+}

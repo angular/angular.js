@@ -1,0 +1,342 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/guide/unit-testing.ngdoc?message=docs(guide%2FUnit Testing)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<p>JavaScript is a dynamically typed language which comes with great power of expression, but it also
+comes with almost no help from the compiler. For this reason we feel very strongly that any code
+written in JavaScript needs to come with a strong set of tests. We have built many features into
+Angular which makes testing your Angular applications easy. So there is no excuse for not testing.</p>
+<h2 id="separation-of-concerns">Separation of Concerns</h2>
+<p>Unit testing, as the name implies, is about testing individual units of code. Unit tests try to
+answer questions such as &quot;Did I think about the logic correctly?&quot; or &quot;Does the sort function order
+the list in the right order?&quot;</p>
+<p>In order to answer such a question it is very important that we can isolate the unit of code under test.
+That is because when we are testing the sort function we don&#39;t want to be forced into creating
+related pieces such as the DOM elements, or making any XHR calls to fetch the data to sort.</p>
+<p>While this may seem obvious it can be very difficult to call an individual function on a
+typical project. The reason is that the developers often mix concerns resulting in a
+piece of code which does everything. It makes an XHR request, it sorts the response data and then it
+manipulates the DOM.</p>
+<p>With Angular we try to make it easy for you to do the right thing, and so we
+provide dependency injection for your XHR requests, which can be mocked, and we provide abstractions which
+allow you to test your model without having to resort to manipulating the DOM. The test can then
+assert that the data has been sorted without having to create or look at the state of the DOM or
+wait for any XHR requests to return data. The individual sort function can be tested in isolation.</p>
+<h2 id="with-great-power-comes-great-responsibility">With great power comes great responsibility</h2>
+<p>Angular is written with testability in mind, but it still requires that you do the right thing.
+We tried to make the right thing easy, but if you ignore these guidelines you may end up with an
+untestable application.</p>
+<h2 id="dependency-injection">Dependency Injection</h2>
+<p>Angular comes with <a href="guide/di">dependency injection</a> built-in, which makes testing components much
+easier, because you can pass in a component&#39;s dependencies and stub or mock them as you wish.</p>
+<p>Components that have their dependencies injected allow them to be easily mocked on a test by
+test basis, without having to mess with any global variables that could inadvertently affect
+another test.</p>
+<h2 id="additional-tools-for-testing-angular-applications">Additional tools for testing Angular applications</h2>
+<p>For testing Angular applications there are certain tools that you should use that will make testing much
+easier to set up and run.</p>
+<h3 id="karma">Karma</h3>
+<p><a href="http://karma-runner.github.io/">Karma</a> is a JavaScript command line tool that can be used to spawn
+a web server which loads your application&#39;s source code and executes your tests. You can configure
+Karma to run against a number of browsers, which is useful for being confident that your application
+works on all browsers you need to support. Karma is executed on the command line and will display
+the results of your tests on the command line once they have run in the browser.</p>
+<p>Karma is a NodeJS application, and should be installed through npm. Full installation instructions
+are available on <a href="http://karma-runner.github.io/0.12/intro/installation.html">the Karma website</a>.</p>
+<h3 id="jasmine">Jasmine</h3>
+<p><a href="http://jasmine.github.io/1.3/introduction.html">Jasmine</a> is a test driven development framework for
+JavaScript that has become the most popular choice for testing Angular applications. Jasmine
+provides functions to help with structuring your tests and also making assertions. As your tests
+grow, keeping them well structured and documented is vital, and Jasmine helps achieve this.</p>
+<p>In Jasmine we use the <code>describe</code> function to group our tests together:</p>
+<pre><code class="lang-js">describe(&quot;sorting the list of users&quot;, function() {
+  // individual tests go here
+});
+</code></pre>
+<p>And then each individual test is defined within a call to the <code>it</code> function:</p>
+<pre><code class="lang-js">describe(&#39;sorting the list of users&#39;, function() {
+  it(&#39;sorts in descending order by default&#39;, function() {
+    // your test assertion goes here
+  });
+});
+</code></pre>
+<p>Grouping related tests within <code>describe</code> blocks and describing each individual test within an
+<code>it</code> call keeps your tests self documenting.</p>
+<p>Finally, Jasmine provides matchers which let you make assertions:</p>
+<pre><code class="lang-js">describe(&#39;sorting the list of users&#39;, function() {
+  it(&#39;sorts in descending order by default&#39;, function() {
+    var users = [&#39;jack&#39;, &#39;igor&#39;, &#39;jeff&#39;];
+    var sorted = sortUsers(users);
+    expect(sorted).toEqual([&#39;jeff&#39;, &#39;jack&#39;, &#39;igor&#39;]);
+  });
+});
+</code></pre>
+<p>Jasmine comes with a number of matchers that help you make a variety of assertions. You should <a href="http://jasmine.github.io/1.3/introduction.html#section-Matchers">read
+the Jasmine documentation</a> to see
+what they are. To use Jasmine with Karma, we use the
+<a href="https://github.com/karma-runner/karma-jasmine">karma-jasmine</a> test runner.</p>
+<h3 id="angular-mocks">angular-mocks</h3>
+<p>Angular also provides the <a href="api/ngMock"><code>ngMock</code></a> module, which provides mocking for your tests. This is used
+to inject and mock Angular services within unit tests. In addition, it is able to extend other
+modules so they are synchronous. Having tests synchronous keeps them much cleaner and easier to work
+with. One of the most useful parts of ngMock is <a href="api/ngMock/service/$httpBackend"><code>$httpBackend</code></a>, which lets us mock XHR
+requests in tests, and return sample data instead.</p>
+<h2 id="testing-a-controller">Testing a Controller</h2>
+<p>Because Angular separates logic from the view layer, it keeps controllers easy to test. Let&#39;s take a
+look at how we might test the controller below, which provides <code>$scope.grade</code>, which sets a property
+on the scope based on the length of the password.</p>
+<pre><code class="lang-js">angular.module(&#39;app&#39;, [])
+.controller(&#39;PasswordController&#39;, function PasswordController($scope) {
+  $scope.password = &#39;&#39;;
+  $scope.grade = function() {
+    var size = $scope.password.length;
+    if (size &gt; 8) {
+      $scope.strength = &#39;strong&#39;;
+    } else if (size &gt; 3) {
+      $scope.strength = &#39;medium&#39;;
+    } else {
+      $scope.strength = &#39;weak&#39;;
+    }
+  };
+});
+</code></pre>
+<p>Because controllers are not available on the global scope, we need to use <a href="api/ngMock/function/angular.mock.inject"><code>angular.mock.inject</code></a> to inject our controller first. The first step is to use the <code>module</code> function,
+which is provided by angular-mocks. This loads in the module it&#39;s given, so it is available in your
+tests. We pass this into <code>beforeEach</code>, which is a function Jasmine provides that lets us run code
+before each test. Then we can use <code>inject</code> to access <code>$controller</code>, the service that is responsible
+for instantiating controllers.</p>
+<pre><code class="lang-js">describe(&#39;PasswordController&#39;, function() {
+  beforeEach(module(&#39;app&#39;));
+
+  var $controller;
+
+  beforeEach(inject(function(_$controller_){
+    // The injector unwraps the underscores (_) from around the parameter names when matching
+    $controller = _$controller_;
+  }));
+
+  describe(&#39;$scope.grade&#39;, function() {
+    it(&#39;sets the strength to &quot;strong&quot; if the password length is &gt;8 chars&#39;, function() {
+      var $scope = {};
+      var controller = $controller(&#39;PasswordController&#39;, { $scope: $scope });
+      $scope.password = &#39;longerthaneightchars&#39;;
+      $scope.grade();
+      expect($scope.strength).toEqual(&#39;strong&#39;);
+    });
+  });
+});
+</code></pre>
+<p>Notice how by nesting the <code>describe</code> calls and being descriptive when calling them with strings, the
+test is very clear. It documents exactly what it is testing, and at a glance you can quickly see
+what is happening. Now let&#39;s add the test for when the password is less than three characters, which
+should see <code>$scope.strength</code> set to &quot;weak&quot;:</p>
+<pre><code class="lang-js">describe(&#39;PasswordController&#39;, function() {
+  beforeEach(module(&#39;app&#39;));
+
+  var $controller;
+
+  beforeEach(inject(function(_$controller_){
+    // The injector unwraps the underscores (_) from around the parameter names when matching
+    $controller = _$controller_;
+  }));
+
+  describe(&#39;$scope.grade&#39;, function() {
+    it(&#39;sets the strength to &quot;strong&quot; if the password length is &gt;8 chars&#39;, function() {
+      var $scope = {};
+      var controller = $controller(&#39;PasswordController&#39;, { $scope: $scope });
+      $scope.password = &#39;longerthaneightchars&#39;;
+      $scope.grade();
+      expect($scope.strength).toEqual(&#39;strong&#39;);
+    });
+
+    it(&#39;sets the strength to &quot;weak&quot; if the password length &lt;3 chars&#39;, function() {
+      var $scope = {};
+      var controller = $controller(&#39;PasswordController&#39;, { $scope: $scope });
+      $scope.password = &#39;a&#39;;
+      $scope.grade();
+      expect($scope.strength).toEqual(&#39;weak&#39;);
+    });
+  });
+});
+</code></pre>
+<p>Now we have two tests, but notice the duplication between the tests. Both have to
+create the <code>$scope</code> variable and create the controller. As we add new tests, this duplication is
+only going to get worse. Thankfully, Jasmine provides <code>beforeEach</code>, which lets us run a function
+before each individual test. Let&#39;s see how that would tidy up our tests:</p>
+<pre><code class="lang-js">describe(&#39;PasswordController&#39;, function() {
+  beforeEach(module(&#39;app&#39;));
+
+  var $controller;
+
+  beforeEach(inject(function(_$controller_){
+    // The injector unwraps the underscores (_) from around the parameter names when matching
+    $controller = _$controller_;
+  }));
+
+  describe(&#39;$scope.grade&#39;, function() {
+    var $scope, controller;
+
+    beforeEach(function() {
+      $scope = {};
+      controller = $controller(&#39;PasswordController&#39;, { $scope: $scope });
+    });
+
+    it(&#39;sets the strength to &quot;strong&quot; if the password length is &gt;8 chars&#39;, function() {
+      $scope.password = &#39;longerthaneightchars&#39;;
+      $scope.grade();
+      expect($scope.strength).toEqual(&#39;strong&#39;);
+    });
+
+    it(&#39;sets the strength to &quot;weak&quot; if the password length &lt;3 chars&#39;, function() {
+      $scope.password = &#39;a&#39;;
+      $scope.grade();
+      expect($scope.strength).toEqual(&#39;weak&#39;);
+    });
+  });
+});
+</code></pre>
+<p>We&#39;ve moved the duplication out and into the <code>beforeEach</code> block. Each individual test now
+only contains the code specific to that test, and not code that is general across all tests. As you
+expand your tests, keep an eye out for locations where you can use <code>beforeEach</code> to tidy up tests.
+<code>beforeEach</code> isn&#39;t the only function of this sort that Jasmine provides, and the <a href="http://jasmine.github.io/1.3/introduction.html#section-Setup_and_Teardown">documentation
+lists the others</a>.</p>
+<h2 id="testing-filters">Testing Filters</h2>
+<p><a href="api/ng/provider/$filterProvider">Filters</a> are functions which transform the data into a user readable
+format. They are important because they remove the formatting responsibility from the application
+logic, further simplifying the application logic.</p>
+<pre><code class="lang-js">myModule.filter(&#39;length&#39;, function() {
+  return function(text) {
+    return (&#39;&#39; + (text || &#39;&#39;)).length;
+  }
+});
+
+describe(&#39;length filter&#39;, function() {
+  it(&#39;returns 0 when given null&#39;, function() {
+    var length = $filter(&#39;length&#39;);
+    expect(length(null)).toEqual(0);
+  });
+
+  it(&#39;returns the correct value when given a string of chars&#39;, function() {
+    var length = $filter(&#39;length&#39;);
+    expect(length(&#39;abc&#39;)).toEqual(3);
+  });
+});
+</code></pre>
+<h2 id="testing-directives">Testing Directives</h2>
+<p>Directives in angular are responsible for encapsulating complex functionality within custom HTML tags,
+attributes, classes or comments. Unit tests are very important for directives because the components
+you create with directives may be used throughout your application and in many different contexts.</p>
+<h3 id="simple-html-element-directive">Simple HTML Element Directive</h3>
+<p>Let&#39;s start with an angular app with no dependencies.</p>
+<pre><code class="lang-js">var app = angular.module(&#39;myApp&#39;, []);
+</code></pre>
+<p>Now we can add a directive to our app.</p>
+<pre><code class="lang-js">app.directive(&#39;aGreatEye&#39;, function () {
+    return {
+        restrict: &#39;E&#39;,
+        replace: true,
+        template: &#39;&lt;h1&gt;lidless, wreathed in flame, {{1 + 1}} times&lt;/h1&gt;&#39;
+    };
+});
+</code></pre>
+<p>This directive is used as a tag <code>&lt;a-great-eye&gt;&lt;/a-great-eye&gt;</code>. It replaces the entire tag with the
+template <code>&lt;h1&gt;lidless, wreathed in flame, {{1 + 1}} times&lt;/h1&gt;</code>. Now we are going to write a jasmine unit test to
+verify this functionality. Note that the expression <code>{{1 + 1}}</code> times will also be evaluated in the rendered content.</p>
+<pre><code class="lang-js">describe(&#39;Unit testing great quotes&#39;, function() {
+  var $compile,
+      $rootScope;
+
+  // Load the myApp module, which contains the directive
+  beforeEach(module(&#39;myApp&#39;));
+
+  // Store references to $rootScope and $compile
+  // so they are available to all tests in this describe block
+  beforeEach(inject(function(_$compile_, _$rootScope_){
+    // The injector unwraps the underscores (_) from around the parameter names when matching
+    $compile = _$compile_;
+    $rootScope = _$rootScope_;
+  }));
+
+  it(&#39;Replaces the element with the appropriate content&#39;, function() {
+    // Compile a piece of HTML containing the directive
+    var element = $compile(&quot;&lt;a-great-eye&gt;&lt;/a-great-eye&gt;&quot;)($rootScope);
+    // fire all the watches, so the scope expression {{1 + 1}} will be evaluated
+    $rootScope.$digest();
+    // Check that the compiled element contains the templated content
+    expect(element.html()).toContain(&quot;lidless, wreathed in flame, 2 times&quot;);
+  });
+});
+</code></pre>
+<p>We inject the $compile service and $rootScope before each jasmine test. The $compile service is used
+to render the aGreatEye directive. After rendering the directive we ensure that the directive has
+replaced the content and &quot;lidless, wreathed in flame, 2 times&quot; is present.</p>
+<div class="alert alert-info">
+<strong>Underscore notation</strong>:
+
+The use of the underscore notation (e.g.: <code>_$rootScope_</code>) is a convention wide spread in AngularJS
+community to keep the variable names clean in your tests. That&#39;s why the
+<a href="api/auto/service/$injector"><code>$injector</code></a> strips out the leading and the trailing underscores when
+matching the parameters. The underscore rule applies <strong><em>only</em></strong> if the name starts <strong>and</strong> ends with
+exactly one underscore, otherwise no replacing happens.
+</div>
+
+<h3 id="testing-transclusion-directives">Testing Transclusion Directives</h3>
+<p>Directives that use transclusion are treated specially by the compiler.  Before their compile
+function is called, the contents of the directive&#39;s element are removed from the element and
+provided via a transclusion function.  The directive&#39;s template is then appended to the directive&#39;s
+element, to which it can then insert the transcluded content into its template.</p>
+<p>Before compilation:</p>
+<pre><code class="lang-html">&lt;div translude-directive&gt;
+  Some transcluded content
+&lt;/div&gt;
+</code></pre>
+<p>After transclusion extraction:</p>
+<pre><code class="lang-html">&lt;div transclude-directive&gt;&lt;/div&gt;
+</code></pre>
+<p>After compilation:</p>
+<pre><code class="lang-html">&lt;div transclude-directive&gt;
+  Some Template
+  &lt;span ng-transclude&gt;Some transcluded content&lt;/span&gt;
+&lt;/div&gt;
+</code></pre>
+<p>If the directive is using &#39;element&#39; transclusion, the compiler will actually remove the
+directive&#39;s entire element from the DOM and replace it with a comment node. The compiler then
+inserts the directive&#39;s template &quot;after&quot; this comment node, as a sibling.</p>
+<p>Before compilation</p>
+<pre><code class="lang-html">&lt;div element-transclude&gt;
+  Some Content
+&lt;/div&gt;
+</code></pre>
+<p>After transclusion extraction</p>
+<pre><code class="lang-html">&lt;!-- elementTransclude --&gt;
+</code></pre>
+<p>After compilation:</p>
+<pre><code class="lang-html">&lt;!-- elementTransclude --&gt;
+&lt;div element-transclude&gt;
+  Some Template
+  &lt;span ng-transclude&gt;Some transcluded content&lt;/span&gt;
+&lt;/div&gt;
+</code></pre>
+<p>It is important to be aware of this when writing tests for directives that use &#39;element&#39;
+transclusion.  If you place the directive on the root element of the DOM fragment that you
+pass to <a href="api/ng/service/$compile"><code>$compile</code></a>, then the DOM node returned from the linking function will be the
+comment node and you will lose the ability to access the template and transcluded content.</p>
+<pre><code class="lang-javascript">var node = $compile(&#39;&lt;div element-transclude&gt;&lt;/div&gt;&#39;)($rootScope);
+expect(node[0].nodeType).toEqual(node.COMMENT_NODE);
+expect(node[1]).toBeUndefined();
+</code></pre>
+<p>To cope with this you simply ensure that your &#39;element&#39; transclude directive is wrapped in an
+element, such as a <code>&lt;div&gt;</code>.</p>
+<pre><code class="lang-javascript">var node = $compile(&#39;&lt;div&gt;&lt;div element-transclude&gt;&lt;/div&gt;&lt;/div&gt;&#39;)($rootScope);
+var contents = node.contents();
+expect(contents[0].nodeType).toEqual(node.COMMENT_NODE);
+expect(contents[1].nodeType).toEqual(node.ELEMENT_NODE);
+</code></pre>
+<h3 id="testing-directives-with-external-templates">Testing Directives With External Templates</h3>
+<p>If your directive uses <code>templateUrl</code>, consider using
+<a href="https://github.com/karma-runner/karma-ng-html2js-preprocessor">karma-ng-html2js-preprocessor</a>
+to pre-compile HTML templates and thus avoid having to load them over HTTP during test execution.
+Otherwise you may run into issues if the test directory hierarchy differs from the application&#39;s.</p>
+<h2 id="sample-project">Sample project</h2>
+<p>See the <a href="https://github.com/angular/angular-seed">angular-seed</a> project for an example.</p>
+
+

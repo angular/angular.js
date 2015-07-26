@@ -1,0 +1,108 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/tutorial/step_09.ngdoc?message=docs(tutorial%2F9 - Filters)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<ul doc-tutorial-nav="9"></ul>
+
+<p>In this step you will learn how to create your own custom display filter.</p>
+<ul>
+<li>In the previous step, the details page displayed either &quot;true&quot; or &quot;false&quot; to indicate whether
+certain phone features were present or not. We have used a custom filter to convert those text
+strings into glyphs: ✓ for &quot;true&quot;, and ✘ for &quot;false&quot;. Let&#39;s see what the filter code looks like.</li>
+</ul>
+<div doc-tutorial-reset="9"></div>
+
+
+<h2 id="custom-filter">Custom Filter</h2>
+<p>In order to create a new filter, you are going to create a <code>phonecatFilters</code> module and register
+your custom filter with this module:</p>
+<p><strong><code>app/js/filters.js</code>:</strong></p>
+<pre><code class="lang-js">angular.module(&#39;phonecatFilters&#39;, []).filter(&#39;checkmark&#39;, function() {
+  return function(input) {
+    return input ? &#39;\u2713&#39; : &#39;\u2718&#39;;
+  };
+});
+</code></pre>
+<p>The name of our filter is &quot;checkmark&quot;. The <code>input</code> evaluates to either <code>true</code> or <code>false</code>, and we
+return one of the two unicode characters we have chosen to represent true (<code>\u2713</code> -&gt; ✓) or false (<code>\u2718</code> -&gt; ✘).</p>
+<p>Now that our filter is ready, we need to register the <code>phonecatFilters</code> module as a dependency for
+our main <code>phonecatApp</code> module.</p>
+<p><strong><code>app/js/app.js</code>:</strong></p>
+<pre><code class="lang-js">...
+angular.module(&#39;phonecatApp&#39;, [&#39;ngRoute&#39;,&#39;phonecatControllers&#39;,&#39;phonecatFilters&#39;]);
+...
+</code></pre>
+<h2 id="template">Template</h2>
+<p>Since the filter code lives in the <code>app/js/filters.js</code> file, we need to include this file in our
+layout template.</p>
+<p><strong><code>app/index.html</code>:</strong></p>
+<pre><code class="lang-html">...
+ &lt;script src=&quot;js/controllers.js&quot;&gt;&lt;/script&gt;
+ &lt;script src=&quot;js/filters.js&quot;&gt;&lt;/script&gt;
+...
+</code></pre>
+<p>The syntax for using filters in Angular templates is as follows:</p>
+<pre><code>{{ expression | filter }}
+</code></pre>
+<p>Let&#39;s employ the filter in the phone details template:</p>
+<p><strong><code>app/partials/phone-detail.html</code>:</strong></p>
+<pre><code class="lang-html">...
+    &lt;dl&gt;
+      &lt;dt&gt;Infrared&lt;/dt&gt;
+      &lt;dd&gt;{{phone.connectivity.infrared | checkmark}}&lt;/dd&gt;
+      &lt;dt&gt;GPS&lt;/dt&gt;
+      &lt;dd&gt;{{phone.connectivity.gps | checkmark}}&lt;/dd&gt;
+    &lt;/dl&gt;
+...
+</code></pre>
+<h2 id="test">Test</h2>
+<p>Filters, like any other component, should be tested and these tests are very easy to write.</p>
+<p><strong><code>test/unit/filtersSpec.js</code>:</strong></p>
+<pre><code class="lang-js">describe(&#39;filter&#39;, function() {
+
+  beforeEach(module(&#39;phonecatFilters&#39;));
+
+  describe(&#39;checkmark&#39;, function() {
+
+    it(&#39;should convert boolean values to unicode checkmark or cross&#39;,
+        inject(function(checkmarkFilter) {
+      expect(checkmarkFilter(true)).toBe(&#39;\u2713&#39;);
+      expect(checkmarkFilter(false)).toBe(&#39;\u2718&#39;);
+    }));
+  });
+});
+</code></pre>
+<p>We must call <code>beforeEach(module(&#39;phonecatFilters&#39;))</code> before any of
+our filter tests execute. This call loads our <code>phonecatFilters</code> module into the injector
+for this test run.</p>
+<p>Note that we call the helper function, <code>inject(function(checkmarkFilter) { ... })</code>, to get
+access to the filter that we want to test.  See <a href="api/ngMock/function/angular.mock.inject">angular.mock.inject()</a>.</p>
+<p>Notice that the suffix &#39;Filter&#39; is appended to your filter name when injected.
+See the <a href="guide/filter#using-filters-in-controllers-services-and-directives">Filter Guide</a>
+section where this is outlined.</p>
+<p>You should now see the following output in the Karma tab:</p>
+<pre>Chrome 22.0: Executed 4 of 4 SUCCESS (0.034 secs / 0.012 secs)</pre>
+
+
+<h1 id="experiments">Experiments</h1>
+<ul>
+<li><p>Let&#39;s experiment with some of the <a href="api/ng/filter">built-in Angular filters</a> and add the
+following bindings to <code>index.html</code>:</p>
+<ul>
+<li><code>{{ &quot;lower cap string&quot; | uppercase }}</code></li>
+<li><code>{{ {foo: &quot;bar&quot;, baz: 23} | json }}</code></li>
+<li><code>{{ 1304375948024 | date }}</code></li>
+<li><code>{{ 1304375948024 | date:&quot;MM/dd/yyyy @ h:mma&quot; }}</code></li>
+</ul>
+</li>
+<li><p>We can also create a model with an input element, and combine it with a filtered binding. Add
+the following to index.html:</p>
+<pre><code class="lang-html">&lt;input ng-model=&quot;userInput&quot;&gt; Uppercased: {{ userInput | uppercase }}
+</code></pre>
+</li>
+</ul>
+<h1 id="summary">Summary</h1>
+<p>Now that you have learned how to write and test a custom filter, go to <a href="tutorial/step_10">step 10</a> to
+learn how we can use Angular to enhance the phone details page further.</p>
+<ul doc-tutorial-nav="9"></ul>
+
+

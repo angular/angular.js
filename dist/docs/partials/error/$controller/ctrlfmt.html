@@ -1,0 +1,46 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/error/$controller/ctrlfmt.ngdoc?message=docs(error%2Fctrlfmt)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1>Error: error:ctrlfmt
+  <div><span class='hint'>Badly formed controller string</span></div>
+</h1>
+
+<div>
+    <pre class="minerr-errmsg" error-display="Badly formed controller string '{0}'. Must match `__name__ as __id__` or `__name__`.">Badly formed controller string '{0}'. Must match `__name__ as __id__` or `__name__`.</pre>
+</div>
+
+<h2>Description</h2>
+<div class="description">
+  <p>This error occurs when <a href="api/ng/service/$controller">$controller</a> service is called
+with a string that does not match the supported controller string formats.</p>
+<p>Supported formats:</p>
+<ol>
+<li><code>__name__</code></li>
+<li><code>__name__ as __identifier__</code></li>
+</ol>
+<p>N&#39;either <code>__name__</code> or <code>__identifier__</code> may contain spaces.</p>
+<p>Example of incorrect usage that leads to this error:</p>
+<pre><code class="lang-html">&lt;!-- unclosed ng-controller attribute messes up the format --&gt;
+&lt;div ng-controller=&quot;myController&gt;
+</code></pre>
+<p>or</p>
+<pre><code class="lang-js">// does not match `__name__` or `__name__ as __identifier__`
+var myCtrl = $controller(&quot;mY contRoller&quot;, { $scope: newScope });
+</code></pre>
+<p>or</p>
+<pre><code class="lang-js">directive(&quot;myDirective&quot;, function() {
+  return {
+    // does not match `__name__` or `__name__ as __identifier__`
+    controller: &quot;mY contRoller&quot;,
+    link: function() {}
+  };
+});
+</code></pre>
+<p>To fix the examples above, ensure that the controller string matches the supported
+formats, and that any html attributes which are used as controller expressions are
+closed.</p>
+<p>Please consult the <a href="api/ng/service/$controller">$controller</a> service api docs to learn more.</p>
+
+</div>
+
+

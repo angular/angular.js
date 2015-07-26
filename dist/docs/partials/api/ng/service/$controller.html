@@ -1,0 +1,134 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/controller.js?message=docs($controller)%3A%20describe%20your%20change...#L59' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/controller.js#L59' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">$controller</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+  <li>
+    <a href="api/ng/provider/$controllerProvider">- $controllerProvider</a>
+  </li>
+
+    <li>
+      - service in module <a href="api/ng">ng</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p><code>$controller</code> service is responsible for instantiating controllers.</p>
+<p>It&#39;s just a simple call to <a href="api/auto/service/$injector">$injector</a>, but extracted into
+a service, so that one can override this service with <a href="https://gist.github.com/1649788">BC version</a>.</p>
+
+</div>
+
+
+
+
+<div>
+  
+  <h2 id="dependencies">Dependencies</h2>
+  <ul>
+    <li><a href="api/auto/service/$injector"><code>$injector</code></a></li>
+  </ul>
+  
+
+    
+
+  <h2 id="usage">Usage</h2>
+    
+      <p><code>$controller(constructor, locals);</code></p>
+
+
+    
+
+    
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        constructor
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-function">function()</a><a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>If called with a function then it&#39;s considered to be the
+   controller constructor function. Otherwise it&#39;s considered to be a string which is used
+   to retrieve the controller constructor using the following steps:</p>
+<ul>
+<li>check if a controller with given name is registered via <code>$controllerProvider</code></li>
+<li>check if evaluating the string on the current scope returns a constructor</li>
+<li><p>if $controllerProvider#allowGlobals, check <code>window[constructor]</code> on the global
+<code>window</code> object (not recommended)</p>
+<p>The string can use the <code>controller as property</code> syntax, where the controller instance is published
+as the specified property on the <code>scope</code>; the <code>scope</code> must be injected into <code>locals</code> param for this
+to work correctly.</p>
+</li>
+</ul>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        locals
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">Object</a>
+      </td>
+      <td>
+        <p>Injection locals for Controller.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
+    
+    <h3>Returns</h3>
+<table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-object">Object</a></td>
+    <td><p>Instance of given controller.</p>
+</td>
+  </tr>
+</table>
+
+  
+  
+  
+
+
+
+  
+</div>
+
+

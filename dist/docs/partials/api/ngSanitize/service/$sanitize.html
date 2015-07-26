@@ -1,0 +1,138 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ngSanitize/sanitize.js?message=docs($sanitize)%3A%20describe%20your%20change...#L37' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ngSanitize/sanitize.js#L37' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">$sanitize</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+  
+
+    <li>
+      - service in module <a href="api/ngSanitize">ngSanitize</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>The input is sanitized by parsing the HTML into tokens. All safe tokens (from a whitelist) are
+  then serialized back to properly escaped html string. This means that no unsafe input can make
+  it into the returned string, however, since our parser is more strict than a typical browser
+  parser, it&#39;s possible that some obscure input, which would be recognized as valid HTML by a
+  browser, won&#39;t make it through the sanitizer. The input may also contain SVG markup.
+  The whitelist is configured using the functions <code>aHrefSanitizationWhitelist</code> and
+  <code>imgSrcSanitizationWhitelist</code> of <a href="api/ng/provider/$compileProvider"><code>$compileProvider</code></a>.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+    
+
+  <h2 id="usage">Usage</h2>
+    
+      <p><code>$sanitize(html);</code></p>
+
+
+    
+
+    
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        html
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>HTML input.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
+    
+    <h3>Returns</h3>
+<table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-string">string</a></td>
+    <td><p>Sanitized HTML.</p>
+</td>
+  </tr>
+</table>
+
+  
+  
+  
+
+
+
+  
+  <h2 id="example">Example</h2><p>
+
+<div>
+  <a ng-click="openPlunkr('examples/example-example113', $event)" class="btn pull-right">
+    <i class="glyphicon glyphicon-edit">&nbsp;</i>
+    Edit in Plunker</a>
+
+  <div class="runnable-example"
+      path="examples/example-example113"
+      module="sanitizeExample"
+      deps="angular-sanitize.js">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>     &lt;script&gt;&#10;         angular.module(&#39;sanitizeExample&#39;, [&#39;ngSanitize&#39;])&#10;           .controller(&#39;ExampleController&#39;, [&#39;$scope&#39;, &#39;$sce&#39;, function($scope, $sce) {&#10;             $scope.snippet =&#10;               &#39;&lt;p style=&quot;color:blue&quot;&gt;an html\n&#39; +&#10;               &#39;&lt;em onmouseover=&quot;this.textContent=\&#39;PWN3D!\&#39;&quot;&gt;click here&lt;/em&gt;\n&#39; +&#10;               &#39;snippet&lt;/p&gt;&#39;;&#10;             $scope.deliberatelyTrustDangerousSnippet = function() {&#10;               return $sce.trustAsHtml($scope.snippet);&#10;             };&#10;           }]);&#10;     &lt;/script&gt;&#10;     &lt;div ng-controller=&quot;ExampleController&quot;&gt;&#10;        Snippet: &lt;textarea ng-model=&quot;snippet&quot; cols=&quot;60&quot; rows=&quot;3&quot;&gt;&lt;/textarea&gt;&#10;       &lt;table&gt;&#10;         &lt;tr&gt;&#10;           &lt;td&gt;Directive&lt;/td&gt;&#10;           &lt;td&gt;How&lt;/td&gt;&#10;           &lt;td&gt;Source&lt;/td&gt;&#10;           &lt;td&gt;Rendered&lt;/td&gt;&#10;         &lt;/tr&gt;&#10;         &lt;tr id=&quot;bind-html-with-sanitize&quot;&gt;&#10;           &lt;td&gt;ng-bind-html&lt;/td&gt;&#10;           &lt;td&gt;Automatically uses $sanitize&lt;/td&gt;&#10;           &lt;td&gt;&lt;pre&gt;&amp;lt;div ng-bind-html=&quot;snippet&quot;&amp;gt;&lt;br/&gt;&amp;lt;/div&amp;gt;&lt;/pre&gt;&lt;/td&gt;&#10;           &lt;td&gt;&lt;div ng-bind-html=&quot;snippet&quot;&gt;&lt;/div&gt;&lt;/td&gt;&#10;         &lt;/tr&gt;&#10;         &lt;tr id=&quot;bind-html-with-trust&quot;&gt;&#10;           &lt;td&gt;ng-bind-html&lt;/td&gt;&#10;           &lt;td&gt;Bypass $sanitize by explicitly trusting the dangerous value&lt;/td&gt;&#10;           &lt;td&gt;&#10;           &lt;pre&gt;&amp;lt;div ng-bind-html=&quot;deliberatelyTrustDangerousSnippet()&quot;&amp;gt;&#10;&amp;lt;/div&amp;gt;&lt;/pre&gt;&#10;           &lt;/td&gt;&#10;           &lt;td&gt;&lt;div ng-bind-html=&quot;deliberatelyTrustDangerousSnippet()&quot;&gt;&lt;/div&gt;&lt;/td&gt;&#10;         &lt;/tr&gt;&#10;         &lt;tr id=&quot;bind-default&quot;&gt;&#10;           &lt;td&gt;ng-bind&lt;/td&gt;&#10;           &lt;td&gt;Automatically escapes&lt;/td&gt;&#10;           &lt;td&gt;&lt;pre&gt;&amp;lt;div ng-bind=&quot;snippet&quot;&amp;gt;&lt;br/&gt;&amp;lt;/div&amp;gt;&lt;/pre&gt;&lt;/td&gt;&#10;           &lt;td&gt;&lt;div ng-bind=&quot;snippet&quot;&gt;&lt;/div&gt;&lt;/td&gt;&#10;         &lt;/tr&gt;&#10;       &lt;/table&gt;&#10;       &lt;/div&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="protractor.js"
+      type="protractor"
+      language="js">
+      <pre><code>it(&#39;should sanitize the html snippet by default&#39;, function() {&#10;  expect(element(by.css(&#39;#bind-html-with-sanitize div&#39;)).getInnerHtml()).&#10;    toBe(&#39;&lt;p&gt;an html\n&lt;em&gt;click here&lt;/em&gt;\nsnippet&lt;/p&gt;&#39;);&#10;});&#10;&#10;it(&#39;should inline raw snippet if bound to a trusted value&#39;, function() {&#10;  expect(element(by.css(&#39;#bind-html-with-trust div&#39;)).getInnerHtml()).&#10;    toBe(&quot;&lt;p style=\&quot;color:blue\&quot;&gt;an html\n&quot; +&#10;         &quot;&lt;em onmouseover=\&quot;this.textContent=&#39;PWN3D!&#39;\&quot;&gt;click here&lt;/em&gt;\n&quot; +&#10;         &quot;snippet&lt;/p&gt;&quot;);&#10;});&#10;&#10;it(&#39;should escape snippet without any filter&#39;, function() {&#10;  expect(element(by.css(&#39;#bind-default div&#39;)).getInnerHtml()).&#10;    toBe(&quot;&amp;lt;p style=\&quot;color:blue\&quot;&amp;gt;an html\n&quot; +&#10;         &quot;&amp;lt;em onmouseover=\&quot;this.textContent=&#39;PWN3D!&#39;\&quot;&amp;gt;click here&amp;lt;/em&amp;gt;\n&quot; +&#10;         &quot;snippet&amp;lt;/p&amp;gt;&quot;);&#10;});&#10;&#10;it(&#39;should update&#39;, function() {&#10;  element(by.model(&#39;snippet&#39;)).clear();&#10;  element(by.model(&#39;snippet&#39;)).sendKeys(&#39;new &lt;b onclick=&quot;alert(1)&quot;&gt;text&lt;/b&gt;&#39;);&#10;  expect(element(by.css(&#39;#bind-html-with-sanitize div&#39;)).getInnerHtml()).&#10;    toBe(&#39;new &lt;b&gt;text&lt;/b&gt;&#39;);&#10;  expect(element(by.css(&#39;#bind-html-with-trust div&#39;)).getInnerHtml()).toBe(&#10;    &#39;new &lt;b onclick=&quot;alert(1)&quot;&gt;text&lt;/b&gt;&#39;);&#10;  expect(element(by.css(&#39;#bind-default div&#39;)).getInnerHtml()).toBe(&#10;    &quot;new &amp;lt;b onclick=\&quot;alert(1)\&quot;&amp;gt;text&amp;lt;/b&amp;gt;&quot;);&#10;});</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-example113/index.html" name="example-example113"></iframe>
+  </div>
+</div>
+
+
+</p>
+
+</div>
+
+

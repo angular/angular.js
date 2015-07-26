@@ -1,0 +1,170 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/jqLite.js?message=docs(angular.element)%3A%20describe%20your%20change...#L14' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/jqLite.js#L14' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">angular.element</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - function in module <a href="api/ng">ng</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Wraps a raw DOM element or HTML string as a <a href="http://jquery.com">jQuery</a> element.</p>
+<p>If jQuery is available, <code>angular.element</code> is an alias for the
+<a href="http://api.jquery.com/jQuery/">jQuery</a> function. If jQuery is not available, <code>angular.element</code>
+delegates to Angular&#39;s built-in subset of jQuery, called &quot;jQuery lite&quot; or &quot;jqLite.&quot;</p>
+<div class="alert alert-success">jqLite is a tiny, API-compatible subset of jQuery that allows
+Angular to manipulate the DOM in a cross-browser compatible way. <strong>jqLite</strong> implements only the most
+commonly needed functionality with the goal of having a very small footprint.</div>
+
+<p>To use jQuery, simply load it before <code>DOMContentLoaded</code> event fired.</p>
+<div class="alert"><strong>Note:</strong> all element references in Angular are always wrapped with jQuery or
+jqLite; they are never raw DOM references.</div>
+
+<h2 id="angular-s-jqlite">Angular&#39;s jqLite</h2>
+<p>jqLite provides only the following jQuery methods:</p>
+<ul>
+<li><a href="http://api.jquery.com/addClass/"><code>addClass()</code></a></li>
+<li><a href="http://api.jquery.com/after/"><code>after()</code></a></li>
+<li><a href="http://api.jquery.com/append/"><code>append()</code></a></li>
+<li><a href="http://api.jquery.com/attr/"><code>attr()</code></a> - Does not support functions as parameters</li>
+<li><a href="http://api.jquery.com/bind/"><code>bind()</code></a> - Does not support namespaces, selectors or eventData</li>
+<li><a href="http://api.jquery.com/children/"><code>children()</code></a> - Does not support selectors</li>
+<li><a href="http://api.jquery.com/clone/"><code>clone()</code></a></li>
+<li><a href="http://api.jquery.com/contents/"><code>contents()</code></a></li>
+<li><a href="http://api.jquery.com/css/"><code>css()</code></a> - Only retrieves inline-styles, does not call <code>getComputedStyle()</code></li>
+<li><a href="http://api.jquery.com/data/"><code>data()</code></a></li>
+<li><a href="http://api.jquery.com/detach/"><code>detach()</code></a></li>
+<li><a href="http://api.jquery.com/empty/"><code>empty()</code></a></li>
+<li><a href="http://api.jquery.com/eq/"><code>eq()</code></a></li>
+<li><a href="http://api.jquery.com/find/"><code>find()</code></a> - Limited to lookups by tag name</li>
+<li><a href="http://api.jquery.com/hasClass/"><code>hasClass()</code></a></li>
+<li><a href="http://api.jquery.com/html/"><code>html()</code></a></li>
+<li><a href="http://api.jquery.com/next/"><code>next()</code></a> - Does not support selectors</li>
+<li><a href="http://api.jquery.com/on/"><code>on()</code></a> - Does not support namespaces, selectors or eventData</li>
+<li><a href="http://api.jquery.com/off/"><code>off()</code></a> - Does not support namespaces or selectors</li>
+<li><a href="http://api.jquery.com/one/"><code>one()</code></a> - Does not support namespaces or selectors</li>
+<li><a href="http://api.jquery.com/parent/"><code>parent()</code></a> - Does not support selectors</li>
+<li><a href="http://api.jquery.com/prepend/"><code>prepend()</code></a></li>
+<li><a href="http://api.jquery.com/prop/"><code>prop()</code></a></li>
+<li><a href="http://api.jquery.com/ready/"><code>ready()</code></a></li>
+<li><a href="http://api.jquery.com/remove/"><code>remove()</code></a></li>
+<li><a href="http://api.jquery.com/removeAttr/"><code>removeAttr()</code></a></li>
+<li><a href="http://api.jquery.com/removeClass/"><code>removeClass()</code></a></li>
+<li><a href="http://api.jquery.com/removeData/"><code>removeData()</code></a></li>
+<li><a href="http://api.jquery.com/replaceWith/"><code>replaceWith()</code></a></li>
+<li><a href="http://api.jquery.com/text/"><code>text()</code></a></li>
+<li><a href="http://api.jquery.com/toggleClass/"><code>toggleClass()</code></a></li>
+<li><a href="http://api.jquery.com/triggerHandler/"><code>triggerHandler()</code></a> - Passes a dummy event object to handlers.</li>
+<li><a href="http://api.jquery.com/unbind/"><code>unbind()</code></a> - Does not support namespaces</li>
+<li><a href="http://api.jquery.com/val/"><code>val()</code></a></li>
+<li><a href="http://api.jquery.com/wrap/"><code>wrap()</code></a></li>
+</ul>
+<h2 id="jquery-jqlite-extras">jQuery/jqLite Extras</h2>
+<p>Angular also provides the following additional methods and events to both jQuery and jqLite:</p>
+<h3 id="events">Events</h3>
+<ul>
+<li><code>$destroy</code> - AngularJS intercepts all jqLite/jQuery&#39;s DOM destruction apis and fires this event
+ on all DOM nodes being removed.  This can be used to clean up any 3rd party bindings to the DOM
+ element before it is removed.</li>
+</ul>
+<h3 id="methods">Methods</h3>
+<ul>
+<li><code>controller(name)</code> - retrieves the controller of the current element or its parent. By default
+retrieves controller associated with the <code>ngController</code> directive. If <code>name</code> is provided as
+camelCase directive name, then the controller for this directive will be retrieved (e.g.
+<code>&#39;ngModel&#39;</code>).</li>
+<li><code>injector()</code> - retrieves the injector of the current element or its parent.</li>
+<li><code>scope()</code> - retrieves the <a href="api/ng/type/$rootScope.Scope">scope</a> of the current
+element or its parent. Requires <a href="guide/production#disabling-debug-data">Debug Data</a> to
+be enabled.</li>
+<li><code>isolateScope()</code> - retrieves an isolate <a href="api/ng/type/$rootScope.Scope">scope</a> if one is attached directly to the
+current element. This getter should be used only on elements that contain a directive which starts a new isolate
+scope. Calling <code>scope()</code> on this element always returns the original non-isolate scope.
+Requires <a href="guide/production#disabling-debug-data">Debug Data</a> to be enabled.</li>
+<li><code>inheritedData()</code> - same as <code>data()</code>, but walks up the DOM until a value is found or the top
+parent element is reached.</li>
+</ul>
+
+</div>
+
+
+
+
+<div>
+  
+
+    
+
+  <h2 id="usage">Usage</h2>
+    
+      <p><code>angular.element(element);</code></p>
+
+
+    
+
+    
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        element
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a><a href="" class="label type-hint type-hint-domelement">DOMElement</a>
+      </td>
+      <td>
+        <p>HTML string or DOMElement to be wrapped into jQuery.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
+    
+    <h3>Returns</h3>
+<table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-object">Object</a></td>
+    <td><p>jQuery object.</p>
+</td>
+  </tr>
+</table>
+
+  
+  
+  
+
+
+
+  
+</div>
+
+

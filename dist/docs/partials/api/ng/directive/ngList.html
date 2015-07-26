@@ -1,0 +1,178 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/directive/ngList.js?message=docs(ngList)%3A%20describe%20your%20change...#L4' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/directive/ngList.js#L4' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">ngList</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - directive in module <a href="api/ng">ng</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Text input that converts between a delimited string and an array of strings. The default
+delimiter is a comma followed by a space - equivalent to <code>ng-list=&quot;, &quot;</code>. You can specify a custom
+delimiter as the value of the <code>ngList</code> attribute - for example, <code>ng-list=&quot; | &quot;</code>.</p>
+<p>The behaviour of the directive is affected by the use of the <code>ngTrim</code> attribute.</p>
+<ul>
+<li>If <code>ngTrim</code> is set to <code>&quot;false&quot;</code> then whitespace around both the separator and each
+list item is respected. This implies that the user of the directive is responsible for
+dealing with whitespace but also allows you to use whitespace as a delimiter, such as a
+tab or newline character.</li>
+<li>Otherwise whitespace around the delimiter is ignored when splitting (although it is respected
+when joining the list items back together) and whitespace around each list item is stripped
+before it is added to the model.</li>
+</ul>
+<h3 id="example-with-validation">Example with Validation</h3>
+<p>
+
+<div>
+  <a ng-click="openPlunkr('examples/example-ngList-directive', $event)" class="btn pull-right">
+    <i class="glyphicon glyphicon-edit">&nbsp;</i>
+    Edit in Plunker</a>
+
+  <div class="runnable-example"
+      path="examples/example-ngList-directive"
+      name="ngList-directive"
+      module="listExample">
+
+  
+    <div class="runnable-example-file" 
+      name="app.js"
+      language="js"
+      type="js">
+      <pre><code>angular.module(&#39;listExample&#39;, [])&#10;.controller(&#39;ExampleController&#39;, [&#39;$scope&#39;, function($scope) {&#10;  $scope.names = [&#39;morpheus&#39;, &#39;neo&#39;, &#39;trinity&#39;];&#10;}]);</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;form name=&quot;myForm&quot; ng-controller=&quot;ExampleController&quot;&gt;&#10; List: &lt;input name=&quot;namesInput&quot; ng-model=&quot;names&quot; ng-list required&gt;&#10; &lt;span class=&quot;error&quot; ng-show=&quot;myForm.namesInput.$error.required&quot;&gt;&#10;   Required!&lt;/span&gt;&#10; &lt;br&gt;&#10; &lt;tt&gt;names = {{names}}&lt;/tt&gt;&lt;br/&gt;&#10; &lt;tt&gt;myForm.namesInput.$valid = {{myForm.namesInput.$valid}}&lt;/tt&gt;&lt;br/&gt;&#10; &lt;tt&gt;myForm.namesInput.$error = {{myForm.namesInput.$error}}&lt;/tt&gt;&lt;br/&gt;&#10; &lt;tt&gt;myForm.$valid = {{myForm.$valid}}&lt;/tt&gt;&lt;br/&gt;&#10; &lt;tt&gt;myForm.$error.required = {{!!myForm.$error.required}}&lt;/tt&gt;&lt;br/&gt;&#10;&lt;/form&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="protractor.js"
+      type="protractor"
+      language="js">
+      <pre><code>var listInput = element(by.model(&#39;names&#39;));&#10;var names = element(by.exactBinding(&#39;names&#39;));&#10;var valid = element(by.binding(&#39;myForm.namesInput.$valid&#39;));&#10;var error = element(by.css(&#39;span.error&#39;));&#10;&#10;it(&#39;should initialize to model&#39;, function() {&#10;  expect(names.getText()).toContain(&#39;[&quot;morpheus&quot;,&quot;neo&quot;,&quot;trinity&quot;]&#39;);&#10;  expect(valid.getText()).toContain(&#39;true&#39;);&#10;  expect(error.getCssValue(&#39;display&#39;)).toBe(&#39;none&#39;);&#10;});&#10;&#10;it(&#39;should be invalid if empty&#39;, function() {&#10;  listInput.clear();&#10;  listInput.sendKeys(&#39;&#39;);&#10;&#10;  expect(names.getText()).toContain(&#39;&#39;);&#10;  expect(valid.getText()).toContain(&#39;false&#39;);&#10;  expect(error.getCssValue(&#39;display&#39;)).not.toBe(&#39;none&#39;);&#10;});</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-ngList-directive/index.html" name="example-ngList-directive"></iframe>
+  </div>
+</div>
+
+
+</p>
+<h3 id="example-splitting-on-whitespace">Example - splitting on whitespace</h3>
+<p>
+
+<div>
+  <a ng-click="openPlunkr('examples/example-ngList-directive-newlines', $event)" class="btn pull-right">
+    <i class="glyphicon glyphicon-edit">&nbsp;</i>
+    Edit in Plunker</a>
+
+  <div class="runnable-example"
+      path="examples/example-ngList-directive-newlines"
+      name="ngList-directive-newlines">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;textarea ng-model=&quot;list&quot; ng-list=&quot;&amp;#10;&quot; ng-trim=&quot;false&quot;&gt;&lt;/textarea&gt;&#10;&lt;pre&gt;{{ list | json }}&lt;/pre&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="protractor.js"
+      type="protractor"
+      language="js">
+      <pre><code>it(&quot;should split the text by newlines&quot;, function() {&#10;  var listInput = element(by.model(&#39;list&#39;));&#10;  var output = element(by.binding(&#39;list | json&#39;));&#10;  listInput.sendKeys(&#39;abc\ndef\nghi&#39;);&#10;  expect(output.getText()).toContain(&#39;[\n  &quot;abc&quot;,\n  &quot;def&quot;,\n  &quot;ghi&quot;\n]&#39;);&#10;});</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-ngList-directive-newlines/index.html" name="example-ngList-directive-newlines"></iframe>
+  </div>
+</div>
+
+
+</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+  
+  <h2>Directive Info</h2>
+  <ul>
+    
+    <li>This directive executes at priority level 0.</li>
+  </ul>
+
+  
+  <h2 id="usage">Usage</h2>
+  <div class="usage">
+  
+    <ul>
+    <li>as attribute:
+        <pre><code>&lt;input&#10;  [ng-list=&quot;&quot;]&gt;&#10;...&#10;&lt;/input&gt;</code></pre>
+      </li>
+    
+  </div>
+  
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        ngList
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>optional delimiter that should be used to split the value.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
+  
+
+
+  
+</div>
+
+

@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Example - example-ngModel-getter-setter-jquery</title>
+  
+
+  <script src="../../components/jquery-2.1.1/jquery.js"></script>
+  <script src="../../../angular.js"></script>
+  <script src="app.js"></script>
+  
+
+  
+</head>
+<body ng-app="getterSetterExample">
+  <div ng-controller="ExampleController">
+  <form name="userForm">
+    Name:
+    <input type="text" name="userName"
+           ng-model="user.name"
+           ng-model-options="{ getterSetter: true }" />
+  </form>
+  <pre>user.name = <span ng-bind="user.name()"></span></pre>
+</div>
+</body>
+</html>

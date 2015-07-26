@@ -1,0 +1,107 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ngTouch/touch.js?message=docs(ngTouch)%3A%20describe%20your%20change...#L3' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1>
+  <code>ngTouch</code>
+</h1>
+
+<h1 id="ngtouch">ngTouch</h1>
+<p>The <code>ngTouch</code> module provides touch events and other helpers for touch-enabled devices.
+The implementation is based on jQuery Mobile touch event handling
+(<a href="http://jquerymobile.com/">jquerymobile.com</a>).</p>
+<p>See <a href="api/ngTouch/service/$swipe"><code>$swipe</code></a> for usage.</p>
+<div doc-module-components="ngTouch"></div>
+
+
+  <h2>Installation</h2>
+
+  <p>First include <code>angular-touch.js</code> in your HTML:</p>
+
+  <pre><code>&lt;script src=&quot;angular.js&quot;&gt;&#10;&lt;script src=&quot;angular-touch.js&quot;&gt;</code></pre>
+
+  <p>You can download this file from the following places:</p>
+  <ul>
+    <li>
+      <a href="https://developers.google.com/speed/libraries/devguide#angularjs">Google CDN</a><br>
+      e.g. <code>//ajax.googleapis.com/ajax/libs/angularjs/X.Y.Z/angular-touch.js</code>
+    </li>
+    <li>
+      <a href="http://bower.io">Bower</a><br>
+      e.g. <pre><code>bower install angular-touch@X.Y.Z</code></pre>
+    </li>
+    <li>
+      <a href="http://code.angularjs.org/">code.angularjs.org</a><br>
+      e.g. <pre><code>&quot;//code.angularjs.org/X.Y.Z/angular-touch.js&quot;</code></pre>
+    </li>
+  </ul>
+  <p>where X.Y.Z is the AngularJS version you are running.</p>
+  <p>Then load the module in your application by adding it as a dependent module:</p>
+  <pre><code>angular.module(&#39;app&#39;, [&#39;ngTouch&#39;]);</code></pre>
+
+  <p>With that you&apos;re ready to get started!</p>
+
+
+<div class="component-breakdown">
+  <h2>Module Components</h2>
+  
+  <div>
+    <h3 class="component-heading" id="directive">Directive</h3>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ngTouch/directive/ngClick">ngClick</a></td>
+        <td><p>A more powerful replacement for the default ngClick designed to be used on touchscreen
+devices. Most mobile browsers wait about 300ms after a tap-and-release before sending
+the click event. This version handles them immediately, and then prevents the
+following click event from propagating.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ngTouch/directive/ngSwipeLeft">ngSwipeLeft</a></td>
+        <td><p>Specify custom behavior when an element is swiped to the left on a touchscreen device.
+A leftward swipe is a quick, right-to-left slide of the finger.
+Though ngSwipeLeft is designed for touch-based devices, it will work with a mouse click and drag
+too.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ngTouch/directive/ngSwipeRight">ngSwipeRight</a></td>
+        <td><p>Specify custom behavior when an element is swiped to the right on a touchscreen device.
+A rightward swipe is a quick, left-to-right slide of the finger.
+Though ngSwipeRight is designed for touch-based devices, it will work with a mouse click and drag
+too.</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+  
+  <div>
+    <h3 class="component-heading" id="service">Service</h3>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ngTouch/service/$swipe">$swipe</a></td>
+        <td><p>The <code>$swipe</code> service is a service that abstracts the messier details of hold-and-drag swipe
+behavior, to make implementing swipe-related directives more convenient.</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+  
+</div>
+
+
+
+

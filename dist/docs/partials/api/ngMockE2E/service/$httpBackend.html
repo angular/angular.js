@@ -1,0 +1,762 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ngMock/angular-mocks.js?message=docs($httpBackend)%3A%20describe%20your%20change...#L1850' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ngMock/angular-mocks.js#L1850' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">$httpBackend</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+  
+
+    <li>
+      - service in module <a href="api/ngMockE2E">ngMockE2E</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Fake HTTP backend implementation suitable for end-to-end testing or backend-less development of
+applications that use the <a href="api/ng/service/$http">$http service</a>.</p>
+<p><em>Note</em>: For fake http backend implementation suitable for unit testing please see
+<a href="api/ngMock/service/$httpBackend">unit-testing $httpBackend mock</a>.</p>
+<p>This implementation can be used to respond with static or dynamic responses via the <code>when</code> api
+and its shortcuts (<code>whenGET</code>, <code>whenPOST</code>, etc) and optionally pass through requests to the
+real $httpBackend for specific requests (e.g. to interact with certain remote apis or to fetch
+templates from a webserver).</p>
+<p>As opposed to unit-testing, in an end-to-end testing scenario or in scenario when an application
+is being developed with the real backend api replaced with a mock, it is often desirable for
+certain category of requests to bypass the mock and issue a real http request (e.g. to fetch
+templates or static files from the webserver). To configure the backend with this behavior
+use the <code>passThrough</code> request handler of <code>when</code> instead of <code>respond</code>.</p>
+<p>Additionally, we don&#39;t want to manually have to flush mocked out requests like we do during unit
+testing. For this reason the e2e $httpBackend flushes mocked out requests
+automatically, closely simulating the behavior of the XMLHttpRequest object.</p>
+<p>To setup the application to run with this http backend, you have to create a module that depends
+on the <code>ngMockE2E</code> and your application modules and defines the fake backend:</p>
+<pre><code class="lang-js">myAppDev = angular.module(&#39;myAppDev&#39;, [&#39;myApp&#39;, &#39;ngMockE2E&#39;]);
+myAppDev.run(function($httpBackend) {
+  phones = [{name: &#39;phone1&#39;}, {name: &#39;phone2&#39;}];
+
+  // returns the current list of phones
+  $httpBackend.whenGET(&#39;/phones&#39;).respond(phones);
+
+  // adds a new phone to the phones array
+  $httpBackend.whenPOST(&#39;/phones&#39;).respond(function(method, url, data) {
+    var phone = angular.fromJson(data);
+    phones.push(phone);
+    return [200, phone, {}];
+  });
+  $httpBackend.whenGET(/^\/templates\//).passThrough();
+  //...
+});
+</code></pre>
+<p>Afterwards, bootstrap your app with this new module.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+    
+
+  
+
+  
+<h2>Methods</h2>
+<ul class="methods">
+  <li id="when">
+    <h3><p><code>when(method, url, [data], [headers]);</code></p>
+
+</h3>
+    <div><p>Creates a new backend definition.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        method
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>HTTP method.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        url
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a><a href="" class="label type-hint type-hint-regexp">RegExp</a><a href="" class="label type-hint type-hint-function">function(string)</a>
+      </td>
+      <td>
+        <p>HTTP url or function that receives a url
+  and returns true if the url matches the current definition.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        data
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a><a href="" class="label type-hint type-hint-regexp">RegExp</a>
+      </td>
+      <td>
+        <p>HTTP request body.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        headers
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">Object</a><a href="" class="label type-hint type-hint-function">function(Object)</a>
+      </td>
+      <td>
+        <p>HTTP headers or function that receives http header
+  object and returns true if the headers match the current definition.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-requesthandler">requestHandler</a></td>
+    <td><p>Returns an object with <code>respond</code> and <code>passThrough</code> methods that
+  control how a matched request is handled. You can save this object for later use and invoke
+  <code>respond</code> or <code>passThrough</code> again in order to change how a matched request is handled.</p>
+<ul>
+<li>respond –
+<code>{function([status,] data[, headers, statusText])
+| function(function(method, url, data, headers)}</code>
+– The respond method takes a set of static data to be returned or a function that can return
+an array containing response status (number), response data (string), response headers
+(Object), and the text for the status (string).</li>
+<li>passThrough – <code>{function()}</code> – Any request matching a backend definition with
+<code>passThrough</code> handler will be passed through to the real backend (an XHR request will be made
+to the server.)</li>
+<li>Both methods return the <code>requestHandler</code> object for possible overrides.</li>
+</ul>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="whenGET">
+    <h3><p><code>whenGET(url, [headers]);</code></p>
+
+</h3>
+    <div><p>Creates a new backend definition for GET requests. For more info see <code>when()</code>.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        url
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a><a href="" class="label type-hint type-hint-regexp">RegExp</a><a href="" class="label type-hint type-hint-function">function(string)</a>
+      </td>
+      <td>
+        <p>HTTP url or function that receives a url
+  and returns true if the url matches the current definition.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        headers
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">Object</a><a href="" class="label type-hint type-hint-function">function(Object)</a>
+      </td>
+      <td>
+        <p>HTTP headers.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-requesthandler">requestHandler</a></td>
+    <td><p>Returns an object with <code>respond</code> and <code>passThrough</code> methods that
+  control how a matched request is handled. You can save this object for later use and invoke
+  <code>respond</code> or <code>passThrough</code> again in order to change how a matched request is handled.</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="whenHEAD">
+    <h3><p><code>whenHEAD(url, [headers]);</code></p>
+
+</h3>
+    <div><p>Creates a new backend definition for HEAD requests. For more info see <code>when()</code>.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        url
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a><a href="" class="label type-hint type-hint-regexp">RegExp</a><a href="" class="label type-hint type-hint-function">function(string)</a>
+      </td>
+      <td>
+        <p>HTTP url or function that receives a url
+  and returns true if the url matches the current definition.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        headers
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">Object</a><a href="" class="label type-hint type-hint-function">function(Object)</a>
+      </td>
+      <td>
+        <p>HTTP headers.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-requesthandler">requestHandler</a></td>
+    <td><p>Returns an object with <code>respond</code> and <code>passThrough</code> methods that
+  control how a matched request is handled. You can save this object for later use and invoke
+  <code>respond</code> or <code>passThrough</code> again in order to change how a matched request is handled.</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="whenDELETE">
+    <h3><p><code>whenDELETE(url, [headers]);</code></p>
+
+</h3>
+    <div><p>Creates a new backend definition for DELETE requests. For more info see <code>when()</code>.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        url
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a><a href="" class="label type-hint type-hint-regexp">RegExp</a><a href="" class="label type-hint type-hint-function">function(string)</a>
+      </td>
+      <td>
+        <p>HTTP url or function that receives a url
+  and returns true if the url matches the current definition.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        headers
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">Object</a><a href="" class="label type-hint type-hint-function">function(Object)</a>
+      </td>
+      <td>
+        <p>HTTP headers.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-requesthandler">requestHandler</a></td>
+    <td><p>Returns an object with <code>respond</code> and <code>passThrough</code> methods that
+  control how a matched request is handled. You can save this object for later use and invoke
+  <code>respond</code> or <code>passThrough</code> again in order to change how a matched request is handled.</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="whenPOST">
+    <h3><p><code>whenPOST(url, [data], [headers]);</code></p>
+
+</h3>
+    <div><p>Creates a new backend definition for POST requests. For more info see <code>when()</code>.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        url
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a><a href="" class="label type-hint type-hint-regexp">RegExp</a><a href="" class="label type-hint type-hint-function">function(string)</a>
+      </td>
+      <td>
+        <p>HTTP url or function that receives a url
+  and returns true if the url matches the current definition.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        data
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a><a href="" class="label type-hint type-hint-regexp">RegExp</a>
+      </td>
+      <td>
+        <p>HTTP request body.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        headers
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">Object</a><a href="" class="label type-hint type-hint-function">function(Object)</a>
+      </td>
+      <td>
+        <p>HTTP headers.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-requesthandler">requestHandler</a></td>
+    <td><p>Returns an object with <code>respond</code> and <code>passThrough</code> methods that
+  control how a matched request is handled. You can save this object for later use and invoke
+  <code>respond</code> or <code>passThrough</code> again in order to change how a matched request is handled.</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="whenPUT">
+    <h3><p><code>whenPUT(url, [data], [headers]);</code></p>
+
+</h3>
+    <div><p>Creates a new backend definition for PUT requests.  For more info see <code>when()</code>.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        url
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a><a href="" class="label type-hint type-hint-regexp">RegExp</a><a href="" class="label type-hint type-hint-function">function(string)</a>
+      </td>
+      <td>
+        <p>HTTP url or function that receives a url
+  and returns true if the url matches the current definition.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        data
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a><a href="" class="label type-hint type-hint-regexp">RegExp</a>
+      </td>
+      <td>
+        <p>HTTP request body.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        headers
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">Object</a><a href="" class="label type-hint type-hint-function">function(Object)</a>
+      </td>
+      <td>
+        <p>HTTP headers.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-requesthandler">requestHandler</a></td>
+    <td><p>Returns an object with <code>respond</code> and <code>passThrough</code> methods that
+  control how a matched request is handled. You can save this object for later use and invoke
+  <code>respond</code> or <code>passThrough</code> again in order to change how a matched request is handled.</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="whenPATCH">
+    <h3><p><code>whenPATCH(url, [data], [headers]);</code></p>
+
+</h3>
+    <div><p>Creates a new backend definition for PATCH requests.  For more info see <code>when()</code>.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        url
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a><a href="" class="label type-hint type-hint-regexp">RegExp</a><a href="" class="label type-hint type-hint-function">function(string)</a>
+      </td>
+      <td>
+        <p>HTTP url or function that receives a url
+  and returns true if the url matches the current definition.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        data
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a><a href="" class="label type-hint type-hint-regexp">RegExp</a>
+      </td>
+      <td>
+        <p>HTTP request body.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        headers
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">Object</a><a href="" class="label type-hint type-hint-function">function(Object)</a>
+      </td>
+      <td>
+        <p>HTTP headers.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-requesthandler">requestHandler</a></td>
+    <td><p>Returns an object with <code>respond</code> and <code>passThrough</code> methods that
+  control how a matched request is handled. You can save this object for later use and invoke
+  <code>respond</code> or <code>passThrough</code> again in order to change how a matched request is handled.</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="whenJSONP">
+    <h3><p><code>whenJSONP(url);</code></p>
+
+</h3>
+    <div><p>Creates a new backend definition for JSONP requests. For more info see <code>when()</code>.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        url
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a><a href="" class="label type-hint type-hint-regexp">RegExp</a><a href="" class="label type-hint type-hint-function">function(string)</a>
+      </td>
+      <td>
+        <p>HTTP url or function that receives a url
+  and returns true if the url matches the current definition.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-requesthandler">requestHandler</a></td>
+    <td><p>Returns an object with <code>respond</code> and <code>passThrough</code> methods that
+  control how a matched request is handled. You can save this object for later use and invoke
+  <code>respond</code> or <code>passThrough</code> again in order to change how a matched request is handled.</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  </ul>
+  
+  
+
+
+
+  
+</div>
+
+

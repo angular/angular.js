@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en" ng-csp>
+<head>
+  <meta charset="UTF-8">
+  <title>Example - example-example.csp-production</title>
+  
+
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular.min.js"></script>
+  <script src="script.js"></script>
+  
+
+  
+</head>
+<body ng-app="cspExample">
+  <div ng-controller="MainController as ctrl">
+  <div>
+    <button ng-click="ctrl.inc()" id="inc">Increment</button>
+    <span id="counter">
+      {{ctrl.counter}}
+    </span>
+  </div>
+
+  <div>
+    <button ng-click="ctrl.evil()" id="evil">Evil</button>
+    <span id="evilError">
+      {{ctrl.evilError}}
+    </span>
+  </div>
+</div>
+</body>
+</html>

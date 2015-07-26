@@ -1,0 +1,1076 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/http.js?message=docs($http)%3A%20describe%20your%20change...#L234' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/http.js#L234' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">$http</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+  <li>
+    <a href="api/ng/provider/$httpProvider">- $httpProvider</a>
+  </li>
+
+    <li>
+      - service in module <a href="api/ng">ng</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>The <code>$http</code> service is a core Angular service that facilitates communication with the remote
+HTTP servers via the browser&#39;s <a href="https://developer.mozilla.org/en/xmlhttprequest">XMLHttpRequest</a>
+object or via <a href="http://en.wikipedia.org/wiki/JSONP">JSONP</a>.</p>
+<p>For unit testing applications that use <code>$http</code> service, see
+<a href="api/ngMock/service/$httpBackend">$httpBackend mock</a>.</p>
+<p>For a higher level of abstraction, please check out the <a href="api/ngResource/service/$resource">$resource</a> service.</p>
+<p>The $http API is based on the <a href="api/ng/service/$q">deferred/promise APIs</a> exposed by
+the $q service. While for simple usage patterns this doesn&#39;t matter much, for advanced usage
+it is important to familiarize yourself with these APIs and the guarantees they provide.</p>
+<h2 id="general-usage">General usage</h2>
+<p>The <code>$http</code> service is a function which takes a single argument — a configuration object —
+that is used to generate an HTTP request and returns  a <a href="api/ng/service/$q">promise</a>
+with two $http specific methods: <code>success</code> and <code>error</code>.</p>
+<pre><code class="lang-js">// Simple GET request example :
+$http.get(&#39;/someUrl&#39;).
+  success(function(data, status, headers, config) {
+    // this callback will be called asynchronously
+    // when the response is available
+  }).
+  error(function(data, status, headers, config) {
+    // called asynchronously if an error occurs
+    // or server returns response with an error status.
+  });
+</code></pre>
+<pre><code class="lang-js">// Simple POST request example (passing data) :
+$http.post(&#39;/someUrl&#39;, {msg:&#39;hello word!&#39;}).
+  success(function(data, status, headers, config) {
+    // this callback will be called asynchronously
+    // when the response is available
+  }).
+  error(function(data, status, headers, config) {
+    // called asynchronously if an error occurs
+    // or server returns response with an error status.
+  });
+</code></pre>
+<p>Since the returned value of calling the $http function is a <code>promise</code>, you can also use
+the <code>then</code> method to register callbacks, and these callbacks will receive a single argument –
+an object representing the response. See the API signature and type info below for more
+details.</p>
+<p>A response status code between 200 and 299 is considered a success status and
+will result in the success callback being called. Note that if the response is a redirect,
+XMLHttpRequest will transparently follow it, meaning that the error callback will not be
+called for such responses.</p>
+<h2 id="writing-unit-tests-that-use-http">Writing Unit Tests that use $http</h2>
+<p>When unit testing (using <a href="api/ngMock">ngMock</a>), it is necessary to call
+<a href="api/ngMock/service/$httpBackend#flush">$httpBackend.flush()</a> to flush each pending
+request using trained responses.</p>
+<pre><code>$httpBackend.expectGET(...);
+$http.get(...);
+$httpBackend.flush();
+</code></pre>
+<h2 id="shortcut-methods">Shortcut methods</h2>
+<p>Shortcut methods are also available. All shortcut methods require passing in the URL, and
+request data must be passed in for POST/PUT requests.</p>
+<pre><code class="lang-js">$http.get(&#39;/someUrl&#39;).success(successCallback);
+$http.post(&#39;/someUrl&#39;, data).success(successCallback);
+</code></pre>
+<p>Complete list of shortcut methods:</p>
+<ul>
+<li><a href="api/ng/service/$http#get">$http.get</a></li>
+<li><a href="api/ng/service/$http#head">$http.head</a></li>
+<li><a href="api/ng/service/$http#post">$http.post</a></li>
+<li><a href="api/ng/service/$http#put">$http.put</a></li>
+<li><a href="api/ng/service/$http#delete">$http.delete</a></li>
+<li><a href="api/ng/service/$http#jsonp">$http.jsonp</a></li>
+<li><a href="api/ng/service/$http#patch">$http.patch</a></li>
+</ul>
+<h2 id="setting-http-headers">Setting HTTP Headers</h2>
+<p>The $http service will automatically add certain HTTP headers to all requests. These defaults
+can be fully configured by accessing the <code>$httpProvider.defaults.headers</code> configuration
+object, which currently contains this default configuration:</p>
+<ul>
+<li><code>$httpProvider.defaults.headers.common</code> (headers that are common for all requests):<ul>
+<li><code>Accept: application/json, text/plain, * / *</code></li>
+</ul>
+</li>
+<li><code>$httpProvider.defaults.headers.post</code>: (header defaults for POST requests)<ul>
+<li><code>Content-Type: application/json</code></li>
+</ul>
+</li>
+<li><code>$httpProvider.defaults.headers.put</code> (header defaults for PUT requests)<ul>
+<li><code>Content-Type: application/json</code></li>
+</ul>
+</li>
+</ul>
+<p>To add or overwrite these defaults, simply add or remove a property from these configuration
+objects. To add headers for an HTTP method other than POST or PUT, simply add a new object
+with the lowercased HTTP method name as the key, e.g.
+<code>$httpProvider.defaults.headers.get = { &#39;My-Header&#39; : &#39;value&#39; }</code>.</p>
+<p>The defaults can also be set at runtime via the <code>$http.defaults</code> object in the same
+fashion. For example:</p>
+<pre><code>module.run(function($http) {
+  $http.defaults.headers.common.Authorization = &#39;Basic YmVlcDpib29w&#39;
+});
+</code></pre>
+<p>In addition, you can supply a <code>headers</code> property in the config object passed when
+calling <code>$http(config)</code>, which overrides the defaults without changing them globally.</p>
+<p>To explicitly remove a header automatically added via $httpProvider.defaults.headers on a per request basis,
+Use the <code>headers</code> property, setting the desired header to <code>undefined</code>. For example:</p>
+<pre><code class="lang-js">var req = {
+ method: &#39;POST&#39;,
+ url: &#39;http://example.com&#39;,
+ headers: {
+   &#39;Content-Type&#39;: undefined
+ },
+ data: { test: &#39;test&#39; },
+}
+
+$http(req).success(function(){...}).error(function(){...});
+</code></pre>
+<h2 id="transforming-requests-and-responses">Transforming Requests and Responses</h2>
+<p>Both requests and responses can be transformed using transformation functions: <code>transformRequest</code>
+and <code>transformResponse</code>. These properties can be a single function that returns
+the transformed value (<code>function(data, headersGetter, status)</code>) or an array of such transformation functions,
+which allows you to <code>push</code> or <code>unshift</code> a new transformation function into the transformation chain.</p>
+<h3 id="default-transformations">Default Transformations</h3>
+<p>The <code>$httpProvider</code> provider and <code>$http</code> service expose <code>defaults.transformRequest</code> and
+<code>defaults.transformResponse</code> properties. If a request does not provide its own transformations
+then these will be applied.</p>
+<p>You can augment or replace the default transformations by modifying these properties by adding to or
+replacing the array.</p>
+<p>Angular provides the following default transformations:</p>
+<p>Request transformations (<code>$httpProvider.defaults.transformRequest</code> and <code>$http.defaults.transformRequest</code>):</p>
+<ul>
+<li>If the <code>data</code> property of the request configuration object contains an object, serialize it
+into JSON format.</li>
+</ul>
+<p>Response transformations (<code>$httpProvider.defaults.transformResponse</code> and <code>$http.defaults.transformResponse</code>):</p>
+<ul>
+<li>If XSRF prefix is detected, strip it (see Security Considerations section below).</li>
+<li>If JSON response is detected, deserialize it using a JSON parser.</li>
+</ul>
+<h3 id="overriding-the-default-transformations-per-request">Overriding the Default Transformations Per Request</h3>
+<p>If you wish override the request/response transformations only for a single request then provide
+<code>transformRequest</code> and/or <code>transformResponse</code> properties on the configuration object passed
+into <code>$http</code>.</p>
+<p>Note that if you provide these properties on the config object the default transformations will be
+overwritten. If you wish to augment the default transformations then you must include them in your
+local transformation array.</p>
+<p>The following code demonstrates adding a new response transformation to be run after the default response
+transformations have been run.</p>
+<pre><code class="lang-js">function appendTransform(defaults, transform) {
+
+  // We can&#39;t guarantee that the default transformation is an array
+  defaults = angular.isArray(defaults) ? defaults : [defaults];
+
+  // Append the new transformation to the defaults
+  return defaults.concat(transform);
+}
+
+$http({
+  url: &#39;...&#39;,
+  method: &#39;GET&#39;,
+  transformResponse: appendTransform($http.defaults.transformResponse, function(value) {
+    return doTransform(value);
+  })
+});
+</code></pre>
+<h2 id="caching">Caching</h2>
+<p>To enable caching, set the request configuration <code>cache</code> property to <code>true</code> (to use default
+cache) or to a custom cache object (built with <a href="api/ng/service/$cacheFactory"><code>$cacheFactory</code></a>).
+When the cache is enabled, <code>$http</code> stores the response from the server in the specified
+cache. The next time the same request is made, the response is served from the cache without
+sending a request to the server.</p>
+<p>Note that even if the response is served from cache, delivery of the data is asynchronous in
+the same way that real requests are.</p>
+<p>If there are multiple GET requests for the same URL that should be cached using the same
+cache, but the cache is not populated yet, only one request to the server will be made and
+the remaining requests will be fulfilled using the response from the first request.</p>
+<p>You can change the default cache to a new object (built with
+<a href="api/ng/service/$cacheFactory"><code>$cacheFactory</code></a>) by updating the
+<a href="api/ng/service/$http#defaults"><code>$http.defaults.cache</code></a> property. All requests who set
+their <code>cache</code> property to <code>true</code> will now use this cache object.</p>
+<p>If you set the default cache to <code>false</code> then only requests that specify their own custom
+cache object will be cached.</p>
+<h2 id="interceptors">Interceptors</h2>
+<p>Before you start creating interceptors, be sure to understand the
+<a href="api/ng/service/$q">$q and deferred/promise APIs</a>.</p>
+<p>For purposes of global error handling, authentication, or any kind of synchronous or
+asynchronous pre-processing of request or postprocessing of responses, it is desirable to be
+able to intercept requests before they are handed to the server and
+responses before they are handed over to the application code that
+initiated these requests. The interceptors leverage the <a href="api/ng/service/$q">promise APIs</a> to fulfill this need for both synchronous and asynchronous pre-processing.</p>
+<p>The interceptors are service factories that are registered with the <code>$httpProvider</code> by
+adding them to the <code>$httpProvider.interceptors</code> array. The factory is called and
+injected with dependencies (if specified) and returns the interceptor.</p>
+<p>There are two kinds of interceptors (and two kinds of rejection interceptors):</p>
+<ul>
+<li><code>request</code>: interceptors get called with a http <code>config</code> object. The function is free to
+modify the <code>config</code> object or create a new one. The function needs to return the <code>config</code>
+object directly, or a promise containing the <code>config</code> or a new <code>config</code> object.</li>
+<li><code>requestError</code>: interceptor gets called when a previous interceptor threw an error or
+resolved with a rejection.</li>
+<li><code>response</code>: interceptors get called with http <code>response</code> object. The function is free to
+modify the <code>response</code> object or create a new one. The function needs to return the <code>response</code>
+object directly, or as a promise containing the <code>response</code> or a new <code>response</code> object.</li>
+<li><code>responseError</code>: interceptor gets called when a previous interceptor threw an error or
+resolved with a rejection.</li>
+</ul>
+<pre><code class="lang-js">// register the interceptor as a service
+$provide.factory(&#39;myHttpInterceptor&#39;, function($q, dependency1, dependency2) {
+  return {
+    // optional method
+    &#39;request&#39;: function(config) {
+      // do something on success
+      return config;
+    },
+
+    // optional method
+   &#39;requestError&#39;: function(rejection) {
+      // do something on error
+      if (canRecover(rejection)) {
+        return responseOrNewPromise
+      }
+      return $q.reject(rejection);
+    },
+
+
+
+    // optional method
+    &#39;response&#39;: function(response) {
+      // do something on success
+      return response;
+    },
+
+    // optional method
+   &#39;responseError&#39;: function(rejection) {
+      // do something on error
+      if (canRecover(rejection)) {
+        return responseOrNewPromise
+      }
+      return $q.reject(rejection);
+    }
+  };
+});
+
+$httpProvider.interceptors.push(&#39;myHttpInterceptor&#39;);
+
+
+// alternatively, register the interceptor via an anonymous factory
+$httpProvider.interceptors.push(function($q, dependency1, dependency2) {
+  return {
+   &#39;request&#39;: function(config) {
+       // same as above
+    },
+
+    &#39;response&#39;: function(response) {
+       // same as above
+    }
+  };
+});
+</code></pre>
+<h2 id="security-considerations">Security Considerations</h2>
+<p>When designing web applications, consider security threats from:</p>
+<ul>
+<li><a href="http://haacked.com/archive/2008/11/20/anatomy-of-a-subtle-json-vulnerability.aspx">JSON vulnerability</a></li>
+<li><a href="http://en.wikipedia.org/wiki/Cross-site_request_forgery">XSRF</a></li>
+</ul>
+<p>Both server and the client must cooperate in order to eliminate these threats. Angular comes
+pre-configured with strategies that address these issues, but for this to work backend server
+cooperation is required.</p>
+<h3 id="json-vulnerability-protection">JSON Vulnerability Protection</h3>
+<p>A <a href="http://haacked.com/archive/2008/11/20/anatomy-of-a-subtle-json-vulnerability.aspx">JSON vulnerability</a>
+allows third party website to turn your JSON resource URL into
+<a href="http://en.wikipedia.org/wiki/JSONP">JSONP</a> request under some conditions. To
+counter this your server can prefix all JSON requests with following string <code>&quot;)]}&#39;,\n&quot;</code>.
+Angular will automatically strip the prefix before processing it as JSON.</p>
+<p>For example if your server needs to return:</p>
+<pre><code class="lang-js">[&#39;one&#39;,&#39;two&#39;]
+</code></pre>
+<p>which is vulnerable to attack, your server can return:</p>
+<pre><code class="lang-js">)]}&#39;,
+[&#39;one&#39;,&#39;two&#39;]
+</code></pre>
+<p>Angular will strip the prefix, before processing the JSON.</p>
+<h3 id="cross-site-request-forgery-xsrf-protection">Cross Site Request Forgery (XSRF) Protection</h3>
+<p><a href="http://en.wikipedia.org/wiki/Cross-site_request_forgery">XSRF</a> is a technique by which
+an unauthorized site can gain your user&#39;s private data. Angular provides a mechanism
+to counter XSRF. When performing XHR requests, the $http service reads a token from a cookie
+(by default, <code>XSRF-TOKEN</code>) and sets it as an HTTP header (<code>X-XSRF-TOKEN</code>). Since only
+JavaScript that runs on your domain could read the cookie, your server can be assured that
+the XHR came from JavaScript running on your domain. The header will not be set for
+cross-domain requests.</p>
+<p>To take advantage of this, your server needs to set a token in a JavaScript readable session
+cookie called <code>XSRF-TOKEN</code> on the first HTTP GET request. On subsequent XHR requests the
+server can verify that the cookie matches <code>X-XSRF-TOKEN</code> HTTP header, and therefore be sure
+that only JavaScript running on your domain could have sent the request. The token must be
+unique for each user and must be verifiable by the server (to prevent the JavaScript from
+making up its own tokens). We recommend that the token is a digest of your site&#39;s
+authentication cookie with a <a href="https://en.wikipedia.org/wiki/Salt_(cryptography&#41;">salt</a>
+for added security.</p>
+<p>The name of the headers can be specified using the xsrfHeaderName and xsrfCookieName
+properties of either $httpProvider.defaults at config-time, $http.defaults at run-time,
+or the per-request config object.</p>
+
+</div>
+
+
+
+
+<div>
+  
+  <h2 id="dependencies">Dependencies</h2>
+  <ul>
+    <li><a href="api/ng/service/$httpBackend"><code>$httpBackend</code></a></li><li><a href="api/ng/service/$cacheFactory"><code>$cacheFactory</code></a></li><li><a href="api/ng/service/$rootScope"><code>$rootScope</code></a></li><li><a href="api/ng/service/$q"><code>$q</code></a></li><li><a href="api/auto/service/$injector"><code>$injector</code></a></li>
+  </ul>
+  
+
+    
+
+  <h2 id="usage">Usage</h2>
+    
+      <p><code>$http(config);</code></p>
+
+
+    
+
+    
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        config
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>Object describing the request to be made and how it should be
+   processed. The object has following properties:</p>
+<ul>
+<li><strong>method</strong> – <code>{string}</code> – HTTP method (e.g. &#39;GET&#39;, &#39;POST&#39;, etc)</li>
+<li><strong>url</strong> – <code>{string}</code> – Absolute or relative URL of the resource that is being requested.</li>
+<li><strong>params</strong> – <code>{Object.&lt;string|Object&gt;}</code> – Map of strings or objects which will be turned
+to <code>?key1=value1&amp;key2=value2</code> after the url. If the value is not a string, it will be
+JSONified.</li>
+<li><strong>data</strong> – <code>{string|Object}</code> – Data to be sent as the request message data.</li>
+<li><strong>headers</strong> – <code>{Object}</code> – Map of strings or functions which return strings representing
+HTTP headers to send to the server. If the return value of a function is null, the
+header will not be sent. Functions accept a config object as an argument.</li>
+<li><strong>xsrfHeaderName</strong> – <code>{string}</code> – Name of HTTP header to populate with the XSRF token.</li>
+<li><strong>xsrfCookieName</strong> – <code>{string}</code> – Name of cookie containing the XSRF token.</li>
+<li><strong>transformRequest</strong> –
+<code>{function(data, headersGetter)|Array.&lt;function(data, headersGetter)&gt;}</code> –
+transform function or an array of such functions. The transform function takes the http
+request body and headers and returns its transformed (typically serialized) version.
+See <a href="api/ng/service/$http#overriding-the-default-transformations-per-request">Overriding the Default Transformations</a></li>
+<li><strong>transformResponse</strong> –
+<code>{function(data, headersGetter, status)|Array.&lt;function(data, headersGetter, status)&gt;}</code> –
+transform function or an array of such functions. The transform function takes the http
+response body, headers and status and returns its transformed (typically deserialized) version.
+See <a href="api/ng/service/$http#overriding-the-default-transformations-per-request">Overriding the Default Transformations</a></li>
+<li><strong>cache</strong> – <code>{boolean|Cache}</code> – If true, a default $http cache will be used to cache the
+GET request, otherwise if a cache instance built with
+<a href="api/ng/service/$cacheFactory">$cacheFactory</a>, this cache will be used for
+caching.</li>
+<li><strong>timeout</strong> – <code>{number|Promise}</code> – timeout in milliseconds, or <a href="api/ng/service/$q">promise</a>
+that should abort the request when resolved.</li>
+<li><strong>withCredentials</strong> - <code>{boolean}</code> - whether to set the <code>withCredentials</code> flag on the
+XHR object. See <a href="https://developer.mozilla.org/docs/Web/HTTP/Access_control_CORS#Requests_with_credentials">requests with credentials</a>
+for more information.</li>
+<li><strong>responseType</strong> - <code>{string}</code> - see
+<a href="https://developer.mozilla.org/en-US/docs/DOM/XMLHttpRequest#responseType">requestType</a>.</li>
+</ul>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
+    
+    <h3>Returns</h3>
+<table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-httppromise">HttpPromise</a></td>
+    <td><p>Returns a <a href="api/ng/service/$q">promise</a> object with the
+  standard <code>then</code> method and two http specific methods: <code>success</code> and <code>error</code>. The <code>then</code>
+  method takes two arguments a success and an error callback which will be called with a
+  response object. The <code>success</code> and <code>error</code> methods take a single argument - a function that
+  will be called when the request succeeds or fails respectively. The arguments passed into
+  these functions are destructured representation of the response object passed into the
+  <code>then</code> method. The response object has these properties:</p>
+<ul>
+<li><strong>data</strong> – <code>{string|Object}</code> – The response body transformed with the transform
+functions.</li>
+<li><strong>status</strong> – <code>{number}</code> – HTTP status code of the response.</li>
+<li><strong>headers</strong> – <code>{function([headerName])}</code> – Header getter function.</li>
+<li><strong>config</strong> – <code>{Object}</code> – The configuration object that was used to generate the request.</li>
+<li><strong>statusText</strong> – <code>{string}</code> – HTTP status text of the response.</li>
+</ul>
+</td>
+  </tr>
+</table>
+
+  
+<h2>Methods</h2>
+<ul class="methods">
+  <li id="get">
+    <h3><p><code>get(url, [config]);</code></p>
+
+</h3>
+    <div><p>Shortcut method to perform <code>GET</code> request.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        url
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Relative or absolute URL specifying the destination of the request</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        config
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">Object</a>
+      </td>
+      <td>
+        <p>Optional configuration object</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-httppromise">HttpPromise</a></td>
+    <td><p>Future object</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="delete">
+    <h3><p><code>delete(url, [config]);</code></p>
+
+</h3>
+    <div><p>Shortcut method to perform <code>DELETE</code> request.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        url
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Relative or absolute URL specifying the destination of the request</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        config
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">Object</a>
+      </td>
+      <td>
+        <p>Optional configuration object</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-httppromise">HttpPromise</a></td>
+    <td><p>Future object</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="head">
+    <h3><p><code>head(url, [config]);</code></p>
+
+</h3>
+    <div><p>Shortcut method to perform <code>HEAD</code> request.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        url
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Relative or absolute URL specifying the destination of the request</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        config
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">Object</a>
+      </td>
+      <td>
+        <p>Optional configuration object</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-httppromise">HttpPromise</a></td>
+    <td><p>Future object</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="jsonp">
+    <h3><p><code>jsonp(url, [config]);</code></p>
+
+</h3>
+    <div><p>Shortcut method to perform <code>JSONP</code> request.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        url
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Relative or absolute URL specifying the destination of the request.
+                    The name of the callback should be the string <code>JSON_CALLBACK</code>.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        config
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">Object</a>
+      </td>
+      <td>
+        <p>Optional configuration object</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-httppromise">HttpPromise</a></td>
+    <td><p>Future object</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="post">
+    <h3><p><code>post(url, data, [config]);</code></p>
+
+</h3>
+    <div><p>Shortcut method to perform <code>POST</code> request.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        url
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Relative or absolute URL specifying the destination of the request</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        data
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">*</a>
+      </td>
+      <td>
+        <p>Request content</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        config
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">Object</a>
+      </td>
+      <td>
+        <p>Optional configuration object</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-httppromise">HttpPromise</a></td>
+    <td><p>Future object</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="put">
+    <h3><p><code>put(url, data, [config]);</code></p>
+
+</h3>
+    <div><p>Shortcut method to perform <code>PUT</code> request.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        url
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Relative or absolute URL specifying the destination of the request</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        data
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">*</a>
+      </td>
+      <td>
+        <p>Request content</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        config
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">Object</a>
+      </td>
+      <td>
+        <p>Optional configuration object</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-httppromise">HttpPromise</a></td>
+    <td><p>Future object</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="patch">
+    <h3><p><code>patch(url, data, [config]);</code></p>
+
+</h3>
+    <div><p>Shortcut method to perform <code>PATCH</code> request.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        url
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Relative or absolute URL specifying the destination of the request</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        data
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">*</a>
+      </td>
+      <td>
+        <p>Request content</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        config
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">Object</a>
+      </td>
+      <td>
+        <p>Optional configuration object</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-httppromise">HttpPromise</a></td>
+    <td><p>Future object</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  </ul>
+  
+  
+<h2>Properties</h2>
+<ul class="properties">
+  <li id="pendingRequests">
+    <h3><code>pendingRequests</code></h3>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-array">Array.&lt;Object&gt;</a></td>
+    <td><p>Array of config objects for currently pending
+  requests. This is primarily meant to be used for debugging purposes.</p>
+</td>
+  </tr>
+</table>
+  </li>
+  
+  <li id="defaults">
+    <h3><code>defaults</code></h3>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td></td>
+    <td><p>Runtime equivalent of the <code>$httpProvider.defaults</code> property. Allows configuration of
+default headers, withCredentials as well as request and response transformations.</p>
+<p>See &quot;Setting HTTP Headers&quot; and &quot;Transforming Requests and Responses&quot; sections above.</p>
+</td>
+  </tr>
+</table>
+  </li>
+  </ul>
+
+
+
+  
+  <h2 id="example">Example</h2><p>
+
+<div>
+  <a ng-click="openPlunkr('examples/example-example105', $event)" class="btn pull-right">
+    <i class="glyphicon glyphicon-edit">&nbsp;</i>
+    Edit in Plunker</a>
+
+  <div class="runnable-example"
+      path="examples/example-example105"
+      module="httpExample">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;div ng-controller=&quot;FetchController&quot;&gt;&#10;  &lt;select ng-model=&quot;method&quot;&gt;&#10;    &lt;option&gt;GET&lt;/option&gt;&#10;    &lt;option&gt;JSONP&lt;/option&gt;&#10;  &lt;/select&gt;&#10;  &lt;input type=&quot;text&quot; ng-model=&quot;url&quot; size=&quot;80&quot;/&gt;&#10;  &lt;button id=&quot;fetchbtn&quot; ng-click=&quot;fetch()&quot;&gt;fetch&lt;/button&gt;&lt;br&gt;&#10;  &lt;button id=&quot;samplegetbtn&quot; ng-click=&quot;updateModel(&#39;GET&#39;, &#39;http-hello.html&#39;)&quot;&gt;Sample GET&lt;/button&gt;&#10;  &lt;button id=&quot;samplejsonpbtn&quot;&#10;    ng-click=&quot;updateModel(&#39;JSONP&#39;,&#10;                  &#39;https://angularjs.org/greet.php?callback=JSON_CALLBACK&amp;name=Super%20Hero&#39;)&quot;&gt;&#10;    Sample JSONP&#10;  &lt;/button&gt;&#10;  &lt;button id=&quot;invalidjsonpbtn&quot;&#10;    ng-click=&quot;updateModel(&#39;JSONP&#39;, &#39;https://angularjs.org/doesntexist&amp;callback=JSON_CALLBACK&#39;)&quot;&gt;&#10;      Invalid JSONP&#10;    &lt;/button&gt;&#10;  &lt;pre&gt;http status code: {{status}}&lt;/pre&gt;&#10;  &lt;pre&gt;http response data: {{data}}&lt;/pre&gt;&#10;&lt;/div&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="script.js"
+      language="js"
+      type="js">
+      <pre><code>angular.module(&#39;httpExample&#39;, [])&#10;.controller(&#39;FetchController&#39;, [&#39;$scope&#39;, &#39;$http&#39;, &#39;$templateCache&#39;,&#10;  function($scope, $http, $templateCache) {&#10;    $scope.method = &#39;GET&#39;;&#10;    $scope.url = &#39;http-hello.html&#39;;&#10;&#10;    $scope.fetch = function() {&#10;      $scope.code = null;&#10;      $scope.response = null;&#10;&#10;      $http({method: $scope.method, url: $scope.url, cache: $templateCache}).&#10;        success(function(data, status) {&#10;          $scope.status = status;&#10;          $scope.data = data;&#10;        }).&#10;        error(function(data, status) {&#10;          $scope.data = data || &quot;Request failed&quot;;&#10;          $scope.status = status;&#10;      });&#10;    };&#10;&#10;    $scope.updateModel = function(method, url) {&#10;      $scope.method = method;&#10;      $scope.url = url;&#10;    };&#10;  }]);</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="http-hello.html"
+      language="html"
+      type="html">
+      <pre><code>Hello, $http!</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="protractor.js"
+      type="protractor"
+      language="js">
+      <pre><code>  var status = element(by.binding(&#39;status&#39;));&#10;  var data = element(by.binding(&#39;data&#39;));&#10;  var fetchBtn = element(by.id(&#39;fetchbtn&#39;));&#10;  var sampleGetBtn = element(by.id(&#39;samplegetbtn&#39;));&#10;  var sampleJsonpBtn = element(by.id(&#39;samplejsonpbtn&#39;));&#10;  var invalidJsonpBtn = element(by.id(&#39;invalidjsonpbtn&#39;));&#10;&#10;  it(&#39;should make an xhr GET request&#39;, function() {&#10;    sampleGetBtn.click();&#10;    fetchBtn.click();&#10;    expect(status.getText()).toMatch(&#39;200&#39;);&#10;    expect(data.getText()).toMatch(/Hello, \$http!/);&#10;  });&#10;&#10;// Commented out due to flakes. See https://github.com/angular/angular.js/issues/9185&#10;// it(&#39;should make a JSONP request to angularjs.org&#39;, function() {&#10;//   sampleJsonpBtn.click();&#10;//   fetchBtn.click();&#10;//   expect(status.getText()).toMatch(&#39;200&#39;);&#10;//   expect(data.getText()).toMatch(/Super Hero!/);&#10;// });&#10;&#10;  it(&#39;should make JSONP request to invalid URL and invoke the error handler&#39;,&#10;      function() {&#10;    invalidJsonpBtn.click();&#10;    fetchBtn.click();&#10;    expect(status.getText()).toMatch(&#39;0&#39;);&#10;    expect(data.getText()).toMatch(&#39;Request failed&#39;);&#10;  });</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-example105/index.html" name="example-example105"></iframe>
+  </div>
+</div>
+
+
+</p>
+
+</div>
+
+

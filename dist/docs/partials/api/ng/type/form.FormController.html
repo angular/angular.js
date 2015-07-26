@@ -1,0 +1,296 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/directive/form.js?message=docs(form.FormController)%3A%20describe%20your%20change...#L20' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/directive/form.js#L20' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">form.FormController</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - type in module <a href="api/ng">ng</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p><code>FormController</code> keeps track of all its controls and nested forms as well as the state of them,
+such as being valid/invalid or dirty/pristine.</p>
+<p>Each <a href="api/ng/directive/form">form</a> directive creates an instance
+of <code>FormController</code>.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+    
+
+  
+
+  
+<h2>Methods</h2>
+<ul class="methods">
+  <li id="$rollbackViewValue">
+    <h3><p><code>$rollbackViewValue();</code></p>
+
+</h3>
+    <div><p>Rollback all form controls pending updates to the <code>$modelValue</code>.</p>
+<p>Updates may be pending by a debounced event or because the input is waiting for a some future
+event defined in <code>ng-model-options</code>. This method is typically needed by the reset button of
+a form that uses <code>ng-model-options</code> to pend updates.</p>
+</div>
+
+    
+
+    
+    
+    
+
+  </li>
+  
+  <li id="$commitViewValue">
+    <h3><p><code>$commitViewValue();</code></p>
+
+</h3>
+    <div><p>Commit all form controls pending updates to the <code>$modelValue</code>.</p>
+<p>Updates may be pending by a debounced event or because the input is waiting for a some future
+event defined in <code>ng-model-options</code>. This method is rarely needed as <code>NgModelController</code>
+usually handles calling this in response to input events.</p>
+</div>
+
+    
+
+    
+    
+    
+
+  </li>
+  
+  <li id="$addControl">
+    <h3><p><code>$addControl();</code></p>
+
+</h3>
+    <div><p>Register a control with the form.</p>
+<p>Input elements using ngModelController do this automatically when they are linked.</p>
+</div>
+
+    
+
+    
+    
+    
+
+  </li>
+  
+  <li id="$removeControl">
+    <h3><p><code>$removeControl();</code></p>
+
+</h3>
+    <div><p>Deregister a control from the form.</p>
+<p>Input elements using ngModelController do this automatically when they are destroyed.</p>
+</div>
+
+    
+
+    
+    
+    
+
+  </li>
+  
+  <li id="$setValidity">
+    <h3><p><code>$setValidity();</code></p>
+
+</h3>
+    <div><p>Sets the validity of a form control.</p>
+<p>This method will also propagate to parent forms.</p>
+</div>
+
+    
+
+    
+    
+    
+
+  </li>
+  
+  <li id="$setDirty">
+    <h3><p><code>$setDirty();</code></p>
+
+</h3>
+    <div><p>Sets the form to a dirty state.</p>
+<p>This method can be called to add the &#39;ng-dirty&#39; class and set the form to a dirty
+state (ng-dirty class). This method will also propagate to parent forms.</p>
+</div>
+
+    
+
+    
+    
+    
+
+  </li>
+  
+  <li id="$setPristine">
+    <h3><p><code>$setPristine();</code></p>
+
+</h3>
+    <div><p>Sets the form to its pristine state.</p>
+<p>This method can be called to remove the &#39;ng-dirty&#39; class and set the form to its pristine
+state (ng-pristine class). This method will also propagate to all the controls contained
+in this form.</p>
+<p>Setting a form back to a pristine state is often useful when we want to &#39;reuse&#39; a form after
+saving or resetting it.</p>
+</div>
+
+    
+
+    
+    
+    
+
+  </li>
+  
+  <li id="$setUntouched">
+    <h3><p><code>$setUntouched();</code></p>
+
+</h3>
+    <div><p>Sets the form to its untouched state.</p>
+<p>This method can be called to remove the &#39;ng-touched&#39; class and set the form controls to their
+untouched state (ng-untouched class).</p>
+<p>Setting a form controls back to their untouched state is often useful when setting the form
+back to its pristine state.</p>
+</div>
+
+    
+
+    
+    
+    
+
+  </li>
+  
+  <li id="$setSubmitted">
+    <h3><p><code>$setSubmitted();</code></p>
+
+</h3>
+    <div><p>Sets the form to its submitted state.</p>
+</div>
+
+    
+
+    
+    
+    
+
+  </li>
+  </ul>
+  
+  
+<h2>Properties</h2>
+<ul class="properties">
+  <li id="$pristine">
+    <h3><code>$pristine</code></h3>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-boolean">boolean</a></td>
+    <td><p>True if user has not interacted with the form yet.</p>
+</td>
+  </tr>
+</table>
+  </li>
+  
+  <li id="$dirty">
+    <h3><code>$dirty</code></h3>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-boolean">boolean</a></td>
+    <td><p>True if user has already interacted with the form.</p>
+</td>
+  </tr>
+</table>
+  </li>
+  
+  <li id="$valid">
+    <h3><code>$valid</code></h3>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-boolean">boolean</a></td>
+    <td><p>True if all of the containing forms and controls are valid.</p>
+</td>
+  </tr>
+</table>
+  </li>
+  
+  <li id="$invalid">
+    <h3><code>$invalid</code></h3>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-boolean">boolean</a></td>
+    <td><p>True if at least one containing control or form is invalid.</p>
+</td>
+  </tr>
+</table>
+  </li>
+  
+  <li id="$submitted">
+    <h3><code>$submitted</code></h3>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-boolean">boolean</a></td>
+    <td><p>True if user has submitted the form even if its invalid.</p>
+</td>
+  </tr>
+</table>
+  </li>
+  
+  <li id="$error">
+    <h3><code>$error</code></h3>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-object">Object</a></td>
+    <td><p>Is an object hash, containing references to controls or
+ forms with failing validators, where:</p>
+<ul>
+<li>keys are validation tokens (error names),</li>
+<li><p>values are arrays of controls or forms that have a failing validator for given error name.</p>
+<p>Built-in validation tokens:</p>
+</li>
+<li><p><code>email</code></p>
+</li>
+<li><code>max</code></li>
+<li><code>maxlength</code></li>
+<li><code>min</code></li>
+<li><code>minlength</code></li>
+<li><code>number</code></li>
+<li><code>pattern</code></li>
+<li><code>required</code></li>
+<li><code>url</code></li>
+<li><code>date</code></li>
+<li><code>datetimelocal</code></li>
+<li><code>time</code></li>
+<li><code>week</code></li>
+<li><code>month</code></li>
+</ul>
+</td>
+  </tr>
+</table>
+  </li>
+  </ul>
+
+
+
+  
+</div>
+
+

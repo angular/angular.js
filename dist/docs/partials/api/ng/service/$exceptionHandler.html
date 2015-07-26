@@ -1,0 +1,132 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/exceptionHandler.js?message=docs($exceptionHandler)%3A%20describe%20your%20change...#L3' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/exceptionHandler.js#L3' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">$exceptionHandler</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+  
+
+    <li>
+      - service in module <a href="api/ng">ng</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Any uncaught exception in angular expressions is delegated to this service.
+The default implementation simply delegates to <code>$log.error</code> which logs it into
+the browser console.</p>
+<p>In unit tests, if <code>angular-mocks.js</code> is loaded, this service is overridden by
+<a href="api/ngMock/service/$exceptionHandler">mock $exceptionHandler</a> which aids in testing.</p>
+<h2 id="example-">Example:</h2>
+<pre><code class="lang-js">angular.module(&#39;exceptionOverride&#39;, []).factory(&#39;$exceptionHandler&#39;, function() {
+  return function(exception, cause) {
+    exception.message += &#39; (caused by &quot;&#39; + cause + &#39;&quot;)&#39;;
+    throw exception;
+  };
+});
+</code></pre>
+<p>This example will override the normal action of <code>$exceptionHandler</code>, to make angular
+exceptions fail hard when they happen, instead of just logging to the console.</p>
+<p><hr />
+Note, that code executed in event-listeners (even those registered using jqLite&#39;s <code>on</code>/<code>bind</code>
+methods) does not delegate exceptions to the <a href="api/ng/service/$exceptionHandler">$exceptionHandler</a>
+(unless executed during a digest).</p>
+<p>If you wish, you can manually delegate exceptions, e.g.
+<code>try { ... } catch(e) { $exceptionHandler(e); }</code></p>
+
+</div>
+
+
+
+
+<div>
+  
+  <h2 id="dependencies">Dependencies</h2>
+  <ul>
+    <li><a href="api/ng/service/$log"><code>$log</code></a></li>
+  </ul>
+  
+
+    
+
+  <h2 id="usage">Usage</h2>
+    
+      <p><code>$exceptionHandler(exception, [cause]);</code></p>
+
+
+    
+
+    
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        exception
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-error">Error</a>
+      </td>
+      <td>
+        <p>Exception associated with the error.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        cause
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>optional information about the context in which
+      the error was thrown.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
+    
+    
+
+  
+  
+  
+
+
+
+  
+</div>
+
+

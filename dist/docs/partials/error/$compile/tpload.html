@@ -1,0 +1,21 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/error/$compile/tpload.ngdoc?message=docs(error%2Ftpload)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1>Error: error:tpload
+  <div><span class='hint'>Error Loading Template</span></div>
+</h1>
+
+<div>
+    <pre class="minerr-errmsg" error-display="Failed to load template: {0} (HTTP status: {1} {2})">Failed to load template: {0} (HTTP status: {1} {2})</pre>
+</div>
+
+<h2>Description</h2>
+<div class="description">
+  <p>This error occurs when <a href="api/ng/service/$compile"><code>$compile</code></a> attempts to fetch a template from some URL, and the request fails.</p>
+<p>To resolve this error, ensure that the URL of the template is spelled correctly and resolves to correct absolute URL.
+The <a href="https://developers.google.com/chrome-developer-tools/docs/network#network_panel_overview">Chrome Developer Tools</a> might also be helpful in determining why the request failed.</p>
+<p>If you are using <a href="api/ng/service/$templateCache"><code>$templateCache</code></a> to pre-load templates, ensure that the cache was populated with the template.</p>
+
+</div>
+
+

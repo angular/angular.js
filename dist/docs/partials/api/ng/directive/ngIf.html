@@ -1,0 +1,153 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/directive/ngIf.js?message=docs(ngIf)%3A%20describe%20your%20change...#L3' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/directive/ngIf.js#L3' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">ngIf</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - directive in module <a href="api/ng">ng</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>The <code>ngIf</code> directive removes or recreates a portion of the DOM tree based on an
+{expression}. If the expression assigned to <code>ngIf</code> evaluates to a false
+value then the element is removed from the DOM, otherwise a clone of the
+element is reinserted into the DOM.</p>
+<p><code>ngIf</code> differs from <code>ngShow</code> and <code>ngHide</code> in that <code>ngIf</code> completely removes and recreates the
+element in the DOM rather than changing its visibility via the <code>display</code> css property.  A common
+case when this difference is significant is when using css selectors that rely on an element&#39;s
+position within the DOM, such as the <code>:first-child</code> or <code>:last-child</code> pseudo-classes.</p>
+<p>Note that when an element is removed using <code>ngIf</code> its scope is destroyed and a new scope
+is created when the element is restored.  The scope created within <code>ngIf</code> inherits from
+its parent scope using
+<a href="https://github.com/angular/angular.js/wiki/Understanding-Scopes#javascript-prototypal-inheritance">prototypal inheritance</a>.
+An important implication of this is if <code>ngModel</code> is used within <code>ngIf</code> to bind to
+a javascript primitive defined in the parent scope. In this case any modifications made to the
+variable within the child scope will override (hide) the value in the parent scope.</p>
+<p>Also, <code>ngIf</code> recreates elements using their compiled state. An example of this behavior
+is if an element&#39;s class attribute is directly modified after it&#39;s compiled, using something like
+jQuery&#39;s <code>.addClass()</code> method, and the element is later removed. When <code>ngIf</code> recreates the element
+the added class will be lost because the original compiled state is used to regenerate the element.</p>
+<p>Additionally, you can provide animations via the <code>ngAnimate</code> module to animate the <code>enter</code>
+and <code>leave</code> effects.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+  
+  <h2>Directive Info</h2>
+  <ul>
+    <li>This directive creates new scope.</li>
+    <li>This directive executes at priority level 600.</li>
+  </ul>
+
+  
+  <h2 id="usage">Usage</h2>
+  <div class="usage">
+  
+    <ul>
+    <li>as attribute:
+        <pre><code>&lt;ANY&#10;  ng-if=&quot;&quot;&gt;&#10;...&#10;&lt;/ANY&gt;</code></pre>
+      </li>
+    
+  </div>
+  
+  <h2 id="animations">Animations</h2>
+  <p>enter - happens just after the <code>ngIf</code> contents change and a new DOM element is created and injected into the <code>ngIf</code> container
+leave - happens just before the <code>ngIf</code> contents are removed from the DOM</p>
+
+  <a href="api/ngAnimate/service/$animate">Click here</a> to learn more about the steps involved in the animation.
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        ngIf
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-expression">expression</a>
+      </td>
+      <td>
+        <p>If the <a href="guide/expression">expression</a> is falsy then
+    the element is removed from the DOM tree. If it is truthy a copy of the compiled
+    element is added to the DOM tree.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
+  
+
+
+  
+  <h2 id="example">Example</h2><p>
+
+<div>
+  <a ng-click="openPlunkr('examples/example-example82', $event)" class="btn pull-right">
+    <i class="glyphicon glyphicon-edit">&nbsp;</i>
+    Edit in Plunker</a>
+
+  <div class="runnable-example"
+      path="examples/example-example82"
+      module="ngAnimate"
+      deps="angular-animate.js"
+      animations="true">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>Click me: &lt;input type=&quot;checkbox&quot; ng-model=&quot;checked&quot; ng-init=&quot;checked=true&quot; /&gt;&lt;br/&gt;&#10;Show when checked:&#10;&lt;span ng-if=&quot;checked&quot; class=&quot;animate-if&quot;&gt;&#10;  This is removed when the checkbox is unchecked.&#10;&lt;/span&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="animations.css"
+      language="css"
+      type="css">
+      <pre><code>.animate-if {&#10;  background:white;&#10;  border:1px solid black;&#10;  padding:10px;&#10;}&#10;&#10;.animate-if.ng-enter, .animate-if.ng-leave {&#10;  -webkit-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;&#10;  transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;&#10;}&#10;&#10;.animate-if.ng-enter,&#10;.animate-if.ng-leave.ng-leave-active {&#10;  opacity:0;&#10;}&#10;&#10;.animate-if.ng-leave,&#10;.animate-if.ng-enter.ng-enter-active {&#10;  opacity:1;&#10;}</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-example82/index.html" name="example-example82"></iframe>
+  </div>
+</div>
+
+
+</p>
+
+</div>
+
+

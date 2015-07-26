@@ -1,0 +1,198 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/tutorial/index.ngdoc?message=docs(tutorial%2FTutorial)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1 id="phonecat-tutorial-app">PhoneCat Tutorial App</h1>
+<p>A great way to get introduced to AngularJS is to work through this tutorial, which walks you through
+the construction of an AngularJS web app. The app you will build is a catalog that displays a list
+of Android devices, lets you filter the list to see only devices that interest you, and then view
+details for any device.</p>
+<p><img class="diagram" src="img/tutorial/catalog_screen.png" width="488" height="413" alt="demo
+application running in the browser"></p>
+<p>Follow the tutorial to see how Angular makes browsers smarter — without the use of native
+extensions or plug-ins:</p>
+<ul>
+<li>See examples of how to use client-side data binding to build dynamic views of data that change
+immediately in response to user actions.</li>
+<li>See how Angular keeps your views in sync with your data without the need for DOM manipulation.</li>
+<li>Learn a better, easier way to test your web apps, with Karma and Protractor.</li>
+<li>Learn how to use dependency injection and services to make common web tasks, such as getting data
+into your app, easier.</li>
+</ul>
+<p>When you finish the tutorial you will be able to:</p>
+<ul>
+<li>Create a dynamic application that works in all modern browsers.</li>
+<li>Use data binding to wire up your data model to your views.</li>
+<li>Create and run unit tests, with Karma.</li>
+<li>Create and run end to end tests, with Protractor.</li>
+<li>Move application logic out of the template and into Controllers.</li>
+<li>Get data from a server using Angular services.</li>
+<li>Apply animations to your application, using ngAnimate.</li>
+<li>Identify resources for learning more about AngularJS.</li>
+</ul>
+<p>The tutorial guides you through the entire process of building a simple application, including
+writing and running unit and end-to-end tests. Experiments at the end of each step provide
+suggestions for you to learn more about AngularJS and the application you are building.</p>
+<p>You can go through the whole tutorial in a couple of hours or you may want to spend a pleasant day
+really digging into it. If you&#39;re looking for a shorter introduction to AngularJS, check out the
+<a href="misc/started">Getting Started</a> document.</p>
+<h1 id="get-started">Get Started</h1>
+<p>The rest of this page explains how you can set up your local machine for development.
+If you just want to read the tutorial then you can just go straight to the first step:
+<a href="tutorial/step_00">Step 0 - Bootstrapping</a>.</p>
+<h1 id="working-with-the-code">Working with the code</h1>
+<p>You can follow along with this tutorial and hack on the code in the comfort of your own computer.
+In this way you can get hands-on practice of really writing AngularJS code and also on using the
+recommended testing tools.</p>
+<p>The tutorial relies on the use of the <a href="http://git-scm.com/">Git</a> versioning system for source code management.
+You don&#39;t need to know anything about Git to follow the tutorial other than how to install and run
+a few git commands.</p>
+<h3 id="install-git">Install Git</h3>
+<p>You can download and install Git from <a href="http://git-scm.com/download">http://git-scm.com/download</a>. Once installed you should have
+access to the <code>git</code> command line tool.  The main commands that you will need to use are:</p>
+<ul>
+<li><code>git clone ...</code> : clone a remote repository onto your local machine</li>
+<li><code>git checkout ...</code> : check out a particular branch or a tagged version of the code to hack on</li>
+</ul>
+<h3 id="download-angular-phonecat">Download angular-phonecat</h3>
+<p>Clone the <a href="https://github.com/angular/angular-phonecat">angular-phonecat repository</a> located at GitHub by running the following
+command:</p>
+<pre><code>git clone --depth=14 https://github.com/angular/angular-phonecat.git
+</code></pre>
+<p>This command creates the <code>angular-phonecat</code> directory in your current directory.</p>
+<div class="alert alert-info">The <code>--depth=14</code> option just tells Git to pull down only the last 14 commits.  This makes the
+download much smaller and faster.
+</div>
+
+<p>Change your current directory to <code>angular-phonecat</code>.</p>
+<pre><code>cd angular-phonecat
+</code></pre>
+<p>The tutorial instructions, from now on, assume you are running all commands from the
+<code>angular-phonecat</code> directory.</p>
+<h3 id="install-node-js">Install Node.js</h3>
+<p>If you want to run the preconfigured local web-server and the test tools then you will also need
+<a href="http://nodejs.org/">Node.js v0.10.27+</a>.</p>
+<p>You can download a Node.js installer for your operating system from <a href="http://nodejs.org/download/">http://nodejs.org/download/</a>.</p>
+<p>Check the version of Node.js that you have installed by running the following command:</p>
+<pre><code>node --version
+</code></pre>
+<p>In Debian based distributions, there is a name clash with another utility called <code>node</code>. The
+suggested solution is to also install the <code>nodejs-legacy</code> apt package, which renames <code>node</code> to
+<code>nodejs</code>.</p>
+<pre><code>apt-get install nodejs-legacy npm
+nodejs --version
+npm --version
+</code></pre>
+<div class="alert alert-info">If you need to run different versions of node.js
+  in your local environment, consider installing
+  <a href="https://github.com/creationix/nvm" title="Node Version Manager Github Repo link">
+    Node Version Manager (nvm)
+  </a>.
+</div>
+
+<p>Once you have Node.js installed on your machine you can download the tool dependencies by running:</p>
+<pre><code>npm install
+</code></pre>
+<p>This command will download the following tools, into the <code>node_modules</code> directory:</p>
+<ul>
+<li><a href="http://bower.io/">Bower</a> - client-side code package manager</li>
+<li><a href="https://github.com/nodeapps/http-server">Http-Server</a> - simple local static web server</li>
+<li><a href="https://github.com/karma-runner/karma">Karma</a> - unit test runner</li>
+<li><a href="https://github.com/angular/protractor">Protractor</a> - end to end (E2E) test runner</li>
+</ul>
+<p>Running <code>npm install</code> will also automatically use bower to download the Angular framework into the
+<code>app/bower_components</code> directory.</p>
+<div class="alert alert-info">
+  Note the angular-phonecat project is setup to install and run these utilities via npm scripts.
+  This means that you do not have to have any of these utilities installed globally on your system
+  to follow the tutorial.  See <strong>Installing Helper Tools</strong> below for more information.
+</div>
+
+<p>The project is preconfigured with a number of npm helper scripts to make it easy to run the common
+tasks that you will need while developing:</p>
+<ul>
+<li><code>npm start</code> : start a local development web-server</li>
+<li><code>npm test</code> : start the Karma unit test runner</li>
+<li><code>npm run protractor</code> : run the Protractor end to end (E2E) tests</li>
+<li><code>npm run update-webdriver</code> : install the drivers needed by Protractor</li>
+</ul>
+<h3 id="install-helper-tools-optional-">Install Helper Tools (optional)</h3>
+<p>The Bower, Http-Server, Karma and Protractor modules are also executables, which can be installed
+globally and run directly from a terminal/command prompt. You don&#39;t need to do this to follow the
+tutorial, but if you decide you do want to run them directly, you can install these modules globally
+using, <code>sudo npm install -g ...</code>.</p>
+<p>For instance, to install the Bower command line executable you would do:</p>
+<pre><code>sudo npm install -g bower
+</code></pre>
+<p><em>(Omit the sudo if running on Windows)</em></p>
+<p>Then you can run the bower tool directly, such as:</p>
+<pre><code>bower install
+</code></pre>
+<h3 id="running-development-web-server">Running Development Web Server</h3>
+<p>While Angular applications are purely client-side code, and it is possible to open them in a web
+browser directly from the file system, it is better to serve them from a HTTP web server.  In
+particular, for security reasons, most modern browsers will not allow JavaScript to make server
+requests if the page is loaded directly from the file system.</p>
+<p>The angular-phonecat project is configured with a simple static web server for hosting the
+application during development. Start the web server by running:</p>
+<pre><code>npm start
+</code></pre>
+<p>This will create a local webserver that is listening to port 8000 on your local machine.
+You can now browse to the application at:</p>
+<pre><code>http://localhost:8000/app/index.html
+</code></pre>
+<div class="alert alert-info">
+To serve the web app on a different ip address or port, edit the &quot;start&quot; script within package.json.
+You can <code>-a</code> to set the address and <code>-p</code> to set the port.
+</div>
+
+<h3 id="running-unit-tests">Running Unit Tests</h3>
+<p>We use unit tests to ensure that the JavaScript code in our application is operating correctly.
+Unit tests focus on testing small isolated parts of the application. The unit tests are kept in the
+<code>test/unit</code> directory.</p>
+<p>The angular-phonecat project is configured to use <a href="https://github.com/karma-runner/karma">Karma</a> to run the unit tests for the
+application.  Start Karma by running:</p>
+<pre><code>npm test
+</code></pre>
+<p>This will start the Karma unit test runner. Karma will read the configuration file at
+<code>test/karma.conf.js</code>.  This configuration file tells Karma to:</p>
+<ul>
+<li>open up a Chrome browser and connect it to Karma</li>
+<li>execute all the unit tests in this browser</li>
+<li>report the results of these tests in the terminal/command line window</li>
+<li>watch all the project&#39;s JavaScript files and re-run the tests whenever any of these change</li>
+</ul>
+<p>It is good to leave this running all the time, in the background, as it will give you immediate
+feedback about whether your changes pass the unit tests while you are working on the code.</p>
+<h3 id="running-end-to-end-tests">Running End to End Tests</h3>
+<p>We use End to End tests to ensure that the application as a whole operates as expected.
+End to End tests are designed to test the whole client side application, in particular that the
+views are displaying and behaving correctly. It does this by simulating real user interaction with
+the real application running in the browser.</p>
+<p>The End to End tests are kept in the <code>test/e2e</code> directory.</p>
+<p>The angular-phonecat project is configured to use <a href="https://github.com/angular/protractor">Protractor</a> to run the End to End
+tests for the application.  Protractor relies upon a set of drivers to allow it to interact with
+the browser. You can install these drivers by running:</p>
+<pre><code>npm run update-webdriver
+</code></pre>
+<p><em>(You should only need to do this once.)</em></p>
+<p>Since Protractor works by interacting with a running application, we need to start our web server:</p>
+<pre><code>npm start
+</code></pre>
+<p>Then in a separate terminal/command line window, we can run the Protractor test scripts against the
+application by running:</p>
+<pre><code>npm run protractor
+</code></pre>
+<p>Protractor will read the configuration file at <code>test/protractor-conf.js</code>.  This configuration tells
+Protractor to:</p>
+<ul>
+<li>open up a Chrome browser and connect it to the application</li>
+<li>execute all the End to End tests in this browser</li>
+<li>report the results of these tests in the terminal/command line window</li>
+<li>close down the browser and exit</li>
+</ul>
+<p>It is good to run the end to end tests whenever you make changes to the HTML views or want to check
+that the application as a whole is executing correctly.  It is very common to run End to End tests
+before pushing a new commit of changes to a remote repository.</p>
+
+
+

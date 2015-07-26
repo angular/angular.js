@@ -1,0 +1,45 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/error/$rootScope/infdig.ngdoc?message=docs(error%2Finfdig)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1>Error: error:infdig
+  <div><span class='hint'>Infinite $digest Loop</span></div>
+</h1>
+
+<div>
+    <pre class="minerr-errmsg" error-display="{0} $digest() iterations reached. Aborting!
+Watchers fired in the last 5 iterations: {1}">{0} $digest() iterations reached. Aborting!
+Watchers fired in the last 5 iterations: {1}</pre>
+</div>
+
+<h2>Description</h2>
+<div class="description">
+  <p>This error occurs when the application&#39;s model becomes unstable and each <code>$digest</code> cycle triggers a state change and subsequent <code>$digest</code> cycle.
+Angular detects this situation and prevents an infinite loop from causing the browser to become unresponsive.</p>
+<p>For example, the situation can occur by setting up a watch on a path and subsequently updating the same path when the value changes.</p>
+<pre><code>$scope.$watch(&#39;foo&#39;, function() {
+  $scope.foo = $scope.foo + 1;
+});
+</code></pre>
+<p>One common mistake is binding to a function which generates a new array every time it is called.  For example:</p>
+<pre><code>&lt;div ng-repeat=&quot;user in getUsers()&quot;&gt;{{ user.name }}&lt;/div&gt;
+
+...
+
+$scope.getUsers = function() {
+  return [ { name: &#39;Hank&#39; }, { name: &#39;Francisco&#39; } ];
+};
+</code></pre>
+<p>Since <code>getUsers()</code> returns a new array, Angular determines that the model is different on each <code>$digest</code>
+cycle, resulting in the error.  The solution is to return the same array object if the elements have
+not changed:</p>
+<pre><code>var users = [ { name: &#39;Hank&#39; }, { name: &#39;Francisco&#39; } ];
+
+$scope.getUsers = function() {
+  return users;
+};
+</code></pre>
+<p>The maximum number of allowed iterations of the <code>$digest</code> cycle is controlled via TTL setting which can be configured via <a href="api/ng/provider/$rootScopeProvider">$rootScopeProvider</a>.</p>
+
+</div>
+
+

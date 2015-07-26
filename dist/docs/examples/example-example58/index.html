@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Example - example-example58</title>
+  
+
+  <script src="../../../angular.min.js"></script>
+  <script src="../../../angular-animate.js"></script>
+  
+
+  <script type="text/javascript">
+    angular.element(document.getElementsByTagName('head')).append(angular.element('<base href="' + window.location.pathname + '" />'));
+  </script>
+</head>
+<body ng-app="formExample">
+  <script>
+  angular.module('formExample', [])
+    .controller('FormController', ['$scope', function($scope) {
+      $scope.userType = 'guest';
+    }]);
+</script>
+<style>
+ .my-form {
+   -webkit-transition:all linear 0.5s;
+   transition:all linear 0.5s;
+   background: transparent;
+ }
+ .my-form.ng-invalid {
+   background: red;
+ }
+</style>
+<form name="myForm" ng-controller="FormController" class="my-form">
+  userType: <input name="input" ng-model="userType" required>
+  <span class="error" ng-show="myForm.input.$error.required">Required!</span><br>
+  <tt>userType = {{userType}}</tt><br>
+  <tt>myForm.input.$valid = {{myForm.input.$valid}}</tt><br>
+  <tt>myForm.input.$error = {{myForm.input.$error}}</tt><br>
+  <tt>myForm.$valid = {{myForm.$valid}}</tt><br>
+  <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br>
+ </form>
+</body>
+</html>

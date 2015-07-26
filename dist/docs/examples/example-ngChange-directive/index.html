@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Example - example-ngChange-directive</title>
+  
+
+  <script src="../../../angular.min.js"></script>
+  
+
+  
+</head>
+<body ng-app="changeExample">
+  <script>
+  angular.module('changeExample', [])
+    .controller('ExampleController', ['$scope', function($scope) {
+      $scope.counter = 0;
+      $scope.change = function() {
+        $scope.counter++;
+      };
+    }]);
+</script>
+<div ng-controller="ExampleController">
+  <input type="checkbox" ng-model="confirmed" ng-change="change()" id="ng-change-example1" />
+  <input type="checkbox" ng-model="confirmed" id="ng-change-example2" />
+  <label for="ng-change-example2">Confirmed</label><br />
+  <tt>debug = {{confirmed}}</tt><br/>
+  <tt>counter = {{counter}}</tt><br/>
+</div>
+</body>
+</html>

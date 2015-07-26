@@ -1,0 +1,112 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ngMock/angular-mocks.js?message=docs($exceptionHandlerProvider)%3A%20describe%20your%20change...#L191' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ngMock/angular-mocks.js#L191' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">$exceptionHandlerProvider</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+  <li>
+    <a href="api/ngMock/service/$exceptionHandler">- $exceptionHandler</a>
+  </li>
+
+    <li>
+      - provider in module <a href="api/ngMock">ngMock</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Configures the mock implementation of <a href="api/ng/service/$exceptionHandler"><code>$exceptionHandler</code></a> to rethrow or to log errors
+passed to the <code>$exceptionHandler</code>.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+    
+
+  
+
+  
+<h2>Methods</h2>
+<ul class="methods">
+  <li id="mode">
+    <h3><p><code>mode(mode);</code></p>
+
+</h3>
+    <div><p>Sets the logging mode.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        mode
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Mode of operation, defaults to <code>rethrow</code>.</p>
+<ul>
+<li><code>log</code>: Sometimes it is desirable to test that an error is thrown, for this case the <code>log</code><pre><code>mode stores an array of errors in `$exceptionHandler.errors`, to allow later
+assertion of them. See <a href="api/ngMock/service/$log#assertEmpty">assertEmpty()</a> and
+<a href="api/ngMock/service/$log#reset">reset()</a>
+</code></pre>
+</li>
+<li><code>rethrow</code>: If any errors are passed to the handler in tests, it typically means that there<pre><code>is a bug in the application or test, so this mock will make these tests fail.
+For any implementations that expect exceptions to be thrown, the `rethrow` mode
+will also maintain a log of thrown errors.
+</code></pre>
+</li>
+</ul>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+
+  </li>
+  </ul>
+  
+  
+
+
+
+  
+</div>
+
+

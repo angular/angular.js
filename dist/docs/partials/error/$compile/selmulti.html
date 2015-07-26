@@ -1,0 +1,26 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/error/$compile/selmulti.ngdoc?message=docs(error%2Fselmulti)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1>Error: error:selmulti
+  <div><span class='hint'>Binding to Multiple Attribute</span></div>
+</h1>
+
+<div>
+    <pre class="minerr-errmsg" error-display="Binding to the 'multiple' attribute is not supported. Element: {0}">Binding to the 'multiple' attribute is not supported. Element: {0}</pre>
+</div>
+
+<h2>Description</h2>
+<div class="description">
+  <p>Binding to the <code>multiple</code> attribute of <code>select</code> element is not supported since switching between multiple and single mode changes the <a href="api/ng/directive/ngModel"><code>ngModel</code></a> object type from instance to array of instances which breaks the model semantics.</p>
+<p>If you need to use different types of <code>select</code> elements in your template based on some variable, please use <a href="api/ng/directive/ngIf">ngIf</a> or <a href="api/ng/directive/ngSwitch">ngSwitch</a> directives to select one of them to be used at runtime.</p>
+<p>Example with invalid usage:</p>
+<pre><code>&lt;select ng-model=&quot;some.model&quot; multiple=&quot;{{mode}}&quot;&gt;&lt;/select&gt;
+</code></pre>
+<p>Example that uses ngIf to pick one of the <code>select</code> elements based on a variable:</p>
+<pre><code>&lt;select ng-if=&quot;mode == &#39;multiple&#39;&quot; ng-model=&quot;some.model&quot; multiple&gt;&lt;/select&gt;
+&lt;select ng-if=&quot;mode != &#39;multiple&#39;&quot; ng-model=&quot;some.model&quot;&gt;&lt;/select&gt;
+</code></pre>
+
+</div>
+
+

@@ -1,0 +1,99 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/directive/ngEventDirs.js?message=docs(ngBlur)%3A%20describe%20your%20change...#L400' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/directive/ngEventDirs.js#L400' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">ngBlur</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - directive in module <a href="api/ng">ng</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Specify custom behavior on blur event.</p>
+<p>A <a href="https://developer.mozilla.org/en-US/docs/Web/Events/blur">blur event</a> fires when
+an element has lost focus.</p>
+<p>Note: As the <code>blur</code> event is executed synchronously also during DOM manipulations
+(e.g. removing a focussed input),
+AngularJS executes the expression using <code>scope.$evalAsync</code> if the event is fired
+during an <code>$apply</code> to ensure a consistent state.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+  
+  <h2>Directive Info</h2>
+  <ul>
+    
+    <li>This directive executes at priority level 0.</li>
+  </ul>
+
+  
+  <h2 id="usage">Usage</h2>
+  <div class="usage">
+  
+    <ul>
+    <li>as attribute:
+        <pre><code>&lt;window, input, select, textarea, a&#10;  ng-blur=&quot;&quot;&gt;&#10;...&#10;&lt;/window, input, select, textarea, a&gt;</code></pre>
+      </li>
+    
+  </div>
+  
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        ngBlur
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-expression">expression</a>
+      </td>
+      <td>
+        <p><a href="guide/expression">Expression</a> to evaluate upon
+blur. (<a href="guide/expression#-event-">Event object is available as <code>$event</code></a>)</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
+  
+
+
+  
+  <h2 id="example">Example</h2><p>See <a href="api/ng/directive/ngClick">ngClick</a></p>
+
+</div>
+
+
