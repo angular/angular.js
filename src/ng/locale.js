@@ -35,8 +35,8 @@ function $LocaleProvider() {
             maxFrac: 2,
             posPre: '\u00A4',
             posSuf: '',
-            negPre: '(\u00A4',
-            negSuf: ')',
+            negPre: '-\u00A4',
+            negSuf: '',
             gSize: 3,
             lgSize: 3
           }
