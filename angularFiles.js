@@ -25,6 +25,7 @@ var angularFiles = {
     'src/ng/httpBackend.js',
     'src/ng/interpolate.js',
     'src/ng/interval.js',
+    'src/ng/locale.js',
     'src/ng/location.js',
     'src/ng/log.js',
     'src/ng/parse.js',
@@ -181,8 +182,7 @@ var angularFiles = {
     'src/publishExternalApis.js',
     '@angularSrcModules',
     '@angularScenario',
-    '@angularTest',
-    'src/ngLocale/angular-locale_en-us.js'  // we need an ngLocale module
+    '@angularTest'
   ],
 
   'karmaExclude': [
@@ -193,13 +193,12 @@ var angularFiles = {
 
   'karmaScenario': [
     'build/angular-scenario.js',
-    'build/docs/docs-scenario.js',
-    'src/ngLocale/angular-locale_en-us.js'  // we need an ngLocale module
+    'build/docs/docs-scenario.js'
   ],
 
   "karmaModules": [
     'build/angular.js',
-    '@angularSrcModules',,
+    '@angularSrcModules',
     'src/ngScenario/browserTrigger.js',
     'test/helpers/*.js',
     'test/ngMessageFormat/*.js',
@@ -209,8 +208,7 @@ var angularFiles = {
     'test/ngResource/*.js',
     'test/ngSanitize/**/*.js',
     'test/ngTouch/**/*.js',
-    'test/ngAria/*.js',
-    'src/ngLocale/angular-locale_en-us.js'  // we need an ngLocale module
+    'test/ngAria/*.js'
   ],
 
   'karmaJquery': [
@@ -220,9 +218,7 @@ var angularFiles = {
     'src/publishExternalApis.js',
     '@angularSrcModules',
     '@angularScenario',
-    '@angularTest',
-    'src/ngLocale/angular-locale_en-us.js'  // we need an ngLocale module
-
+    '@angularTest'
   ],
 
   'karmaJqueryExclude': [

@@ -23,8 +23,8 @@ directive}.  Additionally, you can use {@link guide/i18n#messageformat-extension
 `$interpolate` for localizable pluralization and gender support in all interpolations via the
 `ngMessageFormat` module.
 
-All localizable Angular components depend on locale-specific rule sets managed by the
-{@link ngLocale `$locale` service}.
+All localizable Angular components depend on locale-specific rule sets managed by the {@link
+ng.$locale `$locale` service}.
 
 There a few examples that showcase how to use Angular filters with various locale rule sets in the
 [`i18n/e2e` directory](https://github.com/angular/angular.js/tree/master/i18n/e2e) of the Angular
@@ -99,7 +99,7 @@ develop your app.
 ### Currency symbol
 
 Angular's {@link ng.filter:currency currency filter} allows you to use the default currency symbol
-from the {@link ngLocale `locale` service}, or you can provide the filter with a custom currency
+from the {@link ng.$locale locale service}, or you can provide the filter with a custom currency
 symbol.
 
 <div class="alert alert-success">
