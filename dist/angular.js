@@ -1,5 +1,5 @@
 /**
- * @license AngularJS v1.4.4-local+sha.9bf3e16
+ * @license AngularJS v1.4.4-local+sha.ef2ad06
  * (c) 2010-2015 Google, Inc. http://angularjs.org
  * License: MIT
  */
@@ -57,7 +57,7 @@ function minErr(module, ErrorConstructor) {
       return match;
     });
 
-    message += '\nhttp://errors.angularjs.org/1.4.4-local+sha.9bf3e16/' +
+    message += '\nhttp://errors.angularjs.org/1.4.4-local+sha.ef2ad06/' +
       (module ? module + '/' : '') + code;
 
     for (i = SKIP_INDEXES, paramPrefix = '?'; i < templateArgs.length; i++, paramPrefix = '&') {
@@ -2134,7 +2134,7 @@ function toDebugString(obj) {
  * - `codeName` – `{string}` – Code name of the release, such as "jiggling-armfat".
  */
 var version = {
-  full: '1.4.4-local+sha.9bf3e16',    // all of these placeholder strings will be replaced by grunt's
+  full: '1.4.4-local+sha.ef2ad06',    // all of these placeholder strings will be replaced by grunt's
   major: 1,    // package task
   minor: 4,
   dot: 4,
@@ -16471,31 +16471,41 @@ var originUrl = urlResolve(window.location.href);
  *   | pathname      | The pathname, beginning with "/"
  *
  */
-function urlResolve(url) {
-  var href = url;
+function urlResolve(url, base) {
+	var href = url;
 
-  if (msie) {
-    // Normalize before parse.  Refer Implementation Notes on why this is
-    // done in two steps on IE.
-    urlParsingNode.setAttribute("href", href);
-    href = urlParsingNode.href;
-  }
+	if (msie) {
+	// Normalize before parse.  Refer Implementation Notes on why this is
+	// done in two steps on IE.
+		urlParsingNode.setAttribute("href", href);
+		href = urlParsingNode.href;
+	}
 
-  urlParsingNode.setAttribute('href', href);
+	urlParsingNode.setAttribute('href', href);
+	
+	/* REV EDIT:
+	 * Fix pathname parsing...
+	 */
+	if( href.match(/^https?:\/\/(?:[^:@\/]+(?::[^@\/]+)?@)?([\w|\-|\.]+)(?::\d+)?(?:\/.*)?$/) !== null ) {
+		var parts = href.match(/^https?:\/\/(?:[^:@\/]+(?::[^@\/]+)?@)?([\w|\-|\.]+)(?::\d+)?(\/.*)?$/);
+		urlParsingNode.host = parts[1];
+		urlParsingNode.pathname = parts[2];
+	}
+	/* END EDIT */
 
-  // urlParsingNode provides the UrlUtils interface - http://url.spec.whatwg.org/#urlutils
-  return {
-    href: urlParsingNode.href,
-    protocol: urlParsingNode.protocol ? urlParsingNode.protocol.replace(/:$/, '') : '',
-    host: urlParsingNode.host,
-    search: urlParsingNode.search ? urlParsingNode.search.replace(/^\?/, '') : '',
-    hash: urlParsingNode.hash ? urlParsingNode.hash.replace(/^#/, '') : '',
-    hostname: urlParsingNode.hostname,
-    port: urlParsingNode.port,
-    pathname: (urlParsingNode.pathname.charAt(0) === '/')
-      ? urlParsingNode.pathname
-      : '/' + urlParsingNode.pathname
-  };
+	// urlParsingNode provides the UrlUtils interface - http://url.spec.whatwg.org/#urlutils
+	return {
+		href: urlParsingNode.href,
+		protocol: urlParsingNode.protocol ? urlParsingNode.protocol.replace(/:$/, '') : '',
+		host: urlParsingNode.host,
+		search: urlParsingNode.search ? urlParsingNode.search.replace(/^\?/, '') : '',
+		hash: urlParsingNode.hash ? urlParsingNode.hash.replace(/^#/, '') : '',
+		hostname: urlParsingNode.hostname,
+		port: urlParsingNode.port,
+		pathname: (urlParsingNode.pathname.charAt(0) === '/')
+		  ? urlParsingNode.pathname
+		  : '/' + urlParsingNode.pathname
+	};
 }
 
 /**

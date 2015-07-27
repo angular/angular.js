@@ -8,11 +8,11 @@ angular.module('versionsData', [])
   "prerelease": [
     "local"
   ],
-  "build": "sha.9bf3e16",
+  "build": "sha.ef2ad06",
   "version": "1.4.4-local",
   "codeName": "snapshot",
   "isSnapshot": true,
-  "full": "1.4.4-local+sha.9bf3e16",
+  "full": "1.4.4-local+sha.ef2ad06",
   "branch": "master"
 })
   .value('NG_VERSIONS', [
@@ -24,11 +24,11 @@ angular.module('versionsData', [])
     "prerelease": [
       "local"
     ],
-    "build": "sha.9bf3e16",
+    "build": "sha.ef2ad06",
     "version": "1.4.4-local",
     "codeName": "snapshot",
     "isSnapshot": true,
-    "full": "1.4.4-local+sha.9bf3e16",
+    "full": "1.4.4-local+sha.ef2ad06",
     "branch": "master"
   },
   {
