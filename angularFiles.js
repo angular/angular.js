@@ -75,7 +75,8 @@ var angularFiles = {
     'src/ng/directive/script.js',
     'src/ng/directive/select.js',
     'src/ng/directive/style.js',
-    'src/ng/directive/validators.js'
+    'src/ng/directive/validators.js',
+    'src/ngLocale/angular-locale_en-us.js'
   ],
 
   'angularLoader': [
