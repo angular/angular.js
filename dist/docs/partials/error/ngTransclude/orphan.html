@@ -1,0 +1,21 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/error/ngTransclude/orphan.ngdoc?message=docs(error%2Forphan)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1>Error: error:orphan
+  <div><span class='hint'>Orphan ngTransclude Directive</span></div>
+</h1>
+
+<div>
+    <pre class="minerr-errmsg" error-display="Illegal use of ngTransclude directive in the template! No parent directive that requires a transclusion found. Element: {0}">Illegal use of ngTransclude directive in the template! No parent directive that requires a transclusion found. Element: {0}</pre>
+</div>
+
+<h2>Description</h2>
+<div class="description">
+  <p>Occurs when an <code>ngTransclude</code> occurs without a transcluded ancestor element.</p>
+<p>This error often occurs when you have forgotten to set <code>transclude: true</code> in some directive definition, and then used <code>ngTransclude</code> in the directive&#39;s template.</p>
+<p>To resolve, either remove the offending <code>ngTransclude</code> or check that <code>transclude: true</code> is included in the intended directive definition.</p>
+<p>Consult the API documentation for <a href="guide/directive">writing directives</a> to learn more.</p>
+
+</div>
+
+

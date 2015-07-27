@@ -1,0 +1,200 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/timeout.js?message=docs($timeout)%3A%20describe%20your%20change...#L11' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/timeout.js#L11' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">$timeout</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+  
+
+    <li>
+      - service in module <a href="api/ng">ng</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Angular&#39;s wrapper for <code>window.setTimeout</code>. The <code>fn</code> function is wrapped into a try/catch
+block and delegates any exceptions to
+<a href="api/ng/service/$exceptionHandler">$exceptionHandler</a> service.</p>
+<p>The return value of calling <code>$timeout</code> is a promise, which will be resolved when
+the delay has passed and the timeout function, if provided, is executed.</p>
+<p>To cancel a timeout request, call <code>$timeout.cancel(promise)</code>.</p>
+<p>In tests you can use <a href="api/ngMock/service/$timeout"><code>$timeout.flush()</code></a> to
+synchronously flush the queue of deferred functions.</p>
+<p>If you only want a promise that will be resolved after some specified delay
+then you can call <code>$timeout</code> without the <code>fn</code> function.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+    
+
+  <h2 id="usage">Usage</h2>
+    
+      <p><code>$timeout([fn], [delay], [invokeApply]);</code></p>
+
+
+    
+
+    
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        fn
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-function">function()=</a>
+      </td>
+      <td>
+        <p>A function, whose execution should be delayed.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        delay
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-number">number</a>
+      </td>
+      <td>
+        <p>Delay in milliseconds.</p>
+
+        <p><em>(default: 0)</em></p>
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        invokeApply
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-boolean">boolean</a>
+      </td>
+      <td>
+        <p>If set to <code>false</code> skips model dirty checking, otherwise
+  will invoke <code>fn</code> within the <a href="api/ng/type/$rootScope.Scope#$apply">$apply</a> block.</p>
+
+        <p><em>(default: true)</em></p>
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
+    
+    <h3>Returns</h3>
+<table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-promise">Promise</a></td>
+    <td><p>Promise that will be resolved when the timeout is reached. The value this
+  promise will be resolved with is the return value of the <code>fn</code> function.</p>
+</td>
+  </tr>
+</table>
+
+  
+<h2>Methods</h2>
+<ul class="methods">
+  <li id="cancel">
+    <h3><p><code>cancel([promise]);</code></p>
+
+</h3>
+    <div><p>Cancels a task associated with the <code>promise</code>. As a result of this, the promise will be
+resolved with a rejection.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        promise
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-promise">Promise</a>
+      </td>
+      <td>
+        <p>Promise returned by the <code>$timeout</code> function.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-boolean">boolean</a></td>
+    <td><p>Returns <code>true</code> if the task hasn&#39;t executed yet and was successfully
+  canceled.</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  </ul>
+  
+  
+
+
+
+  
+</div>
+
+

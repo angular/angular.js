@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Example - example-example95-jquery</title>
+  
+
+  <script src="../../components/jquery-2.1.1/jquery.js"></script>
+  <script src="../../../angular.js"></script>
+  
+
+  
+</head>
+<body ng-app="">
+  <script type="text/ng-template" id="/tpl.html">
+  Content of the template.
+</script>
+
+<a ng-click="currentTpl='/tpl.html'" id="tpl-link">Load inlined template</a>
+<div id="tpl-content" ng-include src="currentTpl"></div>
+</body>
+</html>

@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Example - example-ngList-directive</title>
+  
+
+  <script src="../../../angular.min.js"></script>
+  <script src="app.js"></script>
+  
+
+  
+</head>
+<body ng-app="listExample">
+  <form name="myForm" ng-controller="ExampleController">
+  List: <input name="namesInput" ng-model="names" ng-list required>
+  <span class="error" ng-show="myForm.namesInput.$error.required">
+    Required!</span>
+  <br>
+  <tt>names = {{names}}</tt><br/>
+  <tt>myForm.namesInput.$valid = {{myForm.namesInput.$valid}}</tt><br/>
+  <tt>myForm.namesInput.$error = {{myForm.namesInput.$error}}</tt><br/>
+  <tt>myForm.$valid = {{myForm.$valid}}</tt><br/>
+  <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br/>
+ </form>
+</body>
+</html>

@@ -1,0 +1,236 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/directive/ngModel.js?message=docs(ngModelOptions)%3A%20describe%20your%20change...#L1063' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/directive/ngModel.js#L1063' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">ngModelOptions</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - directive in module <a href="api/ng">ng</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Allows tuning how model updates are done. Using <code>ngModelOptions</code> you can specify a custom list of
+events that will trigger a model update and/or a debouncing delay so that the actual update only
+takes place when a timer expires; this timer will be reset after another change takes place.</p>
+<p>Given the nature of <code>ngModelOptions</code>, the value displayed inside input fields in the view might
+be different from the value in the actual model. This means that if you update the model you
+should also invoke <a href="api/ng/type/ngModel.NgModelController"><code>$rollbackViewValue</code></a> on the relevant input field in
+order to make sure it is synchronized with the model and that any debounced action is canceled.</p>
+<p>The easiest way to reference the control&#39;s <a href="api/ng/type/ngModel.NgModelController"><code>$rollbackViewValue</code></a>
+method is by making sure the input is placed inside a form that has a <code>name</code> attribute. This is
+important because <code>form</code> controllers are published to the related scope under the name in their
+<code>name</code> attribute.</p>
+<p>Any pending changes will take place immediately when an enclosing form is submitted via the
+<code>submit</code> event. Note that <code>ngClick</code> events will occur before the model is updated. Use <code>ngSubmit</code>
+to have access to the updated model.</p>
+<p><code>ngModelOptions</code> has an effect on the element it&#39;s declared on and its descendants.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+  
+  <h2>Directive Info</h2>
+  <ul>
+    
+    <li>This directive executes at priority level 0.</li>
+  </ul>
+
+  
+  <h2 id="usage">Usage</h2>
+  <div class="usage">
+  
+    <ul>
+    <li>as attribute:
+        <pre><code>&lt;ANY&#10;  ng-model-options=&quot;&quot;&gt;&#10;...&#10;&lt;/ANY&gt;</code></pre>
+      </li>
+    
+  </div>
+  
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        ngModelOptions
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">Object</a>
+      </td>
+      <td>
+        <p>options to apply to the current model. Valid keys are:</p>
+<ul>
+<li><code>updateOn</code>: string specifying which event should the input be bound to. You can set several
+events using an space delimited list. There is a special event called <code>default</code> that
+matches the default events belonging of the control.</li>
+<li><code>debounce</code>: integer value which contains the debounce model update value in milliseconds. A
+value of 0 triggers an immediate update. If an object is supplied instead, you can specify a
+custom value for each event. For example:
+<code>ng-model-options=&quot;{ updateOn: &#39;default blur&#39;, debounce: {&#39;default&#39;: 500, &#39;blur&#39;: 0} }&quot;</code></li>
+<li><code>allowInvalid</code>: boolean value which indicates that the model can be set with values that did
+not validate correctly instead of the default behavior of setting the model to undefined.</li>
+<li><code>getterSetter</code>: boolean value which determines whether or not to treat functions bound to
+   <code>ngModel</code> as getters/setters.</li>
+<li><code>timezone</code>: Defines the timezone to be used to read/write the <code>Date</code> instance in the model for
+<code>&lt;input type=&quot;date&quot;&gt;</code>, <code>&lt;input type=&quot;time&quot;&gt;</code>, ... . Right now, the only supported value is <code>&#39;UTC&#39;</code>,
+otherwise the default timezone of the browser will be used.</li>
+</ul>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
+  
+
+
+  
+  <h2 id="example">Example</h2><p>The following example shows how to override immediate updates. Changes on the inputs within the
+  form will update the model only when the control loses focus (blur event). If <code>escape</code> key is
+  pressed while the input field is focused, the value is reset to the value in the current model.</p>
+<p>  
+
+<div>
+  <a ng-click="openPlunkr('examples/example-ngModelOptions-directive-blur', $event)" class="btn pull-right">
+    <i class="glyphicon glyphicon-edit">&nbsp;</i>
+    Edit in Plunker</a>
+
+  <div class="runnable-example"
+      path="examples/example-ngModelOptions-directive-blur"
+      name="ngModelOptions-directive-blur"
+      module="optionsExample">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;div ng-controller=&quot;ExampleController&quot;&gt;&#10;  &lt;form name=&quot;userForm&quot;&gt;&#10;    Name:&#10;    &lt;input type=&quot;text&quot; name=&quot;userName&quot;&#10;           ng-model=&quot;user.name&quot;&#10;           ng-model-options=&quot;{ updateOn: &#39;blur&#39; }&quot;&#10;           ng-keyup=&quot;cancel($event)&quot; /&gt;&lt;br /&gt;&#10;&#10;    Other data:&#10;    &lt;input type=&quot;text&quot; ng-model=&quot;user.data&quot; /&gt;&lt;br /&gt;&#10;  &lt;/form&gt;&#10;  &lt;pre&gt;user.name = &lt;span ng-bind=&quot;user.name&quot;&gt;&lt;/span&gt;&lt;/pre&gt;&#10;&lt;/div&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="app.js"
+      language="js"
+      type="js">
+      <pre><code>angular.module(&#39;optionsExample&#39;, [])&#10;.controller(&#39;ExampleController&#39;, [&#39;$scope&#39;, function($scope) {&#10;  $scope.user = { name: &#39;say&#39;, data: &#39;&#39; };&#10;&#10;  $scope.cancel = function(e) {&#10;    if (e.keyCode == 27) {&#10;      $scope.userForm.userName.$rollbackViewValue();&#10;    }&#10;  };&#10;}]);</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="protractor.js"
+      type="protractor"
+      language="js">
+      <pre><code>var model = element(by.binding(&#39;user.name&#39;));&#10;var input = element(by.model(&#39;user.name&#39;));&#10;var other = element(by.model(&#39;user.data&#39;));&#10;&#10;it(&#39;should allow custom events&#39;, function() {&#10;  input.sendKeys(&#39; hello&#39;);&#10;  input.click();&#10;  expect(model.getText()).toEqual(&#39;say&#39;);&#10;  other.click();&#10;  expect(model.getText()).toEqual(&#39;say hello&#39;);&#10;});&#10;&#10;it(&#39;should $rollbackViewValue when model changes&#39;, function() {&#10;  input.sendKeys(&#39; hello&#39;);&#10;  expect(input.getAttribute(&#39;value&#39;)).toEqual(&#39;say hello&#39;);&#10;  input.sendKeys(protractor.Key.ESCAPE);&#10;  expect(input.getAttribute(&#39;value&#39;)).toEqual(&#39;say&#39;);&#10;  other.click();&#10;  expect(model.getText()).toEqual(&#39;say&#39;);&#10;});</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-ngModelOptions-directive-blur/index.html" name="example-ngModelOptions-directive-blur"></iframe>
+  </div>
+</div>
+
+
+</p>
+<p>  This one shows how to debounce model changes. Model will be updated only 1 sec after last change.
+  If the <code>Clear</code> button is pressed, any debounced action is canceled and the value becomes empty.</p>
+<p>  
+
+<div>
+  <a ng-click="openPlunkr('examples/example-ngModelOptions-directive-debounce', $event)" class="btn pull-right">
+    <i class="glyphicon glyphicon-edit">&nbsp;</i>
+    Edit in Plunker</a>
+
+  <div class="runnable-example"
+      path="examples/example-ngModelOptions-directive-debounce"
+      name="ngModelOptions-directive-debounce"
+      module="optionsExample">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;div ng-controller=&quot;ExampleController&quot;&gt;&#10;  &lt;form name=&quot;userForm&quot;&gt;&#10;    Name:&#10;    &lt;input type=&quot;text&quot; name=&quot;userName&quot;&#10;           ng-model=&quot;user.name&quot;&#10;           ng-model-options=&quot;{ debounce: 1000 }&quot; /&gt;&#10;    &lt;button ng-click=&quot;userForm.userName.$rollbackViewValue(); user.name=&#39;&#39;&quot;&gt;Clear&lt;/button&gt;&lt;br /&gt;&#10;  &lt;/form&gt;&#10;  &lt;pre&gt;user.name = &lt;span ng-bind=&quot;user.name&quot;&gt;&lt;/span&gt;&lt;/pre&gt;&#10;&lt;/div&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="app.js"
+      language="js"
+      type="js">
+      <pre><code>angular.module(&#39;optionsExample&#39;, [])&#10;.controller(&#39;ExampleController&#39;, [&#39;$scope&#39;, function($scope) {&#10;  $scope.user = { name: &#39;say&#39; };&#10;}]);</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-ngModelOptions-directive-debounce/index.html" name="example-ngModelOptions-directive-debounce"></iframe>
+  </div>
+</div>
+
+
+</p>
+<p>  This one shows how to bind to getter/setters:</p>
+<p>  
+
+<div>
+  <a ng-click="openPlunkr('examples/example-ngModelOptions-directive-getter-setter', $event)" class="btn pull-right">
+    <i class="glyphicon glyphicon-edit">&nbsp;</i>
+    Edit in Plunker</a>
+
+  <div class="runnable-example"
+      path="examples/example-ngModelOptions-directive-getter-setter"
+      name="ngModelOptions-directive-getter-setter"
+      module="getterSetterExample">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;div ng-controller=&quot;ExampleController&quot;&gt;&#10;  &lt;form name=&quot;userForm&quot;&gt;&#10;    Name:&#10;    &lt;input type=&quot;text&quot; name=&quot;userName&quot;&#10;           ng-model=&quot;user.name&quot;&#10;           ng-model-options=&quot;{ getterSetter: true }&quot; /&gt;&#10;  &lt;/form&gt;&#10;  &lt;pre&gt;user.name = &lt;span ng-bind=&quot;user.name()&quot;&gt;&lt;/span&gt;&lt;/pre&gt;&#10;&lt;/div&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="app.js"
+      language="js"
+      type="js">
+      <pre><code>angular.module(&#39;getterSetterExample&#39;, [])&#10;.controller(&#39;ExampleController&#39;, [&#39;$scope&#39;, function($scope) {&#10;  var _name = &#39;Brian&#39;;&#10;  $scope.user = {&#10;    name: function(newName) {&#10;      return angular.isDefined(newName) ? (_name = newName) : _name;&#10;    }&#10;  };&#10;}]);</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-ngModelOptions-directive-getter-setter/index.html" name="example-ngModelOptions-directive-getter-setter"></iframe>
+  </div>
+</div>
+
+
+</p>
+
+</div>
+
+

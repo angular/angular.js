@@ -1,0 +1,285 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ngRoute/route.js?message=docs($routeProvider)%3A%20describe%20your%20change...#L23' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ngRoute/route.js#L23' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">$routeProvider</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+  <li>
+    <a href="api/ngRoute/service/$route">- $route</a>
+  </li>
+
+    <li>
+      - provider in module <a href="api/ngRoute">ngRoute</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Used for configuring routes.</p>
+<h2 id="example">Example</h2>
+<p>See <a href="api/ngRoute/service/$route#example">$route</a> for an example of configuring and using <code>ngRoute</code>.</p>
+<h2 id="dependencies">Dependencies</h2>
+<p>Requires the <a href="api/ngRoute"><code>ngRoute</code></a> module to be installed.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+    
+
+  
+
+  
+<h2>Methods</h2>
+<ul class="methods">
+  <li id="when">
+    <h3><p><code>when(path, route);</code></p>
+
+</h3>
+    <div><p>Adds a new route definition to the <code>$route</code> service.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        path
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Route path (matched against <code>$location.path</code>). If <code>$location.path</code>
+   contains redundant trailing slash or is missing one, the route will still match and the
+   <code>$location.path</code> will be updated to add or drop the trailing slash to exactly match the
+   route definition.</p>
+<ul>
+<li><code>path</code> can contain named groups starting with a colon: e.g. <code>:name</code>. All characters up
+  to the next slash are matched and stored in <code>$routeParams</code> under the given <code>name</code>
+  when the route matches.</li>
+<li><code>path</code> can contain named groups starting with a colon and ending with a star:
+  e.g.<code>:name*</code>. All characters are eagerly stored in <code>$routeParams</code> under the given <code>name</code>
+  when the route matches.</li>
+<li><p><code>path</code> can contain optional named groups with a question mark: e.g.<code>:name?</code>.</p>
+<p>For example, routes like <code>/color/:color/largecode/:largecode*\/edit</code> will match
+<code>/color/brown/largecode/code/with/slashes/edit</code> and extract:</p>
+</li>
+<li><p><code>color: brown</code></p>
+</li>
+<li><code>largecode: code/with/slashes</code>.</li>
+</ul>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        route
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">Object</a>
+      </td>
+      <td>
+        <p>Mapping information to be assigned to <code>$route.current</code> on route
+   match.</p>
+<p>   Object properties:</p>
+<ul>
+<li><code>controller</code> – <code>{(string|function()=}</code> – Controller fn that should be associated with
+newly created scope or the name of a <a href="api/ng/type/angular.Module#controller">registered
+controller</a> if passed as a string.</li>
+<li><code>controllerAs</code> – <code>{string=}</code> – An identifier name for a reference to the controller.
+If present, the controller will be published to scope under the <code>controllerAs</code> name.</li>
+<li><p><code>template</code> – <code>{string=|function()=}</code> – html template as a string or a function that
+returns an html template as a string which should be used by <a href="api/ngRoute/directive/ngView">ngView</a> or <a href="api/ng/directive/ngInclude">ngInclude</a> directives.
+This property takes precedence over <code>templateUrl</code>.</p>
+<p>If <code>template</code> is a function, it will be called with the following parameters:</p>
+<ul>
+<li><code>{Array.&lt;Object&gt;}</code> - route parameters extracted from the current
+<code>$location.path()</code> by applying the current route</li>
+</ul>
+</li>
+<li><p><code>templateUrl</code> – <code>{string=|function()=}</code> – path or function that returns a path to an html
+template that should be used by <a href="api/ngRoute/directive/ngView">ngView</a>.</p>
+<p>If <code>templateUrl</code> is a function, it will be called with the following parameters:</p>
+<ul>
+<li><code>{Array.&lt;Object&gt;}</code> - route parameters extracted from the current
+<code>$location.path()</code> by applying the current route</li>
+</ul>
+</li>
+<li><p><code>resolve</code> - <code>{Object.&lt;string, function&gt;=}</code> - An optional map of dependencies which should
+be injected into the controller. If any of these dependencies are promises, the router
+will wait for them all to be resolved or one to be rejected before the controller is
+instantiated.
+If all the promises are resolved successfully, the values of the resolved promises are
+injected and <a href="api/ngRoute/service/$route#$routeChangeSuccess">$routeChangeSuccess</a> event is
+fired. If any of the promises are rejected the
+<a href="api/ngRoute/service/$route#$routeChangeError">$routeChangeError</a> event is fired. The map object
+is:</p>
+<ul>
+<li><code>key</code> – <code>{string}</code>: a name of a dependency to be injected into the controller.</li>
+<li><code>factory</code> - <code>{string|function}</code>: If <code>string</code> then it is an alias for a service.
+Otherwise if function, then it is <a href="api/auto/service/$injector#invoke">injected</a>
+and the return value is treated as the dependency. If the result is a promise, it is
+resolved before its value is injected into the controller. Be aware that
+<code>ngRoute.$routeParams</code> will still refer to the previous route within these resolve
+functions.  Use <code>$route.current.params</code> to access the new route parameters, instead.</li>
+</ul>
+</li>
+<li><p><code>redirectTo</code> – {(string|function())=} – value to update
+<a href="api/ng/service/$location">$location</a> path with and trigger route redirection.</p>
+<p>If <code>redirectTo</code> is a function, it will be called with the following parameters:</p>
+<ul>
+<li><code>{Object.&lt;string&gt;}</code> - route parameters extracted from the current
+<code>$location.path()</code> by applying the current route templateUrl.</li>
+<li><code>{string}</code> - current <code>$location.path()</code></li>
+<li><code>{Object}</code> - current <code>$location.search()</code></li>
+</ul>
+<p>The custom <code>redirectTo</code> function is expected to return a string which will be used
+to update <code>$location.path()</code> and <code>$location.search()</code>.</p>
+</li>
+<li><p><code>[reloadOnSearch=true]</code> - {boolean=} - reload route when only <code>$location.search()</code>
+or <code>$location.hash()</code> changes.</p>
+<p>If the option is set to <code>false</code> and url in the browser changes, then
+<code>$routeUpdate</code> event is broadcasted on the root scope.</p>
+</li>
+<li><p><code>[caseInsensitiveMatch=false]</code> - {boolean=} - match routes without being case sensitive</p>
+<p>If the option is set to <code>true</code>, then the particular route can be matched without being
+case sensitive</p>
+</li>
+</ul>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-object">Object</a></td>
+    <td><p>self</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="otherwise">
+    <h3><p><code>otherwise(params);</code></p>
+
+</h3>
+    <div><p>Sets route definition that will be used on route change when no other route definition
+is matched.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        params
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">Object</a><a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Mapping information to be assigned to <code>$route.current</code>.
+If called with a string, the value maps to <code>redirectTo</code>.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-object">Object</a></td>
+    <td><p>self</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  </ul>
+  
+  
+<h2>Properties</h2>
+<ul class="properties">
+  <li id="caseInsensitiveMatch">
+    <h3><code>caseInsensitiveMatch</code></h3>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td></td>
+    <td><p>A boolean property indicating if routes defined
+using this provider should be matched using a case insensitive
+algorithm. Defaults to <code>false</code>.</p>
+</td>
+  </tr>
+</table>
+  </li>
+  </ul>
+
+
+
+  
+</div>
+
+

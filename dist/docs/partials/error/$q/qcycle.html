@@ -1,0 +1,33 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/error/$q/qcycle.ngdoc?message=docs(error%2Fqcycle)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1>Error: error:qcycle
+  <div><span class='hint'>Cannot resolve a promise with itself</span></div>
+</h1>
+
+<div>
+    <pre class="minerr-errmsg" error-display="Expected promise to be resolved with value other than itself '{0}'">Expected promise to be resolved with value other than itself '{0}'</pre>
+</div>
+
+<h2>Description</h2>
+<div class="description">
+  <p>Occurs when resolving a promise with itself as the value, including returning the promise in a
+function passed to <code>then</code>. The A+ 1.1 spec mandates that this behavior throw a TypeError.
+<a href="https://github.com/promises-aplus/promises-spec#the-promise-resolution-procedure">https://github.com/promises-aplus/promises-spec#the-promise-resolution-procedure</a></p>
+<pre><code>var promise = $q.defer().promise;
+
+//bad
+promise.then(function (val) {
+  //Cannot return self
+  return promise;
+});
+
+//good
+promise.then(function (val) {
+  return &#39;some other value&#39;;
+});
+</code></pre>
+
+</div>
+
+

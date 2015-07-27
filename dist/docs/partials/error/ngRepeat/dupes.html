@@ -1,0 +1,26 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/error/ngRepeat/dupes.ngdoc?message=docs(error%2Fdupes)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1>Error: error:dupes
+  <div><span class='hint'>Duplicate Key in Repeater</span></div>
+</h1>
+
+<div>
+    <pre class="minerr-errmsg" error-display="Duplicates in a repeater are not allowed. Use 'track by' expression to specify unique keys. Repeater: {0}, Duplicate key: {1}, Duplicate value: {2}">Duplicates in a repeater are not allowed. Use 'track by' expression to specify unique keys. Repeater: {0}, Duplicate key: {1}, Duplicate value: {2}</pre>
+</div>
+
+<h2>Description</h2>
+<div class="description">
+  <p>Occurs if there are duplicate keys in an <a href="api/ng/directive/ngRepeat">ngRepeat</a> expression.  Duplicate keys are banned because AngularJS uses keys to associate DOM nodes with items.</p>
+<p>By default, collections are keyed by reference which is desirable for most common models but can be problematic for primitive types that are interned (share references).</p>
+<p>For example the issue can be triggered by this <em>invalid</em> code:</p>
+<pre><code>&lt;div ng-repeat=&quot;value in [4, 4]&quot;&gt;&lt;/div&gt;
+</code></pre>
+<p>To resolve this error either ensure that the items in the collection have unique identity or use the <code>track by</code> syntax to specify how to track the association between models and DOM.</p>
+<p>The example above can be resolved by using <code>track by $index</code>, which will cause the items to be keyed by their position in the array instead of their value:</p>
+<pre><code>&lt;div ng-repeat=&quot;value in [4, 4] track by $index&quot;&gt;&lt;/div&gt;
+</code></pre>
+
+</div>
+
+

@@ -1,0 +1,133 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/directive/ngCsp.js?message=docs(ngCsp)%3A%20describe%20your%20change...#L3' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/directive/ngCsp.js#L3' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">ngCsp</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - directive in module <a href="api/ng">ng</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Enables <a href="https://developer.mozilla.org/en/Security/CSP">CSP (Content Security Policy)</a> support.</p>
+<p>This is necessary when developing things like Google Chrome Extensions or Universal Windows Apps.</p>
+<p>CSP forbids apps to use <code>eval</code> or <code>Function(string)</code> generated functions (among other things).
+For Angular to be CSP compatible there are only two things that we need to do differently:</p>
+<ul>
+<li>don&#39;t use <code>Function</code> constructor to generate optimized value getters</li>
+<li>don&#39;t inject custom stylesheet into the document</li>
+</ul>
+<p>AngularJS uses <code>Function(string)</code> generated functions as a speed optimization. Applying the <code>ngCsp</code>
+directive will cause Angular to use CSP compatibility mode. When this mode is on AngularJS will
+evaluate all expressions up to 30% slower than in non-CSP mode, but no security violations will
+be raised.</p>
+<p>CSP forbids JavaScript to inline stylesheet rules. In non CSP mode Angular automatically
+includes some CSS rules (e.g. <a href="api/ng/directive/ngCloak">ngCloak</a>).
+To make those directives work in CSP mode, include the <code>angular-csp.css</code> manually.</p>
+<p>Angular tries to autodetect if CSP is active and automatically turn on the CSP-safe mode. This
+autodetection however triggers a CSP error to be logged in the console:</p>
+<pre><code>Refused to evaluate a string as JavaScript because &#39;unsafe-eval&#39; is not an allowed source of
+script in the following Content Security Policy directive: &quot;default-src &#39;self&#39;&quot;. Note that
+&#39;script-src&#39; was not explicitly set, so &#39;default-src&#39; is used as a fallback.
+</code></pre>
+<p>This error is harmless but annoying. To prevent the error from showing up, put the <code>ngCsp</code>
+directive on the root element of the application or on the <code>angular.js</code> script tag, whichever
+appears first in the html document.</p>
+<p><em>Note: This directive is only available in the <code>ng-csp</code> and <code>data-ng-csp</code> attribute form.</em></p>
+
+</div>
+
+
+
+
+<div>
+  
+
+  
+  <h2>Directive Info</h2>
+  <ul>
+    
+    <li>This directive executes at priority level 0.</li>
+  </ul>
+
+  
+  <h2 id="usage">Usage</h2>
+  <div class="usage">
+  
+    <ul>
+    <li>as attribute:
+        <pre><code>&lt;html&gt;&#10;...&#10;&lt;/html&gt;</code></pre>
+      </li>
+    
+  </div>
+  
+  
+
+
+  
+  <h2 id="example">Example</h2><p>This example shows how to apply the <code>ngCsp</code> directive to the <code>html</code> tag.</p>
+<pre><code class="lang-html">&lt;!doctype html&gt;
+&lt;html ng-app ng-csp&gt;
+...
+...
+&lt;/html&gt;
+</code></pre>
+<p>// Note: the suffix <code>.csp</code> in the example name triggers
+      // csp mode in our http server!
+      
+
+<div>
+  <a ng-click="openPlunkr('examples/example-example.csp', $event)" class="btn pull-right">
+    <i class="glyphicon glyphicon-edit">&nbsp;</i>
+    Edit in Plunker</a>
+
+  <div class="runnable-example"
+      path="examples/example-example.csp"
+      name="example.csp"
+      module="cspExample"
+      ng-csp="true">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;div ng-controller=&quot;MainController as ctrl&quot;&gt;&#10;  &lt;div&gt;&#10;    &lt;button ng-click=&quot;ctrl.inc()&quot; id=&quot;inc&quot;&gt;Increment&lt;/button&gt;&#10;    &lt;span id=&quot;counter&quot;&gt;&#10;      {{ctrl.counter}}&#10;    &lt;/span&gt;&#10;  &lt;/div&gt;&#10;&#10;  &lt;div&gt;&#10;    &lt;button ng-click=&quot;ctrl.evil()&quot; id=&quot;evil&quot;&gt;Evil&lt;/button&gt;&#10;    &lt;span id=&quot;evilError&quot;&gt;&#10;      {{ctrl.evilError}}&#10;    &lt;/span&gt;&#10;  &lt;/div&gt;&#10;&lt;/div&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="script.js"
+      language="js"
+      type="js">
+      <pre><code>angular.module(&#39;cspExample&#39;, [])&#10;.controller(&#39;MainController&#39;, function() {&#10;   this.counter = 0;&#10;   this.inc = function() {&#10;     this.counter++;&#10;   };&#10;   this.evil = function() {&#10;     // jshint evil:true&#10;     try {&#10;       eval(&#39;1+2&#39;);&#10;     } catch (e) {&#10;       this.evilError = e.message;&#10;     }&#10;   };&#10; });</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="protractor.js"
+      type="protractor"
+      language="js">
+      <pre><code>var util, webdriver;&#10;&#10;var incBtn = element(by.id(&#39;inc&#39;));&#10;var counter = element(by.id(&#39;counter&#39;));&#10;var evilBtn = element(by.id(&#39;evil&#39;));&#10;var evilError = element(by.id(&#39;evilError&#39;));&#10;&#10;function getAndClearSevereErrors() {&#10;  return browser.manage().logs().get(&#39;browser&#39;).then(function(browserLog) {&#10;    return browserLog.filter(function(logEntry) {&#10;      return logEntry.level.value &gt; webdriver.logging.Level.WARNING.value;&#10;    });&#10;  });&#10;}&#10;&#10;function clearErrors() {&#10;  getAndClearSevereErrors();&#10;}&#10;&#10;function expectNoErrors() {&#10;  getAndClearSevereErrors().then(function(filteredLog) {&#10;    expect(filteredLog.length).toEqual(0);&#10;    if (filteredLog.length) {&#10;      console.log(&#39;browser console errors: &#39; + util.inspect(filteredLog));&#10;    }&#10;  });&#10;}&#10;&#10;function expectError(regex) {&#10;  getAndClearSevereErrors().then(function(filteredLog) {&#10;    var found = false;&#10;    filteredLog.forEach(function(log) {&#10;      if (log.message.match(regex)) {&#10;        found = true;&#10;      }&#10;    });&#10;    if (!found) {&#10;      throw new Error(&#39;expected an error that matches &#39; + regex);&#10;    }&#10;  });&#10;}&#10;&#10;beforeEach(function() {&#10;  util = require(&#39;util&#39;);&#10;  webdriver = require(&#39;protractor/node_modules/selenium-webdriver&#39;);&#10;});&#10;&#10;// For now, we only test on Chrome,&#10;// as Safari does not load the page with Protractor&#39;s injected scripts,&#10;// and Firefox webdriver always disables content security policy (#6358)&#10;if (browser.params.browser !== &#39;chrome&#39;) {&#10;  return;&#10;}&#10;&#10;it(&#39;should not report errors when the page is loaded&#39;, function() {&#10;  // clear errors so we are not dependent on previous tests&#10;  clearErrors();&#10;  // Need to reload the page as the page is already loaded when&#10;  // we come here&#10;  browser.driver.getCurrentUrl().then(function(url) {&#10;    browser.get(url);&#10;  });&#10;  expectNoErrors();&#10;});&#10;&#10;it(&#39;should evaluate expressions&#39;, function() {&#10;  expect(counter.getText()).toEqual(&#39;0&#39;);&#10;  incBtn.click();&#10;  expect(counter.getText()).toEqual(&#39;1&#39;);&#10;  expectNoErrors();&#10;});&#10;&#10;it(&#39;should throw and report an error when using &quot;eval&quot;&#39;, function() {&#10;  evilBtn.click();&#10;  expect(evilError.getText()).toMatch(/Content Security Policy/);&#10;  expectError(/Content Security Policy/);&#10;});</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-example.csp/index.html" name="example-example.csp"></iframe>
+  </div>
+</div>
+
+
+</p>
+
+</div>
+
+

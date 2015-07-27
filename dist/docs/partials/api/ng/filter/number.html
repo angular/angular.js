@@ -1,0 +1,145 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/filter/filters.js?message=docs(number)%3A%20describe%20your%20change...#L75' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/filter/filters.js#L75' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">number</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - filter in module <a href="api/ng">ng</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Formats a number as text.</p>
+<p>If the input is not a number an empty string is returned.</p>
+<p>If the input is an infinite (Infinity/-Infinity) the Infinity symbol &#39;∞&#39; is returned.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+  
+  <h2>Usage</h2>
+  <h3>In HTML Template Binding</h3>
+  
+    <pre><code>{{ number_expression | number : fractionSize}}</code></pre>
+  
+
+  <h3>In JavaScript</h3>
+  <pre><code>$filter(&#39;number&#39;)(number, fractionSize)</code></pre>
+
+  
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        number
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-number">number</a><a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Number to format.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        fractionSize
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-number">number</a><a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Number of decimal places to round the number to.
+If this is not provided then the fraction size is computed from the current locale&#39;s number
+formatting pattern. In the case of the default locale, it will be 3.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
+  
+  <h3>Returns</h3>
+<table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-string">string</a></td>
+    <td><p>Number rounded to decimalPlaces and places a “,” after each third digit.</p>
+</td>
+  </tr>
+</table>
+
+
+  
+  <h2 id="example">Example</h2><p>
+
+<div>
+  <a ng-click="openPlunkr('examples/example-example99', $event)" class="btn pull-right">
+    <i class="glyphicon glyphicon-edit">&nbsp;</i>
+    Edit in Plunker</a>
+
+  <div class="runnable-example"
+      path="examples/example-example99"
+      module="numberFilterExample">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;script&gt;&#10;  angular.module(&#39;numberFilterExample&#39;, [])&#10;    .controller(&#39;ExampleController&#39;, [&#39;$scope&#39;, function($scope) {&#10;      $scope.val = 1234.56789;&#10;    }]);&#10;&lt;/script&gt;&#10;&lt;div ng-controller=&quot;ExampleController&quot;&gt;&#10;  Enter number: &lt;input ng-model=&#39;val&#39;&gt;&lt;br&gt;&#10;  Default formatting: &lt;span id=&#39;number-default&#39;&gt;{{val | number}}&lt;/span&gt;&lt;br&gt;&#10;  No fractions: &lt;span&gt;{{val | number:0}}&lt;/span&gt;&lt;br&gt;&#10;  Negative number: &lt;span&gt;{{-val | number:4}}&lt;/span&gt;&#10;&lt;/div&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="protractor.js"
+      type="protractor"
+      language="js">
+      <pre><code> it(&#39;should format numbers&#39;, function() {&#10;   expect(element(by.id(&#39;number-default&#39;)).getText()).toBe(&#39;1,234.568&#39;);&#10;   expect(element(by.binding(&#39;val | number:0&#39;)).getText()).toBe(&#39;1,235&#39;);&#10;   expect(element(by.binding(&#39;-val | number:4&#39;)).getText()).toBe(&#39;-1,234.5679&#39;);&#10; });&#10;&#10; it(&#39;should update&#39;, function() {&#10;   element(by.model(&#39;val&#39;)).clear();&#10;   element(by.model(&#39;val&#39;)).sendKeys(&#39;3374.333&#39;);&#10;   expect(element(by.id(&#39;number-default&#39;)).getText()).toBe(&#39;3,374.333&#39;);&#10;   expect(element(by.binding(&#39;val | number:0&#39;)).getText()).toBe(&#39;3,374&#39;);&#10;   expect(element(by.binding(&#39;-val | number:4&#39;)).getText()).toBe(&#39;-3,374.3330&#39;);&#10;});</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-example99/index.html" name="example-example99"></iframe>
+  </div>
+</div>
+
+
+</p>
+
+</div>
+
+

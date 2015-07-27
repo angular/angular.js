@@ -1,0 +1,199 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/directive/form.js?message=docs(form)%3A%20describe%20your%20change...#L305' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/directive/form.js#L305' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">form</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - directive in module <a href="api/ng">ng</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Directive that instantiates
+<a href="api/ng/type/form.FormController">FormController</a>.</p>
+<p>If the <code>name</code> attribute is specified, the form controller is published onto the current scope under
+this name.</p>
+<h1 id="alias-link-ng-directive-ngform-ngform-">Alias: <a href="api/ng/directive/ngForm"><code>ngForm</code></a></h1>
+<p>In Angular forms can be nested. This means that the outer form is valid when all of the child
+forms are valid as well. However, browsers do not allow nesting of <code>&lt;form&gt;</code> elements, so
+Angular provides the <a href="api/ng/directive/ngForm"><code>ngForm</code></a> directive which behaves identically to
+<code>&lt;form&gt;</code> but can be nested.  This allows you to have nested forms, which is very useful when
+using Angular validation directives in forms that are dynamically generated using the
+<a href="api/ng/directive/ngRepeat"><code>ngRepeat</code></a> directive. Since you cannot dynamically generate the <code>name</code>
+attribute of input elements using interpolation, you have to wrap each set of repeated inputs in an
+<code>ngForm</code> directive and nest these in an outer <code>form</code> element.</p>
+<h1 id="css-classes">CSS classes</h1>
+<ul>
+<li><code>ng-valid</code> is set if the form is valid.</li>
+<li><code>ng-invalid</code> is set if the form is invalid.</li>
+<li><code>ng-pristine</code> is set if the form is pristine.</li>
+<li><code>ng-dirty</code> is set if the form is dirty.</li>
+<li><code>ng-submitted</code> is set if the form was submitted.</li>
+</ul>
+<p>Keep in mind that ngAnimate can detect each of these classes when added and removed.</p>
+<h1 id="submitting-a-form-and-preventing-the-default-action">Submitting a form and preventing the default action</h1>
+<p>Since the role of forms in client-side Angular applications is different than in classical
+roundtrip apps, it is desirable for the browser not to translate the form submission into a full
+page reload that sends the data to the server. Instead some javascript logic should be triggered
+to handle the form submission in an application-specific way.</p>
+<p>For this reason, Angular prevents the default action (form submission to the server) unless the
+<code>&lt;form&gt;</code> element has an <code>action</code> attribute specified.</p>
+<p>You can use one of the following two ways to specify what javascript method should be called when
+a form is submitted:</p>
+<ul>
+<li><a href="api/ng/directive/ngSubmit">ngSubmit</a> directive on the form element</li>
+<li><a href="api/ng/directive/ngClick">ngClick</a> directive on the first
+button or input field of type submit (input[type=submit])</li>
+</ul>
+<p>To prevent double execution of the handler, use only one of the <a href="api/ng/directive/ngSubmit">ngSubmit</a>
+or <a href="api/ng/directive/ngClick">ngClick</a> directives.
+This is because of the following form submission rules in the HTML specification:</p>
+<ul>
+<li>If a form has only one input field then hitting enter in this field triggers form submit
+(<code>ngSubmit</code>)</li>
+<li>if a form has 2+ input fields and no buttons or input[type=submit] then hitting enter
+doesn&#39;t trigger submit</li>
+<li>if a form has one or more input fields and one or more buttons or input[type=submit] then
+hitting enter in any of the input fields will trigger the click handler on the <em>first</em> button or
+input[type=submit] (<code>ngClick</code>) <em>and</em> a submit handler on the enclosing form (<code>ngSubmit</code>)</li>
+</ul>
+<p>Any pending <code>ngModelOptions</code> changes will take place immediately when an enclosing form is
+submitted. Note that <code>ngClick</code> events will occur before the model is updated. Use <code>ngSubmit</code>
+to have access to the updated model.</p>
+<h2 id="animation-hooks">Animation Hooks</h2>
+<p>Animations in ngForm are triggered when any of the associated CSS classes are added and removed.
+These classes are: <code>.ng-pristine</code>, <code>.ng-dirty</code>, <code>.ng-invalid</code> and <code>.ng-valid</code> as well as any
+other validations that are performed within the form. Animations in ngForm are similar to how
+they work in ngClass and animations can be hooked into using CSS transitions, keyframes as well
+as JS animations.</p>
+<p>The following example shows a simple way to utilize CSS transitions to style a form element
+that has been rendered as invalid after it has been validated:</p>
+<pre>
+//be sure to include ngAnimate as a module to hook into more
+//advanced animations
+.my-form {
+  transition:0.5s linear all;
+  background: white;
+}
+.my-form.ng-invalid {
+  background: red;
+  color:white;
+}
+</pre>
+</div>
+
+
+
+
+<div>
+  
+
+  
+  <h2>Directive Info</h2>
+  <ul>
+    
+    <li>This directive executes at priority level 0.</li>
+  </ul>
+
+  
+  <h2 id="usage">Usage</h2>
+  <div class="usage">
+  
+    <ul>
+    
+      <li>as element:
+      
+      <pre><code>&lt;form&#10;  [name=&quot;&quot;]&gt;&#10;...&#10;&lt;/form&gt;</code></pre>
+      </li>
+    
+  </div>
+  
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        name
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Name of the form. If specified, the form controller will be published into
+                      related scope, under this name.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
+  
+
+
+  
+  <h2 id="example">Example</h2><p>
+
+<div>
+  <a ng-click="openPlunkr('examples/example-example58', $event)" class="btn pull-right">
+    <i class="glyphicon glyphicon-edit">&nbsp;</i>
+    Edit in Plunker</a>
+
+  <div class="runnable-example"
+      path="examples/example-example58"
+      deps="angular-animate.js"
+      animations="true"
+      fixBase="true"
+      module="formExample">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;script&gt;&#10;  angular.module(&#39;formExample&#39;, [])&#10;    .controller(&#39;FormController&#39;, [&#39;$scope&#39;, function($scope) {&#10;      $scope.userType = &#39;guest&#39;;&#10;    }]);&#10;&lt;/script&gt;&#10;&lt;style&gt;&#10; .my-form {&#10;   -webkit-transition:all linear 0.5s;&#10;   transition:all linear 0.5s;&#10;   background: transparent;&#10; }&#10; .my-form.ng-invalid {&#10;   background: red;&#10; }&#10;&lt;/style&gt;&#10;&lt;form name=&quot;myForm&quot; ng-controller=&quot;FormController&quot; class=&quot;my-form&quot;&gt;&#10;  userType: &lt;input name=&quot;input&quot; ng-model=&quot;userType&quot; required&gt;&#10;  &lt;span class=&quot;error&quot; ng-show=&quot;myForm.input.$error.required&quot;&gt;Required!&lt;/span&gt;&lt;br&gt;&#10;  &lt;tt&gt;userType = {{userType}}&lt;/tt&gt;&lt;br&gt;&#10;  &lt;tt&gt;myForm.input.$valid = {{myForm.input.$valid}}&lt;/tt&gt;&lt;br&gt;&#10;  &lt;tt&gt;myForm.input.$error = {{myForm.input.$error}}&lt;/tt&gt;&lt;br&gt;&#10;  &lt;tt&gt;myForm.$valid = {{myForm.$valid}}&lt;/tt&gt;&lt;br&gt;&#10;  &lt;tt&gt;myForm.$error.required = {{!!myForm.$error.required}}&lt;/tt&gt;&lt;br&gt;&#10; &lt;/form&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="protractor.js"
+      type="protractor"
+      language="js">
+      <pre><code>it(&#39;should initialize to model&#39;, function() {&#10;  var userType = element(by.binding(&#39;userType&#39;));&#10;  var valid = element(by.binding(&#39;myForm.input.$valid&#39;));&#10;&#10;  expect(userType.getText()).toContain(&#39;guest&#39;);&#10;  expect(valid.getText()).toContain(&#39;true&#39;);&#10;});&#10;&#10;it(&#39;should be invalid if empty&#39;, function() {&#10;  var userType = element(by.binding(&#39;userType&#39;));&#10;  var valid = element(by.binding(&#39;myForm.input.$valid&#39;));&#10;  var userInput = element(by.model(&#39;userType&#39;));&#10;&#10;  userInput.clear();&#10;  userInput.sendKeys(&#39;&#39;);&#10;&#10;  expect(userType.getText()).toEqual(&#39;userType =&#39;);&#10;  expect(valid.getText()).toContain(&#39;false&#39;);&#10;});</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-example58/index.html" name="example-example58"></iframe>
+  </div>
+</div>
+
+
+</p>
+
+</div>
+
+

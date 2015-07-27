@@ -1,0 +1,191 @@
+
+<h1>Function components in <code>ng</code></h1>
+
+
+
+<div class="component-breakdown">
+  <div>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/function/angular.lowercase">angular.lowercase</a></td>
+        <td><p>Converts the specified string to lowercase.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/function/angular.uppercase">angular.uppercase</a></td>
+        <td><p>Converts the specified string to uppercase.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/function/angular.forEach">angular.forEach</a></td>
+        <td><p>Invokes the <code>iterator</code> function once for each item in <code>obj</code> collection, which can be either an
+object or an array. The <code>iterator</code> function is invoked with <code>iterator(value, key, obj)</code>, where <code>value</code>
+is the value of an object property or an array element, <code>key</code> is the object property key or
+array element index and obj is the <code>obj</code> itself. Specifying a <code>context</code> for the function is optional.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/function/angular.extend">angular.extend</a></td>
+        <td><p>Extends the destination object <code>dst</code> by copying own enumerable properties from the <code>src</code> object(s)
+to <code>dst</code>. You can specify multiple <code>src</code> objects. If you want to preserve original objects, you can do so
+by passing an empty object as the target: <code>var object = angular.extend({}, object1, object2)</code>.
+Note: Keep in mind that <code>angular.extend</code> does not support recursive merge (deep copy).</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/function/angular.noop">angular.noop</a></td>
+        <td><p>A function that performs no operations. This function can be useful when writing code in the
+functional style.</p>
+<pre><code class="lang-js">function foo(callback) {
+  var result = calculateResult();
+  (callback || angular.noop)(result);
+}
+</code></pre>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/function/angular.identity">angular.identity</a></td>
+        <td><p>A function that returns its first argument. This function is useful when writing code in the
+functional style.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/function/angular.isUndefined">angular.isUndefined</a></td>
+        <td><p>Determines if a reference is undefined.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/function/angular.isDefined">angular.isDefined</a></td>
+        <td><p>Determines if a reference is defined.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/function/angular.isObject">angular.isObject</a></td>
+        <td><p>Determines if a reference is an <code>Object</code>. Unlike <code>typeof</code> in JavaScript, <code>null</code>s are not
+considered to be objects. Note that JavaScript arrays are objects.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/function/angular.isString">angular.isString</a></td>
+        <td><p>Determines if a reference is a <code>String</code>.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/function/angular.isNumber">angular.isNumber</a></td>
+        <td><p>Determines if a reference is a <code>Number</code>.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/function/angular.isDate">angular.isDate</a></td>
+        <td><p>Determines if a value is a date.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/function/angular.isArray">angular.isArray</a></td>
+        <td><p>Determines if a reference is an <code>Array</code>.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/function/angular.isFunction">angular.isFunction</a></td>
+        <td><p>Determines if a reference is a <code>Function</code>.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/function/angular.isElement">angular.isElement</a></td>
+        <td><p>Determines if a reference is a DOM element (or wrapped jQuery element).</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/function/angular.copy">angular.copy</a></td>
+        <td><p>Creates a deep copy of <code>source</code>, which should be an object or an array.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/function/angular.equals">angular.equals</a></td>
+        <td><p>Determines if two objects or two values are equivalent. Supports value types, regular
+expressions, arrays and objects.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/function/angular.bind">angular.bind</a></td>
+        <td><p>Returns a function which calls function <code>fn</code> bound to <code>self</code> (<code>self</code> becomes the <code>this</code> for
+<code>fn</code>). You can supply optional <code>args</code> that are prebound to the function. This feature is also
+known as <a href="http://en.wikipedia.org/wiki/Partial_application">partial application</a>, as
+distinguished from <a href="http://en.wikipedia.org/wiki/Currying#Contrast_with_partial_function_application">function currying</a>.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/function/angular.toJson">angular.toJson</a></td>
+        <td><p>Serializes input into a JSON-formatted string. Properties with leading $$ characters will be
+stripped since angular uses this notation internally.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/function/angular.fromJson">angular.fromJson</a></td>
+        <td><p>Deserializes a JSON string.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/function/angular.bootstrap">angular.bootstrap</a></td>
+        <td><p>Use this function to manually start up angular application.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/function/angular.reloadWithDebugInfo">angular.reloadWithDebugInfo</a></td>
+        <td><p>Use this function to reload the current application with debug information turned on.
+This takes precedence over a call to <code>$compileProvider.debugInfoEnabled(false)</code>.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/function/angular.injector">angular.injector</a></td>
+        <td><p>Creates an injector object that can be used for retrieving services as well as for
+dependency injection (see <a href="guide/di">dependency injection</a>).</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/function/angular.element">angular.element</a></td>
+        <td><p>Wraps a raw DOM element or HTML string as a <a href="http://jquery.com">jQuery</a> element.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/function/angular.module">angular.module</a></td>
+        <td><p>The <code>angular.module</code> is a global place for creating, registering and retrieving Angular
+modules.
+All modules (angular core or 3rd party) that should be available to an application must be
+registered using this mechanism.</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+</div>
+

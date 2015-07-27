@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Example - example-example37-jquery</title>
+  
+
+  <script src="../../components/jquery-2.1.1/jquery.js"></script>
+  <script src="../../../angular.js"></script>
+  <script src="script.js"></script>
+  
+
+  
+</head>
+<body ng-app="form-example-modify-validators">
+  <form name="form" class="css-form" novalidate>
+  <div>
+    Overwritten Email:
+    <input type="email" ng-model="myEmail" overwrite-email name="overwrittenEmail" />
+    <span ng-show="form.overwrittenEmail.$error.email">This email format is invalid!</span><br>
+    Model: {{myEmail}}
+    </div>
+</form>
+</body>
+</html>

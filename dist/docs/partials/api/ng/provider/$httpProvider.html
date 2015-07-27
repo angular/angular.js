@@ -1,0 +1,166 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/http.js?message=docs($httpProvider)%3A%20describe%20your%20change...#L117' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/http.js#L117' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">$httpProvider</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+  <li>
+    <a href="api/ng/service/$http">- $http</a>
+  </li>
+
+    <li>
+      - provider in module <a href="api/ng">ng</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Use <code>$httpProvider</code> to change the default behavior of the <a href="api/ng/service/$http">$http</a> service.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+    
+
+  
+
+  
+<h2>Methods</h2>
+<ul class="methods">
+  <li id="useApplyAsync">
+    <h3><p><code>useApplyAsync([value]);</code></p>
+
+</h3>
+    <div><p>Configure $http service to combine processing of multiple http responses received at around
+the same time via <a href="api/ng/type/$rootScope.Scope#$applyAsync">$rootScope.$applyAsync</a>. This can result in
+significant performance improvement for bigger applications that make many HTTP requests
+concurrently (common during application bootstrap).</p>
+<p>Defaults to false. If no value is specifed, returns the current configured value.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        value
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-boolean">boolean</a>
+      </td>
+      <td>
+        <p>If true, when requests are loaded, they will schedule a deferred
+   &quot;apply&quot; on the next tick, giving time for subsequent requests in a roughly ~10ms window
+   to load and share the same digest cycle.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-boolean">boolean</a><a href="" class="label type-hint type-hint-object">Object</a></td>
+    <td><p>If a value is specified, returns the $httpProvider for chaining.
+   otherwise, returns the current configured value.</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  </ul>
+  
+  
+<h2>Properties</h2>
+<ul class="properties">
+  <li id="defaults">
+    <h3><code>defaults</code></h3>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td></td>
+    <td><p>Object containing default values for all <a href="api/ng/service/$http">$http</a> requests.</p>
+<ul>
+<li><p><strong><code>defaults.cache</code></strong> - {Object} - an object built with <a href="api/ng/service/$cacheFactory"><code>$cacheFactory</code></a>
+that will provide the cache for all requests who set their <code>cache</code> property to <code>true</code>.
+If you set the <code>default.cache = false</code> then only requests that specify their own custom
+cache object will be cached. See <a href="api/ng/service/$http#caching">$http Caching</a> for more information.</p>
+</li>
+<li><p><strong><code>defaults.xsrfCookieName</code></strong> - {string} - Name of cookie containing the XSRF token.
+Defaults value is <code>&#39;XSRF-TOKEN&#39;</code>.</p>
+</li>
+<li><p><strong><code>defaults.xsrfHeaderName</code></strong> - {string} - Name of HTTP header to populate with the
+XSRF token. Defaults value is <code>&#39;X-XSRF-TOKEN&#39;</code>.</p>
+</li>
+<li><p><strong><code>defaults.headers</code></strong> - {Object} - Default headers for all $http requests.
+Refer to <a href="api/ng/service/$http#setting-http-headers">$http</a> for documentation on
+setting default headers.</p>
+<ul>
+<li><strong><code>defaults.headers.common</code></strong></li>
+<li><strong><code>defaults.headers.post</code></strong></li>
+<li><strong><code>defaults.headers.put</code></strong></li>
+<li><strong><code>defaults.headers.patch</code></strong></li>
+</ul>
+</li>
+</ul>
+</td>
+  </tr>
+</table>
+  </li>
+  
+  <li id="interceptors">
+    <h3><code>interceptors</code></h3>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td></td>
+    <td><p>Array containing service factories for all synchronous or asynchronous <a href="api/ng/service/$http">$http</a>
+pre-processing of request or postprocessing of responses.</p>
+<p>These service factories are ordered by request, i.e. they are applied in the same order as the
+array, on request, but reverse order, on response.</p>
+<p><a href="api/ng/service/$http#interceptors">Interceptors detailed info</a></p>
+</td>
+  </tr>
+</table>
+  </li>
+  </ul>
+
+
+
+  
+</div>
+
+

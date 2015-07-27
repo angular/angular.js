@@ -1,0 +1,32 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/guide/databinding.ngdoc?message=docs(guide%2FData Binding)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<p>Data-binding in Angular apps is the automatic synchronization of data between the model and view
+components.  The way that Angular implements data-binding lets you treat the model as the
+single-source-of-truth in your application.  The view is a projection of the model at all times.
+When the model changes, the view reflects the change, and vice versa.</p>
+<h2 id="data-binding-in-classical-template-systems">Data Binding in Classical Template Systems</h2>
+<p><img class="right" src="img/One_Way_Data_Binding.png"/><br />
+Most templating systems bind data in only one direction: they merge template and model components
+together into a view. After the merge occurs, changes to the model
+or related sections of the view are NOT automatically reflected in the view. Worse, any changes
+that the user makes to the view are not reflected in the model. This means that the developer has
+to write code that constantly syncs the view with the model and the model with the view.</p>
+<h2 id="data-binding-in-angular-templates">Data Binding in Angular Templates</h2>
+<p><img class="right" src="img/Two_Way_Data_Binding.png"/><br />
+Angular templates work differently. First the template (which is the uncompiled HTML along with
+any additional markup or directives) is compiled on the browser. The compilation step produces a
+live view. Any changes to the view are immediately reflected in the model, and any changes in
+the model are propagated to the view. The model is the single-source-of-truth for the application
+state, greatly simplifying the programming model for the developer. You can think of
+the view as simply an instant projection of your model.</p>
+<p>Because the view is just a projection of the model, the controller is completely separated from the
+view and unaware of it. This makes testing a snap because it is easy to test your controller in
+isolation without the view and the related DOM/browser dependency.</p>
+<h2 id="related-topics">Related Topics</h2>
+<ul>
+<li><a href="guide/scope">Angular Scopes</a></li>
+<li><a href="guide/templates">Angular Templates</a></li>
+</ul>
+
+

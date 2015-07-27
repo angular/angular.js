@@ -1,0 +1,150 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/tutorial/step_10.ngdoc?message=docs(tutorial%2F10 - Event Handlers)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<ul doc-tutorial-nav="10"></ul>
+
+
+<p>In this step, you will add a clickable phone image swapper to the phone details page.</p>
+<ul>
+<li>The phone details view displays one large image of the current phone and several smaller thumbnail
+images. It would be great if we could replace the large image with any of the thumbnails just by
+clicking on the desired thumbnail image. Let&#39;s have a look at how we can do this with Angular.</li>
+</ul>
+<div doc-tutorial-reset="10"></div>
+
+<h2 id="controller">Controller</h2>
+<p><strong><code>app/js/controllers.js</code>:</strong></p>
+<pre><code class="lang-js">...
+var phonecatControllers = angular.module(&#39;phonecatControllers&#39;,[]);
+
+phonecatControllers.controller(&#39;PhoneDetailCtrl&#39;, [&#39;$scope&#39;, &#39;$routeParams&#39;, &#39;$http&#39;,
+  function($scope, $routeParams, $http) {
+    $http.get(&#39;phones/&#39; + $routeParams.phoneId + &#39;.json&#39;).success(function(data) {
+      $scope.phone = data;
+      $scope.mainImageUrl = data.images[0];
+    });
+
+    $scope.setImage = function(imageUrl) {
+      $scope.mainImageUrl = imageUrl;
+    };
+  }]);
+</code></pre>
+<p>In the <code>PhoneDetailCtrl</code> controller, we created the <code>mainImageUrl</code> model property and set its
+default value to the first phone image URL.</p>
+<p>We also created a <code>setImage</code> event handler function that will change the value of <code>mainImageUrl</code>.</p>
+<h2 id="template">Template</h2>
+<p><strong><code>app/partials/phone-detail.html</code>:</strong></p>
+<pre><code class="lang-html">&lt;img ng-src=&quot;{{mainImageUrl}}&quot; class=&quot;phone&quot;&gt;
+
+...
+
+&lt;ul class=&quot;phone-thumbs&quot;&gt;
+  &lt;li ng-repeat=&quot;img in phone.images&quot;&gt;
+    &lt;img ng-src=&quot;{{img}}&quot; ng-click=&quot;setImage(img)&quot;&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+...
+</code></pre>
+<p>We bound the <code>ngSrc</code> directive of the large image to the <code>mainImageUrl</code> property.</p>
+<p>We also registered an <a href="api/ng/directive/ngClick"><code>ngClick</code></a>
+handler with thumbnail images. When a user clicks on one of the thumbnail images, the handler will
+use the <code>setImage</code> event handler function to change the value of the <code>mainImageUrl</code> property to the
+URL of the thumbnail image.</p>
+<div style="display: none">
+TODO!
+<img  class="diagram" src="img/tutorial/tutorial_10-11_final.png">
+</div>
+
+<h2 id="test">Test</h2>
+<p>To verify this new feature, we added two end-to-end tests. One verifies that the main image is set
+to the first phone image by default. The second test clicks on several thumbnail images and
+verifies that the main image changed appropriately.</p>
+<p><strong><code>test/e2e/scenarios.js</code>:</strong></p>
+<pre><code class="lang-js">...
+  describe(&#39;Phone detail view&#39;, function() {
+
+...
+
+    it(&#39;should display the first phone image as the main phone image&#39;, function() {
+      expect(element(by.css(&#39;img.phone&#39;)).getAttribute(&#39;src&#39;)).toMatch(/img\/phones\/nexus-s.0.jpg/);
+    });
+
+
+    it(&#39;should swap main image if a thumbnail image is clicked on&#39;, function() {
+      element(by.css(&#39;.phone-thumbs li:nth-child(3) img&#39;)).click();
+      expect(element(by.css(&#39;img.phone&#39;)).getAttribute(&#39;src&#39;)).toMatch(/img\/phones\/nexus-s.2.jpg/);
+
+      element(by.css(&#39;.phone-thumbs li:nth-child(1) img&#39;)).click();
+      expect(element(by.css(&#39;img.phone&#39;)).getAttribute(&#39;src&#39;)).toMatch(/img\/phones\/nexus-s.0.jpg/);
+    });
+  });
+</code></pre>
+<p>You can now rerun <code>npm run protractor</code> to see the tests run.</p>
+<p>You also have to refactor one of your unit tests because of the addition of the <code>mainImageUrl</code>
+model property to the <code>PhoneDetailCtrl</code> controller. Below, we create the function <code>xyzPhoneData</code>
+which returns the appropriate json with the <code>images</code> attribute in order to get the test to pass.</p>
+<p><strong><code>test/unit/controllersSpec.js</code>:</strong></p>
+<pre><code class="lang-js">...
+  beforeEach(module(&#39;phonecatApp&#39;));
+
+...
+
+ describe(&#39;PhoneDetailCtrl&#39;, function(){
+    var scope, $httpBackend, ctrl,
+        xyzPhoneData = function() {
+          return {
+            name: &#39;phone xyz&#39;,
+            images: [&#39;image/url1.png&#39;, &#39;image/url2.png&#39;]
+          }
+        };
+
+
+    beforeEach(inject(function(_$httpBackend_, $rootScope, $routeParams, $controller) {
+      $httpBackend = _$httpBackend_;
+      $httpBackend.expectGET(&#39;phones/xyz.json&#39;).respond(xyzPhoneData());
+
+      $routeParams.phoneId = &#39;xyz&#39;;
+      scope = $rootScope.$new();
+      ctrl = $controller(&#39;PhoneDetailCtrl&#39;, {$scope: scope});
+    }));
+
+
+    it(&#39;should fetch phone detail&#39;, function() {
+      expect(scope.phone).toBeUndefined();
+      $httpBackend.flush();
+
+      expect(scope.phone).toEqual(xyzPhoneData());
+    });
+  });
+</code></pre>
+<p>Your unit tests should now be passing.</p>
+<h1 id="experiments">Experiments</h1>
+<ul>
+<li><p>Let&#39;s add a new controller method to <code>PhoneDetailCtrl</code>:</p>
+<pre><code>$scope.hello = function(name) {
+    alert(&#39;Hello &#39; + (name || &#39;world&#39;) + &#39;!&#39;);
+}
+</code></pre>
+<p>and add:</p>
+<pre><code>&lt;button ng-click=&quot;hello(&#39;Elmo&#39;)&quot;&gt;Hello&lt;/button&gt;
+</code></pre>
+<p>to the <code>phone-detail.html</code> template.</p>
+</li>
+</ul>
+<div style="display: none">
+TODO!
+  The controller methods are inherited between controllers/scopes, so you can use the same snippet
+in the <code>phone-list.html</code> template as well.
+
+* Move the <code>hello</code> method from <code>PhoneCatCtrl</code> to <code>PhoneListCtrl</code> and you&#39;ll see that the button
+declared in <code>index.html</code> will stop working, while the one declared in the <code>phone-list.html</code>
+template remains operational.
+</div>
+
+
+<h1 id="summary">Summary</h1>
+<p>With the phone image swapper in place, we&#39;re ready for <a href="tutorial/step_11">step 11</a> to
+learn an even better way to fetch data.</p>
+<ul doc-tutorial-nav="10"></ul>
+
+

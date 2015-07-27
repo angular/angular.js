@@ -1,0 +1,138 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/directive/ngChange.js?message=docs(ngChange)%3A%20describe%20your%20change...#L3' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/directive/ngChange.js#L3' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">ngChange</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - directive in module <a href="api/ng">ng</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Evaluate the given expression when the user changes the input.
+The expression is evaluated immediately, unlike the JavaScript onchange event
+which only triggers at the end of a change (usually, when the user leaves the
+form element or presses the return key).</p>
+<p>The <code>ngChange</code> expression is only evaluated when a change in the input value causes
+a new value to be committed to the model.</p>
+<p>It will not be evaluated:</p>
+<ul>
+<li>if the value returned from the <code>$parsers</code> transformation pipeline has not changed</li>
+<li>if the input has continued to be invalid since the model will stay <code>null</code></li>
+<li>if the model is changed programmatically and not by a change to the input value</li>
+</ul>
+<p>Note, this directive requires <code>ngModel</code> to be present.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+  
+  <h2>Directive Info</h2>
+  <ul>
+    
+    <li>This directive executes at priority level 0.</li>
+  </ul>
+
+  
+  <h2 id="usage">Usage</h2>
+  <div class="usage">
+  
+    <ul>
+    <li>as attribute:
+        <pre><code>&lt;input&#10;  ng-change=&quot;&quot;&gt;&#10;...&#10;&lt;/input&gt;</code></pre>
+      </li>
+    
+  </div>
+  
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        ngChange
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-expression">expression</a>
+      </td>
+      <td>
+        <p><a href="guide/expression">Expression</a> to evaluate upon change
+in input value.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
+  
+
+
+  
+  <h2 id="example">Example</h2><p>
+
+<div>
+  <a ng-click="openPlunkr('examples/example-ngChange-directive', $event)" class="btn pull-right">
+    <i class="glyphicon glyphicon-edit">&nbsp;</i>
+    Edit in Plunker</a>
+
+  <div class="runnable-example"
+      path="examples/example-ngChange-directive"
+      name="ngChange-directive"
+      module="changeExample">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;script&gt;&#10;  angular.module(&#39;changeExample&#39;, [])&#10;    .controller(&#39;ExampleController&#39;, [&#39;$scope&#39;, function($scope) {&#10;      $scope.counter = 0;&#10;      $scope.change = function() {&#10;        $scope.counter++;&#10;      };&#10;    }]);&#10;&lt;/script&gt;&#10;&lt;div ng-controller=&quot;ExampleController&quot;&gt;&#10;  &lt;input type=&quot;checkbox&quot; ng-model=&quot;confirmed&quot; ng-change=&quot;change()&quot; id=&quot;ng-change-example1&quot; /&gt;&#10;  &lt;input type=&quot;checkbox&quot; ng-model=&quot;confirmed&quot; id=&quot;ng-change-example2&quot; /&gt;&#10;  &lt;label for=&quot;ng-change-example2&quot;&gt;Confirmed&lt;/label&gt;&lt;br /&gt;&#10;  &lt;tt&gt;debug = {{confirmed}}&lt;/tt&gt;&lt;br/&gt;&#10;  &lt;tt&gt;counter = {{counter}}&lt;/tt&gt;&lt;br/&gt;&#10;&lt;/div&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="protractor.js"
+      type="protractor"
+      language="js">
+      <pre><code>var counter = element(by.binding(&#39;counter&#39;));&#10;var debug = element(by.binding(&#39;confirmed&#39;));&#10;&#10;it(&#39;should evaluate the expression if changing from view&#39;, function() {&#10;  expect(counter.getText()).toContain(&#39;0&#39;);&#10;&#10;  element(by.id(&#39;ng-change-example1&#39;)).click();&#10;&#10;  expect(counter.getText()).toContain(&#39;1&#39;);&#10;  expect(debug.getText()).toContain(&#39;true&#39;);&#10;});&#10;&#10;it(&#39;should not evaluate the expression if changing from model&#39;, function() {&#10;  element(by.id(&#39;ng-change-example2&#39;)).click();&#10;&#10;  expect(counter.getText()).toContain(&#39;0&#39;);&#10;  expect(debug.getText()).toContain(&#39;true&#39;);&#10;});</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-ngChange-directive/index.html" name="example-ngChange-directive"></iframe>
+  </div>
+</div>
+
+
+</p>
+
+</div>
+
+

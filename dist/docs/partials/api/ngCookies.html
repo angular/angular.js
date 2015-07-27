@@ -1,0 +1,77 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ngCookies/cookies.js?message=docs(ngCookies)%3A%20describe%20your%20change...#L3' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1>
+  <code>ngCookies</code>
+</h1>
+
+<h1 id="ngcookies">ngCookies</h1>
+<p>The <code>ngCookies</code> module provides a convenient wrapper for reading and writing browser cookies.</p>
+<div doc-module-components="ngCookies"></div>
+
+<p>See <a href="api/ngCookies/service/$cookies"><code>$cookies</code></a> and
+<a href="api/ngCookies/service/$cookieStore"><code>$cookieStore</code></a> for usage.</p>
+
+
+
+  <h2>Installation</h2>
+
+  <p>First include <code>angular-cookies.js</code> in your HTML:</p>
+
+  <pre><code>&lt;script src=&quot;angular.js&quot;&gt;&#10;&lt;script src=&quot;angular-cookies.js&quot;&gt;</code></pre>
+
+  <p>You can download this file from the following places:</p>
+  <ul>
+    <li>
+      <a href="https://developers.google.com/speed/libraries/devguide#angularjs">Google CDN</a><br>
+      e.g. <code>//ajax.googleapis.com/ajax/libs/angularjs/X.Y.Z/angular-cookies.js</code>
+    </li>
+    <li>
+      <a href="http://bower.io">Bower</a><br>
+      e.g. <pre><code>bower install angular-cookies@X.Y.Z</code></pre>
+    </li>
+    <li>
+      <a href="http://code.angularjs.org/">code.angularjs.org</a><br>
+      e.g. <pre><code>&quot;//code.angularjs.org/X.Y.Z/angular-cookies.js&quot;</code></pre>
+    </li>
+  </ul>
+  <p>where X.Y.Z is the AngularJS version you are running.</p>
+  <p>Then load the module in your application by adding it as a dependent module:</p>
+  <pre><code>angular.module(&#39;app&#39;, [&#39;ngCookies&#39;]);</code></pre>
+
+  <p>With that you&apos;re ready to get started!</p>
+
+
+<div class="component-breakdown">
+  <h2>Module Components</h2>
+  
+  <div>
+    <h3 class="component-heading" id="service">Service</h3>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ngCookies/service/$cookies">$cookies</a></td>
+        <td><p>Provides read/write access to browser&#39;s cookies.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ngCookies/service/$cookieStore">$cookieStore</a></td>
+        <td><p>Provides a key-value (string-object) storage, that is backed by session cookies.
+Objects put or retrieved from this storage are automatically serialized or
+deserialized by angular&#39;s toJson/fromJson.</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+  
+</div>
+
+
+
+

@@ -1,0 +1,506 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/auto/injector.js?message=docs($injector)%3A%20describe%20your%20change...#L121' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/auto/injector.js#L121' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">$injector</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+  
+
+    <li>
+      - service in module <a href="api/auto">auto</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p><code>$injector</code> is used to retrieve object instances as defined by
+<a href="api/auto/service/$provide">provider</a>, instantiate types, invoke methods,
+and load modules.</p>
+<p>The following always holds true:</p>
+<pre><code class="lang-js">var $injector = angular.injector();
+expect($injector.get(&#39;$injector&#39;)).toBe($injector);
+expect($injector.invoke(function($injector) {
+  return $injector;
+})).toBe($injector);
+</code></pre>
+<h1 id="injection-function-annotation">Injection Function Annotation</h1>
+<p>JavaScript does not have annotations, and annotations are needed for dependency injection. The
+following are all valid ways of annotating function with injection arguments and are equivalent.</p>
+<pre><code class="lang-js">// inferred (only works if code not minified/obfuscated)
+$injector.invoke(function(serviceA){});
+
+// annotated
+function explicit(serviceA) {};
+explicit.$inject = [&#39;serviceA&#39;];
+$injector.invoke(explicit);
+
+// inline
+$injector.invoke([&#39;serviceA&#39;, function(serviceA){}]);
+</code></pre>
+<h2 id="inference">Inference</h2>
+<p>In JavaScript calling <code>toString()</code> on a function returns the function definition. The definition
+can then be parsed and the function arguments can be extracted. This method of discovering
+annotations is disallowed when the injector is in strict mode.
+<em>NOTE:</em> This does not work with minification, and obfuscation tools since these tools change the
+argument names.</p>
+<h2 id="-inject-annotation"><code>$inject</code> Annotation</h2>
+<p>By adding an <code>$inject</code> property onto a function the injection parameters can be specified.</p>
+<h2 id="inline">Inline</h2>
+<p>As an array of injection names, where the last item in the array is the function to call.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+    
+
+  
+
+  
+<h2>Methods</h2>
+<ul class="methods">
+  <li id="get">
+    <h3><p><code>get(name, caller);</code></p>
+
+</h3>
+    <div><p>Return an instance of the service.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        name
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>The name of the instance to retrieve.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        caller
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>An optional string to provide the origin of the function call for error messages.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-object">*</a></td>
+    <td><p>The instance.</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="invoke">
+    <h3><p><code>invoke(fn, [self], [locals]);</code></p>
+
+</h3>
+    <div><p>Invoke the method and supply the method arguments from the <code>$injector</code>.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        fn
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">!Function</a>
+      </td>
+      <td>
+        <p>The function to invoke. Function parameters are injected according to the
+  <a href="guide/di">$inject Annotation</a> rules.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        self
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">Object</a>
+      </td>
+      <td>
+        <p>The <code>this</code> for the invoked method.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        locals
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">Object</a>
+      </td>
+      <td>
+        <p>Optional object. If preset then any argument names are read from this
+                        object first, before the <code>$injector</code> is consulted.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-object">*</a></td>
+    <td><p>the value returned by the invoked <code>fn</code> function.</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="has">
+    <h3><p><code>has(name);</code></p>
+
+</h3>
+    <div><p>Allows the user to query if the particular service exists.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        name
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Name of the service to query.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-boolean">boolean</a></td>
+    <td><p><code>true</code> if injector has given service.</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="instantiate">
+    <h3><p><code>instantiate(Type, [locals]);</code></p>
+
+</h3>
+    <div><p>Create a new instance of JS type. The method takes a constructor function, invokes the new
+operator, and supplies all of the arguments to the constructor function as specified by the
+constructor annotation.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        Type
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-function">Function</a>
+      </td>
+      <td>
+        <p>Annotated constructor function.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        locals
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">Object</a>
+      </td>
+      <td>
+        <p>Optional object. If preset then any argument names are read from this
+object first, before the <code>$injector</code> is consulted.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-object">Object</a></td>
+    <td><p>new instance of <code>Type</code>.</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="annotate">
+    <h3><p><code>annotate(fn, [strictDi]);</code></p>
+
+</h3>
+    <div><p>Returns an array of service names which the function is requesting for injection. This API is
+used by the injector to determine which services need to be injected into the function when the
+function is invoked. There are three ways in which the function can be annotated with the needed
+dependencies.</p>
+<h1 id="argument-names">Argument names</h1>
+<p>The simplest form is to extract the dependencies from the arguments of the function. This is done
+by converting the function into a string using <code>toString()</code> method and extracting the argument
+names.</p>
+<pre><code class="lang-js">// Given
+function MyController($scope, $route) {
+  // ...
+}
+
+// Then
+expect(injector.annotate(MyController)).toEqual([&#39;$scope&#39;, &#39;$route&#39;]);
+</code></pre>
+<p>You can disallow this method by using strict injection mode.</p>
+<p>This method does not work with code minification / obfuscation. For this reason the following
+annotation strategies are supported.</p>
+<h1 id="the-inject-property">The <code>$inject</code> property</h1>
+<p>If a function has an <code>$inject</code> property and its value is an array of strings, then the strings
+represent names of services to be injected into the function.</p>
+<pre><code class="lang-js">// Given
+var MyController = function(obfuscatedScope, obfuscatedRoute) {
+  // ...
+}
+// Define function dependencies
+MyController[&#39;$inject&#39;] = [&#39;$scope&#39;, &#39;$route&#39;];
+
+// Then
+expect(injector.annotate(MyController)).toEqual([&#39;$scope&#39;, &#39;$route&#39;]);
+</code></pre>
+<h1 id="the-array-notation">The array notation</h1>
+<p>It is often desirable to inline Injected functions and that&#39;s when setting the <code>$inject</code> property
+is very inconvenient. In these situations using the array notation to specify the dependencies in
+a way that survives minification is a better choice:</p>
+<pre><code class="lang-js">// We wish to write this (not minification / obfuscation safe)
+injector.invoke(function($compile, $rootScope) {
+  // ...
+});
+
+// We are forced to write break inlining
+var tmpFn = function(obfuscatedCompile, obfuscatedRootScope) {
+  // ...
+};
+tmpFn.$inject = [&#39;$compile&#39;, &#39;$rootScope&#39;];
+injector.invoke(tmpFn);
+
+// To better support inline function the inline annotation is supported
+injector.invoke([&#39;$compile&#39;, &#39;$rootScope&#39;, function(obfCompile, obfRootScope) {
+  // ...
+}]);
+
+// Therefore
+expect(injector.annotate(
+   [&#39;$compile&#39;, &#39;$rootScope&#39;, function(obfus_$compile, obfus_$rootScope) {}])
+ ).toEqual([&#39;$compile&#39;, &#39;$rootScope&#39;]);
+</code></pre>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        fn
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-function">function()</a><a href="" class="label type-hint type-hint-array">Array.&lt;(string|function())&gt;</a>
+      </td>
+      <td>
+        <p>Function for which dependent service names need to
+be retrieved as described above.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        strictDi
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-boolean">boolean</a>
+      </td>
+      <td>
+        <p>Disallow argument name annotation inference.</p>
+
+        <p><em>(default: false)</em></p>
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-array">Array.&lt;string&gt;</a></td>
+    <td><p>The names of the services which the function requires.</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  </ul>
+  
+  
+
+
+
+  
+</div>
+
+
