@@ -407,7 +407,7 @@
  *     otherwise the {@link error:$compile:ctreq Missing Required Controller} error is thrown.
  *
  *     Note that you can also require the directive's own controller - it will be made available like
- *     like any other controller.
+ *     any other controller.
  *
  *   * `transcludeFn` - A transclude linking function pre-bound to the correct transclusion scope.
  *     This is the same as the `$transclude`
