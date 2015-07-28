@@ -7,8 +7,8 @@
  *
  * @description
  * The `ngSwitch` directive is used to conditionally swap DOM structure on your template based on a scope expression.
- * Elements within `ngSwitch` but without `ngSwitchWhen` or `ngSwitchDefault` directives will be preserved at the location
- * as specified in the template.
+ * Elements within `ngSwitch` but without `ngSwitchWhen` or `ngSwitchWhenBind` or `ngSwitchDefault` directives will be 
+ * preserved at the location as specified in the template.
  *
  * The directive itself works similar to ngInclude, however, instead of downloading template code (or loading it
  * from the template cache), `ngSwitch` simply chooses one of the nested elements and makes it visible based on which element
@@ -20,10 +20,11 @@
  * attribute is displayed.
  *
  * <div class="alert alert-info">
- * Be aware that the attribute values to match against cannot be expressions. They are interpreted
+ * Be aware that the attribute values from ng-switch-when to match against cannot be expressions. They are interpreted
  * as literal string values to match against.
  * For example, **`ng-switch-when="someVal"`** will match against the string `"someVal"` not against the
  * value of the expression `$scope.someVal`.
+ * For cases that need a value to be evaluated you can use **`ng-switch-when-bind="..."`**.
  * </div>
 
  * @animations
@@ -39,16 +40,28 @@
  *   <ANY ng-switch-default>...</ANY>
  * </ANY>
  * ```
+ * 
+ *  * ```
+ * <ANY ng-switch="expression">
+ *   <ANY ng-switch-when-bind="matchVariable1">...</ANY>
+ *   <ANY ng-switch-when-bind="matchVariable2">...</ANY>
+ *   <ANY ng-switch-default>...</ANY>
+ * </ANY>
+ * ```
  *
  *
  * @scope
  * @priority 1200
- * @param {*} ngSwitch|on expression to match against <code>ng-switch-when</code>.
+ * @param {*} ngSwitch|on expression to match againsts <code>ng-switch-when</code> or 
+ * <code>ng-switch-when-bind</code>.
  * On child elements add:
  *
  * * `ngSwitchWhen`: the case statement to match against. If match then this
  *   case will be displayed. If the same match appears multiple times, all the
  *   elements will be displayed.
+ * * * `ngSwitchWhenBind`: the bindable case statement to match against. If match 
+ *   then this case will be displayed. If the same match appears multiple times, 
+ *   all the elements will be displayed.
  * * `ngSwitchDefault`: the default case when no other case match. If there
  *   are multiple default cases, all of them will be displayed when no other
  *   case match.
@@ -191,6 +204,17 @@ var ngSwitchWhenDirective = ngDirective({
     ctrl.cases['!' + attrs.ngSwitchWhen] = (ctrl.cases['!' + attrs.ngSwitchWhen] || []);
     ctrl.cases['!' + attrs.ngSwitchWhen].push({ transclude: $transclude, element: element });
   }
+});
+
+var ngSwitchWhenBindDirective = ngDirective({
+    transclude: 'element',
+    priority: 1200,
+    require: '^ngSwitch',
+    multiElement: true,
+    link: function (scope, element, attrs, ctrl, $transclude) {
+        ctrl.cases['!' + scope.$eval(attrs.ngSwitchWhenBind)] = (ctrl.cases['!' + scope.$eval(attrs.ngSwitchWhenBind)] || []);
+        ctrl.cases['!' + scope.$eval(attrs.ngSwitchWhenBind)].push({ transclude: $transclude, element: element });
+    }
 });
 
 var ngSwitchDefaultDirective = ngDirective({
