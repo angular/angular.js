@@ -320,6 +320,49 @@ describe("$animate", function() {
     });
   });
 
+  it('should not issue a call to addClass if the provided class value is not a string or array', function() {
+    inject(function($animate, $rootScope, $rootElement) {
+      var spy = spyOn(window, 'jqLiteAddClass').andCallThrough();
+
+      var element = jqLite('<div></div>');
+      var parent = $rootElement;
+
+      $animate.enter(element, parent, null, { addClass: noop });
+      $rootScope.$digest();
+      expect(spy).not.toHaveBeenCalled();
+
+      $animate.leave(element, { addClass: true });
+      $rootScope.$digest();
+      expect(spy).not.toHaveBeenCalled();
+
+      $animate.enter(element, parent, null, { addClass: 'fatias' });
+      $rootScope.$digest();
+      expect(spy).toHaveBeenCalled();
+    });
+  });
+
+  it('should not issue a call to removeClass if the provided class value is not a string or array', function() {
+    inject(function($animate, $rootScope, $rootElement) {
+      var spy = spyOn(window, 'jqLiteRemoveClass').andCallThrough();
+
+      var element = jqLite('<div></div>');
+      var parent = $rootElement;
+
+      $animate.enter(element, parent, null, {removeClass: noop});
+      $rootScope.$digest();
+      expect(spy).not.toHaveBeenCalled();
+
+      $animate.leave(element, {removeClass: true});
+      $rootScope.$digest();
+      expect(spy).not.toHaveBeenCalled();
+
+      element.addClass('fatias');
+      $animate.enter(element, parent, null, { removeClass: 'fatias' });
+      $rootScope.$digest();
+      expect(spy).toHaveBeenCalled();
+    });
+  });
+
   describe('CSS class DOM manipulation', function() {
     var element;
     var addClass;
