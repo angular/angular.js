@@ -106,31 +106,31 @@ var $$CoreAnimateQueueProvider = function() {
     };
 
     function addRemoveClassesPostDigest(element, add, remove) {
-      var data = postDigestQueue.get(element);
-      var classVal;
+      var classVal, data = postDigestQueue.get(element);
 
       if (!data) {
         postDigestQueue.put(element, data = {});
         postDigestElements.push(element);
       }
 
-      if (add) {
-        forEach(add.split(' '), function(className) {
-          if (className) {
-            data[className] = true;
-          }
-        });
-      }
+      var updateData = function(classes, value) {
+        var changed = false;
+        if (classes) {
+          classes = isString(classes) ? classes.split(' ') :
+                    isArray(classes) ? classes : [];
+          forEach(classes, function(className) {
+            if (className) {
+              changed = true;
+              data[className] = value;
+            }
+          });
+        }
+        return changed;
+      };
 
-      if (remove) {
-        forEach(remove.split(' '), function(className) {
-          if (className) {
-            data[className] = false;
-          }
-        });
-      }
-
-      if (postDigestElements.length > 1) return;
+      var classesAdded = updateData(add, true);
+      var classesRemoved = updateData(remove, false);
+      if ((!classesAdded && !classesRemoved) || postDigestElements.length > 1) return;
 
       $rootScope.$$postDigest(function() {
         forEach(postDigestElements, function(element) {

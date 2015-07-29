@@ -320,6 +320,41 @@ describe("$animate", function() {
     });
   });
 
+  they('should not issue a call to $prop if the provided class value is not a string or array', ['addClass', 'removeClass'], function(prop) {
+    inject(function($animate, $rootScope, $rootElement) {
+      var spyProp = prop === 'addClass' ? 'jqLiteAddClass' : 'jqLiteRemoveClass';
+      var spy = spyOn(window, spyProp).andCallThrough();
+
+      var element = jqLite('<div></div>');
+      var parent = $rootElement;
+
+      var options1 = {};
+      options1[prop] = function() {};
+      $animate.enter(element, parent, null, options1);
+
+      $rootScope.$digest();
+      expect(spy).not.toHaveBeenCalled();
+
+      var options2 = {};
+      options2[prop] = true;
+      $animate.leave(element, options2);
+
+      $rootScope.$digest();
+      expect(spy).not.toHaveBeenCalled();
+
+      var options3 = {};
+      if (prop === 'removeClass') {
+        element.addClass('fatias');
+      }
+
+      options3[prop] = ['fatias'];
+      $animate.enter(element, parent, null, options3);
+
+      $rootScope.$digest();
+      expect(spy).toHaveBeenCalled();
+    });
+  });
+
   describe('CSS class DOM manipulation', function() {
     var element;
     var addClass;

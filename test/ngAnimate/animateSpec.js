@@ -148,6 +148,35 @@ describe("animations", function() {
       });
     });
 
+    they('should nullify both options.$prop when passed into an animation if it is not a string or an array', ['addClass', 'removeClass'], function(prop) {
+      inject(function($animate, $rootScope) {
+        var options1 = {};
+        options1[prop] = function() {};
+        $animate.enter(element, parent, null, options1);
+
+        expect(options1[prop]).toBeFalsy();
+        $rootScope.$digest();
+
+        var options2 = {};
+        options2[prop] = true;
+        $animate.leave(element, options2);
+
+        expect(options2[prop]).toBeFalsy();
+        $rootScope.$digest();
+
+        capturedAnimation = null;
+
+        var options3 = {};
+        if (prop === 'removeClass') {
+          element.addClass('fatias');
+        }
+
+        options3[prop] = ['fatias'];
+        $animate.enter(element, parent, null, options3);
+        expect(options3[prop]).toBe('fatias');
+      });
+    });
+
     it('should throw a minErr if a regex value is used which partially contains or fully matches the `ng-animate` CSS class', function() {
       module(function($animateProvider) {
         assertError(/ng-animate/, true);
