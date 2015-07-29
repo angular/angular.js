@@ -3,7 +3,6 @@
 /* global angularModule: true,
   version: true,
 
-  $LocaleProvider,
   $CompileProvider,
 
   htmlAnchorDirective,
@@ -151,11 +150,6 @@ function publishExternalAPI(angular) {
   });
 
   angularModule = setupModuleLoader(window);
-  try {
-    angularModule('ngLocale');
-  } catch (e) {
-    angularModule('ngLocale', []).provider('$locale', $LocaleProvider);
-  }
 
   angularModule('ng', ['ngLocale'], ['$provide',
     function ngModule($provide) {

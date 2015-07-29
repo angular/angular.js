@@ -115,7 +115,7 @@ module.exports = function(grunt) {
         files: { src: 'test/**/*.js' },
       },
       ng: {
-        files: { src: files['angularSrc'] },
+        files: { src: files['angularSrc'].concat('!src/angular.bind') },
       },
       ngAnimate: {
         files: { src: 'src/ngAnimate/**/*.js' },
