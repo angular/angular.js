@@ -79,6 +79,9 @@ function setupModuleLoader(window) {
      * @returns {module} new module with the {@link angular.Module} api.
      */
     return function module(name, requires, configFn) {
+
+      var info = {};
+
       var assertNotHasOwnProperty = function(name, context) {
         if (name === 'hasOwnProperty') {
           throw ngMinErr('badname', 'hasOwnProperty is not a valid {0} name', context);
@@ -113,6 +116,37 @@ function setupModuleLoader(window) {
           _invokeQueue: invokeQueue,
           _configBlocks: configBlocks,
           _runBlocks: runBlocks,
+
+          /**
+           * @ngdoc method
+           * @name angular.Module#info
+           * @module ng
+           *
+           * @param {Object=} info Information about the module
+           * @returns {Object|Module} The current info object for this module if called as a getter,
+           *                          or `this` if called as a setter.
+           *
+           * @description
+           * Additional info about this module
+           * For example you could put the version of the module in here.
+           *
+           * ```js
+           * angular.module('myModule', []).info({ version: '1.0.0' });
+           * ```
+           *
+           * The global method `angular.info()` can be used to retrieve this info:
+           *
+           * ```js
+           * var version = angular.info('myModule').version;
+           * ```
+           */
+          info: function(value) {
+            if (isDefined(value)) {
+              info = value;
+              return this;
+            }
+            return info;
+          },
 
           /**
            * @ngdoc property

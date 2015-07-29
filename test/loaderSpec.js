@@ -26,10 +26,14 @@ describe('module loader', function() {
 
 
   it('should record calls', function() {
-    var otherModule = window.angular.module('other', []);
-    otherModule.config('otherInit');
+    function config() {}
+    function init() {}
+    function init2() {}
 
-    var myModule = window.angular.module('my', ['other'], 'config');
+    var otherModule = window.angular.module('other', []);
+    otherModule.config(init);
+
+    var myModule = window.angular.module('my', ['other'], config);
 
     expect(myModule.
       decorator('dk', 'dv').
@@ -40,7 +44,7 @@ describe('module loader', function() {
       filter('f', 'ff').
       directive('d', 'dd').
       controller('ctrl', 'ccc').
-      config('init2').
+      config(init2).
       constant('abc', 123).
       run('runBlock')).toBe(myModule);
 
@@ -57,10 +61,28 @@ describe('module loader', function() {
       ['$controllerProvider', 'register', ['ctrl', 'ccc']]
     ]);
     expect(myModule._configBlocks).toEqual([
-      ['$injector', 'invoke', ['config']],
-      ['$injector', 'invoke', ['init2']]
+      ['$injector', 'invoke', [config]],
+      ['$injector', 'invoke', [init2]]
     ]);
     expect(myModule._runBlocks).toEqual(['runBlock']);
+  });
+
+
+  it('should store additional module info', function() {
+    var myModule = angular.module('myModule', ['dep1']).info({version: '1.0'});
+    var otherModule = angular.module('otherModule', ['dep2'], function someConfig() {}).info({version: '2.0'});
+    var thirdModule = angular.module('thirdModule', ['dep2', 'dep3'], [function someConfig() {}]).info({version: '3.0'});
+    var fourthModule = angular.module('fourthModule', [], [function someConfig() {}]);
+
+    expect(myModule.info()).toEqual({version: '1.0'});
+    expect(otherModule.info()).toEqual({version: '2.0'});
+    expect(thirdModule.info()).toEqual({version: '3.0'});
+    expect(fourthModule.info()).toEqual({});
+
+    expect(angular.info('myModule')).toEqual({version: '1.0'});
+    expect(angular.info('otherModule')).toEqual({version: '2.0'});
+    expect(angular.info('thirdModule')).toEqual({version: '3.0'});
+    expect(angular.info('fourthModule')).toEqual({});
   });
 
 

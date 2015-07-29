@@ -75,6 +75,7 @@
     "encodeUriSegment": false,
     "encodeUriQuery": false,
     "angularInit": false,
+    "info": false,
     "bootstrap": false,
     "snake_case": false,
     "bindJQuery": false,
