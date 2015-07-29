@@ -2991,6 +2991,23 @@ describe('$compile', function() {
     );
 
 
+    it('should call observer only when the attribute value changes', function() {
+      module(function() {
+        directive('observingDirective', function() {
+          return {
+            restrict: 'E',
+            scope: { someAttr: '@' }
+          };
+        });
+      });
+      inject(function($rootScope, $compile) {
+        $compile('<observing-directive observer></observing-directive>')($rootScope);
+        $rootScope.$digest();
+        expect(observeSpy).not.toHaveBeenCalledWith(undefined);
+      });
+    });
+
+
     it('should delegate exceptions to $exceptionHandler', function() {
       observeSpy = jasmine.createSpy('$observe attr').andThrow('ERROR');
 
