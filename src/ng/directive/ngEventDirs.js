@@ -78,6 +78,56 @@ forEach(
 
 /**
  * @ngdoc directive
+ * @name ng-drop
+ *
+ * @description
+ * The `ng-drop` directive allows you to specify custom behavior on a drop event.
+ *
+ * @element ANY
+ * @priority 0
+ * @param {expression} ng-drop {@link guide/expression Expression} to evaluate upon
+ * a drop. (The Event object is available as `$event`)
+ *
+ * @example at http://plnkr.co/edit/yFTetlPuxCAZuHzPj9BE?p=preview
+  <example>
+    <script>
+            angular.module('MyAppName', [])
+                    .controller('DragDropCtrl', function ($scope) {
+                        console.log('DragDropCtrl');
+                        $scope.handleDrop = function (e) {
+                            console.log('Drop');
+                            e.stopPropagation();
+                            e.preventDefault();
+                            $scope.thingsDropped++;
+                        };
+                        $scope.handleDragOver = function (e) {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            e.dataTransfer.dropEffect = 'copy';
+                            // this / e.target is the current hover target.
+                            e.currentTarget.classList.add('over');
+                        };
+                    });
+        </script>
+    <script src="./DragDropDirectives.js"></script>
+    <div ng-app="MyAppName">
+        <div ng-controller="DragDropCtrl"
+             style="padding:10px; width: 200px; height: 100px; border: dashed 2px black;"
+             ng-init="thingsDropped = 0" 
+             ng-drop="handleDrop($event)"
+             ng-dragover="handleDragOver($event)" 
+             >
+            Drop things here. {{thingsDropped}} dropped
+        </div>
+        <br/>
+        <img data-src="holder.js/100x100" class="img-thumbnail" alt="100x100" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/PjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIHByZXNlcnZlQXNwZWN0UmF0aW89Im5vbmUiPjwhLS0KICAgIFNvdXJjZSBVUkw6IGhvbGRlci5qcy8xMDB4MTAwCiAgICBDcmVhdGVkIHdpdGggSG9sZGVyLmpzIDIuNi4wLgogICAgTGVhcm4gbW9yZSBhdCBodHRwOi8vaG9sZGVyanMuY29tCiAgICAoYykgMjAxMi0yMDE1IEl2YW4gTWFsb3BpbnNreSAtIGh0dHA6Ly9pbXNreS5jbwogICAgLS0+CiAgICA8Zz4KICAgICAgICA8cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI0VFRUVFRSIvPgogICAgICAgIDxnPgogICAgICAgICAgICA8dGV4dCBzdHlsZT0iZmlsbDojQUFBQUFBO2ZvbnQtd2VpZ2h0OmJvbGQ7Zm9udC1mYW1pbHk6QXJpYWwsIEhlbHZldGljYSwgT3BlbiBTYW5zLCBzYW5zLXNlcmlmLCBtb25vc3BhY2U7Zm9udC1zaXplOjEwcHQiIHg9IjI1LjM0Mzc1IiB5PSI1Mi4yNSI+RHJhZ21lPC90ZXh0PgogICAgICAgIDwvZz4KICAgIDwvZz4KPC9zdmc+Cg=="
+                             data-holder-rendered="true" style="width: 100px; height: 100px;">
+    </div>                         
+  </example>
+ */
+
+/**
+ * @ngdoc directive
  * @name ngDblclick
  *
  * @description
