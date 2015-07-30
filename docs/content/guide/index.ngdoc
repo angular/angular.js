@@ -53,7 +53,7 @@ In Angular applications, you move the job of filling page templates with data fr
 
 ## Specific Topics
 
-* **Login: **[Google example](https://developers.google.com/+/photohunt/python), [AngularJS Faceb0ok library](https://github.com/pc035860/angular-easyfb), [Facebook example](http://blog.brunoscopelliti.com/facebook-authentication-in-your-angularjs-web-app), [authentication strategy](http://blog.brunoscopelliti.com/deal-with-users-authentication-in-an-angularjs-web-app), [unix-style authorization](http://frederiknakstad.com/authentication-in-single-page-applications-with-angular-js/)
+* **Login: **[Google example](https://developers.google.com/+/photohunt/python), [AngularJS Facebook library](https://github.com/pc035860/angular-easyfb), [Facebook example](http://blog.brunoscopelliti.com/facebook-authentication-in-your-angularjs-web-app), [authentication strategy](http://blog.brunoscopelliti.com/deal-with-users-authentication-in-an-angularjs-web-app), [unix-style authorization](http://frederiknakstad.com/authentication-in-single-page-applications-with-angular-js/)
 * **Mobile:** [Angular on Mobile Guide](http://www.ng-newsletter.com/posts/angular-on-mobile.html), [PhoneGap](http://devgirl.org/2013/06/10/quick-start-guide-phonegap-and-angularjs/)
 * **Other Languages:** [CoffeeScript](http://www.coffeescriptlove.com/2013/08/angularjs-and-coffeescript-tutorials.html), [Dart](https://github.com/angular/angular.dart.tutorial/wiki)
 * **Realtime: **[Socket.io](http://www.creativebloq.com/javascript/angularjs-collaboration-board-socketio-2132885), [OmniBinder](https://github.com/jeffbcross/omnibinder)
