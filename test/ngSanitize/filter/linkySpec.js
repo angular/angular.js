@@ -50,8 +50,8 @@ describe('linky', function() {
 
   it('should handle target:', function() {
     expect(linky("http://example.com", "_blank")).
-      toEqual('<a target="_blank" href="http://example.com">http://example.com</a>');
+      toEqual('<a href="http://example.com" target="_blank">http://example.com</a>');
     expect(linky("http://example.com", "someNamedIFrame")).
-      toEqual('<a target="someNamedIFrame" href="http://example.com">http://example.com</a>');
+      toEqual('<a href="http://example.com" target="someNamedIFrame">http://example.com</a>');
   });
 });

@@ -112,7 +112,7 @@ describe('HTML', function() {
   // THESE TESTS ARE EXECUTED WITH COMPILED ANGULAR
   it('should echo html', function() {
     expectHTML('hello<b class="1\'23" align=\'""\'>world</b>.').
-       toEqual('hello<b class="1\'23" align="&#34;&#34;">world</b>.');
+       toEqual('hello<b align="&#34;&#34;" class="1\'23">world</b>.');
   });
 
   it('should remove script', function() {
@@ -165,7 +165,9 @@ describe('HTML', function() {
   });
 
   it('should handle self closed elements', function() {
-    expectHTML('a<hr/>c').toEqual('a<hr></hr>c');
+    expectHTML('a<hr/>c').toEqual('a<hr/>c');
+    expectHTML('<br/>').toEqual('<br/>');
+    expectHTML('<br>').toEqual('<br/>');
   });
 
   it('should handle namespace', function() {
@@ -192,7 +194,7 @@ describe('HTML', function() {
 
   it('should ignore back slash as escape', function() {
     expectHTML('<img alt="xxx\\" title="><script>....">').
-      toEqual('<img alt="xxx\\" title="&gt;&lt;script&gt;...."></img>');
+      toEqual('<img alt="xxx\\" title="&gt;&lt;script&gt;...."/>');
   });
 
   it('should ignore object attributes', function() {
@@ -227,8 +229,8 @@ describe('HTML', function() {
   });
 
   it('should accept SVG tags', function() {
-      expectHTML('<svg width="400px" height="150px" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="red"></svg>')
-        .toEqual('<svg width="400px" height="150px" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="red"></circle></svg>');
+    expectHTML('<svg width="400px" height="150px" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="red"></svg>')
+        .toEqual('<svg height="150px" width="400px" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" fill="red" r="40" stroke="black" stroke-width="3"></circle></svg>');
   });
 
   it('should not ignore white-listed svg camelCased attributes', function() {
@@ -259,7 +261,7 @@ describe('HTML', function() {
 
     expectHTML('<svg><a xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="?"><circle r="400"></circle>' +
     '<animate attributeName="xlink:href" begin="0" from="javascript:alert(1)" to="&" /></a></svg>')
-      .toEqual('<svg><a xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="?"><circle r="400"></circle></a></svg>');
+      .toEqual('<svg><a xlink:href="?" xmlns:xlink="http://www.w3.org/1999/xlink"><circle r="400"></circle></a></svg>');
   });
 
   describe('htmlSanitizerWriter', function() {
@@ -415,11 +417,11 @@ describe('HTML', function() {
       inject(function() {
         $$sanitizeUri.andReturn('someUri');
 
-        expectHTML('<img src="someUri"/>').toEqual('<img src="someUri"></img>');
+        expectHTML('<img src="someUri"/>').toEqual('<img src="someUri"/>');
         expect($$sanitizeUri).toHaveBeenCalledWith('someUri', true);
 
         $$sanitizeUri.andReturn('unsafe:someUri');
-        expectHTML('<img src="someUri"/>').toEqual('<img></img>');
+        expectHTML('<img src="someUri"/>').toEqual('<img/>');
       });
     });
 

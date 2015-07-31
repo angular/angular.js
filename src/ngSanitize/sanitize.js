@@ -189,6 +189,9 @@ var svgElements = toMap("circle,defs,desc,ellipse,font-face,font-face-name,font-
 // Special Elements (can contain anything)
 var specialElements = toMap("script,style");
 
+var selfClosingElements = toMap("area,base,br,col,command,embed,hr,img,input,keygen,link,meta,param,source," +
+        "track,wbr");
+
 var validElements = angular.extend({},
                                    voidElements,
                                    blockElements,
@@ -283,7 +286,8 @@ function htmlParser(html, handler) {
   while (node) {
     switch (node.nodeType) {
       case 1: // ELEMENT_NODE
-        handler.start(node.nodeName.toLowerCase(), attrToMap(node.attributes));
+        handler.start(node.nodeName.toLowerCase(), attrToMap(node.attributes),
+                      selfClosingElements[node.nodeName.toLowerCase()]);
         break;
       case 3: // TEXT NODE
         handler.chars(node.textContent);
@@ -295,18 +299,18 @@ function htmlParser(html, handler) {
     var nextNode;
     if (!(nextNode = node.firstChild)) {
       if (nextNode = node.nextSibling) {
-        if (node.nodeType == 1) {
+        if (node.nodeType == 1 && !selfClosingElements[node.nodeName.toLowerCase()]) {
           handler.end(node.nodeName.toLowerCase());
         }
       } else {
-        if (node.nodeType == 1) {
+        if (node.nodeType == 1 && !selfClosingElements[node.nodeName.toLowerCase()]) {
           handler.end(node.nodeName.toLowerCase());
         }
         while (nextNode == null) {
           node = node.parentNode;
           if (node === baseNode) break;
           nextNode = node.nextSibling;
-          if (node.nodeType == 1) {
+          if (node.nodeType == 1 && !selfClosingElements[node.nodeName.toLowerCase()]) {
             handler.end(node.nodeName.toLowerCase());
           }
         }
@@ -370,7 +374,7 @@ function encodeEntities(value) {
  * create an HTML/XML writer which writes to buffer
  * @param {Array} buf use buf.jain('') to get out sanitized html string
  * @returns {object} in the form of {
- *     start: function(tag, attrs) {},
+ *     start: function(tag, attrs, selfClose) {},
  *     end: function(tag) {},
  *     chars: function(text) {},
  *     comment: function(text) {}
@@ -380,7 +384,7 @@ function htmlSanitizeWriter(buf, uriValidator) {
   var ignore = false;
   var out = angular.bind(buf, buf.push);
   return {
-    start: function(tag, attrs) {
+    start: function(tag, attrs, selfClose) {
       tag = angular.lowercase(tag);
       if (!ignore && specialElements[tag]) {
         ignore = tag;
@@ -388,7 +392,8 @@ function htmlSanitizeWriter(buf, uriValidator) {
       if (!ignore && validElements[tag] === true) {
         out('<');
         out(tag);
-        angular.forEach(attrs, function(value, key) {
+        angular.forEach(Object.keys(attrs).sort(), function(key) {
+          var value = attrs[key];
           var lkey=angular.lowercase(key);
           var isImage = (tag === 'img' && lkey === 'src') || (lkey === 'background');
           if (validAttrs[lkey] === true &&
@@ -400,7 +405,7 @@ function htmlSanitizeWriter(buf, uriValidator) {
             out('"');
           }
         });
-        out('>');
+        out(selfClose ? '/>' : '>');
       }
     },
     end: function(tag) {
