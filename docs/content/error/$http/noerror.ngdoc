@@ -1,0 +1,10 @@
+@ngdoc error
+@name $http:noerror
+@fullName The method `error` on the $http result has been disabled.
+@description
+
+This error occurs when the legacy promise extensions {@link ng.$http `$http`} have been disabled.
+
+To resolve this error, either change to code to use `then` or add `$httpProvider.useLegacyPromiseExtensions(true);` to your application.
+
+For more information, see the {@link ng.$http `$http`} service API documentation.

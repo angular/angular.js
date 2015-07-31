@@ -1975,6 +1975,36 @@ describe('$http with $applyAsync', function() {
   });
 });
 
+describe('$http without useLegacyPromiseExtensions', function() {
+  var $httpBackend, $http;
+  beforeEach(module(function($httpProvider) {
+    $httpProvider.useLegacyPromiseExtensions(false);
+  }, provideLog));
+
+  beforeEach(inject(['$httpBackend', '$http', '$rootScope', function($hb, $h, $rs) {
+    $httpBackend = $hb;
+    $http = $h;
+  }]));
+
+  it('should throw when the success or error methods are called if useLegacyPromiseExtensions is false', function() {
+    $httpBackend.expect('GET', '/url').respond('');
+    var promise = $http({url: '/url'});
+
+    function callSucess() {
+      promise.success();
+    }
+
+    function callError() {
+      promise.error();
+    }
+
+    expect(callSucess).toThrowMinErr(
+            '$http', 'nosuccess', 'The method `success` on the $http result has been disabled.');
+    expect(callError).toThrowMinErr(
+            '$http', 'noerror', 'The method `error` on the $http result has been disabled.');
+  });
+});
+
 describe('$http param serializers', function() {
 
   var defSer, jqrSer;
