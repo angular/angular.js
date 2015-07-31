@@ -209,6 +209,20 @@ describe('ngSrc', function() {
 
           dealoc(element);
         }));
+
+    it('should NOT update the element property for iframe elements', inject(
+        function($compile, $rootScope, $sce) {
+          var element = $compile('<iframe ng-src="{{id}}">')($rootScope);
+          $rootScope.$digest();
+          expect(element.prop('src')).toBeUndefined();
+
+          $rootScope.$apply(function() {
+            $rootScope.id = $sce.trustAsResourceUrl('http://somewhere');
+          });
+          $rootScope.$digest();
+          expect(element.prop('src')).toBeUndefined();
+          dealoc(element);
+        }));
   }
 });
 
