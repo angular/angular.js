@@ -209,6 +209,16 @@ describe('ngSrc', function() {
 
           dealoc(element);
         }));
+
+    it('should NOT update the element property for iframe elements', inject(
+        function($compile, $rootScope, $sce) {
+          var element = angular.element('<iframe ng-src="http://somewhere"></iframe>');
+          $compile(element);
+          spyOn(element, "prop");
+          $rootScope.$digest();
+          expect(element.prop).not.toHaveBeenCalled();
+          dealoc(element);
+        }));
   }
 });
 
