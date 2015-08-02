@@ -92,14 +92,14 @@ $provide.value("$locale", {
         "posSuf": ""
       },
       {
-        "gSize": 0,
-        "lgSize": 0,
+        "gSize": 3,
+        "lgSize": 3,
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "\u00a4-",
+        "negPre": "-\u00a4\u00a0",
         "negSuf": "",
-        "posPre": "\u00a4",
+        "posPre": "\u00a4\u00a0",
         "posSuf": ""
       }
     ]

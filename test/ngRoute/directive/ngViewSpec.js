@@ -777,8 +777,6 @@ describe('ngView animations', function() {
         expect($animate.queue.shift().event).toBe('addClass');
         expect($animate.queue.shift().event).toBe('removeClass');
 
-        $animate.triggerReflow();
-
         expect(item.hasClass('classy')).toBe(false);
         expect(item.hasClass('boring')).toBe(true);
 

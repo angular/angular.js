@@ -35,7 +35,7 @@ angular.module('tutorials', [])
       'step': '@docTutorialReset'
     },
     template:
-      '<p><a href="" ng-click="show=!show;$event.stopPropagation()">Workspace Reset Instructions  ➤</a></p>\n' +
+      '<p><button class="btn" ng-click="show=!show">Workspace Reset Instructions  ➤</button></p>\n' +
       '<div class="alert alert-info" ng-show="show">\n' +
       '  <p>Reset the workspace to step {{step}}.</p>' +
       '  <p><pre>git checkout -f step-{{step}}</pre></p>\n' +

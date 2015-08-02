@@ -755,24 +755,26 @@ angular.mock.animate = angular.module('ngAnimateMock', ['ng'])
 
   .config(['$provide', function($provide) {
 
-    var reflowQueue = [];
-    $provide.value('$$animateReflow', function(fn) {
-      var index = reflowQueue.length;
-      reflowQueue.push(fn);
-      return function cancel() {
-        reflowQueue.splice(index, 1);
-      };
+    $provide.factory('$$forceReflow', function() {
+      function reflowFn() {
+        reflowFn.totalReflows++;
+      }
+      reflowFn.totalReflows = 0;
+      return reflowFn;
     });
 
-    $provide.decorator('$animate', ['$delegate', '$$asyncCallback', '$timeout', '$browser', '$$rAF',
-                            function($delegate,   $$asyncCallback,   $timeout,   $browser,   $$rAF) {
+    $provide.decorator('$animate', ['$delegate', '$timeout', '$browser', '$$rAF', '$$forceReflow',
+                            function($delegate,   $timeout,   $browser,   $$rAF,   $$forceReflow) {
+
       var animate = {
         queue: [],
         cancel: $delegate.cancel,
+        get reflows() {
+          return $$forceReflow.totalReflows;
+        },
         enabled: $delegate.enabled,
         triggerCallbackEvents: function() {
           $$rAF.flush();
-          $$asyncCallback.flush();
         },
         triggerCallbackPromise: function() {
           $timeout.flush(0);
@@ -780,12 +782,6 @@ angular.mock.animate = angular.module('ngAnimateMock', ['ng'])
         triggerCallbacks: function() {
           this.triggerCallbackEvents();
           this.triggerCallbackPromise();
-        },
-        triggerReflow: function() {
-          angular.forEach(reflowQueue, function(fn) {
-            fn();
-          });
-          reflowQueue = [];
         }
       };
 
@@ -1764,20 +1760,6 @@ angular.mock.$RAFDecorator = ['$delegate', function($delegate) {
   return rafFn;
 }];
 
-angular.mock.$AsyncCallbackDecorator = ['$delegate', function($delegate) {
-  var callbacks = [];
-  var addFn = function(fn) {
-    callbacks.push(fn);
-  };
-  addFn.flush = function() {
-    angular.forEach(callbacks, function(fn) {
-      fn();
-    });
-    callbacks = [];
-  };
-  return addFn;
-}];
-
 /**
  *
  */
@@ -1884,7 +1866,6 @@ angular.module('ngMock', ['ng']).provider({
 }).config(['$provide', function($provide) {
   $provide.decorator('$timeout', angular.mock.$TimeoutDecorator);
   $provide.decorator('$$rAF', angular.mock.$RAFDecorator);
-  $provide.decorator('$$asyncCallback', angular.mock.$AsyncCallbackDecorator);
   $provide.decorator('$rootScope', angular.mock.$RootScopeDecorator);
   $provide.decorator('$controller', angular.mock.$ControllerDecorator);
 }]);
