@@ -37,7 +37,9 @@ var inputType = {
    *    the element when the ngRequired expression evaluates to true. Use `ngRequired` instead of
    *    `required` when you want to data-bind to the `required` attribute.
    * @param {number=} ngMinlength Sets `minlength` validation error key if the value is shorter than
-   *    minlength.
+   *    minlength. 
+   *    If the text is under min length value the value of binded property become undefined.
+   *    If the text is empty it will become empty text.
    * @param {number=} ngMaxlength Sets `maxlength` validation error key if the value is longer than
    *    maxlength. Setting the attribute to a negative or non-numeric value, allows view values of
    *    any length.
