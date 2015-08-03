@@ -620,8 +620,10 @@ function $HttpProvider() {
      * cache) or to a custom cache object (built with {@link ng.$cacheFactory `$cacheFactory`}).
      * When the cache is enabled, `$http` stores the response from the server in the specified
      * cache. The next time the same request is made, the response is served from the cache without
-     * sending a request to the server.
-     *
+     * sending a request to the server. `$http` store the response using the required url as key in the cache.
+     * When using a custom cache object, you can then clear cached data with something like
+     * `myCache.remove(requestedUrl)`
+     * 
      * Note that even if the response is served from cache, delivery of the data is asynchronous in
      * the same way that real requests are.
      *
