@@ -112,8 +112,24 @@ function $RootScopeProvider() {
      * compiled HTML template is executed.)
      *
      * Here is a simple scope snippet to show how you can interact with the scope.
-     * ```html
-     * <file src="./test/ng/rootScopeSpec.js" tag="docs1" />
+     * ```js
+         var scope = $rootScope.$new();
+         scope.salutation = 'Hello';
+         scope.name = 'World';
+
+         expect(scope.greeting).toEqual(undefined);
+
+         scope.$watch('name', function() {
+           scope.greeting = scope.salutation + ' ' + scope.name + '!';
+         }); // initialize the watch
+
+         expect(scope.greeting).toEqual(undefined);
+         scope.name = 'Misko';
+         // still old value, since watches have not been called yet
+         expect(scope.greeting).toEqual(undefined);
+
+         scope.$digest(); // fire all the watches
+         expect(scope.greeting).toEqual('Hello Misko!');
      * ```
      *
      * # Inheritance
