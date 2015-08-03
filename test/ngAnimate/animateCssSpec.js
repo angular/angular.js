@@ -1135,6 +1135,62 @@ describe("ngAnimate $animateCss", function() {
           expect(passed).toBe(true);
           expect(failed).not.toBe(true);
         }));
+
+        it("should close all stacked animations after the last timeout runs on the same element",
+          inject(function($animateCss, $$body, $rootElement, $timeout) {
+
+          var now = 0;
+          spyOn(Date, 'now').andCallFake(function() {
+            return now;
+          });
+
+          var cancelSpy = spyOn($timeout, 'cancel').andCallThrough();
+          var doneSpy = jasmine.createSpy();
+
+          ss.addRule('.elm', 'transition:1s linear all;');
+          ss.addRule('.elm.red', 'background:red;');
+          ss.addRule('.elm.blue', 'transition:2s linear all; background:blue;');
+          ss.addRule('.elm.green', 'background:green;');
+
+          var element = jqLite('<div class="elm"></div>');
+          $rootElement.append(element);
+          $$body.append($rootElement);
+
+          // timeout will be at 1500s
+          animate(element, 'red', doneSpy);
+          expect(doneSpy).not.toHaveBeenCalled();
+
+          fastForwardClock(500); //1000s left to go
+
+          // timeout will not be at 500 + 3000s = 3500s
+          animate(element, 'blue', doneSpy);
+          expect(doneSpy).not.toHaveBeenCalled();
+          expect(cancelSpy).toHaveBeenCalled();
+
+          cancelSpy.reset();
+
+          // timeout will not be set again since the former animation is longer
+          animate(element, 'green', doneSpy);
+          expect(doneSpy).not.toHaveBeenCalled();
+          expect(cancelSpy).not.toHaveBeenCalled();
+
+          // this will close the animations fully
+          fastForwardClock(3500);
+          expect(doneSpy).toHaveBeenCalled();
+          expect(doneSpy.callCount).toBe(3);
+
+          function fastForwardClock(time) {
+            now += time;
+            $timeout.flush(time);
+          }
+
+          function animate(element, klass, onDone) {
+            var animator = $animateCss(element, { addClass: klass }).start();
+            animator.done(onDone);
+            triggerAnimationStartFrame();
+            return animator;
+          }
+        }));
       });
 
       describe("getComputedStyle", function() {
