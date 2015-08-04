@@ -23,9 +23,9 @@ angular.module('myApp', ['ngAria'])...
 ###Using ngAria
 Most of what ngAria does is only visible "under the hood". To see the module in action, once you've
 added it as a dependency, you can test a few things:
- * Using your favorite element inspector, look for ngAria attributes in your own code.
+ * Using your favorite element inspector, look for attributes added by ngAria in your own code.
  * Test using your keyboard to ensure `tabindex` is used correctly.
- * Fire up a screen reader such as VoiceOver to listen for ARIA support.
+ * Fire up a screen reader such as VoiceOver or NVDA to check for ARIA support.
 [Helpful screen reader tips.](http://webaim.org/articles/screenreader_testing/)
 
 ##Supported directives
@@ -41,8 +41,8 @@ Currently, ngAria interfaces with the following directives:
 
 <h2 id="ngmodel">ngModel</h2>
 
-Most of ngAria's heavy lifting happens in the {@link ngModel ngModel}
-directive.  For elements using ngModel, special attention is paid by ngAria if that element also
+Much of ngAria's heavy lifting happens in the {@link ngModel ngModel}
+directive. For elements using ngModel, special attention is paid by ngAria if that element also
 has a role or type of `checkbox`, `radio`, `range` or `textbox`.
 
 For those elements using ngModel, ngAria will dynamically bind and update the following ARIA
@@ -134,10 +134,8 @@ attributes (if they have not been explicitly specified by the developer):
 
 ngAria will also add `tabIndex`, ensuring custom elements with these roles will be reachable from
 the keyboard. It is still up to **you** as a developer to **ensure custom controls will be
-operable** from the keybard. Think of `ng-click` on a `<div>` or `<md-checkbox>`: you still need
-to bind `ng-keypress` to make it fully operable from the keyboard. As a rule, any time you create
-a widget involving user interaction, be sure to test it with your keyboard and at least one mobile
-and desktop screen reader (preferably more).
+accessible**. As a rule, any time you create a widget involving user interaction, be sure to test 
+it with your keyboard and at least one mobile and desktop screen reader.
 
 <h2 id="ngdisabled">ngDisabled</h2>
 
@@ -160,7 +158,7 @@ Becomes:
 ```
 
 >You can check whether a control is legitimately disabled for a screen reader by visiting
-[chrome://accessibility](chrome://accessibility).
+[chrome://accessibility](chrome://accessibility) and inspecting [the accessibility tree](http://www.paciellogroup.com/blog/2015/01/the-browser-accessibility-tree/).
 
 <h2 id="ngshow">ngShow</h2>
 
@@ -210,16 +208,25 @@ The default CSS for `ngHide`, the inverse method to `ngShow`, makes ngAria redun
 `display: none`. See explanation for {@link guide/accessibility#ngshow ngShow} when overriding the default CSS.
 
 <h2><span id="ngclick">ngClick</span> and <span id="ngdblclick">ngDblclick</span></h2>
-If `ng-click` or `ng-dblclick` is encountered, ngAria will add `tabindex="0"` if it isn't there
-already.
+If `ng-click` or `ng-dblclick` is encountered, ngAria will add `tabindex="0"` to any element not in 
+a node blacklist:
 
-To fix widespread accessibility problems with `ng-click` on div elements, ngAria will dynamically
-bind keypress by default as long as the element isn't an anchor, button, input or textarea.
-You can turn this functionality on or off with the `bindKeypress` configuration option. ngAria
-will also add the `button` role to communicate to users of assistive technologies.
+ * Button
+ * Anchor
+ * Input
+ * Textarea
+ * Select
+ * Details/Summary
 
-For `ng-dblclick`, you must still manually add `ng-keypress` and role to non-interactive elements such
-as `div` or `taco-button` to enable keyboard access.
+To fix widespread accessibility problems with `ng-click` on `div` elements, ngAria will 
+dynamically bind a keypress event by default as long as the element isn't in the node blacklist.
+You can turn this functionality on or off with the `bindKeypress` configuration option. 
+
+ngAria will also add the `button` role to communicate to users of assistive technologies. This can
+be disabled with the `bindRoleForClick` configuration option.
+
+For `ng-dblclick`, you must still manually add `ng-keypress` and a role to non-interactive elements 
+such as `div` or `taco-button` to enable keyboard access.
 
 <h3>Example</h3>
 ```html
@@ -260,61 +267,17 @@ The attribute magic of ngAria may not work for every scenario. To disable indivi
 you can use the {@link ngAria.$ariaProvider#config config} method. Just keep in mind this will
 tell ngAria to ignore the attribute globally.
 
-<example module="ngAria_ngDisabledExample" deps="angular-aria.js">
+<example module="ngAria_ngClickExample" deps="angular-aria.js">
  <file name="index.html">
-  <style>
-    [role=checkbox] {
-      cursor: pointer;
-      display: inline-block;
-    }
-    [role=checkbox] .icon:before {
-      content: '\2610';
-      display: inline-block;
-      font-size: 2em;
-      line-height: 1;
-      vertical-align: middle;
-      speak: none;
-    }
-    [role=checkbox].active .icon:before {
-      content: '\2611';
-    }
-  </style>
- <form ng-controller="formsController">
-  <div ng-model="someModel" show-attrs>
-    Div with ngModel and aria-invalid disabled
+  <div ng-click="someFunction" show-attrs>
+    &lt;div&gt; with ng-click and bindRoleForClick, tabindex set to false
   </div>
-  <div role="checkbox" ng-model="checked" ng-class="{active: checked}"
-    aria-label="Custom Checkbox" ng-click="toggleCheckbox()" some-checkbox show-attrs>
-    <span class="icon" aria-hidden="true"></span>
-    Custom Checkbox for comparison
-  </div>
- </form>
  <script>
-  angular.module('ngAria_ngDisabledExample', ['ngAria'], function config($ariaProvider) {
+  angular.module('ngAria_ngClickExample', ['ngAria'], function config($ariaProvider) {
     $ariaProvider.config({
-      ariaInvalid: false,
-      tabindex: true
+      bindRoleForClick: false,
+      tabindex: false
     });
-  })
-  .controller('formsController', function($scope){
-    $scope.checked = false;
-    $scope.toggleCheckbox = function(){
-      $scope.checked = !$scope.checked;
-    }
-  })
-  .directive('someCheckbox', function(){
-    return {
-      restrict: 'A',
-      link: function($scope, $el, $attrs) {
-        $el.on('keypress', function(event){
-          event.preventDefault();
-          if(event.keyCode === 32 || event.keyCode === 13){
-            $scope.toggleCheckbox();
-            $scope.$apply();
-          }
-        });
-      }
-    }
   })
   .directive('showAttrs', function() {
     return function(scope, el, attrs) {
