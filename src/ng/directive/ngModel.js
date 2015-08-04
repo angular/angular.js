@@ -757,7 +757,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    * All these actions will be debounced if the {@link ng.directive:ngModelOptions ngModelOptions}
    * directive is used with a custom debounce for this particular event.
    *
-   * Note that calling this function does not trigger a `$digest`.
+   * Note that calling this function triggers a `$apply`.
    *
    * @param {string} value Value from the view.
    * @param {string} trigger Event that triggered the update.
