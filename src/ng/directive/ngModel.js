@@ -1038,12 +1038,12 @@ var ngModelDirective = ['$rootScope', function($rootScope) {
 
           attr.$observe('name', function(newValue) {
             if (modelCtrl.$name !== newValue) {
-              formCtrl.$$renameControl(modelCtrl, newValue);
+              modelCtrl.$$parentForm.$$renameControl(modelCtrl, newValue);
             }
           });
 
           scope.$on('$destroy', function() {
-            formCtrl.$removeControl(modelCtrl);
+            modelCtrl.$$parentForm.$removeControl(modelCtrl);
           });
         },
         post: function ngModelPostLink(scope, element, attr, ctrls) {

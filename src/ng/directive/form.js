@@ -114,11 +114,23 @@ function FormController(element, attrs, $scope, $animate, $interpolate) {
   /**
    * @ngdoc method
    * @name form.FormController#$addControl
+   * @param {object} control control object, either a {@link form.FormController} or an
+   * {@link ngModel.NgModelController}
    *
    * @description
-   * Register a control with the form.
+   * Register a control with the form. Input elements using ngModelController do this automatically
+   * when they are linked.
    *
-   * Input elements using ngModelController do this automatically when they are linked.
+   * Note that the current state of the control will not be reflected on the new parent form. This
+   * is not an issue with normal use, as freshly compiled and linked controls are in a `$pristine`
+   * state.
+   *
+   * However, if the method is used programmatically, for example by adding dynamically created controls,
+   * or controls that have been previously removed without destroying their corresponding DOM element,
+   * it's the developers responsiblity to make sure the current state propagates to the parent form.
+   *
+   * For example, if an input control is added that is already `$dirty` and has `$error` properties,
+   * calling `$setDirty()` and `$validate()` afterwards will propagate the state to the parent form.
    */
   form.$addControl = function(control) {
     // Breaking change - before, inputs whose name was "hasOwnProperty" were quietly ignored
@@ -147,11 +159,18 @@ function FormController(element, attrs, $scope, $animate, $interpolate) {
   /**
    * @ngdoc method
    * @name form.FormController#$removeControl
+   * @param {object} control control object, either a {@link form.FormController} or an
+   * {@link ngModel.NgModelController}
    *
    * @description
    * Deregister a control from the form.
    *
    * Input elements using ngModelController do this automatically when they are destroyed.
+   *
+   * Note that only the removed control's validation state (`$errors`etc.) will be removed from the
+   * form. `$dirty`, `$submitted` states will not be changed, because the expected behavior can be
+   * different from case to case. For example, removing the only `$dirty` control from a form may or
+   * may not mean that the form is still `$dirty`.
    */
   form.$removeControl = function(control) {
     if (control.$name && form[control.$name] === control) {
@@ -503,13 +522,13 @@ var formDirectiveFactory = function(isNgForm) {
               attr.$observe(nameAttr, function(newValue) {
                 if (controller.$name === newValue) return;
                 setter(scope, undefined);
-                parentFormCtrl.$$renameControl(controller, newValue);
+                controller.$$parentForm.$$renameControl(controller, newValue);
                 setter = getSetter(controller.$name);
                 setter(scope, controller);
               });
             }
             formElement.on('$destroy', function() {
-              parentFormCtrl.$removeControl(controller);
+              controller.$$parentForm.$removeControl(controller);
               setter(scope, undefined);
               extend(controller, nullFormCtrl); //stop propagating child destruction handlers upwards
             });
