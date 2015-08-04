@@ -19,7 +19,6 @@ describe('ngModel', function() {
       };
 
       element = jqLite('<form><input></form>');
-      element.data('$formController', parentFormCtrl);
 
       scope = $rootScope;
       ngModelAccessor = jasmine.createSpy('ngModel accessor');
@@ -28,6 +27,9 @@ describe('ngModel', function() {
         $element: element.find('input'),
         $attrs: attrs
       });
+
+      //Assign the mocked parentFormCtrl to the model controller
+      ctrl.$$parentForm = parentFormCtrl;
     }));
 
 
