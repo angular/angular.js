@@ -344,6 +344,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    */
   addSetValidityMethod({
     ctrl: this,
+    $scope: $scope,
     $element: $element,
     set: function(object, property) {
       object[property] = true;
@@ -1255,6 +1256,7 @@ var ngModelOptionsDirective = function() {
 // helper methods
 function addSetValidityMethod(context) {
   var ctrl = context.ctrl,
+      $scope = context.$scope,
       $element = context.$element,
       classCache = {},
       set = context.set,
@@ -1267,6 +1269,9 @@ function addSetValidityMethod(context) {
   ctrl.$setValidity = setValidity;
 
   function setValidity(validationErrorKey, state, controller) {
+    if ($scope.$$destroyed) {
+      return;  // Do nothing to the destroyed scope.
+    }
     if (state === undefined) {
       createAndSet('$pending', validationErrorKey, controller);
     } else {
