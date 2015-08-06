@@ -350,7 +350,7 @@ function htmlParser(html, handler) {
 
     } else {
       // IE versions 9 and 10 do not understand the regex '[^]', so using a workaround with [\W\w].
-      html = html.replace(new RegExp("([\\W\\w]*)<\\s*\\/\\s*" + stack.last() + "[^>]*>", 'i'),
+      html = html.replace(new RegExp("([\\W\\w]*?)<\\s*\\/\\s*" + stack.last() + "[^>]*>", 'i'),
         function(all, text) {
           text = text.replace(COMMENT_REGEXP, "$1").replace(CDATA_REGEXP, "$1");
 
