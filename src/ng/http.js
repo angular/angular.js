@@ -336,7 +336,7 @@ function $HttpProvider() {
     return useApplyAsync;
   };
 
-  var useLegacyPromse = true;
+  var useLegacyPromise = true;
   /**
    * @ngdoc method
    * @name $httpProvider#useLegacyPromiseExtensions
@@ -354,10 +354,10 @@ function $HttpProvider() {
    **/
   this.useLegacyPromiseExtensions = function(value) {
     if (isDefined(value)) {
-      useLegacyPromse = !!value;
+      useLegacyPromise = !!value;
       return this;
     }
-    return useLegacyPromse;
+    return useLegacyPromise;
   };
 
   /**
@@ -979,7 +979,7 @@ function $HttpProvider() {
         promise = promise.then(thenFn, rejectFn);
       }
 
-      if (useLegacyPromse) {
+      if (useLegacyPromise) {
         promise.success = function(fn) {
           assertArgFn(fn, 'fn');
 
