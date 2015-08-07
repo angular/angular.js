@@ -34,13 +34,17 @@ var $sanitizeMinErr = angular.$$minErr('$sanitize');
  * @kind function
  *
  * @description
+ *   Sanitizes an html string by stripping all potentially dangerous tokens.
+ *
  *   The input is sanitized by parsing the HTML into tokens. All safe tokens (from a whitelist) are
  *   then serialized back to properly escaped html string. This means that no unsafe input can make
- *   it into the returned string, however, since our parser is more strict than a typical browser
- *   parser, it's possible that some obscure input, which would be recognized as valid HTML by a
- *   browser, won't make it through the sanitizer. The input may also contain SVG markup.
- *   The whitelist is configured using the functions `aHrefSanitizationWhitelist` and
- *   `imgSrcSanitizationWhitelist` of {@link ng.$compileProvider `$compileProvider`}.
+ *   it into the returned string.
+ *
+ *   The whitelist for URL sanitization of attribute values is configured using the functions
+ *   `aHrefSanitizationWhitelist` and `imgSrcSanitizationWhitelist` of {@link ng.$compileProvider
+ *   `$compileProvider`}.
+ *
+ *   The input may also contain SVG markup if this is enabled via {@link $sanitizeProvider}.
  *
  * @param {string} html HTML input.
  * @returns {string} Sanitized HTML.
@@ -126,8 +130,22 @@ var $sanitizeMinErr = angular.$$minErr('$sanitize');
    </file>
    </example>
  */
+
+
+/**
+ * @ngdoc provider
+ * @name $sanitizeProvider
+ *
+ * @description
+ * Creates and configures {@link $sanitize} instance.
+ */
 function $SanitizeProvider() {
+  var svgEnabled = false;
+
   this.$get = ['$$sanitizeUri', function($$sanitizeUri) {
+    if (svgEnabled) {
+      angular.extend(validElements, svgElements);
+    }
     return function(html) {
       var buf = [];
       htmlParser(html, htmlSanitizeWriter(buf, function(uri, isImage) {
@@ -136,6 +154,46 @@ function $SanitizeProvider() {
       return buf.join('');
     };
   }];
+
+
+  /**
+   * @ngdoc method
+   * @name $sanitizeProvider#enableSvg
+   * @kind function
+   *
+   * @description
+   * Enables a subset of svg to be supported by the sanitizer.
+   *
+   * <div class="alert alert-warning">
+   *   <p>By enabling this setting without taking other precautions, you might expose your
+   *   application to click-hijacking attacks. In these attacks, sanitized svg elements could be positioned
+   *   outside of the containing element and be rendered over other elements on the page (e.g. a login
+   *   link). Such behavior can then result in phishing incidents.</p>
+   *
+   *   <p>To protect against these, explicitly setup `overflow: hidden` css rule for all potential svg
+   *   tags within the sanitized content:</p>
+   *
+   *   <br>
+   *
+   *   <pre><code>
+   *   .rootOfTheIncludedContent svg {
+   *     overflow: hidden !important;
+   *   }
+   *   </code></pre>
+   * </div>
+   *
+   * @param {boolean=} regexp New regexp to whitelist urls with.
+   * @returns {boolean|ng.$sanitizeProvider} Returns the currently configured value if called
+   *    without an argument or self for chaining otherwise.
+   */
+  this.enableSvg = function(enableSvg) {
+    if (angular.isDefined(enableSvg)) {
+      svgEnabled = enableSvg;
+      return this;
+    } else {
+      return svgEnabled;
+    }
+  };
 }
 
 function sanitizeText(chars) {
@@ -193,8 +251,7 @@ var validElements = angular.extend({},
                                    voidElements,
                                    blockElements,
                                    inlineElements,
-                                   optionalEndTagElements,
-                                   svgElements);
+                                   optionalEndTagElements);
 
 //Attributes that have href and hence need to be sanitized
 var uriAttrs = toMap("background,cite,href,longdesc,src,usemap,xlink:href");

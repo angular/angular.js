@@ -100,7 +100,8 @@ describe('HTML', function() {
   // THESE TESTS ARE EXECUTED WITH COMPILED ANGULAR
   it('should echo html', function() {
     expectHTML('hello<b class="1\'23" align=\'""\'>world</b>.').
-       toEqual('hello<b class="1\'23" align="&#34;&#34;">world</b>.');
+       toBeOneOf('hello<b class="1\'23" align="&#34;&#34;">world</b>.',
+                 'hello<b align="&#34;&#34;" class="1\'23">world</b>.');
   });
 
   it('should remove script', function() {
@@ -180,7 +181,8 @@ describe('HTML', function() {
 
   it('should ignore back slash as escape', function() {
     expectHTML('<img alt="xxx\\" title="><script>....">').
-      toEqual('<img alt="xxx\\" title="&gt;&lt;script&gt;....">');
+      toBeOneOf('<img alt="xxx\\" title="&gt;&lt;script&gt;....">',
+                '<img title="&gt;&lt;script&gt;...." alt="xxx\\">');
   });
 
   it('should ignore object attributes', function() {
@@ -214,41 +216,63 @@ describe('HTML', function() {
     expectHTML(false).toBe('false');
   });
 
-  it('should accept SVG tags', function() {
-      expectHTML('<svg width="400px" height="150px" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="red"></svg>')
-        .toEqual('<svg width="400px" height="150px" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="red"></circle></svg>');
+  it('should strip svg elements if not enabled via provider', function() {
+    expectHTML('<svg width="400px" height="150px" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="red"></svg>')
+      .toEqual('');
   });
 
-  it('should not ignore white-listed svg camelCased attributes', function() {
-    expectHTML('<svg preserveAspectRatio="true"></svg>')
+
+  describe('SVG support', function() {
+
+    beforeEach(module(function($sanitizeProvider) {
+      $sanitizeProvider.enableSvg(true);
+    }));
+
+
+    it('should accept SVG tags', function() {
+      expectHTML('<svg width="400px" height="150px" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="red"></svg>')
+        .toBeOneOf('<svg width="400px" height="150px" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="red"></circle></svg>',
+                   '<svg xmlns="http://www.w3.org/2000/svg" height="150px" width="400px"><circle fill="red" stroke-width="3" stroke="black" r="40" cy="50" cx="50"></circle></svg>',
+                   '<svg width="400px" height="150px" xmlns="http://www.w3.org/2000/svg"><circle fill="red" stroke="black" stroke-width="3" cx="50" cy="50" r="40"></circle></svg>');
+    });
+
+    it('should not ignore white-listed svg camelCased attributes', function() {
+      expectHTML('<svg preserveAspectRatio="true"></svg>')
         .toEqual('<svg preserveAspectRatio="true"></svg>');
 
+    });
+
+    it('should sanitize SVG xlink:href attribute values', function() {
+      expectHTML('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><a xlink:href="javascript:alert()"></a></svg>')
+        .toBeOneOf('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><a></a></svg>',
+                   '<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg"><a></a></svg>');
+
+      expectHTML('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><a xlink:href="https://example.com"></a></svg>')
+        .toBeOneOf('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><a xlink:href="https://example.com"></a></svg>',
+                   '<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg"><a xlink:href="https://example.com"></a></svg>');
+    });
+
+    it('should sanitize unknown namespaced SVG attributes', function() {
+      expectHTML('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><a xlink:foo="javascript:alert()"></a></svg>')
+        .toBeOneOf('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><a></a></svg>',
+                   '<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg"><a></a></svg>');
+
+      expectHTML('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><a xlink:bar="https://example.com"></a></svg>')
+        .toBeOneOf('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><a></a></svg>',
+                   '<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg"><a></a></svg>');
+    });
+
+    it('should not accept SVG animation tags', function() {
+      expectHTML('<svg xmlns:xlink="http://www.w3.org/1999/xlink"><a><text y="1em">Click me</text><animate attributeName="xlink:href" values="javascript:alert(1)"/></a></svg>')
+        .toEqual('<svg xmlns:xlink="http://www.w3.org/1999/xlink"><a><text y="1em">Click me</text></a></svg>');
+
+      expectHTML('<svg><a xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="?"><circle r="400"></circle>' +
+        '<animate attributeName="xlink:href" begin="0" from="javascript:alert(1)" to="&" /></a></svg>')
+        .toBeOneOf('<svg><a xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="?"><circle r="400"></circle></a></svg>',
+                   '<svg><a xlink:href="?" xmlns:xlink="http://www.w3.org/1999/xlink"><circle r="400"></circle></a></svg>');
+    });
   });
 
-  it('should sanitize SVG xlink:href attribute values', function() {
-    expectHTML('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><a xlink:href="javascript:alert()"></a></svg>')
-        .toEqual('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><a></a></svg>');
-
-    expectHTML('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><a xlink:href="https://example.com"></a></svg>')
-        .toEqual('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><a xlink:href="https://example.com"></a></svg>');
-  });
-
-  it('should sanitize unknown namespaced SVG attributes', function() {
-    expectHTML('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><a xlink:foo="javascript:alert()"></a></svg>')
-      .toEqual('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><a></a></svg>');
-
-    expectHTML('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><a xlink:bar="https://example.com"></a></svg>')
-      .toEqual('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><a></a></svg>');
-  });
-
-  it('should not accept SVG animation tags', function() {
-    expectHTML('<svg xmlns:xlink="http://www.w3.org/1999/xlink"><a><text y="1em">Click me</text><animate attributeName="xlink:href" values="javascript:alert(1)"/></a></svg>')
-      .toEqual('<svg xmlns:xlink="http://www.w3.org/1999/xlink"><a><text y="1em">Click me</text></a></svg>');
-
-    expectHTML('<svg><a xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="?"><circle r="400"></circle>' +
-    '<animate attributeName="xlink:href" begin="0" from="javascript:alert(1)" to="&" /></a></svg>')
-      .toEqual('<svg><a xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="?"><circle r="400"></circle></a></svg>');
-  });
 
   describe('htmlSanitizerWriter', function() {
     /* global htmlSanitizeWriter: false */
