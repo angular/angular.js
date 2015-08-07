@@ -50,9 +50,9 @@ describe('HTML', function() {
       };
     });
 
-    it('should parse comments', function() {
+    it('should not parse comments', function() {
       htmlParser('<!--FOOBAR-->', handler);
-      expect(comment).toEqual('FOOBAR');
+      expect(comment).not.toBeDefined();
     });
 
     it('should parse basic format', function() {
@@ -64,18 +64,6 @@ describe('HTML', function() {
     it('should not treat "<" followed by a non-/ or non-letter as a tag', function() {
       expectHTML('<- text1 text2 <1 text1 text2 <{', handler).
         toBe('&lt;- text1 text2 &lt;1 text1 text2 &lt;{');
-    });
-
-    it('should throw badparse if text content contains "<" followed by "/" without matching ">"', function() {
-      htmlParser('foo </ bar', handler);
-      expect(start).toEqual(undefined);
-      expect(text).toEqual('foo ');
-    });
-
-    it('should throw badparse if text content contains "<" followed by an ASCII letter without matching ">"', function() {
-      htmlParser('foo <a bar', handler);
-      expect(start).toEqual(undefined);
-      expect(text).toEqual('foo ');
     });
 
     it('should accept tag delimiters such as "<" inside real tags', function() {
@@ -103,8 +91,8 @@ describe('HTML', function() {
     });
 
     it('should parse empty value attribute of node', function() {
-      htmlParser('<OPTION selected value="">abc</OPTION>', handler);
-      expect(start).toEqual({tag:'option', attrs:{selected:'', value:''}});
+      htmlParser('<test-foo selected value="">abc</test-foo>', handler);
+      expect(start).toEqual({tag:'test-foo', attrs:{selected:'', value:''}});
       expect(text).toEqual('abc');
     });
   });
@@ -165,7 +153,7 @@ describe('HTML', function() {
   });
 
   it('should handle self closed elements', function() {
-    expectHTML('a<hr/>c').toEqual('a<hr></hr>c');
+    expectHTML('a<hr/>c').toEqual('a<hr>c');
   });
 
   it('should handle namespace', function() {
@@ -192,7 +180,7 @@ describe('HTML', function() {
 
   it('should ignore back slash as escape', function() {
     expectHTML('<img alt="xxx\\" title="><script>....">').
-      toEqual('<img alt="xxx\\" title="&gt;&lt;script&gt;...."></img>');
+      toEqual('<img alt="xxx\\" title="&gt;&lt;script&gt;....">');
   });
 
   it('should ignore object attributes', function() {
@@ -415,11 +403,11 @@ describe('HTML', function() {
       inject(function() {
         $$sanitizeUri.andReturn('someUri');
 
-        expectHTML('<img src="someUri"/>').toEqual('<img src="someUri"></img>');
+        expectHTML('<img src="someUri"/>').toEqual('<img src="someUri">');
         expect($$sanitizeUri).toHaveBeenCalledWith('someUri', true);
 
         $$sanitizeUri.andReturn('unsafe:someUri');
-        expectHTML('<img src="someUri"/>').toEqual('<img></img>');
+        expectHTML('<img src="someUri"/>').toEqual('<img>');
       });
     });
 
