@@ -149,7 +149,7 @@ function sanitizeText(chars) {
 // Regular Expressions for parsing tags and attributes
 var SURROGATE_PAIR_REGEXP = /[\uD800-\uDBFF][\uDC00-\uDFFF]/g,
   // Match everything outside of normal chars and " (quote character)
-  NON_ALPHANUMERIC_REGEXP = /([^\#-~| |!])/g;
+  NON_ALPHANUMERIC_REGEXP = /([^\#-~ |!])/g;
 
 
 // Good source of info about elements and attributes
@@ -236,28 +236,24 @@ function toMap(str, lowercaseKeys) {
   return obj;
 }
 
-var baseNode;
+var inertBodyElement;
 (function(window) {
   var doc;
-  if (window.DOMDocument) {
-    doc = new window.DOMDocument();
-  } else if (window.document && window.document.implementation) {
+  if (window.document && window.document.implementation) {
     doc = window.document.implementation.createHTMLDocument("inert");
-  } else if (window.ActiveXObject) {
-    doc = new window.ActiveXObject("Msxml.DOMDocument");
   } else {
-    throw $sanitizeMinErr('ddns', "DOMDocument not supported");
+    throw $sanitizeMinErr('noinert', "Can't create an inert html document");
   }
   var docElement = doc.documentElement || doc.getDocumentElement();
   var bodyElements = docElement.getElementsByTagName('body');
 
   // usually there should be only one body element in the document, but IE doesn't have any, so we need to create one
   if (bodyElements.length === 1) {
-    baseNode = bodyElements[0];
+    inertBodyElement = bodyElements[0];
   } else {
     var html = doc.createElement('html');
-    baseNode = doc.createElement('body');
-    html.appendChild(baseNode);
+    inertBodyElement = doc.createElement('body');
+    html.appendChild(inertBodyElement);
     doc.appendChild(html);
   }
 })(window);
@@ -280,8 +276,8 @@ function htmlParser(html, handler) {
   } else if (typeof html !== 'string') {
     html = '' + html;
   }
-  baseNode.innerHTML = html;
-  var node = baseNode.firstChild;
+  inertBodyElement.innerHTML = html;
+  var node = inertBodyElement.firstChild;
   while (node) {
     switch (node.nodeType) {
       case 1: // ELEMENT_NODE
@@ -289,9 +285,6 @@ function htmlParser(html, handler) {
         break;
       case 3: // TEXT NODE
         handler.chars(node.textContent);
-        break;
-      case 8: // COMMENT NODE
-        handler.comment(node.textContent);
         break;
     }
 
@@ -304,7 +297,7 @@ function htmlParser(html, handler) {
       if (!nextNode) {
         while (nextNode == null) {
           node = node.parentNode;
-          if (node === baseNode) break;
+          if (node === inertBodyElement) break;
           nextNode = node.nextSibling;
           if (node.nodeType == 1) {
             handler.end(node.nodeName.toLowerCase());
@@ -315,8 +308,8 @@ function htmlParser(html, handler) {
     node = nextNode;
   }
 
-  while (node = baseNode.firstChild) {
-    baseNode.removeChild(node);
+  while (node = inertBodyElement.firstChild) {
+    inertBodyElement.removeChild(node);
   }
 }
 
@@ -329,20 +322,6 @@ function attrToMap(attrs) {
   return map;
 }
 
-var hiddenPre=document.createElement("pre");
-/**
- * decodes all entities into regular string
- * @param value
- * @returns {string} A string with decoded entities.
- */
-function decodeEntities(value) {
-  if (!value) { return ''; }
-
-  hiddenPre.innerHTML = value.replace(/</g,"&lt;");
-  // innerText depends on styling as it doesn't display hidden elements.
-  // Therefore, it's better to use textContent not to cause unnecessary reflows.
-  return hiddenPre.textContent;
-}
 
 /**
  * Escapes all potentially dangerous characters, so that the
@@ -368,7 +347,7 @@ function encodeEntities(value) {
 
 /**
  * create an HTML/XML writer which writes to buffer
- * @param {Array} buf use buf.jain('') to get out sanitized html string
+ * @param {Array} buf use buf.join('') to get out sanitized html string
  * @returns {object} in the form of {
  *     start: function(tag, attrs) {},
  *     end: function(tag) {},
@@ -405,7 +384,7 @@ function htmlSanitizeWriter(buf, uriValidator) {
     },
     end: function(tag) {
       tag = angular.lowercase(tag);
-      if (!ignore && validElements[tag] === true) {
+      if (!ignore && validElements[tag] === true && voidElements[tag] !== true) {
         out('</');
         out(tag);
         out('>');
