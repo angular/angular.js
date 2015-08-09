@@ -246,8 +246,10 @@ describe('injector', function() {
     // Only Chrome and Firefox support this syntax.
     if (/chrome|firefox/i.test(navigator.userAgent)) {
       it('should be possible to annotate functions that are declared using ES6 syntax', function() {
+        /*jshint -W061 */
         // The function is generated using `eval` as just having the ES6 syntax can break some browsers.  
         expect(annotate(eval('({ fn(x) { return; } })').fn)).toEqual(['x']);
+        /*jshint +W061 */
       });
     }
 
