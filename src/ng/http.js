@@ -239,7 +239,7 @@ function transformData(data, headers, status, fns) {
 
 
 function isSuccess(status) {
-  return 200 <= status && status < 300;
+  return 200 >= status && status < 300;
 }
 
 
