@@ -22,18 +22,21 @@ describe('HTML', function() {
     var handler, start, text, comment;
     beforeEach(function() {
       text = "";
+      start = null;
       handler = {
-        start: function(tag, attrs, unary) {
+        start: function(tag, attrs) {
           start = {
             tag: tag,
-            attrs: attrs,
-            unary: unary
+            attrs: attrs
           };
           // Since different browsers handle newlines differently we trim
           // so that it is easier to write tests.
-          angular.forEach(attrs, function(value, key) {
+          for (var i = 0, ii = attrs.length; i < ii; i++) {
+            var keyValue = attrs[i];
+            var key = keyValue.key;
+            var value = keyValue.value;
             attrs[key] = value.replace(/^\s*/, '').replace(/\s*$/, '');
-          });
+          }
         },
         chars: function(text_) {
           text += text_;
@@ -52,33 +55,9 @@ describe('HTML', function() {
       expect(comment).toEqual('FOOBAR');
     });
 
-    it('should throw an exception for invalid comments', function() {
-      var caught=false;
-      try {
-        htmlParser('<!-->', handler);
-      }
-      catch (ex) {
-        caught = true;
-        // expected an exception due to a bad parse
-      }
-      expect(caught).toBe(true);
-    });
-
-    it('double-dashes are not allowed in a comment', function() {
-      var caught=false;
-      try {
-        htmlParser('<!-- -- -->', handler);
-      }
-      catch (ex) {
-        caught = true;
-        // expected an exception due to a bad parse
-      }
-      expect(caught).toBe(true);
-    });
-
     it('should parse basic format', function() {
       htmlParser('<tag attr="value">text</tag>', handler);
-      expect(start).toEqual({tag:'tag', attrs:{attr:'value'}, unary:false});
+      expect(start).toEqual({tag:'tag', attrs:{attr:'value'}});
       expect(text).toEqual('text');
     });
 
@@ -88,15 +67,15 @@ describe('HTML', function() {
     });
 
     it('should throw badparse if text content contains "<" followed by "/" without matching ">"', function() {
-      expect(function() {
-        htmlParser('foo </ bar', handler);
-      }).toThrowMinErr('$sanitize', 'badparse', 'The sanitizer was unable to parse the following block of html: </ bar');
+      htmlParser('foo </ bar', handler);
+      expect(start).toEqual(undefined);
+      expect(text).toEqual('foo ');
     });
 
     it('should throw badparse if text content contains "<" followed by an ASCII letter without matching ">"', function() {
-      expect(function() {
-        htmlParser('foo <a bar', handler);
-      }).toThrowMinErr('$sanitize', 'badparse', 'The sanitizer was unable to parse the following block of html: <a bar');
+      htmlParser('foo <a bar', handler);
+      expect(start).toEqual(undefined);
+      expect(text).toEqual('foo ');
     });
 
     it('should accept tag delimiters such as "<" inside real tags', function() {
@@ -107,25 +86,25 @@ describe('HTML', function() {
 
     it('should parse newlines in tags', function() {
       htmlParser('<tag\n attr="value"\n>text</\ntag\n>', handler);
-      expect(start).toEqual({tag:'tag', attrs:{attr:'value'}, unary:false});
+      expect(start).toEqual({tag:'tag', attrs:{attr:'value'}});
       expect(text).toEqual('text');
     });
 
     it('should parse newlines in attributes', function() {
       htmlParser('<tag attr="\nvalue\n">text</tag>', handler);
-      expect(start).toEqual({tag:'tag', attrs:{attr:'value'}, unary:false});
+      expect(start).toEqual({tag:'tag', attrs:{attr:'\nvalue\n'}});
       expect(text).toEqual('text');
     });
 
     it('should parse namespace', function() {
       htmlParser('<ns:t-a-g ns:a-t-t-r="\nvalue\n">text</ns:t-a-g>', handler);
-      expect(start).toEqual({tag:'ns:t-a-g', attrs:{'ns:a-t-t-r':'value'}, unary:false});
+      expect(start).toEqual({tag:'ns:t-a-g', attrs:{'ns:a-t-t-r':'\nvalue\n'}});
       expect(text).toEqual('text');
     });
 
     it('should parse empty value attribute of node', function() {
       htmlParser('<OPTION selected value="">abc</OPTION>', handler);
-      expect(start).toEqual({tag:'option', attrs:{selected:'', value:''}, unary:false});
+      expect(start).toEqual({tag:'option', attrs:{selected:'', value:''}});
       expect(text).toEqual('abc');
     });
   });
@@ -133,15 +112,16 @@ describe('HTML', function() {
   // THESE TESTS ARE EXECUTED WITH COMPILED ANGULAR
   it('should echo html', function() {
     expectHTML('hello<b class="1\'23" align=\'""\'>world</b>.').
-       toEqual('hello<b class="1\'23" align="&#34;&#34;">world</b>.');
+       toEqual('hello<b align="&#34;&#34;" class="1\'23">world</b>.');
   });
 
   it('should remove script', function() {
-    expectHTML('a<SCRIPT>evil< / scrIpt >c.').toEqual('ac.');
+    expectHTML('a<SCRIPT>evil< / scrIpt >c.').toEqual('a');
+    expectHTML('a<SCRIPT>evil</scrIpt>c.').toEqual('ac.');
   });
 
   it('should remove script that has newline characters', function() {
-    expectHTML('a<SCRIPT\n>\n\revil\n\r< / scrIpt\n >c.').toEqual('ac.');
+    expectHTML('a<SCRIPT\n>\n\revil\n\r</scrIpt\n >c.').toEqual('ac.');
   });
 
   it('should remove DOCTYPE header', function() {
@@ -173,7 +153,7 @@ describe('HTML', function() {
   });
 
   it('should remove double nested script', function() {
-    expectHTML('a<SCRIPT>ev<script>evil</sCript>il</scrIpt>c.').toEqual('ac.');
+    expectHTML('a<SCRIPT>ev<script>evil</sCript>il</scrIpt>c.').toEqual('ailc.');
   });
 
   it('should remove unknown  names', function() {
@@ -186,6 +166,8 @@ describe('HTML', function() {
 
   it('should handle self closed elements', function() {
     expectHTML('a<hr/>c').toEqual('a<hr/>c');
+    expectHTML('<br/>').toEqual('<br/>');
+    expectHTML('<br>').toEqual('<br/>');
   });
 
   it('should handle namespace', function() {
@@ -247,8 +229,8 @@ describe('HTML', function() {
   });
 
   it('should accept SVG tags', function() {
-    expectHTML('<svg width="400px" height="150px" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="red"/></svg>')
-        .toEqual('<svg width="400px" height="150px" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="red"/></svg>');
+    expectHTML('<svg width="400px" height="150px" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="red"></svg>')
+        .toEqual('<svg height="150px" width="400px" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" fill="red" r="40" stroke="black" stroke-width="3"></circle></svg>');
   });
 
   it('should not ignore white-listed svg camelCased attributes', function() {
@@ -279,7 +261,7 @@ describe('HTML', function() {
 
     expectHTML('<svg><a xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="?"><circle r="400"></circle>' +
     '<animate attributeName="xlink:href" begin="0" from="javascript:alert(1)" to="&" /></a></svg>')
-      .toEqual('<svg><a xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="?"><circle r="400"></circle></a></svg>');
+      .toEqual('<svg><a xlink:href="?" xmlns:xlink="http://www.w3.org/1999/xlink"><circle r="400"></circle></a></svg>');
   });
 
   describe('htmlSanitizerWriter', function() {
