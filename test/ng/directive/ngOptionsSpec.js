@@ -2058,6 +2058,18 @@ describe('ngOptions', function() {
       // ensure the option has not changed following the digest
       expect(element[0].selectedIndex).toEqual(0);
     });
+
+
+    it('should be selectable if select is multiple', function() {
+      createMultiSelect(true);
+
+      // select the empty option
+      setSelectValue(element, 0);
+
+      // ensure selection and correct binding
+      expect(element[0].selectedIndex).toEqual(0);
+      expect(scope.selected).toEqual([]);
+    });
   });
 
 
