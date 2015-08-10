@@ -39,7 +39,7 @@ function setupModuleLoader(window) {
      * registered using this mechanism.
      *
      * When passed two or more arguments, a new module is created.  If passed only one argument, an
-     * existing module (the name passed as the first argument to `module`) is retrieved.
+     * existing module of that name is retrieved.
      *
      *
      * # Module
