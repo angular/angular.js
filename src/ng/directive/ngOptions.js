@@ -526,7 +526,7 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
 
           forEach(selectedValues, function(value) {
             var option = options.selectValueMap[value];
-            if (!option.disabled) selections.push(options.getViewValueFromOption(option));
+            if (option && !option.disabled) selections.push(options.getViewValueFromOption(option));
           });
 
           return selections;
