@@ -48,8 +48,8 @@ ngTouch.config(['$provide', function($provide) {
   }]);
 }]);
 
-ngTouch.directive('ngClick', ['$parse', '$timeout', '$rootElement',
-    function($parse, $timeout, $rootElement) {
+ngTouch.directive('ngClick', ['$parse', '$timeout', '$rootElement', '$location',
+    function($parse, $timeout, $rootElement, $location) {
   var TAP_DURATION = 750; // Shorter than 750ms is a tap, longer is a taphold or drag.
   var MOVE_TOLERANCE = 12; // 12px seems to work in most mobile browsers.
   var PREVENT_DURATION = 2500; // 2.5 seconds maximum from preventGhostClick call to click
@@ -262,6 +262,11 @@ ngTouch.directive('ngClick', ['$parse', '$timeout', '$rootElement',
         if (!angular.isDefined(attr.disabled) || attr.disabled === false) {
           element.triggerHandler('click', [event]);
         }
+
+        // If the element has an href attribute, ensure that the url gets updated.
+        if (attr.href && angular.isString(attr.href)) {
+          $location.url(attr.href);
+        }
       }
 
       resetState();
@@ -293,4 +298,3 @@ ngTouch.directive('ngClick', ['$parse', '$timeout', '$rootElement',
 
   };
 }]);
-
