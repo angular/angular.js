@@ -40,7 +40,7 @@ function setupModuleLoader(window) {
      *
      * Passing one argument retrieves an existing {@link angular.Module}, 
      * whereas passing more than one argument creates a new {@link angular.Module}
-     * 
+     *
      *
      * # Module
      *
