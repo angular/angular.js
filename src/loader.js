@@ -38,9 +38,9 @@ function setupModuleLoader(window) {
      * All modules (angular core or 3rd party) that should be available to an application must be
      * registered using this mechanism.
      *
-     * When passed two or more arguments, a new module is created.  If passed only one argument, an
-     * existing module of that name is retrieved.
-     *
+     * Passing one argument retrieves an existing {@link angular.Module}, 
+     * whereas passing more than one argument creates a new {@link angular.Module}
+     * 
      *
      * # Module
      *
