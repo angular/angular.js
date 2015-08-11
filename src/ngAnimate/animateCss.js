@@ -328,8 +328,10 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
   var gcsLookup = createLocalCacheLookup();
   var gcsStaggerLookup = createLocalCacheLookup();
 
-  this.$get = ['$window', '$$jqLite', '$$AnimateRunner', '$timeout', '$$forceReflow', '$sniffer', '$$rAF', '$animate',
-       function($window,   $$jqLite,   $$AnimateRunner,   $timeout,   $$forceReflow,   $sniffer,   $$rAF,   $animate) {
+  this.$get = ['$window', '$$jqLite', '$$AnimateRunner', '$timeout',
+               '$$forceReflow', '$sniffer', '$$rAFScheduler', '$animate',
+       function($window,   $$jqLite,   $$AnimateRunner,   $timeout,
+                $$forceReflow,   $sniffer,   $$rAFScheduler, $animate) {
 
     var applyAnimationClasses = applyAnimationClassesFactory($$jqLite);
 
@@ -389,12 +391,8 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
     var cancelLastRAFRequest;
     var rafWaitQueue = [];
     function waitUntilQuiet(callback) {
-      if (cancelLastRAFRequest) {
-        cancelLastRAFRequest(); //cancels the request
-      }
       rafWaitQueue.push(callback);
-      cancelLastRAFRequest = $$rAF(function() {
-        cancelLastRAFRequest = null;
+      $$rAFScheduler.waitUntilQuiet(function() {
         gcsLookup.flush();
         gcsStaggerLookup.flush();
 
@@ -485,7 +483,6 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
       // there actually is a detected transition or keyframe animation
       if (options.applyClassesEarly && addRemoveClassName.length) {
         applyAnimationClasses(element, options);
-        addRemoveClassName = '';
       }
 
       var preparationClasses = [structuralClassName, addRemoveClassName].join(' ').trim();

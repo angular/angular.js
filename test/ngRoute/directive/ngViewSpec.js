@@ -749,7 +749,7 @@ describe('ngView animations', function() {
     );
 
     it('should render ngClass on ngView',
-      inject(function($compile, $rootScope, $templateCache, $animate, $location, $timeout) {
+      inject(function($compile, $rootScope, $templateCache, $animate, $location) {
 
         var item;
         $rootScope.tpl = 'one';
@@ -759,6 +759,7 @@ describe('ngView animations', function() {
 
         $location.path('/foo');
         $rootScope.$digest();
+        $animate.flush();
 
         //we don't care about the enter animation
         $animate.queue.shift();
@@ -774,6 +775,8 @@ describe('ngView animations', function() {
 
         expect($animate.queue.shift().event).toBe('addClass');
         expect($animate.queue.shift().event).toBe('removeClass');
+
+        $animate.flush();
 
         expect(item.hasClass('classy')).toBe(false);
         expect(item.hasClass('boring')).toBe(true);
