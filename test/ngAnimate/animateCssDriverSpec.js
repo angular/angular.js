@@ -105,7 +105,7 @@ describe("ngAnimate $$animateCssDriver", function() {
         expect(capturedAnimation[1].applyClassesEarly).toBeFalsy();
 
         driver({ element: element, structural: true });
-        expect(capturedAnimation[1].applyClassesEarly).toBeFalsy();
+        expect(capturedAnimation[1].applyClassesEarly).toBeTruthy();
       }));
 
       it("should only set the event value if the animation is structural", inject(function() {
