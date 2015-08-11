@@ -108,6 +108,21 @@ var SelectController =
  * @description
  * HTML `SELECT` element with angular data-binding.
  *
+ * The `select` directive provides support for {@link ngModel.NgModelController NgModelController} to
+ * read and write the selected value(s) of the '<select>' control (including the default value) and
+ * coordinates dynamically added `<option>` elements, which can be added using the `ngRepeat` or
+ * 'ngOptions' directive.
+ *
+ * @param {string} ngModel Assignable angular expression to data-bind to.  Also used to set the default
+ * value of the select by assigning the desired value to this model in scope.
+ * @param {string=} name Property name of the form under which the control is published.
+ * @param {string=} required Sets `required` validation error key if the value is not entered.
+ * @param {boolean=} ngRequired Sets `required` attribute if set to true
+ * @param {string=} ngChange Angular expression to be executed when selected option(s) changes due to user
+ *    interaction with the select element.
+ * @param {string=} ngOptions sets the options that the select is populated with.  Alternatively the options
+ * can be added with the '<option>' and the 'ngRepeat' directive.
+ *
  * In many cases, `ngRepeat` can be used on `<option>` elements instead of {@link ng.directive:ngOptions
  * ngOptions} to achieve a similar result. However, `ngOptions` provides some benefits such as reducing
  * memory and increasing speed by not creating a new scope for each repeated instance, as well as providing
@@ -124,6 +139,41 @@ var SelectController =
  * Optionally, a single hard-coded `<option>` element, with the value set to an empty string, can
  * be nested into the `<select>` element. This element will then represent the `null` or "not selected"
  * option. See example below for demonstration.
+ *
+ * ### Example use of select with default value set
+ *
+ * <example name="select-with-default-values" module="defaultValueSelect">
+ * <file name="index.html">
+ * <div ng-controller="ExampleController">
+ *   <form name="myForm">
+ *     <label for="mySelect">Make a choice:</label>
+ *     <select name="mySelect" id="mySelect"
+ *       ng-options="option.name for option in data.availableOptions track by option.id"
+ *       ng-model="data.selectedOption"></select>
+ *   </form>
+ *   <hr>
+ *   <tt>option = {{data.selectedOption}}</tt><br/>
+ *   <tt>myForm.mySelect.$valid = {{myForm.mySelect.$valid}}</tt><br/>
+ *   <tt>myForm.mySelect.$error = {{myForm.mySelect.$error}}</tt><br/>
+ *   <tt>myForm.$valid = {{myForm.$valid}}</tt><br/>
+ *   <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br/>
+ * </div>
+ * </file>
+ * <file name="app.js">
+ *  angular.module('defaultValueSelect', [])
+ *    .controller('ExampleController', ['$scope', function($scope) {
+ *      $scope.data = {
+ *       availableOptions: [
+ *         {id: '1', name: 'Option A'},
+ *         {id: '2', name: 'Option B'},
+ *         {id: '3', name: 'Option C'}
+ *       ],
+ *       selectedOption: {id: '3', name: 'Option C'} //This sets the default value of the select in the ui
+ *       };
+ *   }]);
+ * </file>
+ *</example>
+ *
  *
  * <div class="alert alert-info">
  * The value of a `select` directive used without `ngOptions` is always a string.
