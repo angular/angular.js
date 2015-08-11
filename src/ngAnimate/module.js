@@ -4,6 +4,7 @@
 
    $$BodyProvider,
    $$AnimateAsyncRunFactory,
+   $$rAFSchedulerFactory,
    $$AnimateChildrenDirective,
    $$AnimateRunnerFactory,
    $$AnimateQueueProvider,
@@ -744,6 +745,7 @@ angular.module('ngAnimate', [])
   .provider('$$body', $$BodyProvider)
 
   .directive('ngAnimateChildren', $$AnimateChildrenDirective)
+  .factory('$$rAFScheduler', $$rAFSchedulerFactory)
 
   .factory('$$AnimateRunner', $$AnimateRunnerFactory)
   .factory('$$animateAsyncRun', $$AnimateAsyncRunFactory)

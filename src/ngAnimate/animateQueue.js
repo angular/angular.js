@@ -381,9 +381,6 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
         return runner;
       }
 
-      applyGeneratedPreparationClasses(element, isStructural ? event : null, options);
-      blockTransitions(node, SAFE_FAST_FORWARD_DURATION_VALUE);
-
       // the counter keeps track of cancelled animations
       var counter = (existingAnimation.counter || 0) + 1;
       newAnimation.counter = counter;
@@ -442,10 +439,7 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
             : animationDetails.event;
 
         markElementAnimationState(element, RUNNING_STATE);
-        var realRunner = $$animation(element, event, animationDetails.options, function(e) {
-          $$forceReflow();
-          blockTransitions(getDomNode(e), false);
-        });
+        var realRunner = $$animation(element, event, animationDetails.options);
 
         realRunner.done(function(status) {
           close(!status);
