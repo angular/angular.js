@@ -825,6 +825,8 @@ function $HttpProvider() {
      *    - **responseType** - `{string}` - see
      *      [XMLHttpRequest.responseType](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest#xmlhttprequest-responsetype).
      *
+     * @param {boolean=} invokeApply: if false, skips model dirty checking after request succeeds
+     *
      * @returns {HttpPromise} Returns a {@link ng.$q `Promise}` that will be resolved to a response object
      *                        when the request succeeds or fails.
      *
@@ -1083,6 +1085,7 @@ function $HttpProvider() {
      *
      * @param {string} url Relative or absolute URL specifying the destination of the request
      * @param {Object=} config Optional configuration object
+     * @param {boolean=} invokeApply: if false, skips model dirty checking after request succeeds
      * @returns {HttpPromise} Future object
      */
 
@@ -1095,6 +1098,7 @@ function $HttpProvider() {
      *
      * @param {string} url Relative or absolute URL specifying the destination of the request
      * @param {Object=} config Optional configuration object
+     * @param {boolean=} invokeApply: if false, skips model dirty checking after request succeeds
      * @returns {HttpPromise} Future object
      */
 
@@ -1108,6 +1112,7 @@ function $HttpProvider() {
      * @param {string} url Relative or absolute URL specifying the destination of the request.
      *                     The name of the callback should be the string `JSON_CALLBACK`.
      * @param {Object=} config Optional configuration object
+     * @param {boolean=} invokeApply: if false, skips model dirty checking after request succeeds
      * @returns {HttpPromise} Future object
      */
     createShortMethods('get', 'delete', 'head', 'jsonp');
@@ -1122,6 +1127,7 @@ function $HttpProvider() {
      * @param {string} url Relative or absolute URL specifying the destination of the request
      * @param {*} data Request content
      * @param {Object=} config Optional configuration object
+     * @param {boolean=} invokeApply: if false, skips model dirty checking after request succeeds
      * @returns {HttpPromise} Future object
      */
 
@@ -1135,6 +1141,7 @@ function $HttpProvider() {
      * @param {string} url Relative or absolute URL specifying the destination of the request
      * @param {*} data Request content
      * @param {Object=} config Optional configuration object
+     * @param {boolean=} invokeApply: if false, skips model dirty checking after request succeeds
      * @returns {HttpPromise} Future object
      */
 
@@ -1148,6 +1155,7 @@ function $HttpProvider() {
       * @param {string} url Relative or absolute URL specifying the destination of the request
       * @param {*} data Request content
       * @param {Object=} config Optional configuration object
+      * @param {boolean=} invokeApply: if false, skips model dirty checking after request succeeds
       * @returns {HttpPromise} Future object
       */
     createShortMethodsWithData('post', 'put', 'patch');
