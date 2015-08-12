@@ -1775,5 +1775,24 @@ describe("animations", function() {
       expect(count).toBe(1);
     }));
 
+    it('Leave : should remove the element even other animation are called after leave, should not override leave callback',
+      inject(function($animate, $rootScope, $$rAF, $rootElement) {
+
+      var isElementRemoved = false;
+      var outerContainer = jqLite('<div></div>');
+      element = jqLite('<div></div>');
+      outerContainer.append(element);
+      $rootElement.append(outerContainer);
+      var runner = $animate.leave(element, $rootElement);
+      $animate.removeClass(element,'rclass');
+      $rootScope.$digest();
+      runner.end();
+      $$rAF.flush();
+
+      isElementRemoved = !outerContainer[0].contains(element[0]);
+
+      expect(isElementRemoved).toBe(true);
+    }));
+
   });
 });
