@@ -56,4 +56,43 @@ describe('linky', function() {
       toBeOneOf('<a target="someNamedIFrame" href="http://example.com">http://example.com</a>',
                 '<a href="http://example.com" target="someNamedIFrame">http://example.com</a>');
   });
+
+  describe('custom attributes', function() {
+
+    it('should optionally add custom attributes', function() {
+      expect(linky("http://example.com", "_self", {rel: "nofollow"})).
+        toBeOneOf('<a rel="nofollow" target="_self" href="http://example.com">http://example.com</a>',
+                  '<a href="http://example.com" target="_self" rel="nofollow">http://example.com</a>');
+    });
+
+
+    it('should override target parameter with custom attributes', function() {
+      expect(linky("http://example.com", "_self", {target: "_blank"})).
+        toBeOneOf('<a target="_blank" href="http://example.com">http://example.com</a>',
+                  '<a href="http://example.com" target="_blank">http://example.com</a>');
+    });
+
+
+    it('should optionally add custom attributes from function', function() {
+      expect(linky("http://example.com", "_self", function(url) {return {"class": "blue"};})).
+        toBeOneOf('<a class="blue" target="_self" href="http://example.com">http://example.com</a>',
+                  '<a href="http://example.com" target="_self" class="blue">http://example.com</a>',
+                  '<a class="blue" href="http://example.com" target="_self">http://example.com</a>');
+    });
+
+
+    it('should pass url as parameter to custom attribute function', function() {
+      var linkParameters = jasmine.createSpy('linkParameters').andReturn({"class": "blue"});
+      linky("http://example.com", "_self", linkParameters);
+      expect(linkParameters).toHaveBeenCalledWith('http://example.com');
+    });
+
+
+    it('should strip unsafe attributes', function() {
+      expect(linky("http://example.com", "_self", {"class": "blue", "onclick": "alert('Hi')"})).
+        toBeOneOf('<a class="blue" target="_self" href="http://example.com">http://example.com</a>',
+                  '<a href="http://example.com" target="_self" class="blue">http://example.com</a>',
+                  '<a class="blue" href="http://example.com" target="_self">http://example.com</a>');
+    });
+  });
 });
