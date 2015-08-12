@@ -825,6 +825,8 @@ function $HttpProvider() {
      *    - **responseType** - `{string}` - see
      *      [XMLHttpRequest.responseType](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest#xmlhttprequest-responsetype).
      *
+     * @param {boolean=} invokeApply: if false, skips model dirty checking after request succeeds
+     *
      * @returns {HttpPromise} Returns a {@link ng.$q `Promise}` that will be resolved to a response object
      *                        when the request succeeds or fails.
      *
@@ -920,7 +922,7 @@ function $HttpProvider() {
 </file>
 </example>
      */
-    function $http(requestConfig) {
+    function $http(requestConfig, invokeApply) {
 
       if (!angular.isObject(requestConfig)) {
         throw minErr('$http')('badreq', 'Http request configuration must be an object.  Received: {0}', requestConfig);
@@ -956,7 +958,7 @@ function $HttpProvider() {
         }
 
         // send request
-        return sendReq(config, reqData).then(transformResponse, transformResponse);
+        return sendReq(config, reqData, invokeApply).then(transformResponse, transformResponse);
       };
 
       var chain = [serverRequest, undefined];
@@ -1083,6 +1085,7 @@ function $HttpProvider() {
      *
      * @param {string} url Relative or absolute URL specifying the destination of the request
      * @param {Object=} config Optional configuration object
+     * @param {boolean=} invokeApply: if false, skips model dirty checking after request succeeds
      * @returns {HttpPromise} Future object
      */
 
@@ -1095,6 +1098,7 @@ function $HttpProvider() {
      *
      * @param {string} url Relative or absolute URL specifying the destination of the request
      * @param {Object=} config Optional configuration object
+     * @param {boolean=} invokeApply: if false, skips model dirty checking after request succeeds
      * @returns {HttpPromise} Future object
      */
 
@@ -1108,6 +1112,7 @@ function $HttpProvider() {
      * @param {string} url Relative or absolute URL specifying the destination of the request.
      *                     The name of the callback should be the string `JSON_CALLBACK`.
      * @param {Object=} config Optional configuration object
+     * @param {boolean=} invokeApply: if false, skips model dirty checking after request succeeds
      * @returns {HttpPromise} Future object
      */
     createShortMethods('get', 'delete', 'head', 'jsonp');
@@ -1122,6 +1127,7 @@ function $HttpProvider() {
      * @param {string} url Relative or absolute URL specifying the destination of the request
      * @param {*} data Request content
      * @param {Object=} config Optional configuration object
+     * @param {boolean=} invokeApply: if false, skips model dirty checking after request succeeds
      * @returns {HttpPromise} Future object
      */
 
@@ -1135,6 +1141,7 @@ function $HttpProvider() {
      * @param {string} url Relative or absolute URL specifying the destination of the request
      * @param {*} data Request content
      * @param {Object=} config Optional configuration object
+     * @param {boolean=} invokeApply: if false, skips model dirty checking after request succeeds
      * @returns {HttpPromise} Future object
      */
 
@@ -1148,6 +1155,7 @@ function $HttpProvider() {
       * @param {string} url Relative or absolute URL specifying the destination of the request
       * @param {*} data Request content
       * @param {Object=} config Optional configuration object
+      * @param {boolean=} invokeApply: if false, skips model dirty checking after request succeeds
       * @returns {HttpPromise} Future object
       */
     createShortMethodsWithData('post', 'put', 'patch');
@@ -1170,11 +1178,11 @@ function $HttpProvider() {
 
     function createShortMethods(names) {
       forEach(arguments, function(name) {
-        $http[name] = function(url, config) {
+        $http[name] = function(url, config, invokeApply) {
           return $http(extend({}, config || {}, {
             method: name,
             url: url
-          }));
+          }), invokeApply);
         };
       });
     }
@@ -1182,12 +1190,12 @@ function $HttpProvider() {
 
     function createShortMethodsWithData(name) {
       forEach(arguments, function(name) {
-        $http[name] = function(url, data, config) {
+        $http[name] = function(url, data, config, invokeApply) {
           return $http(extend({}, config || {}, {
             method: name,
             url: url,
             data: data
-          }));
+          }), invokeApply);
         };
       });
     }
@@ -1199,7 +1207,7 @@ function $HttpProvider() {
      * !!! ACCESSES CLOSURE VARS:
      * $httpBackend, defaults, $log, $rootScope, defaultCache, $http.pendingRequests
      */
-    function sendReq(config, reqData) {
+    function sendReq(config, reqData, invokeApply) {
       var deferred = $q.defer(),
           promise = deferred.promise,
           cache,
@@ -1276,11 +1284,15 @@ function $HttpProvider() {
           resolvePromise(response, status, headersString, statusText);
         }
 
-        if (useApplyAsync) {
-          $rootScope.$applyAsync(resolveHttpPromise);
-        } else {
-          resolveHttpPromise();
-          if (!$rootScope.$$phase) $rootScope.$apply();
+        var skipApply = (isDefined(invokeApply) && !invokeApply);
+
+        if (!skipApply) {
+          if (useApplyAsync) {
+            $rootScope.$applyAsync(resolveHttpPromise);
+          } else {
+            resolveHttpPromise();
+            if (!$rootScope.$$phase) $rootScope.$apply();
+          }
         }
       }
 
