@@ -249,7 +249,7 @@ describe('ngAnimate integration tests', function() {
       expect(child).not.toHaveClass('expand-add');
     }));
 
-    it('should only issue a reflow for each parent CSS class change that contains ready-to-fire child animations', function() {
+    it('should issue a reflow for each element animation on all DOM levels', function() {
       module('ngAnimateMock');
       inject(function($animate, $compile, $rootScope, $rootElement, $$rAF, $document) {
         element = jqLite(
@@ -273,11 +273,13 @@ describe('ngAnimate integration tests', function() {
         $rootScope.items = [1,2,3,4,5,6,7,8,9,10];
 
         $rootScope.$digest();
-        expect($animate.reflows).toBe(2);
+
+        // 2 parents + 10 items = 12
+        expect($animate.reflows).toBe(12);
       });
     });
 
-    it('should issue a reflow for each parent class-based animation that contains active child animations', function() {
+    it('should issue a reflow for each element and also its children', function() {
       module('ngAnimateMock');
       inject(function($animate, $compile, $rootScope, $rootElement, $$rAF, $document) {
         element = jqLite(
@@ -302,37 +304,9 @@ describe('ngAnimate integration tests', function() {
 
         $rootScope.exp = true;
         $rootScope.$digest();
-        expect($animate.reflows).toBe(2);
-      });
-    });
 
-    it('should only issue one reflow for class-based animations if none of them have children with queued animations', function() {
-      module('ngAnimateMock');
-      inject(function($animate, $compile, $rootScope, $rootElement, $$rAF, $document) {
-        element = jqLite(
-          '<div ng-class="{one:exp}">' +
-             '<div ng-if="exp2"></div>' +
-          '</div>' +
-          '<div ng-class="{two:exp}">' +
-             '<div ng-if="exp2"></div>' +
-          '</div>' +
-          '<div ng-class="{three:exp}"></div>'
-        );
-
-        $rootElement.append(element);
-        jqLite($document[0].body).append($rootElement);
-
-        $compile(element)($rootScope);
-        $rootScope.$digest();
-        expect($animate.reflows).toBe(0);
-
-        $rootScope.exp = true;
-        $rootScope.$digest();
-        expect($animate.reflows).toBe(1);
-
-        $rootScope.exp2 = true;
-        $rootScope.$digest();
-        expect($animate.reflows).toBe(2);
+        // there is one element's expression in there that is false
+        expect($animate.reflows).toBe(6);
       });
     });
 
@@ -356,7 +330,7 @@ describe('ngAnimate integration tests', function() {
         $rootScope.items = [1,2,3,4,5,6,7,8,9,10];
         $rootScope.$digest();
 
-        expect($animate.reflows).toBe(1);
+        expect($animate.reflows).toBe(10);
       });
     });
   });
