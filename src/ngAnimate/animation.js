@@ -19,8 +19,8 @@ var $$AnimationProvider = ['$animateProvider', function($animateProvider) {
     return element.data(RUNNER_STORAGE_KEY);
   }
 
-  this.$get = ['$$jqLite', '$rootScope', '$injector', '$$AnimateRunner', '$$HashMap', '$$forceReflow',
-       function($$jqLite,   $rootScope,   $injector,   $$AnimateRunner,   $$HashMap,   $$forceReflow) {
+  this.$get = ['$$jqLite', '$rootScope', '$injector', '$$AnimateRunner', '$$HashMap',
+       function($$jqLite,   $rootScope,   $injector,   $$AnimateRunner,   $$HashMap) {
 
     var animationQueue = [];
     var applyAnimationClasses = applyAnimationClassesFactory($$jqLite);
@@ -91,11 +91,8 @@ var $$AnimationProvider = ['$animateProvider', function($animateProvider) {
             result = result.concat(row);
             row = [];
           }
-          row.push({
-            fn: entry.fn,
-            terminal: entry.children.length === 0
-          });
-          entry.children.forEach(function(childEntry) {
+          row.push(entry.fn);
+          forEach(entry.children, function(childEntry) {
             nextLevelEntries++;
             queue.push(childEntry);
           });
@@ -105,17 +102,7 @@ var $$AnimationProvider = ['$animateProvider', function($animateProvider) {
         if (row.length) {
           result = result.concat(row);
         }
-
-        var terminalAnimations = [];
-        var parentAnimations = [];
-        forEach(result, function(result) {
-          if (result.terminal) {
-            terminalAnimations.push(result.fn);
-          } else {
-            parentAnimations.push(result.fn);
-          }
-        });
-        return [parentAnimations, terminalAnimations];
+        return result;
       }
     }
 
@@ -224,27 +211,9 @@ var $$AnimationProvider = ['$animateProvider', function($animateProvider) {
         });
 
         // we need to sort each of the animations in order of parent to child
-        // relationships. This ensures that the child classes are applied at the
-        // right time.
-        var anim = sortAnimations(toBeSortedAnimations);
-        var finalLevel = anim.length - 1;
-
-        // sortAnimations will return two lists of animations. The first list
-        // is all of the parent animations that are likely class-based and the
-        // second list is a collection of the rest. Before we run the second
-        // list we must ensure that atleast one reflow has been passed such that
-        // the preparation classes (ng-enter, class-add, etc...) have been applied
-        // to their associated element.
-        if (anim[0].length) {
-          forEach(anim[0], function(triggerAnimation) {
-            $$forceReflow();
-            triggerAnimation();
-          });
-        } else {
-          $$forceReflow();
-        }
-
-        forEach(anim[1], function(triggerAnimation) {
+        // relationships. This ensures that the parent to child classes are
+        // applied at the right time.
+        forEach(sortAnimations(toBeSortedAnimations), function(triggerAnimation) {
           triggerAnimation();
         });
       });
