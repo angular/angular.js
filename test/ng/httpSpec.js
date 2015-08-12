@@ -1013,32 +1013,76 @@ describe('$http', function() {
 
     describe('scope.$apply', function() {
 
-      it('should $apply after success callback', function() {
-        $httpBackend.when('GET').respond(200);
-        $http({method: 'GET', url: '/some'});
-        $httpBackend.flush();
-        expect($rootScope.$apply).toHaveBeenCalledOnce();
+      describe('when invokeApply is undefined', function() {
+
+        it('should $apply after success callback', function() {
+          $httpBackend.when('GET').respond(200);
+          $http({method: 'GET', url: '/some'});
+          $httpBackend.flush();
+          expect($rootScope.$apply).toHaveBeenCalledOnce();
+        });
+
+
+        it('should $apply after error callback', function() {
+          $httpBackend.when('GET').respond(404);
+          $http({method: 'GET', url: '/some'});
+          $httpBackend.flush();
+          expect($rootScope.$apply).toHaveBeenCalledOnce();
+        });
+
+
+        it('should $apply even if exception thrown during callback', inject(function($exceptionHandler) {
+          $httpBackend.when('GET').respond(200);
+          callback.andThrow('error in callback');
+
+          $http({method: 'GET', url: '/some'}).then(callback);
+          $httpBackend.flush();
+          expect($rootScope.$apply).toHaveBeenCalledOnce();
+
+          $exceptionHandler.errors = [];
+        }));
       });
 
+      describe('when invokeApply is defined and falsy', function() {
 
-      it('should $apply after error callback', function() {
-        $httpBackend.when('GET').respond(404);
-        $http({method: 'GET', url: '/some'});
-        $httpBackend.flush();
-        expect($rootScope.$apply).toHaveBeenCalledOnce();
+        it('should resolve promises anyway', function() {
+          $httpBackend.when('GET').respond(200);
+          var promiseCompleted = false;
+          $http({method: 'GET', url: '/some'}, false).then(function() {
+            promiseCompleted = true;
+          });
+          $httpBackend.flush();
+          expect(promiseCompleted).toBe(true);
+        });
+
+
+        it('should not $apply after success callback', function() {
+          $httpBackend.when('GET').respond(200);
+          $http({method: 'GET', url: '/some'}, false);
+          $httpBackend.flush();
+          expect($rootScope.$apply).not.toHaveBeenCalledOnce();
+        });
+
+
+        it('should not $apply after error callback', function() {
+          $httpBackend.when('GET').respond(404);
+          $http({method: 'GET', url: '/some'}, false);
+          $httpBackend.flush();
+          expect($rootScope.$apply).not.toHaveBeenCalledOnce();
+        });
+
+
+        it('should not $apply if exception thrown during callback', inject(function($exceptionHandler) {
+          $httpBackend.when('GET').respond(200);
+          callback.andThrow('error in callback');
+
+          $http({method: 'GET', url: '/some'}, false).then(callback);
+          $httpBackend.flush();
+          expect($rootScope.$apply).not.toHaveBeenCalledOnce();
+
+          $exceptionHandler.errors = [];
+        }));
       });
-
-
-      it('should $apply even if exception thrown during callback', inject(function($exceptionHandler) {
-        $httpBackend.when('GET').respond(200);
-        callback.andThrow('error in callback');
-
-        $http({method: 'GET', url: '/some'}).then(callback);
-        $httpBackend.flush();
-        expect($rootScope.$apply).toHaveBeenCalledOnce();
-
-        $exceptionHandler.errors = [];
-      }));
     });
 
 
