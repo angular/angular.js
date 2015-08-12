@@ -77,7 +77,7 @@ var angularFiles = {
     'src/ng/directive/select.js',
     'src/ng/directive/style.js',
     'src/ng/directive/validators.js',
-    'src/angular.bind',
+    'src/angular.bind.js',
     'src/publishExternalApis.js',
     'src/ngLocale/angular-locale_en-us.js'
   ],
@@ -191,7 +191,7 @@ var angularFiles = {
     'test/jquery_alias.js',
     'src/angular-bootstrap.js',
     'src/ngScenario/angular-bootstrap.js',
-    'src/angular.bind'
+    'src/angular.bind.js'
   ],
 
   'karmaScenario': [
@@ -227,7 +227,7 @@ var angularFiles = {
     'src/angular-bootstrap.js',
     'src/ngScenario/angular-bootstrap.js',
     'test/jquery_remove.js',
-    'src/angular.bind'
+    'src/angular.bind.js'
   ]
 };
 
