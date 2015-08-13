@@ -1671,11 +1671,13 @@ describe("ngAnimate $animateCss", function() {
 
     describe("options", function() {
       var element;
-      beforeEach(inject(function($rootElement, $$body) {
-        $$body.append($rootElement);
+      beforeEach(module(function() {
+        return function($rootElement, $$body) {
+          $$body.append($rootElement);
 
-        element = jqLite('<div></div>');
-        $rootElement.append(element);
+          element = jqLite('<div></div>');
+          $rootElement.append(element);
+        };
       }));
 
       describe("[$$skipPreparationClasses]", function() {
@@ -1862,7 +1864,6 @@ describe("ngAnimate $animateCss", function() {
           animator.start();
           triggerAnimationStartFrame();
 
-
           var prop = element.css('transition-delay');
           expect(prop).toEqual('500s');
         }));
@@ -1978,6 +1979,53 @@ describe("ngAnimate $animateCss", function() {
           expect(element.css('transition-delay')).toEqual('10s');
         }));
 
+        it("should apply the keyframe and transition duration value before the CSS classes are applied", function() {
+          var classSpy = jasmine.createSpy();
+          module(function($provide) {
+            $provide.value('$$jqLite', {
+              addClass: function() {
+                classSpy();
+              },
+              removeClass: function() {
+                classSpy();
+              }
+            });
+          });
+          inject(function($animateCss, $rootElement) {
+            element.addClass('element');
+            ss.addRule('.element', '-webkit-animation:3s keyframe_animation;' +
+                                           'animation:3s keyframe_animation;' +
+                                           'transition:5s linear all;');
+
+            var options = {
+              delay: 2,
+              duration: 2,
+              addClass: 'superman',
+              $$skipPreparationClasses: true,
+              structural: true
+            };
+            var animator = $animateCss(element, options);
+
+            expect(element.attr('style') || '').not.toContain('animation-delay');
+            expect(element.attr('style') || '').not.toContain('transition-delay');
+            expect(classSpy).not.toHaveBeenCalled();
+
+            //redefine the classSpy to assert that the delay values have been
+            //applied before the classes are added
+            var assertionsRun = false;
+            classSpy = function() {
+              assertionsRun = true;
+              expect(element.css(prefix + 'animation-delay')).toEqual('2s');
+              expect(element.css('transition-delay')).toEqual('2s');
+              expect(element).not.toHaveClass('superman');
+            };
+
+            animator.start();
+            triggerAnimationStartFrame();
+            expect(assertionsRun).toBe(true);
+          });
+        });
+
         it("should apply blocking before the animation starts, but then apply the detected delay when options.delay is true",
           inject(function($animateCss, $rootElement) {
 
@@ -1995,41 +2043,28 @@ describe("ngAnimate $animateCss", function() {
           animator.start();
           triggerAnimationStartFrame();
 
-          expect(element.css('transition-delay')).toEqual('1s');
+          expect(element.attr('style') || '').not.toContain('transition-delay');
         }));
 
-        they("should consider a negative value when delay:true is used with a $prop animation", {
-          'transition': function() {
-            return {
-              prop: 'transition-delay',
-              css: 'transition:2s linear all; transition-delay: -1s'
-            };
-          },
-          'keyframe': function(prefix) {
-            return {
-              prop: prefix + 'animation-delay',
-              css: prefix + 'animation:2s keyframe_animation; ' + prefix + 'animation-delay: -1s;'
-            };
-          }
-        }, function(testDetailsFactory) {
+        it("should consider a negative value when delay:true is used with a keyframe animation",
           inject(function($animateCss, $rootElement) {
-            var testDetails = testDetailsFactory(prefix);
 
-            ss.addRule('.ng-enter', testDetails.css);
-            var options = {
-              delay: true,
-              event: 'enter',
-              structural: true
-            };
+          ss.addRule('.ng-enter', prefix + 'animation:2s keyframe_animation; ' +
+                                  prefix + 'animation-delay: -1s;');
 
-            var animator = $animateCss(element, options);
+          var options = {
+            delay: true,
+            event: 'enter',
+            structural: true
+          };
 
-            animator.start();
-            triggerAnimationStartFrame();
+          var animator = $animateCss(element, options);
 
-            expect(element.css(testDetails.prop)).toContain('-1s');
-          });
-        });
+          animator.start();
+          triggerAnimationStartFrame();
+
+          expect(element.css(prefix + 'animation-delay')).toContain('-1s');
+        }));
 
         they("should consider a negative value when a negative option delay is provided for a $prop animation", {
           'transition': function() {
