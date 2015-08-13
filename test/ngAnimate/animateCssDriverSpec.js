@@ -888,8 +888,8 @@ describe("ngAnimate $$animateCssDriver", function() {
         expect(int(toStyles.left)).toBeGreaterThan(20);
       }));
 
-      it("should remove the cloned anchor node from the DOM once the 'in' animation is complete",
-        inject(function($rootElement, $$rAF) {
+      it("should remove the cloned anchor node from the DOM once the 'in' animation is complete using $animate leave to provide animation hooks",
+        inject(function($rootElement, $$rAF, $animate, $rootScope) {
 
         var fromAnchor = jqLite('<div class="blue green red"></div>');
         from.append(fromAnchor);
@@ -917,8 +917,11 @@ describe("ngAnimate $$animateCssDriver", function() {
 
         // now the in animation completes
         expect(clonedAnchor.parent().length).toBe(1);
+
+        spyOn($animate, 'leave').andCallThrough();
         captureLog.pop().runner.end();
 
+        expect($animate.leave).toHaveBeenCalledWith(clonedAnchor);
         expect(clonedAnchor.parent().length).toBe(0);
       }));
 
