@@ -9,8 +9,8 @@ var $$AnimateCssDriverProvider = ['$$animationProvider', function($$animationPro
   var NG_OUT_ANCHOR_CLASS_NAME = 'ng-anchor-out';
   var NG_IN_ANCHOR_CLASS_NAME = 'ng-anchor-in';
 
-  this.$get = ['$animateCss', '$rootScope', '$$AnimateRunner', '$rootElement', '$$body', '$sniffer', '$$jqLite',
-       function($animateCss,   $rootScope,   $$AnimateRunner,   $rootElement,   $$body,   $sniffer,   $$jqLite) {
+  this.$get = ['$animate', '$animateCss', '$rootScope', '$$AnimateRunner', '$rootElement', '$$body', '$sniffer', '$$jqLite',
+       function($animate, $animateCss,   $rootScope,   $$AnimateRunner,   $rootElement,   $$body,   $sniffer,   $$jqLite) {
 
     // only browsers that support these properties can render animations
     if (!$sniffer.animations && !$sniffer.transitions) return noop;
@@ -165,7 +165,7 @@ var $$AnimateCssDriverProvider = ['$$animationProvider', function($$animationPro
       }
 
       function end() {
-        clone.remove();
+        $animate.leave(clone);
         outAnchor.removeClass(NG_ANIMATE_SHIM_CLASS_NAME);
         inAnchor.removeClass(NG_ANIMATE_SHIM_CLASS_NAME);
       }
