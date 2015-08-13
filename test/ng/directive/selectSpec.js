@@ -980,6 +980,66 @@ describe('select', function() {
       expect(element).toEqualSelect(['hello']);
     });
 
+
+    it('should add options with interpolated value attributes',
+      inject(function($rootScope, $compile) {
+        var scope = $rootScope;
+
+        scope.option1 = 'option1';
+        scope.option2 = 'option2';
+
+        var element = $compile(
+          '<select ng-model="selected">' +
+            '<option value="{{option1}}">Option 1</option>' +
+            '<option value="{{option2}}">Option 2</option>' +
+          '</div>')(scope);
+
+        scope.$digest();
+        expect(scope.selected).toBeUndefined();
+
+        browserTrigger(element.find('option').eq(0));
+        expect(scope.selected).toBe('option1');
+
+        scope.selected = 'option2';
+        scope.$digest();
+        expect(element.find('option').eq(1).prop('selected')).toBe(true);
+        expect(element.find('option').eq(1).text()).toBe('Option 2');
+      })
+    );
+
+
+    it('should update the option when the interpolated value attribute changes',
+      inject(function($rootScope, $compile) {
+        var scope = $rootScope;
+
+        scope.option1 = 'option1';
+        scope.option2 = '';
+
+        var element = $compile(
+          '<select ng-model="selected">' +
+            '<option value="{{option1}}">Option 1</option>' +
+            '<option value="{{option2}}">Option 2</option>' +
+          '</div>')(scope);
+
+        var selectCtrl = element.controller('select');
+        spyOn(selectCtrl, 'removeOption').andCallThrough();
+
+        scope.$digest();
+        expect(scope.selected).toBeUndefined();
+        expect(selectCtrl.removeOption).not.toHaveBeenCalled();
+
+        //Change value of option2
+        scope.option2 = 'option2Changed';
+        scope.selected = 'option2Changed';
+        scope.$digest();
+
+        expect(selectCtrl.removeOption).toHaveBeenCalledWith('');
+        expect(element.find('option').eq(1).prop('selected')).toBe(true);
+        expect(element.find('option').eq(1).text()).toBe('Option 2');
+      })
+    );
+
+
     it('should not blow up when option directive is found inside of a datalist',
         inject(function($compile, $rootScope) {
       var element = $compile('<div>' +
