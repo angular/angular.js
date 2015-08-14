@@ -75,7 +75,7 @@ __`test/e2e/scenarios.js`__:
       query.sendKeys('nexus');
       element.all(by.css('.phones li a')).first().click();
       browser.getLocationAbsUrl().then(function(url) {
-        expect(url.split('#')[1]).toBe('/phones/nexus-s');
+        expect(url).toBe('/phones/nexus-s');
       });
     });
 ...
