@@ -204,6 +204,21 @@ describe('validators', function() {
       expect($rootScope.form.test.$error.pattern).toBe(true);
       expect(inputElm).not.toBeValid();
     });
+
+
+    it('should validate the viewValue and not the modelValue', function() {
+      var inputElm = helper.compileInput('<input type="text" name="test" ng-model="value" pattern="\\d{4}">');
+      var ctrl = inputElm.controller('ngModel');
+
+      ctrl.$parsers.push(function(value) {
+        return (value * 10) + '';
+      });
+
+      helper.changeInputValueTo('1234');
+      expect($rootScope.form.test.$error.pattern).not.toBe(true);
+      expect($rootScope.form.test.$modelValue).toBe('12340');
+      expect(inputElm).toBeValid();
+    });
   });
 
 
