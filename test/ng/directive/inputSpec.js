@@ -72,6 +72,25 @@ describe('input', function() {
     expect($rootScope.form.$$renameControl).not.toHaveBeenCalled();
   });
 
+
+  it('should not set the `val` property when the value is equal to the current value', inject(function($rootScope, $compile) {
+    // This is a workaround for Firefox validation. Look at #12102.
+    var input = jqLite('<input type="text" ng-model="foo" required/>');
+    var setterCalls = 0;
+    $rootScope.foo = '';
+    Object.defineProperty(input[0], 'value', {
+      get: function() {
+        return '';
+      },
+      set: function() {
+        setterCalls++;
+      }
+    });
+    $compile(input)($rootScope);
+    $rootScope.$digest();
+    expect(setterCalls).toBe(0);
+  }));
+
   describe('compositionevents', function() {
     it('should not update the model between "compositionstart" and "compositionend" on non android', function() {
 
