@@ -1077,7 +1077,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
         var node = this.$$element[0],
             booleanKey = getBooleanAttrName(node, key),
-            aliasedKey = getAliasedAttrName(node, key),
+            aliasedKey = getAliasedAttrName(key),
             observer = key,
             nodeName;
 
