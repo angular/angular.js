@@ -712,7 +712,6 @@ describe('ngView animations', function() {
       $location.path('/foo');
       $rootScope.$digest();
 
-      $animate.triggerCallbacks();
 
       $location.path('/');
       $rootScope.$digest();
@@ -810,7 +809,7 @@ describe('ngView animations', function() {
         });
       });
 
-      inject(function($rootScope, $compile, $location, $route, $timeout, $rootElement, $sniffer, $animate, $$rAF) {
+      inject(function($rootScope, $compile, $location, $route, $timeout, $rootElement, $sniffer, $animate) {
         element = $compile(html('<div><ng:view onload="load()" class="my-animation"></ng:view></div>'))($rootScope);
         $animate.enabled(true);
 
@@ -834,7 +833,7 @@ describe('ngView animations', function() {
         expect($animate.queue.shift().event).toBe('enter'); //ngRepeat 3
         expect($animate.queue.shift().event).toBe('enter'); //ngRepeat 4
 
-        $$rAF.flush();
+        $animate.flush();
 
         expect(element.text()).toEqual('34');
 
@@ -913,9 +912,11 @@ describe('ngView animations', function() {
 
       $location.path('/foo');
       $rootScope.$digest();
-      expect($animate.queue.shift().event).toBe('enter');
-      $animate.triggerCallbacks();
 
+      $animate.flush();
+      $rootScope.$digest();
+
+      expect($animate.queue.shift().event).toBe('enter');
       expect(autoScrollSpy).toHaveBeenCalledOnce();
     }));
 
@@ -927,9 +928,11 @@ describe('ngView animations', function() {
       $rootScope.value = true;
       $location.path('/foo');
       $rootScope.$digest();
-      expect($animate.queue.shift().event).toBe('enter');
-      $animate.triggerCallbacks();
 
+      $animate.flush();
+      $rootScope.$digest();
+
+      expect($animate.queue.shift().event).toBe('enter');
       expect(autoScrollSpy).toHaveBeenCalledOnce();
     }));
 
@@ -941,7 +944,6 @@ describe('ngView animations', function() {
       $location.path('/foo');
       $rootScope.$digest();
       expect($animate.queue.shift().event).toBe('enter');
-      $animate.triggerCallbacks();
 
       expect(autoScrollSpy).not.toHaveBeenCalled();
     }));
@@ -955,7 +957,6 @@ describe('ngView animations', function() {
       $location.path('/foo');
       $rootScope.$digest();
       expect($animate.queue.shift().event).toBe('enter');
-      $animate.triggerCallbacks();
 
       expect(autoScrollSpy).not.toHaveBeenCalled();
     }));
@@ -972,7 +973,9 @@ describe('ngView animations', function() {
         expect(autoScrollSpy).not.toHaveBeenCalled();
 
         expect($animate.queue.shift().event).toBe('enter');
-        $animate.triggerCallbacks();
+
+        $animate.flush();
+        $rootScope.$digest();
 
         expect($animate.enter).toHaveBeenCalledOnce();
         expect(autoScrollSpy).toHaveBeenCalledOnce();

@@ -428,9 +428,11 @@ describe('ngInclude', function() {
       });
 
       expect(autoScrollSpy).not.toHaveBeenCalled();
-      expect($animate.queue.shift().event).toBe('enter');
-      $animate.triggerCallbacks();
 
+      $animate.flush();
+      $rootScope.$digest();
+
+      expect($animate.queue.shift().event).toBe('enter');
       expect(autoScrollSpy).toHaveBeenCalledOnce();
     }));
 
@@ -446,7 +448,6 @@ describe('ngInclude', function() {
       });
 
       expect($animate.queue.shift().event).toBe('enter');
-      $animate.triggerCallbacks();
 
       $rootScope.$apply(function() {
         $rootScope.tpl = 'another.html';
@@ -455,7 +456,6 @@ describe('ngInclude', function() {
 
       expect($animate.queue.shift().event).toBe('leave');
       expect($animate.queue.shift().event).toBe('enter');
-      $animate.triggerCallbacks();
 
       $rootScope.$apply(function() {
         $rootScope.tpl = 'template.html';
@@ -464,7 +464,9 @@ describe('ngInclude', function() {
 
       expect($animate.queue.shift().event).toBe('leave');
       expect($animate.queue.shift().event).toBe('enter');
-      $animate.triggerCallbacks();
+
+      $animate.flush();
+      $rootScope.$digest();
 
       expect(autoScrollSpy).toHaveBeenCalled();
       expect(autoScrollSpy.callCount).toBe(3);
@@ -480,7 +482,6 @@ describe('ngInclude', function() {
       });
 
       expect($animate.queue.shift().event).toBe('enter');
-      $animate.triggerCallbacks();
       expect(autoScrollSpy).not.toHaveBeenCalled();
     }));
 
@@ -496,7 +497,6 @@ describe('ngInclude', function() {
       });
 
       expect($animate.queue.shift().event).toBe('enter');
-      $animate.triggerCallbacks();
 
       $rootScope.$apply(function() {
         $rootScope.tpl = 'template.html';
@@ -518,7 +518,9 @@ describe('ngInclude', function() {
 
           $rootScope.$apply("tpl = 'template.html'");
           expect($animate.queue.shift().event).toBe('enter');
-          $animate.triggerCallbacks();
+
+          $animate.flush();
+          $rootScope.$digest();
 
           expect(autoScrollSpy).toHaveBeenCalledOnce();
         }

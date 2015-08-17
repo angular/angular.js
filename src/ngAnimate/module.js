@@ -3,7 +3,7 @@
 /* global angularAnimateModule: true,
 
    $$BodyProvider,
-   $$rAFMutexFactory,
+   $$AnimateAsyncRunFactory,
    $$AnimateChildrenDirective,
    $$AnimateRunnerFactory,
    $$AnimateQueueProvider,
@@ -745,9 +745,8 @@ angular.module('ngAnimate', [])
 
   .directive('ngAnimateChildren', $$AnimateChildrenDirective)
 
-  .factory('$$rAFMutex', $$rAFMutexFactory)
-
   .factory('$$AnimateRunner', $$AnimateRunnerFactory)
+  .factory('$$animateAsyncRun', $$AnimateAsyncRunFactory)
 
   .provider('$$animateQueue', $$AnimateQueueProvider)
   .provider('$$animation', $$AnimationProvider)
