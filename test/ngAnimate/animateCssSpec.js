@@ -3,6 +3,7 @@
 describe("ngAnimate $animateCss", function() {
 
   beforeEach(module('ngAnimate'));
+  beforeEach(module('ngAnimateMock'));
 
   function assertAnimationRunning(element, not) {
     var className = element.attr('class');
@@ -52,7 +53,7 @@ describe("ngAnimate $animateCss", function() {
     if (!browserSupportsCssAnimations()) return;
 
     it("should silently quit the animation and not throw when an element has no parent during preparation",
-      inject(function($animateCss, $$rAF, $rootScope, $document, $rootElement) {
+      inject(function($animateCss, $rootScope, $document, $rootElement) {
 
       var element = jqLite('<div></div>');
       expect(function() {
@@ -385,7 +386,7 @@ describe("ngAnimate $animateCss", function() {
         they("should close the animation, but still accept $prop callbacks if no animation is detected",
           ['done', 'then'], function(method) {
 
-          inject(function($animateCss, $$rAF, $rootScope) {
+          inject(function($animateCss, $animate, $rootScope) {
             ss.addRule('.the-third-fake-animation', 'background:green;');
 
             element.addClass('another-fake-animation');
@@ -400,7 +401,8 @@ describe("ngAnimate $animateCss", function() {
             });
 
             expect(done).toBe(false);
-            $$rAF.flush();
+            $animate.flush();
+
             if (method === 'then') {
               $rootScope.$digest();
             }
@@ -411,7 +413,7 @@ describe("ngAnimate $animateCss", function() {
         they("should close the animation, but still accept recognize runner.$prop if no animation is detected",
           ['done(cancel)', 'catch'], function(method) {
 
-          inject(function($animateCss, $$rAF, $rootScope) {
+          inject(function($animateCss, $rootScope) {
             ss.addRule('.the-third-fake-animation', 'background:green;');
 
             element.addClass('another-fake-animation');
@@ -1078,7 +1080,7 @@ describe("ngAnimate $animateCss", function() {
         }));
 
         it("should still resolve the animation once expired",
-          inject(function($animateCss, $$body, $rootElement, $timeout) {
+          inject(function($animateCss, $$body, $rootElement, $timeout, $animate, $rootScope) {
 
           ss.addRule('.ng-enter', 'transition:10s linear all;');
 
@@ -1097,11 +1099,13 @@ describe("ngAnimate $animateCss", function() {
 
           triggerAnimationStartFrame();
           $timeout.flush(15000);
+          $animate.flush();
+          $rootScope.$digest();
           expect(passed).toBe(true);
         }));
 
         it("should not resolve/reject after passing if the animation completed successfully",
-          inject(function($animateCss, $$body, $rootElement, $timeout, $rootScope) {
+          inject(function($animateCss, $$body, $rootElement, $timeout, $rootScope, $animate) {
 
           ss.addRule('.ng-enter', 'transition:10s linear all;');
 
@@ -1125,6 +1129,7 @@ describe("ngAnimate $animateCss", function() {
           browserTrigger(element, 'transitionend',
             { timeStamp: Date.now() + 1000, elapsedTime: 10 });
 
+          $animate.flush();
           $rootScope.$digest();
 
           expect(passed).toBe(true);
@@ -1137,7 +1142,7 @@ describe("ngAnimate $animateCss", function() {
         }));
 
         it("should close all stacked animations after the last timeout runs on the same element",
-          inject(function($animateCss, $$body, $rootElement, $timeout) {
+          inject(function($animateCss, $$body, $rootElement, $timeout, $animate) {
 
           var now = 0;
           spyOn(Date, 'now').andCallFake(function() {
@@ -1176,6 +1181,8 @@ describe("ngAnimate $animateCss", function() {
 
           // this will close the animations fully
           fastForwardClock(3500);
+          $animate.flush();
+
           expect(doneSpy).toHaveBeenCalled();
           expect(doneSpy.callCount).toBe(3);
 
@@ -1218,7 +1225,7 @@ describe("ngAnimate $animateCss", function() {
         }));
 
         it("should cache frequent calls to getComputedStyle before the next animation frame kicks in",
-          inject(function($animateCss, $document, $rootElement, $$rAF) {
+          inject(function($animateCss, $document, $rootElement) {
 
           var i, elm, animator;
           for (i = 0; i < 5; i++) {

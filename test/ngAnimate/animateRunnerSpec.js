@@ -1,12 +1,12 @@
 'use strict';
 
-describe('$$rAFMutex', function() {
+describe('$$animateAsyncRun', function() {
   beforeEach(module('ngAnimate'));
 
   it('should fire the callback only when one or more RAFs have passed',
-    inject(function($$rAF, $$rAFMutex) {
+    inject(function($$animateAsyncRun, $$rAF) {
 
-    var trigger = $$rAFMutex();
+    var trigger = $$animateAsyncRun();
     var called = false;
     trigger(function() {
       called = true;
@@ -18,9 +18,9 @@ describe('$$rAFMutex', function() {
   }));
 
   it('should immediately fire the callback if a RAF has passed since construction',
-    inject(function($$rAF, $$rAFMutex) {
+    inject(function($$animateAsyncRun, $$rAF) {
 
-    var trigger = $$rAFMutex();
+    var trigger = $$animateAsyncRun();
     $$rAF.flush();
 
     var called = false;
@@ -89,7 +89,7 @@ describe("$$AnimateRunner", function() {
   they("should immediately resolve each combined runner in a bottom-up order when $prop is called",
     ['end', 'cancel'], function(method) {
 
-    inject(function($$AnimateRunner, $$rAF) {
+    inject(function($$AnimateRunner) {
       var runner1 = new $$AnimateRunner();
       var runner2 = new $$AnimateRunner();
       runner1.setHost(runner2);
@@ -206,7 +206,7 @@ describe("$$AnimateRunner", function() {
     they("should immediately resolve if and when all runners have been $prop",
       { ended: 'end', cancelled: 'cancel' }, function(method) {
 
-      inject(function($$rAF, $$AnimateRunner) {
+      inject(function($$AnimateRunner) {
         var runner1 = new $$AnimateRunner();
         var runner2 = new $$AnimateRunner();
         var runner3 = new $$AnimateRunner();
@@ -227,7 +227,7 @@ describe("$$AnimateRunner", function() {
     });
 
     it("should return a status of `false` if one or more runners was cancelled",
-      inject(function($$rAF, $$AnimateRunner) {
+      inject(function($$AnimateRunner) {
 
       var runner1 = new $$AnimateRunner();
       var runner2 = new $$AnimateRunner();
