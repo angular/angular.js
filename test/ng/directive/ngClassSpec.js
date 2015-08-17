@@ -468,7 +468,7 @@ describe('ngClass animations', function() {
         };
       });
     });
-    inject(function($compile, $rootScope, $browser, $rootElement, $animate, $timeout, $$body, $$rAF) {
+    inject(function($compile, $rootScope, $browser, $rootElement, $animate, $timeout, $$body) {
       $animate.enabled(true);
 
       $rootScope.val = 'crazy';
@@ -488,7 +488,7 @@ describe('ngClass animations', function() {
       expect(enterComplete).toBe(false);
 
       $rootScope.$digest();
-      $$rAF.flush();
+      $animate.flush();
       $rootScope.$digest();
 
       expect(element.hasClass('crazy')).toBe(true);
