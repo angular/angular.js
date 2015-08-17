@@ -81,3 +81,55 @@ angular.module('myModule', [])
     // a scope object cannot be injected into a service.
   }]);
 ```
+
+Attempting to use unmatched versions of Angular and it's modules will also throw an `Unknown provider` error,
+this can occur due to copy/paste in bower or due to downloaded javascript files with unmatched versions. Ex:
+
+```
+{
+  "name": "myapp",
+  "version": "2.2.0",
+  "dependencies": {
+    "angular-animate": "~1.3.3",
+    "angular-cookies": "~1.3.3",
+    "angular-touch": "~1.3.3",
+    "angular-sanitize": "~1.3.3",
+    "angular": "~1.4.0",
+    ...
+  },
+  "devDependencies": {
+    ...
+  },
+  "resolutions": {
+    "angular": "~1.4.0",
+    ...
+  }
+}
+```
+
+The above bower configuration has angular at `~1.4.0` and angular-animate and other modules at `~1.3.3`.
+Correcting them all to the same version will solve the problem.
+(Also note, that an angular version of `~1.4.0` is specificed in resolutions.  If you have an angular version there,
+you should make sure that matches also.) Ex:
+
+```
+{
+  "name": "myapp",
+  "version": "2.2.0",
+  "dependencies": {
+    "angular-animate": "~1.4.0",
+    "angular-cookies": "~1.4.0",
+    "angular-touch": "~1.4.0",
+    "angular-sanitize": "~1.4.0",
+    "angular": "~1.4.0",
+    ...
+  },
+  "devDependencies": {
+    ...
+  },
+  "resolutions": {
+    "angular": "~1.4.0",
+    ...
+  }
+}
+```
