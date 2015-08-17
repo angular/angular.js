@@ -543,6 +543,44 @@ describe("ngAnimate", function() {
           });
         });
 
+        it("should clear the setClass element animation cache before the next animation runs", function() {
+          var animateSpy = jasmine.createSpy();
+          module(function($animateProvider) {
+            $animateProvider.register('.track-me', function() {
+              return {
+                addClass: animateSpy,
+                removeClass: animateSpy,
+                setClass: animateSpy
+              };
+            });
+          });
+          inject(function($animate, $rootScope, $sniffer, $$rAF) {
+            var orphanChild = jqLite('<div class="track-me"></div>');
+            element.append(orphanChild);
+            orphanChild.remove();
+
+            var doneSpy = jasmine.createSpy();
+
+            $animate.setClass(orphanChild, 'red', 'blue').then(doneSpy);
+            $rootScope.$digest();
+            $animate.triggerCallbacks();
+
+            expect(doneSpy).toHaveBeenCalled();
+            expect(animateSpy).not.toHaveBeenCalled();
+
+            var specialChild = jqLite('<div class="track-me"></div>');
+            element.append(specialChild);
+
+            $animate.setClass(specialChild, 'blue', 'gold').then(doneSpy);
+            $rootScope.$digest();
+            $animate.triggerReflow();
+            $animate.triggerCallbacks();
+
+            expect(animateSpy).toHaveBeenCalled();
+          });
+        });
+
+
         it("should exclusively animate the setClass animation event with native dom elements", function() {
           var count = 0, fallback = jasmine.createSpy('callback');
           module(function($animateProvider) {
@@ -4559,8 +4597,8 @@ describe("ngAnimate", function() {
         });
       });
       inject(function($compile, $rootScope, $animate, $sniffer, $rootElement) {
-
         $rootElement.addClass('animated');
+
         $animate.addClass($rootElement, 'green');
         $rootScope.$digest();
         $animate.triggerReflow();

@@ -1194,8 +1194,12 @@ angular.module('ngAnimate', ['ng'])
           }
 
           return cache.promise = runAnimationPostDigest(function(done) {
-            var parentNode, parentElement, elementNode = extractElementNode(element);
+            var cache, parentNode, parentElement, elementNode = extractElementNode(element);
+            var DOM_FRAGMENT = 11;
             if (elementNode) {
+              cache = element.data(STORAGE_KEY);
+              element.removeData(STORAGE_KEY);
+
               parentElement = element.parent();
               parentNode = elementNode.parentNode;
             }
@@ -1205,9 +1209,6 @@ angular.module('ngAnimate', ['ng'])
               done();
               return;
             }
-
-            var cache = element.data(STORAGE_KEY);
-            element.removeData(STORAGE_KEY);
 
             var state = element.data(NG_ANIMATE_STATE) || {};
             var classes = resolveElementClasses(element, cache, state.active);
