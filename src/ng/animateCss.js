@@ -35,10 +35,10 @@ var $CoreAnimateCssProvider = function() {
         return this.getPromise().then(f1,f2);
       },
       'catch': function(f1) {
-        return this.getPromise().catch(f1);
+        return this.getPromise()['catch'](f1);
       },
       'finally': function(f1) {
-        return this.getPromise().finally(f1);
+        return this.getPromise()['finally'](f1);
       }
     };
 
