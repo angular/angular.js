@@ -301,7 +301,7 @@ ngAriaModule.directive('ngShow', ['$aria', function($aria) {
             elem.attr('tabindex', 0);
           }
 
-          if (ngModel.$validators.required && shouldAttachAttr('aria-required', 'ariaRequired', elem)) {
+          if (shouldAttachAttr('aria-required', 'ariaRequired', elem)) {
             scope.$watch(function ngAriaRequiredWatch() {
               return ngModel.$error.required;
             }, function ngAriaRequiredReaction(newVal) {
