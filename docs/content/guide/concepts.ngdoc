@@ -8,22 +8,22 @@
 This section briefly touches on all of the important parts of AngularJS using a simple example.
 For a more in-depth explanation, see the {@link tutorial/ tutorial}.
 
-| Concept          | Description                     |
-|------------------|------------------------------------------|
-|{@link concepts#template Template}          | HTML with additional markup |
-|{@link concepts#directive Directives}        | extend HTML with custom attributes and elements |
-|{@link concepts#model Model}             | the data shown to the user in the view and with which the user interacts |
-|{@link concepts#scope Scope}             | context where the model is stored so that controllers, directives and expressions can access it |
-|{@link concepts#expression Expressions}       | access variables and functions from the scope |
-|{@link concepts#compiler Compiler}          | parses the template and instantiates directives and expressions |
-|{@link concepts#filter Filter}            | formats the value of an expression for display to the user |
-|{@link concepts#view View}              | what the user sees (the DOM) |
-|{@link concepts#databinding Data Binding}      | sync data between the model and the view |
-|{@link concepts#controller Controller}        | the business logic behind views |
-|{@link concepts#di Dependency Injection} | Creates and wires objects and functions |
-|{@link concepts#injector Injector}          | dependency injection container |
-|{@link concepts#module Module}            | a container for the different parts of an app including controllers, services, filters, directives which configures the Injector |
-|{@link concepts#service Service}           | reusable business logic independent of views |
+| Concept                                    | Description                                                              |
+|--------------------------------------------|--------------------------------------------------------------------------|
+|{@link concepts#template Template}          | HTML with additional markup                                              |
+|{@link concepts#directive Directives}       | extend HTML with custom attributes and elements                          |
+|{@link concepts#model Model}                | the data shown to the user in the view and with which the user interacts |
+|{@link concepts#scope Scope}                | context where the model is stored so that controllers, directives and expressions can access it |
+|{@link concepts#expression Expressions}     | access variables and functions from the scope                            |
+|{@link concepts#compiler Compiler}          | parses the template and instantiates directives and expressions          |
+|{@link concepts#filter Filter}              | formats the value of an expression for display to the user               |
+|{@link concepts#view View}                  | what the user sees (the DOM)                                             |
+|{@link concepts#databinding Data Binding}   | sync data between the model and the view                                 |
+|{@link concepts#controller Controller}      | the business logic behind views                                          |
+|{@link concepts#di Dependency Injection}    | Creates and wires objects and functions                                  |
+|{@link concepts#injector Injector}          | dependency injection container                                           |
+|{@link concepts#module Module}              | a container for the different parts of an app including controllers, services, filters, directives which configures the Injector |
+|{@link concepts#service Service}            | reusable business logic independent of views                             |
 
 
 ## A first example: Data binding
