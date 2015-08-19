@@ -1,3 +1,22 @@
+<a name="1.3.18"></a>
+# 1.3.18 collective-penmanship (2015-08-18)
+
+
+## Bug Fixes
+
+- **$animate:**
+  - clear class animations cache if animation is not started
+  ([2c03a357](https://github.com/angular/angular.js/commit/2c03a3574336ed814d020cf7ba36cee5b87e65b5),
+   [#12604](https://github.com/angular/angular.js/issues/12604), [#12603](https://github.com/angular/angular.js/issues/12603))
+  - do not throw errors if element is removed before animation starts
+  ([6b72598b](https://github.com/angular/angular.js/commit/6b72598b87022e1dd96bddc4451e007ef0601579),
+   [#10205](https://github.com/angular/angular.js/issues/10205))
+- **ngModel:** correct minErr usage for correct doc creation
+  ([64a142b5](https://github.com/angular/angular.js/commit/64a142b58ed0a0e3896d82f3f9ce35373548d0ff),
+   [#12386](https://github.com/angular/angular.js/issues/12386), [#12416](https://github.com/angular/angular.js/issues/12416))
+
+
+
 <a name="1.4.4"></a>
 # 1.4.4 pylon-requirement (2015-08-13)
 
