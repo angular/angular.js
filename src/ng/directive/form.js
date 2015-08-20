@@ -404,7 +404,6 @@ function FormController(element, attrs, $scope, $animate, $interpolate) {
        </script>
        <style>
         .my-form {
-          -webkit-transition:all linear 0.5s;
           transition:all linear 0.5s;
           background: transparent;
         }

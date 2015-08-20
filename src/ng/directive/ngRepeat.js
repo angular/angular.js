@@ -256,7 +256,6 @@
       .animate-repeat.ng-move,
       .animate-repeat.ng-enter,
       .animate-repeat.ng-leave {
-        -webkit-transition:all linear 0.5s;
         transition:all linear 0.5s;
       }
 
