@@ -935,7 +935,6 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
        </script>
        <style>
          .my-input {
-           -webkit-transition:all linear 0.5s;
            transition:all linear 0.5s;
            background: transparent;
          }

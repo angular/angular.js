@@ -85,7 +85,6 @@
       }
 
       .slide-animate.ng-enter, .slide-animate.ng-leave {
-        -webkit-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
         transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
 
         position:absolute;
