@@ -127,7 +127,6 @@ var NG_HIDE_IN_PROGRESS_CLASS = 'ng-hide-animate';
 
       .animate-show.ng-hide-add.ng-hide-add-active,
       .animate-show.ng-hide-remove.ng-hide-remove-active {
-        -webkit-transition: all linear 0.5s;
         transition: all linear 0.5s;
       }
 
@@ -284,7 +283,6 @@ var ngShowDirective = ['$animate', function($animate) {
     </file>
     <file name="animations.css">
       .animate-hide {
-        -webkit-transition: all linear 0.5s;
         transition: all linear 0.5s;
         line-height: 20px;
         opacity: 1;
