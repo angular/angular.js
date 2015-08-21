@@ -142,6 +142,7 @@
     "waitsFor": false,
     "runs": false,
     "dump": false,
+    "they": false,
 
     /* e2e */
     "browser": false,
