@@ -418,8 +418,9 @@ function $RootScopeProvider() {
        *    expression in `watchExpressions` changes
        *    The `newValues` array contains the current values of the `watchExpressions`, with the indexes matching
        *    those of `watchExpression`
-       *    and the `oldValues` array contains the previous values of the `watchExpressions`, with the indexes matching
-       *    those of `watchExpression`
+       *    and the `oldValues` array contains the value of each `watchExpression` before the last change (it 
+       *    will contain an older value if this `watchExpression` has not changed since `listener` was last
+       *    called). The indexes match those of `watchExpression`. 
        *    The `scope` refers to the current scope.
        * @returns {function()} Returns a de-registration function for all listeners.
        */
