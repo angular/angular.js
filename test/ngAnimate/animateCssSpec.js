@@ -1198,6 +1198,24 @@ describe("ngAnimate $animateCss", function() {
             return animator;
           }
         }));
+
+        it("should not throw an error any pending timeout requests resolve after the element has already been removed",
+          inject(function($animateCss, $$body, $rootElement, $timeout, $animate) {
+
+          var element = jqLite('<div></div>');
+          $rootElement.append(element);
+          $$body.append($rootElement);
+
+          ss.addRule('.red', 'transition:1s linear all;');
+
+          $animateCss(element, { addClass: 'red' }).start();
+          triggerAnimationStartFrame();
+          element.remove();
+
+          expect(function() {
+            $timeout.flush();
+          }).not.toThrow();
+        }));
       });
 
       describe("getComputedStyle", function() {
