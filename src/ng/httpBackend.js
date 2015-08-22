@@ -48,7 +48,7 @@ function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDoc
 
       var xhr = createXhr();
       
-      if (('Authorization' in headers) && headers.Authorization.length == 2) {
+      if (('Authorization' in headers || {}) && headers.Authorization.length == 2) {
         xhr.open(method, url, true, headers.Authorization[0], headers.Authorization[1]);
         delete headers.Authorization;
       } else {
