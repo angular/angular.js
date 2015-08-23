@@ -1357,7 +1357,7 @@ describe('resource', function() {
       );
   });
 
-  it('If timeout promise is resolved, cancel the request', function() {
+  it('should cancel the request if timeout promise is resolved', function() {
     var canceler = $q.defer();
 
     $httpBackend.when('GET', '/CreditCard').respond({data: '123'});
@@ -1372,7 +1372,7 @@ describe('resource', function() {
     CreditCard.query();
 
     canceler.resolve();
-    expect(function() { $httpBackend.flush();}).toThrow(new Error("No pending request to flush !"));
+    expect($httpBackend.flush).toThrow(new Error("No pending request to flush !"));
 
     canceler = $q.defer();
     CreditCard = $resource('/CreditCard', {}, {
@@ -1383,9 +1383,7 @@ describe('resource', function() {
     });
 
     CreditCard.query();
-    expect(function() { $httpBackend.flush();}).not.toThrow(new Error("No pending request to flush !"));
-
-
+    expect($httpBackend.flush).not.toThrow();
   });
 
 
