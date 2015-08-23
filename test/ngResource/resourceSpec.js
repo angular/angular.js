@@ -1316,7 +1316,7 @@ describe("resource", function() {
 });
 
 describe('resource', function() {
-  var $httpBackend, $resource;
+  var $httpBackend, $resource, $q;
 
   beforeEach(module(function($exceptionHandlerProvider) {
     $exceptionHandlerProvider.mode('log');
@@ -1327,6 +1327,7 @@ describe('resource', function() {
   beforeEach(inject(function($injector) {
     $httpBackend = $injector.get('$httpBackend');
     $resource = $injector.get('$resource');
+    $q = $injector.get('$q');
   }));
 
 
@@ -1362,6 +1363,35 @@ describe('resource', function() {
     expect(failureSpy.mostRecentCall.args[0]).toMatch(
         /^\[\$resource:badcfg\] Error in resource configuration for action `get`\. Expected response to contain an object but got an array \(Request: GET \/Customer\/123\)/
       );
+  });
+
+  it('should cancel the request if timeout promise is resolved', function() {
+    var canceler = $q.defer();
+
+    $httpBackend.when('GET', '/CreditCard').respond({data: '123'});
+
+    var CreditCard = $resource('/CreditCard', {}, {
+      query: {
+        method: 'GET',
+        timeout: canceler.promise
+      }
+    });
+
+    CreditCard.query();
+
+    canceler.resolve();
+    expect($httpBackend.flush).toThrow(new Error("No pending request to flush !"));
+
+    canceler = $q.defer();
+    CreditCard = $resource('/CreditCard', {}, {
+      query: {
+        method: 'GET',
+        timeout: canceler.promise
+      }
+    });
+
+    CreditCard.query();
+    expect($httpBackend.flush).not.toThrow();
   });
 
 
