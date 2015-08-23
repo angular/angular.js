@@ -498,7 +498,7 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   }
 
   var listener = function(ev) {
-    if (composing) return;
+    if (msie !== 11 && composing) return;
     var value = element.val();
 
     // IE (11 and under) seem to emit an 'input' event if the placeholder value changes.
