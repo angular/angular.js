@@ -2284,7 +2284,7 @@
           "version": "0.6.1",
           "dependencies": {
             "wordwrap": {
-              "version": "0.0.2"
+              "version": "0.0.3"
             },
             "minimist": {
               "version": "0.0.10"
@@ -2385,7 +2385,7 @@
       }
     },
     "dgeni-packages": {
-      "version": "0.10.17",
+      "version": "0.10.19",
       "dependencies": {
         "catharsis": {
           "version": "0.8.7",
@@ -2518,7 +2518,7 @@
           "version": "0.3.0",
           "dependencies": {
             "lru-cache": {
-              "version": "2.6.4"
+              "version": "2.6.5"
             },
             "sigmund": {
               "version": "1.0.1"
@@ -2552,7 +2552,7 @@
                       "version": "0.2.14",
                       "dependencies": {
                         "lru-cache": {
-                          "version": "2.6.4"
+                          "version": "2.6.5"
                         },
                         "sigmund": {
                           "version": "1.0.1"
@@ -2582,10 +2582,10 @@
                   "version": "0.1.6"
                 },
                 "fsevents": {
-                  "version": "0.3.6",
+                  "version": "0.3.8",
                   "dependencies": {
                     "nan": {
-                      "version": "1.8.4"
+                      "version": "2.0.5"
                     }
                   }
                 }
@@ -2625,7 +2625,7 @@
           "version": "4.3.6"
         },
         "shelljs": {
-          "version": "0.5.1"
+          "version": "0.5.3"
         },
         "winston": {
           "version": "0.7.3",
