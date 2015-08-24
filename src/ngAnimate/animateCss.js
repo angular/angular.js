@@ -220,6 +220,7 @@ var DETECT_CSS_PROPERTIES = {
   transitionDuration:      TRANSITION_DURATION_PROP,
   transitionDelay:         TRANSITION_DELAY_PROP,
   transitionProperty:      TRANSITION_PROP + PROPERTY_KEY,
+  transitionTimingFunction: TRANSITION_PROP + TIMING_KEY,
   animationDuration:       ANIMATION_DURATION_PROP,
   animationDelay:          ANIMATION_DELAY_PROP,
   animationIterationCount: ANIMATION_PROP + ANIMATION_ITERATION_COUNT_KEY
@@ -231,6 +232,8 @@ var DETECT_STAGGER_CSS_PROPERTIES = {
   animationDuration:       ANIMATION_DURATION_PROP,
   animationDelay:          ANIMATION_DELAY_PROP
 };
+
+var TRANSITION_EASING_VALUE = /ease|ease-in|ease-out|ease-in-out|linear|step-start|step-end|steps\(.+\)|cubic-bezier\(.+\)/;
 
 function getCssKeyframeDurationStyle(duration) {
   return [ANIMATION_DURATION_PROP, duration + 's'];
@@ -286,13 +289,16 @@ function truthyTimingValue(val) {
   return val === 0 || val != null;
 }
 
-function getCssTransitionDurationStyle(duration, applyOnlyDuration) {
+function getCssTransitionStyle(computedStyles, duration, applyOnlyDuration) {
   var style = TRANSITION_PROP;
   var value = duration + 's';
   if (applyOnlyDuration) {
     style += DURATION_KEY;
   } else {
-    value += ' linear all';
+    var transitionStyle = computedStyles[TRANSITION_PROP];
+    var match = TRANSITION_EASING_VALUE.test(transitionStyle);
+    transitionStyle = match ? transitionStyle.match(TRANSITION_EASING_VALUE)[0] : 'linear';
+    value += ' ' + transitionStyle + ' all';
   }
   return [style, value];
 }
@@ -437,6 +443,7 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
 
       var temporaryStyles = [];
       var classes = element.attr('class');
+      var computedStyles = $window.getComputedStyle(element[0]);
       var styles = packageStyles(options);
       var animationClosed;
       var animationPaused;
@@ -531,7 +538,7 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
 
       if (options.duration >= 0) {
         applyOnlyDuration = node.style[TRANSITION_PROP].length > 0;
-        var durationStyle = getCssTransitionDurationStyle(options.duration, applyOnlyDuration);
+        var durationStyle = getCssTransitionStyle(computedStyles, options.duration, applyOnlyDuration);
 
         // we set the duration so that it will be picked up by getComputedStyle later
         applyInlineStyle(node, durationStyle);
@@ -586,7 +593,7 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
           flags.hasTransitions = true;
           timings.transitionDuration = maxDuration;
           applyOnlyDuration = node.style[TRANSITION_PROP + PROPERTY_KEY].length > 0;
-          temporaryStyles.push(getCssTransitionDurationStyle(maxDuration, applyOnlyDuration));
+          temporaryStyles.push(getCssTransitionStyle(computedStyles, maxDuration, applyOnlyDuration));
         }
 
         if (flags.applyAnimationDuration) {
