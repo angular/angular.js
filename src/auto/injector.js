@@ -487,8 +487,8 @@ function annotate(fn, strictDi, name) {
  *
  * Register a **service constructor**, which will be invoked with `new` to create the service
  * instance.
- * This is short for registering a service where its provider's `$get` property is the service
- * constructor function that will be used to instantiate the service instance.
+ * This is short for registering a service where its provider's `$get` property is
+ * a function that returns an instance created by the service constructor.
  *
  * You should use {@link auto.$provide#service $provide.service(class)} if you define your service
  * as a type/class.
