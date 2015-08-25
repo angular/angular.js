@@ -2007,6 +2007,20 @@ describe('Scope', function() {
         }));
 
 
+        it('should allow stopping event propagation', inject(function($rootScope) {
+          child2.$on('myEvent', function(event) { event.stopPropagation(); });
+          $rootScope.$broadcast('myEvent');
+          expect(log).toEqual('0>1>11>2>3>');
+        }));
+
+
+        it('should stop propagation only for one scope chain', inject(function($rootScope) {
+          child1.$on('myEvent', function(event) { event.stopPropagation(); });
+          $rootScope.$broadcast('myEvent');
+          expect(log).toEqual('0>1>2>21>211>22>23>3>');
+        }));
+
+
         it('should broadcast an event from a child scope', function() {
           child2.$broadcast('myEvent');
           expect(log).toBe('2>21>211>22>23>');
