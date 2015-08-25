@@ -34,8 +34,9 @@
  * and `leave` effects.
  *
  * @animations
- * enter - happens just after the `ngIf` contents change and a new DOM element is created and injected into the `ngIf` container
- * leave - happens just before the `ngIf` contents are removed from the DOM
+ * `.ng-enter` - happens just after the `ngIf` contents change and a new DOM element is created and injected into the `ngIf` container
+ *
+ * `.ng-leave` - happens just before the `ngIf` contents are removed from the DOM
  *
  * @element ANY
  * @scope

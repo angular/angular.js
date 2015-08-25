@@ -23,8 +23,9 @@
  * access on some browsers.
  *
  * @animations
- * enter - animation is used to bring new content into the browser.
- * leave - animation is used to animate existing content away.
+ * `.ng-enter` - animation is used to bring new content into the browser
+ *
+ * `.ng-leave` - animation is used to animate existing content away
  *
  * The enter and leave animation occur concurrently.
  *

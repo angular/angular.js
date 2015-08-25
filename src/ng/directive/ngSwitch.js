@@ -27,8 +27,9 @@
  * </div>
 
  * @animations
- * enter - happens after the ngSwitch contents change and the matched child element is placed inside the container
- * leave - happens just after the ngSwitch contents change and just before the former contents are removed from the DOM
+ * `.ng-enter` - happens after the ngSwitch contents change and the matched child element is placed inside the container
+ *
+ * `.ng-leave` - happens just after the ngSwitch contents change and just before the former contents are removed from the DOM
  *
  * @usage
  *
