@@ -1,4 +1,5 @@
 'use strict';
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *     Any commits to this file should be reviewed with security in mind.  *
  *   Changes to this file can potentially create security vulnerabilities. *
@@ -1371,7 +1372,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             : compileNodes(childNodes,
                  nodeLinkFn ? (
                   (nodeLinkFn.transcludeOnThisElement || !nodeLinkFn.templateOnThisElement)
-                     && nodeLinkFn.transclude) : transcludeFn, null, null, ignoreDirective);
+                     && nodeLinkFn.transclude) : transcludeFn);
 
         if (nodeLinkFn || childLinkFn) {
           linkFns.push(i, nodeLinkFn, childLinkFn);
