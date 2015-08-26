@@ -1681,8 +1681,9 @@ describe('parser', function() {
 
       beforeEach(module(function($provide) {
         $provide.decorator('$sniffer', function($delegate) {
-          $delegate.csp = cspEnabled;
-          return $delegate;
+          expect($delegate.csp.noUnsafeEval === true ||
+                 $delegate.csp.noUnsafeEval === false).toEqual(true);
+          $delegate.csp.noUnsafeEval = cspEnabled;
         });
       }, provideLog));
 
@@ -2120,9 +2121,8 @@ describe('parser', function() {
 
         expect(scope.$eval('items[1] = "abc"')).toEqual("abc");
         expect(scope.$eval('items[1]')).toEqual("abc");
-    //    Dont know how to make this work....
-    //    expect(scope.$eval('books[1] = "moby"')).toEqual("moby");
-    //    expect(scope.$eval('books[1]')).toEqual("moby");
+        expect(scope.$eval('books[1] = "moby"')).toEqual("moby");
+        expect(scope.$eval('books[1]')).toEqual("moby");
       });
 
       it('should evaluate grouped filters', function() {
