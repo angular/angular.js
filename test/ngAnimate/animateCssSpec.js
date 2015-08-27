@@ -18,9 +18,10 @@ describe("ngAnimate $animateCss", function() {
 
   var ss, prefix, triggerAnimationStartFrame;
   beforeEach(module(function() {
-    return function($document, $window, $sniffer, $$rAF) {
+    return function($document, $window, $sniffer, $$rAF, $animate) {
       prefix = '-' + $sniffer.vendorPrefix.toLowerCase() + '-';
       ss = createMockStyleSheet($document, $window);
+      $animate.enabled(true);
       triggerAnimationStartFrame = function() {
         $$rAF.flush();
       };
@@ -51,6 +52,23 @@ describe("ngAnimate $animateCss", function() {
 
   describe('when active', function() {
     if (!browserSupportsCssAnimations()) return;
+
+    it("should not attempt an animation if animations are globally disabled",
+      inject(function($animateCss, $animate, $rootElement, $$body) {
+
+      $animate.enabled(false);
+
+      var animator, element = jqLite('<div></div>');
+      $rootElement.append(element);
+      $$body.append($rootElement);
+
+      animator = $animateCss(element, {
+        duration: 10,
+        to: { 'height': '100px' }
+      });
+
+      expect(animator.$$willAnimate).toBeFalsy();
+    }));
 
     it("should silently quit the animation and not throw when an element has no parent during preparation",
       inject(function($animateCss, $rootScope, $document, $rootElement) {
