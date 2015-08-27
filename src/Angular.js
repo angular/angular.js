@@ -198,7 +198,7 @@ msie = document.documentMode;
  *                   String ...)
  */
 function isArrayLike(obj) {
-  if (obj == null || isWindow(obj)) {
+  if (obj === null || isWindow(obj)) {
     return false;
   }
 
