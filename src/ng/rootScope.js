@@ -867,6 +867,11 @@ function $RootScopeProvider() {
         if (this.$$destroyed) return;
         var parent = this.$parent;
 
+        // let's help garbage collecting
+        while (this.$$childHead) {
+        	this.$$childHead.$destroy();
+        }
+		
         this.$broadcast('$destroy');
         this.$$destroyed = true;
         if (this === $rootScope) return;
