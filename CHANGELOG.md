@@ -1,3 +1,119 @@
+<a name="1.4.5"></a>
+# 1.4.5 permanent-internship (2015-08-28)
+
+
+## Bug Fixes
+
+- **$animate:** `$animate.enabled(false)` should disable animations on $animateCss as well
+  ([c3d5e33e](https://github.com/angular/angular.js/commit/c3d5e33e18bd9e423e2d0678e85564fad1dba99f),
+   [#12696](https://github.com/angular/angular.js/issues/12696), [#12685](https://github.com/angular/angular.js/issues/12685))
+- **$animateCss:**
+  - do not throw errors when a closing timeout is fired on a removed element
+  ([2f6b6fb7](https://github.com/angular/angular.js/commit/2f6b6fb7a1dee0ff97c5d2959b927347eeda6e8b),
+   [#12650](https://github.com/angular/angular.js/issues/12650))
+  - fix parse errors on older Android WebViews
+  ([1cc9c9ca](https://github.com/angular/angular.js/commit/1cc9c9ca9d9698356ea541517b3d06ce6556c01d),
+   [#12610](https://github.com/angular/angular.js/issues/12610))
+  - properly handle cancellation timeouts for follow-up animations
+  ([d8816731](https://github.com/angular/angular.js/commit/d88167318d1c69f0dbd2101c05955eb450c34fd5),
+   [#12490](https://github.com/angular/angular.js/issues/12490), [#12359](https://github.com/angular/angular.js/issues/12359))
+  - ensure failed animations clear the internal cache
+  ([0a75a3db](https://github.com/angular/angular.js/commit/0a75a3db6ef265389c8c955981c2fe67bb4f7769),
+   [#12214](https://github.com/angular/angular.js/issues/12214), [#12518](https://github.com/angular/angular.js/issues/12518), [#12381](https://github.com/angular/angular.js/issues/12381))
+  - the transitions options delay value should be applied before class application
+  ([0c81e9fd](https://github.com/angular/angular.js/commit/0c81e9fd25285dd757db98d458919776a1fb62fc),
+   [#12584](https://github.com/angular/angular.js/issues/12584))
+- **ngAnimate:**
+  - use requestAnimationFrame to space out child animations
+  ([ea8016c4](https://github.com/angular/angular.js/commit/ea8016c4c8f55bc021549f342618ed869998e335),
+   [#12669](https://github.com/angular/angular.js/issues/12669), [#12594](https://github.com/angular/angular.js/issues/12594), [#12655](https://github.com/angular/angular.js/issues/12655), [#12631](https://github.com/angular/angular.js/issues/12631), [#12612](https://github.com/angular/angular.js/issues/12612), [#12187](https://github.com/angular/angular.js/issues/12187))
+  - only buffer rAF requests within the animation runners
+  ([dc48aadd](https://github.com/angular/angular.js/commit/dc48aadd26bbf1797c1c408f63ffde99d67414a9),
+   [#12280](https://github.com/angular/angular.js/issues/12280))
+- **ngModel:** validate pattern against the viewValue
+  ([0e001084](https://github.com/angular/angular.js/commit/0e001084ffff8674efad289d37cb16cc4e46b50a),
+   [#12344](https://github.com/angular/angular.js/issues/12344))
+- **ngResources:** support IPv6 URLs
+  ([b643f0d3](https://github.com/angular/angular.js/commit/b643f0d3223a627ef813f0777524e25d2dd95371),
+   [#12512](https://github.com/angular/angular.js/issues/12512), [#12532](https://github.com/angular/angular.js/issues/12532))
+
+
+## Breaking Changes
+
+- **ngModel:** due to [0e001084](https://github.com/angular/angular.js/commit/0e001084ffff8674efad289d37cb16cc4e46b50a),
+
+
+The `ngPattern` and `pattern` directives will validate the regex
+against the `viewValue` of `ngModel`, i.e. the value of the model
+before the $parsers are applied. Previously, the modelValue
+(the result of the $parsers) was validated.
+
+This fixes issues where `input[date]` and `input[number]` cannot
+be validated because the viewValue string is parsed into
+`Date` and `Number` respectively (starting with Angular 1.3).
+It also brings the directives in line with HTML5 constraint
+validation, which validates against the input value.
+
+This change is unlikely to cause applications to fail, because even
+in Angular 1.2, the value that was validated by pattern could have
+been manipulated by the $parsers, as all validation was done
+inside this pipeline.
+
+If you rely on the pattern being validated against the modelValue,
+you must create your own validator directive that overwrites
+the built-in pattern validator:
+
+```js
+.directive('patternModelOverwrite', function patternModelOverwriteDirective() {
+  return {
+    restrict: 'A',
+    require: '?ngModel',
+    priority: 1,
+    compile: function() {
+      var regexp, patternExp;
+
+      return {
+        pre: function(scope, elm, attr, ctrl) {
+          if (!ctrl) return;
+
+          attr.$observe('pattern', function(regex) {
+            /**
+             * The built-in directive will call our overwritten validator
+             * (see below). We just need to update the regex.
+             * The preLink fn guaranetees our observer is called first.
+             */
+            if (isString(regex) && regex.length > 0) {
+              regex = new RegExp('^' + regex + '$');
+            }
+
+            if (regex && !regex.test) {
+              //The built-in validator will throw at this point
+              return;
+            }
+
+            regexp = regex || undefined;
+          });
+
+        },
+        post: function(scope, elm, attr, ctrl) {
+          if (!ctrl) return;
+
+          regexp, patternExp = attr.ngPattern || attr.pattern;
+
+          //The postLink fn guarantees we overwrite the built-in pattern validator
+          ctrl.$validators.pattern = function(value) {
+            return ctrl.$isEmpty(value) ||
+              isUndefined(regexp) ||
+              regexp.test(value);
+          };
+        }
+      };
+    }
+  };
+});
+```
+
+
 <a name="1.3.18"></a>
 # 1.3.18 collective-penmanship (2015-08-18)
 
