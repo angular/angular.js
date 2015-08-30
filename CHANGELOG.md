@@ -257,6 +257,38 @@ and/or `beforeRemoveClass` then the CSS classes will not be applied
 in time for the children (and the parent class-based animation will not
 be cancelled by any child animations).
 
+- **$q** due to [6838c979](https://github.com/angular/angular.js/commit/6838c979451c109d959a15035177ccee715ccf19),
+  When writing tests, there is no need to call `$timeout.flush()` to resolve a call to `$q.when` with a value.
+
+The previous behavior involved creating an extra promise that needed to be resolved. This is no longer needed when
+`$q.when` is called with a value. In the case that the test is not aware if `$q.when` is called with a value or
+another promise, it is possible to replace `$timeout.flush();` with `$timeout.flush(0);`.
+
+```js
+describe('$q.when', function() {
+  it('should not need a call to $timeout.flush() to resolve already resolved promises',
+      inject(function($q, $timeout) {
+    $q.when('foo');
+    // In Angular 1.4.3 a call to `$timeout.flush();` was needed
+    $timeout.verifyNoPendingTasks();
+  }));
+
+  it('should accept $timeout.flush(0) when not sure if $q.when was called with a value or a promise’,
+      inject(function($q, $timeout) {
+    $q.when('foo');
+    $timeout.flush(0);
+    $timeout.verifyNoPendingTasks();
+  }));
+
+  it('should need a call to $timeout.flush() to resolve $q.when when called with a promise',
+        inject(function($q, $timeout) {
+    $q.when($q.when('foo'));
+    $timeout.flush();
+    $timeout.verifyNoPendingTasks();
+  }));
+});
+```
+
 
 <a name="1.4.3"></a>
 # 1.4.3 foam-acceleration (2015-07-15)
