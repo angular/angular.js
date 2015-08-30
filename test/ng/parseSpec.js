@@ -2797,6 +2797,14 @@ describe('parser', function() {
           expect(scope).toEqual({a:123});
         }));
 
+        it('should return the assigned value', inject(function($parse) {
+          var fn = $parse('a');
+          var scope = {};
+          expect(fn.assign(scope, 123)).toBe(123);
+          var someObject = {};
+          expect(fn.assign(scope, someObject)).toBe(someObject);
+        }));
+
         it('should expose working assignment function for expressions ending with brackets', inject(function($parse) {
           var fn = $parse('a.b["c"]');
           expect(fn.assign).toBeTruthy();
