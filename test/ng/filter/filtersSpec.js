@@ -96,7 +96,8 @@ describe('filters', function() {
       // were ending up with a second exponent in them, then coercing to
       // NaN when formatNumber rounded them with the safe rounding
       // function.
-      var localLimitMax = 999999999999999934463,
+
+      var localLimitMax = 999999999999999900000,
           localLimitMin = 10000000000000000000,
           exampleNumber = 444444444400000000000;
 
