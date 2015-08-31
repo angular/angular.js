@@ -301,7 +301,7 @@ it('should show example', inject(
 ### Fallback for legacy browsers
 
 For browsers that support the HTML5 history API, `$location` uses the HTML5 history API to write
-path and search. If the history API is not supported by a browser, `$location` supplies a Hasbang
+path and search. If the history API is not supported by a browser, `$location` supplies a Hashbang
 URL. This frees you from having to worry about whether the browser viewing your app supports the
 history API  or not; the `$location` service makes this transparent to you.
 
