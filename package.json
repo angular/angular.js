@@ -1,6 +1,7 @@
 {
   "name": "angularjs",
   "branchVersion": "1.3.*",
+  "distTag": "previous_1_3",
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/angular.js.git"
