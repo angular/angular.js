@@ -81,3 +81,6 @@ angular.module('myModule', [])
     // a scope object cannot be injected into a service.
   }]);
 ```
+
+If you encounter this error only with minified code, consider using `ngStrictDi` (see
+{@link ng.directive:ngApp ngApp}) to provoke the error with the non-minified source.
