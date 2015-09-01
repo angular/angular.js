@@ -341,6 +341,21 @@ describe("$animate", function() {
     });
   });
 
+
+  it('should not break postDigest for subsequent elements if addClass contains non-valid CSS class names', function() {
+    inject(function($animate, $rootScope, $rootElement) {
+      var element1 = jqLite('<div></div>');
+      var element2 = jqLite('<div></div>');
+
+      $animate.enter(element1, $rootElement, null, { addClass: ' ' });
+      $animate.enter(element2, $rootElement, null, { addClass: 'valid-name' });
+      $rootScope.$digest();
+
+      expect(element2.hasClass('valid-name')).toBeTruthy();
+    });
+  });
+
+
   it('should not issue a call to removeClass if the provided class value is not a string or array', function() {
     inject(function($animate, $rootScope, $rootElement) {
       var spy = spyOn(window, 'jqLiteRemoveClass').andCallThrough();

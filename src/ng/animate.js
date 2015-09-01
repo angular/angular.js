@@ -151,18 +151,20 @@ var $$CoreAnimateQueueProvider = function() {
 
 
     function addRemoveClassesPostDigest(element, add, remove) {
-      var classVal, data = postDigestQueue.get(element);
-
-      if (!data) {
-        postDigestQueue.put(element, data = {});
-        postDigestElements.push(element);
-      }
+      var data = postDigestQueue.get(element) || {};
 
       var classesAdded = updateData(data, add, true);
       var classesRemoved = updateData(data, remove, false);
-      if ((!classesAdded && !classesRemoved) || postDigestElements.length > 1) return;
 
-      $rootScope.$$postDigest(handleCSSClassChanges);
+      if (classesAdded || classesRemoved) {
+
+        postDigestQueue.put(element, data);
+        postDigestElements.push(element);
+
+        if (postDigestElements.length === 1) {
+          $rootScope.$$postDigest(handleCSSClassChanges);
+        }
+      }
     }
   }];
 };
