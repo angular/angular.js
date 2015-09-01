@@ -86,9 +86,15 @@ Yes. See instructions in {@link downloading}.
 
 ### What browsers does Angular work with?
 
-We run our extensive test suite against the following browsers: Safari, Chrome, Firefox, Opera 15,
-IE9 and mobile browsers (Android, Chrome Mobile, iOS Safari). See {@link guide/ie Internet
-Explorer Compatibility} for more details on supporting legacy IE browsers.
+We run our extensive test suite against the following browsers: the latest versions of Chrome,
+Firefox, Safari, and Safari for iOs, as well as Internet Explorer versions 9-11. See {@link guide/ie
+Internet Explorer Compatibility} for more details on supporting legacy IE browsers.
+
+If a browser is untested, it doesn't mean it won't work; for example, older Android (2.3.x)
+is supported in the sense that we avoid the dot notation for reserved words as property names,
+but we don't actively test changes against it. You can also expect browsers to work that share
+a large part of their codebase with a browser we test, such as Opera > version 12
+(uses the Blink engine), or the various Firefox derivatives.
 
 
 ### What's Angular's performance like?
