@@ -8033,7 +8033,7 @@ describe('$compile', function() {
       }));
 
       it('should not compile single directive', inject(function($compile, $rootScope) {
-          var element = $compile('<div dir-a></div><div dir-b></div><div dir-c></div>', null, null, 'dirA')($rootScope);
+          var element = $compile('<div dir-a></div><div dir-b></div><div dir-c></div>', undefined, undefined, 'dirA')($rootScope);
           var dirA = jqLite(element[0]),
               dirB = jqLite(element[1]),
               dirC = jqLite(element[2]);
@@ -8044,7 +8044,7 @@ describe('$compile', function() {
       }));
 
       it('should not compile multiple directives', inject(function($compile, $rootScope) {
-          var element = $compile('<div dir-a></div><div dir-b></div><div dir-c></div>', null, null, ['dirB', 'dirC'])($rootScope);
+          var element = $compile('<div dir-a></div><div dir-b></div><div dir-c></div>', undefined, undefined, ['dirB', 'dirC'])($rootScope);
           var dirA = jqLite(element[0]),
               dirB = jqLite(element[1]),
               dirC = jqLite(element[2]);
