@@ -169,7 +169,7 @@
  * ```html
  * <!-- See below for an example of ng-disabled being used correctly -->
  * <div ng-init="isDisabled = false">
- *  <button disabled="{{isDisabled}}">Disabled</button>
+ *  <button ng-disabled="{{isDisabled}}">Disabled</button>
  * </div>
  * ```
  *
