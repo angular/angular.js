@@ -183,6 +183,7 @@ function FormController(element, attrs, $scope, $animate, $interpolate) {
    */
   addSetValidityMethod({
     ctrl: this,
+    $scope: $scope,
     $element: element,
     set: function(object, property, controller) {
       var list = object[property];
