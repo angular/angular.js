@@ -845,6 +845,25 @@ describe('$location', function() {
 
   });
 
+  describe('post parse url hook', function() {
+    function repairLocationObj(locationObj, url) {
+      locationObj.$$path = '/repaired';
+      return;
+    }
+
+    it('should allow repair of locationObj via hook', function() {
+      initService({html5Mode: false, hashPrefix: '!', supportHistory: true, postParseAppUrlHook: repairLocationObj});
+      mockUpBrowser({initialUrl: 'http://new.com/a/b#!', baseHref: '/a/b'});
+      inject(function($window, $browser, $location, $rootScope) {
+        spyOn($location, '$$parse').andCallThrough();
+        $window.location.href = 'http://new.com/a/b#!/aaa';
+        $browser.$$checkUrlChange();
+        expect($location.path()).toBe('/repaired');
+        expect($location.$$parse).toHaveBeenCalledOnce();
+      });
+    });
+  });
+
   describe('wiring', function() {
 
     it('should update $location when browser url changes', function() {
@@ -2519,6 +2538,7 @@ describe('$location', function() {
     return module(function($provide, $locationProvider) {
       $locationProvider.html5Mode(options.html5Mode);
       $locationProvider.hashPrefix(options.hashPrefix);
+      $locationProvider.setPostParseAppUrlHook(options.postParseAppUrlHook || function() {return;});
       $provide.value('$sniffer', {history: options.supportHistory});
     });
   }

@@ -30,6 +30,13 @@ function parseAbsoluteUrl(absoluteUrl, locationObj) {
   locationObj.$$port = toInt(parsedUrl.port) || DEFAULT_PORTS[parsedUrl.protocol] || null;
 }
 
+/**
+ * Default post parse app url hook, performs no changes to location object
+ * @param locationObj
+ */
+var postParseAppUrlHook = function(locationObj, url) {
+  return;
+};
 
 function parseAppUrl(relativeUrl, locationObj) {
   var prefixed = (relativeUrl.charAt(0) !== '/');
@@ -41,6 +48,9 @@ function parseAppUrl(relativeUrl, locationObj) {
       match.pathname.substring(1) : match.pathname);
   locationObj.$$search = parseKeyValue(match.search);
   locationObj.$$hash = decodeURIComponent(match.hash);
+
+  // send locationObj and match off to hook processing
+  postParseAppUrlHook && postParseAppUrlHook(locationObj, match);
 
   // make sure path starts with '/';
   if (locationObj.$$path && locationObj.$$path.charAt(0) != '/') {
@@ -707,6 +717,24 @@ function $LocationProvider() {
         requireBase: true,
         rewriteLinks: true
       };
+
+  /**
+   * @ngdoc method
+   * @name $locationProvider#setPostParseAppUrlHook
+   * @description
+   * Use the setPostParseAppUrlHook method to configure a method to modify the location object
+   * after Angular's default location parsing methods. This is required in cases where the
+   * location object is getting damaged by external rewriting procedures (for example, SSL VPN
+   * solutions).
+   * @param {Object} func Function that will modify the locationObj, it must accept
+   * locationObj and url as parameters. The url parameter will contain useful information
+   * that can be used to help repair the locationObj.
+   */
+  this.setPostParseAppUrlHook = function(func) {
+    if (isFunction(func)) {
+      postParseAppUrlHook = func;
+    }
+  };
 
   /**
    * @ngdoc method
