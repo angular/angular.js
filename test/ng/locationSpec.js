@@ -673,7 +673,7 @@ describe('$location', function() {
           $rootScope.$on('$locationChangeSuccess', function() {
             handlerCalled = true;
             if ($location.path() !== '/') {
-                $location.path('/').replace();
+              $location.path('/').replace();
             }
           });
           expect($browser.url()).toEqual('http://server/base/#/home');
@@ -845,6 +845,25 @@ describe('$location', function() {
 
   });
 
+  describe('post parse url hook', function() {
+    function repairLocationObj(locationObj, url) {
+      locationObj.$$path = '/repaired';
+      return;
+    }
+
+    it('should allow repair of locationObj via hook', function() {
+      initService({html5Mode:false,hashPrefix: '!',supportHistory: true, postParseAppUrlHook: repairLocationObj });
+      mockUpBrowser({initialUrl:'http://new.com/a/b#!', baseHref:'/a/b'});
+      inject(function($window, $browser, $location, $rootScope) {
+        spyOn($location, '$$parse').andCallThrough();
+        $window.location.href = 'http://new.com/a/b#!/aaa';
+        $browser.$$checkUrlChange();
+        expect($location.path()).toBe('/repaired');
+        expect($location.$$parse).toHaveBeenCalledOnce();
+      });
+    });
+  });
+
   describe('wiring', function() {
 
     it('should update $location when browser url changes', function() {
@@ -866,7 +885,7 @@ describe('$location', function() {
       mockUpBrowser({initialUrl:'http://new.com/a/b#!', baseHref:'/a/b'});
       inject(function($rootScope, $browser, $location, $window) {
         var OLD_URL = $browser.url(),
-            NEW_URL = 'http://new.com/a/b#!/new';
+          NEW_URL = 'http://new.com/a/b#!/new';
 
         $rootScope.$apply(function() {
           $window.location.href= NEW_URL;
@@ -884,8 +903,8 @@ describe('$location', function() {
       mockUpBrowser({initialUrl:'http://new.com/a/b#!', baseHref:'/a/b'});
       inject(function($rootScope, $browser, $location, $window) {
         var OLD_URL = $browser.url(),
-            NEW_URL = 'http://new.com/a/b#!/new',
-            notRunYet = true;
+          NEW_URL = 'http://new.com/a/b#!/new',
+          notRunYet = true;
 
         $rootScope.$watch(function() {
           if (notRunYet) {
@@ -1320,9 +1339,9 @@ describe('$location', function() {
 
     function configureTestLink(options) {
       var linkHref = options.linkHref,
-          relLink = options.relLink,
-          attrs = options.attrs,
-          content = options.content;
+        relLink = options.relLink,
+        attrs = options.attrs,
+        content = options.content;
 
       attrs = attrs ? ' ' + attrs + ' ' : '';
 
@@ -1412,8 +1431,8 @@ describe('$location', function() {
           expectRewriteTo($browser, 'http://host.com/base/');
 
           jqLite(link).
-              attr('href', 'http://host.com/base/foo').
-              on('click', function(e) { e.preventDefault(); });
+            attr('href', 'http://host.com/base/foo').
+            on('click', function(e) { e.preventDefault(); });
           browserTrigger(link, 'click');
           expect($browser.url()).toBe('http://host.com/base/');
         }
@@ -1610,33 +1629,33 @@ describe('$location', function() {
 
 
     it('should not rewrite when link to different base path when history enabled on new browser',
-        function() {
-      configureTestLink({linkHref: '/other_base/link'});
-      initService({html5Mode:true,supportHistory:true});
-      inject(
-        initBrowser({ url: 'http://host.com/base/index.html', basePath: '/base/index.html' }),
-        setupRewriteChecks(),
-        function($browser) {
-          browserTrigger(link, 'click');
-          expectNoRewrite($browser);
-        }
-      );
-    });
+      function() {
+        configureTestLink({linkHref: '/other_base/link'});
+        initService({html5Mode:true,supportHistory:true});
+        inject(
+          initBrowser({ url: 'http://host.com/base/index.html', basePath: '/base/index.html' }),
+          setupRewriteChecks(),
+          function($browser) {
+            browserTrigger(link, 'click');
+            expectNoRewrite($browser);
+          }
+        );
+      });
 
 
     it('should not rewrite when link to different base path when history enabled on old browser',
-        function() {
-      configureTestLink({linkHref: '/other_base/link'});
-      initService({html5Mode:true,supportHistory:true});
-      inject(
-        initBrowser({ url: 'http://host.com/base/index.html', basePath: '/base/index.html' }),
-        setupRewriteChecks(),
-        function($browser) {
-          browserTrigger(link, 'click');
-          expectNoRewrite($browser);
-        }
-      );
-    });
+      function() {
+        configureTestLink({linkHref: '/other_base/link'});
+        initService({html5Mode:true,supportHistory:true});
+        inject(
+          initBrowser({ url: 'http://host.com/base/index.html', basePath: '/base/index.html' }),
+          setupRewriteChecks(),
+          function($browser) {
+            browserTrigger(link, 'click');
+            expectNoRewrite($browser);
+          }
+        );
+      });
 
 
     it('should not rewrite when link to different base path when history disabled', function() {
@@ -1654,32 +1673,32 @@ describe('$location', function() {
 
 
     it('should not rewrite when full link to different base path when history enabled on new browser',
-        function() {
-      configureTestLink({linkHref: 'http://host.com/other_base/link'});
-      initService({html5Mode:true,supportHistory:true});
-      inject(
-        initBrowser({ url: 'http://host.com/base/index.html', basePath: '/base/index.html' }),
-        setupRewriteChecks(),
-        function($browser) {
-          browserTrigger(link, 'click');
-          expectNoRewrite($browser);
-        }
-      );
-    });
+      function() {
+        configureTestLink({linkHref: 'http://host.com/other_base/link'});
+        initService({html5Mode:true,supportHistory:true});
+        inject(
+          initBrowser({ url: 'http://host.com/base/index.html', basePath: '/base/index.html' }),
+          setupRewriteChecks(),
+          function($browser) {
+            browserTrigger(link, 'click');
+            expectNoRewrite($browser);
+          }
+        );
+      });
 
 
     it('should not rewrite when full link to different base path when history enabled on old browser',
-        function() {
-      configureTestLink({linkHref: 'http://host.com/other_base/link', html5Mode: true, supportHist: false});
-      inject(
-        initBrowser({ url: 'http://host.com/base/index.html', basePath: '/base/index.html' }),
-        setupRewriteChecks(),
-        function($browser) {
-          browserTrigger(link, 'click');
-          expectNoRewrite($browser);
-        }
-      );
-    });
+      function() {
+        configureTestLink({linkHref: 'http://host.com/other_base/link', html5Mode: true, supportHist: false});
+        inject(
+          initBrowser({ url: 'http://host.com/base/index.html', basePath: '/base/index.html' }),
+          setupRewriteChecks(),
+          function($browser) {
+            browserTrigger(link, 'click');
+            expectNoRewrite($browser);
+          }
+        );
+      });
 
 
     it('should not rewrite when full link to different base path when history disabled', function() {
@@ -1769,7 +1788,7 @@ describe('$location', function() {
           if (document.createEvent) {
             rightClick = document.createEvent('MouseEvents');
             rightClick.initMouseEvent('click', true, true, window, 1, 10, 10, 10,  10, false,
-                                      false, false, false, 2, null);
+              false, false, false, 2, null);
 
             link.dispatchEvent(rightClick);
           } else if (document.createEventObject) { // for IE
@@ -1840,33 +1859,33 @@ describe('$location', function() {
 
 
     it('should not mess up hash urls when clicking on links in hashbang mode with a prefix',
-        function() {
-      var base;
-      module(function($locationProvider) {
-        return function($browser) {
-          window.location.hash = '!someHash';
-          $browser.url(base = window.location.href);
-          base = base.split('#')[0];
-          $locationProvider.hashPrefix('!');
-        };
+      function() {
+        var base;
+        module(function($locationProvider) {
+          return function($browser) {
+            window.location.hash = '!someHash';
+            $browser.url(base = window.location.href);
+            base = base.split('#')[0];
+            $locationProvider.hashPrefix('!');
+          };
+        });
+        inject(function($rootScope, $compile, $browser, $rootElement, $document, $location) {
+          // we need to do this otherwise we can't simulate events
+          $document.find('body').append($rootElement);
+
+          var element = $compile('<a href="#!/view1">v1</a><a href="#!/view2">v2</a>')($rootScope);
+          $rootElement.append(element);
+          var av1 = $rootElement.find('a').eq(0);
+          var av2 = $rootElement.find('a').eq(1);
+
+
+          browserTrigger(av1, 'click');
+          expect($browser.url()).toEqual(base + '#!/view1');
+
+          browserTrigger(av2, 'click');
+          expect($browser.url()).toEqual(base + '#!/view2');
+        });
       });
-      inject(function($rootScope, $compile, $browser, $rootElement, $document, $location) {
-        // we need to do this otherwise we can't simulate events
-        $document.find('body').append($rootElement);
-
-        var element = $compile('<a href="#!/view1">v1</a><a href="#!/view2">v2</a>')($rootScope);
-        $rootElement.append(element);
-        var av1 = $rootElement.find('a').eq(0);
-        var av2 = $rootElement.find('a').eq(1);
-
-
-        browserTrigger(av1, 'click');
-        expect($browser.url()).toEqual(base + '#!/view1');
-
-        browserTrigger(av2, 'click');
-        expect($browser.url()).toEqual(base + '#!/view2');
-      });
-    });
 
 
     it('should not intercept clicks outside the current hash prefix', function() {
@@ -1992,9 +2011,9 @@ describe('$location', function() {
       $rootScope.$apply();
 
       expect($log.info.logs.shift()).
-          toEqual(['before', 'http://server/#/somePath', 'http://server/', 'http://server/']);
+        toEqual(['before', 'http://server/#/somePath', 'http://server/', 'http://server/']);
       expect($log.info.logs.shift()).
-          toEqual(['after', 'http://server/#/somePath', 'http://server/', 'http://server/#/somePath']);
+        toEqual(['after', 'http://server/#/somePath', 'http://server/', 'http://server/#/somePath']);
       expect($location.url()).toEqual('/somePath');
       expect($browser.url()).toEqual('http://server/#/somePath');
     }));
@@ -2021,7 +2040,7 @@ describe('$location', function() {
       $rootScope.$apply();
 
       expect($log.info.logs.shift()).
-          toEqual(['before', 'http://server/#/somePath', 'http://server/', 'http://server/']);
+        toEqual(['before', 'http://server/#/somePath', 'http://server/', 'http://server/']);
       expect($log.info.logs[1]).toBeUndefined();
       expect($location.url()).toEqual('');
       expect($browser.url()).toEqual('http://server/');
@@ -2048,7 +2067,7 @@ describe('$location', function() {
           toEqual(['before', 'http://server/#/redirectPath', 'http://server/', 'http://server/']);
         expect($log.info.logs.shift()).
           toEqual(['after', 'http://server/#/redirectPath', 'http://server/',
-                  'http://server/#/redirectPath']);
+            'http://server/#/redirectPath']);
 
         expect($location.url()).toEqual('/redirectPath');
         expect($browser.url()).toEqual('http://server/#/redirectPath');
@@ -2077,7 +2096,7 @@ describe('$location', function() {
           toEqual(['before', 'http://server/#/redirectPath', 'http://server/', 'http://server/']);
         expect($log.info.logs.shift()).
           toEqual(['after', 'http://server/#/redirectPath', 'http://server/',
-                  'http://server/#/redirectPath']);
+            'http://server/#/redirectPath']);
 
         expect($location.url()).toEqual('/redirectPath');
         expect($browser.url()).toEqual('http://server/#/redirectPath');
@@ -2109,7 +2128,7 @@ describe('$location', function() {
           toEqual(['before', 'http://server/#/redirectPath2', 'http://server/', 'http://server/']);
         expect($log.info.logs.shift()).
           toEqual(['after', 'http://server/#/redirectPath2', 'http://server/',
-                  'http://server/#/redirectPath2']);
+            'http://server/#/redirectPath2']);
 
         expect($location.url()).toEqual('/redirectPath2');
         expect($browser.url()).toEqual('http://server/#/redirectPath2');
@@ -2158,13 +2177,13 @@ describe('$location', function() {
 
         expect($log.info.logs.shift()).
           toEqual(['before', 'http://server/#/somePath', 'http://server/',
-                  'http://server/#/somePath']);
+            'http://server/#/somePath']);
         expect($log.info.logs.shift()).
           toEqual(['before', 'http://server/#/redirectPath', 'http://server/#/somePath',
-                  'http://server/#/somePath']);
+            'http://server/#/somePath']);
         expect($log.info.logs.shift()).
           toEqual(['after', 'http://server/#/redirectPath', 'http://server/#/somePath',
-                  'http://server/#/redirectPath']);
+            'http://server/#/redirectPath']);
 
         expect($location.url()).toEqual('/redirectPath');
         expect($browser.url()).toEqual('http://server/#/redirectPath');
@@ -2189,13 +2208,13 @@ describe('$location', function() {
 
         expect($log.info.logs.shift()).
           toEqual(['before', 'http://server/#/somePath', 'http://server/',
-                  'http://server/#/somePath']);
+            'http://server/#/somePath']);
         expect($log.info.logs.shift()).
           toEqual(['before', 'http://server/#/redirectPath', 'http://server/#/somePath',
-                  'http://server/#/somePath']);
+            'http://server/#/somePath']);
         expect($log.info.logs.shift()).
           toEqual(['after', 'http://server/#/redirectPath', 'http://server/#/somePath',
-                  'http://server/#/redirectPath']);
+            'http://server/#/redirectPath']);
 
         expect($location.url()).toEqual('/redirectPath');
         expect($browser.url()).toEqual('http://server/#/redirectPath');
@@ -2213,7 +2232,7 @@ describe('$location', function() {
 
       inject(function($location, $rootScope, $browser, $rootElement) {
         var log = '',
-            link = $rootElement.find('a');
+          link = $rootElement.find('a');
 
 
         $rootScope.$on('$locationChangeStart', function(event) {
@@ -2246,8 +2265,8 @@ describe('$location', function() {
 
       inject(function($location, $rootScope, $browser, $rootElement) {
         var log = '',
-            link = $rootElement.find('a'),
-            browserUrlBefore = $browser.url();
+          link = $rootElement.find('a'),
+          browserUrlBefore = $browser.url();
 
         $rootScope.$on('$locationChangeStart', function(event) {
           event.preventDefault();
@@ -2463,13 +2482,13 @@ describe('$location', function() {
 
 
     it('should not strip stuff from path just because it looks like Windows drive when it\'s not',
-        function() {
-      locationUrl = new LocationHashbangUrl('http://server/pre/index.html', 'http://server/pre/', '#');
+      function() {
+        locationUrl = new LocationHashbangUrl('http://server/pre/index.html', 'http://server/pre/', '#');
 
-      locationUrl.$$parse('http://server/pre/index.html#http%3A%2F%2Fexample.com%2F');
-      expect(locationUrl.url()).toBe('/http://example.com/');
-      expect(locationUrl.absUrl()).toBe('http://server/pre/index.html#/http://example.com/');
-    });
+        locationUrl.$$parse('http://server/pre/index.html#http%3A%2F%2Fexample.com%2F');
+        expect(locationUrl.url()).toBe('/http://example.com/');
+        expect(locationUrl.absUrl()).toBe('http://server/pre/index.html#/http://example.com/');
+      });
 
     it('should throw on url(urlString, stateObject)', function() {
       expectThrowOnStateChange(locationUrl);
@@ -2519,6 +2538,7 @@ describe('$location', function() {
     return module(function($provide, $locationProvider) {
       $locationProvider.html5Mode(options.html5Mode);
       $locationProvider.hashPrefix(options.hashPrefix);
+      $locationProvider.setPostParseAppUrlHook(options.postParseAppUrlHook || function() {return;});
       $provide.value('$sniffer', {history: options.supportHistory});
     });
   }
