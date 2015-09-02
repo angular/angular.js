@@ -7262,6 +7262,104 @@ describe('$compile', function() {
   });
 
 
+  describe('multi-slot transclude', function() {
+    it('should only include elements without `ng-transclude-slot` attribute in default transclusion function', function() {
+      module(function() {
+        directive('trans', function() {
+          return {
+            transclude: true,
+            template: '<div ng-transclude></div>'
+          };
+        });
+      });
+      inject(function($rootScope, $compile) {
+        element = $compile(
+          '<div trans>' +
+            '<span>stuart</span>' +
+            '<span>bob</span>' +
+            '<span ng-transclude-slot="boss">gru</span>' +
+            '<span>kevin</span>' +
+          '</div>')($rootScope);
+        $rootScope.$apply();
+        expect(element.text()).toEqual('stuartbobkevin');
+      });
+    });
+
+    it('should transclude elements to an `ng-transclude` with a matching `ng-transclude-slot`', function() {
+      module(function() {
+        directive('trans', function() {
+          return {
+            transclude: true,
+            template:
+              '<div class="boss" ng-transclude="boss"></div>' +
+              '<div class="minion" ng-transclude="minion"></div>' +
+              '<div class="other" ng-transclude></div>'
+          };
+        });
+      });
+      inject(function($rootScope, $compile) {
+        element = $compile(
+          '<div trans>' +
+            '<span ng-transclude-slot="minion">stuart</span>' +
+            '<span>dorothy</span>' +
+            '<span ng-transclude-slot="boss">gru</span>' +
+            '<span ng-transclude-slot="minion">kevin</span>' +
+          '</div>')($rootScope);
+        $rootScope.$apply();
+        expect(element.children().eq(0).text()).toEqual('gru');
+        expect(element.children().eq(1).text()).toEqual('stuartkevin');
+        expect(element.children().eq(2).text()).toEqual('dorothy');
+      });
+    });
+
+    it('should provide the elements marked with `ng-transclude-slot` as additional transclude functions on the $$slots property', function() {
+      var capturedTranscludeFn;
+      module(function() {
+        directive('trans', function() {
+          return {
+            transclude: true,
+            link: function(scope, element, attrs, controller, transclude) {
+              capturedTranscludeFn = transclude;
+            }
+          };
+        });
+      });
+      inject(function($rootScope, $compile, log) {
+        element = $compile(
+          '<div trans>' +
+          '  <span ng-transclude-slot="minion">stuart</span>' +
+          '  <span ng-transclude-slot="minion">bob</span>' +
+          '  <span>dorothy</span>' +
+          '  <span ng-transclude-slot="boss">gru</span>' +
+          '</div>')($rootScope);
+        $rootScope.$apply();
+
+        var minionTranscludeFn = capturedTranscludeFn.$$boundTransclude.$$slots['minion'];
+        var minions = minionTranscludeFn();
+        expect(minions[0].outerHTML).toEqual('<span ng-transclude-slot="minion" class="ng-scope">stuart</span>');
+        expect(minions[1].outerHTML).toEqual('<span ng-transclude-slot="minion" class="ng-scope">bob</span>');
+
+        var scope = element.scope();
+
+        var minionScope = jqLite(minions[0]).scope();
+        expect(minionScope.$parent).toBe(scope);
+
+        var bossTranscludeFn = capturedTranscludeFn.$$boundTransclude.$$slots['boss'];
+        var boss = bossTranscludeFn();
+        expect(boss[0].outerHTML).toEqual('<span ng-transclude-slot="boss" class="ng-scope">gru</span>');
+
+        var bossScope = jqLite(boss[0]).scope();
+        expect(bossScope.$parent).toBe(scope);
+
+        expect(bossScope).not.toBe(minionScope);
+
+        dealoc(boss);
+        dealoc(minions);
+      });
+    });
+  });
+
+
   describe('img[src] sanitization', function() {
 
     it('should NOT require trusted values for img src', inject(function($rootScope, $compile, $sce) {

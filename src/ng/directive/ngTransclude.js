@@ -65,9 +65,20 @@ var ngTranscludeDirective = ngDirective({
        startingTag($element));
     }
 
-    $transclude(function(clone) {
-      $element.empty();
-      $element.append(clone);
-    });
+    if ($attrs.ngTransclude) {
+      $transclude = $transclude.$$boundTransclude.$$slots[$attrs.ngTransclude];
+      if (!$transclude) return;
+
+      $transclude(undefined, function(clone) {
+        $element.empty();
+        $element.append(clone);
+      });
+    } else {
+
+      $transclude(function(clone) {
+        $element.empty();
+        $element.append(clone);
+      });
+    }
   }
 });
