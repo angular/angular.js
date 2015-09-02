@@ -239,9 +239,9 @@ The name of the starting class is the name of the event that is fired (like `ent
 The active class name is the same as the starting class's but with an `-active` suffix.
 This two-class CSS naming convention allows the developer to craft an animation, beginning to end.
 
-In our example above, elements expand from a height of **0** to **120 pixels** when items are added or moved,
-around and collapsing the items before removing them from the list.
-There's also a nice fade-in and fade-out effect that also occurs at the same time. All of this is handled
+In our example above, elements are expanded from a height of **0** to **120 pixels** when they're added to the 
+list and are collapsed back down to **0 pixels** before being removed from the list.
+There's also a nice fade-in and fade-out effect that occurs at the same time. All of this is handled
 by the CSS transition declarations at the top of the example code above.
 
 Although most modern browsers have good support for [CSS transitions](http://caniuse.com/#feat=css-transitions)
