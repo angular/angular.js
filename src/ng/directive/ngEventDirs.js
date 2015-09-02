@@ -43,10 +43,11 @@ var ngEventDirectives = {};
 // so that they are not executed in an inconsistent state.
 var forceAsyncEvents = {
   'blur': true,
-  'focus': true
+  'focus': true,
+  'focusout': true,
 };
 forEach(
-  'click dblclick mousedown mouseup mouseover mouseout mousemove mouseenter mouseleave keydown keyup keypress submit focus blur copy cut paste'.split(' '),
+  'click dblclick mousedown mouseup mouseover mouseout mousemove mouseenter mouseleave keydown keyup keypress submit focus focusout blur copy cut paste'.split(' '),
   function(eventName) {
     var directiveName = directiveNormalize('ng-' + eventName);
     ngEventDirectives[directiveName] = ['$parse', '$rootScope', function($parse, $rootScope) {
@@ -392,6 +393,26 @@ forEach(
  * @priority 0
  * @param {expression} ngFocus {@link guide/expression Expression} to evaluate upon
  * focus. ({@link guide/expression#-event- Event object is available as `$event`})
+ *
+ * @example
+ * See {@link ng.directive:ngClick ngClick}
+ */
+
+/**
+ * @ngdoc directive
+ * @name ngFocusout
+ *
+ * @description
+ * Specify custom behavior on focusout event.
+ *
+ * Note: As the `focusout` event is executed synchronously when calling `input.focusout()`
+ * AngularJS executes the expression using `scope.$evalAsync` if the event is fired
+ * during an `$apply` to ensure a consistent state.
+ *
+ * @element window, input, select, textarea, a
+ * @priority 0
+ * @param {expression} ngFocusout {@link guide/expression Expression} to evaluate upon
+ * focusout. ({@link guide/expression#-event- Event object is available as `$event`})
  *
  * @example
  * See {@link ng.directive:ngClick ngClick}
