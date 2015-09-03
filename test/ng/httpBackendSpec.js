@@ -44,21 +44,23 @@ describe('$httpBackend', function() {
   });
 
   it('should pass null to send if no body is set', function() {
-    $backend('GET', '/some-url', null, noop);
+    $backend('GET', '/some-url', undefined, noop);
     xhr = MockXhr.$$lastInstance;
 
     expect(xhr.$$data).toBe(null);
   });
 
-  it('should pass the correct falsy value to send if falsy body is set (excluding NaN)', function() {
-    var values = [false, 0, "", null, undefined];
-    angular.forEach(values, function(value) {
-      $backend('GET', '/some-url', value, noop);
-      xhr = MockXhr.$$lastInstance;
+  it('should pass the correct falsy value to send if falsy body is set (excluding undefined, NaN)',
+    function() {
+      var values = [false, 0, "", null];
+      angular.forEach(values, function(value) {
+        $backend('GET', '/some-url', value, noop);
+        xhr = MockXhr.$$lastInstance;
 
-      expect(xhr.$$data).toBe(value);
-    });
-  });
+        expect(xhr.$$data).toBe(value);
+      });
+    }
+  );
 
   it('should pass NaN to send if NaN body is set', function() {
     $backend('GET', '/some-url', NaN, noop);
