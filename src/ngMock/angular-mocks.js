@@ -1628,7 +1628,7 @@ function MockHttpExpectation(method, url, data, headers) {
     if (!url) return true;
     if (angular.isFunction(url.test)) return url.test(u);
     if (angular.isFunction(url)) return url(u);
-    return url == u;
+    return (url == u || this.compareUrl(u));
   };
 
   this.matchHeaders = function(h) {
@@ -1645,6 +1645,15 @@ function MockHttpExpectation(method, url, data, headers) {
       return angular.equals(angular.fromJson(angular.toJson(data)), angular.fromJson(d));
     }
     return data == d;
+  };
+  
+  this.getUrlParams = function (u){
+    var params = u.slice(u.indexOf('?') + 1).split('&');
+    return params.sort();
+  };
+
+  this.compareUrl = function (u){
+    return (url.slice(0,url.indexOf('?')) == u.slice(0,url.indexOf('?')) && this.getUrlParams(url).join() == this.getUrlParams(u).join())
   };
 
   this.toString = function() {
