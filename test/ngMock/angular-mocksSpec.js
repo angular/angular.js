@@ -1633,6 +1633,11 @@ describe('ngMock', function() {
         expect(exp.match('GET', 'a/x')).toBe(false);
       });
 
+      it('should match url with same query params, but different order', function() {
+        var exp = new MockHttpExpectation('GET', 'www.example.com/x/y?a=b&c=d&e=f');
+
+        expect(exp.matchUrl('www.example.com/x/y?e=f&c=d&a=b')).toBe(true);
+      });
 
       it('should accept url as function', function() {
         var urlValidator = function(url) {
