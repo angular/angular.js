@@ -1872,6 +1872,15 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
 
 function MockHttpExpectation(method, url, data, headers, keys) {
 
+  function getUrlParams(u) {
+    var params = u.slice(u.indexOf('?') + 1).split('&');
+    return params.sort();
+  }
+
+  function compareUrl(u) {
+    return (url.slice(0, url.indexOf('?')) == u.slice(0, u.indexOf('?')) && getUrlParams(url).join() == getUrlParams(u).join());
+  }
+
   this.data = data;
   this.headers = headers;
 
@@ -1887,7 +1896,7 @@ function MockHttpExpectation(method, url, data, headers, keys) {
     if (!url) return true;
     if (angular.isFunction(url.test)) return url.test(u);
     if (angular.isFunction(url)) return url(u);
-    return url == u;
+    return (url == u || compareUrl(u));
   };
 
   this.matchHeaders = function(h) {
