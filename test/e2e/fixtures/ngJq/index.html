@@ -5,7 +5,8 @@
 
     <script src="../../../../bower_components/jquery/dist/jquery.js"></script>
     <script type="text/javascript">
-      // Trying to trick `bindJQuery()`
+      // Verifying that we are not accessing `window['']`.
+      // (See https://github.com/angular/angular.js/issues/12741 for more details)
       window[''] = window.jQuery;
     </script>
     <script src="angular.js"></script>
