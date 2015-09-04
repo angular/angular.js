@@ -67,6 +67,47 @@ describe('jqLite', function() {
     });
 
 
+    it('should allow construction of an html element containing dashes', function() {
+      var nodes;
+      nodes = jqLite('<my-foo></my-foo>');
+      expect(nodes.length).toEqual(1);
+      expect(nodes[0].nodeName).toEqual('MY-FOO');
+
+      nodes = jqLite('<my-foo />');
+      expect(nodes.length).toEqual(1);
+      expect(nodes[0].nodeName).toEqual('MY-FOO');
+    });
+
+
+    it('should allow construction of an html element containing dashes and starting with characters that match existing html elements', function() {
+      var nodes;
+
+      nodes = jqLite('<option-foo></option-foo>');
+      expect(nodes.length).toEqual(1);
+      expect(nodes[0].nodeName).toEqual('OPTION-FOO');
+
+      nodes = jqLite('<thead-foo></thead-foo>');
+      expect(nodes.length).toEqual(1);
+      expect(nodes[0].nodeName).toEqual('THEAD-FOO');
+
+      nodes = jqLite('<col-foo></col-foo>');
+      expect(nodes.length).toEqual(1);
+      expect(nodes[0].nodeName).toEqual('COL-FOO');
+
+      nodes = jqLite('<tr-foo></tr-foo>');
+      expect(nodes.length).toEqual(1);
+      expect(nodes[0].nodeName).toEqual('TR-FOO');
+
+      nodes = jqLite('<td-foo></td-foo>');
+      expect(nodes.length).toEqual(1);
+      expect(nodes[0].nodeName).toEqual('TD-FOO');
+
+      nodes = jqLite('<div-foo></div-foo>');
+      expect(nodes.length).toEqual(1);
+      expect(nodes[0].nodeName).toEqual('DIV-FOO');
+    });
+
+
     it('should allow construction of html with leading whitespace', function() {
       var nodes = jqLite('  \n\r   \r\n<div>1</div><span>2</span>');
       expect(nodes[0].parentNode).toBeDefined();
