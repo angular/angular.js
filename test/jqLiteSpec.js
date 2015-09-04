@@ -78,6 +78,33 @@ describe('jqLite', function() {
     });
 
 
+    // This is not working correctly in jQuery prior to v3.0.
+    // See https://github.com/jquery/jquery/issues/1987 for details.
+    it('should properly handle dash-delimited node names', function() {
+      var jQueryVersion = window.jQuery && window.jQuery.fn.jquery.split('.')[0];
+      var jQuery3xOrNewer = jQueryVersion && (Number(jQueryVersion) >= 3);
+
+      if (_jqLiteMode || jQuery3xOrNewer) {
+        var nodeNames = 'thead tbody tfoot colgroup caption tr th td div kung'.split(' ');
+        var nodeNamesTested = 0;
+        var nodes, customNodeName;
+
+        forEach(nodeNames, function(nodeName) {
+          var customNodeName = nodeName + '-foo';
+          var nodes = jqLite('<' + customNodeName + '>Hello, world !</' + customNodeName + '>');
+
+          expect(nodes.length).toBe(1);
+          expect(nodeName_(nodes)).toBe(customNodeName);
+          expect(nodes.html()).toBe('Hello, world !');
+
+          nodeNamesTested++;
+        });
+
+        expect(nodeNamesTested).toBe(10);
+      }
+    });
+
+
     it('should allow creation of comment tags', function() {
       var nodes = jqLite('<!-- foo -->');
       expect(nodes.length).toBe(1);
