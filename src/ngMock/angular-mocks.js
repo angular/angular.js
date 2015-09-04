@@ -1653,7 +1653,7 @@ function MockHttpExpectation(method, url, data, headers) {
   };
 
   this.compareUrl = function (u){
-    return (url.slice(0,url.indexOf('?')) == u.slice(0,url.indexOf('?')) && this.getUrlParams(url).join() == this.getUrlParams(u).join())
+    return (url.slice(0,url.indexOf('?')) == u.slice(0,u.indexOf('?')) && this.getUrlParams(url).join() == this.getUrlParams(u).join())
   };
 
   this.toString = function() {
