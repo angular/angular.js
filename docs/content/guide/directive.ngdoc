@@ -893,7 +893,7 @@ to which tab is active.
           restrict: 'E',
           transclude: true,
           scope: {},
-          controller: function($scope) {
+          controller: ['$scope', function($scope) {
             var panes = $scope.panes = [];
 
             $scope.select = function(pane) {
@@ -909,7 +909,7 @@ to which tab is active.
               }
               panes.push(pane);
             };
-          },
+          }],
           templateUrl: 'my-tabs.html'
         };
       })
