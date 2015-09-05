@@ -89,9 +89,9 @@ function $InterpolateProvider() {
 
 
   this.$get = ['$parse', '$exceptionHandler', '$sce', function($parse, $exceptionHandler, $sce) {
-    var startSymbolLength = startSymbol.length,
-        endSymbolLength = endSymbol.length,
-        escapedStartRegexp = new RegExp(startSymbol.replace(/./g, escape), 'g'),
+    const startSymbolLength = startSymbol.length,
+        endSymbolLength = endSymbol.length;
+    var escapedStartRegexp = new RegExp(startSymbol.replace(/./g, escape), 'g'),
         escapedEndRegexp = new RegExp(endSymbol.replace(/./g, escape), 'g');
 
     function escape(ch) {
