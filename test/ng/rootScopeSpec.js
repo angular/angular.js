@@ -829,6 +829,14 @@ describe('Scope', function() {
           }).not.toThrow();
         });
 
+        it('should not throw an error because the object does not inherit from Object.prototype', function() {
+          $rootScope.obj = Object.create(null);
+          $rootScope.obj.a = 'B';
+          expect(function() {
+            $rootScope.$digest();
+          }).not.toThrow();
+        });
+
       });
     });
 
