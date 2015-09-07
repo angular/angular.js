@@ -236,6 +236,10 @@ function shallowClearAndCopy(src, dst) {
  *      rejection), `false` before that. Knowing if the Resource has been resolved is useful in
  *      data-binding.
  *
+ *   - `$responseData`: the actual data from the response after it has been transformed by any
+ *     `transformResponse` functions.  This allows developers to access metadata, such as error
+ *     or pagination information from the Resource instance.
+ *
  * @example
  *
  * # Credit card resource
@@ -513,6 +517,7 @@ angular.module('ngResource', ['ng']).
           var data = extend({}, this);
           delete data.$promise;
           delete data.$resolved;
+          delete data.$responseData;
           return data;
         };
 
@@ -610,12 +615,14 @@ angular.module('ngResource', ['ng']).
                 }
               }
 
+              value.$responseData = response.data;
               value.$resolved = true;
 
               response.resource = value;
 
               return response;
             }, function(response) {
+              value.$responseData = response.data;
               value.$resolved = true;
 
               (error || noop)(response);

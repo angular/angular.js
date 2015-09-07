@@ -593,7 +593,6 @@ describe("resource", function() {
     var cc = CreditCard.get({id:123});
     $httpBackend.flush();
     expect(cc instanceof CreditCard).toBe(true);
-
     $httpBackend.expect('POST', '/CreditCard/123', angular.toJson(data)).respond('');
     var idBefore = cc.id;
 
@@ -1357,4 +1356,80 @@ describe('resource', function() {
   });
 
 
+  it('should be able to get meta data from query response', function() {
+    var result = [
+      { thing: 'value1' },
+      { thing: 'value2' }
+    ];
+    result.meta = 'data';
+
+    $httpBackend.expectGET('URL').respond({});
+    var models = $resource('URL', { }, {
+      query: {
+        method: 'GET',
+        isArray: true,
+        transformResponse: function() {
+          return result;
+        }
+      }
+    }).query();
+
+    $httpBackend.flush();
+
+    // Should have array and metadata
+    expect(models.length).toBe(2);
+    expect(models[0].thing).toEqual(result[0].thing);
+    expect(models[1].thing).toEqual(result[1].thing);
+    expect(models.$responseData.meta).toBe('data');
+  });
+
+
+  it('should be able to get error data from save response', function() {
+    var model = {
+      untouched: true,
+      error: 'No Error'
+    };
+
+    model = new ($resource('URL', { }, {
+      save: {
+        method: 'POST'
+      }
+    }))(model);
+
+    // Should have the config we passed the constructor
+    expect(model.untouched).toBe(true);
+    expect(model.error).toBe('No Error');
+
+    $httpBackend.expectPOST('URL').respond(500, { error: 'An error occurred' });
+    model.$save();
+    $httpBackend.flush();
+
+    // Should have the same config as before; decorated with props from response
+    expect(model.untouched).toBe(true);
+    expect(model.error).toEqual('No Error');
+    expect(model.$responseData.error).toBe('An error occurred');
+  });
+
+
+  it('should be able to get error data from query response', function() {
+
+    $httpBackend.expectGET('URL').respond(500, { error: 'An error occurred' });
+    var models = $resource('URL', { }, {
+      query: {
+        method: 'GET',
+        isArray: true,
+        transformResponse: function(result) {
+          result.meta = 'data';
+          return result;
+        }
+      }
+    }).query();
+
+    $httpBackend.flush();
+
+    // Should have the same config as before; decorated with props from response
+    expect(angular.isArray(models)).toBeTruthy();
+    expect(models.$responseData.meta).toBe('data');
+    expect(models.$responseData.error).toBe('An error occurred');
+  });
 });
