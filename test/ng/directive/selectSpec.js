@@ -318,6 +318,26 @@ describe('select', function() {
       });
 
 
+      it('should support option without a value attribute', function() {
+        compile('<select ng-model="robot">' +
+                  '<option>--select--</option>' +
+                  '<option value="x">robot x</option>' +
+                  '<option value="y">robot y</option>' +
+                '</select>');
+        expect(element).toEqualSelect(["? undefined:undefined ?"], "--select--", 'x', 'y');
+      });
+
+
+      it('should support option without a value with other HTML attributes', function() {
+        compile('<select ng-model="robot">' +
+                  '<option data-foo="bar">--select--</option>' +
+                  '<option value="x">robot x</option>' +
+                  '<option value="y">robot y</option>' +
+                '</select>');
+        expect(element).toEqualSelect(["? undefined:undefined ?"], "--select--", 'x', 'y');
+      });
+
+
       describe('interactions with repeated options', function() {
 
         it('should select empty option when model is undefined', function() {
