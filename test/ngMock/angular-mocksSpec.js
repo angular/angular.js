@@ -1173,6 +1173,97 @@ describe('ngMock', function() {
     });
 
 
+    it('should not error if the url is not provided', function() {
+      expect(function() {
+        hb.when('GET');
+
+        hb.whenGET();
+        hb.whenPOST();
+        hb.whenPUT();
+        hb.whenPATCH();
+        hb.whenDELETE();
+        hb.whenHEAD();
+
+        hb.expect('GET');
+
+        hb.expectGET();
+        hb.expectPOST();
+        hb.expectPUT();
+        hb.expectPATCH();
+        hb.expectDELETE();
+        hb.expectHEAD();
+      }).not.toThrow();
+    });
+
+
+    it('should error if the url is undefined', function() {
+      expect(function() {
+        hb.when('GET', undefined);
+      }).toThrowError('Undefined argument `url`; the argument is provided but not defined');
+
+      expect(function() {
+        hb.whenGET(undefined);
+      }).toThrowError('Undefined argument `url`; the argument is provided but not defined');
+
+      expect(function() {
+        hb.whenDELETE(undefined);
+      }).toThrowError('Undefined argument `url`; the argument is provided but not defined');
+
+      expect(function() {
+        hb.whenJSONP(undefined);
+      }).toThrowError('Undefined argument `url`; the argument is provided but not defined');
+
+      expect(function() {
+        hb.whenHEAD(undefined);
+      }).toThrowError('Undefined argument `url`; the argument is provided but not defined');
+
+      expect(function() {
+        hb.whenPATCH(undefined);
+      }).toThrowError('Undefined argument `url`; the argument is provided but not defined');
+
+      expect(function() {
+        hb.whenPOST(undefined);
+      }).toThrowError('Undefined argument `url`; the argument is provided but not defined');
+
+      expect(function() {
+        hb.whenPUT(undefined);
+      }).toThrowError('Undefined argument `url`; the argument is provided but not defined');
+
+
+      expect(function() {
+        hb.expect('GET', undefined);
+      }).toThrowError('Undefined argument `url`; the argument is provided but not defined');
+
+      expect(function() {
+        hb.expectGET(undefined);
+      }).toThrowError('Undefined argument `url`; the argument is provided but not defined');
+
+      expect(function() {
+        hb.expectDELETE(undefined);
+      }).toThrowError('Undefined argument `url`; the argument is provided but not defined');
+
+      expect(function() {
+        hb.expectJSONP(undefined);
+      }).toThrowError('Undefined argument `url`; the argument is provided but not defined');
+
+      expect(function() {
+        hb.expectHEAD(undefined);
+      }).toThrowError('Undefined argument `url`; the argument is provided but not defined');
+
+      expect(function() {
+        hb.expectPATCH(undefined);
+      }).toThrowError('Undefined argument `url`; the argument is provided but not defined');
+
+      expect(function() {
+        hb.expectPOST(undefined);
+      }).toThrowError('Undefined argument `url`; the argument is provided but not defined');
+
+      expect(function() {
+        hb.expectPUT(undefined);
+      }).toThrowError('Undefined argument `url`; the argument is provided but not defined');
+    });
+
+
     it('should preserve the order of requests', function() {
       hb.when('GET', '/url1').respond(200, 'first');
       hb.when('GET', '/url2').respond(201, 'second');
