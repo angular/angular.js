@@ -865,13 +865,6 @@ function $RootScopeProvider() {
       $destroy: function() {
         // we can't destroy the root scope or a scope that has been already destroyed
         if (this.$$destroyed) return;
-        var parent = this.$parent;
-
-        // let's help garbage collecting
-        while (this.$$childHead) {
-        	this.$$childHead.$destroy();
-        }
-		
         this.$broadcast('$destroy');
         this.$$destroyed = true;
         if (this === $rootScope) return;
@@ -879,6 +872,33 @@ function $RootScopeProvider() {
         for (var eventName in this.$$listenerCount) {
           decrementListenerCount(this, this.$$listenerCount[eventName], eventName);
         }
+        
+        // remove the scope from its parent and help GC by isolating each destroyed scope
+        this.$cleanupDestroyedHierarchy();
+      },
+      
+      /**
+       * @ngdoc method
+       * @name $rootScope.Scope#$cleanupDestroyedHierarchy
+       * @kind function
+       *
+       * @description
+       * Cleanup the destroyed scope's hierarchy by removing it from the parent scope and removing 
+       * references within the destroyed scope tree.
+       * This helps GC by isolating each scope, therefore an external leak keeping a reference to a 
+       * child will only prevent the child from being collected, not the whole tree. 
+       */
+      $cleanupDestroyedHierarchy: function() {
+        // do not cleanup non destroyed scopes
+        if (!this.$$destroyed) return;
+
+        // first cleanup children
+        while (this.$$childHead) {
+        	this.$$childHead.$cleanupDestroyedHierarchy();
+        }
+
+        // then cleanup the current scope
+        var parent = this.$parent;
 
         // sever all the references to parent scopes (after this cleanup, the current scope should
         // not be retained by any of our references and should be eligible for garbage collection)
