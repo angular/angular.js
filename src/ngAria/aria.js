@@ -53,15 +53,15 @@ var ngAriaModule = angular.module('ngAria', ['ng']).
                         provider('$aria', $AriaProvider);
 
 /**
-* Internal Utilities 
+* Internal Utilities
 */
 var nodeBlackList = ['BUTTON', 'A', 'INPUT', 'TEXTAREA', 'SELECT', 'DETAILS', 'SUMMARY'];
 
-var isNodeOneOf = function (elem, nodeTypeArray) {
+var isNodeOneOf = function(elem, nodeTypeArray) {
   if (nodeTypeArray.indexOf(elem[0].nodeName) !== -1) {
     return true;
   }
-}
+};
 /**
  * @ngdoc provider
  * @name $ariaProvider
