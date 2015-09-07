@@ -2013,7 +2013,7 @@ describe('ngOptions', function() {
     });
 
 
-    it('should support biding via ngBind attribute', function() {
+    it('should support binding via ngBind attribute', function() {
       var option;
       createSingleSelect('<option value="" ng-bind="blankVal"></option>');
 
