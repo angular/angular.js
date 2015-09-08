@@ -688,6 +688,14 @@ describe('input', function() {
         expect(inputElm).toBeInvalid();
         expect($rootScope.form.alias.$error.min).toBeTruthy();
       });
+
+      it('should validate if min is empty', function() {
+        $rootScope.minVal = undefined;
+        $rootScope.value = new Date(-9999, 0, 1, 0, 0, 0);
+        $rootScope.$digest();
+
+        expect($rootScope.form.alias.$error.min).toBeFalsy();
+      });
     });
 
     describe('max', function() {
@@ -721,6 +729,14 @@ describe('input', function() {
 
         expect(inputElm).toBeInvalid();
         expect($rootScope.form.alias.$error.max).toBeTruthy();
+      });
+
+      it('should validate if max is empty', function() {
+        $rootScope.maxVal = undefined;
+        $rootScope.value = new Date(9999, 11, 31, 23, 59, 59);
+        $rootScope.$digest();
+
+        expect($rootScope.form.alias.$error.max).toBeFalsy();
       });
     });
   });
@@ -886,6 +902,14 @@ describe('input', function() {
         expect(inputElm).toBeInvalid();
         expect($rootScope.form.alias.$error.min).toBeTruthy();
       });
+
+      it('should validate if min is empty', function() {
+        $rootScope.minVal = undefined;
+        $rootScope.value = new Date(-9999, 0, 1, 0, 0, 0);
+        $rootScope.$digest();
+
+        expect($rootScope.form.alias.$error.min).toBeFalsy();
+      });
     });
 
     describe('max', function() {
@@ -920,6 +944,14 @@ describe('input', function() {
 
         expect(inputElm).toBeInvalid();
         expect($rootScope.form.alias.$error.max).toBeTruthy();
+      });
+
+      it('should validate if max is empty', function() {
+        $rootScope.maxVal = undefined;
+        $rootScope.value = new Date(9999, 11, 31, 23, 59, 59);
+        $rootScope.$digest();
+
+        expect($rootScope.form.alias.$error.max).toBeFalsy();
       });
     });
   });
@@ -1119,6 +1151,14 @@ describe('input', function() {
         expect(inputElm).toBeInvalid();
         expect($rootScope.form.alias.$error.min).toBeTruthy();
       });
+
+      it('should validate if min is empty', function() {
+        $rootScope.minVal = undefined;
+        $rootScope.value = new Date(-9999, 0, 1, 0, 0, 0);
+        $rootScope.$digest();
+
+        expect($rootScope.form.alias.$error.min).toBeFalsy();
+      });
     });
 
     describe('max', function() {
@@ -1152,6 +1192,14 @@ describe('input', function() {
 
         expect(inputElm).toBeInvalid();
         expect($rootScope.form.alias.$error.max).toBeTruthy();
+      });
+
+      it('should validate if max is empty', function() {
+        $rootScope.maxVal = undefined;
+        $rootScope.value = new Date(9999, 11, 31, 23, 59, 59);
+        $rootScope.$digest();
+
+        expect($rootScope.form.alias.$error.max).toBeFalsy();
       });
     });
 
@@ -1428,12 +1476,21 @@ describe('input', function() {
         expect(inputElm).toBeInvalid();
         expect($rootScope.form.alias.$error.min).toBeTruthy();
       });
+
+      it('should validate if min is empty', function() {
+        $rootScope.minVal = undefined;
+        $rootScope.value = new Date(-9999, 0, 1, 0, 0, 0);
+        $rootScope.$digest();
+
+        expect($rootScope.form.alias.$error.min).toBeFalsy();
+      });
     });
 
     describe('max', function() {
       var inputElm;
       beforeEach(function() {
-        inputElm = helper.compileInput('<input type="time" ng-model="value" name="alias" max="22:30:00" />');
+        $rootScope.maxVal = '22:30:00';
+        inputElm = helper.compileInput('<input type="time" ng-model="value" name="alias" max="{{ maxVal }}" />');
       });
 
       it('should invalidate', function() {
@@ -1449,11 +1506,19 @@ describe('input', function() {
         expect(+$rootScope.value).toBe(+new Date(1970, 0, 1, 5, 30, 0));
         expect($rootScope.form.alias.$error.max).toBeFalsy();
       });
+
+     it('should validate if max is empty', function() {
+        $rootScope.maxVal = undefined;
+        $rootScope.value = new Date(9999, 11, 31, 23, 59, 59);
+        $rootScope.$digest();
+
+        expect($rootScope.form.alias.$error.max).toBeFalsy();
+      });
     });
 
 
     it('should validate even if max value changes on-the-fly', function() {
-      $rootScope.max = '4:02:00';
+      $rootScope.max = '04:02:00';
       var inputElm = helper.compileInput('<input type="time" ng-model="value" name="alias" max="{{max}}" />');
 
       helper.changeInputValueTo('05:34:00');
@@ -1481,7 +1546,7 @@ describe('input', function() {
 
 
     it('should validate even if ng-max value changes on-the-fly', function() {
-      $rootScope.max = '4:02:00';
+      $rootScope.max = '04:02:00';
       var inputElm = helper.compileInput('<input type="time" ng-model="value" name="alias" ng-max="max" />');
 
       helper.changeInputValueTo('05:34:00');
@@ -1706,6 +1771,16 @@ describe('input', function() {
 
         expect($rootScope.form.myControl.$error.min).toBeTruthy();
       });
+
+      it('should validate if min is empty', function() {
+        var inputElm = helper.compileInput(
+            '<input type="date" name="alias" ng-model="value" min />');
+
+        $rootScope.value = new Date(-9999, 0, 1, 0, 0, 0);
+        $rootScope.$digest();
+
+        expect($rootScope.form.alias.$error.min).toBeFalsy();
+      });
     });
 
     describe('max', function() {
@@ -1734,6 +1809,16 @@ describe('input', function() {
         $rootScope.$digest();
 
         expect($rootScope.form.myControl.$error.max).toBeTruthy();
+      });
+
+      it('should validate if max is empty', function() {
+        var inputElm = helper.compileInput(
+            '<input type="date" name="alias" ng-model="value" max />');
+
+        $rootScope.value = new Date(9999, 11, 31, 23, 59, 59);
+        $rootScope.$digest();
+
+        expect($rootScope.form.alias.$error.max).toBeFalsy();
       });
     });
 
