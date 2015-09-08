@@ -140,16 +140,19 @@ describe('Filter: limitTo', function() {
 
   it('should return an empty array if Y exceeds input length', function() {
     expect(limitTo(items, '3', 12)).toEqual([]);
-    expect(limitTo(items, 4, '-12')).toEqual([]);
     expect(limitTo(items, -3, '12')).toEqual([]);
-    expect(limitTo(items, '-4', -12)).toEqual([]);
   });
 
   it('should return an empty string if Y exceeds input length', function() {
     expect(limitTo(str, '3', 12)).toEqual("");
-    expect(limitTo(str, 4, '-12')).toEqual("");
     expect(limitTo(str, -3, '12')).toEqual("");
-    expect(limitTo(str, '-4', -12)).toEqual("");
+  });
+
+  it('should start at 0 if Y is negative and exceeds input length', function() {
+    expect(limitTo(items, 4, '-12')).toEqual(['a', 'b', 'c', 'd']);
+    expect(limitTo(items, '-4', -12)).toEqual(['e', 'f', 'g', 'h']);
+    expect(limitTo(str, 4, '-12')).toEqual("tuvw");
+    expect(limitTo(str, '-4', -12)).toEqual("wxyz");
   });
 
   it('should return the entire string beginning from Y if X is positive and X+Y exceeds input length', function() {
