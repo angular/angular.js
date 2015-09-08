@@ -19,7 +19,7 @@ Help us keep Angular open and inclusive. Please read and follow our [Code of Con
 ## <a name="question"></a> Got a Question or Problem?
 
 If you have questions about how to use AngularJS, please direct these to the [Google Group][groups]
-discussion list or [StackOverflow][stackoverflow]. We are also available on [IRC][irc].
+discussion list or [StackOverflow][stackoverflow]. We are also available on [IRC][irc] and [Gitter][gitter].
 
 ## <a name="issue"></a> Found an Issue?
 If you find a bug in the source code or a mistake in the documentation, you can help us by
@@ -268,6 +268,7 @@ You can find out more detailed information about contributing in the
 [corporate-cla]: http://code.google.com/legal/corporate-cla-v1.0.html
 [dev-doc]: https://docs.angularjs.org/guide
 [github]: https://github.com/angular/angular.js
+[gitter]: https://gitter.im/angular/angular.js
 [groups]: https://groups.google.com/forum/?fromgroups#!forum/angular
 [individual-cla]: http://code.google.com/legal/individual-cla-v1.0.html
 [irc]: http://webchat.freenode.net/?channels=angularjs&uio=d4
