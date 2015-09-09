@@ -936,6 +936,9 @@ forEach({
 
   toggleClass: function(element, selector, condition) {
     if (selector) {
+      if (isFunction(selector)) {
+        selector = selector.call(element, 0, element.className, condition);
+      }
       forEach(selector.split(' '), function(className) {
         var classCondition = condition;
         if (isUndefined(classCondition)) {
