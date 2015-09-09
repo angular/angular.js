@@ -48,7 +48,7 @@ install:
   - npm config set loglevel http
   - npm install -g npm@2.5
   # Instal npm dependecies and ensure that npm cache is not stale
-  - scripts/npm/install-dependencies.sh
+  - npm install
 
 before_script:
   - mkdir -p $LOGS_DIR
