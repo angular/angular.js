@@ -825,6 +825,8 @@ function copy(source, destination, stackSource, stackDest) {
       } else if (isRegExp(source)) {
         destination = new RegExp(source.source, source.toString().match(/[^\/]*$/)[0]);
         destination.lastIndex = source.lastIndex;
+      } else if (isFunction(source.cloneNode)) {
+          destination = source.cloneNode(true);
       } else {
         var emptyObject = Object.create(getPrototypeOf(source));
         return copy(source, emptyObject, stackSource, stackDest);

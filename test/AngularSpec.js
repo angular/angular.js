@@ -386,6 +386,18 @@ describe('angular', function() {
       expect(aCopy).toBe(aCopy.self);
     });
 
+    it('should deeply copy XML nodes', function() {
+      var anElement = document.createElement('foo');
+      anElement.appendChild(document.createElement('bar'));
+      var theCopy = anElement.cloneNode(true);
+      expect(copy(anElement).outerHTML).toEqual(theCopy.outerHTML);
+      expect(copy(anElement)).not.toBe(anElement);
+    });
+
+    it('should not try to call a non-function called `cloneNode`', function() {
+      expect(copy.bind(null, { cloneNode: 100 })).not.toThrow();
+    });
+
     it('should handle objects with multiple references', function() {
       var b = {};
       var a = [b, -1, b];
