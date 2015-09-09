@@ -794,98 +794,121 @@ function arrayRemove(array, value) {
  </file>
  </example>
  */
-function copy(source, destination, stackSource, stackDest) {
-  if (isWindow(source) || isScope(source)) {
-    throw ngMinErr('cpws',
-      "Can't copy! Making copies of Window or Scope instances is not supported.");
-  }
-  if (isTypedArray(destination)) {
-    throw ngMinErr('cpta',
-      "Can't copy! TypedArray destination cannot be mutated.");
-  }
+function copy(source, destination) {
+  var stackSource_obj = [];
+  var stackDest_obj = [];
+  var stackSource_arr = [];
+  var stackDest_arr = [];
+  var stackSource_ta = [];
+  var stackDest_ta = [];
+  var stackSource_date = [];
+  var stackDest_date = [];
+  var stackSource_regex = [];
+  var stackDest_regex = [];
+  return copy_(source, destination);
 
-  if (!destination) {
-    destination = source;
-    if (isObject(source)) {
-      var index;
-      if (stackSource && (index = stackSource.indexOf(source)) !== -1) {
-        return stackDest[index];
-      }
-
-      // TypedArray, Date and RegExp have specific copy functionality and must be
-      // pushed onto the stack before returning.
-      // Array and other objects create the base object and recurse to copy child
-      // objects. The array/object will be pushed onto the stack when recursed.
-      if (isArray(source)) {
-        return copy(source, [], stackSource, stackDest);
-      } else if (isTypedArray(source)) {
-        destination = new source.constructor(source);
-      } else if (isDate(source)) {
-        destination = new Date(source.getTime());
-      } else if (isRegExp(source)) {
-        destination = new RegExp(source.source, source.toString().match(/[^\/]*$/)[0]);
-        destination.lastIndex = source.lastIndex;
-      } else {
-        var emptyObject = Object.create(getPrototypeOf(source));
-        return copy(source, emptyObject, stackSource, stackDest);
-      }
-
-      if (stackDest) {
-        stackSource.push(source);
-        stackDest.push(destination);
-      }
+  function copy_(source, destination) {
+    if (isWindow(source) || isScope(source)) {
+      throw ngMinErr('cpws',
+        "Can't copy! Making copies of Window or Scope instances is not supported.");
     }
-  } else {
-    if (source === destination) throw ngMinErr('cpi',
-      "Can't copy! Source and destination are identical.");
-
-    stackSource = stackSource || [];
-    stackDest = stackDest || [];
-
-    if (isObject(source)) {
-      stackSource.push(source);
-      stackDest.push(destination);
+    if (isTypedArray(destination)) {
+      throw ngMinErr('cpta',
+        "Can't copy! TypedArray destination cannot be mutated.");
     }
 
-    var result, key;
-    if (isArray(source)) {
-      destination.length = 0;
-      for (var i = 0; i < source.length; i++) {
-        destination.push(copy(source[i], null, stackSource, stackDest));
+    if (!destination) {
+      destination = source;
+      if (isObject(source)) {
+        var index;
+
+        // TypedArray, Date and RegExp have specific copy functionality and must be
+        // pushed onto the stack before returning.
+        // Array and other objects create the base object and recurse to copy child
+        // objects. The array/object will be pushed onto the stack when recursed.
+        if (isArray(source)) {
+          if ((index = stackSource_arr.indexOf(source)) !== -1) {
+            return stackDest_arr[index];
+          }
+          return copy_(source, []);
+        } else if (isTypedArray(source)) {
+          if ((index = stackSource_ta.indexOf(source)) !== -1) {
+            return stackDest_ta[index];
+          }
+          destination = new source.constructor(source);
+          stackSource_ta.push(source);
+          stackDest_ta.push(destination);
+        } else if (isDate(source)) {
+          if ((index = stackSource_date.indexOf(source)) !== -1) {
+            return stackDest_date[index];
+          }
+          destination = new Date(source.getTime());
+          stackSource_date.push(source);
+          stackDest_date.push(destination);
+        } else if (isRegExp(source)) {
+          if ((index = stackSource_regex.indexOf(source)) !== -1) {
+            return stackDest_regex[index];
+          }
+          destination = new RegExp(source.source, source.toString().match(/[^\/]*$/)[0]);
+          destination.lastIndex = source.lastIndex;
+          stackSource_regex.push(source);
+          stackDest_regex.push(destination);
+        } else {
+          if ((index = stackSource_obj.indexOf(source)) !== -1) {
+            return stackDest_obj[index];
+          }
+          var emptyObject = Object.create(getPrototypeOf(source));
+          return copy_(source, emptyObject);
+        }
       }
     } else {
-      var h = destination.$$hashKey;
-      if (isArray(destination)) {
+      if (source === destination) throw ngMinErr('cpi',
+        "Can't copy! Source and destination are identical.");
+
+      var result, key;
+      if (isArray(source)) {
+        stackSource_arr.push(source);
+        stackDest_arr.push(destination);
         destination.length = 0;
-      } else {
-        forEach(destination, function(value, key) {
-          delete destination[key];
-        });
-      }
-      if (isBlankObject(source)) {
-        // createMap() fast path --- Safe to avoid hasOwnProperty check because prototype chain is empty
-        for (key in source) {
-          destination[key] = copy(source[key], null, stackSource, stackDest);
-        }
-      } else if (source && typeof source.hasOwnProperty === 'function') {
-        // Slow path, which must rely on hasOwnProperty
-        for (key in source) {
-          if (source.hasOwnProperty(key)) {
-            destination[key] = copy(source[key], null, stackSource, stackDest);
-          }
+        for (var i = 0; i < source.length; i++) {
+          destination.push(copy_(source[i], null));
         }
       } else {
-        // Slowest path --- hasOwnProperty can't be called as a method
-        for (key in source) {
-          if (hasOwnProperty.call(source, key)) {
-            destination[key] = copy(source[key], null, stackSource, stackDest);
+        stackSource_obj.push(source);
+        stackDest_obj.push(destination);
+        var h = destination.$$hashKey;
+        if (isArray(destination)) {
+          destination.length = 0;
+        } else {
+          for (key in destination) {
+            delete destination[key];
           }
         }
+        if (isBlankObject(source)) {
+          // createMap() fast path --- Safe to avoid hasOwnProperty check because prototype chain is empty
+          for (key in source) {
+            destination[key] = copy_(source[key], null);
+          }
+        } else if (source && typeof source.hasOwnProperty === 'function') {
+          // Slow path, which must rely on hasOwnProperty
+          for (key in source) {
+            if (source.hasOwnProperty(key)) {
+              destination[key] = copy_(source[key], null);
+            }
+          }
+        } else {
+          // Slowest path --- hasOwnProperty can't be called as a method
+          for (key in source) {
+            if (hasOwnProperty.call(source, key)) {
+              destination[key] = copy_(source[key], null);
+            }
+          }
+        }
+        setHashKey(destination,h);
       }
-      setHashKey(destination,h);
     }
+    return destination;
   }
-  return destination;
 }
 
 /**
