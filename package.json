@@ -13,6 +13,10 @@
     "npm": "~2.5"
   },
   "engineStrict": true,
+  "scripts": {
+    "preinstall": "node scripts/npm/check-node-modules.js --purge",
+    "postinstall": "node scripts/npm/copy-npm-shrinkwrap.js"
+  },
   "devDependencies": {
     "angular-benchpress": "0.x.x",
     "benchmark": "1.x.x",
