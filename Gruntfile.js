@@ -305,7 +305,7 @@ module.exports = function(grunt) {
 
     shell: {
       "npm-install": {
-        command: path.normalize('scripts/npm/install-dependencies.sh')
+        command: 'node scripts/npm/check-node-modules.js'
       },
 
       "promises-aplus-tests": {
