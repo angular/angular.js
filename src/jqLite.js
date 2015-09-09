@@ -139,6 +139,15 @@ var MOUSE_EVENT_MAP= { mouseleave: "mouseout", mouseenter: "mouseover"};
 var jqLiteMinErr = minErr('jqLite');
 
 /**
+ * Returns the key under which the related event-type listener is stored on the original listener
+ * function. See the special handling of mouseenter/mouseleave events in `jqLiteOn/Off`.
+ * @param relatedEventType The type of the related event
+ */
+function getRelatedListenerKey(relatedEventType) {
+  return '$$' + relatedEventType + 'Listener';
+}
+
+/**
  * Converts snake_case to camelCase.
  * Also there is special case for Moz prefix starting with upper case letter.
  * @param name Name to normalize
@@ -300,12 +309,28 @@ function jqLiteOff(element, type, fn, unsupported) {
     }
   } else {
     forEach(type.split(' '), function(type) {
-      if (isDefined(fn)) {
-        var listenerFns = events[type];
-        arrayRemove(listenerFns || [], fn);
-        if (listenerFns && listenerFns.length > 0) {
-          return;
-        }
+      var relatedType = MOUSE_EVENT_MAP[type];
+      var relatedListenerKey = relatedType && getRelatedListenerKey(relatedType);
+      var isDefinedFn = isDefined(fn);
+
+      var allListenerFnsForType = events[type] || [];
+      var allListenerFnsForRelatedType = (relatedType && events[relatedType]) || [];
+      var listenerFnsToRemove = isDefinedFn ? [fn] : allListenerFnsForType;
+
+      // Remove the "related" listeners (if any)
+      if (allListenerFnsForRelatedType.length) {
+        forEach(listenerFnsToRemove, function(fn) {
+          var relatedListenerFn = fn[relatedListenerKey];
+          arrayRemove(allListenerFnsForRelatedType, relatedListenerFn);
+        });
+
+        if (!allListenerFnsForRelatedType.length) jqLiteOff(element, relatedType);
+      }
+
+      // Remove the listener or all listeners for `type`
+      if (isDefinedFn) {
+        arrayRemove(allListenerFnsForType, fn);
+        if (allListenerFnsForType.length) return;
       }
 
       removeEventListenerFn(element, type, handle);
@@ -822,7 +847,10 @@ forEach({
           // Read about mouseenter and mouseleave:
           // http://www.quirksmode.org/js/events_mouse.html#link8
 
-          jqLiteOn(element, MOUSE_EVENT_MAP[type], function(event) {
+          // We need to keep track of the actual listener
+          var relatedType = MOUSE_EVENT_MAP[type];
+          var relatedListenerKey = getRelatedListenerKey(relatedType);
+          var listenerFn = fn[relatedListenerKey] || (fn[relatedListenerKey] = function(event) {
             var target = this, related = event.relatedTarget;
             // For mousenter/leave call the handler if related is outside the target.
             // NB: No relatedTarget if the mouse left/entered the browser window
@@ -831,6 +859,7 @@ forEach({
             }
           });
 
+          jqLiteOn(element, relatedType, listenerFn);
         } else {
           if (type !== '$destroy') {
             addEventListenerFn(element, type, handle);
