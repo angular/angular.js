@@ -472,7 +472,7 @@ describe('ngClass animations', function() {
       //is spaced-out then it is required so that the original digestion
       //is kicked into gear
       $rootScope.$digest();
-      $animate.triggerCallbacks();
+      $animate.flush();
 
       expect(element.data('state')).toBe('crazy-enter');
       expect(enterComplete).toBe(true);

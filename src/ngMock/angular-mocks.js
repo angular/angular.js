@@ -782,8 +782,8 @@ angular.mock.animate = angular.module('ngAnimateMock', ['ng'])
       };
     });
 
-    $provide.decorator('$animate', ['$delegate', '$$asyncCallback', '$timeout', '$browser',
-                            function($delegate,   $$asyncCallback,   $timeout,   $browser) {
+    $provide.decorator('$animate', ['$delegate', '$$asyncCallback', '$timeout', '$browser', '$rootScope', '$$rAF',
+                            function($delegate,   $$asyncCallback,   $timeout,   $browser,   $rootScope,   $$rAF) {
       var animate = {
         queue: [],
         cancel: $delegate.cancel,
@@ -803,6 +803,43 @@ angular.mock.animate = angular.module('ngAnimateMock', ['ng'])
             fn();
           });
           reflowQueue = [];
+        },
+        flush: function() {
+          $rootScope.$digest();
+          var doNextRun, somethingFlushed = false;
+          do {
+            doNextRun = false;
+            if (reflowQueue.length) {
+              doNextRun = somethingFlushed = true;
+              this.triggerReflow();
+            }
+            if ($$rAF.queue.length) {
+              doNextRun = somethingFlushed = true;
+              $$rAF.flush();
+            }
+            if ($$asyncCallback.queue.length) {
+              doNextRun = somethingFlushed = true;
+              this.triggerCallbackEvents();
+            }
+            if (timeoutsRemaining()) {
+              var oldValue = timeoutsRemaining();
+              this.triggerCallbackPromise();
+              var newValue = timeoutsRemaining();
+              if (newValue < oldValue) {
+                doNextRun = somethingFlushed = true;
+              }
+            }
+          } while (doNextRun);
+
+          if (!somethingFlushed) {
+            throw new Error('No pending animations ready to be closed or flushed');
+          }
+
+          $rootScope.$digest();
+
+          function timeoutsRemaining() {
+            return $browser.deferredFns.length;
+          }
         }
       };
 
@@ -1752,14 +1789,15 @@ angular.mock.$TimeoutDecorator = ['$delegate', '$browser', function($delegate, $
 }];
 
 angular.mock.$RAFDecorator = ['$delegate', function($delegate) {
-  var queue = [];
-  var rafFn = function(fn) {
+  var queue, rafFn = function(fn) {
     var index = queue.length;
     queue.push(fn);
     return function() {
       queue.splice(index, 1);
     };
   };
+
+  queue = rafFn.queue = [];
 
   rafFn.supported = $delegate.supported;
 
@@ -1773,22 +1811,22 @@ angular.mock.$RAFDecorator = ['$delegate', function($delegate) {
       queue[i]();
     }
 
-    queue = [];
+    queue.length = 0;
   };
 
   return rafFn;
 }];
 
 angular.mock.$AsyncCallbackDecorator = ['$delegate', function($delegate) {
-  var callbacks = [];
-  var addFn = function(fn) {
-    callbacks.push(fn);
+  var queue, addFn = function(fn) {
+    queue.push(fn);
   };
+  queue = addFn.queue = [];
   addFn.flush = function() {
-    angular.forEach(callbacks, function(fn) {
+    angular.forEach(queue, function(fn) {
       fn();
     });
-    callbacks = [];
+    queue.length = 0;
   };
   return addFn;
 }];

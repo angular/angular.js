@@ -712,7 +712,7 @@ describe('ngView animations', function() {
       $location.path('/foo');
       $rootScope.$digest();
 
-      $animate.triggerCallbacks();
+      $animate.flush();
 
       $location.path('/');
       $rootScope.$digest();
@@ -776,7 +776,7 @@ describe('ngView animations', function() {
         expect($animate.queue.shift().event).toBe('addClass');
         expect($animate.queue.shift().event).toBe('removeClass');
 
-        $animate.triggerReflow();
+        $animate.flush();
 
         expect(item.hasClass('classy')).toBe(false);
         expect(item.hasClass('boring')).toBe(true);
@@ -914,7 +914,7 @@ describe('ngView animations', function() {
       $location.path('/foo');
       $rootScope.$digest();
       expect($animate.queue.shift().event).toBe('enter');
-      $animate.triggerCallbacks();
+      $animate.flush();
 
       expect(autoScrollSpy).toHaveBeenCalledOnce();
     }));
@@ -928,7 +928,7 @@ describe('ngView animations', function() {
       $location.path('/foo');
       $rootScope.$digest();
       expect($animate.queue.shift().event).toBe('enter');
-      $animate.triggerCallbacks();
+      $animate.flush();
 
       expect(autoScrollSpy).toHaveBeenCalledOnce();
     }));
@@ -941,7 +941,7 @@ describe('ngView animations', function() {
       $location.path('/foo');
       $rootScope.$digest();
       expect($animate.queue.shift().event).toBe('enter');
-      $animate.triggerCallbacks();
+      $animate.flush();
 
       expect(autoScrollSpy).not.toHaveBeenCalled();
     }));
@@ -955,7 +955,7 @@ describe('ngView animations', function() {
       $location.path('/foo');
       $rootScope.$digest();
       expect($animate.queue.shift().event).toBe('enter');
-      $animate.triggerCallbacks();
+      $animate.flush();
 
       expect(autoScrollSpy).not.toHaveBeenCalled();
     }));
@@ -972,7 +972,7 @@ describe('ngView animations', function() {
         expect(autoScrollSpy).not.toHaveBeenCalled();
 
         expect($animate.queue.shift().event).toBe('enter');
-        $animate.triggerCallbacks();
+        $animate.flush();
 
         expect($animate.enter).toHaveBeenCalledOnce();
         expect(autoScrollSpy).toHaveBeenCalledOnce();

@@ -56,3 +56,12 @@ function createMockStyleSheet(doc, wind) {
     }
   };
 }
+
+function browserSupportsCssAnimations() {
+  var nav = window.navigator.appVersion;
+  if (nav.indexOf('MSIE') >= 0) {
+    var version = parseInt(navigator.appVersion.match(/MSIE ([\d.]+)/)[1]);
+    return version >= 10; //only IE10+ support keyframes / transitions
+  }
+  return true;
+}

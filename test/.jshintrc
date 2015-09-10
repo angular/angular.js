@@ -165,6 +165,7 @@
     "spyOnlyCallsWithArgs": false,
     "createMockStyleSheet": false,
     "browserTrigger": false,
-    "jqLiteCacheSize": false
+    "jqLiteCacheSize": false,
+    "browserSupportsCssAnimations": false
   }
 }
