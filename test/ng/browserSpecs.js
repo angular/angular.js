@@ -12,11 +12,19 @@ function MockWindow(options) {
   var events = {};
   var timeouts = this.timeouts = [];
   var locationHref = 'http://server/';
+  var committedHref = 'http://server/';
   var mockWindow = this;
   var msie = options.msie;
   var ieState;
 
   historyEntriesLength = 1;
+
+  function replaceHash(href, hash) {
+    // replace the hash with the new one (stripping off a leading hash if there is one)
+    // See hash setter spec: https://url.spec.whatwg.org/#urlutils-and-urlutilsreadonly-members
+    return stripHash(href) + '#' + hash.replace(/^#/,'');
+  }
+
 
   this.setTimeout = function(fn) {
     return timeouts.push(fn) - 1;
@@ -46,24 +54,28 @@ function MockWindow(options) {
 
   this.location = {
     get href() {
-      return locationHref;
+      return committedHref;
     },
     set href(value) {
       locationHref = value;
       mockWindow.history.state = null;
       historyEntriesLength++;
+      if (!options.updateAsync) this.flushHref();
     },
     get hash() {
-      return getHash(locationHref);
+      return getHash(committedHref);
     },
     set hash(value) {
-      // replace the hash with the new one (stripping off a leading hash if there is one)
-      // See hash setter spec: https://url.spec.whatwg.org/#urlutils-and-urlutilsreadonly-members
-      locationHref = stripHash(locationHref) + '#' + value.replace(/^#/,'');
+      locationHref = replaceHash(locationHref, value);
+      if (!options.updateAsync) this.flushHref();
     },
     replace: function(url) {
       locationHref = url;
       mockWindow.history.state = null;
+      if (!options.updateAsync) this.flushHref();
+    },
+    flushHref: function() {
+      committedHref = locationHref;
     }
   };
 
@@ -132,7 +144,7 @@ describe('browser', function() {
 
     logs = {log:[], warn:[], info:[], error:[]};
 
-    var fakeLog = {log: function() { logs.log.push(slice.call(arguments)); },
+    fakeLog = {log: function() { logs.log.push(slice.call(arguments)); },
                    warn: function() { logs.warn.push(slice.call(arguments)); },
                    info: function() { logs.info.push(slice.call(arguments)); },
                    error: function() { logs.error.push(slice.call(arguments)); }};
@@ -703,7 +715,11 @@ describe('browser', function() {
   describe('integration tests with $location', function() {
 
     function setup(options) {
+      fakeWindow = new MockWindow(options);
+      browser = new Browser(fakeWindow, fakeDocument, fakeLog, sniffer);
+
       module(function($provide, $locationProvider) {
+
         spyOn(fakeWindow.history, 'pushState').andCallFake(function(stateObj, title, newUrl) {
           fakeWindow.location.href = newUrl;
         });
@@ -826,6 +842,32 @@ describe('browser', function() {
         expect(changeUrlCount).toBe(1);
       });
 
+    });
+
+    // issue #12241
+    it('should not infinite digest if the browser does not synchronously update the location properties', function() {
+      setup({
+        history: true,
+        html5Mode: true,
+        updateAsync: true // Simulate a browser that doesn't update the href synchronously
+      });
+
+      inject(function($location, $rootScope) {
+
+        // Change the hash within Angular and check that we don't infinitely digest
+        $location.hash('newHash');
+        expect(function() { $rootScope.$digest(); }).not.toThrow();
+        expect($location.absUrl()).toEqual('http://server/#newHash');
+
+        // Now change the hash from outside Angular and check that $location updates correctly
+        fakeWindow.location.hash = '#otherHash';
+
+        // simulate next tick - since this browser doesn't update synchronously
+        fakeWindow.location.flushHref();
+        fakeWindow.fire('hashchange');
+
+        expect($location.absUrl()).toEqual('http://server/#otherHash');
+      });
     });
   });
 
