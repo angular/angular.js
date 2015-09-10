@@ -433,7 +433,7 @@ describe('ngInclude', function() {
 
       expect(autoScrollSpy).not.toHaveBeenCalled();
       expect($animate.queue.shift().event).toBe('enter');
-      $animate.triggerCallbacks();
+      $animate.flush();
 
       expect(autoScrollSpy).toHaveBeenCalledOnce();
     }));
@@ -450,7 +450,7 @@ describe('ngInclude', function() {
       });
 
       expect($animate.queue.shift().event).toBe('enter');
-      $animate.triggerCallbacks();
+      $animate.flush();
 
       $rootScope.$apply(function() {
         $rootScope.tpl = 'another.html';
@@ -459,7 +459,7 @@ describe('ngInclude', function() {
 
       expect($animate.queue.shift().event).toBe('leave');
       expect($animate.queue.shift().event).toBe('enter');
-      $animate.triggerCallbacks();
+      $animate.flush();
 
       $rootScope.$apply(function() {
         $rootScope.tpl = 'template.html';
@@ -468,7 +468,7 @@ describe('ngInclude', function() {
 
       expect($animate.queue.shift().event).toBe('leave');
       expect($animate.queue.shift().event).toBe('enter');
-      $animate.triggerCallbacks();
+      $animate.flush();
 
       expect(autoScrollSpy).toHaveBeenCalled();
       expect(autoScrollSpy.callCount).toBe(3);
@@ -484,7 +484,7 @@ describe('ngInclude', function() {
       });
 
       expect($animate.queue.shift().event).toBe('enter');
-      $animate.triggerCallbacks();
+      $animate.flush();
       expect(autoScrollSpy).not.toHaveBeenCalled();
     }));
 
@@ -500,7 +500,7 @@ describe('ngInclude', function() {
       });
 
       expect($animate.queue.shift().event).toBe('enter');
-      $animate.triggerCallbacks();
+      $animate.flush();
 
       $rootScope.$apply(function() {
         $rootScope.tpl = 'template.html';
@@ -522,7 +522,7 @@ describe('ngInclude', function() {
 
           $rootScope.$apply("tpl = 'template.html'");
           expect($animate.queue.shift().event).toBe('enter');
-          $animate.triggerCallbacks();
+          $animate.flush();
 
           expect(autoScrollSpy).toHaveBeenCalledOnce();
         }

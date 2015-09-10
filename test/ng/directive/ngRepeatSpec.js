@@ -1486,7 +1486,7 @@ describe('ngRepeat animations', function() {
         $rootScope.$digest();
 
         expect(element.text()).toBe('123'); // the original order should be preserved
-        $animate.triggerReflow();
+        $animate.flush();
         $timeout.flush(1500); // 1s * 1.5 closing buffer
         expect(element.text()).toBe('13');
 
