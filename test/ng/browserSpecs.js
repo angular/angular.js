@@ -131,7 +131,7 @@ function MockDocument() {
   };
 }
 
-ddescribe('browser', function() {
+describe('browser', function() {
   /* global Browser: false */
   var browser, fakeWindow, fakeDocument, fakeLog, logs, scripts, removedScripts;
 
