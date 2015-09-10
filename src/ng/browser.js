@@ -373,22 +373,18 @@ function applyIOS9Shim(browser) {
   patchedBrowser.url = function() {
     if (arguments.length) {
       pendingLocationUrl = arguments[0];
-
-      // reset the current pendingLocationUrl in the next task
-      (function() {
-        var pendingLocationUrlToReset = pendingLocationUrl;
-        setTimeout(function() {
-          if (pendingLocationUrlToReset === pendingLocationUrl) {
-            pendingLocationUrl = null;
-          }
-        },0);
-      }());
-
       return browser.url.apply(patchedBrowser, arguments);
     }
 
     return pendingLocationUrl || browser.url();
   };
+
+  jqLite(window).on('popstate', clearPendingLocationUrl);
+  jqLite(window).on('hashchange', clearPendingLocationUrl);
+
+  function clearPendingLocationUrl() {
+    pendingLocationUrl = null;
+  }
 
   return patchedBrowser;
 }
