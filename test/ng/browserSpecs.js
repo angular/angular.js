@@ -1,6 +1,6 @@
 'use strict';
 
-/* global getHash:true, stripHash:true */
+/* global getHash:true, stripHash:true, isIOS9UIWebView:true */
 
 var historyEntriesLength;
 var sniffer = {};
@@ -850,6 +850,23 @@ describe('browser', function() {
       });
     });
 
+  });
+
+
+  describe('iOS9 UIWebView workarounds', function() {
+
+    describe('userAgent sniffing', function() {
+
+      it('should identify iOS9 + UIWebView', function() {
+        var userAgentString = 'Mozilla/5.0 (iPhone; CPU iPhone OS 9_0 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Mobile/13A4325c (358330912)';
+        expect(isIOS9UIWebView(userAgentString)).toBe(true);
+      });
+
+      it('should ignore iOS9 + WKWebView', function() {
+        var userAgentString = 'Mozilla/5.0 (iPhone; CPU iPhone OS 9_0 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13A4325c Safari/601.1';
+        expect(isIOS9UIWebView(userAgentString)).toBe(false);
+      });
+    });
   });
 
 });
