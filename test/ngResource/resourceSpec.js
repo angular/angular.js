@@ -339,9 +339,13 @@ describe("resource", function() {
 
 
   it('should handle url encoding in mapped params', function() {
-    var R = $resource('/api/myapp/resource?from=:from');
+    var R1 = $resource('/api/myapp/resource?:query');
+    $httpBackend.expect('GET', '/api/myapp/resource?foo&bar').respond({});
+    R1.get({query: 'foo&bar'});
+
+    var R2 = $resource('/api/myapp/resource?from=:from');
     $httpBackend.expect('GET', '/api/myapp/resource?from=bar%20%26%20blanks').respond({});
-    R.get({from: 'bar & blanks'});
+    R2.get({from: 'bar & blanks'});
   });
 
 
