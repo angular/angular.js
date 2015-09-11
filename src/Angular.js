@@ -977,7 +977,7 @@ function equals(o1, o2) {
         for (key in o2) {
           if (!(key in keySet) &&
               key.charAt(0) !== '$' &&
-              o2[key] !== undefined &&
+              isDefined(o2[key]) &&
               !isFunction(o2[key])) return false;
         }
         return true;

@@ -87,7 +87,7 @@ angular.mock.$Browser = function() {
       if (fn.id === deferId) fnIndex = index;
     });
 
-    if (fnIndex !== undefined) {
+    if (isDefined(fnIndex)) {
       self.deferredFns.splice(fnIndex, 1);
       return true;
     }
@@ -462,7 +462,7 @@ angular.mock.$IntervalProvider = function() {
             if (fn.id === promise.$$intervalId) fnIndex = index;
           });
 
-          if (fnIndex !== undefined) {
+          if (isDefined(fnIndex)) {
             repeatFns.splice(fnIndex, 1);
           }
         }
@@ -504,7 +504,7 @@ angular.mock.$IntervalProvider = function() {
         if (fn.id === promise.$$intervalId) fnIndex = index;
       });
 
-      if (fnIndex !== undefined) {
+      if (isDefined(fnIndex)) {
         repeatFns[fnIndex].deferred.reject('canceled');
         repeatFns.splice(fnIndex, 1);
         return true;

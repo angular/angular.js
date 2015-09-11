@@ -282,10 +282,10 @@ describe('SCE', function() {
     function runTest(cfg, testFn) {
       return function() {
         module(function($sceDelegateProvider) {
-          if (cfg.whiteList !== undefined) {
+          if (isDefined(cfg.whiteList)) {
             $sceDelegateProvider.resourceUrlWhitelist(cfg.whiteList);
           }
-          if (cfg.blackList !== undefined) {
+          if (isDefined(cfg.blackList)) {
             $sceDelegateProvider.resourceUrlBlacklist(cfg.blackList);
           }
         });

@@ -293,7 +293,7 @@ _jQuery.fn.bindings = function(windowJquery, bindExp) {
   }
 
   function push(value) {
-    if (value === undefined) {
+    if (isUndefined(value)) {
       value = '';
     } else if (typeof value !== 'string') {
       value = angular.toJson(value);

@@ -138,8 +138,8 @@ describe('cookie options', function() {
               .reduce(function(prev, value) {
                 var pair = value.split('=', 2);
                 if (pair[0] === key) {
-                  if (prev === undefined) {
-                    return pair[1] === undefined ? true : pair[1];
+                  if (isUndefined(prev)) {
+                    return isUndefined(pair[1]) ? true : pair[1];
                   } else {
                     throw 'duplicate key in cookie string';
                   }

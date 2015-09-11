@@ -764,8 +764,8 @@ describe('$http', function() {
         $httpBackend.expect('POST', '/url', 'messageBody', function(headers) {
           return headers['accept'] == 'Rewritten' &&
                  headers['content-type'] == 'Content-Type Rewritten' &&
-                 headers['Accept'] === undefined &&
-                 headers['Content-Type'] === undefined;
+                 isUndefined(headers['Accept']) &&
+                 isUndefined(headers['Content-Type']);
         }).respond('');
 
         $http({url: '/url', method: 'POST', data: 'messageBody', headers: {
@@ -779,7 +779,7 @@ describe('$http', function() {
         mockedCookies['XSRF-TOKEN'] =  'secret';
         $browser.url('http://host.com/base');
         $httpBackend.expect('GET', 'http://www.test.com/url', undefined, function(headers) {
-          return headers['X-XSRF-TOKEN'] === undefined;
+          return isUndefined(headers['X-XSRF-TOKEN']);
         }).respond('');
 
         $http({url: 'http://www.test.com/url', method: 'GET', headers: {}});

@@ -1165,7 +1165,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         }
 
         if (writeAttr !== false) {
-          if (value === null || value === undefined) {
+          if (value === null || isUndefined(value)) {
             this.$$element.removeAttr(attrName);
           } else {
             this.$$element.attr(attrName, value);
@@ -2131,7 +2131,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             i = 0, ii = directives.length; i < ii; i++) {
           try {
             directive = directives[i];
-            if ((maxPriority === undefined || maxPriority > directive.priority) &&
+            if ((isUndefined(maxPriority) || maxPriority > directive.priority) &&
                  directive.restrict.indexOf(location) != -1) {
               if (startAttrName) {
                 directive = inherit(directive, {$$start: startAttrName, $$end: endAttrName});
