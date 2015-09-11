@@ -47,6 +47,7 @@ afterEach(function() {
   if (bod) {
     bod.$$hashKey = null;
   }
+  document.$$hashKey = null;
 
   if (this.$injector) {
     var $rootScope = this.$injector.get('$rootScope');
