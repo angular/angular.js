@@ -138,5 +138,26 @@ describe('ngList', function() {
       expect($rootScope.list).toEqual(['a','b']);
     });
   });
+
+  describe('preserveBlanks', function() {
+    it('should not preserve blanks when undefined', function() {
+      helper.compileInput('<input type="text" ng-model="list" ng-list="|" />');
+      helper.changeInputValueTo('a||b');
+      expect($rootScope.list).toEqual(['a','b']);
+    });
+
+    it('should not preserve blanks when false', function() {
+      helper.compileInput('<input type="text" ng-model="list" ng-list="|" preserve-blanks="false" />');
+      helper.changeInputValueTo('a||b');
+      expect($rootScope.list).toEqual(['a','b']);
+    });
+
+    it('should preserve blanks when true', function() {
+      helper.compileInput('<input type="text" ng-model="list" ng-list="|" preserve-blanks="true" />');
+      helper.changeInputValueTo('a||b');
+      expect($rootScope.list).toEqual(['a', '', 'b']);
+    });
+  });
+
 });
 
