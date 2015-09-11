@@ -1828,6 +1828,187 @@ describe('ngMockE2E', function() {
       }));
     });
   });
+
+  describe('ngAnimateMock', function() {
+
+    beforeEach(module('ngAnimate'));
+    beforeEach(module('ngAnimateMock'));
+
+    var ss, element, trackedAnimations;
+
+    afterEach(function() {
+      if (element) {
+        element.remove();
+      }
+      if (ss) {
+        ss.destroy();
+      }
+    });
+
+    beforeEach(module(function($animateProvider) {
+      trackedAnimations = [];
+      $animateProvider.register('.animate', function() {
+        return {
+          leave: logFn('leave'),
+          addClass: logFn('addClass')
+        };
+
+        function logFn(method) {
+          return function(element) {
+            trackedAnimations.push(getDoneCallback(arguments));
+          };
+        }
+
+        function getDoneCallback(args) {
+          for (var i = args.length; i > 0; i--) {
+            if (angular.isFunction(args[i])) return args[i];
+          }
+        }
+      });
+
+      return function($animate, $rootElement, $document, $rootScope, $window) {
+        ss = createMockStyleSheet($document, $window);
+
+        element = angular.element('<div class="animate"></div>');
+        $rootElement.append(element);
+        angular.element($document[0].body).append($rootElement);
+        $animate.enabled(true);
+        $rootScope.$digest();
+      };
+    }));
+
+    describe('$animate.queue', function() {
+      it('should maintain a queue of the executed animations', inject(function($animate) {
+        element.removeClass('animate'); // we don't care to test any actual animations
+        var options = {};
+
+        $animate.addClass(element, 'on', options);
+        var first = $animate.queue[0];
+        expect(first.element).toBe(element);
+        expect(first.event).toBe('addClass');
+        expect(first.options).toBe(options);
+
+        $animate.removeClass(element, 'off', options);
+        var second = $animate.queue[1];
+        expect(second.element).toBe(element);
+        expect(second.event).toBe('removeClass');
+        expect(second.options).toBe(options);
+
+        $animate.leave(element, options);
+        var third = $animate.queue[2];
+        expect(third.element).toBe(element);
+        expect(third.event).toBe('leave');
+        expect(third.options).toBe(options);
+      }));
+    });
+
+    describe('$animate.flush()', function() {
+      it('should throw an error if there is nothing to animate', inject(function($animate) {
+        expect(function() {
+          $animate.flush();
+        }).toThrow('No pending animations ready to be closed or flushed');
+      }));
+
+      it('should trigger the animation to start',
+        inject(function($animate) {
+
+        expect(trackedAnimations.length).toBe(0);
+        $animate.leave(element);
+        $animate.flush();
+        expect(trackedAnimations.length).toBe(1);
+      }));
+
+      it('should trigger the animation to end once run and called',
+        inject(function($animate) {
+
+        $animate.leave(element);
+        $animate.flush();
+        expect(element.parent().length).toBe(1);
+
+        trackedAnimations[0]();
+        $animate.flush();
+        expect(element.parent().length).toBe(0);
+      }));
+
+      it('should trigger the animation promise callback to fire once run and closed',
+        inject(function($animate) {
+
+        var doneSpy = jasmine.createSpy();
+        $animate.leave(element).then(doneSpy);
+        $animate.flush();
+
+        trackedAnimations[0]();
+        expect(doneSpy).not.toHaveBeenCalled();
+        $animate.flush();
+        expect(doneSpy).toHaveBeenCalled();
+      }));
+
+      it('should trigger a series of CSS animations to trigger and start once run',
+        inject(function($animate, $rootScope) {
+
+        if (!browserSupportsCssAnimations()) return;
+
+        ss.addRule('.leave-me.ng-leave', 'transition:1s linear all;');
+
+        var i, elm, elms = [];
+        for (i = 0; i < 5; i++) {
+          elm = angular.element('<div class="leave-me"></div>');
+          element.append(elm);
+          elms.push(elm);
+
+          $animate.leave(elm);
+        }
+
+        $rootScope.$digest();
+
+        for (i = 0; i < 5; i++) {
+          elm = elms[i];
+          expect(elm.hasClass('ng-leave')).toBe(true);
+          expect(elm.hasClass('ng-leave-active')).toBe(false);
+        }
+
+        $animate.flush();
+
+        for (i = 0; i < 5; i++) {
+          elm = elms[i];
+          expect(elm.hasClass('ng-leave')).toBe(true);
+          expect(elm.hasClass('ng-leave-active')).toBe(true);
+        }
+      }));
+
+      it('should trigger parent and child animations to run within the same flush',
+        inject(function($animate, $rootScope) {
+
+        var child = angular.element('<div class="animate child"></div>');
+        element.append(child);
+
+        expect(trackedAnimations.length).toBe(0);
+
+        $animate.addClass(element, 'go');
+        $animate.addClass(child, 'start');
+        $animate.flush();
+
+        expect(trackedAnimations.length).toBe(2);
+      }));
+
+      it('should trigger animation callbacks when called',
+        inject(function($animate, $rootScope) {
+
+        var spy = jasmine.createSpy();
+        $animate.on('addClass', element, spy);
+
+        $animate.addClass(element, 'on');
+        expect(spy).not.toHaveBeenCalled();
+
+        $animate.flush();
+        expect(spy.callCount).toBe(1);
+
+        trackedAnimations[0]();
+        $animate.flush();
+        expect(spy.callCount).toBe(2);
+      }));
+    });
+  });
 });
 
 describe('make sure that we can create an injector outside of tests', function() {
