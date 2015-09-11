@@ -507,8 +507,7 @@ describe('$$animation', function() {
 
         $rootScope.$digest();
 
-        $animate.flush(); // element -> child
-        $animate.flush(); // child -> grandchild
+        $animate.flush();
 
         expect(captureLog[0].element).toBe(element);
         expect(captureLog[1].element).toBe(child);
