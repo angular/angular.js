@@ -450,7 +450,7 @@ function jqLiteInheritedData(element, name, value) {
 
   while (element) {
     for (var i = 0, ii = names.length; i < ii; i++) {
-      if ((value = jqLite.data(element, names[i])) !== undefined) return value;
+      if (isDefined(value = jqLite.data(element, names[i]))) return value;
     }
 
     // If dealing with a document fragment node with a host element, and no parent, use the host
@@ -694,7 +694,7 @@ forEach({
     // in a way that survives minification.
     // jqLiteEmpty takes no arguments but is a setter.
     if (fn !== jqLiteEmpty &&
-        (((fn.length == 2 && (fn !== jqLiteHasClass && fn !== jqLiteController)) ? arg1 : arg2) === undefined)) {
+        (isUndefined((fn.length == 2 && (fn !== jqLiteHasClass && fn !== jqLiteController)) ? arg1 : arg2))) {
       if (isObject(arg1)) {
 
         // we are a write, but the object properties are the key/values
@@ -715,7 +715,7 @@ forEach({
         // TODO: do we still need this?
         var value = fn.$dv;
         // Only if we have $dv do we iterate over all, otherwise it is just the first element.
-        var jj = (value === undefined) ? Math.min(nodeCount, 1) : nodeCount;
+        var jj = (isUndefined(value)) ? Math.min(nodeCount, 1) : nodeCount;
         for (var j = 0; j < jj; j++) {
           var nodeValue = fn(this[j], arg1, arg2);
           value = value ? value + nodeValue : nodeValue;

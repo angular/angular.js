@@ -51,7 +51,7 @@ describe('q', function() {
       log.push(logPrefix + '->throw(' +  _argToString(returnVal) + ')');
       throw returnVal;
     } else {
-      if (returnVal === undefined) {
+      if (isUndefined(returnVal)) {
         log.push(logPrefix);
       } else {
         log.push(logPrefix + '->' +  _argToString(returnVal));

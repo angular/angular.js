@@ -556,7 +556,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
 
     function processParseErrors() {
       var errorKey = ctrl.$$parserName || 'parse';
-      if (parserValid === undefined) {
+      if (isUndefined(parserValid)) {
         setValidity(errorKey, null);
       } else {
         if (!parserValid) {
@@ -1242,7 +1242,7 @@ var ngModelOptionsDirective = function() {
       var that = this;
       this.$options = copy($scope.$eval($attrs.ngModelOptions));
       // Allow adding/overriding bound events
-      if (this.$options.updateOn !== undefined) {
+      if (isDefined(this.$options.updateOn)) {
         this.$options.updateOnDefault = false;
         // extract "default" pseudo-event from list of events that can trigger a model update
         this.$options.updateOn = trim(this.$options.updateOn.replace(DEFAULT_REGEXP, function() {
@@ -1272,7 +1272,7 @@ function addSetValidityMethod(context) {
   ctrl.$setValidity = setValidity;
 
   function setValidity(validationErrorKey, state, controller) {
-    if (state === undefined) {
+    if (isUndefined(state)) {
       createAndSet('$pending', validationErrorKey, controller);
     } else {
       unsetAndCleanup('$pending', validationErrorKey, controller);

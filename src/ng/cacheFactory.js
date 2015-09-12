@@ -67,10 +67,10 @@
            $scope.keys = [];
            $scope.cache = $cacheFactory('cacheId');
            $scope.put = function(key, value) {
-             if ($scope.cache.get(key) === undefined) {
+             if (isUndefined($scope.cache.get(key))) {
                $scope.keys.push(key);
              }
-             $scope.cache.put(key, value === undefined ? null : value);
+             $scope.cache.put(key, isUndefined(value) ? null : value);
            };
          }]);
      </file>

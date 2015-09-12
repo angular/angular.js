@@ -39,7 +39,7 @@ function $$CookieReader($document) {
           // the first value that is seen for a cookie is the most
           // specific one.  values for the same cookie name that
           // follow are for less specific paths.
-          if (lastCookies[name] === undefined) {
+          if (isUndefined(lastCookies[name])) {
             lastCookies[name] = safeDecodeURIComponent(cookie.substring(index + 1));
           }
         }
