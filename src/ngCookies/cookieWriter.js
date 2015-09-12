@@ -20,7 +20,7 @@ function $$CookieWriter($document, $log, $browser) {
     options = options || {};
     expires = options.expires;
     path = angular.isDefined(options.path) ? options.path : cookiePath;
-    if (value === undefined) {
+    if (angular.isUndefined(value)) {
       expires = 'Thu, 01 Jan 1970 00:00:00 GMT';
       value = '';
     }
