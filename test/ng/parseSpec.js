@@ -1190,6 +1190,20 @@ describe('parser', function() {
               scope.$eval('{}["__proto__"].foo = 1');
             }).toThrowMinErr('$parse', 'isecfld');
 
+            expect(function() {
+              scope.$eval('{}[["__proto__"]]');
+            }).toThrowMinErr('$parse', 'isecfld');
+            expect(function() {
+              scope.$eval('{}[["__proto__"]].foo = 1');
+            }).toThrowMinErr('$parse', 'isecfld');
+
+            expect(function() {
+              scope.$eval('0[["__proto__"]]');
+            }).toThrowMinErr('$parse', 'isecfld');
+            expect(function() {
+              scope.$eval('0[["__proto__"]].foo = 1');
+            }).toThrowMinErr('$parse', 'isecfld');
+
             scope.a = "__pro";
             scope.b = "to__";
             expect(function() {
