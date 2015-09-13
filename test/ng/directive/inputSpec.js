@@ -2683,14 +2683,17 @@ describe('input', function() {
     });
 
 
-    it('should set the ngTrueValue when required directive is present', function() {
-      var inputElm = helper.compileInput('<input type="checkbox" ng-model="value" required ng-true-value="\'yes\'" />');
+    it('should pass validation for "required" when trueValue is a string', function() {
+      var inputElm = helper.compileInput('<input type="checkbox" required name="cb"' +
+        'ng-model="value" ng-true-value="\'yes\'" />');
 
       expect(inputElm).toBeInvalid();
+      expect($rootScope.form.cb.$error.required).toBe(true);
 
       browserTrigger(inputElm, 'click');
       expect(inputElm[0].checked).toBe(true);
       expect(inputElm).toBeValid();
+      expect($rootScope.form.cb.$error.required).toBeUndefined();
     });
   });
 
