@@ -1679,12 +1679,10 @@ describe('parser', function() {
   forEach([true, false], function(cspEnabled) {
     describe('csp: ' + cspEnabled, function() {
 
-      beforeEach(module(function($provide) {
-        $provide.decorator('$sniffer', function($delegate) {
-          expect($delegate.csp.noUnsafeEval === true ||
-                 $delegate.csp.noUnsafeEval === false).toEqual(true);
-          $delegate.csp.noUnsafeEval = cspEnabled;
-        });
+      beforeEach(module(function() {
+        expect(csp().noUnsafeEval === true ||
+               csp().noUnsafeEval === false).toEqual(true);
+        csp().noUnsafeEval = cspEnabled;
       }, provideLog));
 
       beforeEach(inject(function($rootScope) {
@@ -2667,6 +2665,20 @@ describe('parser', function() {
             }).toThrowMinErr('$parse', 'isecfld');
             expect(function() {
               scope.$eval('{}["__proto__"].foo = 1');
+            }).toThrowMinErr('$parse', 'isecfld');
+
+            expect(function() {
+              scope.$eval('{}[["__proto__"]]');
+            }).toThrowMinErr('$parse', 'isecfld');
+            expect(function() {
+              scope.$eval('{}[["__proto__"]].foo = 1');
+            }).toThrowMinErr('$parse', 'isecfld');
+
+            expect(function() {
+              scope.$eval('0[["__proto__"]]');
+            }).toThrowMinErr('$parse', 'isecfld');
+            expect(function() {
+              scope.$eval('0[["__proto__"]].foo = 1');
             }).toThrowMinErr('$parse', 'isecfld');
 
             scope.a = "__pro";
