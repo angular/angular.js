@@ -757,7 +757,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
   var EVENT_HANDLER_ATTR_REGEXP = /^(on[a-z]+|formaction)$/;
 
   function parseIsolateBindings(scope, directiveName, isController) {
-    var LOCAL_REGEXP = /^\s*([@&]|=(\*?))(\??)\s*(\w*)\s*$/;
+    var LOCAL_REGEXP = /^\s*([@&#]|=(\*?))(\??)\s*(\w*)\s*$/;
 
     var bindings = {};
 
