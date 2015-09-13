@@ -2663,6 +2663,31 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
               return parentGet(scope, locals);
             };
             break;
+
+        case '#':
+        	parentGet = attrs.hasOwnProperty(attrName) ? $parse(attrs[attrName]) : noop;
+
+        	if (parentGet === noop && optional) break;
+
+        	var parentValue = parentGet(scope);
+
+        	if (!isObject(parentValue))
+        		throw $compileMinErr('nonassign',
+					"Attribute value has to be an object in directive '{0}'." +
+					" Definition: {... {1}: '{2}' ...}",
+					directive.name, scopeName, definition);
+
+        	destination[scopeName] = copy(parentValue);
+
+        	var unwatch;
+        	unwatch = scope.$watch(function parentValueWatch() {
+        		return $parse(attrs[attrName])(scope);
+        	}, function onParentValueChange(newParentValue) {
+        		destination[scopeName] = copy(newParentValue);
+        	});
+        	onNewScopeDestroyed = (onNewScopeDestroyed || []);
+        	onNewScopeDestroyed.push(unwatch);
+        	break;
         }
       });
       var destroyBindings = onNewScopeDestroyed ? function destroyBindings() {
