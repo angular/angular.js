@@ -25,6 +25,14 @@ function lookupDottedPath(obj, path) {
 }
 
 /**
+ * check whether it's a single value in json standard or not
+ * http://json.org/
+ */
+function isSingleJson(value) {
+  return angular.isString(value) || angular.isNumber(value) || value === null || typeof value === 'boolean';
+}
+
+/**
  * Create a shallow copy of an object and clear other fields from the destination
  */
 function shallowClearAndCopy(src, dst) {
@@ -34,9 +42,15 @@ function shallowClearAndCopy(src, dst) {
     delete dst[key];
   });
 
-  for (var key in src) {
-    if (src.hasOwnProperty(key) && !(key.charAt(0) === '$' && key.charAt(1) === '$')) {
-      dst[key] = src[key];
+  if (isSingleJson(src)) {
+    // wrap single value into an object with a _value key
+    // see https://github.com/angular/angular.js/issues/12787
+    dst._value = src;
+  } else {
+    for (var key in src) {
+      if (src.hasOwnProperty(key) && !(key.charAt(0) === '$' && key.charAt(1) === '$')) {
+        dst[key] = src[key];
+      }
     }
   }
 
