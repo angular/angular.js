@@ -244,8 +244,8 @@ var svgElements = toMap("circle,defs,desc,ellipse,font-face,font-face-name,font-
         "hkern,image,linearGradient,line,marker,metadata,missing-glyph,mpath,path,polygon,polyline," +
         "radialGradient,rect,stop,svg,switch,text,title,tspan,use");
 
-// Special Elements (can contain anything)
-var specialElements = toMap("script,style");
+// Blocked Elements (will be stripped)
+var blockedElements = toMap("script,style");
 
 var validElements = angular.extend({},
                                    voidElements,
@@ -430,15 +430,15 @@ function encodeEntities(value) {
  * }
  */
 function htmlSanitizeWriter(buf, uriValidator) {
-  var ignore = false;
+  var ignoreCurrentElement = false;
   var out = angular.bind(buf, buf.push);
   return {
     start: function(tag, attrs) {
       tag = angular.lowercase(tag);
-      if (!ignore && specialElements[tag]) {
-        ignore = tag;
+      if (!ignoreCurrentElement && blockedElements[tag]) {
+        ignoreCurrentElement = tag;
       }
-      if (!ignore && validElements[tag] === true) {
+      if (!ignoreCurrentElement && validElements[tag] === true) {
         out('<');
         out(tag);
         angular.forEach(attrs, function(value, key) {
@@ -458,17 +458,17 @@ function htmlSanitizeWriter(buf, uriValidator) {
     },
     end: function(tag) {
       tag = angular.lowercase(tag);
-      if (!ignore && validElements[tag] === true && voidElements[tag] !== true) {
+      if (!ignoreCurrentElement && validElements[tag] === true && voidElements[tag] !== true) {
         out('</');
         out(tag);
         out('>');
       }
-      if (tag == ignore) {
-        ignore = false;
+      if (tag == ignoreCurrentElement) {
+        ignoreCurrentElement = false;
       }
     },
     chars: function(chars) {
-      if (!ignore) {
+      if (!ignoreCurrentElement) {
         out(encodeEntities(chars));
       }
     }
