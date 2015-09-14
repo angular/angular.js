@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "nov",
       "des"
     ],
+    "STANDALONEMONTH": [
+      "januar",
+      "februar",
+      "mars",
+      "apr\u00edl",
+      "mai",
+      "juni",
+      "juli",
+      "august",
+      "september",
+      "oktober",
+      "november",
+      "desember"
+    ],
     "WEEKENDRANGE": [
       5,
       6
@@ -94,7 +108,7 @@ $provide.value("$locale", {
     "shortTime": "HH:mm"
   },
   "NUMBER_FORMATS": {
-    "CURRENCY_SYM": "kr",
+    "CURRENCY_SYM": "kr.",
     "DECIMAL_SEP": ",",
     "GROUP_SEP": ".",
     "PATTERNS": [

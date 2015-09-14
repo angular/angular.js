@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "may",
       "li\u0253"
     ],
+    "STANDALONEMONTH": [
+      "K\u0254nd\u0254\u014b",
+      "M\u00e0c\u025b\u0302l",
+      "M\u00e0t\u00f9mb",
+      "M\u00e0top",
+      "M\u0300puy\u025b",
+      "H\u00ecl\u00f2nd\u025b\u0300",
+      "Nj\u00e8b\u00e0",
+      "H\u00ecka\u014b",
+      "D\u00ecp\u0254\u0300s",
+      "B\u00ec\u00f2\u00f4m",
+      "M\u00e0y\u025bs\u00e8p",
+      "L\u00ecbuy li \u0144y\u00e8e"
+    ],
     "WEEKENDRANGE": [
       5,
       6

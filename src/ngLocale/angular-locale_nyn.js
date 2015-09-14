@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "KNK",
       "KNB"
     ],
+    "STANDALONEMONTH": [
+      "Okwokubanza",
+      "Okwakabiri",
+      "Okwakashatu",
+      "Okwakana",
+      "Okwakataana",
+      "Okwamukaaga",
+      "Okwamushanju",
+      "Okwamunaana",
+      "Okwamwenda",
+      "Okwaikumi",
+      "Okwaikumi na kumwe",
+      "Okwaikumi na ibiri"
+    ],
     "WEEKENDRANGE": [
       5,
       6

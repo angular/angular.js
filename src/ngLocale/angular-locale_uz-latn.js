@@ -62,6 +62,20 @@ $provide.value("$locale", {
       "Noya",
       "Dek"
     ],
+    "STANDALONEMONTH": [
+      "Yanvar",
+      "Fevral",
+      "Mart",
+      "Aprel",
+      "May",
+      "Iyun",
+      "Iyul",
+      "Avgust",
+      "Sentabr",
+      "Oktabr",
+      "Noyabr",
+      "Dekabr"
+    ],
     "WEEKENDRANGE": [
       5,
       6
