@@ -62,6 +62,8 @@ describe('filters', function() {
     it('should format according different separators', function() {
       var num = formatNumber(1234567.1, pattern, '.', ',', 2);
       expect(num).toBe('1.234.567,10');
+      num = formatNumber(1e-14, pattern, '.', ',', 14);
+      expect(num).toBe('0,00000000000001');
     });
 
     it('should format with or without fractionSize', function() {
