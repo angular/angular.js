@@ -1676,13 +1676,18 @@ describe('parser', function() {
   }]));
 
 
-  forEach([true, false], function(cspEnabled) {
-    describe('csp: ' + cspEnabled, function() {
+  forEach([{csp: true, expensiveChecks: true},
+           {csp: true, expensiveChecks: false},
+           {csp: false, expensiveChecks: true},
+           {csp: false, expensiveChecks: false},
+      ], function(configuration) {
+    describe('csp: ' + configuration.csp, function() {
 
-      beforeEach(module(function() {
+      beforeEach(module(function($parseProvider) {
         expect(csp().noUnsafeEval === true ||
                csp().noUnsafeEval === false).toEqual(true);
-        csp().noUnsafeEval = cspEnabled;
+        csp().noUnsafeEval = configuration.csp;
+        $parseProvider.expensiveChecks(configuration.expensiveChecks);
       }, provideLog));
 
       beforeEach(inject(function($rootScope) {
@@ -2352,35 +2357,51 @@ describe('parser', function() {
           });
 
           describe('expensiveChecks', function() {
-            it('should block access to window object even when aliased in getters', inject(function($parse, $window) {
-              scope.foo = {w: $window};
-              // This isn't blocked for performance.
-              expect(scope.$eval($parse('foo.w'))).toBe($window);
-              // Event handlers use the more expensive path for better protection since they expose
-              // the $event object on the scope.
-              expect(function() {
-                scope.$eval($parse('foo.w', null, true));
-              }).toThrowMinErr(
-                      '$parse', 'isecwindow', 'Referencing the Window in Angular expressions is disallowed! ' +
-                      'Expression: foo.w');
-            }));
+            if (!configuration.expensiveChecks) {
+              it('should block access to window object even when aliased in getters', inject(function($parse, $window) {
+                scope.foo = {w: $window};
+                // This isn't blocked for performance.
+                expect(scope.$eval($parse('foo.w'))).toBe($window);
+                // Event handlers use the more expensive path for better protection since they expose
+                // the $event object on the scope.
+                expect(function() {
+                  scope.$eval($parse('foo.w', null, true));
+                }).toThrowMinErr(
+                        '$parse', 'isecwindow', 'Referencing the Window in Angular expressions is disallowed! ' +
+                        'Expression: foo.w');
+              }));
 
-            it('should block access to window object even when aliased in setters', inject(function($parse, $window) {
-              scope.foo = {w: $window};
-              // This is blocked as it points to `window`.
-              expect(function() {
-                expect(scope.$eval($parse('foo.w = 1'))).toBe($window);
-              }).toThrowMinErr(
-                      '$parse', 'isecwindow', 'Referencing the Window in Angular expressions is disallowed! ' +
-                      'Expression: foo.w = 1');
-              // Event handlers use the more expensive path for better protection since they expose
-              // the $event object on the scope.
-              expect(function() {
-                scope.$eval($parse('foo.w = 1', null, true));
-              }).toThrowMinErr(
-                      '$parse', 'isecwindow', 'Referencing the Window in Angular expressions is disallowed! ' +
-                      'Expression: foo.w = 1');
-            }));
+              it('should block access to window object even when aliased in setters', inject(function($parse, $window) {
+                scope.foo = {w: $window};
+                // This is blocked as it points to `window`.
+                expect(function() {
+                  expect(scope.$eval($parse('foo.w = 1'))).toBe($window);
+                }).toThrowMinErr(
+                        '$parse', 'isecwindow', 'Referencing the Window in Angular expressions is disallowed! ' +
+                        'Expression: foo.w = 1');
+                // Event handlers use the more expensive path for better protection since they expose
+                // the $event object on the scope.
+                expect(function() {
+                  scope.$eval($parse('foo.w = 1', null, true));
+                }).toThrowMinErr(
+                        '$parse', 'isecwindow', 'Referencing the Window in Angular expressions is disallowed! ' +
+                        'Expression: foo.w = 1');
+              }));
+            } else {
+              it('should be possible to enable expensiveChecks at the provider level', inject(function($parse, $window) {
+                scope.foo = {w: $window};
+                expect(function() {
+                  scope.$eval($parse('foo.w'));
+                }).toThrowMinErr(
+                        '$parse', 'isecwindow', 'Referencing the Window in Angular expressions is disallowed! ' +
+                        'Expression: foo.w');
+                expect(function() {
+                  scope.$eval($parse('foo.w = 1'));
+                }).toThrowMinErr(
+                        '$parse', 'isecwindow', 'Referencing the Window in Angular expressions is disallowed! ' +
+                        'Expression: foo.w = 1');
+              }));
+            }
           });
         });
 
