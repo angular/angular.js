@@ -228,6 +228,11 @@ describe('HTML', function() {
     });
   }
 
+  it('should strip html comments', function() {
+    expectHTML('<!-- comment 1 --><p>text1<!-- comment 2 -->text2</p><!-- comment 3 -->')
+      .toEqual('<p>text1text2</p>');
+  });
+
 
   describe('SVG support', function() {
 
