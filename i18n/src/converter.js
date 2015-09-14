@@ -39,6 +39,7 @@ function convertDatetimeData(dataObj) {
 
   datetimeFormats.MONTH = dataObj.MONTHS;
   datetimeFormats.SHORTMONTH = dataObj.SHORTMONTHS;
+  datetimeFormats.STANDALONEMONTH = dataObj.STANDALONEMONTHS;
   datetimeFormats.DAY = dataObj.WEEKDAYS;
   datetimeFormats.SHORTDAY = dataObj.SHORTWEEKDAYS;
   datetimeFormats.AMPMS = dataObj.AMPMS;
