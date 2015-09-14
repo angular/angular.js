@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "marraskuuta",
       "joulukuuta"
     ],
+    "STANDALONEMONTH": [
+      "tammikuu",
+      "helmikuu",
+      "maaliskuu",
+      "huhtikuu",
+      "toukokuu",
+      "kes\u00e4kuu",
+      "hein\u00e4kuu",
+      "elokuu",
+      "syyskuu",
+      "lokakuu",
+      "marraskuu",
+      "joulukuu"
+    ],
     "WEEKENDRANGE": [
       5,
       6

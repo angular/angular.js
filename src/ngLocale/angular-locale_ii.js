@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "11",
       "12"
     ],
+    "STANDALONEMONTH": [
+      "\ua2cd\ua1aa",
+      "\ua44d\ua1aa",
+      "\ua315\ua1aa",
+      "\ua1d6\ua1aa",
+      "\ua26c\ua1aa",
+      "\ua0d8\ua1aa",
+      "\ua3c3\ua1aa",
+      "\ua246\ua1aa",
+      "\ua22c\ua1aa",
+      "\ua2b0\ua1aa",
+      "\ua2b0\ua2aa\ua1aa",
+      "\ua2b0\ua44b\ua1aa"
+    ],
     "WEEKENDRANGE": [
       5,
       6

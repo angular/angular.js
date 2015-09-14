@@ -62,6 +62,20 @@ $provide.value("$locale", {
       "Nov",
       "Di\u010b"
     ],
+    "STANDALONEMONTH": [
+      "Jannar",
+      "Frar",
+      "Marzu",
+      "April",
+      "Mejju",
+      "\u0120unju",
+      "Lulju",
+      "Awwissu",
+      "Settembru",
+      "Ottubru",
+      "Novembru",
+      "Di\u010bembru"
+    ],
     "WEEKENDRANGE": [
       5,
       6

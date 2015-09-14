@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "Aya",
       "Kap"
     ],
+    "STANDALONEMONTH": [
+      "Qulla puquy",
+      "Hatun puquy",
+      "Pauqar waray",
+      "Ayriwa",
+      "Aymuray",
+      "Inti raymi",
+      "Anta Sitwa",
+      "Qhapaq Sitwa",
+      "Uma raymi",
+      "Kantaray",
+      "Ayamarq\u02bca",
+      "Kapaq Raymi"
+    ],
     "WEEKENDRANGE": [
       5,
       6
