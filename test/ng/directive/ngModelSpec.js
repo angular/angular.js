@@ -1328,6 +1328,28 @@ describe('ngModel', function() {
   describe('CSS classes', function() {
     var EMAIL_REGEXP = /^[a-z0-9!#$%&'*+\/=?^_`{|}~.-]+@[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)*$/i;
 
+    it('should set ng-empty or ng-not-empty when the view value changes',
+          inject(function($compile, $rootScope, $sniffer) {
+
+      var element = $compile('<input ng-model="value" />')($rootScope);
+
+      $rootScope.$digest();
+      expect(element).toBeEmpty();
+
+      $rootScope.value = 'XXX';
+      $rootScope.$digest();
+      expect(element).toBeNotEmpty();
+
+      element.val('');
+      browserTrigger(element, $sniffer.hasEvent('input') ? 'input' : 'change');
+      expect(element).toBeEmpty();
+
+      element.val('YYY');
+      browserTrigger(element, $sniffer.hasEvent('input') ? 'input' : 'change');
+      expect(element).toBeNotEmpty();
+    }));
+
+
     it('should set css classes (ng-valid, ng-invalid, ng-pristine, ng-dirty, ng-untouched, ng-touched)',
         inject(function($compile, $rootScope, $sniffer) {
       var element = $compile('<input type="email" ng-model="value" />')($rootScope);
@@ -1693,8 +1715,10 @@ describe('ngModel', function() {
       model.$setViewValue('some dirty value');
 
       var animations = findElementAnimations(input, $animate.queue);
-      assertValidAnimation(animations[0], 'removeClass', 'ng-pristine');
-      assertValidAnimation(animations[1], 'addClass', 'ng-dirty');
+      assertValidAnimation(animations[0], 'removeClass', 'ng-empty');
+      assertValidAnimation(animations[1], 'addClass', 'ng-not-empty');
+      assertValidAnimation(animations[2], 'removeClass', 'ng-pristine');
+      assertValidAnimation(animations[3], 'addClass', 'ng-dirty');
     }));
 
 
