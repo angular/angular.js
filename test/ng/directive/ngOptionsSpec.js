@@ -156,10 +156,10 @@ describe('ngOptions', function() {
   });
 
 
-  it('should have optional dependency on ngModel', function() {
+  it('should have a dependency on ngModel', function() {
     expect(function() {
       compile('<select ng-options="item in items"></select>');
-    }).not.toThrow();
+    }).toThrow();
   });
 
 
