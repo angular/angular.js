@@ -273,7 +273,7 @@ describe('$q.when', function() {
     $timeout.verifyNoPendingTasks();
   }));
 
-  it('should accept $timeout.flush(0) when not sure if $q.when was called with a value or a promise’,
+  it('should accept $timeout.flush(0) when not sure if $q.when was called with a value or a promise',
       inject(function($q, $timeout) {
     $q.when('foo');
     $timeout.flush(0);
