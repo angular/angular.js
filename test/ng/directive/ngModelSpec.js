@@ -1,6 +1,9 @@
 'use strict';
 
-/* globals getInputCompileHelper: false */
+/* global getInputCompileHelper: false,
+   NgModelValidator: true,
+   NgModelTransformer: true
+*/
 
 describe('ngModel', function() {
 
@@ -1361,6 +1364,261 @@ describe('ngModel', function() {
         expect(scope.value).toBeUndefined();
         expect(ctrl.$error).toEqual({parserOrValidator: true});
       });
+
+    });
+
+    describe('collections', function() {
+
+      beforeEach(function() {
+        ctrl.$isCollection = true;
+        ctrl.$$setupModelWatch();
+      });
+
+      it('should call parsers with the whole collection by default or if expectsItem is false', function() {
+        var parse = {
+          fn: function(value) {
+            return ['a', 'b', 'c'];
+          }
+        };
+
+        var parser = new NgModelTransformer(
+          'parse',
+          function(value) {
+            return ['a', 'b', 'c', 'd'];
+          },
+          false
+        );
+
+        spyOn(parse, 'fn').andCallThrough();
+        spyOn(parser, 'transformFn').andCallThrough();
+        ctrl.$parsers.push(parse.fn);
+        ctrl.$parsers.push(parser);
+
+        ctrl.$setViewValue(['a', 'b']);
+        expect(parse.fn).toHaveBeenCalledOnceWith(['a', 'b']);
+        expect(parser.transformFn).toHaveBeenCalledOnceWith(['a', 'b', 'c']);
+      });
+
+
+      it('should call parsers for each item if expectsItem is true', function() {
+        var parser = new NgModelTransformer(
+          'parse',
+          function(value) {
+            return value + '1';
+          },
+          true
+        );
+
+        spyOn(parser, 'transformFn').andCallThrough();
+        ctrl.$parsers.push(parser);
+
+        ctrl.$setViewValue(['a', 'b', 'c']);
+        expect(parser.transformFn.calls.length).toBe(3);
+        expect(parser.transformFn.calls[0].args[0]).toBe('a');
+        expect(parser.transformFn.calls[1].args[0]).toBe('b');
+        expect(parser.transformFn.calls[2].args[0]).toBe('c');
+        expect(scope.value).toEqual(['a1', 'b1', 'c1']);
+      });
+
+
+      it('should call formatters with the whole collection by default or if expectsItem is false', function() {
+        var format = {
+          fn: function(value) {
+            return value;
+          }
+        };
+
+        var formatter = new NgModelTransformer(
+          'format',
+          function(value) {
+            return value;
+          },
+          false
+        );
+
+        spyOn(format, 'fn').andCallThrough();
+        spyOn(formatter, 'transformFn').andCallThrough();
+        ctrl.$formatters.push(format.fn);
+        ctrl.$formatters.push(formatter);
+
+        scope.value = ['a', 'b', 'c'];
+        scope.$digest();
+
+        expect(format.fn).toHaveBeenCalledOnceWith(['a', 'b', 'c']);
+        expect(formatter.transformFn).toHaveBeenCalledOnceWith(['a', 'b', 'c']);
+      });
+
+
+      it('should call formatters for each item if expectsItem is true', function() {
+        var formatter = new NgModelTransformer(
+          'format',
+          function(value) {
+            return value.toUpperCase();
+          },
+          true
+        );
+
+        spyOn(formatter, 'transformFn').andCallThrough();
+        ctrl.$formatters.push(formatter);
+        scope.value = ['a', 'b', 'c'];
+        scope.$digest();
+
+        expect(formatter.transformFn.calls.length).toBe(3);
+        expect(formatter.transformFn.calls[0].args[0]).toBe('a');
+        expect(formatter.transformFn.calls[1].args[0]).toBe('b');
+        expect(formatter.transformFn.calls[2].args[0]).toBe('c');
+
+        expect(ctrl.$viewValue).toEqual(['A', 'B', 'C']);
+      });
+
+
+      it('should call validators with the whole collection by default or if expectsItem is false', function() {
+        ctrl.$validators.testLegacy = jasmine.createSpy().andReturn(true);
+
+        ctrl.$validators.test = new NgModelValidator(
+          'test',
+          jasmine.createSpy('validator').andReturn(true),
+          false
+        );
+
+        ctrl.$setViewValue(['a', 'b']);
+        expect(ctrl.$validators.testLegacy).toHaveBeenCalledOnceWith(['a', 'b'], ['a', 'b']);
+        expect(ctrl.$validators.test.validateFn).toHaveBeenCalledOnceWith(['a', 'b'], ['a', 'b']);
+      });
+
+
+      it('should call validators for each item if expectsItem is true', function() {
+
+        ctrl.$validators.test = new NgModelValidator(
+          'test',
+          jasmine.createSpy('validator').andReturn(true),
+          true
+        );
+
+        ctrl.$setViewValue(['a', 'b']);
+        expect(ctrl.$validators.test.validateFn.calls.length).toBe(2);
+        expect(ctrl.$validators.test.validateFn.calls[0].args).toEqual(['a', 'a']);
+        expect(ctrl.$validators.test.validateFn.calls[1].args).toEqual(['b', 'b']);
+      });
+
+
+      it('should invalidate the model if one item is invalid', function() {
+        ctrl.$validators.test = new NgModelValidator(
+          'test',
+          function(modelValue, viewValue) {
+            return modelValue === 'a' ? true : false;
+          },
+          true
+        );
+
+        ctrl.$setViewValue(['a', 'b']);
+        expect(ctrl.$valid).toBe(false);
+        expect(ctrl.$error.test).toBe(true);
+      });
+
+
+      it('should not modify the $modelValue when a formatter modifies a collection', function() {
+        var formatter = new NgModelTransformer(
+          'format',
+          function(value) {
+            if (value) {
+              value.pop();
+            }
+            return value;
+          },
+          false
+        );
+
+        ctrl.$formatters.push(formatter);
+        scope.value = ['a', 'b', 'c'];
+        scope.$digest();
+
+        expect(ctrl.$viewValue).toEqual(['a', 'b']);
+        expect(ctrl.$modelValue).toEqual(['a', 'b', 'c']);
+        expect(scope.value).toEqual(['a', 'b', 'c']);
+      });
+
+      describe('passing viewValue as collection item to a validator if expectsItem is true ', function() {
+
+        it('should pass the the viewValue represention of an item to the validator if expectsItem is true', function() {
+          ctrl.$validators.test = new NgModelValidator(
+            'test',
+            jasmine.createSpy('validator').andReturn(true),
+            true
+          );
+
+          ctrl.$setViewValue(['a', 'b']);
+          expect(ctrl.$validators.test.validateFn.calls[0].args).toEqual(['a', 'a']);
+          expect(ctrl.$validators.test.validateFn.calls[1].args).toEqual(['b', 'b']);
+
+          scope.value = ['aa', 'bb'];
+          scope.$digest();
+          expect(ctrl.$validators.test.validateFn.calls[2].args).toEqual(['aa', 'aa']);
+          expect(ctrl.$validators.test.validateFn.calls[3].args).toEqual(['bb', 'bb']);
+        });
+
+
+        it('should use the result of the first parser that returns a collection', function() {
+          ctrl.$parsers.push(function() {
+            // The first parser returns a string
+            return 'xyz';
+          });
+
+          ctrl.$parsers.push(function() {
+            // The second parser returns an array -> viewValueCollection
+            return ['a', 'b'];
+          });
+
+
+          ctrl.$parsers.push(function(value) {
+            // The third parser returns another array -> modelValue
+            return ['aa', 'bb'];
+          });
+
+          ctrl.$validators.test = new NgModelValidator(
+            'test',
+            jasmine.createSpy('validator').andReturn(true),
+            true
+          );
+
+          ctrl.$setViewValue('abc');
+          expect(ctrl.$validators.test.validateFn.calls[0].args).toEqual(['aa', 'a']);
+          expect(ctrl.$validators.test.validateFn.calls[1].args).toEqual(['bb', 'b']);
+        });
+
+
+        it('should use the result of the last formatter that returns a collection', function() {
+          ctrl.$formatters.unshift(function(value) {
+            return ['aa', 'bb'];
+          });
+
+          ctrl.$formatters.unshift(function(value) {
+            return ['a', 'b'];
+          });
+
+          ctrl.$formatters.unshift(new NgModelTransformer(
+            // The last formatter handles the whole collection and returns a string -> viewValue
+            'formatToString',
+            function() {
+              return 'ab';
+            },
+            false
+          ));
+
+          ctrl.$validators.test = new NgModelValidator(
+            'test',
+            jasmine.createSpy('validator').andReturn(true),
+            true
+          );
+
+          scope.value = ['aaa', 'bbb'];
+          scope.$digest();
+
+          expect(ctrl.$validators.test.validateFn.calls[0].args).toEqual(['aaa', 'a']);
+          expect(ctrl.$validators.test.validateFn.calls[1].args).toEqual(['bbb', 'b']);
+        });
+      });
+
 
     });
   });

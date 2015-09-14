@@ -1,5 +1,7 @@
 'use strict';
 
+/* global NgModelValidator: true */
+
 var requiredDirective = function() {
   return {
     restrict: 'A',
@@ -65,6 +67,7 @@ var maxlengthDirective = function() {
         maxlength = isNaN(intVal) ? -1 : intVal;
         ctrl.$validate();
       });
+
       ctrl.$validators.maxlength = function(modelValue, viewValue) {
         return (maxlength < 0) || ctrl.$isEmpty(viewValue) || (viewValue.length <= maxlength);
       };
@@ -84,6 +87,7 @@ var minlengthDirective = function() {
         minlength = toInt(value) || 0;
         ctrl.$validate();
       });
+
       ctrl.$validators.minlength = function(modelValue, viewValue) {
         return ctrl.$isEmpty(viewValue) || viewValue.length >= minlength;
       };
