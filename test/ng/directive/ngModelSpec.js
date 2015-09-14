@@ -1182,46 +1182,6 @@ describe('ngModel', function() {
       }));
 
 
-      it('should minimize janky setting of classes during $validate() and ngModelWatch', inject(function($animate, $compile, $rootScope) {
-        var addClass = $animate.addClass;
-        var removeClass = $animate.removeClass;
-        var addClassCallCount = 0;
-        var removeClassCallCount = 0;
-        var input;
-        $animate.addClass = function(element, className) {
-          if (input && element[0] === input[0]) ++addClassCallCount;
-          return addClass.call($animate, element, className);
-        };
-
-        $animate.removeClass = function(element, className) {
-          if (input && element[0] === input[0]) ++removeClassCallCount;
-          return removeClass.call($animate, element, className);
-        };
-
-        dealoc(element);
-
-        $rootScope.value = "123456789";
-        element = $compile(
-          '<form name="form">' +
-              '<input type="text" ng-model="value" name="alias" ng-maxlength="10">' +
-          '</form>'
-        )($rootScope);
-
-        var form = $rootScope.form;
-        input = element.children().eq(0);
-
-        $rootScope.$digest();
-
-        expect(input).toBeValid();
-        expect(input).not.toHaveClass('ng-invalid-maxlength');
-        expect(input).toHaveClass('ng-valid-maxlength');
-        expect(addClassCallCount).toBe(1);
-        expect(removeClassCallCount).toBe(0);
-
-        dealoc(element);
-      }));
-
-
       it('should always use the most recent $viewValue for validation', function() {
         ctrl.$parsers.push(function(value) {
           if (value && value.substr(-1) === 'b') {
