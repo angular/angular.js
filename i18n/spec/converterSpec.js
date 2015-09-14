@@ -27,6 +27,7 @@ describe("convertNumberData", function() {
 describe("convertDatetimeData", function() {
   var convert = converter.convertDatetimeData,
       dataObj = { MONTHS: ['Enero', 'Pebrero'],
+                  STANDALONEMONTHS: ['Enero', 'Pebrero'],
                   SHORTMONTHS: ['Ene', 'Peb'],
                   WEEKDAYS: ['Linggo', 'Lunes'],
                   SHORTWEEKDAYS: ['Lin', 'Lun'],
@@ -37,6 +38,7 @@ describe("convertDatetimeData", function() {
   it('should convert empty datetime obj', function() {
     var processedData = convert(dataObj);
     expect(processedData.MONTH).toEqual(['Enero', 'Pebrero']);
+    expect(processedData.STANDALONEMONTH).toEqual(['Enero', 'Pebrero']);
     expect(processedData.SHORTMONTH).toEqual(['Ene', 'Peb']);
     expect(processedData.DAY).toEqual(['Linggo', 'Lunes']);
     expect(processedData.SHORTDAY).toEqual(['Lin', 'Lun']);
