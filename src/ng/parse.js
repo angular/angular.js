@@ -1687,6 +1687,25 @@ function getValueOf(value) {
 function $ParseProvider() {
   var cacheDefault = createMap();
   var cacheExpensive = createMap();
+  var forceExpensiveChecks = false;
+
+  /**
+   * @ngdoc method
+   * @name $parseProvider#expensiveChecks
+   * @description
+   * Force expensive checks on all parsed expressions. Defaults to `false`.
+   *
+   * @param {boolean=} value new value to set the force expensive checks to.
+   * @returns {boolean|self} Returns the value of force expensive checks when used as getter and self if used as setter.
+   */
+  this.expensiveChecks = function(value) {
+    if (isDefined(value)) {
+      forceExpensiveChecks = value;
+      return this;
+    } else {
+      return forceExpensiveChecks;
+    }
+  };
 
   this.$get = ['$filter', function($filter) {
     var noUnsafeEval = csp().noUnsafeEval;
@@ -1706,6 +1725,7 @@ function $ParseProvider() {
         case 'string':
           exp = exp.trim();
           cacheKey = exp;
+          expensiveChecks = expensiveChecks || forceExpensiveChecks;
 
           var cache = (expensiveChecks ? cacheExpensive : cacheDefault);
           parsedExpression = cache[cacheKey];
