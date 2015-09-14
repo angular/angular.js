@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "M.Houney",
       "M.Nollick"
     ],
+    "STANDALONEMONTH": [
+      "Jerrey-geuree",
+      "Toshiaght-arree",
+      "Mayrnt",
+      "Averil",
+      "Boaldyn",
+      "Mean-souree",
+      "Jerrey-souree",
+      "Luanistyn",
+      "Mean-fouyir",
+      "Jerrey-fouyir",
+      "Mee Houney",
+      "Mee ny Nollick"
+    ],
     "WEEKENDRANGE": [
       5,
       6

@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "Lwe",
       "Mpal"
     ],
+    "STANDALONEMONTH": [
+      "Zibandlela",
+      "Nhlolanja",
+      "Mbimbitho",
+      "Mabasa",
+      "Nkwenkwezi",
+      "Nhlangula",
+      "Ntulikazi",
+      "Ncwabakazi",
+      "Mpandula",
+      "Mfumfu",
+      "Lwezi",
+      "Mpalakazi"
+    ],
     "WEEKENDRANGE": [
       5,
       6

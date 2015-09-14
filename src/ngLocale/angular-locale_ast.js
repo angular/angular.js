@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "pay",
       "avi"
     ],
+    "STANDALONEMONTH": [
+      "xineru",
+      "febreru",
+      "marzu",
+      "abril",
+      "mayu",
+      "xunu",
+      "xunetu",
+      "agostu",
+      "setiembre",
+      "ochobre",
+      "payares",
+      "avientu"
+    ],
     "WEEKENDRANGE": [
       5,
       6

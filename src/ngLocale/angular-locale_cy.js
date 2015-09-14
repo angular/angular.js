@@ -62,6 +62,20 @@ $provide.value("$locale", {
       "Tach",
       "Rhag"
     ],
+    "STANDALONEMONTH": [
+      "Ionawr",
+      "Chwefror",
+      "Mawrth",
+      "Ebrill",
+      "Mai",
+      "Mehefin",
+      "Gorffennaf",
+      "Awst",
+      "Medi",
+      "Hydref",
+      "Tachwedd",
+      "Rhagfyr"
+    ],
     "WEEKENDRANGE": [
       5,
       6

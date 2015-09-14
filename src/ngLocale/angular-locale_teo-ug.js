@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "Lab",
       "Poo"
     ],
+    "STANDALONEMONTH": [
+      "Orara",
+      "Omuk",
+      "Okwamg\u2019",
+      "Odung\u2019el",
+      "Omaruk",
+      "Omodok\u2019king\u2019ol",
+      "Ojola",
+      "Opedel",
+      "Osokosokoma",
+      "Otibar",
+      "Olabor",
+      "Opoo"
+    ],
     "WEEKENDRANGE": [
       5,
       6
