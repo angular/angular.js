@@ -20,7 +20,7 @@ fleshed out the `phone-detail.html` view template.
 
 ## Data
 
-In addition to `phones.json`, the `app/phones/` directory also contains one json file for each
+In addition to `phones.json`, the `app/phones/` directory also contains one JSON file for each
 phone:
 
 __`app/phones/nexus-s.json`:__ (sample snippet)
@@ -53,7 +53,7 @@ show this data in the phone detail view.
 
 ## Controller
 
-We'll expand the `PhoneDetailCtrl` by using the `$http` service to fetch the json files. This works
+We'll expand the `PhoneDetailCtrl` by using the `$http` service to fetch the JSON files. This works
 the same way as the phone list controller.
 
 __`app/js/controllers.js`:__

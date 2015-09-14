@@ -501,8 +501,7 @@ describe('ngView', function() {
 
       $location.url('/foo');
       $rootScope.$digest();
-      // using toMatch because in IE8+jquery the space doesn't get preserved. jquery bug?
-      expect(element.text()).toMatch(/\s*WORKS/);
+      expect(element.text()).toEqual('   \n   WORKS');
 
       var div = element.find('div');
       expect(div.parent()[0].nodeName.toUpperCase()).toBeOneOf('NG:VIEW', 'VIEW');
@@ -713,7 +712,6 @@ describe('ngView animations', function() {
       $location.path('/foo');
       $rootScope.$digest();
 
-      $animate.triggerCallbacks();
 
       $location.path('/');
       $rootScope.$digest();
@@ -751,7 +749,7 @@ describe('ngView animations', function() {
     );
 
     it('should render ngClass on ngView',
-      inject(function($compile, $rootScope, $templateCache, $animate, $location, $timeout) {
+      inject(function($compile, $rootScope, $templateCache, $animate, $location) {
 
         var item;
         $rootScope.tpl = 'one';
@@ -761,6 +759,7 @@ describe('ngView animations', function() {
 
         $location.path('/foo');
         $rootScope.$digest();
+        $animate.flush();
 
         //we don't care about the enter animation
         $animate.queue.shift();
@@ -777,7 +776,7 @@ describe('ngView animations', function() {
         expect($animate.queue.shift().event).toBe('addClass');
         expect($animate.queue.shift().event).toBe('removeClass');
 
-        $animate.triggerReflow();
+        $animate.flush();
 
         expect(item.hasClass('classy')).toBe(false);
         expect(item.hasClass('boring')).toBe(true);
@@ -836,6 +835,8 @@ describe('ngView animations', function() {
 
         expect($animate.queue.shift().event).toBe('enter'); //ngRepeat 3
         expect($animate.queue.shift().event).toBe('enter'); //ngRepeat 4
+
+        $animate.flush();
 
         expect(element.text()).toEqual('34');
 
@@ -914,9 +915,11 @@ describe('ngView animations', function() {
 
       $location.path('/foo');
       $rootScope.$digest();
-      expect($animate.queue.shift().event).toBe('enter');
-      $animate.triggerCallbacks();
 
+      $animate.flush();
+      $rootScope.$digest();
+
+      expect($animate.queue.shift().event).toBe('enter');
       expect(autoScrollSpy).toHaveBeenCalledOnce();
     }));
 
@@ -928,9 +931,11 @@ describe('ngView animations', function() {
       $rootScope.value = true;
       $location.path('/foo');
       $rootScope.$digest();
-      expect($animate.queue.shift().event).toBe('enter');
-      $animate.triggerCallbacks();
 
+      $animate.flush();
+      $rootScope.$digest();
+
+      expect($animate.queue.shift().event).toBe('enter');
       expect(autoScrollSpy).toHaveBeenCalledOnce();
     }));
 
@@ -942,7 +947,6 @@ describe('ngView animations', function() {
       $location.path('/foo');
       $rootScope.$digest();
       expect($animate.queue.shift().event).toBe('enter');
-      $animate.triggerCallbacks();
 
       expect(autoScrollSpy).not.toHaveBeenCalled();
     }));
@@ -956,7 +960,6 @@ describe('ngView animations', function() {
       $location.path('/foo');
       $rootScope.$digest();
       expect($animate.queue.shift().event).toBe('enter');
-      $animate.triggerCallbacks();
 
       expect(autoScrollSpy).not.toHaveBeenCalled();
     }));
@@ -973,7 +976,9 @@ describe('ngView animations', function() {
         expect(autoScrollSpy).not.toHaveBeenCalled();
 
         expect($animate.queue.shift().event).toBe('enter');
-        $animate.triggerCallbacks();
+
+        $animate.flush();
+        $rootScope.$digest();
 
         expect($animate.enter).toHaveBeenCalledOnce();
         expect(autoScrollSpy).toHaveBeenCalledOnce();

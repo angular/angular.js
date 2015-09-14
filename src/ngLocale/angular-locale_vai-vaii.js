@@ -34,6 +34,15 @@ $provide.value("$locale", {
       "\ua549\ua524\ua540\ua56e",
       "\ua53b\ua52c\ua533"
     ],
+    "ERANAMES": [
+      "BCE",
+      "CE"
+    ],
+    "ERAS": [
+      "BCE",
+      "CE"
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "\ua5a8\ua56a\ua583 \ua51e\ua56e",
       "\ua552\ua561\ua59d\ua595",
@@ -71,6 +80,10 @@ $provide.value("$locale", {
       "\ua51e\ua60b\ua554\ua57f \ua578\ua583\ua5cf",
       "\ua5a8\ua56a\ua571 \ua5cf\ua56e"
     ],
+    "WEEKENDRANGE": [
+      5,
+      6
+    ],
     "fullDate": "EEEE, d MMMM y",
     "longDate": "d MMMM y",
     "medium": "d MMM y h:mm:ss a",
@@ -81,7 +94,7 @@ $provide.value("$locale", {
     "shortTime": "h:mm a"
   },
   "NUMBER_FORMATS": {
-    "CURRENCY_SYM": "\u20ac",
+    "CURRENCY_SYM": "$",
     "DECIMAL_SEP": ".",
     "GROUP_SEP": ",",
     "PATTERNS": [
@@ -102,7 +115,7 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "\u00a4-",
+        "negPre": "-\u00a4",
         "negSuf": "",
         "posPre": "\u00a4",
         "posSuf": ""

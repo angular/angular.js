@@ -405,10 +405,13 @@ describe('jqLite', function() {
     it('should provide the non-wrapped data calls', function() {
       var node = document.createElement('div');
 
+      expect(jqLite.hasData(node)).toBe(false);
       expect(jqLite.data(node, "foo")).toBeUndefined();
+      expect(jqLite.hasData(node)).toBe(false);
 
       jqLite.data(node, "foo", "bar");
 
+      expect(jqLite.hasData(node)).toBe(true);
       expect(jqLite.data(node, "foo")).toBe("bar");
       expect(jqLite(node).data("foo")).toBe("bar");
 
@@ -421,6 +424,9 @@ describe('jqLite', function() {
       jqLite.removeData(node);
       jqLite.removeData(node);
       expect(jqLite.data(node, "bar")).toBeUndefined();
+
+      jqLite(node).remove();
+      expect(jqLite.hasData(node)).toBe(false);
     });
 
     it('should emit $destroy event if element removed via remove()', function() {
@@ -611,6 +617,30 @@ describe('jqLite', function() {
       expect(elm.attr('readonly')).toBeUndefined();
       expect(elm.attr('readOnly')).toBeUndefined();
       expect(elm.attr('disabled')).toBeUndefined();
+    });
+
+    it('should do nothing when setting or getting on attribute nodes', function() {
+      var attrNode = jqLite(document.createAttribute('myattr'));
+      expect(attrNode).toBeDefined();
+      expect(attrNode[0].nodeType).toEqual(2);
+      expect(attrNode.attr('some-attribute','somevalue')).toEqual(attrNode);
+      expect(attrNode.attr('some-attribute')).toBeUndefined();
+    });
+
+    it('should do nothing when setting or getting on text nodes', function() {
+      var textNode = jqLite(document.createTextNode('some text'));
+      expect(textNode).toBeDefined();
+      expect(textNode[0].nodeType).toEqual(3);
+      expect(textNode.attr('some-attribute','somevalue')).toEqual(textNode);
+      expect(textNode.attr('some-attribute')).toBeUndefined();
+    });
+
+    it('should do nothing when setting or getting on comment nodes', function() {
+      var comment = jqLite(document.createComment('some comment'));
+      expect(comment).toBeDefined();
+      expect(comment[0].nodeType).toEqual(8);
+      expect(comment.attr('some-attribute','somevalue')).toEqual(comment);
+      expect(comment.attr('some-attribute')).toBeUndefined();
     });
   });
 

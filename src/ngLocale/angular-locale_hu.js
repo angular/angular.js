@@ -16,6 +16,15 @@ $provide.value("$locale", {
       "p\u00e9ntek",
       "szombat"
     ],
+    "ERANAMES": [
+      "id\u0151sz\u00e1m\u00edt\u00e1sunk el\u0151tt",
+      "id\u0151sz\u00e1m\u00edt\u00e1sunk szerint"
+    ],
+    "ERAS": [
+      "i. e.",
+      "i. sz."
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "janu\u00e1r",
       "febru\u00e1r",
@@ -52,6 +61,10 @@ $provide.value("$locale", {
       "okt.",
       "nov.",
       "dec."
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "y. MMMM d., EEEE",
     "longDate": "y. MMMM d.",

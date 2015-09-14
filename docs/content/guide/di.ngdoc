@@ -163,8 +163,8 @@ someModule.controller('MyController', function($scope, greeter) {
 });
 ```
 
-Given a function the injector can infer the names of the services to inject by examining the
-function declaration and extracting the parameter names. In the above example `$scope`, and
+Given a function, the injector can infer the names of the services to inject by examining the
+function declaration and extracting the parameter names. In the above example, `$scope` and
 `greeter` are two services which need to be injected into the function.
 
 One advantage of this approach is that there's no array of names to keep in sync with the
@@ -293,7 +293,7 @@ Create a new injector that can provide components defined in our `myModule` modu
 `greeter` service from the injector. (This is usually done automatically by angular bootstrap).
 
 ```js
-var injector = angular.injector(['myModule', 'ng']);
+var injector = angular.injector(['ng', 'myModule']);
 var greeter = injector.get('greeter');
 ```
 

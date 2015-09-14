@@ -76,8 +76,9 @@ angular.scenario.ObjectModel = function(runner) {
   runner.on('StepEnd', function(spec) {
     var it = self.getSpec(spec.id);
     var step = it.getLastStep();
-    if (step.name !== step.name)
+    if (step.name !== step.name) {
       throw 'Events fired in the wrong order. Step names don\'t match.';
+    }
     complete(step);
 
     // forward the event
@@ -114,7 +115,7 @@ angular.scenario.ObjectModel = function(runner) {
   });
 
   function complete(item) {
-    item.endTime = new Date().getTime();
+    item.endTime = Date.now();
     item.duration = item.endTime - item.startTime;
     item.status = item.status || 'success';
   }
@@ -188,7 +189,7 @@ angular.scenario.ObjectModel.prototype.getSpec = function(id) {
 angular.scenario.ObjectModel.Spec = function(id, name, definitionNames) {
   this.id = id;
   this.name = name;
-  this.startTime = new Date().getTime();
+  this.startTime = Date.now();
   this.steps = [];
   this.fullDefinitionName = (definitionNames || []).join(' ');
 };
@@ -234,7 +235,7 @@ angular.scenario.ObjectModel.Spec.prototype.setStatusFromStep = function(step) {
  */
 angular.scenario.ObjectModel.Step = function(name) {
   this.name = name;
-  this.startTime = new Date().getTime();
+  this.startTime = Date.now();
 };
 
 /**

@@ -35,7 +35,7 @@ URL of the subcontext:
 
 ```html
 <head>
-  <base href="/subapp">
+  <base href="/subapp/">
   ...
 </head>
 ```

@@ -60,6 +60,13 @@ describe('minErr', function() {
         toMatch(/^\[test:26\] false: false; zero: 0; null: null; undefined: undefined; emptyStr: /);
   });
 
+  it('should handle arguments that are objects with cyclic references', function() {
+    var a = { b: { } };
+    a.b.a = a;
+
+    var myError = testError('26', 'a is {0}', a);
+    expect(myError.message).toMatch(/a is {"b":{"a":"..."}}/);
+  });
 
   it('should preserve interpolation markers when fewer arguments than needed are provided', function() {
     // this way we can easily see if we are passing fewer args than needed
@@ -89,5 +96,12 @@ describe('minErr', function() {
     expect(normalMinErr('acode', 'aproblem') instanceof TypeError).toBe(false);
     var typeMinErr = minErr('type', TypeError);
     expect(typeMinErr('acode', 'aproblem') instanceof TypeError).toBe(true);
+  });
+
+
+  it('should include a properly formatted error reference URL in the message', function() {
+    // to avoid maintaining the root URL in two locations, we only validate the parameters
+    expect(testError('acode', 'aproblem', 'a', 'b', 'value with space').message)
+      .toMatch(/^[\s\S]*\?p0=a&p1=b&p2=value%20with%20space$/);
   });
 });

@@ -20,6 +20,42 @@ AngularJS is 100% JavaScript, 100% client-side and compatible with both desktop 
 So it's definitely not a plugin or some other native browser extension.
 
 
+### What is the AngularJS versioning strategy?
+
+In Angular 1 we do not allow intentional breaking changes to appear in versions where only the "patch"
+number changes. For example between 1.3.12 and 1.3.13 there can be no breaking changes. We do allow
+breaking changes happen between "minor" number changes. For example between 1.3.15 and 1.4.0 there
+will be a number of breaking changes. We also allow breaking changes between beta releases of Angular.
+For example between 1.4.0-beta.4 and 1.4.0-beta.5 there may be breaking changes. We try hard to minimize
+these kinds of change only to those where there is a strong use case such as a strongly requested feature
+improvement, a considerable simplification of the code or a measurable performance improvement.
+
+When adding new code to branches of Angular, have a very stringent commit policy:
+
+- Every commit must contain tests and documentation updates alongside the code changes and that all the
+tests must pass;
+- Commit messages must be written in a specific manner that allows us to parse them and extract the changes
+for release notes.
+
+The Angular code base has a very large set of unit tests (over 4000) and end to end tests, which are pretty
+comprehensive. This means that a breaking change will require one or more tests to be changed to allow the
+tests to pass. So when a commit includes tests that are being removed or modified, this is a flag that the
+code might include a breaking change. When reviewing the commit we can then decide whether there really is
+a breaking change and if it is appropriate for the branch to which it is being merged. If so, then we
+require that the commit message contains an appropriate breaking change message.
+
+Additionally, when a commit lands in our master repository it is synced to Google where we test it against
+over 2000 applications using the test suites of these applications. This allows us to catch regressions
+quickly before a release. We've had a pretty good experience with this setup. Only bugs that affect features
+not used at Google or without sufficient test coverage, have a chance of making it through.
+
+Lastly, when we are making a release we generate updates to the changelog directly from the commits. This
+generated update contains a highlighted section that contains all the breaking changes that have been
+extracted from the commits. We can quickly see in the new changelog exactly what commits contain breaking
+changes and so can application developers when they are deciding whether to update to a new version of
+Angular.
+
+
 ### Is AngularJS a templating system?
 
 At the highest level, Angular does look like just another templating system. But there is one
@@ -33,7 +69,7 @@ templating systems.
 ### Do I need to worry about security holes in AngularJS?
 
 Like any other technology, AngularJS is not impervious to attack. Angular does, however, provide
-built-in protection from basic security holes including cross-site scripting and HTML injection
+built-in protection from basic security holes, including cross-site scripting and HTML injection
 attacks. AngularJS does round-trip escaping on all strings for you and even offers XSRF protection
 for server-side communication.
 
@@ -50,9 +86,15 @@ Yes. See instructions in {@link downloading}.
 
 ### What browsers does Angular work with?
 
-We run our extensive test suite against the following browsers: Safari, Chrome, Firefox, Opera 15,
-IE9 and mobile browsers (Android, Chrome Mobile, iOS Safari). See {@link guide/ie Internet
-Explorer Compatibility} for more details in supporting legacy IE browsers.
+We run our extensive test suite against the following browsers: the latest versions of Chrome,
+Firefox, Safari, and Safari for iOs, as well as Internet Explorer versions 9-11. See {@link guide/ie
+Internet Explorer Compatibility} for more details on supporting legacy IE browsers.
+
+If a browser is untested, it doesn't mean it won't work; for example, older Android (2.3.x)
+is supported in the sense that we avoid the dot notation for reserved words as property names,
+but we don't actively test changes against it. You can also expect browsers to work that share
+a large part of their codebase with a browser we test, such as Opera > version 12
+(uses the Blink engine), or the various Firefox derivatives.
 
 
 ### What's Angular's performance like?
@@ -61,13 +103,13 @@ The startup time heavily depends on your network connection, state of the cache,
 available hardware, but typically we measure bootstrap time in tens or hundreds of milliseconds.
 
 The runtime performance will vary depending on the number and complexity of bindings on the page
-as well as the speed of your backend (for apps that fetch data from the backend). Just for an
-illustration we typically build snappy apps with hundreds or thousands of active bindings.
+as well as the speed of your backend (for apps that fetch data from the backend). For an
+illustration, we typically build snappy apps with hundreds or thousands of active bindings.
 
 
 ### How big is the angular.js file that I need to include?
 
-The size of the file is < 36KB compressed and minified.
+The size of the file is ~50KB compressed and minified.
 
 
 ### Can I use the open-source Closure Library with Angular?
@@ -88,7 +130,7 @@ but we don't guarantee that.
 
 ### What is testability like in Angular?
 
-Very testable and designed this way from ground up. It has an integrated dependency injection
+Very testable and designed this way from the ground up. It has an integrated dependency injection
 framework, provides mocks for many heavy dependencies (server-side communication). See
 {@link ngMock} for details.
 
@@ -158,7 +200,7 @@ Conditionally showing and hiding things using jQuery is a common pattern in othe
 `ng-show` (and `ng-hide`) conditionally show and hide elements based on boolean expressions.
 Describe the conditions for showing and hiding an element in terms of `$scope` variables:
 
-    <div ng-show="!loggedIn">Click <a href="#/login">here</a> to log in</div>
+    <div ng-show="!loggedIn"><a href="#/login">Click here to log in</a></div>
 
 Note also the counterpart `ng-hide` and similar `ng-disabled`.
 Note especially the powerful `ng-switch` that should be used instead of several mutually exclusive `ng-show`s.
@@ -189,7 +231,7 @@ Then whenever a value on a scope changes, all `$watch`es observing that element 
 
 Sometimes, usually when you're writing a custom directive, you will have to define your own `$watch` on a scope value to make the directive react to changes.
 
-On the flip side, sometimes you change a scope value in some code but the app doesn't react to it.
+On the flip side, sometimes you change a scope value in some code, but the app doesn't react to it.
 Angular checks for scope variable changes after pieces of your code have finished running; for example, when `ng-click` calls a function on your scope, Angular will check for changes and react.
 However, some code is outside of Angular and you'll have to call `scope.$apply()` yourself to trigger the update.
 This is most commonly seen in event handlers in custom directives.

@@ -22,8 +22,8 @@ function getVF(n, opt_precision) {
 $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": [
-      "AM",
-      "PM"
+      "dopoludnia",
+      "odpoludnia"
     ],
     "DAY": [
       "nede\u013ea",
@@ -34,6 +34,15 @@ $provide.value("$locale", {
       "piatok",
       "sobota"
     ],
+    "ERANAMES": [
+      "pred Kristom",
+      "po Kristovi"
+    ],
+    "ERAS": [
+      "pred Kr.",
+      "po Kr."
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "janu\u00e1ra",
       "febru\u00e1ra",
@@ -71,13 +80,17 @@ $provide.value("$locale", {
       "nov",
       "dec"
     ],
+    "WEEKENDRANGE": [
+      5,
+      6
+    ],
     "fullDate": "EEEE, d. MMMM y",
     "longDate": "d. MMMM y",
-    "medium": "d.M.y H:mm:ss",
-    "mediumDate": "d.M.y",
+    "medium": "d. M. y H:mm:ss",
+    "mediumDate": "d. M. y",
     "mediumTime": "H:mm:ss",
-    "short": "d.M.y H:mm",
-    "shortDate": "d.M.y",
+    "short": "dd.MM.yy H:mm",
+    "shortDate": "dd.MM.yy",
     "shortTime": "H:mm"
   },
   "NUMBER_FORMATS": {

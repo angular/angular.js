@@ -321,11 +321,15 @@ describe('ngMock', function() {
         inject(function($interval, $rootScope) {
       var applySpy = spyOn($rootScope, '$apply').andCallThrough();
 
-      $interval(noop, 1000, 0, false);
+      var counter = 0;
+      $interval(function increment() { counter++; }, 1000, 0, false);
+
       expect(applySpy).not.toHaveBeenCalled();
+      expect(counter).toBe(0);
 
       $interval.flush(2000);
       expect(applySpy).not.toHaveBeenCalled();
+      expect(counter).toBe(2);
     }));
 
 
@@ -588,22 +592,42 @@ describe('ngMock', function() {
     }));
 
 
-    it('should log exceptions', module(function($exceptionHandlerProvider) {
-      $exceptionHandlerProvider.mode('log');
-      var $exceptionHandler = $exceptionHandlerProvider.$get();
-      $exceptionHandler('MyError');
-      expect($exceptionHandler.errors).toEqual(['MyError']);
+    it('should log exceptions', function() {
+      module(function($exceptionHandlerProvider) {
+        $exceptionHandlerProvider.mode('log');
+      });
+      inject(function($exceptionHandler) {
+        $exceptionHandler('MyError');
+        expect($exceptionHandler.errors).toEqual(['MyError']);
 
-      $exceptionHandler('MyError', 'comment');
-      expect($exceptionHandler.errors[1]).toEqual(['MyError', 'comment']);
-    }));
+        $exceptionHandler('MyError', 'comment');
+        expect($exceptionHandler.errors[1]).toEqual(['MyError', 'comment']);
+      });
+    });
 
+    it('should log and rethrow exceptions', function() {
+      module(function($exceptionHandlerProvider) {
+        $exceptionHandlerProvider.mode('rethrow');
+      });
+      inject(function($exceptionHandler) {
+        expect(function() { $exceptionHandler('MyError'); }).toThrow('MyError');
+        expect($exceptionHandler.errors).toEqual(['MyError']);
 
-    it('should throw on wrong argument', module(function($exceptionHandlerProvider) {
-      expect(function() {
-        $exceptionHandlerProvider.mode('XXX');
-      }).toThrow("Unknown mode 'XXX', only 'log'/'rethrow' modes are allowed!");
-    }));
+        expect(function() { $exceptionHandler('MyError', 'comment'); }).toThrow('MyError');
+        expect($exceptionHandler.errors[1]).toEqual(['MyError', 'comment']);
+      });
+    });
+
+    it('should throw on wrong argument', function() {
+      module(function($exceptionHandlerProvider) {
+        expect(function() {
+          $exceptionHandlerProvider.mode('XXX');
+        }).toThrow("Unknown mode 'XXX', only 'log'/'rethrow' modes are allowed!");
+      });
+
+      inject(); // Trigger the tests in `module`
+    });
+
   });
 
 
@@ -695,8 +719,6 @@ describe('ngMock', function() {
 
     it('should serialize scope that has overridden "hasOwnProperty"', inject(function($rootScope, $sniffer) {
       /* jshint -W001 */
-      // MS IE8 just doesn't work for this kind of thing, since "for ... in" doesn't return
-      // things like hasOwnProperty even if it is explicitly defined on the actual object!
       $rootScope.hasOwnProperty = 'X';
       expect(d($rootScope)).toMatch(/Scope\(.*\): \{/);
       expect(d($rootScope)).toMatch(/hasOwnProperty: "X"/);
@@ -761,6 +783,39 @@ describe('ngMock', function() {
 
           it('should cleanup hashKey after previous test', function() {
             expect(testFn.$$hashKey).toBeUndefined();
+          });
+        });
+
+        describe('$inject cleanup', function() {
+          function testFn() {
+
+          }
+
+          it('should add $inject when invoking test function', inject(function($injector) {
+            $injector.invoke(testFn);
+            expect(testFn.$inject).toBeDefined();
+          }));
+
+          it('should cleanup $inject after previous test', function() {
+            expect(testFn.$inject).toBeUndefined();
+          });
+
+          it('should add $inject when annotating test function', inject(function($injector) {
+            $injector.annotate(testFn);
+            expect(testFn.$inject).toBeDefined();
+          }));
+
+          it('should cleanup $inject after previous test', function() {
+            expect(testFn.$inject).toBeUndefined();
+          });
+
+          it('should invoke an already annotated function', inject(function($injector) {
+            testFn.$inject = [];
+            $injector.invoke(testFn);
+          }));
+
+          it('should not cleanup $inject after previous test', function() {
+            expect(testFn.$inject).toBeDefined();
           });
         });
       });
@@ -848,10 +903,6 @@ describe('ngMock', function() {
         });
       });
 
-
-      // We don't run the following tests on IE8.
-      // IE8 throws "Object does not support this property or method." error,
-      // when thrown from a function defined on window (which `inject` is).
 
       it('should not change thrown Errors', inject(function($sniffer) {
         expect(function() {
@@ -1055,17 +1106,6 @@ describe('ngMock', function() {
         expect(callback).toHaveBeenCalledOnceWith(200, 'first', 'header: val', 'OK');
       });
 
-      it('should take function', function() {
-        hb.expect('GET', '/some').respond(function(m, u, d, h) {
-          return [301, m + u + ';' + d + ';a=' + h.a, {'Connection': 'keep-alive'}, 'Moved Permanently'];
-        });
-
-        hb('GET', '/some', 'data', callback, {a: 'b'});
-        hb.flush();
-
-        expect(callback).toHaveBeenCalledOnceWith(301, 'GET/some;data;a=b', 'Connection: keep-alive', 'Moved Permanently');
-      });
-
       it('should default status code to 200', function() {
         callback.andCallFake(function(status, response) {
           expect(status).toBe(200);
@@ -1081,6 +1121,24 @@ describe('ngMock', function() {
         expect(callback.callCount).toBe(2);
       });
 
+      it('should default status code to 200 and provide status text', function() {
+        hb.expect('GET', '/url1').respond('first', {'header': 'val'}, 'OK');
+        hb('GET', '/url1', null, callback);
+        hb.flush();
+
+        expect(callback).toHaveBeenCalledOnceWith(200, 'first', 'header: val', 'OK');
+      });
+
+      it('should take function', function() {
+        hb.expect('GET', '/some').respond(function(m, u, d, h) {
+          return [301, m + u + ';' + d + ';a=' + h.a, {'Connection': 'keep-alive'}, 'Moved Permanently'];
+        });
+
+        hb('GET', '/some', 'data', callback, {a: 'b'});
+        hb.flush();
+
+        expect(callback).toHaveBeenCalledOnceWith(301, 'GET/some;data;a=b', 'Connection: keep-alive', 'Moved Permanently');
+      });
 
       it('should default response headers to ""', function() {
         hb.expect('GET', '/url1').respond(200, 'first');
@@ -1162,7 +1220,7 @@ describe('ngMock', function() {
       });
 
 
-      it ('should throw exception when only headers differs from expectation', function() {
+      it('should throw exception when only headers differs from expectation', function() {
         hb.when('GET').respond(200, '', {});
         hb.expect('GET', '/match', undefined, {'Content-Type': 'application/json'});
 
@@ -1173,7 +1231,7 @@ describe('ngMock', function() {
       });
 
 
-      it ('should throw exception when only data differs from expectation', function() {
+      it('should throw exception when only data differs from expectation', function() {
         hb.when('GET').respond(200, '', {});
         hb.expect('GET', '/match', 'some-data');
 
@@ -1184,7 +1242,7 @@ describe('ngMock', function() {
       });
 
 
-      it ('should not throw an exception when parsed body is equal to expected body object', function() {
+      it('should not throw an exception when parsed body is equal to expected body object', function() {
         hb.when('GET').respond(200, '', {});
 
         hb.expect('GET', '/match', {a: 1, b: 2});
@@ -1199,7 +1257,7 @@ describe('ngMock', function() {
       });
 
 
-      it ('should throw exception when only parsed body differs from expected body object', function() {
+      it('should throw exception when only parsed body differs from expected body object', function() {
         hb.when('GET').respond(200, '', {});
         hb.expect('GET', '/match', {a: 1, b: 2});
 
@@ -1297,6 +1355,18 @@ describe('ngMock', function() {
       hb.verifyNoOutstandingExpectation();
       hb.verifyNoOutstandingRequest();
     });
+
+
+    it('should abort requests when timeout passed as a numeric value', inject(function($timeout) {
+      hb.expect('GET', '/url1').respond(200);
+
+      hb('GET', '/url1', null, callback, null, 200);
+      $timeout.flush(300);
+
+      expect(callback).toHaveBeenCalledWith(-1, undefined, '');
+      hb.verifyNoOutstandingExpectation();
+      hb.verifyNoOutstandingRequest();
+    }));
 
 
     it('should throw an exception if no response defined', function() {
@@ -1675,6 +1745,28 @@ describe('ngMock', function() {
       }));
     });
   });
+
+
+  describe('$controllerDecorator', function() {
+    it('should support creating controller with bindings', function() {
+      var called = false;
+      var data = [
+        { name: 'derp1', id: 0 },
+        { name: 'testname', id: 1 },
+        { name: 'flurp', id: 2 }
+      ];
+      module(function($controllerProvider) {
+        $controllerProvider.register('testCtrl', function() {
+          called = true;
+          expect(this.data).toBe(data);
+        });
+      });
+      inject(function($controller, $rootScope) {
+        $controller('testCtrl', { scope: $rootScope }, { data: data });
+        expect(called).toBe(true);
+      });
+    });
+  });
 });
 
 
@@ -1736,4 +1828,11 @@ describe('ngMockE2E', function() {
       }));
     });
   });
+});
+
+describe('make sure that we can create an injector outside of tests', function() {
+  //since some libraries create custom injectors outside of tests,
+  //we want to make sure that this is not breaking the internals of
+  //how we manage annotated function cleanup during tests. See #10967
+  angular.injector([function($injector) {}]);
 });

@@ -34,6 +34,15 @@ $provide.value("$locale", {
       "Labohlano",
       "Mokibelo"
     ],
+    "ERANAMES": [
+      "BCE",
+      "CE"
+    ],
+    "ERAS": [
+      "BCE",
+      "CE"
+    ],
+    "FIRSTDAYOFWEEK": 6,
     "MONTH": [
       "Janaware",
       "Feberware",
@@ -71,6 +80,10 @@ $provide.value("$locale", {
       "Nof",
       "Dis"
     ],
+    "WEEKENDRANGE": [
+      5,
+      6
+    ],
     "fullDate": "y MMMM d, EEEE",
     "longDate": "y MMMM d",
     "medium": "y MMM d HH:mm:ss",
@@ -82,7 +95,7 @@ $provide.value("$locale", {
   },
   "NUMBER_FORMATS": {
     "CURRENCY_SYM": "R",
-    "DECIMAL_SEP": ",",
+    "DECIMAL_SEP": ".",
     "GROUP_SEP": "\u00a0",
     "PATTERNS": [
       {

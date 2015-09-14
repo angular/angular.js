@@ -34,6 +34,15 @@ $provide.value("$locale", {
       "\u05d9\u05d5\u05dd \u05e9\u05d9\u05e9\u05d9",
       "\u05d9\u05d5\u05dd \u05e9\u05d1\u05ea"
     ],
+    "ERANAMES": [
+      "\u05dc\u05e4\u05e0\u05d9 \u05d4\u05e1\u05e4\u05d9\u05e8\u05d4",
+      "\u05dc\u05e1\u05e4\u05d9\u05e8\u05d4"
+    ],
+    "ERAS": [
+      "\u05dc\u05e4\u05e0\u05d4\u05f4\u05e1",
+      "\u05dc\u05e1\u05e4\u05d9\u05e8\u05d4"
+    ],
+    "FIRSTDAYOFWEEK": 6,
     "MONTH": [
       "\u05d9\u05e0\u05d5\u05d0\u05e8",
       "\u05e4\u05d1\u05e8\u05d5\u05d0\u05e8",
@@ -71,14 +80,18 @@ $provide.value("$locale", {
       "\u05e0\u05d5\u05d1\u05f3",
       "\u05d3\u05e6\u05de\u05f3"
     ],
+    "WEEKENDRANGE": [
+      4,
+      5
+    ],
     "fullDate": "EEEE, d \u05d1MMMM y",
     "longDate": "d \u05d1MMMM y",
-    "medium": "d \u05d1MMM y HH:mm:ss",
+    "medium": "d \u05d1MMM y H:mm:ss",
     "mediumDate": "d \u05d1MMM y",
-    "mediumTime": "HH:mm:ss",
-    "short": "dd/MM/yy HH:mm",
-    "shortDate": "dd/MM/yy",
-    "shortTime": "HH:mm"
+    "mediumTime": "H:mm:ss",
+    "short": "d.M.y H:mm",
+    "shortDate": "d.M.y",
+    "shortTime": "H:mm"
   },
   "NUMBER_FORMATS": {
     "CURRENCY_SYM": "\u20aa",

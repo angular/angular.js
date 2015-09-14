@@ -5,9 +5,9 @@
 
 # What does it do?
 
-The `$location` service parses the URL in the browser address bar (based on the [window.location](https://developer.mozilla.org/en/window.location)) and makes the URL available to
-your application. Changes to the URL in the address bar are reflected into $location service and
-changes to $location are reflected into the browser address bar.
+The `$location` service parses the URL in the browser address bar (based on [`window.location`](https://developer.mozilla.org/en/window.location)) and makes the URL available to
+your application. Changes to the URL in the address bar are reflected into the `$location` service and
+changes to `$location` are reflected into the browser address bar.
 
 **The $location service:**
 
@@ -21,7 +21,7 @@ changes to $location are reflected into the browser address bar.
 - Represents the URL object as a set of methods (protocol, host, port, path, search, hash).
 
 
-## Comparing $location to window.location
+## Comparing `$location` to `window.location`
 
 <table class="table">
 <thead>
@@ -68,7 +68,7 @@ changes to $location are reflected into the browser address bar.
 </tbody>
 </table>
 
-## When should I use $location?
+## When should I use `$location`?
 Any time your application needs to react to a change in the current URL or if you want to change
 the current URL in the browser.
 
@@ -85,7 +85,7 @@ others customizing the configuration can enable new features.
 Once the `$location` service is instantiated, you can interact with it via jQuery-style getter and
 setter methods that allow you to get or change the current URL in the browser.
 
-## $location service configuration
+## `$location` service configuration
 
 To configure the `$location` service, retrieve the
 {@link ng.$locationProvider $locationProvider} and set the parameters as follows:
@@ -165,7 +165,7 @@ encoded.
 
 `$location` service has two configuration modes which control the format of the URL in the browser
 address bar: **Hashbang mode** (the default) and the **HTML5 mode** which is based on using the
-HTML5 [History API](http://www.w3.org/TR/html5/introduction.html#history-0). Applications use the same API in
+[HTML5 History API](https://html.spec.whatwg.org/multipage/browsers.html#the-history-interface). Applications use the same API in
 both modes and the `$location` service will work with appropriate URL segments and browser APIs to
 facilitate the browser URL change and history management.
 
@@ -301,7 +301,7 @@ it('should show example', inject(
 ### Fallback for legacy browsers
 
 For browsers that support the HTML5 history API, `$location` uses the HTML5 history API to write
-path and search. If the history API is not supported by a browser, `$location` supplies a Hasbang
+path and search. If the history API is not supported by a browser, `$location` supplies a Hashbang
 URL. This frees you from having to worry about whether the browser viewing your app supports the
 history API  or not; the `$location` service makes this transparent to you.
 
@@ -344,7 +344,7 @@ to anchors on the same page without needing to know on which page the user curre
 Using this mode requires URL rewriting on server side, basically you have to rewrite all your links
 to entry point of your application (e.g. index.html). Requiring a `<base>` tag is also important for
 this case, as it allows Angular to differentiate between the part of the url that is the application
-base and the path that should be handeled by the application.
+base and the path that should be handled by the application.
 
 ### Sending links among different browsers
 
@@ -358,7 +358,7 @@ legacy browsers and hashbang links in modern browser:
 
 Here you can see two `$location` instances, both in **Html5 mode**, but on different browsers, so
 that you can see the differences. These `$location` services are connected to a fake browsers. Each
-input represents address bar of the browser.
+input represents the address bar of the browser.
 
 Note that when you type hashbang url into first browser (or vice versa) it doesn't rewrite /
 redirect to regular / hashbang url, as this conversion happens only during parsing the initial URL
@@ -693,7 +693,7 @@ A path should always begin with forward slash (`/`); the `$location.path()` sett
 forward slash if it is missing.
 
 Note that the `!` prefix in the hashbang mode is not part of `$location.path()`; it is actually
-hashPrefix.
+`hashPrefix`.
 
 ## Crawling your app
 
@@ -835,7 +835,7 @@ angular.module('locationExample', [])
 
 # Related API
 
-* {@link ng.$location $location API}
+* {@link ng.$location `$location` API}
 
 
 

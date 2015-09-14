@@ -332,7 +332,7 @@ The first issue we have to solve is that the dialog box template expects `title`
 But we would like the template's scope property `title` to be the result of interpolating the
 `<dialog>` element's `title` attribute (i.e. `"Hello {{username}}"`). Furthermore, the buttons expect
 the `onOk` and `onCancel` functions to be present in the scope. This limits the usefulness of the
-widget. To solve the mapping issue we use the `locals` to create local variables which the template
+widget. To solve the mapping issue we use the `scope` to create local variables which the template
 expects as follows:
 
 ```js

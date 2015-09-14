@@ -5,6 +5,7 @@ var angularFiles = {
     'src/minErr.js',
     'src/Angular.js',
     'src/loader.js',
+    'src/stringify.js',
     'src/AngularPublic.js',
     'src/jqLite.js',
     'src/apis.js',
@@ -13,13 +14,14 @@ var angularFiles = {
 
     'src/ng/anchorScroll.js',
     'src/ng/animate.js',
-    'src/ng/asyncCallback.js',
+    'src/ng/animateCss.js',
     'src/ng/browser.js',
     'src/ng/cacheFactory.js',
     'src/ng/compile.js',
     'src/ng/controller.js',
     'src/ng/document.js',
     'src/ng/exceptionHandler.js',
+    'src/ng/forceReflow.js',
     'src/ng/http.js',
     'src/ng/httpBackend.js',
     'src/ng/interpolate.js',
@@ -39,6 +41,7 @@ var angularFiles = {
     'src/ng/timeout.js',
     'src/ng/urlUtils.js',
     'src/ng/window.js',
+    'src/ng/cookieReader.js',
 
     'src/ng/filter.js',
     'src/ng/filter/filter.js',
@@ -52,6 +55,7 @@ var angularFiles = {
     'src/ng/directive/form.js',
     'src/ng/directive/input.js',
     'src/ng/directive/ngBind.js',
+    'src/ng/directive/ngChange.js',
     'src/ng/directive/ngClass.js',
     'src/ng/directive/ngCloak.js',
     'src/ng/directive/ngController.js',
@@ -60,7 +64,10 @@ var angularFiles = {
     'src/ng/directive/ngIf.js',
     'src/ng/directive/ngInclude.js',
     'src/ng/directive/ngInit.js',
+    'src/ng/directive/ngList.js',
+    'src/ng/directive/ngModel.js',
     'src/ng/directive/ngNonBindable.js',
+    'src/ng/directive/ngOptions.js',
     'src/ng/directive/ngPluralize.js',
     'src/ng/directive/ngRepeat.js',
     'src/ng/directive/ngShowHide.js',
@@ -69,20 +76,45 @@ var angularFiles = {
     'src/ng/directive/ngTransclude.js',
     'src/ng/directive/script.js',
     'src/ng/directive/select.js',
-    'src/ng/directive/style.js'
+    'src/ng/directive/style.js',
+    'src/ng/directive/validators.js',
+    'src/angular.bind.js',
+    'src/publishExternalApis.js',
+    'src/ngLocale/angular-locale_en-us.js'
   ],
 
   'angularLoader': [
+    'stringify.js',
     'src/minErr.js',
     'src/loader.js'
   ],
 
   'angularModules': {
     'ngAnimate': [
-      'src/ngAnimate/animate.js'
+      'src/ngAnimate/shared.js',
+      'src/ngAnimate/body.js',
+      'src/ngAnimate/rafScheduler.js',
+      'src/ngAnimate/animateChildrenDirective.js',
+      'src/ngAnimate/animateCss.js',
+      'src/ngAnimate/animateCssDriver.js',
+      'src/ngAnimate/animateJs.js',
+      'src/ngAnimate/animateJsDriver.js',
+      'src/ngAnimate/animateQueue.js',
+      'src/ngAnimate/animateRunner.js',
+      'src/ngAnimate/animation.js',
+      'src/ngAnimate/module.js'
     ],
     'ngCookies': [
-      'src/ngCookies/cookies.js'
+      'src/ngCookies/cookies.js',
+      'src/ngCookies/cookieStore.js',
+      'src/ngCookies/cookieWriter.js'
+    ],
+    'ngMessageFormat': [
+      'src/ngMessageFormat/messageFormatCommon.js',
+      'src/ngMessageFormat/messageFormatSelector.js',
+      'src/ngMessageFormat/messageFormatInterpolationParts.js',
+      'src/ngMessageFormat/messageFormatParser.js',
+      'src/ngMessageFormat/messageFormatService.js'
     ],
     'ngMessages': [
       'src/ngMessages/messages.js'
@@ -152,16 +184,16 @@ var angularFiles = {
     'bower_components/jquery/dist/jquery.js',
     'test/jquery_remove.js',
     '@angularSrc',
-    'src/publishExternalApis.js',
     '@angularSrcModules',
     '@angularScenario',
-    '@angularTest',
+    '@angularTest'
   ],
 
   'karmaExclude': [
     'test/jquery_alias.js',
     'src/angular-bootstrap.js',
-    'src/ngScenario/angular-bootstrap.js'
+    'src/ngScenario/angular-bootstrap.js',
+    'src/angular.bind.js'
   ],
 
   'karmaScenario': [
@@ -174,6 +206,7 @@ var angularFiles = {
     '@angularSrcModules',
     'src/ngScenario/browserTrigger.js',
     'test/helpers/*.js',
+    'test/ngMessageFormat/*.js',
     'test/ngMock/*.js',
     'test/ngCookies/*.js',
     'test/ngRoute/**/*.js',
@@ -187,21 +220,22 @@ var angularFiles = {
     'bower_components/jquery/dist/jquery.js',
     'test/jquery_alias.js',
     '@angularSrc',
-    'src/publishExternalApis.js',
     '@angularSrcModules',
     '@angularScenario',
-    '@angularTest',
+    '@angularTest'
   ],
 
   'karmaJqueryExclude': [
     'src/angular-bootstrap.js',
     'src/ngScenario/angular-bootstrap.js',
-    'test/jquery_remove.js'
+    'test/jquery_remove.js',
+    'src/angular.bind.js'
   ]
 };
 
 angularFiles['angularSrcModules'] = [].concat(
   angularFiles['angularModules']['ngAnimate'],
+  angularFiles['angularModules']['ngMessageFormat'],
   angularFiles['angularModules']['ngMessages'],
   angularFiles['angularModules']['ngCookies'],
   angularFiles['angularModules']['ngResource'],

@@ -34,6 +34,15 @@ $provide.value("$locale", {
       "Jumqata",
       "Qunxa Sambat"
     ],
+    "ERANAMES": [
+      "Yaasuusuk Duma",
+      "Yaasuusuk Wadir"
+    ],
+    "ERAS": [
+      "Yaasuusuk Duma",
+      "Yaasuusuk Wadir"
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "Qunxa Garablu",
       "Kudo",
@@ -70,6 +79,10 @@ $provide.value("$locale", {
       "Dit",
       "Xim",
       "Kax"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE, MMMM dd, y",
     "longDate": "dd MMMM y",

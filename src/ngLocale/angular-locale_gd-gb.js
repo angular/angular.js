@@ -30,23 +30,32 @@ $provide.value("$locale", {
       "DiLuain",
       "DiM\u00e0irt",
       "DiCiadain",
-      "Diardaoin",
+      "DiarDaoin",
       "DihAoine",
       "DiSathairne"
     ],
+    "ERANAMES": [
+      "Ro Chr\u00ecosta",
+      "An d\u00e8idh Chr\u00ecosta"
+    ],
+    "ERAS": [
+      "RC",
+      "AD"
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
-      "Am Faoilleach",
-      "An Gearran",
-      "Am M\u00e0rt",
-      "An Giblean",
-      "An C\u00e8itean",
-      "An t-\u00d2gmhios",
-      "An t-Iuchar",
-      "An L\u00f9nastal",
-      "An t-Sultain",
-      "An D\u00e0mhair",
-      "An t-Samhain",
-      "An D\u00f9bhlachd"
+      "dhen Fhaoilleach",
+      "dhen Ghearran",
+      "dhen Mh\u00e0rt",
+      "dhen Ghiblean",
+      "dhen Ch\u00e8itean",
+      "dhen \u00d2gmhios",
+      "dhen Iuchar",
+      "dhen L\u00f9nastal",
+      "dhen t-Sultain",
+      "dhen D\u00e0mhair",
+      "dhen t-Samhain",
+      "dhen D\u00f9bhlachd"
     ],
     "SHORTDAY": [
       "DiD",
@@ -71,8 +80,12 @@ $provide.value("$locale", {
       "Samh",
       "D\u00f9bh"
     ],
-    "fullDate": "EEEE, d MMMM y",
-    "longDate": "d MMMM y",
+    "WEEKENDRANGE": [
+      5,
+      6
+    ],
+    "fullDate": "EEEE, d'mh' MMMM y",
+    "longDate": "d'mh' MMMM y",
     "medium": "d MMM y HH:mm:ss",
     "mediumDate": "d MMM y",
     "mediumTime": "HH:mm:ss",
@@ -102,7 +115,7 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "\u00a4-",
+        "negPre": "-\u00a4",
         "negSuf": "",
         "posPre": "\u00a4",
         "posSuf": ""

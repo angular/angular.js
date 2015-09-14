@@ -16,6 +16,15 @@ $provide.value("$locale", {
       "\u0436\u0443\u043c\u0430",
       "\u0448\u0430\u043d\u0431\u0430"
     ],
+    "ERANAMES": [
+      "\u041c.\u0410.",
+      "\u042d"
+    ],
+    "ERAS": [
+      "\u041c.\u0410.",
+      "\u042d"
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "\u042f\u043d\u0432\u0430\u0440",
       "\u0424\u0435\u0432\u0440\u0430\u043b",
@@ -53,6 +62,10 @@ $provide.value("$locale", {
       "\u041d\u043e\u044f",
       "\u0414\u0435\u043a"
     ],
+    "WEEKENDRANGE": [
+      5,
+      6
+    ],
     "fullDate": "EEEE, y MMMM dd",
     "longDate": "y MMMM d",
     "medium": "y MMM d HH:mm:ss",
@@ -84,7 +97,7 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "\u00a4\u00a0-",
+        "negPre": "-\u00a4\u00a0",
         "negSuf": "",
         "posPre": "\u00a4\u00a0",
         "posSuf": ""

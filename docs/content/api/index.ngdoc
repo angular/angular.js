@@ -128,7 +128,7 @@ Use ngRoute to enable URL routing to your application. The ngRoute module suppor
 
 ## {@link ngAnimate ngAnimate}
 
-Use ngAnimate to enable animation features into your application. Various core ng directives will provide
+Use ngAnimate to enable animation features within your application. Various core ng directives will provide
 animation hooks into your application when ngAnimate is included. Animations are defined by using CSS transitions/animations
 or JavaScript callbacks.
 
@@ -140,7 +140,7 @@ or JavaScript callbacks.
       {@link ngAnimate#service Services / Factories}
     </td>
     <td>
-      Use {@link ngAnimate.$animate $animate} to trigger animation operations within your directive code.
+      Use {@link ng.$animate $animate} to trigger animation operations within your directive code.
     </td>
   </tr>
   <tr>
@@ -148,7 +148,7 @@ or JavaScript callbacks.
       {@link ngAnimate CSS-based animations}
     </td>
     <td>
-      Follow ngAnimate’s CSS naming structure to reference CSS transitions / keyframe animations in AngularJS. Once defined the animation can be triggered by referencing the CSS class within the HTML template code.
+      Follow ngAnimate’s CSS naming structure to reference CSS transitions / keyframe animations in AngularJS. Once defined, the animation can be triggered by referencing the CSS class within the HTML template code.
     </td>
   </tr>
   <tr>
@@ -156,11 +156,32 @@ or JavaScript callbacks.
       {@link ngAnimate JS-based animations}
     </td>
     <td>
-      Use {@link angular.Module#animation module.animation()} to register a JavaScript animation. Once registered the animation can be triggered by referencing the CSS class within the HTML template code.
+      Use {@link angular.Module#animation module.animation()} to register a JavaScript animation. Once registered, the animation can be triggered by referencing the CSS class within the HTML template code.
     </td>
   </tr>
 </table>
 
+## {@link ngAria ngAria}
+
+Use ngAria to inject common accessibility attributes into directives and improve the experience for users with disabilities.
+
+<div class="alert alert-info">Include the **angular-aria.js** file and set ngAria as a dependency for this to work in your application.</div>
+
+<table class="definition-table spaced">
+  <tr>
+    <td>
+      {@link ngAria#service Services}
+    </td>
+    <td>
+      <p>
+          The {@link ngAria.$aria $aria} service contains helper methods for applying ARIA attributes to HTML.
+      <p>
+      <p>
+          {@link ngAria.$ariaProvider $ariaProvider} is used for configuring ARIA attributes.
+      </p>
+    </td>
+  </tr>
+</table>
 
 ## {@link ngResource ngResource}
 
@@ -252,7 +273,7 @@ Use ngSanitize to securely parse and manipulate HTML data in your application.
 
 ## {@link ngMock ngMock}
 
-Use ngMock to inject and mock modules, factories, services and providers within your unit tests
+Use ngMock to inject and mock modules, factories, services and providers within your unit tests.
 
 <div class="alert alert-info">Include the **angular-mocks.js** file into your test runner for this to work.</div>
 

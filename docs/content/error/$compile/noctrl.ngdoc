@@ -1,0 +1,12 @@
+@ngdoc error
+@name $compile:noctrl
+@fullName Controller is required.
+@description
+
+When using the `bindToController` feature of AngularJS, a directive is required
+to have a Controller. A controller may be specified by adding a "controller"
+property to the directive definition object. Its value should be either a
+string, or an invokable object (a function, or an array whose last element is a
+function).
+
+For more information, see the {@link guide/directive directives guide}.

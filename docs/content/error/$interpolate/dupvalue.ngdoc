@@ -1,0 +1,11 @@
+@ngdoc error
+@name $interpolate:dupvalue
+@fullName Duplicate choice in plural/select
+@description
+
+You have repeated a match selection for your plural or select MessageFormat
+extension in your interpolation expression.  The different choices have to be unique.
+
+For more information about the MessageFormat syntax in interpolation
+expressions, please refer to MessageFormat extensions section at
+{@link guide/i18n#MessageFormat Angular i18n MessageFormat}

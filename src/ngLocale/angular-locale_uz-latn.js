@@ -4,8 +4,8 @@ var PLURAL_CATEGORY = {ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "
 $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": [
-      "AM",
-      "PM"
+      "TO",
+      "TK"
     ],
     "DAY": [
       "yakshanba",
@@ -16,6 +16,15 @@ $provide.value("$locale", {
       "juma",
       "shanba"
     ],
+    "ERANAMES": [
+      "M.A.",
+      "E"
+    ],
+    "ERAS": [
+      "M.A.",
+      "E"
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "Yanvar",
       "Fevral",
@@ -25,8 +34,8 @@ $provide.value("$locale", {
       "Iyun",
       "Iyul",
       "Avgust",
-      "Sentyabr",
-      "Oktyabr",
+      "Sentabr",
+      "Oktabr",
       "Noyabr",
       "Dekabr"
     ],
@@ -53,6 +62,10 @@ $provide.value("$locale", {
       "Noya",
       "Dek"
     ],
+    "WEEKENDRANGE": [
+      5,
+      6
+    ],
     "fullDate": "EEEE, y MMMM dd",
     "longDate": "y MMMM d",
     "medium": "y MMM d HH:mm:ss",
@@ -63,7 +76,7 @@ $provide.value("$locale", {
     "shortTime": "HH:mm"
   },
   "NUMBER_FORMATS": {
-    "CURRENCY_SYM": "\u20ac",
+    "CURRENCY_SYM": "so\u02bcm",
     "DECIMAL_SEP": ",",
     "GROUP_SEP": "\u00a0",
     "PATTERNS": [
@@ -84,7 +97,7 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "\u00a4\u00a0-",
+        "negPre": "-\u00a4\u00a0",
         "negSuf": "",
         "posPre": "\u00a4\u00a0",
         "posSuf": ""

@@ -53,7 +53,7 @@ In Angular applications, you move the job of filling page templates with data fr
 
 ## Specific Topics
 
-* **Login: **[Google example](https://developers.google.com/+/photohunt/python), [Facebook example](http://blog.brunoscopelliti.com/facebook-authentication-in-your-angularjs-web-app), [authentication strategy](http://blog.brunoscopelliti.com/deal-with-users-authentication-in-an-angularjs-web-app), [unix-style authorization](http://frederiknakstad.com/authentication-in-single-page-applications-with-angular-js/)
+* **Login: **[Google example](https://developers.google.com/+/photohunt/python), [AngularJS Facebook library](https://github.com/pc035860/angular-easyfb), [Facebook example](http://blog.brunoscopelliti.com/facebook-authentication-in-your-angularjs-web-app), [authentication strategy](http://blog.brunoscopelliti.com/deal-with-users-authentication-in-an-angularjs-web-app), [unix-style authorization](http://frederiknakstad.com/authentication-in-single-page-applications-with-angular-js/)
 * **Mobile:** [Angular on Mobile Guide](http://www.ng-newsletter.com/posts/angular-on-mobile.html), [PhoneGap](http://devgirl.org/2013/06/10/quick-start-guide-phonegap-and-angularjs/)
 * **Other Languages:** [CoffeeScript](http://www.coffeescriptlove.com/2013/08/angularjs-and-coffeescript-tutorials.html), [Dart](https://github.com/angular/angular.dart.tutorial/wiki)
 * **Realtime: **[Socket.io](http://www.creativebloq.com/javascript/angularjs-collaboration-board-socketio-2132885), [OmniBinder](https://github.com/jeffbcross/omnibinder)
@@ -62,6 +62,7 @@ In Angular applications, you move the job of filling page templates with data fr
 
 ## Tools
 
+* **Getting Started:** [Comparison of the options for starting a new project](http://www.dancancro.com/comparison-of-angularjs-application-starters/)
 * **Debugging:** [Batarang](https://chrome.google.com/webstore/detail/angularjs-batarang/ighdmehidhipcmcojjgiloacoafjmpfk?hl=en)
 * **Testing:** [Karma](http://karma-runner.github.io), [Protractor](https://github.com/angular/protractor)
 * **Editor support:** [Webstorm](http://plugins.jetbrains.com/plugin/6971) (and [video](http://www.youtube.com/watch?v=LJOyrSh1kDU)), [Sublime Text](https://github.com/angular-ui/AngularJS-sublime-package), [Visual Studio](http://madskristensen.net/post/angularjs-intellisense-in-visual-studio-2012)
@@ -101,7 +102,7 @@ This is a short list of libraries with specific support and documentation for wo
 ## Learning Resources
 
 ###Books
-* [AngularJS](http://www.amazon.com/AngularJS-Brad-Green/dp/1449344852) by Brad Green and Shyam Seshadri
+* [AngularJS: Up and Running](http://www.amazon.com/AngularJS-Running-Enhanced-Productivity-Structured/dp/1491901942) by Brad Green and Shyam Seshadri
 * [Mastering Web App Development](http://www.amazon.com/Mastering-Web-Application-Development-AngularJS/dp/1782161821) by Pawel Kozlowski and Pete Bacon Darwin
 * [AngularJS Directives](http://www.amazon.com/AngularJS-Directives-Alex-Vanston/dp/1783280336) by Alex Vanston
 * [Recipes With AngularJS](http://www.amazon.co.uk/Recipes-Angular-js-Frederik-Dietz-ebook/dp/B00DK95V48) by Frederik Dietz
@@ -109,6 +110,7 @@ This is a short list of libraries with specific support and documentation for wo
 * [ng-book: The Complete Book on AngularJS](http://ng-book.com/) by Ari Lerner
 * [AngularJS : Novice to Ninja](http://www.amazon.in/AngularJS-Novice-Ninja-Sandeep-Panda/dp/0992279453) by Sandeep Panda
 * [AngularJS UI Development](http://www.amazon.com/AngularJS-UI-Development-Amit-Ghart-ebook/dp/B00OXVAK7A) by Amit Gharat and Matthias Nehlsen
+* [Responsive Web Design with AngularJS](http://www.amazon.com/Responsive-Design-AngularJS-Sandeep-Kumar/dp/178439842X) by Sandeep Kumar Patel
 
 ###Videos:
 * [egghead.io](http://egghead.io/)
@@ -117,12 +119,12 @@ This is a short list of libraries with specific support and documentation for wo
 ### Courses
 * **Free online:**
   [thinkster.io](http://thinkster.io),
-  [CodeAcademy](http://www.codecademy.com/courses/javascript-advanced-en-2hJ3J/0/1)
+  [CodeAcademy](http://www.codecademy.com/courses/javascript-advanced-en-2hJ3J/0/1),
   [CodeSchool](https://www.codeschool.com/courses/shaping-up-with-angular-js)
 * **Paid online:**
   [Pluralsite (3 courses)](http://www.pluralsight.com/training/Courses/Find?highlight=true&searchTerm=angularjs),
   [Tuts+](https://tutsplus.com/course/easier-js-apps-with-angular/),
-  [lynda.com](http://www.lynda.com/AngularJS-tutorials/Up-Running-AngularJS/133318-2.html)
+  [lynda.com](http://www.lynda.com/AngularJS-tutorials/Up-Running-AngularJS/133318-2.html),
   [WintellectNOW (4 lessons)](http://www.wintellectnow.com/Course/Detail/mastering-angularjs)
 * **Paid onsite:**
   [angularbootcamp.com](http://angularbootcamp.com/)

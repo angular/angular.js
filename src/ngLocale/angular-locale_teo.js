@@ -30,17 +30,26 @@ $provide.value("$locale", {
       "Nakaebarasa",
       "Nakaare",
       "Nakauni",
-      "Nakaung'on",
+      "Nakaung\u2019on",
       "Nakakany",
       "Nakasabiti"
     ],
+    "ERANAMES": [
+      "Kabla ya Christo",
+      "Baada ya Christo"
+    ],
+    "ERAS": [
+      "KK",
+      "BK"
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "Orara",
       "Omuk",
-      "Okwamg'",
-      "Odung'el",
+      "Okwamg\u2019",
+      "Odung\u2019el",
       "Omaruk",
-      "Omodok'king'ol",
+      "Omodok\u2019king\u2019ol",
       "Ojola",
       "Opedel",
       "Osokosokoma",
@@ -70,6 +79,10 @@ $provide.value("$locale", {
       "Tib",
       "Lab",
       "Poo"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE, d MMMM y",
     "longDate": "d MMMM y",
@@ -102,7 +115,7 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "\u00a4-",
+        "negPre": "-\u00a4",
         "negSuf": "",
         "posPre": "\u00a4",
         "posSuf": ""

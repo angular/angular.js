@@ -1,149 +1,142 @@
 'use strict';
 
 describe('$cookies', function() {
-  beforeEach(module('ngCookies', function($provide) {
-    $provide.factory('$browser', function() {
-      return angular.extend(new angular.mock.$Browser(), {cookieHash: {preexisting:'oldCookie'}});
+  var mockedCookies;
+
+  beforeEach(function() {
+    mockedCookies = {};
+    module('ngCookies', {
+      $$cookieWriter: jasmine.createSpy('$$cookieWriter').andCallFake(function(name, value) {
+        mockedCookies[name] = value;
+      }),
+      $$cookieReader: function() {
+        return mockedCookies;
+      }
     });
+  });
+
+
+  it('should serialize objects to json', inject(function($cookies) {
+    $cookies.putObject('objectCookie', {id: 123, name: 'blah'});
+    expect($cookies.get('objectCookie')).toEqual('{"id":123,"name":"blah"}');
   }));
 
 
-  it('should provide access to existing cookies via object properties and keep them in sync',
-      inject(function($cookies, $browser, $rootScope) {
-    expect($cookies).toEqual({'preexisting': 'oldCookie'});
-
-    // access internal cookie storage of the browser mock directly to simulate behavior of
-    // document.cookie
-    $browser.cookieHash['brandNew'] = 'cookie';
-    $browser.poll();
-
-    expect($cookies).toEqual({'preexisting': 'oldCookie', 'brandNew':'cookie'});
-
-    $browser.cookieHash['brandNew'] = 'cookie2';
-    $browser.poll();
-    expect($cookies).toEqual({'preexisting': 'oldCookie', 'brandNew':'cookie2'});
-
-    delete $browser.cookieHash['brandNew'];
-    $browser.poll();
-    expect($cookies).toEqual({'preexisting': 'oldCookie'});
+  it('should deserialize json to object', inject(function($cookies) {
+    $cookies.put('objectCookie', '{"id":123,"name":"blah"}');
+    expect($cookies.getObject('objectCookie')).toEqual({id: 123, name: 'blah'});
   }));
 
 
-  it('should create or update a cookie when a value is assigned to a property',
-      inject(function($cookies, $browser, $rootScope) {
-    $cookies.oatmealCookie = 'nom nom';
-    $rootScope.$digest();
-
-    expect($browser.cookies()).
-      toEqual({'preexisting': 'oldCookie', 'oatmealCookie':'nom nom'});
-
-    $cookies.oatmealCookie = 'gone';
-    $rootScope.$digest();
-
-    expect($browser.cookies()).
-      toEqual({'preexisting': 'oldCookie', 'oatmealCookie': 'gone'});
+  it('should delete objects from the store when remove is called', inject(function($cookies) {
+    $cookies.putObject('gonner', { "I'll":"Be Back"});
+    expect($cookies.get('gonner')).toEqual('{"I\'ll":"Be Back"}');
+    $cookies.remove('gonner');
+    expect($cookies.get('gonner')).toEqual(undefined);
   }));
 
 
-  it('should convert non-string values to string',
-      inject(function($cookies, $browser, $rootScope) {
-    $cookies.nonString = [1, 2, 3];
-    $cookies.nullVal = null;
-    $cookies.undefVal = undefined;
-    var preexisting = $cookies.preexisting = function() {};
-    $rootScope.$digest();
-    expect($browser.cookies()).toEqual({
-      'preexisting': '' + preexisting,
-      'nonString': '1,2,3',
-      'nullVal': 'null',
-      'undefVal': 'undefined'
+  it('should handle empty string value cookies', inject(function($cookies) {
+    $cookies.putObject("emptyCookie",'');
+    expect($cookies.get('emptyCookie')).toEqual('""');
+    expect($cookies.getObject("emptyCookie")).toEqual('');
+    mockedCookies['blankCookie'] = '';
+    expect($cookies.getObject("blankCookie")).toEqual('');
+  }));
+
+
+  it('should put cookie value without serializing', inject(function($cookies) {
+    $cookies.put('name', 'value');
+    $cookies.put('name2', '"value2"');
+    expect($cookies.get('name')).toEqual('value');
+    expect($cookies.getObject('name2')).toEqual('value2');
+  }));
+
+
+  it('should get cookie value without deserializing', inject(function($cookies) {
+    $cookies.put('name', 'value');
+    $cookies.putObject('name2', 'value2');
+    expect($cookies.get('name')).toEqual('value');
+    expect($cookies.get('name2')).toEqual('"value2"');
+  }));
+
+  it('should get all the cookies', inject(function($cookies) {
+    $cookies.put('name', 'value');
+    $cookies.putObject('name2', 'value2');
+    expect($cookies.getAll()).toEqual({name: 'value', name2: '"value2"'});
+  }));
+
+
+  it('should pass options on put', inject(function($cookies, $$cookieWriter) {
+    $cookies.put('name', 'value', {path: '/a/b'});
+    expect($$cookieWriter).toHaveBeenCalledWith('name', 'value', {path: '/a/b'});
+  }));
+
+
+  it('should pass options on putObject', inject(function($cookies, $$cookieWriter) {
+    $cookies.putObject('name', 'value', {path: '/a/b'});
+    expect($$cookieWriter).toHaveBeenCalledWith('name', '"value"', {path: '/a/b'});
+  }));
+
+
+  it('should pass options on remove', inject(function($cookies, $$cookieWriter) {
+    $cookies.remove('name', {path: '/a/b'});
+    expect($$cookieWriter).toHaveBeenCalledWith('name', undefined, {path: '/a/b'});
+  }));
+
+
+  it('should pass default options on put', function() {
+    module(function($cookiesProvider) {
+      $cookiesProvider.defaults.secure = true;
     });
-    expect($cookies).toEqual({
-      'preexisting': '' + preexisting,
-      'nonString': '1,2,3',
-      'nullVal': 'null',
-      'undefVal': 'undefined'
+    inject(function($cookies, $$cookieWriter) {
+      $cookies.put('name', 'value', {path: '/a/b'});
+      expect($$cookieWriter).toHaveBeenCalledWith('name', 'value', {path: '/a/b', secure: true});
     });
-  }));
+  });
 
 
-  it('should remove a cookie when a $cookies property is deleted',
-      inject(function($cookies, $browser, $rootScope) {
-    $cookies.oatmealCookie = 'nom nom';
-    $rootScope.$digest();
-    $browser.poll();
-    expect($browser.cookies()).
-      toEqual({'preexisting': 'oldCookie', 'oatmealCookie':'nom nom'});
-
-    delete $cookies.oatmealCookie;
-    $rootScope.$digest();
-
-    expect($browser.cookies()).toEqual({'preexisting': 'oldCookie'});
-  }));
+  it('should pass default options on putObject', function() {
+    module(function($cookiesProvider) {
+      $cookiesProvider.defaults.secure = true;
+    });
+    inject(function($cookies, $$cookieWriter) {
+      $cookies.putObject('name', 'value', {path: '/a/b'});
+      expect($$cookieWriter).toHaveBeenCalledWith('name', '"value"', {path: '/a/b', secure: true});
+    });
+  });
 
 
-  it('should drop or reset cookies that browser refused to store',
-      inject(function($cookies, $browser, $rootScope) {
-    var i, longVal;
-
-    for (i = 0; i < 5000; i++) {
-      longVal += '*';
-    }
-
-    //drop if no previous value
-    $cookies.longCookie = longVal;
-    $rootScope.$digest();
-    expect($cookies).toEqual({'preexisting': 'oldCookie'});
+  it('should pass default options on remove', function() {
+    module(function($cookiesProvider) {
+      $cookiesProvider.defaults.secure = true;
+    });
+    inject(function($cookies, $$cookieWriter) {
+      $cookies.remove('name', {path: '/a/b'});
+      expect($$cookieWriter).toHaveBeenCalledWith('name', undefined, {path: '/a/b', secure: true});
+    });
+  });
 
 
-    //reset if previous value existed
-    $cookies.longCookie = 'shortVal';
-    $rootScope.$digest();
-    expect($cookies).toEqual({'preexisting': 'oldCookie', 'longCookie': 'shortVal'});
-    $cookies.longCookie = longVal;
-    $rootScope.$digest();
-    expect($cookies).toEqual({'preexisting': 'oldCookie', 'longCookie': 'shortVal'});
-  }));
-});
+  it('should let passed options override default options', function() {
+    module(function($cookiesProvider) {
+      $cookiesProvider.defaults.secure = true;
+    });
+    inject(function($cookies, $$cookieWriter) {
+      $cookies.put('name', 'value', {secure: false});
+      expect($$cookieWriter).toHaveBeenCalledWith('name', 'value', {secure: false});
+    });
+  });
 
 
-describe('$cookieStore', function() {
+  it('should pass default options if no options are passed', function() {
+    module(function($cookiesProvider) {
+      $cookiesProvider.defaults.secure = true;
+    });
+    inject(function($cookies, $$cookieWriter) {
+      $cookies.put('name', 'value');
+      expect($$cookieWriter).toHaveBeenCalledWith('name', 'value', {secure: true});
+    });
+  });
 
-  beforeEach(module('ngCookies'));
-
-  it('should serialize objects to json', inject(function($cookieStore, $browser, $rootScope) {
-    $cookieStore.put('objectCookie', {id: 123, name: 'blah'});
-    $rootScope.$digest();
-    expect($browser.cookies()).toEqual({'objectCookie': '{"id":123,"name":"blah"}'});
-  }));
-
-
-  it('should deserialize json to object', inject(function($cookieStore, $browser) {
-    $browser.cookies('objectCookie', '{"id":123,"name":"blah"}');
-    $browser.poll();
-    expect($cookieStore.get('objectCookie')).toEqual({id: 123, name: 'blah'});
-  }));
-
-
-  it('should delete objects from the store when remove is called', inject(function($cookieStore, $browser, $rootScope) {
-    $cookieStore.put('gonner', { "I'll":"Be Back"});
-    $rootScope.$digest(); //force eval in test
-    $browser.poll();
-    expect($browser.cookies()).toEqual({'gonner': '{"I\'ll":"Be Back"}'});
-
-    $cookieStore.remove('gonner');
-    $rootScope.$digest();
-    expect($browser.cookies()).toEqual({});
-  }));
-  it('should handle empty string value cookies', inject(function($cookieStore, $browser, $rootScope) {
-    $cookieStore.put("emptyCookie",'');
-    $rootScope.$digest();
-    expect($browser.cookies()).
-        toEqual({ 'emptyCookie': '""' });
-    expect($cookieStore.get("emptyCookie")).toEqual('');
-
-    $browser.cookieHash['blankCookie'] = '';
-    $browser.poll();
-    expect($cookieStore.get("blankCookie")).toEqual('');
-  }));
-});
+ });

@@ -22,3 +22,6 @@
 /* global -ngTouch */
 var ngTouch = angular.module('ngTouch', []);
 
+function nodeName_(element) {
+  return angular.lowercase(element.nodeName || (element[0] && element[0].nodeName));
+}

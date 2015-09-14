@@ -23,7 +23,7 @@ $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": [
       "pre podne",
-      "popodne"
+      "po podne"
     ],
     "DAY": [
       "nedelja",
@@ -34,6 +34,15 @@ $provide.value("$locale", {
       "petak",
       "subota"
     ],
+    "ERANAMES": [
+      "Pre nove ere",
+      "Nove ere"
+    ],
+    "ERAS": [
+      "p. n. e.",
+      "n. e."
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "januar",
       "februar",
@@ -71,14 +80,18 @@ $provide.value("$locale", {
       "nov",
       "dec"
     ],
+    "WEEKENDRANGE": [
+      5,
+      6
+    ],
     "fullDate": "EEEE, dd. MMMM y.",
     "longDate": "dd. MMMM y.",
-    "medium": "dd.MM.y. HH.mm.ss",
+    "medium": "dd.MM.y. HH:mm:ss",
     "mediumDate": "dd.MM.y.",
-    "mediumTime": "HH.mm.ss",
-    "short": "d.M.yy. HH.mm",
+    "mediumTime": "HH:mm:ss",
+    "short": "d.M.yy. HH:mm",
     "shortDate": "d.M.yy.",
-    "shortTime": "HH.mm"
+    "shortTime": "HH:mm"
   },
   "NUMBER_FORMATS": {
     "CURRENCY_SYM": "KM",

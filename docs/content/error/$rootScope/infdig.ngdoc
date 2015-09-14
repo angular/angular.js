@@ -35,7 +35,7 @@ var users = [ { name: 'Hank' }, { name: 'Francisco' } ];
 
 $scope.getUsers = function() {
   return users;
-});
+};
 ```
 
 The maximum number of allowed iterations of the `$digest` cycle is controlled via TTL setting which can be configured via {@link ng.$rootScopeProvider $rootScopeProvider}.

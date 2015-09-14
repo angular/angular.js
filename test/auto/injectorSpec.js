@@ -4,12 +4,14 @@ describe('injector', function() {
   var providers;
   var injector;
   var providerInjector;
+  var controllerProvider;
 
-  beforeEach(module(function($provide, $injector) {
+  beforeEach(module(function($provide, $injector, $controllerProvider) {
     providers = function(name, factory, annotations) {
       $provide.factory(name, extend(factory, annotations || {}));
     };
     providerInjector = $injector;
+    controllerProvider = $controllerProvider;
   }));
   beforeEach(inject(function($injector) {
     injector = $injector;
@@ -30,6 +32,12 @@ describe('injector', function() {
     providers('a', function() {return 'Mi';});
     providers('b', function(mi) {return mi + 'sko';}, {$inject:['a']});
     expect(injector.get('b')).toEqual('Misko');
+  });
+
+
+  it('should check its modulesToLoad argument', function() {
+    expect(function() { angular.injector('test'); })
+        .toThrowMinErr('ng', 'areq');
   });
 
 
@@ -71,6 +79,22 @@ describe('injector', function() {
     expect(function() {
       injector.get('idontexist');
     }).toThrowMinErr("$injector", "unpr", "Unknown provider: idontexistProvider <- idontexist");
+  });
+
+
+  it('should provide the caller name if given', function(done) {
+    expect(function() {
+      injector.get('idontexist', 'callerName');
+    }).toThrowMinErr("$injector", "unpr", "Unknown provider: idontexistProvider <- idontexist <- callerName");
+  });
+
+
+  it('should provide the caller name for controllers', function(done) {
+    controllerProvider.register('myCtrl', function(idontexist) {});
+    var $controller = injector.get('$controller');
+    expect(function() {
+      $controller('myCtrl', {$scope: {}});
+    }).toThrowMinErr("$injector", "unpr", "Unknown provider: idontexistProvider <- idontexist <- myCtrl");
   });
 
 
@@ -219,8 +243,23 @@ describe('injector', function() {
     });
 
 
+    // Only Chrome and Firefox support this syntax.
+    if (/chrome|firefox/i.test(navigator.userAgent)) {
+      it('should be possible to annotate functions that are declared using ES6 syntax', function() {
+        /*jshint -W061 */
+        // The function is generated using `eval` as just having the ES6 syntax can break some browsers.
+        expect(annotate(eval('({ fn(x) { return; } })').fn)).toEqual(['x']);
+        /*jshint +W061 */
+      });
+    }
+
+
     it('should publish annotate API', function() {
-      expect(injector.annotate).toBe(annotate);
+      expect(angular.mock.$$annotate).toBe(annotate);
+      spyOn(angular.mock, '$$annotate').andCallThrough();
+      function fn() {}
+      injector.annotate(fn);
+      expect(angular.mock.$$annotate).toHaveBeenCalledWith(fn);
     });
   });
 
@@ -954,7 +993,7 @@ describe('strict-di injector', function() {
       });
     });
     inject(function($injector) {
-      expect (function() {
+      expect(function() {
         $injector.invoke(function($test2) {});
       }).toThrowMinErr('$injector', 'strictdi');
     });
@@ -968,7 +1007,7 @@ describe('strict-di injector', function() {
       });
     });
     inject(function($injector) {
-      expect (function() {
+      expect(function() {
         $injector.invoke(['$test', function($test) {}]);
       }).toThrowMinErr('$injector', 'strictdi');
     });

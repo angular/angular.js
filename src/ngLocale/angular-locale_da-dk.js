@@ -47,6 +47,15 @@ $provide.value("$locale", {
       "fredag",
       "l\u00f8rdag"
     ],
+    "ERANAMES": [
+      "f.Kr.",
+      "e.Kr."
+    ],
+    "ERAS": [
+      "f.Kr.",
+      "e.Kr."
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "januar",
       "februar",
@@ -84,13 +93,17 @@ $provide.value("$locale", {
       "nov.",
       "dec."
     ],
+    "WEEKENDRANGE": [
+      5,
+      6
+    ],
     "fullDate": "EEEE 'den' d. MMMM y",
-    "longDate": "d. MMM y",
-    "medium": "dd/MM/y HH.mm.ss",
-    "mediumDate": "dd/MM/y",
+    "longDate": "d. MMMM y",
+    "medium": "d. MMM y HH.mm.ss",
+    "mediumDate": "d. MMM y",
     "mediumTime": "HH.mm.ss",
-    "short": "dd/MM/yy HH.mm",
-    "shortDate": "dd/MM/yy",
+    "short": "dd/MM/y HH.mm",
+    "shortDate": "dd/MM/y",
     "shortTime": "HH.mm"
   },
   "NUMBER_FORMATS": {

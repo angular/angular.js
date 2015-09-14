@@ -1,5 +1,16 @@
 'use strict';
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *     Any commits to this file should be reviewed with security in mind.  *
+ *   Changes to this file can potentially create security vulnerabilities. *
+ *          An approval from 2 Core members with history of modifying      *
+ *                         this file is required.                          *
+ *                                                                         *
+ *  Does the change somehow allow for arbitrary javascript to be executed? *
+ *    Or allows for someone to change the prototype of built-in objects?   *
+ *     Or gives undesired access to variables likes document or window?    *
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 var $sanitizeMinErr = angular.$$minErr('$sanitize');
 
 /**
@@ -195,10 +206,11 @@ var inlineElements = angular.extend({}, optionalEndTagInlineElements, makeMap("a
 
 // SVG Elements
 // https://wiki.whatwg.org/wiki/Sanitization_rules#svg_Elements
-var svgElements = makeMap("animate,animateColor,animateMotion,animateTransform,circle,defs," +
-        "desc,ellipse,font-face,font-face-name,font-face-src,g,glyph,hkern,image,linearGradient," +
-        "line,marker,metadata,missing-glyph,mpath,path,polygon,polyline,radialGradient,rect,set," +
-        "stop,svg,switch,text,title,tspan,use");
+// Note: the elements animate,animateColor,animateMotion,animateTransform,set are intentionally omitted.
+// They can potentially allow for arbitrary javascript to be executed. See #11290
+var svgElements = makeMap("circle,defs,desc,ellipse,font-face,font-face-name,font-face-src,g,glyph," +
+        "hkern,image,linearGradient,line,marker,metadata,missing-glyph,mpath,path,polygon,polyline," +
+        "radialGradient,rect,stop,svg,switch,text,title,tspan,use");
 
 // Special Elements (can contain anything)
 var specialElements = makeMap("script,style");
@@ -216,36 +228,37 @@ var uriAttrs = makeMap("background,cite,href,longdesc,src,usemap,xlink:href");
 var htmlAttrs = makeMap('abbr,align,alt,axis,bgcolor,border,cellpadding,cellspacing,class,clear,' +
     'color,cols,colspan,compact,coords,dir,face,headers,height,hreflang,hspace,' +
     'ismap,lang,language,nohref,nowrap,rel,rev,rows,rowspan,rules,' +
-    'scope,scrolling,shape,size,span,start,summary,target,title,type,' +
+    'scope,scrolling,shape,size,span,start,summary,tabindex,target,title,type,' +
     'valign,value,vspace,width');
 
 // SVG attributes (without "id" and "name" attributes)
 // https://wiki.whatwg.org/wiki/Sanitization_rules#svg_Attributes
 var svgAttrs = makeMap('accent-height,accumulate,additive,alphabetic,arabic-form,ascent,' +
-    'attributeName,attributeType,baseProfile,bbox,begin,by,calcMode,cap-height,class,color,' +
-    'color-rendering,content,cx,cy,d,dx,dy,descent,display,dur,end,fill,fill-rule,font-family,' +
-    'font-size,font-stretch,font-style,font-variant,font-weight,from,fx,fy,g1,g2,glyph-name,' +
-    'gradientUnits,hanging,height,horiz-adv-x,horiz-origin-x,ideographic,k,keyPoints,' +
-    'keySplines,keyTimes,lang,marker-end,marker-mid,marker-start,markerHeight,markerUnits,' +
-    'markerWidth,mathematical,max,min,offset,opacity,orient,origin,overline-position,' +
-    'overline-thickness,panose-1,path,pathLength,points,preserveAspectRatio,r,refX,refY,' +
-    'repeatCount,repeatDur,requiredExtensions,requiredFeatures,restart,rotate,rx,ry,slope,stemh,' +
-    'stemv,stop-color,stop-opacity,strikethrough-position,strikethrough-thickness,stroke,' +
-    'stroke-dasharray,stroke-dashoffset,stroke-linecap,stroke-linejoin,stroke-miterlimit,' +
-    'stroke-opacity,stroke-width,systemLanguage,target,text-anchor,to,transform,type,u1,u2,' +
-    'underline-position,underline-thickness,unicode,unicode-range,units-per-em,values,version,' +
-    'viewBox,visibility,width,widths,x,x-height,x1,x2,xlink:actuate,xlink:arcrole,xlink:role,' +
-    'xlink:show,xlink:title,xlink:type,xml:base,xml:lang,xml:space,xmlns,xmlns:xlink,y,y1,y2,' +
-    'zoomAndPan');
+    'baseProfile,bbox,begin,by,calcMode,cap-height,class,color,color-rendering,content,' +
+    'cx,cy,d,dx,dy,descent,display,dur,end,fill,fill-rule,font-family,font-size,font-stretch,' +
+    'font-style,font-variant,font-weight,from,fx,fy,g1,g2,glyph-name,gradientUnits,hanging,' +
+    'height,horiz-adv-x,horiz-origin-x,ideographic,k,keyPoints,keySplines,keyTimes,lang,' +
+    'marker-end,marker-mid,marker-start,markerHeight,markerUnits,markerWidth,mathematical,' +
+    'max,min,offset,opacity,orient,origin,overline-position,overline-thickness,panose-1,' +
+    'path,pathLength,points,preserveAspectRatio,r,refX,refY,repeatCount,repeatDur,' +
+    'requiredExtensions,requiredFeatures,restart,rotate,rx,ry,slope,stemh,stemv,stop-color,' +
+    'stop-opacity,strikethrough-position,strikethrough-thickness,stroke,stroke-dasharray,' +
+    'stroke-dashoffset,stroke-linecap,stroke-linejoin,stroke-miterlimit,stroke-opacity,' +
+    'stroke-width,systemLanguage,target,text-anchor,to,transform,type,u1,u2,underline-position,' +
+    'underline-thickness,unicode,unicode-range,units-per-em,values,version,viewBox,visibility,' +
+    'width,widths,x,x-height,x1,x2,xlink:actuate,xlink:arcrole,xlink:role,xlink:show,xlink:title,' +
+    'xlink:type,xml:base,xml:lang,xml:space,xmlns,xmlns:xlink,y,y1,y2,zoomAndPan', true);
 
 var validAttrs = angular.extend({},
                                 uriAttrs,
                                 svgAttrs,
                                 htmlAttrs);
 
-function makeMap(str) {
+function makeMap(str, lowercaseKeys) {
   var obj = {}, items = str.split(','), i;
-  for (i = 0; i < items.length; i++) obj[items[i]] = true;
+  for (i = 0; i < items.length; i++) {
+    obj[lowercaseKeys ? angular.lowercase(items[i]) : items[i]] = true;
+  }
   return obj;
 }
 
@@ -271,14 +284,14 @@ function htmlParser(html, handler) {
     }
   }
   var index, chars, match, stack = [], last = html, text;
-  stack.last = function() { return stack[ stack.length - 1 ]; };
+  stack.last = function() { return stack[stack.length - 1]; };
 
   while (html) {
     text = '';
     chars = true;
 
     // Make sure we're not in a script or style element
-    if (!stack.last() || !specialElements[ stack.last() ]) {
+    if (!stack.last() || !specialElements[stack.last()]) {
 
       // Comment
       if (html.indexOf("<!--") === 0) {
@@ -336,7 +349,8 @@ function htmlParser(html, handler) {
       }
 
     } else {
-      html = html.replace(new RegExp("(.*)<\\s*\\/\\s*" + stack.last() + "[^>]*>", 'i'),
+      // IE versions 9 and 10 do not understand the regex '[^]', so using a workaround with [\W\w].
+      html = html.replace(new RegExp("([\\W\\w]*)<\\s*\\/\\s*" + stack.last() + "[^>]*>", 'i'),
         function(all, text) {
           text = text.replace(COMMENT_REGEXP, "$1").replace(CDATA_REGEXP, "$1");
 
@@ -360,20 +374,21 @@ function htmlParser(html, handler) {
 
   function parseStartTag(tag, tagName, rest, unary) {
     tagName = angular.lowercase(tagName);
-    if (blockElements[ tagName ]) {
-      while (stack.last() && inlineElements[ stack.last() ]) {
+    if (blockElements[tagName]) {
+      while (stack.last() && inlineElements[stack.last()]) {
         parseEndTag("", stack.last());
       }
     }
 
-    if (optionalEndTagElements[ tagName ] && stack.last() == tagName) {
+    if (optionalEndTagElements[tagName] && stack.last() == tagName) {
       parseEndTag("", tagName);
     }
 
-    unary = voidElements[ tagName ] || !!unary;
+    unary = voidElements[tagName] || !!unary;
 
-    if (!unary)
+    if (!unary) {
       stack.push(tagName);
+    }
 
     var attrs = {};
 
@@ -392,16 +407,17 @@ function htmlParser(html, handler) {
   function parseEndTag(tag, tagName) {
     var pos = 0, i;
     tagName = angular.lowercase(tagName);
-    if (tagName)
+    if (tagName) {
       // Find the closest opened tag of the same type
-      for (pos = stack.length - 1; pos >= 0; pos--)
-        if (stack[ pos ] == tagName)
-          break;
+      for (pos = stack.length - 1; pos >= 0; pos--) {
+        if (stack[pos] == tagName) break;
+      }
+    }
 
     if (pos >= 0) {
       // Close all the open elements, up the stack
       for (i = stack.length - 1; i >= pos; i--)
-        if (handler.end) handler.end(stack[ i ]);
+        if (handler.end) handler.end(stack[i]);
 
       // Remove the open elements from the stack
       stack.length = pos;
@@ -410,7 +426,6 @@ function htmlParser(html, handler) {
 }
 
 var hiddenPre=document.createElement("pre");
-var spaceRe = /^(\s*)([\s\S]*?)(\s*)$/;
 /**
  * decodes all entities into regular string
  * @param value
@@ -419,22 +434,10 @@ var spaceRe = /^(\s*)([\s\S]*?)(\s*)$/;
 function decodeEntities(value) {
   if (!value) { return ''; }
 
-  // Note: IE8 does not preserve spaces at the start/end of innerHTML
-  // so we must capture them and reattach them afterward
-  var parts = spaceRe.exec(value);
-  var spaceBefore = parts[1];
-  var spaceAfter = parts[3];
-  var content = parts[2];
-  if (content) {
-    hiddenPre.innerHTML=content.replace(/</g,"&lt;");
-    // innerText depends on styling as it doesn't display hidden elements.
-    // Therefore, it's better to use textContent not to cause unnecessary
-    // reflows. However, IE<9 don't support textContent so the innerText
-    // fallback is necessary.
-    content = 'textContent' in hiddenPre ?
-      hiddenPre.textContent : hiddenPre.innerText;
-  }
-  return spaceBefore + content + spaceAfter;
+  hiddenPre.innerHTML = value.replace(/</g,"&lt;");
+  // innerText depends on styling as it doesn't display hidden elements.
+  // Therefore, it's better to use textContent not to cause unnecessary reflows.
+  return hiddenPre.textContent;
 }
 
 /**

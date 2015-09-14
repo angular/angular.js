@@ -34,6 +34,15 @@ $provide.value("$locale", {
       "petek",
       "sobota"
     ],
+    "ERANAMES": [
+      "pred na\u0161im \u0161tetjem",
+      "na\u0161e \u0161tetje"
+    ],
+    "ERAS": [
+      "pr. n. \u0161t.",
+      "po Kr."
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "januar",
       "februar",
@@ -71,14 +80,18 @@ $provide.value("$locale", {
       "nov.",
       "dec."
     ],
+    "WEEKENDRANGE": [
+      5,
+      6
+    ],
     "fullDate": "EEEE, dd. MMMM y",
     "longDate": "dd. MMMM y",
-    "medium": "d. MMM y HH.mm.ss",
+    "medium": "d. MMM y HH:mm:ss",
     "mediumDate": "d. MMM y",
-    "mediumTime": "HH.mm.ss",
-    "short": "d. MM. yy HH.mm",
+    "mediumTime": "HH:mm:ss",
+    "short": "d. MM. yy HH:mm",
     "shortDate": "d. MM. yy",
-    "shortTime": "HH.mm"
+    "shortTime": "HH:mm"
   },
   "NUMBER_FORMATS": {
     "CURRENCY_SYM": "\u20ac",

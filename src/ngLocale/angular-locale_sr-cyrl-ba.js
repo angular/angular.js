@@ -23,25 +23,34 @@ $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": [
       "\u043f\u0440\u0435 \u043f\u043e\u0434\u043d\u0435",
-      "\u043f\u043e\u043f\u043e\u0434\u043d\u0435"
+      "\u043f\u043e \u043f\u043e\u0434\u043d\u0435"
     ],
     "DAY": [
       "\u043d\u0435\u0434\u0435\u0459\u0430",
       "\u043f\u043e\u043d\u0435\u0434\u0435\u0459\u0430\u043a",
       "\u0443\u0442\u043e\u0440\u0430\u043a",
-      "\u0441\u0440\u0438\u0458\u0435\u0434\u0430",
+      "\u0441\u0440\u0435\u0434\u0430",
       "\u0447\u0435\u0442\u0432\u0440\u0442\u0430\u043a",
       "\u043f\u0435\u0442\u0430\u043a",
       "\u0441\u0443\u0431\u043e\u0442\u0430"
     ],
+    "ERANAMES": [
+      "\u041f\u0440\u0435 \u043d\u043e\u0432\u0435 \u0435\u0440\u0435",
+      "\u041d\u043e\u0432\u0435 \u0435\u0440\u0435"
+    ],
+    "ERAS": [
+      "\u043f. \u043d. \u0435.",
+      "\u043d. \u0435."
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "\u0458\u0430\u043d\u0443\u0430\u0440",
       "\u0444\u0435\u0431\u0440\u0443\u0430\u0440",
       "\u043c\u0430\u0440\u0442",
       "\u0430\u043f\u0440\u0438\u043b",
       "\u043c\u0430\u0458",
-      "\u0458\u0443\u043d\u0438",
-      "\u0458\u0443\u043b\u0438",
+      "\u0458\u0443\u043d",
+      "\u0458\u0443\u043b",
       "\u0430\u0432\u0433\u0443\u0441\u0442",
       "\u0441\u0435\u043f\u0442\u0435\u043c\u0431\u0430\u0440",
       "\u043e\u043a\u0442\u043e\u0431\u0430\u0440",
@@ -52,7 +61,7 @@ $provide.value("$locale", {
       "\u043d\u0435\u0434",
       "\u043f\u043e\u043d",
       "\u0443\u0442\u043e",
-      "\u0441\u0440\u0438",
+      "\u0441\u0440\u0435",
       "\u0447\u0435\u0442",
       "\u043f\u0435\u0442",
       "\u0441\u0443\u0431"
@@ -71,13 +80,17 @@ $provide.value("$locale", {
       "\u043d\u043e\u0432",
       "\u0434\u0435\u0446"
     ],
+    "WEEKENDRANGE": [
+      5,
+      6
+    ],
     "fullDate": "EEEE, dd. MMMM y.",
     "longDate": "dd. MMMM y.",
-    "medium": "y-MM-dd HH:mm:ss",
-    "mediumDate": "y-MM-dd",
+    "medium": "dd.MM.y. HH:mm:ss",
+    "mediumDate": "dd.MM.y.",
     "mediumTime": "HH:mm:ss",
-    "short": "yy-MM-dd HH:mm",
-    "shortDate": "yy-MM-dd",
+    "short": "d.M.yy. HH:mm",
+    "shortDate": "d.M.yy.",
     "shortTime": "HH:mm"
   },
   "NUMBER_FORMATS": {

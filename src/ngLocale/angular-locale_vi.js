@@ -16,6 +16,15 @@ $provide.value("$locale", {
       "Th\u1ee9 S\u00e1u",
       "Th\u1ee9 B\u1ea3y"
     ],
+    "ERANAMES": [
+      "tr. CN",
+      "sau CN"
+    ],
+    "ERAS": [
+      "tr. CN",
+      "sau CN"
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "th\u00e1ng 1",
       "th\u00e1ng 2",
@@ -52,6 +61,10 @@ $provide.value("$locale", {
       "thg 10",
       "thg 11",
       "thg 12"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE, 'ng\u00e0y' dd MMMM 'n\u0103m' y",
     "longDate": "'Ng\u00e0y' dd 'th\u00e1ng' MM 'n\u0103m' y",

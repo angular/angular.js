@@ -5,7 +5,7 @@
 
 # What are Scopes?
 
-{@link ng.$rootScope.Scope scope} is an object that refers to the application
+{@link ng.$rootScope.Scope Scope} is an object that refers to the application
 model. It is an execution context for {@link expression expressions}. Scopes are
 arranged in hierarchical structure which mimic the DOM structure of the application. Scopes can
 watch {@link guide/expression expressions} and propagate events.
@@ -177,7 +177,7 @@ for example, only a portion of the view needs to be controlled by Angular.
 
 To examine the scope in the debugger:
 
-  1. right click on the element of interest in your browser and select 'inspect element'. You
+  1. Right click on the element of interest in your browser and select 'inspect element'. You
   should see the browser debugger with the element you clicked on highlighted.
 
   2. The debugger allows you to access the currently selected element in the console as `$0`
@@ -245,7 +245,7 @@ of the `$watch` expressions and compares them with the previous value. This dirt
 asynchronously. This means that assignment such as `$scope.username="angular"` will not
 immediately cause a `$watch` to be notified, instead the `$watch` notification is delayed until
 the `$digest` phase. This delay is desirable, since it coalesces multiple model updates into one
-`$watch` notification as well as it guarantees that during the `$watch` notification no other
+`$watch` notification as well as guarantees that during the `$watch` notification no other
 `$watch`es are running. If a `$watch` changes the value of the model, it will force additional
 `$digest` cycle.
 
@@ -264,7 +264,7 @@ the `$digest` phase. This delay is desirable, since it coalesces multiple model 
   3. **Model mutation**
 
      For mutations to be properly observed, you should make them only within the {@link
-     ng.$rootScope.Scope#$apply scope.$apply()}. (Angular APIs do this
+     ng.$rootScope.Scope#$apply scope.$apply()}. Angular APIs do this
      implicitly, so no extra `$apply` call is needed when doing synchronous work in controllers,
      or asynchronous work with {@link ng.$http $http}, {@link ng.$timeout $timeout}
      or {@link ng.$interval $interval} services.
@@ -345,7 +345,7 @@ access on JavaScript object.
 Dirty checking can be done with three strategies: By reference, by collection contents, and by value. The strategies differ in the kinds of changes they detect, and in their performance characteristics.
 
    - Watching *by reference* ({@link
-      ng.$rootScope.Scope#$watch scope.$watch} `(watchExpression, listener)`) detects a change when the whole value returned by the watch expression switches to a new value. If the value is an array or an object, changes inside it are not detected. This is the most efficient stategy.
+      ng.$rootScope.Scope#$watch scope.$watch} `(watchExpression, listener)`) detects a change when the whole value returned by the watch expression switches to a new value. If the value is an array or an object, changes inside it are not detected. This is the most efficient strategy.
    - Watching *collection contents* ({@link
       ng.$rootScope.Scope#$watchCollection scope.$watchCollection} `(watchExpression, listener)`) detects changes that occur inside an array or an object: When items are added, removed, or reordered. The detection is shallow - it does not reach into nested collections. Watching collection contents is more expensive than watching by reference, because copies of the collection contents need to be maintained. However, the strategy attempts to minimize the amount of copying required.
    - Watching *by value* ({@link

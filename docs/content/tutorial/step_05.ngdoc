@@ -258,8 +258,8 @@ You should now see the following output in the Karma tab:
 
 # Experiments
 
-* At the bottom of `index.html`, add a `<pre>{{phones | json}}</pre>` binding to see the list of phones
-  displayed in json format.
+* At the bottom of `index.html`, add a `<pre>{{phones | filter:query | orderBy:orderProp | json}}</pre>` 
+binding to see the list of phones displayed in json format.  
 
 * In the `PhoneListCtrl` controller, pre-process the http response by limiting the number of phones
 to the first 5 in the list. Use the following code in the `$http` callback:

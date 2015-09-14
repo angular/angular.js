@@ -55,8 +55,7 @@
       if (window.WebKitTransitionEvent) {
         evnt = new WebKitTransitionEvent(eventType, eventData);
         evnt.initEvent(eventType, false, true);
-      }
-      else {
+      } else {
         try {
           evnt = new TransitionEvent(eventType, eventData);
         }
@@ -65,13 +64,11 @@
           evnt.initTransitionEvent(eventType, null, null, null, eventData.elapsedTime || 0);
         }
       }
-    }
-    else if (/animationend/.test(eventType)) {
+    } else if (/animationend/.test(eventType)) {
       if (window.WebKitAnimationEvent) {
         evnt = new WebKitAnimationEvent(eventType, eventData);
         evnt.initEvent(eventType, false, true);
-      }
-      else {
+      } else {
         try {
           evnt = new AnimationEvent(eventType, eventData);
         }
@@ -80,8 +77,9 @@
           evnt.initAnimationEvent(eventType, null, null, null, eventData.elapsedTime || 0);
         }
       }
-    }
-    else {
+    } else if (/touch/.test(eventType) && supportsTouchEvents()) {
+      evnt = createTouchEvent(element, eventType, x, y);
+    } else {
       evnt = document.createEvent('MouseEvents');
       x = x || 0;
       y = y || 0;
@@ -116,4 +114,35 @@
 
     return finalProcessDefault;
   };
+
+  function supportsTouchEvents() {
+    if ('_cached' in supportsTouchEvents) {
+      return supportsTouchEvents._cached;
+    }
+    if (!document.createTouch || !document.createTouchList) {
+      supportsTouchEvents._cached = false;
+      return false;
+    }
+    try {
+      document.createEvent('TouchEvent');
+    } catch (e) {
+      supportsTouchEvents._cached = false;
+      return false;
+    }
+    supportsTouchEvents._cached = true;
+    return true;
+  }
+
+  function createTouchEvent(element, eventType, x, y) {
+    var evnt = new Event(eventType);
+    x = x || 0;
+    y = y || 0;
+
+    var touch = document.createTouch(window, element, Date.now(), x, y, x, y);
+    var touches = document.createTouchList(touch);
+
+    evnt.touches = touches;
+
+    return evnt;
+  }
 }());

@@ -13,19 +13,6 @@ ARG_DEFS=(
 
 function init {
   TMP_DIR=$(resolveDir ../../tmp)
-  REPOS=(
-    angular
-    angular-animate
-    angular-cookies
-    angular-i18n
-    angular-loader
-    angular-mocks
-    angular-route
-    angular-resource
-    angular-sanitize
-    angular-scenario
-    angular-touch
-  )
 }
 
 function prepare {
@@ -51,4 +38,5 @@ function publish {
   done
 }
 
+source $(dirname $0)/repos.inc
 source $(dirname $0)/../utils.inc

@@ -5,13 +5,16 @@
 
 # Understanding Controllers
 
-In Angular, a Controller is a JavaScript **constructor function** that is used to augment the
+In Angular, a Controller is defined by a JavaScript **constructor function** that is used to augment the
 {@link scope Angular Scope}.
 
 When a Controller is attached to the DOM via the {@link ng.directive:ngController ng-controller}
 directive, Angular will instantiate a new Controller object, using the specified Controller's
-**constructor function**. A new **child scope** will be available as an injectable parameter to the
-Controller's constructor function as `$scope`.
+**constructor function**. A new **child scope** will be created and made available as an injectable
+parameter to the Controller's constructor function as `$scope`.
+
+If the controller has been attached using the `controller as` syntax then the controller instance will
+be assigned to a property on the new scope.
 
 Use controllers to:
 
@@ -30,12 +33,12 @@ Do not use controllers to:
 services} instead.
 - Manage the life-cycle of other components (for example, to create service instances).
 
-# Setting up the initial state of a `$scope` object
+## Setting up the initial state of a `$scope` object
 
 Typically, when you create an application you need to set up the initial state for the Angular
 `$scope`. You set up the initial state of a scope by attaching properties to the `$scope` object.
 The properties contain the **view model** (the model that will be presented by the view).  All the
-`$scope` properties will be available to the template at the point in the DOM where the Controller
+`$scope` properties will be available to the {@link templates template} at the point in the DOM where the Controller
 is registered.
 
 The following example demonstrates creating a `GreetingController`, which attaches a `greeting`
@@ -69,13 +72,13 @@ now be data-bound to the template:
 ```
 
 
-# Adding Behavior to a Scope Object
+## Adding Behavior to a Scope Object
 
 In order to react to events or execute computation in the view we must provide behavior to the
 scope. We add behavior to the scope by attaching methods to the `$scope` object.  These methods are
 then available to be called from the template/view.
 
-The following example uses a Controller to add a method to the scope, which doubles a number:
+The following example uses a Controller to add a method, which doubles a number, to the scope:
 
 ```js
 var myApp = angular.module('myApp',[]);
@@ -99,14 +102,14 @@ objects (or primitives) assigned to the scope become model properties. Any metho
 the scope are available in the template/view, and can be invoked via angular expressions
 and `ng` event handler directives (e.g. {@link ng.directive:ngClick ngClick}).
 
-# Using Controllers Correctly
+## Using Controllers Correctly
 
 In general, a Controller shouldn't try to do too much. It should contain only the business logic
 needed for a single view.
 
 The most common way to keep Controllers slim is by encapsulating work that doesn't belong to
 controllers into services and then using these services in Controllers via dependency injection.
-This is discussed in the {@link di Dependency Injection} {@link services
+This is discussed in the {@link di Dependency Injection}  and  {@link services
 Services} sections of this guide.
 
 
@@ -125,7 +128,7 @@ following components:
 - A model consisting of a string named `spice`
 - A Controller with two functions that set the value of `spice`
 
-The message in our template contains a binding to the `spice` model, which by default is set to the
+The message in our template contains a binding to the `spice` model which, by default, is set to the
 string "very". Depending on which button is clicked, the `spice` model is set to `chili` or
 `jalapeño`, and the message is automatically updated by data-binding.
 
@@ -162,7 +165,7 @@ scope is augmented (managed) by the `SpicyController` Controller.
 starts with capital letter and ends with "Controller".
 - Assigning a property to `$scope` creates or updates the model.
 - Controller methods can be created through direct assignment to scope (see the `chiliSpicy` method)
-- The Controller methods and properties are available in the template (for the `<div>` element and
+- The Controller methods and properties are available in the template (for both the `<div>` element and
 its children).
 
 ## Spicy Arguments Example
@@ -259,7 +262,7 @@ Inheritance works with methods in the same way as it does with properties. So in
 examples, all of the properties could be replaced with methods that return string values.
 
 
-## Testing Controllers
+# Testing Controllers
 
 Although there are many ways to test a Controller, one of the best conventions, shown below,
 involves injecting the {@link ng.$rootScope $rootScope} and {@link ng.$controller $controller}:
@@ -302,7 +305,7 @@ describe('myController function', function() {
 ```
 
 
-If you need to test a nested Controller you need to create the same scope hierarchy
+If you need to test a nested Controller you  must create the same scope hierarchy
 in your test that exists in the DOM:
 
 ```js
@@ -326,7 +329,7 @@ describe('state', function() {
         expect(childScope.timeOfDay).toBe('morning');
         expect(childScope.name).toBe('Mattie');
         expect(grandChildScope.timeOfDay).toBe('evening');
-        expect(grandChildScope.name).toBe('Gingerbreak Baby');
+        expect(grandChildScope.name).toBe('Gingerbread Baby');
     });
 });
 ```

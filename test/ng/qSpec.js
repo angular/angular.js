@@ -51,7 +51,7 @@ describe('q', function() {
       log.push(logPrefix + '->throw(' +  _argToString(returnVal) + ')');
       throw returnVal;
     } else {
-      if (returnVal === undefined) {
+      if (isUndefined(returnVal)) {
         log.push(logPrefix);
       } else {
         log.push(logPrefix + '->' +  _argToString(returnVal));
@@ -1639,6 +1639,14 @@ describe('q', function() {
         expect(logStr()).toBe('');
         syncNotify(deferred, 'notification');
         expect(logStr()).toBe('progress(notification)->notification');
+      });
+    });
+
+
+    describe('resolve', function() {
+      it('should be an alias of the "when" function', function() {
+        expect(q.resolve).toBeDefined();
+        expect(q.resolve).toEqual(q.when);
       });
     });
 

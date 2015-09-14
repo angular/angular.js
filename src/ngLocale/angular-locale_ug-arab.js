@@ -34,6 +34,15 @@ $provide.value("$locale", {
       "\u062c\u06c8\u0645\u06d5",
       "\u0634\u06d5\u0646\u0628\u06d5"
     ],
+    "ERANAMES": [
+      "\u0645\u0649\u0644\u0627\u062f\u0649\u064a\u06d5\u062f\u0649\u0646 \u0628\u06c7\u0631\u06c7\u0646",
+      "\u0645\u0649\u0644\u0627\u062f\u0649\u064a\u06d5"
+    ],
+    "ERAS": [
+      "\u0645\u0649\u0644\u0627\u062f\u0649\u064a\u06d5\u062f\u0649\u0646 \u0628\u06c7\u0631\u06c7\u0646",
+      "\u0645\u0649\u0644\u0627\u062f\u0649\u064a\u06d5"
+    ],
+    "FIRSTDAYOFWEEK": 6,
     "MONTH": [
       "\u064a\u0627\u0646\u06cb\u0627\u0631",
       "\u0641\u06d0\u06cb\u0631\u0627\u0644",
@@ -71,6 +80,10 @@ $provide.value("$locale", {
       "\u0646\u0648\u064a\u0627\u0628\u0649\u0631",
       "\u062f\u06d0\u0643\u0627\u0628\u0649\u0631"
     ],
+    "WEEKENDRANGE": [
+      5,
+      6
+    ],
     "fullDate": "EEEE\u060c MMMM d\u060c y",
     "longDate": "MMMM d\u060c y",
     "medium": "MMM d\u060c y h:mm:ss a",
@@ -81,7 +94,7 @@ $provide.value("$locale", {
     "shortTime": "h:mm a"
   },
   "NUMBER_FORMATS": {
-    "CURRENCY_SYM": "\u20ac",
+    "CURRENCY_SYM": "\u00a5",
     "DECIMAL_SEP": ".",
     "GROUP_SEP": ",",
     "PATTERNS": [
@@ -102,7 +115,7 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "\u00a4-",
+        "negPre": "-\u00a4",
         "negSuf": "",
         "posPre": "\u00a4",
         "posSuf": ""

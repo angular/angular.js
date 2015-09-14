@@ -140,6 +140,10 @@ describe('HTML', function() {
     expectHTML('a<SCRIPT>evil< / scrIpt >c.').toEqual('ac.');
   });
 
+  it('should remove script that has newline characters', function() {
+    expectHTML('a<SCRIPT\n>\n\revil\n\r< / scrIpt\n >c.').toEqual('ac.');
+  });
+
   it('should remove DOCTYPE header', function() {
     expectHTML('<!DOCTYPE html>').toEqual('');
     expectHTML('<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"\n"http://www.w3.org/TR/html4/strict.dtd">').toEqual('');
@@ -158,6 +162,10 @@ describe('HTML', function() {
 
   it('should remove style', function() {
     expectHTML('a<STyle>evil</stYle>c.').toEqual('ac.');
+  });
+
+  it('should remove style that has newline characters', function() {
+    expectHTML('a<STyle \n>\n\revil\n\r</stYle\n>c.').toEqual('ac.');
   });
 
   it('should remove script and style', function() {
@@ -243,6 +251,12 @@ describe('HTML', function() {
         .toEqual('<svg width="400px" height="150px" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="red"/></svg>');
   });
 
+  it('should not ignore white-listed svg camelCased attributes', function() {
+    expectHTML('<svg preserveAspectRatio="true"></svg>')
+        .toEqual('<svg preserveAspectRatio="true"></svg>');
+
+  });
+
   it('should sanitize SVG xlink:href attribute values', function() {
     expectHTML('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><a xlink:href="javascript:alert()"></a></svg>')
         .toEqual('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><a></a></svg>');
@@ -257,6 +271,15 @@ describe('HTML', function() {
 
     expectHTML('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><a xlink:bar="https://example.com"></a></svg>')
       .toEqual('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><a></a></svg>');
+  });
+
+  it('should not accept SVG animation tags', function() {
+    expectHTML('<svg xmlns:xlink="http://www.w3.org/1999/xlink"><a><text y="1em">Click me</text><animate attributeName="xlink:href" values="javascript:alert(1)"/></a></svg>')
+      .toEqual('<svg xmlns:xlink="http://www.w3.org/1999/xlink"><a><text y="1em">Click me</text></a></svg>');
+
+    expectHTML('<svg><a xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="?"><circle r="400"></circle>' +
+    '<animate attributeName="xlink:href" begin="0" from="javascript:alert(1)" to="&" /></a></svg>')
+      .toEqual('<svg><a xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="?"><circle r="400"></circle></a></svg>');
   });
 
   describe('htmlSanitizerWriter', function() {
@@ -487,8 +510,7 @@ describe('HTML', function() {
 });
 
 describe('decodeEntities', function() {
-  var handler, text,
-      origHiddenPre = window.hiddenPre;
+  var handler, text;
 
   beforeEach(function() {
     text = '';
@@ -503,37 +525,13 @@ describe('decodeEntities', function() {
     module('ngSanitize');
   });
 
-  afterEach(function() {
-    window.hiddenPre = origHiddenPre;
+  it('should unescape text', function() {
+    htmlParser('a&lt;div&gt;&amp;&lt;/div&gt;c', handler);
+    expect(text).toEqual('a<div>&</div>c');
   });
 
-  it('should use innerText if textContent is not available (IE<9)', function() {
-    window.hiddenPre = {
-      innerText: 'INNER_TEXT'
-    };
-    inject(function($sanitize) {
-      htmlParser('<tag>text</tag>', handler);
-      expect(text).toEqual('INNER_TEXT');
-    });
-  });
-  it('should use textContent if available', function() {
-    window.hiddenPre = {
-      textContent: 'TEXT_CONTENT',
-      innerText: 'INNER_TEXT'
-    };
-    inject(function($sanitize) {
-      htmlParser('<tag>text</tag>', handler);
-      expect(text).toEqual('TEXT_CONTENT');
-    });
-  });
-  it('should use textContent even if empty', function() {
-    window.hiddenPre = {
-      textContent: '',
-      innerText: 'INNER_TEXT'
-    };
-    inject(function($sanitize) {
-      htmlParser('<tag>text</tag>', handler);
-      expect(text).toEqual('');
-    });
+  it('should preserve whitespace', function() {
+    htmlParser('  a&amp;b ', handler);
+    expect(text).toEqual('  a&b ');
   });
 });

@@ -34,6 +34,15 @@ $provide.value("$locale", {
       "Fida",
       "Memeneda"
     ],
+    "ERANAMES": [
+      "Ansa Kristo",
+      "Kristo Ekyiri"
+    ],
+    "ERAS": [
+      "AK",
+      "KE"
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "Sanda-\u0186p\u025bp\u0254n",
       "Kwakwar-\u0186gyefuo",
@@ -71,6 +80,10 @@ $provide.value("$locale", {
       "\u0186-O",
       "M-\u0186"
     ],
+    "WEEKENDRANGE": [
+      5,
+      6
+    ],
     "fullDate": "EEEE, y MMMM dd",
     "longDate": "y MMMM d",
     "medium": "y MMM d HH:mm:ss",
@@ -102,7 +115,7 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "\u00a4-",
+        "negPre": "-\u00a4",
         "negSuf": "",
         "posPre": "\u00a4",
         "posSuf": ""

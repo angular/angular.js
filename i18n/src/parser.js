@@ -56,7 +56,7 @@ function parsePattern(pattern) {
     p.negSuf = negative.substr(pos + trunkLen).replace(/\'/g, '');
   } else {
     // hardcoded '-' sign is fine as all locale use '-' as MINUS_SIGN. (\u2212 is the same as '-')
-    p.negPre = p.posPre + '-';
+    p.negPre = '-' + p.posPre;
     p.negSuf = p.posSuf;
   }
 

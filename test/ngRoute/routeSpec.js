@@ -70,6 +70,36 @@ describe('$route', function() {
     });
   });
 
+  it('should allow redirects while handling $routeChangeStart', function() {
+    module(function($routeProvider) {
+      $routeProvider.when('/some', {
+        id: 'some', template: 'Some functionality'
+      });
+      $routeProvider.when('/redirect', {
+        id: 'redirect'
+      });
+    });
+    module(provideLog);
+    inject(function($route, $location, $rootScope, $compile, log) {
+      $rootScope.$on('$routeChangeStart', function(event, next, current) {
+        if (next.id === 'some') {
+          $location.path('/redirect');
+        }
+      });
+      $compile('<div><div ng-view></div></div>')($rootScope);
+      $rootScope.$on('$routeChangeStart', log.fn('routeChangeStart'));
+      $rootScope.$on('$routeChangeError', log.fn('routeChangeError'));
+      $rootScope.$on('$routeChangeSuccess', log.fn('routeChangeSuccess'));
+      $rootScope.$apply(function() {
+        $location.path('/some');
+      });
+
+      expect($route.current.id).toBe('redirect');
+      expect($location.path()).toBe('/redirect');
+      expect(log).toEqual(['routeChangeStart', 'routeChangeStart', 'routeChangeSuccess']);
+    });
+  });
+
   it('should route and fire change event', function() {
     var log = '',
         lastRoute,
@@ -296,13 +326,13 @@ describe('$route', function() {
       expect($route.current).toBeUndefined();
     }));
 
-    it('matches literal *', inject(function($route, $location, $rootScope) {
+    it('matches literal .', inject(function($route, $location, $rootScope) {
       $location.path('/$testX23/foo*(bar)/222');
       $rootScope.$digest();
       expect($route.current).toBeUndefined();
     }));
 
-    it('matches literal .', inject(function($route, $location, $rootScope) {
+    it('matches literal *', inject(function($route, $location, $rootScope) {
       $location.path('/$test.23/foooo(bar)/222');
       $rootScope.$digest();
       expect($route.current).toBeUndefined();
@@ -944,6 +974,29 @@ describe('$route', function() {
     });
 
 
+    it('should properly interpolate optional and eager route vars ' +
+       'when redirecting from path with trailing slash', function() {
+      module(function($routeProvider) {
+        $routeProvider.when('/foo/:id?/:subid?', {templateUrl: 'foo.html'});
+        $routeProvider.when('/bar/:id*/:subid', {templateUrl: 'bar.html'});
+      });
+
+      inject(function($location, $rootScope, $route) {
+        $location.path('/foo/id1/subid2/');
+        $rootScope.$digest();
+
+        expect($location.path()).toEqual('/foo/id1/subid2');
+        expect($route.current.templateUrl).toEqual('foo.html');
+
+        $location.path('/bar/id1/extra/subid2/');
+        $rootScope.$digest();
+
+        expect($location.path()).toEqual('/bar/id1/extra/subid2');
+        expect($route.current.templateUrl).toEqual('bar.html');
+      });
+    });
+
+
     it('should allow custom redirectTo function to be used', function() {
       function customRedirectFn(routePathParams, path, search) {
         expect(routePathParams).toEqual({id: 'id3'});
@@ -1288,6 +1341,30 @@ describe('$route', function() {
       });
     });
 
+    it('should not update query params when an optional property was previously not in path', function() {
+      var routeChangeSpy = jasmine.createSpy('route change');
+
+      module(function($routeProvider) {
+        $routeProvider.when('/bar/:barId/:fooId/:spamId/:eggId?', {controller: angular.noop});
+      });
+
+      inject(function($route, $routeParams, $location, $rootScope) {
+        $rootScope.$on('$routeChangeSuccess', routeChangeSpy);
+
+        $location.path('/bar/1/2/3');
+        $location.search({initial: 'true'});
+        $rootScope.$digest();
+        routeChangeSpy.reset();
+
+        $route.updateParams({barId: '5', fooId: '6', eggId: '4'});
+        $rootScope.$digest();
+
+        expect($routeParams).toEqual({barId: '5', fooId: '6', spamId: '3', eggId: '4', initial: 'true'});
+        expect(routeChangeSpy).toHaveBeenCalledOnce();
+        expect($location.path()).toEqual('/bar/5/6/3/4');
+        expect($location.search()).toEqual({initial: 'true'});
+      });
+    });
 
     it('should complain if called without an existing route', inject(function($route) {
       expect($route.updateParams).toThrowMinErr('ngRoute', 'norout');

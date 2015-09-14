@@ -22,7 +22,7 @@ function getVF(n, opt_precision) {
 $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": [
-      "pre podne",
+      "prije podne",
       "popodne"
     ],
     "DAY": [
@@ -34,6 +34,15 @@ $provide.value("$locale", {
       "petak",
       "subota"
     ],
+    "ERANAMES": [
+      "Prije nove ere",
+      "Nove ere"
+    ],
+    "ERAS": [
+      "p. n. e.",
+      "n. e."
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "januar",
       "februar",
@@ -42,7 +51,7 @@ $provide.value("$locale", {
       "maj",
       "juni",
       "juli",
-      "avgust",
+      "august",
       "septembar",
       "oktobar",
       "novembar",
@@ -65,23 +74,27 @@ $provide.value("$locale", {
       "maj",
       "jun",
       "jul",
-      "avg",
+      "aug",
       "sep",
       "okt",
       "nov",
       "dec"
     ],
+    "WEEKENDRANGE": [
+      5,
+      6
+    ],
     "fullDate": "EEEE, dd. MMMM y.",
     "longDate": "dd. MMMM y.",
-    "medium": "dd.MM.y. HH:mm:ss",
-    "mediumDate": "dd.MM.y.",
+    "medium": "dd. MMM. y. HH:mm:ss",
+    "mediumDate": "dd. MMM. y.",
     "mediumTime": "HH:mm:ss",
     "short": "dd.MM.yy. HH:mm",
     "shortDate": "dd.MM.yy.",
     "shortTime": "HH:mm"
   },
   "NUMBER_FORMATS": {
-    "CURRENCY_SYM": "\u20ac",
+    "CURRENCY_SYM": "KM",
     "DECIMAL_SEP": ",",
     "GROUP_SEP": ".",
     "PATTERNS": [
@@ -102,14 +115,14 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "\u00a4\u00a0-",
-        "negSuf": "",
-        "posPre": "\u00a4\u00a0",
-        "posSuf": ""
+        "negPre": "-",
+        "negSuf": "\u00a0\u00a4",
+        "posPre": "",
+        "posSuf": "\u00a0\u00a4"
       }
     ]
   },
   "id": "bs-latn",
-  "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
+  "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (vf.v == 0 && i % 10 == 1 && i % 100 != 11 || vf.f % 10 == 1 && vf.f % 100 != 11) {    return PLURAL_CATEGORY.ONE;  }  if (vf.v == 0 && i % 10 >= 2 && i % 10 <= 4 && (i % 100 < 12 || i % 100 > 14) || vf.f % 10 >= 2 && vf.f % 10 <= 4 && (vf.f % 100 < 12 || vf.f % 100 > 14)) {    return PLURAL_CATEGORY.FEW;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

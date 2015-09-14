@@ -16,6 +16,15 @@ $provide.value("$locale", {
       "\u0578\u0582\u0580\u0562\u0561\u0569",
       "\u0577\u0561\u0562\u0561\u0569"
     ],
+    "ERANAMES": [
+      "\u0574.\u0569.\u0561.",
+      "\u0574.\u0569."
+    ],
+    "ERAS": [
+      "\u0574.\u0569.\u0561.",
+      "\u0574.\u0569."
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "\u0570\u0578\u0582\u0576\u057e\u0561\u0580\u056b",
       "\u0583\u0565\u057f\u0580\u057e\u0561\u0580\u056b",
@@ -48,15 +57,19 @@ $provide.value("$locale", {
       "\u0570\u0576\u057d",
       "\u0570\u056c\u057d",
       "\u0585\u0563\u057d",
-      "\u057d\u057a\u057f",
-      "\u0570\u056f\u057f",
-      "\u0576\u0575\u0574",
-      "\u0564\u056f\u057f"
+      "\u057d\u0565\u057a",
+      "\u0570\u0578\u056f",
+      "\u0576\u0578\u0575",
+      "\u0564\u0565\u056f"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "y\u0569. MMMM d, EEEE",
     "longDate": "dd MMMM, y\u0569.",
-    "medium": "dd MMM, y \u0569. H:mm:ss",
-    "mediumDate": "dd MMM, y \u0569.",
+    "medium": "dd MMM, y\u0569. H:mm:ss",
+    "mediumDate": "dd MMM, y\u0569.",
     "mediumTime": "H:mm:ss",
     "short": "dd.MM.yy H:mm",
     "shortDate": "dd.MM.yy",

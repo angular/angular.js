@@ -1,0 +1,12 @@
+@ngdoc error
+@name $interpolate:logicbug
+@fullName Bug in ngMessageFormat module
+@description
+
+You've just hit a bug in the ngMessageFormat module provided by angular-message-format.min.js.
+Please file a github issue for this and provide the interpolation text that caused you to hit this
+bug mentioning the exact version of AngularJS used and we will fix it!
+
+For more information about the MessageFormat syntax in interpolation
+expressions, please refer to MessageFormat extensions section at
+{@link guide/i18n#MessageFormat Angular i18n MessageFormat}

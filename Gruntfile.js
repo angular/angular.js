@@ -17,10 +17,6 @@ module.exports = function(grunt) {
   NG_VERSION.cdn = versionInfo.cdnVersion;
   var dist = 'angular-'+ NG_VERSION.full;
 
-  //global beforeEach
-  util.init();
-
-
   //config
   grunt.initConfig({
     NG_VERSION: NG_VERSION,
@@ -28,14 +24,6 @@ module.exports = function(grunt) {
       options: {
         buildPath: 'build/benchmarks',
         benchmarksPath: 'benchmarks'
-      }
-    },
-    parallel: {
-      travis: {
-        tasks: [
-          util.parallelTask(['test:unit', 'test:promises-aplus', 'tests:docs'], {stream: true}),
-          util.parallelTask(['test:e2e'])
-        ]
       }
     },
 
@@ -127,7 +115,7 @@ module.exports = function(grunt) {
         files: { src: 'test/**/*.js' },
       },
       ng: {
-        files: { src: files['angularSrc'] },
+        files: { src: files['angularSrc'].concat('!src/angular.bind.js') },
       },
       ngAnimate: {
         files: { src: 'src/ngAnimate/**/*.js' },
@@ -137,6 +125,9 @@ module.exports = function(grunt) {
       },
       ngLocale: {
         files: { src: 'src/ngLocale/**/*.js' },
+      },
+      ngMessageFormat: {
+        files: { src: 'src/ngMessageFormat/**/*.js' },
       },
       ngMessages: {
         files: { src: 'src/ngMessages/**/*.js' },
@@ -165,9 +156,13 @@ module.exports = function(grunt) {
     },
 
     jscs: {
-      src: ['src/**/*.js', 'test/**/*.js'],
+      src: [
+        'src/**/*.js',
+        'test/**/*.js',
+        '!src/angular.bind.js' // we ignore this file since contains an early return statement
+      ],
       options: {
-        config: ".jscs.json"
+        config: ".jscsrc"
       }
     },
 
@@ -212,6 +207,10 @@ module.exports = function(grunt) {
         dest: 'build/angular-resource.js',
         src: util.wrap(files['angularModules']['ngResource'], 'module')
       },
+      messageformat: {
+        dest: 'build/angular-message-format.js',
+        src: util.wrap(files['angularModules']['ngMessageFormat'], 'module')
+      },
       messages: {
         dest: 'build/angular-messages.js',
         src: util.wrap(files['angularModules']['ngMessages'], 'module')
@@ -244,6 +243,7 @@ module.exports = function(grunt) {
       animate: 'build/angular-animate.js',
       cookies: 'build/angular-cookies.js',
       loader: 'build/angular-loader.js',
+      messageformat: 'build/angular-message-format.js',
       messages: 'build/angular-messages.js',
       touch: 'build/angular-touch.js',
       resource: 'build/angular-resource.js',
@@ -259,8 +259,19 @@ module.exports = function(grunt) {
         'test/**/*.js',
         '!test/ngScenario/DescribeSpec.js',
         '!src/ng/directive/attrs.js', // legitimate xit here
-        '!src/ngScenario/**/*.js'
-      ]
+        '!src/ngScenario/**/*.js',
+        '!test/helpers/privateMocks*.js'
+      ],
+      options: {
+        disallowed: [
+          'iit',
+          'xit',
+          'tthey',
+          'xthey',
+          'ddescribe',
+          'xdescribe'
+        ]
+      }
     },
 
     "merge-conflict": {
@@ -293,6 +304,10 @@ module.exports = function(grunt) {
     },
 
     shell: {
+      "npm-install": {
+        command: path.normalize('scripts/npm/install-dependencies.sh')
+      },
+
       "promises-aplus-tests": {
         options: {
           stdout: false,
@@ -319,14 +334,18 @@ module.exports = function(grunt) {
     }
   });
 
+  // global beforeEach task
+  if (!process.env.TRAVIS) {
+    grunt.task.run('shell:npm-install');
+  }
 
   //alias tasks
   grunt.registerTask('test', 'Run unit, docs and e2e tests with Karma', ['jshint', 'jscs', 'package','test:unit','test:promises-aplus', 'tests:docs', 'test:protractor']);
   grunt.registerTask('test:jqlite', 'Run the unit tests with Karma' , ['tests:jqlite']);
   grunt.registerTask('test:jquery', 'Run the jQuery unit tests with Karma', ['tests:jquery']);
-  grunt.registerTask('test:modules', 'Run the Karma module tests with Karma', ['tests:modules']);
+  grunt.registerTask('test:modules', 'Run the Karma module tests with Karma', ['build', 'tests:modules']);
   grunt.registerTask('test:docs', 'Run the doc-page tests with Karma', ['package', 'tests:docs']);
-  grunt.registerTask('test:unit', 'Run unit, jQuery and Karma module tests with Karma', ['tests:jqlite', 'tests:jquery', 'tests:modules']);
+  grunt.registerTask('test:unit', 'Run unit, jQuery and Karma module tests with Karma', ['test:jqlite', 'test:jquery', 'test:modules']);
   grunt.registerTask('test:protractor', 'Run the end to end tests with Protractor and keep a test server running in the background', ['webdriver', 'connect:testserver', 'protractor:normal']);
   grunt.registerTask('test:travis-protractor', 'Run the end to end tests with Protractor for Travis CI builds', ['connect:testserver', 'protractor:travis']);
   grunt.registerTask('test:ci-protractor', 'Run the end to end tests with Protractor for Jenkins CI builds', ['webdriver', 'connect:testserver', 'protractor:jenkins']);

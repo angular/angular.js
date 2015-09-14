@@ -34,6 +34,15 @@ $provide.value("$locale", {
       "Aneg 6",
       "Aneg 7"
     ],
+    "ERANAMES": [
+      "BCE",
+      "CE"
+    ],
+    "ERAS": [
+      "BCE",
+      "CE"
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "im\u0259g mbegtug",
       "imeg \u00e0b\u00f9b\u00ec",
@@ -71,6 +80,10 @@ $provide.value("$locale", {
       "im\u0259g z\u00f2",
       "im\u0259g krizmed"
     ],
+    "WEEKENDRANGE": [
+      5,
+      6
+    ],
     "fullDate": "EEEE, y MMMM dd",
     "longDate": "y MMMM d",
     "medium": "y MMM d HH:mm:ss",
@@ -102,7 +115,7 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "\u00a4\u00a0-",
+        "negPre": "-\u00a4\u00a0",
         "negSuf": "",
         "posPre": "\u00a4\u00a0",
         "posSuf": ""

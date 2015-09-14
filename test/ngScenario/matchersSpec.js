@@ -6,7 +6,7 @@ describe('angular.scenario.matchers', function() {
   function expectMatcher(value, test) {
     delete matchers.error;
     delete matchers.future.value;
-    if (value !== undefined) {
+    if (isDefined(value)) {
       matchers.future.value = value;
     }
     test();

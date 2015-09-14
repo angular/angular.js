@@ -64,16 +64,20 @@ describe('$sniffer', function() {
 
     it('should claim that IE9 doesn\'t have support for "oninput"', function() {
       // IE9 implementation is fubared, so it's better to pretend that it doesn't have the support
+      // IE10+ implementation is fubared when mixed with placeholders
       mockDivElement = {oninput: noop};
 
-      expect($sniffer.hasEvent('input')).toBe((msie == 9) ? false : true);
+      expect($sniffer.hasEvent('input')).toBe(!(msie && msie <= 11));
     });
   });
 
 
   describe('csp', function() {
-    it('should be false by default', function() {
-      expect(sniffer({}).csp).toBe(false);
+    it('should have all rules set to false by default', function() {
+      var csp = sniffer({}).csp;
+      forEach(Object.keys(csp), function(key) {
+        expect(csp[key]).toEqual(false);
+      });
     });
   });
 
@@ -86,11 +90,9 @@ describe('$sniffer', function() {
         var ua = $window.navigator.userAgent.toLowerCase();
         if (/chrome/i.test(ua) || /safari/i.test(ua) || /webkit/i.test(ua)) {
           expectedPrefix = 'Webkit';
-        }
-        else if (/firefox/i.test(ua)) {
+        } else if (/firefox/i.test(ua)) {
           expectedPrefix = 'Moz';
-        }
-        else if (/ie/i.test(ua) || /trident/i.test(ua)) {
+        } else if (/ie/i.test(ua) || /trident/i.test(ua)) {
           expectedPrefix = 'Ms';
         }
         expect($sniffer.vendorPrefix).toBe(expectedPrefix);

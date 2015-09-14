@@ -200,7 +200,7 @@ code is present, and match the CSS class name on the element, then AngularJS wil
 ## Class and ngClass animation hooks
 
 AngularJS also pays attention to CSS class changes on elements by triggering the **add** and **remove** hooks.
-This means that if a CSS class is added to or removed from an element then an animation can be executed in between
+This means that if a CSS class is added to or removed from an element then an animation can be executed in between,
 before the CSS class addition or removal is finalized. (Keep in mind that AngularJS will only be
 able to capture class changes if an **expression** or the **ng-class** directive is used on the element.)
 
@@ -236,7 +236,7 @@ The example below shows how to perform animations during class changes:
  </file>
 </example>
 
-Although the CSS is a little different then what we saw before, the idea is the same.
+Although the CSS is a little different than what we saw before, the idea is the same.
 
 ## Which directives support animations?
 
@@ -253,7 +253,7 @@ The table below explains in detail which animation events are triggered
 | {@link ng.directive:ngClass#animations ngClass or &#123;&#123;class&#125;&#125;}    | add and remove                           |
 | {@link ng.directive:ngShow#animations ngShow & ngHide}                              | add and remove (the ng-hide class value) |
 
-For a full breakdown of the steps involved during each animation event, refer to the {@link ngAnimate.$animate API docs}.
+For a full breakdown of the steps involved during each animation event, refer to the {@link ng.$animate API docs}.
 
 ## How do I use animations in my own directives?
 
@@ -276,6 +276,6 @@ myModule.directive('my-directive', ['$animate', function($animate) {
 
 ## More about animations
 
-For a full breakdown of each method available on `$animate`, see the {@link ngAnimate.$animate API documentation}.
+For a full breakdown of each method available on `$animate`, see the {@link ng.$animate API documentation}.
 
 To see a complete demo, see the {@link tutorial/step_12 animation step within the AngularJS phonecat tutorial}.

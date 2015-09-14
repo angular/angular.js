@@ -34,6 +34,15 @@ $provide.value("$locale", {
       "A\u014bp\u00e9tuzapta\u014b",
       "Ow\u00e1\u014bgyu\u017ea\u017eapi"
     ],
+    "ERANAMES": [
+      "BCE",
+      "CE"
+    ],
+    "ERAS": [
+      "BCE",
+      "CE"
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "Wi\u00f3the\u021fika W\u00ed",
       "Thiy\u00f3\u021feyu\u014bka W\u00ed",
@@ -71,6 +80,10 @@ $provide.value("$locale", {
       "Wan\u00edyetu W\u00ed",
       "T\u021fah\u00e9kap\u0161u\u014b W\u00ed"
     ],
+    "WEEKENDRANGE": [
+      5,
+      6
+    ],
     "fullDate": "EEEE, MMMM d, y",
     "longDate": "MMMM d, y",
     "medium": "MMM d, y h:mm:ss a",
@@ -102,7 +115,7 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "\u00a4\u00a0-",
+        "negPre": "-\u00a4\u00a0",
         "negSuf": "",
         "posPre": "\u00a4\u00a0",
         "posSuf": ""

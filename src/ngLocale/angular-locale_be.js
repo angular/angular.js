@@ -1,24 +1,6 @@
 'use strict';
 angular.module("ngLocale", [], ["$provide", function($provide) {
 var PLURAL_CATEGORY = {ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "many", OTHER: "other"};
-function getDecimals(n) {
-  n = n + '';
-  var i = n.indexOf('.');
-  return (i == -1) ? 0 : n.length - i - 1;
-}
-
-function getVF(n, opt_precision) {
-  var v = opt_precision;
-
-  if (undefined === v) {
-    v = Math.min(getDecimals(n), 3);
-  }
-
-  var base = Math.pow(10, v);
-  var f = ((n * base) | 0) % base;
-  return {v: v, f: f};
-}
-
 $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": [
@@ -34,6 +16,15 @@ $provide.value("$locale", {
       "\u043f\u044f\u0442\u043d\u0456\u0446\u0430",
       "\u0441\u0443\u0431\u043e\u0442\u0430"
     ],
+    "ERANAMES": [
+      "\u0434\u0430 \u043d.\u044d.",
+      "\u043d.\u044d."
+    ],
+    "ERAS": [
+      "\u0434\u0430 \u043d.\u044d.",
+      "\u043d.\u044d."
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "\u0441\u0442\u0443\u0434\u0437\u0435\u043d\u044f",
       "\u043b\u044e\u0442\u0430\u0433\u0430",
@@ -71,6 +62,10 @@ $provide.value("$locale", {
       "\u043b\u0456\u0441",
       "\u0441\u043d\u0435"
     ],
+    "WEEKENDRANGE": [
+      5,
+      6
+    ],
     "fullDate": "EEEE, d MMMM y",
     "longDate": "d MMMM y",
     "medium": "d.M.y HH.mm.ss",
@@ -102,7 +97,7 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "\u00a4-",
+        "negPre": "-\u00a4",
         "negSuf": "",
         "posPre": "\u00a4",
         "posSuf": ""
@@ -110,6 +105,6 @@ $provide.value("$locale", {
     ]
   },
   "id": "be",
-  "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
+  "pluralCat": function(n, opt_precision) {  if (n % 10 == 1 && n % 100 != 11) {    return PLURAL_CATEGORY.ONE;  }  if (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14)) {    return PLURAL_CATEGORY.FEW;  }  if (n % 10 == 0 || n % 10 >= 5 && n % 10 <= 9 || n % 100 >= 11 && n % 100 <= 14) {    return PLURAL_CATEGORY.MANY;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

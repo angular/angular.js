@@ -34,19 +34,28 @@ $provide.value("$locale", {
       "vienres",
       "s\u00e1badu"
     ],
+    "ERANAMES": [
+      "a.C.",
+      "d.C."
+    ],
+    "ERAS": [
+      "a.C.",
+      "d.C."
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "de xineru",
       "de febreru",
       "de marzu",
-      "d'abril",
+      "d\u2019abril",
       "de mayu",
       "de xunu",
       "de xunetu",
-      "d'agostu",
+      "d\u2019agostu",
       "de setiembre",
-      "d'ochobre",
+      "d\u2019ochobre",
       "de payares",
-      "d'avientu"
+      "d\u2019avientu"
     ],
     "SHORTDAY": [
       "dom",
@@ -71,7 +80,11 @@ $provide.value("$locale", {
       "pay",
       "avi"
     ],
-    "fullDate": "EEEE, dd MMMM 'de' y",
+    "WEEKENDRANGE": [
+      5,
+      6
+    ],
+    "fullDate": "EEEE, d MMMM 'de' y",
     "longDate": "d MMMM 'de' y",
     "medium": "d MMM y HH:mm:ss",
     "mediumDate": "d MMM y",

@@ -1,6 +1,13 @@
 language: node_js
+sudo: false
 node_js:
   - '0.10'
+
+cache:
+  directories:
+    - node_modules
+    - bower_components
+    - docs/bower_components
 
 branches:
   except:
@@ -8,27 +15,44 @@ branches:
 
 env:
   matrix:
-    - JOB=unit
-    - JOB=e2e TEST_TARGET=jqlite
-    - JOB=e2e TEST_TARGET=jquery
+    - JOB=unit BROWSER_PROVIDER=saucelabs
+    - JOB=docs-e2e BROWSER_PROVIDER=saucelabs
+    - JOB=e2e TEST_TARGET=jqlite BROWSER_PROVIDER=saucelabs
+    - JOB=e2e TEST_TARGET=jquery BROWSER_PROVIDER=saucelabs
+    - JOB=unit BROWSER_PROVIDER=browserstack
+    - JOB=docs-e2e BROWSER_PROVIDER=browserstack
+    - JOB=e2e TEST_TARGET=jqlite BROWSER_PROVIDER=browserstack
+    - JOB=e2e TEST_TARGET=jquery BROWSER_PROVIDER=browserstack
   global:
     - SAUCE_USERNAME=angular-ci
     - SAUCE_ACCESS_KEY=9b988f434ff8-fbca-8aa4-4ae3-35442987
+    - BROWSER_STACK_USERNAME=VojtaJina
+    - BROWSER_STACK_ACCESS_KEY=QCQJ1ZpWXpBkSwEdD8ev
     - LOGS_DIR=/tmp/angular-build/logs
-    - BROWSER_PROVIDER_READY_FILE=/tmp/sauce-connect-ready
+    - BROWSER_PROVIDER_READY_FILE=/tmp/browsersprovider-tunnel-ready
+
+matrix:
+  allow_failures:
+    - env: "JOB=unit BROWSER_PROVIDER=browserstack"
+    - env: "JOB=docs-e2e BROWSER_PROVIDER=browserstack"
+    - env: "JOB=e2e TEST_TARGET=jqlite BROWSER_PROVIDER=browserstack"
+    - env: "JOB=e2e TEST_TARGET=jquery BROWSER_PROVIDER=browserstack"
 
 install:
+  # Check the size of caches
+  - du -sh ./node_modules ./bower_components/ ./docs/bower_components/ || true
   # - npm config set registry http://23.251.144.68
   # Disable the spinner, it looks bad on Travis
   - npm config set spin false
   # Log HTTP requests
   - npm config set loglevel http
-  - time ./scripts/travis/npm-bundle-deps.sh
-  - time npm install
+  - npm install -g npm@2.5
+  # Instal npm dependecies and ensure that npm cache is not stale
+  - scripts/npm/install-dependencies.sh
 
 before_script:
   - mkdir -p $LOGS_DIR
-  - ./lib/sauce/sauce_connect_setup.sh
+  - ./scripts/travis/start_browser_provider.sh
   - npm install -g grunt-cli
   - grunt package
   - ./scripts/travis/wait_for_browser_provider.sh

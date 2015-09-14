@@ -85,8 +85,10 @@ describe('filters', function() {
     });
 
     it('should format numbers that round to zero as nonnegative', function() {
-      var num = formatNumber(-0.01, pattern, ',', '.', 1);
-      expect(num).toBe('0.0');
+      expect(formatNumber(-0.01, pattern, ',', '.', 1)).toBe('0.0');
+      expect(formatNumber(-1e-10, pattern, ',', '.', 1)).toBe('0.0');
+      expect(formatNumber(-0.0001, pattern, ',', '.', 3)).toBe('0.000');
+      expect(formatNumber(-0.0000001, pattern, ',', '.', 6)).toBe('0.000000');
     });
   });
 
@@ -99,7 +101,7 @@ describe('filters', function() {
 
     it('should do basic currency filtering', function() {
       expect(currency(0)).toEqual('$0.00');
-      expect(currency(-999)).toEqual('($999.00)');
+      expect(currency(-999)).toEqual('-$999.00');
       expect(currency(1234.5678, "USD$")).toEqual('USD$1,234.57');
       expect(currency(1234.5678, "USD$", 0)).toEqual('USD$1,235');
     });
@@ -120,6 +122,12 @@ describe('filters', function() {
       expect(currency(0.008)).toBe('$0.01');
       expect(currency(0.003)).toBe('$0.00');
     });
+
+    it('should set the default fraction size to the max fraction size of the locale value', inject(function($locale) {
+      $locale.NUMBER_FORMATS.PATTERNS[1].maxFrac = 1;
+
+      expect(currency(1.07)).toBe('$1.1');
+    }));
   });
 
 
@@ -142,10 +150,10 @@ describe('filters', function() {
       expect(number(Number.NaN)).toEqual('');
       expect(number({})).toEqual('');
       expect(number([])).toEqual('');
-      expect(number(+Infinity)).toEqual('');
-      expect(number(-Infinity)).toEqual('');
+      expect(number(+Infinity)).toEqual('∞');
+      expect(number(-Infinity)).toEqual('-∞');
       expect(number("1234.5678")).toEqual('1,234.568');
-      expect(number(1 / 0)).toEqual("");
+      expect(number(1 / 0)).toEqual('∞');
       expect(number(1,        2)).toEqual("1.00");
       expect(number(.1,       2)).toEqual("0.10");
       expect(number(.01,      2)).toEqual("0.01");
@@ -189,16 +197,21 @@ describe('filters', function() {
       expect(number(1e-50, 0)).toEqual('0');
       expect(number(1e-6, 6)).toEqual('0.000001');
       expect(number(1e-7, 6)).toEqual('0.000000');
+      expect(number(9e-7, 6)).toEqual('0.000001');
 
       expect(number(-1e-50, 0)).toEqual('0');
       expect(number(-1e-6, 6)).toEqual('-0.000001');
-      expect(number(-1e-7, 6)).toEqual('-0.000000');
+      expect(number(-1e-7, 6)).toEqual('0.000000');
+      expect(number(-1e-8, 9)).toEqual('-0.000000010');
     });
   });
 
   describe('json', function() {
     it('should do basic filter', function() {
       expect(filter('json')({a:"b"})).toEqual(toJson({a:"b"}, true));
+    });
+    it('should allow custom indentation', function() {
+      expect(filter('json')({a:"b"}, 4)).toEqual(toJson({a:"b"}, 4));
     });
   });
 
@@ -232,6 +245,11 @@ describe('filters', function() {
     it('should ignore falsy inputs', function() {
       expect(date(null)).toBeNull();
       expect(date('')).toEqual('');
+    });
+
+    it('should ignore invalid dates', function() {
+      var invalidDate = new Date('abc');
+      expect(date(invalidDate)).toBe(invalidDate);
     });
 
     it('should do basic filter', function() {
@@ -280,6 +298,18 @@ describe('filters', function() {
 
       expect(date(earlyDate, "MMMM dd, y")).
                       toEqual('September 03, 1');
+
+      expect(date(noon, "MMMM dd, y G")).
+                      toEqual('September 03, 2010 AD');
+
+      expect(date(noon, "MMMM dd, y GG")).
+                      toEqual('September 03, 2010 AD');
+
+      expect(date(noon, "MMMM dd, y GGG")).
+                      toEqual('September 03, 2010 AD');
+
+      expect(date(noon, "MMMM dd, y GGGG")).
+                      toEqual('September 03, 2010 Anno Domini');
     });
 
     it('should accept negative numbers as strings', function() {
@@ -311,6 +341,36 @@ describe('filters', function() {
 
       expect(date(westOfUTCPartial, "yyyy-MM-ddTHH:mm:ssZ")).
                     toEqual('2010-09-03T06:35:08-0530');
+    });
+
+    it('should correctly calculate week number', function() {
+      function formatWeek(dateToFormat) {
+        return date(new angular.mock.TzDate(+5, dateToFormat + 'T12:00:00.000Z'), 'ww (EEE)');
+      }
+
+      expect(formatWeek('2007-01-01')).toEqual('01 (Mon)');
+      expect(formatWeek('2007-12-31')).toEqual('53 (Mon)');
+
+      expect(formatWeek('2008-01-01')).toEqual('01 (Tue)');
+      expect(formatWeek('2008-12-31')).toEqual('53 (Wed)');
+
+      expect(formatWeek('2014-01-01')).toEqual('01 (Wed)');
+      expect(formatWeek('2014-12-31')).toEqual('53 (Wed)');
+
+      expect(formatWeek('2009-01-01')).toEqual('01 (Thu)');
+      expect(formatWeek('2009-12-31')).toEqual('53 (Thu)');
+
+      expect(formatWeek('2010-01-01')).toEqual('00 (Fri)');
+      expect(formatWeek('2010-12-31')).toEqual('52 (Fri)');
+
+      expect(formatWeek('2011-01-01')).toEqual('00 (Sat)');
+      expect(formatWeek('2011-01-02')).toEqual('01 (Sun)');
+      expect(formatWeek('2011-01-03')).toEqual('01 (Mon)');
+      expect(formatWeek('2011-12-31')).toEqual('52 (Sat)');
+
+      expect(formatWeek('2012-01-01')).toEqual('01 (Sun)');
+      expect(formatWeek('2012-01-02')).toEqual('01 (Mon)');
+      expect(formatWeek('2012-12-31')).toEqual('53 (Mon)');
     });
 
     it('should treat single quoted strings as string literals', function() {
@@ -408,6 +468,16 @@ describe('filters', function() {
     it('should use UTC if the timezone is set to "UTC"', function() {
       expect(date(new Date(2003, 8, 10, 3, 2, 4), 'yyyy-MM-dd HH-mm-ss')).toEqual('2003-09-10 03-02-04');
       expect(date(new Date(Date.UTC(2003, 8, 10, 3, 2, 4)), 'yyyy-MM-dd HH-mm-ss', 'UTC')).toEqual('2003-09-10 03-02-04');
+      expect(date(new Date(Date.UTC(2003, 8, 10, 3, 2, 4)), 'yyyy-MM-dd HH-mm-ssZ', 'UTC')).toEqual('2003-09-10 03-02-04+0000');
+    });
+
+    it('should support conversion to any timezone', function() {
+      expect(date(new Date(Date.UTC(2003, 8, 10, 3, 2, 4)), 'yyyy-MM-dd HH-mm-ssZ', 'GMT+0500')).toEqual('2003-09-10 08-02-04+0500');
+    });
+
+    it('should fallback to default timezone in case an unknown timezone was passed', function() {
+      var value = new Date(2003, 8, 10, 3, 2, 4);
+      expect(date(value, 'yyyy-MM-dd HH-mm-ssZ', 'WTF')).toEqual(date(value, 'yyyy-MM-dd HH-mm-ssZ'));
     });
   });
 });

@@ -288,5 +288,5 @@ learn how to improve this application with animations.
 <ul doc-tutorial-nav="11"></ul>
 
 [restful]: http://en.wikipedia.org/wiki/Representational_State_Transfer
-[jasmine-matchers]: https://github.com/pivotal/jasmine/wiki/Matchers
+[jasmine-matchers]: http://jasmine.github.io/1.3/introduction.html#section-Matchers
 [bower]: http://bower.io/

@@ -34,6 +34,15 @@ $provide.value("$locale", {
       "Ijum\u00e1a",
       "Jumam\u00f3osi"
     ],
+    "ERANAMES": [
+      "K\u0268r\u0268sit\u0289 s\u0268 anavyaal",
+      "K\u0268r\u0268sit\u0289 akavyaalwe"
+    ],
+    "ERAS": [
+      "KSA",
+      "KA"
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "K\u0289f\u00fangat\u0268",
       "K\u0289naan\u0268",
@@ -71,6 +80,10 @@ $provide.value("$locale", {
       "Saano",
       "Sasat\u0289"
     ],
+    "WEEKENDRANGE": [
+      5,
+      6
+    ],
     "fullDate": "EEEE, d MMMM y",
     "longDate": "d MMMM y",
     "medium": "d MMM y h:mm:ss a",
@@ -102,7 +115,7 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "\u00a4\u00a0-",
+        "negPre": "-\u00a4\u00a0",
         "negSuf": "",
         "posPre": "\u00a4\u00a0",
         "posSuf": ""

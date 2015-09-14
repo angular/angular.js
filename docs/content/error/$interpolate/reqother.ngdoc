@@ -1,0 +1,13 @@
+@ngdoc error
+@name $interpolate:reqother
+@fullName Required choice "other" for select/plural in MessageFormat
+@description
+
+Your interpolation expression with a MessageFormat extension for either
+"plural" or "select" (typically used for gender selection) does not contain a
+message for the choice "other".  Using either select or plural MessageFormat
+extensions require that you provide a message for the selection "other".
+
+For more information about the MessageFormat syntax in interpolation
+expressions, please refer to MessageFormat extensions section at
+{@link guide/i18n#MessageFormat Angular i18n MessageFormat}

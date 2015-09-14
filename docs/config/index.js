@@ -6,18 +6,18 @@ var packagePath = __dirname;
 var Package = require('dgeni').Package;
 
 // Create and export a new Dgeni package called angularjs. This package depends upon
-// the ngdoc,nunjucks and examples packages defined in the dgeni-packages npm module.
+// the ngdoc, nunjucks, and examples packages defined in the dgeni-packages npm module.
 module.exports = new Package('angularjs', [
   require('dgeni-packages/ngdoc'),
   require('dgeni-packages/nunjucks'),
-  require('dgeni-packages/examples')
+  require('dgeni-packages/examples'),
+  require('dgeni-packages/git')
 ])
 
 
 .factory(require('./services/errorNamespaceMap'))
 .factory(require('./services/getMinerrInfo'))
 .factory(require('./services/getVersion'))
-.factory(require('./services/gitData'))
 
 .factory(require('./services/deployments/debug'))
 .factory(require('./services/deployments/default'))
@@ -25,7 +25,6 @@ module.exports = new Package('angularjs', [
 .factory(require('./services/deployments/production'))
 
 .factory(require('./inline-tag-defs/type'))
-
 
 .processor(require('./processors/error-docs'))
 .processor(require('./processors/index-page'))
@@ -43,7 +42,7 @@ module.exports = new Package('angularjs', [
 
   readFilesProcessor.basePath = path.resolve(__dirname,'../..');
   readFilesProcessor.sourceFiles = [
-    { include: 'src/**/*.js', basePath: 'src' },
+    { include: 'src/**/*.js', exclude: 'src/angular.bind.js', basePath: 'src' },
     { include: 'docs/content/**/*.ngdoc', basePath: 'docs/content' }
   ];
 
@@ -125,10 +124,16 @@ module.exports = new Package('angularjs', [
   });
 
   computeIdsProcessor.idTemplates.push({
-    docTypes: ['error', 'errorNamespace'],
+    docTypes: ['error'],
+    getId: function(doc) { return 'error:' + doc.namespace + ':' + doc.name; },
+    getAliases: function(doc) { return [doc.name, doc.namespace + ':' + doc.name, doc.id]; }
+  },
+  {
+    docTypes: ['errorNamespace'],
     getId: function(doc) { return 'error:' + doc.name; },
     getAliases: function(doc) { return [doc.id]; }
-  });
+  }
+  );
 })
 
 .config(function(checkAnchorLinksProcessor) {
