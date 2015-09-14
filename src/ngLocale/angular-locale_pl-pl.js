@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "lis",
       "gru"
     ],
+    "STANDALONEMONTH": [
+      "stycze\u0144",
+      "luty",
+      "marzec",
+      "kwiecie\u0144",
+      "maj",
+      "czerwiec",
+      "lipiec",
+      "sierpie\u0144",
+      "wrzesie\u0144",
+      "pa\u017adziernik",
+      "listopad",
+      "grudzie\u0144"
+    ],
     "WEEKENDRANGE": [
       5,
       6

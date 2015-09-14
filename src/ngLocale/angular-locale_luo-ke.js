@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "DGI",
       "DAG"
     ],
+    "STANDALONEMONTH": [
+      "Dwe mar Achiel",
+      "Dwe mar Ariyo",
+      "Dwe mar Adek",
+      "Dwe mar Ang\u2019wen",
+      "Dwe mar Abich",
+      "Dwe mar Auchiel",
+      "Dwe mar Abiriyo",
+      "Dwe mar Aboro",
+      "Dwe mar Ochiko",
+      "Dwe mar Apar",
+      "Dwe mar gi achiel",
+      "Dwe mar Apar gi ariyo"
+    ],
     "WEEKENDRANGE": [
       5,
       6
