@@ -839,6 +839,65 @@ describe('jqLite', function() {
         expect(jqLite(b).hasClass('cde')).toBe(false);
       });
 
+      it('should allow function to be passed with conditions', function() {
+        var selector = jqLite([a, b]);
+        selector.addClass('abc');
+        selector.addClass('cde');
+        selector.addClass('fgh');
+        selector.addClass('ijk');
+
+        expect(selector.toggleClass(function(index, className, state) {
+          selector.toggleClass(className, state);
+        }, [true, true, false, false])).toBe(selector);
+
+        expect(jqLite(a).hasClass('abc')).toBe(true);
+        expect(jqLite(a).hasClass('cde')).toBe(true);
+        expect(jqLite(a).hasClass('fgh')).toBe(false);
+        expect(jqLite(a).hasClass('ijk')).toBe(false);
+
+        expect(jqLite(b).hasClass('abc')).toBe(true);
+        expect(jqLite(b).hasClass('cde')).toBe(true);
+        expect(jqLite(b).hasClass('fgh')).toBe(false);
+        expect(jqLite(b).hasClass('ijk')).toBe(false);
+      });
+
+      it('should allow function to be passed without condition', function() {
+        var selector = jqLite([a, b]);
+        selector.addClass('abc');
+        selector.addClass('cde');
+        selector.addClass('fgh');
+        selector.addClass('ijk');
+
+        expect(selector.toggleClass(function(index, className) {
+          if (className === 'abc' || className === 'cde') {
+            selector.removeClass(className);
+          }
+        })).toBe(selector);
+
+        expect(jqLite(a).hasClass('abc')).toBe(false);
+        expect(jqLite(a).hasClass('cde')).toBe(false);
+        expect(jqLite(a).hasClass('fgh')).toBe(true);
+        expect(jqLite(a).hasClass('ijk')).toBe(true);
+
+        expect(jqLite(b).hasClass('abc')).toBe(false);
+        expect(jqLite(b).hasClass('cde')).toBe(false);
+        expect(jqLite(b).hasClass('fgh')).toBe(true);
+        expect(jqLite(b).hasClass('ijk')).toBe(true);
+      });
+
+      it('should toggle all classes if no selector is passed', function() {
+        var selector = jqLite([a, b]);
+        selector.addClass('abc');
+        selector.addClass('cde');
+
+        expect(selector.toggleClass()).toBe(selector);
+
+        expect(jqLite(a).hasClass('abc')).toBe(false);
+        expect(jqLite(a).hasClass('cde')).toBe(false);
+        expect(jqLite(b).hasClass('abc')).toBe(false);
+        expect(jqLite(b).hasClass('cde')).toBe(false);
+      });
+
       it('should not break for null / undefined selectors', function() {
         var selector = jqLite([a, b]);
         expect(selector.toggleClass(null)).toBe(selector);
@@ -864,6 +923,32 @@ describe('jqLite', function() {
         element.removeClass('bar');
 
         expect(element.hasClass('foo')).toBe(true);
+        expect(element.hasClass('bar')).toBe(false);
+        expect(element.hasClass('baz')).toBe(true);
+      });
+
+
+      it('should remove all classes if no class is specified', function() {
+        var element = jqLite('<div class="foo bar baz"></div>');
+
+        expect(element.removeClass()).toEqual(element);
+
+        expect(element.hasClass('foo')).toBe(false);
+        expect(element.hasClass('bar')).toBe(false);
+        expect(element.hasClass('baz')).toBe(false);
+      });
+
+
+      it('should allow a function as a paramater', function() {
+        var element = jqLite('<div class="foo bar baz"></div>');
+
+        expect(element.removeClass(function(index, className) {
+          if (className === 'foo' || className === 'bar') {
+            element.removeClass(className);
+          }
+        })).toEqual(element);
+
+        expect(element.hasClass('foo')).toBe(false);
         expect(element.hasClass('bar')).toBe(false);
         expect(element.hasClass('baz')).toBe(true);
       });

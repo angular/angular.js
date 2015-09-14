@@ -381,15 +381,26 @@ function jqLiteHasClass(element, selector) {
       indexOf(" " + selector + " ") > -1);
 }
 
-function jqLiteRemoveClass(element, cssClasses) {
-  if (cssClasses && element.setAttribute) {
-    forEach(cssClasses.split(' '), function(cssClass) {
-      element.setAttribute('class', trim(
-          (" " + (element.getAttribute('class') || '') + " ")
-          .replace(/[\n\t]/g, " ")
-          .replace(" " + trim(cssClass) + " ", " "))
-      );
-    });
+function jqLiteRemoveClass(element, cssClassesOrFunc) {
+  if (element.setAttribute) {
+    if (cssClassesOrFunc) {
+      if (typeof cssClassesOrFunc === 'function') {
+        forEach(element.className.split(/\s+/), function(className, index) {
+          cssClassesOrFunc(index, className);
+        });
+      } else {
+        forEach(cssClassesOrFunc.split(' '), function(cssClass) {
+          element.setAttribute('class', trim(
+              (" " + (element.getAttribute('class') || '') + " ")
+              .replace(/[\n\t]/g, " ")
+              .replace(" " + trim(cssClass) + " ", " "))
+          );
+        });
+      }
+    } else {
+      // if no class names are specified in the parameter, all classes will be removed
+      element.setAttribute('class', '');
+    }
   }
 }
 
@@ -935,14 +946,35 @@ forEach({
   removeClass: jqLiteRemoveClass,
 
   toggleClass: function(element, selector, condition) {
+
     if (selector) {
-      forEach(selector.split(' '), function(className) {
-        var classCondition = condition;
-        if (isUndefined(classCondition)) {
-          classCondition = !jqLiteHasClass(element, className);
-        }
-        (classCondition ? jqLiteAddClass : jqLiteRemoveClass)(element, className);
-      });
+
+      // the class name to be toggled can be determined by passing in a function.
+      if (typeof selector === 'function') {
+
+        forEach(element.className.split(/\s+/), function(className, index) {
+          if (Array.isArray(condition) && condition.length >= index) {
+            selector(index, className, condition[index]);
+          } else {
+            selector(index, className);
+          }
+        });
+
+      // if has the class, then it is removed; if does not have the class, then it is added.
+      } else {
+
+        forEach(selector.split(' '), function(className) {
+          var classCondition = condition;
+          if (isUndefined(classCondition)) {
+            classCondition = !jqLiteHasClass(element, className);
+          }
+          (classCondition ? jqLiteAddClass : jqLiteRemoveClass)(element, className);
+        });
+      }
+
+    // if no arguments are passed all class names on the element will be toggled.
+    } else {
+      jqLiteRemoveClass(element);
     }
   },
 
