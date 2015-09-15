@@ -44,7 +44,7 @@ var noArgs = function (fn) {
 
 var identity = function (i) { return i; };
 
-// like Q.all, but runs the comands in series
+// like Q.all, but runs the commands in series
 // useful for ensuring env state (like which branch is checked out)
 var allInSeries = function (fn) {
   return function (args) {
