@@ -173,7 +173,7 @@ function request(method, url, options, response) {
         res.on('error', function (e) { console.log(e); });
         break;
       case 401:
-        console.log('Eror: Login credentials expired! Please login.');
+        console.log('Error: Login credentials expired! Please login.');
         break;
       default:
         data = [];
