@@ -943,9 +943,7 @@ describe('jqLite', function() {
         var element = jqLite('<div class="foo bar baz"></div>');
 
         expect(element.removeClass(function(index, className) {
-          if (className === 'foo' || className === 'bar') {
-            element.removeClass(className);
-          }
+          return 'foo bar';
         })).toEqual(element);
 
         expect(element.hasClass('foo')).toBe(false);

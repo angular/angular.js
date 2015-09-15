@@ -383,20 +383,26 @@ function jqLiteHasClass(element, selector) {
 
 function jqLiteRemoveClass(element, cssClassesOrFunc) {
   if (element.setAttribute) {
+
     if (cssClassesOrFunc) {
-      if (typeof cssClassesOrFunc === 'function') {
-        forEach(element.className.split(/\s+/), function(className, index) {
-          cssClassesOrFunc(index, className);
-        });
-      } else {
-        forEach(cssClassesOrFunc.split(' '), function(cssClass) {
-          element.setAttribute('class', trim(
-              (" " + (element.getAttribute('class') || '') + " ")
-              .replace(/[\n\t]/g, " ")
-              .replace(" " + trim(cssClass) + " ", " "))
-          );
-        });
+      //if cssClassesOrFunc is a function
+      if (isFunction(cssClassesOrFunc)) {
+        /*
+        * takes index of element in the set, and a list of the elements class names
+        * index of element in set will always be 0
+        * returns one or more space-separated class names to be removed
+        */
+        cssClassesOrFunc = cssClassesOrFunc(0, element.className);
       }
+      //remove classes
+      forEach(cssClassesOrFunc.split(' '), function(cssClass) {
+        element.setAttribute('class', trim(
+            (" " + (element.getAttribute('class') || '') + " ")
+            .replace(/[\n\t]/g, " ")
+            .replace(" " + trim(cssClass) + " ", " "))
+        );
+      });
+
     } else {
       // if no class names are specified in the parameter, all classes will be removed
       element.setAttribute('class', '');
@@ -950,10 +956,10 @@ forEach({
     if (selector) {
 
       // the class name to be toggled can be determined by passing in a function.
-      if (typeof selector === 'function') {
+      if (isFunction(selector)) {
 
         forEach(element.className.split(/\s+/), function(className, index) {
-          if (Array.isArray(condition) && condition.length >= index) {
+          if (isArray(condition) && condition.length >= index) {
             selector(index, className, condition[index]);
           } else {
             selector(index, className);
