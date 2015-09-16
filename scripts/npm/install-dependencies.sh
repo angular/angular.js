@@ -10,7 +10,7 @@ if diff -q $SHRINKWRAP_FILE $SHRINKWRAP_CACHED_FILE; then
 else
   echo 'Blowing away node_modules and reinstalling npm dependencies...'
   rm -rf node_modules
-  npm install
+  npm install --registry http://registry.npmjs.org/
   cp $SHRINKWRAP_FILE $SHRINKWRAP_CACHED_FILE
   echo 'npm install successful!'
 fi

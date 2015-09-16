@@ -338,7 +338,7 @@ describe("resource", function() {
   });
 
 
-  it('should handle url encoding in mapped params', function() {
+  it('should encode & in query params unless in query param value', function() {
     var R1 = $resource('/api/myapp/resource?:query');
     $httpBackend.expect('GET', '/api/myapp/resource?foo&bar').respond({});
     R1.get({query: 'foo&bar'});
