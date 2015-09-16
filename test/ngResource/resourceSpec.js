@@ -331,21 +331,18 @@ describe("resource", function() {
   });
 
 
-  it('should encode & in url params', function() {
-    var R = $resource('/Path/:a');
-    $httpBackend.expect('GET', '/Path/doh&foo?bar=baz%261').respond('{}');
-    R.get({a: 'doh&foo', bar: 'baz&1'});
-  });
-
-
   it('should encode & in query params unless in query param value', function() {
     var R1 = $resource('/api/myapp/resource?:query');
-    $httpBackend.expect('GET', '/api/myapp/resource?foo&bar').respond({});
+    $httpBackend.expect('GET', '/api/myapp/resource?foo&bar').respond('{}');
     R1.get({query: 'foo&bar'});
 
     var R2 = $resource('/api/myapp/resource?from=:from');
-    $httpBackend.expect('GET', '/api/myapp/resource?from=bar%20%26%20blanks').respond({});
+    $httpBackend.expect('GET', '/api/myapp/resource?from=bar%20%26%20blanks').respond('{}');
     R2.get({from: 'bar & blanks'});
+
+    var R3 = $resource('/Path/:a');
+    $httpBackend.expect('GET', '/Path/doh&foo?bar=baz%261').respond('{}');
+    R3.get({a: 'doh&foo', bar: 'baz&1'});
   });
 
 
