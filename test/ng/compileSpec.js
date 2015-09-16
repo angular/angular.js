@@ -6975,6 +6975,21 @@ describe('$compile', function() {
           expect(lowercase(nodeName_(child.contents().eq(1)))).toBe('div');
         });
       });
+
+      describe('transclude element and <template>', function() {
+        it('should transform a transclude element on a template to transclude content', function() {
+          inject(function($compile, $rootScope) {
+            $rootScope.foo = [1, 2, 3];
+            element = $compile('<div><template ng-repeat="bar in foo"><div>{{bar}}</div>:{{bar}}#</template></div>')($rootScope);
+            $rootScope.$digest();
+            expect(element.text()).toEqual('1:1#2:2#3:3#');
+            expect(element.children().length).toEqual(6);
+            expect(element.children()[0].outerHTML).toEqual('<div class="ng-binding ng-scope">1</div>');
+            expect(element.children()[1].outerHTML).toEqual('<span class="ng-binding ng-scope">:1#</span>');
+            expect(element.children()[4].outerHTML).toEqual('<div class="ng-binding ng-scope">3</div>');
+          });
+        });
+      });
     });
 
     it('should safely create transclude comment node and not break with "-->"',
