@@ -125,6 +125,9 @@ ngTouch.directive('ngClick', ['$parse', '$timeout', '$rootElement',
       return; // Too old.
     }
 
+    // Get the node name of the target
+    var nodeName = nodeName_(event.target);
+
     var touches = event.touches && event.touches.length ? event.touches : [event];
     var x = touches[0].clientX;
     var y = touches[0].clientY;
@@ -144,7 +147,7 @@ ngTouch.directive('ngClick', ['$parse', '$timeout', '$rootElement',
       lastLabelClickCoordinates = null;
     }
     // remember label click coordinates to prevent click busting of trigger click event on input
-    if (nodeName_(event.target) === 'label') {
+    if (nodeName === 'label') {
       lastLabelClickCoordinates = [x, y];
     }
 
@@ -158,9 +161,15 @@ ngTouch.directive('ngClick', ['$parse', '$timeout', '$rootElement',
     // If we didn't find an allowable region, bust the click.
     event.stopPropagation();
     event.preventDefault();
+    
+    // Check if the target node is not of the type input.
+    // All targets should be blurred except input to prevent the keyboard from
+    // bouncing in and out and sometimes not showing.
+    if(node !== 'input') {
+      // Blur focused form elements
+      event.target && event.target.blur && event.target.blur();
+    }
 
-    // Blur focused form elements
-    event.target && event.target.blur && event.target.blur();
   }
 
 
@@ -255,7 +264,9 @@ ngTouch.directive('ngClick', ['$parse', '$timeout', '$rootElement',
         // Blur the focused element (the button, probably) before firing the callback.
         // This doesn't work perfectly on Android Chrome, but seems to work elsewhere.
         // I couldn't get anything to work reliably on Android Chrome.
-        if (tapElement) {
+        // Make sure the tapElement isn't of type input to prevent the keyboard from
+        // bouncing and possibly not showing without a few attempted clicks.
+        if (tapElement && nodeName_(tapElement) !== 'input') {
           tapElement.blur();
         }
 
