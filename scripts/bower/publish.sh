@@ -14,6 +14,8 @@ function init {
   TMP_DIR=$(resolveDir ../../tmp)
   BUILD_DIR=$(resolveDir ../../build)
   NEW_VERSION=$(cat $BUILD_DIR/version.txt)
+  # get the npm dist-tag from a custom property (distTag) in package.json
+  DIST_TAG=$(readJsonProp "package.json" "distTag")
 }
 
 
@@ -95,8 +97,6 @@ function publish {
 
     # don't publish every build to npm
     if [ "${NEW_VERSION/+sha}" = "$NEW_VERSION" ] ; then
-      # get the npm dist-tag from a custom property (distTag) in package.json
-      DIST_TAG=$(readJsonProp "package.json" "distTag")
       echo "-- Publishing to npm as $DIST_TAG"
       npm publish --tag=$DIST_TAG
     fi
