@@ -319,6 +319,38 @@ describe('ngAnimate integration tests', function() {
         }
       });
     });
+
+    it('should trigger callbacks at the start and end of an animation',
+      inject(function($rootScope, $rootElement, $animate, $compile) {
+
+      ss.addRule('.animate-me', 'transition:2s linear all;');
+
+      var parent = jqLite('<div><div ng-if="exp" class="animate-me"></div></div>');
+      element = parent.find('div');
+      html(parent);
+
+      $compile(parent)($rootScope);
+      $rootScope.$digest();
+
+      var spy = jasmine.createSpy();
+      $animate.on('enter', parent, spy);
+
+      $rootScope.exp = true;
+      $rootScope.$digest();
+
+      element = parent.find('div');
+
+      $animate.flush();
+
+      expect(spy.callCount).toBe(1);
+
+      browserTrigger(element, 'transitionend', { timeStamp: Date.now(), elapsedTime: 2 });
+      $animate.flush();
+
+      expect(spy.callCount).toBe(2);
+
+      dealoc(element);
+    }));
   });
 
   describe('JS animations', function() {

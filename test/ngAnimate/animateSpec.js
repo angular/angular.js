@@ -890,7 +890,6 @@ describe("animations", function() {
         });
 
         $rootScope.$digest();
-        $animate.flush();
         expect(capturedAnimation).toBeTruthy();
         expect(runner1done).toBeFalsy();
 
@@ -910,7 +909,6 @@ describe("animations", function() {
         });
 
         $rootScope.$digest();
-        $animate.flush();
         expect(capturedAnimation).toBeTruthy();
         expect(runner2done).toBeFalsy();
 
@@ -990,8 +988,6 @@ describe("animations", function() {
         var doneHandler = jasmine.createSpy('addClass done');
         runner.done(doneHandler);
 
-        $animate.flush();
-
         expect(doneHandler).not.toHaveBeenCalled();
 
         $animate.removeClass(element, 'active-class');
@@ -1010,8 +1006,6 @@ describe("animations", function() {
 
         var doneHandler = jasmine.createSpy('addClass done');
         runner.done(doneHandler);
-
-        $animate.flush();
 
         expect(doneHandler).not.toHaveBeenCalled();
 
@@ -1519,7 +1513,6 @@ describe("animations", function() {
       element = jqLite('<div></div>');
       $animate.enter(element, $rootElement);
       $rootScope.$digest();
-      $animate.flush();
 
       expect(callbackTriggered).toBe(false);
     }));
@@ -1705,6 +1698,69 @@ describe("animations", function() {
 
       $animate.flush();
       expect(count).toBe(1);
+    }));
+
+    it('should always detect registered callbacks after one postDigest has fired',
+      inject(function($animate, $rootScope, $rootElement) {
+
+      element = jqLite('<div></div>');
+
+      var spy = jasmine.createSpy();
+      registerCallback();
+
+      var runner = $animate.enter(element, $rootElement);
+      registerCallback();
+
+      $rootScope.$digest();
+      registerCallback();
+
+      expect(spy.callCount).toBe(0);
+      $animate.flush();
+
+      // this is not 3 since the 3rd callback
+      // was added after the first callback
+      // was fired
+      expect(spy.callCount).toBe(2);
+
+      spy.reset();
+      runner.end();
+
+      $animate.flush();
+
+      // now we expect all three callbacks
+      // to fire when the animation ends since
+      // the callback detection happens again
+      expect(spy.callCount).toBe(3);
+
+      function registerCallback() {
+        $animate.on('enter', element, spy);
+      }
+    }));
+
+    it('should use RAF if there are detected callbacks within the hierachy of the element being animated',
+      inject(function($animate, $rootScope, $rootElement, $$rAF) {
+
+      var runner;
+
+      element = jqLite('<div></div>');
+      runner = $animate.enter(element, $rootElement);
+      $rootScope.$digest();
+      runner.end();
+
+      assertRAFsUsed(false);
+
+      var spy = jasmine.createSpy();
+      $animate.on('leave', element, spy);
+
+      runner = $animate.leave(element, $rootElement);
+      $rootScope.$digest();
+      runner.end();
+
+      assertRAFsUsed(true);
+
+      function assertRAFsUsed(bool) {
+        expect($$rAF.queue.length)[bool ? 'toBeGreaterThan' : 'toBe'](0);
+      }
     }));
 
     it('leave: should remove the element even if another animation is called after',
