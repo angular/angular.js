@@ -1,3 +1,177 @@
+<a name="1.4.6"></a>
+# 1.4.6 multiplicative-elevation (2015-09-17)
+
+
+## Bug Fixes
+
+- **$animate:** invalid CSS class names should not break subsequent elements
+  ([c3a654b7](https://github.com/angular/angular.js/commit/c3a654b7c8e585b8fb9f90ece10ef54d19fd74c8),
+   [#12674](https://github.com/angular/angular.js/issues/12674), [#12725](https://github.com/angular/angular.js/issues/12725))
+- **$browser:** handle async updates to location
+  ([8d39bd8a](https://github.com/angular/angular.js/commit/8d39bd8abf423517b5bff70137c2a29e32bff76d),
+   [#12241](https://github.com/angular/angular.js/issues/12241), [#12819](https://github.com/angular/angular.js/issues/12819))
+- **$http:** propagate status -1 for timed out requests
+  ([38520a1a](https://github.com/angular/angular.js/commit/38520a1a73fffb6cfeffc7edfcab5be33e1619eb),
+   [#4491](https://github.com/angular/angular.js/issues/4491), [#8756](https://github.com/angular/angular.js/issues/8756))
+- **$httpBackend:** send `null` when post-data is undefined
+  ([6f39f108](https://github.com/angular/angular.js/commit/6f39f1082773921e79b48a78aa6cd8a7d1921da7),
+   [#12141](https://github.com/angular/angular.js/issues/12141), [#12739](https://github.com/angular/angular.js/issues/12739))
+- **$parse:**
+  - throw error when accessing a restricted property indirectly
+  ([b2f8b0b8](https://github.com/angular/angular.js/commit/b2f8b0b875dbabf7bba0ba6e9bd553c7a8b910d0),
+   [#12833](https://github.com/angular/angular.js/issues/12833))
+  - `assign` returns the new value
+  ([7d2c6eee](https://github.com/angular/angular.js/commit/7d2c6eeef8ad61690737b6298c94f066082eff58),
+   [#12675](https://github.com/angular/angular.js/issues/12675), [#12708](https://github.com/angular/angular.js/issues/12708))
+- **angular.copy:** support copying XML nodes
+  ([122ab074](https://github.com/angular/angular.js/commit/122ab074cac6401ecded51fa031af139360f40aa),
+   [#5429](https://github.com/angular/angular.js/issues/5429), [#12786](https://github.com/angular/angular.js/issues/12786))
+- **form, ngModel:** correctly notify parent form when children are added
+  ([c6110e8b](https://github.com/angular/angular.js/commit/c6110e8b08c7e9bb2b7da5ecc5c42d1a834ea92d))
+- **input:** ignore min/max if they are empty on all input types
+  ([544001f5](https://github.com/angular/angular.js/commit/544001f5a331de06961c0201d69ecc92893abd0b),
+   [#12363](https://github.com/angular/angular.js/issues/12363), [#12785](https://github.com/angular/angular.js/issues/12785))
+- **ngAnimateMock:** $animate.flush should work for looping animations
+  ([472d076c](https://github.com/angular/angular.js/commit/472d076cca2ffb99bd87d3c026ef69afc713268d))
+- **ngAria:** clean up tabindex usage
+  ([f48244ce](https://github.com/angular/angular.js/commit/f48244ce5e6d11637aab97af1aff3430bda12429),
+   [#11500](https://github.com/angular/angular.js/issues/11500))
+- **ngJq:** properly detect when `ng-jq` is empty
+  ([19ecdb54](https://github.com/angular/angular.js/commit/19ecdb54bf85fc4e7bd3cde453aa6843f869a1ab),
+   [#12741](https://github.com/angular/angular.js/issues/12741))
+- **ngModel:**
+  - remove reference to parentForm from removed control
+  ([290b5049](https://github.com/angular/angular.js/commit/290b5049c2de4aa0d6ba8eea624bc6dce027b197),
+   [#12263](https://github.com/angular/angular.js/issues/12263))
+  - let aliased validator directives work on any element
+  ([43769fb6](https://github.com/angular/angular.js/commit/43769fb676ae904852582a2c88a5523f0b9f58fc),
+   [#12158](https://github.com/angular/angular.js/issues/12158), [#12658](https://github.com/angular/angular.js/issues/12658))
+- **ngRepeat:** add support to iterate an object's properties even if it does not inherit from Object
+  ([7ea2c7f3](https://github.com/angular/angular.js/commit/7ea2c7f36ef854391df3f6b127ad42a2d5cbf1a3),
+   [#9964](https://github.com/angular/angular.js/issues/9964))
+- **rootScope:** add support for watchCollection to watch an object which does not inherit from Object
+  ([20fb626b](https://github.com/angular/angular.js/commit/20fb626b78ed8fbd02f59f5b26df9387a2a6ea0e),
+   [#9964](https://github.com/angular/angular.js/issues/9964))
+- **select:** update option if interpolated value attribute changes
+  ([82b0929e](https://github.com/angular/angular.js/commit/82b0929e4ea0ae087f766f2ee26f9570c8a3c8ac),
+   [#12005](https://github.com/angular/angular.js/issues/12005), [#12582](https://github.com/angular/angular.js/issues/12582))
+- **toDebugString:** change replacement string
+  ([0ca8b1df](https://github.com/angular/angular.js/commit/0ca8b1df201044019596db7173d784aeebdea0a7),
+   [#10103](https://github.com/angular/angular.js/issues/10103))
+
+
+## Performance Improvements
+
+- **Angular:** only create new collection in getBlockNodes if the block has changed
+  ([0202663e](https://github.com/angular/angular.js/commit/0202663e938a477cd86145bb158bf7a02efd8fb5),
+   [#9899](https://github.com/angular/angular.js/issues/9899))
+
+
+
+
+<a name="1.3.19"></a>
+# 1.3.19 glutinous-shriek (2015-09-15)
+
+## Bug Fixes
+
+- **$http:** propagate status -1 for timed out requests
+  ([f13055a0](https://github.com/angular/angular.js/commit/f13055a0a53a39b160448713a5617edee6042801),
+   [#4491](https://github.com/angular/angular.js/issues/4491), [#8756](https://github.com/angular/angular.js/issues/8756))
+- **$location:** don't crash if navigating outside the app base
+  ([623ce1ad](https://github.com/angular/angular.js/commit/623ce1ad2cf68024719c5cae5d682d00195df30c),
+   [#11667](https://github.com/angular/angular.js/issues/11667))
+- **$parse:** throw error when accessing a restricted property indirectly
+  ([ec98c94c](https://github.com/angular/angular.js/commit/ec98c94ccbfc97b655447956738d5f6ff98b2f33),
+   [#12833](https://github.com/angular/angular.js/issues/12833))
+- **ngModel:** validate pattern against the viewValue
+  ([274e9353](https://github.com/angular/angular.js/commit/274e93537ed4e95aefeacea48909eb334894f0ac),
+   [#12344](https://github.com/angular/angular.js/issues/12344))
+
+
+## Features
+
+- **ngAnimate:** introduce `$animate.flush` for unit testing
+  ([f98e0384](https://github.com/angular/angular.js/commit/f98e038418f7367b2373adcf4887f64a8e8bdcb0))
+
+
+## Possible Breaking Changes
+
+- **ngModel:** due to [274e9353](https://github.com/angular/angular.js/commit/274e93537ed4e95aefeacea48909eb334894f0ac),
+
+
+The `ngPattern` and `pattern` directives will validate the regex
+against the `viewValue` of `ngModel`, i.e. the value of the model
+before the $parsers are applied. Previously, the modelValue
+(the result of the $parsers) was validated.
+
+This fixes issues where `input[date]` and `input[number]` cannot
+be validated because the viewValue string is parsed into
+`Date` and `Number` respectively (starting with Angular 1.3).
+It also brings the directives in line with HTML5 constraint
+validation, which validates against the input value.
+
+This change is unlikely to cause applications to fail, because even
+in Angular 1.2, the value that was validated by pattern could have
+been manipulated by the $parsers, as all validation was done
+inside this pipeline.
+
+If you rely on the pattern being validated against the modelValue,
+you must create your own validator directive that overwrites
+the built-in pattern validator:
+
+```
+.directive('patternModelOverwrite', function patternModelOverwriteDirective() {
+  return {
+    restrict: 'A',
+    require: '?ngModel',
+    priority: 1,
+    compile: function() {
+      var regexp, patternExp;
+
+      return {
+        pre: function(scope, elm, attr, ctrl) {
+          if (!ctrl) return;
+
+          attr.$observe('pattern', function(regex) {
+            /**
+             * The built-in directive will call our overwritten validator
+             * (see below). We just need to update the regex.
+             * The preLink fn guaranetees our observer is called first.
+             */
+            if (isString(regex) && regex.length > 0) {
+              regex = new RegExp('^' + regex + '$');
+            }
+
+            if (regex && !regex.test) {
+              //The built-in validator will throw at this point
+              return;
+            }
+
+            regexp = regex || undefined;
+          });
+
+        },
+        post: function(scope, elm, attr, ctrl) {
+          if (!ctrl) return;
+
+          regexp, patternExp = attr.ngPattern || attr.pattern;
+
+          //The postLink fn guarantees we overwrite the built-in pattern validator
+          ctrl.$validators.pattern = function(value) {
+            return ctrl.$isEmpty(value) ||
+              isUndefined(regexp) ||
+              regexp.test(value);
+          };
+        }
+      };
+    }
+  };
+});
+```
+
+
+
+
 <a name="1.4.5"></a>
 # 1.4.5 permanent-internship (2015-08-28)
 
