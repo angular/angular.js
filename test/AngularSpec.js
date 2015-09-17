@@ -786,7 +786,7 @@ describe('angular', function() {
 
     it('should bootstrap using class name', function() {
       var appElement = jqLite('<div class="ng-app: ABC;"></div>')[0];
-      angularInit(jqLite('<div></div>').append(appElement)[0], bootstrapSpy);
+      angularInit(appElement, bootstrapSpy);
       expect(bootstrapSpy).toHaveBeenCalledOnceWith(appElement, ['ABC']);
     });
 
