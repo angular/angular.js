@@ -121,7 +121,7 @@ describe("ngAnimate $$animateCssDriver", function() {
       var from, to, fromAnimation, toAnimation;
 
       beforeEach(module(function() {
-        return function($rootElement, $$body) {
+        return function($rootElement, $document) {
           from = element;
           to = jqLite('<div></div>');
           fromAnimation = { element: from, event: 'enter' };
@@ -130,7 +130,7 @@ describe("ngAnimate $$animateCssDriver", function() {
           $rootElement.append(to);
 
           // we need to do this so that style detection works
-          $$body.append($rootElement);
+          jqLite($document[0].body).append($rootElement);
         };
       }));
 

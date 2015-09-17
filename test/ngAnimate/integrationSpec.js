@@ -7,12 +7,12 @@ describe('ngAnimate integration tests', function() {
 
   var element, html, ss;
   beforeEach(module(function() {
-    return function($rootElement, $document, $$body, $window, $animate) {
+    return function($rootElement, $document, $window, $animate) {
       $animate.enabled(true);
 
       ss = createMockStyleSheet($document, $window);
 
-      var body = $$body;
+      var body = jqLite($document[0].body);
       html = function(element) {
         body.append($rootElement);
         $rootElement.append(element);
