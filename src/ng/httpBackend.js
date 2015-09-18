@@ -47,8 +47,13 @@ function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDoc
     } else {
 
       var xhr = createXhr();
+      if (isDefined(headers) && isDefined(headers.Authorization) && headers.Authorization.length == 2) {
+        xhr.open(method, url, true, headers.Authorization[0], headers.Authorization[1]);
+        delete headers.Authorization;
+      } else {
+        xhr.open(method, url, true);
+      }
 
-      xhr.open(method, url, true);
       forEach(headers, function(value, key) {
         if (isDefined(value)) {
             xhr.setRequestHeader(key, value);
