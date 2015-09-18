@@ -831,6 +831,19 @@ describe('ngMock', function() {
         });
       });
 
+      describe('nested calls', function() {
+        it('should invoke nested module calls immediately', function() {
+          module(function($provide) {
+            $provide.constant('someConst', 'blah');
+            module(function(someConst) {
+              log = someConst;
+            });
+          });
+          inject(function() {
+            expect(log).toBe('blah');
+          });
+        });
+      });
 
       describe('inline in test', function() {
         it('should load module', function() {
