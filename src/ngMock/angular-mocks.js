@@ -1128,7 +1128,7 @@ angular.mock.dump = function(object) {
    ```
  */
 angular.mock.$HttpBackendProvider = function() {
-  this.$get = ['$rootScope', '$timeout', createHttpBackendMock];
+  this.$get = ['$sce', '$rootScope', '$timeout', createHttpBackendMock];
 };
 
 /**
@@ -1145,7 +1145,7 @@ angular.mock.$HttpBackendProvider = function() {
  * @param {Object=} $browser Auto-flushing enabled if specified
  * @return {Object} Instance of $httpBackend mock
  */
-function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
+function createHttpBackendMock($sce, $rootScope, $timeout, $delegate, $browser) {
   var definitions = [],
       expectations = [],
       responses = [],
@@ -2110,7 +2110,7 @@ angular.module('ngMockE2E', ['ng']).config(['$provide', function($provide) {
  */
 angular.mock.e2e = {};
 angular.mock.e2e.$httpBackendDecorator =
-  ['$rootScope', '$timeout', '$delegate', '$browser', createHttpBackendMock];
+  ['$sce', '$rootScope', '$timeout', '$delegate', '$browser', createHttpBackendMock];
 
 
 /**

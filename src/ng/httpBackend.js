@@ -21,14 +21,20 @@ function createXhr() {
  * $httpBackend} which can be trained with responses.
  */
 function $HttpBackendProvider() {
-  this.$get = ['$browser', '$window', '$document', function($browser, $window, $document) {
-    return createHttpBackend($browser, createXhr, $browser.defer, $window.angular.callbacks, $document[0]);
+  this.$get = ['$sce', '$browser', '$window', '$document', function($sce, $browser, $window, $document) {
+    return createHttpBackend($sce, $browser, createXhr, $browser.defer, $window.angular.callbacks, $document[0]);
   }];
 }
 
-function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDocument) {
+function createHttpBackend($sce, $browser, createXhr, $browserDefer, callbacks, rawDocument) {
   // TODO(vojta): fix the signature
   return function(method, url, post, callback, headers, timeout, withCredentials, responseType) {
+    if (lowercase(method) == 'jsonp') {
+      // This is a pretty sensitive operation where we're allowing a script to have full access to
+      // our DOM and JS space.  So we require that the URL satisfies SCE.RESOURCE_URL.
+      url = $sce.getTrustedResourceUrl(url);
+    }
+
     $browser.$$incOutstandingRequestCount();
     url = url || $browser.url();
 
@@ -142,8 +148,8 @@ function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDoc
     // - adds and immediately removes script elements from the document
     var script = rawDocument.createElement('script'), callback = null;
     script.type = "text/javascript";
-    script.src = url;
     script.async = true;
+    script.src = url;
 
     callback = function(event) {
       removeEventListenerFn(script, "load", callback);

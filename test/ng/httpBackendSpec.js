@@ -3,12 +3,13 @@
 
 describe('$httpBackend', function() {
 
-  var $backend, $browser, callbacks,
+  var $sce, $backend, $browser, callbacks,
       xhr, fakeDocument, callback;
 
 
   beforeEach(inject(function($injector) {
     callbacks = {counter: 0};
+    $sce = $injector.get('$sce');
     $browser = $injector.get('$browser');
     fakeDocument = {
       $$scripts: [],
@@ -28,7 +29,7 @@ describe('$httpBackend', function() {
         })
       }
     };
-    $backend = createHttpBackend($browser, createMockXhr, $browser.defer, callbacks, fakeDocument);
+    $backend = createHttpBackend($sce, $browser, createMockXhr, $browser.defer, callbacks, fakeDocument);
     callback = jasmine.createSpy('done');
   }));
 
@@ -274,7 +275,22 @@ describe('$httpBackend', function() {
   });
 
 
-  describe('JSONP', function() {
+  [true, false].forEach(function(trustAsResourceUrl) {
+    describe('JSONP: trustAsResourceUrl='+trustAsResourceUrl, function() {
+
+
+    function $backendCall() {
+      var args = Array.prototype.slice.call(arguments);
+      var url = args[1];
+      if (trustAsResourceUrl || url == null) {
+        args[1] = $sce.trustAsResourceUrl(url);
+        return $backend.apply(null, args);
+      } else {
+        var badUrlPrefix = url ? url.replace('JSON_CALLBACK', '') : '';
+        expect(function() { $backend.apply(null, args); }).toThrowMinErr(
+          '$sce', 'insecurl', 'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: ' + badUrlPrefix);
+      }
+    }
 
     var SCRIPT_URL = /([^\?]*)\?cb=angular\.callbacks\.(.*)/;
 
@@ -285,7 +301,9 @@ describe('$httpBackend', function() {
         expect(response).toBe('some-data');
       });
 
-      $backend('JSONP', 'http://example.org/path?cb=JSON_CALLBACK', null, callback);
+      $backendCall('JSONP', 'http://example.org/path?cb=JSON_CALLBACK', null, callback);
+      if (!trustAsResourceUrl) return;
+
       expect(fakeDocument.$$scripts.length).toBe(1);
 
       var script = fakeDocument.$$scripts.shift(),
@@ -300,7 +318,9 @@ describe('$httpBackend', function() {
 
 
     it('should clean up the callback and remove the script', function() {
-      $backend('JSONP', 'http://example.org/path?cb=JSON_CALLBACK', null, callback);
+      $backendCall('JSONP', 'http://example.org/path?cb=JSON_CALLBACK', null, callback);
+      if (!trustAsResourceUrl) return;
+
       expect(fakeDocument.$$scripts.length).toBe(1);
 
 
@@ -316,11 +336,13 @@ describe('$httpBackend', function() {
 
 
     it('should set url to current location if not specified or empty string', function() {
-      $backend('JSONP', undefined, null, callback);
+      $backendCall('JSONP', undefined, null, callback);
+      if (!trustAsResourceUrl) return;
+
       expect(fakeDocument.$$scripts[0].src).toBe($browser.url());
       fakeDocument.$$scripts.shift();
 
-      $backend('JSONP', '', null, callback);
+      $backendCall('JSONP', '', null, callback);
       expect(fakeDocument.$$scripts[0].src).toBe($browser.url());
     });
 
@@ -330,7 +352,9 @@ describe('$httpBackend', function() {
         expect(status).toBe(-1);
       });
 
-      $backend('JSONP', 'http://example.org/path?cb=JSON_CALLBACK', null, callback, null, 2000);
+      $backendCall('JSONP', 'http://example.org/path?cb=JSON_CALLBACK', null, callback, null, 2000);
+      if (!trustAsResourceUrl) return;
+
       expect(fakeDocument.$$scripts.length).toBe(1);
       expect($browser.deferredFns[0].time).toBe(2000);
 
@@ -347,7 +371,7 @@ describe('$httpBackend', function() {
 
     // TODO(vojta): test whether it fires "async-start"
     // TODO(vojta): test whether it fires "async-end" on both success and error
-  });
+  })});
 
   describe('protocols that return 0 status code', function() {
 
@@ -360,7 +384,7 @@ describe('$httpBackend', function() {
 
 
     it('should convert 0 to 200 if content and file protocol', function() {
-      $backend = createHttpBackend($browser, createMockXhr);
+      $backend = createHttpBackend($sce, $browser, createMockXhr);
 
       $backend('GET', 'file:///whatever/index.html', null, callback);
       respond(0, 'SOME CONTENT');
@@ -370,7 +394,7 @@ describe('$httpBackend', function() {
     });
 
     it('should convert 0 to 200 if content for protocols other than file', function() {
-      $backend = createHttpBackend($browser, createMockXhr);
+      $backend = createHttpBackend($sce, $browser, createMockXhr);
 
       $backend('GET', 'someProtocol:///whatever/index.html', null, callback);
       respond(0, 'SOME CONTENT');
@@ -380,7 +404,7 @@ describe('$httpBackend', function() {
     });
 
     it('should convert 0 to 404 if no content and file protocol', function() {
-      $backend = createHttpBackend($browser, createMockXhr);
+      $backend = createHttpBackend($sce, $browser, createMockXhr);
 
       $backend('GET', 'file:///whatever/index.html', null, callback);
       respond(0, '');
@@ -390,7 +414,7 @@ describe('$httpBackend', function() {
     });
 
     it('should not convert 0 to 404 if no content for protocols other than file', function() {
-      $backend = createHttpBackend($browser, createMockXhr);
+      $backend = createHttpBackend($sce, $browser, createMockXhr);
 
       $backend('GET', 'someProtocol:///whatever/index.html', null, callback);
       respond(0, '');
@@ -418,7 +442,7 @@ describe('$httpBackend', function() {
 
       try {
 
-        $backend = createHttpBackend($browser, createMockXhr);
+        $backend = createHttpBackend($sce, $browser, createMockXhr);
 
         $backend('GET', '/whatever/index.html', null, callback);
         respond(0, '');
@@ -433,7 +457,7 @@ describe('$httpBackend', function() {
 
 
     it('should return original backend status code if different from 0', function() {
-      $backend = createHttpBackend($browser, createMockXhr);
+      $backend = createHttpBackend($sce, $browser, createMockXhr);
 
       // request to http://
       $backend('POST', 'http://rest_api/create_whatever', null, callback);
