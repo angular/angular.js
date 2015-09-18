@@ -62,6 +62,7 @@
  * Implicit module which gets automatically added to each {@link auto.$injector $injector}.
  */
 
+var ARROW_ARG = /^([^\(]+?)=>/;
 var FN_ARGS = /^[^\(]*\(\s*([^\)]*)\)/m;
 var FN_ARG_SPLIT = /,/;
 var FN_ARG = /^\s*(_?)(\S+?)\1\s*$/;
@@ -70,7 +71,7 @@ var $injectorMinErr = minErr('$injector');
 
 function extractArgs(fn) {
   var fnText = fn.toString().replace(STRIP_COMMENTS, ''),
-      args = fnText.match(FN_ARGS);
+      args = fnText.match(ARROW_ARG) || fnText.match(FN_ARGS);
   return args;
 }
 
