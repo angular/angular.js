@@ -129,8 +129,14 @@ describe("ngAnimate $$animateCssDriver", function() {
           $rootElement.append(from);
           $rootElement.append(to);
 
-          // we need to do this so that style detection works
-          jqLite($document[0].body).append($rootElement);
+          var doc = $document[0];
+
+          // there is one test in here that expects the rootElement
+          // to superceed the body node
+          if (!$rootElement[0].contains(doc.body)) {
+            // we need to do this so that style detection works
+            jqLite(doc.body).append($rootElement);
+          }
         };
       }));
 
@@ -975,6 +981,39 @@ describe("ngAnimate $$animateCssDriver", function() {
 
         expect(completed).toBe(true);
       }));
+
+      it("should use <body> as the element container if the rootElement exists outside of the <body> tag", function() {
+        module(function($provide) {
+          $provide.factory('$rootElement', function($document) {
+            return jqLite($document[0].querySelector('html'));
+          });
+        });
+        inject(function($rootElement, $rootScope, $animate, $document) {
+          ss.addRule('.ending-element', 'width:9999px; height:6666px; display:inline-block;');
+
+          var fromAnchor = jqLite('<div></div>');
+          from.append(fromAnchor);
+
+          var toAnchor = jqLite('<div></div>');
+          to.append(toAnchor);
+
+          $rootElement.append(fromAnchor);
+          $rootElement.append(toAnchor);
+
+          var completed = false;
+          driver({
+            from: fromAnimation,
+            to: toAnimation,
+            anchors: [{
+              'out': fromAnchor,
+              'in': toAnchor
+            }]
+          }).start();
+
+          var clone = captureLog[2].element[0];
+          expect(clone.parentNode).toBe($document[0].body);
+        });
+      });
     });
   });
 });
