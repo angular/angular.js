@@ -249,10 +249,27 @@ describe('injector', function() {
 
     // Only Chrome and Firefox support this syntax.
     if (/chrome|firefox/i.test(navigator.userAgent)) {
-      it('should be possible to annotate functions that are declared using ES6 syntax', function() {
+      describe('es6', function() {
         /*jshint -W061 */
-        // The function is generated using `eval` as just having the ES6 syntax can break some browsers.
-        expect(annotate(eval('({ fn(x) { return; } })').fn)).toEqual(['x']);
+        // The functions are generated using `eval` as just having the ES6 syntax can break some browsers.
+        it('should be possible to annotate functions that are declared using ES6 syntax', function() {
+          expect(annotate(eval('({ fn(x) { return; } })').fn)).toEqual(['x']);
+        });
+
+
+        it('should create $inject for arrow functions', function() {
+          expect(annotate(eval('(a, b) => a'))).toEqual(['a', 'b']);
+        });
+
+
+        it('should create $inject for arrow functions with no parenthesis', function() {
+          expect(annotate(eval('a => a'))).toEqual(['a']);
+        });
+
+
+        it('should take args before first arrow', function() {
+          expect(annotate(eval('a => b => b'))).toEqual(['a']);
+        });
         /*jshint +W061 */
       });
     }
