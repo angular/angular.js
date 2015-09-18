@@ -364,7 +364,8 @@ function FormController(element, attrs, $scope, $animate, $interpolate) {
  * to handle the form submission in an application-specific way.
  *
  * For this reason, Angular prevents the default action (form submission to the server) unless the
- * `<form>` element has an `action` attribute specified.
+ * `<form>` element has a `method` attribute with the value `"dialog"` or has an `action` attribute
+ * specified.
  *
  * You can use one of the following two ways to specify what javascript method should be called when
  * a form is submitted:
@@ -485,7 +486,7 @@ var formDirectiveFactory = function(isNgForm) {
             var controller = ctrls[0];
 
             // if `action` attr is not present on the form, prevent the default action (submission)
-            if (!('action' in attr)) {
+            if (!('action' in attr) && attr['method'] !== 'dialog') {
               // we can't use jq events because if a form is destroyed during submission the default
               // action is not prevented. see #1238
               //

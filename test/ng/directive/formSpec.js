@@ -483,6 +483,20 @@ describe('form', function() {
       browserTrigger(doc, 'submit');
       expect(callback).toHaveBeenCalledOnce();
     });
+
+
+    it('should NOT prevent form submission if method attribute id "dialog"', function() {
+      var callback = jasmine.createSpy('submit').andCallFake(function(event) {
+        expect(event.isDefaultPrevented()).toBe(false);
+        event.preventDefault();
+      });
+
+      doc = $compile('<form method="dialog"></form>')(scope);
+      doc.on('submit', callback);
+
+      browserTrigger(doc, 'submit');
+      expect(callback).toHaveBeenCalledOnce();
+    });
   });
 
 
