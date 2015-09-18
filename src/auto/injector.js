@@ -68,11 +68,16 @@ var FN_ARG = /^\s*(_?)(\S+?)\1\s*$/;
 var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
 var $injectorMinErr = minErr('$injector');
 
+function extractArgs(fn) {
+  var fnText = fn.toString().replace(STRIP_COMMENTS, ''),
+      args = fnText.match(FN_ARGS);
+  return args;
+}
+
 function anonFn(fn) {
   // For anonymous functions, showing at the very least the function signature can help in
   // debugging.
-  var fnText = fn.toString().replace(STRIP_COMMENTS, ''),
-      args = fnText.match(FN_ARGS);
+  var args = extractArgs(fn);
   if (args) {
     return 'function(' + (args[1] || '').replace(/[\s\r\n]+/, ' ') + ')';
   }
@@ -81,7 +86,6 @@ function anonFn(fn) {
 
 function annotate(fn, strictDi, name) {
   var $inject,
-      fnText,
       argDecl,
       last;
 
@@ -96,8 +100,7 @@ function annotate(fn, strictDi, name) {
           throw $injectorMinErr('strictdi',
             '{0} is not using explicit annotation and cannot be invoked in strict mode', name);
         }
-        fnText = fn.toString().replace(STRIP_COMMENTS, '');
-        argDecl = fnText.match(FN_ARGS);
+        argDecl = extractArgs(fn);
         forEach(argDecl[1].split(FN_ARG_SPLIT), function(arg) {
           arg.replace(FN_ARG, function(all, underscore, name) {
             $inject.push(name);
