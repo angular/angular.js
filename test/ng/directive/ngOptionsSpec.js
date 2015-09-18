@@ -1497,28 +1497,37 @@ describe('ngOptions', function() {
 
       scope.$apply(function() {
         scope.values = [{name: 'A'},
-                        {name: 'B', group: 'first'},
-                        {name: 'C', group: 'second'},
-                        {name: 'D', group: 'first'},
-                        {name: 'E', group: 'second'}];
+                        {name: 'B', group: 0},
+                        {name: 'C', group: 'first'},
+                        {name: 'D', group: 'second'},
+                        {name: 'E', group: 0},
+                        {name: 'F', group: 'first'},
+                        {name: 'G', group: 'second'}];
         scope.selected = scope.values[3];
       });
 
       expect(element).toEqualSelectValue(scope.selected);
 
-      var first = jqLite(element.find('optgroup')[0]);
-      var b = jqLite(first.find('option')[0]);
-      var d = jqLite(first.find('option')[1]);
-      expect(first.attr('label')).toEqual('first');
+      var zero = jqLite(element.find('optgroup')[0]);
+      var b = jqLite(zero.find('option')[0]);
+      var e = jqLite(zero.find('option')[1]);
+      expect(zero.attr('label')).toEqual('0');
       expect(b.text()).toEqual('B');
-      expect(d.text()).toEqual('D');
-
-      var second = jqLite(element.find('optgroup')[1]);
-      var c = jqLite(second.find('option')[0]);
-      var e = jqLite(second.find('option')[1]);
-      expect(second.attr('label')).toEqual('second');
-      expect(c.text()).toEqual('C');
       expect(e.text()).toEqual('E');
+
+      var first = jqLite(element.find('optgroup')[1]);
+      var c = jqLite(first.find('option')[0]);
+      var f = jqLite(first.find('option')[1]);
+      expect(first.attr('label')).toEqual('first');
+      expect(c.text()).toEqual('C');
+      expect(f.text()).toEqual('F');
+
+      var second = jqLite(element.find('optgroup')[2]);
+      var d = jqLite(second.find('option')[0]);
+      var g = jqLite(second.find('option')[1]);
+      expect(second.attr('label')).toEqual('second');
+      expect(d.text()).toEqual('D');
+      expect(g.text()).toEqual('G');
 
       scope.$apply(function() {
         scope.selected = scope.values[0];
