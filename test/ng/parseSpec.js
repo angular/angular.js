@@ -1119,6 +1119,27 @@ describe('parser', function() {
           expect(count).toBe(1);
         });
 
+       it('should prevent the exploit', function() {
+          expect(function() {
+            scope.$eval('(1)[{0: "__proto__", 1: "__proto__", 2: "__proto__", 3: "safe", length: 4, toString: [].pop}].foo = 1');
+          }).toThrow();
+          if (!msie || msie > 10) {
+            expect((1)['__proto__'].foo).toBeUndefined();
+          }
+       });
+
+        it('should prevent the exploit', function() {
+          expect(function() {
+            scope.$eval('' +
+              ' "".sub.call.call(' +
+                '({})["constructor"].getOwnPropertyDescriptor("".sub.__proto__, "constructor").value,' +
+                'null,' +
+                '"alert(1)"' +
+              ')()' +
+              '');
+          }).toThrow();
+        });
+
 
         it('should call the function once when it is part of the context on array lookups', function() {
           var count = 0;
