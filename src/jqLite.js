@@ -881,7 +881,10 @@ forEach({
   },
 
   contents: function(element) {
-    return element.contentDocument || element.childNodes || [];
+    return element.contentDocument ||
+           element.childNodes.length > 0 && element.childNodes ||
+           element.content && element.content.childNodes.length > 0 && element.content.childNodes ||
+           [];
   },
 
   append: function(element, node) {

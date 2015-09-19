@@ -1750,8 +1750,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             assertNoDuplicate('transclusion', nonTlbTranscludeDirective, directive, $compileNode);
             nonTlbTranscludeDirective = directive;
           }
-
-          if (directiveValue == 'element') {
+          if (directiveValue == 'element' && nodeName_(compileNode) !== 'template') {
             hasElementTranscludeDirective = true;
             terminalPriority = directive.priority;
             $template = $compileNode;
@@ -1775,6 +1774,14 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           } else {
             $template = jqLite(jqLiteClone(compileNode)).contents();
             $compileNode.empty(); // clear contents
+            // This implies that the current element is a <template>
+            if (directiveValue === 'element' && nodeName_(compileNode) === 'template') {
+              var replacementNode = jqLite(document.createComment(' ' + directiveName + ': ' +
+                                                templateAttrs[directiveName] + ' '));
+              compileNode = replacementNode[0];
+              replaceWith(jqCollection, $compileNode, compileNode);
+              $compileNode = replacementNode;
+            }
             childTranscludeFn = compile($template, transcludeFn);
           }
         }
