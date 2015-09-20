@@ -17,7 +17,8 @@
     "preinstall": "node scripts/npm/check-node-modules.js --purge",
     "postinstall": "node scripts/npm/copy-npm-shrinkwrap.js",
     "commit": "git-cz",
-    "test-i18n": "jasmine-node i18n/spec"
+    "test-i18n": "jasmine-node i18n/spec",
+    "test-i18n-ucd": "jasmine-node i18n/ucd/spec"
   },
   "devDependencies": {
     "angular-benchpress": "0.x.x",
@@ -75,6 +76,7 @@
     "q-io": "^1.10.9",
     "qq": "^0.3.5",
     "rewire": "~2.1.0",
+    "sax": "^1.1.1",
     "semver": "~4.0.3",
     "shelljs": "~0.3.0",
     "sorted-object": "^1.0.0",
