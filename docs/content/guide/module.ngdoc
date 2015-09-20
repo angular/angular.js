@@ -75,9 +75,8 @@ that you break your application to multiple modules like this:
   * And an application level module which depends on the above modules and contains any
     initialization code.
 
-We've also
-[written a document](http://angularjs.blogspot.com/2014/02/an-angularjs-style-guide-and-best.html)
-on how we organize large apps at Google.
+You can find a community  
+[style guide](https://github.com/johnpapa/angular-styleguide) to help yourself when application grows.
 
 The above is a suggestion. Tailor it to your needs.
 
