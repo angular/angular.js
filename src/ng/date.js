@@ -37,7 +37,7 @@ function $DateProvider() {
        * @description
        * Return Date object representing current date
        */
-      now: function () {
+      now: function() {
         return $window.Date();
       }
     };
