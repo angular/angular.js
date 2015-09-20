@@ -61,6 +61,7 @@
   $BrowserProvider,
   $CacheFactoryProvider,
   $ControllerProvider,
+  $DateProvider,
   $DocumentProvider,
   $ExceptionHandlerProvider,
   $FilterProvider,
