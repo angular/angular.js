@@ -95,6 +95,37 @@ describe('parser', function() {
       expect(spaces).toEqual(noSpaces);
     });
 
+    it('should use callback functions to know when an identifier is valid', function() {
+      function getText(t) { return t.text; }
+      var isIdentifierStart = jasmine.createSpy('start');
+      var isIdentifierContinue = jasmine.createSpy('continue');
+      isIdentifierStart.and.returnValue(true);
+      var lex = new Lexer({csp: false, isIdentifierStart: isIdentifierStart, isIdentifierContinue: isIdentifierContinue});
+
+      isIdentifierContinue.and.returnValue(true);
+      var tokens = lex.lex('πΣε').map(getText);
+      expect(tokens).toEqual(['πΣε']);
+
+      isIdentifierContinue.and.returnValue(false);
+      tokens = lex.lex('πΣε').map(getText);
+      expect(tokens).toEqual(['π', 'Σ', 'ε']);
+    });
+
+    it('should send the unicode characters and code points', function() {
+      function getText(t) { return t.text; }
+      var isIdentifierStart = jasmine.createSpy('start');
+      var isIdentifierContinue = jasmine.createSpy('continue');
+      isIdentifierStart.and.returnValue(true);
+      isIdentifierContinue.and.returnValue(true);
+      var lex = new Lexer({csp: false, isIdentifierStart: isIdentifierStart, isIdentifierContinue: isIdentifierContinue});
+      var tokens = lex.lex('\uD801\uDC37\uD852\uDF62\uDBFF\uDFFF');
+      expect(isIdentifierStart).toHaveBeenCalledTimes(1);
+      expect(isIdentifierStart.calls.argsFor(0)).toEqual(['\uD801\uDC37', 0x10437]);
+      expect(isIdentifierContinue).toHaveBeenCalledTimes(2);
+      expect(isIdentifierContinue.calls.argsFor(0)).toEqual(['\uD852\uDF62', 0x24B62]);
+      expect(isIdentifierContinue.calls.argsFor(1)).toEqual(['\uDBFF\uDFFF', 0x10FFFF]);
+    });
+
     it('should tokenize undefined', function() {
       var tokens = lex("undefined");
       var i = 0;
