@@ -120,6 +120,10 @@ var angularFiles = {
     'ngMessages': [
       'src/ngMessages/messages.js'
     ],
+    'ngParseExt': [
+      'src/ngParseExt/ucd.js',
+      'src/ngParseExt/module.js'
+    ],
     'ngResource': [
       'src/ngResource/resource.js'
     ],

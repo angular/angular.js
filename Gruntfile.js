@@ -135,6 +135,9 @@ module.exports = function(grunt) {
       ngMock: {
         files: { src: 'src/ngMock/**/*.js' },
       },
+      ngParseExt: {
+        files: { src: 'src/ngParseExt/**/*.js' },
+      },
       ngResource: {
         files: { src: 'src/ngResource/**/*.js' },
       },
@@ -231,7 +234,11 @@ module.exports = function(grunt) {
         dest: 'build/angular-aria.js',
         src: util.wrap(files['angularModules']['ngAria'], 'module')
       },
-      'promises-aplus-adapter': {
+      parseext: {
+        dest: 'build/angular-parse-ext.js',
+        src: util.wrap(files['angularModules']['ngParseExt'], 'module')
+      },
+      "promises-aplus-adapter": {
         dest:'tmp/promises-aplus-adapter++.js',
         src:['src/ng/q.js', 'lib/promises-aplus/promises-aplus-test-adapter.js']
       }
@@ -249,7 +256,8 @@ module.exports = function(grunt) {
       resource: 'build/angular-resource.js',
       route: 'build/angular-route.js',
       sanitize: 'build/angular-sanitize.js',
-      aria: 'build/angular-aria.js'
+      aria: 'build/angular-aria.js',
+      parseext: 'build/angular-parse-ext.js'
     },
 
 
