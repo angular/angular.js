@@ -2712,6 +2712,35 @@ describe('parser', function() {
               '');
           }).toThrow();
         });
+
+        it('should prevent assigning in the context of a constructor', function() {
+          expect(function() {
+            scope.$eval("''.constructor.join");
+          }).not.toThrow();
+          expect(function() {
+            scope.$eval("''.constructor.join = ''.constructor.join");
+          }).toThrow();
+          expect(function() {
+            scope.$eval("''.constructor[0] = ''");
+          }).toThrow();
+          expect(function() {
+            scope.$eval("(0).constructor[0] = ''");
+          }).toThrow();
+          expect(function() {
+            scope.$eval("{}.constructor[0] = ''");
+          }).toThrow();
+          // foo.constructor is the object constructor.
+          expect(function() {
+            scope.$eval("foo.constructor[0] = ''", {foo: {}});
+          }).toThrow();
+          // foo.constructor is not a constructor.
+          expect(function() {
+            scope.$eval("foo.constructor[0] = ''", {foo: {constructor: ''}});
+          }).not.toThrow();
+          expect(function() {
+            scope.$eval("objConstructor = {}.constructor; objConstructor.join = ''");
+          }).toThrow();
+        });
       });
 
       it('should call the function from the received instance and not from a new one', function() {
