@@ -1120,9 +1120,9 @@ describe('parser', function() {
         });
 
        it('should prevent the exploit', function() {
-          expect(function() {
+          try {
             scope.$eval('(1)[{0: "__proto__", 1: "__proto__", 2: "__proto__", 3: "safe", length: 4, toString: [].pop}].foo = 1');
-          }).toThrow();
+          } catch(e) { /* ignore */ };
           if (!msie || msie > 10) {
             expect((1)['__proto__'].foo).toBeUndefined();
           }
