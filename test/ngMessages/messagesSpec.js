@@ -372,6 +372,50 @@ describe('ngMessages', function() {
     expect(trim(element.text())).toEqual("Enter something");
   }));
 
+  // issue #12856
+  it('should only detach the message object that is associated with the message node being removed',
+    inject(function($rootScope, $compile, $animate) {
+
+    // We are going to spy on the `leave` method to give us control over
+    // when the element is actually removed
+    spyOn($animate, 'leave');
+
+    // Create a basic ng-messages set up
+    element = $compile('<div ng-messages="col">' +
+                       '  <div ng-message="primary">Enter something</div>' +
+                       '</div>')($rootScope);
+
+    // Trigger the message to be displayed
+    $rootScope.col = { primary: true };
+    $rootScope.$digest();
+    expect(messageChildren(element).length).toEqual(1);
+    var oldMessageNode = messageChildren(element)[0];
+
+    // Remove the message
+    $rootScope.col = { primary: undefined };
+    $rootScope.$digest();
+
+    // Since we have spied on the `leave` method, the message node is still in the DOM
+    expect($animate.leave).toHaveBeenCalledOnce();
+    var nodeToRemove = $animate.leave.mostRecentCall.args[0][0];
+    expect(nodeToRemove).toBe(oldMessageNode);
+    $animate.leave.reset();
+
+    // Add the message back in
+    $rootScope.col = { primary: true };
+    $rootScope.$digest();
+
+    // Simulate the animation completing on the node
+    jqLite(nodeToRemove).remove();
+
+    // We should not get another call to `leave`
+    expect($animate.leave).not.toHaveBeenCalled();
+
+    // There should only be the new message node
+    expect(messageChildren(element).length).toEqual(1);
+    var newMessageNode = messageChildren(element)[0];
+    expect(newMessageNode).not.toBe(oldMessageNode);
+  }));
 
   it('should render animations when the active/inactive classes are added/removed', function() {
     module('ngAnimate');
