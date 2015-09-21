@@ -74,6 +74,18 @@ describe('ngList', function() {
     expect(inputElm).toBeValid();
   });
 
+
+  it('should update the view if a part of the collection changes', function() {
+    var inputElm = helper.compileInput('<input type="text" ng-list ng-model="list">');
+    helper.changeInputValueTo('a,b');
+    expect($rootScope.list).toEqual(['a','b']);
+
+    $rootScope.list[1] = 'c';
+    $rootScope.$digest();
+
+    expect(inputElm.val()).toEqual('a, c');
+  });
+
   describe('with a custom separator', function() {
     it('should split on the custom separator', function() {
       helper.compileInput('<input type="text" ng-model="list" ng-list=":" />');
