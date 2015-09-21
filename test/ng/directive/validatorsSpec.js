@@ -319,6 +319,25 @@ describe('validators', function() {
       expect(ctrl.$error.minlength).toBe(true);
       expect(ctrlNg.$error.minlength).toBe(true);
     }));
+
+    describe('collection validation', function() {
+
+      it('should validate the viewValue and not the individual values', function() {
+        var inputElm = helper.compileInput('<input type="text" minlength="10" ng-list ng-model="list">');
+        var ctrl = inputElm.controller('ngModel');
+        spyOn(ctrl.$validators, 'minlength').andCallThrough();
+
+        helper.changeInputValueTo('2,2');
+        expect(inputElm).toBeInvalid();
+        expect(ctrl.$error.minlength).toBe(true);
+        expect(ctrl.$validators.minlength.calls[0].args).toEqual([['2','2'], '2,2']);
+
+        helper.changeInputValueTo('20000,20000');
+        expect(inputElm).toBeValid();
+        expect(ctrl.$error.minlength).toBeFalsy();
+      });
+    });
+
   });
 
 
@@ -507,6 +526,24 @@ describe('validators', function() {
       expect(ctrl.$error.maxlength).toBe(true);
       expect(ctrlNg.$error.maxlength).toBe(true);
     }));
+
+    describe('collection validation', function() {
+
+      it('should validate the viewValue and not the individual values', function() {
+        var inputElm = helper.compileInput('<input type="text" maxlength="10" ng-list ng-model="list">');
+        var ctrl = inputElm.controller('ngModel');
+        spyOn(ctrl.$validators, 'maxlength').andCallThrough();
+
+        helper.changeInputValueTo('2,2');
+        expect(inputElm).toBeValid();
+        expect(ctrl.$error.maxlength).toBeFalsy();
+        expect(ctrl.$validators.maxlength.calls[0].args).toEqual([['2','2'], '2,2']);
+
+        helper.changeInputValueTo('20000,20000');
+        expect(inputElm).toBeInvalid();
+        expect(ctrl.$error.maxlength).toBe(true);
+      });
+    });
   });
 
 
