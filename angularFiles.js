@@ -82,6 +82,9 @@ var angularFiles = {
     'ngCookies': [
       'src/ngCookies/cookies.js'
     ],
+    'ngMessages': [
+      'src/ngMessages/messages.js'
+    ],
     'ngResource': [
       'src/ngResource/resource.js'
     ],
@@ -102,6 +105,9 @@ var angularFiles = {
       'src/ngTouch/swipe.js',
       'src/ngTouch/directive/ngClick.js',
       'src/ngTouch/directive/ngSwipe.js'
+    ],
+    'ngAria': [
+      'src/ngAria/aria.js'
     ],
   },
 
@@ -130,12 +136,14 @@ var angularFiles = {
     'test/auto/*.js',
     'test/ng/**/*.js',
     'test/ngAnimate/*.js',
+    'test/ngMessages/*.js',
     'test/ngCookies/*.js',
     'test/ngResource/*.js',
     'test/ngRoute/**/*.js',
     'test/ngSanitize/**/*.js',
     'test/ngMock/*.js',
-    'test/ngTouch/**/*.js'
+    'test/ngTouch/**/*.js',
+    'test/ngAria/**/*.js'
   ],
 
   'karma': [
@@ -192,11 +200,13 @@ var angularFiles = {
 angularFiles['angularSrcModules'] = [].concat(
   angularFiles['angularModules']['ngAnimate'],
   angularFiles['angularModules']['ngCookies'],
+  angularFiles['angularModules']['ngMessages'],
   angularFiles['angularModules']['ngResource'],
   angularFiles['angularModules']['ngRoute'],
   angularFiles['angularModules']['ngSanitize'],
   angularFiles['angularModules']['ngMock'],
-  angularFiles['angularModules']['ngTouch']
+  angularFiles['angularModules']['ngTouch'],
+  angularFiles['angularModules']['ngAria']
 );
 
 if (exports) {

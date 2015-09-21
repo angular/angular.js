@@ -122,6 +122,7 @@ function publishExternalAPI(angular){
     'isNumber': isNumber,
     'isElement': isElement,
     'isArray': isArray,
+    'indexOf': indexOf,
     'version': version,
     'isDate': isDate,
     'lowercase': lowercase,

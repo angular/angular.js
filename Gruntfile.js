@@ -195,6 +195,10 @@ module.exports = function(grunt) {
         dest: 'build/angular-resource.js',
         src: util.wrap(files['angularModules']['ngResource'], 'module')
       },
+      messages: {
+        dest: 'build/angular-messages.js',
+        src: util.wrap(files['angularModules']['ngMessages'], 'module')
+      },
       animate: {
         dest: 'build/angular-animate.js',
         src: util.wrap(files['angularModules']['ngAnimate'], 'module')
@@ -206,6 +210,10 @@ module.exports = function(grunt) {
       cookies: {
         dest: 'build/angular-cookies.js',
         src: util.wrap(files['angularModules']['ngCookies'], 'module')
+      },
+      aria: {
+        dest: 'build/angular-aria.js',
+        src: util.wrap(files['angularModules']['ngAria'], 'module')
       },
       "promises-aplus-adapter": {
         dest:'tmp/promises-aplus-adapter++.js',
