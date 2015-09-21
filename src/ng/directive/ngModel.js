@@ -18,6 +18,18 @@ var VALID_CLASS = 'ng-valid',
 
 var ngModelMinErr = minErr('ngModel');
 
+function NgModelTransformer(name, transformFn, expectsItem) {
+  this.name = name;
+  this.transformFn = transformFn;
+  this.expectsItem = expectsItem;
+}
+
+function NgModelValidator(name, validateFn, expectsItem) {
+  this.name = name;
+  this.validateFn = validateFn;
+  this.expectsItem = expectsItem;
+}
+
 /**
  * @ngdoc type
  * @name ngModel.NgModelController
@@ -221,6 +233,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
   this.$viewValue = Number.NaN;
   this.$modelValue = Number.NaN;
   this.$$rawModelValue = undefined; // stores the parsed modelValue / model set from scope regardless of validity.
+  this.$$viewValueCollection = undefined; // stores the viewValue as a collection if $isCollection is true
   this.$validators = {};
   this.$asyncValidators = {};
   this.$parsers = [];
@@ -237,6 +250,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
   this.$pending = undefined; // keep pending keys here
   this.$name = $interpolate($attr.name || '', false)($scope);
   this.$$parentForm = nullFormCtrl;
+  this.$isCollection = false;
 
   var parsedNgModel = $parse($attr.ngModel),
       parsedNgModelAssign = parsedNgModel.assign,
@@ -576,8 +590,9 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
 
     function processSyncValidators() {
       var syncValidatorsValid = true;
+
       forEach(ctrl.$validators, function(validator, name) {
-        var result = validator(modelValue, viewValue);
+        var result = processValidator(validator, modelValue, viewValue);
         syncValidatorsValid = syncValidatorsValid && result;
         setValidity(name, result);
       });
@@ -594,7 +609,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
       var validatorPromises = [];
       var allValid = true;
       forEach(ctrl.$asyncValidators, function(validator, name) {
-        var promise = validator(modelValue, viewValue);
+        var promise = processValidator(validator, modelValue, viewValue);
         if (!isPromiseLike(promise)) {
           throw ngModelMinErr("$asyncValidators",
             "Expected asynchronous validator to return a promise but got '{0}' instead.", promise);
@@ -653,6 +668,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
       return;
     }
     ctrl.$$lastCommittedViewValue = viewValue;
+    ctrl.$$viewValueCollection = undefined;
 
     // change to dirty
     if (ctrl.$pristine) {
@@ -661,6 +677,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
     this.$$parseAndValidate();
   };
 
+
   this.$$parseAndValidate = function() {
     var viewValue = ctrl.$$lastCommittedViewValue;
     var modelValue = viewValue;
@@ -668,13 +685,28 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
 
     if (parserValid) {
       for (var i = 0; i < ctrl.$parsers.length; i++) {
-        modelValue = ctrl.$parsers[i](modelValue);
+        var parser = ctrl.$parsers[i];
+        var modelValueWasArray = isArray(modelValue);
+        modelValue = processTransform(modelValue, parser);
+        if (ctrl.$isCollection && !modelValueWasArray && isArray(modelValue)) {
+          // Once the first parser creates a collection from the viewValue,
+          // store this as the viewValue collection
+          ctrl.$$viewValueCollection = viewValue;
+        }
+
         if (isUndefined(modelValue)) {
           parserValid = false;
           break;
         }
       }
     }
+
+    if (ctrl.$isCollection && !ctrl.$$viewValueCollection) {
+      // If no parser has set the viewValueCollection,
+      // assume that the viewValue is already a collection
+      ctrl.$$viewValueCollection = viewValue;
+    }
+
     if (isNumber(ctrl.$modelValue) && isNaN(ctrl.$modelValue)) {
       // ctrl.$modelValue has not been touched yet...
       ctrl.$modelValue = ngModelGet($scope);
@@ -709,7 +741,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
   };
 
   this.$$writeModelToScope = function() {
-    ngModelSet($scope, ctrl.$modelValue);
+    ngModelSet($scope, modelValueGetter(ctrl.$modelValue));
     forEach(ctrl.$viewChangeListeners, function(listener) {
       try {
         listener();
@@ -806,43 +838,129 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
     }
   };
 
-  // model -> value
-  // Note: we cannot use a normal scope.$watch as we want to detect the following:
-  // 1. scope value is 'a'
-  // 2. user enters 'b'
-  // 3. ng-change kicks in and reverts scope value to 'a'
-  //    -> scope value did not change since the last digest as
-  //       ng-change executes in apply phase
-  // 4. view should be changed back to 'a'
-  $scope.$watch(function ngModelWatch() {
+  this.$$setupModelWatch = function() {
+    // model -> value
+    // Note: we cannot use a normal scope.$watch as we want to detect the following:
+    // 1. scope value is 'a'
+    // 2. user enters 'b'
+    // 3. ng-change kicks in and reverts scope value to 'a'
+    //    -> scope value did not change since the last digest as
+    //       ng-change executes in apply phase
+    // 4. view should be changed back to 'a'
+
+    // options.deepWatch
+    // options.collection
+
+    setModelValueHelpers();
+    $scope.$watch(ngModelWatch);
+  };
+
+  var modelValueGetter = function modelValueGetter(modelValue) {
+    return modelValue;
+  };
+
+  var modelValueChanged = function modelValueChanged(newModelValue, currentModelValue) {
+    return newModelValue !== currentModelValue;
+  };
+
+  /**
+   * If ngModelOptions deepWatch is true, then the model must be copied after every view / scope
+   * change, so we can correctly detect changes to it with .equals(). Otherwise, the ctrl.$modelValue
+   * and the scope value are the same, and we cannot detect differences to them properly
+   */
+  function setModelValueHelpers() {
+    if (ctrl.$options && ctrl.$options.deepWatch || ctrl.$isCollection)  {
+      modelValueGetter = function modelValueGetter(modelValue) {
+        return copy(modelValue);
+      };
+
+      modelValueChanged = function modelValueChanged(newModelValue, currentModelValue) {
+        return !equals(newModelValue, currentModelValue);
+      };
+    }
+  }
+
+  function ngModelWatch() {
     var modelValue = ngModelGet($scope);
 
     // if scope model value and ngModel value are out of sync
-    // TODO(perf): why not move this to the action fn?
-    if (modelValue !== ctrl.$modelValue &&
+    if (modelValueChanged(modelValue, ctrl.$modelValue) &&
        // checks for NaN is needed to allow setting the model to NaN when there's an asyncValidator
        (ctrl.$modelValue === ctrl.$modelValue || modelValue === modelValue)
     ) {
-      ctrl.$modelValue = ctrl.$$rawModelValue = modelValue;
-      parserValid = undefined;
+      modelToViewAction(modelValue);
+    }
+    return modelValue;
+  }
 
-      var formatters = ctrl.$formatters,
-          idx = formatters.length;
+  function modelToViewAction(modelValue) {
+    ctrl.$modelValue = ctrl.$$rawModelValue = modelValueGetter(modelValue);
+    ctrl.$$viewValueCollection = undefined;
+    parserValid = undefined;
 
-      var viewValue = modelValue;
-      while (idx--) {
-        viewValue = formatters[idx](viewValue);
-      }
-      if (ctrl.$viewValue !== viewValue) {
-        ctrl.$viewValue = ctrl.$$lastCommittedViewValue = viewValue;
-        ctrl.$render();
+    var formatters = ctrl.$formatters,
+        idx = formatters.length;
 
-        ctrl.$$runValidators(modelValue, viewValue, noop);
+
+    var viewValue = modelValueGetter(modelValue);
+    while (idx--) {
+      var formatter = formatters[idx];
+      viewValue = processTransform(viewValue, formatter);
+      if (ctrl.$isCollection && isArray(viewValue)) {
+        ctrl.$$viewValueCollection = viewValue;
       }
     }
+    if (ctrl.$viewValue !== viewValue) {
+      ctrl.$viewValue = ctrl.$$lastCommittedViewValue = viewValue;
+      if (ctrl.$isCollection && !ctrl.$$viewValueCollection) {
+        //No formatter returned a collection or no formatters ran
+        ctrl.$$viewValueCollection = modelValue;
+      }
 
-    return modelValue;
-  });
+      ctrl.$render();
+      ctrl.$$runValidators(modelValue, viewValue, noop);
+    }
+  }
+
+  function processTransform(value, transform) {
+    var result;
+    var transformFn = transform;
+    var expectsItem = false;
+
+    if (isObject(transform)) {
+      transformFn = transform.transformFn;
+      expectsItem = transform.expectsItem;
+    }
+
+    if (ctrl.$isCollection && isArray(value) && expectsItem) {
+      result = value.map(transformFn);
+    } else {
+      result = transformFn(value);
+    }
+
+    return result;
+  }
+
+  function processValidator(validator, modelValue, viewValue) {
+    var result;
+    var validateFn = validator;
+    var expectsItem = false;
+
+    if (isObject(validator)) {
+      validateFn = validator.validateFn;
+      expectsItem = validator.expectsItem;
+    }
+
+    if (ctrl.$isCollection && isArray(modelValue) && expectsItem) {
+      result = modelValue.reduce(function (result, value, index) {
+        return result && validateFn(modelValue[index], ctrl.$$viewValueCollection[index]);
+      }, true);
+    } else {
+      result = validateFn(modelValue, viewValue);
+    }
+
+    return result;
+  }
 }];
 
 
@@ -1032,6 +1150,7 @@ var ngModelDirective = ['$rootScope', function($rootScope) {
               formCtrl = ctrls[1] || modelCtrl.$$parentForm;
 
           modelCtrl.$$setOptions(ctrls[2] && ctrls[2].$options);
+          modelCtrl.$$setupModelWatch();
 
           // notify others, especially parent forms
           formCtrl.$addControl(modelCtrl);

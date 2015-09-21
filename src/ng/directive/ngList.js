@@ -90,40 +90,49 @@ var ngListDirective = function() {
     restrict: 'A',
     priority: 100,
     require: 'ngModel',
-    link: function(scope, element, attr, ctrl) {
-      // We want to control whitespace trimming so we use this convoluted approach
-      // to access the ngList attribute, which doesn't pre-trim the attribute
-      var ngList = element.attr(attr.$attr.ngList) || ', ';
-      var trimValues = attr.ngTrim !== 'false';
-      var separator = trimValues ? trim(ngList) : ngList;
+    compile: function() {
+      return {
+        pre: function(scope, element, attr, ctrl) {
+          // Inform the model controller that the model is a collection, so it can use deepWatch
+          // to detect changes
+          ctrl.$isCollection = true;
+        },
+        post: function(scope, element, attr, ctrl) {
+          // We want to control whitespace trimming so we use this convoluted approach
+          // to access the ngList attribute, which doesn't pre-trim the attribute
+          var ngList = element.attr(attr.$attr.ngList) || ', ';
+          var trimValues = attr.ngTrim !== 'false';
+          var separator = trimValues ? trim(ngList) : ngList;
 
-      var parse = function(viewValue) {
-        // If the viewValue is invalid (say required but empty) it will be `undefined`
-        if (isUndefined(viewValue)) return;
+          var parse = function(viewValue) {
+            // If the viewValue is invalid (say required but empty) it will be `undefined`
+            if (isUndefined(viewValue)) return;
 
-        var list = [];
+            var list = [];
 
-        if (viewValue) {
-          forEach(viewValue.split(separator), function(value) {
-            if (value) list.push(trimValues ? trim(value) : value);
+            if (viewValue) {
+              forEach(viewValue.split(separator), function(value) {
+                if (value) list.push(trimValues ? trim(value) : value);
+              });
+            }
+
+            return list;
+          };
+
+          ctrl.$parsers.push(parse);
+          ctrl.$formatters.push(function(value) {
+            if (isArray(value)) {
+              return value.join(ngList);
+            }
+
+            return undefined;
           });
+
+          // Override the standard $isEmpty because an empty array means the input is empty.
+          ctrl.$isEmpty = function(value) {
+            return !value || !value.length;
+          };
         }
-
-        return list;
-      };
-
-      ctrl.$parsers.push(parse);
-      ctrl.$formatters.push(function(value) {
-        if (isArray(value)) {
-          return value.join(ngList);
-        }
-
-        return undefined;
-      });
-
-      // Override the standard $isEmpty because an empty array means the input is empty.
-      ctrl.$isEmpty = function(value) {
-        return !value || !value.length;
       };
     }
   };

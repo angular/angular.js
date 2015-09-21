@@ -58,4 +58,19 @@ describe('ngChange', function() {
     helper.changeInputValueTo('a');
     expect(inputElm.val()).toBe('b');
   });
+
+
+  it('should set the view if the model is changed by ngChange', function() {
+    $rootScope.reset = function() {
+      $rootScope.value = 'a';
+    };
+    $rootScope.value = 'a';
+    var input = helper.compileInput('<input type="text" ng-change="reset()" ng-model="value">');
+    var inputController = input.controller('ngModel');
+
+    $rootScope.$digest();
+
+    helper.changeInputValueTo('b');
+    expect(input.val()).toBe('a');
+  });
 });
