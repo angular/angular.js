@@ -645,6 +645,7 @@ describe('input', function() {
       expect(inputElm.val()).toBe('2013-12');
     });
 
+
     it('should only change the month of a bound date in any timezone', function() {
       var inputElm = helper.compileInput('<input type="month" ng-model="value" ng-model-options="{timezone: \'+0500\'}" />');
 
@@ -655,6 +656,73 @@ describe('input', function() {
       expect(+$rootScope.value).toBe(Date.UTC(2013, 7, 31, 20, 0, 0));
       expect(inputElm.val()).toBe('2013-09');
     });
+
+
+    it('should re-validate when partially editing the input value', function() {
+      // This testcase tests re-validation on interactions involved in the following scenario
+      // (on a browser that supports this type of input):
+      //
+      // 1. Initially empty field.
+      //    - `input.value`: ''
+      //    - `input.validity`: {valid: true, badInput: false, ...}
+      // 2. The user fills part of the value (e.g. the year) using the keyboard.
+      //    - `input.value`: ''
+      //    - `input.validity`: {valid: false, badInput: true, ...}
+      //    - 'input' event: Not fired   (since `input.value` hasn't changed)
+      // 3. The user fills the value completely (using either the keyboard or the date-picker).
+      //    - `input.value`: '<some-valid-value>'
+      //    - `input.validity`: {valid: true, badInput: false, ...}
+      //    - 'input' event: Fired
+      // 4. The user deletes part of the value (e.g. the year) using the keyboard.
+      //    - `input.value`: ''   (since a partial value is invalid)
+      //    - `input.validity`: {valid: false, badInput: true, ...}
+      //    - 'input' event: Fired
+      // 5. The user deletes all parts of the value using the keyboard (i.e. clears the field).
+      //    - `input.value`: ''
+      //    - `input.validity`: {valid: true, badInput: false, ...}
+      //    - 'input' event: Not fired   (since `input.value` hasn't changed)
+      //
+      // The problematic cases are (2) and (5), because there is a change in the validity state,
+      // but no 'input' event is fired to inform Angular of that change and the need to re-validate.
+
+      var inputType = 'month';
+
+      if (browserSupportsInputTypeAndEvent(inputType, 'input')) {
+        var mockValidity = {valid: true, badInput: false};
+        helper.compileInput('<input type="' + inputType + '" ng-model="val" />', mockValidity);
+        var inputElm = helper.inputElm;
+
+        expect(inputElm).toBeValid();
+
+        mockValidity.valid = false;
+        mockValidity.badInput = true;
+        browserTrigger(inputElm, 'keyup');
+        expect(inputElm).toBeInvalid();
+
+        mockValidity.valid = true;
+        mockValidity.badInput = false;
+        browserTrigger(inputElm, 'keyup');
+        expect(inputElm).toBeValid();
+      }
+    });
+
+
+    it('should fire \'input\' event on \'keyup\' only on browsers that support this input type',
+      function() {
+        var inputType = 'month';
+
+        var inputEventExpectedToFire = browserSupportsInputTypeAndEvent(inputType, 'input');
+        var inputEventActuallyFired = false;
+
+        var inputElm = helper.compileInput('<input type="' + inputType + '" ng-model="val" />');
+        inputElm.on('input', function() { inputEventActuallyFired = true; });
+
+        browserTrigger(inputElm, 'keyup');
+
+        expect(inputEventActuallyFired).toBe(inputEventExpectedToFire);
+      }
+    );
+
 
     describe('min', function() {
       var inputElm;
@@ -697,6 +765,7 @@ describe('input', function() {
         expect($rootScope.form.alias.$error.min).toBeFalsy();
       });
     });
+
 
     describe('max', function() {
       var inputElm;
@@ -870,6 +939,73 @@ describe('input', function() {
       expect($rootScope.form.alias.$error.week).toBeTruthy();
     });
 
+
+    it('should re-validate when partially editing the input value', function() {
+      // This testcase tests re-validation on interactions involved in the following scenario
+      // (on a browser that supports this type of input):
+      //
+      // 1. Initially empty field.
+      //    - `input.value`: ''
+      //    - `input.validity`: {valid: true, badInput: false, ...}
+      // 2. The user fills part of the value (e.g. the year) using the keyboard.
+      //    - `input.value`: ''
+      //    - `input.validity`: {valid: false, badInput: true, ...}
+      //    - 'input' event: Not fired   (since `input.value` hasn't changed)
+      // 3. The user fills the value completely (using either the keyboard or the date-picker).
+      //    - `input.value`: '<some-valid-value>'
+      //    - `input.validity`: {valid: true, badInput: false, ...}
+      //    - 'input' event: Fired
+      // 4. The user deletes part of the value (e.g. the year) using the keyboard.
+      //    - `input.value`: ''   (since a partial value is invalid)
+      //    - `input.validity`: {valid: false, badInput: true, ...}
+      //    - 'input' event: Fired
+      // 5. The user deletes all parts of the value using the keyboard (i.e. clears the field).
+      //    - `input.value`: ''
+      //    - `input.validity`: {valid: true, badInput: false, ...}
+      //    - 'input' event: Not fired   (since `input.value` hasn't changed)
+      //
+      // The problematic cases are (2) and (5), because there is a change in the validity state,
+      // but no 'input' event is fired to inform Angular of that change and the need to re-validate.
+
+      var inputType = 'week';
+
+      if (browserSupportsInputTypeAndEvent(inputType, 'input')) {
+        var mockValidity = {valid: true, badInput: false};
+        helper.compileInput('<input type="' + inputType + '" ng-model="val" />', mockValidity);
+        var inputElm = helper.inputElm;
+
+        expect(inputElm).toBeValid();
+
+        mockValidity.valid = false;
+        mockValidity.badInput = true;
+        browserTrigger(inputElm, 'keyup');
+        expect(inputElm).toBeInvalid();
+
+        mockValidity.valid = true;
+        mockValidity.badInput = false;
+        browserTrigger(inputElm, 'keyup');
+        expect(inputElm).toBeValid();
+      }
+    });
+
+
+    it('should fire \'input\' event on \'keyup\' only on browsers that support this input type',
+      function() {
+        var inputType = 'week';
+
+        var inputEventExpectedToFire = browserSupportsInputTypeAndEvent(inputType, 'input');
+        var inputEventActuallyFired = false;
+
+        var inputElm = helper.compileInput('<input type="' + inputType + '" ng-model="val" />');
+        inputElm.on('input', function() { inputEventActuallyFired = true; });
+
+        browserTrigger(inputElm, 'keyup');
+
+        expect(inputEventActuallyFired).toBe(inputEventExpectedToFire);
+      }
+    );
+
+
     describe('min', function() {
       var inputElm;
       beforeEach(function() {
@@ -911,6 +1047,7 @@ describe('input', function() {
         expect($rootScope.form.alias.$error.min).toBeFalsy();
       });
     });
+
 
     describe('max', function() {
       var inputElm;
@@ -1119,6 +1256,73 @@ describe('input', function() {
       expect($rootScope.form.alias.$error.datetimelocal).toBeTruthy();
     });
 
+
+    it('should re-validate when partially editing the input value', function() {
+      // This testcase tests re-validation on interactions involved in the following scenario
+      // (on a browser that supports this type of input):
+      //
+      // 1. Initially empty field.
+      //    - `input.value`: ''
+      //    - `input.validity`: {valid: true, badInput: false, ...}
+      // 2. The user fills part of the value (e.g. the year) using the keyboard.
+      //    - `input.value`: ''
+      //    - `input.validity`: {valid: false, badInput: true, ...}
+      //    - 'input' event: Not fired   (since `input.value` hasn't changed)
+      // 3. The user fills the value completely (using either the keyboard or the date-picker).
+      //    - `input.value`: '<some-valid-value>'
+      //    - `input.validity`: {valid: true, badInput: false, ...}
+      //    - 'input' event: Fired
+      // 4. The user deletes part of the value (e.g. the year) using the keyboard.
+      //    - `input.value`: ''   (since a partial value is invalid)
+      //    - `input.validity`: {valid: false, badInput: true, ...}
+      //    - 'input' event: Fired
+      // 5. The user deletes all parts of the value using the keyboard (i.e. clears the field).
+      //    - `input.value`: ''
+      //    - `input.validity`: {valid: true, badInput: false, ...}
+      //    - 'input' event: Not fired   (since `input.value` hasn't changed)
+      //
+      // The problematic cases are (2) and (5), because there is a change in the validity state,
+      // but no 'input' event is fired to inform Angular of that change and the need to re-validate.
+
+      var inputType = 'datetime-local';
+
+      if (browserSupportsInputTypeAndEvent(inputType, 'input')) {
+        var mockValidity = {valid: true, badInput: false};
+        helper.compileInput('<input type="' + inputType + '" ng-model="val" />', mockValidity);
+        var inputElm = helper.inputElm;
+
+        expect(inputElm).toBeValid();
+
+        mockValidity.valid = false;
+        mockValidity.badInput = true;
+        browserTrigger(inputElm, 'keyup');
+        expect(inputElm).toBeInvalid();
+
+        mockValidity.valid = true;
+        mockValidity.badInput = false;
+        browserTrigger(inputElm, 'keyup');
+        expect(inputElm).toBeValid();
+      }
+    });
+
+
+    it('should fire \'input\' event on \'keyup\' only on browsers that support this input type',
+      function() {
+        var inputType = 'datetime-local';
+
+        var inputEventExpectedToFire = browserSupportsInputTypeAndEvent(inputType, 'input');
+        var inputEventActuallyFired = false;
+
+        var inputElm = helper.compileInput('<input type="' + inputType + '" ng-model="val" />');
+        inputElm.on('input', function() { inputEventActuallyFired = true; });
+
+        browserTrigger(inputElm, 'keyup');
+
+        expect(inputEventActuallyFired).toBe(inputEventExpectedToFire);
+      }
+    );
+
+
     describe('min', function() {
       var inputElm;
       beforeEach(function() {
@@ -1160,6 +1364,7 @@ describe('input', function() {
         expect($rootScope.form.alias.$error.min).toBeFalsy();
       });
     });
+
 
     describe('max', function() {
       var inputElm;
@@ -1444,6 +1649,73 @@ describe('input', function() {
       expect(+$rootScope.value).toBe(+new Date(2013, 2, 3, 1, 2, 0));
     });
 
+
+    it('should re-validate when partially editing the input value', function() {
+      // This testcase tests re-validation on interactions involved in the following scenario
+      // (on a browser that supports this type of input):
+      //
+      // 1. Initially empty field.
+      //    - `input.value`: ''
+      //    - `input.validity`: {valid: true, badInput: false, ...}
+      // 2. The user fills part of the value (e.g. the hours) using the keyboard.
+      //    - `input.value`: ''
+      //    - `input.validity`: {valid: false, badInput: true, ...}
+      //    - 'input' event: Not fired   (since `input.value` hasn't changed)
+      // 3. The user fills the value completely (using either the keyboard or the buttons).
+      //    - `input.value`: '<some-valid-value>'
+      //    - `input.validity`: {valid: true, badInput: false, ...}
+      //    - 'input' event: Fired
+      // 4. The user deletes part of the value (e.g. the hours) using the keyboard.
+      //    - `input.value`: ''   (since a partial value is invalid)
+      //    - `input.validity`: {valid: false, badInput: true, ...}
+      //    - 'input' event: Fired
+      // 5. The user deletes all parts of the value using the keyboard (i.e. clears the field).
+      //    - `input.value`: ''
+      //    - `input.validity`: {valid: true, badInput: false, ...}
+      //    - 'input' event: Not fired   (since `input.value` hasn't changed)
+      //
+      // The problematic cases are (2) and (5), because there is a change in the validity state,
+      // but no 'input' event is fired to inform Angular of that change and the need to re-validate.
+
+      var inputType = 'time';
+
+      if (browserSupportsInputTypeAndEvent(inputType, 'input')) {
+        var mockValidity = {valid: true, badInput: false};
+        helper.compileInput('<input type="' + inputType + '" ng-model="val" />', mockValidity);
+        var inputElm = helper.inputElm;
+
+        expect(inputElm).toBeValid();
+
+        mockValidity.valid = false;
+        mockValidity.badInput = true;
+        browserTrigger(inputElm, 'keyup');
+        expect(inputElm).toBeInvalid();
+
+        mockValidity.valid = true;
+        mockValidity.badInput = false;
+        browserTrigger(inputElm, 'keyup');
+        expect(inputElm).toBeValid();
+      }
+    });
+
+
+    it('should fire \'input\' event on \'keyup\' only on browsers that support this input type',
+      function() {
+        var inputType = 'time';
+
+        var inputEventExpectedToFire = browserSupportsInputTypeAndEvent(inputType, 'input');
+        var inputEventActuallyFired = false;
+
+        var inputElm = helper.compileInput('<input type="' + inputType + '" ng-model="val" />');
+        inputElm.on('input', function() { inputEventActuallyFired = true; });
+
+        browserTrigger(inputElm, 'keyup');
+
+        expect(inputEventActuallyFired).toBe(inputEventExpectedToFire);
+      }
+    );
+
+
     describe('min', function() {
       var inputElm;
       beforeEach(function() {
@@ -1485,6 +1757,7 @@ describe('input', function() {
         expect($rootScope.form.alias.$error.min).toBeFalsy();
       });
     });
+
 
     describe('max', function() {
       var inputElm;
@@ -1744,6 +2017,73 @@ describe('input', function() {
       dealoc(formElm);
     });
 
+
+    it('should re-validate when partially editing the input value', function() {
+      // This testcase tests re-validation on interactions involved in the following scenario
+      // (on a browser that supports this type of input):
+      //
+      // 1. Initially empty field.
+      //    - `input.value`: ''
+      //    - `input.validity`: {valid: true, badInput: false, ...}
+      // 2. The user fills part of the value (e.g. the year) using the keyboard.
+      //    - `input.value`: ''
+      //    - `input.validity`: {valid: false, badInput: true, ...}
+      //    - 'input' event: Not fired   (since `input.value` hasn't changed)
+      // 3. The user fills the value completely (using either the keyboard or the date-picker).
+      //    - `input.value`: '<some-valid-value>'
+      //    - `input.validity`: {valid: true, badInput: false, ...}
+      //    - 'input' event: Fired
+      // 4. The user deletes part of the value (e.g. the year) using the keyboard.
+      //    - `input.value`: ''   (since a partial value is invalid)
+      //    - `input.validity`: {valid: false, badInput: true, ...}
+      //    - 'input' event: Fired
+      // 5. The user deletes all parts of the value using the keyboard (i.e. clears the field).
+      //    - `input.value`: ''
+      //    - `input.validity`: {valid: true, badInput: false, ...}
+      //    - 'input' event: Not fired   (since `input.value` hasn't changed)
+      //
+      // The problematic cases are (2) and (5), because there is a change in the validity state,
+      // but no 'input' event is fired to inform Angular of that change and the need to re-validate.
+
+      var inputType = 'date';
+
+      if (browserSupportsInputTypeAndEvent(inputType, 'input')) {
+        var mockValidity = {valid: true, badInput: false};
+        helper.compileInput('<input type="' + inputType + '" ng-model="val" />', mockValidity);
+        var inputElm = helper.inputElm;
+
+        expect(inputElm).toBeValid();
+
+        mockValidity.valid = false;
+        mockValidity.badInput = true;
+        browserTrigger(inputElm, 'keyup');
+        expect(inputElm).toBeInvalid();
+
+        mockValidity.valid = true;
+        mockValidity.badInput = false;
+        browserTrigger(inputElm, 'keyup');
+        expect(inputElm).toBeValid();
+      }
+    });
+
+
+    it('should fire \'input\' event on \'keyup\' only on browsers that support this input type',
+      function() {
+        var inputType = 'date';
+
+        var inputEventExpectedToFire = browserSupportsInputTypeAndEvent(inputType, 'input');
+        var inputEventActuallyFired = false;
+
+        var inputElm = helper.compileInput('<input type="' + inputType + '" ng-model="val" />');
+        inputElm.on('input', function() { inputEventActuallyFired = true; });
+
+        browserTrigger(inputElm, 'keyup');
+
+        expect(inputEventActuallyFired).toBe(inputEventExpectedToFire);
+      }
+    );
+
+
     describe('min', function() {
 
       it('should invalidate', function() {
@@ -1782,6 +2122,7 @@ describe('input', function() {
         expect($rootScope.form.alias.$error.min).toBeFalsy();
       });
     });
+
 
     describe('max', function() {
 
@@ -2859,4 +3200,15 @@ describe('input', function() {
       dealoc(inputElm);
     });
   });
+
+
+  // Helpers
+  function browserSupportsInputTypeAndEvent(inputType, event) {
+    var input = jqLite('<input type="' + inputType + '" />');
+
+    var supportsType = (inputType === input.prop('type'));
+    var supportsEvent = $sniffer.hasEvent(event);
+
+    return supportsType && supportsEvent;
+  }
 });

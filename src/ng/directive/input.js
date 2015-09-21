@@ -19,6 +19,7 @@ var DATETIMELOCAL_REGEXP = /^(\d{4})-(\d\d)-(\d\d)T(\d\d):(\d\d)(?::(\d\d)(\.\d{
 var WEEK_REGEXP = /^(\d{4})-W(\d\d)$/;
 var MONTH_REGEXP = /^(\d{4})-(\d\d)$/;
 var TIME_REGEXP = /^(\d\d):(\d\d)(?::(\d\d)(\.\d{1,3})?)?$/;
+var DATE_INPUT_TYPES = ['date', 'datetime-local', 'month', 'time', 'week'];
 
 var inputType = {
 
@@ -1134,6 +1135,15 @@ function baseInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   // input event on backspace, delete or cut
   if ($sniffer.hasEvent('input')) {
     element.on('input', listener);
+
+    // On date-family inputs, we also need to listen for `keyup` in case the date is partially
+    // edited by the user using the keyboard, resulting in a change in the validity state, but
+    // without an accompanying change in the input value (thus no `input` event).
+    // (This is only necessary on browsers that support inputs of that type - other browsers set the
+    //  `type` property to "text".)
+    var isTypeSupported = (type === attr.type);
+    var listenForKeyup = isTypeSupported && (DATE_INPUT_TYPES.indexOf(type) !== -1);
+    if (listenForKeyup) element.on('keyup', function() { element.triggerHandler('input'); });
   } else {
     var timeout;
 
