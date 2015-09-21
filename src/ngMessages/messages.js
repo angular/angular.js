@@ -325,6 +325,9 @@ angular.module('ngMessages', [])
        controller: ['$element', '$scope', '$attrs', function($element, $scope, $attrs) {
          var ctrl = this;
          var latestKey = 0;
+         var nextAttachId = 0;
+
+         this.getAttachId = function getAttachId() { return nextAttachId++; };
 
          var messages = this.messages = {};
          var renderLater, cachedCollection;
@@ -636,11 +639,15 @@ function ngMessageDirectiveFactory(restrict) {
                 $animate.enter(elm, null, element);
                 currentElement = elm;
 
+                // Each time we attach this node to a message we get a new id that we can match
+                // when we are destroying the node later.
+                var $$attachId = currentElement.$$attachId = ngMessagesCtrl.getAttachId();
+
                 // in the event that the parent element is destroyed
                 // by any other structural directive then it's time
                 // to deregister the message from the controller
                 currentElement.on('$destroy', function() {
-                  if (currentElement) {
+                  if (currentElement && currentElement.$$attachId === $$attachId) {
                     ngMessagesCtrl.deregister(commentNode);
                     messageCtrl.detach();
                   }
