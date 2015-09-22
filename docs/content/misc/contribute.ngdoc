@@ -52,9 +52,11 @@ To build AngularJS, you clone the source code repository and use Grunt to genera
 minified AngularJS files:
 
 ```shell
-# Clone your Github repository(Note: Do not go with `sudo` user when cloning into this repository 
-if not known what it does essentially, please refer https://www.linux.com/learn/tutorials/306766:linux-101-introduction-to-sudo):
+# Clone your Github repository:
 git clone "git@github.com:<github username>/angular.js.git"
+
+**Note:** You may need to use sudo (for OSX, *nix, BSD etc) or run your command shell as Administrator (for Windows) to install Grunt &amp;
+Bower globally.
 
 # Go to the AngularJS directory:
 cd angular.js
