@@ -174,6 +174,18 @@ describe('validators', function() {
     });
 
 
+    it('should parse stringified RegExps on ngPattern scope value', function() {
+      helper.compileInput('<input type="text" ng-model="value" ng-pattern="regExp" />');
+      helper.changeInputValueTo('1234');
+
+      $rootScope.$apply(function(s) { s.regExp = /^\d{3}$/; });
+      expect(helper.inputElm).toBeInvalid();
+
+      $rootScope.$apply(function(s) { s.regExp = '/^\\d{4}$/'; });
+      expect(helper.inputElm).toBeValid();
+    });
+
+
     it('should validate the viewValue and not the modelValue', function() {
       var inputElm = helper.compileInput('<input type="text" name="test" ng-model="value" pattern="\\d{4}">');
       var ctrl = inputElm.controller('ngModel');

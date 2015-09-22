@@ -390,19 +390,43 @@ forEach(ALIASED_ATTR, function(htmlAttr, ngAttr) {
     return {
       priority: 100,
       link: function(scope, element, attr) {
-        //special case ngPattern when a literal regular expression value
-        //is used as the expression (this way we don't have to watch anything).
-        if (ngAttr === "ngPattern" && attr.ngPattern.charAt(0) == "/") {
-          var match = attr.ngPattern.match(REGEX_STRING_REGEXP);
-          if (match) {
-            attr.$set("ngPattern", new RegExp(match[1], match[2]));
-            return;
+        var isNgPattern = (ngAttr === 'ngPattern');
+
+        // Special case `ngPattern`:
+        // 1. When a literal regular expression value is used as the expression,
+        //    don't watch anything.
+        // 2. When the expression value is a string, check if it is a "stringified" regular
+        //    expression and parse it.
+        if (isNgPattern) {
+          var regExp = parseRegExpString(attr[ngAttr]);
+
+          if (regExp) {
+            attr.$set(ngAttr, regExp);
+          } else {
+            scope.$watch(attr[ngAttr], function ngPatternWatchAction(value) {
+              var regExp = parseRegExpString(value);
+              attr.$set(ngAttr, regExp || value);
+            });
           }
+
+          return;
         }
 
         scope.$watch(attr[ngAttr], function ngAttrAliasWatchAction(value) {
           attr.$set(ngAttr, value);
         });
+
+        // Helpers
+        function parseRegExpString(regExpString) {
+          var match;
+
+          if (isString(regExpString) && (regExpString.charAt(0) === '/') &&
+              (match = REGEX_STRING_REGEXP.exec(regExpString))) {
+            return new RegExp(match[1], match[2]);
+          }
+
+          return null;
+        }
       }
     };
   };
