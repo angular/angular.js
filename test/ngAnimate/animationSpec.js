@@ -836,8 +836,8 @@ describe('$$animation', function() {
       element = jqLite('<div></div>');
       parent = jqLite('<div></div>');
 
-      return function($$AnimateRunner, $q, $rootElement, $$body) {
-        $$body.append($rootElement);
+      return function($$AnimateRunner, $rootElement, $document) {
+        jqLite($document[0].body).append($rootElement);
         $rootElement.append(parent);
 
         mockedDriverFn = function(element, method, options, domOperation) {
