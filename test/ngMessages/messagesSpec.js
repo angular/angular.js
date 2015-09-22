@@ -401,6 +401,24 @@ describe('ngMessages', function() {
     });
   });
 
+  it('should render a default message when no one matched', inject(function($rootScope, $compile) {
+    element = $compile('<div ng-messages="col">' +
+                       '  <div ng-message="val">Message is set</div>' +
+                       '  <div ng-message-default>Default message is set</div>' +
+                       '</div>')($rootScope);
+    $rootScope.$digest();
+
+    //expect(element.text()).not.toContain('Message is set');
+    expect(element.text()).toContain('Default message is set');
+
+    $rootScope.$apply(function() {
+      $rootScope.col = { val: true };
+    });
+
+    //expect(element.text()).toContain('Message is set');
+    expect(element.text()).not.toContain('Default message is set');
+  }));
+
   describe('when including templates', function() {
     they('should work with a dynamic collection model which is managed by ngRepeat',
       {'<div ng-messages-include="...">': '<div ng-messages="item">' +
