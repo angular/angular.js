@@ -1284,6 +1284,100 @@ describe('ngMock', function() {
       });
     });
 
+    describe('expect().haveNotBeenCalled', function() {
+      it("function won't be called", function() {
+        hb.expect('GET', '/some').haveNotBeenCalled();
+
+        expect(function() {
+          hb.verifyNoOutstandingExpectation();
+        }).not.toThrow();
+      });
+
+
+      it("should throw exception if not expected function will be called", function() {
+        hb.expect('GET', '/some').haveNotBeenCalled();
+
+        expect(function() {
+          hb('GET', '/some', null, noop);
+        }).toThrow('Request should not be called: GET /some');
+      });
+
+
+      it("should throw exception if not expected function will be called after expected one", function() {
+        hb.expect('GET', '/some1').respond(200, {});
+        hb.expect('GET', '/some2').haveNotBeenCalled();
+
+        expect(function() {
+          hb('GET', '/some1', {}, noop);
+          hb('GET', '/some2', {}, noop);
+        }).toThrow('Request should not be called: GET /some2');
+      });
+
+
+      it("should throw exception if not expected function will be called regardless of sequence", function() {
+        hb.expect('GET', '/some1').haveNotBeenCalled();
+        hb.expect('GET', '/some2').haveNotBeenCalled();
+        hb.expect('GET', '/some3').respond(200, {});
+
+        expect(function() {
+          hb('GET', '/some3', {}, noop);
+          hb('GET', '/some2', {}, noop);
+        }).toThrow('Request should not be called: GET /some2');
+      });
+
+
+      it("function is expected and not expected in the same time, and called", function() {
+        hb.expect('GET', '/some1').respond(200, {});
+        hb.expect('GET', '/some1').haveNotBeenCalled();
+
+        expect(function() {
+          hb('GET', '/some1', {}, noop);
+        }).toThrow('Request should not be called: GET /some1');
+      });
+
+
+      it("function is expected and not expected in the same time, and not called", function() {
+        hb.expect('GET', '/some1').respond(200, {});
+        hb.expect('GET', '/some1').haveNotBeenCalled();
+
+        expect(function() {
+          hb.verifyNoOutstandingExpectation();
+        }).toThrow('Unsatisfied requests: GET /some1');
+      });
+
+
+      it("the same url is expected and not expected with different data", function() {
+        hb.expect('GET', '/some1', {id: 1}).respond(200, {});
+        hb.expect('GET', '/some1', {id: 2}).haveNotBeenCalled();
+
+        expect(function() {
+          hb('GET', '/some1', {id: 1}, noop);
+        }).not.toThrow();
+      });
+
+
+      it("the same url is expected and not expected with different headers", function() {
+        hb.expect('GET', '/some1', {id: 1}, {header: 1}).respond(200, {});
+        hb.expect('GET', '/some1', {id: 1}, {header: 2}).haveNotBeenCalled();
+
+        expect(function() {
+          hb('GET', '/some1', {id: 1}, noop, {header: 1});
+        }).not.toThrow();
+      });
+
+
+      it("should skip not expected function", function() {
+        hb.expect('GET', '/some1').respond(200, {});
+        hb.expect('GET', '/some2').haveNotBeenCalled();
+        hb.expect('GET', '/some3').respond(200, {});
+
+        expect(function() {
+          hb('GET', '/some1', {}, noop);
+          hb('GET', '/some3', {}, noop);
+          hb.verifyNoOutstandingExpectation();
+        }).not.toThrow();
+      });
+    });
 
     describe('flush()', function() {
       it('flush() should flush requests fired during callbacks', function() {
