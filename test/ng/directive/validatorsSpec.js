@@ -127,7 +127,7 @@ describe('validators', function() {
 
 
     it('should register "pattern" with the model validations when the pattern attribute is used', function() {
-      var inputElm = helper.compileInput('<input type="text" name="input" ng-model="value" pattern="^\\d+$" />');
+      var inputElm = helper.compileInput('<input type="text" name="input" ng-model="value" pattern="\\d+" />');
 
       helper.changeInputValueTo('abcd');
       expect(inputElm).toBeInvalid();
@@ -160,38 +160,6 @@ describe('validators', function() {
 
     it('should be invalid if entire string does not match pattern', function() {
       var inputElm = helper.compileInput('<input type="text" name="test" ng-model="value" pattern="\\d{4}">');
-      helper.changeInputValueTo('1234');
-      expect($rootScope.form.test.$error.pattern).not.toBe(true);
-      expect(inputElm).toBeValid();
-
-      helper.changeInputValueTo('123');
-      expect($rootScope.form.test.$error.pattern).toBe(true);
-      expect(inputElm).not.toBeValid();
-
-      helper.changeInputValueTo('12345');
-      expect($rootScope.form.test.$error.pattern).toBe(true);
-      expect(inputElm).not.toBeValid();
-    });
-
-
-    it('should be cope with patterns that start with ^', function() {
-      var inputElm = helper.compileInput('<input type="text" name="test" ng-model="value" pattern="^\\d{4}">');
-      helper.changeInputValueTo('1234');
-      expect($rootScope.form.test.$error.pattern).not.toBe(true);
-      expect(inputElm).toBeValid();
-
-      helper.changeInputValueTo('123');
-      expect($rootScope.form.test.$error.pattern).toBe(true);
-      expect(inputElm).not.toBeValid();
-
-      helper.changeInputValueTo('12345');
-      expect($rootScope.form.test.$error.pattern).toBe(true);
-      expect(inputElm).not.toBeValid();
-    });
-
-
-    it('should be cope with patterns that end with $', function() {
-      var inputElm = helper.compileInput('<input type="text" name="test" ng-model="value" pattern="\\d{4}$">');
       helper.changeInputValueTo('1234');
       expect($rootScope.form.test.$error.pattern).not.toBe(true);
       expect(inputElm).toBeValid();
