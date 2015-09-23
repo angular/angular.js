@@ -277,8 +277,8 @@ Now that Angular knows of all the parts of the application, it needs to create t
 In the previous section we saw that controllers are created using a factory function.
 For services there are multiple ways to define their factory
 (see the {@link services service guide}).
-In the example above, we are using a function that returns the `currencyConverter` function as the factory
-for the service.
+In the example above, we are using an anonymous function as the factory function for `currencyConverter` service. 
+This function should return the `currencyConverter` service instance.
 
 Back to the initial question: How does the `InvoiceController` get a reference to the `currencyConverter` function?
 In Angular, this is done by simply defining arguments on the constructor function. With this, the injector
