@@ -61,6 +61,7 @@ script:
   - ./scripts/travis/build.sh
 
 after_script:
+  - ./scripts/travis/tear_down_browser_provider.sh
   - ./scripts/travis/print_logs.sh
 
 notifications:
