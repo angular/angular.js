@@ -284,6 +284,44 @@ function setupModuleLoader(window) {
 
           /**
            * @ngdoc method
+           * @name angular.Module#component
+           * @module ng
+           * @param {string} name A directive name
+           * @param {Object} options Component definition object
+           * @description
+           * TODO...
+           */
+          component: function(name, options) {
+            config(['$compileProvider', function ($compileProvider) {
+              var controller = options.controller || function () {};
+
+              ['$onActivate', '$onDeactivate', '$onReuse', '$canReuse', '$canDeactivate'].forEach(function (hookName) {
+                if (options[hookName]) {
+                  controller.prototype[hookName] = options[hookName];
+                }
+              });
+
+              function factory() {
+                return {
+                  template: options.template || '',
+                  controllerAs: name,
+                  controller: controller
+                };
+              }
+
+              if (options.$canActivate) {
+                factory.$canActivate = options.$canActivate;
+              }
+              if (options.$routeConfig) {
+                factory.$routeConfig = options.$routeConfig;
+              }
+              $compileProvider.directive(name, factory);
+            }]);
+            return moduleInstance;
+          },
+
+          /**
+           * @ngdoc method
            * @name angular.Module#config
            * @module ng
            * @param {Function} configFn Execute this function on module load. Useful for service
