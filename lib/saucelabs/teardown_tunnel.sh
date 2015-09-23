@@ -13,4 +13,4 @@ while [[ -n `ps -ef | grep "bin/sc" | grep -v "grep"` ]]; do
 done
 
 echo ""
-echo "Sauce Connect tunnel has bee shut down"
+echo "Sauce Connect tunnel has been shut down"
