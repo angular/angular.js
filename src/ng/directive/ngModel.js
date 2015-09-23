@@ -731,11 +731,6 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
         $exceptionHandler(e);
       }
     });
-    if (ctrl.$viewChangeListeners.length > 0 ||
-        ctrl.$options && ctrl.$options.getterSetter === true
-    ) {
-      modelToViewAction(ngModelGet($scope));
-    }
   };
 
   /**
@@ -825,13 +820,19 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
     }
   };
 
-  // model -> view
+  // model -> value
+  // Note: we cannot use a normal scope.$watch as we want to detect the following:
+  // 1. scope value is 'a'
+  // 2. user enters 'b'
+  // 3. ng-change kicks in and reverts scope value to 'a'
+  //    -> scope value did not change since the last digest as
+  //       ng-change executes in apply phase
+  // 4. view should be changed back to 'a'
   $scope.$watch(function ngModelWatch() {
-    return ngModelGet($scope);
-  }, ngModelWatchAction, ctrl.$options && ctrl.$options.deepWatch);
+    var modelValue = ngModelGet($scope);
 
-  function ngModelWatchAction(modelValue) {
     // if scope model value and ngModel value are out of sync
+    // TODO(perf): why not move this to the action fn?
     if (modelValue !== ctrl.$modelValue &&
        // checks for NaN is needed to allow setting the model to NaN when there's an asyncValidator
        (ctrl.$modelValue === ctrl.$modelValue || modelValue === modelValue)
@@ -854,7 +855,9 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
         ctrl.$$runValidators(modelValue, viewValue, noop);
       }
     }
-  }
+
+    return modelValue;
+  });
 }];
 
 
