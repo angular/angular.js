@@ -1486,6 +1486,11 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         });
       };
 
+      var boundSlots = boundTranscludeFn.$$slots = createMap();
+      for (var slotName in transcludeFn.$$slots) {
+        boundSlots[slotName] = createBoundTranscludeFn(scope, transcludeFn.$$slots[slotName], previousBoundTranscludeFn);
+      }
+
       return boundTranscludeFn;
     }
 
@@ -1644,6 +1649,27 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         element = groupScan(element[0], attrStart, attrEnd);
         return linkFn(scope, element, attrs, controllers, transcludeFn);
       };
+    }
+
+
+    function compileTemplate(eager, $templateNodes, parentTranscludeFn, terminalPriority, ignoreDirective, previousCompileContext) {
+      var defaultSlot = [];
+      var slots = createMap();
+      forEach($templateNodes, function(node) {
+        var slotName = jqLite(node).attr('ng-transclude-slot');
+        var slot = defaultSlot;
+        if (slotName) {
+          slot = slots[slotName] = (slots[slotName] || []);
+        }
+        slot.push(node);
+      });
+
+      var transcludeFn = compilationGenerator(eager, defaultSlot, parentTranscludeFn, terminalPriority, ignoreDirective, previousCompileContext);
+      forEach(Object.keys(slots), function(slotName) {
+        slots[slotName] = compilationGenerator(eager, slots[slotName], parentTranscludeFn, terminalPriority, ignoreDirective, previousCompileContext);
+      });
+      transcludeFn.$$slots = slots;
+      return transcludeFn;
     }
 
     /**
@@ -1815,7 +1841,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             compileNode = $compileNode[0];
             replaceWith(jqCollection, sliceArgs($template), compileNode);
 
-            childTranscludeFn = compilationGenerator(mightHaveMultipleTransclusionError, $template, transcludeFn, terminalPriority,
+            childTranscludeFn = compileTemplate(mightHaveMultipleTransclusionError, $template, transcludeFn, terminalPriority,
                                         replaceDirective && replaceDirective.name, {
                                           // Don't pass in:
                                           // - controllerDirectives - otherwise we'll create duplicates controllers
@@ -1829,7 +1855,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           } else {
             $template = jqLite(jqLiteClone(compileNode)).contents();
             $compileNode.empty(); // clear contents
-            childTranscludeFn = compilationGenerator(mightHaveMultipleTransclusionError, $template, transcludeFn);
+            childTranscludeFn = compileTemplate(mightHaveMultipleTransclusionError, $template, transcludeFn);
           }
         }
 
