@@ -2786,6 +2786,71 @@ describe("ngAnimate $animateCss", function() {
         }));
       });
 
+      describe("[cleanupStyles]", function() {
+        it("should cleanup [from] and [to] styles that have been applied for the animation when true",
+          inject(function($animateCss) {
+
+          var runner = $animateCss(element, {
+            duration: 1,
+            from: { background: 'gold' },
+            to: { color: 'brown' },
+            cleanupStyles: true
+          }).start();
+
+          assertStyleIsPresent(element, 'background', true);
+          assertStyleIsPresent(element, 'color', false);
+
+          triggerAnimationStartFrame();
+
+          assertStyleIsPresent(element, 'background', true);
+          assertStyleIsPresent(element, 'color', true);
+
+          runner.end();
+
+          assertStyleIsPresent(element, 'background', false);
+          assertStyleIsPresent(element, 'color', false);
+
+          function assertStyleIsPresent(element, style, bool) {
+            expect(element[0].style[style])[bool ? 'toBeTruthy' : 'toBeFalsy']();
+          }
+        }));
+
+        it('should restore existing overidden styles already present on the element when true',
+          inject(function($animateCss) {
+
+          element.css('height', '100px');
+          element.css('width', '111px');
+
+          var runner = $animateCss(element, {
+            duration: 1,
+            from: { height: '200px', 'font-size':'66px' },
+            to: { height: '300px', 'font-size': '99px', width: '222px' },
+            cleanupStyles: true
+          }).start();
+
+          assertStyle(element, 'height', '200px');
+          assertStyle(element, 'font-size', '66px');
+          assertStyle(element, 'width', '111px');
+
+          triggerAnimationStartFrame();
+
+          assertStyle(element, 'height', '300px');
+          assertStyle(element, 'width', '222px');
+          assertStyle(element, 'font-size', '99px');
+
+          runner.end();
+
+          assertStyle(element, 'width', '111px');
+          assertStyle(element, 'height', '100px');
+
+          expect(element[0].style.getPropertyValue('font-size')).not.toBe('66px');
+
+          function assertStyle(element, prop, value) {
+            expect(element[0].style.getPropertyValue(prop)).toBe(value);
+          }
+        }));
+      });
+
       it('should round up long elapsedTime values to close off a CSS3 animation',
         inject(function($animateCss) {
 

@@ -115,6 +115,38 @@ describe("$animateCss", function() {
       expect(cancelSpy).toHaveBeenCalled();
       expect(doneSpy).not.toHaveBeenCalled();
     }));
+
+    it("should not bother applying the provided [from] and [to] styles to the element if [cleanupStyles] is present",
+      inject(function($animateCss, $rootScope) {
+
+      var animator = $animateCss(element, {
+        cleanupStyles: true,
+        from: { width: '100px' },
+        to: { width: '900px', height: '1000px' }
+      });
+
+      assertStyleIsEmpty(element, 'width');
+      assertStyleIsEmpty(element, 'height');
+
+      var runner = animator.start();
+
+      assertStyleIsEmpty(element, 'width');
+      assertStyleIsEmpty(element, 'height');
+
+      triggerRAF();
+
+      assertStyleIsEmpty(element, 'width');
+      assertStyleIsEmpty(element, 'height');
+
+      runner.end();
+
+      assertStyleIsEmpty(element, 'width');
+      assertStyleIsEmpty(element, 'height');
+
+      function assertStyleIsEmpty(element, prop) {
+        expect(element[0].style.getPropertyValue(prop)).toBeFalsy();
+      }
+    }));
   });
 
 });
