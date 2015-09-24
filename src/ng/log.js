@@ -104,6 +104,171 @@ function $LogProvider() {
 
       /**
        * @ngdoc method
+       * @name $log#time
+       * @param {string} identifier identifier for this timer. Allows
+       *                            starting many independent timers.
+       *
+       * @description
+       * Wraps `console.time`.
+       * 
+       * Starts a timer identified by the passed identifier for 
+       * timing a block of code.
+       */
+      time: consoleLog('time'),
+
+      /**
+       * @ngdoc method
+       * @name $log#timeEnd
+       * @param {string} identifier identifier for this timer. 
+       *
+       * @description
+       * Wraps `console.timeEnd`.
+       * 
+       * Logs the time passed since calling `$log.time` with the 
+       * same identifier.
+       */
+      timeEnd: consoleLog('timeEnd'),
+
+      /**
+       * @ngdoc method
+       * @name $log#group
+       *
+       * @description
+       * Wraps `console.group`.
+       * 
+       * use `$log.group();`
+       *   to indent
+       *     the output
+       *       one level 
+       *         at a time.
+       */
+      group: consoleLog('group'),
+
+      /**
+       * @ngdoc method
+       * @name $log#groupEnd
+       *
+       * @description
+       * Wraps `console.groupEnd`.
+       * 
+       *          use `$log.groupEnd();`
+       *        to unindent
+       *      the output
+       *    one level 
+       *  at a time.
+       */
+      groupEnd: consoleLog('groupEnd'),
+
+      /**
+       * @ngdoc method
+       * @name $log#groupCollapsed
+       *
+       * @description
+       * Wraps `console.groupCollapsed`.
+       * 
+       * `$log.groupCollapsed()` does the same as `$log.group()`, 
+       * but the indented section is collapsed by default.
+       */
+      groupCollapsed: consoleLog('groupCollapsed'),
+
+      /**
+       * @ngdoc method
+       * @name $log#dir
+       * @param {Object}  obj the object to be printed
+       *
+       * @description
+       * Wraps `console.dir`.
+       * 
+       * `$log.dir(obj)` prints obj as an indented directory-like 
+       * structure, perfect for inspecting the makeup of a function
+       * or object.
+       */
+      dir: consoleLog('dir'),
+
+      /**
+       * @ngdoc method
+       * @name $log#dirxml
+       * @param {Object}  obj the object to be printed
+       *
+       * @description
+       * Wraps `console.dirxml`.
+       * 
+       * `$log.dirxml(obj)` prints the passed object as indented 
+       * XML-markup.
+       */
+      dirxml: consoleLog('dirxml'),
+
+      /**
+       * @ngdoc method
+       * @name $log#profile
+       * @param {string} identifier identifier for this profile. Allows
+       *                            recording many independent profiles.
+       *
+       * @description
+       * Wraps `console.profile`.
+       * 
+       * `$log.profile('x')` starts recording a snapshot with id 'x', 
+       * which can be inspected in the Chrome developer console's 
+       * 'Profiles' section.
+       * 
+       * If the parameter is omitted, the profile receives a numerical 
+       * identifier.
+       */
+      profile: consoleLog('profile'),
+
+      /**
+       * @ngdoc method
+       * @name $log#profileEnd
+       * @param {string} identifier identifier for this profile. Allows
+       *                            recording many independent profiles.
+       *
+       * @description
+       * Wraps `console.profileEnd`.
+       * 
+       * `$log.profileEnd('x')` stops recording a snapshot with id 'x', 
+       * so and makes it available for inspection in the Chrome developer 
+       * console's'Profiles' section.
+       */
+      profileEnd: consoleLog('profileEnd'),
+
+      /**
+       * @ngdoc method
+       * @name $log#assert
+       * @param {expression} condition the expression to assert.
+       * @param {string} message the message with which to fail if expression
+       *                 evaluates as falsy.
+       *
+       * @description
+       * Wraps `console.assert`.
+       * 
+       * `$log.assert(condition, 'message')` checks if 'condition' evaluates
+       * as truthy, otherwise will throw an error using the passed 'message'.
+       */
+      assert: consoleLog('assert'),
+
+      /**
+       * @ngdoc method
+       * @name $log#table
+       *
+       * @description
+       * Render a nicely formatted table to the console:
+       * 
+       * $log.table([
+       *    ['moo', 'baa'],
+       *    ['gni', 'unf'] 
+       * ]);
+       * 
+       * or 
+       * 
+       * console.table({
+       *    gah: {moo: 'baa', gni: 'fla'}, 
+       *    doo: {'moo': 'unf', gni: 'hng'}
+       * })
+       */
+      table: consoleLog('table'),
+
+      /**
+       * @ngdoc method
        * @name $log#debug
        *
        * @description
