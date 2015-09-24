@@ -204,6 +204,10 @@ var ANIMATE_TIMER_KEY = '$$animateCss';
  * * `staggerIndex` - The numeric index representing the stagger item (e.g. a value of 5 is equal to the sixth item in the stagger; therefore when a
  * * `stagger` option value of `0.1` is used then there will be a stagger delay of `600ms`)
  * * `applyClassesEarly` - Whether or not the classes being added or removed will be used when detecting the animation. This is set by `$animate` when enter/leave/move animations are fired to ensure that the CSS classes are resolved in time. (Note that this will prevent any transitions from occuring on the classes being added and removed.)
+ * * `cleanupStyles` - Whether or not the provided `from` and `to` styles will be removed once
+ *    the animation is closed. This is useful for when the styles are used purely for the sake of
+ *    the animation and do not have a lasting visual effect on the element (e.g. a colapse and open animation).
+ *    By default this value is set to `false`.
  *
  * @return {object} an object with start and end methods and details about the animation.
  *
@@ -324,6 +328,23 @@ function createLocalCacheLookup() {
   };
 }
 
+// we do not reassign an already present style value since
+// if we detect the style property value again we may be
+// detecting styles that were added via the `from` styles.
+// We make use of `isDefined` here since an empty string
+// or null value (which is what getPropertyValue will return
+// for a non-existing style) will still be marked as a valid
+// value for the style (a falsy value implies that the style
+// is to be removed at the end of the animation). If we had a simple
+// "OR" statement then it would not be enough to catch that.
+function registerRestorableStyles(backup, node, properties) {
+  forEach(properties, function(prop) {
+    backup[prop] = isDefined(backup[prop])
+        ? backup[prop]
+        : node.style.getPropertyValue(prop);
+  });
+}
+
 var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
   var gcsLookup = createLocalCacheLookup();
   var gcsStaggerLookup = createLocalCacheLookup();
@@ -424,6 +445,7 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
     }
 
     return function init(element, options) {
+      var restoreStyles = {};
       var node = getDomNode(element);
       if (!node
           || !node.parentNode
@@ -625,7 +647,12 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
                                        stagger.animationDuration === 0;
       }
 
-      applyAnimationFromStyles(element, options);
+      if (options.from) {
+        if (options.cleanupStyles) {
+          registerRestorableStyles(restoreStyles, node, Object.keys(options.from));
+        }
+        applyAnimationFromStyles(element, options);
+      }
 
       if (flags.blockTransition || flags.blockKeyframeAnimation) {
         applyBlocking(maxDuration);
@@ -691,6 +718,13 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
 
         applyAnimationClasses(element, options);
         applyAnimationStyles(element, options);
+
+        if (Object.keys(restoreStyles).length) {
+          forEach(restoreStyles, function(value, prop) {
+            value ? node.style.setProperty(prop, value)
+                  : node.style.removeProperty(prop);
+          });
+        }
 
         // the reason why we have this option is to allow a synchronous closing callback
         // that is fired as SOON as the animation ends (when the CSS is removed) or if
@@ -886,7 +920,12 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
           }
 
           element.on(events.join(' '), onAnimationProgress);
-          applyAnimationToStyles(element, options);
+          if (options.to) {
+            if (options.cleanupStyles) {
+              registerRestorableStyles(restoreStyles, node, Object.keys(options.to));
+            }
+            applyAnimationToStyles(element, options);
+          }
         }
 
         function onAnimationExpired() {
