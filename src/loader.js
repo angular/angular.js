@@ -284,6 +284,85 @@ function setupModuleLoader(window) {
 
           /**
            * @ngdoc method
+           * @name angular.Module#component
+           * @module ng
+           * @param {string} name Name of the component in camel-case (i.e. myComp which will match as my-comp)
+           * @param {Object} options Component definition object, has the following properties (all optional):
+           *
+           *    - `controller` – `{(string|function()=}` – Controller fn that should be associated with
+           *      newly created scope or the name of a {@link angular.Module#controller registered
+           *      controller} if passed as a string.
+           *    - `controllerAs` – `{string=}` – An identifier name for a reference to the controller.
+           *      If present, the controller will be published to scope under the `controllerAs` name.
+           *      If not present, this will default to be the same as the component name.
+           *    - `template` – `{string=|function()=}` – html template as a string or a function that
+           *      returns an html template as a string which should be used as the contents of this component.
+           *
+           *      If `template` is a function, then it is {@link auto.$injector#invoke injected} with
+           *      the following locals:
+           *
+           *      - `$element` - Current element
+           *      - `$attrs` - Current attributes object for the element
+           *
+           *    - `templateUrl` – `{string=|function()=}` – path or function that returns a path to an html
+           *      template that should be used  as the contents of this component.
+           *
+           *      If `templateUrl` is a function, then it is {@link auto.$injector#invoke injected} with
+           *      the following locals:
+           *
+           *      - `$element` - Current element
+           *      - `$attrs` - Current attributes object for the element
+           *    - `transclude` – `{boolean=}` – whether {@link $compile#transclusion transclusion} is enabled.
+           *      enabled by default.
+           *    - `isolate` – `{boolean=}` – whether the new scope is isolated. Isolated by default.
+           *    - `bindings` – `{object=}` – define DOM attribute binding to component properties.
+           *      component properties are always bound to the component controller and not to the scope.
+           *    - `$canActivate` – `{function()=}` – TBD.
+           *    - `$routeConfig` – `{object=}` – TBD.
+           *
+           * @description
+           * Register a component definition with the compiler. This is short for registering a directive
+           * where its definition object is isolated, allows transclusion and bound to controller as the
+           * component name by default.
+           * See {@link ng.$compileProvider#directive $compileProvider.directive()}.
+           */
+          component: function(name, options) {
+            function factory($injector) {
+              function makeInjectable(fn) {
+                if (angular.isFunction(fn)) {
+                  return function(tElement, tAttrs) {
+                    return $injector.invoke(fn, this, {$element: tElement, $attrs: tAttrs});
+                  };
+                } else {
+                  return fn;
+                }
+              }
+
+              var template = (!options.template && !options.templateUrl ? '' : options.template);
+              return {
+                controller: options.controller || function() {},
+                controllerAs: identifierForController(options.controller) || options.controllerAs || name,
+                template: makeInjectable(template),
+                templateUrl: makeInjectable(options.templateUrl),
+                transclude: options.transclude === undefined ? true : options.transclude,
+                scope: options.isolate === false ? true : {},
+                bindToController: options.bindings || {}
+              };
+            }
+
+            if (options.$canActivate) {
+              factory.$canActivate = options.$canActivate;
+            }
+            if (options.$routeConfig) {
+              factory.$routeConfig = options.$routeConfig;
+            }
+            factory.$inject = ['$injector'];
+
+            return moduleInstance.directive(name, factory);
+          },
+
+          /**
+           * @ngdoc method
            * @name angular.Module#config
            * @module ng
            * @param {Function} configFn Execute this function on module load. Useful for service
