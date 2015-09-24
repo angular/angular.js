@@ -110,8 +110,8 @@ function $LogProvider() {
        *
        * @description
        * Wraps `console.time`.
-       * 
-       * Starts a timer identified by the passed identifier for 
+       *
+       * Starts a timer identified by the passed identifier for
        * timing a block of code.
        */
       time: consoleLog('time'),
@@ -119,12 +119,12 @@ function $LogProvider() {
       /**
        * @ngdoc method
        * @name $log#timeEnd
-       * @param {string} identifier identifier for this timer. 
+       * @param {string} identifier identifier for this timer.
        *
        * @description
        * Wraps `console.timeEnd`.
-       * 
-       * Logs the time passed since calling `$log.time` with the 
+       *
+       * Logs the time passed since calling `$log.time` with the
        * same identifier.
        */
       timeEnd: consoleLog('timeEnd'),
@@ -135,11 +135,11 @@ function $LogProvider() {
        *
        * @description
        * Wraps `console.group`.
-       * 
+       *
        * use `$log.group();`
        *   to indent
        *     the output
-       *       one level 
+       *       one level
        *         at a time.
        */
       group: consoleLog('group'),
@@ -150,11 +150,11 @@ function $LogProvider() {
        *
        * @description
        * Wraps `console.groupEnd`.
-       * 
+       *
        *          use `$log.groupEnd();`
        *        to unindent
        *      the output
-       *    one level 
+       *    one level
        *  at a time.
        */
       groupEnd: consoleLog('groupEnd'),
@@ -165,8 +165,8 @@ function $LogProvider() {
        *
        * @description
        * Wraps `console.groupCollapsed`.
-       * 
-       * `$log.groupCollapsed()` does the same as `$log.group()`, 
+       *
+       * `$log.groupCollapsed()` does the same as `$log.group()`,
        * but the indented section is collapsed by default.
        */
       groupCollapsed: consoleLog('groupCollapsed'),
@@ -178,8 +178,8 @@ function $LogProvider() {
        *
        * @description
        * Wraps `console.dir`.
-       * 
-       * `$log.dir(obj)` prints obj as an indented directory-like 
+       *
+       * `$log.dir(obj)` prints obj as an indented directory-like
        * structure, perfect for inspecting the makeup of a function
        * or object.
        */
@@ -192,8 +192,8 @@ function $LogProvider() {
        *
        * @description
        * Wraps `console.dirxml`.
-       * 
-       * `$log.dirxml(obj)` prints the passed object as indented 
+       *
+       * `$log.dirxml(obj)` prints the passed object as indented
        * XML-markup.
        */
       dirxml: consoleLog('dirxml'),
@@ -206,12 +206,12 @@ function $LogProvider() {
        *
        * @description
        * Wraps `console.profile`.
-       * 
-       * `$log.profile('x')` starts recording a snapshot with id 'x', 
-       * which can be inspected in the Chrome developer console's 
+       *
+       * `$log.profile('x')` starts recording a snapshot with id 'x',
+       * which can be inspected in the Chrome developer console's
        * 'Profiles' section.
-       * 
-       * If the parameter is omitted, the profile receives a numerical 
+       *
+       * If the parameter is omitted, the profile receives a numerical
        * identifier.
        */
       profile: consoleLog('profile'),
@@ -224,9 +224,9 @@ function $LogProvider() {
        *
        * @description
        * Wraps `console.profileEnd`.
-       * 
-       * `$log.profileEnd('x')` stops recording a snapshot with id 'x', 
-       * so and makes it available for inspection in the Chrome developer 
+       *
+       * `$log.profileEnd('x')` stops recording a snapshot with id 'x',
+       * so and makes it available for inspection in the Chrome developer
        * console's'Profiles' section.
        */
       profileEnd: consoleLog('profileEnd'),
@@ -240,7 +240,7 @@ function $LogProvider() {
        *
        * @description
        * Wraps `console.assert`.
-       * 
+       *
        * `$log.assert(condition, 'message')` checks if 'condition' evaluates
        * as truthy, otherwise will throw an error using the passed 'message'.
        */
@@ -252,16 +252,16 @@ function $LogProvider() {
        *
        * @description
        * Render a nicely formatted table to the console:
-       * 
+       *
        * $log.table([
        *    ['moo', 'baa'],
-       *    ['gni', 'unf'] 
+       *    ['gni', 'unf']
        * ]);
-       * 
-       * or 
-       * 
+       *
+       * or
+       *
        * console.table({
-       *    gah: {moo: 'baa', gni: 'fla'}, 
+       *    gah: {moo: 'baa', gni: 'fla'},
        *    doo: {'moo': 'unf', gni: 'hng'}
        * })
        */
