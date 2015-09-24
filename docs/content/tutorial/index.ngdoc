@@ -246,6 +246,15 @@ npm run update-webdriver
 
 *(You should only need to do this once.)*
 
+You will need to Java present on your dev machine to allow the Selenium standalone to be started.
+Check if you already have java installed by opening a terminal/command line window and typing
+'''
+java -version
+'''
+If java is already installed and exists in the PATH then you will be shown the version installed,
+if, however you receive a message that "java is not recognized as an internal command or external
+command" you will need to install [java].
+
 Since Protractor works by interacting with a running application, we need to start our web server:
 
 ```
@@ -280,3 +289,4 @@ Now that you have set up your local machine, let's get started with the tutorial
 [bower]: http://bower.io/
 [http-server]: https://github.com/nodeapps/http-server
 [karma]: https://github.com/karma-runner/karma
+[java]: https://www.java.com/en/download/help/download_options.xml
