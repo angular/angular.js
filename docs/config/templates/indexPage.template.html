@@ -147,7 +147,7 @@
         <div class="search-results-container" ng-show="hasResults">
           <div class="container">
             <div class="search-results-frame">
-              <div ng-repeat="(key, value) in results" class="search-results-group" ng-class="colClassName + ' col-group-' + key">
+              <div ng-repeat="(key, value) in results track by key" class="search-results-group" ng-class="colClassName + ' col-group-' + key" ng-show="value.length > 0">
                 <h4 class="search-results-group-heading">{{ key }}</h4>
                 <ul class="search-results">
                   <!-- Do not insert a line break between li and a. Chrome will insert an actual line-break, which breaks the list item view.
