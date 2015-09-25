@@ -940,6 +940,26 @@ function $RootScopeProvider() {
       $eval: function(expr, locals) {
         return $parse(expr)(this, locals);
       },
+      
+      /**
+       * @ngdoc method
+       * @name $rootScope.Scope#$assign
+       * @kind function
+       * 
+       * @description
+       * Assign the value to the current scope on it's `expr` property
+       * 
+       * # Example
+       * ```js
+       *   $scope.assign('app.info.name', 'AngularApp') // likely used in directive when the expr is dynamic
+       *   console.log($scope.app.info.name) // AngularApp
+       * ```
+       *
+       *
+       */
+      $assign: function(expr, value) {
+        $parse(expr).assign(this, value)
+      },
 
       /**
        * @ngdoc method
