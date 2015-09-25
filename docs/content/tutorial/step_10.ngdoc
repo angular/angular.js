@@ -32,13 +32,22 @@ phonecatControllers.controller('PhoneDetailCtrl', ['$scope', '$routeParams', '$h
     $scope.setImage = function(imageUrl) {
       $scope.mainImageUrl = imageUrl;
     };
+    
+    $scope.setImagesKeyed=function(e, imageUrl){
+    if ((e.which==13) || (e.which==31)){
+      $scope.mainImageUrl = imageUrl;
+      e.preventDefault();
+      }
+    };
+
   }]);
 ```
 
 In the `PhoneDetailCtrl` controller, we created the `mainImageUrl` model property and set its
 default value to the first phone image URL.
 
-We also created a `setImage` event handler function that will change the value of `mainImageUrl`.
+We also created a `setImage` and 'setImagesKeyed' event handler functions that will change the value of `mainImageUrl`.  Since this image does not normally support keyboard navigation, we have 
+also added an ngKepress handler and tabindex to ensure keyboard only users are able to interact with the image.  
 
 
 ## Template
@@ -52,7 +61,7 @@ __`app/partials/phone-detail.html`:__
 
 <ul class="phone-thumbs">
   <li ng-repeat="img in phone.images">
-    <img ng-src="{{img}}" ng-click="setImage(img)">
+    <img ng-src="{{img}}" ng-click="setImage(img)" alt="{{img.alt}}" ng-keypress="setImagesKeyed($event, img)" tabindex="0">
   </li>
 </ul>
 ...
@@ -60,8 +69,7 @@ __`app/partials/phone-detail.html`:__
 
 We bound the `ngSrc` directive of the large image to the `mainImageUrl` property.
 
-We also registered an {@link ng.directive:ngClick `ngClick`}
-handler with thumbnail images. When a user clicks on one of the thumbnail images, the handler will
+We also registered an {@link ng.directive:ngClick `ngClick`} and {@link ng.directive:ngKeypress `ngKeypress`} handlers with thumbnail images. When a user clicks on one of the thumbnail images, the handler will
 use the `setImage` event handler function to change the value of the `mainImageUrl` property to the
 URL of the thumbnail image.
 
