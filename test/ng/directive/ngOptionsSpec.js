@@ -2095,6 +2095,30 @@ describe('ngOptions', function() {
       expect(element[0].selectedIndex).toEqual(0);
       expect(scope.selected).toEqual([]);
     });
+
+
+    it('should be possible to use ngIf in the blank option', function() {
+      var option;
+      createSingleSelect('<option ng-if="isBlank" value="">blank</option>');
+
+      scope.$apply(function() {
+        scope.values = [{name: 'A'}];
+        scope.isBlank = true;
+      });
+
+      expect(element.find('option').length).toBe(2);
+      option = element.find('option').eq(0);
+      expect(option.val()).toBe('');
+      expect(option.text()).toBe('blank');
+
+      scope.$apply(function() {
+        scope.isBlank = false;
+      });
+
+      expect(element.find('option').length).toBe(1);
+      option = element.find('option').eq(0);
+      expect(option.text()).toBe('A');
+    });
   });
 
 
