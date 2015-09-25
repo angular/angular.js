@@ -342,6 +342,11 @@ function $SceDelegateProvider() {
      * returns the originally supplied value if the queried context type is a supertype of the
      * created type.  If this condition isn't satisfied, throws an exception.
      *
+     * <div class="alert alert-danger">
+     * Disabling auto-escaping is extremely dangerous, it usually creates a Cross Site Scripting
+     * (XSS) vulnerability in your application.
+     * </div>
+     *
      * @param {string} type The kind of context in which this value is to be used.
      * @param {*} maybeTrusted The result of a prior {@link ng.$sceDelegate#trustAs
      *     `$sceDelegate.trustAs`} call.
