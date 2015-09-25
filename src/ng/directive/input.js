@@ -1141,9 +1141,9 @@ function baseInputType(scope, element, attr, ctrl, $sniffer, $browser) {
     // without an accompanying change in the input value (thus no `input` event).
     // (This is only necessary on browsers that support inputs of that type - other browsers set the
     //  `type` property to "text".)
-    var isTypeSupported = (type === attr.type);
-    var listenForKeyup = isTypeSupported && (DATE_INPUT_TYPES.indexOf(type) !== -1);
-    if (listenForKeyup) element.on('keyup', function() { element.triggerHandler('input'); });
+    var browserSupportsType = (type === attr.type);
+    var listenForKeyup = browserSupportsType && (DATE_INPUT_TYPES.indexOf(type) !== -1);
+    if (listenForKeyup) element.on('keyup', function() { listener('input'); });
   } else {
     var timeout;
 

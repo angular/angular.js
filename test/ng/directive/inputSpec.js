@@ -707,21 +707,18 @@ describe('input', function() {
     });
 
 
-    it('should fire \'input\' event on \'keyup\' only on browsers that support this input type',
-      function() {
-        var inputType = 'month';
+    it('should listen for \'keyup\' only on browsers that support this input type', function() {
+      var inputType = 'month';
 
-        var inputEventExpectedToFire = browserSupportsInputTypeAndEvent(inputType, 'input');
-        var inputEventActuallyFired = false;
+      var shouldListenForKeyup = browserSupportsInputTypeAndEvent(inputType, 'input');
+      var inputElm = helper.compileInput('<input type="' + inputType + '" ng-model="val" />');
+      var ctrl = inputElm.controller('ngModel');
+      spyOn(ctrl, '$setViewValue');
 
-        var inputElm = helper.compileInput('<input type="' + inputType + '" ng-model="val" />');
-        inputElm.on('input', function() { inputEventActuallyFired = true; });
+      inputElm.triggerHandler('keyup');
 
-        browserTrigger(inputElm, 'keyup');
-
-        expect(inputEventActuallyFired).toBe(inputEventExpectedToFire);
-      }
-    );
+      expect(ctrl.$setViewValue.callCount).toBe(shouldListenForKeyup ? 1 : 0);
+    });
 
 
     describe('min', function() {
@@ -989,21 +986,18 @@ describe('input', function() {
     });
 
 
-    it('should fire \'input\' event on \'keyup\' only on browsers that support this input type',
-      function() {
-        var inputType = 'week';
+    it('should listen for \'keyup\' only on browsers that support this input type', function() {
+      var inputType = 'week';
 
-        var inputEventExpectedToFire = browserSupportsInputTypeAndEvent(inputType, 'input');
-        var inputEventActuallyFired = false;
+      var shouldListenForKeyup = browserSupportsInputTypeAndEvent(inputType, 'input');
+      var inputElm = helper.compileInput('<input type="' + inputType + '" ng-model="val" />');
+      var ctrl = inputElm.controller('ngModel');
+      spyOn(ctrl, '$setViewValue');
 
-        var inputElm = helper.compileInput('<input type="' + inputType + '" ng-model="val" />');
-        inputElm.on('input', function() { inputEventActuallyFired = true; });
+      inputElm.triggerHandler('keyup');
 
-        browserTrigger(inputElm, 'keyup');
-
-        expect(inputEventActuallyFired).toBe(inputEventExpectedToFire);
-      }
-    );
+      expect(ctrl.$setViewValue.callCount).toBe(shouldListenForKeyup ? 1 : 0);
+    });
 
 
     describe('min', function() {
@@ -1306,21 +1300,18 @@ describe('input', function() {
     });
 
 
-    it('should fire \'input\' event on \'keyup\' only on browsers that support this input type',
-      function() {
-        var inputType = 'datetime-local';
+    it('should listen for \'keyup\' only on browsers that support this input type', function() {
+      var inputType = 'datetime-local';
 
-        var inputEventExpectedToFire = browserSupportsInputTypeAndEvent(inputType, 'input');
-        var inputEventActuallyFired = false;
+      var shouldListenForKeyup = browserSupportsInputTypeAndEvent(inputType, 'input');
+      var inputElm = helper.compileInput('<input type="' + inputType + '" ng-model="val" />');
+      var ctrl = inputElm.controller('ngModel');
+      spyOn(ctrl, '$setViewValue');
 
-        var inputElm = helper.compileInput('<input type="' + inputType + '" ng-model="val" />');
-        inputElm.on('input', function() { inputEventActuallyFired = true; });
+      inputElm.triggerHandler('keyup');
 
-        browserTrigger(inputElm, 'keyup');
-
-        expect(inputEventActuallyFired).toBe(inputEventExpectedToFire);
-      }
-    );
+      expect(ctrl.$setViewValue.callCount).toBe(shouldListenForKeyup ? 1 : 0);
+    });
 
 
     describe('min', function() {
@@ -1699,21 +1690,18 @@ describe('input', function() {
     });
 
 
-    it('should fire \'input\' event on \'keyup\' only on browsers that support this input type',
-      function() {
-        var inputType = 'time';
+    it('should listen for \'keyup\' only on browsers that support this input type', function() {
+      var inputType = 'time';
 
-        var inputEventExpectedToFire = browserSupportsInputTypeAndEvent(inputType, 'input');
-        var inputEventActuallyFired = false;
+      var shouldListenForKeyup = browserSupportsInputTypeAndEvent(inputType, 'input');
+      var inputElm = helper.compileInput('<input type="' + inputType + '" ng-model="val" />');
+      var ctrl = inputElm.controller('ngModel');
+      spyOn(ctrl, '$setViewValue');
 
-        var inputElm = helper.compileInput('<input type="' + inputType + '" ng-model="val" />');
-        inputElm.on('input', function() { inputEventActuallyFired = true; });
+      inputElm.triggerHandler('keyup');
 
-        browserTrigger(inputElm, 'keyup');
-
-        expect(inputEventActuallyFired).toBe(inputEventExpectedToFire);
-      }
-    );
+      expect(ctrl.$setViewValue.callCount).toBe(shouldListenForKeyup ? 1 : 0);
+    });
 
 
     describe('min', function() {
@@ -2067,21 +2055,18 @@ describe('input', function() {
     });
 
 
-    it('should fire \'input\' event on \'keyup\' only on browsers that support this input type',
-      function() {
-        var inputType = 'date';
+    it('should listen for \'keyup\' only on browsers that support this input type', function() {
+      var inputType = 'date';
 
-        var inputEventExpectedToFire = browserSupportsInputTypeAndEvent(inputType, 'input');
-        var inputEventActuallyFired = false;
+      var shouldListenForKeyup = browserSupportsInputTypeAndEvent(inputType, 'input');
+      var inputElm = helper.compileInput('<input type="' + inputType + '" ng-model="val" />');
+      var ctrl = inputElm.controller('ngModel');
+      spyOn(ctrl, '$setViewValue');
 
-        var inputElm = helper.compileInput('<input type="' + inputType + '" ng-model="val" />');
-        inputElm.on('input', function() { inputEventActuallyFired = true; });
+      inputElm.triggerHandler('keyup');
 
-        browserTrigger(inputElm, 'keyup');
-
-        expect(inputEventActuallyFired).toBe(inputEventExpectedToFire);
-      }
-    );
+      expect(ctrl.$setViewValue.callCount).toBe(shouldListenForKeyup ? 1 : 0);
+    });
 
 
     describe('min', function() {
