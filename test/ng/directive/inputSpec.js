@@ -659,31 +659,9 @@ describe('input', function() {
 
 
     it('should re-validate when partially editing the input value', function() {
-      // This testcase tests re-validation on interactions involved in the following scenario
-      // (on a browser that supports this type of input):
-      //
-      // 1. Initially empty field.
-      //    - `input.value`: ''
-      //    - `input.validity`: {valid: true, badInput: false, ...}
-      // 2. The user fills part of the value (e.g. the year) using the keyboard.
-      //    - `input.value`: ''
-      //    - `input.validity`: {valid: false, badInput: true, ...}
-      //    - 'input' event: Not fired   (since `input.value` hasn't changed)
-      // 3. The user fills the value completely (using either the keyboard or the date-picker).
-      //    - `input.value`: '<some-valid-value>'
-      //    - `input.validity`: {valid: true, badInput: false, ...}
-      //    - 'input' event: Fired
-      // 4. The user deletes part of the value (e.g. the year) using the keyboard.
-      //    - `input.value`: ''   (since a partial value is invalid)
-      //    - `input.validity`: {valid: false, badInput: true, ...}
-      //    - 'input' event: Fired
-      // 5. The user deletes all parts of the value using the keyboard (i.e. clears the field).
-      //    - `input.value`: ''
-      //    - `input.validity`: {valid: true, badInput: false, ...}
-      //    - 'input' event: Not fired   (since `input.value` hasn't changed)
-      //
-      // The problematic cases are (2) and (5), because there is a change in the validity state,
-      // but no 'input' event is fired to inform Angular of that change and the need to re-validate.
+      // This testcase simulates keyboard interactions that lead to a change in the validity state
+      // of the element, but no change in its value (thus no 'input' event).
+      // For a more detailed explanation, see: https://github.com/angular/angular.js/pull/12902
 
       var inputType = 'month';
 
@@ -938,31 +916,9 @@ describe('input', function() {
 
 
     it('should re-validate when partially editing the input value', function() {
-      // This testcase tests re-validation on interactions involved in the following scenario
-      // (on a browser that supports this type of input):
-      //
-      // 1. Initially empty field.
-      //    - `input.value`: ''
-      //    - `input.validity`: {valid: true, badInput: false, ...}
-      // 2. The user fills part of the value (e.g. the year) using the keyboard.
-      //    - `input.value`: ''
-      //    - `input.validity`: {valid: false, badInput: true, ...}
-      //    - 'input' event: Not fired   (since `input.value` hasn't changed)
-      // 3. The user fills the value completely (using either the keyboard or the date-picker).
-      //    - `input.value`: '<some-valid-value>'
-      //    - `input.validity`: {valid: true, badInput: false, ...}
-      //    - 'input' event: Fired
-      // 4. The user deletes part of the value (e.g. the year) using the keyboard.
-      //    - `input.value`: ''   (since a partial value is invalid)
-      //    - `input.validity`: {valid: false, badInput: true, ...}
-      //    - 'input' event: Fired
-      // 5. The user deletes all parts of the value using the keyboard (i.e. clears the field).
-      //    - `input.value`: ''
-      //    - `input.validity`: {valid: true, badInput: false, ...}
-      //    - 'input' event: Not fired   (since `input.value` hasn't changed)
-      //
-      // The problematic cases are (2) and (5), because there is a change in the validity state,
-      // but no 'input' event is fired to inform Angular of that change and the need to re-validate.
+      // This testcase simulates keyboard interactions that lead to a change in the validity state
+      // of the element, but no change in its value (thus no 'input' event).
+      // For a more detailed explanation, see: https://github.com/angular/angular.js/pull/12902
 
       var inputType = 'week';
 
@@ -1252,31 +1208,9 @@ describe('input', function() {
 
 
     it('should re-validate when partially editing the input value', function() {
-      // This testcase tests re-validation on interactions involved in the following scenario
-      // (on a browser that supports this type of input):
-      //
-      // 1. Initially empty field.
-      //    - `input.value`: ''
-      //    - `input.validity`: {valid: true, badInput: false, ...}
-      // 2. The user fills part of the value (e.g. the year) using the keyboard.
-      //    - `input.value`: ''
-      //    - `input.validity`: {valid: false, badInput: true, ...}
-      //    - 'input' event: Not fired   (since `input.value` hasn't changed)
-      // 3. The user fills the value completely (using either the keyboard or the date-picker).
-      //    - `input.value`: '<some-valid-value>'
-      //    - `input.validity`: {valid: true, badInput: false, ...}
-      //    - 'input' event: Fired
-      // 4. The user deletes part of the value (e.g. the year) using the keyboard.
-      //    - `input.value`: ''   (since a partial value is invalid)
-      //    - `input.validity`: {valid: false, badInput: true, ...}
-      //    - 'input' event: Fired
-      // 5. The user deletes all parts of the value using the keyboard (i.e. clears the field).
-      //    - `input.value`: ''
-      //    - `input.validity`: {valid: true, badInput: false, ...}
-      //    - 'input' event: Not fired   (since `input.value` hasn't changed)
-      //
-      // The problematic cases are (2) and (5), because there is a change in the validity state,
-      // but no 'input' event is fired to inform Angular of that change and the need to re-validate.
+      // This testcase simulates keyboard interactions that lead to a change in the validity state
+      // of the element, but no change in its value (thus no 'input' event).
+      // For a more detailed explanation, see: https://github.com/angular/angular.js/pull/12902
 
       var inputType = 'datetime-local';
 
@@ -1642,31 +1576,9 @@ describe('input', function() {
 
 
     it('should re-validate when partially editing the input value', function() {
-      // This testcase tests re-validation on interactions involved in the following scenario
-      // (on a browser that supports this type of input):
-      //
-      // 1. Initially empty field.
-      //    - `input.value`: ''
-      //    - `input.validity`: {valid: true, badInput: false, ...}
-      // 2. The user fills part of the value (e.g. the hours) using the keyboard.
-      //    - `input.value`: ''
-      //    - `input.validity`: {valid: false, badInput: true, ...}
-      //    - 'input' event: Not fired   (since `input.value` hasn't changed)
-      // 3. The user fills the value completely (using either the keyboard or the buttons).
-      //    - `input.value`: '<some-valid-value>'
-      //    - `input.validity`: {valid: true, badInput: false, ...}
-      //    - 'input' event: Fired
-      // 4. The user deletes part of the value (e.g. the hours) using the keyboard.
-      //    - `input.value`: ''   (since a partial value is invalid)
-      //    - `input.validity`: {valid: false, badInput: true, ...}
-      //    - 'input' event: Fired
-      // 5. The user deletes all parts of the value using the keyboard (i.e. clears the field).
-      //    - `input.value`: ''
-      //    - `input.validity`: {valid: true, badInput: false, ...}
-      //    - 'input' event: Not fired   (since `input.value` hasn't changed)
-      //
-      // The problematic cases are (2) and (5), because there is a change in the validity state,
-      // but no 'input' event is fired to inform Angular of that change and the need to re-validate.
+      // This testcase simulates keyboard interactions that lead to a change in the validity state
+      // of the element, but no change in its value (thus no 'input' event).
+      // For a more detailed explanation, see: https://github.com/angular/angular.js/pull/12902
 
       var inputType = 'time';
 
@@ -2007,31 +1919,9 @@ describe('input', function() {
 
 
     it('should re-validate when partially editing the input value', function() {
-      // This testcase tests re-validation on interactions involved in the following scenario
-      // (on a browser that supports this type of input):
-      //
-      // 1. Initially empty field.
-      //    - `input.value`: ''
-      //    - `input.validity`: {valid: true, badInput: false, ...}
-      // 2. The user fills part of the value (e.g. the year) using the keyboard.
-      //    - `input.value`: ''
-      //    - `input.validity`: {valid: false, badInput: true, ...}
-      //    - 'input' event: Not fired   (since `input.value` hasn't changed)
-      // 3. The user fills the value completely (using either the keyboard or the date-picker).
-      //    - `input.value`: '<some-valid-value>'
-      //    - `input.validity`: {valid: true, badInput: false, ...}
-      //    - 'input' event: Fired
-      // 4. The user deletes part of the value (e.g. the year) using the keyboard.
-      //    - `input.value`: ''   (since a partial value is invalid)
-      //    - `input.validity`: {valid: false, badInput: true, ...}
-      //    - 'input' event: Fired
-      // 5. The user deletes all parts of the value using the keyboard (i.e. clears the field).
-      //    - `input.value`: ''
-      //    - `input.validity`: {valid: true, badInput: false, ...}
-      //    - 'input' event: Not fired   (since `input.value` hasn't changed)
-      //
-      // The problematic cases are (2) and (5), because there is a change in the validity state,
-      // but no 'input' event is fired to inform Angular of that change and the need to re-validate.
+      // This testcase simulates keyboard interactions that lead to a change in the validity state
+      // of the element, but no change in its value (thus no 'input' event).
+      // For a more detailed explanation, see: https://github.com/angular/angular.js/pull/12902
 
       var inputType = 'date';
 
