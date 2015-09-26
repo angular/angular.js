@@ -2038,7 +2038,9 @@ describe('ngOptions', function() {
       expect(option.text()).toBe('is blank');
     });
 
-    it('should support option without a value attribute', function() {
+    it('should be ignored when it has no value attribute', function() {
+      // The option value is set to the textContent if there's no value attribute,
+      // so in that case it doesn't count as a blank option
       createSingleSelect('<option>--select--</option>');
       scope.$apply(function() {
         scope.values = [{name: 'A'}, {name: 'B'}, {name: 'C'}];
