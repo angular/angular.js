@@ -1727,6 +1727,30 @@ function getValueOf(value) {
 function $ParseProvider() {
   var cacheDefault = createMap();
   var cacheExpensive = createMap();
+  var defaultToOneTime = false;
+  /**
+   * @ngdoc method
+   * @name $parseProvider#useOneTimeAsDefault
+   * @description
+   *
+   * Configure `$parse` service to use one-time-bind without `::`, and require `::` to preserve the
+   * watcher.
+   *
+   * Defaults to false. If no value is specified, returns the current configured value.
+   *
+   * @param {boolean=} value If true, `$parse` will use one-time-bind without `::` require `::` to
+   * preserve the watcher.
+   *
+   * @returns {boolean|Object} If a value is specified, returns the $parseProvider for chaining.
+   *    otherwise, returns the current configured value.
+   **/
+  this.useOneTimeAsDefault = function(value) {
+    if (isDefined(value)) {
+      defaultToOneTime = !!value;
+      return this;
+    }
+    return defaultToOneTime;
+  };
 
   this.$get = ['$filter', function($filter) {
     var noUnsafeEval = csp().noUnsafeEval;
@@ -1740,7 +1764,8 @@ function $ParseProvider() {
         };
 
     return function $parse(exp, interceptorFn, expensiveChecks) {
-      var parsedExpression, oneTime, cacheKey;
+      var oneTime = defaultToOneTime,
+        parsedExpression, cacheKey;
 
       switch (typeof exp) {
         case 'string':
@@ -1752,7 +1777,7 @@ function $ParseProvider() {
 
           if (!parsedExpression) {
             if (exp.charAt(0) === ':' && exp.charAt(1) === ':') {
-              oneTime = true;
+              oneTime = !oneTime;
               exp = exp.substring(2);
             }
             var parseOptions = expensiveChecks ? $parseOptionsExpensive : $parseOptions;
