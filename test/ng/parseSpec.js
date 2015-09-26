@@ -1675,10 +1675,57 @@ describe('parser', function() {
     $filterProvider = filterProvider;
   }]));
 
+  describe('$parseProvider.defaultToOnetime', function() {
+    beforeEach(module(function($parseProvider) {
+      $parseProvider.useOneTimeAsDefault(true);
+    }, provideLog));
+
+    it('should one-time bind without explicit expression', function() {
+      inject(function($parse, $rootScope, log) {
+        var fn = $parse('foo');
+        $rootScope.$watch(fn, function(value, old) { if (value !== old) log(value); });
+
+        $rootScope.$digest();
+        expect($rootScope.$$watchers.length).toBe(1);
+
+        $rootScope.foo = 'bar';
+        $rootScope.$digest();
+        expect($rootScope.$$watchers.length).toBe(0);
+        expect(log).toEqual('bar');
+        log.reset();
+
+        $rootScope.foo = 'man';
+        $rootScope.$digest();
+        expect($rootScope.$$watchers.length).toBe(0);
+        expect(log).toEqual('');
+      });
+    });
+
+    it('should not remove watch with explicit expression', function() {
+      inject(function($parse, $rootScope, log) {
+        var fn = $parse('::foo');
+        $rootScope.$watch(fn, function(value, old) { if (value !== old) log(value); });
+
+        $rootScope.$digest();
+        expect($rootScope.$$watchers.length).toBe(1);
+
+        $rootScope.foo = 'bar';
+        $rootScope.$digest();
+        expect($rootScope.$$watchers.length).toBe(1);
+        expect(log).toEqual('bar');
+        log.reset();
+
+        $rootScope.foo = 'man';
+        $rootScope.$digest();
+        expect($rootScope.$$watchers.length).toBe(1);
+        expect(log).toEqual('man');
+      });
+    });
+  });
+
 
   forEach([true, false], function(cspEnabled) {
     describe('csp: ' + cspEnabled, function() {
-
       beforeEach(module(function() {
         expect(csp().noUnsafeEval === true ||
                csp().noUnsafeEval === false).toEqual(true);
