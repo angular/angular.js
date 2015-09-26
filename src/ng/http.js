@@ -425,13 +425,15 @@ function $HttpProvider() {
      *
      *
      * ## General usage
-     * The `$http` service is a function which takes a single argument — a configuration object —
+     * The `$http` service is a function which takes a single argument — a {@link $http#usage configuration object} —
      * that is used to generate an HTTP request and returns  a {@link ng.$q promise}.
      *
      * ```js
-     *   // Simple GET request example :
-     *   $http.get('/someUrl').
-     *     then(function(response) {
+     *   // Simple GET request example:
+     *   $http({
+     *     method: 'GET',
+     *     url: '/someUrl'
+     *   }).then(function(response) {
      *       // this callback will be called asynchronously
      *       // when the response is available
      *     }, function(response) {
@@ -440,8 +442,9 @@ function $HttpProvider() {
      *     });
      * ```
      *
+     * There are also shortcut methods available:
      * ```js
-     *   // Simple POST request example (passing data) :
+     *   // Simple POST request shortcut example (passing data) :
      *   $http.post('/someUrl', {msg:'hello word!'}).
      *     then(function(response) {
      *       // this callback will be called asynchronously
@@ -655,7 +658,7 @@ function $HttpProvider() {
      *
      * There are two kinds of interceptors (and two kinds of rejection interceptors):
      *
-     *   * `request`: interceptors get called with a http `config` object. The function is free to
+     *   * `request`: interceptors get called with a http {@link $http#usage `config`} object. The function is free to
      *     modify the `config` object or create a new one. The function needs to return the `config`
      *     object directly, or a promise containing the `config` or a new `config` object.
      *   * `requestError`: interceptor gets called when a previous interceptor threw an error or
