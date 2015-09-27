@@ -158,6 +158,15 @@ function LocationHtml5Url(appBase, appBaseNoFile, basePrefix) {
     }
     return !!rewrittenUrl;
   };
+
+  /**
+   * Sets the appBase and appBaseNoFile members to use a new base href.
+   * @private
+   */
+  this.$$setBaseHref = function(baseHref) {
+    appBase = serverBase(this.absUrl()) + (baseHref || '/');
+    appBaseNoFile = stripFile(appBase);
+  };
 }
 
 
@@ -641,6 +650,34 @@ forEach([LocationHashbangInHtml5Url, LocationHashbangUrl, LocationHtml5Url], fun
     // but we're changing the $$state reference to $browser.state() during the $digest
     // so the modification window is narrow.
     this.$$state = isUndefined(state) ? null : state;
+
+    return this;
+  };
+
+  /**
+   * @ngdoc method
+   * @name $location#setBaseHref
+   *
+   * @description
+   * This method is a setter only.
+   *
+   * Change the base href (therefore the app base) that $location uses.
+   * Useful for cases where the URL needs to change to something outside the current base without triggering a refresh.
+   *
+   * NOTE: This method is supported only in HTML5 mode and only in browsers supporting
+   * the HTML5 History API. It doesn't seem to have an obvious use case outside of that,
+   * as changing the base href otherwise would also cause a page refresh.
+   *
+   * @param {string=} baseHref the new base href to use
+   * @return {object} $location service
+   */
+  Location.prototype.setBaseHref = function(baseHref) {
+    if (Location !== LocationHtml5Url || !this.$$html5) {
+      throw $locationMinErr('nobasehref', 'Setting the app base href is available only ' +
+        'in HTML5 mode and only in browsers supporting HTML5 History API');
+    }
+
+    this.$$setBaseHref(baseHref);
 
     return this;
   };
