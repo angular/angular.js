@@ -7265,6 +7265,295 @@ describe('$compile', function() {
   });
 
 
+  describe('multi-slot transclude', function() {
+    it('should only include elements without a matching transclusion element in default transclusion slot', function() {
+      module(function() {
+        directive('minionComponent', function() {
+          return {
+            restrict: 'E',
+            scope: {},
+            transclude: {
+              boss: 'bossSlot'
+            },
+            template:
+              '<div class="other" ng-transclude></div>'
+          };
+        });
+      });
+      inject(function($rootScope, $compile) {
+        element = $compile(
+          '<minion-component>' +
+            '<span>stuart</span>' +
+            '<span>bob</span>' +
+            '<boss>gru</boss>' +
+            '<span>kevin</span>' +
+          '</minion-component>')($rootScope);
+        $rootScope.$apply();
+        expect(element.text()).toEqual('stuartbobkevin');
+      });
+    });
+
+    it('should transclude elements to an `ng-transclude` with a matching transclusion slot name', function() {
+      module(function() {
+        directive('minionComponent', function() {
+          return {
+            restrict: 'E',
+            scope: {},
+            transclude: {
+              minion: 'minionSlot',
+              boss: 'bossSlot'
+            },
+            template:
+              '<div class="boss" ng-transclude="bossSlot"></div>' +
+              '<div class="minion" ng-transclude="minionSlot"></div>' +
+              '<div class="other" ng-transclude></div>'
+          };
+        });
+      });
+      inject(function($rootScope, $compile) {
+        element = $compile(
+          '<minion-component>' +
+            '<minion>stuart</minion>' +
+            '<span>dorothy</span>' +
+            '<boss>gru</boss>' +
+            '<minion>kevin</minion>' +
+          '</minion-component>')($rootScope);
+        $rootScope.$apply();
+        expect(element.children().eq(0).text()).toEqual('gru');
+        expect(element.children().eq(1).text()).toEqual('stuartkevin');
+        expect(element.children().eq(2).text()).toEqual('dorothy');
+      });
+    });
+
+
+    it('should use the `ng-transclude-slot` attribute if ng-transclude is used as an element', function() {
+      module(function() {
+        directive('minionComponent', function() {
+          return {
+            restrict: 'E',
+            scope: {},
+            transclude: {
+              minion: 'minionSlot',
+              boss: 'bossSlot'
+            },
+            template:
+              '<ng-transclude class="boss" ng-transclude-slot="bossSlot"></ng-transclude>' +
+              '<ng-transclude class="minion" ng-transclude-slot="minionSlot"></ng-transclude>' +
+              '<ng-transclude class="other"></ng-transclude>'
+          };
+        });
+      });
+      inject(function($rootScope, $compile) {
+        element = $compile(
+          '<minion-component>' +
+            '<minion>stuart</minion>' +
+            '<span>dorothy</span>' +
+            '<boss>gru</boss>' +
+            '<minion>kevin</minion>' +
+          '</minion-component>')($rootScope);
+        $rootScope.$apply();
+        expect(element.children().eq(0).text()).toEqual('gru');
+        expect(element.children().eq(1).text()).toEqual('stuartkevin');
+        expect(element.children().eq(2).text()).toEqual('dorothy');
+      });
+    });
+
+    it('should error if a required transclude slot is not filled', function() {
+      module(function() {
+        directive('minionComponent', function() {
+          return {
+            restrict: 'E',
+            scope: {},
+            transclude: {
+              minion: 'minionSlot',
+              boss: 'bossSlot'
+            },
+            template:
+              '<div class="boss" ng-transclude="bossSlot"></div>' +
+              '<div class="minion" ng-transclude="minionSlot"></div>' +
+              '<div class="other" ng-transclude></div>'
+          };
+        });
+      });
+      inject(function($rootScope, $compile) {
+        expect(function() {
+          element = $compile(
+            '<minion-component>' +
+              '<minion>stuart</minion>' +
+              '<span>dorothy</span>' +
+            '</minion-component>')($rootScope);
+        }).toThrowMinErr('$compile', 'reqslot', 'Required transclusion slot `bossSlot` was not filled.');
+      });
+    });
+
+
+    it('should not error if an optional transclude slot is not filled', function() {
+      module(function() {
+        directive('minionComponent', function() {
+          return {
+            restrict: 'E',
+            scope: {},
+            transclude: {
+              minion: 'minionSlot',
+              boss: '?bossSlot'
+            },
+            template:
+              '<div class="boss" ng-transclude="bossSlot"></div>' +
+              '<div class="minion" ng-transclude="minionSlot"></div>' +
+              '<div class="other" ng-transclude></div>'
+          };
+        });
+      });
+      inject(function($rootScope, $compile) {
+        element = $compile(
+          '<minion-component>' +
+            '<minion>stuart</minion>' +
+            '<span>dorothy</span>' +
+          '</minion-component>')($rootScope);
+        $rootScope.$apply();
+        expect(element.children().eq(1).text()).toEqual('stuart');
+        expect(element.children().eq(2).text()).toEqual('dorothy');
+      });
+    });
+
+
+    it('should error if we try to transclude a slot that was not declared by the directive', function() {
+      module(function() {
+        directive('minionComponent', function() {
+          return {
+            restrict: 'E',
+            scope: {},
+            transclude: {
+              minion: 'minionSlot'
+            },
+            template:
+              '<div class="boss" ng-transclude="bossSlot"></div>' +
+              '<div class="minion" ng-transclude="minionSlot"></div>' +
+              '<div class="other" ng-transclude></div>'
+          };
+        });
+      });
+      inject(function($rootScope, $compile) {
+        expect(function() {
+          element = $compile(
+            '<minion-component>' +
+              '<minion>stuart</minion>' +
+              '<span>dorothy</span>' +
+            '</minion-component>')($rootScope);
+        }).toThrowMinErr('$compile', 'noslot',
+          'No parent directive that requires a transclusion with slot name "bossSlot". ' +
+          'Element: <div class="boss" ng-transclude="bossSlot">');
+      });
+    });
+
+    it('should allow the slot name to equal the element name', function() {
+
+      module(function() {
+        directive('foo', function() {
+          return {
+            restrict: 'E',
+            scope: {},
+            transclude: {
+              bar: 'bar'
+            },
+            template:
+              '<div class="other" ng-transclude="bar"></div>'
+          };
+        });
+      });
+      inject(function($rootScope, $compile) {
+        element = $compile(
+          '<foo>' +
+            '<bar>baz</bar>' +
+          '</foo>')($rootScope);
+        $rootScope.$apply();
+        expect(element.text()).toEqual('baz');
+      });
+    });
+
+
+    it('should match against the normalized form of the element', function() {
+      module(function() {
+        directive('foo', function() {
+          return {
+            restrict: 'E',
+            scope: {},
+            transclude: {
+              fooBar: 'fooBarSlot'
+            },
+            template:
+              '<div class="other" ng-transclude="fooBarSlot"></div>'
+          };
+        });
+      });
+      inject(function($rootScope, $compile) {
+        element = $compile(
+          '<foo>' +
+            '<foo-bar>baz</foo-bar>' +
+          '</foo>')($rootScope);
+        $rootScope.$apply();
+        expect(element.text()).toEqual('baz');
+      });
+    });
+
+
+    it('should provide the elements marked with matching transclude elements as additional transclude functions on the $$slots property', function() {
+      var capturedTranscludeFn;
+      module(function() {
+        directive('minionComponent', function() {
+          return {
+            restrict: 'E',
+            scope: {},
+            transclude: {
+              minion: 'minionSlot',
+              boss: 'bossSlot'
+            },
+            template:
+              '<div class="boss" ng-transclude="bossSlot"></div>' +
+              '<div class="minion" ng-transclude="minionSlot"></div>' +
+              '<div class="other" ng-transclude></div>',
+            link: function(s, e, a, c, transcludeFn) {
+              capturedTranscludeFn = transcludeFn;
+            }
+          };
+        });
+      });
+      inject(function($rootScope, $compile, log) {
+        element = $compile(
+          '<minion-component>' +
+          '  <minion>stuart</minion>' +
+          '  <minion>bob</minion>' +
+          '  <span>dorothy</span>' +
+          '  <boss>gru</boss>' +
+          '</minion-component>')($rootScope);
+        $rootScope.$apply();
+
+        var minionTranscludeFn = capturedTranscludeFn.$$boundTransclude.$$slots['minionSlot'];
+        var minions = minionTranscludeFn();
+        expect(minions[0].outerHTML).toEqual('<minion class="ng-scope">stuart</minion>');
+        expect(minions[1].outerHTML).toEqual('<minion class="ng-scope">bob</minion>');
+
+        var scope = element.scope();
+
+        var minionScope = jqLite(minions[0]).scope();
+        expect(minionScope.$parent).toBe(scope);
+
+        var bossTranscludeFn = capturedTranscludeFn.$$boundTransclude.$$slots['bossSlot'];
+        var boss = bossTranscludeFn();
+        expect(boss[0].outerHTML).toEqual('<boss class="ng-scope">gru</boss>');
+
+        var bossScope = jqLite(boss[0]).scope();
+        expect(bossScope.$parent).toBe(scope);
+
+        expect(bossScope).not.toBe(minionScope);
+
+        dealoc(boss);
+        dealoc(minions);
+      });
+    });
+  });
+
+
   describe('img[src] sanitization', function() {
 
     it('should NOT require trusted values for img src', inject(function($rootScope, $compile, $sce) {
