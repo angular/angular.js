@@ -133,10 +133,10 @@ angular.scenario.Application.prototype.executeAction = function(action) {
       return $injector;
     };
 
-    $injector.invoke(function($browser) {
+    $injector.invoke(['$browser', function($browser){
       $browser.notifyWhenNoOutstandingRequests(function() {
         action.call(self, $window, $element);
       });
-    });
+    }]);
   }
 };
