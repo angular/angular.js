@@ -1270,7 +1270,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
     //================================
 
-    function compile($compileNodes, transcludeFn, maxPriority, ignoreDirective,
+    function compile($compileNodes, transcludeFn, maxPriority, changeOuterScope, ignoreDirective,
                         previousCompileContext) {
       if (!($compileNodes instanceof jqLite)) {
         // jquery always rewraps, whereas we need to preserve the original selector so that we can
@@ -1291,6 +1291,10 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       var namespace = null;
       return function publicLinkFn(scope, cloneConnectFn, options) {
         assertArg(scope, 'scope');
+
+        if (changeOuterScope) {
+          scope = scope.$parent.$new(false);
+        }
 
         options = options || {};
         var parentBoundTranscludeFn = options.parentBoundTranscludeFn,
@@ -1657,16 +1661,16 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
      * @param previousCompileContext
      * @returns {Function}
      */
-    function compilationGenerator(eager, $compileNodes, transcludeFn, maxPriority, ignoreDirective, previousCompileContext) {
+    function compilationGenerator(eager, $compileNodes, transcludeFn, changeOuterScope, maxPriority, ignoreDirective, previousCompileContext) {
         if (eager) {
-            return compile($compileNodes, transcludeFn, maxPriority, ignoreDirective, previousCompileContext);
+            return compile($compileNodes, transcludeFn, maxPriority, changeOuterScope, ignoreDirective, previousCompileContext);
         }
 
         var compiled;
 
         return function() {
             if (!compiled) {
-                compiled = compile($compileNodes, transcludeFn, maxPriority, ignoreDirective, previousCompileContext);
+                compiled = compile($compileNodes, transcludeFn, maxPriority, changeOuterScope, ignoreDirective, previousCompileContext);
 
                 // Null out all of these references in order to make them eligible for garbage collection
                 // since this is a potentially long lived closure
@@ -1706,6 +1710,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       previousCompileContext = previousCompileContext || {};
 
       var terminalPriority = -Number.MAX_VALUE,
+          changeOuterScope,
           newScopeDirective = previousCompileContext.newScopeDirective,
           controllerDirectives = previousCompileContext.controllerDirectives,
           newIsolateScopeDirective = previousCompileContext.newIsolateScopeDirective,
@@ -1796,6 +1801,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
         if (directiveValue = directive.transclude) {
           hasTranscludeDirective = true;
+          changeOuterScope = directive.$$replacing;
 
           // Special case ngIf and ngRepeat so that we don't complain about duplicate transclusion.
           // This option should only be used by directives that know how to safely handle element transclusion,
@@ -1815,8 +1821,8 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             compileNode = $compileNode[0];
             replaceWith(jqCollection, sliceArgs($template), compileNode);
 
-            childTranscludeFn = compilationGenerator(mightHaveMultipleTransclusionError, $template, transcludeFn, terminalPriority,
-                                        replaceDirective && replaceDirective.name, {
+            childTranscludeFn = compilationGenerator(mightHaveMultipleTransclusionError, $template, transcludeFn, changeOuterScope,
+                                        terminalPriority, replaceDirective && replaceDirective.name, {
                                           // Don't pass in:
                                           // - controllerDirectives - otherwise we'll create duplicates controllers
                                           // - newIsolateScopeDirective or templateDirective - combining templates with
@@ -1829,7 +1835,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           } else {
             $template = jqLite(jqLiteClone(compileNode)).contents();
             $compileNode.empty(); // clear contents
-            childTranscludeFn = compilationGenerator(mightHaveMultipleTransclusionError, $template, transcludeFn);
+            childTranscludeFn = compilationGenerator(mightHaveMultipleTransclusionError, $template, transcludeFn, changeOuterScope);
           }
         }
 
@@ -1874,6 +1880,11 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             if (newIsolateScopeDirective) {
               markDirectivesAsIsolate(templateDirectives);
             }
+
+            if (newScopeDirective || newIsolateScopeDirective) {
+              markDirectivesAsReplacing(templateDirectives);
+            }
+
             directives = directives.concat(templateDirectives).concat(unprocessedDirectives);
             mergeTemplateAttributes(templateAttrs, newTemplateAttrs);
 
@@ -2159,6 +2170,15 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       // mark all directives as needing isolate scope.
       for (var j = 0, jj = directives.length; j < jj; j++) {
         directives[j] = inherit(directives[j], {$$isolateScope: true});
+      }
+    }
+
+    function markDirectivesAsReplacing(directives) {
+      // mark transcluding directives as replacing, so that their outer scope is changed to the directive's scope
+      for (var j = 0, jj = directives.length; j < jj; j++) {
+        if (directives[j].transclude) {
+          directives[j] = inherit(directives[j], {$$replacing: true});
+        }
       }
     }
 
