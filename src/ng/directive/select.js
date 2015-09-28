@@ -98,6 +98,15 @@ var SelectController =
   self.hasOption = function(value) {
     return !!optionsMap.get(value);
   };
+
+  // Directives that provide their own option adding mechanism call this to prevent options
+  // from being added in the standard way
+  self.overriden = false;
+  self.override = function() {
+    self.overridden = true;
+    self.addOption = noop;
+    self.removeOption = noop;
+  };
 }];
 
 /**
@@ -308,7 +317,13 @@ var selectDirective = function() {
     restrict: 'E',
     require: ['select', '?ngModel'],
     controller: SelectController,
-    link: function(scope, element, attr, ctrls) {
+    priority: 1,
+    link: {
+      pre: selectPreLink
+    }
+  };
+
+  function selectPreLink(scope, element, attr, ctrls) {
 
       // if ngModel is not defined, we don't need to do anything
       var ngModelCtrl = ctrls[1];
@@ -378,7 +393,6 @@ var selectDirective = function() {
 
       }
     }
-  };
 };
 
 
@@ -430,7 +444,7 @@ var optionDirective = ['$interpolate', function($interpolate) {
 
         // Only update trigger option updates if this is an option within a `select`
         // that also has `ngModel` attached
-        if (selectCtrl && selectCtrl.ngModelCtrl) {
+        if (selectCtrl && selectCtrl.ngModelCtrl && !selectCtrl.overridden) {
 
           if (valueInterpolated) {
             // The value attribute is interpolated
