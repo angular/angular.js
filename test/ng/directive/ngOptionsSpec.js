@@ -104,6 +104,17 @@ describe('ngOptions', function() {
     });
   });
 
+  beforeEach(module(function($compileProvider) {
+    $compileProvider
+      .directive('compileContents', function($compile) {
+        return {
+          link: { pre: function(scope, element) {
+            $compile(element.contents())(scope);
+          }}
+        };
+    });
+  }));
+
   beforeEach(inject(function($rootScope, _$compile_) {
     scope = $rootScope.$new(); //create a child scope because the root scope can't be $destroy-ed
     $compile = _$compile_;
@@ -2118,6 +2129,18 @@ describe('ngOptions', function() {
       expect(element.find('option').length).toBe(1);
       option = element.find('option').eq(0);
       expect(option.text()).toBe('A');
+    });
+
+
+    it('should not throw when a directive compiles the blank option before ngOptions is linked', function() {
+      expect(function() {
+          createSelect({
+          'compile-contents': '',
+          'name': 'select',
+          'ng-model': 'value',
+          'ng-options': 'item for item in items',
+        }, true);
+      }).not.toThrow();
     });
   });
 
