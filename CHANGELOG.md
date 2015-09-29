@@ -1,3 +1,16 @@
+<a name="1.3.20"></a>
+# 1.3.20 shallow-translucence (2015-09-29)
+
+
+## Bug Fixes
+
+- **$parse:** do not convert to string computed properties multiple times
+  ([d434f3db](https://github.com/angular/angular.js/commit/d434f3db53d6209eb140b904e83bbde401686c16))
+
+
+## Breaking Changes
+
+
 <a name="1.2.29"></a>
 # 1.2.29 ultimate-deprecation (2015-09-29)
 
