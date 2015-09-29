@@ -108,9 +108,11 @@ describe('ngOptions', function() {
     $compileProvider
       .directive('compileContents', function($compile) {
         return {
-          link: { pre: function(scope, element) {
-            $compile(element.contents())(scope);
-          }}
+          link: {
+            pre: function(scope, element) {
+              $compile(element.contents())(scope);
+            }
+          }
         };
       })
       .directive('customSelect', function() {
@@ -2145,7 +2147,7 @@ describe('ngOptions', function() {
 
     it('should not throw when a directive compiles the blank option before ngOptions is linked', function() {
       expect(function() {
-          createSelect({
+        createSelect({
           'compile-contents': '',
           'name': 'select',
           'ng-model': 'value',
