@@ -1,3 +1,32 @@
+<a name="1.2.29"></a>
+# 1.2.29 ultimate-deprecation (2015-09-29)
+
+
+## Bug Fixes
+
+- **$browser:** prevent infinite digests when clearing the hash of a url
+  ([9845cee6](https://github.com/angular/angular.js/commit/9845cee63eda3ad5024622c792c5e745b59ec5cb),
+   [#9629](https://github.com/angular/angular.js/issues/9629), [#9635](https://github.com/angular/angular.js/issues/9635), [#10228](https://github.com/angular/angular.js/issues/10228), [#10308](https://github.com/angular/angular.js/issues/10308))
+- **$compile:** workaround for IE11 MutationObserver
+  ([fccce96d](https://github.com/angular/angular.js/commit/fccce96d444f442ba5ecfb67201505a445d0c209),
+   [#11781](https://github.com/angular/angular.js/issues/11781), [#12613](https://github.com/angular/angular.js/issues/12613))
+- **$location:** strip off empty hash segments when comparing
+  ([e81b2f72](https://github.com/angular/angular.js/commit/e81b2f726cacd08bcf91500183a7ea3f71961718),
+   [#9635](https://github.com/angular/angular.js/issues/9635), [#10748](https://github.com/angular/angular.js/issues/10748))
+- **$parse:**
+  - do not convert to string computed properties multiple times
+  ([afb65c11](https://github.com/angular/angular.js/commit/afb65c11e5e3425f8431ad5b82308ff6b8ecbc64))
+  - throw error when accessing a restricted property indirectly
+  ([e6cbd4fa](https://github.com/angular/angular.js/commit/e6cbd4faa211b2c0c8879c255e3194fb0717dcec),
+   [#12833](https://github.com/angular/angular.js/issues/12833))
+- **ngAnimate:** ensure that minified repaint code isn't removed
+  ([b041b664](https://github.com/angular/angular.js/commit/b041b664752e34a42bbc65e02bf0009f0836c50c),
+   [#9936](https://github.com/angular/angular.js/issues/9936))
+
+
+## Breaking Changes
+
+
 <a name="1.4.6"></a>
 # 1.4.6 multiplicative-elevation (2015-09-17)
 
