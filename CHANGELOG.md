@@ -1,3 +1,55 @@
+<a name="1.4.7"></a>
+# 1.4.7 dark-luminescence (2015-09-29)
+
+
+## Bug Fixes
+
+- **$compile:** use createMap() for $$observe listeners when initialized from attr interpolation
+  ([5a98e806](https://github.com/angular/angular.js/commit/5a98e806ef3c59916bb4668268125610b11effe8),
+   [#10446](https://github.com/angular/angular.js/issues/10446))
+- **$parse:**
+  - block assigning to fields of a constructor
+  ([a7f3761e](https://github.com/angular/angular.js/commit/a7f3761eda5309f76b73c6fb1d3173a270112899),
+   [#12860](https://github.com/angular/angular.js/issues/12860))
+  - do not convert to string computed properties multiple times
+  ([698af191](https://github.com/angular/angular.js/commit/698af191ded2465ca4e0f97959b75fede5a531ab))
+- **filters:** ensure `formatNumber` observes i18n decimal separators
+  ([4994acd2](https://github.com/angular/angular.js/commit/4994acd26e582eec8a92b139bfc09ca79a9b8835),
+   [#10342](https://github.com/angular/angular.js/issues/10342), [#12850](https://github.com/angular/angular.js/issues/12850))
+- **jqLite:** properly handle dash-delimited node names in `jqLiteBuildFragment`
+  ([cdd1227a](https://github.com/angular/angular.js/commit/cdd1227a308edd34d31b67f338083b6e0c4c0db9),
+   [#10617](https://github.com/angular/angular.js/issues/10617), [#12759](https://github.com/angular/angular.js/issues/12759))
+- **ngAnimate:**
+  - ensure anchoring uses body as a container when needed
+  ([9d3704ca](https://github.com/angular/angular.js/commit/9d3704ca467081f16b71b011eb50c53d5cdb2f34),
+   [#12872](https://github.com/angular/angular.js/issues/12872))
+  - callback detection should only use RAF when necessary
+  ([fa8c399f](https://github.com/angular/angular.js/commit/fa8c399fadc30b78710868fe59d2930fdc17c7a5))
+- **ngMessages:** prevent race condition with ngAnimate
+  ([7295c60f](https://github.com/angular/angular.js/commit/7295c60ffb9f2e4f32043c538ace740b187f565a),
+   [#12856](https://github.com/angular/angular.js/issues/12856), [#12903](https://github.com/angular/angular.js/issues/12903))
+- **ngOptions:**
+  - skip comments when looking for option elements
+  ([68d4dc5b](https://github.com/angular/angular.js/commit/68d4dc5b71b23e4c7c2650e6da3d7200de99f1ae),
+   [#12190](https://github.com/angular/angular.js/issues/12190))
+  - prevent frozen select ui in IE
+  ([dbc69851](https://github.com/angular/angular.js/commit/dbc698517ff620b3a6279f65d4a9b6e3c15087b9),
+   [#11314](https://github.com/angular/angular.js/issues/11314), [#11795](https://github.com/angular/angular.js/issues/11795))
+
+
+## Features
+
+- **$animateCss:** add support for temporary styles via `cleanupStyles`
+  ([e52d731b](https://github.com/angular/angular.js/commit/e52d731bfd1fbb6c616125fbde2fb365722254b7),
+   [#12930](https://github.com/angular/angular.js/issues/12930))
+- **$http:** add `$xhrFactory` service to enable creation of custom xhr objects
+  ([7a413df5](https://github.com/angular/angular.js/commit/7a413df5e47e04e20a1c93d35922050bbcbfb492),
+   [#2318](https://github.com/angular/angular.js/issues/2318), [#9319](https://github.com/angular/angular.js/issues/9319), [#12159](https://github.com/angular/angular.js/issues/12159))
+
+
+## Breaking Changes
+
+
 <a name="1.3.20"></a>
 # 1.3.20 shallow-translucence (2015-09-29)
 
