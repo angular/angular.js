@@ -1,3 +1,116 @@
+<a name="1.5.0-beta.1"></a>
+# 1.5.0-beta.1 dense-dispersion (2015-09-29)
+
+
+## Bug Fixes
+
+- **$compile:**
+  - use createMap() for $$observe listeners when initialized from attr interpolation
+  ([76c2491a](https://github.com/angular/angular.js/commit/76c2491a316d6b296c721227529fcb09087d369a),
+   [#10446](https://github.com/angular/angular.js/issues/10446))
+  - properly sanitize xlink:href attribute interoplation
+  ([f33ce173](https://github.com/angular/angular.js/commit/f33ce173c90736e349cf594df717ae3ee41e0f7a),
+   [#12524](https://github.com/angular/angular.js/issues/12524))
+- **$parse:**
+  - fix typo in error message ("assing" -> "assign")
+  ([70dac5ae](https://github.com/angular/angular.js/commit/70dac5ae82ffe9c6250681274905583747523b5d),
+   [#12940](https://github.com/angular/angular.js/issues/12940))
+  - block assigning to fields of a constructor
+  ([e1f4f23f](https://github.com/angular/angular.js/commit/e1f4f23f781a79ae8a4046b21130283cec3f2917),
+   [#12860](https://github.com/angular/angular.js/issues/12860))
+  - do not convert to string computed properties multiple times
+  ([20cf7d5e](https://github.com/angular/angular.js/commit/20cf7d5e3a0af766b1929e24794859c79439351c))
+- **$sanitize:**
+  - strip urls starting with 'unsafe:' as opposed to 'unsafe'
+  ([a4dfa4d0](https://github.com/angular/angular.js/commit/a4dfa4d061fd2f6baf9821f0863dcce7888232ab),
+   [#12524](https://github.com/angular/angular.js/issues/12524))
+  - add mXSS protection
+  ([bc0d8c4e](https://github.com/angular/angular.js/commit/bc0d8c4eea9a34bff5e29dd492dcdd668251be40),
+   [#12524](https://github.com/angular/angular.js/issues/12524))
+  - support void elements, fixups, remove dead code, typos
+  ([94207f8f](https://github.com/angular/angular.js/commit/94207f8fb6ee8fe26fe18657f6b5aca6def99605),
+   [#12524](https://github.com/angular/angular.js/issues/12524))
+- **filters:** ensure `formatNumber` observes i18n decimal separators
+  ([658a865c](https://github.com/angular/angular.js/commit/658a865c5b2580eed53b340e7394945cd76e2260),
+   [#10342](https://github.com/angular/angular.js/issues/10342), [#12850](https://github.com/angular/angular.js/issues/12850))
+- **injector:** support arrow functions with no parenthesis
+  ([03726f7f](https://github.com/angular/angular.js/commit/03726f7fbd5d71c0604b8dd40e97cb2fb0fb777f),
+   [#12890](https://github.com/angular/angular.js/issues/12890))
+- **input:** remove workaround for Firefox bug
+  ([b366f035](https://github.com/angular/angular.js/commit/b366f0352abccfe4c4868b5a9e8c0b88659bd1ee))
+- **ngAnimate:**
+  - ensure anchoring uses body as a container when needed
+  ([240d5896](https://github.com/angular/angular.js/commit/240d5896ecdfac2351f9bd6147b52de52c0b7608),
+   [#12872](https://github.com/angular/angular.js/issues/12872))
+  - callback detection should only use RAF when necessary
+  ([8b27c3f0](https://github.com/angular/angular.js/commit/8b27c3f064b34532ba99d709cadf09fc4c0cbeab))
+- **ngMessages:** prevent race condition with ngAnimate
+  ([8366622b](https://github.com/angular/angular.js/commit/8366622bed009d2cad7d0cff28b9c1e48bfbd4e1),
+   [#12856](https://github.com/angular/angular.js/issues/12856), [#12903](https://github.com/angular/angular.js/issues/12903))
+- **ngOptions:**
+  - skip comments when looking for option elements
+  ([7f3f3dd3](https://github.com/angular/angular.js/commit/7f3f3dd3ebcc44711600ac292af54c411c3c705f),
+   [#12190](https://github.com/angular/angular.js/issues/12190))
+  - prevent frozen select ui in IE
+  ([42c97c5d](https://github.com/angular/angular.js/commit/42c97c5db5921e9e5447fb32bdae1f48da42844f),
+   [#11314](https://github.com/angular/angular.js/issues/11314), [#11795](https://github.com/angular/angular.js/issues/11795))
+  - allow falsy values as option group identifiers
+  ([b71d7c3f](https://github.com/angular/angular.js/commit/b71d7c3f3c04e65b02d88b33c22dd90ae3cdfc27),
+   [#7015](https://github.com/angular/angular.js/issues/7015), [#7024](https://github.com/angular/angular.js/issues/7024), [#12888](https://github.com/angular/angular.js/issues/12888))
+  - throw if ngModel is not present
+  ([ded25187](https://github.com/angular/angular.js/commit/ded2518756d4409fdfda0d4af243f2125bea01b5),
+   [#7047](https://github.com/angular/angular.js/issues/7047), [#12840](https://github.com/angular/angular.js/issues/12840))
+- **ngResource:** encode `&` in URL query param values
+  ([1c97a605](https://github.com/angular/angular.js/commit/1c97a6057bc013262be761bca5e5c22224c4bbf8),
+   [#12201](https://github.com/angular/angular.js/issues/12201))
+
+
+## Features
+
+- **$animateCss:** add support for temporary styles via `cleanupStyles`
+  ([9f67da62](https://github.com/angular/angular.js/commit/9f67da625293441e27559ebde7503cc63408a95c),
+   [#12930](https://github.com/angular/angular.js/issues/12930))
+- **$http:** add `$xhrFactory` service to enable creation of custom xhr objects
+  ([106f90aa](https://github.com/angular/angular.js/commit/106f90aafa0fa5a81ad7af7ffc9d1e00ab97ffef),
+   [#2318](https://github.com/angular/angular.js/issues/2318), [#9319](https://github.com/angular/angular.js/issues/9319), [#12159](https://github.com/angular/angular.js/issues/12159))
+- **$injector:** add strictDi property to $injector instance
+  ([79577c5d](https://github.com/angular/angular.js/commit/79577c5d316c7bf0204d7d1747ddc5b15bfe2955),
+   [#11728](https://github.com/angular/angular.js/issues/11728), [#11734](https://github.com/angular/angular.js/issues/11734))
+- **$sanitize:** make svg support an opt-in
+  ([181fc567](https://github.com/angular/angular.js/commit/181fc567d873df065f1e84af7225deb70a8d2eb9),
+   [#12524](https://github.com/angular/angular.js/issues/12524))
+- **$time:** create time service
+  ([fa4c7b7f](https://github.com/angular/angular.js/commit/fa4c7b7f1d885eb9746166e268c9f7511ea39676),
+   [#10402](https://github.com/angular/angular.js/issues/10402), [#10525](https://github.com/angular/angular.js/issues/10525))
+- **ngModel:** provide ng-empty and ng-not-empty CSS classes
+  ([630280c7](https://github.com/angular/angular.js/commit/630280c7fb04a83208d09c97c2efb81be3a3db74),
+   [#10050](https://github.com/angular/angular.js/issues/10050), [#12848](https://github.com/angular/angular.js/issues/12848))
+
+
+## Performance Improvements
+
+- **$compile:** Lazily compile the `transclude` function
+  ([652b83eb](https://github.com/angular/angular.js/commit/652b83eb226131d131a44453520a569202aa4aac))
+
+
+## Breaking Changes
+
+- **$sanitize:** due to [181fc567](https://github.com/angular/angular.js/commit/181fc567d873df065f1e84af7225deb70a8d2eb9),
+  The svg support in  is now an opt-in option
+
+Applications that depend on this option can use  to turn the option back on,
+but while doing so, please read the warning provided in the  documentation for
+information on preventing click-hijacking attacks when this option is turned on.
+
+- **ngOptions:** due to [ded25187](https://github.com/angular/angular.js/commit/ded2518756d4409fdfda0d4af243f2125bea01b5),
+
+`ngOptions` will now throw if `ngModel` is not present on the `select`
+element. Previously, having no `ngModel` let `ngOptions` silently
+fail, which could lead to hard to debug errors. The change should
+therefore not affect any applications, as it simply makes the
+requirement more strict and alerts the developer explicitly.
+
+
 <a name="1.4.7"></a>
 # 1.4.7 dark-luminescence (2015-09-29)
 
