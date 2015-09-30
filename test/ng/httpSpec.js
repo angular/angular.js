@@ -1391,6 +1391,25 @@ describe('$http', function() {
           expect(callback).toHaveBeenCalledOnce();
           expect(callback.mostRecentCall.args[0]).toBe('RESP-FIRST:V1');
         });
+
+
+        it('should apply `transformResponse` even if the response data is empty', function(data) {
+          var callback = jasmine.createSpy('transformResponse');
+          var config = {transformResponse: callback};
+
+          $httpBackend.expect('GET', '/url1').respond(200, undefined);
+          $httpBackend.expect('GET', '/url2').respond(200, null);
+          $httpBackend.expect('GET', '/url3').respond(200, '');
+          $http.get('/url1', config);
+          $http.get('/url2', config);
+          $http.get('/url3', config);
+          $httpBackend.flush();
+
+          expect(callback.callCount).toBe(3);
+          expect(callback.calls[0].args[0]).toBe(undefined);
+          expect(callback.calls[1].args[0]).toBe(null);
+          expect(callback.calls[2].args[0]).toBe('');
+        });
       });
     });
 
