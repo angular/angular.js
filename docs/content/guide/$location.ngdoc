@@ -391,6 +391,9 @@ In these examples we use `<base href="/base/index.html" />`
 
    .constant('initUrl', 'http://www.example.com/base/path?a=b#h')
    .constant('baseHref', '/base/index.html')
+   
+   // This will make the fake broser run with html5 support.
+   // Don't set this in your other projects.
    .value('$sniffer', { history: true })
 
    .controller("LocationController", function($scope, $location) {
@@ -540,6 +543,9 @@ In these examples we use `<base href="/base/index.html" />`
 
     .constant('initUrl', 'http://www.example.com/base/index.html#!/path?a=b#h')
     .constant('baseHref', '/base/index.html')
+    
+    // This will make the fake broser run with html5 support.
+    // Don't set this in your other projects.
     .value('$sniffer', { history: false })
 
     .config(function($locationProvider) {
