@@ -1549,6 +1549,8 @@ function angularInit(element, bootstrap) {
  * @param {Object=} config an object for defining configuration options for the application. The
  *     following keys are supported:
  *
+ * * `debugInfoEnabled` - overrides the `debugInfoEnabled` setting defined in the provided
+ *   `modules` (see {@link ng.$compileProvider#debugInfoEnabled} for more.).
  * * `strictDi` - disable automatic function annotation for the application. This is meant to
  *   assist in finding bugs which break minified code. Defaults to `false`.
  *
