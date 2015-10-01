@@ -356,15 +356,15 @@ legacy browsers and hashbang links in modern browser:
 
 ### Example
 
-Here you can see two `$location` instances, both in **Html5 mode**, but on different browsers, so
-that you can see the differences. These `$location` services are connected to a fake browsers. Each
-input represents the address bar of the browser.
+Here you can see two `$location` instances that show the difference between **Html5 mode** and **Html5 Fallback mode**.
+Note that to simulate different levels of browser support, the `$location` instances are connected to
+a fakeBrowser service, which you don't have to set up in actual projects.
 
-Note that when you type hashbang url into first browser (or vice versa) it doesn't rewrite /
+Note that when you type hashbang url into the first browser (or vice versa) it doesn't rewrite /
 redirect to regular / hashbang url, as this conversion happens only during parsing the initial URL
 = on page reload.
 
-In these examples we use `<base href="/base/index.html" />`
+In these examples we use `<base href="/base/index.html" />`. The inputs represent the address bar of the browser.
 
 #### Browser in HTML5 mode
 <example module="html5-mode" name="location-html5-mode">
@@ -389,6 +389,7 @@ In these examples we use `<base href="/base/index.html" />`
   <file name="app.js">
    angular.module('html5-mode', ['fake-browser', 'address-bar'])
 
+   // Configure the fakeBrowser. Do not set these values in actual projects.
    .constant('initUrl', 'http://www.example.com/base/path?a=b#h')
    .constant('baseHref', '/base/index.html')
    .value('$sniffer', { history: true })
@@ -538,6 +539,7 @@ In these examples we use `<base href="/base/index.html" />`
   <file name="app.js">
     angular.module('hashbang-mode', ['fake-browser', 'address-bar'])
 
+    // Configure the fakeBrowser. Do not set these values in actual projects.
     .constant('initUrl', 'http://www.example.com/base/index.html#!/path?a=b#h')
     .constant('baseHref', '/base/index.html')
     .value('$sniffer', { history: false })
