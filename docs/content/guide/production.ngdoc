@@ -44,7 +44,7 @@ and {@link angular.reloadWithDebugInfo `angular.reloadWithDebugInfo`}.
 
 ## Strict DI Mode
 
-Using strict di mode in your production application will throw errors when a injectable
+Using strict di mode in your production application will throw errors when an injectable
 function is not
 {@link di#dependency-annotation annotated explicitly}. Strict di mode is intended to help
 you make sure that your code will work when minified. However, it also will force you to
