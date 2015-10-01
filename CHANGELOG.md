@@ -79,9 +79,6 @@
 - **$sanitize:** make svg support an opt-in
   ([181fc567](https://github.com/angular/angular.js/commit/181fc567d873df065f1e84af7225deb70a8d2eb9),
    [#12524](https://github.com/angular/angular.js/issues/12524))
-- **$time:** create time service
-  ([fa4c7b7f](https://github.com/angular/angular.js/commit/fa4c7b7f1d885eb9746166e268c9f7511ea39676),
-   [#10402](https://github.com/angular/angular.js/issues/10402), [#10525](https://github.com/angular/angular.js/issues/10525))
 - **ngModel:** provide ng-empty and ng-not-empty CSS classes
   ([630280c7](https://github.com/angular/angular.js/commit/630280c7fb04a83208d09c97c2efb81be3a3db74),
    [#10050](https://github.com/angular/angular.js/issues/10050), [#12848](https://github.com/angular/angular.js/issues/12848))
