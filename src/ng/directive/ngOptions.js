@@ -58,28 +58,27 @@ var ngOptionsMinErr = minErr('ngOptions');
  * ### `select` **`as`** and **`track by`**
  *
  * <div class="alert alert-warning">
- * Do not use `select` **`as`** and **`track by`** in the same expression. They are not designed to work together.
+ * Be careful when using `select` **`as`** and **`track by`** in the same expression.
  * </div>
  *
- * Consider the following example:
+ * This will work:
  *
  * ```html
- * <select ng-options="item.subItem as item.label for item in values track by item.id" ng-model="selected"></select>
+ * <select ng-options="item as item.label for item in items track by item.id" ng-model="selected"></select>
  * ```
  *
- * ```js
- * $scope.values = [{
- *   id: 1,
- *   label: 'aLabel',
- *   subItem: { name: 'aSubItem' }
- * }, {
- *   id: 2,
- *   label: 'bLabel',
- *   subItem: { name: 'bSubItem' }
- * }];
+ * This will not work:
  *
- * $scope.selected = { name: 'aSubItem' };
+ * ```html
+ * <select ng-options="item.value as item.label for item in items track by item.id" ng-model="selected"></select>
  * ```
+ *
+ * In both examples the **`track by`** expression is applied sucessfully to each `item` in `items`. It is also
+ * applied to the selected value from `ngModel`. In the first example this will be `item`. However, in the
+ * second example, the selected value will be `item.value` causing the **`track by`** expression to evaluate
+ * `item.value.id`. As a result, the selected element is never found and the `<select>` is always reset to
+ * the "not selected" option.
+ *
  *
  * With the purpose of preserving the selection, the **`track by`** expression is always applied to the element
  * of the data source (to `item` in this example). To calculate whether an element is selected, we do the
