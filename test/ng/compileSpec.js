@@ -947,6 +947,14 @@ describe('$compile', function() {
           expect(child).toHaveClass('log'); // merged from replace directive template
         }));
 
+        it('should interpolate the values once per digest',
+            inject(function($compile, $rootScope, log) {
+          element = $compile('<div>{{log("A")}} foo {{::log("B")}}</div>')($rootScope);
+          $rootScope.log = log;
+          $rootScope.$digest();
+          expect(log).toEqual('A; B; A; B');
+        }));
+
         it('should update references to replaced jQuery context', function() {
           module(function($compileProvider) {
             $compileProvider.directive('foo', function() {
