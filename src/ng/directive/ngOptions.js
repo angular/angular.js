@@ -395,6 +395,7 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
   return {
     restrict: 'A',
     terminal: true,
+    controller: function() { },
     require: ['select', 'ngModel'],
     link: function(scope, selectElement, attr, ctrls) {
 

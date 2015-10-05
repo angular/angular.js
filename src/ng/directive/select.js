@@ -417,10 +417,15 @@ var optionDirective = ['$interpolate', function($interpolate) {
 
         // This is an optimization over using ^^ since we don't want to have to search
         // all the way to the root of the DOM for every single option element
-        var selectCtrlName = '$selectController',
-            parent = element.parent(),
-            selectCtrl = parent.data(selectCtrlName) ||
-              parent.parent().data(selectCtrlName); // in case we are in optgroup
+        var selectElement = element.parent();
+        if (nodeName_(selectElement) !== 'select') {
+          selectElement = selectElement.parent(); // in case we are in optgroup
+        }
+
+        var selectCtrl = selectElement.data('$selectController');
+
+        // If there is an ngOptions directive then bail out
+        if (selectElement.data('$ngOptionsController')) return;
 
         function addOption(optionValue) {
           selectCtrl.addOption(optionValue, element);

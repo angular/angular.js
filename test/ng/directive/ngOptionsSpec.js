@@ -104,6 +104,30 @@ describe('ngOptions', function() {
     });
   });
 
+  beforeEach(module(function($compileProvider) {
+    $compileProvider
+      .directive('compileContents', function($compile) {
+        return {
+          link: {
+            pre: function(scope, element) {
+              $compile(element.contents())(scope);
+            }
+          }
+        };
+      })
+      .directive('customSelect', function() {
+        return {
+          restrict: 'E',
+          replace: true,
+          scope: { ngModel: '=', options: '='},
+          templateUrl: 'select_template.html',
+          link: function(scope) {
+            scope.selectable_options = scope.options;
+          }
+        }
+      });
+  }));
+
   beforeEach(inject(function($rootScope, _$compile_) {
     scope = $rootScope.$new(); //create a child scope because the root scope can't be $destroy-ed
     $compile = _$compile_;
@@ -2119,6 +2143,31 @@ describe('ngOptions', function() {
       option = element.find('option').eq(0);
       expect(option.text()).toBe('A');
     });
+
+
+    it('should not throw when a directive compiles the blank option before ngOptions is linked', function() {
+      expect(function() {
+        createSelect({
+          'compile-contents': '',
+          'name': 'select',
+          'ng-model': 'value',
+          'ng-options': 'item for item in items',
+        }, true);
+      }).not.toThrow();
+    });
+
+    it('should not throw with a directive that replaces', inject(function($templateCache, $httpBackend) {
+      $templateCache.put('select_template.html', '<select ng-options="option as option for option in selectable_options"> <option value="">This is a test</option> </select>');
+
+      scope.options = ['a', 'b', 'c', 'd'];
+
+      expect(function() {
+        var element = $compile('<custom-select ng-model="value" options="options"></custom-select>')(scope);
+        scope.$digest();
+        dealoc(element);
+      }).not.toThrow();
+
+    }));
   });
 
 
