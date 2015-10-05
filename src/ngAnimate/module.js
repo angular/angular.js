@@ -363,13 +363,12 @@
  * ```js
  * myModule.animation('.slide', ['$animateCss', function($animateCss) {
  *   return {
- *     enter: function(element, doneFn) {
+ *     enter: function(element) {
 *        // this will trigger `.slide.ng-enter` and `.slide.ng-enter-active`.
- *       var runner = $animateCss(element, {
+ *       return $animateCss(element, {
  *         event: 'enter',
  *         structural: true
- *       }).start();
-*        runner.done(doneFn);
+ *       });
  *     }
  *   }
  * }]);
@@ -384,16 +383,14 @@
  * ```js
  * myModule.animation('.slide', ['$animateCss', function($animateCss) {
  *   return {
- *     enter: function(element, doneFn) {
- *       var runner = $animateCss(element, {
+ *     enter: function(element) {
+ *       return $animateCss(element, {
  *         event: 'enter',
  *         structural: true,
  *         addClass: 'maroon-setting',
  *         from: { height:0 },
  *         to: { height: 200 }
- *       }).start();
- *
- *       runner.done(doneFn);
+ *       });
  *     }
  *   }
  * }]);
