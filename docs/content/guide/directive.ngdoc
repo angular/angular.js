@@ -588,13 +588,14 @@ In this example we will build a directive that displays the current time.
 Once a second, it updates the DOM to reflect the current time.
 
 Directives that want to modify the DOM typically use the `link` option.
-`link` takes a function with the following signature, `function link(scope, element, attrs) { ... }`
+`link` takes a function with the following signature, `function link(scope, element, attrs, controller) { ... }`
 where:
 
 * `scope` is an Angular scope object.
 * `element` is the jqLite-wrapped element that this directive matches.
 * `attrs` is a hash object with key-value pairs of normalized attribute names and their
   corresponding attribute values.
+* `controller` is the controller for the directive, if defined
 
 In our `link` function, we want to update the displayed time once a second, or whenever a user
 changes the time formatting string that our directive binds to. We will use the `$interval` service
