@@ -4406,6 +4406,66 @@ describe('$compile', function() {
     });
 
 
+    it('should evaluate against the correct scope, when using `bindToController` (new scope)',
+      function() {
+        module(function($compileProvider, $controllerProvider) {
+          $controllerProvider.register({
+            'ParentCtrl': function() {
+              this.value1 = 'parent1';
+              this.value2 = 'parent2';
+              this.value3 = function() { return 'parent3'; };
+            },
+            'ChildCtrl': function() {
+              this.value1 = 'child1';
+              this.value2 = 'child2';
+              this.value3 = function() { return 'child3'; };
+            }
+          });
+
+          $compileProvider.directive('child', valueFn({
+            scope: true,
+            controller: 'ChildCtrl',
+            controllerAs: 'ctrl',
+            bindToController: {
+              fromView1: '@',
+              fromView2: '=',
+              fromView3: '&'
+            },
+            template: ''
+          }));
+        });
+
+        inject(function($compile, $rootScope) {
+          element = $compile(
+              '<div ng-controller="ParentCtrl as ctrl">' +
+                '<child ' +
+                    'from-view-1="{{ ctrl.value1 }}" ' +
+                    'from-view-2="ctrl.value2" ' +
+                    'from-view-3="ctrl.value3">' +
+                '</child>' +
+              '</div>')($rootScope);
+          $rootScope.$digest();
+
+          var parentCtrl = element.controller('ngController');
+          var childCtrl = element.find('child').controller('child');
+
+          expect(childCtrl.fromView1).toBe(parentCtrl.value1);
+          expect(childCtrl.fromView1).not.toBe(childCtrl.value1);
+          expect(childCtrl.fromView2).toBe(parentCtrl.value2);
+          expect(childCtrl.fromView2).not.toBe(childCtrl.value2);
+          expect(childCtrl.fromView3()()).toBe(parentCtrl.value3());
+          expect(childCtrl.fromView3()()).not.toBe(childCtrl.value3());
+
+          childCtrl.fromView2 = 'modified';
+          $rootScope.$digest();
+
+          expect(parentCtrl.value2).toBe('modified');
+          expect(childCtrl.value2).toBe('child2');
+        });
+      }
+    );
+
+
     it('should put controller in scope when controller identifier present but not using controllerAs', function() {
       var controllerCalled = false;
       var myCtrl;

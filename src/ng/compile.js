@@ -2027,8 +2027,8 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
       function nodeLinkFn(childLinkFn, scope, linkNode, $rootElement, boundTranscludeFn,
                           thisLinkFn) {
-        var i, ii, linkFn, controller, isolateScope, elementControllers, transcludeFn, $element,
-            attrs;
+        var i, ii, linkFn, controller, isolateScope, parentScope, elementControllers, transcludeFn,
+            $element, attrs;
 
         if (compileNode === linkNode) {
           attrs = templateAttrs;
@@ -2041,6 +2041,8 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         if (newIsolateScopeDirective) {
           isolateScope = scope.$new(true);
         }
+
+        parentScope = (newScopeDirective && !newIsolateScopeDirective) ? scope.$parent : scope;
 
         if (boundTranscludeFn) {
           // track `boundTranscludeFn` so it can be unwrapped if `transcludeFn`
@@ -2060,7 +2062,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           compile.$$addScopeClass($element, true);
           isolateScope.$$isolateBindings =
               newIsolateScopeDirective.$$isolateBindings;
-          initializeDirectiveBindings(scope, attrs, isolateScope,
+          initializeDirectiveBindings(parentScope, attrs, isolateScope,
                                       isolateScope.$$isolateBindings,
                                       newIsolateScopeDirective, isolateScope);
         }
@@ -2076,7 +2078,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             if (controller && controller.identifier && bindings) {
               controllerForBindings = controller;
               thisLinkFn.$$destroyBindings =
-                  initializeDirectiveBindings(scope, attrs, controller.instance,
+                  initializeDirectiveBindings(parentScope, attrs, controller.instance,
                                               bindings, scopeDirective);
             }
           }
@@ -2093,7 +2095,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                 // Remove and re-install bindToController bindings
                 thisLinkFn.$$destroyBindings();
                 thisLinkFn.$$destroyBindings =
-                  initializeDirectiveBindings(scope, attrs, controllerResult, bindings, scopeDirective);
+                  initializeDirectiveBindings(parentScope, attrs, controllerResult, bindings, scopeDirective);
               }
             }
           }
