@@ -1661,7 +1661,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
      * @param previousCompileContext
      * @returns {Function}
      */
-    function compilationGenerator(eager, $compileNodes, transcludeFn, changeOuterScope, maxPriority, ignoreDirective, previousCompileContext) {
+    function compilationGenerator(eager, $compileNodes, transcludeFn, maxPriority, changeOuterScope, ignoreDirective, previousCompileContext) {
         if (eager) {
             return compile($compileNodes, transcludeFn, maxPriority, changeOuterScope, ignoreDirective, previousCompileContext);
         }
@@ -1821,8 +1821,8 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             compileNode = $compileNode[0];
             replaceWith(jqCollection, sliceArgs($template), compileNode);
 
-            childTranscludeFn = compilationGenerator(mightHaveMultipleTransclusionError, $template, transcludeFn, changeOuterScope,
-                                        terminalPriority, replaceDirective && replaceDirective.name, {
+            childTranscludeFn = compilationGenerator(mightHaveMultipleTransclusionError, $template, transcludeFn,
+                                        terminalPriority, changeOuterScope, replaceDirective && replaceDirective.name, {
                                           // Don't pass in:
                                           // - controllerDirectives - otherwise we'll create duplicates controllers
                                           // - newIsolateScopeDirective or templateDirective - combining templates with
@@ -1835,7 +1835,8 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           } else {
             $template = jqLite(jqLiteClone(compileNode)).contents();
             $compileNode.empty(); // clear contents
-            childTranscludeFn = compilationGenerator(mightHaveMultipleTransclusionError, $template, transcludeFn, changeOuterScope);
+            childTranscludeFn = compilationGenerator(mightHaveMultipleTransclusionError, $template, transcludeFn,
+                                          undefined, changeOuterScope);
           }
         }
 

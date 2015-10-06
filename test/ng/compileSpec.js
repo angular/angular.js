@@ -5632,7 +5632,7 @@ describe('$compile', function() {
       //see issue https://github.com/angular/angular.js/issues/12936
       it('should use the proper scope when being the root element of a replaced directive', function() {
         module(function() {
-          directive('parent', valueFn({
+          directive('isolate', valueFn({
             scope: {},
             replace: true,
             template: '<div trans>{{x}}</div>',
@@ -5650,10 +5650,39 @@ describe('$compile', function() {
           }));
         });
         inject(function($rootScope, $compile) {
-          element = $compile('<parent></parent>')($rootScope);
+          element = $compile('<isolate></isolate>')($rootScope);
           $rootScope.x = 'root';
           $rootScope.$apply();
           expect(element.text()).toEqual('iso');
+        });
+      });
+
+
+      //see issue https://github.com/angular/angular.js/issues/12936
+      it('should use the proper scope when being the root element of a replaced directive with child scope', function() {
+        module(function() {
+          directive('child', valueFn({
+            scope: true,
+            replace: true,
+            template: '<div trans>{{x}}</div>',
+            link: function(scope, element, attr, ctrl) {
+              scope.x = 'child';
+            }
+          }));
+          directive('trans', valueFn({
+            transclude: 'content',
+            link: function(scope, element, attr, ctrl, $transclude) {
+              $transclude(function(clone) {
+                element.append(clone);
+              });
+            }
+          }));
+        });
+        inject(function($rootScope, $compile) {
+          element = $compile('<child></child>')($rootScope);
+          $rootScope.x = 'root';
+          $rootScope.$apply();
+          expect(element.text()).toEqual('child');
         });
       });
 
