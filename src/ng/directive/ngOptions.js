@@ -401,6 +401,9 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
       // The emptyOption allows the application developer to provide their own custom "empty"
       // option when the viewValue does not match any of the option values.
       var emptyOption;
+      // The empty option might have a directive that dynamically adds / removes it
+      var dynamicEmptyOption;
+
       for (var i = 0, children = selectElement.children(), ii = children.length; i < ii; i++) {
         if (children[i].value === '') {
           emptyOption = children.eq(i);
@@ -550,6 +553,9 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
 
         // compile the element since there might be bindings in it
         $compile(emptyOption)(scope);
+        if (emptyOption[0].nodeType === NODE_TYPE_COMMENT) {
+          dynamicEmptyOption = true;
+        }
 
         // remove the class, which is added automatically because we recompile the element and it
         // becomes the compilation root
@@ -619,9 +625,15 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
         var unknownOption_ = unknownOption && unknownOption[0];
 
         if (emptyOption_ || unknownOption_) {
-          while (current &&
-                (current === emptyOption_ ||
-                current === unknownOption_)) {
+
+          while (
+            current &&
+            (current === emptyOption_ ||
+            current === unknownOption_ ||
+            // When the empty option is dynamically added / removed, we cannot be sure that the
+            // emptyOption is the same as it was when it was extracted in the first place
+            dynamicEmptyOption && (current.nodeType === NODE_TYPE_COMMENT || current.value === ''))
+          ) {
             current = current.nextSibling;
           }
         }
