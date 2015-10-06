@@ -393,6 +393,8 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
       optGroupTemplate = document.createElement('optgroup');
 
 
+    function ngOptionsPostLink(scope, selectElement, attr, ctrls) {
+
       // if ngModel is not defined, we don't need to do anything
       var ngModelCtrl = ctrls[1];
       if (!ngModelCtrl) return;
