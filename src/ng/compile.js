@@ -1977,7 +1977,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       }
 
       function nodeLinkFn(childLinkFn, scope, linkNode, $rootElement, boundTranscludeFn) {
-        var linkFn, isolateScope, elementControllers, transcludeFn, $element,
+        var linkFn, isolateScope, controllerScope, elementControllers, transcludeFn, $element,
             attrs, removeScopeBindingWatches, removeControllerBindingWatches;
 
         if (compileNode === linkNode) {
@@ -1988,8 +1988,11 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           attrs = new Attributes($element, templateAttrs);
         }
 
+        controllerScope = scope;
         if (newIsolateScopeDirective) {
           isolateScope = scope.$new(true);
+        } else if (newScopeDirective) {
+          controllerScope = scope.$parent;
         }
 
         if (boundTranscludeFn) {
@@ -2026,7 +2029,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
           if (controller.identifier && bindings) {
             removeControllerBindingWatches =
-              initializeDirectiveBindings(scope, attrs, controller.instance, bindings, controllerDirective);
+              initializeDirectiveBindings(controllerScope, attrs, controller.instance, bindings, controllerDirective);
           }
 
           var controllerResult = controller();
@@ -2037,7 +2040,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             $element.data('$' + controllerDirective.name + 'Controller', controllerResult);
             removeControllerBindingWatches && removeControllerBindingWatches();
             removeControllerBindingWatches =
-              initializeDirectiveBindings(scope, attrs, controller.instance, bindings, controllerDirective);
+              initializeDirectiveBindings(controllerScope, attrs, controller.instance, bindings, controllerDirective);
           }
         }
 
