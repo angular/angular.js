@@ -1578,6 +1578,7 @@ function bootstrap(element, modules, config) {
   var defaultConfig = {
     strictDi: false
   };
+
   config = extend(defaultConfig, config);
   var doBootstrap = function() {
     element = jqLite(element);
@@ -1616,19 +1617,19 @@ function bootstrap(element, modules, config) {
     return injector;
   };
 
-  var NG_ENABLE_DEBUG_INFO = /^NG_ENABLE_DEBUG_INFO!/;
-  var NG_DEFER_BOOTSTRAP = /^NG_DEFER_BOOTSTRAP!/;
+  var NG_ENABLE_DEBUG_INFO = /\bNG_ENABLE_DEBUG_INFO!=true\b/;
+  var NG_DEFER_BOOTSTRAP = /\bNG_DEFER_BOOTSTRAP!=true\b/;
 
-  if (window && NG_ENABLE_DEBUG_INFO.test(window.name)) {
+  if (document && NG_ENABLE_DEBUG_INFO.test(document.cookie)) {
     config.debugInfoEnabled = true;
-    window.name = window.name.replace(NG_ENABLE_DEBUG_INFO, '');
+    document.cookie = 'NG_ENABLE_DEBUG_INFO!=false;expires=Thu, 01 Jan 1970 00:00:01 GMT';
   }
 
-  if (window && !NG_DEFER_BOOTSTRAP.test(window.name)) {
+  if (document && !NG_DEFER_BOOTSTRAP.test(document.cookie)) {
     return doBootstrap();
   }
 
-  window.name = window.name.replace(NG_DEFER_BOOTSTRAP, '');
+  document.cookie = 'NG_DEFER_BOOTSTRAP!=false;expires=Thu, 01 Jan 1970 00:00:01 GMT';
   angular.resumeBootstrap = function(extraModules) {
     forEach(extraModules, function(module) {
       modules.push(module);
@@ -1652,7 +1653,7 @@ function bootstrap(element, modules, config) {
  * See {@link ng.$compileProvider#debugInfoEnabled} for more.
  */
 function reloadWithDebugInfo() {
-  window.name = 'NG_ENABLE_DEBUG_INFO!' + window.name;
+  document.cookie = 'NG_ENABLE_DEBUG_INFO!=true';
   window.location.reload();
 }
 
