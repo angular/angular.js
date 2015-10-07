@@ -1147,7 +1147,8 @@ describe('$route', function() {
     });
 
 
-    it('should not reload a route when reloadOnSearch is disabled and only .search() changes', function() {
+    it('should not reload a route when reloadOnSearch is disabled and' +
+      'only .search() changes without resolve promises defined', function() {
       var routeChange = jasmine.createSpy('route change'),
           routeUpdate = jasmine.createSpy('route update');
 
@@ -1174,6 +1175,54 @@ describe('$route', function() {
         $rootScope.$digest();
         expect(routeChange).not.toHaveBeenCalled();
         expect(routeUpdate).toHaveBeenCalled();
+      });
+    });
+
+
+    it('should not reload a route when reloadOnSearch is disabled and' +
+      'only .search() changes with resolve promises defined', function() {
+      var routeChange = jasmine.createSpy('route change'),
+          routeUpdate = jasmine.createSpy('route update'),
+          deferA;
+
+      module(function($routeProvider) {
+        $routeProvider.when('/foo', {
+          controller: angular.noop,
+          reloadOnSearch: false,
+          resolve: {
+          a: ['$q', function($q) {
+            deferA = $q.defer();
+            return deferA.promise;
+          }]
+          }
+        });
+      });
+
+      inject(function($route, $location, $rootScope) {
+        $rootScope.$on('$routeChangeStart', routeChange);
+        $rootScope.$on('$routeChangeSuccess', routeChange);
+        $rootScope.$on('$routeUpdate', routeUpdate);
+
+        expect(routeChange).not.toHaveBeenCalled();
+
+        $location.path('/foo');
+        $rootScope.$digest();
+        expect(routeChange).toHaveBeenCalled();
+        expect(routeChange.callCount).toBe(1);
+        expect(routeUpdate).not.toHaveBeenCalled();
+        routeChange.reset();
+
+        // don't trigger reload and routeUpdate
+        $location.search({foo: 'bar'});
+        $rootScope.$digest();
+        expect(routeChange).not.toHaveBeenCalled();
+        expect(routeUpdate).not.toHaveBeenCalled();
+
+        // should trigger routeUpdate
+        deferA.resolve();
+        $rootScope.$digest();
+        expect(routeUpdate).toHaveBeenCalled();
+
       });
     });
 
