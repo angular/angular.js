@@ -2628,7 +2628,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
     // Set up $watches for isolate scope and controller bindings. This process
     // only occurs for isolate scopes and new scopes with controllerAs.
     function initializeDirectiveBindings(scope, attrs, destination, bindings, directive) {
-      var removeWatchCollection;
+      var removeWatchCollection = [];
       forEach(bindings, function(definition, scopeName) {
         var attrName = definition.attrName,
         optional = definition.optional,
@@ -2696,7 +2696,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             } else {
               removeWatch = scope.$watch($parse(attrs[attrName], parentValueWatch), null, parentGet.literal);
             }
-            removeWatchCollection = (removeWatchCollection || []);
             removeWatchCollection.push(removeWatch);
             break;
 
@@ -2714,7 +2713,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         }
       });
 
-      return removeWatchCollection && function removeWatches() {
+      return removeWatchCollection.length && function removeWatches() {
         for (var i = 0, ii = removeWatchCollection.length; i < ii; ++i) {
           removeWatchCollection[i]();
         }
