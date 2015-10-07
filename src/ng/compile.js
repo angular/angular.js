@@ -2073,7 +2073,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
               controllerForBindings = controller;
               removeControllerBindingWatches =
                   initializeDirectiveBindings(scope, attrs, controller.instance,
-                                              bindings, scopeDirective) || noop;
+                                              bindings, scopeDirective);
             }
           }
           for (i in elementControllers) {
@@ -2087,7 +2087,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
               $element.data('$' + i + 'Controller', controllerResult);
               if (controller === controllerForBindings) {
                 // Remove and re-install bindToController bindings
-                removeControllerBindingWatches();
+                removeControllerBindingWatches && removeControllerBindingWatches();
                 removeControllerBindingWatches =
                   initializeDirectiveBindings(scope, attrs, controllerResult, bindings, scopeDirective);
               }
