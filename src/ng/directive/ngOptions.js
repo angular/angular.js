@@ -408,7 +408,7 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
         }
       }
 
-      var providedEmptyOption = !!emptyOption;
+      var providedEmptyOption = emptyOption;
 
       var unknownOption = jqLite(optionTemplate.cloneNode(false));
       unknownOption.val('?');
@@ -618,10 +618,19 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
         var emptyOption_ = emptyOption && emptyOption[0];
         var unknownOption_ = unknownOption && unknownOption[0];
 
+        // If the compiled empty option was replaced by a comment because
+        // it had an "element" transclusion directive on it (such as ngIf)
+        // then compare against the pre-compiled empty element instead
+        if (emptyOption && emptyOption_.nodeType === NODE_TYPE_COMMENT) {
+          emptyOption_ = providedEmptyOption[0];
+        }
+
         if (emptyOption_ || unknownOption_) {
           while (current &&
                 (current === emptyOption_ ||
-                current === unknownOption_)) {
+                current === unknownOption_ ||
+                current.nodeType === NODE_TYPE_COMMENT ||
+                current.value === '')) {
             current = current.nextSibling;
           }
         }
