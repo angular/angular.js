@@ -1,0 +1,53 @@
+@ngdoc error
+@name orderBy:notarray
+@fullName Not an array
+@description
+
+This error occurs when {@link ng.orderBy filter} is not used with an array:
+```html
+<input ng-model="search">
+<div ng-repeat="(key, value) in myObj | orderBy:search">
+  {{ key }} : {{ value }}
+</div>
+```
+
+orderBy must be used with an array so a subset of items can be returned.
+The array can be initialized asynchronously and therefore null or undefined won't throw this error.
+
+To orderBy an object by the value of its properties you can create your own array based on that object:
+```js
+angular.module('aModule',[])
+  .controller('aController', function($scope) {
+    var obj = {
+      one:   {
+              name: 'something 1'
+              },
+      two:   {
+              name: 'something 2'
+             },
+      three: {
+             name: 'something 3'
+             },
+    };
+
+    //if using underscore
+    $scope.objToArray = = _.values(obj);
+
+  });
+```
+That can be used as:
+```html
+<input ng-model="search">
+<div ng-repeat="some in objToArray | orderBy:'name'">
+  {{ key }} : {{ value }}
+</div>
+```
+
+You could as well convert the object to an array using a filter such as
+[toArrayFilter](https://github.com/petebacondarwin/angular-toArrayFilter):
+```html
+<input ng-model="search">
+<div ng-repeat="item in myObj | toArray:false | filter:search">
+  {{ item }}
+</div>
+```
