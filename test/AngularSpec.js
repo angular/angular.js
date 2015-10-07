@@ -1826,6 +1826,7 @@ describe('angular', function() {
 
         expect(element.html()).toBe('3');
         expect(/\bNG_DEFER_BOOTSTRAP!=true\b/.test(document.cookie)).toBeFalsy();
+<<<<<<< HEAD
       });
     });
 
@@ -1870,7 +1871,62 @@ describe('angular', function() {
         bootstrap(element);
         
         expect(document.cookie).toEqual('');
+=======
+>>>>>>> fix(Angular.js): use cookie instead of window.name to load with debug info
       });
+    });
+
+    describe('reloadWithDebugInfo', function() {
+      var element;
+
+      beforeEach(function() {
+        element = jqLite('<div>{{1+2}}</div>');
+      });
+
+      afterEach(function() {
+        dealoc(element);
+      });
+
+      it('should not change the configuration when the cookie is not set', function() {
+        var compileProvider = null;
+
+        bootstrap(element, [disableDebugAndGetProvider]);
+        expect(compileProvider.debugInfoEnabled()).toBeFalsy();
+
+        function disableDebugAndGetProvider($compileProvider) {
+          $compileProvider.debugInfoEnabled(false);
+          compileProvider = $compileProvider;
+        }
+      });
+
+      it('should enable debug if the cookie is set', function() {
+        var compileProvider = null;
+
+        document.cookie = 'NG_ENABLE_DEBUG_INFO!=true';
+        bootstrap(element, [getCompileProvider]);
+
+        expect(compileProvider.debugInfoEnabled()).toBeTruthy();
+
+        function getCompileProvider($compileProvider) {
+          compileProvider = $compileProvider;
+        }
+      });
+
+      it('should remove the cookie', function() {
+        document.cookie = 'NG_ENABLE_DEBUG_INFO!=true';
+        bootstrap(element);
+        expect(document.cookie).toEqual('');
+      });
+    });
+  });
+
+  describe('reloadWithDebugInfo', function() {
+
+    it('should create a cookie', function() {
+      angular.reloadWithDebugInfo();
+      expect(/\bNG_ENABLE_DEBUG_INFO!=true\b/.test(document.cookie)).toBeTruthy();
+
+      // it should also reload the window, but we can not test that, as window.location can not be spied upon
     });
   });
 
