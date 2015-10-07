@@ -34,10 +34,10 @@
  * @param {string} ngInclude|src angular expression evaluating to URL. If the source is a string constant,
  *                 make sure you wrap it in **single** quotes, e.g. `src="'myPartialTemplate.html'"`.
  * @param {string=} onload Expression to evaluate when a new partial is loaded.
- * 
+ *
  *                  <div class="alert alert-warning">
  *                  **Note:** Seems like the onload attribute is being handled differently by different browsers,
- *                  like with SVG elements in IE11. To fix this, you can instead use `data-onload` 
+ *                  like with SVG elements in IE11. To fix this, you can instead use `data-onload`
  *                  in ng-include and it will work, because directives normalize the attribute names.
  *                  </div>
  *
