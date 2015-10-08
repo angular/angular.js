@@ -56,4 +56,25 @@ describe('linky', function() {
       toBeOneOf('<a target="someNamedIFrame" href="http://example.com">http://example.com</a>',
                 '<a href="http://example.com" target="someNamedIFrame">http://example.com</a>');
   });
+
+  it('should optionally add custom attributes', function() {
+    expect(linky("http://example.com", "_self", {rel: "nofollow"})).
+      toEqual('<a rel="nofollow" target="_self" href="http://example.com">http://example.com</a>');
+  });
+
+  it('should override target parameter with custom attributes', function() {
+    expect(linky("http://example.com", "_self", {target: "_blank"})).
+      toEqual('<a target="_blank" href="http://example.com">http://example.com</a>');
+  });
+
+  it('should optionally add custom attributes from function', function() {
+    expect(linky("http://example.com", "_self", function(url) {return {"class": "blue"};})).
+      toEqual('<a class="blue" target="_self" href="http://example.com">http://example.com</a>');
+  });
+
+  it('should pass url as parameter to custom attribute function', function() {
+    var linkParameters = jasmine.createSpy('linkParameters').andReturn({"class": "blue"});
+    linky("http://example.com", "_self", linkParameters);
+    expect(linkParameters).toHaveBeenCalledWith('http://example.com');
+  });
 });
