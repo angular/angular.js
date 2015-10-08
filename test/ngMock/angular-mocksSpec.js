@@ -963,6 +963,11 @@ describe('ngMock', function() {
       expect(typeof hb.whenHEAD).toBe("function");
     });
 
+    it('should provide "route" shortcuts for expect and when', function() {
+        expect(typeof hb.whenRoute).toBe("function");
+        expect(typeof hb.expectRoute).toBe("function");
+    });
+
 
     it('should respond with first matched definition', function() {
       hb.when('GET', '/url1').respond(200, 'content', {});
@@ -1143,14 +1148,38 @@ describe('ngMock', function() {
       });
 
       it('should take function', function() {
-        hb.expect('GET', '/some').respond(function(m, u, d, h) {
-          return [301, m + u + ';' + d + ';a=' + h.a, {'Connection': 'keep-alive'}, 'Moved Permanently'];
+        hb.expect('GET', '/some?q=s').respond(function(m, u, d, h, p) {
+          return [301, m + u + ';' + d + ';a=' + h.a + ';q=' + p.q, {'Connection': 'keep-alive'}, 'Moved Permanently'];
         });
 
-        hb('GET', '/some', 'data', callback, {a: 'b'});
+        hb('GET', '/some?q=s', 'data', callback, {a: 'b'});
         hb.flush();
 
-        expect(callback).toHaveBeenCalledOnceWith(301, 'GET/some;data;a=b', 'Connection: keep-alive', 'Moved Permanently');
+        expect(callback).toHaveBeenCalledOnceWith(301, 'GET/some?q=s;data;a=b;q=s', 'Connection: keep-alive', 'Moved Permanently');
+      });
+
+      it('should decode query parameters in respond() function', function() {
+        hb.expect('GET', '/url?query=l%E2%80%A2ng%20string%20w%2F%20spec%5Eal%20char%24&id=1234&orderBy=-name')
+        .respond(function(m, u, d, h, p) {
+          return [200, "id=" + p.id + ";orderBy=" + p.orderBy + ";query=" + p.query];
+        });
+
+        hb('GET', '/url?query=l%E2%80%A2ng%20string%20w%2F%20spec%5Eal%20char%24&id=1234&orderBy=-name', null, callback);
+        hb.flush();
+
+        expect(callback).toHaveBeenCalledOnceWith(200, 'id=1234;orderBy=-name;query=l•ng string w/ spec^al char$', '', '');
+      });
+
+      it('should include regex captures in respond() params when keys provided', function() {
+        hb.expect('GET', /\/(.+)\/article\/(.+)/, undefined, undefined, ['id', 'name'])
+        .respond(function(m, u, d, h, p) {
+          return [200, "id=" + p.id + ";name=" + p.name];
+        });
+
+        hb('GET', '/1234/article/cool-angular-article', null, callback);
+        hb.flush();
+
+        expect(callback).toHaveBeenCalledOnceWith(200, 'id=1234;name=cool-angular-article', '', '');
       });
 
       it('should default response headers to ""', function() {
@@ -1515,6 +1544,35 @@ describe('ngMock', function() {
       });
     });
 
+    describe('expectRoute/whenRoute shortcuts', function() {
+      angular.forEach(['expectRoute', 'whenRoute'], function(routeShortcut) {
+        var methods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'JSONP'];
+        they('should provide ' + routeShortcut + ' shortcut with $prop method', methods,
+          function() {
+            hb[routeShortcut](this, '/route').respond('path');
+            hb(this, '/route', undefined, callback);
+            hb.flush();
+            expect(callback).toHaveBeenCalledOnceWith(200, 'path', '', '');
+          }
+        );
+        they('should match colon deliminated parameters in ' + routeShortcut + ' $prop method', methods,
+          function() {
+            hb[routeShortcut](this, '/route/:id/path/:s_id').respond('path');
+            hb(this, '/route/123/path/456', undefined, callback);
+            hb.flush();
+            expect(callback).toHaveBeenCalledOnceWith(200, 'path', '', '');
+          }
+        );
+        they('should ignore query param when matching in ' + routeShortcut + ' $prop method', methods,
+          function() {
+            hb[routeShortcut](this, '/route/:id').respond('path');
+            hb(this, '/route/123?q=str&foo=bar', undefined, callback);
+            hb.flush();
+            expect(callback).toHaveBeenCalledOnceWith(200, 'path', '', '');
+          }
+        );
+      });
+    });
 
     describe('MockHttpExpectation', function() {
       /* global MockHttpExpectation */
