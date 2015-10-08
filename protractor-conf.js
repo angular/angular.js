@@ -9,7 +9,7 @@ config.specs = [
 ];
 
 config.capabilities = {
-  browserName: 'chrome',
+  browserName: 'chrome'
 };
 
 exports.config = config;
