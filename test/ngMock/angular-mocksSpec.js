@@ -964,8 +964,8 @@ describe('ngMock', function() {
     });
 
     it('should provide "route" shortcuts for expect and when', function() {
-        expect(typeof hb.whenRoute).toBe("function");
-        expect(typeof hb.expectRoute).toBe("function");
+      expect(typeof hb.whenRoute).toBe("function");
+      expect(typeof hb.expectRoute).toBe("function");
     });
 
 
