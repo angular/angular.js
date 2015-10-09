@@ -401,6 +401,16 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
       markElementAnimationState(element, PRE_DIGEST_STATE, newAnimation);
 
       $rootScope.$$postDigest(function() {
+        //saves the addClass or removeClass before options manipulation
+        var classInfo = {};
+
+        if (options.addClass) {
+          classInfo.addClass = options.addClass;
+        }
+        if (options.removeClass) {
+          classInfo.removeClass = options.removeClass;
+        }
+
         var animationDetails = activeAnimationsLookup.get(node);
         var animationCancelled = !animationDetails;
         animationDetails = animationDetails || {};
@@ -460,13 +470,13 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
           if (animationDetails && animationDetails.counter === counter) {
             clearElementAnimationState(getDomNode(element));
           }
-          notifyProgress(runner, event, 'close', {});
+          notifyProgress(runner, event, 'close', classInfo);
         });
 
         // this will update the runner's flow-control events based on
         // the `realRunner` object.
         runner.setHost(realRunner);
-        notifyProgress(runner, event, 'start', {});
+        notifyProgress(runner, event, 'start', classInfo);
       });
 
       return runner;
