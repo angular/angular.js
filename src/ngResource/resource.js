@@ -517,6 +517,7 @@ angular.module('ngResource', ['ng']).
 
         Resource.prototype.toJSON = function() {
           var data = extend({}, this);
+          delete data.$timeoutDeferred;
           delete data.$promise;
           delete data.$resolved;
           return data;
@@ -574,10 +575,14 @@ angular.module('ngResource', ['ng']).
               undefined;
 
             forEach(action, function(value, key) {
-              if (key != 'params' && key != 'isArray' && key != 'interceptor') {
+              if (key !== 'params' && key !== 'isArray' && key !== 'interceptor') {
                 httpConfig[key] = copy(value);
               }
             });
+            if (action.timeout === 'promise') {
+              var deferred = value.$timeoutDeferred = $q.defer();
+              httpConfig.timeout = deferred.promise;
+            }
 
             if (hasBody) httpConfig.data = data;
             route.setUrlParams(httpConfig,
@@ -585,8 +590,9 @@ angular.module('ngResource', ['ng']).
               action.url);
 
             var promise = $http(httpConfig).then(function(response) {
-              var data = response.data,
-                promise = value.$promise;
+              var data = response.data;
+              var promise = value.$promise;
+              var timeoutDeferred = value.$timeoutDeferred;
 
               if (data) {
                 // Need to convert action.isArray to boolean in case it is undefined
@@ -613,6 +619,7 @@ angular.module('ngResource', ['ng']).
                 } else {
                   shallowClearAndCopy(data, value);
                   value.$promise = promise;
+                  value.$timeoutDeferred = timeoutDeferred;
                 }
               }
 
