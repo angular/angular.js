@@ -372,6 +372,46 @@ describe('ngMessages', function() {
     expect(trim(element.text())).toEqual("Enter something");
   }));
 
+
+  it('should be compatible with ngBind',
+    inject(function($rootScope, $compile) {
+
+    element = $compile('<div ng-messages="col">' +
+                       '        <div ng-message="required" ng-bind="errorMessages.required"></div>' +
+                       '        <div ng-message="extra" ng-bind="errorMessages.extra"></div>' +
+                       '</div>')($rootScope);
+
+    $rootScope.$apply(function() {
+      $rootScope.col = {
+        required: true,
+        extra: true
+      };
+      $rootScope.errorMessages = {
+        required: 'Fill in the text field.',
+        extra: 'Extra error message.'
+      };
+    });
+
+    expect(messageChildren(element).length).toBe(1);
+    expect(trim(element.text())).toEqual('Fill in the text field.');
+
+    $rootScope.$apply(function() {
+      $rootScope.col.required = false;
+      $rootScope.col.extra = true;
+    });
+
+    expect(messageChildren(element).length).toBe(1);
+    expect(trim(element.text())).toEqual('Extra error message.');
+
+    $rootScope.$apply(function() {
+      $rootScope.errorMessages.extra = 'New error message.';
+    });
+
+    expect(messageChildren(element).length).toBe(1);
+    expect(trim(element.text())).toEqual('New error message.');
+  }));
+
+
   // issue #12856
   it('should only detach the message object that is associated with the message node being removed',
     inject(function($rootScope, $compile, $animate) {
