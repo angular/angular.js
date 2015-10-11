@@ -603,7 +603,7 @@ directive logic will be put.
 * `transcludeFn` is a transclude linking function pre-bound to the correct transclusion scope.
 
 <div class="alert alert-info">
-For full detail on the `link` method refer to the {@link ng.$compile `$compile` API} page.
+For full detail on the `link` method refer to the {@link ng.$compile#-link- `$compile` API} page.
 </div>
 
 In our `link` function, we want to update the displayed time once a second, or whenever a user
