@@ -574,9 +574,9 @@ var locationPrototype = {
    * @description
    * This method is getter / setter.
    *
-   * Return hash fragment when called without any parameters.
+   * Returns the hash fragment when called without any parameters.
    *
-   * Changes the hash fragment when called with parameter and returns `$location`.
+   * Changes the hash fragment when called with a parameter and returns `$location`.
    *
    *
    * ```js
