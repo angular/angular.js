@@ -2114,5 +2114,38 @@ describe('q', function() {
       expect(exceptionExceptionSpy).toHaveBeenCalled();
       expect(errorSpy).toHaveBeenCalled();
     });
+
+    it('should a promise have spread method', function () {
+      expect(deferred.promise.spread).toBeDefined();
+    });
+
+    it('should get the parameters on spread after collection of promise', function () {
+      var a,b;
+      q.all([q.resolve(1), q.resolve(2)]).spread(function(_a, _b) { a = _a; b = _b; });
+      mockNextTick.flush();
+      expect(a).toEqual(1);
+      expect(b).toEqual(2);
+    });
+
+    it('should get the parameter after only one promise', function () {
+      var result;
+      deferred.promise.spread(function (a) { result = a });
+      deferred.resolve(1);
+      mockNextTick.flush();
+      expect(result).toEqual(1);
+    });
+
+    it('should chain the promises with spread', function () {
+      var result;
+      deferred.promise.spread(function () {
+        return q.resolve(1);
+      }).then(function (a) {
+        result = a;
+      });
+      deferred.resolve();
+      mockNextTick.flush();
+      expect(result).toEqual(1);
+    });
+
   });
 });

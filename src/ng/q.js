@@ -296,6 +296,22 @@ function qFactory(nextTick, exceptionHandler) {
       }, function(error) {
         return handleCallback(error, false, callback);
       }, progressBack);
+    },
+
+    spread: function (onFulfilled, onRejected) {
+
+      function toArray (value) {
+        var arr = [];
+        arr.push(value);
+        return arr;
+      }
+
+      function spread (value) {
+        var arrData = isArray(value) ? value : toArray(value); 
+        return onFulfilled.apply(undefined, arrData);
+      }
+
+      return this.then(spread, onRejected);
     }
   });
 
