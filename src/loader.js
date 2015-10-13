@@ -287,16 +287,19 @@ function setupModuleLoader(window) {
            * @name angular.Module#component
            * @module ng
            * @param {string} name Name of the component in camel-case (i.e. myComp which will match as my-comp)
-           * @param {Object} options Component definition object, has the following properties (all optional):
+           * @param {Object} options Component definition object (a simplified
+           *    {@link ng.$compile#directive-definition-object directive definition object}),
+           *    has the following properties (all optional):
            *
-           *    - `controller` – `{(string|function()=}` – Controller fn that should be associated with
-           *      newly created scope or the name of a {@link angular.Module#controller registered
-           *      controller} if passed as a string.
+           *    - `controller` – `{(string|function()=}` – Controller constructor function that should be
+           *      associated with newly created scope or the name of a {@link ng.$compile#-controller-
+           *      registered controller} if passed as a string. Empty function by default.
            *    - `controllerAs` – `{string=}` – An identifier name for a reference to the controller.
            *      If present, the controller will be published to scope under the `controllerAs` name.
            *      If not present, this will default to be the same as the component name.
            *    - `template` – `{string=|function()=}` – html template as a string or a function that
            *      returns an html template as a string which should be used as the contents of this component.
+           *      Empty string by default.
            *
            *      If `template` is a function, then it is {@link auto.$injector#invoke injected} with
            *      the following locals:
@@ -312,18 +315,47 @@ function setupModuleLoader(window) {
            *
            *      - `$element` - Current element
            *      - `$attrs` - Current attributes object for the element
-           *    - `transclude` – `{boolean=}` – whether {@link $compile#transclusion transclusion} is enabled.
-           *      enabled by default.
-           *    - `isolate` – `{boolean=}` – whether the new scope is isolated. Isolated by default.
-           *    - `bindings` – `{object=}` – define DOM attribute binding to component properties.
-           *      component properties are always bound to the component controller and not to the scope.
+           *    - `bindings` – `{object=}` – Define DOM attribute binding to component properties.
+           *      Component properties are always bound to the component controller and not to the scope.
+           *    - `transclude` – `{boolean=}` – Whether {@link $compile#transclusion transclusion} is enabled.
+           *      Enabled by default.
+           *    - `isolate` – `{boolean=}` – Whether the new scope is isolated. Isolated by default.
+           *    - `restrict` - `{string=}` - String of subset of {@link ng.$compile#-restrict- EACM} which
+           *      restricts the component to specific directive declaration style. If omitted, this defaults to 'E'.
            *    - `$canActivate` – `{function()=}` – TBD.
            *    - `$routeConfig` – `{object=}` – TBD.
            *
            * @description
-           * Register a component definition with the compiler. This is short for registering a directive
-           * where its definition object is isolated, allows transclusion and bound to controller as the
-           * component name by default.
+           * Register a component definition with the compiler. This is short for registering a specific
+           * subset of directives which represents actual UI components in your application. Component
+           * definitions are very simple and do not require the complexity behind defining directives.
+           * Component definitions usually consist only of the template and the controller backing it.
+           * In order to make the definition easier, components enforce best practices like controllerAs
+           * and default behaviors like scope isolation, restrict to elements and allow transclusion.
+           *
+           * Here are a few examples of how you would usually define components:
+           *
+           * ```js
+           *   angular.module(...).component.('myComp', {
+           *     template: '<div>My name is {{myComp.name}}</div>',
+           *     controller: function MyCtrl() {
+           *       this.name = 'shahar';
+           *     }
+           *   });
+           *
+           *   angular.module(...).component.('myComp', {
+           *     template: '<div>My name is {{myComp.name}}</div>',
+           *     bindings: {name: '@'}
+           *   });
+           *
+           *   angular.module(...).component.('myComp', {
+           *     templateUrl: 'views/my-comp.html',
+           *     controller: 'MyCtrl as ctrl',
+           *     bindings: {name: '@'}
+           *   });
+           *
+           * ```
+           *
            * See {@link ng.$compileProvider#directive $compileProvider.directive()}.
            */
           component: function(name, options) {
@@ -346,7 +378,8 @@ function setupModuleLoader(window) {
                 templateUrl: makeInjectable(options.templateUrl),
                 transclude: options.transclude === undefined ? true : options.transclude,
                 scope: options.isolate === false ? true : {},
-                bindToController: options.bindings || {}
+                bindToController: options.bindings || {},
+                restrict: options.restrict || 'E'
               };
             }
 

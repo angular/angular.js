@@ -123,7 +123,8 @@ describe('component', function() {
         templateUrl: undefined,
         transclude: true,
         scope: {},
-        bindToController: {}
+        bindToController: {},
+        restrict: 'E'
       }));
     });
   });
@@ -137,7 +138,8 @@ describe('component', function() {
       templateUrl: 'def.html',
       transclude: false,
       isolate: false,
-      bindings: {abc: '='}
+      bindings: {abc: '='},
+      restrict: 'EA'
     });
     module('my');
     inject(function(myComponentDirective) {
@@ -148,7 +150,8 @@ describe('component', function() {
         templateUrl: 'def.html',
         transclude: false,
         scope: true,
-        bindToController: {abc: '='}
+        bindToController: {abc: '='},
+        restrict: 'EA'
       }));
     });
   });
