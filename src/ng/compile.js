@@ -1854,7 +1854,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
               // Add the matching elements into their slot
               forEach($compileNode.children(), function(node) {
                 var slotName = slotNames[directiveNormalize(nodeName_(node))];
-                var slot = $template;
                 if (slotName) {
                   filledSlots[slotName] = true;
                   slots[slotName].push(node);
