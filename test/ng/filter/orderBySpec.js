@@ -10,7 +10,7 @@ describe('Filter: orderBy', function() {
   describe('(Arrays)', function() {
     it('should throw an exception if no array-like object is provided', function() {
       expect(function() { orderBy({}); }).
-        toThrowMinErr('filter', 'notarray', 'Expected array but received: {}');
+        toThrowMinErr('orderBy', 'notarray', 'Expected array but received: {}');
     });
 
     it('should return sorted array if predicate is not provided', function() {
