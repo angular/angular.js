@@ -616,16 +616,18 @@ describe('$aria', function() {
   describe('tabindex', function() {
     beforeEach(injectScopeAndCompiler);
 
-    it('should not attach to native controls', function() {
-      var element = [
-        $compile("<button ng-click='something'></button>")(scope),
-        $compile("<a ng-href='#/something'>")(scope),
-        $compile("<input ng-model='val'>")(scope),
-        $compile("<textarea ng-model='val'></textarea>")(scope),
-        $compile("<select ng-model='val'></select>")(scope),
-        $compile("<details ng-model='val'></details>")(scope)
-      ];
-      expectAriaAttrOnEachElement(element, 'tabindex', undefined);
+    they('should not attach to native control $prop', {
+      'button': "<button ng-click='something'></button>",
+      'a': "<a ng-href='#/something'>",
+      'input[text]': "<input type='text' ng-model='val'>",
+      'input[radio]': "<input type='radio' ng-model='val'>",
+      'input[checkbox]': "<input type='checkbox' ng-model='val'>",
+      'textarea': "<textarea ng-model='val'></textarea>",
+      'select': "<select ng-model='val'></select>",
+      'details': "<details ng-model='val'></details>"
+    }, function(html) {
+        compileElement(html);
+        expect(element.attr('tabindex')).toBeUndefined();
     });
 
     it('should not attach to random ng-model elements', function() {
