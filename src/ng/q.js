@@ -359,11 +359,9 @@ function qFactory(nextTick, exceptionHandler) {
     },
 
     $$resolve: function(val) {
-      var then, fns;
-
-      fns = callOnce(this, this.$$resolve, this.$$reject);
+      var fns = callOnce(this, this.$$resolve, this.$$reject);
       try {
-        if ((isObject(val) || isFunction(val))) then = val && val.then;
+        var then = val && val.then;
         if (isFunction(then)) {
           this.promise.$$state.status = -1;
           then.call(val, fns[0], fns[1], this.notify);
