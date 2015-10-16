@@ -10,6 +10,12 @@ You are now ready to build the AngularJS phonecat app. In this step, you will be
 with the most important source code files, learn how to start the development servers bundled with
 angular-seed, and run the application in the browser.
 
+First clone the `angular-phonecat` project:
+
+```
+git clone https://github.com/angular/angular-phonecat.git
+```
+
 
 In `angular-phonecat` directory, run this command:
 
