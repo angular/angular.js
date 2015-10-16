@@ -14,15 +14,15 @@
  *     exposed as $$____ properties
  *
  * Loop operations are optimized by using while(count--) { ... }
- *   - this means that in order to keep the same order of execution as addition we have to add
+ *   - This means that in order to keep the same order of execution as addition we have to add
  *     items to the array at the beginning (unshift) instead of at the end (push)
  *
  * Child scopes are created and removed often
- *   - Using an array would be slow since inserts in middle are expensive so we use linked list
+ *   - Using an array would be slow since inserts in the middle are expensive; so we use linked lists
  *
- * There are few watches then a lot of observers. This is why you don't want the observer to be
- * implemented in the same way as watch. Watch requires return of initialization function which
- * are expensive to construct.
+ * There are fewer watches than observers. This is why you don't want the observer to be implemented
+ * in the same way as watch. Watch requires return of the initialization function which is expensive
+ * to construct.
  */
 
 
@@ -64,7 +64,7 @@
  * Every application has a single root {@link ng.$rootScope.Scope scope}.
  * All other scopes are descendant scopes of the root scope. Scopes provide separation
  * between the model and the view, via a mechanism for watching the model for changes.
- * They also provide an event emission/broadcast and subscription facility. See the
+ * They also provide event emission/broadcast and subscription facility. See the
  * {@link guide/scope developer guide on scopes}.
  */
 function $RootScopeProvider() {
