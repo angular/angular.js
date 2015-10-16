@@ -156,7 +156,7 @@ describe("resource", function() {
   });
 
 
-  it('should ignore slashes of undefinend parameters', function() {
+  it('should ignore slashes of undefined parameters', function() {
     var R = $resource('/Path/:a/:b/:c');
 
     $httpBackend.when('GET', '/Path').respond('{}');
@@ -181,7 +181,7 @@ describe("resource", function() {
     R.get({a:6, b:7, c:8});
   });
 
-  it('should not ignore leading slashes of undefinend parameters that have non-slash trailing sequence', function() {
+  it('should not ignore leading slashes of undefined parameters that have non-slash trailing sequence', function() {
     var R = $resource('/Path/:a.foo/:b.bar/:c.baz');
 
     $httpBackend.when('GET', '/Path/.foo/.bar.baz').respond('{}');
@@ -242,7 +242,7 @@ describe("resource", function() {
   });
 
   it('should not encode @ in url params', function() {
-    //encodeURIComponent is too agressive and doesn't follow http://www.ietf.org/rfc/rfc3986.txt
+    //encodeURIComponent is too aggressive and doesn't follow http://www.ietf.org/rfc/rfc3986.txt
     //with regards to the character set (pchar) allowed in path segments
     //so we need this test to make sure that we don't over-encode the params and break stuff like
     //buzz api which uses @self

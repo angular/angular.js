@@ -290,7 +290,7 @@
  *       jQuery(element).fadeOut(1000, doneFn);
  *     }
  *   }
- * }]
+ * }]);
  * ```
  *
  * The nice thing about JS-based animations is that we can inject other services and make use of advanced animation libraries such as
@@ -321,7 +321,7 @@
  *       // do some cool animation and call the doneFn
  *     }
  *   }
- * }]
+ * }]);
  * ```
  *
  * ## CSS + JS Animations Together
@@ -343,7 +343,7 @@
  *       jQuery(element).slideIn(1000, doneFn);
  *     }
  *   }
- * }]
+ * }]);
  * ```
  *
  * ```css
@@ -363,16 +363,15 @@
  * ```js
  * myModule.animation('.slide', ['$animateCss', function($animateCss) {
  *   return {
- *     enter: function(element, doneFn) {
+ *     enter: function(element) {
 *        // this will trigger `.slide.ng-enter` and `.slide.ng-enter-active`.
- *       var runner = $animateCss(element, {
+ *       return $animateCss(element, {
  *         event: 'enter',
  *         structural: true
- *       }).start();
-*        runner.done(doneFn);
+ *       });
  *     }
  *   }
- * }]
+ * }]);
  * ```
  *
  * The nice thing here is that we can save bandwidth by sticking to our CSS-based animation code and we don't need to rely on a 3rd-party animation framework.
@@ -384,19 +383,17 @@
  * ```js
  * myModule.animation('.slide', ['$animateCss', function($animateCss) {
  *   return {
- *     enter: function(element, doneFn) {
- *       var runner = $animateCss(element, {
+ *     enter: function(element) {
+ *       return $animateCss(element, {
  *         event: 'enter',
  *         structural: true,
  *         addClass: 'maroon-setting',
  *         from: { height:0 },
  *         to: { height: 200 }
- *       }).start();
- *
- *       runner.done(doneFn);
+ *       });
  *     }
  *   }
- * }]
+ * }]);
  * ```
  *
  * Now we can fill in the rest via our transition CSS code:

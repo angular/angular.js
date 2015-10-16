@@ -947,6 +947,14 @@ describe('$compile', function() {
           expect(child).toHaveClass('log'); // merged from replace directive template
         }));
 
+        it('should interpolate the values once per digest',
+            inject(function($compile, $rootScope, log) {
+          element = $compile('<div>{{log("A")}} foo {{::log("B")}}</div>')($rootScope);
+          $rootScope.log = log;
+          $rootScope.$digest();
+          expect(log).toEqual('A; B; A; B');
+        }));
+
         it('should update references to replaced jQuery context', function() {
           module(function($compileProvider) {
             $compileProvider.directive('foo', function() {
@@ -7024,239 +7032,531 @@ describe('$compile', function() {
     }));
 
 
-    // See https://github.com/angular/angular.js/issues/7183
-    it("should pass transclusion through to template of a 'replace' directive", function() {
-      module(function() {
-        directive('transSync', function() {
-          return {
-            transclude: true,
-            link: function(scope, element, attr, ctrl, transclude) {
+    describe('lazy compilation', function() {
+      // See https://github.com/angular/angular.js/issues/7183
+      it("should pass transclusion through to template of a 'replace' directive", function() {
+        module(function() {
+          directive('transSync', function() {
+            return {
+              transclude: true,
+              link: function(scope, element, attr, ctrl, transclude) {
 
-              expect(transclude).toEqual(jasmine.any(Function));
+                expect(transclude).toEqual(jasmine.any(Function));
 
-              transclude(function(child) { element.append(child); });
-            }
-          };
-        });
-
-        directive('trans', function($timeout) {
-          return {
-            transclude: true,
-            link: function(scope, element, attrs, ctrl, transclude) {
-
-              // We use timeout here to simulate how ng-if works
-              $timeout(function() {
                 transclude(function(child) { element.append(child); });
-              });
+              }
+            };
+          });
+
+          directive('trans', function($timeout) {
+            return {
+              transclude: true,
+              link: function(scope, element, attrs, ctrl, transclude) {
+
+                // We use timeout here to simulate how ng-if works
+                $timeout(function() {
+                  transclude(function(child) { element.append(child); });
+                });
+              }
+            };
+          });
+
+          directive('replaceWithTemplate', function() {
+            return {
+              templateUrl: "template.html",
+              replace: true
+            };
+          });
+        });
+
+        inject(function($compile, $rootScope, $templateCache, $timeout) {
+
+          $templateCache.put('template.html', '<div trans-sync>Content To Be Transcluded</div>');
+
+          expect(function() {
+            element = $compile('<div><div trans><div replace-with-template></div></div></div>')($rootScope);
+            $timeout.flush();
+          }).not.toThrow();
+
+          expect(element.text()).toEqual('Content To Be Transcluded');
+        });
+
+      });
+
+      it('should lazily compile the contents of directives that are transcluded', function() {
+        var innerCompilationCount = 0, transclude;
+
+        module(function() {
+          directive('trans', valueFn({
+            transclude: true,
+            controller: function($transclude) {
+              transclude = $transclude;
+            }
+          }));
+
+          directive('inner', valueFn({
+            template: '<span>FooBar</span>',
+            compile: function() {
+              innerCompilationCount +=1;
+            }
+          }));
+        });
+
+        inject(function($compile, $rootScope) {
+          element = $compile('<trans><inner></inner></trans>')($rootScope);
+          expect(innerCompilationCount).toBe(0);
+          transclude(function(child) { element.append(child); });
+          expect(innerCompilationCount).toBe(1);
+          expect(element.text()).toBe('FooBar');
+        });
+      });
+
+      it('should lazily compile the contents of directives that are transcluded with a template', function() {
+        var innerCompilationCount = 0, transclude;
+
+        module(function() {
+          directive('trans', valueFn({
+            transclude: true,
+            template: '<div>Baz</div>',
+            controller: function($transclude) {
+              transclude = $transclude;
+            }
+          }));
+
+          directive('inner', valueFn({
+            template: '<span>FooBar</span>',
+            compile: function() {
+              innerCompilationCount +=1;
+            }
+          }));
+        });
+
+        inject(function($compile, $rootScope) {
+          element = $compile('<trans><inner></inner></trans>')($rootScope);
+          expect(innerCompilationCount).toBe(0);
+          transclude(function(child) { element.append(child); });
+          expect(innerCompilationCount).toBe(1);
+          expect(element.text()).toBe('BazFooBar');
+        });
+      });
+
+      it('should lazily compile the contents of directives that are transcluded with a templateUrl', function() {
+        var innerCompilationCount = 0, transclude;
+
+        module(function() {
+          directive('trans', valueFn({
+            transclude: true,
+            templateUrl: 'baz.html',
+            controller: function($transclude) {
+              transclude = $transclude;
+            }
+          }));
+
+          directive('inner', valueFn({
+            template: '<span>FooBar</span>',
+            compile: function() {
+              innerCompilationCount +=1;
+            }
+          }));
+        });
+
+        inject(function($compile, $rootScope, $httpBackend) {
+          $httpBackend.expectGET('baz.html').respond('<div>Baz</div>');
+          element = $compile('<trans><inner></inner></trans>')($rootScope);
+          $httpBackend.flush();
+
+          expect(innerCompilationCount).toBe(0);
+          transclude(function(child) { element.append(child); });
+          expect(innerCompilationCount).toBe(1);
+          expect(element.text()).toBe('BazFooBar');
+        });
+      });
+
+      it('should lazily compile the contents of directives that are transclude element', function() {
+        var innerCompilationCount = 0, transclude;
+
+        module(function() {
+          directive('trans', valueFn({
+            transclude: 'element',
+            controller: function($transclude) {
+              transclude = $transclude;
+            }
+          }));
+
+          directive('inner', valueFn({
+            template: '<span>FooBar</span>',
+            compile: function() {
+              innerCompilationCount +=1;
+            }
+          }));
+        });
+
+        inject(function($compile, $rootScope) {
+          element = $compile('<div><trans><inner></inner></trans></div>')($rootScope);
+          expect(innerCompilationCount).toBe(0);
+          transclude(function(child) { element.append(child); });
+          expect(innerCompilationCount).toBe(1);
+          expect(element.text()).toBe('FooBar');
+        });
+      });
+
+      it('should lazily compile transcluded directives with ngIf on them', function() {
+        var innerCompilationCount = 0, outerCompilationCount = 0, transclude;
+
+        module(function() {
+          directive('outer', valueFn({
+            transclude: true,
+            compile: function() {
+              outerCompilationCount += 1;
+            },
+            controller: function($transclude) {
+              transclude = $transclude;
+            }
+          }));
+
+          directive('inner', valueFn({
+            template: '<span>FooBar</span>',
+            compile: function() {
+              innerCompilationCount +=1;
+            }
+          }));
+        });
+
+        inject(function($compile, $rootScope) {
+          $rootScope.shouldCompile = false;
+
+          element = $compile('<div><outer ng-if="shouldCompile"><inner></inner></outer></div>')($rootScope);
+          expect(outerCompilationCount).toBe(0);
+          expect(innerCompilationCount).toBe(0);
+          expect(transclude).toBeUndefined();
+          $rootScope.$apply('shouldCompile=true');
+          expect(outerCompilationCount).toBe(1);
+          expect(innerCompilationCount).toBe(0);
+          expect(transclude).toBeDefined();
+          transclude(function(child) { element.append(child); });
+          expect(outerCompilationCount).toBe(1);
+          expect(innerCompilationCount).toBe(1);
+          expect(element.text()).toBe('FooBar');
+        });
+      });
+
+      it('should eagerly compile multiple directives with transclusion and templateUrl/replace', function() {
+        var innerCompilationCount = 0;
+
+        module(function() {
+          directive('outer', valueFn({
+            transclude: true
+          }));
+
+          directive('outer', valueFn({
+            templateUrl: 'inner.html',
+            replace: true
+          }));
+
+          directive('inner', valueFn({
+            compile: function() {
+              innerCompilationCount +=1;
+            }
+          }));
+        });
+
+        inject(function($compile, $rootScope, $httpBackend) {
+          $httpBackend.expectGET('inner.html').respond('<inner></inner>');
+          element = $compile('<outer></outer>')($rootScope);
+          $httpBackend.flush();
+
+          expect(innerCompilationCount).toBe(1);
+        });
+      });
+    });
+
+  });
+
+
+  describe('multi-slot transclude', function() {
+    it('should only include elements without a matching transclusion element in default transclusion slot', function() {
+      module(function() {
+        directive('minionComponent', function() {
+          return {
+            restrict: 'E',
+            scope: {},
+            transclude: {
+              boss: 'bossSlot'
+            },
+            template:
+              '<div class="other" ng-transclude></div>'
+          };
+        });
+      });
+      inject(function($rootScope, $compile) {
+        element = $compile(
+          '<minion-component>' +
+            '<span>stuart</span>' +
+            '<span>bob</span>' +
+            '<boss>gru</boss>' +
+            '<span>kevin</span>' +
+          '</minion-component>')($rootScope);
+        $rootScope.$apply();
+        expect(element.text()).toEqual('stuartbobkevin');
+      });
+    });
+
+    it('should transclude elements to an `ng-transclude` with a matching transclusion slot name', function() {
+      module(function() {
+        directive('minionComponent', function() {
+          return {
+            restrict: 'E',
+            scope: {},
+            transclude: {
+              minion: 'minionSlot',
+              boss: 'bossSlot'
+            },
+            template:
+              '<div class="boss" ng-transclude="bossSlot"></div>' +
+              '<div class="minion" ng-transclude="minionSlot"></div>' +
+              '<div class="other" ng-transclude></div>'
+          };
+        });
+      });
+      inject(function($rootScope, $compile) {
+        element = $compile(
+          '<minion-component>' +
+            '<minion>stuart</minion>' +
+            '<span>dorothy</span>' +
+            '<boss>gru</boss>' +
+            '<minion>kevin</minion>' +
+          '</minion-component>')($rootScope);
+        $rootScope.$apply();
+        expect(element.children().eq(0).text()).toEqual('gru');
+        expect(element.children().eq(1).text()).toEqual('stuartkevin');
+        expect(element.children().eq(2).text()).toEqual('dorothy');
+      });
+    });
+
+
+    it('should use the `ng-transclude-slot` attribute if ng-transclude is used as an element', function() {
+      module(function() {
+        directive('minionComponent', function() {
+          return {
+            restrict: 'E',
+            scope: {},
+            transclude: {
+              minion: 'minionSlot',
+              boss: 'bossSlot'
+            },
+            template:
+              '<ng-transclude class="boss" ng-transclude-slot="bossSlot"></ng-transclude>' +
+              '<ng-transclude class="minion" ng-transclude-slot="minionSlot"></ng-transclude>' +
+              '<ng-transclude class="other"></ng-transclude>'
+          };
+        });
+      });
+      inject(function($rootScope, $compile) {
+        element = $compile(
+          '<minion-component>' +
+            '<minion>stuart</minion>' +
+            '<span>dorothy</span>' +
+            '<boss>gru</boss>' +
+            '<minion>kevin</minion>' +
+          '</minion-component>')($rootScope);
+        $rootScope.$apply();
+        expect(element.children().eq(0).text()).toEqual('gru');
+        expect(element.children().eq(1).text()).toEqual('stuartkevin');
+        expect(element.children().eq(2).text()).toEqual('dorothy');
+      });
+    });
+
+    it('should error if a required transclude slot is not filled', function() {
+      module(function() {
+        directive('minionComponent', function() {
+          return {
+            restrict: 'E',
+            scope: {},
+            transclude: {
+              minion: 'minionSlot',
+              boss: 'bossSlot'
+            },
+            template:
+              '<div class="boss" ng-transclude="bossSlot"></div>' +
+              '<div class="minion" ng-transclude="minionSlot"></div>' +
+              '<div class="other" ng-transclude></div>'
+          };
+        });
+      });
+      inject(function($rootScope, $compile) {
+        expect(function() {
+          element = $compile(
+            '<minion-component>' +
+              '<minion>stuart</minion>' +
+              '<span>dorothy</span>' +
+            '</minion-component>')($rootScope);
+        }).toThrowMinErr('$compile', 'reqslot', 'Required transclusion slot `bossSlot` was not filled.');
+      });
+    });
+
+
+    it('should not error if an optional transclude slot is not filled', function() {
+      module(function() {
+        directive('minionComponent', function() {
+          return {
+            restrict: 'E',
+            scope: {},
+            transclude: {
+              minion: 'minionSlot',
+              boss: '?bossSlot'
+            },
+            template:
+              '<div class="boss" ng-transclude="bossSlot"></div>' +
+              '<div class="minion" ng-transclude="minionSlot"></div>' +
+              '<div class="other" ng-transclude></div>'
+          };
+        });
+      });
+      inject(function($rootScope, $compile) {
+        element = $compile(
+          '<minion-component>' +
+            '<minion>stuart</minion>' +
+            '<span>dorothy</span>' +
+          '</minion-component>')($rootScope);
+        $rootScope.$apply();
+        expect(element.children().eq(1).text()).toEqual('stuart');
+        expect(element.children().eq(2).text()).toEqual('dorothy');
+      });
+    });
+
+
+    it('should error if we try to transclude a slot that was not declared by the directive', function() {
+      module(function() {
+        directive('minionComponent', function() {
+          return {
+            restrict: 'E',
+            scope: {},
+            transclude: {
+              minion: 'minionSlot'
+            },
+            template:
+              '<div class="boss" ng-transclude="bossSlot"></div>' +
+              '<div class="minion" ng-transclude="minionSlot"></div>' +
+              '<div class="other" ng-transclude></div>'
+          };
+        });
+      });
+      inject(function($rootScope, $compile) {
+        expect(function() {
+          element = $compile(
+            '<minion-component>' +
+              '<minion>stuart</minion>' +
+              '<span>dorothy</span>' +
+            '</minion-component>')($rootScope);
+        }).toThrowMinErr('$compile', 'noslot',
+          'No parent directive that requires a transclusion with slot name "bossSlot". ' +
+          'Element: <div class="boss" ng-transclude="bossSlot">');
+      });
+    });
+
+    it('should allow the slot name to equal the element name', function() {
+
+      module(function() {
+        directive('foo', function() {
+          return {
+            restrict: 'E',
+            scope: {},
+            transclude: {
+              bar: 'bar'
+            },
+            template:
+              '<div class="other" ng-transclude="bar"></div>'
+          };
+        });
+      });
+      inject(function($rootScope, $compile) {
+        element = $compile(
+          '<foo>' +
+            '<bar>baz</bar>' +
+          '</foo>')($rootScope);
+        $rootScope.$apply();
+        expect(element.text()).toEqual('baz');
+      });
+    });
+
+
+    it('should match against the normalized form of the element', function() {
+      module(function() {
+        directive('foo', function() {
+          return {
+            restrict: 'E',
+            scope: {},
+            transclude: {
+              fooBar: 'fooBarSlot'
+            },
+            template:
+              '<div class="other" ng-transclude="fooBarSlot"></div>'
+          };
+        });
+      });
+      inject(function($rootScope, $compile) {
+        element = $compile(
+          '<foo>' +
+            '<foo-bar>baz</foo-bar>' +
+          '</foo>')($rootScope);
+        $rootScope.$apply();
+        expect(element.text()).toEqual('baz');
+      });
+    });
+
+
+    it('should provide the elements marked with matching transclude elements as additional transclude functions on the $$slots property', function() {
+      var capturedTranscludeFn;
+      module(function() {
+        directive('minionComponent', function() {
+          return {
+            restrict: 'E',
+            scope: {},
+            transclude: {
+              minion: 'minionSlot',
+              boss: 'bossSlot'
+            },
+            template:
+              '<div class="boss" ng-transclude="bossSlot"></div>' +
+              '<div class="minion" ng-transclude="minionSlot"></div>' +
+              '<div class="other" ng-transclude></div>',
+            link: function(s, e, a, c, transcludeFn) {
+              capturedTranscludeFn = transcludeFn;
             }
           };
         });
-
-        directive('replaceWithTemplate', function() {
-          return {
-            templateUrl: "template.html",
-            replace: true
-          };
-        });
       });
+      inject(function($rootScope, $compile, log) {
+        element = $compile(
+          '<minion-component>' +
+          '  <minion>stuart</minion>' +
+          '  <minion>bob</minion>' +
+          '  <span>dorothy</span>' +
+          '  <boss>gru</boss>' +
+          '</minion-component>')($rootScope);
+        $rootScope.$apply();
 
-      inject(function($compile, $rootScope, $templateCache, $timeout) {
+        var minionTranscludeFn = capturedTranscludeFn.$$boundTransclude.$$slots['minionSlot'];
+        var minions = minionTranscludeFn();
+        expect(minions[0].outerHTML).toEqual('<minion class="ng-scope">stuart</minion>');
+        expect(minions[1].outerHTML).toEqual('<minion class="ng-scope">bob</minion>');
 
-        $templateCache.put('template.html', '<div trans-sync>Content To Be Transcluded</div>');
+        var scope = element.scope();
 
-        expect(function() {
-          element = $compile('<div><div trans><div replace-with-template></div></div></div>')($rootScope);
-          $timeout.flush();
-        }).not.toThrow();
+        var minionScope = jqLite(minions[0]).scope();
+        expect(minionScope.$parent).toBe(scope);
 
-        expect(element.text()).toEqual('Content To Be Transcluded');
-      });
+        var bossTranscludeFn = capturedTranscludeFn.$$boundTransclude.$$slots['bossSlot'];
+        var boss = bossTranscludeFn();
+        expect(boss[0].outerHTML).toEqual('<boss class="ng-scope">gru</boss>');
 
-    });
+        var bossScope = jqLite(boss[0]).scope();
+        expect(bossScope.$parent).toBe(scope);
 
-    it('should lazily compile the contents of directives that are transcluded', function() {
-      var innerCompilationCount = 0, transclude;
+        expect(bossScope).not.toBe(minionScope);
 
-      module(function() {
-        directive('trans', valueFn({
-          transclude: true,
-          controller: function($transclude) {
-            transclude = $transclude;
-          }
-        }));
-
-        directive('inner', valueFn({
-          template: '<span>FooBar</span>',
-          compile: function() {
-            innerCompilationCount +=1;
-          }
-        }));
-      });
-
-      inject(function($compile, $rootScope) {
-        element = $compile('<trans><inner></inner></trans>')($rootScope);
-        expect(innerCompilationCount).toBe(0);
-        transclude(function(child) { element.append(child); });
-        expect(innerCompilationCount).toBe(1);
-        expect(element.text()).toBe('FooBar');
-      });
-    });
-
-    it('should lazily compile the contents of directives that are transcluded with a template', function() {
-      var innerCompilationCount = 0, transclude;
-
-      module(function() {
-        directive('trans', valueFn({
-          transclude: true,
-          template: '<div>Baz</div>',
-          controller: function($transclude) {
-            transclude = $transclude;
-          }
-        }));
-
-        directive('inner', valueFn({
-          template: '<span>FooBar</span>',
-          compile: function() {
-            innerCompilationCount +=1;
-          }
-        }));
-      });
-
-      inject(function($compile, $rootScope) {
-        element = $compile('<trans><inner></inner></trans>')($rootScope);
-        expect(innerCompilationCount).toBe(0);
-        transclude(function(child) { element.append(child); });
-        expect(innerCompilationCount).toBe(1);
-        expect(element.text()).toBe('BazFooBar');
-      });
-    });
-
-    it('should lazily compile the contents of directives that are transcluded with a templateUrl', function() {
-      var innerCompilationCount = 0, transclude;
-
-      module(function() {
-        directive('trans', valueFn({
-          transclude: true,
-          templateUrl: 'baz.html',
-          controller: function($transclude) {
-            transclude = $transclude;
-          }
-        }));
-
-        directive('inner', valueFn({
-          template: '<span>FooBar</span>',
-          compile: function() {
-            innerCompilationCount +=1;
-          }
-        }));
-      });
-
-      inject(function($compile, $rootScope, $httpBackend) {
-        $httpBackend.expectGET('baz.html').respond('<div>Baz</div>');
-        element = $compile('<trans><inner></inner></trans>')($rootScope);
-        $httpBackend.flush();
-
-        expect(innerCompilationCount).toBe(0);
-        transclude(function(child) { element.append(child); });
-        expect(innerCompilationCount).toBe(1);
-        expect(element.text()).toBe('BazFooBar');
-      });
-    });
-
-    it('should lazily compile the contents of directives that are transclude element', function() {
-      var innerCompilationCount = 0, transclude;
-
-      module(function() {
-        directive('trans', valueFn({
-          transclude: 'element',
-          controller: function($transclude) {
-            transclude = $transclude;
-          }
-        }));
-
-        directive('inner', valueFn({
-          template: '<span>FooBar</span>',
-          compile: function() {
-            innerCompilationCount +=1;
-          }
-        }));
-      });
-
-      inject(function($compile, $rootScope) {
-        element = $compile('<div><trans><inner></inner></trans></div>')($rootScope);
-        expect(innerCompilationCount).toBe(0);
-        transclude(function(child) { element.append(child); });
-        expect(innerCompilationCount).toBe(1);
-        expect(element.text()).toBe('FooBar');
-      });
-    });
-
-    it('should lazily compile transcluded directives with ngIf on them', function() {
-      var innerCompilationCount = 0, outerCompilationCount = 0, transclude;
-
-      module(function() {
-        directive('outer', valueFn({
-          transclude: true,
-          compile: function() {
-            outerCompilationCount += 1;
-          },
-          controller: function($transclude) {
-            transclude = $transclude;
-          }
-        }));
-
-        directive('inner', valueFn({
-          template: '<span>FooBar</span>',
-          compile: function() {
-            innerCompilationCount +=1;
-          }
-        }));
-      });
-
-      inject(function($compile, $rootScope) {
-        $rootScope.shouldCompile = false;
-
-        element = $compile('<div><outer ng-if="shouldCompile"><inner></inner></outer></div>')($rootScope);
-        expect(outerCompilationCount).toBe(0);
-        expect(innerCompilationCount).toBe(0);
-        expect(transclude).toBeUndefined();
-        $rootScope.$apply('shouldCompile=true');
-        expect(outerCompilationCount).toBe(1);
-        expect(innerCompilationCount).toBe(0);
-        expect(transclude).toBeDefined();
-        transclude(function(child) { element.append(child); });
-        expect(outerCompilationCount).toBe(1);
-        expect(innerCompilationCount).toBe(1);
-        expect(element.text()).toBe('FooBar');
-      });
-    });
-
-    it('should eagerly compile multiple directives with transclusion and templateUrl/replace', function() {
-      var innerCompilationCount = 0;
-
-      module(function() {
-        directive('outer', valueFn({
-          transclude: true
-        }));
-
-        directive('outer', valueFn({
-          templateUrl: 'inner.html',
-          replace: true
-        }));
-
-        directive('inner', valueFn({
-          compile: function() {
-            innerCompilationCount +=1;
-          }
-        }));
-      });
-
-      inject(function($compile, $rootScope, $httpBackend) {
-        $httpBackend.expectGET('inner.html').respond('<inner></inner>');
-        element = $compile('<outer></outer>')($rootScope);
-        $httpBackend.flush();
-
-        expect(innerCompilationCount).toBe(1);
+        dealoc(boss);
+        dealoc(minions);
       });
     });
   });
