@@ -195,13 +195,28 @@ to ensure that Karma and its necessary plugins are installed. You can do this by
 
 To run the tests, and then watch the files for changes: `npm test`.
 
-* Karma will start new instances of Chrome and Firefox browser automatically. Just ignore them and let them run in
+* Karma will start new instances of Chrome and Firefox browsers automatically. Just ignore them and let them run in
    the background. Karma will use these browsers for test execution.
-* If you only have Chrome browser installed on your machine, make sure to update the karma configuration file before 
-   running the test. Update `unit/test/karma.conf.js` file to only include Chrome browser:
-   
+* If you only have one browser installed on your machine (either Chrome or Firefox browser), make sure to update the 
+   karma configuration file before running the test. Locate the configuration file in `test/karma.conf.js`, then
+   update the property of `browsers` to suit with the one you have in your machine.
+  
+  If you only have Chrome browser installed: 
   <pre>
-    browsers: ['Chrome']
+    ...
+    frameworks: ['jasmine'],
+    
+    browsers: ['Chrome'],
+    ...
+  </pre>
+  
+  Or if you only have Firefox browser installed:
+  <pre>
+    ...
+    frameworks: ['jasmine'],
+    
+    browsers: ['Firefox'],
+    ...
   </pre>
   
 * You should see the following or similar output in the terminal:
