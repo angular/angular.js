@@ -44,6 +44,10 @@
  * <div class="alert">**Note:** all element references in Angular are always wrapped with jQuery or
  * jqLite; they are never raw DOM references.</div>
  *
+ * <div class="alert">**Note:** Keep in mind that this function is just a selector, it will
+ * not find elements by tag name for you. Try instead `angular.element(document).find()`
+ * or `$document.find()`</div>
+ *
  * ## Angular's jqLite
  * jqLite provides only the following jQuery methods:
  *
