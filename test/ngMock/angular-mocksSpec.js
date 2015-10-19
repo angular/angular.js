@@ -2150,12 +2150,12 @@ describe('ngMockE2E', function() {
     var hb, realHttpBackend, callback;
 
     beforeEach(function() {
-      module(function($provide) {
-        callback = jasmine.createSpy('callback');
+      callback = jasmine.createSpy('callback');
+      angular.module('ng').config(function($provide) {
         realHttpBackend = jasmine.createSpy('real $httpBackend');
         $provide.value('$httpBackend', realHttpBackend);
-        $provide.decorator('$httpBackend', angular.mock.e2e.$httpBackendDecorator);
       });
+      module('ngMockE2E');
       inject(function($injector) {
         hb = $injector.get('$httpBackend');
       });
