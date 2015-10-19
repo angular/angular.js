@@ -201,13 +201,13 @@ function formatNumber(number, pattern, groupSep, decimalSep, fractionSize) {
           formatedText += whole.charAt(i);
         }
       }
-    }
 
-    for (i = pos; i < whole.length; i++) {
-      if ((whole.length - i) % lgroup === 0 && i !== 0) {
-        formatedText += groupSep;
+      for (i = pos; i < whole.length; i++) {
+        if ((whole.length - i) % lgroup === 0 && i !== 0) {
+          formatedText += groupSep;
+        }
+        formatedText += whole.charAt(i);
       }
-      formatedText += whole.charAt(i);
     }
 
     // format fraction part.
