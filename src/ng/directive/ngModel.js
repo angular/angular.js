@@ -1160,6 +1160,7 @@ var DEFAULT_REGEXP = /(\s+|^)default(\s+|$)/;
           </label><br />
         </form>
         <pre>user.name = <span ng-bind="user.name"></span></pre>
+        <pre>user.data = <span ng-bind="user.data"></span></pre>        
       </div>
     </file>
     <file name="app.js">
