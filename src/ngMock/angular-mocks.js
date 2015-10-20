@@ -1849,10 +1849,14 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
         var part = responses.splice(skip, 1);
         if (!part.length) throw new Error('No more pending request to flush !');
         part[0]();
+        // Calling $digest again to execute the callbacks of the promises returned from $http
+        // as these callbacks can add new requests to the queue to flush.
+        if (digest !== false) $rootScope.$digest();
       }
     } else {
       while (responses.length > skip) {
         responses.splice(skip, 1)[0]();
+        if (digest !== false) $rootScope.$digest();
       }
     }
     $httpBackend.verifyNoOutstandingExpectation(digest);
