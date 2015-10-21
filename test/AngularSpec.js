@@ -1920,16 +1920,6 @@ describe('angular', function() {
     });
   });
 
-  describe('reloadWithDebugInfo', function() {
-
-    it('should create a cookie', function() {
-      angular.reloadWithDebugInfo();
-      expect(/\bNG_ENABLE_DEBUG_INFO!=true\b/.test(document.cookie)).toBeTruthy();
-
-      // it should also reload the window, but we can not test that, as window.location can not be spied upon
-    });
-  });
-
 
   describe('startingElementHtml', function() {
     it('should show starting element tag only', function() {
