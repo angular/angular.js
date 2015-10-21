@@ -1489,15 +1489,19 @@ function angularInit(element, bootstrap) {
       module = element.getAttribute(name);
     }
   });
-  forEach(ngAttrPrefixes, function(prefix) {
-    var name = prefix + 'app';
-    var candidate;
 
-    if (!appElement && (candidate = element.querySelector('[' + name.replace(':', '\\:') + ']'))) {
-      appElement = candidate;
-      module = candidate.getAttribute(name);
-    }
-  });
+  if(!appElement) {
+    forEach(ngAttrPrefixes, function(prefix) {
+      var name = prefix + 'app';
+      var candidate;
+
+      if (!appElement && (candidate = element.querySelector('[' + name.replace(':', '\\:') + ']'))) {
+        appElement = candidate;
+        module = candidate.getAttribute(name);
+      }
+    });
+  }
+
   if (appElement) {
     config.strictDi = getNgAttribute(appElement, "strict-di") !== null;
     bootstrap(appElement, module ? [module] : [], config);
