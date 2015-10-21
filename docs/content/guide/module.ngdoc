@@ -302,3 +302,25 @@ describe('myApp', function() {
   });
 });
 ```
+
+## Unit Testing Run blocks
+
+Sometimes you would like to test your run blocks. However it's not so obvious at the moment.
+
+```js
+it('should call something in a run block', function() {
+
+    // angular.module() will load your module which has the run block
+    var moduleToTest = angular.module('moduleToTest');
+
+    // with _runBlocks[0] you can access your run block function
+    // if you have multiple run blocks you can access them by using the correct index
+    var runMethod = moduleToTest._runBlocks[0];
+
+    // so you can run after you prepared your mocks
+    runMethod();
+
+    // here you can create your expectations
+    expect(MyService.initialize()).toHaveBeenCalled();
+});
+```
