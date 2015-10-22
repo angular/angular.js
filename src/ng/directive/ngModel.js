@@ -547,7 +547,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
         ctrl.$modelValue = allValid ? modelValue : undefined;
 
         if (ctrl.$modelValue !== prevModelValue) {
-          ctrl.$$writeModelToScope();
+          ctrl.$$writeModelToScope(ctrl.$modelValue, prevModelValue);
         }
       }
     });
@@ -719,16 +719,16 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
 
     function writeToModelIfNeeded() {
       if (ctrl.$modelValue !== prevModelValue) {
-        ctrl.$$writeModelToScope();
+        ctrl.$$writeModelToScope(ctrl.$modelValue, prevModelValue);
       }
     }
   };
 
-  this.$$writeModelToScope = function() {
+  this.$$writeModelToScope = function(currentModelValue, previousModelValue) {
     ngModelSet($scope, ctrl.$modelValue);
     forEach(ctrl.$viewChangeListeners, function(listener) {
       try {
-        listener();
+        listener(currentModelValue, previousModelValue);
       } catch (e) {
         $exceptionHandler(e);
       }
@@ -751,7 +751,8 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    * and `$validators` pipelines. If there are no special {@link ngModelOptions} specified then the staged
    * value sent directly for processing, finally to be applied to `$modelValue` and then the
    * **expression** specified in the `ng-model` attribute. Lastly, all the registered change listeners,
-   * in the `$viewChangeListeners` list, are called.
+   * in the `$viewChangeListeners` list, are called. The parameters for the $viewChangeListeners are
+   * the current and the previous value.
    *
    * In case the {@link ng.directive:ngModelOptions ngModelOptions} directive is used with `updateOn`
    * and the `default` trigger is not listed, all those actions will remain pending until one of the
