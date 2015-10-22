@@ -138,7 +138,9 @@ __`test/unit/controllersSpec.js`:__
       expect(scope.phone).toBeUndefined();
       $httpBackend.flush();
 
-      expect(scope.phone).toEqual(xyzPhoneData());
+      var xyzPhoneInstance = xyzPhoneData();
+      expect(scope.phone).toEqual(xyzPhoneInstance);
+      expect(scope.mainImageUrl).toEqual(xyzPhoneInstance.images[0]);
     });
   });
 ```
