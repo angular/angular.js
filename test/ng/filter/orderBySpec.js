@@ -13,6 +13,10 @@ describe('Filter: orderBy', function() {
         toThrowMinErr('orderBy', 'notarray', 'Expected array but received: {}');
     });
 
+    it('should not throw an exception if an array-like object is provided', function() {
+      expect(orderBy('cba')).toEqual(['a', 'b', 'c']);
+    });
+
     it('should return sorted array if predicate is not provided', function() {
       expect(orderBy([2, 1, 3])).toEqual([1, 2, 3]);
 

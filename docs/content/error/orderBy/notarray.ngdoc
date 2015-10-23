@@ -1,9 +1,9 @@
 @ngdoc error
 @name orderBy:notarray
-@fullName Not an array
+@fullName Value is not array-like
 @description
 
-This error occurs when {@link ng.orderBy orderBy} is not used with an array:
+This error occurs when {@link ng.orderBy orderBy} is not passed an array-like value:
 ```html
 <input ng-model="search">
 <div ng-repeat="(key, value) in myObj | orderBy:search">
@@ -11,10 +11,10 @@ This error occurs when {@link ng.orderBy orderBy} is not used with an array:
 </div>
 ```
 
-orderBy must be used with an array so a subset of items can be returned.
-The array can be initialized asynchronously and therefore null or undefined won't throw this error.
+orderBy must be used with an array-like value so a subset of items can be returned.
+The array can be initialized asynchronously and therefore `null` or `undefined` won't throw this error.
 
-To orderBy an object by the value of its properties you can create your own array based on that object:
+To use orderBy to order the properties of an object, you can create your own array based on that object:
 ```js
 angular.module('aModule', [])
   .controller('aController', function($scope) {
