@@ -579,6 +579,15 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
       function updateOptionElement(option, element) {
         option.element = element;
         element.disabled = option.disabled;
+
+        // Fixes an issue where the attribute 'disabled' was assigned to an element, but the
+        // value of the attribute wasn't enforced. This correctly assigns the 'disabled' attribute
+        // with the value 'disabled' (Fixes CSS selectors such as option[disabled] and option[disabled="disabled"]
+        // et al.) This is more consistent with other angular implementations (see: ngDisabled);
+        if(element.disabled) {
+          element.setAttribute('disabled', 'disabled');
+        }
+
         // NOTE: The label must be set before the value, otherwise IE10/11/EDGE create unresponsive
         // selects in certain circumstances when multiple selects are next to each other and display
         // the option list in listbox style, i.e. the select is [multiple], or specifies a [size].
