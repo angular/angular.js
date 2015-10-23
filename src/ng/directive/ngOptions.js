@@ -582,8 +582,9 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
 
         // Fixes an issue where the attribute 'disabled' was assigned to an element, but the
         // value of the attribute wasn't enforced. This correctly assigns the 'disabled' attribute
-        // with the value 'disabled' (Fixes CSS selectors such as option[disabled] and option[disabled="disabled"]
-        // et al.) This is more consistent with other angular implementations (see: ngDisabled);
+        // with the value 'disabled' (Fixes CSS selectors such as option[disabled] and
+        // option[disabled="disabled"] et al.) This is more consistent with other angular
+        // implementations (see: ngDisabled);
         if(element.disabled) {
           element.setAttribute('disabled', 'disabled');
         }
