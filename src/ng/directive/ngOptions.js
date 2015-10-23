@@ -579,6 +579,12 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
       function updateOptionElement(option, element) {
         option.element = element;
         element.disabled = option.disabled;
+
+        // Fix issue where disabled attribute is applied to an element, but the value is not a valid value per HTML specification
+        if(element.disabled) {
+          element.setAttribute('disabled', 'disabled');
+        }
+
         // NOTE: The label must be set before the value, otherwise IE10/11/EDGE create unresponsive
         // selects in certain circumstances when multiple selects are next to each other and display
         // the option list in listbox style, i.e. the select is [multiple], or specifies a [size].
