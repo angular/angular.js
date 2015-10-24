@@ -585,7 +585,7 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
         // with the value 'disabled' (Fixes CSS selectors such as option[disabled] and
         // option[disabled="disabled"] et al.) This is more consistent with other angular
         // implementations (see: ngDisabled);
-        if(element.disabled) {
+        if (element.disabled) {
           element.setAttribute('disabled', 'disabled');
         }
 
