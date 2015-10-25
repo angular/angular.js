@@ -434,7 +434,6 @@ var ngRepeatDirective = ['$parse', '$animate', function($parse, $animate) {
               }
             }
           }
-
           collectionLength = collectionKeys.length;
           nextBlockOrder = new Array(collectionLength);
 

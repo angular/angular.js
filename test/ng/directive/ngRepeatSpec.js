@@ -612,6 +612,16 @@ describe('ngRepeat', function() {
     expect(element.text()).toEqual('misko:m:0|shyam:s:1|frodo:f:2|');
   });
 
+  it('should expose iterator offset as $index when iterating over objects with length key value 0', function() {
+    element = $compile(
+      '<ul>' +
+        '<li ng-repeat="(key, val) in items">{{key}}:{{val}}:{{$index}}|</li>' +
+      '</ul>')(scope);
+    scope.items = {'misko':'m', 'shyam':'s', 'frodo':'f', 'length':0};
+    scope.$digest();
+    expect(element.text()).toEqual('frodo:f:0|length:0:1|misko:m:2|shyam:s:3|');
+  });
+
 
   it('should expose iterator position as $first, $middle and $last when iterating over arrays',
       function() {
