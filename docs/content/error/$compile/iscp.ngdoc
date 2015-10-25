@@ -11,10 +11,11 @@ myModule.directive('directiveName', function factory() {
     ...
     scope: {
       'attrName': '@', // OK
-      'attrName2': '=localName', // OK
-      'attrName3': 'name',    // ERROR: missing mode @&=
-      'attrName4': ' = name', // ERROR: extra spaces
-      'attrName5': 'name=',   // ERROR: must be prefixed with @&=
+      'attrName2': '=localName',  // OK
+      'attrName2': '=local-name', // ERROR: invalid '-' character
+      'attrName3': 'name',        // ERROR: missing mode @&=
+      'attrName4': ' = name',     // ERROR: extra spaces
+      'attrName5': 'name=',       // ERROR: must be prefixed with @&=
     }
     ...
   }
