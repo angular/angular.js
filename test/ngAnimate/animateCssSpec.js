@@ -1865,6 +1865,37 @@ describe("ngAnimate $animateCss", function() {
         };
       }));
 
+      it("should not alter the provided options input in any way throughout the animation", inject(function($animateCss) {
+        var initialOptions = {
+          from: { height: '50px' },
+          to: { width: '50px' },
+          addClass: 'one',
+          removeClass: 'two',
+          duration: 10,
+          delay: 10,
+          structural: true,
+          keyframeStyle: '1s rotate',
+          transitionStyle: '1s linear',
+          stagger: 0.5,
+          staggerIndex: 3
+        };
+
+        var copiedOptions = copy(initialOptions);
+        expect(copiedOptions).toEqual(initialOptions);
+
+        var animator = $animateCss(element, copiedOptions);
+        expect(copiedOptions).toEqual(initialOptions);
+
+        var runner = animator.start();
+        expect(copiedOptions).toEqual(initialOptions);
+
+        triggerAnimationStartFrame();
+        expect(copiedOptions).toEqual(initialOptions);
+
+        runner.end();
+        expect(copiedOptions).toEqual(initialOptions);
+      }));
+
       describe("[$$skipPreparationClasses]", function() {
         it('should not apply and remove the preparation classes to the element when true',
           inject(function($animateCss) {
