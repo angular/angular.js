@@ -1142,6 +1142,11 @@ describe('angular', function() {
 
       forEach(jqObject, function(value, key) { log.push(key + ':' + value.innerHTML); });
       expect(log).toEqual(['0:s1', '1:s2']);
+
+      log = [];
+      jqObject = jqLite("<pane></pane>");
+      forEach(jqObject.children(), function(value, key) { log.push(key + ':' + value.innerHTML); });
+      expect(log).toEqual([]);
     });
 
 
