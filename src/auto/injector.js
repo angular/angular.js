@@ -642,16 +642,19 @@ function createInjector(modulesToLoad, strictDi) {
             throw $injectorMinErr('unpr', "Unknown provider: {0}", path.join(' <- '));
           })),
       instanceCache = {},
-      instanceInjector = (instanceCache.$injector =
+      protoInstanceInjector =
           createInternalInjector(instanceCache, function(serviceName, caller) {
             var provider = providerInjector.get(serviceName + providerSuffix, caller);
-            return instanceInjector.invoke(provider.$get, provider, undefined, serviceName);
-          }));
+            return instanceInjector.invoke(
+                provider.$get, provider, undefined, serviceName);
+          }),
+      instanceInjector = protoInstanceInjector;
 
-
-  forEach(loadModules(modulesToLoad), function(fn) { if (fn) instanceInjector.invoke(fn); });
-
+  providerCache['$injector' + providerSuffix] = { $get: valueFn(protoInstanceInjector) };
+  var runBlocks = loadModules(modulesToLoad);
+  instanceInjector = protoInstanceInjector.get('$injector');
   instanceInjector.strictDi = strictDi;
+  forEach(runBlocks, function(fn) { if (fn) instanceInjector.invoke(fn); });
 
   return instanceInjector;
 
