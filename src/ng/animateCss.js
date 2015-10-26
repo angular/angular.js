@@ -13,7 +13,13 @@
  */
 var $CoreAnimateCssProvider = function() {
   this.$get = ['$$rAF', '$q', '$$AnimateRunner', function($$rAF, $q, $$AnimateRunner) {
-    return function(element, options) {
+
+    return function(element, initialOptions) {
+      // we always make a copy of the options since
+      // there should never be any side effects on
+      // the input data when running `$animateCss`.
+      var options = copy(initialOptions);
+
       // there is no point in applying the styles since
       // there is no animation that goes on at all in
       // this version of $animateCss.

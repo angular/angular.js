@@ -130,6 +130,24 @@ describe("animations", function() {
       };
     }));
 
+    it("should not alter the provided options input in any way throughout the animation", inject(function($animate, $rootScope) {
+      var initialOptions = {
+        from: { height: '50px' },
+        to: { width: '50px' },
+        addClass: 'one',
+        removeClass: 'two'
+      };
+
+      var copiedOptions = copy(initialOptions);
+      expect(copiedOptions).toEqual(initialOptions);
+
+      var runner = $animate.enter(element, parent, null, copiedOptions);
+      expect(copiedOptions).toEqual(initialOptions);
+
+      $rootScope.$digest();
+      expect(copiedOptions).toEqual(initialOptions);
+    }));
+
     it('should animate only the specified CSS className matched within $animateProvider.classNameFilter', function() {
       module(function($animateProvider) {
         $animateProvider.classNameFilter(/only-allow-this-animation/);
@@ -149,20 +167,24 @@ describe("animations", function() {
       });
     });
 
-    they('should nullify both options.$prop when passed into an animation if it is not a string or an array', ['addClass', 'removeClass'], function(prop) {
+    they('should not apply the provided options.$prop value unless it\'s a string or string-based array', ['addClass', 'removeClass'], function(prop) {
       inject(function($animate, $rootScope) {
+        var startingCssClasses = element.attr('class') || '';
+
         var options1 = {};
         options1[prop] = function() {};
         $animate.enter(element, parent, null, options1);
 
-        expect(options1[prop]).toBeFalsy();
+        expect(element.attr('class')).toEqual(startingCssClasses);
+
         $rootScope.$digest();
 
         var options2 = {};
         options2[prop] = true;
         $animate.leave(element, options2);
 
-        expect(options2[prop]).toBeFalsy();
+        expect(element.attr('class')).toEqual(startingCssClasses);
+
         $rootScope.$digest();
 
         capturedAnimation = null;
@@ -170,11 +192,15 @@ describe("animations", function() {
         var options3 = {};
         if (prop === 'removeClass') {
           element.addClass('fatias');
+          startingCssClasses = element.attr('class');
         }
 
         options3[prop] = ['fatias'];
         $animate.enter(element, parent, null, options3);
-        expect(options3[prop]).toBe('fatias');
+
+        $rootScope.$digest();
+
+        expect(element.attr('class')).not.toEqual(startingCssClasses);
       });
     });
 
