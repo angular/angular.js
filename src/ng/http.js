@@ -1316,7 +1316,7 @@ function $HttpProvider() {
       if (serializedParams.length > 0) {
         url += ((url.indexOf('?') == -1) ? '?' : '&') + serializedParams;
       }
-      console.log(url);
+      //console.log(url);
       return url;
     }
   }];
