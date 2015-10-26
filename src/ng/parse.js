@@ -1894,13 +1894,9 @@ function $ParseProvider() {
     function constantWatchDelegate(scope, listener, objectEquality, parsedExpression) {
       var unwatch;
       return unwatch = scope.$watch(function constantWatch(scope) {
-        return parsedExpression(scope);
-      }, function constantListener(value, old, scope) {
-        if (isFunction(listener)) {
-          listener.apply(this, arguments);
-        }
         unwatch();
-      }, objectEquality);
+        return parsedExpression(scope);
+      }, listener, objectEquality);
     }
 
     function addInterceptor(parsedExpression, interceptorFn) {
