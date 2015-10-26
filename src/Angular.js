@@ -193,7 +193,8 @@ msie = document.documentMode;
 
 function isNodeList(obj) {
   return typeof obj.length == 'number' &&
-         typeof obj.item == 'function';
+         (typeof obj.item == 'function' ||
+          isString(obj.jquery));
 }
 
 /**
