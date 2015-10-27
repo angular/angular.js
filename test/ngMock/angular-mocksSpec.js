@@ -690,6 +690,40 @@ describe('ngMock', function() {
       $timeout.flush(123);
       expect(count).toBe(2);
     }));
+
+    it('should process dynamically added tasks one per each flush,' +
+    ' if called in atomic mode', inject(function($timeout) {
+
+      var task1 = jasmine.createSpy('first handler');
+      var task2 = jasmine.createSpy('second handler');
+
+      $timeout(function() {
+        task1();
+        $timeout(function() {
+          task2();
+        });
+      });
+
+      $timeout.flush(0, true);
+      expect(task1).toHaveBeenCalled();
+      expect(task2).not.toHaveBeenCalled();
+
+      $timeout.flush(0);
+      expect(task2).toHaveBeenCalled();
+
+    }));
+
+    it('should process dynamically added tasks by default', inject(function($timeout) {
+      var nestedTask = jasmine.createSpy('handler behind the nested timeouts');
+      $timeout(function() {
+        $timeout(function() {
+          nestedTask();
+        });
+      });
+
+      $timeout.flush(0);
+      expect(nestedTask).toHaveBeenCalled();
+    }));
   });
 
 
