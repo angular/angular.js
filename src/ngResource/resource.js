@@ -574,7 +574,7 @@ angular.module('ngResource', ['ng']).
               undefined;
 
             forEach(action, function(value, key) {
-              if (key != 'params' && key != 'isArray' && key != 'interceptor') {
+              if (key != 'params' && key != 'interceptor') {
                 httpConfig[key] = copy(value);
               }
             });
