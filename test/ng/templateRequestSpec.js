@@ -2,6 +2,51 @@
 
 describe('$templateRequest', function() {
 
+  describe('provider', function() {
+
+    describe('acceptHeaders', function() {
+
+      it('should default to undefined and fallback to $http accept headers', function() {
+
+        var defaultHeader;
+
+        module(function($templateRequestProvider, $httpProvider) {
+          defaultHeader = $httpProvider.defaults.headers.get || $httpProvider.defaults.headers.common;
+          expect($templateRequestProvider.acceptHeaders()).toBeUndefined();
+        });
+
+        inject(function($templateRequest, $httpBackend) {
+          $httpBackend.expectGET('tpl.html', defaultHeader).respond();
+          $templateRequest('tpl.html');
+          $httpBackend.verifyNoOutstandingExpectation();
+        });
+
+      });
+
+      it('should be configurable', function() {
+
+        var expectedHeader;
+
+        module(function($templateRequestProvider, $httpProvider) {
+
+          // Configure the standard $http headers to something unusual
+          $httpProvider.defaults.headers.get = { 'Other': 'header value' };
+          // Configure the template request service to provide a specific accept header
+          $templateRequestProvider.acceptHeaders('moo');
+
+          // Compute what we expect the actual header object to be
+          expectedHeader = extend($httpProvider.defaults.headers.get, {Accept: 'moo'});
+        });
+
+        inject(function($templateRequest, $httpBackend) {
+          $httpBackend.expectGET('tpl.html', expectedHeader).respond();
+          $templateRequest('tpl.html');
+          $httpBackend.verifyNoOutstandingExpectation();
+        });
+      });
+    });
+  });
+
   it('should download the provided template file',
     inject(function($rootScope, $templateRequest, $httpBackend) {
 
