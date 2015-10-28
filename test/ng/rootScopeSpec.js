@@ -1219,15 +1219,17 @@ describe('Scope', function() {
         var parent = $rootScope.$new(),
             child1 = parent.$new(),
             child2 = parent.$new(),
-            grandChild = child1.$new();
-        parent.$destroy();
+            grandChild1 = child1.$new(),
+            grandChild2 = child1.$new();
 
+        child1.$destroy();
         $rootScope.$digest();
 
-        expect(isDisconnected(parent)).toBe(true);
+        expect(isDisconnected(parent)).toBe(false);
         expect(isDisconnected(child1)).toBe(true);
-        expect(isDisconnected(child2)).toBe(true);
-        expect(isDisconnected(grandChild)).toBe(true);
+        expect(isDisconnected(child2)).toBe(false);
+        expect(isDisconnected(grandChild1)).toBe(true);
+        expect(isDisconnected(grandChild2)).toBe(true);
 
         function isDisconnected($scope) {
           return $scope.$$nextSibling === null &&
