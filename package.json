@@ -15,7 +15,8 @@
   "engineStrict": true,
   "scripts": {
     "preinstall": "node scripts/npm/check-node-modules.js --purge",
-    "postinstall": "node scripts/npm/copy-npm-shrinkwrap.js"
+    "postinstall": "node scripts/npm/copy-npm-shrinkwrap.js",
+    "commit": "git-cz"
   },
   "devDependencies": {
     "angular-benchpress": "0.x.x",
@@ -24,6 +25,8 @@
     "browserstacktunnel-wrapper": "~1.3.1",
     "canonical-path": "0.0.2",
     "cheerio": "^0.17.0",
+    "commitizen": "^2.3.0",
+    "cz-conventional-changelog": "1.1.4",
     "dgeni": "^0.4.0",
     "dgeni-packages": "^0.10.0",
     "event-stream": "~3.1.0",
@@ -80,5 +83,10 @@
       "url": "https://github.com/angular/angular.js/blob/master/LICENSE"
     }
   ],
-  "dependencies": {}
+  "dependencies": {},
+  "config": {
+    "commitizen": {
+      "path": "node_modules/cz-conventional-changelog"
+    }
+  }
 }
