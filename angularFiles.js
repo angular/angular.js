@@ -101,6 +101,7 @@ var angularFiles = {
       'src/ngAnimate/animateQueue.js',
       'src/ngAnimate/animateRunner.js',
       'src/ngAnimate/animation.js',
+      'src/ngAnimate/ngAnimateSwap.js',
       'src/ngAnimate/module.js'
     ],
     'ngCookies': [
