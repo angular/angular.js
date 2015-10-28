@@ -31,8 +31,6 @@ describe('$templateRequest', function() {
 
         function someTransform() {}
 
-        var expectedHeader;
-
         module(function($templateRequestProvider, $httpProvider) {
 
           // Configure the template request service to provide  specific headers and transforms
@@ -51,6 +49,30 @@ describe('$templateRequest', function() {
             cache: $templateCache,
             transformResponse: [someTransform],
             headers: { Accept: 'moo' }
+          });
+        });
+      });
+
+
+      it('should be allow you to override the cache', function() {
+
+        var httpOptions = {};
+
+        module(function($templateRequestProvider, $httpProvider) {
+          $templateRequestProvider.httpOptions(httpOptions);
+        });
+
+        inject(function($templateRequest, $http, $cacheFactory) {
+          spyOn($http, 'get').andCallThrough();
+
+          var customCache = $cacheFactory('customCache');
+          httpOptions.cache = customCache;
+
+          $templateRequest('tpl.html');
+
+          expect($http.get).toHaveBeenCalledOnceWith('tpl.html', {
+            cache: customCache,
+            transformResponse: []
           });
         });
       });
