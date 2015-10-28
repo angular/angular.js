@@ -25,8 +25,20 @@ describe("resource", function() {
         headers: {
           'If-None-Match': '*'
         }
+      },
+      cancellableQuery: {
+        method: 'GET',
+        isArray: true,
+        timeout: 'promise'
+      },
+      cancellableGet: {
+        method: 'GET',
+        timeout: 'promise'
+      },
+      cancellablePut: {
+        method: 'PUT',
+        timeout: 'promise'
       }
-
     });
     callback = jasmine.createSpy();
   }));
@@ -674,21 +686,25 @@ describe("resource", function() {
     expect(person2).toEqual(jasmine.any(Person));
   });
 
-  it('should not include $promise and $resolved when resource is toJson\'ed', function() {
-    $httpBackend.expect('GET', '/CreditCard/123').respond({id: 123, number: '9876'});
-    var cc = CreditCard.get({id: 123});
-    $httpBackend.flush();
+  it('should not include $promise, $resolved and $timeoutDeferred when resource is toJson\'ed',
+    function() {
+      $httpBackend.expect('GET', '/CreditCard/123').respond({id: 123, number: '9876'});
+      var cc = CreditCard.cancellableGet({id: 123});
+      $httpBackend.flush();
 
-    cc.$myProp = 'still here';
+      cc.$myProp = 'still here';
 
-    expect(cc.$promise).toBeDefined();
-    expect(cc.$resolved).toBe(true);
+      expect(cc.$promise).toBeDefined();
+      expect(cc.$resolved).toBe(true);
+      expect(cc.$timeoutDeferred).toBeDefined();
 
-    var json = JSON.parse(angular.toJson(cc));
-    expect(json.$promise).not.toBeDefined();
-    expect(json.$resolved).not.toBeDefined();
-    expect(json).toEqual({id: 123, number: '9876', $myProp: 'still here'});
-  });
+      var json = JSON.parse(angular.toJson(cc));
+      expect(json.$promise).not.toBeDefined();
+      expect(json.$resolved).not.toBeDefined();
+      expect(json.$timeoutDeferred).not.toBeDefined();
+      expect(json).toEqual({id: 123, number: '9876', $myProp: 'still here'});
+    }
+  );
 
   describe('promise api', function() {
 
@@ -1033,6 +1049,120 @@ describe("resource", function() {
     });
   });
 
+  describe('timeoutDeferred api', function() {
+    var $rootScope;
+
+
+    beforeEach(inject(function(_$rootScope_) {
+      $rootScope = _$rootScope_;
+    }));
+
+
+    describe('single resource', function() {
+      beforeEach(inject(function(_$rootScope_) {
+        $httpBackend.whenGET('/CreditCard/123').respond({id: {key: 123}, number: '9876'});
+      }));
+
+
+      it('should add $timeoutDeferred to the result object iff `timeout === "promise"`',
+        function() {
+          var cc = CreditCard.cancellableGet({id: 123});
+          expect(cc.$timeoutDeferred).toBeDefined();
+
+          cc = CreditCard.get({id: 123});
+          expect(cc.$timeoutDeferred).not.toBeDefined();
+        }
+      );
+
+
+      it('should keep $timeoutDeferred around after resolution', function() {
+        var cc = CreditCard.cancellableGet({id: 123});
+        var deferred = cc.$timeoutDeferred;
+
+        $httpBackend.flush();
+
+        expect(cc.$timeoutDeferred).toBeDefined();
+        expect(cc.$timeoutDeferred).toBe(deferred);
+      });
+
+
+      it('should create a new $timeoutDeferred for each request', function() {
+        $httpBackend.whenPUT('/CreditCard/123').respond({id: {key: 123}, number: '9876'});
+
+        var cc = CreditCard.cancellableGet({id: 123});
+        $httpBackend.flush();
+        var deferred1 = cc.$timeoutDeferred;
+
+        cc.$cancellablePut();
+        $httpBackend.flush();
+        var deferred2 = cc.$timeoutDeferred;
+
+        cc.$cancellablePut();
+        $httpBackend.flush();
+        var deferred3 = cc.$timeoutDeferred;
+
+        expect(deferred1).toBeDefined();
+        expect(deferred2).toBeDefined();
+        expect(deferred3).toBeDefined();
+        expect(deferred1).not.toBe(deferred2);
+        expect(deferred1).not.toBe(deferred3);
+        expect(deferred2).not.toBe(deferred3);
+      });
+
+
+      it('should allow cancelling the request', function() {
+        var cc = new CreditCard({id: {key: 123}});
+
+        $httpBackend.expectPUT('/CreditCard/123').respond({id: {key: 123}});
+        cc.$cancellablePut();
+        expect($httpBackend.flush).not.toThrow();
+
+        $httpBackend.expectPUT('/CreditCard/123').respond({id: {key: 123}});
+        cc.$cancellablePut();
+        cc.$timeoutDeferred.resolve();
+        expect($httpBackend.flush).toThrow('No pending request to flush !');
+      });
+    });
+
+
+    describe('resource collection', function() {
+      beforeEach(inject(function(_$rootScope_) {
+        $httpBackend.whenGET('/CreditCard').respond([{id: {key: 1}}, {id: {key: 2}}]);
+      }));
+
+
+      it('should add $timeoutDeferred to the result object iff `timeout === "promise"`',
+        function() {
+          var ccs = CreditCard.query();
+          expect(ccs.$timeoutDeferred).not.toBeDefined();
+
+          ccs = CreditCard.cancellableQuery();
+          expect(ccs.$timeoutDeferred).toBeDefined();
+        }
+      );
+
+
+      it('should keep $timeoutDeferred around after resolution', function() {
+        var ccs = CreditCard.cancellableQuery();
+        var deferred = ccs.$timeoutDeferred;
+
+        $httpBackend.flush();
+
+        expect(ccs.$timeoutDeferred).toBeDefined();
+        expect(ccs.$timeoutDeferred).toBe(deferred);
+      });
+
+
+      it('should allow cancelling the request', function() {
+        var ccs = CreditCard.cancellableQuery();
+        expect($httpBackend.flush).not.toThrow();
+
+        ccs = CreditCard.cancellableQuery();
+        ccs.$timeoutDeferred.resolve();
+        expect($httpBackend.flush).toThrow('No pending request to flush !');
+      });
+    });
+  });
 
   describe('failure mode', function() {
     var ERROR_CODE = 500,
