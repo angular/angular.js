@@ -571,7 +571,7 @@ angular.module('ngMessages', [])
    /**
     * @ngdoc directive
     * @name ngMessageExp
-    * @restrict AE
+    * @restrict A
     * @scope
     *
     * @description
@@ -602,7 +602,7 @@ angular.module('ngMessages', [])
 function ngMessageDirectiveFactory() {
   return ['$animate', function($animate) {
     return {
-      restrict: 'AE',
+      restrict: restrict,
       transclude: 'element',
       terminal: true,
       require: '^^ngMessages',
