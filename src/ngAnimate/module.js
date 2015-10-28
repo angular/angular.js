@@ -2,6 +2,7 @@
 
 /* global angularAnimateModule: true,
 
+   ngAnimateSwapDirective,
    $$AnimateAsyncRunFactory,
    $$rAFSchedulerFactory,
    $$AnimateChildrenDirective,
@@ -738,6 +739,8 @@
  * Click here {@link ng.$animate to learn more about animations with `$animate`}.
  */
 angular.module('ngAnimate', [])
+  .directive('ngAnimateSwap', ngAnimateSwapDirective)
+
   .directive('ngAnimateChildren', $$AnimateChildrenDirective)
   .factory('$$rAFScheduler', $$rAFSchedulerFactory)
 
