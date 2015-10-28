@@ -1364,5 +1364,13 @@ describe('resource', function() {
       );
   });
 
+  it('should accept optional argument constructor', function() {
+    function Foo() {}
+
+    var Resource = $resource('/', null, null, {constructor: Foo});
+
+    expect(Resource).toEqual(Foo);
+  });
+
 
 });
