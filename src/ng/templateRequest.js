@@ -10,25 +10,27 @@ var $compileMinErr = minErr('$compile');
  */
 function $TemplateRequestProvider() {
 
-  var acceptHeaders;
+  var httpOptions;
 
   /**
    * @ngdoc method
-   * @name $templateRequestProvider#acceptHeaders
+   * @name $templateRequestProvider#httpOptions
    * @description
-   * The accept header to be sent to the server as part of the request.
-   * If this value is undefined then the default {@link $http} Accept header
-   * will be used.
+   * The options to be passed to the $http service when making the request.
+   * You can use this to override options such as the Accept header for template requests.
    *
-   * @param {string=} value new value for the Accept header.
-   * @returns {string|self} Returns the Accept header value when used as getter and self if used as setter.
+   * The {$templateRequest} will set the `cache` and the `transformResponse` properties of the
+   * options if not overridden here.
+   *
+   * @param {string=} value new value for the {@link $http} options.
+   * @returns {string|self} Returns the {@link $http} options when used as getter and self if used as setter.
    */
-  this.acceptHeaders = function(val) {
+  this.httpOptions = function(val) {
     if (val) {
-      acceptHeaders = val;
+      httpOptions = val;
       return this;
     }
-    return acceptHeaders;
+    return httpOptions;
   };
 
   /**
@@ -42,6 +44,9 @@ function $TemplateRequestProvider() {
    * exception can be thwarted by setting the 2nd parameter of the function to true). Note that the
    * contents of `$templateCache` are trusted, so the call to `$sce.getTrustedUrl(tpl)` is omitted
    * when `tpl` is of type string and `$templateCache` has the matching entry.
+   *
+   * If you want to pass custom options to the `$http` service, such as setting the Accept header you
+   * can configure this via {@link $templateRequestProvider#httpOptions}.
    *
    * @param {string|TrustedResourceUrl} tpl The HTTP request template URL
    * @param {boolean=} ignoreRequestError Whether or not to ignore the exception when the request fails or the template is empty
@@ -74,16 +79,10 @@ function $TemplateRequestProvider() {
         transformResponse = null;
       }
 
-      var httpOptions = {
-        cache: $templateCache,
-        transformResponse: transformResponse
-      };
-
-      if (acceptHeaders) {
-        httpOptions.headers = { 'Accept': acceptHeaders };
-      }
-
-      return $http.get(tpl, httpOptions)
+      return $http.get(tpl, extend({
+          cache: $templateCache,
+          transformResponse: transformResponse
+        }, httpOptions))
         ['finally'](function() {
           handleRequestFn.totalPendingRequests--;
         })
