@@ -13,6 +13,11 @@ describe('Filter: orderBy', function() {
         toThrowMinErr('orderBy', 'notarray', 'Expected array but received: {}');
     });
 
+    it('should not throw an exception if a null or undefined value is provided', function() {
+      expect(orderBy(null)).toEqual(null);
+      expect(orderBy(undefined)).toEqual(undefined);
+    });
+
     it('should not throw an exception if an array-like object is provided', function() {
       expect(orderBy('cba')).toEqual(['a', 'b', 'c']);
     });
