@@ -28,6 +28,7 @@ describe('Scope', function() {
   });
 
 
+
   describe('$parent', function() {
     it('should point to itself in root', inject(function($rootScope) {
       expect($rootScope.$root).toEqual($rootScope);
@@ -102,6 +103,20 @@ describe('Scope', function() {
 
 
   describe('$watch/$digest', function() {
+    it('should clean the digest phase when an exception is thrown', inject(function($rootScope, $q) {
+      $q.when().then(function() {
+        throw new Error('Test Error');
+      });
+
+      expect(function() {
+        $rootScope.$apply();
+      }).toThrow('Test Error');
+
+      expect(function() {
+        $rootScope.$apply();
+      }).not.toThrow();
+    }));
+
     it('should watch and fire on simple property change', inject(function($rootScope) {
       var spy = jasmine.createSpy();
       $rootScope.$watch('name', spy);
