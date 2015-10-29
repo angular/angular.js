@@ -5,8 +5,12 @@ var $compileMinErr = minErr('$compile');
 /**
  * @ngdoc provider
  * @name $templateRequestProvider
+ *
  * @description
- * Used to configure the Accept header that is sent to the server when requesting a template.
+ * Used to configure the options passed to the {@link $http} service when making a template request.
+ *
+ * For example, it can be used for specifying the "Accept" header that is sent to the server, when
+ * requesting a template.
  */
 function $TemplateRequestProvider() {
 
@@ -16,10 +20,10 @@ function $TemplateRequestProvider() {
    * @ngdoc method
    * @name $templateRequestProvider#httpOptions
    * @description
-   * The options to be passed to the $http service when making the request.
-   * You can use this to override options such as the Accept header for template requests.
+   * The options to be passed to the {@link $http} service when making the request.
+   * You can use this to override options such as the "Accept" header for template requests.
    *
-   * The {$templateRequest} will set the `cache` and the `transformResponse` properties of the
+   * The {@link $templateRequest} will set the `cache` and the `transformResponse` properties of the
    * options if not overridden here.
    *
    * @param {string=} value new value for the {@link $http} options.
