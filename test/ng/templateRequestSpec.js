@@ -31,7 +31,7 @@ describe('$templateRequest', function() {
 
         function someTransform() {}
 
-        module(function($templateRequestProvider, $httpProvider) {
+        module(function($templateRequestProvider) {
 
           // Configure the template request service to provide  specific headers and transforms
           $templateRequestProvider.httpOptions({
@@ -58,7 +58,7 @@ describe('$templateRequest', function() {
 
         var httpOptions = {};
 
-        module(function($templateRequestProvider, $httpProvider) {
+        module(function($templateRequestProvider) {
           $templateRequestProvider.httpOptions(httpOptions);
         });
 

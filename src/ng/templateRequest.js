@@ -5,7 +5,6 @@ var $compileMinErr = minErr('$compile');
 /**
  * @ngdoc provider
  * @name $templateRequestProvider
- *
  * @description
  * Used to configure the options passed to the {@link $http} service when making a template request.
  *
