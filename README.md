@@ -8,16 +8,16 @@ synchronizes data from your UI (view) with your JavaScript objects (model) throu
 binding. To help you structure your application better and make it easy to test, AngularJS teaches
 the browser how to do dependency injection and inversion of control.
 
-Oh yeah and it helps with server-side communication, taming async callbacks with promises and 
-deferreds. It also makes client-side navigation and deeplinking with hashbang urls or HTML5 pushState a
-piece of cake. Best of all?? It makes development fun!
+It helps with server-side communication, taming async callbacks with promises and deferreds. 
+It also makes client-side navigation and deeplinking with hashbang urls or HTML5 pushState a
+piece of cake. Best of all? It makes development fun!
 
-* Web site: http://angularjs.org
-* Tutorial: http://docs.angularjs.org/tutorial
-* API Docs: http://docs.angularjs.org/api
-* Developer Guide: http://docs.angularjs.org/guide
+* Web site: https://angularjs.org
+* Tutorial: https://docs.angularjs.org/tutorial
+* API Docs: https://docs.angularjs.org/api
+* Developer Guide: https://docs.angularjs.org/guide
 * Contribution guidelines: [CONTRIBUTING.md](https://github.com/angular/angular.js/blob/master/CONTRIBUTING.md)
-* Dashboard: http://dashboard.angularjs.org
+* Dashboard: https://dashboard.angularjs.org
 
 Building AngularJS
 ---------
@@ -37,7 +37,7 @@ To execute end-to-end (e2e) tests, use:
     grunt package
     grunt test:e2e
 
-To learn more about the grunt tasks, run `grunt --help` and also read our
+To learn more about the grunt tasks, run `grunt --help`, instead you may want to read our
 [contribution guidelines](https://github.com/angular/angular.js/blob/master/CONTRIBUTING.md).
 
 
