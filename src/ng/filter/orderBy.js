@@ -177,7 +177,9 @@ orderByFilter.$inject = ['$parse'];
 function orderByFilter($parse) {
   return function(array, sortPredicate, reverseOrder) {
 
-    if (!(isArrayLike(array))) return array;
+    if (!array) { return array; }
+
+    if (!isArrayLike(array)) throw minErr('orderBy')('notarray', 'Expected array but received: {0}', array);
 
     if (!isArray(sortPredicate)) { sortPredicate = [sortPredicate]; }
     if (sortPredicate.length === 0) { sortPredicate = ['+']; }
