@@ -25,6 +25,39 @@ describe('angular', function() {
     });
   });
 
+  describe('ES6Map', function() {
+    it('should test for bad Map objects', function() {
+      expect(testES6Map()).toBe(false);
+      expect(testES6Map(null)).toBe(false);
+      expect(testES6Map(3)).toBe(false);
+      expect(testES6Map({})).toBe(false);
+    });
+
+    it('should test for bad Map shims', function() {
+      function NoMethods() {}
+
+      function ToStringOnKeys() {
+        this._vals = {};
+      }
+      ToStringOnKeys.prototype = {
+        get: function(key) {
+          return this._vals[key];
+        },
+        set: function(key, val) {
+          this._vals[key] = val;
+          return this;
+        }
+      };
+
+      expect(testES6Map(NoMethods)).toBe(false);
+      expect(testES6Map(ToStringOnKeys)).toBe(false);
+    });
+
+    it('should pass the ES6Map test with ES6MapShim', function() {
+      expect(testES6Map(ES6MapShim)).toBe(true);
+    });
+  });
+
   describe('copy', function() {
     it('should return same object', function() {
       var obj = {};

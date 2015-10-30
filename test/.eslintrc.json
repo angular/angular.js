@@ -103,6 +103,8 @@
     "getBlockNodes": false,
     "createMap": false,
     "VALIDITY_STATE_PROPERTY": true,
+    "testES6Map": true,
+    "ES6MapShim": true,
 
     /* AngularPublic.js */
     "version": false,
