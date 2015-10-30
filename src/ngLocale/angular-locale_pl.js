@@ -99,7 +99,6 @@ $provide.value("$locale", {
     "GROUP_SEP": "\u00a0",
     "PATTERNS": [
       {
-        "gMinSize": 5,
         "gSize": 3,
         "lgSize": 3,
         "maxFrac": 3,
@@ -111,7 +110,6 @@ $provide.value("$locale", {
         "posSuf": ""
       },
       {
-        "gMinSize": 5,
         "gSize": 3,
         "lgSize": 3,
         "maxFrac": 2,
