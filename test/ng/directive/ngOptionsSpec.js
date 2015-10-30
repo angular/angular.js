@@ -125,7 +125,7 @@ describe('ngOptions', function() {
 
       .directive('oCompileContents', function() {
         return {
-          link: function(scope, element)  {
+          link: function(scope, element) {
             linkLog.push('linkCompileContents');
             $compile(element.contents())(scope);
           }
