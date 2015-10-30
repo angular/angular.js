@@ -749,6 +749,49 @@ function arrayRemove(array, value) {
   return index;
 }
 
+
+function ES6MapShim() {
+  this._keys = [];
+  this._values = [];
+}
+ES6MapShim.prototype = {
+  get: function(key) {
+    var idx = this._keys.indexOf(key);
+    if (idx !== -1) {
+      return this._values[idx];
+    }
+  },
+  set: function(key, value) {
+    var idx = this._keys.indexOf(key);
+    if (idx === -1) {
+      idx = this._keys.length;
+    }
+    this._keys[idx] = key;
+    this._values[idx] = value;
+    return this;
+  }
+};
+
+function testES6Map(Map) {
+  var m, o = {};
+  return isFunction(Map) && (m = new Map())
+
+    // Required functions
+    && isFunction(m.get) && isFunction(m.set)
+
+    // Number keys, must not call toString
+    && m.get(1) === undefined
+    && m.set(1, o) === m
+    && m.get(1) === o
+    && m.get('1') === undefined
+
+    // Object keys, must use instance as key and not call toString
+    && m.set(o, 2) === m && m.get(o) === 2
+    && m.get({}) === undefined;
+}
+
+var ES6Map = testES6Map(window.Map) ? window.Map : ES6MapShim;
+
 /**
  * @ngdoc function
  * @name angular.copy
@@ -815,8 +858,7 @@ function arrayRemove(array, value) {
   </example>
  */
 function copy(source, destination) {
-  var stackSource = [];
-  var stackDest = [];
+  var stack = new ES6Map();
 
   if (destination) {
     if (isTypedArray(destination) || isArrayBuffer(destination)) {
@@ -837,8 +879,7 @@ function copy(source, destination) {
       });
     }
 
-    stackSource.push(source);
-    stackDest.push(destination);
+    stack.set(source, destination);
     return copyRecurse(source, destination);
   }
 
@@ -882,9 +923,9 @@ function copy(source, destination) {
     }
 
     // Already copied values
-    var index = stackSource.indexOf(source);
-    if (index !== -1) {
-      return stackDest[index];
+    var existingCopy = stack.get(source);
+    if (existingCopy) {
+      return existingCopy;
     }
 
     if (isWindow(source) || isScope(source)) {
@@ -900,8 +941,7 @@ function copy(source, destination) {
       needsRecurse = true;
     }
 
-    stackSource.push(source);
-    stackDest.push(destination);
+    stack.set(source, destination);
 
     return needsRecurse
       ? copyRecurse(source, destination)
