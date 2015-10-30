@@ -365,7 +365,7 @@ angular.module('ngResource', ['ng']).
       }
     };
 
-    this.$get = ['$http', '$q', function($http, $q) {
+    this.$get = ['$http', '$log', '$q', function($http, $log, $q) {
 
       var noop = angular.noop,
         forEach = angular.forEach,
@@ -525,6 +525,22 @@ angular.module('ngResource', ['ng']).
         forEach(actions, function(action, name) {
           var hasBody = /^(POST|PUT|PATCH)$/i.test(action.method);
 
+          var hasTimeout = action.hasOwnProperty('timeout');
+          if (hasTimeout && !angular.isNumber(action.timeout)) {
+            $log.debug('ngResource:\n' +
+                       '  Only numeric values are allowed as `timeout`.\n' +
+                       '  Promises are not supported in $resource, because the same value has to ' +
+                       'be re-used for multiple requests. If you are looking for a way to cancel ' +
+                       'requests, you should use the `cancellable` option.');
+            delete action.timeout;
+            hasTimeout = false;
+          }
+          action.cancellable = hasTimeout ?
+              false : action.hasOwnProperty('cancellable') ?
+              action.cancellable : (options && options.hasOwnProperty('cancellable')) ?
+              options.cancellable :
+              provider.defaults.cancellable;
+
           Resource[name] = function(a1, a2, a3, a4) {
             var params = {}, data, success, error;
 
@@ -581,6 +597,7 @@ angular.module('ngResource', ['ng']).
                 case 'params':
                 case 'isArray':
                 case 'interceptor':
+                case 'cancellable':
                   break;
                 case 'timeout':
                   httpConfig[key] = value;
@@ -588,14 +605,27 @@ angular.module('ngResource', ['ng']).
               }
             });
 
+            if (!isInstanceCall) {
+              if (!action.cancellable) {
+                value.$cancelRequest = angular.noop;
+              } else {
+                var deferred = $q.defer();
+                httpConfig.timeout = deferred.promise;
+                value.$cancelRequest = deferred.resolve.bind(deferred);
+              }
+            }
+
             if (hasBody) httpConfig.data = data;
             route.setUrlParams(httpConfig,
               extend({}, extractParams(data, action.params || {}), params),
               action.url);
 
-            var promise = $http(httpConfig).then(function(response) {
+            var promise = $http(httpConfig).finally(function() {
+              if (value.$cancelRequest) value.$cancelRequest = angular.noop;
+            }).then(function(response) {
               var data = response.data,
-                promise = value.$promise;
+                promise = value.$promise,
+                cancelRequest = value.$cancelRequest;
 
               if (data) {
                 // Need to convert action.isArray to boolean in case it is undefined
@@ -625,6 +655,7 @@ angular.module('ngResource', ['ng']).
                 }
               }
 
+              value.$cancelRequest = cancelRequest;
               value.$resolved = true;
 
               response.resource = value;

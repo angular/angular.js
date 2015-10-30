@@ -1364,35 +1364,158 @@ describe('resource', function() {
         /^\[\$resource:badcfg\] Error in resource configuration for action `get`\. Expected response to contain an object but got an array \(Request: GET \/Customer\/123\)/
       );
   });
+});
 
-  it('should cancel the request if timeout promise is resolved', function() {
-    var canceler = $q.defer();
+describe('resource wrt cancelling requests', function() {
+  var httpSpy;
+  var $httpBackend;
+  var $resource;
 
-    $httpBackend.when('GET', '/CreditCard').respond({data: '123'});
+  beforeEach(module('ngResource', function($provide) {
+    $provide.decorator('$http', function($delegate) {
+      httpSpy = jasmine.createSpy('$http').andCallFake($delegate);
+      return httpSpy;
+    });
+  }));
+
+  beforeEach(inject(function(_$httpBackend_, _$resource_) {
+    $httpBackend = _$httpBackend_;
+    $resource = _$resource_;
+  }));
+
+  it('should accept numeric timeouts in actions and pass them to $http', function() {
+    $httpBackend.whenGET('/CreditCard').respond({});
 
     var CreditCard = $resource('/CreditCard', {}, {
-      query: {
+      get: {
         method: 'GET',
-        timeout: canceler.promise
+        timeout: 10000
       }
     });
 
-    CreditCard.query();
+    CreditCard.get();
+    $httpBackend.flush();
 
-    canceler.resolve();
-    expect($httpBackend.flush).toThrow(new Error("No pending request to flush !"));
+    expect(httpSpy).toHaveBeenCalledOnce();
+    expect(httpSpy.calls[0].args[0].timeout).toBe(10000);
+  });
 
-    canceler = $q.defer();
-    CreditCard = $resource('/CreditCard', {}, {
-      query: {
-        method: 'GET',
-        timeout: canceler.promise
+  it('should delete non-numeric timeouts in actions and log a $debug message',
+    inject(function($log, $q) {
+      spyOn($log, 'debug');
+      $httpBackend.whenGET('/CreditCard').respond({});
+
+      var CreditCard = $resource('/CreditCard', {}, {
+        get: {
+          method: 'GET',
+          timeout: $q.defer().promise
+        }
+      });
+
+      CreditCard.get();
+      $httpBackend.flush();
+
+      expect(httpSpy).toHaveBeenCalledOnce();
+      expect(httpSpy.calls[0].args[0].timeout).toBeUndefined();
+      expect($log.debug).toHaveBeenCalledOnceWith('ngResource:\n' +
+          '  Only numeric values are allowed as `timeout`.\n' +
+          '  Promises are not supported in $resource, because the same value has to ' +
+          'be re-used for multiple requests. If you are looking for a way to cancel ' +
+          'requests, you should use the `cancellable` option.');
+    })
+  );
+
+  it('should not create a `$cancelRequest` method for instance calls', function() {
+    var CreditCard = $resource('/CreditCard', {}, {
+      save1: {
+        method: 'POST',
+        cancellable: false
+      },
+      save2: {
+        method: 'POST',
+        cancellable: true
       }
     });
 
-    CreditCard.query();
+    var creditCard = new CreditCard();
+
+    var promise1 = creditCard.$save1();
+    expect(promise1.$cancelRequest).toBeUndefined();
+    expect(creditCard.$cancelRequest).toBeUndefined();
+
+    var promise2 = creditCard.$save2();
+    expect(promise2.$cancelRequest).toBeUndefined();
+    expect(creditCard.$cancelRequest).toBeUndefined();
+  });
+
+  it('should always create a (possibly noop) `$cancelRequest` method for non-instance calls',
+    function() {
+      var CreditCard = $resource('/CreditCard', {}, {
+        get1: {
+          method: 'GET',
+          cancellable: false
+        },
+        get2: {
+          method: 'GET',
+          cancellable: true
+        }
+      });
+
+      var creditCard1 = CreditCard.get1();
+      var creditCard2 = CreditCard.get2();
+
+      expect(creditCard1.$cancelRequest).toBe(noop);
+      expect(creditCard2.$cancelRequest).toBeDefined();
+    }
+  );
+
+  it('should not make the request cancellable if there is a timeout', function() {
+    var CreditCard = $resource('/CreditCard', {}, {
+      get: {
+        method: 'GET',
+        timeout: 10000,
+        cancellable: true
+      }
+    });
+
+    var creditCard = CreditCard.get();
+
+    expect(creditCard.$cancelRequest).toBe(noop);
+  });
+
+  it('should cancel the request (if cancellable), when calling `$cancelRequest`', function() {
+    $httpBackend.whenGET('/CreditCard').respond({});
+
+    var CreditCard = $resource('/CreditCard', {}, {
+      get: {
+        method: 'GET',
+        cancellable: true
+      }
+    });
+
+    CreditCard.get().$cancelRequest();
+    expect($httpBackend.flush).toThrow(new Error('No pending request to flush !'));
+
+    CreditCard.get();
     expect($httpBackend.flush).not.toThrow();
   });
 
+  it('should reset `$cancelRequest` after the response arrives', function() {
+    $httpBackend.whenGET('/CreditCard').respond({});
 
+    var CreditCard = $resource('/CreditCard', {}, {
+      get: {
+        method: 'GET',
+        cancellable: true
+      }
+    });
+
+    var creditCard = CreditCard.get();
+
+    expect(creditCard.$cancelRequest).not.toBe(noop);
+
+    $httpBackend.flush();
+
+    expect(creditCard.$cancelRequest).toBe(noop);
+  });
 });
