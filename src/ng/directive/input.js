@@ -1461,6 +1461,7 @@ function parseConstantExpr($parse, context, name, expression, fallback) {
 function checkboxInputType(scope, element, attr, ctrl, $sniffer, $browser, $filter, $parse) {
   var trueValue = parseConstantExpr($parse, scope, 'ngTrueValue', attr.ngTrueValue, true);
   var falseValue = parseConstantExpr($parse, scope, 'ngFalseValue', attr.ngFalseValue, false);
+  var indeterminateValue = parseConstantExpr($parse, scope, 'ngIndeterminateValue', attr.ngIndeterminateValue, null);
 
   var listener = function(ev) {
     ctrl.$setViewValue(element[0].checked, ev && ev.type);
@@ -1484,8 +1485,21 @@ function checkboxInputType(scope, element, attr, ctrl, $sniffer, $browser, $filt
   });
 
   ctrl.$parsers.push(function(value) {
+    if (element[0].indeterminate)
+      return indeterminateValue;
+
     return value ? trueValue : falseValue;
   });
+
+  scope.$watch(function() {
+    return element[0].indeterminate;
+  }, function(ev) {
+    if (element[0].indeterminate)
+        ctrl.$setViewValue(indeterminateValue);
+      else
+        ctrl.$setViewValue(element[0].checked, ev && ev.type);
+  });
+
 }
 
 

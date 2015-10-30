@@ -2605,6 +2605,14 @@ describe('input', function() {
 
   describe('checkbox', function() {
 
+    it('should support ngIndeterminateValue=<contexpr>', function() {
+      var inputElm = helper.compileInput('<input ng-indeterminate-value="\'arbitraryValue\'" type="checkbox" ng-model="checkboxViewValue" />');
+      inputElm[0].indeterminate = true;
+      $rootScope.$apply();
+
+      expect($rootScope.checkboxViewValue).toBe('arbitraryValue');
+    });
+
     it('should ignore checkbox without ngModel directive', function() {
       var inputElm = helper.compileInput('<input type="checkbox" name="whatever" required />');
 
