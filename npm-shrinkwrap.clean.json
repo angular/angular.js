@@ -5510,7 +5510,7 @@
       }
     },
     "dgeni-packages": {
-      "version": "0.10.19",
+      "version": "0.11.0",
       "dependencies": {
         "catharsis": {
           "version": "0.8.7",
@@ -5529,7 +5529,7 @@
           "version": "2.3.0",
           "dependencies": {
             "camel-case": {
-              "version": "1.1.2"
+              "version": "1.2.0"
             },
             "constant-case": {
               "version": "1.1.1"
@@ -5578,11 +5578,11 @@
             }
           }
         },
-        "esprima": {
-          "version": "1.2.5"
+        "espree": {
+          "version": "2.2.5"
         },
         "estraverse": {
-          "version": "1.9.3"
+          "version": "4.1.1"
         },
         "glob": {
           "version": "3.2.11",
@@ -5643,7 +5643,7 @@
           "version": "0.3.0",
           "dependencies": {
             "lru-cache": {
-              "version": "2.6.5"
+              "version": "2.7.0"
             },
             "sigmund": {
               "version": "1.0.1"
@@ -5677,7 +5677,7 @@
                       "version": "0.2.14",
                       "dependencies": {
                         "lru-cache": {
-                          "version": "2.6.5"
+                          "version": "2.7.0"
                         },
                         "sigmund": {
                           "version": "1.0.1"
@@ -5710,7 +5710,7 @@
                   "version": "0.3.8",
                   "dependencies": {
                     "nan": {
-                      "version": "2.0.5"
+                      "version": "2.1.0"
                     }
                   }
                 }
@@ -5768,7 +5768,7 @@
               "version": "0.1.8"
             },
             "pkginfo": {
-              "version": "0.3.0"
+              "version": "0.3.1"
             },
             "request": {
               "version": "2.16.6",
