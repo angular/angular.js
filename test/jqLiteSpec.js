@@ -611,7 +611,7 @@ describe('jqLite', function() {
       expect(jqLite('<select multiple="x">').attr('multiple')).toBe('multiple');
     });
 
-    var attributes = 'multiple,selected,checked,disabled,readOnly,required,open'.split(',');
+    var attributes = 'multiple,selected,checked,disabled,readOnly,required,open,indeterminate'.split(',');
 
     for(var i = 0; i < attributes.length; i++) {
       var thisAttribute = attributes[i];
