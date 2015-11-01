@@ -8587,4 +8587,42 @@ describe('$compile', function() {
         expect(element.hasClass('fire')).toBe(true);
       }));
   });
+  describe('$compile with ignore parameter', function() {
+      beforeEach(module(function($provide, $compileProvider) {
+          forEach(['a', 'b', 'c'], function(name) {
+              directive = $compileProvider.directive;
+
+              directive('dir' + uppercase(name), function() {
+                  return {
+                      restrict: 'A',
+                      compile: function(element) {
+                          element.text('compiled');
+                      }
+                  };
+              });
+          });
+      }));
+
+      it('should not compile single directive', inject(function($compile, $rootScope) {
+          var element = $compile('<div dir-a></div><div dir-b></div><div dir-c></div>', undefined, undefined, 'dirA')($rootScope);
+          var dirA = jqLite(element[0]),
+              dirB = jqLite(element[1]),
+              dirC = jqLite(element[2]);
+
+          expect(dirA.text()).toEqual('');
+          expect(dirB.text()).toEqual('compiled');
+          expect(dirC.text()).toEqual('compiled');
+      }));
+
+      it('should not compile multiple directives', inject(function($compile, $rootScope) {
+          var element = $compile('<div dir-a></div><div dir-b></div><div dir-c></div>', undefined, undefined, ['dirB', 'dirC'])($rootScope);
+          var dirA = jqLite(element[0]),
+              dirB = jqLite(element[1]),
+              dirC = jqLite(element[2]);
+
+          expect(dirA.text()).toEqual('compiled');
+          expect(dirB.text()).toEqual('');
+          expect(dirC.text()).toEqual('');
+      }));
+  });
 });

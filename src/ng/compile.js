@@ -1393,7 +1393,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             : compileNodes(childNodes,
                  nodeLinkFn ? (
                   (nodeLinkFn.transcludeOnThisElement || !nodeLinkFn.templateOnThisElement)
-                     && nodeLinkFn.transclude) : transcludeFn);
+                     && nodeLinkFn.transclude) : transcludeFn, undefined, undefined, ignoreDirective);
 
         if (nodeLinkFn || childLinkFn) {
           linkFns.push(i, nodeLinkFn, childLinkFn);
@@ -2238,6 +2238,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
     function addDirective(tDirectives, name, location, maxPriority, ignoreDirective, startAttrName,
                           endAttrName) {
       if (name === ignoreDirective) return null;
+      if (isArray(ignoreDirective) && includes(ignoreDirective, name)) return null;
       var match = null;
       if (hasDirectives.hasOwnProperty(name)) {
         for (var directive, directives = $injector.get(name + Suffix),
