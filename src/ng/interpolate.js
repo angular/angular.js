@@ -238,6 +238,7 @@ function $InterpolateProvider() {
         if (!mustHaveExpression) {
           var unescapedText = unescapeText(text);
           constantInterp = valueFn(unescapedText);
+          constantInterp.exp = text;
           constantInterp.expressions = [];
           constantInterp.$$watchDelegate = constantWatchDelegate;
         }
