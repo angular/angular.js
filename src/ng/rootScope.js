@@ -1148,7 +1148,7 @@ function $RootScopeProvider() {
         var self = this;
         var modifiedListener = function() {
           deregisterListener(self, name, modifiedListener);
-          listener.apply(self, arguments);
+          listener.apply(null, arguments);
         };
 
         registerListener(this, name, modifiedListener);
