@@ -1915,6 +1915,7 @@ describe('angular', function() {
       it('should remove the cookie', function() {
         document.cookie = 'NG_ENABLE_DEBUG_INFO!=true';
         bootstrap(element);
+        
         expect(document.cookie).toEqual('');
       });
     });
