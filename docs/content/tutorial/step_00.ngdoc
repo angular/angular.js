@@ -10,6 +10,13 @@ You are now ready to build the AngularJS phonecat app. In this step, you will be
 with the most important source code files, learn how to start the development servers bundled with
 angular-seed, and run the application in the browser.
 
+<div class="alert alert-info">
+Note: Instead of using npm (especially on Windows), you may just download the angular-min library from
+the official page and simple include it into you web-app page (but then you should copy the code below
+and insert it into your manually created page). npm sometimes doesn't work fine on Windows, so including
+a minified angular script it the simpliest way for beginners.
+</div>
+
 
 In `angular-phonecat` directory, run this command:
 
