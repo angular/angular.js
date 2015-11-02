@@ -649,7 +649,9 @@ describe('angular', function() {
       expect(dst.jqObject).not.toBe(src.jqObject);
 
       expect(isElement(dst.element)).toBeTruthy();
+      expect(jqLite(dst.element)).not.toBe(dst.element); // i.e it is a DOM element
       expect(isElement(dst.jqObject)).toBeTruthy();
+      expect(jqLite(dst.jqObject)).toBe(dst.jqObject); // i.e it is a jqLite/jquery object
     });
   });
 
