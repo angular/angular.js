@@ -363,7 +363,7 @@ function baseExtend(dst, objs, deep) {
         } else if (src.nodeName) {
           dst[key] = src.cloneNode(true);
         } else if (isElement(src)) {
-          dst[key] = jqLite(src).clone();
+          dst[key] = src.clone();
         } else {
           if (!isObject(dst[key])) dst[key] = isArray(src) ? [] : {};
           baseExtend(dst[key], [src], true);

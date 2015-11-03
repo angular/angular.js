@@ -639,8 +639,10 @@ describe('angular', function() {
 
 
     it('should copy(clone) elements', function() {
-      var src = { element: document.createElement('div'),
-        jqObject: jqLite("<p><span>s1</span><span>s2</span></p>").find("span") };
+      var src = {
+        element: document.createElement('div'),
+        jqObject: jqLite('<p><span>s1</span><span>s2</span></p>').find('span')
+      };
       var dst = {};
 
       merge(dst, src);
@@ -651,7 +653,7 @@ describe('angular', function() {
       expect(isElement(dst.element)).toBeTruthy();
       expect(dst.element.nodeName).toBeDefined(); // i.e it is a DOM element
       expect(isElement(dst.jqObject)).toBeTruthy();
-      expect(dst.jqObject.nodeName).toBeUndefined(dst.jqObject); // i.e it is a jqLite/jquery object
+      expect(dst.jqObject.nodeName).toBeUndefined(); // i.e it is a jqLite/jQuery object
     });
   });
 
