@@ -2480,6 +2480,9 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
               if (!hasCompileParent) compile.$$addBindingClass(parent);
               compile.$$addBindingInfo(parent, interpolateFn.expressions);
               scope.$watch(interpolateFn, function interpolateFnWatchAction(value) {
+                if (!node[0].nodeValue) {
+                  return;
+                }
                 node[0].nodeValue = value;
               });
             };

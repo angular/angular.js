@@ -2812,6 +2812,16 @@ describe('$compile', function() {
     );
 
 
+    it('should not throw when compiling and linking text bindings taken from a previously compiled element', inject(
+        function($rootScope, $compile) {
+          $rootScope.name = 'angular';
+          element = $compile('<div>text: {{name}}</div>')($rootScope);
+          var text = element.text();
+          element.html('').append($compile('<span>' + text +'</span>')($rootScope));
+          expect(function() {$rootScope.$digest()}).not.toThrow();
+        })
+    );
+
     it('should one-time bind if the expression starts with two colons', inject(
         function($rootScope, $compile) {
           $rootScope.name = 'angular';
