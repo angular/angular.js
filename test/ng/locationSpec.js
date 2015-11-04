@@ -2141,6 +2141,31 @@ describe('$location', function() {
       })
     );
 
+    it('should fire $locationChangeSuccess when browser location changes to URL which ends with #',
+      inject(function($location, $browser, $rootScope, $log) {
+        $location.url('/somepath');
+        $rootScope.$apply();
+
+        expect($browser.url()).toEqual('http://server/#/somepath');
+        expect($location.url()).toEqual('/somepath');
+
+        $rootScope.$on('$locationChangeStart', function(event, newUrl, oldUrl) {
+          $log.info('start', newUrl, oldUrl);
+        });
+        $rootScope.$on('$locationChangeSuccess', function(event, newUrl, oldUrl) {
+          $log.info('after', newUrl, oldUrl);
+        });
+
+        $browser.url('http://server/#');
+        $browser.poll();
+
+        expect($log.info.logs.shift()).
+          toEqual(['start', 'http://server/', 'http://server/#/somepath']);
+        expect($log.info.logs.shift()).
+          toEqual(['after', 'http://server/', 'http://server/#/somepath']);
+      })
+    );
+
     it('should allow redirect during browser url change',
       inject(function($location, $browser, $rootScope, $log) {
         $rootScope.$on('$locationChangeStart', function(event, newUrl, oldUrl) {
