@@ -38,7 +38,7 @@
  *                  **Note:** When using onload on SVG elements in IE11, the browser will try to call
  *                  a function with the name on the window element, which will usually throw a
  *                  "function is undefined" error. To fix this, you can instead use `data-onload` or a
- *                  different form that {@link guide/directives#normalization matches} `onload`.
+ *                  different form that {@link guide/directive#normalization matches} `onload`.
  *                  </div>
    *
  * @param {string=} autoscroll Whether `ngInclude` should call {@link ng.$anchorScroll
