@@ -21,6 +21,7 @@ var outputFolder = '../build/docs';
 var bowerFolder = 'bower_components';
 
 var src = 'app/src/**/*.js';
+var ignoredFiles = '!src/angular.bind.js';
 var assets = 'app/assets/**/*';
 
 
@@ -50,7 +51,7 @@ gulp.task('build-app', function() {
   var minFile = 'docs.min.js';
   var folder = outputFolder + '/js/';
 
-  return gulp.src(src)
+  return gulp.src([src, ignoredFiles])
     .pipe(sourcemaps.init())
     .pipe(concat(file))
     .pipe(gulp.dest(folder))
@@ -107,5 +108,5 @@ gulp.task('jshint', ['doc-gen'], function() {
 gulp.task('default', ['assets', 'doc-gen', 'build-app', 'jshint']);
 
 gulp.task('watch', function() {
-  gulp.watch([src, assets], ['assets', 'build-app']);
+  gulp.watch([src, ignoredFiles, assets], ['assets', 'build-app']);
 });

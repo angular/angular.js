@@ -35,6 +35,12 @@ describe('injector', function() {
   });
 
 
+  it('should check its modulesToLoad argument', function() {
+    expect(function() { angular.injector('test'); })
+        .toThrowMinErr('ng', 'areq');
+  });
+
+
   it('should resolve dependency graph and instantiate all services just once', function() {
     var log = [];
 
@@ -114,6 +120,10 @@ describe('injector', function() {
 
   it('should create a new $injector for the run phase', inject(function($injector) {
     expect($injector).not.toBe(providerInjector);
+  }));
+
+  it('should have an false strictDi property', inject(function($injector) {
+    expect($injector.strictDi).toBe(false);
   }));
 
 
@@ -235,6 +245,34 @@ describe('injector', function() {
         annotate({});
       }).toThrow();
     });
+
+
+    // Only Chrome and Firefox support this syntax.
+    if (/chrome|firefox/i.test(navigator.userAgent)) {
+      describe('es6', function() {
+        /*jshint -W061 */
+        // The functions are generated using `eval` as just having the ES6 syntax can break some browsers.
+        it('should be possible to annotate functions that are declared using ES6 syntax', function() {
+          expect(annotate(eval('({ fn(x) { return; } })').fn)).toEqual(['x']);
+        });
+
+
+        it('should create $inject for arrow functions', function() {
+          expect(annotate(eval('(a, b) => a'))).toEqual(['a', 'b']);
+        });
+
+
+        it('should create $inject for arrow functions with no parenthesis', function() {
+          expect(annotate(eval('a => a'))).toEqual(['a']);
+        });
+
+
+        it('should take args before first arrow', function() {
+          expect(annotate(eval('a => b => b'))).toEqual(['a']);
+        });
+        /*jshint +W061 */
+      });
+    }
 
 
     it('should publish annotate API', function() {
@@ -650,6 +688,23 @@ describe('injector', function() {
           expect(log.join('; ')).
             toBe('myDecoratedService:input,dependency1; myService:decInput; dec+origReturn');
         });
+
+
+        it('should allow for decorators to $injector', function() {
+          injector = createInjector(['ng', function($provide) {
+            $provide.decorator('$injector', function($delegate) {
+              return extend({}, $delegate, {get: function(val) {
+                if (val === 'key') {
+                  return 'value';
+                }
+                return $delegate.get(val);
+              }});
+            });
+          }]);
+
+          expect(injector.get('key')).toBe('value');
+          expect(injector.get('$http')).not.toBeUndefined();
+        });
       });
     });
 
@@ -1036,4 +1091,8 @@ describe('strict-di injector', function() {
     inject(function($test) {});
     expect(called).toBe(true);
   });
+
+  it('should set strictDi property to true on the injector instance', inject(function($injector) {
+    expect($injector.strictDi).toBe(true);
+  }));
 });

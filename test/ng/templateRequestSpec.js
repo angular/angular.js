@@ -2,6 +2,83 @@
 
 describe('$templateRequest', function() {
 
+  describe('provider', function() {
+
+    describe('httpOptions', function() {
+
+      it('should default to undefined and fallback to default $http options', function() {
+
+        var defaultHeader;
+
+        module(function($templateRequestProvider) {
+          expect($templateRequestProvider.httpOptions()).toBeUndefined();
+        });
+
+        inject(function($templateRequest, $http, $templateCache) {
+          spyOn($http, 'get').andCallThrough();
+
+          $templateRequest('tpl.html');
+
+          expect($http.get).toHaveBeenCalledOnceWith('tpl.html', {
+            cache: $templateCache,
+            transformResponse: [  ]
+          });
+        });
+
+      });
+
+      it('should be configurable', function() {
+
+        function someTransform() {}
+
+        module(function($templateRequestProvider) {
+
+          // Configure the template request service to provide  specific headers and transforms
+          $templateRequestProvider.httpOptions({
+            headers: { Accept: 'moo' },
+            transformResponse: [someTransform]
+          });
+        });
+
+        inject(function($templateRequest, $http, $templateCache) {
+          spyOn($http, 'get').andCallThrough();
+
+          $templateRequest('tpl.html');
+
+          expect($http.get).toHaveBeenCalledOnceWith('tpl.html', {
+            cache: $templateCache,
+            transformResponse: [someTransform],
+            headers: { Accept: 'moo' }
+          });
+        });
+      });
+
+
+      it('should be allow you to override the cache', function() {
+
+        var httpOptions = {};
+
+        module(function($templateRequestProvider) {
+          $templateRequestProvider.httpOptions(httpOptions);
+        });
+
+        inject(function($templateRequest, $http, $cacheFactory) {
+          spyOn($http, 'get').andCallThrough();
+
+          var customCache = $cacheFactory('customCache');
+          httpOptions.cache = customCache;
+
+          $templateRequest('tpl.html');
+
+          expect($http.get).toHaveBeenCalledOnceWith('tpl.html', {
+            cache: customCache,
+            transformResponse: []
+          });
+        });
+      });
+    });
+  });
+
   it('should download the provided template file',
     inject(function($rootScope, $templateRequest, $httpBackend) {
 

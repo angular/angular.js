@@ -719,8 +719,6 @@ describe('ngMock', function() {
 
     it('should serialize scope that has overridden "hasOwnProperty"', inject(function($rootScope, $sniffer) {
       /* jshint -W001 */
-      // MS IE8 just doesn't work for this kind of thing, since "for ... in" doesn't return
-      // things like hasOwnProperty even if it is explicitly defined on the actual object!
       $rootScope.hasOwnProperty = 'X';
       expect(d($rootScope)).toMatch(/Scope\(.*\): \{/);
       expect(d($rootScope)).toMatch(/hasOwnProperty: "X"/);
@@ -833,6 +831,19 @@ describe('ngMock', function() {
         });
       });
 
+      describe('nested calls', function() {
+        it('should invoke nested module calls immediately', function() {
+          module(function($provide) {
+            $provide.constant('someConst', 'blah');
+            module(function(someConst) {
+              log = someConst;
+            });
+          });
+          inject(function() {
+            expect(log).toBe('blah');
+          });
+        });
+      });
 
       describe('inline in test', function() {
         it('should load module', function() {
@@ -906,10 +917,6 @@ describe('ngMock', function() {
       });
 
 
-      // We don't run the following tests on IE8.
-      // IE8 throws "Object does not support this property or method." error,
-      // when thrown from a function defined on window (which `inject` is).
-
       it('should not change thrown Errors', inject(function($sniffer) {
         expect(function() {
           inject(function() {
@@ -954,6 +961,11 @@ describe('ngMock', function() {
       expect(typeof hb.whenPATCH).toBe("function");
       expect(typeof hb.whenDELETE).toBe("function");
       expect(typeof hb.whenHEAD).toBe("function");
+    });
+
+    it('should provide "route" shortcuts for expect and when', function() {
+      expect(typeof hb.whenRoute).toBe("function");
+      expect(typeof hb.expectRoute).toBe("function");
     });
 
 
@@ -1136,14 +1148,38 @@ describe('ngMock', function() {
       });
 
       it('should take function', function() {
-        hb.expect('GET', '/some').respond(function(m, u, d, h) {
-          return [301, m + u + ';' + d + ';a=' + h.a, {'Connection': 'keep-alive'}, 'Moved Permanently'];
+        hb.expect('GET', '/some?q=s').respond(function(m, u, d, h, p) {
+          return [301, m + u + ';' + d + ';a=' + h.a + ';q=' + p.q, {'Connection': 'keep-alive'}, 'Moved Permanently'];
         });
 
-        hb('GET', '/some', 'data', callback, {a: 'b'});
+        hb('GET', '/some?q=s', 'data', callback, {a: 'b'});
         hb.flush();
 
-        expect(callback).toHaveBeenCalledOnceWith(301, 'GET/some;data;a=b', 'Connection: keep-alive', 'Moved Permanently');
+        expect(callback).toHaveBeenCalledOnceWith(301, 'GET/some?q=s;data;a=b;q=s', 'Connection: keep-alive', 'Moved Permanently');
+      });
+
+      it('should decode query parameters in respond() function', function() {
+        hb.expect('GET', '/url?query=l%E2%80%A2ng%20string%20w%2F%20spec%5Eal%20char%24&id=1234&orderBy=-name')
+        .respond(function(m, u, d, h, p) {
+          return [200, "id=" + p.id + ";orderBy=" + p.orderBy + ";query=" + p.query];
+        });
+
+        hb('GET', '/url?query=l%E2%80%A2ng%20string%20w%2F%20spec%5Eal%20char%24&id=1234&orderBy=-name', null, callback);
+        hb.flush();
+
+        expect(callback).toHaveBeenCalledOnceWith(200, 'id=1234;orderBy=-name;query=l•ng string w/ spec^al char$', '', '');
+      });
+
+      it('should include regex captures in respond() params when keys provided', function() {
+        hb.expect('GET', /\/(.+)\/article\/(.+)/, undefined, undefined, ['id', 'name'])
+        .respond(function(m, u, d, h, p) {
+          return [200, "id=" + p.id + ";name=" + p.name];
+        });
+
+        hb('GET', '/1234/article/cool-angular-article', null, callback);
+        hb.flush();
+
+        expect(callback).toHaveBeenCalledOnceWith(200, 'id=1234;name=cool-angular-article', '', '');
       });
 
       it('should default response headers to ""', function() {
@@ -1508,6 +1544,35 @@ describe('ngMock', function() {
       });
     });
 
+    describe('expectRoute/whenRoute shortcuts', function() {
+      angular.forEach(['expectRoute', 'whenRoute'], function(routeShortcut) {
+        var methods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'JSONP'];
+        they('should provide ' + routeShortcut + ' shortcut with $prop method', methods,
+          function() {
+            hb[routeShortcut](this, '/route').respond('path');
+            hb(this, '/route', undefined, callback);
+            hb.flush();
+            expect(callback).toHaveBeenCalledOnceWith(200, 'path', '', '');
+          }
+        );
+        they('should match colon deliminated parameters in ' + routeShortcut + ' $prop method', methods,
+          function() {
+            hb[routeShortcut](this, '/route/:id/path/:s_id').respond('path');
+            hb(this, '/route/123/path/456', undefined, callback);
+            hb.flush();
+            expect(callback).toHaveBeenCalledOnceWith(200, 'path', '', '');
+          }
+        );
+        they('should ignore query param when matching in ' + routeShortcut + ' $prop method', methods,
+          function() {
+            hb[routeShortcut](this, '/route/:id').respond('path');
+            hb(this, '/route/123?q=str&foo=bar', undefined, callback);
+            hb.flush();
+            expect(callback).toHaveBeenCalledOnceWith(200, 'path', '', '');
+          }
+        );
+      });
+    });
 
     describe('MockHttpExpectation', function() {
       /* global MockHttpExpectation */
@@ -1831,6 +1896,187 @@ describe('ngMockE2E', function() {
         expect(callback).not.toHaveBeenCalled();
         $browser.defer.flush();
         expect(callback).toHaveBeenCalledOnce();
+      }));
+    });
+  });
+
+  describe('ngAnimateMock', function() {
+
+    beforeEach(module('ngAnimate'));
+    beforeEach(module('ngAnimateMock'));
+
+    var ss, element, trackedAnimations;
+
+    afterEach(function() {
+      if (element) {
+        element.remove();
+      }
+      if (ss) {
+        ss.destroy();
+      }
+    });
+
+    beforeEach(module(function($animateProvider) {
+      trackedAnimations = [];
+      $animateProvider.register('.animate', function() {
+        return {
+          leave: logFn('leave'),
+          addClass: logFn('addClass')
+        };
+
+        function logFn(method) {
+          return function(element) {
+            trackedAnimations.push(getDoneCallback(arguments));
+          };
+        }
+
+        function getDoneCallback(args) {
+          for (var i = args.length; i > 0; i--) {
+            if (angular.isFunction(args[i])) return args[i];
+          }
+        }
+      });
+
+      return function($animate, $rootElement, $document, $rootScope, $window) {
+        ss = createMockStyleSheet($document, $window);
+
+        element = angular.element('<div class="animate"></div>');
+        $rootElement.append(element);
+        angular.element($document[0].body).append($rootElement);
+        $animate.enabled(true);
+        $rootScope.$digest();
+      };
+    }));
+
+    describe('$animate.queue', function() {
+      it('should maintain a queue of the executed animations', inject(function($animate) {
+        element.removeClass('animate'); // we don't care to test any actual animations
+        var options = {};
+
+        $animate.addClass(element, 'on', options);
+        var first = $animate.queue[0];
+        expect(first.element).toBe(element);
+        expect(first.event).toBe('addClass');
+        expect(first.options).toBe(options);
+
+        $animate.removeClass(element, 'off', options);
+        var second = $animate.queue[1];
+        expect(second.element).toBe(element);
+        expect(second.event).toBe('removeClass');
+        expect(second.options).toBe(options);
+
+        $animate.leave(element, options);
+        var third = $animate.queue[2];
+        expect(third.element).toBe(element);
+        expect(third.event).toBe('leave');
+        expect(third.options).toBe(options);
+      }));
+    });
+
+    describe('$animate.flush()', function() {
+      it('should throw an error if there is nothing to animate', inject(function($animate) {
+        expect(function() {
+          $animate.flush();
+        }).toThrow('No pending animations ready to be closed or flushed');
+      }));
+
+      it('should trigger the animation to start',
+        inject(function($animate) {
+
+        expect(trackedAnimations.length).toBe(0);
+        $animate.leave(element);
+        $animate.flush();
+        expect(trackedAnimations.length).toBe(1);
+      }));
+
+      it('should trigger the animation to end once run and called',
+        inject(function($animate) {
+
+        $animate.leave(element);
+        $animate.flush();
+        expect(element.parent().length).toBe(1);
+
+        trackedAnimations[0]();
+        $animate.flush();
+        expect(element.parent().length).toBe(0);
+      }));
+
+      it('should trigger the animation promise callback to fire once run and closed',
+        inject(function($animate) {
+
+        var doneSpy = jasmine.createSpy();
+        $animate.leave(element).then(doneSpy);
+        $animate.flush();
+
+        trackedAnimations[0]();
+        expect(doneSpy).not.toHaveBeenCalled();
+        $animate.flush();
+        expect(doneSpy).toHaveBeenCalled();
+      }));
+
+      it('should trigger a series of CSS animations to trigger and start once run',
+        inject(function($animate, $rootScope) {
+
+        if (!browserSupportsCssAnimations()) return;
+
+        ss.addRule('.leave-me.ng-leave', 'transition:1s linear all;');
+
+        var i, elm, elms = [];
+        for (i = 0; i < 5; i++) {
+          elm = angular.element('<div class="leave-me"></div>');
+          element.append(elm);
+          elms.push(elm);
+
+          $animate.leave(elm);
+        }
+
+        $rootScope.$digest();
+
+        for (i = 0; i < 5; i++) {
+          elm = elms[i];
+          expect(elm.hasClass('ng-leave')).toBe(true);
+          expect(elm.hasClass('ng-leave-active')).toBe(false);
+        }
+
+        $animate.flush();
+
+        for (i = 0; i < 5; i++) {
+          elm = elms[i];
+          expect(elm.hasClass('ng-leave')).toBe(true);
+          expect(elm.hasClass('ng-leave-active')).toBe(true);
+        }
+      }));
+
+      it('should trigger parent and child animations to run within the same flush',
+        inject(function($animate, $rootScope) {
+
+        var child = angular.element('<div class="animate child"></div>');
+        element.append(child);
+
+        expect(trackedAnimations.length).toBe(0);
+
+        $animate.addClass(element, 'go');
+        $animate.addClass(child, 'start');
+        $animate.flush();
+
+        expect(trackedAnimations.length).toBe(2);
+      }));
+
+      it('should trigger animation callbacks when called',
+        inject(function($animate, $rootScope) {
+
+        var spy = jasmine.createSpy();
+        $animate.on('addClass', element, spy);
+
+        $animate.addClass(element, 'on');
+        expect(spy).not.toHaveBeenCalled();
+
+        $animate.flush();
+        expect(spy.callCount).toBe(1);
+
+        trackedAnimations[0]();
+        $animate.flush();
+        expect(spy.callCount).toBe(2);
       }));
     });
   });

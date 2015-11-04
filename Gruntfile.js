@@ -115,7 +115,7 @@ module.exports = function(grunt) {
         files: { src: 'test/**/*.js' },
       },
       ng: {
-        files: { src: files['angularSrc'] },
+        files: { src: files['angularSrc'].concat('!src/angular.bind.js') },
       },
       ngAnimate: {
         files: { src: 'src/ngAnimate/**/*.js' },
@@ -156,9 +156,13 @@ module.exports = function(grunt) {
     },
 
     jscs: {
-      src: ['src/**/*.js', 'test/**/*.js'],
+      src: [
+        'src/**/*.js',
+        'test/**/*.js',
+        '!src/angular.bind.js' // we ignore this file since contains an early return statement
+      ],
       options: {
-        config: ".jscs.json"
+        config: ".jscsrc"
       }
     },
 
@@ -301,7 +305,7 @@ module.exports = function(grunt) {
 
     shell: {
       "npm-install": {
-        command: path.normalize('scripts/npm/install-dependencies.sh')
+        command: 'node scripts/npm/check-node-modules.js'
       },
 
       "promises-aplus-tests": {

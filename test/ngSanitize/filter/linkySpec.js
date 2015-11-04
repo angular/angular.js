@@ -20,6 +20,15 @@ describe('linky', function() {
     expect(linky(undefined)).not.toBeDefined();
   });
 
+  it('should be case-insensitive', function() {
+    expect(linky('WWW.example.com')).toEqual('<a href="http://WWW.example.com">WWW.example.com</a>');
+    expect(linky('WWW.EXAMPLE.COM')).toEqual('<a href="http://WWW.EXAMPLE.COM">WWW.EXAMPLE.COM</a>');
+    expect(linky('HTTP://www.example.com')).toEqual('<a href="HTTP://www.example.com">HTTP://www.example.com</a>');
+    expect(linky('HTTP://example.com')).toEqual('<a href="HTTP://example.com">HTTP://example.com</a>');
+    expect(linky('HTTPS://www.example.com')).toEqual('<a href="HTTPS://www.example.com">HTTPS://www.example.com</a>');
+    expect(linky('HTTPS://example.com')).toEqual('<a href="HTTPS://example.com">HTTPS://example.com</a>');
+  });
+
   it('should handle www.', function() {
     expect(linky('www.example.com')).toEqual('<a href="http://www.example.com">www.example.com</a>');
   });
@@ -41,8 +50,49 @@ describe('linky', function() {
 
   it('should handle target:', function() {
     expect(linky("http://example.com", "_blank")).
-      toEqual('<a target="_blank" href="http://example.com">http://example.com</a>');
+      toBeOneOf('<a target="_blank" href="http://example.com">http://example.com</a>',
+                '<a href="http://example.com" target="_blank">http://example.com</a>');
     expect(linky("http://example.com", "someNamedIFrame")).
-      toEqual('<a target="someNamedIFrame" href="http://example.com">http://example.com</a>');
+      toBeOneOf('<a target="someNamedIFrame" href="http://example.com">http://example.com</a>',
+                '<a href="http://example.com" target="someNamedIFrame">http://example.com</a>');
+  });
+
+  describe('custom attributes', function() {
+
+    it('should optionally add custom attributes', function() {
+      expect(linky("http://example.com", "_self", {rel: "nofollow"})).
+        toBeOneOf('<a rel="nofollow" target="_self" href="http://example.com">http://example.com</a>',
+                  '<a href="http://example.com" target="_self" rel="nofollow">http://example.com</a>');
+    });
+
+
+    it('should override target parameter with custom attributes', function() {
+      expect(linky("http://example.com", "_self", {target: "_blank"})).
+        toBeOneOf('<a target="_blank" href="http://example.com">http://example.com</a>',
+                  '<a href="http://example.com" target="_blank">http://example.com</a>');
+    });
+
+
+    it('should optionally add custom attributes from function', function() {
+      expect(linky("http://example.com", "_self", function(url) {return {"class": "blue"};})).
+        toBeOneOf('<a class="blue" target="_self" href="http://example.com">http://example.com</a>',
+                  '<a href="http://example.com" target="_self" class="blue">http://example.com</a>',
+                  '<a class="blue" href="http://example.com" target="_self">http://example.com</a>');
+    });
+
+
+    it('should pass url as parameter to custom attribute function', function() {
+      var linkParameters = jasmine.createSpy('linkParameters').andReturn({"class": "blue"});
+      linky("http://example.com", "_self", linkParameters);
+      expect(linkParameters).toHaveBeenCalledWith('http://example.com');
+    });
+
+
+    it('should strip unsafe attributes', function() {
+      expect(linky("http://example.com", "_self", {"class": "blue", "onclick": "alert('Hi')"})).
+        toBeOneOf('<a class="blue" target="_self" href="http://example.com">http://example.com</a>',
+                  '<a href="http://example.com" target="_self" class="blue">http://example.com</a>',
+                  '<a class="blue" href="http://example.com" target="_self">http://example.com</a>');
+    });
   });
 });

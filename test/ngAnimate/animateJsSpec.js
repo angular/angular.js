@@ -3,6 +3,7 @@
 describe("ngAnimate $$animateJs", function() {
 
   beforeEach(module('ngAnimate'));
+  beforeEach(module('ngAnimateMock'));
 
   function getDoneFunction(args) {
     for (var i = 1; i < args.length; i++) {
@@ -86,7 +87,7 @@ describe("ngAnimate $$animateJs", function() {
       $animateProvider.register('.two', makeAnimation('enter'));
       $animateProvider.register('.three', makeAnimation('enter'));
     });
-    inject(function($$animateJs, $$rAF) {
+    inject(function($$animateJs, $animate) {
       var element = jqLite('<div class="one two three"></div>');
       var animator = $$animateJs(element, 'enter');
       var complete = false;
@@ -97,7 +98,7 @@ describe("ngAnimate $$animateJs", function() {
       forEach(doneCallbacks, function(cb) {
         cb();
       });
-      $$rAF.flush();
+      $animate.flush();
       expect(complete).toBe(true);
     });
   });
@@ -206,7 +207,7 @@ describe("ngAnimate $$animateJs", function() {
         };
       });
     });
-    inject(function($$animateJs, $$rAF) {
+    inject(function($$animateJs, $animate) {
       var element = jqLite('<div class="the-end"></div>');
       var animator = $$animateJs(element, 'addClass', {
         addClass: 'red'
@@ -221,12 +222,12 @@ describe("ngAnimate $$animateJs", function() {
       before();
 
       expect(after).toBeUndefined();
-      $$rAF.flush();
+      $animate.flush();
       expect(after).toBeDefined();
       after();
 
       expect(endCalled).toBeUndefined();
-      $$rAF.flush();
+      $animate.flush();
       expect(endCalled).toBe(true);
     });
   });
@@ -251,7 +252,7 @@ describe("ngAnimate $$animateJs", function() {
         };
       });
     });
-    inject(function($$animateJs, $$rAF) {
+    inject(function($$animateJs, $animate) {
       var element = jqLite('<div class="the-end"></div>');
       var animator = $$animateJs(element, 'addClass', {
         domOperation: function() {
@@ -264,7 +265,7 @@ describe("ngAnimate $$animateJs", function() {
       });
       runner[method]();
 
-      $$rAF.flush();
+      $animate.flush();
       expect(log).toEqual(
         ['before addClass ' + method,
          'dom addClass',
@@ -278,7 +279,7 @@ describe("ngAnimate $$animateJs", function() {
         return { beforeAddClass: noop };
       });
     });
-    inject(function($$animateJs, $$rAF, $rootScope) {
+    inject(function($$animateJs, $animate, $rootScope) {
       var element = jqLite('<div class="the-end"></div>');
       var animator = $$animateJs(element, 'addClass');
       var runner = animator.start();
@@ -291,7 +292,7 @@ describe("ngAnimate $$animateJs", function() {
         });
 
       runner.end();
-      $$rAF.flush();
+      $animate.flush();
       $rootScope.$digest();
       expect(done).toBe(true);
       expect(cancelled).toBe(false);
@@ -304,7 +305,7 @@ describe("ngAnimate $$animateJs", function() {
         return { beforeAddClass: noop };
       });
     });
-    inject(function($$animateJs, $$rAF, $rootScope) {
+    inject(function($$animateJs, $animate, $rootScope) {
       var element = jqLite('<div class="the-end"></div>');
       var animator = $$animateJs(element, 'addClass');
       var runner = animator.start();
@@ -317,7 +318,7 @@ describe("ngAnimate $$animateJs", function() {
       });
 
       runner.cancel();
-      $$rAF.flush();
+      $animate.flush();
       $rootScope.$digest();
       expect(done).toBe(false);
       expect(cancelled).toBe(true);
@@ -504,7 +505,7 @@ describe("ngAnimate $$animateJs", function() {
     var allEvents = ['leave'].concat(otherEvents).concat(enterMoveEvents);
 
     they("$prop should asynchronously render the before$prop animation", otherEvents, function(event) {
-      inject(function($$rAF) {
+      inject(function($animate) {
         var beforeMethod = 'before' + event.charAt(0).toUpperCase() + event.substr(1);
         animations[beforeMethod] = function(element, a, b, c) {
           log.push('before ' + event);
@@ -514,14 +515,14 @@ describe("ngAnimate $$animateJs", function() {
 
         runAnimation(event);
         expect(log).toEqual(['before ' + event]);
-        $$rAF.flush();
+        $animate.flush();
 
         expect(log).toEqual(['before ' + event, 'dom ' + event]);
       });
     });
 
     they("$prop should asynchronously render the $prop animation", allEvents, function(event) {
-      inject(function($$rAF) {
+      inject(function($animate) {
         animations[event] = function(element, a, b, c) {
           log.push('after ' + event);
           var done = getDoneFunction(arguments);
@@ -534,11 +535,11 @@ describe("ngAnimate $$animateJs", function() {
 
         if (event === 'leave') {
           expect(log).toEqual(['after leave']);
-          $$rAF.flush();
+          $animate.flush();
           expect(log).toEqual(['after leave', 'dom leave', 'complete']);
         } else {
           expect(log).toEqual(['dom ' + event, 'after ' + event]);
-          $$rAF.flush();
+          $animate.flush();
           expect(log).toEqual(['dom ' + event, 'after ' + event, 'complete']);
         }
       });
@@ -547,7 +548,7 @@ describe("ngAnimate $$animateJs", function() {
     they("$prop should asynchronously render the $prop animation when a start/end animator object is returned",
       allEvents, function(event) {
 
-      inject(function($$rAF, $$AnimateRunner) {
+      inject(function($animate, $$AnimateRunner) {
         var runner;
         animations[event] = function(element, a, b, c) {
           return {
@@ -565,12 +566,12 @@ describe("ngAnimate $$animateJs", function() {
         if (event === 'leave') {
           expect(log).toEqual(['start leave']);
           runner.end();
-          $$rAF.flush();
+          $animate.flush();
           expect(log).toEqual(['start leave', 'dom leave', 'complete']);
         } else {
           expect(log).toEqual(['dom ' + event, 'start ' + event]);
           runner.end();
-          $$rAF.flush();
+          $animate.flush();
           expect(log).toEqual(['dom ' + event, 'start ' + event, 'complete']);
         }
       });
@@ -579,7 +580,7 @@ describe("ngAnimate $$animateJs", function() {
     they("$prop should asynchronously render the $prop animation when an instance of $$AnimateRunner is returned",
       allEvents, function(event) {
 
-      inject(function($$rAF, $$AnimateRunner) {
+      inject(function($animate, $$AnimateRunner) {
         var runner;
         animations[event] = function(element, a, b, c) {
           log.push('start ' + event);
@@ -593,19 +594,19 @@ describe("ngAnimate $$animateJs", function() {
         if (event === 'leave') {
           expect(log).toEqual(['start leave']);
           runner.end();
-          $$rAF.flush();
+          $animate.flush();
           expect(log).toEqual(['start leave', 'dom leave', 'complete']);
         } else {
           expect(log).toEqual(['dom ' + event, 'start ' + event]);
           runner.end();
-          $$rAF.flush();
+          $animate.flush();
           expect(log).toEqual(['dom ' + event, 'start ' + event, 'complete']);
         }
       });
     });
 
     they("$prop should asynchronously reject the before animation if the callback function is called with false", otherEvents, function(event) {
-      inject(function($$rAF, $rootScope) {
+      inject(function($animate, $rootScope) {
         var beforeMethod = 'before' + event.charAt(0).toUpperCase() + event.substr(1);
         animations[beforeMethod] = function(element, a, b, c) {
           log.push('before ' + event);
@@ -624,13 +625,13 @@ describe("ngAnimate $$animateJs", function() {
           function() { log.push('fail'); });
 
         expect(log).toEqual(['before ' + event]);
-        $$rAF.flush();
+        $animate.flush();
         expect(log).toEqual(['before ' + event, 'dom ' + event, 'fail']);
       });
     });
 
     they("$prop should asynchronously reject the after animation if the callback function is called with false", allEvents, function(event) {
-      inject(function($$rAF, $rootScope) {
+      inject(function($animate, $rootScope) {
         animations[event] = function(element, a, b, c) {
           log.push('after ' + event);
           var done = getDoneFunction(arguments);
@@ -644,17 +645,17 @@ describe("ngAnimate $$animateJs", function() {
         var expectations = [];
         if (event === 'leave') {
           expect(log).toEqual(['after leave']);
-          $$rAF.flush();
+          $animate.flush();
           expect(log).toEqual(['after leave', 'dom leave', 'fail']);
         } else {
           expect(log).toEqual(['dom ' + event, 'after ' + event]);
-          $$rAF.flush();
+          $animate.flush();
           expect(log).toEqual(['dom ' + event, 'after ' + event, 'fail']);
         }
       });
     });
 
-    it('setClass should delegate down to addClass/removeClass if not defined', inject(function($$rAF) {
+    it('setClass should delegate down to addClass/removeClass if not defined', inject(function($animate) {
       animations.addClass = function(element, done) {
         log.push('addClass');
       };
@@ -671,7 +672,7 @@ describe("ngAnimate $$animateJs", function() {
     }));
 
     it('beforeSetClass should delegate down to beforeAddClass/beforeRemoveClass if not defined',
-      inject(function($$rAF) {
+      inject(function($animate) {
 
       animations.beforeAddClass = function(element, className, done) {
         log.push('beforeAddClass');
@@ -686,13 +687,13 @@ describe("ngAnimate $$animateJs", function() {
       expect(animations.setClass).toBeFalsy();
 
       runAnimation('setClass');
-      $$rAF.flush();
+      $animate.flush();
 
       expect(log).toEqual(['beforeRemoveClass', 'beforeAddClass', 'dom setClass']);
     }));
 
     it('leave should always ignore the `beforeLeave` animation',
-      inject(function($$rAF) {
+      inject(function($animate) {
 
       animations.beforeLeave = function(element, done) {
         log.push('beforeLeave');
@@ -705,13 +706,13 @@ describe("ngAnimate $$animateJs", function() {
       };
 
       runAnimation('leave');
-      $$rAF.flush();
+      $animate.flush();
 
       expect(log).toEqual(['leave', 'dom leave']);
     }));
 
     it('should allow custom events to be triggered',
-      inject(function($$rAF) {
+      inject(function($animate) {
 
       animations.beforeFlex = function(element, done) {
         log.push('beforeFlex');
@@ -724,7 +725,7 @@ describe("ngAnimate $$animateJs", function() {
       };
 
       runAnimation('flex');
-      $$rAF.flush();
+      $animate.flush();
 
       expect(log).toEqual(['beforeFlex', 'dom flex', 'flex']);
     }));

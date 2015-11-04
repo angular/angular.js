@@ -38,8 +38,8 @@ function setupModuleLoader(window) {
      * All modules (angular core or 3rd party) that should be available to an application must be
      * registered using this mechanism.
      *
-     * When passed two or more arguments, a new module is created.  If passed only one argument, an
-     * existing module (the name passed as the first argument to `module`) is retrieved.
+     * Passing one argument retrieves an existing {@link angular.Module},
+     * whereas passing more than one argument creates a new {@link angular.Module}
      *
      *
      * # Module
@@ -146,7 +146,7 @@ function setupModuleLoader(window) {
            * @description
            * See {@link auto.$provide#provider $provide.provider()}.
            */
-          provider: invokeLater('$provide', 'provider'),
+          provider: invokeLaterAndSetModuleName('$provide', 'provider'),
 
           /**
            * @ngdoc method
@@ -157,7 +157,7 @@ function setupModuleLoader(window) {
            * @description
            * See {@link auto.$provide#factory $provide.factory()}.
            */
-          factory: invokeLater('$provide', 'factory'),
+          factory: invokeLaterAndSetModuleName('$provide', 'factory'),
 
           /**
            * @ngdoc method
@@ -168,7 +168,7 @@ function setupModuleLoader(window) {
            * @description
            * See {@link auto.$provide#service $provide.service()}.
            */
-          service: invokeLater('$provide', 'service'),
+          service: invokeLaterAndSetModuleName('$provide', 'service'),
 
           /**
            * @ngdoc method
@@ -188,7 +188,7 @@ function setupModuleLoader(window) {
            * @param {string} name constant name
            * @param {*} object Constant value.
            * @description
-           * Because the constant are fixed, they get applied before other provide methods.
+           * Because the constants are fixed, they get applied before other provide methods.
            * See {@link auto.$provide#constant $provide.constant()}.
            */
           constant: invokeLater('$provide', 'constant', 'unshift'),
@@ -203,7 +203,7 @@ function setupModuleLoader(window) {
            * @description
            * See {@link auto.$provide#decorator $provide.decorator()}.
            */
-          decorator: invokeLater('$provide', 'decorator'),
+          decorator: invokeLaterAndSetModuleName('$provide', 'decorator'),
 
           /**
            * @ngdoc method
@@ -237,7 +237,7 @@ function setupModuleLoader(window) {
            * See {@link ng.$animateProvider#register $animateProvider.register()} and
            * {@link ngAnimate ngAnimate module} for more information.
            */
-          animation: invokeLater('$animateProvider', 'register'),
+          animation: invokeLaterAndSetModuleName('$animateProvider', 'register'),
 
           /**
            * @ngdoc method
@@ -255,7 +255,7 @@ function setupModuleLoader(window) {
            * (`myapp_subsection_filterx`).
            * </div>
            */
-          filter: invokeLater('$filterProvider', 'register'),
+          filter: invokeLaterAndSetModuleName('$filterProvider', 'register'),
 
           /**
            * @ngdoc method
@@ -267,7 +267,7 @@ function setupModuleLoader(window) {
            * @description
            * See {@link ng.$controllerProvider#register $controllerProvider.register()}.
            */
-          controller: invokeLater('$controllerProvider', 'register'),
+          controller: invokeLaterAndSetModuleName('$controllerProvider', 'register'),
 
           /**
            * @ngdoc method
@@ -280,7 +280,120 @@ function setupModuleLoader(window) {
            * @description
            * See {@link ng.$compileProvider#directive $compileProvider.directive()}.
            */
-          directive: invokeLater('$compileProvider', 'directive'),
+          directive: invokeLaterAndSetModuleName('$compileProvider', 'directive'),
+
+          /**
+           * @ngdoc method
+           * @name angular.Module#component
+           * @module ng
+           * @param {string} name Name of the component in camel-case (i.e. myComp which will match as my-comp)
+           * @param {Object} options Component definition object (a simplified
+           *    {@link ng.$compile#directive-definition-object directive definition object}),
+           *    has the following properties (all optional):
+           *
+           *    - `controller` – `{(string|function()=}` – Controller constructor function that should be
+           *      associated with newly created scope or the name of a {@link ng.$compile#-controller-
+           *      registered controller} if passed as a string. Empty function by default.
+           *    - `controllerAs` – `{string=}` – An identifier name for a reference to the controller.
+           *      If present, the controller will be published to scope under the `controllerAs` name.
+           *      If not present, this will default to be the same as the component name.
+           *    - `template` – `{string=|function()=}` – html template as a string or a function that
+           *      returns an html template as a string which should be used as the contents of this component.
+           *      Empty string by default.
+           *
+           *      If `template` is a function, then it is {@link auto.$injector#invoke injected} with
+           *      the following locals:
+           *
+           *      - `$element` - Current element
+           *      - `$attrs` - Current attributes object for the element
+           *
+           *    - `templateUrl` – `{string=|function()=}` – path or function that returns a path to an html
+           *      template that should be used  as the contents of this component.
+           *
+           *      If `templateUrl` is a function, then it is {@link auto.$injector#invoke injected} with
+           *      the following locals:
+           *
+           *      - `$element` - Current element
+           *      - `$attrs` - Current attributes object for the element
+           *    - `bindings` – `{object=}` – Define DOM attribute binding to component properties.
+           *      Component properties are always bound to the component controller and not to the scope.
+           *    - `transclude` – `{boolean=}` – Whether {@link $compile#transclusion transclusion} is enabled.
+           *      Enabled by default.
+           *    - `isolate` – `{boolean=}` – Whether the new scope is isolated. Isolated by default.
+           *    - `restrict` - `{string=}` - String of subset of {@link ng.$compile#-restrict- EACM} which
+           *      restricts the component to specific directive declaration style. If omitted, this defaults to 'E'.
+           *    - `$canActivate` – `{function()=}` – TBD.
+           *    - `$routeConfig` – `{object=}` – TBD.
+           *
+           * @description
+           * Register a component definition with the compiler. This is short for registering a specific
+           * subset of directives which represents actual UI components in your application. Component
+           * definitions are very simple and do not require the complexity behind defining directives.
+           * Component definitions usually consist only of the template and the controller backing it.
+           * In order to make the definition easier, components enforce best practices like controllerAs
+           * and default behaviors like scope isolation, restrict to elements and allow transclusion.
+           *
+           * Here are a few examples of how you would usually define components:
+           *
+           * ```js
+           *   var myMod = angular.module(...);
+           *   myMod.component('myComp', {
+           *     template: '<div>My name is {{myComp.name}}</div>',
+           *     controller: function() {
+           *       this.name = 'shahar';
+           *     }
+           *   });
+           *
+           *   myMod.component('myComp', {
+           *     template: '<div>My name is {{myComp.name}}</div>',
+           *     bindings: {name: '@'}
+           *   });
+           *
+           *   myMod.component('myComp', {
+           *     templateUrl: 'views/my-comp.html',
+           *     controller: 'MyCtrl as ctrl',
+           *     bindings: {name: '@'}
+           *   });
+           *
+           * ```
+           *
+           * See {@link ng.$compileProvider#directive $compileProvider.directive()}.
+           */
+          component: function(name, options) {
+            function factory($injector) {
+              function makeInjectable(fn) {
+                if (angular.isFunction(fn)) {
+                  return function(tElement, tAttrs) {
+                    return $injector.invoke(fn, this, {$element: tElement, $attrs: tAttrs});
+                  };
+                } else {
+                  return fn;
+                }
+              }
+
+              var template = (!options.template && !options.templateUrl ? '' : options.template);
+              return {
+                controller: options.controller || function() {},
+                controllerAs: identifierForController(options.controller) || options.controllerAs || name,
+                template: makeInjectable(template),
+                templateUrl: makeInjectable(options.templateUrl),
+                transclude: options.transclude === undefined ? true : options.transclude,
+                scope: options.isolate === false ? true : {},
+                bindToController: options.bindings || {},
+                restrict: options.restrict || 'E'
+              };
+            }
+
+            if (options.$canActivate) {
+              factory.$canActivate = options.$canActivate;
+            }
+            if (options.$routeConfig) {
+              factory.$routeConfig = options.$routeConfig;
+            }
+            factory.$inject = ['$injector'];
+
+            return moduleInstance.directive(name, factory);
+          },
 
           /**
            * @ngdoc method
@@ -327,6 +440,19 @@ function setupModuleLoader(window) {
           if (!queue) queue = invokeQueue;
           return function() {
             queue[insertMethod || 'push']([provider, method, arguments]);
+            return moduleInstance;
+          };
+        }
+
+        /**
+         * @param {string} provider
+         * @param {string} method
+         * @returns {angular.Module}
+         */
+        function invokeLaterAndSetModuleName(provider, method) {
+          return function(recipeName, factoryFunction) {
+            if (factoryFunction && isFunction(factoryFunction)) factoryFunction.$$moduleName = name;
+            invokeQueue.push([provider, method, arguments]);
             return moduleInstance;
           };
         }

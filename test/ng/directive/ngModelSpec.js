@@ -19,7 +19,6 @@ describe('ngModel', function() {
       };
 
       element = jqLite('<form><input></form>');
-      element.data('$formController', parentFormCtrl);
 
       scope = $rootScope;
       ngModelAccessor = jasmine.createSpy('ngModel accessor');
@@ -28,6 +27,9 @@ describe('ngModel', function() {
         $element: element.find('input'),
         $attrs: attrs
       });
+
+      //Assign the mocked parentFormCtrl to the model controller
+      ctrl.$$parentForm = parentFormCtrl;
     }));
 
 
@@ -1091,6 +1093,31 @@ describe('ngModel', function() {
       }));
 
 
+      it('should be possible to extend Object prototype and still be able to do form validation',
+        inject(function($compile, $rootScope) {
+        Object.prototype.someThing = function() {};
+        var element = $compile('<form name="myForm">' +
+                                 '<input type="text" name="username" ng-model="username" minlength="10" required />' +
+                               '</form>')($rootScope);
+        var inputElm = element.find('input');
+
+        var formCtrl = $rootScope.myForm;
+        var usernameCtrl = formCtrl.username;
+
+        $rootScope.$digest();
+        expect(usernameCtrl.$invalid).toBe(true);
+        expect(formCtrl.$invalid).toBe(true);
+
+        usernameCtrl.$setViewValue('valid-username');
+        $rootScope.$digest();
+
+        expect(usernameCtrl.$invalid).toBe(false);
+        expect(formCtrl.$invalid).toBe(false);
+        delete Object.prototype.someThing;
+
+        dealoc(element);
+      }));
+
       it('should re-evaluate the form validity state once the asynchronous promise has been delivered',
         inject(function($compile, $rootScope, $q) {
 
@@ -1150,46 +1177,6 @@ describe('ngModel', function() {
         expect(formCtrl.$invalid).toBe(false);
         expect(formCtrl.$pending).toBeFalsy();
         expect(ageCtrl.$invalid).toBe(false);
-
-        dealoc(element);
-      }));
-
-
-      it('should minimize janky setting of classes during $validate() and ngModelWatch', inject(function($animate, $compile, $rootScope) {
-        var addClass = $animate.addClass;
-        var removeClass = $animate.removeClass;
-        var addClassCallCount = 0;
-        var removeClassCallCount = 0;
-        var input;
-        $animate.addClass = function(element, className) {
-          if (input && element[0] === input[0]) ++addClassCallCount;
-          return addClass.call($animate, element, className);
-        };
-
-        $animate.removeClass = function(element, className) {
-          if (input && element[0] === input[0]) ++removeClassCallCount;
-          return removeClass.call($animate, element, className);
-        };
-
-        dealoc(element);
-
-        $rootScope.value = "123456789";
-        element = $compile(
-          '<form name="form">' +
-              '<input type="text" ng-model="value" name="alias" ng-maxlength="10">' +
-          '</form>'
-        )($rootScope);
-
-        var form = $rootScope.form;
-        input = element.children().eq(0);
-
-        $rootScope.$digest();
-
-        expect(input).toBeValid();
-        expect(input).not.toHaveClass('ng-invalid-maxlength');
-        expect(input).toHaveClass('ng-valid-maxlength');
-        expect(addClassCallCount).toBe(1);
-        expect(removeClassCallCount).toBe(0);
 
         dealoc(element);
       }));
@@ -1340,6 +1327,28 @@ describe('ngModel', function() {
 
   describe('CSS classes', function() {
     var EMAIL_REGEXP = /^[a-z0-9!#$%&'*+\/=?^_`{|}~.-]+@[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)*$/i;
+
+    it('should set ng-empty or ng-not-empty when the view value changes',
+          inject(function($compile, $rootScope, $sniffer) {
+
+      var element = $compile('<input ng-model="value" />')($rootScope);
+
+      $rootScope.$digest();
+      expect(element).toBeEmpty();
+
+      $rootScope.value = 'XXX';
+      $rootScope.$digest();
+      expect(element).toBeNotEmpty();
+
+      element.val('');
+      browserTrigger(element, $sniffer.hasEvent('input') ? 'input' : 'change');
+      expect(element).toBeEmpty();
+
+      element.val('YYY');
+      browserTrigger(element, $sniffer.hasEvent('input') ? 'input' : 'change');
+      expect(element).toBeNotEmpty();
+    }));
+
 
     it('should set css classes (ng-valid, ng-invalid, ng-pristine, ng-dirty, ng-untouched, ng-touched)',
         inject(function($compile, $rootScope, $sniffer) {
@@ -1706,8 +1715,10 @@ describe('ngModel', function() {
       model.$setViewValue('some dirty value');
 
       var animations = findElementAnimations(input, $animate.queue);
-      assertValidAnimation(animations[0], 'removeClass', 'ng-pristine');
-      assertValidAnimation(animations[1], 'addClass', 'ng-dirty');
+      assertValidAnimation(animations[0], 'removeClass', 'ng-empty');
+      assertValidAnimation(animations[1], 'addClass', 'ng-not-empty');
+      assertValidAnimation(animations[2], 'removeClass', 'ng-pristine');
+      assertValidAnimation(animations[3], 'addClass', 'ng-dirty');
     }));
 
 

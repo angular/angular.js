@@ -10,7 +10,7 @@ the browser how to do dependency injection and inversion of control.
 
 Oh yeah and it helps with server-side communication, taming async callbacks with promises and 
 deferreds. It also makes client-side navigation and deeplinking with hashbang urls or HTML5 pushState a
-piece of cake. The best of all: it makes development fun!
+piece of cake. Best of all?? It makes development fun!
 
 * Web site: http://angularjs.org
 * Tutorial: http://docs.angularjs.org/tutorial

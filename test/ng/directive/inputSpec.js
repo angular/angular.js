@@ -688,6 +688,14 @@ describe('input', function() {
         expect(inputElm).toBeInvalid();
         expect($rootScope.form.alias.$error.min).toBeTruthy();
       });
+
+      it('should validate if min is empty', function() {
+        $rootScope.minVal = undefined;
+        $rootScope.value = new Date(-9999, 0, 1, 0, 0, 0);
+        $rootScope.$digest();
+
+        expect($rootScope.form.alias.$error.min).toBeFalsy();
+      });
     });
 
     describe('max', function() {
@@ -721,6 +729,14 @@ describe('input', function() {
 
         expect(inputElm).toBeInvalid();
         expect($rootScope.form.alias.$error.max).toBeTruthy();
+      });
+
+      it('should validate if max is empty', function() {
+        $rootScope.maxVal = undefined;
+        $rootScope.value = new Date(9999, 11, 31, 23, 59, 59);
+        $rootScope.$digest();
+
+        expect($rootScope.form.alias.$error.max).toBeFalsy();
       });
     });
   });
@@ -886,6 +902,14 @@ describe('input', function() {
         expect(inputElm).toBeInvalid();
         expect($rootScope.form.alias.$error.min).toBeTruthy();
       });
+
+      it('should validate if min is empty', function() {
+        $rootScope.minVal = undefined;
+        $rootScope.value = new Date(-9999, 0, 1, 0, 0, 0);
+        $rootScope.$digest();
+
+        expect($rootScope.form.alias.$error.min).toBeFalsy();
+      });
     });
 
     describe('max', function() {
@@ -920,6 +944,14 @@ describe('input', function() {
 
         expect(inputElm).toBeInvalid();
         expect($rootScope.form.alias.$error.max).toBeTruthy();
+      });
+
+      it('should validate if max is empty', function() {
+        $rootScope.maxVal = undefined;
+        $rootScope.value = new Date(9999, 11, 31, 23, 59, 59);
+        $rootScope.$digest();
+
+        expect($rootScope.form.alias.$error.max).toBeFalsy();
       });
     });
   });
@@ -1119,6 +1151,14 @@ describe('input', function() {
         expect(inputElm).toBeInvalid();
         expect($rootScope.form.alias.$error.min).toBeTruthy();
       });
+
+      it('should validate if min is empty', function() {
+        $rootScope.minVal = undefined;
+        $rootScope.value = new Date(-9999, 0, 1, 0, 0, 0);
+        $rootScope.$digest();
+
+        expect($rootScope.form.alias.$error.min).toBeFalsy();
+      });
     });
 
     describe('max', function() {
@@ -1152,6 +1192,14 @@ describe('input', function() {
 
         expect(inputElm).toBeInvalid();
         expect($rootScope.form.alias.$error.max).toBeTruthy();
+      });
+
+      it('should validate if max is empty', function() {
+        $rootScope.maxVal = undefined;
+        $rootScope.value = new Date(9999, 11, 31, 23, 59, 59);
+        $rootScope.$digest();
+
+        expect($rootScope.form.alias.$error.max).toBeFalsy();
       });
     });
 
@@ -1428,12 +1476,21 @@ describe('input', function() {
         expect(inputElm).toBeInvalid();
         expect($rootScope.form.alias.$error.min).toBeTruthy();
       });
+
+      it('should validate if min is empty', function() {
+        $rootScope.minVal = undefined;
+        $rootScope.value = new Date(-9999, 0, 1, 0, 0, 0);
+        $rootScope.$digest();
+
+        expect($rootScope.form.alias.$error.min).toBeFalsy();
+      });
     });
 
     describe('max', function() {
       var inputElm;
       beforeEach(function() {
-        inputElm = helper.compileInput('<input type="time" ng-model="value" name="alias" max="22:30:00" />');
+        $rootScope.maxVal = '22:30:00';
+        inputElm = helper.compileInput('<input type="time" ng-model="value" name="alias" max="{{ maxVal }}" />');
       });
 
       it('should invalidate', function() {
@@ -1449,11 +1506,19 @@ describe('input', function() {
         expect(+$rootScope.value).toBe(+new Date(1970, 0, 1, 5, 30, 0));
         expect($rootScope.form.alias.$error.max).toBeFalsy();
       });
+
+     it('should validate if max is empty', function() {
+        $rootScope.maxVal = undefined;
+        $rootScope.value = new Date(9999, 11, 31, 23, 59, 59);
+        $rootScope.$digest();
+
+        expect($rootScope.form.alias.$error.max).toBeFalsy();
+      });
     });
 
 
     it('should validate even if max value changes on-the-fly', function() {
-      $rootScope.max = '4:02:00';
+      $rootScope.max = '04:02:00';
       var inputElm = helper.compileInput('<input type="time" ng-model="value" name="alias" max="{{max}}" />');
 
       helper.changeInputValueTo('05:34:00');
@@ -1481,7 +1546,7 @@ describe('input', function() {
 
 
     it('should validate even if ng-max value changes on-the-fly', function() {
-      $rootScope.max = '4:02:00';
+      $rootScope.max = '04:02:00';
       var inputElm = helper.compileInput('<input type="time" ng-model="value" name="alias" ng-max="max" />');
 
       helper.changeInputValueTo('05:34:00');
@@ -1706,6 +1771,16 @@ describe('input', function() {
 
         expect($rootScope.form.myControl.$error.min).toBeTruthy();
       });
+
+      it('should validate if min is empty', function() {
+        var inputElm = helper.compileInput(
+            '<input type="date" name="alias" ng-model="value" min />');
+
+        $rootScope.value = new Date(-9999, 0, 1, 0, 0, 0);
+        $rootScope.$digest();
+
+        expect($rootScope.form.alias.$error.min).toBeFalsy();
+      });
     });
 
     describe('max', function() {
@@ -1734,6 +1809,16 @@ describe('input', function() {
         $rootScope.$digest();
 
         expect($rootScope.form.myControl.$error.max).toBeTruthy();
+      });
+
+      it('should validate if max is empty', function() {
+        var inputElm = helper.compileInput(
+            '<input type="date" name="alias" ng-model="value" max />');
+
+        $rootScope.value = new Date(9999, 11, 31, 23, 59, 59);
+        $rootScope.$digest();
+
+        expect($rootScope.form.alias.$error.max).toBeFalsy();
       });
     });
 
@@ -1914,6 +1999,71 @@ describe('input', function() {
         $rootScope.value = 'one';
         var inputElm = helper.compileInput('<input type="number" ng-model="value" />');
       }).toThrowMinErr('ngModel', 'numfmt', "Expected `one` to be a number");
+    });
+
+
+    it('should parse exponential notation', function() {
+      var inputElm = helper.compileInput('<input type="number" name="alias" ng-model="value" />');
+
+      // #.###e+##
+      $rootScope.form.alias.$setViewValue("1.23214124123412412e+26");
+      expect(inputElm).toBeValid();
+      expect($rootScope.value).toBe(1.23214124123412412e+26);
+
+      // #.###e##
+      $rootScope.form.alias.$setViewValue("1.23214124123412412e26");
+      expect(inputElm).toBeValid();
+      expect($rootScope.value).toBe(1.23214124123412412e26);
+
+      // #.###e-##
+      $rootScope.form.alias.$setViewValue("1.23214124123412412e-26");
+      expect(inputElm).toBeValid();
+      expect($rootScope.value).toBe(1.23214124123412412e-26);
+
+      // ####e+##
+      $rootScope.form.alias.$setViewValue("123214124123412412e+26");
+      expect(inputElm).toBeValid();
+      expect($rootScope.value).toBe(123214124123412412e26);
+
+      // ####e##
+      $rootScope.form.alias.$setViewValue("123214124123412412e26");
+      expect(inputElm).toBeValid();
+      expect($rootScope.value).toBe(123214124123412412e26);
+
+      // ####e-##
+      $rootScope.form.alias.$setViewValue("123214124123412412e-26");
+      expect(inputElm).toBeValid();
+      expect($rootScope.value).toBe(123214124123412412e-26);
+
+      // #.###E+##
+      $rootScope.form.alias.$setViewValue("1.23214124123412412E+26");
+      expect(inputElm).toBeValid();
+      expect($rootScope.value).toBe(1.23214124123412412e+26);
+
+      // #.###E##
+      $rootScope.form.alias.$setViewValue("1.23214124123412412E26");
+      expect(inputElm).toBeValid();
+      expect($rootScope.value).toBe(1.23214124123412412e26);
+
+      // #.###E-##
+      $rootScope.form.alias.$setViewValue("1.23214124123412412E-26");
+      expect(inputElm).toBeValid();
+      expect($rootScope.value).toBe(1.23214124123412412e-26);
+
+      // ####E+##
+      $rootScope.form.alias.$setViewValue("123214124123412412E+26");
+      expect(inputElm).toBeValid();
+      expect($rootScope.value).toBe(123214124123412412e26);
+
+      // ####E##
+      $rootScope.form.alias.$setViewValue("123214124123412412E26");
+      expect(inputElm).toBeValid();
+      expect($rootScope.value).toBe(123214124123412412e26);
+
+      // ####E-##
+      $rootScope.form.alias.$setViewValue("123214124123412412E-26");
+      expect(inputElm).toBeValid();
+      expect($rootScope.value).toBe(123214124123412412e-26);
     });
 
 
@@ -2387,8 +2537,18 @@ describe('input', function() {
     describe('URL_REGEXP', function() {
       /* global URL_REGEXP: false */
       it('should validate url', function() {
+        // See valid URLs in RFC3987 (http://tools.ietf.org/html/rfc3987)
         expect(URL_REGEXP.test('http://server:123/path')).toBe(true);
+        expect(URL_REGEXP.test('https://server:123/path')).toBe(true);
+        expect(URL_REGEXP.test('file:///home/user')).toBe(true);
+        expect(URL_REGEXP.test('mailto:user@example.com?subject=Foo')).toBe(true);
+        expect(URL_REGEXP.test('r2-d2.c3-p0://localhost/foo')).toBe(true);
+        expect(URL_REGEXP.test('abc:/foo')).toBe(true);
+        expect(URL_REGEXP.test('http:')).toBe(false);
         expect(URL_REGEXP.test('a@B.c')).toBe(false);
+        expect(URL_REGEXP.test('a_B.c')).toBe(false);
+        expect(URL_REGEXP.test('0scheme://example.com')).toBe(false);
+        expect(URL_REGEXP.test('http://example.com:9999/~~``')).toBe(false);
       });
     });
   });
@@ -2533,14 +2693,17 @@ describe('input', function() {
     });
 
 
-    it('should set the ngTrueValue when required directive is present', function() {
-      var inputElm = helper.compileInput('<input type="checkbox" ng-model="value" required ng-true-value="\'yes\'" />');
+    it('should pass validation for "required" when trueValue is a string', function() {
+      var inputElm = helper.compileInput('<input type="checkbox" required name="cb"' +
+        'ng-model="value" ng-true-value="\'yes\'" />');
 
       expect(inputElm).toBeInvalid();
+      expect($rootScope.form.cb.$error.required).toBe(true);
 
       browserTrigger(inputElm, 'click');
       expect(inputElm[0].checked).toBe(true);
       expect(inputElm).toBeValid();
+      expect($rootScope.form.cb.$error.required).toBeUndefined();
     });
   });
 

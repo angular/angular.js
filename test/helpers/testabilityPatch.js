@@ -1,4 +1,4 @@
-/* global jQuery: true, uid: true */
+/* global jQuery: true, uid: true, jqCache: true */
 'use strict';
 
 /**
@@ -12,6 +12,7 @@ if (window._jQuery) _jQuery.event.special.change = undefined;
 if (window.bindJQuery) bindJQuery();
 
 beforeEach(function() {
+
   // all this stuff is not needed for module tests, where jqlite and publishExternalAPI and jqLite are not global vars
   if (window.publishExternalAPI) {
     publishExternalAPI(angular);
@@ -28,7 +29,10 @@ beforeEach(function() {
 
     // reset to jQuery or default to us.
     bindJQuery();
-    jqLiteCacheSizeInit();
+
+    // Clear the cache to prevent memory leak failures from previous tests
+    // breaking subsequent tests unnecessarily
+    jqCache = jqLite.cache = {};
   }
 
   angular.element(document.body).empty().removeData();
@@ -47,6 +51,7 @@ afterEach(function() {
   if (bod) {
     bod.$$hashKey = null;
   }
+  document.$$hashKey = null;
 
   if (this.$injector) {
     var $rootScope = this.$injector.get('$rootScope');
@@ -82,7 +87,6 @@ afterEach(function() {
       throw new Error('Found jqCache references that were not deallocated! count: ' + count);
     }
   }
-
 
   // copied from Angular.js
   // we need this method here so that we can run module tests with wrapped angular.js
@@ -132,14 +136,7 @@ function dealoc(obj) {
 
 
 function jqLiteCacheSize() {
-  var size = 0;
-  forEach(jqLite.cache, function() { size++; });
-  return size - jqLiteCacheSize.initSize;
-}
-jqLiteCacheSize.initSize = 0;
-
-function jqLiteCacheSizeInit() {
-  jqLiteCacheSize.initSize = jqLiteCacheSize.initSize + jqLiteCacheSize();
+  return Object.keys(jqLite.cache).length;
 }
 
 

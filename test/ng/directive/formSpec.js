@@ -58,6 +58,119 @@ describe('form', function() {
     expect(form.alias).toBeUndefined();
   });
 
+
+  it('should ignore changes in manually removed controls', function() {
+    doc = $compile(
+      '<form name="myForm">' +
+        '<input name="control" ng-maxlength="1" ng-model="value" store-model-ctrl/>' +
+      '</form>')(scope);
+
+    var form = scope.myForm;
+
+    var input = doc.find('input').eq(0);
+    var inputController = input.controller('ngModel');
+
+    changeInputValue(input, 'ab');
+    scope.$apply();
+
+    expect(form.$error.maxlength).toBeTruthy();
+    expect(form.$dirty).toBe(true);
+    expect(form.$error.maxlength[0].$name).toBe('control');
+
+    // remove control
+    form.$removeControl(form.control);
+    expect(form.control).toBeUndefined();
+    expect(form.$error.maxlength).toBeFalsy();
+
+    inputController.$setPristine();
+    expect(form.$dirty).toBe(true);
+
+    form.$setPristine();
+
+    changeInputValue(input, 'abc');
+    scope.$apply();
+
+    expect(form.$error.maxlength).toBeFalsy();
+    expect(form.$dirty).toBe(false);
+  });
+
+
+  it('should react to validation changes in manually added controls', function() {
+    doc = $compile(
+      '<form name="myForm">' +
+        '<input name="control" ng-maxlength="1" ng-model="value" store-model-ctrl/>' +
+      '</form>')(scope);
+
+      scope.$digest();
+
+    var form = scope.myForm;
+
+    var input = doc.find('input').eq(0);
+
+    // remove control and invalidate it
+    form.$removeControl(control);
+    expect(form.control).toBeUndefined();
+
+    changeInputValue(input, 'abc');
+    expect(control.$error.maxlength).toBe(true);
+    expect(control.$dirty).toBe(true);
+    expect(form.$error.maxlength).toBeFalsy();
+    expect(form.$dirty).toBe(false);
+
+    // re-add the control; its current validation state is not propagated
+    form.$addControl(control);
+    expect(form.control).toBe(control);
+    expect(form.$error.maxlength).toBeFalsy();
+    expect(form.$dirty).toBe(false);
+
+    // Only when the input changes again its validation state is propagated
+    changeInputValue(input, 'abcd');
+    expect(form.$error.maxlength[0]).toBe(control);
+    expect(form.$dirty).toBe(false);
+  });
+
+
+  it('should use the correct parent when renaming and removing dynamically added controls', function() {
+    scope.controlName = 'childControl';
+    scope.hasChildControl = true;
+
+    doc = $compile(
+      '<form name="myForm">' +
+        '<div ng-if="hasChildControl">' +
+          '<input name="{{controlName}}" ng-maxlength="1" ng-model="value"/>' +
+        '</div>' +
+      '</form>' +
+      '<form name="otherForm"></form>')(scope);
+
+    scope.$digest();
+
+    var form = scope.myForm;
+    var otherForm = scope.otherForm;
+    var childControl = form.childControl;
+
+    // remove child form and add it to another form
+    form.$removeControl(childControl);
+    otherForm.$addControl(childControl);
+
+    expect(form.childControl).toBeUndefined();
+    expect(otherForm.childControl).toBe(childControl);
+
+    // rename the childControl
+    scope.controlName = 'childControlMoved';
+    scope.$digest();
+
+    expect(form.childControlMoved).toBeUndefined();
+    expect(otherForm.childControl).toBeUndefined();
+    expect(otherForm.childControlMoved).toBe(childControl);
+
+    scope.hasChildControl = false;
+    scope.$digest();
+
+    expect(form.childControlMoved).toBeUndefined();
+    expect(otherForm.childControlMoved).toBeUndefined();
+  });
+
+
   it('should remove scope reference when form with no parent form is removed from the DOM', function() {
     var formController;
     scope.ctrl = {};
@@ -547,35 +660,153 @@ describe('form', function() {
       expect(doc.find('div').hasClass('ng-pending')).toBe(false);
     });
 
-  it('should leave the parent form invalid when deregister a removed input', function() {
-    doc = jqLite(
-      '<form name="parent">' +
-        '<div class="ng-form" name="child">' +
-          '<input ng-if="inputPresent" ng-model="modelA" name="inputA" required>' +
-          '<input ng-model="modelB" name="inputB" required>' +
-        '</div>' +
-      '</form>');
-    $compile(doc)(scope);
-    scope.inputPresent = true;
-    scope.$apply();
 
-    var parent = scope.parent,
-        child = scope.child,
-        inputA = child.inputA,
-        inputB = child.inputB;
+    it('should leave the parent form invalid when deregister a removed input', function() {
+      doc = jqLite(
+        '<form name="parent">' +
+          '<div class="ng-form" name="child">' +
+            '<input ng-if="inputPresent" ng-model="modelA" name="inputA" required>' +
+            '<input ng-model="modelB" name="inputB" required>' +
+          '</div>' +
+        '</form>');
+      $compile(doc)(scope);
+      scope.inputPresent = true;
+      scope.$apply();
 
-    expect(parent).toBeDefined();
-    expect(child).toBeDefined();
-    expect(parent.$error.required).toEqual([child]);
-    expect(child.$error.required).toEqual([inputB, inputA]);
+      var parent = scope.parent,
+          child = scope.child,
+          inputA = child.inputA,
+          inputB = child.inputB;
 
-    //remove child input
-    scope.inputPresent = false;
-    scope.$apply();
+      expect(parent).toBeDefined();
+      expect(child).toBeDefined();
+      expect(parent.$error.required).toEqual([child]);
+      expect(child.$error.required).toEqual([inputB, inputA]);
 
-    expect(parent.$error.required).toEqual([child]);
-    expect(child.$error.required).toEqual([inputB]);
-  });
+      //remove child input
+      scope.inputPresent = false;
+      scope.$apply();
+
+      expect(parent.$error.required).toEqual([child]);
+      expect(child.$error.required).toEqual([inputB]);
+    });
+
+
+    it('should ignore changes in manually removed child forms', function() {
+      doc = $compile(
+        '<form name="myForm">' +
+          '<ng-form name="childform">' +
+            '<input name="childformcontrol" ng-maxlength="1" ng-model="value"/>' +
+          '</ng-form>' +
+        '</form>')(scope);
+
+      var form = scope.myForm;
+      var childformController = doc.find('ng-form').eq(0).controller('form');
+
+      var input = doc.find('input').eq(0);
+      var inputController = input.controller('ngModel');
+
+      changeInputValue(input, 'ab');
+      scope.$apply();
+
+      expect(form.$dirty).toBe(true);
+      expect(form.$error.maxlength).toBeTruthy();
+      expect(form.$error.maxlength[0].$name).toBe('childform');
+
+      inputController.$setPristine();
+      expect(form.$dirty).toBe(true);
+
+      form.$setPristine();
+
+      // remove child form
+      form.$removeControl(childformController);
+      expect(form.childform).toBeUndefined();
+      expect(form.$error.maxlength).toBeFalsy();
+
+      changeInputValue(input, 'abc');
+      scope.$apply();
+
+      expect(form.$error.maxlength).toBeFalsy();
+      expect(form.$dirty).toBe(false);
+    });
+
+
+    it('should react to changes in manually added child forms', function() {
+      doc = $compile(
+        '<form name="myForm">' +
+          '<ng-form name="childForm">' +
+            '<input name="childformcontrol" ng-maxlength="1" ng-model="value" />' +
+          '</ng-form>' +
+        '</form>')(scope);
+
+      var form = scope.myForm;
+      var childFormController = doc.find('ng-form').eq(0).controller('form');
+
+      var input = doc.find('input').eq(0);
+
+      // remove child form so we can add it manually
+      form.$removeControl(childFormController);
+      changeInputValue(input, 'ab');
+
+      expect(form.childForm).toBeUndefined();
+      expect(form.$dirty).toBe(false);
+      expect(form.$error.maxlength).toBeFalsy();
+
+      // re-add the child form; its current validation state is not propagated
+      form.$addControl(childFormController);
+      expect(form.childForm).toBe(childFormController);
+      expect(form.$error.maxlength).toBeFalsy();
+      expect(form.$dirty).toBe(false);
+
+      // Only when the input inside the child form changes, the validation state is propagated
+      changeInputValue(input, 'abc');
+      expect(form.$error.maxlength[0]).toBe(childFormController);
+      expect(form.$dirty).toBe(false);
+    });
+
+
+    it('should use the correct parent when renaming and removing dynamically added forms', function() {
+      scope.formName = 'childForm';
+      scope.hasChildForm = true;
+
+      doc = $compile(
+        '<form name="myForm">' +
+          '<div ng-if="hasChildForm">' +
+            '<ng-form name="{{formName}}">' +
+              '<input name="childformcontrol" ng-maxlength="1" ng-model="value"/>' +
+            '</ng-form>' +
+          '</div>' +
+        '</form>' +
+        '<form name="otherForm"></form>')(scope);
+
+      scope.$digest();
+
+      var form = scope.myForm;
+      var otherForm = scope.otherForm;
+      var childForm = form.childForm;
+
+      // remove child form and add it to another form
+      form.$removeControl(childForm);
+      otherForm.$addControl(childForm);
+
+      expect(form.childForm).toBeUndefined();
+      expect(otherForm.childForm).toBe(childForm);
+
+      // rename the childForm
+      scope.formName = 'childFormMoved';
+      scope.$digest();
+
+      expect(form.childFormMoved).toBeUndefined();
+      expect(otherForm.childForm).toBeUndefined();
+      expect(otherForm.childFormMoved).toBe(childForm);
+
+      scope.hasChildForm = false;
+      scope.$digest();
+
+      expect(form.childFormMoved).toBeUndefined();
+      expect(otherForm.childFormMoved).toBeUndefined();
+    });
+
 
     it('should chain nested forms in repeater', function() {
       doc = jqLite(

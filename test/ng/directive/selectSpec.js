@@ -318,6 +318,26 @@ describe('select', function() {
       });
 
 
+      it('should support option without a value attribute', function() {
+        compile('<select ng-model="robot">' +
+                  '<option>--select--</option>' +
+                  '<option value="x">robot x</option>' +
+                  '<option value="y">robot y</option>' +
+                '</select>');
+        expect(element).toEqualSelect(["? undefined:undefined ?"], "--select--", 'x', 'y');
+      });
+
+
+      it('should support option without a value with other HTML attributes', function() {
+        compile('<select ng-model="robot">' +
+                  '<option data-foo="bar">--select--</option>' +
+                  '<option value="x">robot x</option>' +
+                  '<option value="y">robot y</option>' +
+                '</select>');
+        expect(element).toEqualSelect(["? undefined:undefined ?"], "--select--", 'x', 'y');
+      });
+
+
       describe('interactions with repeated options', function() {
 
         it('should select empty option when model is undefined', function() {
@@ -404,7 +424,7 @@ describe('select', function() {
         scope.$apply(function() {
           scope.robot = null;
         });
-        expect(element).toEqualSelect([unknownValue(null)], '', 'c3p0', 'r2d2');
+        expect(element).toEqualSelect([''], 'c3p0', 'r2d2');
 
         scope.$apply(function() {
           scope.robot = 'r2d2';
@@ -964,21 +984,122 @@ describe('select', function() {
 
   describe('option', function() {
 
-    it('should populate value attribute on OPTION', function() {
+    it('should populate a missing value attribute with the option text', function() {
       compile('<select ng-model="x"><option selected>abc</option></select>');
       expect(element).toEqualSelect([unknownValue(undefined)], 'abc');
     });
 
-    it('should ignore value if already exists', function() {
+
+    it('should ignore the option text if the value attribute exists', function() {
       compile('<select ng-model="x"><option value="abc">xyz</option></select>');
       expect(element).toEqualSelect([unknownValue(undefined)], 'abc');
     });
+
 
     it('should set value even if self closing HTML', function() {
       scope.x = 'hello';
       compile('<select ng-model="x"><option>hello</select>');
       expect(element).toEqualSelect(['hello']);
     });
+
+
+    it('should add options with interpolated value attributes', function() {
+      scope.option1 = 'option1';
+      scope.option2 = 'option2';
+
+     compile('<select ng-model="selected">' +
+        '<option value="{{option1}}">Option 1</option>' +
+        '<option value="{{option2}}">Option 2</option>' +
+      '</select>');
+
+      scope.$digest();
+      expect(scope.selected).toBeUndefined();
+
+      browserTrigger(element.find('option').eq(0));
+      expect(scope.selected).toBe('option1');
+
+      scope.selected = 'option2';
+      scope.$digest();
+      expect(element.find('option').eq(1).prop('selected')).toBe(true);
+      expect(element.find('option').eq(1).text()).toBe('Option 2');
+    });
+
+
+    it('should update the option when the interpolated value attribute changes', function() {
+      scope.option1 = 'option1';
+      scope.option2 = '';
+
+      compile('<select ng-model="selected">' +
+        '<option value="{{option1}}">Option 1</option>' +
+        '<option value="{{option2}}">Option 2</option>' +
+      '</select>');
+
+      var selectCtrl = element.controller('select');
+      spyOn(selectCtrl, 'removeOption').andCallThrough();
+
+      scope.$digest();
+      expect(scope.selected).toBeUndefined();
+      expect(selectCtrl.removeOption).not.toHaveBeenCalled();
+
+      //Change value of option2
+      scope.option2 = 'option2Changed';
+      scope.selected = 'option2Changed';
+      scope.$digest();
+
+      expect(selectCtrl.removeOption).toHaveBeenCalledWith('');
+      expect(element.find('option').eq(1).prop('selected')).toBe(true);
+      expect(element.find('option').eq(1).text()).toBe('Option 2');
+    });
+
+
+    it('should add options with interpolated text', function() {
+      scope.option1 = 'Option 1';
+      scope.option2 = 'Option 2';
+
+      compile('<select ng-model="selected">' +
+        '<option>{{option1}}</option>' +
+        '<option>{{option2}}</option>' +
+      '</select>');
+
+      scope.$digest();
+      expect(scope.selected).toBeUndefined();
+
+      browserTrigger(element.find('option').eq(0));
+      expect(scope.selected).toBe('Option 1');
+
+      scope.selected = 'Option 2';
+      scope.$digest();
+      expect(element.find('option').eq(1).prop('selected')).toBe(true);
+      expect(element.find('option').eq(1).text()).toBe('Option 2');
+    });
+
+
+    it('should update options when their interpolated text changes', function() {
+      scope.option1 = 'Option 1';
+      scope.option2 = '';
+
+      compile('<select ng-model="selected">' +
+        '<option>{{option1}}</option>' +
+        '<option>{{option2}}</option>' +
+      '</select>');
+
+      var selectCtrl = element.controller('select');
+      spyOn(selectCtrl, 'removeOption').andCallThrough();
+
+      scope.$digest();
+      expect(scope.selected).toBeUndefined();
+      expect(selectCtrl.removeOption).not.toHaveBeenCalled();
+
+      //Change value of option2
+      scope.option2 = 'Option 2 Changed';
+      scope.selected = 'Option 2 Changed';
+      scope.$digest();
+
+      expect(selectCtrl.removeOption).toHaveBeenCalledWith('');
+      expect(element.find('option').eq(1).prop('selected')).toBe(true);
+      expect(element.find('option').eq(1).text()).toBe('Option 2 Changed');
+    });
+
 
     it('should not blow up when option directive is found inside of a datalist',
         inject(function($compile, $rootScope) {

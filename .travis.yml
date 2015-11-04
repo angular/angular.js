@@ -19,10 +19,10 @@ env:
     - JOB=docs-e2e BROWSER_PROVIDER=saucelabs
     - JOB=e2e TEST_TARGET=jqlite BROWSER_PROVIDER=saucelabs
     - JOB=e2e TEST_TARGET=jquery BROWSER_PROVIDER=saucelabs
-    - JOB=unit BROWSER_PROVIDER=browserstack
-    - JOB=docs-e2e BROWSER_PROVIDER=browserstack
-    - JOB=e2e TEST_TARGET=jqlite BROWSER_PROVIDER=browserstack
-    - JOB=e2e TEST_TARGET=jquery BROWSER_PROVIDER=browserstack
+#    - JOB=unit BROWSER_PROVIDER=browserstack
+#    - JOB=docs-e2e BROWSER_PROVIDER=browserstack
+#    - JOB=e2e TEST_TARGET=jqlite BROWSER_PROVIDER=browserstack
+#    - JOB=e2e TEST_TARGET=jquery BROWSER_PROVIDER=browserstack
   global:
     - SAUCE_USERNAME=angular-ci
     - SAUCE_ACCESS_KEY=9b988f434ff8-fbca-8aa4-4ae3-35442987
@@ -31,12 +31,12 @@ env:
     - LOGS_DIR=/tmp/angular-build/logs
     - BROWSER_PROVIDER_READY_FILE=/tmp/browsersprovider-tunnel-ready
 
-matrix:
-  allow_failures:
-    - env: "JOB=unit BROWSER_PROVIDER=browserstack"
-    - env: "JOB=docs-e2e BROWSER_PROVIDER=browserstack"
-    - env: "JOB=e2e TEST_TARGET=jqlite BROWSER_PROVIDER=browserstack"
-    - env: "JOB=e2e TEST_TARGET=jquery BROWSER_PROVIDER=browserstack"
+#matrix:
+#  allow_failures:
+#    - env: "JOB=unit BROWSER_PROVIDER=browserstack"
+#    - env: "JOB=docs-e2e BROWSER_PROVIDER=browserstack"
+#    - env: "JOB=e2e TEST_TARGET=jqlite BROWSER_PROVIDER=browserstack"
+#    - env: "JOB=e2e TEST_TARGET=jquery BROWSER_PROVIDER=browserstack"
 
 install:
   # Check the size of caches
@@ -48,7 +48,7 @@ install:
   - npm config set loglevel http
   - npm install -g npm@2.5
   # Instal npm dependecies and ensure that npm cache is not stale
-  - scripts/npm/install-dependencies.sh
+  - npm install
 
 before_script:
   - mkdir -p $LOGS_DIR
@@ -61,6 +61,7 @@ script:
   - ./scripts/travis/build.sh
 
 after_script:
+  - ./scripts/travis/tear_down_browser_provider.sh
   - ./scripts/travis/print_logs.sh
 
 notifications:

@@ -5,13 +5,16 @@
 
 # Understanding Controllers
 
-In Angular, a Controller is a JavaScript **constructor function** that is used to augment the
+In Angular, a Controller is defined by a JavaScript **constructor function** that is used to augment the
 {@link scope Angular Scope}.
 
 When a Controller is attached to the DOM via the {@link ng.directive:ngController ng-controller}
 directive, Angular will instantiate a new Controller object, using the specified Controller's
-**constructor function**. A new **child scope** will be available as an injectable parameter to the
-Controller's constructor function as `$scope`.
+**constructor function**. A new **child scope** will be created and made available as an injectable
+parameter to the Controller's constructor function as `$scope`.
+
+If the controller has been attached using the `controller as` syntax then the controller instance will
+be assigned to a property on the new scope.
 
 Use controllers to:
 
@@ -106,7 +109,7 @@ needed for a single view.
 
 The most common way to keep Controllers slim is by encapsulating work that doesn't belong to
 controllers into services and then using these services in Controllers via dependency injection.
-This is discussed in the {@link di Dependency Injection} {@link services
+This is discussed in the {@link di Dependency Injection}  and  {@link services
 Services} sections of this guide.
 
 
@@ -162,7 +165,7 @@ scope is augmented (managed) by the `SpicyController` Controller.
 starts with capital letter and ends with "Controller".
 - Assigning a property to `$scope` creates or updates the model.
 - Controller methods can be created through direct assignment to scope (see the `chiliSpicy` method)
-- The Controller methods and properties are available in the template (for the `<div>` element and
+- The Controller methods and properties are available in the template (for both the `<div>` element and
 its children).
 
 ## Spicy Arguments Example
@@ -302,7 +305,7 @@ describe('myController function', function() {
 ```
 
 
-If you need to test a nested Controller you need to create the same scope hierarchy
+If you need to test a nested Controller you  must create the same scope hierarchy
 in your test that exists in the DOM:
 
 ```js

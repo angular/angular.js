@@ -22,18 +22,21 @@ describe('HTML', function() {
     var handler, start, text, comment;
     beforeEach(function() {
       text = "";
+      start = null;
       handler = {
-        start: function(tag, attrs, unary) {
+        start: function(tag, attrs) {
           start = {
             tag: tag,
-            attrs: attrs,
-            unary: unary
+            attrs: attrs
           };
           // Since different browsers handle newlines differently we trim
           // so that it is easier to write tests.
-          angular.forEach(attrs, function(value, key) {
+          for (var i = 0, ii = attrs.length; i < ii; i++) {
+            var keyValue = attrs[i];
+            var key = keyValue.key;
+            var value = keyValue.value;
             attrs[key] = value.replace(/^\s*/, '').replace(/\s*$/, '');
-          });
+          }
         },
         chars: function(text_) {
           text += text_;
@@ -47,56 +50,20 @@ describe('HTML', function() {
       };
     });
 
-    it('should parse comments', function() {
+    it('should not parse comments', function() {
       htmlParser('<!--FOOBAR-->', handler);
-      expect(comment).toEqual('FOOBAR');
-    });
-
-    it('should throw an exception for invalid comments', function() {
-      var caught=false;
-      try {
-        htmlParser('<!-->', handler);
-      }
-      catch (ex) {
-        caught = true;
-        // expected an exception due to a bad parse
-      }
-      expect(caught).toBe(true);
-    });
-
-    it('double-dashes are not allowed in a comment', function() {
-      var caught=false;
-      try {
-        htmlParser('<!-- -- -->', handler);
-      }
-      catch (ex) {
-        caught = true;
-        // expected an exception due to a bad parse
-      }
-      expect(caught).toBe(true);
+      expect(comment).not.toBeDefined();
     });
 
     it('should parse basic format', function() {
       htmlParser('<tag attr="value">text</tag>', handler);
-      expect(start).toEqual({tag:'tag', attrs:{attr:'value'}, unary:false});
+      expect(start).toEqual({tag:'tag', attrs:{attr:'value'}});
       expect(text).toEqual('text');
     });
 
     it('should not treat "<" followed by a non-/ or non-letter as a tag', function() {
       expectHTML('<- text1 text2 <1 text1 text2 <{', handler).
         toBe('&lt;- text1 text2 &lt;1 text1 text2 &lt;{');
-    });
-
-    it('should throw badparse if text content contains "<" followed by "/" without matching ">"', function() {
-      expect(function() {
-        htmlParser('foo </ bar', handler);
-      }).toThrowMinErr('$sanitize', 'badparse', 'The sanitizer was unable to parse the following block of html: </ bar');
-    });
-
-    it('should throw badparse if text content contains "<" followed by an ASCII letter without matching ">"', function() {
-      expect(function() {
-        htmlParser('foo <a bar', handler);
-      }).toThrowMinErr('$sanitize', 'badparse', 'The sanitizer was unable to parse the following block of html: <a bar');
     });
 
     it('should accept tag delimiters such as "<" inside real tags', function() {
@@ -107,25 +74,25 @@ describe('HTML', function() {
 
     it('should parse newlines in tags', function() {
       htmlParser('<tag\n attr="value"\n>text</\ntag\n>', handler);
-      expect(start).toEqual({tag:'tag', attrs:{attr:'value'}, unary:false});
+      expect(start).toEqual({tag:'tag', attrs:{attr:'value'}});
       expect(text).toEqual('text');
     });
 
     it('should parse newlines in attributes', function() {
       htmlParser('<tag attr="\nvalue\n">text</tag>', handler);
-      expect(start).toEqual({tag:'tag', attrs:{attr:'value'}, unary:false});
+      expect(start).toEqual({tag:'tag', attrs:{attr:'\nvalue\n'}});
       expect(text).toEqual('text');
     });
 
     it('should parse namespace', function() {
       htmlParser('<ns:t-a-g ns:a-t-t-r="\nvalue\n">text</ns:t-a-g>', handler);
-      expect(start).toEqual({tag:'ns:t-a-g', attrs:{'ns:a-t-t-r':'value'}, unary:false});
+      expect(start).toEqual({tag:'ns:t-a-g', attrs:{'ns:a-t-t-r':'\nvalue\n'}});
       expect(text).toEqual('text');
     });
 
     it('should parse empty value attribute of node', function() {
-      htmlParser('<OPTION selected value="">abc</OPTION>', handler);
-      expect(start).toEqual({tag:'option', attrs:{selected:'', value:''}, unary:false});
+      htmlParser('<test-foo selected value="">abc</test-foo>', handler);
+      expect(start).toEqual({tag:'test-foo', attrs:{selected:'', value:''}});
       expect(text).toEqual('abc');
     });
   });
@@ -133,15 +100,17 @@ describe('HTML', function() {
   // THESE TESTS ARE EXECUTED WITH COMPILED ANGULAR
   it('should echo html', function() {
     expectHTML('hello<b class="1\'23" align=\'""\'>world</b>.').
-       toEqual('hello<b class="1\'23" align="&#34;&#34;">world</b>.');
+       toBeOneOf('hello<b class="1\'23" align="&#34;&#34;">world</b>.',
+                 'hello<b align="&#34;&#34;" class="1\'23">world</b>.');
   });
 
   it('should remove script', function() {
-    expectHTML('a<SCRIPT>evil< / scrIpt >c.').toEqual('ac.');
+    expectHTML('a<SCRIPT>evil< / scrIpt >c.').toEqual('a');
+    expectHTML('a<SCRIPT>evil</scrIpt>c.').toEqual('ac.');
   });
 
   it('should remove script that has newline characters', function() {
-    expectHTML('a<SCRIPT\n>\n\revil\n\r< / scrIpt\n >c.').toEqual('ac.');
+    expectHTML('a<SCRIPT\n>\n\revil\n\r</scrIpt\n >c.').toEqual('ac.');
   });
 
   it('should remove DOCTYPE header', function() {
@@ -173,7 +142,7 @@ describe('HTML', function() {
   });
 
   it('should remove double nested script', function() {
-    expectHTML('a<SCRIPT>ev<script>evil</sCript>il</scrIpt>c.').toEqual('ac.');
+    expectHTML('a<SCRIPT>ev<script>evil</sCript>il</scrIpt>c.').toEqual('ailc.');
   });
 
   it('should remove unknown  names', function() {
@@ -185,7 +154,7 @@ describe('HTML', function() {
   });
 
   it('should handle self closed elements', function() {
-    expectHTML('a<hr/>c').toEqual('a<hr/>c');
+    expectHTML('a<hr/>c').toEqual('a<hr>c');
   });
 
   it('should handle namespace', function() {
@@ -212,7 +181,8 @@ describe('HTML', function() {
 
   it('should ignore back slash as escape', function() {
     expectHTML('<img alt="xxx\\" title="><script>....">').
-      toEqual('<img alt="xxx\\" title="&gt;&lt;script&gt;...."/>');
+      toBeOneOf('<img alt="xxx\\" title="&gt;&lt;script&gt;....">',
+                '<img title="&gt;&lt;script&gt;...." alt="xxx\\">');
   });
 
   it('should ignore object attributes', function() {
@@ -246,41 +216,84 @@ describe('HTML', function() {
     expectHTML(false).toBe('false');
   });
 
-  it('should accept SVG tags', function() {
-    expectHTML('<svg width="400px" height="150px" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="red"/></svg>')
-        .toEqual('<svg width="400px" height="150px" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="red"/></svg>');
+
+  it('should strip svg elements if not enabled via provider', function() {
+    expectHTML('<svg width="400px" height="150px" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="red"></svg>')
+      .toEqual('');
   });
 
-  it('should not ignore white-listed svg camelCased attributes', function() {
-    expectHTML('<svg preserveAspectRatio="true"></svg>')
-        .toEqual('<svg preserveAspectRatio="true"></svg>');
+  if (/Chrome/.test(window.navigator.userAgent)) {
+    it('should prevent mXSS attacks', function() {
+      expectHTML('<a href="&#x3000;javascript:alert(1)">CLICKME</a>').toBe('<a>CLICKME</a>');
+    });
+  }
 
+  it('should strip html comments', function() {
+    expectHTML('<!-- comment 1 --><p>text1<!-- comment 2 -->text2</p><!-- comment 3 -->')
+      .toEqual('<p>text1text2</p>');
   });
 
-  it('should sanitize SVG xlink:href attribute values', function() {
-    expectHTML('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><a xlink:href="javascript:alert()"></a></svg>')
-        .toEqual('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><a></a></svg>');
 
-    expectHTML('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><a xlink:href="https://example.com"></a></svg>')
-        .toEqual('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><a xlink:href="https://example.com"></a></svg>');
+  describe('SVG support', function() {
+
+    beforeEach(module(function($sanitizeProvider) {
+      $sanitizeProvider.enableSvg(true);
+    }));
+
+
+    it('should accept SVG tags', function() {
+      expectHTML('<svg width="400px" height="150px" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="red"></svg>')
+        .toBeOneOf('<svg width="400px" height="150px" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="red"></circle></svg>',
+                   '<svg xmlns="http://www.w3.org/2000/svg" height="150px" width="400px"><circle fill="red" stroke-width="3" stroke="black" r="40" cy="50" cx="50"></circle></svg>',
+                   '<svg width="400px" height="150px" xmlns="http://www.w3.org/2000/svg"><circle fill="red" stroke="black" stroke-width="3" cx="50" cy="50" r="40"></circle></svg>');
+    });
+
+    it('should not ignore white-listed svg camelCased attributes', function() {
+      expectHTML('<svg preserveAspectRatio="true"></svg>')
+        .toBeOneOf('<svg preserveAspectRatio="true"></svg>',
+                   '<svg preserveAspectRatio="true" xmlns="http://www.w3.org/2000/svg"></svg>');
+
+    });
+
+    it('should sanitize SVG xlink:href attribute values', function() {
+      expectHTML('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><a xlink:href="javascript:alert()"></a></svg>')
+        .toBeOneOf('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><a></a></svg>',
+                   '<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg"><a></a></svg>',
+                   '<svg xmlns="http://www.w3.org/2000/svg"><a xmlns:xlink="http://www.w3.org/1999/xlink"></a></svg>');
+
+      expectHTML('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><a xlink:href="https://example.com"></a></svg>')
+        .toBeOneOf('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><a xlink:href="https://example.com"></a></svg>',
+                   '<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg"><a xlink:href="https://example.com"></a></svg>',
+                   '<svg xmlns="http://www.w3.org/2000/svg"><a xlink:href="https://example.com" xmlns:xlink="http://www.w3.org/1999/xlink"></a></svg>',
+                   '<svg xmlns="http://www.w3.org/2000/svg"><a xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://example.com"></a></svg>');
+    });
+
+    it('should sanitize unknown namespaced SVG attributes', function() {
+      expectHTML('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><a xlink:foo="javascript:alert()"></a></svg>')
+        .toBeOneOf('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><a></a></svg>',
+                   '<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg"><a></a></svg>',
+                   '<svg xmlns="http://www.w3.org/2000/svg"><a></a></svg>');
+
+      expectHTML('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><a xlink:bar="https://example.com"></a></svg>')
+        .toBeOneOf('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><a></a></svg>',
+                   '<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg"><a></a></svg>',
+                   '<svg xmlns="http://www.w3.org/2000/svg"><a></a></svg>');
+    });
+
+    it('should not accept SVG animation tags', function() {
+      expectHTML('<svg xmlns:xlink="http://www.w3.org/1999/xlink"><a><text y="1em">Click me</text><animate attributeName="xlink:href" values="javascript:alert(1)"/></a></svg>')
+        .toBeOneOf('<svg xmlns:xlink="http://www.w3.org/1999/xlink"><a><text y="1em">Click me</text></a></svg>',
+                   '<svg xmlns="http://www.w3.org/2000/svg"><a><text y="1em">Click me</text></a></svg>');
+
+      expectHTML('<svg><a xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="?"><circle r="400"></circle>' +
+        '<animate attributeName="xlink:href" begin="0" from="javascript:alert(1)" to="&" /></a></svg>')
+        .toBeOneOf('<svg><a xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="?"><circle r="400"></circle></a></svg>',
+                   '<svg><a xlink:href="?" xmlns:xlink="http://www.w3.org/1999/xlink"><circle r="400"></circle></a></svg>',
+                   '<svg xmlns="http://www.w3.org/2000/svg"><a xlink:href="?" xmlns:xlink="http://www.w3.org/1999/xlink"><circle r="400"></circle></a></svg>',
+                   '<svg xmlns="http://www.w3.org/2000/svg"><a xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="?"><circle r="400"></circle></a></svg>');
+    });
   });
 
-  it('should sanitize unknown namespaced SVG attributes', function() {
-    expectHTML('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><a xlink:foo="javascript:alert()"></a></svg>')
-      .toEqual('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><a></a></svg>');
-
-    expectHTML('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><a xlink:bar="https://example.com"></a></svg>')
-      .toEqual('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><a></a></svg>');
-  });
-
-  it('should not accept SVG animation tags', function() {
-    expectHTML('<svg xmlns:xlink="http://www.w3.org/1999/xlink"><a><text y="1em">Click me</text><animate attributeName="xlink:href" values="javascript:alert(1)"/></a></svg>')
-      .toEqual('<svg xmlns:xlink="http://www.w3.org/1999/xlink"><a><text y="1em">Click me</text></a></svg>');
-
-    expectHTML('<svg><a xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="?"><circle r="400"></circle>' +
-    '<animate attributeName="xlink:href" begin="0" from="javascript:alert(1)" to="&" /></a></svg>')
-      .toEqual('<svg><a xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="?"><circle r="400"></circle></a></svg>');
-  });
 
   describe('htmlSanitizerWriter', function() {
     /* global htmlSanitizeWriter: false */
@@ -435,11 +448,11 @@ describe('HTML', function() {
       inject(function() {
         $$sanitizeUri.andReturn('someUri');
 
-        expectHTML('<img src="someUri"/>').toEqual('<img src="someUri"/>');
+        expectHTML('<img src="someUri"/>').toEqual('<img src="someUri">');
         expect($$sanitizeUri).toHaveBeenCalledWith('someUri', true);
 
         $$sanitizeUri.andReturn('unsafe:someUri');
-        expectHTML('<img src="someUri"/>').toEqual('<img/>');
+        expectHTML('<img src="someUri"/>').toEqual('<img>');
       });
     });
 

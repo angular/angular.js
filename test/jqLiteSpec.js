@@ -78,6 +78,33 @@ describe('jqLite', function() {
     });
 
 
+    // This is not working correctly in jQuery prior to v3.0.
+    // See https://github.com/jquery/jquery/issues/1987 for details.
+    it('should properly handle dash-delimited node names', function() {
+      var jQueryVersion = window.jQuery && window.jQuery.fn.jquery.split('.')[0];
+      var jQuery3xOrNewer = jQueryVersion && (Number(jQueryVersion) >= 3);
+
+      if (_jqLiteMode || jQuery3xOrNewer) {
+        var nodeNames = 'thead tbody tfoot colgroup caption tr th td div kung'.split(' ');
+        var nodeNamesTested = 0;
+        var nodes, customNodeName;
+
+        forEach(nodeNames, function(nodeName) {
+          var customNodeName = nodeName + '-foo';
+          var nodes = jqLite('<' + customNodeName + '>Hello, world !</' + customNodeName + '>');
+
+          expect(nodes.length).toBe(1);
+          expect(nodeName_(nodes)).toBe(customNodeName);
+          expect(nodes.html()).toBe('Hello, world !');
+
+          nodeNamesTested++;
+        });
+
+        expect(nodeNamesTested).toBe(10);
+      }
+    });
+
+
     it('should allow creation of comment tags', function() {
       var nodes = jqLite('<!-- foo -->');
       expect(nodes.length).toBe(1);
@@ -405,10 +432,13 @@ describe('jqLite', function() {
     it('should provide the non-wrapped data calls', function() {
       var node = document.createElement('div');
 
+      expect(jqLite.hasData(node)).toBe(false);
       expect(jqLite.data(node, "foo")).toBeUndefined();
+      expect(jqLite.hasData(node)).toBe(false);
 
       jqLite.data(node, "foo", "bar");
 
+      expect(jqLite.hasData(node)).toBe(true);
       expect(jqLite.data(node, "foo")).toBe("bar");
       expect(jqLite(node).data("foo")).toBe("bar");
 
@@ -421,6 +451,9 @@ describe('jqLite', function() {
       jqLite.removeData(node);
       jqLite.removeData(node);
       expect(jqLite.data(node, "bar")).toBeUndefined();
+
+      jqLite(node).remove();
+      expect(jqLite.hasData(node)).toBe(false);
     });
 
     it('should emit $destroy event if element removed via remove()', function() {
@@ -1160,21 +1193,45 @@ describe('jqLite', function() {
     });
 
     describe('mouseenter-mouseleave', function() {
-      var root, parent, sibling, child, log;
+      var root, parent, child, log;
 
-      beforeEach(function() {
+      function setup(html, parentNode, childNode) {
         log = '';
-        root = jqLite('<div>root<p>parent<span>child</span></p><ul></ul></div>');
-        parent = root.find('p');
-        sibling = root.find('ul');
-        child = parent.find('span');
+        root = jqLite(html);
+        parent = root.find(parentNode);
+        child = parent.find(childNode);
 
         parent.on('mouseenter', function() { log += 'parentEnter;'; });
         parent.on('mouseleave', function() { log += 'parentLeave;'; });
 
         child.on('mouseenter', function() { log += 'childEnter;'; });
         child.on('mouseleave', function() { log += 'childLeave;'; });
-      });
+      }
+
+      function browserMoveTrigger(from, to) {
+        var fireEvent = function(type, element, relatedTarget) {
+          var evnt;
+          evnt = document.createEvent('MouseEvents');
+
+          var originalPreventDefault = evnt.preventDefault,
+          appWindow = window,
+          fakeProcessDefault = true,
+          finalProcessDefault;
+
+          evnt.preventDefault = function() {
+            fakeProcessDefault = false;
+            return originalPreventDefault.apply(evnt, arguments);
+          };
+
+          var x = 0, y = 0;
+          evnt.initMouseEvent(type, true, true, window, 0, x, y, x, y, false, false,
+          false, false, 0, relatedTarget);
+
+          element.dispatchEvent(evnt);
+        };
+        fireEvent('mouseout', from[0], to[0]);
+        fireEvent('mouseover', to[0], from[0]);
+      }
 
       afterEach(function() {
         dealoc(root);
@@ -1182,30 +1239,8 @@ describe('jqLite', function() {
 
       it('should fire mouseenter when coming from outside the browser window', function() {
         if (window.jQuery) return;
-        var browserMoveTrigger = function(from, to) {
-          var fireEvent = function(type, element, relatedTarget) {
-            var evnt;
-            evnt = document.createEvent('MouseEvents');
 
-            var originalPreventDefault = evnt.preventDefault,
-            appWindow = window,
-            fakeProcessDefault = true,
-            finalProcessDefault;
-
-            evnt.preventDefault = function() {
-              fakeProcessDefault = false;
-              return originalPreventDefault.apply(evnt, arguments);
-            };
-
-            var x = 0, y = 0;
-            evnt.initMouseEvent(type, true, true, window, 0, x, y, x, y, false, false,
-            false, false, 0, relatedTarget);
-
-            element.dispatchEvent(evnt);
-          };
-          fireEvent('mouseout', from[0], to[0]);
-          fireEvent('mouseover', to[0], from[0]);
-        };
+        setup('<div>root<p>parent<span>child</span></p><ul></ul></div>', 'p', 'span');
 
         browserMoveTrigger(root, parent);
         expect(log).toEqual('parentEnter;');
@@ -1219,6 +1254,28 @@ describe('jqLite', function() {
         browserMoveTrigger(parent, root);
         expect(log).toEqual('parentEnter;childEnter;childLeave;parentLeave;');
 
+      });
+
+      it('should fire the mousenter on SVG elements', function() {
+        if (window.jQuery) return;
+
+        setup(
+          '<div>' +
+          '<svg xmlns="http://www.w3.org/2000/svg"' +
+          '     viewBox="0 0 18.75 18.75"' +
+          '     width="18.75"' +
+          '     height="18.75"' +
+          '     version="1.1">' +
+          '       <path d="M0,0c0,4.142,3.358,7.5,7.5,7.5s7.5-3.358,7.5-7.5-3.358-7.5-7.5-7.5-7.5,3.358-7.5,7.5"' +
+          '             fill-rule="nonzero"' +
+          '             fill="#CCC"' +
+          '             ng-attr-fill="{{data.color || \'#CCC\'}}"/>' +
+          '</svg>' +
+          '</div>',
+          'svg', 'path');
+
+        browserMoveTrigger(parent, child);
+        expect(log).toEqual('childEnter;');
       });
     });
 

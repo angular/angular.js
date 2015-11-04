@@ -14,13 +14,14 @@ var angularFiles = {
 
     'src/ng/anchorScroll.js',
     'src/ng/animate.js',
-    'src/ng/asyncCallback.js',
+    'src/ng/animateCss.js',
     'src/ng/browser.js',
     'src/ng/cacheFactory.js',
     'src/ng/compile.js',
     'src/ng/controller.js',
     'src/ng/document.js',
     'src/ng/exceptionHandler.js',
+    'src/ng/forceReflow.js',
     'src/ng/http.js',
     'src/ng/httpBackend.js',
     'src/ng/interpolate.js',
@@ -76,7 +77,10 @@ var angularFiles = {
     'src/ng/directive/script.js',
     'src/ng/directive/select.js',
     'src/ng/directive/style.js',
-    'src/ng/directive/validators.js'
+    'src/ng/directive/validators.js',
+    'src/angular.bind.js',
+    'src/publishExternalApis.js',
+    'src/ngLocale/angular-locale_en-us.js'
   ],
 
   'angularLoader': [
@@ -88,6 +92,7 @@ var angularFiles = {
   'angularModules': {
     'ngAnimate': [
       'src/ngAnimate/shared.js',
+      'src/ngAnimate/rafScheduler.js',
       'src/ngAnimate/animateChildrenDirective.js',
       'src/ngAnimate/animateCss.js',
       'src/ngAnimate/animateCssDriver.js',
@@ -178,7 +183,6 @@ var angularFiles = {
     'bower_components/jquery/dist/jquery.js',
     'test/jquery_remove.js',
     '@angularSrc',
-    'src/publishExternalApis.js',
     '@angularSrcModules',
     '@angularScenario',
     '@angularTest'
@@ -187,7 +191,8 @@ var angularFiles = {
   'karmaExclude': [
     'test/jquery_alias.js',
     'src/angular-bootstrap.js',
-    'src/ngScenario/angular-bootstrap.js'
+    'src/ngScenario/angular-bootstrap.js',
+    'src/angular.bind.js'
   ],
 
   'karmaScenario': [
@@ -214,7 +219,6 @@ var angularFiles = {
     'bower_components/jquery/dist/jquery.js',
     'test/jquery_alias.js',
     '@angularSrc',
-    'src/publishExternalApis.js',
     '@angularSrcModules',
     '@angularScenario',
     '@angularTest'
@@ -223,7 +227,8 @@ var angularFiles = {
   'karmaJqueryExclude': [
     'src/angular-bootstrap.js',
     'src/ngScenario/angular-bootstrap.js',
-    'test/jquery_remove.js'
+    'test/jquery_remove.js',
+    'src/angular.bind.js'
   ]
 };
 

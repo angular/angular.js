@@ -313,10 +313,18 @@ describe('angular', function() {
     it('should throw an exception if a Scope is being copied', inject(function($rootScope) {
       expect(function() { copy($rootScope.$new()); }).
           toThrowMinErr("ng", "cpws", "Can't copy! Making copies of Window or Scope instances is not supported.");
+      expect(function() { copy({child: $rootScope.$new()}, {}); }).
+          toThrowMinErr("ng", "cpws", "Can't copy! Making copies of Window or Scope instances is not supported.");
+      expect(function() { copy([$rootScope.$new()]); }).
+          toThrowMinErr("ng", "cpws", "Can't copy! Making copies of Window or Scope instances is not supported.");
     }));
 
     it('should throw an exception if a Window is being copied', function() {
       expect(function() { copy(window); }).
+          toThrowMinErr("ng", "cpws", "Can't copy! Making copies of Window or Scope instances is not supported.");
+      expect(function() { copy({child: window}); }).
+          toThrowMinErr("ng", "cpws", "Can't copy! Making copies of Window or Scope instances is not supported.");
+      expect(function() { copy([window], []); }).
           toThrowMinErr("ng", "cpws", "Can't copy! Making copies of Window or Scope instances is not supported.");
     });
 
@@ -334,9 +342,14 @@ describe('angular', function() {
       hashKey(src);
       dst = copy(src);
       expect(hashKey(dst)).not.toEqual(hashKey(src));
+
+      src = {foo: {}};
+      hashKey(src.foo);
+      dst = copy(src);
+      expect(hashKey(src.foo)).not.toEqual(hashKey(dst.foo));
     });
 
-    it('should retain the previous $$hashKey', function() {
+    it('should retain the previous $$hashKey when copying object with hashKey', function() {
       var src,dst,h;
       src = {};
       dst = {};
@@ -351,7 +364,21 @@ describe('angular', function() {
       expect(hashKey(dst)).toEqual(h);
     });
 
-    it('should handle circular references when circularRefs is turned on', function() {
+    it('should retain the previous $$hashKey when copying non-object', function() {
+      var dst = {};
+      var h = hashKey(dst);
+
+      copy(null, dst);
+      expect(hashKey(dst)).toEqual(h);
+
+      copy(42, dst);
+      expect(hashKey(dst)).toEqual(h);
+
+      copy(new Date(), dst);
+      expect(hashKey(dst)).toEqual(h);
+    });
+
+    it('should handle circular references', function() {
       var a = {b: {a: null}, self: null, selfs: [null, null, [null]]};
       a.b.a = a;
       a.self = a;
@@ -362,13 +389,72 @@ describe('angular', function() {
 
       expect(aCopy).not.toBe(a);
       expect(aCopy).toBe(aCopy.self);
+      expect(aCopy).toBe(aCopy.selfs[2][0]);
       expect(aCopy.selfs[2]).not.toBe(a.selfs[2]);
+
+      var copyTo = [];
+      aCopy = copy(a, copyTo);
+      expect(aCopy).toBe(copyTo);
+      expect(aCopy).not.toBe(a);
+      expect(aCopy).toBe(aCopy.self);
+    });
+
+    it('should deeply copy XML nodes', function() {
+      var anElement = document.createElement('foo');
+      anElement.appendChild(document.createElement('bar'));
+      var theCopy = anElement.cloneNode(true);
+      expect(copy(anElement).outerHTML).toEqual(theCopy.outerHTML);
+      expect(copy(anElement)).not.toBe(anElement);
+    });
+
+    it('should not try to call a non-function called `cloneNode`', function() {
+      expect(copy.bind(null, { cloneNode: 100 })).not.toThrow();
+    });
+
+    it('should handle objects with multiple references', function() {
+      var b = {};
+      var a = [b, -1, b];
+
+      var aCopy = copy(a);
+      expect(aCopy[0]).not.toBe(a[0]);
+      expect(aCopy[0]).toBe(aCopy[2]);
+
+      var copyTo = [];
+      aCopy = copy(a, copyTo);
+      expect(aCopy).toBe(copyTo);
+      expect(aCopy[0]).not.toBe(a[0]);
+      expect(aCopy[0]).toBe(aCopy[2]);
+    });
+
+    it('should handle date/regex objects with multiple references', function() {
+      var re = /foo/;
+      var d = new Date();
+      var o = {re: re, re2: re, d: d, d2: d};
+
+      var oCopy = copy(o);
+      expect(oCopy.re).toBe(oCopy.re2);
+      expect(oCopy.d).toBe(oCopy.d2);
+
+      oCopy = copy(o, {});
+      expect(oCopy.re).toBe(oCopy.re2);
+      expect(oCopy.d).toBe(oCopy.d2);
     });
 
     it('should clear destination arrays correctly when source is non-array', function() {
       expect(copy(null, [1,2,3])).toEqual([]);
       expect(copy(undefined, [1,2,3])).toEqual([]);
       expect(copy({0: 1, 1: 2}, [1,2,3])).toEqual([1,2]);
+      expect(copy(new Date(), [1,2,3])).toEqual([]);
+      expect(copy(/a/, [1,2,3])).toEqual([]);
+      expect(copy(true, [1,2,3])).toEqual([]);
+    });
+
+    it('should clear destination objects correctly when source is non-array', function() {
+      expect(copy(null, {0:1,1:2,2:3})).toEqual({});
+      expect(copy(undefined, {0:1,1:2,2:3})).toEqual({});
+      expect(copy(new Date(), {0:1,1:2,2:3})).toEqual({});
+      expect(copy(/a/, {0:1,1:2,2:3})).toEqual({});
+      expect(copy(true, {0:1,1:2,2:3})).toEqual({});
     });
 
     it('should copy objects with no prototype parent', function() {
@@ -388,6 +474,7 @@ describe('angular', function() {
   });
 
   describe("extend", function() {
+
     it('should not copy the private $$hashKey', function() {
       var src,dst;
       src = {};
@@ -397,6 +484,24 @@ describe('angular', function() {
       expect(hashKey(dst)).not.toEqual(hashKey(src));
     });
 
+
+    it('should copy the properties of the source object onto the destination object', function() {
+      var destination, source;
+      destination = {};
+			source = {foo: true};
+      destination = extend(destination, source);
+      expect(isDefined(destination.foo)).toBe(true);
+    });
+
+
+    it('ISSUE #4751 - should copy the length property of an object source to the destination object', function() {
+      var destination, source;
+      destination = {};
+      source = {radius: 30, length: 0};
+      destination = extend(destination, source);
+      expect(isDefined(destination.length)).toBe(true);
+      expect(isDefined(destination.radius)).toBe(true);
+    });
 
     it('should retain the previous $$hashKey', function() {
       var src,dst,h;
@@ -419,6 +524,27 @@ describe('angular', function() {
       dst = extend(dst,src);
       // make sure we retain the old key
       expect(hashKey(dst)).toEqual(h);
+    });
+
+
+    it('should copy dates by reference', function() {
+      var src = { date: new Date() };
+      var dst = {};
+
+      extend(dst, src);
+
+      expect(dst.date).toBe(src.date);
+    });
+
+    it('should copy elements by reference', function() {
+      var src = { element: document.createElement('div'),
+        jqObject: jqLite("<p><span>s1</span><span>s2</span></p>").find("span") };
+      var dst = {};
+
+      extend(dst, src);
+
+      expect(dst.element).toBe(src.element);
+      expect(dst.jqObject).toBe(src.jqObject);
     });
   });
 
@@ -486,6 +612,48 @@ describe('angular', function() {
         foo: [1,2,3]
       });
       expect(dst.foo).not.toBe(src.foo);
+    });
+
+
+    it('should copy dates by value', function() {
+      var src = { date: new Date() };
+      var dst = {};
+
+      merge(dst, src);
+
+      expect(dst.date).not.toBe(src.date);
+      expect(isDate(dst.date)).toBeTruthy();
+      expect(dst.date.valueOf()).toEqual(src.date.valueOf());
+    });
+
+    it('should copy regexp by value', function() {
+      var src = { regexp: /blah/ };
+      var dst = {};
+
+      merge(dst, src);
+
+      expect(dst.regexp).not.toBe(src.regexp);
+      expect(isRegExp(dst.regexp)).toBe(true);
+      expect(dst.regexp.toString()).toBe(src.regexp.toString());
+    });
+
+
+    it('should copy(clone) elements', function() {
+      var src = {
+        element: document.createElement('div'),
+        jqObject: jqLite('<p><span>s1</span><span>s2</span></p>').find('span')
+      };
+      var dst = {};
+
+      merge(dst, src);
+
+      expect(dst.element).not.toBe(src.element);
+      expect(dst.jqObject).not.toBe(src.jqObject);
+
+      expect(isElement(dst.element)).toBeTruthy();
+      expect(dst.element.nodeName).toBeDefined(); // i.e it is a DOM element
+      expect(isElement(dst.jqObject)).toBeTruthy();
+      expect(dst.jqObject.nodeName).toBeUndefined(); // i.e it is a jqLite/jQuery object
     });
   });
 
@@ -702,43 +870,77 @@ describe('angular', function() {
 
 
   describe('csp', function() {
+
+    function mockCspElement(cspAttrName, cspAttrValue) {
+      return spyOn(document, 'querySelector').andCallFake(function(selector) {
+        if (selector == '[' + cspAttrName + ']') {
+          var html = '<div ' + cspAttrName + (cspAttrValue ? ('="' + cspAttrValue + '" ') : '') + '></div>';
+          return jqLite(html)[0];
+        }
+      });
+
+    }
+
     var originalFunction;
 
     beforeEach(function() {
-      originalFunction = window.Function;
+      spyOn(window, 'Function');
     });
 
     afterEach(function() {
-      window.Function = originalFunction;
-      delete csp.isActive_;
+      delete csp.rules;
     });
 
 
-    it('should return the false when CSP is not enabled (the default)', function() {
-      expect(csp()).toBe(false);
+    it('should return the false for all rules when CSP is not enabled (the default)', function() {
+      expect(csp()).toEqual({ noUnsafeEval: false, noInlineStyle: false });
     });
 
 
-    it('should return true if CSP is autodetected via CSP v1.1 securityPolicy.isActive property', function() {
-      window.Function = function() { throw new Error('CSP test'); };
-      expect(csp()).toBe(true);
+    it('should return true for noUnsafeEval if eval causes a CSP security policy error', function() {
+      window.Function.andCallFake(function() { throw new Error('CSP test'); });
+      expect(csp()).toEqual({ noUnsafeEval: true, noInlineStyle: false });
+      expect(window.Function).toHaveBeenCalledWith('');
     });
 
 
-    it('should return the true when CSP is enabled manually via [ng-csp]', function() {
-      spyOn(document, 'querySelector').andCallFake(function(selector) {
-        if (selector == '[ng-csp]') return {};
-      });
-      expect(csp()).toBe(true);
+    it('should return true for all rules when CSP is enabled manually via empty `ng-csp` attribute', function() {
+      var spy = mockCspElement('ng-csp');
+      expect(csp()).toEqual({ noUnsafeEval: true, noInlineStyle: true });
+      expect(spy).toHaveBeenCalledWith('[ng-csp]');
+      expect(window.Function).not.toHaveBeenCalled();
     });
 
 
-    it('should return the true when CSP is enabled manually via [data-ng-csp]', function() {
-      spyOn(document, 'querySelector').andCallFake(function(selector) {
-        if (selector == '[data-ng-csp]') return {};
-      });
-      expect(csp()).toBe(true);
-      expect(document.querySelector).toHaveBeenCalledWith('[data-ng-csp]');
+    it('should return true when CSP is enabled manually via [data-ng-csp]', function() {
+      var spy = mockCspElement('data-ng-csp');
+      expect(csp()).toEqual({ noUnsafeEval: true, noInlineStyle: true });
+      expect(spy).toHaveBeenCalledWith('[data-ng-csp]');
+      expect(window.Function).not.toHaveBeenCalled();
+    });
+
+
+    it('should return true for noUnsafeEval if it is specified in the `ng-csp` attribute value', function() {
+      var spy = mockCspElement('ng-csp', 'no-unsafe-eval');
+      expect(csp()).toEqual({ noUnsafeEval: true, noInlineStyle: false });
+      expect(spy).toHaveBeenCalledWith('[ng-csp]');
+      expect(window.Function).not.toHaveBeenCalled();
+    });
+
+
+    it('should return true for noInlineStyle if it is specified in the `ng-csp` attribute value', function() {
+      var spy = mockCspElement('ng-csp', 'no-inline-style');
+      expect(csp()).toEqual({ noUnsafeEval: false, noInlineStyle: true });
+      expect(spy).toHaveBeenCalledWith('[ng-csp]');
+      expect(window.Function).not.toHaveBeenCalled();
+    });
+
+
+    it('should return true for all styles if they are all specified in the `ng-csp` attribute value', function() {
+      var spy = mockCspElement('ng-csp', 'no-inline-style;no-unsafe-eval');
+      expect(csp()).toEqual({ noUnsafeEval: true, noInlineStyle: true });
+      expect(spy).toHaveBeenCalledWith('[ng-csp]');
+      expect(window.Function).not.toHaveBeenCalled();
     });
   });
 
@@ -866,6 +1068,12 @@ describe('angular', function() {
         'toString': '123'
       });
     });
+
+    it('should ignore badly escaped = characters', function() {
+      expect(parseKeyValue('test=a=b')).toEqual({
+          'test': 'a=b'
+      });
+    });
   });
 
   describe('toKeyValue', function() {
@@ -886,6 +1094,42 @@ describe('angular', function() {
       expect(toKeyValue({key: [323,'value',true]})).toEqual('key=323&key=value&key');
       expect(toKeyValue({key: [323,'value',true, 1234]})).
       toEqual('key=323&key=value&key&key=1234');
+    });
+  });
+
+  describe('isArrayLike', function() {
+
+    it('should return false if passed a number', function() {
+      expect(isArrayLike(10)).toBe(false);
+    });
+
+    it('should return true if passed an array', function() {
+      expect(isArrayLike([1,2,3,4])).toBe(true);
+    });
+
+    it('should return true if passed an object', function() {
+      expect(isArrayLike({0:"test", 1:"bob", 2:"tree", length:3})).toBe(true);
+    });
+
+    it('should return true if passed arguments object', function() {
+      function test(a,b,c) {
+        expect(isArrayLike(arguments)).toBe(true);
+      }
+      test(1,2,3);
+    });
+
+    it('should return true if passed a nodelist', function() {
+      var nodes = document.body.childNodes;
+      expect(isArrayLike(nodes)).toBe(true);
+    });
+
+    it('should return false for objects with `length` but no matching indexable items', function() {
+      var obj = {
+        a: 'a',
+        b:'b',
+        length: 10
+      };
+      expect(isArrayLike(obj)).toBe(false);
     });
   });
 
@@ -928,6 +1172,11 @@ describe('angular', function() {
 
       forEach(jqObject, function(value, key) { log.push(key + ':' + value.innerHTML); });
       expect(log).toEqual(['0:s1', '1:s2']);
+
+      log = [];
+      jqObject = jqLite("<pane></pane>");
+      forEach(jqObject.children(), function(value, key) { log.push(key + ':' + value.innerHTML); });
+      expect(log).toEqual([]);
     });
 
 

@@ -29,7 +29,7 @@ describe('$interval', function() {
           if (fn.id === id) fnIndex = index;
         });
 
-        if (fnIndex !== undefined) {
+        if (isDefined(fnIndex)) {
           repeatFns.splice(fnIndex, 1);
           return true;
         }

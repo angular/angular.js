@@ -1,0 +1,10 @@
+@ngdoc error
+@name $sanitize:noinert
+@fullName Can't create an inert html document
+@description
+
+This error occurs when `$sanitize` sanitizer determines that `document.implementation.createHTMLDocument ` api is not supported by the current browser.
+
+This api is necessary for safe parsing of HTML strings into DOM trees and without it the sanitizer can't sanitize the input.
+
+The api is present in all supported browsers including IE 9.0, so the presence of this error usually indicates that Angular's `$sanitize` is being used on an unsupported platform.

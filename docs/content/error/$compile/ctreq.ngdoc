@@ -8,7 +8,7 @@ but the required directive controller is not present on the current DOM element 
 
 To resolve this error ensure that there is no typo in the required controller name and that the required directive controller is present on the current element.
 
-If the required controller is expected to be on a ancestor element, make sure that you prefix the controller name in the `require` definition with `^`.
+If the required controller is expected to be on an ancestor element, make sure that you prefix the controller name in the `require` definition with `^`.
 
 If the required controller is optionally requested, use `?` or `^?` to specify that.
 
