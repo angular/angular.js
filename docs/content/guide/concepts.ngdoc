@@ -348,8 +348,7 @@ The following example shows how this is done with Angular:
 
         return {
           currencies: currencies,
-          convert: convert,
-          refresh: refresh
+          convert: convert
         };
       }]);
   </file>
