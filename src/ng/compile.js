@@ -2956,18 +2956,18 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             startingTag(node));
       }
 
+      if (EVENT_HANDLER_ATTR_REGEXP.test(name)) {
+        throw $compileMinErr('nodomevents',
+            "Interpolations for HTML DOM event attributes are disallowed.  Please use the " +
+                "ng- versions (such as ng-click instead of onclick) instead.");
+      }
+
       directives.push({
         priority: 100,
         compile: function() {
             return {
               pre: function attrInterpolatePreLinkFn(scope, element, attr) {
                 var $$observers = (attr.$$observers || (attr.$$observers = createMap()));
-
-                if (EVENT_HANDLER_ATTR_REGEXP.test(name)) {
-                  throw $compileMinErr('nodomevents',
-                      "Interpolations for HTML DOM event attributes are disallowed.  Please use the " +
-                          "ng- versions (such as ng-click instead of onclick) instead.");
-                }
 
                 // If the attribute has changed since last $interpolate()ed
                 var newValue = attr[name];

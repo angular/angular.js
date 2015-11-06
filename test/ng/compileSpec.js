@@ -9524,17 +9524,17 @@ describe('$compile', function() {
       // All interpolations are disallowed.
       $rootScope.onClickJs = "";
       expect(function() {
-          $compile('<button onclick="{{onClickJs}}"></script>')($rootScope);
+          $compile('<button onclick="{{onClickJs}}"></script>');
         }).toThrowMinErr(
           "$compile", "nodomevents", "Interpolations for HTML DOM event attributes are disallowed.  " +
           "Please use the ng- versions (such as ng-click instead of onclick) instead.");
       expect(function() {
-          $compile('<button ONCLICK="{{onClickJs}}"></script>')($rootScope);
+          $compile('<button ONCLICK="{{onClickJs}}"></script>');
         }).toThrowMinErr(
           "$compile", "nodomevents", "Interpolations for HTML DOM event attributes are disallowed.  " +
           "Please use the ng- versions (such as ng-click instead of onclick) instead.");
       expect(function() {
-          $compile('<button ng-attr-onclick="{{onClickJs}}"></script>')($rootScope);
+          $compile('<button ng-attr-onclick="{{onClickJs}}"></script>');
         }).toThrowMinErr(
           "$compile", "nodomevents", "Interpolations for HTML DOM event attributes are disallowed.  " +
           "Please use the ng- versions (such as ng-click instead of onclick) instead.");
