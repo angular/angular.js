@@ -170,6 +170,25 @@ other inline messages situated as children within the `ngMessages` container dir
 Depending on where the `ngMessagesInclude` directive is placed it will be prioritized inline with the other messages
 before and after it.
 
+Also due to [c9a4421f](https://github.com/angular/angular.js/commit/c9a4421fc3c97448527eadef1f42eb2f487ec2e0),
+it is no longer possible to use interpolation inside the `ngMessages` attribute expression. This technique
+is generally not recommended, and can easily break when a directive implementation changes. In cases
+where a simple expression is not possible, you can delegate accessing the object to a function:
+
+```html
+<div ng-messages="ctrl.form['field_{{$index}}'].$error">...</div>
+```
+would become
+```html
+<div ng-messages="ctrl.getMessages($index)">...</div>
+```
+where `ctrl.getMessages()`
+```javascript
+ctrl.getMessages = function($index) {
+  return ctrl.form['field_' + $index].$error;
+}
+```
+
 ### ngOptions
 
 The `ngOptions` directive has also been refactored and as a result some long-standing bugs

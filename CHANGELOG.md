@@ -1544,7 +1544,6 @@ mechanism.
 
 - **ngMessages:** due to [c9a4421f](https://github.com/angular/angular.js/commit/c9a4421fc3c97448527eadef1f42eb2f487ec2e0),
 
-
 The `ngMessagesInclude` attribute is now its own directive and that must
 be placed as a **child** element within the element with the ngMessages
 directive. (Keep in mind that the former behaviour of the
@@ -1565,6 +1564,26 @@ end of the container containing the ngMessages directive).
   <div ng-message="required">Your message is required</div>
   <div ng-messages-include="remote.html"></div>
 </div>
+```
+
+- **ngMessages:** due to [c9a4421f](https://github.com/angular/angular.js/commit/c9a4421fc3c97448527eadef1f42eb2f487ec2e0),
+
+it is no longer possible to use interpolation inside the `ngMessages` attribute expression. This technique
+is generally not recommended, and can easily break when a directive implementation changes. In cases
+where a simple expression is not possible, you can delegate accessing the object to a function:
+
+```html
+<div ng-messages="ctrl.form['field_{{$index}}'].$error">...</div>
+```
+would become
+```html
+<div ng-messages="ctrl.getMessages($index)">...</div>
+```
+where `ctrl.getMessages()`
+```javascript
+ctrl.getMessages = function($index) {
+  return ctrl.form['field_' + $index].$error;
+}
 ```
 
 - **$http:** due to [5da1256](https://github.com/angular/angular.js/commit/5da1256fc2812d5b28fb0af0de81256054856369),
