@@ -2022,6 +2022,12 @@ But in practice this is not what people want and so this change iterates over pr
 in the order they are returned by Object.keys(obj), which is almost always the order
 in which the properties were defined.
 
+- **ngOptions:** due to [7fda214c](https://github.com/angular/angular.js/commit/7fda214c4f65a6a06b25cf5d5aff013a364e9cef),
+
+setting the ngOptions attribute expression after the element is compiled, will no longer trigger the ngOptions behavior.
+This worked previously because the ngOptions logic was part of the select directive, while
+it is now implemented in the ngOptions directive itself.
+
 - **select:** due to [7fda214c](https://github.com/angular/angular.js/commit/7fda214c4f65a6a06b25cf5d5aff013a364e9cef),
 
 the `select` directive will now use strict comparison of the `ngModel` scope value against `option`
