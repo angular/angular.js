@@ -167,9 +167,9 @@ function shallowClearAndCopy(src, dst) {
  *     for more information.
  *   - **`responseType`** - `{string}` - see
  *     [requestType](https://developer.mozilla.org/en-US/docs/DOM/XMLHttpRequest#responseType).
- *   - **`interceptor`** - `{Object=}` - The interceptor object has two optional methods -
- *     `response` and `responseError`. Both `response` and `responseError` interceptors get called
- *     with `http response` object. See {@link ng.$http $http interceptors}.
+ *   - **`interceptor`** - `{Object=}` - The interceptor object has four optional methods -
+ *     `request`, `requestError`, `response`, and `responseError`. See
+ *     {@link ng.$http $http interceptors} for details.
  *
  * @param {Object} options Hash with custom settings that should extend the
  *   default `$resourceProvider` behavior.  The supported options are:
@@ -633,6 +633,10 @@ angular.module('ngResource', ['ng']).
             var isInstanceCall = this instanceof Resource;
             var value = isInstanceCall ? data : (action.isArray ? [] : new Resource(data));
             var httpConfig = {};
+            var requestInterceptor = action.interceptor && action.interceptor.request ||
+              undefined;
+            var requestErrorInterceptor = action.interceptor && action.interceptor.requestError ||
+              undefined;
             var responseInterceptor = action.interceptor && action.interceptor.response ||
               defaultResponseInterceptor;
             var responseErrorInterceptor = action.interceptor && action.interceptor.responseError ||
@@ -667,7 +671,14 @@ angular.module('ngResource', ['ng']).
               extend({}, extractParams(data, action.params || {}), params),
               action.url);
 
-            var promise = $http(httpConfig).then(function(response) {
+            // Start the promise chain
+            var promise = $q.
+              resolve(httpConfig).
+              then(requestInterceptor).
+              catch(requestErrorInterceptor).
+              then($http);
+
+            promise = promise.then(function(response) {
               var data = response.data;
 
               if (data) {
