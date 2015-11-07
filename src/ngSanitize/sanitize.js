@@ -148,7 +148,7 @@ function $SanitizeProvider() {
       angular.extend(validElements, svgElements);
     }
     var attrMap = toMap(addAttributes);
-    angular.extend(validAttrs, attrMap)
+    angular.extend(validAttrs, attrMap);
     return function(html) {
       var buf = [];
       htmlParser(html, htmlSanitizeWriter(buf, function(uri, isImage) {
