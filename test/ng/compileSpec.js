@@ -4482,7 +4482,7 @@ describe('$compile', function() {
             'str': '@fooStr',
             'fn': '&fooFn'
           },
-          scope: true,
+          scope: {},
           controllerAs: 'fooCtrl',
           controller: function() {
             expect(this.data).toEqualData({'foo': 'bar', 'baz': 'biz'});
