@@ -5,7 +5,6 @@
 
 <ul doc-tutorial-nav="0"></ul>
 
-
 In this step of the tutorial, you will become familiar with the most important source code files of
 the AngularJS phonecat app. You will also learn how to start the development servers bundled with
 angular-seed, and run the application in the browser.
