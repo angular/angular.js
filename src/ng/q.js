@@ -255,7 +255,12 @@ function qFactory(nextTick, exceptionHandler) {
    * @returns {Deferred} Returns a new instance of deferred.
    */
   var defer = function() {
-    return new Deferred();
+    var d = new Deferred();
+    //Necessary to support unbound execution :/
+    d.resolve = simpleBind(d, d.resolve);
+    d.reject = simpleBind(d, d.reject);
+    d.notify = simpleBind(d, d.notify);
+    return d;
   };
 
   function Promise() {
@@ -328,10 +333,6 @@ function qFactory(nextTick, exceptionHandler) {
 
   function Deferred() {
     this.promise = new Promise();
-    //Necessary to support unbound execution :/
-    this.resolve = simpleBind(this, this.resolve);
-    this.reject = simpleBind(this, this.reject);
-    this.notify = simpleBind(this, this.notify);
   }
 
   extend(Deferred.prototype, {
