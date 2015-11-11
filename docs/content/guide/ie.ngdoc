@@ -13,8 +13,8 @@ addressing issues specific to IE8 or earlier.
 </div>
 
 This document describes the Internet Explorer (IE) idiosyncrasies when dealing with custom HTML
-attributes and tags. Read this document if you are planning on deploying your Angular application
-on IE.
+attributes and tags. Read this document if you plan on users accessing your Angular application
+via IE.
 
 The project currently supports and will attempt to fix bugs for IE9 and above. The continuous
 integration server runs all the tests against IE9, IE10, and IE11. See
