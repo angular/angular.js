@@ -582,13 +582,13 @@ function $RouteProvider() {
     }
 
     function buildResolvePromises(resolve) {
-      var locals = angular.extend({}, resolve);
-      angular.forEach(locals, function(value, key) {
-        locals[key] = angular.isString(value) ?
+      var resolvePromises = angular.extend({}, resolve);
+      angular.forEach(resolvePromises, function(value, key) {
+        resolvePromises[key] = angular.isString(value) ?
             $injector.get(value) : $injector.invoke(value, null, null, key);
       });
 
-      return locals;
+      return resolvePromises;
     }
 
     function commitRoute() {
