@@ -1431,6 +1431,60 @@ describe('jqLite', function() {
     });
 
 
+    it('should correctly deregister the mouseenter/mouseleave listeners', function() {
+      var aElem = jqLite(a);
+      var onMouseenter = jasmine.createSpy('onMouseenter');
+      var onMouseleave = jasmine.createSpy('onMouseleave');
+
+      aElem.on('mouseenter', onMouseenter);
+      aElem.on('mouseleave', onMouseleave);
+      aElem.off('mouseenter', onMouseenter);
+      aElem.off('mouseleave', onMouseleave);
+      aElem.on('mouseenter', onMouseenter);
+      aElem.on('mouseleave', onMouseleave);
+
+      browserTrigger(a, 'mouseover', {relatedTarget: b});
+      expect(onMouseenter).toHaveBeenCalledOnce();
+
+      browserTrigger(a, 'mouseout', {relatedTarget: b});
+      expect(onMouseleave).toHaveBeenCalledOnce();
+    });
+
+
+    it('should call a `mouseenter/leave` listener only once when `mouseenter/leave` and `mouseover/out` '
+       + 'are triggered simultaneously', function() {
+      var aElem = jqLite(a);
+      var onMouseenter = jasmine.createSpy('mouseenter');
+      var onMouseleave = jasmine.createSpy('mouseleave');
+
+      aElem.on('mouseenter', onMouseenter);
+      aElem.on('mouseleave', onMouseleave);
+
+      browserTrigger(a, 'mouseenter', {relatedTarget: b});
+      browserTrigger(a, 'mouseover', {relatedTarget: b});
+      expect(onMouseenter).toHaveBeenCalledOnce();
+
+      browserTrigger(a, 'mouseleave', {relatedTarget: b});
+      browserTrigger(a, 'mouseout', {relatedTarget: b});
+      expect(onMouseleave).toHaveBeenCalledOnce();
+    });
+
+    it('should call a `mouseenter/leave` listener when manually triggering the event', function() {
+      var aElem = jqLite(a);
+      var onMouseenter = jasmine.createSpy('mouseenter');
+      var onMouseleave = jasmine.createSpy('mouseleave');
+
+      aElem.on('mouseenter', onMouseenter);
+      aElem.on('mouseleave', onMouseleave);
+
+      aElem.triggerHandler('mouseenter');
+      expect(onMouseenter).toHaveBeenCalledOnce();
+
+      aElem.triggerHandler('mouseleave');
+      expect(onMouseleave).toHaveBeenCalledOnce();
+    });
+
+
     it('should deregister specific listener within the listener and call subsequent listeners', function() {
       var aElem = jqLite(a),
           clickSpy = jasmine.createSpy('click'),
