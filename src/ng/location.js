@@ -918,16 +918,16 @@ function $LocationProvider() {
         var oldUrl = $location.absUrl();
         var oldState = $location.$$state;
         var defaultPrevented;
-
+		var trimNewUrl = trimEmptyHash(newUrl);
         $location.$$parse(newUrl);
         $location.$$state = newState;
 
-        defaultPrevented = $rootScope.$broadcast('$locationChangeStart', newUrl, oldUrl,
+        defaultPrevented = $rootScope.$broadcast('$locationChangeStart', trimNewUrl, oldUrl,
             newState, oldState).defaultPrevented;
 
         // if the location was changed by a `$locationChangeStart` handler then stop
         // processing this location change
-        if ($location.absUrl() !== newUrl) return;
+        if ($location.absUrl() !== trimNewUrl) return;
 
         if (defaultPrevented) {
           $location.$$parse(oldUrl);
