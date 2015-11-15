@@ -1743,6 +1743,14 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
    * ```
    */
   $httpBackend.verifyNoOutstandingRequest = function() {
+    // Flush outstanding tasks first,
+    // otherwise outstanding requests made by $http will not get noticed.
+    try {
+      $timeout.flush();
+    }
+    catch (e) {
+      // Catch any exceptions thrown, and continue to check responses
+    }
     if (responses.length) {
       throw new Error('Unflushed requests: ' + responses.length);
     }
