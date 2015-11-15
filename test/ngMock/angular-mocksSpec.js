@@ -937,11 +937,12 @@ describe('ngMock', function() {
 
 
   describe('$httpBackend', function() {
-    var hb, callback, realBackendSpy;
+    var hb, callback, realBackendSpy, $http;
 
-    beforeEach(inject(function($httpBackend) {
+    beforeEach(inject(function($httpBackend, _$http_) {
       callback = jasmine.createSpy('callback');
       hb = $httpBackend;
+      $http = _$http_;
     }));
 
     it('should provide "expect" methods for each HTTP verb', function() {
@@ -1479,10 +1480,11 @@ describe('ngMock', function() {
       it('should throw exception if not all requests were flushed', function() {
         hb.when('GET').respond(200);
         hb('GET', '/some', null, noop, {});
+        $http.get('/some');
 
         expect(function() {
           hb.verifyNoOutstandingRequest();
-        }).toThrow('Unflushed requests: 1');
+        }).toThrow('Unflushed requests: 2');
       });
     });
 
