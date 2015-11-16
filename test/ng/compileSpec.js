@@ -868,6 +868,16 @@ describe('$compile', function() {
           expect(div.attr('id')).toEqual('myid');
         }));
 
+
+        it('should correctly merge attributes that contain special characters', inject(function($compile, $rootScope) {
+          element = $compile(
+            '<div><div replace (click)="doSomething()" [value]="someExpression"></div><div>')($rootScope);
+          var div = element.find('div');
+          expect(div.attr('(click)')).toEqual('doSomething()');
+          expect(div.attr('[value]')).toEqual('someExpression');
+        }));
+
+
         it('should prevent multiple templates per element', inject(function($compile) {
           try {
             $compile('<div><span replace class="replace"></span></div>');
