@@ -1229,8 +1229,11 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
     };
 
     function setSpecialAttr(element, attrName, value) {
-      specialAttrHolder.innerHTML = "<span " + attrName + "='" + (value || '').replace(QUOTE_REGEX, '&quot;') + "'>";
-      var attribute = specialAttrHolder.firstChild.attributes[0].cloneNode();
+      specialAttrHolder.innerHTML = "<span " + attrName + "='" + (value || '').replace(QUOTE_REGEX, '&quot;') + "'>"
+      var span = specialAttrHolder.firstChild;
+      var attribute = span.attributes[0];
+      // We have to remove the attribute from the holder element before we can add it to the destination element
+      span.removeAttribute(attrName);
       element.attributes.setNamedItem(attribute);
     }
 
