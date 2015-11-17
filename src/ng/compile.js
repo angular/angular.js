@@ -990,7 +990,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
              $controller,   $rootScope,   $document,   $sce,   $animate,   $$sanitizeUri) {
 
     var SIMPLE_ATTR_NAME = /^\w/;
-    var QUOTE_REGEX = /'/g;
     var specialAttrHolder = document.createElement('div');
     var Attributes = function(element, attributesToCopy) {
       if (attributesToCopy) {
@@ -1229,7 +1228,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
     };
 
     function setSpecialAttr(element, attrName, value) {
-      // Attributes names that do not start with letters cannot be set using `setAttribute`
+      // Attributes names that do not start with letters (such as `(click)`) cannot be set using `setAttribute`
       // so we have to jump through some hoops to get such an attribute
       // https://github.com/angular/angular.js/pull/13318
       specialAttrHolder.innerHTML = "<span " + attrName + ">";
