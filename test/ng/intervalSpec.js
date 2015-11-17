@@ -129,6 +129,39 @@ describe('$interval', function() {
   }));
 
 
+
+  it('should allow you to specify the delay time with a function', inject(function($interval, $window) {
+    var counter = 0;
+    $interval(
+      function() { counter++; },
+      function(iteration) { return iteration + 5; }
+    );
+
+    expect(counter).toBe(0);
+
+    $window.flush(4);
+    expect(counter).toBe(0);
+
+    $window.flush(1);
+    expect(counter).toBe(1);
+
+    $window.flush(1);
+    expect(counter).toBe(1);
+
+    $window.flush(5);
+    expect(counter).toBe(2);
+
+    $window.flush(7);
+    expect(counter).toBe(3);
+
+    $window.flush(7);
+    expect(counter).toBe(3);
+
+    $window.flush(1);
+    expect(counter).toBe(4);
+  }));
+
+
   it('should allow you to specify a number of iterations', inject(function($interval, $window) {
     var counter = 0;
     $interval(function() {counter++;}, 1000, 2);
