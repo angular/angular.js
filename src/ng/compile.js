@@ -1229,11 +1229,15 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
     };
 
     function setSpecialAttr(element, attrName, value) {
-      specialAttrHolder.innerHTML = "<span " + attrName + "='" + (value || '').replace(QUOTE_REGEX, '&quot;') + "'>"
+      // Attributes names that do not start with letters cannot be set using `setAttribute`
+      // so we have to jump through some hoops to get such an attribute
+      // https://github.com/angular/angular.js/pull/13318
+      specialAttrHolder.innerHTML = "<span " + attrName + ">";
       var span = specialAttrHolder.firstChild;
       var attribute = span.attributes[0];
       // We have to remove the attribute from the holder element before we can add it to the destination element
       span.removeAttribute(attrName);
+      attribute.value = value;
       element.attributes.setNamedItem(attribute);
     }
 
