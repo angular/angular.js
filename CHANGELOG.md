@@ -13,14 +13,12 @@
 - **$compile:**
   - bind all directive controllers correctly when using `bindToController`
   ([bd7b2177](https://github.com/angular/angular.js/commit/bd7b2177291697a665e4068501b3704200972467),
+   [1c13a4f4](https://github.com/angular/angular.js/commit/1c13a4f45ddc86805a96576b75c969ad577b6274)
    [#11343](https://github.com/angular/angular.js/issues/11343), [#11345](https://github.com/angular/angular.js/issues/11345))
   - evaluate against the correct scope with bindToController on new scope
   ([50557a6c](https://github.com/angular/angular.js/commit/50557a6cd329e8438fb5694d11e8a7d018142afe),
    [#13021](https://github.com/angular/angular.js/issues/13021), [#13025](https://github.com/angular/angular.js/issues/13025))
-  - bind all directive controllers correctly when using `bindToController`
-  ([1c13a4f4](https://github.com/angular/angular.js/commit/1c13a4f45ddc86805a96576b75c969ad577b6274),
-   [#11343](https://github.com/angular/angular.js/issues/11343), [#11345](https://github.com/angular/angular.js/issues/11345))
-  - fix scoping of transclusion directives inside replace directive
+  - fix scoping of transclusion directives inside a replace directive
   ([1a98c0ee](https://github.com/angular/angular.js/commit/1a98c0ee346b718b9462da1abf4352a4605cbc7f),
    [#12975](https://github.com/angular/angular.js/issues/12975), [#12936](https://github.com/angular/angular.js/issues/12936), [#13244](https://github.com/angular/angular.js/issues/13244))
   - use createMap() for $$observe listeners when initialized from attr interpolation
@@ -36,7 +34,7 @@
   ([4412fe23](https://github.com/angular/angular.js/commit/4412fe238f37f79a2017ee7b20ba089c0acd73e9),
    [#12175](https://github.com/angular/angular.js/issues/12175), [#13251](https://github.com/angular/angular.js/issues/13251))
 - **$parse:**
-  - evaluate once simple expressions in interpolations
+  - evaluate simple expressions in interpolations only once
   ([1caf0b6b](https://github.com/angular/angular.js/commit/1caf0b6bee5781589e20f7a27a8c60e8b1b784f5),
    [#12983](https://github.com/angular/angular.js/issues/12983), [#13002](https://github.com/angular/angular.js/issues/13002))
   - fix typo in error message ("assing" -> "assign")
@@ -45,12 +43,12 @@
   - block assigning to fields of a constructor
   ([e1f4f23f](https://github.com/angular/angular.js/commit/e1f4f23f781a79ae8a4046b21130283cec3f2917),
    [#12860](https://github.com/angular/angular.js/issues/12860))
-  - do not convert to string computed properties multiple times
+  - safer conversion of computed properties to strings
   ([20cf7d5e](https://github.com/angular/angular.js/commit/20cf7d5e3a0af766b1929e24794859c79439351c))
-- **$resource:** allow XHR request to be cancelled via timeout promise
+- **$resource:** allow XHR request to be cancelled via a timeout promise
   ([4fc73466](https://github.com/angular/angular.js/commit/4fc734665e5dddef26ed30a9d4f75632cd269481),
    [#12657](https://github.com/angular/angular.js/issues/12657), [#12675](https://github.com/angular/angular.js/issues/12675), [#10890](https://github.com/angular/angular.js/issues/10890), [#9332](https://github.com/angular/angular.js/issues/9332))
-- **$rootScope:** stop IE9 memory leak when destroying scopes
+- **$rootScope:** prevent IE9 memory leak when destroying scopes
   ([8fe781fb](https://github.com/angular/angular.js/commit/8fe781fbe7c42c64eb895c28d9fd5479b037d020),
    [#10706](https://github.com/angular/angular.js/issues/10706), [#11786](https://github.com/angular/angular.js/issues/11786))
 - **$sanitize:**
@@ -69,7 +67,7 @@
 - **filters:** ensure `formatNumber` observes i18n decimal separators
   ([658a865c](https://github.com/angular/angular.js/commit/658a865c5b2580eed53b340e7394945cd76e2260),
    [#10342](https://github.com/angular/angular.js/issues/10342), [#12850](https://github.com/angular/angular.js/issues/12850))
-- **injector:** support arrow functions with no parenthesis
+- **injector:** support arrow functions with no parentheses
   ([03726f7f](https://github.com/angular/angular.js/commit/03726f7fbd5d71c0604b8dd40e97cb2fb0fb777f),
    [#12890](https://github.com/angular/angular.js/issues/12890))
 - **input:** remove workaround for Firefox bug
@@ -117,12 +115,9 @@
   - skip comments and empty options when looking for options
   ([395f3ec6](https://github.com/angular/angular.js/commit/395f3ec638f2ee77d22889823aa80898a6ce812d),
    [#12190](https://github.com/angular/angular.js/issues/12190), [#13029](https://github.com/angular/angular.js/issues/13029), [#13033](https://github.com/angular/angular.js/issues/13033))
-  - override select option registration
+  - override select option registration to allow compilation of empty option
   ([2fcfd75a](https://github.com/angular/angular.js/commit/2fcfd75a142200e1a4b1b7ed4fb588e3befcbd57),
    [#11685](https://github.com/angular/angular.js/issues/11685), [#12972](https://github.com/angular/angular.js/issues/12972), [#12968](https://github.com/angular/angular.js/issues/12968), [#13012](https://github.com/angular/angular.js/issues/13012))
-  - skip comments when looking for option elements
-  ([7f3f3dd3](https://github.com/angular/angular.js/commit/7f3f3dd3ebcc44711600ac292af54c411c3c705f),
-   [#12190](https://github.com/angular/angular.js/issues/12190))
   - prevent frozen select ui in IE
   ([42c97c5d](https://github.com/angular/angular.js/commit/42c97c5db5921e9e5447fb32bdae1f48da42844f),
    [#11314](https://github.com/angular/angular.js/issues/11314), [#11795](https://github.com/angular/angular.js/issues/11795))
@@ -163,9 +158,6 @@
 - **$templateRequest:** support configuration of $http options
   ([b2fc39d2](https://github.com/angular/angular.js/commit/b2fc39d2ddac64249b4f2961ee18b878a1e98251),
    [#13188](https://github.com/angular/angular.js/issues/13188), [#11868](https://github.com/angular/angular.js/issues/11868), [#6860](https://github.com/angular/angular.js/issues/6860))
-- **$time:** create time service
-  ([fa4c7b7f](https://github.com/angular/angular.js/commit/fa4c7b7f1d885eb9746166e268c9f7511ea39676),
-   [#10402](https://github.com/angular/angular.js/issues/10402), [#10525](https://github.com/angular/angular.js/issues/10525))
 - **Module:** add helper method, `component(...)` for creating component directives
   ([54e81655](https://github.com/angular/angular.js/commit/54e816552f20e198e14f849cdb2379fed8570c1a),
    [#10007](https://github.com/angular/angular.js/issues/10007), [#12933](https://github.com/angular/angular.js/issues/12933))
@@ -191,14 +183,14 @@
 - **$compile:**
   - use static jquery data method to avoid creating new instances
   ([9b90c32f](https://github.com/angular/angular.js/commit/9b90c32f31fd56e348539674128acec6536cd846))
-  - Lazily compile the `transclude` function
+  - lazily compile the `transclude` function
   ([652b83eb](https://github.com/angular/angular.js/commit/652b83eb226131d131a44453520a569202aa4aac))
 - **$interpolate:** provide a simplified result for constant expressions
   ([cf83b4f4](https://github.com/angular/angular.js/commit/cf83b4f445d3a1fc18fc140e65e670754401d50b))
 - **copy:**
-  - avoid regex in isTypedArray
+  - avoid regex in `isTypedArray`
   ([c8768d12](https://github.com/angular/angular.js/commit/c8768d12f2f0b31f9ac971aeac6d2c17c9ff3db5))
-  - only validate/clear user specified destination
+  - only validate/clear if the user specifies a destination
   ([33c67ce7](https://github.com/angular/angular.js/commit/33c67ce785cf8be7f0c294b3942ca4a337c5759d),
    [#12068](https://github.com/angular/angular.js/issues/12068))
 - **merge:** remove unnecessary wrapping of jqLite element
@@ -216,7 +208,6 @@ but while doing so, please read the warning provided in the  documentation for
 information on preventing click-hijacking attacks when this option is turned on.
 
 - **ngMessage:** due to [4971ef12](https://github.com/angular/angular.js/commit/4971ef12d4c2c268cb8d26f90385dc96eba19db8),
-
 
 ngMessage is now compiled with a priority of 1, which means directives
 on the same element as ngMessage with a priority lower than 1 will
@@ -236,8 +227,7 @@ requirement more strict and alerts the developer explicitly.
 
 - **orderByFilter:** due to [2a85a634](https://github.com/angular/angular.js/commit/2a85a634f86c84f15b411ce009a3515fca7ba580),
 
-Previously, an non array-like input would pass through the orderBy filter
-unchanged.
+Previously, an non array-like input would pass through the orderBy filter unchanged.
 Now, an error is thrown. This can be worked around by converting an object
 to an array, either manually or using a filter such as
 https://github.com/petebacondarwin/angular-toArrayFilter.
