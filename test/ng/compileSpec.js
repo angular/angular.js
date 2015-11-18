@@ -869,7 +869,7 @@ describe('$compile', function() {
         }));
 
 
-        iit('should correctly merge attributes that contain special characters', inject(function($compile, $rootScope) {
+        it('should correctly merge attributes that contain special characters', inject(function($compile, $rootScope) {
           element = $compile(
             '<div><div replace (click)="doSomething()" [value]="someExpression" Ω="omega"></div><div>')($rootScope);
           var div = element.find('div');
