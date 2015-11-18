@@ -2217,6 +2217,23 @@ describe('ngOptions', function() {
       dealoc(element);
     }));
 
+    // See issue #13331
+    it('should set [selected] to false when a genuine option is selected', function() {
+      scope.options = ['a'];
+      scope.model = '';
+      compile(
+          '<select ng-model="model" ng-options="opt for opt in options">' +
+            '<option value="">Empty Option</option>' +
+          '</select>');
+      var opt = element.find("option")[0];
+      expect(opt.hasAttribute('selected')).toBeTruthy();
+      expect(opt.selected).toBeTruthy();
+      scope.model = 'a';
+      scope.$digest();
+      expect(opt.hasAttribute('selected')).toBeFalsy();
+      expect(opt.selected).toBeFalsy();
+    });
+
   });
 
 
