@@ -1232,12 +1232,25 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       // so we have to jump through some hoops to get such an attribute
       // https://github.com/angular/angular.js/pull/13318
       specialAttrHolder.innerHTML = "<span " + attrName + ">";
+      console.log('holder');
+      console.log(specialAttrHolder);
       var attributes = specialAttrHolder.firstChild.attributes;
       var attribute = attributes[0];
+      console.log('attribute');
+      console.log(attribute, attribute.name, attribute.value);
       // We have to remove the attribute from its container element before we can add it to the destination element
       attributes.removeNamedItem(attribute.name);
       attribute.value = value;
+      console.log('attribute with value');
+      console.log(attribute, attribute.name, attribute.value);
       element.attributes.setNamedItem(attribute);
+      console.log('element attributes');
+      for(var i=0; i< element.attributes.length; i++) {
+        var attribute = element.attributes[i];
+        console.log(attribute, attribute.name, attribute.value);
+      }
+      console.log('element');
+      console.log(element);
     }
 
     function safeAddClass($element, className) {
