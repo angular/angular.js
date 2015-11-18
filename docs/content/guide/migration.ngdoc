@@ -262,7 +262,6 @@ Before:
 $scope.resetWithCancel = function (e) {
   if (e.keyCode == 27) {
     $scope.myForm.myInput1.$cancelUpdate();
-    $scope.myValue = '';
   }
 };
 ```
@@ -273,7 +272,6 @@ After:
 $scope.resetWithCancel = function (e) {
   if (e.keyCode == 27) {
     $scope.myForm.myInput1.$rollbackViewValue();
-    $scope.myValue = '';
   }
 }
 ```
