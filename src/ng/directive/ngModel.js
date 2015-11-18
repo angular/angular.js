@@ -455,7 +455,6 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    *       $scope.resetWithCancel = function(e) {
    *         if (e.keyCode == 27) {
    *           $scope.myForm.myInput1.$rollbackViewValue();
-   *           $scope.myValue = '';
    *         }
    *       };
    *       $scope.resetWithoutCancel = function(e) {
