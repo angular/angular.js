@@ -370,6 +370,21 @@ describe('angular', function() {
       expect(copy(undefined, [1,2,3])).toEqual([]);
       expect(copy({0: 1, 1: 2}, [1,2,3])).toEqual([1,2]);
     });
+
+    it('should copy objects with no prototype parent', function() {
+      var obj = extend(Object.create(null), {
+        a: 1,
+        b: 2,
+        c: 3
+      });
+      var dest = copy(obj);
+
+      expect(Object.getPrototypeOf(dest)).toBe(null);
+      expect(dest.a).toBe(1);
+      expect(dest.b).toBe(2);
+      expect(dest.c).toBe(3);
+      expect(Object.keys(dest)).toEqual(['a', 'b', 'c']);
+    });
   });
 
   describe("extend", function() {
