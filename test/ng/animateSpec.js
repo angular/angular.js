@@ -378,6 +378,27 @@ describe("$animate", function() {
     });
   });
 
+  it("should not alter the provided options input in any way throughout the animation", inject(function($animate, $rootElement, $rootScope) {
+    var element = jqLite('<div></div>');
+    var parent = $rootElement;
+
+    var initialOptions = {
+      from: { height: '50px' },
+      to: { width: '50px' },
+      addClass: 'one',
+      removeClass: 'two'
+    };
+
+    var copiedOptions = copy(initialOptions);
+    expect(copiedOptions).toEqual(initialOptions);
+
+    var runner = $animate.enter(element, parent, null, copiedOptions);
+    expect(copiedOptions).toEqual(initialOptions);
+
+    $rootScope.$digest();
+    expect(copiedOptions).toEqual(initialOptions);
+  }));
+
   describe('CSS class DOM manipulation', function() {
     var element;
     var addClass;
