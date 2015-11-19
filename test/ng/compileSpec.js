@@ -871,11 +871,11 @@ describe('$compile', function() {
 
         it('should correctly merge attributes that contain special characters', inject(function($compile, $rootScope) {
           element = $compile(
-            '<div><div replace (click)="doSomething()" [value]="someExpression" Ω="omega"></div><div>')($rootScope);
+            '<div><div replace (click)="doSomething()" [value]="someExpression" ω="omega"></div><div>')($rootScope);
           var div = element.find('div');
           expect(div.attr('(click)')).toEqual('doSomething()');
           expect(div.attr('[value]')).toEqual('someExpression');
-          expect(div.attr('Ω')).toEqual('omega');
+          expect(div.attr('ω')).toEqual('omega');
         }));
 
 
