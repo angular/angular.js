@@ -1128,12 +1128,13 @@ describe('select', function() {
       scope.model = '';
       compile(
           '<select ng-model="model" ng-options="opt for opt in options">' +
-            '<option id=empty_option value="">Empty Option</option>' +
+            '<option id="empty_option" value="">Empty Option</option>' +
           '</select>');
-      expect(element.find("option").eq(0).attr("selected")).toBe("selected");
+      var opt = element.find("option")[0];
+      expect(!opt.getAttribute("selected")).toBe(false);
       scope.model = 'a';
       scope.$digest();
-      expect(element.find("option").eq(0).attr("selected")).toBe(undefined);
+      expect(!opt.getAttribute("selected")).toBe(true);
     });
 
   });
