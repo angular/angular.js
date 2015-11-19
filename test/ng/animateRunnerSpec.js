@@ -1,8 +1,8 @@
 'use strict';
 
-describe('$$animateAsyncRun', function() {
-  beforeEach(module('ngAnimate'));
+/* jshint newcap: false */
 
+describe('$$animateAsyncRun', function() {
   it('should fire the callback only when one or more RAFs have passed',
     inject(function($$animateAsyncRun, $$rAF) {
 
@@ -32,9 +32,6 @@ describe('$$animateAsyncRun', function() {
 });
 
 describe("$$AnimateRunner", function() {
-
-  beforeEach(module('ngAnimate'));
-
   they("should trigger the host $prop function",
     ['end', 'cancel', 'pause', 'resume'], function(method) {
 
