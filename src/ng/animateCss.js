@@ -26,6 +26,7 @@ var $CoreAnimateCssProvider = function() {
         options.from = null;
       }
 
+      /* jshint newcap: false */
       var closed, runner = new $$AnimateRunner();
       return {
         start: run,

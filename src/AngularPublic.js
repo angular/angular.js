@@ -57,7 +57,7 @@
   $AnimateProvider,
   $CoreAnimateCssProvider,
   $$CoreAnimateQueueProvider,
-  $$AnimateRunnerProvider,
+  $$AnimateRunnerFactoryProvider,
   $$AnimateAsyncRunFactoryProvider,
   $BrowserProvider,
   $CacheFactoryProvider,
