@@ -150,8 +150,10 @@ function shallowClearAndCopy(src, dst) {
  *     GET request, otherwise if a cache instance built with
  *     {@link ng.$cacheFactory $cacheFactory}, this cache will be used for
  *     caching.
- *   - **`timeout`** – `{number|Promise}` – timeout in milliseconds, or {@link ng.$q promise} that
- *     should abort the request when resolved.
+ *   - **`timeout`** – `{number|Promise|Function}` – timeout in milliseconds, or
+ *     {@link ng.$q promise} that should abort the request when resolved or a function that returns
+ *     either a number or a promise. The function allows for the timeout to change with time and
+ *     provides a way to cancel an action multiple times (by providing a new promise each time).
  *   - **`withCredentials`** - `{boolean}` - whether to set the `withCredentials` flag on the
  *     XHR object. See
  *     [requests with credentials](https://developer.mozilla.org/en/http_access_control#section_5)
