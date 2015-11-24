@@ -62,6 +62,20 @@ $provide.value("$locale", {
       "Du",
       "Ker"
     ],
+    "STANDALONEMONTH": [
+      "Genver",
+      "C\u02bchwevrer",
+      "Meurzh",
+      "Ebrel",
+      "Mae",
+      "Mezheven",
+      "Gouere",
+      "Eost",
+      "Gwengolo",
+      "Here",
+      "Du",
+      "Kerzu"
+    ],
     "WEEKENDRANGE": [
       5,
       6

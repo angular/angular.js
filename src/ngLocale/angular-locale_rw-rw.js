@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "ugu.",
       "uku."
     ],
+    "STANDALONEMONTH": [
+      "Mutarama",
+      "Gashyantare",
+      "Werurwe",
+      "Mata",
+      "Gicuransi",
+      "Kamena",
+      "Nyakanga",
+      "Kanama",
+      "Nzeli",
+      "Ukwakira",
+      "Ugushyingo",
+      "Ukuboza"
+    ],
     "WEEKENDRANGE": [
       5,
       6

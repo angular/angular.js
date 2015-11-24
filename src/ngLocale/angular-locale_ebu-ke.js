@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "Imw",
       "Igi"
     ],
+    "STANDALONEMONTH": [
+      "Mweri wa mbere",
+      "Mweri wa ka\u0129ri",
+      "Mweri wa kathat\u0169",
+      "Mweri wa kana",
+      "Mweri wa gatano",
+      "Mweri wa gatantat\u0169",
+      "Mweri wa m\u0169gwanja",
+      "Mweri wa kanana",
+      "Mweri wa kenda",
+      "Mweri wa ik\u0169mi",
+      "Mweri wa ik\u0169mi na \u0169mwe",
+      "Mweri wa ik\u0169mi na Ka\u0129r\u0129"
+    ],
     "WEEKENDRANGE": [
       5,
       6

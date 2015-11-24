@@ -62,6 +62,20 @@ $provide.value("$locale", {
       "Kas",
       "Ara"
     ],
+    "STANDALONEMONTH": [
+      "Ocak",
+      "\u015eubat",
+      "Mart",
+      "Nisan",
+      "May\u0131s",
+      "Haziran",
+      "Temmuz",
+      "A\u011fustos",
+      "Eyl\u00fcl",
+      "Ekim",
+      "Kas\u0131m",
+      "Aral\u0131k"
+    ],
     "WEEKENDRANGE": [
       5,
       6

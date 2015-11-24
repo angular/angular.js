@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "Noo",
       "Dee"
     ],
+    "STANDALONEMONTH": [
+      "\u017danwiye",
+      "Feewiriye",
+      "Marsi",
+      "Awiril",
+      "Me",
+      "\u017duwe\u014b",
+      "\u017duyye",
+      "Ut",
+      "Sektanbur",
+      "Oktoobur",
+      "Noowanbur",
+      "Deesanbur"
+    ],
     "WEEKENDRANGE": [
       5,
       6

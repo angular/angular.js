@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "Nob",
       "Dis"
     ],
+    "STANDALONEMONTH": [
+      "Chanuari",
+      "Feburari",
+      "Machi",
+      "Apiriri",
+      "Mei",
+      "Juni",
+      "Chulai",
+      "Agosti",
+      "Septemba",
+      "Okitoba",
+      "Nobemba",
+      "Disemba"
+    ],
     "WEEKENDRANGE": [
       5,
       6
