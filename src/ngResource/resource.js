@@ -1,6 +1,7 @@
 'use strict';
 
 var $resourceMinErr = angular.$$minErr('$resource');
+var hasOwnProperty = Object.prototype.hasOwnProperty;
 
 // Helper functions and regex to lookup a dotted path on an object
 // stopping at undefined/null.  The path must be composed of ASCII
@@ -577,7 +578,7 @@ angular.module('ngResource', ['ng']).
         forEach(actions, function(action, name) {
           var hasBody = /^(POST|PUT|PATCH)$/i.test(action.method);
 
-          var hasTimeout = action.hasOwnProperty('timeout');
+          var hasTimeout = hasOwnProperty.call(action, 'timeout');
           if (hasTimeout && !angular.isNumber(action.timeout)) {
             $log.debug('ngResource:\n' +
                        '  Only numeric values are allowed as `timeout`.\n' +
@@ -588,8 +589,8 @@ angular.module('ngResource', ['ng']).
             hasTimeout = false;
           }
           action.cancellable = hasTimeout ?
-              false : action.hasOwnProperty('cancellable') ?
-              action.cancellable : (options && options.hasOwnProperty('cancellable')) ?
+              false : hasOwnProperty.call(action, 'cancellable') ?
+              action.cancellable : (options && hasOwnProperty.call(options, 'cancellable')) ?
               options.cancellable :
               provider.defaults.cancellable;
 
