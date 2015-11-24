@@ -510,11 +510,6 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
 
       } else {
 
-        ngModelCtrl.$isEmpty = function(value) {
-          return !value || value.length === 0;
-        };
-
-
         selectCtrl.writeValue = function writeNgOptionsMultiple(value) {
           options.items.forEach(function(option) {
             option.element.selected = false;
@@ -558,6 +553,42 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
         }
       }
 
+      function isViewOptionValid(viewValue) {
+
+        var isValidOption = false;
+        var viewOptions = [];
+        // Get all option and add them to viewOptions array
+        angular.forEach(options.items, function(item) {
+            viewOptions.push(options.getViewValueFromOption(item));
+        });
+
+        // In case of multiple view is an array so validate all view values
+        // if one of them match set isValidOption to true
+        if (multiple) {
+            for (var i = 0, length = viewValue.length; i < length; i++) {
+                if (viewOptions.indexOf(viewValue[i]) > -1) {
+                    isValidOption = true;
+                    break;
+                }
+            }
+        } else {
+            if (viewOptions.indexOf(viewValue) > -1) {
+                isValidOption = true;
+            }
+        }
+
+        return isValidOption;
+      }
+
+      // Copy the implementation of $isEmpty function to be used in overwritten one
+      var $$isEmpty = ngModelCtrl.$isEmpty;
+
+      ngModelCtrl.$isEmpty = function(value) {
+        if ($$isEmpty(value)) {
+          return true;
+        }
+        return !isViewOptionValid(value);
+      };
 
       if (providedEmptyOption) {
 
