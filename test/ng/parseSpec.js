@@ -3165,6 +3165,17 @@ describe('parser', function() {
           expect(called).toBe(true);
         }));
 
+        it('should invoke interceptors when the expression is `undefined`', inject(function($parse) {
+          var called = false;
+          function interceptor(v) {
+            called = true;
+            return v;
+          }
+          scope.$watch($parse(undefined, interceptor));
+          scope.$digest();
+          expect(called).toBe(true);
+        }));
+
         it('should treat filters with constant input as constants', inject(function($parse) {
           var filterCalls = 0;
           $filterProvider.register('foo', valueFn(function(input) {
