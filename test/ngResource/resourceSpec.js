@@ -1448,26 +1448,50 @@ describe('resource wrt cancelling requests', function() {
     expect(creditCard.$cancelRequest).toBeUndefined();
   });
 
-  it('should always create a (possibly noop) `$cancelRequest` method for non-instance calls',
-    function() {
-      var CreditCard = $resource('/CreditCard', {}, {
-        get1: {
-          method: 'GET',
-          cancellable: false
-        },
-        get2: {
-          method: 'GET',
-          cancellable: true
-        }
-      });
+  it('should not create a `$cancelRequest` method for non-cancellable calls', function() {
+    var CreditCard = $resource('/CreditCard', {}, {
+      get: {
+        method: 'GET',
+        cancellable: false
+      }
+    });
 
-      var creditCard1 = CreditCard.get1();
-      var creditCard2 = CreditCard.get2();
+    var creditCard = CreditCard.get();
 
-      expect(creditCard1.$cancelRequest).toBe(noop);
-      expect(creditCard2.$cancelRequest).toBeDefined();
-    }
-  );
+    expect(creditCard.$cancelRequest).toBeUndefined();
+  });
+
+  it('should also take into account `options.cancellable`', function() {
+    var options = {cancellable: true};
+    var CreditCard = $resource('/CreditCard', {}, {
+      get1: {method: 'GET', cancellable: false},
+      get2: {method: 'GET', cancellable: true},
+      get3: {method: 'GET'}
+    }, options);
+
+    var creditCard1 = CreditCard.get1();
+    var creditCard2 = CreditCard.get2();
+    var creditCard3 = CreditCard.get3();
+
+    expect(creditCard1.$cancelRequest).toBeUndefined();
+    expect(creditCard2.$cancelRequest).toBeDefined();
+    expect(creditCard3.$cancelRequest).toBeDefined();
+
+    options = {cancellable: false};
+    CreditCard = $resource('/CreditCard', {}, {
+      get1: {method: 'GET', cancellable: false},
+      get2: {method: 'GET', cancellable: true},
+      get3: {method: 'GET'}
+    }, options);
+
+    creditCard1 = CreditCard.get1();
+    creditCard2 = CreditCard.get2();
+    creditCard3 = CreditCard.get3();
+
+    expect(creditCard1.$cancelRequest).toBeUndefined();
+    expect(creditCard2.$cancelRequest).toBeDefined();
+    expect(creditCard3.$cancelRequest).toBeUndefined();
+  });
 
   it('should not make the request cancellable if there is a timeout', function() {
     var CreditCard = $resource('/CreditCard', {}, {
@@ -1480,7 +1504,7 @@ describe('resource wrt cancelling requests', function() {
 
     var creditCard = CreditCard.get();
 
-    expect(creditCard.$cancelRequest).toBe(noop);
+    expect(creditCard.$cancelRequest).toBeUndefined();
   });
 
   it('should cancel the request (if cancellable), when calling `$cancelRequest`', function() {
@@ -1517,5 +1541,33 @@ describe('resource wrt cancelling requests', function() {
     $httpBackend.flush();
 
     expect(creditCard.$cancelRequest).toBe(noop);
+  });
+});
+
+describe('resource wrt configuring `cancellable` on the provider', function() {
+  var $resource;
+
+  beforeEach(module('ngResource', function($resourceProvider) {
+    $resourceProvider.defaults.cancellable = true;
+  }));
+
+  beforeEach(inject(function(_$resource_) {
+    $resource = _$resource_;
+  }));
+
+  it('should also take into account `$resourceProvider.defaults.cancellable`', function() {
+    var CreditCard = $resource('/CreditCard', {}, {
+      get1: {method: 'GET', cancellable: false},
+      get2: {method: 'GET', cancellable: true},
+      get3: {method: 'GET'}
+    });
+
+    var creditCard1 = CreditCard.get1();
+    var creditCard2 = CreditCard.get2();
+    var creditCard3 = CreditCard.get3();
+
+    expect(creditCard1.$cancelRequest).toBeUndefined();
+    expect(creditCard2.$cancelRequest).toBeDefined();
+    expect(creditCard3.$cancelRequest).toBeDefined();
   });
 });

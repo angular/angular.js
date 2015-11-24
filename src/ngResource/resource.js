@@ -657,14 +657,10 @@ angular.module('ngResource', ['ng']).
               }
             });
 
-            if (!isInstanceCall) {
-              if (!action.cancellable) {
-                value.$cancelRequest = angular.noop;
-              } else {
-                var deferred = $q.defer();
-                httpConfig.timeout = deferred.promise;
-                value.$cancelRequest = deferred.resolve;
-              }
+            if (!isInstanceCall && action.cancellable) {
+              var deferred = $q.defer();
+              httpConfig.timeout = deferred.promise;
+              value.$cancelRequest = deferred.resolve;
             }
 
             if (hasBody) httpConfig.data = data;
