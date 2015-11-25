@@ -26,15 +26,15 @@ function setupModuleLoader(window) {
   return ensure(angular, 'module', function() {
     /** @type {Object.<string, angular.Module>} */
     var modules = {};
-  
+
     var assertNotHasOwnProperty = function(name, context) {
       if (name === 'hasOwnProperty') {
         throw ngMinErr('badname', 'hasOwnProperty is not a valid {0} name', context);
       }
     };
-  
-    ensure(angular, 'moduleExists', function(){
-      return function moduleExists(name){
+
+    ensure(angular, 'moduleExists', function() {
+      return function moduleExists(name) {
         assertNotHasOwnProperty(name, 'module');
         return modules[name] !== undefined;
       };
