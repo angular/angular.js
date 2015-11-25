@@ -36,7 +36,7 @@ function setupModuleLoader(window) {
     ensure(angular, 'moduleExists', function(){
       return function moduleExists(name){
         assertNotHasOwnProperty(name, 'module');
-        return modules[name] != undefined;
+        return modules[name] !== undefined;
       };
     });
 
