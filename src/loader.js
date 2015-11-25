@@ -26,6 +26,19 @@ function setupModuleLoader(window) {
   return ensure(angular, 'module', function() {
     /** @type {Object.<string, angular.Module>} */
     var modules = {};
+  
+    var assertNotHasOwnProperty = function(name, context) {
+      if (name === 'hasOwnProperty') {
+        throw ngMinErr('badname', 'hasOwnProperty is not a valid {0} name', context);
+      }
+    };
+  
+    ensure(angular, 'moduleExists', function(){
+      return function moduleExists(name){
+        assertNotHasOwnProperty(name, 'module');
+        return modules[name] != undefined;
+      };
+    });
 
     /**
      * @ngdoc function
@@ -79,12 +92,6 @@ function setupModuleLoader(window) {
      * @returns {module} new module with the {@link angular.Module} api.
      */
     return function module(name, requires, configFn) {
-      var assertNotHasOwnProperty = function(name, context) {
-        if (name === 'hasOwnProperty') {
-          throw ngMinErr('badname', 'hasOwnProperty is not a valid {0} name', context);
-        }
-      };
-
       assertNotHasOwnProperty(name, 'module');
       if (requires && modules.hasOwnProperty(name)) {
         modules[name] = null;
