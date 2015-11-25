@@ -576,18 +576,17 @@ angular.module('ngResource', ['ng']).
 
         forEach(actions, function(action, name) {
           var hasBody = /^(POST|PUT|PATCH)$/i.test(action.method);
-          var cancellable;
+          var cancellable = false;
 
-          if (angular.isNumber(action.timeout)) {
-            cancellable = false;
-          } else if (action.timeout) {
-            $log.debug('ngResource:\n' +
-                       '  Only numeric values are allowed as `timeout`.\n' +
-                       '  Promises are not supported in $resource, because the same value has to ' +
-                       'be re-used for multiple requests. If you are looking for a way to cancel ' +
-                       'requests, you should use the `cancellable` option.');
-            delete action.timeout;
-          } else {
+          if (!angular.isNumber(action.timeout)) {
+            if (action.timeout) {
+              $log.debug('ngResource:\n' +
+                         '  Only numeric values are allowed as `timeout`.\n' +
+                         '  Promises are not supported in $resource, because the same value has to ' +
+                         'be re-used for multiple requests. If you are looking for a way to cancel ' +
+                         'requests, you should use the `cancellable` option.');
+              delete action.timeout;
+            }
             cancellable = angular.isDefined(action.cancellable) ? action.cancellable :
                          (options && angular.isDefined(options.cancellable)) ? options.cancellable :
                          provider.defaults.cancellable;
