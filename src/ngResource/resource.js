@@ -706,7 +706,7 @@ angular.module('ngResource', ['ng']).
 
             promise.finally(function() {
               value.$resolved = true;
-              if (cancellable) {
+              if (!isInstanceCall && cancellable) {
                 value.$cancelRequest = angular.noop;
                 timeoutDeferred = httpConfig.timeout = null;
               }
