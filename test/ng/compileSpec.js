@@ -7680,6 +7680,40 @@ describe('$compile', function() {
       });
     });
 
+    it('should use the default transclusion slot if the ng-transclude attribute has the same value as its key', function() {
+      module(function() {
+        directive('minionComponent', function() {
+          return {
+            restrict: 'E',
+            scope: {},
+            transclude: {},
+            template:
+              '<div class="a" ng-transclude="ng-transclude"></div>' +
+              '<div class="b" ng:transclude="ng:transclude"></div>' +
+              '<div class="c" data-ng-transclude="data-ng-transclude"></div>'
+          };
+        });
+      });
+      inject(function($rootScope, $compile) {
+        element = $compile(
+          '<minion-component>' +
+            '<span>stuart</span>' +
+            '<span>bob</span>' +
+            '<span>kevin</span>' +
+          '</minion-component>')($rootScope);
+        $rootScope.$apply();
+        var a = element.children().eq(0);
+        var b = element.children().eq(1);
+        var c = element.children().eq(2);
+        expect(a).toHaveClass('a');
+        expect(b).toHaveClass('b');
+        expect(c).toHaveClass('c');
+        expect(a.text()).toEqual('stuartbobkevin');
+        expect(b.text()).toEqual('stuartbobkevin');
+        expect(c.text()).toEqual('stuartbobkevin');
+      });
+    });
+
     it('should transclude elements to an `ng-transclude` with a matching transclusion slot name', function() {
       module(function() {
         directive('minionComponent', function() {
