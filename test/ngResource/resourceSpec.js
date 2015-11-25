@@ -1428,6 +1428,8 @@ describe('cancelling requests', function() {
   );
 
   it('should not create a `$cancelRequest` method for instance calls', function() {
+    $httpBackend.whenPOST('/CreditCard').respond({});
+
     var CreditCard = $resource('/CreditCard', {}, {
       save1: {
         method: 'POST',
@@ -1446,6 +1448,11 @@ describe('cancelling requests', function() {
     expect(creditCard.$cancelRequest).toBeUndefined();
 
     var promise2 = creditCard.$save2();
+    expect(promise2.$cancelRequest).toBeUndefined();
+    expect(creditCard.$cancelRequest).toBeUndefined();
+
+    $httpBackend.flush();
+    expect(promise1.$cancelRequest).toBeUndefined();
     expect(promise2.$cancelRequest).toBeUndefined();
     expect(creditCard.$cancelRequest).toBeUndefined();
   });
@@ -1546,7 +1553,7 @@ describe('cancelling requests', function() {
   });
 });
 
-describe('resource wrt configuring `cancellable` on the provider', function() {
+describe('configuring `cancellable` on the provider', function() {
   var $resource;
 
   beforeEach(module('ngResource', function($resourceProvider) {
