@@ -3953,7 +3953,7 @@ describe('$compile', function() {
         expect(componentScope.ref).toBe('hello world');
 
         componentScope.ref = 'ignore me';
-        expect($rootScope.$apply).
+        expect(function() { $rootScope.$apply(); }).
             toThrowMinErr("$compile", "nonassign", "Expression ''hello ' + name' used with directive 'myComponent' is non-assignable!");
         expect(componentScope.ref).toBe('hello world');
         // reset since the exception was rethrown which prevented phase clearing
@@ -3962,6 +3962,21 @@ describe('$compile', function() {
         $rootScope.name = 'misko';
         $rootScope.$apply();
         expect(componentScope.ref).toBe('hello misko');
+      }));
+
+      it('should complain if assigning to undefined', inject(function() {
+        compile('<div><span my-component>');
+        $rootScope.$apply();
+        expect(componentScope.ref).toBeUndefined();
+
+        componentScope.ref = 'ignore me';
+        expect(function() { $rootScope.$apply(); }).
+            toThrowMinErr("$compile", "nonassign", "Expression 'undefined' used with directive 'myComponent' is non-assignable!");
+        expect(componentScope.ref).toBeUndefined();
+
+        $rootScope.$$phase = null; // reset since the exception was rethrown which prevented phase clearing
+        $rootScope.$apply();
+        expect(componentScope.ref).toBeUndefined();
       }));
 
       // regression
