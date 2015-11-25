@@ -11,7 +11,7 @@
  * You can specify that you want to insert a named transclusion slot, instead of the default slot, by providing the slot name
  * as the value of the `ng-transclude` or `ng-transclude-slot` attribute.
  *
- * Any existing content of the element that this directive is placed on will be removed before the transcluded content is inserted.
+ * Any existing content of the element that this directive is placed on, will be removed before the transcluded content is inserted.
  *
  * @element ANY
  *
