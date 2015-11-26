@@ -1427,7 +1427,38 @@ describe('cancelling requests', function() {
     })
   );
 
+  it('should use `callable` value if passed a non-numeric `timeout` in an action',
+    inject(function($log, $q) {
+      spyOn($log, 'debug');
+      $httpBackend.whenGET('/CreditCard').respond({});
+
+      var CreditCard = $resource('/CreditCard', {}, {
+        get: {
+          method: 'GET',
+          timeout: $q.defer().promise,
+          cancellable: true
+        }
+      });
+
+      var creditCard = CreditCard.get();
+      expect(creditCard.$cancelRequest).toBeDefined();
+      expect(httpSpy.calls[0].args[0].timeout.then).toBeDefined();
+
+      // $httpBackend.flush();
+
+      // expect(httpSpy).toHaveBeenCalledOnce();
+      // expect(httpSpy.calls[0].args[0].timeout).toBe(jasmine.any());
+      // expect($log.debug).toHaveBeenCalledOnceWith('ngResource:\n' +
+      //     '  Only numeric values are allowed as `timeout`.\n' +
+      //     '  Promises are not supported in $resource, because the same value has to ' +
+      //     'be re-used for multiple requests. If you are looking for a way to cancel ' +
+      //     'requests, you should use the `cancellable` option.');
+    })
+  );
+
   it('should not create a `$cancelRequest` method for instance calls', function() {
+    $httpBackend.whenPOST('/CreditCard').respond({});
+
     var CreditCard = $resource('/CreditCard', {}, {
       save1: {
         method: 'POST',
@@ -1446,6 +1477,11 @@ describe('cancelling requests', function() {
     expect(creditCard.$cancelRequest).toBeUndefined();
 
     var promise2 = creditCard.$save2();
+    expect(promise2.$cancelRequest).toBeUndefined();
+    expect(creditCard.$cancelRequest).toBeUndefined();
+
+    $httpBackend.flush();
+    expect(promise1.$cancelRequest).toBeUndefined();
     expect(promise2.$cancelRequest).toBeUndefined();
     expect(creditCard.$cancelRequest).toBeUndefined();
   });
@@ -1546,7 +1582,7 @@ describe('cancelling requests', function() {
   });
 });
 
-describe('resource wrt configuring `cancellable` on the provider', function() {
+describe('configuring `cancellable` on the provider', function() {
   var $resource;
 
   beforeEach(module('ngResource', function($resourceProvider) {
