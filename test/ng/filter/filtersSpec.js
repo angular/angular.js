@@ -57,6 +57,14 @@ describe('filters', function() {
       pattern.maxFrac = 4;
       num = formatNumber(1.11119, pattern, ',', '.');
       expect(num).toBe('1.1112');
+
+      pattern.gMinSize = 5;
+      num = formatNumber(1234567.89, pattern, ',', '.');
+      expect(num).toBe('12,34,567.89');
+      num = formatNumber(12345.67, pattern, ',', '.');
+      expect(num).toBe('12,345.67');
+      num = formatNumber(1234.56, pattern, ',', '.');
+      expect(num).toBe('1234.56');
     });
 
     it('should format according different separators', function() {
