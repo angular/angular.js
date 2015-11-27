@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "\u0128km",
       "\u0128kl"
     ],
+    "STANDALONEMONTH": [
+      "Mwai wa mbee",
+      "Mwai wa kel\u0129",
+      "Mwai wa katat\u0169",
+      "Mwai wa kana",
+      "Mwai wa katano",
+      "Mwai wa thanthat\u0169",
+      "Mwai wa muonza",
+      "Mwai wa nyaanya",
+      "Mwai wa kenda",
+      "Mwai wa \u0129kumi",
+      "Mwai wa \u0129kumi na \u0129mwe",
+      "Mwai wa \u0129kumi na il\u0129"
+    ],
     "WEEKENDRANGE": [
       5,
       6

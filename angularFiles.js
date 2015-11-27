@@ -14,6 +14,7 @@ var angularFiles = {
 
     'src/ng/anchorScroll.js',
     'src/ng/animate.js',
+    'src/ng/animateRunner.js',
     'src/ng/animateCss.js',
     'src/ng/browser.js',
     'src/ng/cacheFactory.js',
@@ -101,6 +102,7 @@ var angularFiles = {
       'src/ngAnimate/animateQueue.js',
       'src/ngAnimate/animateRunner.js',
       'src/ngAnimate/animation.js',
+      'src/ngAnimate/ngAnimateSwap.js',
       'src/ngAnimate/module.js'
     ],
     'ngCookies': [

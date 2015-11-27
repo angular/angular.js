@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "Mus",
       "Muh"
     ],
+    "STANDALONEMONTH": [
+      "Mupalangulwa",
+      "Mwitope",
+      "Mushende",
+      "Munyi",
+      "Mushende Magali",
+      "Mujimbi",
+      "Mushipepo",
+      "Mupuguto",
+      "Munyense",
+      "Mokhu",
+      "Musongandembwe",
+      "Muhaano"
+    ],
     "WEEKENDRANGE": [
       5,
       6

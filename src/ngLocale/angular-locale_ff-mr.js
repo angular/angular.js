@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "jol",
       "bow"
     ],
+    "STANDALONEMONTH": [
+      "siilo",
+      "colte",
+      "mbooy",
+      "see\u0257to",
+      "duujal",
+      "korse",
+      "morso",
+      "juko",
+      "siilto",
+      "yarkomaa",
+      "jolal",
+      "bowte"
+    ],
     "WEEKENDRANGE": [
       5,
       6

@@ -2654,5 +2654,20 @@ describe('ngOptions', function() {
       expect(scope.value).toBe('third');
       expect(element).toEqualSelectValue('third');
     }));
+
+    it('should not set $dirty with select-multiple after compilation', function() {
+      scope.values = ['a', 'b'];
+      scope.selected = ['b'];
+
+      createSelect({
+        'ng-model':'selected',
+        'multiple':true,
+        'ng-options':'value for value in values',
+        'name': 'select'
+      });
+
+      expect(element.find('option')[1].selected).toBe(true);
+      expect(scope.form.select.$pristine).toBe(true);
+    });
   });
 });

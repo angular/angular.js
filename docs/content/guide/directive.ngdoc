@@ -598,7 +598,7 @@ directive logic will be put.
 * `element` is the jqLite-wrapped element that this directive matches.
 * `attrs` is a hash object with key-value pairs of normalized attribute names and their
   corresponding attribute values.
-* `controller` is the directive's required controller instance(s) or it's own controller (if any).
+* `controller` is the directive's required controller instance(s) or its own controller (if any).
   The exact value depends on the directive's require property.
 * `transcludeFn` is a transclude linking function pre-bound to the correct transclusion scope.
 

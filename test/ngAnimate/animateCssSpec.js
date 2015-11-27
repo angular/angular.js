@@ -1234,6 +1234,74 @@ describe("ngAnimate $animateCss", function() {
             $timeout.flush();
           }).not.toThrow();
         }));
+
+        it("should consider a positive options.delay value for the closing timeout",
+          inject(function($animateCss, $rootElement, $timeout, $document) {
+
+          var element = jqLite('<div></div>');
+          $rootElement.append(element);
+          jqLite($document[0].body).append($rootElement);
+
+          var options = {
+            delay: 3,
+            duration: 3,
+            to: {
+              height: '100px'
+            }
+          };
+
+          var animator = $animateCss(element, options);
+
+          animator.start();
+          triggerAnimationStartFrame();
+
+          // At this point, the animation should still be running (closing timeout is 7500ms ... duration * 1.5 + delay => 7.5)
+          $timeout.flush(7000);
+
+          expect(element.css(prefix + 'transition-delay')).toBe('3s');
+          expect(element.css(prefix + 'transition-duration')).toBe('3s');
+
+          // Let's flush the remaining amout of time for the timeout timer to kick in
+          $timeout.flush(500);
+
+          dump(element.attr('style'));
+          expect(element.css(prefix + 'transition-duration')).toBeOneOf('', '0s');
+          expect(element.css(prefix + 'transition-delay')).toBeOneOf('', '0s');
+        }));
+
+        it("should ignore a boolean options.delay value for the closing timeout",
+          inject(function($animateCss, $rootElement, $timeout, $document) {
+
+          var element = jqLite('<div></div>');
+          $rootElement.append(element);
+          jqLite($document[0].body).append($rootElement);
+
+          var options = {
+            delay: true,
+            duration: 3,
+            to: {
+              height: '100px'
+            }
+          };
+
+          var animator = $animateCss(element, options);
+
+          animator.start();
+          triggerAnimationStartFrame();
+
+          // At this point, the animation should still be running (closing timeout is 4500ms ... duration * 1.5 => 4.5)
+          $timeout.flush(4000);
+
+          expect(element.css(prefix + 'transition-delay')).toBeOneOf('initial', '0s');
+          expect(element.css(prefix + 'transition-duration')).toBe('3s');
+
+          // Let's flush the remaining amout of time for the timeout timer to kick in
+          $timeout.flush(500);
+
+          expect(element.css(prefix + 'transition-duration')).toBeOneOf('', '0s');
+          expect(element.css(prefix + 'transition-delay')).toBeOneOf('', '0s');
+        }));
+
       });
 
       describe("getComputedStyle", function() {

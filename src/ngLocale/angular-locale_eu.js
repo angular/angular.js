@@ -62,6 +62,20 @@ $provide.value("$locale", {
       "aza.",
       "abe."
     ],
+    "STANDALONEMONTH": [
+      "Urtarrila",
+      "Otsaila",
+      "Martxoa",
+      "Apirila",
+      "Maiatza",
+      "Ekaina",
+      "Uztaila",
+      "Abuztua",
+      "Iraila",
+      "Urria",
+      "Azaroa",
+      "Abendua"
+    ],
     "WEEKENDRANGE": [
       5,
       6

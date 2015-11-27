@@ -14,8 +14,9 @@ function init {
   TMP_DIR=$(resolveDir ../../tmp)
   BUILD_DIR=$(resolveDir ../../build)
   NEW_VERSION=$(cat $BUILD_DIR/version.txt)
+  PROJECT_DIR=$(resolveDir ../..)
   # get the npm dist-tag from a custom property (distTag) in package.json
-  DIST_TAG=$(readJsonProp "package.json" "distTag")
+  DIST_TAG=$(readJsonProp "$PROJECT_DIR/package.json" "distTag")
 }
 
 

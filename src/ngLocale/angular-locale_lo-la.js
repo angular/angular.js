@@ -62,6 +62,20 @@ $provide.value("$locale", {
       "\u0e9e.\u0e88.",
       "\u0e97.\u0ea7."
     ],
+    "STANDALONEMONTH": [
+      "\u0ea1\u0eb1\u0e87\u0e81\u0ead\u0e99",
+      "\u0e81\u0eb8\u0ea1\u0e9e\u0eb2",
+      "\u0ea1\u0eb5\u0e99\u0eb2",
+      "\u0ec0\u0ea1\u0eaa\u0eb2",
+      "\u0e9e\u0eb6\u0e94\u0eaa\u0eb0\u0e9e\u0eb2",
+      "\u0ea1\u0eb4\u0e96\u0eb8\u0e99\u0eb2",
+      "\u0e81\u0ecd\u0ea5\u0eb0\u0e81\u0ebb\u0e94",
+      "\u0eaa\u0eb4\u0e87\u0eab\u0eb2",
+      "\u0e81\u0eb1\u0e99\u0e8d\u0eb2",
+      "\u0e95\u0eb8\u0ea5\u0eb2",
+      "\u0e9e\u0eb0\u0e88\u0eb4\u0e81",
+      "\u0e97\u0eb1\u0e99\u0ea7\u0eb2"
+    ],
     "WEEKENDRANGE": [
       5,
       6

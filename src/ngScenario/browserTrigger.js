@@ -15,6 +15,7 @@
     if (!element) return;
 
     eventData = eventData || {};
+    var relatedTarget = eventData.relatedTarget || element;
     var keys = eventData.keys;
     var x = eventData.x;
     var y = eventData.y;
@@ -84,7 +85,7 @@
       x = x || 0;
       y = y || 0;
       evnt.initMouseEvent(eventType, true, true, window, 0, x, y, x, y, pressed('ctrl'),
-          pressed('alt'), pressed('shift'), pressed('meta'), 0, element);
+          pressed('alt'), pressed('shift'), pressed('meta'), 0, relatedTarget);
     }
 
     /* we're unable to change the timeStamp value directly so this

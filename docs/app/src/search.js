@@ -11,7 +11,15 @@ angular.module('search', [])
     var MIN_SEARCH_LENGTH = 2;
     if(q.length >= MIN_SEARCH_LENGTH) {
       docsSearch(q).then(function(hits) {
-        var results = {};
+        // Make sure the areas are always in the same order
+        var results = {
+          api: [],
+          guide: [],
+          tutorial: [],
+          error: [],
+          misc: []
+        };
+
         angular.forEach(hits, function(hit) {
           var area = hit.area;
 
