@@ -161,6 +161,7 @@ function outputLocale(localeInfo, localeID) {
   if (!localeObj.DATETIME_FORMATS) {
     localeObj.DATETIME_FORMATS = fallBackObj.DATETIME_FORMATS;
   }
+  localeObj.localeID = localeID;
   localeObj.id = correctedLocaleId(localeID);
 
   var getDecimals = [
