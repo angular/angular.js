@@ -414,6 +414,7 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
       var selectCtrl = ctrls[0];
       var ngModelCtrl = ctrls[1];
       var multiple = attr.multiple;
+      var isOptionValid = true;
 
       // The emptyOption allows the application developer to provide their own custom "empty"
       // option when the viewValue does not match any of the option values.
@@ -466,7 +467,7 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
 
         selectCtrl.writeValue = function writeNgOptionsValue(value) {
           var option = options.getOptionFromViewValue(value);
-
+          isOptionValid = option ? true : false;
           if (option && !option.disabled) {
             if (selectElement[0].value !== option.selectValue) {
               removeUnknownOption();
@@ -516,10 +517,16 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
           });
 
           if (value) {
+            var matchedOptions = 0;
             value.forEach(function(item) {
               var option = options.getOptionFromViewValue(item);
-              if (option && !option.disabled) option.element.selected = true;
+              if (option && !option.disabled) {
+                  ++matchedOptions;
+                  option.element.selected = true;
+              }
             });
+
+            isOptionValid = (matchedOptions > 0) ? true : false;
           }
         };
 
@@ -553,41 +560,11 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
         }
       }
 
-      function isViewOptionValid(viewValue) {
-
-        var isValidOption = false;
-        var viewOptions = [];
-        // Get all option and add them to viewOptions array
-        angular.forEach(options.items, function(item) {
-            viewOptions.push(options.getViewValueFromOption(item));
-        });
-
-        // In case of multiple view is an array so validate all view values
-        // if one of them match set isValidOption to true
-        if (multiple) {
-            for (var i = 0, length = viewValue.length; i < length; i++) {
-                if (viewOptions.indexOf(viewValue[i]) > -1) {
-                    isValidOption = true;
-                    break;
-                }
-            }
-        } else {
-            if (viewOptions.indexOf(viewValue) > -1) {
-                isValidOption = true;
-            }
-        }
-
-        return isValidOption;
-      }
-
-      // Copy the implementation of $isEmpty function to be used in overwritten one
+      // Copy the implementation of $isEmpty function to be used in overwritten one.
       var $$isEmpty = ngModelCtrl.$isEmpty;
 
       ngModelCtrl.$isEmpty = function(value) {
-        if ($$isEmpty(value)) {
-          return true;
-        }
-        return !isViewOptionValid(value);
+        return $$isEmpty(value) || !isOptionValid;
       };
 
       if (providedEmptyOption) {
@@ -762,7 +739,7 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
         ngModelCtrl.$render();
 
         // Check to see if the value has changed due to the update to the options
-        if (!ngModelCtrl.$isEmpty(previousValue)) {
+        if (!$$isEmpty(previousValue)) {
           var nextValue = selectCtrl.readValue();
           var isNotPrimitive = ngOptions.trackBy || multiple;
           if (isNotPrimitive ? !equals(previousValue, nextValue) : previousValue !== nextValue) {
