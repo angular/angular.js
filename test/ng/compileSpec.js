@@ -3631,6 +3631,14 @@ describe('$compile', function() {
         expect(element.text()).toBe('3');
       });
     });
+
+    it('should throw multilink error when linking the same element more then once', function() {
+      var linker = $compile('<div>');
+      linker($rootScope).remove();
+      expect(function() {
+        linker($rootScope);
+      }).toThrowMinErr('$compile', 'multilink', 'This element has already been linked.');
+    });
   });
 
 
@@ -7971,6 +7979,22 @@ describe('$compile', function() {
         });
       });
 
+      it('should throw if a transcluded node is transcluded again', function() {
+        module(function() {
+          directive('trans', valueFn({
+            transclude: true,
+            link: function(scope, element, attr, ctrl, $transclude) {
+              $transclude();
+              $transclude();
+            }
+          }));
+        });
+        inject(function($rootScope, $compile) {
+          expect(function() {
+            $compile('<trans></trans>')($rootScope);
+          }).toThrowMinErr('$compile', 'multilink', 'This element has already been linked.');
+        });
+      });
 
       it('should not leak if two "element" transclusions are on the same element (with debug info)', function() {
         if (jQuery) {
@@ -8113,7 +8137,7 @@ describe('$compile', function() {
                 '</div>' +
               '</div>' +
             '</div>');
-          element = template($rootScope);
+          element = template($rootScope, noop);
           $rootScope.$digest();
           $timeout.flush();
           $httpBackend.flush();
@@ -8123,10 +8147,11 @@ describe('$compile', function() {
           $templateCache.removeAll();
           var destroyedScope = $rootScope.$new();
           destroyedScope.$destroy();
-          var clone = template(destroyedScope);
+          var clone = template(destroyedScope, noop);
           $rootScope.$digest();
           $timeout.flush();
           expect(linkFn).not.toHaveBeenCalled();
+          clone.remove();
         });
       });
 
