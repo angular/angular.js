@@ -2421,12 +2421,13 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           }
         }
 
-        // Initialize bindToController bindings
+        // Initialize controllers
         for (var name in elementControllers) {
           var controllerDirective = controllerDirectives[name];
           var controller = elementControllers[name];
           var bindings = controllerDirective.$$bindings.bindToController;
 
+          // Initialize bindToController bindings
           if (controller.identifier && bindings) {
             controller.bindingInfo =
               initializeDirectiveBindings(controllerScope, attrs, controller.instance, bindings, controllerDirective);
@@ -2439,11 +2440,14 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             // If the controller constructor has a return value, overwrite the instance
             // from setupControllers
             controller.instance = controllerResult;
-            $element.data('$' + controllerDirective.name + 'Controller', controllerResult);
             controller.bindingInfo.removeWatches && controller.bindingInfo.removeWatches();
             controller.bindingInfo =
               initializeDirectiveBindings(controllerScope, attrs, controller.instance, bindings, controllerDirective);
           }
+
+          // Store controllers on the $element data
+          // For transclude comment nodes this will be a noop and will be done at transclusion time
+          $element.data('$' + controllerDirective.name + 'Controller', controllerResult);
         }
 
         // Bind the required controllers to the controller, if `require` is an object and `bindToController` is truthy
@@ -2610,14 +2614,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           controller = attrs[directive.name];
         }
 
-        var controllerInstance = $controller(controller, locals, true, directive.controllerAs);
-
-        // For directives with element transclusion the element is a comment.
-        // In this case .data will not attach any data.
-        // Instead, we save the controllers for the element in a local hash and attach to .data
-        // later, once we have the actual element.
-        elementControllers[directive.name] = controllerInstance;
-        $element.data('$' + directive.name + 'Controller', controllerInstance.instance);
+        elementControllers[directive.name] = $controller(controller, locals, true, directive.controllerAs);
       }
       return elementControllers;
     }
