@@ -1175,6 +1175,7 @@ function $RootScopeProvider() {
       $emit: function(name, args) {
         var empty = [],
             namedListeners,
+            namedListenersCopy,
             scope = this,
             stopPropagation = false,
             event = {
@@ -1191,19 +1192,20 @@ function $RootScopeProvider() {
 
         do {
           namedListeners = scope.$$listeners[name] || empty;
+          namedListenersCopy = namedListeners.slice(0);
           event.currentScope = scope;
           for (i = 0, length = namedListeners.length; i < length; i++) {
 
             // if listeners were deregistered, defragment the array
-            if (!namedListeners[i]) {
-              namedListeners.splice(i, 1);
+            if (namedListeners.indexOf(namedListenersCopy[i]) === -1) {
+              namedListenersCopy.splice(i, 1);
               i--;
               length--;
               continue;
             }
             try {
               //allow all listeners attached to the current scope to run
-              namedListeners[i].apply(null, listenerArgs);
+              namedListenersCopy[i].apply(null, listenerArgs);
             } catch (e) {
               $exceptionHandler(e);
             }
