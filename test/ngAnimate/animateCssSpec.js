@@ -1264,7 +1264,6 @@ describe("ngAnimate $animateCss", function() {
           // Let's flush the remaining amout of time for the timeout timer to kick in
           $timeout.flush(500);
 
-          dump(element.attr('style'));
           expect(element.css(prefix + 'transition-duration')).toBeOneOf('', '0s');
           expect(element.css(prefix + 'transition-delay')).toBeOneOf('', '0s');
         }));
