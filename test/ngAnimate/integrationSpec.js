@@ -387,6 +387,45 @@ describe('ngAnimate integration tests', function() {
 
       dealoc(element);
     }));
+
+
+    it("should remove a class when the same class is currently being added by a joined class-based animation",
+      inject(function($animate, $animateCss, $rootScope, $document, $rootElement, $$rAF) {
+
+      ss.addRule('.hide', 'opacity: 0');
+      ss.addRule('.hide-add, .hide-remove', 'transition: 1s linear all');
+
+      jqLite($document[0].body).append($rootElement);
+      element = jqLite('<div></div>');
+      $rootElement.append(element);
+
+      // These animations will be joined together
+      $animate.addClass(element, 'red');
+      $animate.addClass(element, 'hide');
+      $rootScope.$digest();
+
+      expect(element).toHaveClass('red-add');
+      expect(element).toHaveClass('hide-add');
+
+      // When a digest has passed, but no $rAF has been issued yet, .hide hasn't been added to
+      // the element yet
+      $animate.removeClass(element, 'hide');
+      $rootScope.$digest();
+      $$rAF.flush();
+
+      expect(element).not.toHaveClass('hide-add hide-add-active');
+      expect(element).toHaveClass('hide-remove hide-remove-active');
+
+      //End the animation process
+      browserTrigger(element, 'transitionend',
+        { timeStamp: Date.now() + 1000, elapsedTime: 2 });
+      $animate.flush();
+
+      expect(element).not.toHaveClass('hide-add-active red-add-active');
+      expect(element).toHaveClass('red');
+      expect(element).not.toHaveClass('hide');
+    }));
+
   });
 
   describe('JS animations', function() {
