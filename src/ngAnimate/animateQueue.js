@@ -12,6 +12,14 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
     join: []
   };
 
+  function makeTruthyMapFromKeys(keys) {
+    var map = Object.create(null);
+    forEach(keys, function(key) {
+      map[key] = true;
+    });
+    return map;
+  }
+
   function isAllowed(ruleType, element, currentAnimation, previousAnimation) {
     return rules[ruleType].some(function(fn) {
       return fn(element, currentAnimation, previousAnimation);
@@ -59,11 +67,38 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
   });
 
   rules.cancel.push(function(element, newAnimation, currentAnimation) {
-    var nO = newAnimation.options;
-    var cO = currentAnimation.options;
+    var ONE_SPACE = ' ';
 
-    // if the exact same CSS class is added/removed then it's safe to cancel it
-    return (nO.addClass && nO.addClass === cO.removeClass) || (nO.removeClass && nO.removeClass === cO.addClass);
+    var nA = newAnimation.options.addClass;
+    var nR = newAnimation.options.removeClass;
+    var cA = currentAnimation.options.addClass;
+    var cR = currentAnimation.options.removeClass;
+
+    // early detection to save the global CPU shortage :)
+    if ((!isDefined(nA) && !isDefined(nR)) || (!isDefined(cA) && !isDefined(cR))) {
+      return false;
+    }
+
+    var cancelSomething = false;
+
+    cA = cA ? makeTruthyMapFromKeys(cA.split(ONE_SPACE)) : null;
+    cR = cR ? makeTruthyMapFromKeys(cR.split(ONE_SPACE)) : null;
+
+    if (cR && nA) {
+      cancelSomething = nA.split(ONE_SPACE).some(function(className) {
+        return cR[className];
+      });
+
+      if (cancelSomething) return true;
+    }
+
+    if (cA && nR) {
+      cancelSomething = nR.split(ONE_SPACE).some(function(className) {
+        return cA[className];
+      });
+    }
+
+    return cancelSomething;
   });
 
   this.$get = ['$$rAF', '$rootScope', '$rootElement', '$document', '$$HashMap',
