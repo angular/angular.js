@@ -243,6 +243,9 @@ function shallowClearAndCopy(src, dst) {
  *     If an interceptor object was provided, the promise will instead be resolved with the value
  *     returned by the interceptor.
  *
+ *   - `$new`: available only for collections (when `isArray: true`) A method for creating new
+ *     instances of the same resource object from which it originated the collection.
+ *
  *   - `$resolved`: `true` after first server interaction is completed (either with success or
  *      rejection), `false` before that. Knowing if the Resource has been resolved is useful in
  *      data-binding.
@@ -725,6 +728,9 @@ angular.module('ngResource', ['ng']).
               // - return the instance / collection
               value.$promise = promise;
               value.$resolved = false;
+              value.$new = function(data) {
+                return new Resource(data);
+              };
               if (cancellable) value.$cancelRequest = timeoutDeferred.resolve;
 
               return value;
