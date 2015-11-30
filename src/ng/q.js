@@ -354,8 +354,8 @@ function qFactory(nextTick, exceptionHandler) {
       var that = this;
       var done = false;
       try {
-        if ((isObject(val) || isFunction(val))) then = val && val.then;
-        if (isFunction(then)) {
+        if(isPromiseLike(val)) {
+          then = val && val.then
           this.promise.$$state.status = -1;
           then.call(val, resolvePromise, rejectPromise, simpleBind(this, this.notify));
         } else {
