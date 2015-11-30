@@ -2475,6 +2475,7 @@ if (window.jasmine || window.mocha) {
 
     currentSpec.$injector = null;
     currentSpec.$modules = null;
+    currentSpec.$providerInjector = null;
     currentSpec = null;
 
     if (injector) {
