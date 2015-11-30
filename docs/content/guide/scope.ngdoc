@@ -419,4 +419,4 @@ user enters text into the text field.
         which in turn updates the DOM.
      6. Angular exits the execution context, which in turn exits the `keydown` event and with it
         the JavaScript execution context.
-     7. The browser re-renders the view with update text.
+     7. The browser re-renders the view with the updated text.
