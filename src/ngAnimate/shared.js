@@ -67,10 +67,6 @@ var ANIMATION_DURATION_PROP = ANIMATION_PROP + DURATION_KEY;
 var TRANSITION_DELAY_PROP = TRANSITION_PROP + DELAY_KEY;
 var TRANSITION_DURATION_PROP = TRANSITION_PROP + DURATION_KEY;
 
-var isPromiseLike = function(p) {
-  return p && p.then ? true : false;
-};
-
 function assertArg(arg, name, reason) {
   if (!arg) {
     throw ngMinErr('areq', "Argument '{0}' is {1}", (name || '?'), (reason || "required"));

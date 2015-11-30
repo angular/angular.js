@@ -7,6 +7,35 @@ describe('angular', function() {
     dealoc(element);
   });
 
+  describe('isPromiseLike', function() {
+    it('should work with undefined', function() {
+      expect(isPromiseLike(undefined)).toBeFalsy();
+    });
+
+    it('should work with functions', function() {
+      var a = function() {};
+      expect(isPromiseLike(a)).toBeFalsy();
+      a.then = 'not a function';
+      expect(isPromiseLike(a)).toBeFalsy();
+      a.then = function() {};
+      expect(isPromiseLike(a)).toBeTruthy();
+    });
+
+    it('should work with objects', function() {
+      var a = {};
+      expect(isPromiseLike(a)).toBeFalsy();
+      a.then = 'not a function';
+      expect(isPromiseLike(a)).toBeFalsy();
+      a.then = function() {};
+      expect(isPromiseLike(a)).toBeTruthy();
+    });
+
+    it('should return false for non-promise', function() {
+      var a = "Just a string";
+      expect(isPromiseLike(a)).toBeFalsy();
+    });
+  });
+
   describe('case', function() {
     it('should change case', function() {
       expect(lowercase('ABC90')).toEqual('abc90');

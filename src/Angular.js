@@ -674,7 +674,11 @@ function isBoolean(value) {
 
 
 function isPromiseLike(obj) {
-  return obj && isFunction(obj.then);
+  var then;
+  if (isObject(obj) || isFunction(obj)) {
+    then = obj && obj.then;
+  }
+  return isFunction(then) ? true : false;
 }
 
 
