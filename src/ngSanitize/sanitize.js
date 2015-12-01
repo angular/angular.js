@@ -145,6 +145,7 @@ function $SanitizeProvider() {
   this.$get = ['$$sanitizeUri', function($$sanitizeUri) {
     if (svgEnabled) {
       angular.extend(validElements, svgElements);
+      angular.extend(validAttrs, svgAttrs);
     }
     return function(html) {
       var buf = [];
