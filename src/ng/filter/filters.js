@@ -183,25 +183,31 @@ function formatNumber(number, pattern, groupSep, decimalSep, fractionSize) {
     var whole = fraction[0];
     fraction = fraction[1] || '';
 
-    var i, pos = 0,
-        lgroup = pattern.lgSize,
-        group = pattern.gSize;
+    // format whole part.
+    var gMinSize = pattern.gMinSize || pattern.gSize;
+    if (whole.length < gMinSize) {
+      formatedText += whole;
+    } else {
+      var i, pos = 0,
+          lgroup = pattern.lgSize,
+          group = pattern.gSize;
 
-    if (whole.length >= (lgroup + group)) {
-      pos = whole.length - lgroup;
-      for (i = 0; i < pos; i++) {
-        if ((pos - i) % group === 0 && i !== 0) {
+      if (whole.length >= (lgroup + group)) {
+        pos = whole.length - lgroup;
+        for (i = 0; i < pos; i++) {
+          if ((pos - i) % group === 0 && i !== 0) {
+            formatedText += groupSep;
+          }
+          formatedText += whole.charAt(i);
+        }
+      }
+
+      for (i = pos; i < whole.length; i++) {
+        if ((whole.length - i) % lgroup === 0 && i !== 0) {
           formatedText += groupSep;
         }
         formatedText += whole.charAt(i);
       }
-    }
-
-    for (i = pos; i < whole.length; i++) {
-      if ((whole.length - i) % lgroup === 0 && i !== 0) {
-        formatedText += groupSep;
-      }
-      formatedText += whole.charAt(i);
     }
 
     // format fraction part.
