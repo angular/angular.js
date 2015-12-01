@@ -834,47 +834,70 @@ describe("animations", function() {
         expect(capturedAnimation[0]).toBe(element);
       }));
 
-      it('should skip all pre-digest queued child animations when a parent structural animation is triggered',
-        inject(function($rootScope, $rootElement, $animate) {
+      describe('when a parent structural animation is triggered:', function() {
 
-        parent.append(element);
+        it('should skip all pre-digest queued child animations',
+          inject(function($rootScope, $rootElement, $animate) {
 
-        $animate.addClass(element, 'rumlow');
-        $animate.move(parent, null, parent2);
+          parent.append(element);
 
-        expect(capturedAnimation).toBeFalsy();
-        expect(capturedAnimationHistory.length).toBe(0);
-        $rootScope.$digest();
+          $animate.addClass(element, 'rumlow');
+          $animate.move(parent, null, parent2);
 
-        expect(capturedAnimation[0]).toBe(parent);
-        expect(capturedAnimationHistory.length).toBe(1);
-      }));
+          expect(capturedAnimation).toBeFalsy();
+          expect(capturedAnimationHistory.length).toBe(0);
+          $rootScope.$digest();
 
-      it('should end all ongoing post-digest child animations when a parent structural animation is triggered',
-        inject(function($rootScope, $rootElement, $animate) {
+          expect(capturedAnimation[0]).toBe(parent);
+          expect(capturedAnimationHistory.length).toBe(1);
+        }));
 
-        parent.append(element);
+        it('should end all ongoing post-digest child animations',
+          inject(function($rootScope, $rootElement, $animate) {
 
-        $animate.addClass(element, 'rumlow');
-        var isCancelled = false;
-        overriddenAnimationRunner = extend(defaultFakeAnimationRunner, {
-          end: function() {
-            isCancelled = true;
-          }
-        });
+          parent.append(element);
 
-        $rootScope.$digest();
-        expect(capturedAnimation[0]).toBe(element);
-        expect(isCancelled).toBe(false);
+          $animate.addClass(element, 'rumlow');
+          var isCancelled = false;
+          overriddenAnimationRunner = extend(defaultFakeAnimationRunner, {
+            end: function() {
+              isCancelled = true;
+            }
+          });
 
-        // restore the default
-        overriddenAnimationRunner = defaultFakeAnimationRunner;
-        $animate.move(parent, null, parent2);
-        $rootScope.$digest();
-        expect(capturedAnimation[0]).toBe(parent);
+          $rootScope.$digest();
+          expect(capturedAnimation[0]).toBe(element);
+          expect(isCancelled).toBe(false);
 
-        expect(isCancelled).toBe(true);
-      }));
+          // restore the default
+          overriddenAnimationRunner = defaultFakeAnimationRunner;
+          $animate.move(parent, null, parent2);
+          $rootScope.$digest();
+          expect(capturedAnimation[0]).toBe(parent);
+
+          expect(isCancelled).toBe(true);
+        }));
+
+        it('should ignore children that have animation data-attributes but no animation data',
+          inject(function($rootScope, $rootElement, $animate) {
+
+          parent.append(element);
+
+          $animate.addClass(element, 'rumlow');
+
+          $rootScope.$digest();
+          expect(capturedAnimation[0]).toBe(element);
+
+          // If an element is cloned during an animation, the clone has the data-attributes indicating
+          // an animation
+          var clone = element.clone();
+          parent.append(clone);
+
+          $animate.move(parent, null, parent2);
+          $rootScope.$digest();
+          expect(capturedAnimation[0]).toBe(parent);
+        }));
+      });
 
       it('should not end any child animations if a parent class-based animation is issued',
         inject(function($rootScope, $rootElement, $animate) {
