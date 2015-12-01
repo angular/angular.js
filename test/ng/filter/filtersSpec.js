@@ -92,6 +92,25 @@ describe('filters', function() {
       expect(formatNumber(-0.0001, pattern, ',', '.', 3)).toBe('0.000');
       expect(formatNumber(-0.0000001, pattern, ',', '.', 6)).toBe('0.000000');
     });
+
+    it('should work with numbers that are close to the limit for exponent notation', function() {
+      // previously, numbers that n * (10 ^ fractionSize) > localLimitMax
+      // were ending up with a second exponent in them, then coercing to
+      // NaN when formatNumber rounded them with the safe rounding
+      // function.
+
+      var localLimitMax = 999999999999999900000,
+          localLimitMin = 10000000000000000000,
+          exampleNumber = 444444444400000000000;
+
+      expect(formatNumber(localLimitMax, pattern, ',', '.', 2))
+        .toBe('999,999,999,999,999,900,000.00');
+      expect(formatNumber(localLimitMin, pattern, ',', '.', 2))
+        .toBe('10,000,000,000,000,000,000.00');
+      expect(formatNumber(exampleNumber, pattern, ',', '.', 2))
+        .toBe('444,444,444,400,000,000,000.00');
+
+    });
   });
 
   describe('currency', function() {
