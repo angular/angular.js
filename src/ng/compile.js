@@ -2152,7 +2152,9 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           transcludeFn = controllersBoundTransclude;
           transcludeFn.$$boundTransclude = boundTranscludeFn;
           // expose the slots on the `$transclude` function
-          transcludeFn.$slots = boundTranscludeFn.$$slots;
+          transcludeFn.isSlotFilled = function(slotName) {
+            return !!boundTranscludeFn.$$slots[slotName];
+          };
         }
 
         if (controllerDirectives) {
