@@ -11,8 +11,9 @@
  * You can specify that you want to insert a named transclusion slot, instead of the default slot, by providing the slot name
  * as the value of the `ng-transclude` or `ng-transclude-slot` attribute.
  *
- * Any existing content of this element will be removed before the transcluded content is inserted,
- * but only if the transcluded content is not empty.
+ * For required slots and the default transclusion, existing content will be removed before the transcluded content is inserted.
+ *
+ * For optional slots, existing content is left in place, if the slot was not filled.
  *
  * @element ANY
  *
@@ -118,11 +119,13 @@
             restrict: 'E',
             transclude: {
               'paneTitle': '?title',
-              'paneBody': 'body'
+              'paneBody': 'body',
+              'paneFooter': '?footer'
             },
             template: '<div style="border: 1px solid black;">' +
                         '<div ng-transclude="title" style="background-color: gray"></div>' +
                         '<div ng-transclude="body"></div>' +
+                        '<div ng-transclude="footer" style="background-color: gray">Default Footer</div>' +
                       '</div>'
           };
       })
@@ -171,7 +174,10 @@ var ngTranscludeDirective = ngDirective({
        startingTag($element));
     }
 
-    $transclude(ngTranscludeCloneAttachFn, null, $attrs.ngTransclude || $attrs.ngTranscludeSlot);
+    // If there is no slot name defined or the slot name is not optional
+    // then transclude the slot
+    var slotName = $attrs.ngTransclude || $attrs.ngTranscludeSlot;
+    $transclude(ngTranscludeCloneAttachFn, null, slotName);
   }
 });
 
