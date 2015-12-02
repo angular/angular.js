@@ -586,6 +586,7 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
             parentHost = parentElement.data(NG_ANIMATE_PIN_DATA);
             if (parentHost) {
               parentElement = parentHost;
+              rootElementDetected = true;
             }
           }
         }
