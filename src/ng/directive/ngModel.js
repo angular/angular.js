@@ -165,13 +165,13 @@ is set to `true`. The parse error is stored in `ngModel.$error.parse`.
               // Specify how UI should be updated
               ngModel.$render = function() {
                 element.html($sce.getTrustedHtml(ngModel.$viewValue || ''));
+                read(); // initialize
               };
 
               // Listen for change events to enable binding
               element.on('blur keyup change', function() {
                 scope.$evalAsync(read);
               });
-              read(); // initialize
 
               // Write data to the model
               function read() {
