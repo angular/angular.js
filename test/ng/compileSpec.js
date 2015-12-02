@@ -7714,6 +7714,36 @@ describe('$compile', function() {
       });
     });
 
+
+    it('should include non-element nodes in the default transclusion', function() {
+      module(function() {
+        directive('minionComponent', function() {
+          return {
+            restrict: 'E',
+            scope: {},
+            transclude: {
+              boss: 'bossSlot'
+            },
+            template:
+              '<div class="other" ng-transclude></div>'
+          };
+        });
+      });
+      inject(function($rootScope, $compile) {
+        element = $compile(
+          '<minion-component>' +
+            'text1' +
+            '<span>stuart</span>' +
+            '<span>bob</span>' +
+            '<boss>gru</boss>' +
+            'text2' +
+            '<span>kevin</span>' +
+          '</minion-component>')($rootScope);
+        $rootScope.$apply();
+        expect(element.text()).toEqual('text1stuartbobtext2kevin');
+      });
+    });
+
     it('should transclude elements to an `ng-transclude` with a matching transclusion slot name', function() {
       module(function() {
         directive('minionComponent', function() {
