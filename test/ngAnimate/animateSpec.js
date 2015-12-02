@@ -1448,28 +1448,46 @@ describe("animations", function() {
     }));
 
 
-    it('should allow an element to be pinned elsewhere and still be available in animations',
-      inject(function($animate, $compile, $document, $rootElement, $rootScope) {
+    they('should animate an element inside a pinned element that is the $prop element',
+      ['same', 'parent', 'grandparent'],
+      function(elementRelation) {
+        inject(function($animate, $compile, $document, $rootElement, $rootScope) {
 
-      var innerParent = jqLite('<div></div>');
-      jqLite($document[0].body).append(innerParent);
-      innerParent.append($rootElement);
+        var pinElement, animateElement;
 
-      var element = jqLite('<div></div>');
-      jqLite($document[0].body).append(element);
+        var innerParent = jqLite('<div></div>');
+        jqLite($document[0].body).append(innerParent);
+        innerParent.append($rootElement);
 
-      $animate.addClass(element, 'red');
-      $rootScope.$digest();
-      expect(capturedAnimation).toBeFalsy();
+        switch (elementRelation) {
+          case 'same':
+            pinElement = jqLite('<div id="animate"></div>');
+            break;
+          case 'parent':
+            pinElement = jqLite('<div><div id="animate"></div></div>');
+            break;
+          case 'grandparent':
+            pinElement = jqLite('<div><div><div id="animate"></div></div></div>');
+            break;
+        }
 
-      $animate.pin(element, $rootElement);
+        jqLite($document[0].body).append(pinElement);
+        animateElement = jqLite($document[0].getElementById('animate'));
 
-      $animate.addClass(element, 'blue');
-      $rootScope.$digest();
-      expect(capturedAnimation).toBeTruthy();
+        $animate.addClass(animateElement, 'red');
+        $rootScope.$digest();
+        expect(capturedAnimation).toBeFalsy();
 
-      dealoc(element);
-    }));
+        // Pin the element to the app root to enable animations
+        $animate.pin(pinElement, $rootElement);
+
+        $animate.addClass(animateElement, 'blue');
+        $rootScope.$digest();
+        expect(capturedAnimation).toBeTruthy();
+
+        dealoc(pinElement);
+      });
+    });
 
     it('should adhere to the disabled state of the hosted parent when an element is pinned',
       inject(function($animate, $compile, $document, $rootElement, $rootScope) {
