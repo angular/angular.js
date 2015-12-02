@@ -35,7 +35,9 @@ Angular expressions are like JavaScript expressions with the following differenc
   * **No RegExp Creation With Literal Notation:** You cannot create regular expressions
     in an Angular expression.
 
-  * **No Comma And Void Operators:** You cannot use `,` or `void` in an Angular expression.
+  * **No Object Creation With New Operator:** You cannot use `new` operator in an Angular expression.
+
+  * **No Comma And Void Operators:** You cannot use `,` or `void` operators in an Angular expression.
 
   * **Filters:** You can use {@link guide/filter filters} within expressions to format data before
     displaying it.
