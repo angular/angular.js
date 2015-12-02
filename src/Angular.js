@@ -1,6 +1,6 @@
 'use strict';
 
-/* We need to tell jshint what variables are being exported */
+/* We need to tell JSHint what variables are being exported */
 /* global angular: true,
   msie: true,
   jqLite: true,
@@ -146,13 +146,13 @@ var uppercase = function(string) {return isString(string) ? string.toUpperCase()
 
 
 var manualLowercase = function(s) {
-  /* jshint bitwise: false */
+  /* JSHint bitwise: false */
   return isString(s)
       ? s.replace(/[A-Z]/g, function(ch) {return String.fromCharCode(ch.charCodeAt(0) | 32);})
       : s;
 };
 var manualUppercase = function(s) {
-  /* jshint bitwise: false */
+  /* JSHint bitwise: false */
   return isString(s)
       ? s.replace(/[a-z]/g, function(ch) {return String.fromCharCode(ch.charCodeAt(0) & ~32);})
       : s;
@@ -1032,9 +1032,9 @@ var csp = function() {
 
   function noUnsafeEval() {
     try {
-      /* jshint -W031, -W054 */
+      /* JSHint -W031, -W054 */
       new Function('');
-      /* jshint +W031, +W054 */
+      /* JSHint +W031, +W054 */
       return false;
     } catch (e) {
       return true;
@@ -1104,7 +1104,7 @@ function sliceArgs(args, startIndex) {
 }
 
 
-/* jshint -W101 */
+/* JSHint -W101 */
 /**
  * @ngdoc function
  * @name angular.bind
@@ -1122,7 +1122,7 @@ function sliceArgs(args, startIndex) {
  * @param {...*} args Optional arguments to be prebound to the `fn` function call.
  * @returns {function()} Function that wraps the `fn` with all the specified bindings.
  */
-/* jshint +W101 */
+/* JSHint +W101 */
 function bind(self, fn) {
   var curryArgs = arguments.length > 2 ? sliceArgs(arguments, 2) : [];
   if (isFunction(fn) && !(fn instanceof RegExp)) {
