@@ -2480,6 +2480,7 @@ if (window.jasmine || window.mocha) {
 
     if (injector) {
       injector.get('$rootElement').off();
+      injector.get('$rootScope').$destroy();
     }
 
     // clean up jquery's fragment cache
