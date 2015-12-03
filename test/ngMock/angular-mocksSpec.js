@@ -1650,6 +1650,25 @@ describe('ngMock', function() {
   });
 
 
+  describe('$rootScope', function() {
+    var destroyed = false;
+    var oldRootScope;
+
+    it('should destroy $rootScope after each test', inject(function($rootScope) {
+      $rootScope.$on('$destroy', function() {
+        destroyed = true;
+      });
+      oldRootScope = $rootScope;
+    }));
+
+    it('should have destroyed the $rootScope from the previous test', inject(function($rootScope) {
+      expect(destroyed).toBe(true);
+      expect($rootScope).not.toBe(oldRootScope);
+      expect(oldRootScope.$$destroyed).toBe(true);
+    }));
+  });
+
+
   describe('$rootScopeDecorator', function() {
 
     describe('$countChildScopes', function() {
