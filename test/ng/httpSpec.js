@@ -302,6 +302,13 @@ describe('$http', function() {
       }).toThrowMinErr('$http','badreq', 'Http request configuration must be an object.  Received: /url');
     });
 
+    it('should throw error if the request configuration url is not a string', function() {
+      expect(function() {
+          $http({url: false});
+      }).toThrowMinErr('$http','badreq', 'Http request configuration url must be a string.  Received: false');
+    });
+
+
     it('should send GET requests if no method specified', function() {
       $httpBackend.expect('GET', '/url').respond('');
       $http({url: '/url'});
