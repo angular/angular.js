@@ -2083,7 +2083,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
           var controller = directive.controller;
           if (controller == '@') {
-            controller = attrs[directive.name];
+            controller = $interpolate(attrs[directive.name])(locals.$scope);
           }
 
           var controllerInstance = $controller(controller, locals, true, directive.controllerAs);
