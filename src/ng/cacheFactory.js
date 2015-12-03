@@ -106,9 +106,9 @@ function $CacheFactoryProvider() {
        * @description
        * A cache object used to store and retrieve data, primarily used by
        * {@link $http $http} and the {@link ng.directive:script script} directive to cache
-       * templates and other data. Do not confuse this cache object with the browser cache. 
-       * It is a standard Javascript heap memory object. Hence, refreshing the page will also 
-       * reinitialize this cache object's values. 
+       * templates and other data. Do not confuse this cache object with the browser cache.
+       * It is a standard Javascript heap memory object. Hence, refreshing the page will also
+       * reinitialize this cache object's values.
        *
        * ```js
        *  angular.module('superCache')
