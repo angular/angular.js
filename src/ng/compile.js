@@ -289,7 +289,7 @@
  * #### `template`
  * HTML markup that may:
  * * Replace the contents of the directive's element (default).
- * * Replace the directive's element itself (if `replace` is true - DEPRECATED).
+ * * Replace the directive's element itself (if `replace` is true).
  * * Wrap the contents of the directive's element (if `transclude` is true).
  *
  * Value may be:
@@ -318,7 +318,7 @@
  * $sce#getTrustedResourceUrl $sce.getTrustedResourceUrl}.
  *
  *
- * #### `replace` ([*DEPRECATED*!], will be removed in next major release - i.e. v2.0)
+ * #### `replace`
  * specify what the template should replace. Defaults to `false`.
  *
  * * `true` - the template will replace the directive's element.
