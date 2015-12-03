@@ -29,6 +29,7 @@
     "REMOVE_CLASS_SUFFIX": false,
     "EVENT_CLASS_PREFIX": false,
     "ACTIVE_CLASS_SUFFIX": false,
+    "PREPARE_CLASS_SUFFIX": false,
 
     "TRANSITION_DURATION_PROP": false,
     "TRANSITION_DELAY_PROP": false,

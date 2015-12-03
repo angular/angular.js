@@ -513,6 +513,25 @@ describe('$$animation', function() {
         expect(captureLog[1].element).toBe(child);
         expect(captureLog[2].element).toBe(grandchild);
       }));
+
+
+      they('should add the preparation class before the $prop-animation is pushed to the queue',
+        ['enter', 'leave', 'move'], function(animationType) {
+        inject(function($$animation, $rootScope, $animate) {
+          var runner = $$animation(element, animationType);
+          expect(element).toHaveClass('ng-' + animationType + '-prepare');
+        });
+      });
+
+
+      they('should remove the preparation class before the $prop-animation starts',
+        ['enter', 'leave', 'move'], function(animationType) {
+        inject(function($$animation, $rootScope, $$rAF) {
+          var runner = $$animation(element, animationType);
+          $rootScope.$digest();
+          expect(element).not.toHaveClass('ng-' + animationType + '-prepare');
+        });
+      });
     });
 
     describe("grouped", function() {

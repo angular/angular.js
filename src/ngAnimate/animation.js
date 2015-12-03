@@ -135,6 +135,12 @@ var $$AnimationProvider = ['$animateProvider', function($animateProvider) {
         options.tempClasses = null;
       }
 
+      var prepareClassName;
+      if (isStructural) {
+        prepareClassName = 'ng-' + event + PREPARE_CLASS_SUFFIX;
+        $$jqLite.addClass(element, prepareClassName);
+      }
+
       animationQueue.push({
         // this data is used by the postDigest code and passed into
         // the driver step function
@@ -356,6 +362,10 @@ var $$AnimationProvider = ['$animateProvider', function($animateProvider) {
         element.addClass(NG_ANIMATE_CLASSNAME);
         if (tempClasses) {
           $$jqLite.addClass(element, tempClasses);
+        }
+        if (prepareClassName) {
+          $$jqLite.removeClass(element, prepareClassName);
+          prepareClassName = null;
         }
       }
 
