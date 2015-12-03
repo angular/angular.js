@@ -387,6 +387,34 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
           selectValueMap[selectValue] = optionItem;
         }
 
+        /**
+         *
+         * @returns {boolean}
+         */
+        function isSelectedOptionValid() {
+
+          var selectedValue = selectElement.val();
+
+          if (!selectedValue) {
+            return false;
+          }
+
+          // in case  select is multiple then check
+          // if one of the selected values matched with the options  return true
+          // or return false if no value match
+          if (isArray(selectedValue)) {
+            for (var i = 0, length = selectedValue.length; i < length; i++) {
+              if (selectValueMap[selectedValue[i]]) {
+                return true;
+              }
+            }
+            return false;
+          }
+
+          return !!selectValueMap[selectedValue];
+
+        }
+
         return {
           items: optionItems,
           selectValueMap: selectValueMap,
@@ -397,7 +425,9 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
             // If the viewValue could be an object that may be mutated by the application,
             // we need to make a copy and not return the reference to the value on the option.
             return trackBy ? angular.copy(option.viewValue) : option.viewValue;
-          }
+          },
+
+          isSelectedOptionValid: isSelectedOptionValid
         };
       }
     };
@@ -552,42 +582,11 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
 
         }
       }
-
-      function isViewOptionValid(viewValue) {
-
-        var isValidOption = false;
-        var viewOptions = [];
-        // Get all option and add them to viewOptions array
-        angular.forEach(options.items, function(item) {
-            viewOptions.push(options.getViewValueFromOption(item));
-        });
-
-        // In case of multiple view is an array so validate all view values
-        // if one of them match set isValidOption to true
-        if (multiple) {
-            for (var i = 0, length = viewValue.length; i < length; i++) {
-                if (viewOptions.indexOf(viewValue[i]) > -1) {
-                    isValidOption = true;
-                    break;
-                }
-            }
-        } else {
-            if (viewOptions.indexOf(viewValue) > -1) {
-                isValidOption = true;
-            }
-        }
-
-        return isValidOption;
-      }
-
       // Copy the implementation of $isEmpty function to be used in overwritten one
       var $$isEmpty = ngModelCtrl.$isEmpty;
 
       ngModelCtrl.$isEmpty = function(value) {
-        if ($$isEmpty(value)) {
-          return true;
-        }
-        return !isViewOptionValid(value);
+        return $$isEmpty(value) || !options.isSelectedOptionValid();
       };
 
       if (providedEmptyOption) {
@@ -762,7 +761,7 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
         ngModelCtrl.$render();
 
         // Check to see if the value has changed due to the update to the options
-        if (!ngModelCtrl.$isEmpty(previousValue)) {
+        if (!$$isEmpty(previousValue)) {
           var nextValue = selectCtrl.readValue();
           var isNotPrimitive = ngOptions.trackBy || multiple;
           if (isNotPrimitive ? !equals(previousValue, nextValue) : previousValue !== nextValue) {
