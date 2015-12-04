@@ -237,7 +237,8 @@
  *          as those elements need to created and cloned in a special way when they are defined outside their
  *          usual containers (e.g. like `<svg>`).
  *        * See also the `directive.templateNamespace` property.
- *
+ *    The `$transclude` function has a property called `$slots`, which is a hash of slot names to slot transclusion
+ *    functions. If a slot was declared but not filled its value on the `$slots` object will be `null`.
  *
  * #### `require`
  * Require another directive and inject its controller as the fourth argument to the linking function. The
@@ -337,14 +338,22 @@
  * The contents are compiled and provided to the directive as a **transclusion function**. See the
  * {@link $compile#transclusion Transclusion} section below.
  *
- * There are two kinds of transclusion depending upon whether you want to transclude just the contents of the
- * directive's element or the entire element:
+ * There are three kinds of transclusion depending upon whether you want to transclude just the contents of the
+ * directive's element, the entire element or parts of the element:
  *
  * * `true` - transclude the content (i.e. the child nodes) of the directive's element.
  * * `'element'` - transclude the whole of the directive's element including any directives on this
  *   element that defined at a lower priority than this directive. When used, the `template`
  *   property is ignored.
+ * * **`{...}` (an object hash):** - map elements of the content onto transclusion "slots" in the template.
+ *   See {@link ngTransclude} for more information.
  *
+ * Mult-slot transclusion is declared by providing an object for the `transclude` property.
+ * This object is a map where the keys are the canonical name of HTML elements to match in the transcluded HTML,
+ * and the values are the names of the slots. If the name is prefixed with a `?` then that slot is optional.
+ *
+ * The slots are made available as `$transclude.$slots` on the transclude function that is passed to the
+ * linking functions as the fifth parameter, and can be injected into the directive controller.
  *
  * #### `compile`
  *
@@ -1511,7 +1520,11 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       // so that they are available inside the `controllersBoundTransclude` function
       var boundSlots = boundTranscludeFn.$$slots = createMap();
       for (var slotName in transcludeFn.$$slots) {
-        boundSlots[slotName] = createBoundTranscludeFn(scope, transcludeFn.$$slots[slotName], previousBoundTranscludeFn);
+        if (transcludeFn.$$slots[slotName]) {
+          boundSlots[slotName] = createBoundTranscludeFn(scope, transcludeFn.$$slots[slotName], previousBoundTranscludeFn);
+        } else {
+          boundSlots[slotName] = null;
+        }
       }
 
       return boundTranscludeFn;
@@ -1855,22 +1868,31 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           } else {
 
             var slots = createMap();
+
             $template = jqLite(jqLiteClone(compileNode)).contents();
 
             if (isObject(directiveValue)) {
 
-              // We have transclusion slots - collect them up and compile them and store their
-              // transclusion functions
+              // We have transclusion slots,
+              // collect them up, compile them and store their transclusion functions
               $template = [];
-              var slotNames = createMap();
+
+              var slotMap = createMap();
               var filledSlots = createMap();
 
-              // Parse the slot names: if they start with a ? then they are optional
-              forEach(directiveValue, function(slotName, key) {
-                var optional = (slotName.charAt(0) === '?');
-                slotName = optional ? slotName.substring(1) : slotName;
-                slotNames[key] = slotName;
-                slots[slotName] = [];
+              // Parse the element selectors
+              forEach(directiveValue, function(elementSelector, slotName) {
+                // If an element selector starts with a ? then it is optional
+                var optional = (elementSelector.charAt(0) === '?');
+                elementSelector = optional ? elementSelector.substring(1) : elementSelector;
+
+                slotMap[elementSelector] = slotName;
+
+                // We explicitly assign `null` since this implies that a slot was defined but not filled.
+                // Later when calling boundTransclusion functions with a slot name we only error if the
+                // slot is `undefined`
+                slots[slotName] = null;
+
                 // filledSlots contains `true` for all slots that are either optional or have been
                 // filled. This is used to check that we have not missed any required slots
                 filledSlots[slotName] = optional;
@@ -1878,9 +1900,10 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
               // Add the matching elements into their slot
               forEach($compileNode.contents(), function(node) {
-                var slotName = slotNames[directiveNormalize(nodeName_(node))];
+                var slotName = slotMap[nodeName_(node)];
                 if (slotName) {
                   filledSlots[slotName] = true;
+                  slots[slotName] = slots[slotName] || [];
                   slots[slotName].push(node);
                 } else {
                   $template.push(node);
@@ -1894,9 +1917,12 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                 }
               });
 
-              forEach(Object.keys(slots), function(slotName) {
-                slots[slotName] = compilationGenerator(mightHaveMultipleTransclusionError, slots[slotName], transcludeFn);
-              });
+              for (var slotName in slots) {
+                if (slots[slotName]) {
+                  // Only define a transclusion function if the slot was filled
+                  slots[slotName] = compilationGenerator(mightHaveMultipleTransclusionError, slots[slotName], transcludeFn);
+                }
+              }
             }
 
             $compileNode.empty(); // clear contents
@@ -2125,6 +2151,8 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           // is later passed as `parentBoundTranscludeFn` to `publicLinkFn`
           transcludeFn = controllersBoundTransclude;
           transcludeFn.$$boundTransclude = boundTranscludeFn;
+          // expose the slots on the `$transclude` function
+          transcludeFn.$slots = boundTranscludeFn.$$slots;
         }
 
         if (controllerDirectives) {
@@ -2221,16 +2249,22 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             futureParentElement = hasElementTranscludeDirective ? $element.parent() : $element;
           }
           if (slotName) {
+            // slotTranscludeFn can be one of three things:
+            //  * a transclude function - a filled slot
+            //  * `null` - an optional slot that was not filled
+            //  * `undefined` - a slot that was not declared (i.e. invalid)
             var slotTranscludeFn = boundTranscludeFn.$$slots[slotName];
-            if (!slotTranscludeFn) {
+            if (slotTranscludeFn) {
+              return slotTranscludeFn(scope, cloneAttachFn, transcludeControllers, futureParentElement, scopeToChild);
+            } else if (isUndefined(slotTranscludeFn)) {
               throw $compileMinErr('noslot',
                'No parent directive that requires a transclusion with slot name "{0}". ' +
                'Element: {1}',
                slotName, startingTag($element));
             }
-            return slotTranscludeFn(scope, cloneAttachFn, transcludeControllers, futureParentElement, scopeToChild);
+          } else {
+            return boundTranscludeFn(scope, cloneAttachFn, transcludeControllers, futureParentElement, scopeToChild);
           }
-          return boundTranscludeFn(scope, cloneAttachFn, transcludeControllers, futureParentElement, scopeToChild);
         }
       }
     }
