@@ -226,10 +226,10 @@
  * * `$element` - Current element
  * * `$attrs` - Current attributes object for the element
  * * `$transclude` - A transclude linking function pre-bound to the correct transclusion scope:
- *   `function([scope], cloneLinkingFn, futureParentElement)`.
- *    * `scope`: optional argument to override the scope.
- *    * `cloneLinkingFn`: optional argument to create clones of the original transcluded content.
- *    * `futureParentElement`:
+ *   `function([scope], cloneLinkingFn, futureParentElement, slotName)`:
+ *    * `scope`: (optional) override the scope.
+ *    * `cloneLinkingFn`: (optional) argument to create clones of the original transcluded content.
+ *    * `futureParentElement` (optional):
  *        * defines the parent to which the `cloneLinkingFn` will add the cloned elements.
  *        * default: `$element.parent()` resp. `$element` for `transclude:'element'` resp. `transclude:true`.
  *        * only needed for transcludes that are allowed to contain non html elements (e.g. SVG elements)
@@ -237,8 +237,10 @@
  *          as those elements need to created and cloned in a special way when they are defined outside their
  *          usual containers (e.g. like `<svg>`).
  *        * See also the `directive.templateNamespace` property.
- *    The `$transclude` function has a property called `$slots`, which is a hash of slot names to slot transclusion
- *    functions. If a slot was declared but not filled its value on the `$slots` object will be `null`.
+ *    * `slotName`: (optional) the name of the slot to transclude. If falsy (e.g. `null`, `undefined` or `''`)
+ *      then the default translusion is provided.
+ *    The `$transclude` function also has a method on it, `$transclude.isSlotFilled(slotName)`, which returns
+ *    `true` if the specified slot contains content (i.e. one or more DOM nodes).
  *
  * #### `require`
  * Require another directive and inject its controller as the fourth argument to the linking function. The
@@ -338,22 +340,6 @@
  * The contents are compiled and provided to the directive as a **transclusion function**. See the
  * {@link $compile#transclusion Transclusion} section below.
  *
- * There are three kinds of transclusion depending upon whether you want to transclude just the contents of the
- * directive's element, the entire element or parts of the element:
- *
- * * `true` - transclude the content (i.e. the child nodes) of the directive's element.
- * * `'element'` - transclude the whole of the directive's element including any directives on this
- *   element that defined at a lower priority than this directive. When used, the `template`
- *   property is ignored.
- * * **`{...}` (an object hash):** - map elements of the content onto transclusion "slots" in the template.
- *   See {@link ngTransclude} for more information.
- *
- * Mult-slot transclusion is declared by providing an object for the `transclude` property.
- * This object is a map where the keys are the canonical name of HTML elements to match in the transcluded HTML,
- * and the values are the names of the slots. If the name is prefixed with a `?` then that slot is optional.
- *
- * The slots are made available as `$transclude.$slots` on the transclude function that is passed to the
- * linking functions as the fifth parameter, and can be injected into the directive controller.
  *
  * #### `compile`
  *
@@ -482,6 +468,30 @@
  * DOM fragment that is being compiled. See {@link guide/unit-testing#testing-transclusion-directives
  * Testing Transclusion Directives}.
  * </div>
+ *
+ * There are three kinds of transclusion depending upon whether you want to transclude just the contents of the
+ * directive's element, the entire element or multiple parts of the element contents:
+ *
+ * * `true` - transclude the content (i.e. the child nodes) of the directive's element.
+ * * `'element'` - transclude the whole of the directive's element including any directives on this
+ *   element that defined at a lower priority than this directive. When used, the `template`
+ *   property is ignored.
+ * * **`{...}` (an object hash):** - map elements of the content onto transclusion "slots" in the template.
+ *
+ * **Mult-slot transclusion** is declared by providing an object for the `transclude` property.
+ *
+ * This object is a map where the keys are the name of the slot to fill and the value is the element selector
+ * used to match the HTML to the slot. Only element names are supported for matching. If the element selector
+ * is prefixed with a `?` then that slot is optional.
+ *
+ * For example, the transclude object `{ slotA: '?my-custom-element' }` maps `<my-custom-element>` elements to
+ * the `slotA` slot, which can be accessed via the `$transclude` function or via the {@link ngTransclude} directive.
+ *
+ * Slots that are not marked as optional (`?`) will trigger a compile time error if there are no matching elements
+ * in the transclude content. If you wish to know if an optional slot was filled with content, then you can call
+ * `$transclude.isSlotFilled(slotName)` on the transclude function passed to the directive's link function and
+ * injectable into the directive's controller.
+ *
  *
  * #### Transclusion Functions
  *
