@@ -6252,7 +6252,8 @@ describe('$compile', function() {
       });
 
 
-      it('should clear contents of the ng-translude element before appending transcluded content', function() {
+      it('should clear contents of the ng-translude element before appending transcluded content' +
+        ' if transcluded content exists', function() {
         module(function() {
           directive('trans', function() {
             return {
@@ -6265,6 +6266,23 @@ describe('$compile', function() {
           element = $compile('<div trans>unicorn!</div>')($rootScope);
           $rootScope.$apply();
           expect(sortedHtml(element.html())).toEqual('<div ng-transclude=""><span>unicorn!</span></div>');
+        });
+      });
+
+      it('should NOT clear contents of the ng-translude element before appending transcluded content' +
+        ' if transcluded content does NOT exist', function() {
+        module(function() {
+          directive('trans', function() {
+            return {
+              transclude: true,
+              template: '<div ng-transclude>old stuff! </div>'
+            };
+          });
+        });
+        inject(function(log, $rootScope, $compile) {
+          element = $compile('<div trans></div>')($rootScope);
+          $rootScope.$apply();
+          expect(sortedHtml(element.html())).toEqual('<div ng-transclude="">old stuff! </div>');
         });
       });
 
