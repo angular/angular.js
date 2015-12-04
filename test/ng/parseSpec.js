@@ -2740,6 +2740,9 @@ describe('parser', function() {
           expect(function() {
             scope.$eval("objConstructor = {}.constructor; objConstructor.join = ''");
           }).toThrow();
+          expect(function() {
+            scope.$eval("'a'.constructor.prototype.charAt=[].join");
+          }).toThrow();
         });
       });
 
