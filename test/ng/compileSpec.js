@@ -7660,7 +7660,7 @@ describe('$compile', function() {
             restrict: 'E',
             scope: {},
             transclude: {
-              boss: 'bossSlot'
+              bossSlot: 'boss'
             },
             template:
               '<div class="other" ng-transclude></div>'
@@ -7722,7 +7722,7 @@ describe('$compile', function() {
             restrict: 'E',
             scope: {},
             transclude: {
-              boss: 'bossSlot'
+              bossSlot: 'boss'
             },
             template:
               '<div class="other" ng-transclude></div>'
@@ -7751,8 +7751,8 @@ describe('$compile', function() {
             restrict: 'E',
             scope: {},
             transclude: {
-              minion: 'minionSlot',
-              boss: 'bossSlot'
+              minionSlot: 'minion',
+              bossSlot: 'boss'
             },
             template:
               '<div class="boss" ng-transclude="bossSlot"></div>' +
@@ -7784,8 +7784,8 @@ describe('$compile', function() {
             restrict: 'E',
             scope: {},
             transclude: {
-              minion: 'minionSlot',
-              boss: 'bossSlot'
+              minionSlot: 'minion',
+              bossSlot: 'boss'
             },
             template:
               '<ng-transclude class="boss" ng-transclude-slot="bossSlot"></ng-transclude>' +
@@ -7816,8 +7816,8 @@ describe('$compile', function() {
             restrict: 'E',
             scope: {},
             transclude: {
-              minion: 'minionSlot',
-              boss: 'bossSlot'
+              minionSlot: 'minion',
+              bossSlot: 'boss'
             },
             template:
               '<div class="boss" ng-transclude="bossSlot"></div>' +
@@ -7845,8 +7845,8 @@ describe('$compile', function() {
             restrict: 'E',
             scope: {},
             transclude: {
-              minion: 'minionSlot',
-              boss: '?bossSlot'
+              minionSlot: 'minion',
+              bossSlot: '?boss'
             },
             template:
               '<div class="boss" ng-transclude="bossSlot"></div>' +
@@ -7875,7 +7875,7 @@ describe('$compile', function() {
             restrict: 'E',
             scope: {},
             transclude: {
-              minion: 'minionSlot'
+              minionSlot: 'minion'
             },
             template:
               '<div class="boss" ng-transclude="bossSlot"></div>' +
@@ -7923,14 +7923,14 @@ describe('$compile', function() {
     });
 
 
-    it('should match against the normalized form of the element', function() {
+    it('should not normalize the element name', function() {
       module(function() {
         directive('foo', function() {
           return {
             restrict: 'E',
             scope: {},
             transclude: {
-              fooBar: 'fooBarSlot'
+              fooBarSlot: 'foo-bar'
             },
             template:
               '<div class="other" ng-transclude="fooBarSlot"></div>'
@@ -7948,7 +7948,7 @@ describe('$compile', function() {
     });
 
 
-    it('should provide the elements marked with matching transclude elements as additional transclude functions on the $$slots property', function() {
+    it('should provide the elements marked with matching transclude elements as additional transclude functions on the $slots property', function() {
       var capturedTranscludeFn;
       module(function() {
         directive('minionComponent', function() {
@@ -7956,8 +7956,8 @@ describe('$compile', function() {
             restrict: 'E',
             scope: {},
             transclude: {
-              minion: 'minionSlot',
-              boss: 'bossSlot'
+              minionSlot: 'minion',
+              bossSlot: 'boss'
             },
             template:
               '<div class="boss" ng-transclude="bossSlot"></div>' +
@@ -7979,7 +7979,7 @@ describe('$compile', function() {
           '</minion-component>')($rootScope);
         $rootScope.$apply();
 
-        var minionTranscludeFn = capturedTranscludeFn.$$boundTransclude.$$slots['minionSlot'];
+        var minionTranscludeFn = capturedTranscludeFn.$slots['minionSlot'];
         var minions = minionTranscludeFn();
         expect(minions[0].outerHTML).toEqual('<minion class="ng-scope">stuart</minion>');
         expect(minions[1].outerHTML).toEqual('<minion class="ng-scope">bob</minion>');
@@ -7989,7 +7989,7 @@ describe('$compile', function() {
         var minionScope = jqLite(minions[0]).scope();
         expect(minionScope.$parent).toBe(scope);
 
-        var bossTranscludeFn = capturedTranscludeFn.$$boundTransclude.$$slots['bossSlot'];
+        var bossTranscludeFn = capturedTranscludeFn.$slots['bossSlot'];
         var boss = bossTranscludeFn();
         expect(boss[0].outerHTML).toEqual('<boss class="ng-scope">gru</boss>');
 
@@ -8000,6 +8000,34 @@ describe('$compile', function() {
 
         dealoc(boss);
         dealoc(minions);
+      });
+    });
+
+    it('should set unfilled optional transclude slots to `null` in the $transclude.$slots property', function() {
+      var capturedTranscludeFn;
+      module(function() {
+        directive('minionComponent', function() {
+          return {
+            restrict: 'E',
+            scope: {},
+            transclude: {
+              minionSlot: 'minion',
+              bossSlot: '?boss'
+            },
+            link: function(s, e, a, c, transcludeFn) {
+              capturedTranscludeFn = transcludeFn;
+            }
+          };
+        });
+      });
+      inject(function($rootScope, $compile) {
+        element = $compile(
+          '<minion-component>' +
+            '<minion>stuart</minion>' +
+            '<span>dorothy</span>' +
+          '</minion-component>')($rootScope);
+        expect(capturedTranscludeFn.$slots.minionSlot).toEqual(jasmine.any(Function));
+        expect(capturedTranscludeFn.$slots.bossSlot).toBe(null);
       });
     });
   });
