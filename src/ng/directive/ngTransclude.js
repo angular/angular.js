@@ -11,7 +11,8 @@
  * You can specify that you want to insert a named transclusion slot, instead of the default slot, by providing the slot name
  * as the value of the `ng-transclude` or `ng-transclude-slot` attribute.
  *
- * Any existing content of the element that this directive is placed on, will be removed before the transcluded content is inserted.
+ * Any existing content of this element will be removed before the transcluded content is inserted,
+ * but only if the transcluded content is not empty.
  *
  * @element ANY
  *
@@ -59,6 +60,42 @@
           expect(element(by.binding('text')).getText()).toEqual('TEXT');
         });
      </file>
+   </example>
+ *
+ * @example
+ * ### Transclude default content
+ * This example shows how to use `NgTransclude` with default ng-transclude element content
+ *
+ * <example module="transcludeDefaultContentExample">
+   <file name="index.html">
+   <script>
+   angular.module('transcludeDefaultContentExample', [])
+   .directive('myButton', function(){
+               return {
+                 restrict: 'E',
+                 transclude: true,
+                 scope: true,
+                 template: '<button style="cursor: pointer;">' +
+                             '<ng-transclude>' +
+                               '<b style="color: red;">Button1</b>' +
+                             '</ng-transclude>' +
+                           '</button>'
+               };
+           });
+   </script>
+   <!-- default button content -->
+   <my-button id="default"></my-button>
+   <!-- modified button content -->
+   <my-button id="modified">
+     <i style="color: green;">Button2</i>
+   </my-button>
+   </file>
+   <file name="protractor.js" type="protractor">
+   it('should have different transclude element content', function() {
+            expect(element(by.id('default')).getText()).toBe('Button1');
+            expect(element(by.id('modified')).getText()).toBe('Button2');
+          });
+   </file>
    </example>
  *
  * @example
@@ -120,8 +157,10 @@ var ngTranscludeDirective = ngDirective({
     }
 
     function ngTranscludeCloneAttachFn(clone) {
-      $element.empty();
-      $element.append(clone);
+      if (clone.length) {
+        $element.empty();
+        $element.append(clone);
+      }
     }
 
     if (!$transclude) {
