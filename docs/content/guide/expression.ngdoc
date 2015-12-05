@@ -5,8 +5,9 @@
 
 # Angular Expressions
 
-Angular expressions are JavaScript-like code snippets that are usually placed in bindings such as
-`{{ expression }}`.
+Angular expressions are JavaScript-like code snippets that are mainly placed in
+interpolation bindings such as `<span title="{{ attrBinding }}">{{ textBinding }}</span>`,
+but also used directly in directive attributes such as `ng-click="functionExpression()"`.
 
 For example, these are valid expressions in Angular:
 
@@ -285,7 +286,7 @@ result is a non-undefined value (see value stabilization algorithm below).
 </example>
 
 
-### Why this feature
+### Reasons for using one-time binding
 
 The main purpose of one-time binding expression is to provide a way to create a binding
 that gets deregistered and frees up resources once the binding is stabilized.
