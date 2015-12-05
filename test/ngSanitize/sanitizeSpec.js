@@ -292,6 +292,13 @@ describe('HTML', function() {
                    '<svg xmlns="http://www.w3.org/2000/svg"><a xlink:href="?" xmlns:xlink="http://www.w3.org/1999/xlink"><circle r="400"></circle></a></svg>',
                    '<svg xmlns="http://www.w3.org/2000/svg"><a xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="?"><circle r="400"></circle></a></svg>');
     });
+
+    it('should not accept SVG `use` tags', function() {
+      expectHTML('<svg><use xlink:href="test.svg#xss" /></svg>')
+        .toBeOneOf('<svg></svg>',
+                   '<svg xmlns:xlink="http://www.w3.org/1999/xlink"></svg>',
+                   '<svg xmlns="http://www.w3.org/2000/svg"></svg>');
+    });
   });
 
 

@@ -242,7 +242,7 @@ var inlineElements = angular.extend({}, optionalEndTagInlineElements, toMap("a,a
 // They can potentially allow for arbitrary javascript to be executed. See #11290
 var svgElements = toMap("circle,defs,desc,ellipse,font-face,font-face-name,font-face-src,g,glyph," +
         "hkern,image,linearGradient,line,marker,metadata,missing-glyph,mpath,path,polygon,polyline," +
-        "radialGradient,rect,stop,svg,switch,text,title,tspan,use");
+        "radialGradient,rect,stop,svg,switch,text,title,tspan");
 
 // Blocked Elements (will be stripped)
 var blockedElements = toMap("script,style");
