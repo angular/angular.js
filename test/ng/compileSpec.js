@@ -7941,27 +7941,33 @@ describe('$compile', function() {
     });
 
 
-    it('should not normalize the element name', function() {
+    it('should match the normalized form of the element name', function() {
       module(function() {
         directive('foo', function() {
           return {
             restrict: 'E',
             scope: {},
             transclude: {
-              fooBarSlot: 'foo-bar'
+              fooBarSlot: 'fooBar',
+              mooKarSlot: 'mooKar'
             },
             template:
-              '<div class="other" ng-transclude="fooBarSlot"></div>'
+              '<div class="a" ng-transclude="fooBarSlot"></div>' +
+              '<div class="b" ng-transclude="mooKarSlot"></div>'
           };
         });
       });
       inject(function($rootScope, $compile) {
         element = $compile(
           '<foo>' +
-            '<foo-bar>baz</foo-bar>' +
+            '<foo-bar>bar1</foo-bar>' +
+            '<foo:bar>bar2</foo:bar>' +
+            '<moo-kar>baz1</moo-kar>' +
+            '<data-moo-kar>baz2</data-moo-kar>' +
           '</foo>')($rootScope);
         $rootScope.$apply();
-        expect(element.text()).toEqual('baz');
+        expect(element.children().eq(0).text()).toEqual('bar1bar2');
+        expect(element.children().eq(1).text()).toEqual('baz1baz2');
       });
     });
 

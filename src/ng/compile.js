@@ -480,11 +480,13 @@
  *
  * **Mult-slot transclusion** is declared by providing an object for the `transclude` property.
  *
- * This object is a map where the keys are the name of the slot to fill and the value is the element selector
- * used to match the HTML to the slot. Only element names are supported for matching. If the element selector
- * is prefixed with a `?` then that slot is optional.
+ * This object is a map where the keys are the name of the slot to fill and the value is an element selector
+ * used to match the HTML to the slot. The element selector can be in normalized camelCase form and will match
+ * elements using any of the standard variants of the camelCase form.
  *
- * For example, the transclude object `{ slotA: '?my-custom-element' }` maps `<my-custom-element>` elements to
+ * If the element selector is prefixed with a `?` then that slot is optional.
+ *
+ * For example, the transclude object `{ slotA: '?myCustomElement' }` maps `<my-custom-element>` elements to
  * the `slotA` slot, which can be accessed via the `$transclude` function or via the {@link ngTransclude} directive.
  *
  * Slots that are not marked as optional (`?`) will trigger a compile time error if there are no matching elements
@@ -1910,7 +1912,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
               // Add the matching elements into their slot
               forEach($compileNode.contents(), function(node) {
-                var slotName = slotMap[nodeName_(node)];
+                var slotName = slotMap[directiveNormalize(nodeName_(node))];
                 if (slotName) {
                   filledSlots[slotName] = true;
                   slots[slotName] = slots[slotName] || [];

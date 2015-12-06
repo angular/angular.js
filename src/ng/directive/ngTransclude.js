@@ -126,9 +126,9 @@
  *        return {
  *          restrict: 'E',
  *          transclude: {
- *            'title': '?pane-title',
- *            'body': 'pane-body',
- *            'footer': '?pane-footer'
+ *            'title': '?paneTitle',
+ *            'body': 'paneBody',
+ *            'footer': '?paneFooter'
  *          },
  *          template: '<div style="border: 1px solid black;">' +
  *                      '<div class="title" ng-transclude="title">Fallback Title</div>' +
