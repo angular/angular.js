@@ -325,6 +325,7 @@ AST.ArrayExpression = 'ArrayExpression';
 AST.Property = 'Property';
 AST.ObjectExpression = 'ObjectExpression';
 AST.ThisExpression = 'ThisExpression';
+AST.LocalsExpression = 'LocalsExpression';
 
 // Internal use only
 AST.NGValueParameter = 'NGValueParameter';
@@ -625,7 +626,8 @@ AST.prototype = {
     'false': { type: AST.Literal, value: false },
     'null': { type: AST.Literal, value: null },
     'undefined': {type: AST.Literal, value: undefined },
-    'this': {type: AST.ThisExpression }
+    'this': {type: AST.ThisExpression },
+    '$locals': {type: AST.LocalsExpression }
   }
 };
 
@@ -742,6 +744,10 @@ function findConstantAndWatchExpressions(ast, $filter) {
     ast.toWatch = argsToWatch;
     break;
   case AST.ThisExpression:
+    ast.constant = false;
+    ast.toWatch = [];
+    break;
+  case AST.LocalsExpression:
     ast.constant = false;
     ast.toWatch = [];
     break;
@@ -1114,6 +1120,10 @@ ASTCompiler.prototype = {
       this.assign(intoId, 's');
       recursionFn('s');
       break;
+    case AST.LocalsExpression:
+      this.assign(intoId, 'l');
+      recursionFn('l');
+      break;
     case AST.NGValueParameter:
       this.assign(intoId, 'v');
       recursionFn('v');
@@ -1440,6 +1450,10 @@ ASTInterpreter.prototype = {
     case AST.ThisExpression:
       return function(scope) {
         return context ? {value: scope} : scope;
+      };
+    case AST.LocalsExpression:
+      return function(scope, locals) {
+        return context ? {value: locals} : locals;
       };
     case AST.NGValueParameter:
       return function(scope, locals, assign, inputs) {
