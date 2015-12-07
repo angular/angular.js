@@ -584,6 +584,36 @@ After:
       };
     });
 
+  - due to [531a8de7](https://github.com/angular/angular.js/commit/531a8de72c439d8ddd064874bf364c00cedabb11),
+`$observe` no longer registers on undefined attributes. For example, if you were using `$observe` on
+an absent optional attribute to set a default value, the following would not work anymore:
+
+```html
+<my-dir></my-dir>
+```
+
+```js
+// Link function for directive myDir
+link: function(scope, element, attr) {
+  attr.$observe('myAttr', function(newVal) {
+    scope.myValue = newVal ? newVal : 'myDefaultValue';
+  })
+}
+```
+
+Instead, check if the attribute is set before registering the observer:
+
+```js
+link: function(scope, element, attr) {
+  if (attr.myAttr) {
+    // register the observer
+  } else {
+    // set the default
+  }
+}
+```
+
+
 
 
 

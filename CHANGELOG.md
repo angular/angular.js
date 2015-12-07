@@ -709,8 +709,6 @@ the built-in pattern validator:
 ```
 
 
-
-
 <a name="1.4.5"></a>
 # 1.4.5 permanent-internship (2015-08-28)
 
@@ -2984,7 +2982,36 @@ We also added a documentation page focused on security, which contains some of t
    [#9578](https://github.com/angular/angular.js/issues/9578), [#9751](https://github.com/angular/angular.js/issues/9751))
 
 
+## Breaking Changes
 
+- **$observe:** Due to [531a8de7](https://github.com/angular/angular.js/commit/531a8de72c439d8ddd064874bf364c00cedabb11),
+observers no longer register on undefined attributes. For example, if you were using `$observe` on
+an absent optional attribute to set a default value, the following would not work anymore:
+
+```html
+<my-dir></my-dir>
+```
+
+```js
+// link function for directive myDir
+link: function(scope, element, attr) {
+  attr.$observe('myAttr', function(newVal) {
+    scope.myValue = newVal ? newVal : 'myDefaultValue';
+  })
+}
+```
+
+Instead, check if the attribute is set before registering the observer:
+
+```js
+link: function(scope, element, attr) {
+  if (attr.myAttr) {
+    // register the observer
+  } else {
+    // set the default
+  }
+}
+```
 
 <a name="1.3.0"></a>
 # 1.3.0 superluminal-nudge (2014-10-13)
