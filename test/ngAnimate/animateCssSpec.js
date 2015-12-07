@@ -12,6 +12,16 @@ describe("ngAnimate $animateCss", function() {
         : expect(className).not.toMatch(regex);
   }
 
+  function keyframeProgress(element, duration, delay) {
+    browserTrigger(element, 'animationend',
+      { timeStamp: Date.now() + ((delay || 1) * 1000), elapsedTime: duration });
+  }
+
+  function transitionProgress(element, duration, delay) {
+    browserTrigger(element, 'transitionend',
+      { timeStamp: Date.now() + ((delay || 1) * 1000), elapsedTime: duration });
+  }
+
   var fakeStyle = {
     color: 'blue'
   };
@@ -353,16 +363,6 @@ describe("ngAnimate $animateCss", function() {
           }
           assert.toHaveClass('ng-enter');
           assert.toHaveClass('ng-enter-active');
-        }
-
-        function keyframeProgress(element, duration, delay) {
-          browserTrigger(element, 'animationend',
-            { timeStamp: Date.now() + ((delay || 1) * 1000), elapsedTime: duration });
-        }
-
-        function transitionProgress(element, duration, delay) {
-          browserTrigger(element, 'transitionend',
-            { timeStamp: Date.now() + ((delay || 1) * 1000), elapsedTime: duration });
         }
 
         beforeEach(inject(function($rootElement, $document) {
@@ -1403,6 +1403,138 @@ describe("ngAnimate $animateCss", function() {
           triggerAnimationStartFrame();
           expect(count.stagger).toBe(2);
         }));
+      });
+
+      describe('transitionend/animationend event listeners', function() {
+        var element, elementOnSpy, elementOffSpy, progress;
+
+        function setStyles(event) {
+          switch (event) {
+            case TRANSITIONEND_EVENT:
+              ss.addRule('.ng-enter', 'transition: 10s linear all;');
+              progress = transitionProgress;
+              break;
+            case ANIMATIONEND_EVENT:
+              ss.addRule('.ng-enter', '-webkit-animation: animation 10s;' +
+                                              'animation: animation 10s;');
+              progress = keyframeProgress;
+              break;
+          }
+        }
+
+        beforeEach(inject(function($rootElement, $document) {
+          element = jqLite('<div></div>');
+          $rootElement.append(element);
+          jqLite($document[0].body).append($rootElement);
+
+          elementOnSpy = spyOn(element, 'on').andCallThrough();
+          elementOffSpy = spyOn(element, 'off').andCallThrough();
+        }));
+
+        they('should remove the $prop event listeners on cancel',
+          [TRANSITIONEND_EVENT, ANIMATIONEND_EVENT], function(event) {
+            inject(function($animateCss) {
+
+              setStyles(event);
+
+              var animator = $animateCss(element, {
+                event: 'enter',
+                structural: true
+              });
+
+              var runner = animator.start();
+              triggerAnimationStartFrame();
+
+              expect(elementOnSpy).toHaveBeenCalledOnce();
+              expect(elementOnSpy.mostRecentCall.args[0]).toBe(event);
+
+              runner.cancel();
+
+              expect(elementOffSpy).toHaveBeenCalledOnce();
+              expect(elementOffSpy.mostRecentCall.args[0]).toBe(event);
+            });
+        });
+
+        they("should remove the $prop event listener when the animation is closed",
+          [TRANSITIONEND_EVENT, ANIMATIONEND_EVENT], function(event) {
+            inject(function($animateCss) {
+
+              setStyles(event);
+
+              var animator = $animateCss(element, {
+                event: 'enter',
+                structural: true
+              });
+
+              var runner = animator.start();
+              triggerAnimationStartFrame();
+
+              expect(elementOnSpy).toHaveBeenCalledOnce();
+              expect(elementOnSpy.mostRecentCall.args[0]).toBe(event);
+
+              progress(element, 10);
+
+              expect(elementOffSpy).toHaveBeenCalledOnce();
+              expect(elementOffSpy.mostRecentCall.args[0]).toBe(event);
+            });
+        });
+
+        they("should remove the $prop event listener when the closing timeout occurs",
+          [TRANSITIONEND_EVENT, ANIMATIONEND_EVENT], function(event) {
+            inject(function($animateCss, $timeout) {
+
+              setStyles(event);
+
+              var animator = $animateCss(element, {
+                event: 'enter',
+                structural: true
+              });
+
+              animator.start();
+              triggerAnimationStartFrame();
+
+              expect(elementOnSpy).toHaveBeenCalledOnce();
+              expect(elementOnSpy.mostRecentCall.args[0]).toBe(event);
+
+              $timeout.flush(15000);
+
+              expect(elementOffSpy).toHaveBeenCalledOnce();
+              expect(elementOffSpy.mostRecentCall.args[0]).toBe(event);
+            });
+        });
+
+        they("should not add or remove $prop event listeners when no animation styles are detected",
+          [TRANSITIONEND_EVENT, ANIMATIONEND_EVENT], function(event) {
+            inject(function($animateCss, $timeout) {
+
+              progress = event === TRANSITIONEND_EVENT ? transitionProgress : keyframeProgress;
+
+              // Make sure other event listeners are not affected
+              var otherEndSpy = jasmine.createSpy('otherEndSpy');
+              element.on(event, otherEndSpy);
+
+              expect(elementOnSpy).toHaveBeenCalledOnce();
+              elementOnSpy.reset();
+
+              var animator = $animateCss(element, {
+                event: 'enter',
+                structural: true
+              });
+
+              expect(animator.$$willAnimate).toBeFalsy();
+
+              // This will close the animation because no styles have been detected
+              var runner = animator.start();
+              triggerAnimationStartFrame();
+
+              expect(elementOnSpy).not.toHaveBeenCalled();
+              expect(elementOffSpy).not.toHaveBeenCalled();
+
+              progress(element, 10);
+              expect(otherEndSpy).toHaveBeenCalledOnce();
+            });
+        });
+
       });
     });
 
