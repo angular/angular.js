@@ -359,7 +359,7 @@ element, to which it can then insert the transcluded content into its template.
 
 Before compilation:
 ```html
-<div translude-directive>
+<div transclude-directive>
   Some transcluded content
 </div>
 ```
