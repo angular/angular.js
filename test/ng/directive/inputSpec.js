@@ -2544,11 +2544,13 @@ describe('input', function() {
         expect(URL_REGEXP.test('mailto:user@example.com?subject=Foo')).toBe(true);
         expect(URL_REGEXP.test('r2-d2.c3-p0://localhost/foo')).toBe(true);
         expect(URL_REGEXP.test('abc:/foo')).toBe(true);
+        expect(URL_REGEXP.test('http://example.com/path;path')).toBe(true);
+        expect(URL_REGEXP.test('http://example.com/[]$\'()*,~)')).toBe(true);
         expect(URL_REGEXP.test('http:')).toBe(false);
         expect(URL_REGEXP.test('a@B.c')).toBe(false);
         expect(URL_REGEXP.test('a_B.c')).toBe(false);
         expect(URL_REGEXP.test('0scheme://example.com')).toBe(false);
-        expect(URL_REGEXP.test('http://example.com:9999/~~``')).toBe(false);
+        expect(URL_REGEXP.test('http://example.com:9999/``')).toBe(false);
       });
     });
   });
