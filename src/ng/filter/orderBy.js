@@ -138,13 +138,26 @@
  * @example
   <example module="orderByExample">
     <file name="index.html">
+      <style type="text/css">
+        .active.sort-link:after {
+            content: '\25b2';
+        }
+        .reverse .active.sort-link:after {
+            content: '\25bc';
+        }
+    </style>
       <div ng-controller="ExampleController">
         <table class="friend">
           <tr>
-            <th><a href="" ng-click="reverse=false;order('name', false)">Name</a>
-              (<a href="" ng-click="order('-name',false)">^</a>)</th>
-            <th><a href="" ng-click="reverse=!reverse;order('phone', reverse)">Phone Number</a></th>
-            <th><a href="" ng-click="reverse=!reverse;order('age',reverse)">Age</a></th>
+            <th >
+                <a data-ng-class="['sort-link',{'active': predicate=='name'}]"  href="" ng-click="order('name')">Name</a>
+            </th>
+            <th>
+                <a data-ng-class="['sort-link',{'active': predicate=='phone'}]" href="" ng-click="order('phone')">Phone Number</a>
+            </th>
+            <th>
+                <a href="" data-ng-class="['sort-link',{'active': predicate=='age'}]" ng-click="order('age')">Age</a>
+            </th>
           </tr>
           <tr ng-repeat="friend in friends">
             <td>{{friend.name}}</td>
@@ -166,8 +179,12 @@
             { name: 'Adam',    phone: '555-5678',    age: 35 },
             { name: 'Julie',   phone: '555-8765',    age: 29 }
           ];
-          $scope.order = function(predicate, reverse) {
-            $scope.friends = orderBy($scope.friends, predicate, reverse);
+          $scope.predicate = 'name';
+          $scope.reverse = true;
+          $scope.order = function(predicate) {
+            $scope.predicate = predicate;
+            $scope.reverse = ($scope.predicate === predicate) ? !$scope.reverse : false;
+            $scope.friends = orderBy($scope.friends, predicate, $scope.reverse);
           };
           $scope.order('-age',false);
         }]);
