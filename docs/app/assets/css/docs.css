@@ -641,6 +641,12 @@ ul.events > li {
   vertical-align: top;
 }
 
+.table > tbody > tr.head > td,
+.table > tbody > tr.head > th {
+  border-bottom: 2px solid #ddd;
+  padding-top: 50px;
+}
+
 @media only screen and (min-width: 769px) and (max-width: 991px) {
   .main-body-grid {
     margin-top: 160px;
