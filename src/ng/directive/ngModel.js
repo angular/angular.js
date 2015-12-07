@@ -164,7 +164,7 @@ is set to `true`. The parse error is stored in `ngModel.$error.parse`.
 
               // Specify how UI should be updated
               ngModel.$render = function() {
-                element.html($sce.getTrustedHtml(ngModel.$viewValue || ''));
+                element.html($sce.getTrustedHtml(ngModel.$viewValue || element.html()));
                 read(); // initialize
               };
 
