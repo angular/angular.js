@@ -8,6 +8,10 @@
     "applyAnimationStyles": false,
     "applyAnimationFromStyles": false,
     "applyAnimationToStyles": false,
-    "applyAnimationClassesFactory": false
+    "applyAnimationClassesFactory": false,
+    "TRANSITIONEND_EVENT": false,
+    "TRANSITION_PROP": false,
+    "ANIMATION_PROP": false,
+    "ANIMATIONEND_EVENT": false
   }
 }
