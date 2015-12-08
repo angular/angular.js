@@ -1355,6 +1355,48 @@ describe('resource', function() {
         /^\[\$resource:badcfg\] Error in resource configuration for action `get`\. Expected response to contain an object but got an array \(Request: GET \/Customer\/123\)/
       );
   });
+});
 
+describe('resource with promises as `timeout`', function() {
+  var httpSpy;
+  var $httpBackend;
+  var $resource;
 
+  beforeEach(module('ngResource', function($provide) {
+    $provide.decorator('$http', function($delegate) {
+      httpSpy = jasmine.createSpy('$http').andCallFake($delegate);
+      return httpSpy;
+    });
+  }));
+
+  beforeEach(inject(function(_$httpBackend_, _$resource_) {
+    $httpBackend = _$httpBackend_;
+    $resource = _$resource_;
+  }));
+
+  it('should ignore non-numeric timeouts in actions and log a $debug message',
+    inject(function($log, $q) {
+      spyOn($log, 'debug');
+      $httpBackend.whenGET('/CreditCard').respond({});
+
+      var CreditCard = $resource('/CreditCard', {}, {
+        get: {
+          method: 'GET',
+          timeout: $q.defer().promise
+        }
+      });
+
+      CreditCard.get();
+      $httpBackend.flush();
+
+      expect(httpSpy).toHaveBeenCalledOnce();
+      expect(httpSpy.calls[0].args[0].timeout).toBeUndefined();
+      expect($log.debug).toHaveBeenCalledOnceWith('ngResource:\n' +
+          '  Only numeric values are allowed as `timeout`.\n' +
+          '  Promises are not supported in $resource, because the same value would ' +
+          'be used for multiple requests.\n' +
+          '  If you need support for cancellable $resource actions, you should ' +
+          'upgrade to version 1.5 or higher.');
+    })
+  );
 });
