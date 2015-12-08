@@ -31,6 +31,9 @@ var ngOptionsMinErr = minErr('ngOptions');
  * be nested into the `<select>` element. This element will then represent the `null` or "not selected"
  * option. See example below for demonstration.
  *
+ * Additionally, a default value can be specified for empty options using the `ng-empty-value` attribute.
+ * See Usage section for more details.
+ *
  * ## Complex Models (objects or collections)
  *
  * By default, `ngModel` watches the model by reference, not value. This is important to know when
@@ -155,6 +158,9 @@ var ngOptionsMinErr = minErr('ngOptions');
  *      used to identify the objects in the array. The `trackexpr` will most likely refer to the
  *     `value` variable (e.g. `value.propertyName`). With this the selection is preserved
  *      even when the options are recreated (e.g. reloaded from the server).
+ *
+ * @param {expression=} ngEmptyValue When an option with empty value is selected, whether hardcoded or created
+ *    with ngOptions, the associated ngModel will be assigned the result of this expression.
  *
  * @example
     <example module="selectExample">
@@ -488,6 +494,9 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
         };
 
         selectCtrl.readValue = function readNgOptionsValue() {
+
+          // Allow a default value to be substituted for any options with empty values
+          if (selectElement.val() === '') return $parse(attr.ngEmptyValue)(scope);
 
           var selectedOption = options.selectValueMap[selectElement.val()];
 

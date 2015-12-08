@@ -2143,6 +2143,26 @@ describe('ngOptions', function() {
       expect(scope.selected).toEqual([]);
     });
 
+    it('should be possible to specify a value for empty options', function() {
+      var html = '<select ng-model="someModel" ng-options="c for c in choices" ng-empty-value="someVar">' +
+                   '<option value="">Choose One</option>' +
+                 '</select>';
+      compile(html);
+      scope.$apply(function() {
+        scope.choices = ['A','B','C'];
+        scope.someModel = "";
+        scope.someVar = "foo";
+      });
+      //current implementation only works if select is not pristine, so we click it back and forth
+      setSelectValue(element, 3);
+      setSelectValue(element, 0);
+
+      //make sure the empty value is being evaluated as an Angular expression
+      expect(scope.someModel).toBe("foo");
+
+      dealoc(element);
+
+    });
 
     it('should be possible to use ngIf in the blank option', function() {
       var option;
