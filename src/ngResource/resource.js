@@ -154,9 +154,8 @@ function shallowClearAndCopy(src, dst) {
  *     caching.
  *   - **`timeout`** – `{number}` – timeout in milliseconds.<br />
  *     **Note:** In contrast to {@link ng.$http#usage $http.config}, {@link ng.$q promises} are
- *     **not** supported in $resource, because the same value has to be re-used for multiple
- *     requests. If you are looking for a way to cancel requests, you should use the `cancellable`
- *     option.
+ *     **not** supported in $resource, because the same value would be used for multiple requests.
+ *     If you are looking for a way to cancel requests, you should use the `cancellable` option.
  *   - **`cancellable`** – `{boolean}` – if set to true, the request made by a "non-instance" call
  *     will be cancelled (if not already completed) by calling `$cancelRequest()` on the call's
  *     return value. Calling `$cancelRequest()` for a non-cancellable or an already
