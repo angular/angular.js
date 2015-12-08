@@ -100,7 +100,6 @@ var angularFiles = {
       'src/ngAnimate/animateJs.js',
       'src/ngAnimate/animateJsDriver.js',
       'src/ngAnimate/animateQueue.js',
-      'src/ngAnimate/animateRunner.js',
       'src/ngAnimate/animation.js',
       'src/ngAnimate/ngAnimateSwap.js',
       'src/ngAnimate/module.js'
