@@ -94,7 +94,7 @@ ngTouch.factory('$swipe', [function() {
      * as described above.
      *
      */
-    bind: function(element, eventHandlers, pointerTypes) {
+    bind: function(element, eventHandlers, pointerTypes,bufferSize) {
       // Absolute total movement, used to control swipe vs. scroll.
       var totalX, totalY;
       // Coordinates of the start position.
@@ -138,6 +138,10 @@ ngTouch.factory('$swipe', [function() {
 
         lastPos = coords;
 
+		//set the buffer size to custom or to the default of 10
+		if(angular.isNumber(bufferSize)){
+			MOVE_BUFFER_RADIUS=bufferSize;
+		}
         if (totalX < MOVE_BUFFER_RADIUS && totalY < MOVE_BUFFER_RADIUS) {
           return;
         }
