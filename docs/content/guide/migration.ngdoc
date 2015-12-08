@@ -685,8 +685,15 @@ $scope.resetWithCancel = function (e) {
    [#5864](https://github.com/angular/angular.js/issues/5864))
 
 
+- {@link input[checkbox] `input[checkbox]`} now supports constant expressions in `ngTrueValue` and
+  `ngFalseValue`, making it now possible to e.g. use boolean and integer values. Previously, these attributes would
+  always be treated as strings, whereas they are now parsed as expressions, and will throw if an expression
+  is non-constant. To convert non-constant strings into constant expressions, simply wrap them in an
+  extra pair of quotes, like so:
 
+    `<input type="checkbox" ng-model="..." ng-true-value="'truthyValue'">`
 
+  See [c90cefe1614](https://github.com/angular/angular.js/commit/c90cefe16142d973a123e945fc9058e8a874c357)
 
 
 ## Scopes and Digests (`$scope`)
