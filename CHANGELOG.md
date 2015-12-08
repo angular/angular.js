@@ -5508,8 +5508,9 @@ See https://github.com/angular/angular.js/issues/10236 for an example.
 
 - **angular.toJson:** due to [c054288c](https://github.com/angular/angular.js/commit/c054288c9722875e3595e6e6162193e0fb67a251),
 
-  If you expected `toJson` to strip these types of properties before,
-  you will have to manually do this yourself now.
+  `toJson()` will no longer strip properties starting with a single `$`. If you relied on
+`toJson()`'s stripping these types of properties before, you will have to do it manually now.
+It will still strip properties starting with `$$` though.
 
 
 
