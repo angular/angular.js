@@ -368,7 +368,7 @@ angular.module('ngResource', ['ng']).
       }
     };
 
-    this.$get = ['$http', '$q', function($http, $q) {
+    this.$get = ['$http', '$log', '$q', function($http, $log, $q) {
 
       var noop = angular.noop,
         forEach = angular.forEach,
@@ -578,6 +578,16 @@ angular.module('ngResource', ['ng']).
                 case 'params':
                 case 'isArray':
                 case 'interceptor':
+                  break;
+                case 'timeout':
+                  if (value && !angular.isNumber(value)) {
+                    $log.debug('ngResource:\n' +
+                        '  Only numeric values are allowed as `timeout`.\n' +
+                        '  Promises are not supported in $resource, because the same value would ' +
+                        'be used for multiple requests.\n' +
+                        '  If you need support for cancellable $resource actions, you should ' +
+                        'upgrade to version 1.5 or higher.');
+                  }
                   break;
               }
             });
