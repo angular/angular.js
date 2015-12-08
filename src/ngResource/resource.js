@@ -582,8 +582,8 @@ angular.module('ngResource', ['ng']).
             if (action.timeout) {
               $log.debug('ngResource:\n' +
                          '  Only numeric values are allowed as `timeout`.\n' +
-                         '  Promises are not supported in $resource, because the same value has to ' +
-                         'be re-used for multiple requests. If you are looking for a way to cancel ' +
+                         '  Promises are not supported in $resource, because the same value would ' +
+                         'be used for multiple requests. If you are looking for a way to cancel ' +
                          'requests, you should use the `cancellable` option.');
               delete action.timeout;
             }
