@@ -104,8 +104,18 @@ describe('$aria', function() {
   describe('aria-checked', function() {
     beforeEach(injectScopeAndCompiler);
 
-    it('should attach itself to input type="checkbox"', function() {
+    it('should not attach itself to native input type="checkbox"', function() {
       compileElement('<input type="checkbox" ng-model="val">');
+
+      scope.$apply('val = true');
+      expect(element.attr('aria-checked')).toBeUndefined();
+
+      scope.$apply('val = false');
+      expect(element.attr('aria-checked')).toBeUndefined();
+    });
+
+    it('should attach itself to custom checkbox', function() {
+      compileElement('<div role="checkbox" ng-model="val">');
 
       scope.$apply('val = true');
       expect(element.attr('aria-checked')).toBe('true');
@@ -114,31 +124,42 @@ describe('$aria', function() {
       expect(element.attr('aria-checked')).toBe('false');
     });
 
-    it('should handle checkbox with string model values using ng(True|False)Value', function() {
-      var element = $compile('<input type="checkbox" ng-model="val" ng-true-value="\'yes\'" ' +
-        'ng-false-value="\'no\'">'
-      )(scope);
+    it('should not handle native checkbox with ngChecked', function() {
+      var element = $compile('<input type="checkbox" ng-checked="val">')(scope);
 
-      scope.$apply('val="yes"');
+      scope.$apply('val = true');
+      expect(element.attr('aria-checked')).toBeUndefined();
+
+      scope.$apply('val = false');
+      expect(element.attr('aria-checked')).toBeUndefined();
+    });
+
+    it('should handle custom checkbox with ngChecked', function() {
+      var element = $compile('<div role="checkbox" ng-checked="val">')(scope);
+
+      scope.$apply('val = true');
       expect(element.eq(0).attr('aria-checked')).toBe('true');
 
-      scope.$apply('val="no"');
+      scope.$apply('val = false');
       expect(element.eq(0).attr('aria-checked')).toBe('false');
     });
 
-    it('should handle checkbox with integer model values using ngTrueValue', function() {
-      var element = $compile('<input type="checkbox" ng-model="val" ng-true-value="0">')(scope);
-
-      scope.$apply('val=0');
-      expect(element.eq(0).attr('aria-checked')).toBe('true');
-
-      scope.$apply('val=1');
-      expect(element.eq(0).attr('aria-checked')).toBe('false');
-    });
-
-    it('should attach itself to input type="radio"', function() {
+    it('should not attach to native input type="radio"', function() {
       var element = $compile('<input type="radio" ng-model="val" value="one">' +
-          '<input type="radio" ng-model="val" value="two">')(scope);
+                             '<input type="radio" ng-model="val" value="two">')(scope);
+
+      scope.$apply("val='one'");
+      expect(element.eq(0).attr('aria-checked')).toBeUndefined();
+      expect(element.eq(1).attr('aria-checked')).toBeUndefined();
+
+      scope.$apply("val='two'");
+      expect(element.eq(0).attr('aria-checked')).toBeUndefined();
+      expect(element.eq(1).attr('aria-checked')).toBeUndefined();
+    });
+
+    it('should attach to custom radio controls', function() {
+      var element = $compile('<div role="radio" ng-model="val" value="one"></div>' +
+          '<div role="radio" ng-model="val" value="two"></div>')(scope);
 
       scope.$apply("val='one'");
       expect(element.eq(0).attr('aria-checked')).toBe('true');
@@ -149,22 +170,22 @@ describe('$aria', function() {
       expect(element.eq(1).attr('aria-checked')).toBe('true');
     });
 
-    it('should handle radios with integer model values', function() {
-      var element = $compile('<input type="radio" ng-model="val" value="0">' +
-          '<input type="radio" ng-model="val" value="1">')(scope);
+    it('should handle custom radios with integer model values', function() {
+      var element = $compile('<div role="radio" ng-model="val" value="0"></div>' +
+          '<div role="radio" ng-model="val" value="1"></div>')(scope);
 
-      scope.$apply('val=0');
+      scope.$apply("val=0");
       expect(element.eq(0).attr('aria-checked')).toBe('true');
       expect(element.eq(1).attr('aria-checked')).toBe('false');
 
-      scope.$apply('val=1');
+      scope.$apply("val=1");
       expect(element.eq(0).attr('aria-checked')).toBe('false');
       expect(element.eq(1).attr('aria-checked')).toBe('true');
     });
 
     it('should handle radios with boolean model values using ngValue', function() {
-      var element = $compile('<input type="radio" ng-model="val" ng-value="valExp">' +
-          '<input type="radio" ng-model="val" ng-value="valExp2">')(scope);
+      var element = $compile('<div role="radio" ng-model="val" ng-value="valExp"></div>' +
+          '<div role="radio" ng-model="val" ng-value="valExp2"></div>')(scope);
 
       scope.$apply(function() {
         scope.valExp = true;
@@ -177,24 +198,6 @@ describe('$aria', function() {
       scope.$apply('val = false');
       expect(element.eq(0).attr('aria-checked')).toBe('false');
       expect(element.eq(1).attr('aria-checked')).toBe('true');
-    });
-
-    it('should attach itself to role="radio"', function() {
-      scope.val = 'one';
-      compileElement('<div role="radio" ng-model="val" value="one"></div>');
-      expect(element.attr('aria-checked')).toBe('true');
-
-      scope.$apply("val = 'two'");
-      expect(element.attr('aria-checked')).toBe('false');
-    });
-
-    it('should attach itself to role="checkbox"', function() {
-      scope.val = true;
-      compileElement('<div role="checkbox" ng-model="val"></div>');
-      expect(element.attr('aria-checked')).toBe('true');
-
-      scope.$apply('val = false');
-      expect(element.attr('aria-checked')).toBe('false');
     });
 
     it('should attach itself to role="menuitemradio"', function() {
@@ -217,8 +220,6 @@ describe('$aria', function() {
 
     it('should not attach itself if an aria-checked value is already present', function() {
       var element = [
-        $compile("<input type='checkbox' ng-model='val1' aria-checked='userSetValue'>")(scope),
-        $compile("<input type='radio' ng-model='val2' value='one' aria-checked='userSetValue'><input type='radio' ng-model='val2' value='two'>")(scope),
         $compile("<div role='radio' ng-model='val' value='{{val3}}' aria-checked='userSetValue'></div>")(scope),
         $compile("<div role='menuitemradio' ng-model='val' value='{{val3}}' aria-checked='userSetValue'></div>")(scope),
         $compile("<div role='checkbox' checked='checked' aria-checked='userSetValue'></div>")(scope),
@@ -297,52 +298,32 @@ describe('$aria', function() {
   describe('aria-disabled', function() {
     beforeEach(injectScopeAndCompiler);
 
-    it('should attach itself to input elements', function() {
-      scope.$apply('val = false');
-      compileElement("<input ng-disabled='val'>");
-      expect(element.attr('aria-disabled')).toBe('false');
-
+    they('should not attach itself to native $prop controls', {
+      input: '<input ng-disabled="val">',
+      textarea: '<textarea ng-disabled="val"></textarea>',
+      select: '<select ng-disabled="val"></select>',
+      button: '<button ng-disabled="val"></button>'
+    }, function(tmpl) {
+      var element = $compile(tmpl)(scope);
       scope.$apply('val = true');
-      expect(element.attr('aria-disabled')).toBe('true');
+
+      expect(element.attr('disabled')).toBeDefined();
+      expect(element.attr('aria-disabled')).toBeUndefined();
     });
 
-    it('should attach itself to textarea elements', function() {
-      scope.$apply('val = false');
-      compileElement('<textarea ng-disabled="val"></textarea>');
+    it('should attach itself to custom controls', function() {
+      compileElement('<div ng-disabled="val"></div>');
       expect(element.attr('aria-disabled')).toBe('false');
 
       scope.$apply('val = true');
       expect(element.attr('aria-disabled')).toBe('true');
-    });
 
-    it('should attach itself to button elements', function() {
-      scope.$apply('val = false');
-      compileElement('<button ng-disabled="val"></button>');
-      expect(element.attr('aria-disabled')).toBe('false');
-
-      scope.$apply('val = true');
-      expect(element.attr('aria-disabled')).toBe('true');
-    });
-
-    it('should attach itself to select elements', function() {
-      scope.$apply('val = false');
-      compileElement('<select ng-disabled="val"></select>');
-      expect(element.attr('aria-disabled')).toBe('false');
-
-      scope.$apply('val = true');
-      expect(element.attr('aria-disabled')).toBe('true');
     });
 
     it('should not attach itself if an aria-disabled attribute is already present', function() {
-      var element = [
-        $compile("<input aria-disabled='userSetValue' ng-disabled='val'>")(scope),
-        $compile("<textarea aria-disabled='userSetValue' ng-disabled='val'></textarea>")(scope),
-        $compile("<button aria-disabled='userSetValue' ng-disabled='val'></button>")(scope),
-        $compile("<select aria-disabled='userSetValue' ng-disabled='val'></select>")(scope)
-      ];
+      compileElement('<div ng-disabled="val" aria-disabled="userSetValue"></div>');
 
-      scope.$apply('val = true');
-      expectAriaAttrOnEachElement(element, 'aria-disabled', 'userSetValue');
+      expect(element.attr('aria-disabled')).toBe('userSetValue');
     });
 
 
@@ -367,15 +348,10 @@ describe('$aria', function() {
     beforeEach(injectScopeAndCompiler);
 
     it('should not attach aria-disabled', function() {
-      var element = [
-        $compile("<input ng-disabled='val'>")(scope),
-        $compile("<textarea ng-disabled='val'></textarea>")(scope),
-        $compile("<button ng-disabled='val'></button>")(scope),
-        $compile("<select ng-disabled='val'></select>")(scope)
-      ];
+      compileElement('<div ng-disabled="val"></div>');
 
-      scope.$apply('val = false');
-      expectAriaAttrOnEachElement(element, 'aria-disabled', undefined);
+      scope.$apply('val = true');
+      expect(element.attr('aria-disabled')).toBeUndefined();
     });
   });
 
@@ -384,6 +360,15 @@ describe('$aria', function() {
 
     it('should attach aria-invalid to input', function() {
       compileElement('<input ng-model="txtInput" ng-minlength="10">');
+      scope.$apply("txtInput='LTten'");
+      expect(element.attr('aria-invalid')).toBe('true');
+
+      scope.$apply("txtInput='morethantencharacters'");
+      expect(element.attr('aria-invalid')).toBe('false');
+    });
+
+    it('should attach aria-invalid to custom controls', function() {
+      compileElement('<div ng-model="txtInput" role="textbox" ng-minlength="10"></div>');
       scope.$apply("txtInput='LTten'");
       expect(element.attr('aria-invalid')).toBe('true');
 
@@ -414,49 +399,28 @@ describe('$aria', function() {
   describe('aria-required', function() {
     beforeEach(injectScopeAndCompiler);
 
-    it('should attach aria-required to input', function() {
+    it('should not attach to input', function() {
       compileElement('<input ng-model="val" required>');
-      expect(element.attr('aria-required')).toBe('true');
+      expect(element.attr('aria-required')).toBeUndefined();
+    });
 
-      scope.$apply("val='input is valid now'");
+     it('should attach to custom controls with ngModel and required', function() {
+      compileElement('<div ng-model="val" role="checkbox" required></div>');
+      expect(element.attr('aria-required')).toBe('true');
+    });
+
+    it('should set aria-required to false when ng-required is false', function() {
+      compileElement("<div role='checkbox' ng-required='false' ng-model='val'></div>");
       expect(element.attr('aria-required')).toBe('false');
     });
 
-    it('should attach aria-required to textarea', function() {
-      compileElement('<textarea ng-model="val" required></textarea>');
+    it('should attach to custom controls with ngRequired', function() {
+      compileElement('<div role="checkbox" ng-model="val" ng-required="true"></div>');
       expect(element.attr('aria-required')).toBe('true');
-
-      scope.$apply("val='input is valid now'");
-      expect(element.attr('aria-required')).toBe('false');
-    });
-
-    it('should attach aria-required to select', function() {
-      compileElement('<select ng-model="val" required></select>');
-      expect(element.attr('aria-required')).toBe('true');
-
-      scope.$apply("val='input is valid now'");
-      expect(element.attr('aria-required')).toBe('false');
-    });
-
-    it('should attach aria-required to ngRequired', function() {
-      compileElement('<input ng-model="val" ng-required="true">');
-      expect(element.attr('aria-required')).toBe('true');
-
-      scope.$apply("val='input is valid now'");
-      expect(element.attr('aria-required')).toBe('false');
     });
 
     it('should not attach itself if aria-required is already present', function() {
-      compileElement("<input ng-model='val' required aria-required='userSetValue'>");
-      expect(element.attr('aria-required')).toBe('userSetValue');
-
-      compileElement("<textarea ng-model='val' required aria-required='userSetValue'></textarea>");
-      expect(element.attr('aria-required')).toBe('userSetValue');
-
-      compileElement("<select ng-model='val' required aria-required='userSetValue'></select>");
-      expect(element.attr('aria-required')).toBe('userSetValue');
-
-      compileElement("<input ng-model='val' ng-required='true' aria-required='userSetValue'>");
+      compileElement("<div role='checkbox' ng-model='val' ng-required='true' aria-required='userSetValue'></div>");
       expect(element.attr('aria-required')).toBe('userSetValue');
     });
   });
@@ -471,50 +435,8 @@ describe('$aria', function() {
       compileElement("<input ng-model='val' required>");
       expect(element.attr('aria-required')).toBeUndefined();
 
-      compileElement("<textarea ng-model='val' required></textarea>");
+      compileElement("<div ng-model='val' ng-required='true'></div>");
       expect(element.attr('aria-required')).toBeUndefined();
-
-      compileElement("<select ng-model='val' required></select>");
-      expect(element.attr('aria-required')).toBeUndefined();
-    });
-  });
-
-  describe('aria-multiline', function() {
-    beforeEach(injectScopeAndCompiler);
-
-    it('should attach itself to textarea', function() {
-      compileElement('<textarea ng-model="val"></textarea>');
-      expect(element.attr('aria-multiline')).toBe('true');
-    });
-
-    it('should attach itself role="textbox"', function() {
-      compileElement('<div role="textbox" ng-model="val"></div>');
-      expect(element.attr('aria-multiline')).toBe('true');
-    });
-
-    it('should not attach itself if aria-multiline is already present', function() {
-      compileElement('<textarea aria-multiline="userSetValue"></textarea>');
-      expect(element.attr('aria-multiline')).toBe('userSetValue');
-
-      compileElement('<div role="textbox" aria-multiline="userSetValue"></div>');
-      expect(element.attr('aria-multiline')).toBe('userSetValue');
-    });
-  });
-
-  describe('aria-multiline when disabled', function() {
-    beforeEach(configAriaProvider({
-      ariaMultiline: false
-    }));
-    beforeEach(injectScopeAndCompiler);
-
-    it('should not attach itself to textarea', function() {
-      compileElement('<textarea></textarea>');
-      expect(element.attr('aria-multiline')).toBeUndefined();
-    });
-
-    it('should not attach itself role="textbox"', function() {
-      compileElement('<div role="textbox"></div>');
-      expect(element.attr('aria-multiline')).toBeUndefined();
     });
   });
 
@@ -636,13 +558,10 @@ describe('$aria', function() {
     });
 
     it('should attach tabindex to custom inputs', function() {
-      compileElement('<div type="checkbox" ng-model="val"></div>');
-      expect(element.attr('tabindex')).toBe('0');
-
       compileElement('<div role="checkbox" ng-model="val"></div>');
       expect(element.attr('tabindex')).toBe('0');
 
-      compileElement('<div type="range" ng-model="val"></div>');
+      compileElement('<div role="slider" ng-model="val"></div>');
       expect(element.attr('tabindex')).toBe('0');
     });
 
