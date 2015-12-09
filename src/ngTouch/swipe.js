@@ -71,6 +71,8 @@ ngTouch.factory('$swipe', [function() {
      * The pointer types that should be used can be specified via the optional
      * third argument, which is an array of strings `'mouse'` and `'touch'`. By default,
      * `$swipe` will listen for `mouse` and `touch` events.
+	 * For vertical swipe motions the fourth optional argument can be used to change the vertical buffer 
+	 * that determines what is a swipe and what is a scroll. 
      *
      * The four events are `start`, `move`, `end`, and `cancel`. `start`, `move`, and `end`
      * receive as a parameter a coordinates object of the form `{ x: 150, y: 310 }` and the raw
@@ -81,9 +83,10 @@ ngTouch.factory('$swipe', [function() {
      * distance moved in either dimension exceeds a small threshold.
      *
      * Once this threshold is exceeded, either the horizontal or vertical delta is greater.
-     * - If the horizontal distance is greater, this is a swipe and `move` and `end` events follow.
-     * - If the vertical distance is greater, this is a scroll, and we let the browser take over.
-     *   A `cancel` event is sent.
+     * - If the horizontal distance is greater or the vertical distance is less then the vertical buffer, 
+	 *   this is a swipe and `move` and `end` events follow.
+     * - If the vertical distance is greater then the horizontal and the vertical buffer, this is a scroll, and we let the browser take over.
+     *   A `cancel` event is sent. 
      *
      * `move` is called on `mousemove` and `touchmove` after the above logic has determined that
      * a swipe is in progress.
@@ -94,7 +97,7 @@ ngTouch.factory('$swipe', [function() {
      * as described above.
      *
      */
-    bind: function(element, eventHandlers, pointerTypes, bufferSize) {
+    bind: function(element, eventHandlers, pointerTypes, verticalBufferSize) {
       // Absolute total movement, used to control swipe vs. scroll.
       var totalX, totalY;
       // Coordinates of the start position.
@@ -103,6 +106,7 @@ ngTouch.factory('$swipe', [function() {
       var lastPos;
       // Whether a swipe is active.
       var active = false;
+	  // Default virtical buffer
 
       pointerTypes = pointerTypes || ['mouse', 'touch'];
       element.on(getEvents(pointerTypes, 'start'), function(event) {
@@ -139,15 +143,15 @@ ngTouch.factory('$swipe', [function() {
         lastPos = coords;
 
 		//set the buffer size to custom or to the default of 10
-		if (angular.isNumber(bufferSize)) {
-			MOVE_BUFFER_RADIUS=bufferSize;
+		if (!angular.isNumber(verticalBufferSize)) {
+			verticalBufferSize=MOVE_BUFFER_RADIUS;
 		}
         if (totalX < MOVE_BUFFER_RADIUS && totalY < MOVE_BUFFER_RADIUS) {
           return;
         }
 
-        // One of totalX or totalY has exceeded the buffer, so decide on swipe vs. scroll.
-        if (totalY > totalX) {
+        // One of totalX or totalY has exceeded the buffer and the totalY exceeded the verticalBuffer, so decide on swipe vs. scroll.
+        if (totalY > totalX && totalY > verticalBufferSize) {
           // Allow native scrolling to take over.
           active = false;
           eventHandlers['cancel'] && eventHandlers['cancel'](event);
