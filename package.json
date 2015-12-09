@@ -1,7 +1,7 @@
 {
   "name": "angularjs",
   "license": "MIT",
-  "branchVersion": "^1.5.0-beta.0",
+  "branchVersion": "^1.5.0-rc.0",
   "branchPattern": "1.5.*",
   "distTag": "beta",
   "repository": {
@@ -9,7 +9,7 @@
     "url": "https://github.com/angular/angular.js.git"
   },
   "engines": {
-    "node": "~0.10",
+    "node": "<5",
     "npm": "~2.5"
   },
   "engineStrict": true,
