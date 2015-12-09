@@ -139,7 +139,7 @@ ngTouch.factory('$swipe', [function() {
         lastPos = coords;
 
 		//set the buffer size to custom or to the default of 10
-		if  (angular.isNumber(bufferSize)) {
+		if (angular.isNumber(bufferSize)) {
 			MOVE_BUFFER_RADIUS=bufferSize;
 		}
         if (totalX < MOVE_BUFFER_RADIUS && totalY < MOVE_BUFFER_RADIUS) {
