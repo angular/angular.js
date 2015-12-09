@@ -405,7 +405,7 @@ function setupModuleLoader(window) {
           component: function(name, options) {
             function factory($injector) {
               function makeInjectable(fn) {
-                if (angular.isFunction(fn)) {
+                if (isFunction(fn) || Array.isArray(fn)) {
                   return function(tElement, tAttrs) {
                     return $injector.invoke(fn, this, {$element: tElement, $attrs: tAttrs});
                   };
