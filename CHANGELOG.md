@@ -142,7 +142,7 @@ var User = $resource('/api/user/:id', {id: '@id'}, {
 });
 
 var user = User.get({id: 1});   // sends a request
-instance.$cancelRequest();      // aborts the request
+user.$cancelRequest();      // aborts the request
 
 user = User.get({id: 2});
 ```
