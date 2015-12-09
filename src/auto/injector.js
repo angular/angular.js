@@ -739,7 +739,13 @@ function createInjector(modulesToLoad, strictDi) {
           var invokeArgs = queue[i],
               provider = providerInjector.get(invokeArgs[0]);
 
-          provider[invokeArgs[1]].apply(provider, invokeArgs[2]);
+          // Check for undefined provider method.
+          var providerFn = provider[invokeArgs[1]];
+          if (providerFn === undefined) {
+            throw new Error("Method " + invokeArgs[1] + " was not found for provider " + invokeArgs[0] + ".");
+          }
+
+          providerFn.apply(provider, invokeArgs[2]);
         }
       }
 
