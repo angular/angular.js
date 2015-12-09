@@ -174,6 +174,24 @@ describe('component', function() {
     });
   });
 
+  it('should allow passing injectable arrays as template/templateUrl', function() {
+    var log = '';
+    window.angular.module('my', []).component('myComponent', {
+      template: ['$element', '$attrs', 'myValue', function($element, $attrs, myValue) {
+        log += 'template,' + $element + ',' + $attrs + ',' + myValue + '\n';
+      }],
+      templateUrl: ['$element', '$attrs', 'myValue', function($element, $attrs, myValue) {
+        log += 'templateUrl,' + $element + ',' + $attrs + ',' + myValue + '\n';
+      }]
+    }).value('myValue', 'blah');
+    module('my');
+    inject(function(myComponentDirective) {
+      myComponentDirective[0].template('a', 'b');
+      myComponentDirective[0].templateUrl('c', 'd');
+      expect(log).toEqual('template,a,b,blah\ntemplateUrl,c,d,blah\n');
+    });
+  });
+
   it('should allow passing transclude as object', function() {
     window.angular.module('my', []).component('myComponent', {
       transclude: {}
