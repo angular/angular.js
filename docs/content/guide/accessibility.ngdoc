@@ -33,6 +33,9 @@ Currently, ngAria interfaces with the following directives:
 
  * {@link guide/accessibility#ngmodel ngModel}
  * {@link guide/accessibility#ngdisabled ngDisabled}
+ * {@link guide/accessibility#ngrequired ngRequired}
+ * {@link guide/accessibility#ngvaluechecked ngChecked}
+ * {@link guide/accessibility#ngvaluechecked ngValue}
  * {@link guide/accessibility#ngshow ngShow}
  * {@link guide/accessibility#nghide ngHide}
  * {@link guide/accessibility#ngclick ngClick}
@@ -137,6 +140,27 @@ the keyboard. It is still up to **you** as a developer to **ensure custom contro
 accessible**. As a rule, any time you create a widget involving user interaction, be sure to test
 it with your keyboard and at least one mobile and desktop screen reader.
 
+<h2 id="ngvaluechecked">ngValue and ngChecked</h2>
+
+To ease the transition between native inputs and custom controls, ngAria now supports
+{@link ng/directive/ngValue ngValue} and {@link ng/directive/ngChecked ngChecked}.
+The original directives were created for native inputs only, so ngAria extends
+support to custom elements by managing `aria-checked` for accessibility.
+
+###Example
+
+```html
+<custom-checkbox ng-checked="val"></custom-checkbox>
+<custom-radio-button ng-value="val"></custom-radio-button>
+```
+
+Becomes:
+
+```html
+<custom-checkbox ng-checked="val" aria-checked="true"></custom-checkbox>
+<custom-radio-button ng-value="val" aria-checked="true"></custom-radio-button>
+```
+
 <h2 id="ngdisabled">ngDisabled</h2>
 
 The `disabled` attribute is only valid for certain elements such as `button`, `input` and
@@ -148,17 +172,36 @@ custom controls to be more accessible.
 ###Example
 
 ```html
-<md-checkbox ng-disabled="disabled">
+<md-checkbox ng-disabled="disabled"></md-checkbox>
 ```
 
 Becomes:
 
 ```html
-<md-checkbox disabled aria-disabled="true">
+<md-checkbox disabled aria-disabled="true"></md-checkbox>
 ```
 
 >You can check whether a control is legitimately disabled for a screen reader by visiting
 [chrome://accessibility](chrome://accessibility) and inspecting [the accessibility tree](http://www.paciellogroup.com/blog/2015/01/the-browser-accessibility-tree/).
+
+<h2 id="ngrequired">ngRequired</h2>
+
+The boolean `required` attribute is only valid for native form controls such as `input` and
+`textarea`. To properly indicate custom element directives such as `<md-checkbox>` or `<custom-input>`
+as required, using ngAria with {@link ng/directive/ngRequired ngRequired} will also add
+`aria-required`. This tells accessibility APIs when a custom control is required.
+
+###Example
+
+```html
+<md-checkbox ng-required="val"></md-checkbox>
+```
+
+Becomes:
+
+```html
+<md-checkbox ng-required="val" aria-required="true"></md-checkbox>
+```
 
 <h2 id="ngshow">ngShow</h2>
 
