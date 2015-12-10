@@ -1486,7 +1486,7 @@ angular.module('ngAnimate', ['ng'])
         function onAnimationProgress(event) {
           event.stopPropagation();
           var ev = event.originalEvent || event;
-          var timeStamp = ev.$manualTimeStamp || ev.timeStamp || Date.now();
+          var timeStamp = ev.$manualTimeStamp || Date.now();
 
           /* Firefox (or possibly just Gecko) likes to not round values up
            * when a ms measurement is used for the animation */
@@ -1494,7 +1494,7 @@ angular.module('ngAnimate', ['ng'])
 
           /* $manualTimeStamp is a mocked timeStamp value which is set
            * within browserTrigger(). This is only here so that tests can
-           * mock animations properly. Real events fallback to event.timeStamp,
+           * mock animations properly. Real events fallback to Date.now(),
            * or, if they don't, then a timeStamp is automatically created for them.
            * We're checking to see if the timeStamp surpasses the expected delay,
            * but we're using elapsedTime instead of the timeStamp on the 2nd
