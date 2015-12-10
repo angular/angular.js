@@ -792,7 +792,7 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
       function onAnimationProgress(event) {
         event.stopPropagation();
         var ev = event.originalEvent || event;
-        var timeStamp = ev.$manualTimeStamp || ev.timeStamp || Date.now();
+        var timeStamp = ev.$manualTimeStamp || Date.now();
 
         /* Firefox (or possibly just Gecko) likes to not round values up
          * when a ms measurement is used for the animation */
