@@ -1,0 +1,10 @@
+@ngdoc error
+@name $injector:unprfn
+@fullName Undefined Provider Function
+@description
+
+This error results from the `$injector` being unable to call a pre-defined
+provider function. This can happen if a platform level provider is redefined
+by another library.
+
+For more information, see the {@link guide/di Dependency Injection Guide}.

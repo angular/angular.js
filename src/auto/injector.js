@@ -739,10 +739,10 @@ function createInjector(modulesToLoad, strictDi) {
           var invokeArgs = queue[i],
               provider = providerInjector.get(invokeArgs[0]);
 
-          // Check for undefined provider method.
+          // Check for undefined provider function.
           var providerFn = provider[invokeArgs[1]];
           if (providerFn === undefined) {
-            throw new Error("Method " + invokeArgs[1] + " was not found for provider " + invokeArgs[0] + ".");
+            throw $injectorMinErr('unprfn', "Undefined provider function: {0}.{1}", invokeArgs[0], invokeArgs[1]);
           }
 
           providerFn.apply(provider, invokeArgs[2]);
