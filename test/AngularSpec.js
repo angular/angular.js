@@ -1826,7 +1826,6 @@ describe('angular', function() {
 
         expect(element.html()).toBe('3');
         expect(/\bNG_DEFER_BOOTSTRAP!=true\b/.test(document.cookie)).toBeFalsy();
-<<<<<<< HEAD
       });
     });
 
@@ -1869,10 +1868,8 @@ describe('angular', function() {
       it('should remove the cookie', function() {
         document.cookie = 'NG_ENABLE_DEBUG_INFO!=true';
         bootstrap(element);
-        
+
         expect(document.cookie).toEqual('');
-=======
->>>>>>> fix(Angular.js): use cookie instead of window.name to load with debug info
       });
     });
 
@@ -1915,7 +1912,7 @@ describe('angular', function() {
       it('should remove the cookie', function() {
         document.cookie = 'NG_ENABLE_DEBUG_INFO!=true';
         bootstrap(element);
-        
+
         expect(document.cookie).toEqual('');
       });
     });
