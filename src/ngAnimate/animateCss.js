@@ -225,8 +225,8 @@ var CLOSING_TIME_BUFFER = 1.5;
 var DETECT_CSS_PROPERTIES = {
   transitionDuration:       TRANSITION_DURATION_PROP,
   transitionDelay:          TRANSITION_DELAY_PROP,
-  transitionProperty:       TRANSITION_PROP + PROPERTY_KEY,
-  transitionTimingFunction: TRANSITION_PROP + TIMING_KEY,
+  transitionProperty:       TRANSITION_PROPERTY_PROP,
+  transitionTimingFunction: TRANSITION_TIMING_PROP,
   animationDuration:        ANIMATION_DURATION_PROP,
   animationDelay:           ANIMATION_DELAY_PROP,
   animationIterationCount:  ANIMATION_PROP + ANIMATION_ITERATION_COUNT_KEY
@@ -293,13 +293,13 @@ function truthyTimingValue(val) {
   return val === 0 || val != null;
 }
 
-function getCssTransitionStyle(timings, duration) {
+function getCssTransitionStyle(styles, duration) {
   var style = TRANSITION_PROP;
   var value = duration + 's';
 
-  value += ' ' + timings[TRANSITION_TIMING_PROP];
-  value += ' ' + timings[TRANSITION_PROPERTY_PROP];
-  value += timings[TRANSITION_DELAY_PROP] ? ' ' + timings[TRANSITION_DELAY_PROP] + 's' : '';
+  value += ' ' + styles[TRANSITION_TIMING_PROP];
+  value += ' ' + styles[TRANSITION_PROPERTY_PROP];
+  value += styles[TRANSITION_DELAY_PROP] ? ' ' + styles[TRANSITION_DELAY_PROP] + 's' : '';
 
   return [style, value];
 }
@@ -595,8 +595,7 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
       var flags = {};
       flags.hasTransitions          = timings.transitionDuration > 0;
       flags.hasAnimations           = timings.animationDuration > 0;
-      flags.applyTransitionDuration = options.duration > 0 || hasToStyles && (flags.hasTransitions
-                                         || (flags.hasAnimations && !flags.hasTransitions));
+      flags.applyTransitionDuration = options.duration > 0 || hasToStyles && flags.hasTransitions;
       flags.applyAnimationDuration  = options.duration && flags.hasAnimations;
       flags.applyTransitionDelay    = truthyTimingValue(options.delay) && (flags.applyTransitionDuration || flags.hasTransitions);
       flags.applyAnimationDelay     = truthyTimingValue(options.delay) && flags.hasAnimations;
