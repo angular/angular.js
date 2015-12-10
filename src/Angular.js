@@ -1578,7 +1578,6 @@ function bootstrap(element, modules, config) {
   var defaultConfig = {
     strictDi: false
   };
-
   config = extend(defaultConfig, config);
   var doBootstrap = function() {
     element = jqLite(element);
