@@ -223,13 +223,12 @@ var ELAPSED_TIME_MAX_DECIMAL_PLACES = 3;
 var CLOSING_TIME_BUFFER = 1.5;
 
 var DETECT_CSS_PROPERTIES = {
-  transitionDuration:       TRANSITION_DURATION_PROP,
-  transitionDelay:          TRANSITION_DELAY_PROP,
-  transitionProperty:       TRANSITION_PROP + PROPERTY_KEY,
-  transitionTimingFunction: TRANSITION_PROP + TIMING_KEY,
-  animationDuration:        ANIMATION_DURATION_PROP,
-  animationDelay:           ANIMATION_DELAY_PROP,
-  animationIterationCount:  ANIMATION_PROP + ANIMATION_ITERATION_COUNT_KEY
+  transitionDuration:      TRANSITION_DURATION_PROP,
+  transitionDelay:         TRANSITION_DELAY_PROP,
+  transitionProperty:      TRANSITION_PROP + PROPERTY_KEY,
+  animationDuration:       ANIMATION_DURATION_PROP,
+  animationDelay:          ANIMATION_DELAY_PROP,
+  animationIterationCount: ANIMATION_PROP + ANIMATION_ITERATION_COUNT_KEY
 };
 
 var DETECT_STAGGER_CSS_PROPERTIES = {
@@ -293,14 +292,14 @@ function truthyTimingValue(val) {
   return val === 0 || val != null;
 }
 
-function getCssTransitionStyle(timings, duration) {
+function getCssTransitionDurationStyle(duration, applyOnlyDuration) {
   var style = TRANSITION_PROP;
   var value = duration + 's';
-
-  value += ' ' + timings[TRANSITION_TIMING_PROP];
-  value += ' ' + timings[TRANSITION_PROPERTY_PROP];
-  value += timings[TRANSITION_DELAY_PROP] ? ' ' + timings[TRANSITION_DELAY_PROP] + 's' : '';
-
+  if (applyOnlyDuration) {
+    style += DURATION_KEY;
+  } else {
+    value += ' linear all';
+  }
   return [style, value];
 }
 
@@ -556,6 +555,15 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
         temporaryStyles.push(transitionStyle);
       }
 
+      if (options.duration >= 0) {
+        applyOnlyDuration = node.style[TRANSITION_PROP].length > 0;
+        var durationStyle = getCssTransitionDurationStyle(options.duration, applyOnlyDuration);
+
+        // we set the duration so that it will be picked up by getComputedStyle later
+        applyInlineStyle(node, durationStyle);
+        temporaryStyles.push(durationStyle);
+      }
+
       if (options.keyframeStyle) {
         var keyframeStyle = [ANIMATION_PROP, options.keyframeStyle];
         applyInlineStyle(node, keyframeStyle);
@@ -568,18 +576,8 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
               : gcsLookup.count(cacheKey)
           : 0;
 
-      var timings = computeTimings(node, fullClassName, cacheKey);
-
-      if (options.duration > 0) {
-        // Duration in options overwrites duration set in style
-        timings.transitionDuration = options.duration;
-      }
-
-      var relativeDelay = timings.maxDelay;
-      maxDelay = Math.max(relativeDelay, 0);
-      maxDuration = timings.maxDuration;
-
       var isFirst = itemIndex === 0;
+
       // this is a pre-emptive way of forcing the setup classes to be added and applied INSTANTLY
       // without causing any combination of transitions to kick in. By adding a negative delay value
       // it forces the setup class' transition to end immediately. We later then remove the negative
@@ -590,10 +588,17 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
         blockTransitions(node, SAFE_FAST_FORWARD_DURATION_VALUE);
       }
 
+      var timings = computeTimings(node, fullClassName, cacheKey);
+      var relativeDelay = timings.maxDelay;
+      maxDelay = Math.max(relativeDelay, 0);
+      maxDuration = timings.maxDuration;
+
       var flags = {};
       flags.hasTransitions          = timings.transitionDuration > 0;
       flags.hasAnimations           = timings.animationDuration > 0;
-      flags.applyTransitionDuration = options.duration > 0 || hasToStyles && (flags.hasTransitions
+      flags.hasTransitionAll        = flags.hasTransitions && timings.transitionProperty == 'all';
+      flags.applyTransitionDuration = hasToStyles && (
+                                        (flags.hasTransitions && !flags.hasTransitionAll)
                                          || (flags.hasAnimations && !flags.hasTransitions));
       flags.applyAnimationDuration  = options.duration && flags.hasAnimations;
       flags.applyTransitionDelay    = truthyTimingValue(options.delay) && (flags.applyTransitionDuration || flags.hasTransitions);
@@ -606,7 +611,8 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
         if (flags.applyTransitionDuration) {
           flags.hasTransitions = true;
           timings.transitionDuration = maxDuration;
-          temporaryStyles.push(getCssTransitionStyle(timings, maxDuration));
+          applyOnlyDuration = node.style[TRANSITION_PROP + PROPERTY_KEY].length > 0;
+          temporaryStyles.push(getCssTransitionDurationStyle(maxDuration, applyOnlyDuration));
         }
 
         if (flags.applyAnimationDuration) {
@@ -614,7 +620,6 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
           timings.animationDuration = maxDuration;
           temporaryStyles.push(getCssKeyframeDurationStyle(maxDuration));
         }
-
       }
 
       if (maxDuration === 0 && !flags.recalculateTimingStyles) {
