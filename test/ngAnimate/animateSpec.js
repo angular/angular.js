@@ -1431,7 +1431,24 @@ describe("animations", function() {
       });
     }));
 
-    it('should allow an element to pinned elsewhere and still be available in animations',
+    it('should throw if the arguments are not elements',
+      inject(function($animate, $compile, $document, $rootScope, $rootElement) {
+
+      var element = jqLite('<div></div>');
+
+      expect(function() {
+        $animate.pin(element);
+      }).toThrowMinErr('ng', 'areq', 'Argument \'parentElement\' is not an element');
+
+      expect(function() {
+        $animate.pin(null, $rootElement);
+      }).toThrowMinErr('ng', 'areq', 'Argument \'element\' is not an element');
+
+      dealoc(element);
+    }));
+
+
+    it('should allow an element to be pinned elsewhere and still be available in animations',
       inject(function($animate, $compile, $document, $rootElement, $rootScope) {
 
       var innerParent = jqLite('<div></div>');
