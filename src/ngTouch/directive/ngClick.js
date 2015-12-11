@@ -57,6 +57,7 @@ ngTouch.directive('ngClick', ['$parse', '$timeout', '$rootElement',
 
   var ACTIVE_CLASS_NAME = 'ng-click-active';
   var lastPreventedTime;
+  var processingTime;
   var touchCoordinates;
   var lastLabelClickCoordinates;
 
@@ -121,7 +122,7 @@ ngTouch.directive('ngClick', ['$parse', '$timeout', '$rootElement',
   // Global click handler that prevents the click if it's in a bustable zone and preventGhostClick
   // was called recently.
   function onClick(event) {
-    if (Date.now() - lastPreventedTime > PREVENT_DURATION) {
+    if (Date.now() - lastPreventedTime - processingTime > PREVENT_DURATION) {
       return; // Too old.
     }
 
@@ -197,6 +198,14 @@ ngTouch.directive('ngClick', ['$parse', '$timeout', '$rootElement',
     checkAllowableRegions(touchCoordinates, x, y);
   }
 
+  function calculateProcessingTime() {
+      //use the now - last prevented time on a timeout
+      processingTime = 0;
+      $timeout(function() {
+          processingTime = Date.now() - lastPreventedTime;
+      }, 0);
+  }
+
   // Actual linking function.
   return function(scope, element, attr) {
     var clickHandler = $parse(attr.ngClick),
@@ -251,6 +260,7 @@ ngTouch.directive('ngClick', ['$parse', '$timeout', '$rootElement',
       if (tapping && diff < TAP_DURATION && dist < MOVE_TOLERANCE) {
         // Call preventGhostClick so the clickbuster will catch the corresponding click.
         preventGhostClick(x, y);
+        calculateProcessingTime();
 
         // Blur the focused element (the button, probably) before firing the callback.
         // This doesn't work perfectly on Android Chrome, but seems to work elsewhere.

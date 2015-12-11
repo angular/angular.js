@@ -233,6 +233,85 @@ describe('ngClick (touch)', function() {
     }));
 
 
+      it('should cancel the following click event with long running processes', inject(function($rootScope, $compile, $rootElement, $timeout) {
+          //we need the real date now function for really getting the time... to really test the timeout...
+          Date.now = orig_now;
+          var count = 0;
+          var done = false;
+
+          $rootScope.slowCount = function() {
+              var start = Date.now();
+              var now = Date.now();
+              //must wait longer than the PREVENT_DURATION
+              while (now - start < 3000) {
+                  now = Date.now();
+              }
+              count++;
+          };
+
+          element = $compile('<div ng-click="slowCount()"></div>')($rootScope);
+          $rootElement.append(element);
+
+          $rootScope.$digest();
+
+          expect(count).toBe(0);
+
+          // Fire touchstart at 10ms, touchend at 50ms, the click at 300ms.
+          runs(function() {
+              setTimeout(function() {
+                  browserTrigger(element, 'touchstart', {
+                      keys: [],
+                      x: 10,
+                      y: 10
+                  });
+                  try {
+                      $timeout.verifyNoPendingTasks();
+                  } catch (e) {
+                      $timeout.flush();
+                  }
+              }, 10);
+
+              setTimeout(function() {
+                  browserTrigger(element, 'touchend', {
+                      keys: [],
+                      x: 10,
+                      y: 10
+                  });
+                  try {
+                      $timeout.verifyNoPendingTasks();
+                  } catch (e) {
+                      $timeout.flush();
+                  }
+
+                  expect(count).toBe(1);
+              }, 50);
+
+              setTimeout(function() {
+                  browserTrigger(element, 'click', {
+                      keys: [],
+                      x: 10,
+                      y: 10
+                  });
+                  try {
+                      $timeout.verifyNoPendingTasks();
+                  } catch (e) {
+                      $timeout.flush();
+                  }
+                  done = true;
+              }, 300);
+
+          });
+
+          waitsFor(function() {
+              return done;
+          }, "click event to fire", 500);
+
+          runs(function() {
+              expect(count).toEqual(1);
+          });
+      }));
+
+
     it('should cancel the following click event even when the element has changed', inject(
         function($rootScope, $compile, $rootElement) {
       $rootElement.append(
