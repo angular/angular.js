@@ -15,6 +15,7 @@ branches:
 
 env:
   matrix:
+    - JOB=ci-checks
     - JOB=unit BROWSER_PROVIDER=saucelabs
     - JOB=docs-e2e BROWSER_PROVIDER=saucelabs
     - JOB=e2e TEST_TARGET=jqlite BROWSER_PROVIDER=saucelabs
@@ -51,11 +52,7 @@ install:
   - npm install
 
 before_script:
-  - mkdir -p $LOGS_DIR
-  - ./scripts/travis/start_browser_provider.sh
-  - npm install -g grunt-cli
-  - grunt package
-  - ./scripts/travis/wait_for_browser_provider.sh
+  - ./scripts/travis/before_build.sh
 
 script:
   - ./scripts/travis/build.sh
