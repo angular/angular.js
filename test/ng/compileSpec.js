@@ -3952,7 +3952,7 @@ describe('$compile', function() {
 
         compile('<div><span my-component ref="name">');
 
-        //change both sides to the same item withing the same digest cycle
+        //change both sides to the same item within the same digest cycle
         componentScope.ref = 'same';
         $rootScope.name = 'same';
         $rootScope.$apply();
@@ -6221,7 +6221,7 @@ describe('$compile', function() {
             var currentCleanData = jQuery.cleanData;
             jQuery.cleanData = function(elems) {
               cleanedCount += elems.length;
-              // Don't return the output and expicitly pass only the first parameter
+              // Don't return the output and explicitly pass only the first parameter
               // so that we're sure we're not relying on either of them. jQuery UI patch
               // behaves in this way.
               currentCleanData(elems);

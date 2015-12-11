@@ -885,7 +885,7 @@ describe('form', function() {
       expect(doc.hasClass('ng-valid-another')).toBe(true);
       expect(doc.hasClass('ng-invalid-another')).toBe(false);
 
-      // validators are skipped, e.g. becuase of a parser error
+      // validators are skipped, e.g. because of a parser error
       control.$setValidity('error', null);
       control.$setValidity('another', null);
       scope.$digest();

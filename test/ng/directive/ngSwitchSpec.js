@@ -273,7 +273,7 @@ describe('ngSwitch', function() {
       '</div>')($rootScope);
     $rootScope.$apply();
 
-    // element now contains only empty repeater. this element is dealocated by local afterEach.
+    // element now contains only empty repeater. this element is deallocated by local afterEach.
     // afterwards a global afterEach will check for leaks in jq data cache object
   }));
 
