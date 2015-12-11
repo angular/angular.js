@@ -352,7 +352,7 @@ describe('$http', function() {
 
 
       it('should not encode @ in url params', function() {
-        //encodeURIComponent is too agressive and doesn't follow http://www.ietf.org/rfc/rfc3986.txt
+        //encodeURIComponent is too aggressive and doesn't follow http://www.ietf.org/rfc/rfc3986.txt
         //with regards to the character set (pchar) allowed in path segments
         //so we need this test to make sure that we don't over-encode the params and break stuff
         //like buzz api which uses @self
@@ -1085,7 +1085,7 @@ describe('$http', function() {
             };
 
             // I'm really sorry for doing this :-D
-            // Unfortunatelly I don't know how to trick toString.apply(obj) comparison
+            // Unfortunately I don't know how to trick toString.apply(obj) comparison
             spyOn(window, 'isFile').andReturn(true);
 
             $httpBackend.expect('POST', '/some', file).respond('');
