@@ -1374,7 +1374,7 @@ function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
       if (isDefined(val) && !isNumber(val)) {
         val = parseFloat(val, 10);
       }
-      minVal = isNumber(val) && !isNaN(val) ? val : undefined;
+      minVal = !isNumberNaN(val) ? val : undefined;
       // TODO(matsko): implement validateLater to reduce number of validations
       ctrl.$validate();
     });
@@ -1390,7 +1390,7 @@ function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
       if (isDefined(val) && !isNumber(val)) {
         val = parseFloat(val, 10);
       }
-      maxVal = isNumber(val) && !isNaN(val) ? val : undefined;
+      maxVal = !isNumberNaN(val) ? val : undefined;
       // TODO(matsko): implement validateLater to reduce number of validations
       ctrl.$validate();
     });
