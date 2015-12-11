@@ -1012,6 +1012,7 @@ describe('ngMock', function() {
       hb = $httpBackend;
     }));
 
+
     it('should provide "expect" methods for each HTTP verb', function() {
       expect(typeof hb.expectGET).toBe("function");
       expect(typeof hb.expectPOST).toBe("function");
@@ -1030,6 +1031,7 @@ describe('ngMock', function() {
       expect(typeof hb.whenDELETE).toBe("function");
       expect(typeof hb.whenHEAD).toBe("function");
     });
+
 
     it('should provide "route" shortcuts for expect and when', function() {
       expect(typeof hb.whenRoute).toBe("function");
@@ -1653,6 +1655,7 @@ describe('ngMock', function() {
       });
     });
 
+
     describe('verifyRequests', function() {
 
       it('should throw exception if not all requests were flushed', function() {
@@ -1663,6 +1666,18 @@ describe('ngMock', function() {
           hb.verifyNoOutstandingRequest();
         }).toThrowError('Unflushed requests: 1');
       });
+
+
+      it('should verify requests fired asynchronously', inject(function($q) {
+        hb.when('GET').respond(200);
+        $q.resolve().then(function() {
+          hb('GET', '/some', null, noop, {});
+        });
+
+        expect(function() {
+          hb.verifyNoOutstandingRequest();
+        }).toThrowError('Unflushed requests: 1');
+      }));
     });
 
 
@@ -1723,6 +1738,7 @@ describe('ngMock', function() {
       });
     });
 
+
     describe('expectRoute/whenRoute shortcuts', function() {
       angular.forEach(['expectRoute', 'whenRoute'], function(routeShortcut) {
         var methods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'JSONP'];
@@ -1752,6 +1768,7 @@ describe('ngMock', function() {
         );
       });
     });
+
 
     describe('MockHttpExpectation', function() {
       /* global MockHttpExpectation */
