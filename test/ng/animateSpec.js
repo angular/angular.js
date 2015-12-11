@@ -122,7 +122,7 @@ describe("$animate", function() {
       });
       inject(function() {
         // by using hasOwnProperty we know for sure that the lookup object is an empty object
-        // instead of inhertiting properties from its original prototype.
+        // instead of inheriting properties from its original prototype.
         expect(provider.$$registeredAnimations.hasOwnProperty).toBeFalsy();
 
         provider.register('.filter', noop);

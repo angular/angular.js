@@ -315,7 +315,7 @@ describe('Filter: filter', function() {
     expect(filter(items, expr, true).length).toBe(1);
     expect(filter(items, expr, true)[0]).toBe(items[0]);
 
-    // Inherited function proprties
+    // Inherited function properties
     function Expr(text) {
         this.text = text;
     }

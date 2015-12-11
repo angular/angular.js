@@ -1261,7 +1261,7 @@ describe("ngAnimate $animateCss", function() {
           expect(element.css(prefix + 'transition-delay')).toBe('3s');
           expect(element.css(prefix + 'transition-duration')).toBe('3s');
 
-          // Let's flush the remaining amout of time for the timeout timer to kick in
+          // Let's flush the remaining amount of time for the timeout timer to kick in
           $timeout.flush(500);
 
           expect(element.css(prefix + 'transition-duration')).toBeOneOf('', '0s');
@@ -1294,7 +1294,7 @@ describe("ngAnimate $animateCss", function() {
           expect(element.css(prefix + 'transition-delay')).toBeOneOf('initial', '0s');
           expect(element.css(prefix + 'transition-duration')).toBe('3s');
 
-          // Let's flush the remaining amout of time for the timeout timer to kick in
+          // Let's flush the remaining amount of time for the timeout timer to kick in
           $timeout.flush(500);
 
           expect(element.css(prefix + 'transition-duration')).toBeOneOf('', '0s');
