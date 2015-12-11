@@ -937,6 +937,21 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
  *  - {@link ng.directive:select select}
  *  - {@link ng.directive:textarea textarea}
  *
+ * # Complex Models (objects or collections)
+ *
+ * By default, `ngModel` watches the model by reference, not value. This is important to know when
+ * binding elements to models that are objects or collections. If properties of the object or collection
+ * change, the model won't be re-rendered unless the identity of the object is also changed. If the model
+ * is assigned to an entirely new object, its identity will be changed and a re-rendering will trigger.
+ *
+ * The rootScope method `$watchCollection` can be used to watch for changes, but it does a shallow comparison,
+ * meaning that changing properties deeper than the first level of the object (or of the item in the collection
+ * if it's an array) will not trigger a re-rendering of the model.
+ *
+ * Some directives have options that will cause them to use `$watchCollection` - for example, `ngOptions`
+ * will do so when a `track by` clause is included in the comprehension expression or if the select is given
+ * the `multiple` attribute.
+ *
  * # CSS classes
  * The following CSS classes are added and removed on the associated input/select/textarea element
  * depending on the validity of the model.
