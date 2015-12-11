@@ -747,18 +747,27 @@ function arrayRemove(array, value) {
 function ES6MapShim() {
   this._keys = [];
   this._values = [];
+  this._lastKey = NaN;
+  this._lastIndex = -1;
 }
 ES6MapShim.prototype = {
+  _idx: function(key) {
+    if (key === this._lastKey) {
+      return this._lastIndex;
+    }
+    return (this._lastIndex = (this._keys.indexOf(this._lastKey = key)));
+  },
   get: function(key) {
-    var idx = this._keys.indexOf(key);
+    var idx = this._idx(key);
     if (idx !== -1) {
       return this._values[idx];
     }
   },
   set: function(key, value) {
-    var idx = this._keys.indexOf(key);
+    var idx = this._idx(key);
     if (idx === -1) {
-      idx = this._keys.length;
+      idx = this._lastIndex = this._keys.length;
+      this._lastKey = key;
     }
     this._keys[idx] = key;
     this._values[idx] = value;
