@@ -750,7 +750,7 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
         }
 
         // Remove the transitionend / animationend listener(s)
-        if (events) {
+        if (events && events.length) {
           element.off(events.join(' '), onAnimationProgress);
         }
 
