@@ -11,7 +11,7 @@ var PATTERN_SEP = ';',
     DIGIT       = '#';
 
 /**
- * main funciton for parser
+ * main function for parser
  * @param str {string} pattern to be parsed (e.g. #,##0.###).
  */
 function parsePattern(pattern) {
