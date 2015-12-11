@@ -122,7 +122,7 @@ describe('input', function() {
     //  focus (which visually removes the placeholder value): focusin focus *input*
     //  blur (which visually creates the placeholder value):  focusout *input* blur
     //However none of these occur if the placeholder is not visible at the time of the event.
-    //These tests try simulate various scenerios which do/do-not fire the extra input event
+    //These tests try simulate various scenarios which do/do-not fire the extra input event
 
     it('should not dirty the model on an input event in response to a placeholder change', function() {
       var inputElm = helper.compileInput('<input type="text" placeholder="Test" attr-capture ng-model="unsetValue" name="name" />');

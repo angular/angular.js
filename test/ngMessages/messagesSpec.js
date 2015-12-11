@@ -511,7 +511,7 @@ describe('ngMessages', function() {
 
         var elements = element[0].querySelectorAll('[ng-repeat]');
 
-        // all three collections should have atleast one error showing up
+        // all three collections should have at least one error showing up
         expect(messageChildren(element).length).toBe(3);
         expect(messageChildren(elements[0]).length).toBe(1);
         expect(messageChildren(elements[1]).length).toBe(1);

@@ -188,7 +188,7 @@ describe('Scope', function() {
       expect(child1.$$watchersCount).toBe(1);
       expect($rootScope.$$watchersCount).toBe(2);
 
-      // Execute everything a second time to be sure that calling the remove funciton
+      // Execute everything a second time to be sure that calling the remove function
       // several times, it only decrements the counter once
       remove2();
       expect(child2.$$watchersCount).toBe(1);
