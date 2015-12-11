@@ -1,6 +1,6 @@
 'use strict';
 
-ddescribe('ngOptions', function() {
+describe('ngOptions', function() {
 
   var scope, formElement, element, $compile, linkLog;
 
