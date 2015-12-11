@@ -293,7 +293,7 @@ is  `$locals`.
   - use createMap() for $$observe listeners when initialized from attr interpolation
   ([76c2491a](https://github.com/angular/angular.js/commit/76c2491a316d6b296c721227529fcb09087d369a),
    [#10446](https://github.com/angular/angular.js/issues/10446))
-  - properly sanitize xlink:href attribute interoplation
+  - properly sanitize xlink:href attribute interpolation
   ([f33ce173](https://github.com/angular/angular.js/commit/f33ce173c90736e349cf594df717ae3ee41e0f7a),
    [#12524](https://github.com/angular/angular.js/issues/12524))
 - **$http:** apply `transformResponse` even when `data` is empty
@@ -518,7 +518,7 @@ Closes #11719
   - use createMap() for $$observe listeners when initialized from attr interpolation
   ([76c2491a](https://github.com/angular/angular.js/commit/76c2491a316d6b296c721227529fcb09087d369a),
    [#10446](https://github.com/angular/angular.js/issues/10446))
-  - properly sanitize xlink:href attribute interoplation
+  - properly sanitize xlink:href attribute interpolation
   ([f33ce173](https://github.com/angular/angular.js/commit/f33ce173c90736e349cf594df717ae3ee41e0f7a),
    [#12524](https://github.com/angular/angular.js/issues/12524))
 - **$parse:**
@@ -1202,7 +1202,7 @@ describe('$q.when', function() {
   ([f81ff3be](https://github.com/angular/angular.js/commit/f81ff3beb0c9d19d494c5878086fb57476442b8b),
    [#10423](https://github.com/angular/angular.js/issues/10423), [#12145](https://github.com/angular/angular.js/issues/12145))
 - **$compile:**
-  - throw error when requestng new and isolate scopes (async)
+  - throw error when requesting new and isolate scopes (async)
   ([6333d65b](https://github.com/angular/angular.js/commit/6333d65b76e0796cfbab8a2953af0c8014dba2e1),
    [#12215](https://github.com/angular/angular.js/issues/12215), [#12217](https://github.com/angular/angular.js/issues/12217))
 - **$location:** allow navigating outside the original base URL
@@ -1595,7 +1595,7 @@ $animateProvider.classNameFilter(/ng-animate-special/);
 
 
 Although it is unlikely that anyone is using it in this way, this change does change the
-behaviour of `ngOptions` in the following case:
+behavior of `ngOptions` in the following case:
 
   * you are iterating over an array-like object, using the array form of the `ngOptions` syntax
 (`item.label for item in items`) and that object contains non-numeric property keys.
@@ -1605,7 +1605,7 @@ In this case these properties with non-numeric keys will be ignored.
 ** Here array-like is defined by the result of a call to this internal function:
 https://github.com/angular/angular.js/blob/v1.4.0-rc.1/src/Angular.js#L198-L211 **
 
-To get the desired behaviour you need to iterate using the object form of the `ngOptions` syntax
+To get the desired behavior you need to iterate using the object form of the `ngOptions` syntax
 (`value.label` for (key, value) in items)`).
 
 
@@ -1842,7 +1842,7 @@ styles are resolved in time.
 - **Angular:** properly compare RegExp with other objects for equality
   ([f22e1fc9](https://github.com/angular/angular.js/commit/f22e1fc9610ae111a3ea8746a3a57169c99ce142),
    [#11204](https://github.com/angular/angular.js/issues/11204), [#11205](https://github.com/angular/angular.js/issues/11205))
-- **date filter:** display localised era for `G` format codes
+- **date filter:** display localized era for `G` format codes
   ([2b4dfa9e](https://github.com/angular/angular.js/commit/2b4dfa9e2b63d7ebb78f3b0fd3439d18f932e1cd),
    [#10503](https://github.com/angular/angular.js/issues/10503), [#11266](https://github.com/angular/angular.js/issues/11266))
 - **filterFilter:**
@@ -1948,7 +1948,7 @@ mechanism.
 - **Angular:** properly compare RegExp with other objects for equality
   ([b8e8f9af](https://github.com/angular/angular.js/commit/b8e8f9af78f4ef3e556dd3cef6bfee35ad4cb82a),
    [#11204](https://github.com/angular/angular.js/issues/11204), [#11205](https://github.com/angular/angular.js/issues/11205))
-- **date filter:** display localised era for `G` format codes
+- **date filter:** display localized era for `G` format codes
   ([f2683f95](https://github.com/angular/angular.js/commit/f2683f956fcd3216eaa263db20b31e0d46338800),
    [#10503](https://github.com/angular/angular.js/issues/10503), [#11266](https://github.com/angular/angular.js/issues/11266))
 - **filterFilter:**
@@ -2054,7 +2054,7 @@ mechanism.
 
 The `ngMessagesInclude` attribute is now its own directive and that must
 be placed as a **child** element within the element with the ngMessages
-directive. (Keep in mind that the former behaviour of the
+directive. (Keep in mind that the former behavior of the
 ngMessageInclude attribute was that all **included** ngMessage template
 code was placed at the **bottom** of the element containing the
 ngMessages directive; therefore to make this behave in the same way,
@@ -2229,7 +2229,7 @@ $http.get(url, {
 - **filter:** format timezone correctly in the case that UTC timezone is used
   ([8c469191](https://github.com/angular/angular.js/commit/8c46919199090a05634789774124b38983430c76),
    [#9359](https://github.com/angular/angular.js/issues/9359))
-- **ngRoute:** dont duplicate optional params into query
+- **ngRoute:** don't duplicate optional params into query
   ([27bf2ce4](https://github.com/angular/angular.js/commit/27bf2ce40c5adfb1494d69c9d0ac9cf433834a12),
    [#10689](https://github.com/angular/angular.js/issues/10689))
 - **ngScenario:** allow ngScenario to handle lazy-loaded and manually bootstrapped applications
@@ -2279,7 +2279,7 @@ is marked as optional and the attribute is not specified, no function will be ad
 - **$parse:** remove references to last arguments to a fn call
   ([7caad220](https://github.com/angular/angular.js/commit/7caad2205a6e9927890192a3638f55532bdaaf75),
    [#10894](https://github.com/angular/angular.js/issues/10894))
-- **ngRoute:** dont duplicate optional params into query
+- **ngRoute:** don't duplicate optional params into query
   ([f41ca4a5](https://github.com/angular/angular.js/commit/f41ca4a53ed53f172fb334911be56e42aad58794),
    [#10689](https://github.com/angular/angular.js/issues/10689))
 - **ngScenario:** Allow ngScenario to handle lazy-loaded and manually bootstrapped applications
@@ -2537,7 +2537,7 @@ Now it will be something like:
 ```
 
 If your application code relied on this value, which it shouldn't, then you will need to modify your
-application to accommodate this. You may find that you can use the `track by` feaure of `ngOptions`
+application to accommodate this. You may find that you can use the `track by` feature of `ngOptions`
 as this provides the ability to specify the key that is stored.
 
 - **ngOptions:** due to [7fda214c](https://github.com/angular/angular.js/commit/7fda214c4f65a6a06b25cf5d5aff013a364e9cef),
@@ -2692,7 +2692,7 @@ Previously, if either value being compared in the orderBy comparator was null or
 order would, incorrectly, not change. Now, this order behaves more like Array.prototype.sort, which
 by default pushes `null` behind objects, due to `n` occurring after `[` (the first characters of their
 stringified forms) in ASCII / Unicode. If `toString` is customized, or does not exist, the
-behaviour is undefined.
+behavior is undefined.
 
 
 
@@ -2769,7 +2769,7 @@ behaviour is undefined.
   ([96c61fe7](https://github.com/angular/angular.js/commit/96c61fe756d7d3db011818bf0925e3d86ffff8ce),
    [#10278](https://github.com/angular/angular.js/issues/10278))
 - **orderBy:**
-  - make object-to-primtiive behaviour work for objects with null prototype
+  - make object-to-primtiive behavior work for objects with null prototype
   ([3aa57528](https://github.com/angular/angular.js/commit/3aa5752894419b4638d5c934879258fa6a1c0d07))
   - maintain order in array of objects when predicate is not provided
   ([8bfeddb5](https://github.com/angular/angular.js/commit/8bfeddb5d671017f4a21b8b46334ac816710b143),
@@ -2950,7 +2950,7 @@ would previously invoke `model.value()` in the global context.
 
 Now, ngModel invokes `value` with `model` as the context.
 
-It's unlikely that real apps relied on this behavior. If they did they can use `.bind` to explicilty
+It's unlikely that real apps relied on this behavior. If they did they can use `.bind` to explicitly
 bind a getter/getter to the global context, or just reference globals normally without `this`.
 
 
@@ -3026,7 +3026,7 @@ bind a getter/getter to the global context, or just reference globals normally w
 - **ngMock:** call $interval callbacks even when invokeApply is false
   ([d81ff888](https://github.com/angular/angular.js/commit/d81ff8885b77f70c6417d7be3124d86d07447375),
    [#10032](https://github.com/angular/angular.js/issues/10032))
-- **ngPattern:** match behaviour of native HTML pattern attribute
+- **ngPattern:** match behavior of native HTML pattern attribute
   ([85eb9660](https://github.com/angular/angular.js/commit/85eb9660ef67c24d5104a6a1921bedad0bd1b57e),
    [#9881](https://github.com/angular/angular.js/issues/9881), [#9888](https://github.com/angular/angular.js/issues/9888))
 - **select:** ensure the label attribute is updated in Internet Explorer
@@ -3253,7 +3253,7 @@ link: function(scope, element, attr) {
 - **$animate:** due to [e5f4d7b1](https://github.com/angular/angular.js/commit/e5f4d7b10ae5e6a17ab349995451c33b7d294245),
   staggering animations that use transitions will now
 always block the transition from starting (via `transition: 0s none`)
-up until the stagger step kicks in. The former behaviour was that the
+up until the stagger step kicks in. The former behavior was that the
 block was removed as soon as the pending class was added. This fix
 allows for styles to be applied in the pending class without causing
 an animation to trigger prematurely.
@@ -3496,7 +3496,7 @@ Closes #9281
 
 - $scope['this'] no longer exits on the $scope object
 - $parse-ed expressions no longer allow chaining 'this' such as this['this'] or $parent['this']
-- 'this' in $parse-ed expressions can no longer be overriden, if a variable named 'this' is put on the scope it must be accessed using this['this']
+- 'this' in $parse-ed expressions can no longer be overridden, if a variable named 'this' is put on the scope it must be accessed using this['this']
 
 Closes #9105
 
@@ -3670,7 +3670,7 @@ Previously it was just a good practice to make all filters stateless. Now
 it's a requirement in order for the model change-observation to pick up
 all changes.
 
-If an existing filter is statefull, it can be flagged as such but keep in
+If an existing filter is stateful, it can be flagged as such but keep in
 mind that this will result in a significant performance-penalty (or rather
 lost opportunity to benefit from a major perf improvement) that will
 affect the `$digest` duration.
@@ -3799,7 +3799,7 @@ attribute, used for evaluating a scope expression when the switch value changes.
 While it's unlikely, applications which may be using this feature should work around the removal
 by adding a custom directive which will perform the eval instead. Directive controllers are
 re-instantiated when being transcluded, so by putting the attribute on each item that you want
-to be notified of a change to, you can more or less emulate the old behaviour.
+to be notified of a change to, you can more or less emulate the old behavior.
 
 Example:
 
@@ -4062,7 +4062,7 @@ Angular will now throw a $compile minErr each a template fails to download
 for ngView, directives and ngMessage template requests. This changes the former
 behavior of silently ignoring failed HTTP requests--or when the template itself
 is empty. Please ensure that all directive, ngView and ngMessage code now properly
-addresses this scenario. NgInclude is uneffected from this change.
+addresses this scenario. NgInclude is unaffected from this change.
 
 
 - **$animate**: due to [23da6140](https://github.com/angular/angular.js/commit/23da614043fe5dcf0be132b86466eecb11c766a2)
@@ -4075,7 +4075,7 @@ applying the active CSS class.
 
 - **$animate**: due to [bf0f5502](https://github.com/angular/angular.js/commit/bf0f5502b1bbfddc5cdd2f138efd9188b8c652a9)
 
-Both the API for the cancallation method and the done callback for
+Both the API for the cancelation method and the done callback for
 $animate animations is different. Instead of using a callback function
 for each of the $animate animation methods, a promise is used instead.
 
@@ -4302,7 +4302,7 @@ angular.module("myApp", []).
 - **input:** due to [ebece0bc](https://github.com/angular/angular.js/commit/ebece0bcb9d64e59beb1c9b3418bed25e50ceef4),
 
 Previously, `input[type=password]` would trim values by default, and would require an explicit ng-trim="false"
-to disable the trimming behaviour. After this CL, `ng-trim` no longer affects `input[type=password]`, and will
+to disable the trimming behavior. After this CL, `ng-trim` no longer affects `input[type=password]`, and will
 never trim the password value.
 
 Closes #8250
@@ -4345,7 +4345,7 @@ Closes #8230
 - **copy:** clear array destinations correctly for non-array sources
   ([a603e202](https://github.com/angular/angular.js/commit/a603e202cc7e048c2ab6f12dee1cc8f277cf6f4f),
    [#8610](https://github.com/angular/angular.js/issues/8610), [#8702](https://github.com/angular/angular.js/issues/8702))
-- **forEach:** match behaviour of Array.prototype.forEach (ignore missing properties)
+- **forEach:** match behavior of Array.prototype.forEach (ignore missing properties)
   ([36230194](https://github.com/angular/angular.js/commit/36230194be8aa417b0af33d618060829a75c4c5f),
    [#8510](https://github.com/angular/angular.js/issues/8510), [#8522](https://github.com/angular/angular.js/issues/8522), [#8525](https://github.com/angular/angular.js/issues/8525))
 - **input:**
@@ -4562,7 +4562,7 @@ by this change.
   by default, do not trim `input[type=password]` values.
 
 Previously, `input[type=password]` would trim values by default, and would require an explicit `ng-trim="false"`
-to disable the trimming behaviour. After this change, `ng-trim` no longer affects `input[type=password]`, and will
+to disable the trimming behavior. After this change, `ng-trim` no longer affects `input[type=password]`, and will
 never trim the password value.
 
 Closes #8250
@@ -4726,7 +4726,7 @@ Closes #8230
 - **$compile:** due to [11f5aeee](https://github.com/angular/angular.js/commit/11f5aeeee952a395edaf54e3277674f211a82fc7),
   directives now match elements by default unless specific restriction rules are set via `restrict` property.
 
-This means that if a directive 'myFoo' previously didn't specify matching restrictrion, it will now match both the attribute
+This means that if a directive 'myFoo' previously didn't specify matching restriction, it will now match both the attribute
 and element form.
 
 Before:
@@ -4856,7 +4856,7 @@ Closes #8321
 
 ## Features
 
-- **$compile:** explicitly request multi-element directive behaviour
+- **$compile:** explicitly request multi-element directive behavior
   ([e8066c4b](https://github.com/angular/angular.js/commit/e8066c4b4ce11496b0d8f39e41b4d753048bca2d),
    [#5372](https://github.com/angular/angular.js/issues/5372), [#6574](https://github.com/angular/angular.js/issues/6574), [#5370](https://github.com/angular/angular.js/issues/5370), [#8044](https://github.com/angular/angular.js/issues/8044), [#7336](https://github.com/angular/angular.js/issues/7336))
 - **ngList:** use ngTrim to manage whitespace handling when splitting
@@ -4883,7 +4883,7 @@ Closes #8321
 
 - **$compile:** due to [e8066c4b](https://github.com/angular/angular.js/commit/e8066c4b4ce11496b0d8f39e41b4d753048bca2d),
   Directives which previously depended on the implicit grouping between
-directive-start and directive-end attributes must be refactored in order to see this same behaviour.
+directive-start and directive-end attributes must be refactored in order to see this same behavior.
 
 Before:
 
@@ -4964,7 +4964,7 @@ Closes #8147
 The `ngList` directive no longer supports splitting the view value
 via a regular expression. We need to be able to re-join list items back
 together and doing this when you can split with regular expressions can
-lead to inconsistent behaviour and would be much more complex to support.
+lead to inconsistent behavior and would be much more complex to support.
 
 If your application relies upon ngList splitting with a regular expression
 then you should either try to convert the separator to a simple string or
@@ -5264,11 +5264,11 @@ vulnerabilities via [security@angularjs.org].
   - due to [77ada4c8](https://github.com/angular/angular.js/commit/77ada4c82d6b8fc6d977c26f3cdb48c2f5fbe5a5),
 
 You can no longer invoke .bind, .call or .apply on a function in angular expressions.
-This is to disallow changing the behaviour of existing functions
-in an unforseen fashion.
+This is to disallow changing the behavior of existing functions
+in an unforeseen fashion.
   - due to [6081f207](https://github.com/angular/angular.js/commit/6081f20769e64a800ee8075c168412b21f026d99),
 
-The (deprecated) __proto__ propery does not work inside angular expressions
+The (deprecated) __proto__ property does not work inside angular expressions
 anymore.
   - due to [48fa3aad](https://github.com/angular/angular.js/commit/48fa3aadd546036c7e69f71046f659ab1de244c6),
 
@@ -5288,10 +5288,10 @@ of the original object's prototype chain directly onto the copied object.
 
 This means that if you iterate over only the copied object's `hasOwnProperty`
 properties, it will no longer contain the properties from the prototype.
-This is actually much more reasonable behaviour and it is unlikely that
+This is actually much more reasonable behavior and it is unlikely that
 applications are actually relying on this.
 
-If this behaviour is relied upon, in an app, then one should simply iterate
+If this behavior is relied upon, in an app, then one should simply iterate
 over all the properties on the object (and its inherited properties) and
 not filter them with `hasOwnProperty`.
 
@@ -5395,11 +5395,11 @@ or:
   - due to [07fa87a8](https://github.com/angular/angular.js/commit/07fa87a8a82b8be155d8c898bb79e5d9277adfb4),
 
 You can no longer invoke .bind, .call or .apply on a function in angular expressions.
-This is to disallow changing the behaviour of existing functions
-in an unforseen fashion.
+This is to disallow changing the behavior of existing functions
+in an unforeseen fashion.
   - due to [cb713e60](https://github.com/angular/angular.js/commit/cb713e6045413a25b54ad3267476fa29efd70646),
 
-The (deprecated) __proto__ propery does not work inside angular expressions
+The (deprecated) __proto__ property does not work inside angular expressions
 anymore.
   - due to [89ca8597](https://github.com/angular/angular.js/commit/89ca8597341aa5585bcf728fa677022b7ec9c071),
 
@@ -5499,7 +5499,7 @@ If you need Object.keys, make it accessible in the scope.
   ([92489886](https://github.com/angular/angular.js/commit/92489886dcce3bca00fe827aeb0817297b8a175c))
   - optimize adding nodes to a jqLite collection
   ([31faeaa7](https://github.com/angular/angular.js/commit/31faeaa7293716251ed437fa54432bb89d9d48de))
-  - optimize element dealocation
+  - optimize element deallocation
   ([e35abc9d](https://github.com/angular/angular.js/commit/e35abc9d2fac0471cbe8089dc0e33a72b8029ada))
   - don't use reflection to access expandoId
   ([ea9a130a](https://github.com/angular/angular.js/commit/ea9a130a43d165f4f4389d01ac409dd3047efcb4))
@@ -5996,7 +5996,7 @@ https://docs.angularjs.org/api/ng/service/$http#interceptors
 
 - **injector:** due to [c0b4e2db](https://github.com/angular/angular.js/commit/c0b4e2db9cbc8bc3164cedc4646145d3ab72536e),
 
-Previously, config blocks would be able to control behaviour of provider registration, due to being
+Previously, config blocks would be able to control behavior of provider registration, due to being
 invoked prior to provider registration. Now, provider registration always occurs prior to configuration
 for a given module, and therefore config blocks are not able to have any control over a providers
 registration.
@@ -6026,8 +6026,8 @@ angular.module('foo', [])
   });
 ```
 
-would have "worked", meaning behaviour of the config block between the registration of "$rootProvider"
-and "$dependentProvider" would have actually accomplished something and changed the behaviour of the
+would have "worked", meaning behavior of the config block between the registration of "$rootProvider"
+and "$dependentProvider" would have actually accomplished something and changed the behavior of the
 app. This is no longer possible within a single module.
 
 
@@ -6543,7 +6543,7 @@ For more info: http://blog.angularjs.org/2013/12/angularjs-13-new-release-approa
   - only block keyframes if a stagger is set to occur
   ([e71e7b6c](https://github.com/angular/angular.js/commit/e71e7b6cae57f25c5837dda98551c8e0a5cb720d),
    [#4225](https://github.com/angular/angular.js/issues/4225))
-  - ensure that animateable directives cancel expired leave animations
+  - ensure that animatable directives cancel expired leave animations
   ([e9881991](https://github.com/angular/angular.js/commit/e9881991ca0a5019d3a4215477738ed247898ba0),
    [#5886](https://github.com/angular/angular.js/issues/5886))
   - ensure all animated elements are taken care of during the closing timeout
@@ -6700,7 +6700,7 @@ For more info: http://blog.angularjs.org/2013/12/angularjs-13-new-release-approa
   - rename mock.animate to ngAnimateMock and ensure it contains all test helper code for ngAnimate
   ([4224cd51](https://github.com/angular/angular.js/commit/4224cd5182bc93e4a210f75e0a4e4de7f3c544e8),
    [#5822](https://github.com/angular/angular.js/issues/5822), [#5917](https://github.com/angular/angular.js/issues/5917))
-  - remove usage of $animate.flushNext in favour of queing
+  - remove usage of $animate.flushNext in favor of queuing
   ([906fdad0](https://github.com/angular/angular.js/commit/906fdad0f95465842e336e057ea97d0633712189))
   - always call functions injected with `inject` with `this` set to the current spec
   ([3bf43903](https://github.com/angular/angular.js/commit/3bf43903397c703aa2e9ba1e1a48dbc9e8286ee2),
@@ -6811,7 +6811,7 @@ The animation mock module has been renamed from `mock.animate` to `ngAnimateMock
 ## Breaking Changes
 
 - **$http:** due to [e1cfb195](https://github.com/angular/angular.js/commit/e1cfb1957feaf89408bccf48fae6f529e57a82fe),
-  it is now necessary to seperately specify default HTTP headers for PUT, POST and PATCH requests, as these no longer share a single object.
+  it is now necessary to separately specify default HTTP headers for PUT, POST and PATCH requests, as these no longer share a single object.
 
   To migrate your code, follow the example below:
 
@@ -6900,7 +6900,7 @@ The animation mock module has been renamed from `mock.animate` to `ngAnimateMock
   - remove base href domain if the URL begins with '//'
   ([760f2fb7](https://github.com/angular/angular.js/commit/760f2fb73178e56c37397b3c5876f7dac96f0455),
    [#5606](https://github.com/angular/angular.js/issues/5606))
-  - fix $location.path() behaviour when $locationChangeStart is triggered by the browser
+  - fix $location.path() behavior when $locationChangeStart is triggered by the browser
   ([cf686285](https://github.com/angular/angular.js/commit/cf686285c22d528440e173fdb65ad1052d96df3c),
    [#4989](https://github.com/angular/angular.js/issues/4989), [#5089](https://github.com/angular/angular.js/issues/5089), [#5118](https://github.com/angular/angular.js/issues/5118), [#5580](https://github.com/angular/angular.js/issues/5580))
   - re-assign history after BFCache back on Android browser
@@ -6957,7 +6957,7 @@ The animation mock module has been renamed from `mock.animate` to `ngAnimateMock
 - **$log:** should work in IE8
   ([4f5758e6](https://github.com/angular/angular.js/commit/4f5758e6669222369889c9e789601d25ff885530),
    [#5400](https://github.com/angular/angular.js/issues/5400))
-- **$parse:** return `undefined` if an intermetiate property's value is `null`
+- **$parse:** return `undefined` if an intermediate property's value is `null`
   ([26d43cac](https://github.com/angular/angular.js/commit/26d43cacdc106765bd928d41600352198f887aef),
    [#5480](https://github.com/angular/angular.js/issues/5480))
 - **closure:** add type definition for `Scope#$watchCollection`
@@ -7333,7 +7333,7 @@ There are no breaking changes in this release (promise!)
   - attribute bindings should not break due to terminal directives
   ([79223eae](https://github.com/angular/angular.js/commit/79223eae5022838893342c42dacad5eca83fabe8),
    [#4525](https://github.com/angular/angular.js/issues/4525), [#4528](https://github.com/angular/angular.js/issues/4528), [#4649](https://github.com/angular/angular.js/issues/4649))
-  - instantiate controlers when re-entering compilation
+  - instantiate controllers when re-entering compilation
   ([faf5b980](https://github.com/angular/angular.js/commit/faf5b980da09da2b4c28f1feab33f87269f9f0ba),
    [#4434](https://github.com/angular/angular.js/issues/4434), [#4616](https://github.com/angular/angular.js/issues/4616))
 - **$injector:** allow a constructor function to return a function
@@ -7473,7 +7473,7 @@ There are no breaking changes in this release (promise!)
   someone on the scope chain for JavaScript use, you also expose it to
   Angular expressions
   2. the new "controller as" syntax that's now in increased usage exposes the
-  entire controller on the scope chain greatly increaing the exposed surface.
+  entire controller on the scope chain greatly increasing the exposed surface.
 
   Though Angular expressions are written and controlled by the developer, they:
 
@@ -7490,7 +7490,7 @@ There are no breaking changes in this release (promise!)
   Please use `data-ng-csp` instead.
 
 - **jqLite:** due to [27e9340b](https://github.com/angular/angular.js/commit/27e9340b3c25b512e45213b39811098d07e12e3b),
-  `jqLite.scope()` (connonly used through `angular.element(node).scope()`) does not return the
+  `jqLite.scope()` (commonly used through `angular.element(node).scope()`) does not return the
   isolate scope on the element that triggered directive with isolate scope. Use
   `jqLite.isolateScope()` instead.
 
@@ -7742,7 +7742,7 @@ There are no breaking changes in this release (promise!)
 - **directives:** due to [b7af76b4](https://github.com/angular/angular.js/commit/b7af76b4c5aa77648cc1bfd49935b48583419023),
   the priority of ngRepeat, ngSwitchWhen, ngIf, ngInclude and ngView has changed. This could affect directives that explicitly specify their priority.
 
-  In order to make ngRepeat, ngSwitchWhen, ngIf, ngInclude and ngView work together in all common scenarios their directives are being adjusted to achieve the following precendence:
+  In order to make ngRepeat, ngSwitchWhen, ngIf, ngInclude and ngView work together in all common scenarios their directives are being adjusted to achieve the following precedence:
 
   ```
   Directive        | Old Priority | New Priority
@@ -7816,7 +7816,7 @@ There are no breaking changes in this release (promise!)
 
 - **Directives:**
   - **ngTransclude:**
-     - clear the translusion point before transcluding
+     - clear the transclusion point before transcluding
       ([eed299a3](https://github.com/angular/angular.js/commit/eed299a31b5a6dd0363133c5f9271bf33d090c94))
      - make the transclusion available to parent post-link function
       ([bf79bd41](https://github.com/angular/angular.js/commit/bf79bd4194eca2118ae1c492c08dbd217f5ae810))
@@ -8830,7 +8830,7 @@ _Note: This release also contains all bug fixes available in [1.0.6](#1.0.6)._
           <li ng-switch-when="option">2</li>
         </ul>
 
-  To keep the old behaviour, use:
+  To keep the old behavior, use:
 
         <ul ng-switch="select">
           <li ng-switch-when="1">2</li>
@@ -9229,7 +9229,7 @@ _Note: This release also contains all bug fixes available in [1.0.3](#1.0.3)._
     ([a32bc40f](https://github.com/angular/angular.js/commit/a32bc40fd75ca46e3581ad7a6e3a24a31df6e266),
      [#1111](https://github.com/angular/angular.js/issues/1111))
   ([d9eff86e](https://github.com/angular/angular.js/commit/d9eff86ef77dd76208cef21e882239d4db0eac1e))
-- **$parser:** string concatination with undefined model
+- **$parser:** string concatenation with undefined model
   ([42c38b29](https://github.com/angular/angular.js/commit/42c38b29f7dcb3327fe58e630b8e2973676989e0),
    [#988](https://github.com/angular/angular.js/issues/988))
 - **$resource:**
@@ -11094,7 +11094,7 @@ with the `$route` service
   `$browser.defer.flush()` in your test just before the point where you expect all cached
   resource/xhr requests to return any results. Please see 011fa39c2a0b5da843395b538fc4e52e5ade8287
   for more info.
-- The HTML sanitizer is slightly more strinct now. Please see info in the "Security" section above.
+- The HTML sanitizer is slightly more strict now. Please see info in the "Security" section above.
 
 
 <a name="0.9.5"></a>
@@ -11137,7 +11137,7 @@ with the `$route` service
 
 ### Api
 - date filter now accepts strings that angular.String.toDate can convert to Date objects
-- angular.String.toDate supports ISO8061 formated strings with all time fractions being optional
+- angular.String.toDate supports ISO8061 formatted strings with all time fractions being optional
 - ng:repeat now exposes $position with values set to 'first', 'middle' or 'last'
 - ng:switch now supports ng:switch-default as fallback switch option
 
@@ -11175,7 +11175,7 @@ with the `$route` service
 - new browser() dsl statement for getting info about the emulated browser running the app
   (issue #109)
 - scenario runner is now compatible with IE8 (issue #93)
-- scenarior runner checks if URL would return a non-success status code (issue #100)
+- scenario runner checks if URL would return a non-success status code (issue #100)
 - binding() DSL now accepts regular expressions
 - new textarea() scenario runner DSL for entering text into textareas
 
@@ -11209,7 +11209,7 @@ with the `$route` service
 
 ### Chores
 - lots of fixes to get all tests pass on IE
-- added TzDate type to allow us to create timezone idependent tests (issue #88)
+- added TzDate type to allow us to create timezone independent tests (issue #88)
 
 ### Breaking changes
 - $cookieStore service is not globally published any more, if you use it, you must request it via
