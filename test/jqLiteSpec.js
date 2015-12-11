@@ -1345,6 +1345,29 @@ describe('jqLite', function() {
       expect(mouseoverSpy).not.toHaveBeenCalled();
     });
 
+    it('should not deregister any listeners when called with empty string', function() {
+      var aElem = jqLite(a),
+          clickSpy = jasmine.createSpy('click'),
+          mouseoverSpy = jasmine.createSpy('mouseover');
+
+      aElem.on('click', clickSpy);
+      aElem.on('mouseover', mouseoverSpy);
+
+      browserTrigger(a, 'click');
+      expect(clickSpy).toHaveBeenCalledOnce();
+      browserTrigger(a, 'mouseover');
+      expect(mouseoverSpy).toHaveBeenCalledOnce();
+
+      clickSpy.reset();
+      mouseoverSpy.reset();
+
+      aElem.off('');
+
+      browserTrigger(a, 'click');
+      expect(clickSpy).toHaveBeenCalledOnce();
+      browserTrigger(a, 'mouseover');
+      expect(mouseoverSpy).toHaveBeenCalledOnce();
+    });
 
     it('should deregister listeners for specific type', function() {
       var aElem = jqLite(a),
