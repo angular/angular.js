@@ -749,8 +749,8 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
           options.onDone();
         }
 
-        // Remove the transitionend / animationend listener(s)
-        if (events) {
+        if (events && events.length) {
+          // Remove the transitionend / animationend listener(s)
           element.off(events.join(' '), onAnimationProgress);
         }
 
@@ -960,7 +960,10 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
             element.data(ANIMATE_TIMER_KEY, animationsData);
           }
 
-          element.on(events.join(' '), onAnimationProgress);
+          if (events.length) {
+            element.on(events.join(' '), onAnimationProgress);
+          }
+
           if (options.to) {
             if (options.cleanupStyles) {
               registerRestorableStyles(restoreStyles, node, Object.keys(options.to));
