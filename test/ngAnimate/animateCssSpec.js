@@ -1502,6 +1502,39 @@ describe("ngAnimate $animateCss", function() {
               expect(elementOffSpy.mostRecentCall.args[0]).toBe(event);
             });
         });
+
+        they("should not add or remove $prop event listeners when no animation styles are detected",
+          [TRANSITIONEND_EVENT, ANIMATIONEND_EVENT], function(event) {
+            inject(function($animateCss, $timeout) {
+
+              progress = event === TRANSITIONEND_EVENT ? transitionProgress : keyframeProgress;
+
+              // Make sure other event listeners are not affected
+              var otherEndSpy = jasmine.createSpy('otherEndSpy');
+              element.on(event, otherEndSpy);
+
+              expect(elementOnSpy).toHaveBeenCalledOnce();
+              elementOnSpy.reset();
+
+              var animator = $animateCss(element, {
+                event: 'enter',
+                structural: true
+              });
+
+              expect(animator.$$willAnimate).toBeFalsy();
+
+              // This will close the animation because no styles have been detected
+              var runner = animator.start();
+              triggerAnimationStartFrame();
+
+              expect(elementOnSpy).not.toHaveBeenCalled();
+              expect(elementOffSpy).not.toHaveBeenCalled();
+
+              progress(element, 10);
+              expect(otherEndSpy).toHaveBeenCalledOnce();
+            });
+        });
+
       });
     });
 
