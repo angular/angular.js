@@ -4235,6 +4235,53 @@ describe('$compile', function() {
     });
 
 
+    it('should eventually expose isolate scope variables on ES6 class controller with controllerAs when bindToController is true', function() {
+      if (!/chrome/i.test(navigator.userAgent)) return;
+      /*jshint -W061 */
+      var controllerCalled = false;
+      module(function($compileProvider) {
+        $compileProvider.directive('fooDir', valueFn({
+          template: '<p>isolate</p>',
+          scope: {
+            'data': '=dirData',
+            'str': '@dirStr',
+            'fn': '&dirFn'
+          },
+          controller: eval(
+            "class Foo {" +
+            "  constructor($scope) {}" +
+            "  check() {" +
+            "    expect(this.data).toEqualData({" +
+            "      'foo': 'bar'," +
+            "      'baz': 'biz'" +
+            "    });" +
+            "    expect(this.str).toBe('Hello, world!');" +
+            "    expect(this.fn()).toBe('called!');" +
+            "    controllerCalled = true;" +
+            "  }" +
+            "}"
+          ),
+          controllerAs: 'test',
+          bindToController: true
+        }));
+      });
+      inject(function($compile, $rootScope) {
+        $rootScope.fn = valueFn('called!');
+        $rootScope.whom = 'world';
+        $rootScope.remoteData = {
+          'foo': 'bar',
+          'baz': 'biz'
+        };
+        element = $compile('<div foo-dir dir-data="remoteData" ' +
+                                 'dir-str="Hello, {{whom}}!" ' +
+                                 'dir-fn="fn()"></div>')($rootScope);
+        element.data('$fooDirController').check();
+        expect(controllerCalled).toBe(true);
+      });
+      /*jshint +W061 */
+    });
+
+
     it('should update @-bindings on controller when bindToController and attribute change observed', function() {
       module(function($compileProvider) {
         $compileProvider.directive('atBinding', valueFn({

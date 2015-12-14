@@ -214,7 +214,7 @@
  * #### `bindToController`
  * When an isolate scope is used for a component (see above), and `controllerAs` is used, `bindToController: true` will
  * allow a component to have its properties bound to the controller, rather than to scope. When the controller
- * is instantiated, the initial values of the isolate scope bindings are already available.
+ * is instantiated, the initial values of the isolate scope bindings will be available if the controller is not an ES6 class.
  *
  * #### `controller`
  * Controller constructor function. The controller is instantiated before the
