@@ -22,6 +22,13 @@ describe('private mocks', function() {
         expect(window.it).toHaveBeenCalledWith('should fight "fire" with "fire"', jasmine.any(Function));
       });
 
+      it('should handle replacement strings containing `$&` correctly', function() {
+        spyOn(window, 'it');
+
+        they('should replace dollar-prop with $prop', ['$&']);
+        expect(window.it).toHaveBeenCalledWith('should replace dollar-prop with "$&"', jasmine.any(Function));
+      });
+
       it('should pass each item in an array to the handler', function() {
         var handlerSpy = jasmine.createSpy('handler');
         spyOn(window, 'it').andCallFake(function(msg, handler) {
