@@ -85,7 +85,7 @@ var angularFiles = {
   ],
 
   'angularLoader': [
-    'stringify.js',
+    'src/stringify.js',
     'src/minErr.js',
     'src/loader.js'
   ],
