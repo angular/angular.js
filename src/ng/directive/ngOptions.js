@@ -493,10 +493,12 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
           }
         };
 
+        var emptyValueParseFn = 'ngEmptyValue' in attr && attr.ngEmptyValue.length > 0 && $parse(attr.ngEmptyValue);
+
         selectCtrl.readValue = function readNgOptionsValue() {
 
           // Allow a default value to be substituted for any options with empty values
-          if (selectElement.val() === '') return $parse(attr.ngEmptyValue)(scope);
+          if (selectElement.val() === '' && emptyValueParseFn) return emptyValueParseFn(scope);
 
           var selectedOption = options.selectValueMap[selectElement.val()];
 
