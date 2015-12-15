@@ -30,6 +30,7 @@
     "dgeni": "^0.4.0",
     "dgeni-packages": "^0.11.0",
     "event-stream": "~3.1.0",
+    "glob": "^6.0.1",
     "grunt": "~0.4.2",
     "grunt-bump": "~0.0.13",
     "grunt-contrib-clean": "~0.6.0",
