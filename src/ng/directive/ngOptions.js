@@ -493,7 +493,8 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
           }
         };
 
-        var emptyValueParseFn = 'ngEmptyValue' in attr && attr.ngEmptyValue.length > 0 && $parse(attr.ngEmptyValue);
+        var emptyValueParseFn = 'ngEmptyValue' in attr && attr.ngEmptyValue.length > 0
+                                && $parse(attr.ngEmptyValue);
 
         selectCtrl.readValue = function readNgOptionsValue() {
 
