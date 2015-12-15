@@ -20,6 +20,14 @@ describe('linky', function() {
     expect(linky(undefined)).not.toBeDefined();
   });
 
+  it('should return non-string, truthy values unchanged', function() {
+    expect(linky(true)).toBe(true);
+    expect(linky(42)).toBe(42);
+    expect(linky([])).toEqual([]);
+    expect(linky({})).toEqual({});
+    expect(linky(noop)).toBe(noop);
+  });
+
   it('should be case-insensitive', function() {
     expect(linky('WWW.example.com')).toEqual('<a href="http://WWW.example.com">WWW.example.com</a>');
     expect(linky('WWW.EXAMPLE.COM')).toEqual('<a href="http://WWW.EXAMPLE.COM">WWW.EXAMPLE.COM</a>');
