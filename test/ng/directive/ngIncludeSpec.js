@@ -398,6 +398,26 @@ describe('ngInclude', function() {
   });
 
 
+  it('should not compile template if original scope is destroyed', function() {
+    module(function($provide) {
+      $provide.decorator('$compile', function($delegate) {
+        return jasmine.createSpy('$compile').andCallFake($delegate);
+      });
+    });
+    inject(function($rootScope, $httpBackend, $compile) {
+      $httpBackend.when('GET', 'url').respond('template text');
+      $rootScope.show = true;
+      element = $compile('<div ng-if="show"><div ng-include="\'url\'"></div></div>')($rootScope);
+      $rootScope.$digest();
+      $rootScope.show = false;
+      $rootScope.$digest();
+      $compile.reset();
+      $httpBackend.flush();
+      expect($compile).not.toHaveBeenCalled();
+    });
+  });
+
+
   describe('autoscroll', function() {
     var autoScrollSpy;
 
