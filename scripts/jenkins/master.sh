@@ -22,7 +22,7 @@ function build {
     npm install --color false
     grunt ci-checks package --no-color
   else
-    ./jenkins_build.sh
+    scripts/jenkins/build.sh
   fi
 
   cd $SCRIPT_DIR
