@@ -1,7 +1,7 @@
 language: node_js
 sudo: false
 node_js:
-  - '0.10'
+  - '4.2'
 
 cache:
   directories:
@@ -20,24 +20,21 @@ env:
     - JOB=docs-e2e BROWSER_PROVIDER=saucelabs
     - JOB=e2e TEST_TARGET=jqlite BROWSER_PROVIDER=saucelabs
     - JOB=e2e TEST_TARGET=jquery BROWSER_PROVIDER=saucelabs
-#    - JOB=unit BROWSER_PROVIDER=browserstack
-#    - JOB=docs-e2e BROWSER_PROVIDER=browserstack
-#    - JOB=e2e TEST_TARGET=jqlite BROWSER_PROVIDER=browserstack
-#    - JOB=e2e TEST_TARGET=jquery BROWSER_PROVIDER=browserstack
   global:
+    - CXX=g++-4.8  # node 4 likes the G++ v4.8 compiler
     - SAUCE_USERNAME=angular-ci
     - SAUCE_ACCESS_KEY=9b988f434ff8-fbca-8aa4-4ae3-35442987
-    - BROWSER_STACK_USERNAME=VojtaJina
-    - BROWSER_STACK_ACCESS_KEY=QCQJ1ZpWXpBkSwEdD8ev
     - LOGS_DIR=/tmp/angular-build/logs
     - BROWSER_PROVIDER_READY_FILE=/tmp/browsersprovider-tunnel-ready
 
-#matrix:
-#  allow_failures:
-#    - env: "JOB=unit BROWSER_PROVIDER=browserstack"
-#    - env: "JOB=docs-e2e BROWSER_PROVIDER=browserstack"
-#    - env: "JOB=e2e TEST_TARGET=jqlite BROWSER_PROVIDER=browserstack"
-#    - env: "JOB=e2e TEST_TARGET=jquery BROWSER_PROVIDER=browserstack"
+# node 4 likes the G++ v4.8 compiler
+# see https://docs.travis-ci.com/user/languages/javascript-with-nodejs#Node.js-v4-(or-io.js-v3)-compiler-requirements
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-4.8
 
 install:
   # Check the size of caches
@@ -47,7 +44,7 @@ install:
   - npm config set spin false
   # Log HTTP requests
   - npm config set loglevel http
-  - npm install -g npm@2.5
+  #- npm install -g npm@2.5
   # Install npm dependencies and ensure that npm cache is not stale
   - npm install
 
