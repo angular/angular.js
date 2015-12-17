@@ -4,9 +4,7 @@ echo "#################################"
 echo "#### Update master ##############"
 echo "#################################"
 
-ARG_DEFS=(
-  "[--no-test=(true|false)]"
-)
+ARG_DEFS=()
 
 function init {
   if [[ ! $VERBOSE ]]; then
