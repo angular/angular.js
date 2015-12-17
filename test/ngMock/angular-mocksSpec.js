@@ -1924,7 +1924,7 @@ describe('ngMockE2E', function() {
     beforeEach(module('ngAnimate'));
     beforeEach(module('ngAnimateMock'));
 
-    var ss, element, trackedAnimations;
+    var ss, element, trackedAnimations, animationLog;
 
     afterEach(function() {
       if (element) {
@@ -1937,6 +1937,8 @@ describe('ngMockE2E', function() {
 
     beforeEach(module(function($animateProvider) {
       trackedAnimations = [];
+      animationLog = [];
+
       $animateProvider.register('.animate', function() {
         return {
           leave: logFn('leave'),
@@ -1945,7 +1947,13 @@ describe('ngMockE2E', function() {
 
         function logFn(method) {
           return function(element) {
+            animationLog.push('start ' + method);
             trackedAnimations.push(getDoneCallback(arguments));
+
+            return function closingFn(cancel) {
+              var lab = cancel ? 'cancel' : 'end';
+              animationLog.push(lab + ' ' + method);
+            };
           };
         }
 
@@ -2096,6 +2104,56 @@ describe('ngMockE2E', function() {
         trackedAnimations[0]();
         $animate.flush();
         expect(spy.callCount).toBe(2);
+      }));
+    });
+
+    describe('$animate.closeAndFlush()', function() {
+      it('should close the currently running $animateCss animations',
+        inject(function($animateCss, $animate) {
+
+        if (!browserSupportsCssAnimations()) return;
+
+        var spy = jasmine.createSpy();
+        var runner = $animateCss(element, {
+          duration: 1,
+          to: { color: 'red' }
+        }).start();
+
+        runner.then(spy);
+
+        expect(spy).not.toHaveBeenCalled();
+        $animate.closeAndFlush();
+        expect(spy).toHaveBeenCalled();
+      }));
+
+      it('should close the currently running $$animateJs animations',
+        inject(function($$animateJs, $animate) {
+
+        var spy = jasmine.createSpy();
+        var runner = $$animateJs(element, 'leave', 'animate', {}).start();
+        runner.then(spy);
+
+        expect(spy).not.toHaveBeenCalled();
+        $animate.closeAndFlush();
+        expect(spy).toHaveBeenCalled();
+      }));
+
+      it('should run the closing javascript animation function upon flush',
+        inject(function($$animateJs, $animate) {
+
+        $$animateJs(element, 'leave', 'animate', {}).start();
+
+        expect(animationLog).toEqual(['start leave']);
+        $animate.closeAndFlush();
+        expect(animationLog).toEqual(['start leave', 'end leave']);
+      }));
+
+      it('should throw an error if there are no animations to close and flush',
+        inject(function($animate) {
+
+        expect(function() {
+          $animate.closeAndFlush();
+        }).toThrow('No pending animations ready to be closed or flushed');
       }));
     });
   });

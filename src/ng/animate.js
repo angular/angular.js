@@ -53,6 +53,10 @@ function prepareAnimateOptions(options) {
       : {};
 }
 
+var $$CoreAnimateJsProvider = function() {
+  this.$get = function() {};
+};
+
 // this is prefixed with Core since it conflicts with
 // the animateQueueProvider defined in ngAnimate/animateQueue.js
 var $$CoreAnimateQueueProvider = function() {
