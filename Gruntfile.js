@@ -233,7 +233,7 @@ module.exports = function(grunt) {
       },
       "promises-aplus-adapter": {
         dest:'tmp/promises-aplus-adapter++.js',
-        src:['src/ng/q.js','lib/promises-aplus/promises-aplus-test-adapter.js']
+        src:['src/ng/q.js', 'lib/promises-aplus/promises-aplus-test-adapter.js']
       }
     },
 
@@ -342,7 +342,7 @@ module.exports = function(grunt) {
 
 
   //alias tasks
-  grunt.registerTask('test', 'Run unit, docs and e2e tests with Karma', ['jshint', 'jscs', 'package','test:unit','test:promises-aplus', 'tests:docs', 'test:protractor']);
+  grunt.registerTask('test', 'Run unit, docs and e2e tests with Karma', ['jshint', 'jscs', 'package', 'test:unit', 'test:promises-aplus', 'tests:docs', 'test:protractor']);
   grunt.registerTask('test:jqlite', 'Run the unit tests with Karma' , ['tests:jqlite']);
   grunt.registerTask('test:jquery', 'Run the jQuery unit tests with Karma', ['tests:jquery']);
   grunt.registerTask('test:modules', 'Run the Karma module tests with Karma', ['build', 'tests:modules']);
@@ -352,11 +352,11 @@ module.exports = function(grunt) {
   grunt.registerTask('test:travis-protractor', 'Run the end to end tests with Protractor for Travis CI builds', ['connect:testserver', 'protractor:travis']);
   grunt.registerTask('test:ci-protractor', 'Run the end to end tests with Protractor for Jenkins CI builds', ['webdriver', 'connect:testserver', 'protractor:jenkins']);
   grunt.registerTask('test:e2e', 'Alias for test:protractor', ['test:protractor']);
-  grunt.registerTask('test:promises-aplus',['build:promises-aplus-adapter','shell:promises-aplus-tests']);
+  grunt.registerTask('test:promises-aplus',['build:promises-aplus-adapter', 'shell:promises-aplus-tests']);
 
-  grunt.registerTask('minify', ['bower','clean', 'build', 'minall']);
+  grunt.registerTask('minify', ['bower', 'clean', 'build', 'minall']);
   grunt.registerTask('webserver', ['connect:devserver']);
-  grunt.registerTask('package', ['bower', 'validate-angular-files','clean', 'buildall', 'minall', 'collect-errors', 'docs', 'copy', 'write', 'compress']);
+  grunt.registerTask('package', ['bower', 'validate-angular-files', 'clean', 'buildall', 'minall', 'collect-errors', 'docs', 'copy', 'write', 'compress']);
   grunt.registerTask('ci-checks', ['ddescribe-iit', 'merge-conflict', 'jshint', 'jscs']);
   grunt.registerTask('default', ['package']);
 };
