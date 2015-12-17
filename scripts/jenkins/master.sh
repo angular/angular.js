@@ -17,14 +17,7 @@ function init {
 
 function build {
   cd ../..
-
-  if [[ $NO_TEST == "true" ]]; then
-    npm install --color false
-    grunt ci-checks package --no-color
-  else
-    scripts/jenkins/build.sh
-  fi
-
+  scripts/jenkins/build.sh
   cd $SCRIPT_DIR
 }
 
