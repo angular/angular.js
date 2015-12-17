@@ -162,7 +162,7 @@ module.exports = function(grunt) {
         '!src/angular.bind.js' // we ignore this file since contains an early return statement
       ],
       options: {
-        config: ".jscsrc"
+        config: '.jscsrc'
       }
     },
 
@@ -231,7 +231,7 @@ module.exports = function(grunt) {
         dest: 'build/angular-aria.js',
         src: util.wrap(files['angularModules']['ngAria'], 'module')
       },
-      "promises-aplus-adapter": {
+      'promises-aplus-adapter': {
         dest:'tmp/promises-aplus-adapter++.js',
         src:['src/ng/q.js', 'lib/promises-aplus/promises-aplus-test-adapter.js']
       }
@@ -253,7 +253,7 @@ module.exports = function(grunt) {
     },
 
 
-    "ddescribe-iit": {
+    'ddescribe-iit': {
       files: [
         'src/**/*.js',
         'test/**/*.js',
@@ -274,7 +274,7 @@ module.exports = function(grunt) {
       }
     },
 
-    "merge-conflict": {
+    'merge-conflict': {
       files: [
         'src/**/*',
         'test/**/*',
@@ -304,11 +304,11 @@ module.exports = function(grunt) {
     },
 
     shell: {
-      "npm-install": {
+      'npm-install': {
         command: 'node scripts/npm/check-node-modules.js'
       },
 
-      "promises-aplus-tests": {
+      'promises-aplus-tests': {
         options: {
           stdout: false,
           stderr: true,
