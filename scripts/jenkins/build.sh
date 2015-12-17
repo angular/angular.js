@@ -7,6 +7,8 @@ echo "#################################"
 # Enable tracing and exit on first failure
 set -xe
 
+scripts/jenkins/set-node-version.sh
+
 # This is the default set of browsers to use on the CI server unless overridden via env variable
 if [[ -z "$BROWSERS" ]]
 then
@@ -19,6 +21,7 @@ rm -f angular.js.size
 
 
 # BUILD #
+npm install -g grunt-cli
 npm install --color false
 grunt ci-checks package --no-color
 
