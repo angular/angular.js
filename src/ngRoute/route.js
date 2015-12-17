@@ -249,7 +249,8 @@ function $RouteProvider() {
                '$injector',
                '$templateRequest',
                '$sce',
-      function($rootScope, $location, $routeParams, $q, $injector, $templateRequest, $sce) {
+               '$log',
+      function($rootScope, $location, $routeParams, $q, $injector, $templateRequest, $sce, $log) {
 
     /**
      * @ngdoc service
@@ -615,7 +616,9 @@ function $RouteProvider() {
             }
           }, function(error) {
             if (nextRoute == $route.current) {
+              $log.debug('No listeners found for $routeChangeError: ' + error);
               $rootScope.$broadcast('$routeChangeError', nextRoute, lastRoute, error);
+              }
             }
           });
       }
