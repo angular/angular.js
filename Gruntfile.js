@@ -4,9 +4,7 @@ var files = require('./angularFiles').files;
 var util = require('./lib/grunt/utils.js');
 var versionInfo = require('./lib/versions/version-info');
 var path = require('path');
-var fs = require('fs');
 var e2e = require('./test/e2e/tools');
-var glob = require("glob");
 
 module.exports = function(grunt) {
   //grunt plugins
@@ -341,55 +339,7 @@ module.exports = function(grunt) {
     grunt.task.run('shell:npm-install');
   }
 
-  grunt.registerTask('validate-angular-files', function() {
-    var combinedFiles = Object.assign({}, files.angularModules);
-    combinedFiles.ng = files.angularSrc;
-    combinedFiles.angularLoader = files.angularLoader;
 
-    var errorsDetected = false;
-    var directories = [];
-    var detectedFiles = {
-      "src/ng/rootElement.js": true
-    };
-
-    for (var section in combinedFiles) {
-      var sectionFiles = combinedFiles[section];
-
-      if (section != "angularLoader") {
-        directories.push("src/" + section);
-      }
-
-      console.log("Validating " + sectionFiles.length + " files from the \"" + section + "\" module");
-
-      sectionFiles.forEach(function(file) {
-        detectedFiles[file] = true;
-
-        if (!fs.existsSync(file)) {
-          grunt.log.error(file + " does not exist in the local file structure");
-          errorsDetected = true;
-        }
-      });
-    }
-
-    directories.forEach(function(directory) {
-      glob.sync(directory + "/**/*").forEach(function(filePath) {
-        if (!fs.lstatSync(filePath).isDirectory()) {
-          var fileName = path.basename(filePath);
-          var isHiddenFile = fileName[0] == ".";
-          if (!isHiddenFile && !detectedFiles[filePath]) {
-            grunt.log.error(filePath + " exists in the local file structure but isn't used by any module");
-            errorsDetected = true;
-          }
-        }
-      });
-    });
-
-    if (errorsDetected) {
-      throw new Error("Not all files were properly detected the local file structure");
-    } else {
-      console.log("All files were detected successfully!");
-    }
-  });
 
   //alias tasks
   grunt.registerTask('test', 'Run unit, docs and e2e tests with Karma', ['jshint', 'jscs', 'package','test:unit','test:promises-aplus', 'tests:docs', 'test:protractor']);
