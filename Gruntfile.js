@@ -226,7 +226,7 @@ module.exports = function(grunt) {
     },
 
 
-    "ddescribe-iit": {
+    'ddescribe-iit': {
       files: [
         'src/**/*.js',
         'test/**/*.js',
@@ -236,7 +236,7 @@ module.exports = function(grunt) {
       ]
     },
 
-    "merge-conflict": {
+    'merge-conflict': {
       files: [
         'src/**/*',
         'test/**/*',
