@@ -2233,6 +2233,8 @@ describe('ngMockE2E', function() {
       it('should not throw when a regular animation has no javascript animation',
         inject(function($animate, $$animation, $rootElement) {
 
+        if (!browserSupportsCssAnimations()) return;
+
         var element = jqLite('<div></div>');
         $rootElement.append(element);
 
@@ -2241,7 +2243,7 @@ describe('ngMockE2E', function() {
           from: { background: 'red' },
           to: { background: 'blue' },
           duration: 1,
-          transitionStyle: '1s linear all'
+          transitionStyle: 'all 1s'
         });
 
         expect(function() {
