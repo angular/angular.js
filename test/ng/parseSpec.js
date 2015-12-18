@@ -2201,6 +2201,19 @@ describe('parser', function() {
         expect(scope.$eval('true || false || run()')).toBe(true);
       });
 
+      it('should throw TypeError on using a \'broken\' object as a key to access a property', function() {
+        scope.object = {};
+        forEach([
+          { toString: 2 },
+          { toString: null },
+          { toString: function() { return {}; } }
+        ], function(brokenObject) {
+          scope.brokenObject = brokenObject;
+          expect(function() {
+            scope.$eval('object[brokenObject]');
+          }).toThrow();
+        });
+      });
 
       it('should support method calls on primitive types', function() {
         scope.empty = '';
