@@ -2,15 +2,6 @@
 
 describe('parser', function() {
 
-  beforeEach(function() {
-    /* global getterFnCacheDefault: true */
-    /* global getterFnCacheExpensive: true */
-    // clear caches
-    getterFnCacheDefault = createMap();
-    getterFnCacheExpensive = createMap();
-  });
-
-
   describe('lexer', function() {
     var lex;
 
