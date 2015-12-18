@@ -28,6 +28,27 @@ describe('ngAnimate integration tests', function() {
   describe('CSS animations', function() {
     if (!browserSupportsCssAnimations()) return;
 
+    it("should only create a single copy of the provided animation options",
+      inject(function($rootScope, $rootElement, $animate) {
+
+      ss.addRule('.animate-me', 'transition:2s linear all;');
+
+      var element = jqLite('<div class="animate-me"></div>');
+      html(element);
+
+      var myOptions = {to: { 'color': 'red' }};
+
+      var spy = spyOn(window, 'copy');
+      expect(spy).not.toHaveBeenCalled();
+
+      var animation = $animate.leave(element, myOptions);
+      $rootScope.$digest();
+      $animate.flush();
+
+      expect(spy).toHaveBeenCalledOnce();
+      dealoc(element);
+    }));
+
     they('should render an $prop animation',
       ['enter', 'leave', 'move', 'addClass', 'removeClass', 'setClass'], function(event) {
 
