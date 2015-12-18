@@ -677,7 +677,7 @@ describe('$route', function() {
         } });
       });
 
-      inject(function($location, $route, $rootScope) {
+      inject(function($location, $route, $rootScope, $log) {
         var log = '';
 
         $rootScope.$on('$routeChangeStart', function() { log += 'before();'; });
@@ -690,6 +690,7 @@ describe('$route', function() {
         deferA.reject('MyError');
         $rootScope.$digest();
         expect(log).toEqual('before();failed(MyError);');
+        $log.reset();
       });
     });
 
@@ -823,7 +824,7 @@ describe('$route', function() {
           when('/r3', { templateUrl: 'r3.html' });
       });
 
-      inject(function($route, $httpBackend, $location, $rootScope, $exceptionHandler) {
+      inject(function($route, $httpBackend, $location, $rootScope, $exceptionHandler, $log) {
         $httpBackend.expectGET('r1.html').respond(404, 'R1');
         $location.path('/r1');
         $rootScope.$digest();
@@ -844,6 +845,7 @@ describe('$route', function() {
 
         $httpBackend.flush();
         expect($exceptionHandler.errors.length).toBe(0);
+        $log.reset();
       });
     });
 
@@ -861,10 +863,11 @@ describe('$route', function() {
         });
       });
 
-      inject(function($location, $route, $rootScope, $exceptionHandler) {
+      inject(function($location, $route, $rootScope, $exceptionHandler, $log) {
         $location.path('/locals');
         $rootScope.$digest();
         expect($exceptionHandler.errors).toEqual([myError]);
+        $log.reset();
       });
     });
   });

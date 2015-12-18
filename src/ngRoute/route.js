@@ -616,9 +616,8 @@ function $RouteProvider() {
             }
           }, function(error) {
             if (nextRoute == $route.current) {
-              $log.debug('No listeners found for $routeChangeError: ' + error);
+              $log.debug('A $routeChangeError has happened: ' + error);
               $rootScope.$broadcast('$routeChangeError', nextRoute, lastRoute, error);
-              }
             }
           });
       }
