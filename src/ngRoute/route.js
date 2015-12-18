@@ -249,8 +249,7 @@ function $RouteProvider() {
                '$injector',
                '$templateRequest',
                '$sce',
-               '$log',
-      function($rootScope, $location, $routeParams, $q, $injector, $templateRequest, $sce, $log) {
+      function($rootScope, $location, $routeParams, $q, $injector, $templateRequest, $sce) {
 
     /**
      * @ngdoc service
@@ -616,8 +615,13 @@ function $RouteProvider() {
             }
           }, function(error) {
             if (nextRoute == $route.current) {
-              $log.debug('A $routeChangeError has happened: ' + error);
-              $rootScope.$broadcast('$routeChangeError', nextRoute, lastRoute, error);
+              // If nothing's listening for a $routeChangeError event, we log it in the console
+              //  to aid in debugging
+              if ($rootScope.$$listenerCount['$routeChangeError'] === 0) {
+                $log.debug('No listeners found for $routeChangeError: '+ error);
+              } else {
+                $rootScope.$broadcast('$routeChangeError', nextRoute, lastRoute, error);
+              }
             }
           });
       }
