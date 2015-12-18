@@ -698,7 +698,7 @@ describe('$route', function() {
       });
     });
 
-    it ('should log an error when $routeChangeError is fired', function() {
+    it('should log an error when $routeChangeError is fired', function() {
       var deferA;
       module(function($provide, $routeProvider) {
         $routeProvider.when('/path', { template: 'foo', resolve: {
@@ -714,8 +714,8 @@ describe('$route', function() {
         deferA.reject('fooError');
         $rootScope.$digest();
 
-        expect($log.debug.logs[0][0]).toEqual('A $routeChangeError has happened: fooError')
-      })
+        expect($log.debug.logs[0][0]).toEqual('A $routeChangeError has happened: fooError');
+      });
     });
 
 
