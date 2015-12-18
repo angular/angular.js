@@ -121,7 +121,7 @@ describe('component', function() {
         controllerAs: 'myComponent',
         template: '',
         templateUrl: undefined,
-        transclude: true,
+        transclude: false,
         scope: {},
         bindToController: {},
         restrict: 'E'
@@ -136,7 +136,7 @@ describe('component', function() {
       controllerAs: 'ctrl',
       template: 'abc',
       templateUrl: 'def.html',
-      transclude: false,
+      transclude: true,
       isolate: false,
       bindings: {abc: '='},
       restrict: 'EA'
@@ -148,7 +148,7 @@ describe('component', function() {
         controllerAs: 'ctrl',
         template: 'abc',
         templateUrl: 'def.html',
-        transclude: false,
+        transclude: true,
         scope: true,
         bindToController: {abc: '='},
         restrict: 'EA'
