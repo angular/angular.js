@@ -2036,6 +2036,28 @@ describe("ngAnimate $animateCss", function() {
         expect(copiedOptions).toEqual(initialOptions);
       }));
 
+      it("should not create a copy of the provided options if they have already been prepared earlier",
+        inject(function($animate, $animateCss) {
+
+        var options = {
+          from: { height: '50px' },
+          to: { width: '50px' },
+          addClass: 'one',
+          removeClass: 'two'
+        };
+
+        options.$$prepared = true;
+        var runner = $animateCss(element, options).start();
+        runner.end();
+
+        $animate.flush();
+
+        expect(options.addClass).toBeFalsy();
+        expect(options.removeClass).toBeFalsy();
+        expect(options.to).toBeFalsy();
+        expect(options.from).toBeFalsy();
+      }));
+
       describe("[$$skipPreparationClasses]", function() {
         it('should not apply and remove the preparation classes to the element when true',
           inject(function($animateCss) {
