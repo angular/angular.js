@@ -31,6 +31,28 @@ describe("$animateCss", function() {
       expect(copiedOptions).toEqual(initialOptions);
     }));
 
+    it("should not create a copy of the provided options if they have already been prepared earlier",
+      inject(function($animateCss, $$rAF) {
+
+      var options = {
+        from: { height: '50px' },
+        to: { width: '50px' },
+        addClass: 'one',
+        removeClass: 'two'
+      };
+
+      options.$$prepared = true;
+      var runner = $animateCss(element, options).start();
+      runner.end();
+
+      $$rAF.flush();
+
+      expect(options.addClass).toBeFalsy();
+      expect(options.removeClass).toBeFalsy();
+      expect(options.to).toBeFalsy();
+      expect(options.from).toBeFalsy();
+    }));
+
     it("should apply the provided [from] CSS to the element", inject(function($animateCss) {
       $animateCss(element, { from: { height: '50px' }}).start();
       expect(element.css('height')).toBe('50px');
