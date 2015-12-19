@@ -372,26 +372,27 @@ describe('$compile', function() {
       expect($document.scope()).toBe($rootScope);
     }));
 
-    it('should wrap root text nodes in spans', inject(function($compile, $rootScope) {
-      element = jqLite('<div>A&lt;a&gt;B&lt;/a&gt;C</div>');
-      var text = element.contents();
-      expect(text[0].nodeName).toEqual('#text');
-      text = $compile(text)($rootScope);
-      expect(text[0].nodeName).toEqual('SPAN');
-      expect(element.find('span').text()).toEqual('A<a>B</a>C');
-    }));
 
-
-    it('should not wrap root whitespace text nodes in spans', function() {
+    it('should not wrap root text nodes in spans', function() {
       element = jqLite(
-        '<div>   <div>A</div>\n  ' + // The spaces and newlines here should not get wrapped
-        '<div>B</div>C\t\n  ' +  // The "C", tabs and spaces here will be wrapped
+        '<div>   <div>A</div>\n  ' +
+        '<div>B</div>C\t\n  ' +
         '</div>');
       $compile(element.contents())($rootScope);
       var spans = element.find('span');
-      expect(spans.length).toEqual(1);
-      expect(spans.text().indexOf('C')).toEqual(0);
+      expect(spans.length).toEqual(0);
     });
+
+
+    it('should be able to compile text nodes at the root', inject(function($rootScope) {
+      element = jqLite('<div>Name: {{name}}<br />\nColor: {{color}}</div>');
+      $rootScope.name = 'Lucas';
+      $rootScope.color = 'blue';
+      $compile(element.contents())($rootScope);
+      $rootScope.$digest();
+      expect(element.text()).toEqual('Name: Lucas\nColor: blue');
+    }));
+
 
     it('should not leak memory when there are top level empty text nodes', function() {
       // We compile the contents of element (i.e. not element itself)
@@ -6595,8 +6596,8 @@ describe('$compile', function() {
           $rootScope.x = 'root';
           $rootScope.$apply();
           expect(element.text()).toEqual('W:iso-1-2;T:root-2-3;');
-          expect(jqLite(element.find('span')[0]).text()).toEqual('T:root-2-3');
-          expect(jqLite(element.find('span')[1]).text()).toEqual(';');
+          expect(jqLite(jqLite(element.find('li')[1]).contents()[0]).text()).toEqual('T:root-2-3');
+          expect(jqLite(element.find('span')[0]).text()).toEqual(';');
         });
       });
 
@@ -6630,6 +6631,37 @@ describe('$compile', function() {
           $httpBackend.flush();
           $rootScope.$apply();
           expect(element.text()).toEqual('book-chapter-section-![(paragraph)]!');
+        });
+      });
+
+
+      it('should not merge text elements from transcluded content', function() {
+        module(function() {
+          directive('foo', valueFn({
+            transclude: 'content',
+            template: '<div>This is before {{before}}. </div>',
+            link: function(scope, element, attr, ctrls, $transclude) {
+              var futureParent = element.children().eq(0);
+              $transclude(function(clone) {
+                futureParent.append(clone);
+              }, futureParent);
+            },
+            scope: true
+          }));
+        });
+        inject(function($rootScope, $compile) {
+          element = $compile('<div><div foo>This is after {{after}}</div></div>')($rootScope);
+          $rootScope.before = "BEFORE";
+          $rootScope.after = "AFTER";
+          $rootScope.$apply();
+          expect(element.text()).toEqual('This is before BEFORE. This is after AFTER');
+
+          $rootScope.before = "Not-Before";
+          $rootScope.after = "AfTeR";
+          $rootScope.$$childHead.before = "BeFoRe";
+          $rootScope.$$childHead.after = "Not-After";
+          $rootScope.$apply();
+          expect(element.text()).toEqual('This is before BeFoRe. This is after AfTeR');
         });
       });
 
@@ -6932,11 +6964,11 @@ describe('$compile', function() {
               transclude: true,
               replace: true,
               scope: true,
-              template: '<div><span>I:{{$$transcluded}}</span><div ng-transclude></div></div>'
+              template: '<div><span>I:{{$$transcluded}}</span><span ng-transclude></span></div>'
             };
           });
         });
-        inject(function(log, $rootScope, $compile) {
+        inject(function($rootScope, $compile) {
           element = $compile('<div><div trans>T:{{$$transcluded}}</div></div>')($rootScope);
           $rootScope.$apply();
           expect(jqLite(element.find('span')[0]).text()).toEqual('I:');
@@ -6955,10 +6987,10 @@ describe('$compile', function() {
             };
           });
         });
-        inject(function(log, $rootScope, $compile) {
+        inject(function($rootScope, $compile) {
           element = $compile('<div trans>unicorn!</div>')($rootScope);
           $rootScope.$apply();
-          expect(sortedHtml(element.html())).toEqual('<div ng-transclude=""><span>unicorn!</span></div>');
+          expect(sortedHtml(element.html())).toEqual('<div ng-transclude="">unicorn!</div>');
         });
       });
 

@@ -47,7 +47,7 @@
  *     <div ng-controller="ExampleController">
  *       <input ng-model="title" aria-label="title"> <br/>
  *       <textarea ng-model="text" aria-label="text"></textarea> <br/>
- *       <pane title="{{title}}">{{text}}</pane>
+ *       <pane title="{{title}}"><span>{{text}}</span></pane>
  *     </div>
  *   </file>
  *   <file name="protractor.js" type="protractor">
