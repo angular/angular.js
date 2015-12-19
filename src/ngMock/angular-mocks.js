@@ -2480,6 +2480,15 @@ if (window.jasmine || window.mocha) {
   window.inject = angular.mock.inject = function() {
     var blockFns = Array.prototype.slice.call(arguments, 0);
     var errorForStack = new Error('Declaration Location');
+    // some browsers, e.g. PhanthomJS, do not set a new error object's stack
+    // information until it has been thrown
+    if (!errorForStack.stack) {
+      try {
+        throw errorForStack;
+      } catch (e) {
+        errorForStack = e;
+      }
+    }
     return isSpecRunning() ? workFn.call(currentSpec) : workFn;
     /////////////////////
     function workFn() {
