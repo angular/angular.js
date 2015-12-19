@@ -914,6 +914,51 @@ describe('ngMock', function() {
           });
         }).toThrow('test message');
       }));
+
+      describe('error stack trace when called outside of spec context', function() {
+        // - Chrome, Firefox, Edge, Opera give us the stack trace as soon as an Error is created
+        // - IE10+, PhantomJS give us the stack trace only once the error is thrown
+        // - IE9 does not provide stack traces
+        var stackTraceSupported = (function() {
+          var error = new Error();
+          if (!error.stack) {
+            try {
+              throw error;
+            } catch (e) {}
+          }
+
+          return !!error.stack;
+        })();
+
+        function testCaller() {
+          return inject(function() {
+            throw new Error();
+          });
+        }
+        var throwErrorFromInjectCallback = testCaller();
+
+        if (stackTraceSupported) {
+          describe('on browsers supporting stack traces', function() {
+            it('should update thrown Error stack trace with inject call location', function() {
+              try {
+                throwErrorFromInjectCallback();
+              } catch (e) {
+                expect(e.stack).toMatch('testCaller');
+              }
+            });
+          });
+        } else {
+          describe('on browsers not supporting stack traces', function() {
+            it('should not add stack trace information to thrown Error', function() {
+              try {
+                throwErrorFromInjectCallback();
+              } catch (e) {
+                expect(e.stack).toBeUndefined();
+              }
+            });
+          });
+        }
+      });
     });
   });
 
