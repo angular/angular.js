@@ -8144,6 +8144,51 @@ describe('$compile', function() {
       });
     });
 
+
+    it('should be possible to change the scope of a directive using $provide', function() {
+      module(function($provide) {
+        directive('foo', function() {
+          return {
+            scope: {},
+            template: '<div></div>'
+          };
+        });
+        $provide.decorator('fooDirective', function($delegate) {
+          var directive = $delegate[0];
+          directive.scope.something = '=';
+          directive.template = '<span>{{something}}</span>';
+          return $delegate;
+        });
+      });
+      inject(function($compile, $rootScope) {
+        element = $compile('<div><div foo something="bar"></div></div>')($rootScope);
+        $rootScope.bar = 'bar';
+        $rootScope.$digest();
+        expect(element.text()).toBe('bar');
+      });
+    });
+
+
+    it('should distinguish different bindings with the same binding name', function() {
+      module(function() {
+        directive('foo', function() {
+          return {
+            scope: {
+              foo: '=',
+              bar: '='
+            },
+            template: '<div><div>{{foo}}</div><div>{{bar}}</div></div>'
+          };
+        });
+      });
+      inject(function($compile, $rootScope) {
+        element = $compile('<div><div foo="\'foo\'" bar="\'bar\'"></div></div>')($rootScope);
+        $rootScope.$digest();
+        expect(element.text()).toBe('foobar');
+      });
+    });
+
+
     it('should safely create transclude comment node and not break with "-->"',
         inject(function($rootScope) {
       // see: https://github.com/angular/angular.js/issues/1740
