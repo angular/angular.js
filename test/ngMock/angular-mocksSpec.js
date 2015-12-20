@@ -939,6 +939,9 @@ describe('ngMock', function() {
       // call in multiple test specs
       function testInjectCaller() {
         var shouldThrow;
+        // using an extra internalInjectCaller() wrapper here avoids stack trace
+        // constructed by some browsers (e.g. FireFox) from containing the name
+        // of the external caller function
         var injectingCall = (function internalInjectCaller() {
           return inject(function() {
             if (shouldThrow)
