@@ -2521,8 +2521,6 @@ if (window.jasmine || window.mocha) {
             throw new ErrorAddingDeclarationLocationStack(e, errorForStack);
           }
           throw e;
-        } finally {
-          errorForStack = null;
         }
       }
     }
