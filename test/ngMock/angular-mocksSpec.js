@@ -915,50 +915,67 @@ describe('ngMock', function() {
         }).toThrow('test message');
       }));
 
-      describe('error stack trace when called outside of spec context', function() {
-        // - Chrome, Firefox, Edge, Opera give us the stack trace as soon as an Error is created
-        // - IE10+, PhantomJS give us the stack trace only once the error is thrown
-        // - IE9 does not provide stack traces
-        var stackTraceSupported = (function() {
-          var error = new Error();
-          if (!error.stack) {
-            try {
-              throw error;
-            } catch (e) {}
-          }
-
-          return !!error.stack;
-        })();
-
-        function testCaller() {
-          return inject(function() {
-            throw new Error();
-          });
+      // - Chrome, Firefox, Edge, Opera give us the stack trace as soon as an Error is created
+      // - IE10+, PhantomJS give us the stack trace only once the error is thrown
+      // - IE9 does not provide stack traces
+      var stackTraceSupported = (function() {
+        var error = new Error();
+        if (!error.stack) {
+          try {
+            throw error;
+          } catch (e) {}
         }
-        var throwErrorFromInjectCallback = testCaller();
 
-        if (stackTraceSupported) {
-          describe('on browsers supporting stack traces', function() {
-            it('should update thrown Error stack trace with inject call location', function() {
-              try {
-                throwErrorFromInjectCallback();
-              } catch (e) {
-                expect(e.stack).toMatch('testCaller');
-              }
-            });
+        return !!error.stack;
+      })();
+
+      function testInjectCaller() {
+        var shouldThrow;
+        var injectingCall = (function internalInjectCaller() {
+          return inject(function() {
+            if (shouldThrow)
+              throw new Error();
           });
-        } else {
-          describe('on browsers not supporting stack traces', function() {
-            it('should not add stack trace information to thrown Error', function() {
+        })();
+        injectingCall.setThrow = function(value) {
+          shouldThrow = value;
+        };
+        return injectingCall;
+      }
+
+      if (!stackTraceSupported) {
+        describe('on browsers not supporting stack traces', function() {
+          describe('when called outside of test spec context', function() {
+            var injectingCall = testInjectCaller();
+
+            it('should not add stack trace information to thrown injection Error', function() {
+              injectingCall.setThrow(true);
               try {
-                throwErrorFromInjectCallback();
+                injectingCall();
               } catch (e) {
                 expect(e.stack).toBeUndefined();
               }
             });
           });
-        }
-      });
+        });
+      }
+
+      if (stackTraceSupported) {
+        describe('on browsers supporting stack traces', function() {
+          describe('when called outside of test spec context and initial inject callback invocation fails', function() {
+            var throwingInjectingCall = testInjectCaller();
+            throwingInjectingCall.setThrow(true);
+
+            it('should update thrown Error stack trace with inject call location', function() {
+              try {
+                throwingInjectingCall();
+              } catch (e) {
+                expect(e.stack).toMatch('testInjectCaller');
+              }
+            });
+          });
+        });
+      }
     });
   });
 
