@@ -972,6 +972,7 @@ describe('ngMock', function() {
             var throwingInjectingCall = testInjectCaller();
             throwingInjectingCall.setThrow(true);
 
+            // regression test for issue #13591 when run on IE10+ or PhantomJS
             it('should update thrown Error stack trace with inject call location', function() {
               try {
                 throwingInjectingCall();
