@@ -932,19 +932,28 @@ describe('ngMock', function() {
       // function returned by inject(), when called outside of test spec
       // context, may have stored state so do not reuse the result from this
       // call in multiple test specs
-      function testInjectCaller() {
-        var shouldThrow;
-        // using an extra internalInjectCaller() wrapper here avoids stack trace
-        // constructed by some browsers (e.g. FireFox) from containing the name
-        // of the external caller function
-        var injectingCall = (function internalInjectCaller() {
-          return inject(function() {
-            if (shouldThrow)
+      function testInjectCaller(injectionFunctionCount) {
+        var shouldThrow = [];
+        // using an extra named function wrapper around the Error throw avoids
+        // stack trace constructed by some browsers (e.g. FireFox) from
+        // containing the name of the external caller function
+        function injectionFunction(index) {
+          return function() {
+            if (shouldThrow[index])
               throw new Error();
-          });
-        })();
-        injectingCall.setThrow = function(value) {
-          shouldThrow = value;
+          };
+        }
+        var injectionFunctions = [];
+        for (var i = 0; i < (injectionFunctionCount || 1); ++i) {
+          injectionFunctions.push(injectionFunction(i));
+        }
+        var injectingCall = inject.apply(window, injectionFunctions);
+        injectingCall.setThrow = function(index, value) {
+          if (!isDefined(value)) {
+            value = index;
+            index = 0;
+          }
+          shouldThrow[index] = value;
         };
         return injectingCall;
       }
@@ -998,6 +1007,22 @@ describe('ngMock', function() {
               }
               try {
                 injectingCall();  // repeated failing call
+              } catch (e) {
+                expect(e.stack).toMatch('testInjectCaller');
+              }
+            });
+          });
+
+          describe('when called outside of test spec context with multiple injected functions', function() {
+            var injectingCall = testInjectCaller(2);
+
+            // regression test for issue #13594
+            // regression test for issue #13591 when run on IE10+ or PhantomJS
+            it('should update thrown Error stack when second injected function fails', function() {
+              injectingCall.setThrow(0, false);
+              injectingCall.setThrow(1, true);
+              try {
+                injectingCall();
               } catch (e) {
                 expect(e.stack).toMatch('testInjectCaller');
               }
