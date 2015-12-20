@@ -986,6 +986,28 @@ describe('ngMock', function() {
               }
             });
           });
+
+          describe('when called outside of test spec context', function() {
+            var injectingCall = testInjectCaller();
+
+            // regression test for issue #13594
+            // regression test for issue #13591 when run on IE10+ or PhantomJS
+            it('should update thrown Error stack when repeated inject callback invocations fail', function() {
+              injectingCall.setThrow(false);
+              injectingCall();  // initial call that will not throw
+              injectingCall.setThrow(true);
+              try {
+                injectingCall();  // non-initial call, but first failing one
+              } catch (e) {
+                expect(e.stack).toMatch('testInjectCaller');
+              }
+              try {
+                injectingCall();  // repeated failing call
+              } catch (e) {
+                expect(e.stack).toMatch('testInjectCaller');
+              }
+            });
+          });
         });
       }
     });
