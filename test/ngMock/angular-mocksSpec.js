@@ -934,6 +934,9 @@ describe('ngMock', function() {
         return !!error.stack;
       })();
 
+      // function returned by inject(), when called outside of test spec
+      // context, may have stored state so do not reuse the result from this
+      // call in multiple test specs
       function testInjectCaller() {
         var shouldThrow;
         var injectingCall = (function internalInjectCaller() {
