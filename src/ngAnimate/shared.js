@@ -118,7 +118,7 @@ function pendClasses(classes, fix, isPrefix) {
 
 function removeFromArray(arr, val) {
   var index = arr.indexOf(val);
-  if (val >= 0) {
+  if (index >= 0) {
     arr.splice(index, 1);
   }
 }
