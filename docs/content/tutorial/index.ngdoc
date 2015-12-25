@@ -61,7 +61,7 @@ a few git commands.
 
 ### Install Git
 
-You can download and install Git from http://git-scm.com/download. Once installed you should have
+You can download and install Git from http://git-scm.com/download. Once installed, you should have
 access to the `git` command line tool.  The main commands that you will need to use are:
 
 - `git clone ...` : clone a remote repository onto your local machine
@@ -123,7 +123,7 @@ npm --version
   </a>.
 </div>
 
-Once you have Node.js installed on your machine you can download the tool dependencies by running:
+Once you have Node.js installed on your machine, you can download the tool dependencies by running:
 
 ```
 npm install
@@ -198,7 +198,7 @@ http://localhost:8000/app/index.html
 ```
 
 <div class="alert alert-info">
-To serve the web app on a different ip address or port, edit the "start" script within package.json.
+To serve the web app on a different IP address or port, edit the "start" script within package.json.
 You can use `-a` to set the address and `-p` to set the port.
 </div>
 
