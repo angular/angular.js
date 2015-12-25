@@ -100,7 +100,7 @@ To resolve this type of issue, either fix the api to be always synchronous or as
 your callback handler to always run asynchronously by using the `$timeout` service.
 
 ```
-function MyController($scope, thirdPartyComponent) {
+function MyController($scope, $timeout, thirdPartyComponent) {
   thirdPartyComponent.getData(function(someData) {
     $timeout(function() {
       $scope.someData = someData;
