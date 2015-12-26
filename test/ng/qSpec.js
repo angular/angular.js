@@ -1972,6 +1972,26 @@ describe('q', function() {
     });
   });
 
+  describe('isPromiseLike', function() {
+    it('should return false if not returned an object with then method', function() {
+      expect(q.isPromiseLike(1)).toBe(false);
+      expect(q.isPromiseLike('foo')).toBe(false);
+      expect(q.isPromiseLike({})).toBe(false);
+      expect(q.isPromiseLike(function() {})).toBe(false);
+    });
+
+    it('should return true if passed an object with then method', function() {
+      expect(q.isPromiseLike({then: angular.noop})).toBe(true);
+    });
+
+    it('should return true if passed a function with then method', function() {
+      function foo() {}
+      foo.then = angular.noop;
+
+      expect(q.isPromiseLike(foo)).toBe(true);
+    });
+  });
+
   describe('exception logging', function() {
     var mockExceptionLogger = {
       log: [],

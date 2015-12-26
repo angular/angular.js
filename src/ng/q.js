@@ -561,6 +561,22 @@ function qFactory(nextTick, exceptionHandler) {
     return deferred.promise;
   }
 
+  /**
+   * @ngdoc method
+   * @name $q#isPromiseLike
+   * @kind function
+   *
+   * @description
+   * Determines whether object or function is like a promise
+   *
+   * @param {*} value Reference to check
+   * @returns {boolean} True if `value` is promise-like
+   */
+
+  function isPromiseLike(obj) {
+    return (isObject(obj) || isFunction(obj)) && isFunction(obj.then);
+  }
+
   var $Q = function Q(resolver) {
     if (!isFunction(resolver)) {
       throw $qMinErr('norslvr', "Expected resolverFn, got '{0}'", resolver);
@@ -590,6 +606,7 @@ function qFactory(nextTick, exceptionHandler) {
   $Q.when = when;
   $Q.resolve = resolve;
   $Q.all = all;
+  $Q.isPromiseLike = isPromiseLike;
 
   return $Q;
 }
