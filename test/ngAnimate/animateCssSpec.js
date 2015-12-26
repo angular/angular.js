@@ -12,6 +12,16 @@ describe("ngAnimate $animateCss", function() {
         : expect(className).not.toMatch(regex);
   }
 
+  function keyframeProgress(element, duration, delay) {
+    browserTrigger(element, 'animationend',
+      { timeStamp: Date.now() + ((delay || 1) * 1000), elapsedTime: duration });
+  }
+
+  function transitionProgress(element, duration, delay) {
+    browserTrigger(element, 'transitionend',
+      { timeStamp: Date.now() + ((delay || 1) * 1000), elapsedTime: duration });
+  }
+
   var fakeStyle = {
     color: 'blue'
   };
@@ -353,16 +363,6 @@ describe("ngAnimate $animateCss", function() {
           }
           assert.toHaveClass('ng-enter');
           assert.toHaveClass('ng-enter-active');
-        }
-
-        function keyframeProgress(element, duration, delay) {
-          browserTrigger(element, 'animationend',
-            { timeStamp: Date.now() + ((delay || 1) * 1000), elapsedTime: duration });
-        }
-
-        function transitionProgress(element, duration, delay) {
-          browserTrigger(element, 'transitionend',
-            { timeStamp: Date.now() + ((delay || 1) * 1000), elapsedTime: duration });
         }
 
         beforeEach(inject(function($rootElement, $document) {
@@ -1261,7 +1261,7 @@ describe("ngAnimate $animateCss", function() {
           expect(element.css(prefix + 'transition-delay')).toBe('3s');
           expect(element.css(prefix + 'transition-duration')).toBe('3s');
 
-          // Let's flush the remaining amout of time for the timeout timer to kick in
+          // Let's flush the remaining amount of time for the timeout timer to kick in
           $timeout.flush(500);
 
           expect(element.css(prefix + 'transition-duration')).toBeOneOf('', '0s');
@@ -1294,7 +1294,7 @@ describe("ngAnimate $animateCss", function() {
           expect(element.css(prefix + 'transition-delay')).toBeOneOf('initial', '0s');
           expect(element.css(prefix + 'transition-duration')).toBe('3s');
 
-          // Let's flush the remaining amout of time for the timeout timer to kick in
+          // Let's flush the remaining amount of time for the timeout timer to kick in
           $timeout.flush(500);
 
           expect(element.css(prefix + 'transition-duration')).toBeOneOf('', '0s');
@@ -1403,6 +1403,105 @@ describe("ngAnimate $animateCss", function() {
           triggerAnimationStartFrame();
           expect(count.stagger).toBe(2);
         }));
+      });
+
+      describe('transitionend/animationend event listeners', function() {
+        var element, elementOnSpy, elementOffSpy, progress;
+
+        function setStyles(event) {
+          switch (event) {
+            case TRANSITIONEND_EVENT:
+              ss.addRule('.ng-enter', 'transition: 10s linear all;');
+              progress = transitionProgress;
+              break;
+            case ANIMATIONEND_EVENT:
+              ss.addRule('.ng-enter', '-webkit-animation: animation 10s;' +
+                                              'animation: animation 10s;');
+              progress = keyframeProgress;
+              break;
+          }
+        }
+
+        beforeEach(inject(function($rootElement, $document) {
+          element = jqLite('<div></div>');
+          $rootElement.append(element);
+          jqLite($document[0].body).append($rootElement);
+
+          elementOnSpy = spyOn(element, 'on').andCallThrough();
+          elementOffSpy = spyOn(element, 'off').andCallThrough();
+        }));
+
+        they('should remove the $prop event listeners on cancel',
+          [TRANSITIONEND_EVENT, ANIMATIONEND_EVENT], function(event) {
+            inject(function($animateCss) {
+
+              setStyles(event);
+
+              var animator = $animateCss(element, {
+                event: 'enter',
+                structural: true
+              });
+
+              var runner = animator.start();
+              triggerAnimationStartFrame();
+
+              expect(elementOnSpy).toHaveBeenCalledOnce();
+              expect(elementOnSpy.mostRecentCall.args[0]).toBe(event);
+
+              runner.cancel();
+
+              expect(elementOffSpy).toHaveBeenCalledOnce();
+              expect(elementOffSpy.mostRecentCall.args[0]).toBe(event);
+            });
+        });
+
+        they("should remove the $prop event listener when the animation is closed",
+          [TRANSITIONEND_EVENT, ANIMATIONEND_EVENT], function(event) {
+            inject(function($animateCss) {
+
+              setStyles(event);
+
+              var animator = $animateCss(element, {
+                event: 'enter',
+                structural: true
+              });
+
+              var runner = animator.start();
+              triggerAnimationStartFrame();
+
+              expect(elementOnSpy).toHaveBeenCalledOnce();
+              expect(elementOnSpy.mostRecentCall.args[0]).toBe(event);
+
+              progress(element, 10);
+
+              expect(elementOffSpy).toHaveBeenCalledOnce();
+              expect(elementOffSpy.mostRecentCall.args[0]).toBe(event);
+            });
+        });
+
+        they("should remove the $prop event listener when the closing timeout occurs",
+          [TRANSITIONEND_EVENT, ANIMATIONEND_EVENT], function(event) {
+            inject(function($animateCss, $timeout) {
+
+              setStyles(event);
+
+              var animator = $animateCss(element, {
+                event: 'enter',
+                structural: true
+              });
+
+              animator.start();
+              triggerAnimationStartFrame();
+
+              expect(elementOnSpy).toHaveBeenCalledOnce();
+              expect(elementOnSpy.mostRecentCall.args[0]).toBe(event);
+
+              $timeout.flush(15000);
+
+              expect(elementOffSpy).toHaveBeenCalledOnce();
+              expect(elementOffSpy.mostRecentCall.args[0]).toBe(event);
+            });
+        });
       });
     });
 
@@ -1863,6 +1962,37 @@ describe("ngAnimate $animateCss", function() {
           element = jqLite('<div></div>');
           $rootElement.append(element);
         };
+      }));
+
+      it("should not alter the provided options input in any way throughout the animation", inject(function($animateCss) {
+        var initialOptions = {
+          from: { height: '50px' },
+          to: { width: '50px' },
+          addClass: 'one',
+          removeClass: 'two',
+          duration: 10,
+          delay: 10,
+          structural: true,
+          keyframeStyle: '1s rotate',
+          transitionStyle: '1s linear',
+          stagger: 0.5,
+          staggerIndex: 3
+        };
+
+        var copiedOptions = copy(initialOptions);
+        expect(copiedOptions).toEqual(initialOptions);
+
+        var animator = $animateCss(element, copiedOptions);
+        expect(copiedOptions).toEqual(initialOptions);
+
+        var runner = animator.start();
+        expect(copiedOptions).toEqual(initialOptions);
+
+        triggerAnimationStartFrame();
+        expect(copiedOptions).toEqual(initialOptions);
+
+        runner.end();
+        expect(copiedOptions).toEqual(initialOptions);
       }));
 
       describe("[$$skipPreparationClasses]", function() {

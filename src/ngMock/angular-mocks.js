@@ -1023,18 +1023,18 @@ angular.mock.dump = function(object) {
   function MyController($scope, $http) {
     var authToken;
 
-    $http.get('/auth.py').success(function(data, status, headers) {
-      authToken = headers('A-Token');
-      $scope.user = data;
+    $http.get('/auth.py').then(function(response) {
+      authToken = response.headers('A-Token');
+      $scope.user = response.data;
     });
 
     $scope.saveMessage = function(message) {
       var headers = { 'Authorization': authToken };
       $scope.status = 'Saving...';
 
-      $http.post('/add-msg.py', message, { headers: headers } ).success(function(response) {
+      $http.post('/add-msg.py', message, { headers: headers } ).then(function(response) {
         $scope.status = '';
-      }).error(function() {
+      }).catch(function() {
         $scope.status = 'Failed...';
       });
     };
@@ -2040,7 +2040,7 @@ angular.mock.$RootElementProvider = function() {
  *
  * // Controller definition ...
  *
- * myMod.controller('MyDirectiveController', ['log', function($log) {
+ * myMod.controller('MyDirectiveController', ['$log', function($log) {
  *   $log.info(this.name);
  * })];
  *
@@ -2475,10 +2475,12 @@ if (window.jasmine || window.mocha) {
 
     currentSpec.$injector = null;
     currentSpec.$modules = null;
+    currentSpec.$providerInjector = null;
     currentSpec = null;
 
     if (injector) {
       injector.get('$rootElement').off();
+      injector.get('$rootScope').$destroy();
     }
 
     // clean up jquery's fragment cache

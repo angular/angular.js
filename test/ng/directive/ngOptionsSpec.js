@@ -1555,23 +1555,26 @@ describe('ngOptions', function() {
 
       expect(element).toEqualSelectValue(scope.selected);
 
-      var zero = jqLite(element.find('optgroup')[0]);
-      var b = jqLite(zero.find('option')[0]);
-      var e = jqLite(zero.find('option')[1]);
+      var optgroups = element.find('optgroup');
+      expect(optgroups.length).toBe(3);
+
+      var zero = optgroups.eq(0);
+      var b = zero.find('option').eq(0);
+      var e = zero.find('option').eq(1);
       expect(zero.attr('label')).toEqual('0');
       expect(b.text()).toEqual('B');
       expect(e.text()).toEqual('E');
 
-      var first = jqLite(element.find('optgroup')[1]);
-      var c = jqLite(first.find('option')[0]);
-      var f = jqLite(first.find('option')[1]);
+      var first = optgroups.eq(1);
+      var c = first.find('option').eq(0);
+      var f = first.find('option').eq(1);
       expect(first.attr('label')).toEqual('first');
       expect(c.text()).toEqual('C');
       expect(f.text()).toEqual('F');
 
-      var second = jqLite(element.find('optgroup')[2]);
-      var d = jqLite(second.find('option')[0]);
-      var g = jqLite(second.find('option')[1]);
+      var second = optgroups.eq(2);
+      var d = second.find('option').eq(0);
+      var g = second.find('option').eq(1);
       expect(second.attr('label')).toEqual('second');
       expect(d.text()).toEqual('D');
       expect(g.text()).toEqual('G');
@@ -1583,6 +1586,118 @@ describe('ngOptions', function() {
       expect(element).toEqualSelectValue(scope.selected);
     });
 
+
+    it('should group when the options are available on compile time', function() {
+      scope.values = [{name: 'C', group: 'first'},
+                      {name: 'D', group: 'second'},
+                      {name: 'F', group: 'first'},
+                      {name: 'G', group: 'second'}];
+      scope.selected = scope.values[3];
+
+      createSelect({
+        'ng-model': 'selected',
+        'ng-options': 'item as item.name group by item.group for item in values'
+      });
+
+      expect(element).toEqualSelectValue(scope.selected);
+
+      var optgroups = element.find('optgroup');
+      expect(optgroups.length).toBe(2);
+
+      var first = optgroups.eq(0);
+      var c = first.find('option').eq(0);
+      var f = first.find('option').eq(1);
+      expect(first.attr('label')).toEqual('first');
+      expect(c.text()).toEqual('C');
+      expect(f.text()).toEqual('F');
+
+      var second = optgroups.eq(1);
+      var d = second.find('option').eq(0);
+      var g = second.find('option').eq(1);
+      expect(second.attr('label')).toEqual('second');
+      expect(d.text()).toEqual('D');
+      expect(g.text()).toEqual('G');
+
+      scope.$apply(function() {
+        scope.selected = scope.values[0];
+      });
+
+      expect(element).toEqualSelectValue(scope.selected);
+    });
+
+
+    it('should group when the options are updated', function() {
+      var optgroups, one, two, three, alpha, beta, gamma, delta, epsilon;
+
+      createSelect({
+        'ng-model': 'selected',
+        'ng-options': 'i.name group by i.cls for i in list'
+      });
+
+      scope.list = [
+        {cls: 'one', name: 'Alpha'},
+        {cls: 'one', name: 'Beta'},
+        {cls: 'two', name: 'Gamma'}
+      ];
+      scope.$digest();
+
+      optgroups = element.find('optgroup');
+      expect(optgroups.length).toBe(2);
+
+      one = optgroups.eq(0);
+      expect(one.children('option').length).toBe(2);
+
+      alpha = one.find('option').eq(0);
+      beta = one.find('option').eq(1);
+      expect(one.attr('label')).toEqual('one');
+      expect(alpha.text()).toEqual('Alpha');
+      expect(beta.text()).toEqual('Beta');
+
+      two = optgroups.eq(1);
+      expect(two.children('option').length).toBe(1);
+
+      gamma = two.find('option').eq(0);
+      expect(two.attr('label')).toEqual('two');
+      expect(gamma.text()).toEqual('Gamma');
+
+      // Remove item from first group, add item to second group, add new group
+      scope.list.shift();
+      scope.list.push(
+        {cls: 'two', name: 'Delta'},
+        {cls: 'three', name: 'Epsilon'}
+      );
+      scope.$digest();
+
+      optgroups = element.find('optgroup');
+      expect(optgroups.length).toBe(3);
+
+      // Group with removed item
+      one = optgroups.eq(0);
+      expect(one.children('option').length).toBe(1);
+
+      beta = one.find('option').eq(0);
+      expect(one.attr('label')).toEqual('one');
+      expect(beta.text()).toEqual('Beta');
+
+      // Group with new item
+      two = optgroups.eq(1);
+      expect(two.children('option').length).toBe(2);
+
+      gamma = two.find('option').eq(0);
+      expect(two.attr('label')).toEqual('two');
+      expect(gamma.text()).toEqual('Gamma');
+      delta = two.find('option').eq(1);
+      expect(two.attr('label')).toEqual('two');
+      expect(delta.text()).toEqual('Delta');
+
+      // New group
+      three = optgroups.eq(2);
+      expect(three.children('option').length).toBe(1);
+
+      epsilon = three.find('option').eq(0);
+      expect(three.attr('label')).toEqual('three');
+      expect(epsilon.text()).toEqual('Epsilon');
+    });
 
     it('should place non-grouped items in the list where they appear', function() {
       createSelect({

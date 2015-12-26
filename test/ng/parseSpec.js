@@ -2,15 +2,6 @@
 
 describe('parser', function() {
 
-  beforeEach(function() {
-    /* global getterFnCacheDefault: true */
-    /* global getterFnCacheExpensive: true */
-    // clear caches
-    getterFnCacheDefault = createMap();
-    getterFnCacheExpensive = createMap();
-  });
-
-
   describe('lexer', function() {
     var lex;
 
@@ -550,8 +541,23 @@ describe('parser', function() {
     });
 
 
-    it('should not confuse `this`, `undefined`, `true`, `false`, `null` when used as identfiers', function() {
-      forEach(['this', 'undefined', 'true', 'false', 'null'], function(identifier) {
+    it('should understand the `$locals` expression', function() {
+      expect(createAst('$locals')).toEqual(
+        {
+          type: 'Program',
+          body: [
+            {
+              type: 'ExpressionStatement',
+              expression: { type: 'LocalsExpression' }
+            }
+          ]
+        }
+      );
+    });
+
+
+    it('should not confuse `this`, `$locals`, `undefined`, `true`, `false`, `null` when used as identfiers', function() {
+      forEach(['this', '$locals', 'undefined', 'true', 'false', 'null'], function(identifier) {
         expect(createAst('foo.' + identifier)).toEqual(
           {
             type: 'Program',
@@ -2195,6 +2201,19 @@ describe('parser', function() {
         expect(scope.$eval('true || false || run()')).toBe(true);
       });
 
+      it('should throw TypeError on using a \'broken\' object as a key to access a property', function() {
+        scope.object = {};
+        forEach([
+          { toString: 2 },
+          { toString: null },
+          { toString: function() { return {}; } }
+        ], function(brokenObject) {
+          scope.brokenObject = brokenObject;
+          expect(function() {
+            scope.$eval('object[brokenObject]');
+          }).toThrow();
+        });
+      });
 
       it('should support method calls on primitive types', function() {
         scope.empty = '';
@@ -2739,6 +2758,12 @@ describe('parser', function() {
           }).not.toThrow();
           expect(function() {
             scope.$eval("objConstructor = {}.constructor; objConstructor.join = ''");
+          }).toThrow();
+          expect(function() {
+            scope.$eval("'a'.constructor.prototype.charAt=[].join");
+          }).toThrow();
+          expect(function() {
+            scope.$eval("'a'.constructor.prototype.charCodeAt=[].concat");
           }).toThrow();
         });
       });
@@ -3582,6 +3607,30 @@ describe('parser', function() {
         it('should allow accessing null/undefined properties on `this`', inject(function($rootScope) {
           $rootScope.null = {a: 42};
           expect($rootScope.$eval('this.null.a')).toBe(42);
+        }));
+
+        it('should allow accessing $locals', inject(function($rootScope) {
+          $rootScope.foo = 'foo';
+          $rootScope.bar = 'bar';
+          $rootScope.$locals = 'foo';
+          var locals = {foo: 42};
+          expect($rootScope.$eval('$locals')).toBeUndefined();
+          expect($rootScope.$eval('$locals.foo')).toBeUndefined();
+          expect($rootScope.$eval('this.$locals')).toBe('foo');
+          expect(function() {
+            $rootScope.$eval('$locals = {}');
+          }).toThrow();
+          expect(function() {
+            $rootScope.$eval('$locals.bar = 23');
+          }).toThrow();
+          expect($rootScope.$eval('$locals', locals)).toBe(locals);
+          expect($rootScope.$eval('$locals.foo', locals)).toBe(42);
+          expect($rootScope.$eval('this.$locals', locals)).toBe('foo');
+          expect(function() {
+            $rootScope.$eval('$locals = {}', locals);
+          }).toThrow();
+          expect($rootScope.$eval('$locals.bar = 23', locals)).toEqual(23);
+          expect(locals.bar).toBe(23);
         }));
       });
     });

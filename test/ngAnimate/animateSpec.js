@@ -130,6 +130,24 @@ describe("animations", function() {
       };
     }));
 
+    it("should not alter the provided options input in any way throughout the animation", inject(function($animate, $rootScope) {
+      var initialOptions = {
+        from: { height: '50px' },
+        to: { width: '50px' },
+        addClass: 'one',
+        removeClass: 'two'
+      };
+
+      var copiedOptions = copy(initialOptions);
+      expect(copiedOptions).toEqual(initialOptions);
+
+      var runner = $animate.enter(element, parent, null, copiedOptions);
+      expect(copiedOptions).toEqual(initialOptions);
+
+      $rootScope.$digest();
+      expect(copiedOptions).toEqual(initialOptions);
+    }));
+
     it('should animate only the specified CSS className matched within $animateProvider.classNameFilter', function() {
       module(function($animateProvider) {
         $animateProvider.classNameFilter(/only-allow-this-animation/);
@@ -149,20 +167,24 @@ describe("animations", function() {
       });
     });
 
-    they('should nullify both options.$prop when passed into an animation if it is not a string or an array', ['addClass', 'removeClass'], function(prop) {
+    they('should not apply the provided options.$prop value unless it\'s a string or string-based array', ['addClass', 'removeClass'], function(prop) {
       inject(function($animate, $rootScope) {
+        var startingCssClasses = element.attr('class') || '';
+
         var options1 = {};
         options1[prop] = function() {};
         $animate.enter(element, parent, null, options1);
 
-        expect(options1[prop]).toBeFalsy();
+        expect(element.attr('class')).toEqual(startingCssClasses);
+
         $rootScope.$digest();
 
         var options2 = {};
         options2[prop] = true;
         $animate.leave(element, options2);
 
-        expect(options2[prop]).toBeFalsy();
+        expect(element.attr('class')).toEqual(startingCssClasses);
+
         $rootScope.$digest();
 
         capturedAnimation = null;
@@ -170,11 +192,15 @@ describe("animations", function() {
         var options3 = {};
         if (prop === 'removeClass') {
           element.addClass('fatias');
+          startingCssClasses = element.attr('class');
         }
 
         options3[prop] = ['fatias'];
         $animate.enter(element, parent, null, options3);
-        expect(options3[prop]).toBe('fatias');
+
+        $rootScope.$digest();
+
+        expect(element.attr('class')).not.toEqual(startingCssClasses);
       });
     });
 
@@ -808,47 +834,70 @@ describe("animations", function() {
         expect(capturedAnimation[0]).toBe(element);
       }));
 
-      it('should skip all pre-digest queued child animations when a parent structural animation is triggered',
-        inject(function($rootScope, $rootElement, $animate) {
+      describe('when a parent structural animation is triggered:', function() {
 
-        parent.append(element);
+        it('should skip all pre-digest queued child animations',
+          inject(function($rootScope, $rootElement, $animate) {
 
-        $animate.addClass(element, 'rumlow');
-        $animate.move(parent, null, parent2);
+          parent.append(element);
 
-        expect(capturedAnimation).toBeFalsy();
-        expect(capturedAnimationHistory.length).toBe(0);
-        $rootScope.$digest();
+          $animate.addClass(element, 'rumlow');
+          $animate.move(parent, null, parent2);
 
-        expect(capturedAnimation[0]).toBe(parent);
-        expect(capturedAnimationHistory.length).toBe(1);
-      }));
+          expect(capturedAnimation).toBeFalsy();
+          expect(capturedAnimationHistory.length).toBe(0);
+          $rootScope.$digest();
 
-      it('should end all ongoing post-digest child animations when a parent structural animation is triggered',
-        inject(function($rootScope, $rootElement, $animate) {
+          expect(capturedAnimation[0]).toBe(parent);
+          expect(capturedAnimationHistory.length).toBe(1);
+        }));
 
-        parent.append(element);
+        it('should end all ongoing post-digest child animations',
+          inject(function($rootScope, $rootElement, $animate) {
 
-        $animate.addClass(element, 'rumlow');
-        var isCancelled = false;
-        overriddenAnimationRunner = extend(defaultFakeAnimationRunner, {
-          end: function() {
-            isCancelled = true;
-          }
-        });
+          parent.append(element);
 
-        $rootScope.$digest();
-        expect(capturedAnimation[0]).toBe(element);
-        expect(isCancelled).toBe(false);
+          $animate.addClass(element, 'rumlow');
+          var isCancelled = false;
+          overriddenAnimationRunner = extend(defaultFakeAnimationRunner, {
+            end: function() {
+              isCancelled = true;
+            }
+          });
 
-        // restore the default
-        overriddenAnimationRunner = defaultFakeAnimationRunner;
-        $animate.move(parent, null, parent2);
-        $rootScope.$digest();
-        expect(capturedAnimation[0]).toBe(parent);
+          $rootScope.$digest();
+          expect(capturedAnimation[0]).toBe(element);
+          expect(isCancelled).toBe(false);
 
-        expect(isCancelled).toBe(true);
-      }));
+          // restore the default
+          overriddenAnimationRunner = defaultFakeAnimationRunner;
+          $animate.move(parent, null, parent2);
+          $rootScope.$digest();
+          expect(capturedAnimation[0]).toBe(parent);
+
+          expect(isCancelled).toBe(true);
+        }));
+
+        it('should ignore children that have animation data-attributes but no animation data',
+          inject(function($rootScope, $rootElement, $animate) {
+
+          parent.append(element);
+
+          $animate.addClass(element, 'rumlow');
+
+          $rootScope.$digest();
+          expect(capturedAnimation[0]).toBe(element);
+
+          // If an element is cloned during an animation, the clone has the data-attributes indicating
+          // an animation
+          var clone = element.clone();
+          parent.append(clone);
+
+          $animate.move(parent, null, parent2);
+          $rootScope.$digest();
+          expect(capturedAnimation[0]).toBe(parent);
+        }));
+      });
 
       it('should not end any child animations if a parent class-based animation is issued',
         inject(function($rootScope, $rootElement, $animate) {
@@ -1382,28 +1431,63 @@ describe("animations", function() {
       });
     }));
 
-    it('should allow an element to pinned elsewhere and still be available in animations',
-      inject(function($animate, $compile, $document, $rootElement, $rootScope) {
-
-      var innerParent = jqLite('<div></div>');
-      jqLite($document[0].body).append(innerParent);
-      innerParent.append($rootElement);
+    it('should throw if the arguments are not elements',
+      inject(function($animate, $compile, $document, $rootScope, $rootElement) {
 
       var element = jqLite('<div></div>');
-      jqLite($document[0].body).append(element);
 
-      $animate.addClass(element, 'red');
-      $rootScope.$digest();
-      expect(capturedAnimation).toBeFalsy();
+      expect(function() {
+        $animate.pin(element);
+      }).toThrowMinErr('ng', 'areq', 'Argument \'parentElement\' is not an element');
 
-      $animate.pin(element, $rootElement);
-
-      $animate.addClass(element, 'blue');
-      $rootScope.$digest();
-      expect(capturedAnimation).toBeTruthy();
+      expect(function() {
+        $animate.pin(null, $rootElement);
+      }).toThrowMinErr('ng', 'areq', 'Argument \'element\' is not an element');
 
       dealoc(element);
     }));
+
+
+    they('should animate an element inside a pinned element that is the $prop element',
+      ['same', 'parent', 'grandparent'],
+      function(elementRelation) {
+        inject(function($animate, $compile, $document, $rootElement, $rootScope) {
+
+        var pinElement, animateElement;
+
+        var innerParent = jqLite('<div></div>');
+        jqLite($document[0].body).append(innerParent);
+        innerParent.append($rootElement);
+
+        switch (elementRelation) {
+          case 'same':
+            pinElement = jqLite('<div id="animate"></div>');
+            break;
+          case 'parent':
+            pinElement = jqLite('<div><div id="animate"></div></div>');
+            break;
+          case 'grandparent':
+            pinElement = jqLite('<div><div><div id="animate"></div></div></div>');
+            break;
+        }
+
+        jqLite($document[0].body).append(pinElement);
+        animateElement = jqLite($document[0].getElementById('animate'));
+
+        $animate.addClass(animateElement, 'red');
+        $rootScope.$digest();
+        expect(capturedAnimation).toBeFalsy();
+
+        // Pin the element to the app root to enable animations
+        $animate.pin(pinElement, $rootElement);
+
+        $animate.addClass(animateElement, 'blue');
+        $rootScope.$digest();
+        expect(capturedAnimation).toBeTruthy();
+
+        dealoc(pinElement);
+      });
+    });
 
     it('should adhere to the disabled state of the hosted parent when an element is pinned',
       inject(function($animate, $compile, $document, $rootElement, $rootScope) {

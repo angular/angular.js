@@ -162,7 +162,7 @@ module.exports = function(grunt) {
         '!src/angular.bind.js' // we ignore this file since contains an early return statement
       ],
       options: {
-        config: ".jscsrc"
+        config: '.jscsrc'
       }
     },
 
@@ -231,9 +231,9 @@ module.exports = function(grunt) {
         dest: 'build/angular-aria.js',
         src: util.wrap(files['angularModules']['ngAria'], 'module')
       },
-      "promises-aplus-adapter": {
+      'promises-aplus-adapter': {
         dest:'tmp/promises-aplus-adapter++.js',
-        src:['src/ng/q.js','lib/promises-aplus/promises-aplus-test-adapter.js']
+        src:['src/ng/q.js', 'lib/promises-aplus/promises-aplus-test-adapter.js']
       }
     },
 
@@ -253,7 +253,7 @@ module.exports = function(grunt) {
     },
 
 
-    "ddescribe-iit": {
+    'ddescribe-iit': {
       files: [
         'src/**/*.js',
         'test/**/*.js',
@@ -274,7 +274,7 @@ module.exports = function(grunt) {
       }
     },
 
-    "merge-conflict": {
+    'merge-conflict': {
       files: [
         'src/**/*',
         'test/**/*',
@@ -304,11 +304,11 @@ module.exports = function(grunt) {
     },
 
     shell: {
-      "npm-install": {
+      'npm-install': {
         command: 'node scripts/npm/check-node-modules.js'
       },
 
-      "promises-aplus-tests": {
+      'promises-aplus-tests': {
         options: {
           stdout: false,
           stderr: true,
@@ -339,8 +339,10 @@ module.exports = function(grunt) {
     grunt.task.run('shell:npm-install');
   }
 
+
+
   //alias tasks
-  grunt.registerTask('test', 'Run unit, docs and e2e tests with Karma', ['jshint', 'jscs', 'package','test:unit','test:promises-aplus', 'tests:docs', 'test:protractor']);
+  grunt.registerTask('test', 'Run unit, docs and e2e tests with Karma', ['jshint', 'jscs', 'package', 'test:unit', 'test:promises-aplus', 'tests:docs', 'test:protractor']);
   grunt.registerTask('test:jqlite', 'Run the unit tests with Karma' , ['tests:jqlite']);
   grunt.registerTask('test:jquery', 'Run the jQuery unit tests with Karma', ['tests:jquery']);
   grunt.registerTask('test:modules', 'Run the Karma module tests with Karma', ['build', 'tests:modules']);
@@ -350,11 +352,11 @@ module.exports = function(grunt) {
   grunt.registerTask('test:travis-protractor', 'Run the end to end tests with Protractor for Travis CI builds', ['connect:testserver', 'protractor:travis']);
   grunt.registerTask('test:ci-protractor', 'Run the end to end tests with Protractor for Jenkins CI builds', ['webdriver', 'connect:testserver', 'protractor:jenkins']);
   grunt.registerTask('test:e2e', 'Alias for test:protractor', ['test:protractor']);
-  grunt.registerTask('test:promises-aplus',['build:promises-aplus-adapter','shell:promises-aplus-tests']);
+  grunt.registerTask('test:promises-aplus',['build:promises-aplus-adapter', 'shell:promises-aplus-tests']);
 
-  grunt.registerTask('minify', ['bower','clean', 'build', 'minall']);
+  grunt.registerTask('minify', ['bower', 'clean', 'build', 'minall']);
   grunt.registerTask('webserver', ['connect:devserver']);
-  grunt.registerTask('package', ['bower','clean', 'buildall', 'minall', 'collect-errors', 'docs', 'copy', 'write', 'compress']);
+  grunt.registerTask('package', ['bower', 'validate-angular-files', 'clean', 'buildall', 'minall', 'collect-errors', 'docs', 'copy', 'write', 'compress']);
   grunt.registerTask('ci-checks', ['ddescribe-iit', 'merge-conflict', 'jshint', 'jscs']);
   grunt.registerTask('default', ['package']);
 };

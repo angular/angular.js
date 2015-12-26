@@ -124,7 +124,7 @@ h1,h2,h3,h4,h5,h6 {
   font-size:1.2em;
   padding:0;
   margin:0;
-  border-bottom:1px soild #aaa;
+  border-bottom:1px solid #aaa;
   margin-bottom:5px;
 }
 
@@ -639,6 +639,12 @@ ul.events > li {
   padding: 8px;
   border: 1px solid #eee;
   vertical-align: top;
+}
+
+.table > tbody > tr.head > td,
+.table > tbody > tr.head > th {
+  border-bottom: 2px solid #ddd;
+  padding-top: 50px;
 }
 
 @media only screen and (min-width: 769px) and (max-width: 991px) {

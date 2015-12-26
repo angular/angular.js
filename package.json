@@ -1,7 +1,7 @@
 {
   "name": "angularjs",
   "license": "MIT",
-  "branchVersion": "^1.5.0-beta.0",
+  "branchVersion": "^1.5.0-beta.2",
   "branchPattern": "1.5.*",
   "distTag": "beta",
   "repository": {
@@ -9,7 +9,7 @@
     "url": "https://github.com/angular/angular.js.git"
   },
   "engines": {
-    "node": "~0.10",
+    "node": "<5",
     "npm": "~2.5"
   },
   "engineStrict": true,
@@ -30,6 +30,7 @@
     "dgeni": "^0.4.0",
     "dgeni-packages": "^0.11.0",
     "event-stream": "~3.1.0",
+    "glob": "^6.0.1",
     "grunt": "~0.4.2",
     "grunt-bump": "~0.0.13",
     "grunt-contrib-clean": "~0.6.0",

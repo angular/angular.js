@@ -301,7 +301,7 @@ function setupModuleLoader(window) {
            *      returns an html template as a string which should be used as the contents of this component.
            *      Empty string by default.
            *
-           *      If `template` is a function, then it is {@link auto.$injector#invoke injected} with
+           *      If `template` is a function, then it is {@link guide/di injectable}, and receives
            *      the following locals:
            *
            *      - `$element` - Current element
@@ -310,7 +310,7 @@ function setupModuleLoader(window) {
            *    - `templateUrl` – `{string=|function()=}` – path or function that returns a path to an html
            *      template that should be used  as the contents of this component.
            *
-           *      If `templateUrl` is a function, then it is {@link auto.$injector#invoke injected} with
+           *      If `templateUrl` is a function, then it is {@link guide/di injectable}, and receives
            *      the following locals:
            *
            *      - `$element` - Current element
@@ -333,6 +333,7 @@ function setupModuleLoader(window) {
            * In order to make the definition easier, components enforce best practices like controllerAs
            * and default behaviors like scope isolation, restrict to elements and allow transclusion.
            *
+           * <br />
            * Here are a few examples of how you would usually define components:
            *
            * ```js
@@ -357,12 +358,54 @@ function setupModuleLoader(window) {
            *
            * ```
            *
-           * See {@link ng.$compileProvider#directive $compileProvider.directive()}.
+           * <br />
+           * Components are also useful as route templates (e.g. when using
+           * {@link ngRoute ngRoute}):
+           *
+           * ```js
+           *   var myMod = angular.module('myMod', ['ngRoute']);
+           *
+           *   myMod.component('home', {
+           *     template: '<h1>Home</h1><p>Hello, {{ home.user.name }} !</p>',
+           *     controller: function() {
+           *       this.user = {name: 'world'};
+           *     }
+           *   });
+           *
+           *   myMod.config(function($routeProvider) {
+           *     $routeProvider.when('/', {
+           *       template: '<home></home>'
+           *     });
+           *   });
+           * ```
+           *
+           * <br />
+           * When using {@link ngRoute.$routeProvider $routeProvider}, you can often avoid some
+           * boilerplate, by assigning the resolved dependencies directly on the route scope:
+           *
+           * ```js
+           *   var myMod = angular.module('myMod', ['ngRoute']);
+           *
+           *   myMod.component('home', {
+           *     template: '<h1>Home</h1><p>Hello, {{ home.user.name }} !</p>',
+           *     bindings: {user: '='}
+           *   });
+           *
+           *   myMod.config(function($routeProvider) {
+           *     $routeProvider.when('/', {
+           *       template: '<home user="$resolve.user"></home>',
+           *       resolve: {user: function($http) { return $http.get('...'); }}
+           *     });
+           *   });
+           * ```
+           *
+           * <br />
+           * See also {@link ng.$compileProvider#directive $compileProvider.directive()}.
            */
           component: function(name, options) {
             function factory($injector) {
               function makeInjectable(fn) {
-                if (angular.isFunction(fn)) {
+                if (isFunction(fn) || Array.isArray(fn)) {
                   return function(tElement, tAttrs) {
                     return $injector.invoke(fn, this, {$element: tElement, $attrs: tAttrs});
                   };

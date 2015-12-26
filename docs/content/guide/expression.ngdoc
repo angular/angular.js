@@ -35,7 +35,9 @@ Angular expressions are like JavaScript expressions with the following differenc
   * **No RegExp Creation With Literal Notation:** You cannot create regular expressions
     in an Angular expression.
 
-  * **No Comma And Void Operators:** You cannot use `,` or `void` in an Angular expression.
+  * **No Object Creation With New Operator:** You cannot use `new` operator in an Angular expression.
+
+  * **No Comma And Void Operators:** You cannot use `,` or `void` operators in an Angular expression.
 
   * **Filters:** You can use {@link guide/filter filters} within expressions to format data before
     displaying it.
@@ -112,6 +114,9 @@ This restriction is intentional. It prevents accidental access to the global sta
 
 Instead use services like `$window` and `$location` in functions called from expressions. Such services
 provide mockable access to globals.
+
+It is possible to access the context object using the identifier `this` and the locals object using the
+identifier `$locals`.
 
 <example module="expressionExample">
   <file name="index.html">

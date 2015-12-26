@@ -270,6 +270,16 @@ describe('injector', function() {
         it('should take args before first arrow', function() {
           expect(annotate(eval('a => b => b'))).toEqual(['a']);
         });
+
+        it('should be possible to instantiate ES6 classes', function() {
+          // Only Chrome (not even the FF we use) supports ES6 classes.
+          if (!/chrome/i.test(navigator.userAgent)) return;
+          providers('a', function() { return 'a-value'; });
+          var clazz = eval('(class { constructor(a) { this.a = a; } aVal() { return this.a; } })');
+          var instance = injector.instantiate(clazz);
+          expect(instance).toEqual({a: 'a-value'});
+          expect(instance.aVal()).toEqual('a-value');
+        });
         /*jshint +W061 */
       });
     }

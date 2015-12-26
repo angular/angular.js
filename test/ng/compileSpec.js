@@ -360,7 +360,6 @@ describe('$compile', function() {
     });
   });
 
-
   describe('compile phase', function() {
 
     it('should attach scope to the document node when it is compiled explicitly', inject(function($document) {
@@ -444,6 +443,15 @@ describe('$compile', function() {
       expect(element.html()).toBe("3");
     }));
 
+    it('should detect anchor elements with the string "SVG" in the `href` attribute as an anchor', inject(function($compile, $rootScope) {
+      element = jqLite('<div><a href="/ID_SVG_ID">' +
+        '<span ng-if="true">Should render</span>' +
+        '</a></div>');
+      $compile(element.contents())($rootScope);
+      $rootScope.$digest();
+      document.body.appendChild(element[0]);
+      expect(element.find('span').text()).toContain('Should render');
+    }));
 
     describe('multiple directives per element', function() {
       it('should allow multiple directives per element', inject(function($compile, $rootScope, log) {
@@ -3944,7 +3952,7 @@ describe('$compile', function() {
 
         compile('<div><span my-component ref="name">');
 
-        //change both sides to the same item withing the same digest cycle
+        //change both sides to the same item within the same digest cycle
         componentScope.ref = 'same';
         $rootScope.name = 'same';
         $rootScope.$apply();
@@ -6213,7 +6221,7 @@ describe('$compile', function() {
             var currentCleanData = jQuery.cleanData;
             jQuery.cleanData = function(elems) {
               cleanedCount += elems.length;
-              // Don't return the output and expicitly pass only the first parameter
+              // Don't return the output and explicitly pass only the first parameter
               // so that we're sure we're not relying on either of them. jQuery UI patch
               // behaves in this way.
               currentCleanData(elems);
@@ -6252,7 +6260,8 @@ describe('$compile', function() {
       });
 
 
-      it('should clear contents of the ng-translude element before appending transcluded content', function() {
+      it('should clear contents of the ng-translude element before appending transcluded content' +
+        ' if transcluded content exists', function() {
         module(function() {
           directive('trans', function() {
             return {
@@ -6265,6 +6274,23 @@ describe('$compile', function() {
           element = $compile('<div trans>unicorn!</div>')($rootScope);
           $rootScope.$apply();
           expect(sortedHtml(element.html())).toEqual('<div ng-transclude=""><span>unicorn!</span></div>');
+        });
+      });
+
+      it('should NOT clear contents of the ng-translude element before appending transcluded content' +
+        ' if transcluded content does NOT exist', function() {
+        module(function() {
+          directive('trans', function() {
+            return {
+              transclude: true,
+              template: '<div ng-transclude>old stuff! </div>'
+            };
+          });
+        });
+        inject(function(log, $rootScope, $compile) {
+          element = $compile('<div trans></div>')($rootScope);
+          $rootScope.$apply();
+          expect(sortedHtml(element.html())).toEqual('<div ng-transclude="">old stuff! </div>');
         });
       });
 
@@ -7660,7 +7686,7 @@ describe('$compile', function() {
             restrict: 'E',
             scope: {},
             transclude: {
-              boss: 'bossSlot'
+              bossSlot: 'boss'
             },
             template:
               '<div class="other" ng-transclude></div>'
@@ -7714,6 +7740,36 @@ describe('$compile', function() {
       });
     });
 
+
+    it('should include non-element nodes in the default transclusion', function() {
+      module(function() {
+        directive('minionComponent', function() {
+          return {
+            restrict: 'E',
+            scope: {},
+            transclude: {
+              bossSlot: 'boss'
+            },
+            template:
+              '<div class="other" ng-transclude></div>'
+          };
+        });
+      });
+      inject(function($rootScope, $compile) {
+        element = $compile(
+          '<minion-component>' +
+            'text1' +
+            '<span>stuart</span>' +
+            '<span>bob</span>' +
+            '<boss>gru</boss>' +
+            'text2' +
+            '<span>kevin</span>' +
+          '</minion-component>')($rootScope);
+        $rootScope.$apply();
+        expect(element.text()).toEqual('text1stuartbobtext2kevin');
+      });
+    });
+
     it('should transclude elements to an `ng-transclude` with a matching transclusion slot name', function() {
       module(function() {
         directive('minionComponent', function() {
@@ -7721,8 +7777,8 @@ describe('$compile', function() {
             restrict: 'E',
             scope: {},
             transclude: {
-              minion: 'minionSlot',
-              boss: 'bossSlot'
+              minionSlot: 'minion',
+              bossSlot: 'boss'
             },
             template:
               '<div class="boss" ng-transclude="bossSlot"></div>' +
@@ -7754,8 +7810,8 @@ describe('$compile', function() {
             restrict: 'E',
             scope: {},
             transclude: {
-              minion: 'minionSlot',
-              boss: 'bossSlot'
+              minionSlot: 'minion',
+              bossSlot: 'boss'
             },
             template:
               '<ng-transclude class="boss" ng-transclude-slot="bossSlot"></ng-transclude>' +
@@ -7786,8 +7842,8 @@ describe('$compile', function() {
             restrict: 'E',
             scope: {},
             transclude: {
-              minion: 'minionSlot',
-              boss: 'bossSlot'
+              minionSlot: 'minion',
+              bossSlot: 'boss'
             },
             template:
               '<div class="boss" ng-transclude="bossSlot"></div>' +
@@ -7815,8 +7871,8 @@ describe('$compile', function() {
             restrict: 'E',
             scope: {},
             transclude: {
-              minion: 'minionSlot',
-              boss: '?bossSlot'
+              minionSlot: 'minion',
+              bossSlot: '?boss'
             },
             template:
               '<div class="boss" ng-transclude="bossSlot"></div>' +
@@ -7845,7 +7901,7 @@ describe('$compile', function() {
             restrict: 'E',
             scope: {},
             transclude: {
-              minion: 'minionSlot'
+              minionSlot: 'minion'
             },
             template:
               '<div class="boss" ng-transclude="bossSlot"></div>' +
@@ -7893,32 +7949,38 @@ describe('$compile', function() {
     });
 
 
-    it('should match against the normalized form of the element', function() {
+    it('should match the normalized form of the element name', function() {
       module(function() {
         directive('foo', function() {
           return {
             restrict: 'E',
             scope: {},
             transclude: {
-              fooBar: 'fooBarSlot'
+              fooBarSlot: 'fooBar',
+              mooKarSlot: 'mooKar'
             },
             template:
-              '<div class="other" ng-transclude="fooBarSlot"></div>'
+              '<div class="a" ng-transclude="fooBarSlot"></div>' +
+              '<div class="b" ng-transclude="mooKarSlot"></div>'
           };
         });
       });
       inject(function($rootScope, $compile) {
         element = $compile(
           '<foo>' +
-            '<foo-bar>baz</foo-bar>' +
+            '<foo-bar>bar1</foo-bar>' +
+            '<foo:bar>bar2</foo:bar>' +
+            '<moo-kar>baz1</moo-kar>' +
+            '<data-moo-kar>baz2</data-moo-kar>' +
           '</foo>')($rootScope);
         $rootScope.$apply();
-        expect(element.text()).toEqual('baz');
+        expect(element.children().eq(0).text()).toEqual('bar1bar2');
+        expect(element.children().eq(1).text()).toEqual('baz1baz2');
       });
     });
 
 
-    it('should provide the elements marked with matching transclude elements as additional transclude functions on the $$slots property', function() {
+    it('should return true from `isSlotFilled(slotName) for slots that have content in the transclusion', function() {
       var capturedTranscludeFn;
       module(function() {
         directive('minionComponent', function() {
@@ -7926,8 +7988,8 @@ describe('$compile', function() {
             restrict: 'E',
             scope: {},
             transclude: {
-              minion: 'minionSlot',
-              boss: 'bossSlot'
+              minionSlot: 'minion',
+              bossSlot: '?boss'
             },
             template:
               '<div class="boss" ng-transclude="bossSlot"></div>' +
@@ -7945,31 +8007,76 @@ describe('$compile', function() {
           '  <minion>stuart</minion>' +
           '  <minion>bob</minion>' +
           '  <span>dorothy</span>' +
-          '  <boss>gru</boss>' +
           '</minion-component>')($rootScope);
         $rootScope.$apply();
 
-        var minionTranscludeFn = capturedTranscludeFn.$$boundTransclude.$$slots['minionSlot'];
-        var minions = minionTranscludeFn();
-        expect(minions[0].outerHTML).toEqual('<minion class="ng-scope">stuart</minion>');
-        expect(minions[1].outerHTML).toEqual('<minion class="ng-scope">bob</minion>');
+        var hasMinions = capturedTranscludeFn.isSlotFilled('minionSlot');
+        var hasBosses = capturedTranscludeFn.isSlotFilled('bossSlot');
 
-        var scope = element.scope();
+        expect(hasMinions).toBe(true);
+        expect(hasBosses).toBe(false);
+      });
+    });
 
-        var minionScope = jqLite(minions[0]).scope();
-        expect(minionScope.$parent).toBe(scope);
+    it('should not overwrite the contents of an `ng-transclude` element, if the matching optional slot is not filled', function() {
+      module(function() {
+        directive('minionComponent', function() {
+          return {
+            restrict: 'E',
+            scope: {},
+            transclude: {
+              minionSlot: 'minion',
+              bossSlot: '?boss'
+            },
+            template:
+              '<div class="boss" ng-transclude="bossSlot">default boss content</div>' +
+              '<div class="minion" ng-transclude="minionSlot">default minion content</div>' +
+              '<div class="other" ng-transclude>default content</div>'
+          };
+        });
+      });
+      inject(function($rootScope, $compile) {
+        element = $compile(
+          '<minion-component>' +
+            '<minion>stuart</minion>' +
+            '<span>dorothy</span>' +
+            '<minion>kevin</minion>' +
+          '</minion-component>')($rootScope);
+        $rootScope.$apply();
+        expect(element.children().eq(0).text()).toEqual('default boss content');
+        expect(element.children().eq(1).text()).toEqual('stuartkevin');
+        expect(element.children().eq(2).text()).toEqual('dorothy');
+      });
+    });
 
-        var bossTranscludeFn = capturedTranscludeFn.$$boundTransclude.$$slots['bossSlot'];
-        var boss = bossTranscludeFn();
-        expect(boss[0].outerHTML).toEqual('<boss class="ng-scope">gru</boss>');
-
-        var bossScope = jqLite(boss[0]).scope();
-        expect(bossScope.$parent).toBe(scope);
-
-        expect(bossScope).not.toBe(minionScope);
-
-        dealoc(boss);
-        dealoc(minions);
+    it('should not overwrite the contents of an `ng-transclude` element, if the matching optional slot is not filled', function() {
+      module(function() {
+        directive('minionComponent', function() {
+          return {
+            restrict: 'E',
+            scope: {},
+            transclude: {
+              minionSlot: 'minion',
+              bossSlot: '?boss'
+            },
+            template:
+              '<div class="boss" ng-transclude="bossSlot">default boss content</div>' +
+              '<div class="minion" ng-transclude="minionSlot">default minion content</div>' +
+              '<div class="other" ng-transclude>default content</div>'
+          };
+        });
+      });
+      inject(function($rootScope, $compile) {
+        element = $compile(
+          '<minion-component>' +
+            '<minion>stuart</minion>' +
+            '<span>dorothy</span>' +
+            '<minion>kevin</minion>' +
+          '</minion-component>')($rootScope);
+        $rootScope.$apply();
+        expect(element.children().eq(0).text()).toEqual('default boss content');
+        expect(element.children().eq(1).text()).toEqual('stuartkevin');
+        expect(element.children().eq(2).text()).toEqual('dorothy');
       });
     });
   });

@@ -496,10 +496,9 @@ This change also makes our forEach behave more like Array#forEach.
 
 
 - **angular.toJson:** due to [c054288c](https://github.com/angular/angular.js/commit/c054288c9722875e3595e6e6162193e0fb67a251),
-
-If you expected `toJson` to strip these types of properties before, you will have to
-manually do this yourself now.
-
+  `toJson()` will no longer strip properties starting with a single `$`. If you relied on
+`toJson()`'s stripping these types of properties before, you will have to do it manually now.
+It will still strip properties starting with `$$` though.
 
 
 
@@ -584,6 +583,36 @@ After:
       };
     });
 
+  - due to [531a8de7](https://github.com/angular/angular.js/commit/531a8de72c439d8ddd064874bf364c00cedabb11),
+`$observe` no longer registers on undefined attributes. For example, if you were using `$observe` on
+an absent optional attribute to set a default value, the following would not work anymore:
+
+```html
+<my-dir></my-dir>
+```
+
+```js
+// Link function for directive myDir
+link: function(scope, element, attr) {
+  attr.$observe('myAttr', function(newVal) {
+    scope.myValue = newVal ? newVal : 'myDefaultValue';
+  })
+}
+```
+
+Instead, check if the attribute is set before registering the observer:
+
+```js
+link: function(scope, element, attr) {
+  if (attr.myAttr) {
+    // register the observer
+  } else {
+    // set the default
+  }
+}
+```
+
+
 
 
 
@@ -656,8 +685,15 @@ $scope.resetWithCancel = function (e) {
    [#5864](https://github.com/angular/angular.js/issues/5864))
 
 
+- {@link input[checkbox] `input[checkbox]`} now supports constant expressions in `ngTrueValue` and
+  `ngFalseValue`, making it now possible to e.g. use boolean and integer values. Previously, these attributes would
+  always be treated as strings, whereas they are now parsed as expressions, and will throw if an expression
+  is non-constant. To convert non-constant strings into constant expressions, simply wrap them in an
+  extra pair of quotes, like so:
 
+    `<input type="checkbox" ng-model="..." ng-true-value="'truthyValue'">`
 
+  See [c90cefe1614](https://github.com/angular/angular.js/commit/c90cefe16142d973a123e945fc9058e8a874c357)
 
 
 ## Scopes and Digests (`$scope`)

@@ -268,6 +268,42 @@ describe('ngAnimate integration tests', function() {
       });
     });
 
+    it('should add the preparation class for an enter animation before a parent class-based animation is applied', function() {
+      module('ngAnimateMock');
+      inject(function($animate, $compile, $rootScope, $rootElement, $document) {
+        element = jqLite(
+          '<div ng-class="{parent:exp}">' +
+            '<div ng-if="exp">' +
+            '</div>' +
+          '</div>'
+        );
+
+        ss.addRule('.ng-enter', 'transition:2s linear all;');
+        ss.addRule('.parent-add', 'transition:5s linear all;');
+
+        $rootElement.append(element);
+        jqLite($document[0].body).append($rootElement);
+
+        $compile(element)($rootScope);
+        $rootScope.exp = true;
+        $rootScope.$digest();
+
+        var parent = element;
+        var child = element.find('div');
+
+        expect(parent).not.toHaveClass('parent');
+        expect(parent).toHaveClass('parent-add');
+        expect(child).not.toHaveClass('ng-enter');
+        expect(child).toHaveClass('ng-enter-prepare');
+
+        $animate.flush();
+        expect(parent).toHaveClass('parent parent-add parent-add-active');
+        expect(child).toHaveClass('ng-enter ng-enter-active');
+        expect(child).not.toHaveClass('ng-enter-prepare');
+      });
+    });
+
+
     it('should pack level elements into their own RAF flush', function() {
       module('ngAnimateMock');
       inject(function($animate, $compile, $rootScope, $rootElement, $document) {
@@ -560,6 +596,51 @@ describe('ngAnimate integration tests', function() {
         } else {
           expect(safeClassMatchString).toContain(' cool ');
         }
+      });
+    });
+
+    it("should not alter the provided options values in anyway throughout the animation", function() {
+      var animationSpy = jasmine.createSpy();
+      module(function($animateProvider) {
+        $animateProvider.register('.this-animation', function() {
+          return {
+            enter: function(element, done) {
+              animationSpy();
+              done();
+            }
+          };
+        });
+      });
+
+      inject(function($animate, $rootScope, $compile) {
+        element = jqLite('<div class="parent-man"></div>');
+        var child = jqLite('<div class="child-man one"></div>');
+
+        var initialOptions = {
+          from: { height: '50px' },
+          to: { width: '100px' },
+          addClass: 'one',
+          removeClass: 'two'
+        };
+
+        var copiedOptions = copy(initialOptions);
+        expect(copiedOptions).toEqual(initialOptions);
+
+        html(element);
+        $compile(element)($rootScope);
+
+        $animate.enter(child, element, null, copiedOptions);
+        $rootScope.$digest();
+        expect(copiedOptions).toEqual(initialOptions);
+
+        $animate.flush();
+        expect(copiedOptions).toEqual(initialOptions);
+
+        expect(child).toHaveClass('one');
+        expect(child).not.toHaveClass('two');
+
+        expect(child.attr('style')).toContain('100px');
+        expect(child.attr('style')).toContain('50px');
       });
     });
   });
