@@ -471,6 +471,45 @@ describe('angular', function() {
       expect(dest.c).toBe(3);
       expect(Object.keys(dest)).toEqual(['a', 'b', 'c']);
     });
+
+    it('should copy String() objects', function() {
+      /*jshint -W053 */
+      var obj = new String('foo');
+      /*jshint +W053 */
+      var dest = copy(obj);
+      expect(dest).not.toBe(obj);
+      expect(isObject(dest)).toBe(true);
+      expect(dest.valueOf()).toBe(obj.valueOf());
+    });
+
+    it('should copy Boolean() objects', function() {
+      /*jshint -W053 */
+      var obj = new Boolean(true);
+      /*jshint +W053 */
+      var dest = copy(obj);
+      expect(dest).not.toBe(obj);
+      expect(isObject(dest)).toBe(true);
+      expect(dest.valueOf()).toBe(obj.valueOf());
+    });
+
+    it('should copy Number() objects', function() {
+      /*jshint -W053 */
+      var obj = new Number(42);
+      /*jshint +W053 */
+      var dest = copy(obj);
+      expect(dest).not.toBe(obj);
+      expect(isObject(dest)).toBe(true);
+      expect(dest.valueOf()).toBe(obj.valueOf());
+    });
+
+    it('should copy falsy String/Boolean/Number objects', function() {
+      /*jshint -W053 */
+      expect(copy(new String('')).valueOf()).toBe('');
+      expect(copy(new Boolean(false)).valueOf()).toBe(false);
+      expect(copy(new Number(0)).valueOf()).toBe(0);
+      expect(copy(new Number(NaN)).valueOf()).toBeNaN();
+      /*jshint +W053 */
+    });
   });
 
   describe("extend", function() {
