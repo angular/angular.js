@@ -86,6 +86,7 @@ describe('angular', function() {
         expect(copy(src) instanceof Uint8Array).toBeTruthy();
         expect(dst).toEqual(src);
         expect(dst).not.toBe(src);
+        expect(dst.buffer).not.toBe(src.buffer);
       }
     });
 
@@ -97,6 +98,7 @@ describe('angular', function() {
         expect(copy(src) instanceof Uint8ClampedArray).toBeTruthy();
         expect(dst).toEqual(src);
         expect(dst).not.toBe(src);
+        expect(dst.buffer).not.toBe(src.buffer);
       }
     });
 
@@ -108,6 +110,7 @@ describe('angular', function() {
         expect(copy(src) instanceof Uint16Array).toBeTruthy();
         expect(dst).toEqual(src);
         expect(dst).not.toBe(src);
+        expect(dst.buffer).not.toBe(src.buffer);
       }
     });
 
@@ -119,6 +122,7 @@ describe('angular', function() {
         expect(copy(src) instanceof Uint32Array).toBeTruthy();
         expect(dst).toEqual(src);
         expect(dst).not.toBe(src);
+        expect(dst.buffer).not.toBe(src.buffer);
       }
     });
 
@@ -130,6 +134,7 @@ describe('angular', function() {
         expect(copy(src) instanceof Int8Array).toBeTruthy();
         expect(dst).toEqual(src);
         expect(dst).not.toBe(src);
+        expect(dst.buffer).not.toBe(src.buffer);
       }
     });
 
@@ -141,6 +146,7 @@ describe('angular', function() {
         expect(copy(src) instanceof Int16Array).toBeTruthy();
         expect(dst).toEqual(src);
         expect(dst).not.toBe(src);
+        expect(dst.buffer).not.toBe(src.buffer);
       }
     });
 
@@ -152,6 +158,7 @@ describe('angular', function() {
         expect(copy(src) instanceof Int32Array).toBeTruthy();
         expect(dst).toEqual(src);
         expect(dst).not.toBe(src);
+        expect(dst.buffer).not.toBe(src.buffer);
       }
     });
 
@@ -163,6 +170,7 @@ describe('angular', function() {
         expect(copy(src) instanceof Float32Array).toBeTruthy();
         expect(dst).toEqual(src);
         expect(dst).not.toBe(src);
+        expect(dst.buffer).not.toBe(src.buffer);
       }
     });
 
@@ -174,6 +182,49 @@ describe('angular', function() {
         expect(copy(src) instanceof Float64Array).toBeTruthy();
         expect(dst).toEqual(src);
         expect(dst).not.toBe(src);
+        expect(dst.buffer).not.toBe(src.buffer);
+      }
+    });
+
+    it('should copy an ArrayBuffer with no destination', function() {
+      if (typeof ArrayBuffer !== 'undefined') {
+        var src = new ArrayBuffer(8);
+        new Int32Array(src).set([1, 2]);
+
+        var dst = copy(src);
+        expect(dst instanceof ArrayBuffer).toBeTruthy();
+        expect(dst).toEqual(src);
+        expect(dst).not.toBe(src);
+      }
+    });
+
+    it('should handle ArrayBuffer objects with multiple references', function() {
+      if (typeof ArrayBuffer !== 'undefined') {
+        var buffer = new ArrayBuffer(8);
+        var src = [new Int32Array(buffer), new Float32Array(buffer)];
+        src[0].set([1, 2]);
+
+        var dst = copy(src);
+        expect(dst).toEqual(src);
+        expect(dst[0]).not.toBe(src[0]);
+        expect(dst[1]).not.toBe(src[1]);
+        expect(dst[0].buffer).toBe(dst[1].buffer);
+        expect(dst[0].buffer).not.toBe(buffer);
+      }
+    });
+
+    it('should handle Int32Array objects with multiple references', function() {
+      if (typeof Int32Array !== 'undefined') {
+        var arr = new Int32Array(2);
+        var src = [arr, arr];
+        arr.set([1, 2]);
+
+        var dst = copy(src);
+        expect(dst).toEqual(src);
+        expect(dst).not.toBe(src);
+        expect(dst[0]).not.toBe(src[0]);
+        expect(dst[0]).toBe(dst[1]);
+        expect(dst[0].buffer).toBe(dst[1].buffer);
       }
     });
 
@@ -253,6 +304,15 @@ describe('angular', function() {
       if (typeof Float64Array !== 'undefined') {
         var src = new Float64Array();
         var dst = new Float64Array(5);
+        expect(function() { copy(src, dst); })
+          .toThrowMinErr("ng", "cpta", "Can't copy! TypedArray destination cannot be mutated.");
+      }
+    });
+
+    it("should throw an exception if an ArrayBuffer is the destination", function() {
+      if (typeof ArrayBuffer !== 'undefined') {
+        var src = new ArrayBuffer(5);
+        var dst = new ArrayBuffer(5);
         expect(function() { copy(src, dst); })
           .toThrowMinErr("ng", "cpta", "Can't copy! TypedArray destination cannot be mutated.");
       }

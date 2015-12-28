@@ -683,6 +683,10 @@ function isTypedArray(value) {
   return value && isNumber(value.length) && TYPED_ARRAY_REGEXP.test(toString.call(value));
 }
 
+function isArrayBuffer(obj) {
+  return toString.call(obj) === '[object ArrayBuffer]';
+}
+
 
 var trim = function(value) {
   return isString(value) ? value.trim() : value;
@@ -807,7 +811,7 @@ function copy(source, destination) {
   var stackDest = [];
 
   if (destination) {
-    if (isTypedArray(destination)) {
+    if (isTypedArray(destination) || isArrayBuffer(destination)) {
       throw ngMinErr('cpta', "Can't copy! TypedArray destination cannot be mutated.");
     }
     if (source === destination) {
@@ -907,7 +911,16 @@ function copy(source, destination) {
       case '[object Uint8ClampedArray]':
       case '[object Uint16Array]':
       case '[object Uint32Array]':
-        return new source.constructor(source);
+        return new source.constructor(copyElement(source.buffer));
+
+      case '[object ArrayBuffer]':
+        //Support: IE10
+        if (!source.slice) {
+          var copied = new ArrayBuffer(source.byteLength);
+          new Uint8Array(copied).set(new Uint8Array(source));
+          return copied;
+        }
+        return source.slice(0);
 
       case '[object Boolean]':
       case '[object Number]':
