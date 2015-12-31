@@ -120,7 +120,7 @@ Use ngRoute to enable URL routing to your application. The ngRoute module suppor
       {@link ngRoute#directive Directives}
     </td>
     <td>
-      The {@link ngRoute.directive:ngView ngView} directive will display the template of the current route within the page.
+      The {@link ngoRoute.directive:ngView ngView} directive will display the template of the current route within the page.
     </td>
   </tr>
 </table>
