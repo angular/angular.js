@@ -44,7 +44,7 @@ $interpolateMinErr.interr = function(text, err) {
       this.label = "This binding is brought you by // interpolation symbols.";
   });
 </script>
-<div ng-app="App" ng-controller="DemoController as demo">
+<div ng-app="customInterpolationApp" ng-controller="DemoController as demo">
     //demo.label//
 </div>
 </file>
