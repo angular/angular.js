@@ -1052,7 +1052,8 @@ describe("basic usage", function() {
     it('should call the error callback if provided on non 2xx response', function() {
       $httpBackend.expect('GET', '/CreditCard/123').respond(ERROR_CODE, ERROR_RESPONSE);
 
-      CreditCard.get({id:123}, callback, errorCB);
+      var ccs = CreditCard.get({id:123}, callback, errorCB);
+      ccs.$promise.then(noop, noop);
       $httpBackend.flush();
       expect(errorCB).toHaveBeenCalledOnce();
       expect(callback).not.toHaveBeenCalled();
@@ -1062,7 +1063,8 @@ describe("basic usage", function() {
     it('should call the error callback if provided on non 2xx response (without data)', function() {
       $httpBackend.expect('GET', '/CreditCard').respond(ERROR_CODE, ERROR_RESPONSE);
 
-      CreditCard.get(callback, errorCB);
+      var ccs = CreditCard.get(callback, errorCB);
+      ccs.$promise.then(noop, noop);
       $httpBackend.flush();
       expect(errorCB).toHaveBeenCalledOnce();
       expect(callback).not.toHaveBeenCalled();
@@ -1541,7 +1543,8 @@ describe('cancelling requests', function() {
       }
     });
 
-    CreditCard.get();
+    var ccs = CreditCard.get();
+    ccs.$promise.catch(noop);
     $timeout.flush();
     expect($httpBackend.flush).toThrow(new Error('No pending request to flush !'));
 
@@ -1560,7 +1563,9 @@ describe('cancelling requests', function() {
       }
     });
 
-    CreditCard.get().$cancelRequest();
+    var ccs = CreditCard.get();
+    ccs.$promise.catch(noop);
+    ccs.$cancelRequest();
     expect($httpBackend.flush).toThrow(new Error('No pending request to flush !'));
 
     CreditCard.get();
@@ -1578,7 +1583,9 @@ describe('cancelling requests', function() {
       }
     });
 
-    CreditCard.get().$cancelRequest();
+    var ccs = CreditCard.get();
+    ccs.$promise.catch(noop);
+    ccs.$cancelRequest();
     expect($httpBackend.flush).toThrow(new Error('No pending request to flush !'));
 
     CreditCard.get();

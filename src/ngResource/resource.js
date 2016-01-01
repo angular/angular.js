@@ -706,13 +706,14 @@ angular.module('ngResource', ['ng']).
               return $q.reject(response);
             });
 
-            promise['finally'](function() {
+            promise = promise['finally'](function(response) {
               value.$resolved = true;
               if (!isInstanceCall && cancellable) {
                 value.$cancelRequest = angular.noop;
                 $timeout.cancel(numericTimeoutPromise);
                 timeoutDeferred = numericTimeoutPromise = httpConfig.timeout = null;
               }
+              return response;
             });
 
             promise = promise.then(

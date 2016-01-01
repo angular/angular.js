@@ -445,7 +445,7 @@ angular.mock.$IntervalProvider = function() {
           promise = deferred.promise;
 
       count = (angular.isDefined(count)) ? count : 0;
-      promise.then(null, null, (!hasParams) ? fn : function() {
+      promise.then(null, function() {}, (!hasParams) ? fn : function() {
         fn.apply(null, args);
       });
 
@@ -505,6 +505,7 @@ angular.mock.$IntervalProvider = function() {
       });
 
       if (angular.isDefined(fnIndex)) {
+        repeatFns[fnIndex].deferred.promise.then(undefined, function() {});
         repeatFns[fnIndex].deferred.reject('canceled');
         repeatFns.splice(fnIndex, 1);
         return true;
