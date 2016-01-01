@@ -1031,7 +1031,7 @@ describe('$http', function() {
 
       it('should $apply after error callback', function() {
         $httpBackend.when('GET').respond(404);
-        $http({method: 'GET', url: '/some'});
+        $http({method: 'GET', url: '/some'}).catch(noop);
         $httpBackend.flush();
         expect($rootScope.$apply).toHaveBeenCalledOnce();
       });
@@ -1432,7 +1432,7 @@ describe('$http', function() {
 
       function doFirstCacheRequest(method, respStatus, headers) {
         $httpBackend.expect(method || 'GET', '/url').respond(respStatus || 200, 'content', headers);
-        $http({method: method || 'GET', url: '/url', cache: cache});
+        $http({method: method || 'GET', url: '/url', cache: cache}).catch(noop);
         $httpBackend.flush();
       }
 
@@ -1640,7 +1640,7 @@ describe('$http', function() {
 
       it('should preserve config object when rejecting from pending cache', function() {
         $httpBackend.expect('GET', '/url').respond(404, 'content');
-        $http({method: 'GET', url: '/url', cache: cache, headers: {foo: 'bar'}});
+        $http({method: 'GET', url: '/url', cache: cache, headers: {foo: 'bar'}}).catch(noop);
 
         $http({method: 'GET', url: '/url', cache: cache, headers: {foo: 'baz'}}).catch(callback);
         $httpBackend.flush();

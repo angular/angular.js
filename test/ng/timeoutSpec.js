@@ -165,7 +165,7 @@ describe('$timeout', function() {
       expect($exceptionHandler.errors).toEqual([]);
 
       $timeout.flush();
-      expect($exceptionHandler.errors).toEqual(["Test Error"]);
+      expect($exceptionHandler.errors).toEqual(["Test Error", 'Possibly unhandled rejection: Test Error']);
     }));
 
 
@@ -238,7 +238,7 @@ describe('$timeout', function() {
       $timeout(task2);
       promise3 = $timeout(task3, 333);
       promise4 = $timeout(333);
-      promise3.then(task4);
+      promise3.then(task4, noop);
 
       $timeout.cancel(promise1);
       $timeout.cancel(promise3);

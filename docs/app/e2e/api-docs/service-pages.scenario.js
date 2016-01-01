@@ -10,7 +10,7 @@ describe("service pages", function() {
 
     browser.get('build/docs/index.html#!/api/ng/service/$q');
     providerLink = element.all(by.css('ol.api-profile-header-structure li a')).first();
-    expect(providerLink.getText()).not.toEqual('- $qProvider');
+    expect(providerLink.getText()).not.toEqual('- $compileProvider');
     expect(providerLink.getAttribute('href')).not.toMatch(/api\/ng\/provider\/\$compileProvider/);
   });
 
