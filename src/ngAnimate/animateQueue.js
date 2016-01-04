@@ -365,19 +365,15 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
           // so an example would involve a leave animation taking over an enter. Then when
           // the postDigest kicks in the enter will be ignored.
           var joinAnimationFlag = isAllowed('join', element, newAnimation, existingAnimation);
-          if (joinAnimationFlag) {
-            if (existingAnimation.state === RUNNING_STATE) {
-              normalizeAnimationOptions(element, options);
-            } else {
-              applyGeneratedPreparationClasses(element, isStructural ? event : null, options);
+          if (joinAnimationFlag && existingAnimation.state < RUNNING_STATE) {
+            applyGeneratedPreparationClasses(element, isStructural ? event : null, options);
 
-              event = newAnimation.event = existingAnimation.event;
-              options = mergeAnimationOptions(element, existingAnimation.options, newAnimation.options);
+            event = newAnimation.event = existingAnimation.event;
+            options = mergeAnimationOptions(element, existingAnimation.options, newAnimation.options);
 
-              //we return the same runner since only the option values of this animation will
-              //be fed into the `existingAnimation`.
-              return existingAnimation.runner;
-            }
+            //we return the same runner since only the option values of this animation will
+            //be fed into the `existingAnimation`.
+            return existingAnimation.runner;
           }
         }
       } else {
