@@ -821,10 +821,6 @@ function createInjector(modulesToLoad, strictDi) {
       return args;
     }
 
-    function isClass(func) {
-      return typeof func === 'function'
-        && /^class\s/.test(Function.prototype.toString.call(func));
-    }
 
     function invoke(fn, self, locals, serviceName) {
       if (typeof locals === 'string') {
@@ -837,16 +833,9 @@ function createInjector(modulesToLoad, strictDi) {
         fn = fn[fn.length - 1];
       }
 
-      if (!isClass(fn)) {
-        // http://jsperf.com/angularjs-invoke-apply-vs-switch
-        // #5388
-        return fn.apply(self, args);
-      } else {
-        args.unshift(null);
-        /*jshint -W058 */ // Applying a constructor without immediate parentheses is the point here.
-        return new (Function.prototype.bind.apply(fn, args));
-        /*jshint +W058 */
-      }
+      // http://jsperf.com/angularjs-invoke-apply-vs-switch
+      // #5388
+      return fn.apply(self, args);
     }
 
 
@@ -856,7 +845,7 @@ function createInjector(modulesToLoad, strictDi) {
       var ctor = (isArray(Type) ? Type[Type.length - 1] : Type);
       var args = injectionArgs(Type, locals, serviceName);
       // Empty object at position 0 is ignored for invocation with `new`, but required.
-      args.unshift(null);
+      args.unshift({});
       /*jshint -W058 */ // Applying a constructor without immediate parentheses is the point here.
       return new (Function.prototype.bind.apply(ctor, args));
       /*jshint +W058 */
