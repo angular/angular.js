@@ -132,6 +132,8 @@ The "Angular way" of separating controller from the view, makes it easy to test 
 developed. If our controller is available on the global namespace then we could simply instantiate it
 with a mock `scope` object:
 
+__`test/e2e/scenarios.js`:__
+
 ```js
 describe('PhoneListCtrl', function(){
 
