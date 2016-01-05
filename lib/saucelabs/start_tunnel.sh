@@ -11,8 +11,7 @@ set -e
 # Curl and run this script as part of your .travis.yml before_script section:
 # before_script:
 #   - curl https://gist.github.com/santiycr/5139565/raw/sauce_connect_setup.sh | bash
-
-CONNECT_URL="https://saucelabs.com/downloads/sc-4.3.7-linux.tar.gz"
+CONNECT_URL="https://saucelabs.com/downloads/sc-4.3.13-linux.tar.gz"
 CONNECT_DIR="/tmp/sauce-connect-$RANDOM"
 CONNECT_DOWNLOAD="sc-4.3.7-linux.tar.gz"
 
