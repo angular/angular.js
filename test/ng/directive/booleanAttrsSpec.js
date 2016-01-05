@@ -283,6 +283,16 @@ describe('ngHref', function() {
     expect(element.attr('href')).toEqual(undefined);
   }));
 
+  if (msie) {
+    it('should throw error if ng-href contains a non-escaped percent symbol', inject(function($rootScope, $compile) {
+      element = $compile('<a ng-href="http://www.google.com/{{\'a%link\'}}">')($rootScope);
+
+      expect(function() {
+        $rootScope.$digest();
+      }).toThrow();
+    }));
+  }
+
   if (isDefined(window.SVGElement)) {
     describe('SVGAElement', function() {
       it('should interpolate the expression and bind to xlink:href', inject(function($compile, $rootScope) {
