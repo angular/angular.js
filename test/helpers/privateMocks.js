@@ -40,9 +40,8 @@ function browserSupportsCssAnimations() {
   return true;
 }
 
-function createMockStyleSheet(doc, wind) {
+function createMockStyleSheet(doc) {
   doc = doc ? doc[0] : document;
-  wind = wind || window;
 
   var node = doc.createElement('style');
   var head = doc.getElementsByTagName('head')[0];
