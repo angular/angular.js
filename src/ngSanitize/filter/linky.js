@@ -133,9 +133,10 @@ angular.module('ngSanitize').filter('linky', ['$sanitize', function($sanitize) {
   var LINKY_URL_REGEXP =
         /((ftp|https?):\/\/|(www\.)|(mailto:)?[A-Za-z0-9._%+-]+@)\S*[^\s.;,(){}<>"\u201d\u2019]/i,
       MAILTO_REGEXP = /^mailto:/i;
+  var isString = angular.isString;
 
   return function(text, target, attributes) {
-    if (!text) return text;
+    if (!text || !isString(text)) return text;
     var match;
     var raw = text;
     var html = [];
