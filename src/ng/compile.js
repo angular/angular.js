@@ -229,6 +229,14 @@
  * If both `bindToController` and `scope` are defined and have object hashes, `bindToController` overrides `scope`.
  *
  *
+ * It is also possible to set `bindToController` to an object hash with the same format as the `scope` property.
+ * This will set up the scope bindings to the controller directly. Note that `scope` can still be used
+ * to define which kind of scope is created. By default, no scope is created. Use `scope: {}` to create an isolate
+ * scope (useful for component directives).
+ *
+ * If both `bindToController` and `scope` are defined and have object hashes, `bindToController` overrides `scope`.
+ *
+ *
  * #### `controller`
  * Controller constructor function. The controller is instantiated before the
  * pre-linking phase and can be accessed by other directives (see
