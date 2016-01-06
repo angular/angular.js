@@ -6,7 +6,7 @@
  * @description
  *
  * ngRequired adds the required {@link ngModel.NgModelController#$validators `validator`} to {@link ngModel `ngModel`}.
- * It is most often used for [@link input `input`} and {@link select `select`} controls, but can also be
+ * It is most often used for {@link input `input`} and {@link select `select`} controls, but can also be
  * applied to custom controls.
  *
  * The directive sets the `required` attribute on the element if the Angular expression inside
@@ -43,16 +43,17 @@
  *     </div>
  *   </file>
  *   <file name="protractor.js" type="protractor">
- *     var required = element(by.binding('form.input.$error.required'));
- *     var model = element(by.binding('model'));
- *
- *     it('should set the required error', function() {
- *       expect(required.getText()).toContain('true');
- *
- *       element(by.id('input')).sendKeys('123');
- *       expect(required.getText()).not.toContain('true');
- *       expect(model.getText()).toContain('123');
- *     });
+       var required = element(by.binding('form.input.$error.required'));
+       var model = element(by.binding('model'));
+       var input = element(by.id('input'));
+
+       it('should set the required error', function() {
+         expect(required.getText()).toContain('true');
+
+         input.sendKeys('123');
+         expect(required.getText()).not.toContain('true');
+         expect(model.getText()).toContain('123');
+       });
  *   </file>
  * </example>
  */
@@ -82,14 +83,14 @@ var requiredDirective = function() {
  * @description
  *
  * ngPattern adds the pattern {@link ngModel.NgModelController#$validators `validator`} to {@link ngModel `ngModel`}.
- * It is most often used for text-based [@link input `input`} controls, but can also be applied to custom text-based controls.
+ * It is most often used for text-based {@link input `input`} controls, but can also be applied to custom text-based controls.
  *
- *  The validator sets the `pattern` error key if the {@link ngModel.NgModelController#$viewValue `ngModel.$viewValue`}
- *  does not match a RegExp which is obtained by evaluating the Angular expression given in the
- *  `ngPattern` attribute value:
- *  * If the expression evaluates to a RegExp object, then this is used directly.
- *  * If the expression evaluates to a string, then it will be converted to a RegExp after wrapping it
- *  in `^` and `$` characters. For instance, `"abc"` will be converted to `new RegExp('^abc$')`.
+ * The validator sets the `pattern` error key if the {@link ngModel.NgModelController#$viewValue `ngModel.$viewValue`}
+ * does not match a RegExp which is obtained by evaluating the Angular expression given in the
+ * `ngPattern` attribute value:
+ * * If the expression evaluates to a RegExp object, then this is used directly.
+ * * If the expression evaluates to a string, then it will be converted to a RegExp after wrapping it
+ * in `^` and `$` characters. For instance, `"abc"` will be converted to `new RegExp('^abc$')`.
  *
  * <div class="alert alert-info">
  * **Note:** Avoid using the `g` flag on the RegExp, as it will cause each successive search to
@@ -100,9 +101,16 @@ var requiredDirective = function() {
  * <div class="alert alert-info">
  * **Note:** This directive is also added when the plain `pattern` attribute is used, with two
  * differences:
- * 1. `ngPattern` does not set the `pattern` attribute and therefore not HTML5 constraint validation
- * is available.
- * 2. The `ngPattern` attribute must be an expression, while the `pattern` value must be interpolated
+ * <ol>
+ *   <li>
+ *     `ngPattern` does not set the `pattern` attribute and therefore HTML5 constraint validation is
+ *     not available.
+ *   </li>
+ *   <li>
+ *     The `ngPattern` attribute must be an expression, while the `pattern` value must be
+ *     interpolated.
+ *   </li>
+ * </ol>
  * </div>
  *
  * @example
@@ -128,18 +136,18 @@ var requiredDirective = function() {
  *     </div>
  *   </file>
  *   <file name="protractor.js" type="protractor">
-      var model = element(by.binding('model'));
-      var input = element(by.id('input'));
+       var model = element(by.binding('model'));
+       var input = element(by.id('input'));
 
-      it('should validate the input with the default pattern', function() {
-        input.sendKeys('aaa');
-        expect(model.getText()).not.toContain('aaa');
+       it('should validate the input with the default pattern', function() {
+         input.sendKeys('aaa');
+         expect(model.getText()).not.toContain('aaa');
 
-        input.clear().then(function() {
-          input.sendKeys('123');
-          expect(model.getText()).toContain('123');
-        });
-      });
+         input.clear().then(function() {
+           input.sendKeys('123');
+           expect(model.getText()).toContain('123');
+         });
+       });
  *   </file>
  * </example>
  */
@@ -181,18 +189,25 @@ var patternDirective = function() {
  * @description
  *
  * ngMaxlength adds the maxlength {@link ngModel.NgModelController#$validators `validator`} to {@link ngModel `ngModel`}.
- * It is most often used for text-based [@link input `input`} controls, but can also be applied to custom text-based controls.
+ * It is most often used for text-based {@link input `input`} controls, but can also be applied to custom text-based controls.
  *
- *  The validator sets the `maxlength` error key if the {@link ngModel.NgModelController#$viewValue `ngModel.$viewValue`}
- *  is longer than the integer obtained by evaluating the Angular expression given in the
- *  `ngMaxlength` attribute value.
+ * The validator sets the `maxlength` error key if the {@link ngModel.NgModelController#$viewValue `ngModel.$viewValue`}
+ * is longer than the integer obtained by evaluating the Angular expression given in the
+ * `ngMaxlength` attribute value.
  *
  * <div class="alert alert-info">
  * **Note:** This directive is also added when the plain `maxlength` attribute is used, with two
  * differences:
- * 1. `ngMaxlength` does not set the `maxlength` attribute and therefore not HTML5 constraint validation
- * is available.
- * 2. The `ngMaxlength` attribute must be an expression, while the `maxlength` value must be interpolated
+ * <ol>
+ *   <li>
+ *     `ngMaxlength` does not set the `maxlength` attribute and therefore HTML5 constraint
+ *     validation is not available.
+ *   </li>
+ *   <li>
+ *     The `ngMaxlength` attribute must be an expression, while the `maxlength` value must be
+ *     interpolated.
+ *   </li>
+ * </ol>
  * </div>
  *
  * @example
@@ -218,7 +233,7 @@ var patternDirective = function() {
  *     </div>
  *   </file>
  *   <file name="protractor.js" type="protractor">
- *     var model = element(by.binding('model'));
+       var model = element(by.binding('model'));
        var input = element(by.id('input'));
 
        it('should validate the input with the default maxlength', function() {
@@ -260,18 +275,25 @@ var maxlengthDirective = function() {
  * @description
  *
  * ngMinlength adds the minlength {@link ngModel.NgModelController#$validators `validator`} to {@link ngModel `ngModel`}.
- * It is most often used for text-based [@link input `input`} controls, but can also be applied to custom text-based controls.
+ * It is most often used for text-based {@link input `input`} controls, but can also be applied to custom text-based controls.
  *
- *  The validator sets the `minlength` error key if the {@link ngModel.NgModelController#$viewValue `ngModel.$viewValue`}
- *  is shorter than the integer obtained by evaluating the Angular expression given in the
- *  `ngMinlength` attribute value.
+ * The validator sets the `minlength` error key if the {@link ngModel.NgModelController#$viewValue `ngModel.$viewValue`}
+ * is shorter than the integer obtained by evaluating the Angular expression given in the
+ * `ngMinlength` attribute value.
  *
  * <div class="alert alert-info">
  * **Note:** This directive is also added when the plain `minlength` attribute is used, with two
  * differences:
- * 1. `ngMinlength` does not set the `minlength` attribute and therefore not HTML5 constraint validation
- * is available.
- * 2. The `ngMinlength` value must be an expression, while the `minlength` value must be interpolated
+ * <ol>
+ *   <li>
+ *     `ngMinlength` does not set the `minlength` attribute and therefore HTML5 constraint
+ *     validation is not available.
+ *   </li>
+ *   <li>
+ *     The `ngMinlength` value must be an expression, while the `minlength` value must be
+ *     interpolated.
+ *   </li>
+ * </ol>
  * </div>
  *
  * @example
@@ -297,15 +319,16 @@ var maxlengthDirective = function() {
  *     </div>
  *   </file>
  *   <file name="protractor.js" type="protractor">
- *     var model = element(by.binding('model'));
- *
- *     it('should validate the input with the default minlength', function() {
- *       element(by.id('input')).sendKeys('ab');
- *       expect(model.getText()).not.toContain('ab');
- *
- *       element(by.id('input')).sendKeys('abc');
- *       expect(model.getText()).toContain('abc');
- *     });
+       var model = element(by.binding('model'));
+       var input = element(by.id('input'));
+
+       it('should validate the input with the default minlength', function() {
+         input.sendKeys('ab');
+         expect(model.getText()).not.toContain('ab');
+
+         input.sendKeys('abc');
+         expect(model.getText()).toContain('abc');
+       });
  *   </file>
  * </example>
  */
