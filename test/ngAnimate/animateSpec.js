@@ -1535,7 +1535,9 @@ describe("animations", function() {
       });
 
       return function($document, $rootElement, $animate) {
-        jqLite($document[0].body).append($rootElement);
+        if ($document !== $rootElement) {
+          jqLite($document[0].body).append($rootElement);
+        }
         $animate.enabled(true);
       };
     }));
@@ -1945,6 +1947,41 @@ describe("animations", function() {
       expect(capturedState).toBe('close');
       expect(capturedElement).toBe(element);
     }));
+
+    they('should trigger a callback for a $prop animation if the listener is on the document',
+      ['enter', 'leave'], function($event) {
+        module(function($provide) {
+          $provide.factory('$rootElement', function($document) {
+            // Since we listen on document, $document must be the $rootElement for animations to work
+            return $document;
+          });
+        });
+
+        inject(function($animate, $rootScope, $document) {
+
+          var callbackTriggered = false;
+
+
+          $animate.on($event, $document[0], function() {
+            callbackTriggered = true;
+          });
+
+          var container = jqLite('<div></div>');
+          jqLite($document[0].body).append(container);
+          element = jqLite('<div></div>');
+
+          if ($event === 'leave') {
+            container.append(element);
+          }
+
+          $animate[$event](element, container);
+          $rootScope.$digest();
+
+          $animate.flush();
+
+          expect(callbackTriggered).toBe(true);
+        });
+    });
 
   });
 });
