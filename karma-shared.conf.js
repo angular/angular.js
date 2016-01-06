@@ -34,16 +34,16 @@ module.exports = function(config, specificOptions) {
     // For more browsers on Sauce Labs see:
     // https://saucelabs.com/docs/platforms/webdriver
     customLaunchers: {
-      'SL_Chrome': {
-        base: 'SauceLabs',
-        browserName: 'chrome',
-        version: '45'
-      },
-      'SL_Firefox': {
-        base: 'SauceLabs',
-        browserName: 'firefox',
-        version: '39'
-      },
+      // 'SL_Chrome': {
+      //   base: 'SauceLabs',
+      //   browserName: 'chrome',
+      //   version: '45'
+      // },
+      // 'SL_Firefox': {
+      //   base: 'SauceLabs',
+      //   browserName: 'firefox',
+      //   version: '39'
+      // },
       'SL_Safari': {
         base: 'SauceLabs',
         browserName: 'safari',
