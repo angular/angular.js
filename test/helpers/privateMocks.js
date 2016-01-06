@@ -40,7 +40,7 @@ function browserSupportsCssAnimations() {
   return true;
 }
 
-function createMockStyleSheet(doc) {
+function createMockStyleSheet(doc, prefix) {
   doc = doc ? doc[0] : document;
 
   var node = doc.createElement('style');
@@ -60,6 +60,18 @@ function createMockStyleSheet(doc) {
         }
         catch (e2) {}
       }
+    },
+
+    addPossiblyPrefixedRule: function(selector, styles) {
+      if (prefix) {
+        var prefixedStyles = styles.split(/\s*;\s*/g).map(function(style) {
+          return !style ? '' : prefix + style;
+        }).join('; ');
+
+        this.addRule(selector, prefixedStyles);
+      }
+
+      this.addRule(selector, styles);
     },
 
     destroy: function() {
