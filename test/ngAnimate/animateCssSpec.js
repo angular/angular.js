@@ -28,9 +28,9 @@ describe("ngAnimate $animateCss", function() {
 
   var ss, prefix, triggerAnimationStartFrame;
   beforeEach(module(function() {
-    return function($document, $window, $sniffer, $$rAF, $animate) {
+    return function($document, $sniffer, $$rAF, $animate) {
       prefix = '-' + $sniffer.vendorPrefix.toLowerCase() + '-';
-      ss = createMockStyleSheet($document, $window);
+      ss = createMockStyleSheet($document);
       $animate.enabled(true);
       triggerAnimationStartFrame = function() {
         $$rAF.flush();

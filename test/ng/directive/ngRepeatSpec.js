@@ -1491,11 +1491,11 @@ describe('ngRepeat animations', function() {
   }));
 
   it('should not change the position of the block that is being animated away via a leave animation',
-    inject(function($compile, $rootScope, $animate, $document, $window, $sniffer, $timeout) {
+    inject(function($compile, $rootScope, $animate, $document, $sniffer, $timeout) {
       if (!$sniffer.transitions) return;
 
       var item;
-      var ss = createMockStyleSheet($document, $window);
+      var ss = createMockStyleSheet($document);
 
       try {
 
