@@ -211,7 +211,7 @@ describe('private mocks', function() {
 
       var doc = $document[0];
       var count = doc.styleSheets.length;
-      var stylesheet = createMockStyleSheet($document, $window);
+      var stylesheet = createMockStyleSheet($document);
       var elm;
       runs(function() {
         expect(doc.styleSheets.length).toBe(count + 1);
