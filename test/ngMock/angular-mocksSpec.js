@@ -1866,8 +1866,8 @@ describe('ngMockE2E', function() {
         }
       });
 
-      return function($animate, $rootElement, $document, $rootScope, $window) {
-        ss = createMockStyleSheet($document, $window);
+      return function($animate, $rootElement, $document, $rootScope) {
+        ss = createMockStyleSheet($document);
 
         element = angular.element('<div class="animate"></div>');
         $rootElement.append(element);
