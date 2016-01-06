@@ -880,8 +880,8 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
    * @param {string|Object} name Name of the directive in camel-case (i.e. <code>ngBind</code> which
    *    will match as <code>ng-bind</code>), or an object map of directives where the keys are the
    *    names and the values are the factories.
-   * @param {Function|Array} directiveFactory An injectable directive factory function. See
-   *    {@link guide/directive} for more info.
+   * @param {Function|Array} directiveFactory An injectable directive factory function. See the
+   *    {@link guide/directive directive guide} and the {@link $compile compile API} for more info.
    * @returns {ng.$compileProvider} Self for chaining.
    */
    this.directive = function registerDirective(name, directiveFactory) {
@@ -926,6 +926,166 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       forEach(name, reverseParams(registerDirective));
     }
     return this;
+  };
+
+  /**
+   * @ngdoc method
+   * @name $compileProvider#component
+   * @module ng
+   * @param {string} name Name of the component in camelCase (i.e. `myComp` which will match `<my-comp>`)
+   * @param {Object} options Component definition object (a simplified
+   *    {@link ng.$compile#directive-definition-object directive definition object}),
+   *    with the following properties (all optional):
+   *
+   *    - `controller` – `{(string|function()=}` – controller constructor function that should be
+   *      associated with newly created scope or the name of a {@link ng.$compile#-controller-
+   *      registered controller} if passed as a string. An empty `noop` function by default.
+   *    - `controllerAs` – `{string=}` – identifier name for to reference the controller in the component's scope.
+   *      If present, the controller will be published to scope under the `controllerAs` name.
+   *      If not present, this will default to be the same as the component name.
+   *    - `template` – `{string=|function()=}` – html template as a string or a function that
+   *      returns an html template as a string which should be used as the contents of this component.
+   *      Empty string by default.
+   *
+   *      If `template` is a function, then it is {@link auto.$injector#invoke injected} with
+   *      the following locals:
+   *
+   *      - `$element` - Current element
+   *      - `$attrs` - Current attributes object for the element
+   *
+   *    - `templateUrl` – `{string=|function()=}` – path or function that returns a path to an html
+   *      template that should be used  as the contents of this component.
+   *
+   *      If `templateUrl` is a function, then it is {@link auto.$injector#invoke injected} with
+   *      the following locals:
+   *
+   *      - `$element` - Current element
+   *      - `$attrs` - Current attributes object for the element
+   *
+   *    - `bindings` – `{object=}` – defines bindings between DOM attributes and component properties.
+   *      Component properties are always bound to the component controller and not to the scope.
+   *      See {@link ng.$compile#-bindtocontroller- `bindToController`}.
+   *    - `transclude` – `{boolean=}` – whether {@link $compile#transclusion content transclusion} is enabled.
+   *      Disabled by default.
+   *    - `isolate` – `{boolean=}` – whether the new scope is isolated. Isolated by default.
+   *    - `restrict` - `{string=}` - a string containing one or more characters from {@link ng.$compile#-restrict- EACM},
+   *      which restricts the component to specific directive declaration style. If omitted, this defaults to 'E'.
+   *    - `$canActivate` – `{function()=}` – TBD.
+   *    - `$routeConfig` – `{object=}` – TBD.
+   *
+   * @returns {ng.$compileProvider} the compile provider itself, for chaining of function calls.
+   * @description
+   * Register a **Component definition** with the compiler. This is a shorthand for registering a special
+   * type of directive, which represents a self-contained UI component in your application.
+   *
+   * Component definitions are very simple and do not require much of the complexity behind defining general
+   * directives. Component definitions usually consist only of a template and a controller backing it.
+   *
+   * In order to make the definition easier, components enforce best practices like use of `controllerAs`,
+   * `bindToController` and default behaviors like **isolate scope** and restriction to elements.
+   *
+   * Here are a few examples of how you would usually define components:
+   *
+   * ```js
+   *   var myMod = angular.module(...);
+   *   myMod.component('myComp', {
+   *     template: '<div>My name is {{myComp.name}}</div>',
+   *     controller: function() {
+   *       this.name = 'shahar';
+   *     }
+   *   });
+   *
+   *   myMod.component('myComp', {
+   *     template: '<div>My name is {{myComp.name}}</div>',
+   *     bindings: {name: '@'}
+   *   });
+   *
+   *   myMod.component('myComp', {
+   *     templateUrl: 'views/my-comp.html',
+   *     controller: 'MyCtrl as ctrl',
+   *     bindings: {name: '@'}
+   *   });
+   *
+   * ```
+   *
+   * <br />
+   * Components are also useful as route templates (e.g. when using
+   * {@link ngRoute ngRoute}):
+   *
+   * ```js
+   *   var myMod = angular.module('myMod', ['ngRoute']);
+   *
+   *   myMod.component('home', {
+   *     template: '<h1>Home</h1><p>Hello, {{ home.user.name }} !</p>',
+   *     controller: function() {
+   *       this.user = {name: 'world'};
+   *     }
+   *   });
+   *
+   *   myMod.config(function($routeProvider) {
+   *     $routeProvider.when('/', {
+   *       template: '<home></home>'
+   *     });
+   *   });
+   * ```
+   *
+   * <br />
+   * When using {@link ngRoute.$routeProvider $routeProvider}, you can often avoid some
+   * boilerplate, by assigning the resolved dependencies directly on the route scope:
+   *
+   * ```js
+   *   var myMod = angular.module('myMod', ['ngRoute']);
+   *
+   *   myMod.component('home', {
+   *     template: '<h1>Home</h1><p>Hello, {{ home.user.name }} !</p>',
+   *     bindings: {user: '='}
+   *   });
+   *
+   *   myMod.config(function($routeProvider) {
+   *     $routeProvider.when('/', {
+   *       template: '<home user="$resolve.user"></home>',
+   *       resolve: {user: function($http) { return $http.get('...'); }}
+   *     });
+   *   });
+   * ```
+   *
+   * <br />
+   * See also {@link ng.$compileProvider#directive $compileProvider.directive()}.
+   */
+  this.component = function registerComponent(name, options) {
+    function factory($injector) {
+      function makeInjectable(fn) {
+        if (isFunction(fn) || isArray(fn)) {
+          return function(tElement, tAttrs) {
+            return $injector.invoke(fn, this, {$element: tElement, $attrs: tAttrs});
+          };
+        } else {
+          return fn;
+        }
+      }
+
+      var template = (!options.template && !options.templateUrl ? '' : options.template);
+      return {
+        controller: options.controller || function() {},
+        controllerAs: identifierForController(options.controller) || options.controllerAs || name,
+        template: makeInjectable(template),
+        templateUrl: makeInjectable(options.templateUrl),
+        transclude: options.transclude,
+        scope: options.isolate === false ? true : {},
+        bindToController: options.bindings || {},
+        restrict: options.restrict || 'E'
+      };
+    }
+
+    if (options.$canActivate) {
+      factory.$canActivate = options.$canActivate;
+    }
+    if (options.$routeConfig) {
+      factory.$routeConfig = options.$routeConfig;
+    }
+    factory.$inject = ['$injector'];
+
+    return this.directive(name, factory);
   };
 
 
