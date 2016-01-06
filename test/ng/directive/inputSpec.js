@@ -1196,7 +1196,7 @@ describe('input', function() {
 
       it('should validate if max is empty', function() {
         $rootScope.maxVal = undefined;
-        $rootScope.value = new Date(9999, 11, 31, 23, 59, 59);
+        $rootScope.value = new Date(3000, 11, 31, 23, 59, 59);
         $rootScope.$digest();
 
         expect($rootScope.form.alias.$error.max).toBeFalsy();

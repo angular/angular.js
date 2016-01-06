@@ -230,6 +230,9 @@ describe('$compile', function() {
 
 
   describe('svg namespace transcludes', function() {
+    var ua = window.navigator.userAgent;
+    var isEdge = /Edge/.test(ua);
+
     // this method assumes some sort of sized SVG element is being inspected.
     function assertIsValidSvgCircle(elem) {
       expect(isUnknownElement(elem)).toBe(false);
@@ -300,17 +303,19 @@ describe('$compile', function() {
       }));
 
       // NOTE: This test may be redundant.
-      it('should handle custom svg containers that transclude to foreignObject' +
-         ' that transclude to custom svg containers that transclude to custom elements', inject(function() {
-        element = jqLite('<div><svg-container>' +
-            '<my-foreign-object><svg-container><svg-circle></svg-circle></svg-container></my-foreign-object>' +
-            '</svg-container></div>');
-        $compile(element.contents())($rootScope);
-        document.body.appendChild(element[0]);
+      if (!isEdge) {
+        it('should handle custom svg containers that transclude to foreignObject' +
+           ' that transclude to custom svg containers that transclude to custom elements', inject(function() {
+          element = jqLite('<div><svg-container>' +
+              '<my-foreign-object><svg-container><svg-circle></svg-circle></svg-container></my-foreign-object>' +
+              '</svg-container></div>');
+          $compile(element.contents())($rootScope);
+          document.body.appendChild(element[0]);
 
-        var circle = element.find('circle');
-        assertIsValidSvgCircle(circle[0]);
-      }));
+          var circle = element.find('circle');
+          assertIsValidSvgCircle(circle[0]);
+        }));
+      }
     }
 
     it('should handle directives with templates that manually add the transclude further down', inject(function() {
