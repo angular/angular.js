@@ -1,0 +1,16 @@
+@ngdoc error
+@name linky:notstring
+@fullName Not a string
+@description
+
+This error occurs when {@link ngSanitize.linky linky} is used with a non-empty, non-string value:
+```html
+<div ng-bind-html="42 | linky"></div>
+```
+
+`linky` is supposed to be used with string values only, and therefore assumes that several methods
+(such as `.match()`) are available on the passed in value.
+The value can be initialized asynchronously and therefore null or undefined won't throw this error.
+
+If you want to pass non-string values to `linky` (e.g. Objects whose `.toString()` should be
+utilized), you need to manually convert them to strings.
