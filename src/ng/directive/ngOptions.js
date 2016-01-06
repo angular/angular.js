@@ -447,8 +447,8 @@ var ngOptionsDirective = ['$compile', '$parse', function($compile, $parse) {
         if (!providedEmptyOption) {
           emptyOption.remove();
         } else {
+          emptyOption.removeAttr('selected');
           emptyOption.prop('selected', false);
-          emptyOption.attr('selected', false);
         }
       };
 
