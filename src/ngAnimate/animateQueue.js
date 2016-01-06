@@ -256,12 +256,7 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
               bool = !recordExists;
             } else {
               // (element, bool) - Element setter
-              bool = !!bool;
-              if (!bool) {
-                disabledElementsLookup.put(node, true);
-              } else if (recordExists) {
-                disabledElementsLookup.remove(node);
-              }
+              disabledElementsLookup.put(node, !bool);
             }
           }
         }
@@ -574,6 +569,17 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
       var parentAnimationDetected = false;
       var animateChildren;
 
+      var PARENT_STATE_DISABLED = 1;
+      var PARENT_STATE_ENABLED = 2;
+      var parentElementDisabledState = 0;
+
+      var elementDisabledStatus = disabledElementsLookup.get(getDomNode(element));
+      if (elementDisabledStatus === true) {
+        parentElementDisabledState = PARENT_STATE_DISABLED;
+      } else if (elementDisabledStatus === false) {
+        parentElementDisabledState = PARENT_STATE_ENABLED;
+      }
+
       var parentHost = element.data(NG_ANIMATE_PIN_DATA);
       if (parentHost) {
         parentElement = parentHost;
@@ -597,7 +603,15 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
         // therefore we can't allow any animations to take place
         // but if a parent animation is class-based then that's ok
         if (!parentAnimationDetected) {
-          parentAnimationDetected = details.structural || disabledElementsLookup.get(parentNode);
+          var disabledStatus = disabledElementsLookup.get(parentNode);
+
+          // the user has `explicitly` allowed for animations to be enabled on this container
+          if (disabledStatus === true && parentElementDisabledState != PARENT_STATE_ENABLED) {
+            parentElementDisabledState = PARENT_STATE_DISABLED;
+          } else if (disabledStatus === false) {
+            parentElementDisabledState = PARENT_STATE_ENABLED;
+          }
+          parentAnimationDetected = details.structural;
         }
 
         if (isUndefined(animateChildren) || animateChildren === true) {
@@ -632,7 +646,7 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
         parentElement = parentElement.parent();
       }
 
-      var allowAnimation = !parentAnimationDetected || animateChildren;
+      var allowAnimation = (!parentAnimationDetected || animateChildren) && parentElementDisabledState != PARENT_STATE_DISABLED;
       return allowAnimation && rootElementDetected && bodyElementDetected;
     }
 
