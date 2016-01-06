@@ -88,7 +88,9 @@ describe('$sniffer', function() {
       inject(function($sniffer, $window) {
         var expectedPrefix;
         var ua = $window.navigator.userAgent.toLowerCase();
-        if (/chrome/i.test(ua) || /safari/i.test(ua) || /webkit/i.test(ua)) {
+        if (/edge/i.test(ua)) {
+          expectedPrefix = 'Ms';
+        } else if (/chrome/i.test(ua) || /safari/i.test(ua) || /webkit/i.test(ua)) {
           expectedPrefix = 'Webkit';
         } else if (/firefox/i.test(ua)) {
           expectedPrefix = 'Moz';
