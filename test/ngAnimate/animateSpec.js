@@ -304,6 +304,35 @@ describe("animations", function() {
         $rootScope.$digest();
         expect(capturedAnimation).toBeTruthy();
       }));
+
+      it('should run animations on an element and its children if explicitly enabled, even if animations are disabled on the parent',
+        inject(function($animate, $rootScope) {
+
+        var child = jqLite('<div></div>');
+        element.append(child);
+        parent.append(element);
+
+        $animate.enabled(parent, false);
+
+        $animate.addClass(element, 'red');
+        $rootScope.$digest();
+        expect(capturedAnimation).toBeFalsy();
+
+        $animate.addClass(child, 'red');
+        $rootScope.$digest();
+        expect(capturedAnimation).toBeFalsy();
+
+        $animate.enabled(element, true);
+
+        $animate.addClass(element, 'blue');
+        $rootScope.$digest();
+        expect(capturedAnimation).toBeTruthy();
+        capturedAnimation = null;
+
+        $animate.addClass(child, 'blue');
+        $rootScope.$digest();
+        expect(capturedAnimation).toBeTruthy();
+      }));
     });
 
     it('should strip all comment nodes from the animation and not issue an animation if not real elements are found',
