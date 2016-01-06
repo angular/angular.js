@@ -1,6 +1,6 @@
 'use strict';
 
-describe("ngAnimate $animateCss", function() {
+ddescribe("ngAnimate $animateCss", function() {
 
   // Firefox transforms all transition timing function values to their cubic bezier equivalents
   var CUBIC_BEZIER_LINEAR_EQUIVALENT = 'cubic-bezier(0, 0, 1, 1)';
@@ -562,7 +562,8 @@ describe("ngAnimate $animateCss", function() {
           assertAnimationComplete(true);
         }));
 
-        it("should use the highest keyframe duration value detected in the CSS class with respect to the animation-iteration-count property", inject(function($animateCss) {
+        they("should use the highest keyframe duration value detected in the CSS class with respect to the animation-iteration-count property for $prop", [0,1,2,3,4],
+          function() { inject(function($animateCss) {
           ss.addRule('.ng-enter',
                     'animation:animation 1s 2s 3, animation 1s 10s 2, animation 1s 1000ms infinite;' +
             '-webkit-animation:animation 1s 2s 3, animation 1s 10s 2, animation 1s 1000ms infinite;');
@@ -580,7 +581,8 @@ describe("ngAnimate $animateCss", function() {
 
           keyframeProgress(element, 3, 10);
           assertAnimationComplete(true);
-        }));
+        });
+      });
 
         it("should use the highest duration value when both transitions and keyframes are used", inject(function($animateCss) {
           ss.addRule('.ng-enter', 'transition:1s linear all;' +
