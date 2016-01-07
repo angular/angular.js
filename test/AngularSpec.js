@@ -1218,17 +1218,38 @@ describe('angular', function() {
     });
 
     it('should return true if passed a nodelist', function() {
-      var nodes = document.body.childNodes;
-      expect(isArrayLike(nodes)).toBe(true);
+      var nodes1 = document.body.childNodes;
+      expect(isArrayLike(nodes1)).toBe(true);
+
+      var nodes2 = document.getElementsByTagName('nonExistingTagName');
+      expect(isArrayLike(nodes2)).toBe(true);
     });
 
     it('should return false for objects with `length` but no matching indexable items', function() {
-      var obj = {
+      var obj1 = {
         a: 'a',
         b:'b',
         length: 10
       };
-      expect(isArrayLike(obj)).toBe(false);
+      expect(isArrayLike(obj1)).toBe(false);
+
+      var obj2 = {
+        length: 0
+      };
+      expect(isArrayLike(obj2)).toBe(false);
+    });
+
+    it('should return true for empty instances of an Array subclass', function() {
+      function ArrayLike() {}
+      ArrayLike.prototype = Array.prototype;
+
+      var arrLike = new ArrayLike();
+      expect(arrLike.length).toBe(0);
+      expect(isArrayLike(arrLike)).toBe(true);
+
+      arrLike.push(1, 2, 3);
+      expect(arrLike.length).toBe(3);
+      expect(isArrayLike(arrLike)).toBe(true);
     });
   });
 
