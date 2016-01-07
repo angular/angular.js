@@ -365,8 +365,8 @@ function setupModuleLoader(window) {
            * ```js
            *   var myMod = angular.module('myMod', ['ngRoute']);
            *
-           *   myMod.component('home', {
-           *     template: '<h1>Home</h1><p>Hello, {{ home.user.name }} !</p>',
+           *   myMod.component('myHome', {
+           *     template: '<h1>Home</h1><p>Hello, {{ myHome.user.name }} !</p>',
            *     controller: function() {
            *       this.user = {name: 'world'};
            *     }
@@ -374,7 +374,7 @@ function setupModuleLoader(window) {
            *
            *   myMod.config(function($routeProvider) {
            *     $routeProvider.when('/', {
-           *       template: '<home></home>'
+           *       template: '<my-home></my-home>'
            *     });
            *   });
            * ```
@@ -386,14 +386,14 @@ function setupModuleLoader(window) {
            * ```js
            *   var myMod = angular.module('myMod', ['ngRoute']);
            *
-           *   myMod.component('home', {
-           *     template: '<h1>Home</h1><p>Hello, {{ home.user.name }} !</p>',
+           *   myMod.component('myHome', {
+           *     template: '<h1>Home</h1><p>Hello, {{ myHome.user.name }} !</p>',
            *     bindings: {user: '='}
            *   });
            *
            *   myMod.config(function($routeProvider) {
            *     $routeProvider.when('/', {
-           *       template: '<home user="$resolve.user"></home>',
+           *       template: '<my-home user="$resolve.user"></my-home>',
            *       resolve: {user: function($http) { return $http.get('...'); }}
            *     });
            *   });
