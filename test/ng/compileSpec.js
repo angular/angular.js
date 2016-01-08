@@ -9352,7 +9352,6 @@ describe('$compile', function() {
         template: 'abc',
         templateUrl: 'def.html',
         transclude: true,
-        isolate: false,
         bindings: {abc: '='},
         restrict: 'EA'
       });
@@ -9364,7 +9363,7 @@ describe('$compile', function() {
           template: 'abc',
           templateUrl: 'def.html',
           transclude: true,
-          scope: true,
+          scope: {},
           bindToController: {abc: '='},
           restrict: 'EA'
         }));

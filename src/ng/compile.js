@@ -967,7 +967,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
    *      See {@link ng.$compile#-bindtocontroller- `bindToController`}.
    *    - `transclude` – `{boolean=}` – whether {@link $compile#transclusion content transclusion} is enabled.
    *      Disabled by default.
-   *    - `isolate` – `{boolean=}` – whether the new scope is isolated. Isolated by default.
    *    - `restrict` - `{string=}` - a string containing one or more characters from {@link ng.$compile#-restrict- EACM},
    *      which restricts the component to specific directive declaration style. If omitted, this defaults to 'E'.
    *    - `$canActivate` – `{function()=}` – TBD.
@@ -982,7 +981,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
    * directives. Component definitions usually consist only of a template and a controller backing it.
    *
    * In order to make the definition easier, components enforce best practices like use of `controllerAs`,
-   * `bindToController` and default behaviors like **isolate scope** and restriction to elements.
+   * `bindToController`, **isolate scope** and default behaviors like restriction to elements.
    *
    * Here are a few examples of how you would usually define components:
    *
@@ -1071,7 +1070,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         template: makeInjectable(template),
         templateUrl: makeInjectable(options.templateUrl),
         transclude: options.transclude,
-        scope: options.isolate === false ? true : {},
+        scope: {},
         bindToController: options.bindings || {},
         restrict: options.restrict || 'E'
       };
