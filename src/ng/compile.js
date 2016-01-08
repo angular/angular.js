@@ -928,6 +928,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
     return this;
   };
 
+  this.$$componentControllers = createMap();
   /**
    * @ngdoc method
    * @name $compileProvider#component
@@ -1052,6 +1053,9 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
    * See also {@link ng.$compileProvider#directive $compileProvider.directive()}.
    */
   this.component = function registerComponent(name, options) {
+    var controller = options.controller || function() {};
+    this.$$componentControllers[name] = controller;
+
     function factory($injector) {
       function makeInjectable(fn) {
         if (isFunction(fn) || isArray(fn)) {
@@ -1065,7 +1069,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
       var template = (!options.template && !options.templateUrl ? '' : options.template);
       return {
-        controller: options.controller || function() {},
+        controller: controller,
         controllerAs: identifierForController(options.controller) || options.controllerAs || '$ctrl',
         template: makeInjectable(template),
         templateUrl: makeInjectable(options.templateUrl),
