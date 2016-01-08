@@ -9336,7 +9336,7 @@ describe('$compile', function() {
           controllerAs: 'myComponent',
           template: '',
           templateUrl: undefined,
-          transclude: false,
+          transclude: undefined,
           scope: {},
           bindToController: {},
           restrict: 'E'
