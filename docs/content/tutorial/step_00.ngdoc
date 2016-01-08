@@ -11,7 +11,7 @@ the AngularJS phonecat app. You will also learn how to start the development ser
 angular-seed, and run the application in the browser.
 
 Before you continue, make sure you have set up your development environment and installed all necessary
-dependencies, as described in {@link tutorial/index#get-started Get Started}.
+dependencies, as described in {@link index#get-started Get Started}.
 
 In the `angular-phonecat` directory, run this command:
 
