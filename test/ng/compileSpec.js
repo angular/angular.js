@@ -9333,7 +9333,7 @@ describe('$compile', function() {
       inject(function(myComponentDirective) {
         expect(myComponentDirective[0]).toEqual(jasmine.objectContaining({
           controller: jasmine.any(Function),
-          controllerAs: 'myComponent',
+          controllerAs: '$ctrl',
           template: '',
           templateUrl: undefined,
           transclude: undefined,

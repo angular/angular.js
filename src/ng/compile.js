@@ -942,7 +942,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
    *      registered controller} if passed as a string. An empty `noop` function by default.
    *    - `controllerAs` – `{string=}` – identifier name for to reference the controller in the component's scope.
    *      If present, the controller will be published to scope under the `controllerAs` name.
-   *      If not present, this will default to be the same as the component name.
+   *      If not present, this will default to be `$ctrl`.
    *    - `template` – `{string=|function()=}` – html template as a string or a function that
    *      returns an html template as a string which should be used as the contents of this component.
    *      Empty string by default.
@@ -988,14 +988,14 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
    * ```js
    *   var myMod = angular.module(...);
    *   myMod.component('myComp', {
-   *     template: '<div>My name is {{myComp.name}}</div>',
+   *     template: '<div>My name is {{$ctrl.name}}</div>',
    *     controller: function() {
    *       this.name = 'shahar';
    *     }
    *   });
    *
    *   myMod.component('myComp', {
-   *     template: '<div>My name is {{myComp.name}}</div>',
+   *     template: '<div>My name is {{$ctrl.name}}</div>',
    *     bindings: {name: '@'}
    *   });
    *
@@ -1066,7 +1066,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       var template = (!options.template && !options.templateUrl ? '' : options.template);
       return {
         controller: options.controller || function() {},
-        controllerAs: identifierForController(options.controller) || options.controllerAs || name,
+        controllerAs: identifierForController(options.controller) || options.controllerAs || '$ctrl',
         template: makeInjectable(template),
         templateUrl: makeInjectable(options.templateUrl),
         transclude: options.transclude,
