@@ -206,7 +206,7 @@ describe("$$AnimateRunner", function() {
         var animationComplete = false;
         runner.finally(function() {
           animationComplete = true;
-        }).then(noop, noop);
+        }).catch(noop);
         runner[method]();
         $rootScope.$digest();
         expect(animationComplete).toBe(true);
