@@ -9276,4 +9276,159 @@ describe('$compile', function() {
       testReplaceElementCleanup({replace: true, asyncTemplate: true});
     });
   });
+
+  describe('component helper', function() {
+    it('should return the module', function() {
+      var myModule = angular.module('my', []);
+      expect(myModule.component('myComponent', {})).toBe(myModule);
+    });
+
+    it('should register a directive', function() {
+      angular.module('my', []).component('myComponent', {
+        template: '<div>SUCCESS</div>',
+        controller: function(log) {
+          log('OK');
+        }
+      });
+      module('my');
+
+      inject(function($compile, $rootScope, log) {
+        element = $compile('<my-component></my-component>')($rootScope);
+        expect(element.find('div').text()).toEqual('SUCCESS');
+        expect(log).toEqual('OK');
+      });
+    });
+
+    it('should register a directive via $compileProvider.component()', function() {
+      module(function($compileProvider) {
+        $compileProvider.component('myComponent', {
+          template: '<div>SUCCESS</div>',
+          controller: function(log) {
+            log('OK');
+          }
+        });
+      });
+
+      inject(function($compile, $rootScope, log) {
+        element = $compile('<my-component></my-component>')($rootScope);
+        expect(element.find('div').text()).toEqual('SUCCESS');
+        expect(log).toEqual('OK');
+      });
+    });
+
+    it('should add router annotations to directive factory', function() {
+      var myModule = angular.module('my', []).component('myComponent', {
+        $canActivate: 'canActivate',
+        $routeConfig: 'routeConfig'
+      });
+      expect(myModule._invokeQueue.pop().pop()[1]).toEqual(jasmine.objectContaining({
+        $canActivate: 'canActivate',
+        $routeConfig: 'routeConfig'
+      }));
+    });
+
+    it('should return ddo with reasonable defaults', function() {
+      angular.module('my', []).component('myComponent', {});
+      module('my');
+      inject(function(myComponentDirective) {
+        expect(myComponentDirective[0]).toEqual(jasmine.objectContaining({
+          controller: jasmine.any(Function),
+          controllerAs: 'myComponent',
+          template: '',
+          templateUrl: undefined,
+          transclude: false,
+          scope: {},
+          bindToController: {},
+          restrict: 'E'
+        }));
+      });
+    });
+
+    it('should return ddo with assigned options', function() {
+      function myCtrl() {}
+      angular.module('my', []).component('myComponent', {
+        controller: myCtrl,
+        controllerAs: 'ctrl',
+        template: 'abc',
+        templateUrl: 'def.html',
+        transclude: true,
+        isolate: false,
+        bindings: {abc: '='},
+        restrict: 'EA'
+      });
+      module('my');
+      inject(function(myComponentDirective) {
+        expect(myComponentDirective[0]).toEqual(jasmine.objectContaining({
+          controller: myCtrl,
+          controllerAs: 'ctrl',
+          template: 'abc',
+          templateUrl: 'def.html',
+          transclude: true,
+          scope: true,
+          bindToController: {abc: '='},
+          restrict: 'EA'
+        }));
+      });
+    });
+
+    it('should allow passing injectable functions as template/templateUrl', function() {
+      var log = '';
+      angular.module('my', []).component('myComponent', {
+        template: function($element, $attrs, myValue) {
+          log += 'template,' + $element + ',' + $attrs + ',' + myValue + '\n';
+        },
+        templateUrl: function($element, $attrs, myValue) {
+          log += 'templateUrl,' + $element + ',' + $attrs + ',' + myValue + '\n';
+        }
+      }).value('myValue', 'blah');
+      module('my');
+      inject(function(myComponentDirective) {
+        myComponentDirective[0].template('a', 'b');
+        myComponentDirective[0].templateUrl('c', 'd');
+        expect(log).toEqual('template,a,b,blah\ntemplateUrl,c,d,blah\n');
+      });
+    });
+
+    it('should allow passing injectable arrays as template/templateUrl', function() {
+      var log = '';
+      angular.module('my', []).component('myComponent', {
+        template: ['$element', '$attrs', 'myValue', function($element, $attrs, myValue) {
+          log += 'template,' + $element + ',' + $attrs + ',' + myValue + '\n';
+        }],
+        templateUrl: ['$element', '$attrs', 'myValue', function($element, $attrs, myValue) {
+          log += 'templateUrl,' + $element + ',' + $attrs + ',' + myValue + '\n';
+        }]
+      }).value('myValue', 'blah');
+      module('my');
+      inject(function(myComponentDirective) {
+        myComponentDirective[0].template('a', 'b');
+        myComponentDirective[0].templateUrl('c', 'd');
+        expect(log).toEqual('template,a,b,blah\ntemplateUrl,c,d,blah\n');
+      });
+    });
+
+    it('should allow passing transclude as object', function() {
+      angular.module('my', []).component('myComponent', {
+        transclude: {}
+      });
+      module('my');
+      inject(function(myComponentDirective) {
+        expect(myComponentDirective[0]).toEqual(jasmine.objectContaining({
+          transclude: {}
+        }));
+      });
+    });
+
+    it('should give ctrl as syntax priority over controllerAs', function() {
+      angular.module('my', []).component('myComponent', {
+        controller: 'MyCtrl as vm'
+      });
+      module('my');
+      inject(function(myComponentDirective) {
+        expect(myComponentDirective[0]).toEqual(jasmine.objectContaining({
+          controllerAs: 'vm'
+        }));
+      });
+    });
+  });
 });
