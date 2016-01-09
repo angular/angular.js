@@ -797,7 +797,10 @@ angular.mock.animate = angular.module('ngAnimateMock', ['ng'])
 
       var animateJsConstructor = function() {
         var animator = $delegate.apply($delegate, arguments);
-        runners.push(animator);
+        // If no javascript animation is found, animator is undefined
+        if (animator) {
+          runners.push(animator);
+        }
         return animator;
       };
 

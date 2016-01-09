@@ -2230,12 +2230,34 @@ describe('ngMockE2E', function() {
         expect(animationLog).toEqual(['start leave', 'end leave']);
       }));
 
+      it('should not throw when a regular animation has no javascript animation',
+        inject(function($animate, $$animation, $rootElement) {
+
+        var element = jqLite('<div></div>');
+        $rootElement.append(element);
+
+        // Make sure the animation has valid $animateCss options
+        $$animation(element, null, {
+          from: { background: 'red' },
+          to: { background: 'blue' },
+          duration: 1,
+          transitionStyle: '1s linear all'
+        });
+
+        expect(function() {
+          $animate.closeAndFlush();
+        }).not.toThrow();
+
+        dealoc(element);
+      }));
+
       it('should throw an error if there are no animations to close and flush',
         inject(function($animate) {
 
         expect(function() {
           $animate.closeAndFlush();
         }).toThrow('No pending animations ready to be closed or flushed');
+
       }));
     });
   });
