@@ -129,6 +129,9 @@ Before you submit your pull request consider the following guidelines:
     git rebase master -i
     git push origin my-fix-branch -f
     ```
+    
+
+WARNING. Forced push may delete all in-code comments made in your PR
 
 That's it! Thank you for your contribution!
 
