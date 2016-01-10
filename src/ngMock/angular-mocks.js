@@ -2180,10 +2180,10 @@ angular.mock.$ControllerDecorator = ['$delegate', function($delegate) {
  */
 angular.mock.$ComponentControllerProvider = ['$compileProvider', function($compileProvider) {
   return {
-    $get: ['$controller', function($controller) {
+    $get: ['$controller','$injector', function($controller,$injector) {
       return function $componentController(componentName, locals, bindings, ident) {
-        var controllerInfo = $compileProvider.$$componentControllers[componentName];
-        return $controller(controllerInfo.controller, locals, bindings, ident || controllerInfo.ident);
+        var directiveInfo = $injector.get(componentName + 'Directive')[0];
+        return $controller(directiveInfo.controller, locals, bindings, ident || directiveInfo.controllerAs);
       };
     }]
   };
