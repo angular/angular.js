@@ -24,7 +24,26 @@ angular.module('examples', [])
 
 
 .factory('openPlunkr', ['formPostData', '$http', '$q', function(formPostData, $http, $q) {
-  return function(exampleFolder, clickEvent) {
+
+    var COPYRIGHT = 'Copyright ' + (new Date()).getFullYear() + ' Google Inc. All Rights Reserved.\n'
+     + 'Use of this source code is governed by an MIT-style license that\n'
+     + 'can be found in the LICENSE file at http://angular.io/license';
+    var COPYRIGHT_JS_CSS = '\n\n/*\n' + COPYRIGHT + '\n*/';
+    var COPYRIGHT_HTML = '\n\n<!-- \n' + COPYRIGHT + '\n-->';
+    function getCopyright(filename) {
+      switch (filename.substr(filename.lastIndexOf('.'))) {
+        case '.html':
+          return COPYRIGHT_HTML;
+        case '.js':
+        case '.css':
+          return COPYRIGHT_JS_CSS;
+        case '.md':
+          return COPYRIGHT;
+      }
+      return '';
+    }
+
+    return function(exampleFolder, clickEvent) {
 
     var exampleName = 'AngularJS Example';
     var newWindow = clickEvent.ctrlKey || clickEvent.metaKey;
@@ -67,7 +86,7 @@ angular.module('examples', [])
         var postData = {};
 
         angular.forEach(files, function(file) {
-          postData['files[' + file.name + ']'] = file.content;
+          postData['files[' + file.name + ']'] = file.content + getCopyright(file.name);
         });
 
         postData['tags[0]'] = "angularjs";
