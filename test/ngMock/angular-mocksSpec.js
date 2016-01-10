@@ -1857,6 +1857,88 @@ describe('ngMock', function() {
       });
     });
   });
+
+
+  describe('$componentController', function() {
+    it('should instantiate a simple controller defined inline in a component', function() {
+      function TestController($scope, a, b) {
+        this.$scope = $scope;
+        this.a = a;
+        this.b = b;
+      }
+      module(function($compileProvider) {
+        $compileProvider.component('test', {
+          controller: TestController
+        });
+      });
+      inject(function($componentController, $rootScope) {
+        var $scope = {};
+        var ctrl = $componentController('test', { $scope: $scope, a: 'A', b: 'B' }, { x: 'X', y: 'Y' });
+        expect(ctrl).toEqual({ $scope: $scope, a: 'A', b: 'B', x: 'X', y: 'Y' });
+        expect($scope.$ctrl).toBe(ctrl);
+      });
+    });
+
+    it('should instantiate a controller with $$inject annotation defined inline in a component', function() {
+      function TestController(x, y, z) {
+        this.$scope = x;
+        this.a = y;
+        this.b = z;
+      }
+      TestController.$inject = ['$scope', 'a', 'b'];
+      module(function($compileProvider) {
+        $compileProvider.component('test', {
+          controller: TestController
+        });
+      });
+      inject(function($componentController, $rootScope) {
+        var $scope = {};
+        var ctrl = $componentController('test', { $scope: $scope, a: 'A', b: 'B' }, { x: 'X', y: 'Y' });
+        expect(ctrl).toEqual({ $scope: $scope, a: 'A', b: 'B', x: 'X', y: 'Y' });
+        expect($scope.$ctrl).toBe(ctrl);
+      });
+    });
+
+    it('should instantiate a named controller defined in a component', function() {
+      function TestController($scope, a, b) {
+        this.$scope = $scope;
+        this.a = a;
+        this.b = b;
+      }
+      module(function($controllerProvider, $compileProvider) {
+        $controllerProvider.register('TestController', TestController);
+        $compileProvider.component('test', {
+          controller: 'TestController'
+        });
+      });
+      inject(function($componentController, $rootScope) {
+        var $scope = {};
+        var ctrl = $componentController('test', { $scope: $scope, a: 'A', b: 'B' }, { x: 'X', y: 'Y' });
+        expect(ctrl).toEqual({ $scope: $scope, a: 'A', b: 'B', x: 'X', y: 'Y' });
+        expect($scope.$ctrl).toBe(ctrl);
+      });
+    });
+
+    it('should instantiate a named controller with `controller as` syntax defined in a component', function() {
+      function TestController($scope, a, b) {
+        this.$scope = $scope;
+        this.a = a;
+        this.b = b;
+      }
+      module(function($controllerProvider, $compileProvider) {
+        $controllerProvider.register('TestController', TestController);
+        $compileProvider.component('test', {
+          controller: 'TestController as testCtrl'
+        });
+      });
+      inject(function($componentController, $rootScope) {
+        var $scope = {};
+        var ctrl = $componentController('test', { $scope: $scope, a: 'A', b: 'B' }, { x: 'X', y: 'Y' });
+        expect(ctrl).toEqual({ $scope: $scope, a: 'A', b: 'B', x: 'X', y: 'Y' });
+        expect($scope.testCtrl).toBe(ctrl);
+      });
+    });
+  });
 });
 
 
