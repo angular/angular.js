@@ -1875,6 +1875,7 @@ describe('ngMock', function() {
         var $scope = {};
         var ctrl = $componentController('test', { $scope: $scope, a: 'A', b: 'B' }, { x: 'X', y: 'Y' });
         expect(ctrl).toEqual({ $scope: $scope, a: 'A', b: 'B', x: 'X', y: 'Y' });
+        expect($scope.$ctrl).toBe(ctrl);
       });
     });
 
@@ -1894,6 +1895,7 @@ describe('ngMock', function() {
         var $scope = {};
         var ctrl = $componentController('test', { $scope: $scope, a: 'A', b: 'B' }, { x: 'X', y: 'Y' });
         expect(ctrl).toEqual({ $scope: $scope, a: 'A', b: 'B', x: 'X', y: 'Y' });
+        expect($scope.$ctrl).toBe(ctrl);
       });
     });
 
@@ -1913,6 +1915,7 @@ describe('ngMock', function() {
         var $scope = {};
         var ctrl = $componentController('test', { $scope: $scope, a: 'A', b: 'B' }, { x: 'X', y: 'Y' });
         expect(ctrl).toEqual({ $scope: $scope, a: 'A', b: 'B', x: 'X', y: 'Y' });
+        expect($scope.$ctrl).toBe(ctrl);
       });
     });
 
@@ -1932,9 +1935,10 @@ describe('ngMock', function() {
         var $scope = {};
         var ctrl = $componentController('test', { $scope: $scope, a: 'A', b: 'B' }, { x: 'X', y: 'Y' });
         expect(ctrl).toEqual({ $scope: $scope, a: 'A', b: 'B', x: 'X', y: 'Y' });
-        expect($scope.testCtrl instanceof TestController).toBe(true);
+        expect($scope.testCtrl).toBe(ctrl);
       });
-    });  });
+    });
+  });
 });
 
 

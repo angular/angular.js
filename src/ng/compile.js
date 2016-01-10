@@ -1054,7 +1054,8 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
    */
   this.component = function registerComponent(name, options) {
     var controller = options.controller || function() {};
-    this.$$componentControllers[name] = controller;
+    var ident = identifierForController(options.controller) || options.controllerAs || '$ctrl';
+    this.$$componentControllers[name] = { controller: controller, ident: ident};
 
     function factory($injector) {
       function makeInjectable(fn) {
@@ -1070,7 +1071,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       var template = (!options.template && !options.templateUrl ? '' : options.template);
       return {
         controller: controller,
-        controllerAs: identifierForController(options.controller) || options.controllerAs || '$ctrl',
+        controllerAs: ident,
         template: makeInjectable(template),
         templateUrl: makeInjectable(options.templateUrl),
         transclude: options.transclude,

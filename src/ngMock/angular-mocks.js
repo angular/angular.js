@@ -2166,18 +2166,24 @@ angular.mock.$ControllerDecorator = ['$delegate', function($delegate) {
  * @name $componentController
  * @description
  * A service that can be used to create instances of component controllers.
+ * <div class="alert alert-info">
+ * Be aware that the controller will be instantiated and attached to the scope as specified in
+ * the component definition object. That means that you must always provide a `$scope` object
+ * in the `locals` param.
+ * </div>
  * @param {string} componentName the name of the component whose controller we want to instantiate
  * @param {Object} locals Injection locals for Controller.
  * @param {Object=} bindings Properties to add to the controller before invoking the constructor. This is used
  *                           to simulate the `bindToController` feature and simplify certain kinds of tests.
+ * @param {string=} ident Override the property name to use when attaching the controller to the scope.
  * @return {Object} Instance of requested controller.
  */
 angular.mock.$ComponentControllerProvider = ['$compileProvider', function($compileProvider) {
   return {
     $get: ['$controller', function($controller) {
       return function $componentController(componentName, locals, bindings, ident) {
-        var controller = $compileProvider.$$componentControllers[componentName];
-        return $controller(controller, locals, bindings, ident);
+        var controllerInfo = $compileProvider.$$componentControllers[componentName];
+        return $controller(controllerInfo.controller, locals, bindings, ident || controllerInfo.ident);
       };
     }]
   };
