@@ -968,8 +968,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
    *      See {@link ng.$compile#-bindtocontroller- `bindToController`}.
    *    - `transclude` – `{boolean=}` – whether {@link $compile#transclusion content transclusion} is enabled.
    *      Disabled by default.
-   *    - `$canActivate` – `{function()=}` – TBD.
-   *    - `$routeConfig` – `{object=}` – TBD.
+   *    - `$...` – `{function()=}` – additional annotations to provide to the directive factory function.
    *
    * @returns {ng.$compileProvider} the compile provider itself, for chaining of function calls.
    * @description
@@ -1080,12 +1079,14 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       };
     }
 
-    if (options.$canActivate) {
-      factory.$canActivate = options.$canActivate;
-    }
-    if (options.$routeConfig) {
-      factory.$routeConfig = options.$routeConfig;
-    }
+    // Copy any annotation properties (starting with $) over to the factory function
+    // These could be used by libraries such as the new component router
+    forEach(options, function(val, key) {
+      if (key.charAt(0) === '$') {
+        factory[key] = val;
+      }
+    });
+
     factory.$inject = ['$injector'];
 
     return this.directive(name, factory);

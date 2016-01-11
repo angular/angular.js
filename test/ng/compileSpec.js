@@ -9321,14 +9321,16 @@ describe('$compile', function() {
       });
     });
 
-    it('should add router annotations to directive factory', function() {
+    it('should add additional annotations to directive factory', function() {
       var myModule = angular.module('my', []).component('myComponent', {
         $canActivate: 'canActivate',
-        $routeConfig: 'routeConfig'
+        $routeConfig: 'routeConfig',
+        $customAnnotation: 'XXX'
       });
       expect(myModule._invokeQueue.pop().pop()[1]).toEqual(jasmine.objectContaining({
         $canActivate: 'canActivate',
-        $routeConfig: 'routeConfig'
+        $routeConfig: 'routeConfig',
+        $customAnnotation: 'XXX'
       }));
     });
 
