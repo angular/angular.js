@@ -9357,8 +9357,7 @@ describe('$compile', function() {
         template: 'abc',
         templateUrl: 'def.html',
         transclude: true,
-        bindings: {abc: '='},
-        restrict: 'EA'
+        bindings: {abc: '='}
       });
       module('my');
       inject(function(myComponentDirective) {
@@ -9370,7 +9369,7 @@ describe('$compile', function() {
           transclude: true,
           scope: {},
           bindToController: {abc: '='},
-          restrict: 'EA'
+          restrict: 'E'
         }));
       });
     });
