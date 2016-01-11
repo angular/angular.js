@@ -209,5 +209,16 @@ describe('$controller', function() {
                        "Badly formed controller string 'ctrl as'. " +
                        "Must match `__name__ as __id__` or `__name__`.");
     });
+
+
+    it('should allow identifiers containing `$`', function() {
+      var scope = {};
+
+      $controllerProvider.register('FooCtrl', function() { this.mark = 'foo'; });
+
+      var foo = $controller('FooCtrl as $foo', {$scope: scope});
+      expect(scope.$foo).toBe(foo);
+      expect(scope.$foo.mark).toBe('foo');
+    });
   });
 });
