@@ -2182,7 +2182,22 @@ angular.mock.$ComponentControllerProvider = ['$compileProvider', function($compi
   return {
     $get: ['$controller','$injector', function($controller,$injector) {
       return function $componentController(componentName, locals, bindings, ident) {
-        var directiveInfo = $injector.get(componentName + 'Directive')[0];
+        // get all directives associated to the component name
+        var directives = $injector.get(componentName + 'Directive');
+        // look for those directives that are components
+        var candidateDirectives = directives.filter(function(directiveInfo) {
+          // components have controller, controllerAs and restrict:'E' compatible
+          return directiveInfo.controller && directiveInfo.controllerAs && directiveInfo.restrict.indexOf('E') >= 0;
+        });
+        // check if valid directives found
+        if (candidateDirectives.length === 0) {
+          throw new Error('No component found');
+        }
+        if (candidateDirectives.length > 1) {
+          throw new Error('Too many components found');
+        }
+        // get the info of the component
+        var directiveInfo = candidateDirectives[0];
         return $controller(directiveInfo.controller, locals, bindings, ident || directiveInfo.controllerAs);
       };
     }]
