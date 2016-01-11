@@ -968,21 +968,20 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
    *      See {@link ng.$compile#-bindtocontroller- `bindToController`}.
    *    - `transclude` – `{boolean=}` – whether {@link $compile#transclusion content transclusion} is enabled.
    *      Disabled by default.
-   *    - `restrict` - `{string=}` - a string containing one or more characters from {@link ng.$compile#-restrict- EACM},
-   *      which restricts the component to specific directive declaration style. If omitted, this defaults to 'E'.
    *    - `$canActivate` – `{function()=}` – TBD.
    *    - `$routeConfig` – `{object=}` – TBD.
    *
    * @returns {ng.$compileProvider} the compile provider itself, for chaining of function calls.
    * @description
-   * Register a **Component definition** with the compiler. This is a shorthand for registering a special
-   * type of directive, which represents a self-contained UI component in your application.
+   * Register a **component definition** with the compiler. This is a shorthand for registering a special
+   * type of directive, which represents a self-contained UI component in your application. Such components
+   * are always isolated (i.e. `scope: {}`) and are always restricted to elements (i.e. `restrict: 'E'`).
    *
-   * Component definitions are very simple and do not require much of the complexity behind defining general
+   * Component definitions are very simple and do not require as much configuration as defining general
    * directives. Component definitions usually consist only of a template and a controller backing it.
    *
    * In order to make the definition easier, components enforce best practices like use of `controllerAs`,
-   * `bindToController`, **isolate scope** and default behaviors like restriction to elements.
+   * `bindToController`. They always have **isolate scope** and are restricted to elements.
    *
    * Here are a few examples of how you would usually define components:
    *
@@ -1077,7 +1076,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         transclude: options.transclude,
         scope: {},
         bindToController: options.bindings || {},
-        restrict: options.restrict || 'E'
+        restrict: 'E'
       };
     }
 
