@@ -1984,7 +1984,7 @@ describe('ngMock', function() {
           return { };
         });
         $compileProvider.directive('test', function() {
-          return { 
+          return {
             controller: TestController,
             controllerAs: '$ctrl'
           };
