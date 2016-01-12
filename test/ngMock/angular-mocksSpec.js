@@ -2028,7 +2028,7 @@ describe('ngMock', function() {
       inject(function($componentController, $rootScope) {
         expect(function() {
           $componentController('test', { $scope: {} });
-        }).toThrow('No component found');
+        }).toThrowMinErr('$componentController','nocomp', "No 'test' component found");
       });
     });
 
@@ -2054,7 +2054,7 @@ describe('ngMock', function() {
         expect(function() {
           var $scope = {};
           $componentController('test', { $scope: $scope, a: 'A', b: 'B' }, { x: 'X', y: 'Y' });
-        }).toThrow('Too many components found');
+        }).toThrowMinErr('$componentController','multicomp',"Found 2 directive candidates for component 'test'");
       });
     });
   });
