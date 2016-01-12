@@ -1193,13 +1193,10 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
     var specialAttrHolder = document.createElement('div');
     var Attributes = function(element, attributesToCopy) {
       if (attributesToCopy) {
-        var keys = Object.keys(attributesToCopy);
-        var i, l, key;
-
-        for (i = 0, l = keys.length; i < l; i++) {
-          key = keys[i];
-          this[key] = attributesToCopy[key];
-        }
+        var self = this;
+        forEach(attributesToCopy, function(value, key) {
+          self[key] = value;
+        });
       } else {
         this.$attr = {};
       }
