@@ -1483,10 +1483,14 @@ describe("animations", function() {
           return new $$AnimateRunner();
         };
       });
+
+      return function($animate) {
+        $animate.enabled(true);
+      };
     }));
 
     it('should throw if the arguments are not elements',
-      inject(function($animate, $compile, $document, $rootScope, $rootElement) {
+      inject(function($animate, $rootElement) {
 
       var element = jqLite('<div></div>');
 
@@ -1505,7 +1509,7 @@ describe("animations", function() {
     they('should animate an element inside a pinned element that is the $prop element',
       ['same', 'parent', 'grandparent'],
       function(elementRelation) {
-        inject(function($animate, $compile, $document, $rootElement, $rootScope) {
+        inject(function($animate, $document, $rootElement, $rootScope) {
 
         var pinElement, animateElement;
 
@@ -1543,34 +1547,92 @@ describe("animations", function() {
       });
     });
 
-    it('should adhere to the disabled state of the hosted parent when an element is pinned',
-      inject(function($animate, $compile, $document, $rootElement, $rootScope) {
+    they('should not animate an element when the pinned ($prop) element, is pinned to an element that is not a child of the $rootElement',
+      ['same', 'parent', 'grandparent'],
+      function(elementRelation) {
+        inject(function($animate, $document, $rootElement, $rootScope) {
 
-      var innerParent = jqLite('<div></div>');
-      jqLite($document[0].body).append(innerParent);
-      innerParent.append($rootElement);
-      var innerChild = jqLite('<div></div>');
-      $rootElement.append(innerChild);
+        var pinElement, animateElement, pinTargetElement = jqLite('<div></div>');
 
-      var element = jqLite('<div></div>');
-      jqLite($document[0].body).append(element);
+        var innerParent = jqLite('<div></div>');
+        jqLite($document[0].body).append(innerParent);
+        innerParent.append($rootElement);
 
-      $animate.pin(element, innerChild);
+        switch (elementRelation) {
+          case 'same':
+            pinElement = jqLite('<div id="animate"></div>');
+            break;
+          case 'parent':
+            pinElement = jqLite('<div><div id="animate"></div></div>');
+            break;
+          case 'grandparent':
+            pinElement = jqLite('<div><div><div id="animate"></div></div></div>');
+            break;
+        }
 
-      $animate.enabled(innerChild, false);
+        // Append both the pin element and the pinTargetElement outside the app root
+        jqLite($document[0].body).append(pinElement);
+        jqLite($document[0].body).append(pinTargetElement);
 
-      $animate.addClass(element, 'blue');
-      $rootScope.$digest();
-      expect(capturedAnimation).toBeFalsy();
+        animateElement = jqLite($document[0].getElementById('animate'));
 
-      $animate.enabled(innerChild, true);
+        $animate.addClass(animateElement, 'red');
+        $rootScope.$digest();
+        expect(capturedAnimation).toBeFalsy();
 
-      $animate.addClass(element, 'red');
-      $rootScope.$digest();
-      expect(capturedAnimation).toBeTruthy();
+        $animate.pin(pinElement, pinTargetElement);
 
-      dealoc(element);
-    }));
+        $animate.addClass(animateElement, 'blue');
+        $rootScope.$digest();
+        expect(capturedAnimation).toBeFalsy();
+
+        dealoc(pinElement);
+      });
+    });
+
+    they('should adhere to the disabled state of the hosted parent when the $prop element is pinned',
+      ['same', 'parent', 'grandparent'],
+      function(elementRelation) {
+        inject(function($animate, $document, $rootElement, $rootScope) {
+
+        var pinElement, animateElement, pinHostElement = jqLite('<div></div>');
+
+        var innerParent = jqLite('<div></div>');
+        jqLite($document[0].body).append(innerParent);
+        innerParent.append($rootElement);
+
+        switch (elementRelation) {
+          case 'same':
+            pinElement = jqLite('<div id="animate"></div>');
+            break;
+          case 'parent':
+            pinElement = jqLite('<div><div id="animate"></div></div>');
+            break;
+          case 'grandparent':
+            pinElement = jqLite('<div><div><div id="animate"></div></div></div>');
+            break;
+        }
+
+        $rootElement.append(pinHostElement);
+        jqLite($document[0].body).append(pinElement);
+        animateElement = jqLite($document[0].getElementById('animate'));
+
+        $animate.pin(pinElement, pinHostElement);
+        $animate.enabled(pinHostElement, false);
+
+        $animate.addClass(animateElement, 'blue');
+        $rootScope.$digest();
+        expect(capturedAnimation).toBeFalsy();
+
+        $animate.enabled(pinHostElement, true);
+
+        $animate.addClass(animateElement, 'red');
+        $rootScope.$digest();
+        expect(capturedAnimation).toBeTruthy();
+
+        dealoc(pinElement);
+      });
+    });
   });
 
   describe('callbacks', function() {
