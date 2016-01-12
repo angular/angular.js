@@ -123,12 +123,17 @@ Before you submit your pull request consider the following guidelines:
 * If we suggest changes then:
   * Make the required updates.
   * Re-run the Angular test suite to ensure tests are still passing.
+  * Commit your changes to the branch.
   * Rebase your branch and force push to your GitHub repository (this will update your Pull Request):
+
+If the PR gets too outdated we may ask you to rebase and force push to update the PR:
 
     ```shell
     git rebase master -i
     git push origin my-fix-branch -f
     ```
+    
+WARNING. Squashing or reverting commits and forced push thereafter may delete all in-code comments by others in your commits.
 
 That's it! Thank you for your contribution!
 
