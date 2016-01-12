@@ -928,7 +928,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
     return this;
   };
 
-  this.$$componentControllers = createMap();
   /**
    * @ngdoc method
    * @name $compileProvider#component
@@ -1052,8 +1051,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
    */
   this.component = function registerComponent(name, options) {
     var controller = options.controller || function() {};
-    var ident = identifierForController(options.controller) || options.controllerAs || '$ctrl';
-    this.$$componentControllers[name] = { controller: controller, ident: ident};
 
     function factory($injector) {
       function makeInjectable(fn) {
@@ -1069,7 +1066,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       var template = (!options.template && !options.templateUrl ? '' : options.template);
       return {
         controller: controller,
-        controllerAs: ident,
+        controllerAs: identifierForController(options.controller) || options.controllerAs || '$ctrl',
         template: makeInjectable(template),
         templateUrl: makeInjectable(options.templateUrl),
         transclude: options.transclude,

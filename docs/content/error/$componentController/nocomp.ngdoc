@@ -1,0 +1,11 @@
+@ngdoc error
+@name $componentController:nocomp
+@fullName No component available
+@description
+
+This error occurs when it is requested a component that it is not defined.
+
+
+To resolve this issue create the component which the requested name or change 
+the name to match an existing component name.
+

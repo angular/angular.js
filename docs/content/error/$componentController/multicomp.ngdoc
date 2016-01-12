@@ -1,0 +1,17 @@
+@ngdoc error
+@name $componentController:multicomp
+@fullName Multiple components defined
+@description
+
+This error occurs when multiple components or component-like directives
+are defined with the same name, and processing them would result in a 
+collision or an unsupported configuration.
+
+
+To resolve this issue remove one of the directives or controllers which is causing the collision.
+
+Component-like directives are those that:
+
+* Have a controller
+* Have defined controllerAs
+* Have restrict to 'E'
