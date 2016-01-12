@@ -1938,6 +1938,125 @@ describe('ngMock', function() {
         expect($scope.testCtrl).toBe(ctrl);
       });
     });
+
+    it('should instantiate the controller of the restrict:\'E\' component if there are more directives with the same name but not restricted to \'E\'', function() {
+      function TestController() {
+        this.r = 6779;
+      }
+      module(function($compileProvider) {
+        $compileProvider.directive('test', function() {
+          return { restrict: 'A' };
+        });
+        $compileProvider.component('test', {
+          controller: TestController
+        });
+      });
+      inject(function($componentController, $rootScope) {
+        var ctrl = $componentController('test', { $scope: {} });
+        expect(ctrl).toEqual({ r: 6779 });
+      });
+    });
+
+    it('should instantiate the controller of the restrict:\'E\' component if there are more directives with the same name and restricted to \'E\' but no controller', function() {
+      function TestController() {
+        this.r = 22926;
+      }
+      module(function($compileProvider) {
+        $compileProvider.directive('test', function() {
+          return { restrict: 'E' };
+        });
+        $compileProvider.component('test', {
+          controller: TestController
+        });
+      });
+      inject(function($componentController, $rootScope) {
+        var ctrl = $componentController('test', { $scope: {} });
+        expect(ctrl).toEqual({ r: 22926 });
+      });
+    });
+
+    it('should instantiate the controller of the directive with controller, controllerAs and restrict:\'E\' if there are more directives', function() {
+      function TestController() {
+        this.r = 18842;
+      }
+      module(function($compileProvider) {
+        $compileProvider.directive('test', function() {
+          return { };
+        });
+        $compileProvider.directive('test', function() {
+          return {
+            restrict: 'E',
+            controller: TestController,
+            controllerAs: '$ctrl'
+          };
+        });
+      });
+      inject(function($componentController, $rootScope) {
+        var ctrl = $componentController('test', { $scope: {} });
+        expect(ctrl).toEqual({ r: 18842 });
+      });
+    });
+
+    it('should fail if there is no directive with restrict:\'E\' and controller', function() {
+      function TestController() {
+        this.r = 31145;
+      }
+      module(function($compileProvider) {
+        $compileProvider.directive('test', function() {
+          return {
+            restrict: 'AC',
+            controller: TestController
+          };
+        });
+        $compileProvider.directive('test', function() {
+          return {
+            restrict: 'E',
+            controller: TestController
+          };
+        });
+        $compileProvider.directive('test', function() {
+          return {
+            restrict: 'EA',
+            controller: TestController,
+            controllerAs: '$ctrl'
+          };
+        });
+        $compileProvider.directive('test', function() {
+          return { restrict: 'E' };
+        });
+      });
+      inject(function($componentController, $rootScope) {
+        expect(function() {
+          $componentController('test', { $scope: {} });
+        }).toThrow('No component found');
+      });
+    });
+
+    it('should fail if there more than two components with same name', function() {
+      function TestController($scope, a, b) {
+        this.$scope = $scope;
+        this.a = a;
+        this.b = b;
+      }
+      module(function($compileProvider) {
+        $compileProvider.directive('test', function() {
+          return {
+            restrict: 'E',
+            controller: TestController,
+            controllerAs: '$ctrl'
+          };
+        });
+        $compileProvider.component('test', {
+          controller: TestController
+        });
+      });
+      inject(function($componentController, $rootScope) {
+        expect(function() {
+          var $scope = {};
+          $componentController('test', { $scope: $scope, a: 'A', b: 'B' }, { x: 'X', y: 'Y' });
+        }).toThrow('Too many components found');
+      });
+    });
   });
 });
 
