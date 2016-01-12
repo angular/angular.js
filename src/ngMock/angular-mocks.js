@@ -2189,8 +2189,8 @@ angular.mock.$ComponentControllerProvider = ['$compileProvider', function($compi
         var directives = $injector.get(componentName + 'Directive');
         // look for those directives that are components
         var candidateDirectives = directives.filter(function(directiveInfo) {
-          // components have controller, controllerAs and restrict:'E' compatible
-          return directiveInfo.controller && directiveInfo.controllerAs && directiveInfo.restrict.indexOf('E') >= 0;
+          // components have controller, controllerAs and restrict:'E'
+          return directiveInfo.controller && directiveInfo.controllerAs && directiveInfo.restrict === 'E';
         });
         // check if valid directives found
         if (candidateDirectives.length === 0) {

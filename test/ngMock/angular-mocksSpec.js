@@ -1939,7 +1939,7 @@ describe('ngMock', function() {
       });
     });
 
-    it('should instantiate the controller of the restrict:\'E\' component if there are more directives with the same name but not \'E\' restrictness', function() {
+    it('should instantiate the controller of the restrict:\'E\' component if there are more directives with the same name but not restricted to \'E\'', function() {
       function TestController() {
         this.r = 6779;
       }
@@ -1957,7 +1957,7 @@ describe('ngMock', function() {
       });
     });
 
-    it('should instantiate the controller of the restrict:\'E\' component if there are more directives with the same name and \'E\' restrictness but no controller', function() {
+    it('should instantiate the controller of the restrict:\'E\' component if there are more directives with the same name and restricted to \'E\' but no controller', function() {
       function TestController() {
         this.r = 22926;
       }
@@ -1975,7 +1975,7 @@ describe('ngMock', function() {
       });
     });
 
-    it('should instantiate the controller of the directive with controller if there are more directives', function() {
+    it('should instantiate the controller of the directive with controller, controllerAs and restrict:\'E\' if there are more directives', function() {
       function TestController() {
         this.r = 18842;
       }
@@ -1985,6 +1985,7 @@ describe('ngMock', function() {
         });
         $compileProvider.directive('test', function() {
           return {
+            restrict: 'E',
             controller: TestController,
             controllerAs: '$ctrl'
           };
@@ -1996,7 +1997,7 @@ describe('ngMock', function() {
       });
     });
 
-    it('should fail if there is no directive with restrict:\'E\' compatible and controller', function() {
+    it('should fail if there is no directive with restrict:\'E\' and controller', function() {
       function TestController() {
         this.r = 31145;
       }
@@ -2011,6 +2012,13 @@ describe('ngMock', function() {
           return {
             restrict: 'E',
             controller: TestController
+          };
+        });
+        $compileProvider.directive('test', function() {
+          return {
+            restrict: 'EA',
+            controller: TestController,
+            controllerAs: '$ctrl'
           };
         });
         $compileProvider.directive('test', function() {
@@ -2033,6 +2041,7 @@ describe('ngMock', function() {
       module(function($compileProvider) {
         $compileProvider.directive('test', function() {
           return {
+            restrict: 'E',
             controller: TestController,
             controllerAs: '$ctrl'
           };
