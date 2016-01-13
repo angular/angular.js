@@ -4244,6 +4244,22 @@ describe('$compile', function() {
       if (!/chrome/i.test(navigator.userAgent)) return;
       /*jshint -W061 */
       var controllerCalled = false;
+      var Controller = eval(
+        "class Foo {\n" +
+        "  constructor($scope) {}\n" +
+        "  $onInit() { this.check(); }\n" +
+        "  check() {\n" +
+        "    expect(this.data).toEqualData({\n" +
+        "      'foo': 'bar',\n" +
+        "      'baz': 'biz'\n" +
+        "    });\n" +
+        "    expect(this.str).toBe('Hello, world!');\n" +
+        "    expect(this.fn()).toBe('called!');\n" +
+        "    controllerCalled = true;\n" +
+        "  }\n" +
+        "}");
+      spyOn(Controller.prototype, '$onInit');
+
       module(function($compileProvider) {
         $compileProvider.directive('fooDir', valueFn({
           template: '<p>isolate</p>',
@@ -4252,20 +4268,7 @@ describe('$compile', function() {
             'str': '@dirStr',
             'fn': '&dirFn'
           },
-          controller: eval(
-            "class Foo {" +
-            "  constructor($scope) {}" +
-            "  check() {" +
-            "    expect(this.data).toEqualData({" +
-            "      'foo': 'bar'," +
-            "      'baz': 'biz'" +
-            "    });" +
-            "    expect(this.str).toBe('Hello, world!');" +
-            "    expect(this.fn()).toBe('called!');" +
-            "    controllerCalled = true;" +
-            "  }" +
-            "}"
-          ),
+          controller: Controller,
           controllerAs: 'test',
           bindToController: true
         }));
@@ -4280,11 +4283,13 @@ describe('$compile', function() {
         element = $compile('<div foo-dir dir-data="remoteData" ' +
                                  'dir-str="Hello, {{whom}}!" ' +
                                  'dir-fn="fn()"></div>')($rootScope);
+        expect(Controller.prototype.$onInit).toHaveBeenCalled();
         element.data('$fooDirController').check();
         expect(controllerCalled).toBe(true);
       });
       /*jshint +W061 */
     });
+
 
 
     it('should update @-bindings on controller when bindToController and attribute change observed', function() {
