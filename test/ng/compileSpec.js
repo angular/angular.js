@@ -9435,5 +9435,37 @@ describe('$compile', function() {
         }));
       });
     });
+
+    it('should call `controllersReady` with required controllers, if provided', function() {
+      var controllersReadySpy = jasmine.createSpy('controllersReady');
+      function MeController() { this.name = 'Me'; }
+      function ParentController() { this.name = 'Parent'; }
+      function SiblingController() { this.name = 'Sibling'; }
+
+      angular.module('my', [])
+        .component('me', {
+          require: ['me', '^parent', 'sibling'],
+          controllersReady: controllersReadySpy,
+          controller: MeController
+        })
+        .component('parent', {
+          controller: ParentController
+        })
+        .directive('sibling', function() {
+          return {
+            controller: SiblingController
+          };
+        });
+
+      module('my');
+      inject(function($compile, $rootScope, meDirective) {
+        element = $compile('<parent><me sibling></me></parent>')($rootScope);
+        expect(controllersReadySpy).toHaveBeenCalledWith(
+          jasmine.any(MeController),
+          jasmine.any(ParentController),
+          jasmine.any(SiblingController)
+        );
+      });
+    });
   });
 });
