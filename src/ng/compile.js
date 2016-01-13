@@ -2414,8 +2414,8 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           }
 
           if (isObject(controllerDirective.require) && !isArray(controllerDirective.require)) {
-            var controllers = getControllers(name, controllerDirective.require, $element, elementControllers);
-            console.log(controllers);
+            var controllerObj = getControllers(name, controllerDirective.require, $element, elementControllers);
+            extend(controller.instance, controllerObj);
           }
         }
 
