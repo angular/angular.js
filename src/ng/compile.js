@@ -1072,7 +1072,8 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         transclude: options.transclude,
         scope: {},
         bindToController: options.bindings || {},
-        restrict: 'E'
+        restrict: 'E',
+        require: options.require
       };
     }
 
@@ -2387,6 +2388,13 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
               initializeDirectiveBindings(controllerScope, attrs, controller.instance, bindings, controllerDirective);
           }
         }
+
+        // Trigger the `$onInit` method on all controllers that have one
+        forEach(elementControllers, function(controller) {
+          if (isFunction(controller.instance.$onInit)) {
+            controller.instance.$onInit();
+          }
+        });
 
         // PRELINKING
         for (i = 0, ii = preLinkFns.length; i < ii; i++) {
