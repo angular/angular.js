@@ -609,6 +609,16 @@ Applications that depend on this option can use  to turn the option back on,
 but while doing so, please read the warning provided in the  documentation for
 information on preventing click-hijacking attacks when this option is turned on.
 
+- **ngOptions:** due to [b71d7c3f](https://github.com/angular/angular.js/commit/b71d7c3f3c04e65b02d88b33c22dd90ae3cdfc27),
+
+If your data contains falsy values (`''`, `0`, `false` and `null`) for option groups, then these
+options will now be placed into option groups. Previously all of these falsy values were treated as
+the option not being a member of a group.
+
+Only option groups that are `undefined` will result in the option being put in no group.
+If you have data that contains falsy values that should not be used as groups then you must filter
+the values before passing them to `ngOptions` converting falsy values to `undefined`.
+
 - **ngOptions:** due to [ded25187](https://github.com/angular/angular.js/commit/ded2518756d4409fdfda0d4af243f2125bea01b5),
 
 `ngOptions` will now throw if `ngModel` is not present on the `select`
