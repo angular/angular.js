@@ -170,4 +170,8 @@ module.exports = new Package('angularjs', [
     jqueryDeployment,
     productionDeployment
   ];
+})
+
+.config(function(generateKeywordsProcessor) {
+  generateKeywordsProcessor.docTypesToIgnore = ['componentGroup'];
 });
