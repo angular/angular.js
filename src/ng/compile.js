@@ -1072,7 +1072,11 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         transclude: options.transclude,
         scope: {},
         bindToController: options.bindings || {},
-        restrict: 'E'
+        restrict: 'E',
+        require: options.require,
+        link: options.controllersReady && function(scope, element, attrs, controllers) {
+          options.controllersReady.apply(options, isArray(controllers) ? controllers : [controllers]);
+        }
       };
     }
 
