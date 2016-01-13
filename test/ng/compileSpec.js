@@ -5716,6 +5716,28 @@ describe('$compile', function() {
       });
     });
 
+    it('should support multiple controllers as an object hash', function() {
+      module(function() {
+        directive('c1', valueFn({
+          controller: function() { this.name = 'c1'; }
+        }));
+        directive('c2', valueFn({
+          controller: function() { this.name = 'c2'; }
+        }));
+        directive('dep', function(log) {
+          return {
+            require: { myC1: '^c1', myC2: '^c2' },
+            link: function(scope, element, attrs, controllers) {
+              log('dep:' + controllers.myC1.name + '-' + controller.myC2.name);
+            }
+          };
+        });
+      });
+      inject(function(log, $compile, $rootScope) {
+        element = $compile('<div c1 c2><div dep></div></div>')($rootScope);
+        expect(log).toEqual('dep:c1-c2');
+      });
+    });
 
     it('should instantiate the controller just once when template/templateUrl', function() {
       var syncCtrlSpy = jasmine.createSpy('sync controller'),
