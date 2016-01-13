@@ -4262,6 +4262,22 @@ describe('$compile', function() {
       if (!/chrome/i.test(navigator.userAgent)) return;
       /*jshint -W061 */
       var controllerCalled = false;
+      var Controller = eval(
+        "class Foo {\n" +
+        "  constructor($scope) {}\n" +
+        "  $onInit() { this.check(); }\n" +
+        "  check() {\n" +
+        "    expect(this.data).toEqualData({\n" +
+        "      'foo': 'bar',\n" +
+        "      'baz': 'biz'\n" +
+        "    });\n" +
+        "    expect(this.str).toBe('Hello, world!');\n" +
+        "    expect(this.fn()).toBe('called!');\n" +
+        "    controllerCalled = true;\n" +
+        "  }\n" +
+        "}");
+      spyOn(Controller.prototype, '$onInit').andCallThrough();
+
       module(function($compileProvider) {
         $compileProvider.directive('fooDir', valueFn({
           template: '<p>isolate</p>',
@@ -4270,20 +4286,7 @@ describe('$compile', function() {
             'str': '@dirStr',
             'fn': '&dirFn'
           },
-          controller: eval(
-            "class Foo {" +
-            "  constructor($scope) {}" +
-            "  check() {" +
-            "    expect(this.data).toEqualData({" +
-            "      'foo': 'bar'," +
-            "      'baz': 'biz'" +
-            "    });" +
-            "    expect(this.str).toBe('Hello, world!');" +
-            "    expect(this.fn()).toBe('called!');" +
-            "    controllerCalled = true;" +
-            "  }" +
-            "}"
-          ),
+          controller: Controller,
           controllerAs: 'test',
           bindToController: true
         }));
@@ -4298,7 +4301,7 @@ describe('$compile', function() {
         element = $compile('<div foo-dir dir-data="remoteData" ' +
                                  'dir-str="Hello, {{whom}}!" ' +
                                  'dir-fn="fn()"></div>')($rootScope);
-        element.data('$fooDirController').check();
+        expect(Controller.prototype.$onInit).toHaveBeenCalled();
         expect(controllerCalled).toBe(true);
       });
       /*jshint +W061 */
@@ -4944,6 +4947,32 @@ describe('$compile', function() {
         expect(childScope.theCtrl).not.toBe(myCtrl);
         expect(childScope.theCtrl.constructor).toBe(MyCtrl);
         childScope.theCtrl.test();
+      });
+    });
+
+    it('should call `controller.$onInit`, if provided after all the controllers have been constructed', function() {
+
+      function check() {
+        /*jshint validthis:true */
+        expect(this.element.controller('d1').id).toEqual(1);
+        expect(this.element.controller('d2').id).toEqual(2);
+      }
+
+      function Controller1($element) { this.id = 1; this.element = $element; }
+      Controller1.prototype.$onInit = jasmine.createSpy('$onInit').andCallFake(check);
+
+      function Controller2($element) { this.id = 2; this.element = $element; }
+      Controller2.prototype.$onInit = jasmine.createSpy('$onInit').andCallFake(check);
+
+      angular.module('my', [])
+        .directive('d1', valueFn({ controller: Controller1 }))
+        .directive('d2', valueFn({ controller: Controller2 }));
+
+      module('my');
+      inject(function($compile, $rootScope) {
+        element = $compile('<div d1 d2></div>')($rootScope);
+        expect(Controller1.prototype.$onInit).toHaveBeenCalledOnce();
+        expect(Controller2.prototype.$onInit).toHaveBeenCalledOnce();
       });
     });
 
