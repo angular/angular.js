@@ -275,9 +275,9 @@
  * * a **string** containing the name of the directive to pass to the linking function
  * * an **array** containing the names of directives to pass to the linking function. The argument passed to the
  * linking function will be an array of controllers in the same order as the names in the `require` property
- * * an **object** whose property values are the names of the directibes to pass to the linking function. The argument
- * passed to the linking function will also be an object with matching keys, whose values will be the corresponding
- * controller.
+ * * an **object** whose property values are the names of the directives to pass to the linking function. The argument
+ * passed to the linking function will also be an object with matching keys, whose values will hold the corresponding
+ * controllers.
  *
  * If no such directive(s) can be found, or if the directive does not have a controller, then an error is raised
  * (unless no link function is specified, in which case error checking is skipped). The name can be prefixed with:
