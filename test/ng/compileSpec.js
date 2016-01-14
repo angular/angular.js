@@ -2694,6 +2694,24 @@ describe('$compile', function() {
                   expect(element.isolateScope()['watch']).toBe('watch');
                 })
             );
+
+            it('should handle @ bindings on BOOLEAN attributes', function() {
+              var checkedVal;
+              module(function($compileProvider) {
+                $compileProvider.directive('test', function() {
+                  return {
+                    scope: { checked: '@' },
+                    link: function(scope, element, attrs) {
+                      checkedVal = scope.checked;
+                    }
+                  };
+                });
+              });
+              inject(function($compile, $rootScope) {
+                $compile('<input test checked="checked">')($rootScope);
+                expect(checkedVal).toEqual(true);
+              });
+            });
           });
 
 
