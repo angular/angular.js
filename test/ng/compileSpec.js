@@ -4936,21 +4936,21 @@ describe('$compile', function() {
 
     it('should call `controller.$onInit`, if provided after all the controllers have been constructed', function() {
 
-      function Controller1($element) { this.id = 1; this.element = $element; }
-      Controller1.prototype.$onInit = jasmine.createSpy('$onInit').andCallFake(function() {
+      function check() {
+        /*jshint validthis:true */
         expect(this.element.controller('d1').id).toEqual(1);
         expect(this.element.controller('d2').id).toEqual(2);
-      });
+      }
+
+      function Controller1($element) { this.id = 1; this.element = $element; }
+      Controller1.prototype.$onInit = jasmine.createSpy('$onInit').andCallFake(check);
 
       function Controller2($element) { this.id = 2; this.element = $element; }
-      Controller2.prototype.$onInit = jasmine.createSpy('$onInit').andCallFake(function() {
-        expect(this.element.controller('d1').id).toEqual(1);
-        expect(this.element.controller('d2').id).toEqual(2);
-      });
+      Controller2.prototype.$onInit = jasmine.createSpy('$onInit').andCallFake(check);
 
       angular.module('my', [])
-        .directive('d1', function() { return { controller: Controller1 }; })
-        .directive('d2', function() { return { controller: Controller2 }; });
+        .directive('d1', valueFn({ controller: Controller1 }))
+        .directive('d2', valueFn({ controller: Controller2 }));
 
       module('my');
       inject(function($compile, $rootScope) {
