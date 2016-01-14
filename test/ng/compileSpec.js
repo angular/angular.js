@@ -9579,5 +9579,5 @@ describe('$compile', function() {
         }));
       });
     });
-   });
+  });
 });
