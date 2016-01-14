@@ -5381,6 +5381,55 @@ describe('$compile', function() {
       });
     });
 
+    it('should bind required controllers to controller that has an explicit constructor return value', function() {
+      var parentController, siblingController, meController;
+
+      function ParentController() { this.name = 'Parent'; }
+      function SiblingController() { this.name = 'Sibling'; }
+      function MeController() {
+        meController = {
+          name: 'Me',
+          $onInit: function() {
+            parentController = this.container;
+            siblingController = this.friend;
+          }
+        };
+        spyOn(meController, '$onInit').andCallThrough();
+        return meController;
+      }
+
+      angular.module('my', [])
+        .directive('me', function() {
+          return {
+            restrict: 'E',
+            scope: {},
+            require: { container: '^parent', friend: 'sibling' },
+            controller: MeController
+          };
+        })
+        .directive('parent', function() {
+          return {
+            restrict: 'E',
+            scope: {},
+            controller: ParentController
+          };
+        })
+        .directive('sibling', function() {
+          return {
+            controller: SiblingController
+          };
+        });
+
+      module('my');
+      inject(function($compile, $rootScope, meDirective) {
+        element = $compile('<parent><me sibling></me></parent>')($rootScope);
+        expect(meController.$onInit).toHaveBeenCalled();
+        expect(parentController).toEqual(jasmine.any(ParentController));
+        expect(siblingController).toEqual(jasmine.any(SiblingController));
+      });
+    });
+
+
     it('should require controller of an isolate directive from a non-isolate directive on the ' +
         'same element', function() {
       var IsolateController = function() {};
