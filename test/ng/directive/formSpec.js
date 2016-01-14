@@ -812,6 +812,80 @@ describe('form', function() {
       expect(nestedInputCtrl.$pristine).toBe(true);
       expect(nestedInputCtrl.$dirty).toBe(false);
     });
+
+    it('should propagate pristine-ness to the parent form', function() {
+      doc = $compile(
+          '<form name="parentForm">' +
+            '<div ng-form name="childForm"></div>' +
+          '</form>')(scope);
+
+      var parentForm = doc,
+          childForm = parentForm.find('div').eq(0),
+          childFormCtrl = scope.childForm;
+
+      childFormCtrl.$setDirty();
+      scope.$apply();
+      expect(parentForm).not.toBePristine();
+
+      childFormCtrl.$setPristine();
+      scope.$apply();
+      expect(childForm).toBePristine();
+      expect(parentForm).toBePristine();
+    });
+
+    it('should be pristine if all the nested controls are pristine', function() {
+      doc = $compile(
+          '<form name="form">' +
+            '<input ng-model="inputModel1" name="input1">' +
+            '<input ng-model="inputModel2" name="input2">' +
+          '</form>')(scope);
+
+      var form = doc,
+          formCtrl = scope.form,
+          input1 = form.find('input').eq(0),
+          input2 = form.find('input').eq(1),
+          inputCtrl1 = input1.controller('ngModel'),
+          inputCtrl2 = input2.controller('ngModel');
+
+      inputCtrl1.$setDirty();
+      inputCtrl2.$setDirty();
+      scope.$apply();
+      expect(form).not.toBePristine();
+
+      inputCtrl1.$setPristine();
+      scope.$apply();
+      expect(form).not.toBePristine();
+
+      inputCtrl2.$setPristine();
+      scope.$apply();
+      expect(form).toBePristine();
+    });
+
+    it('should be pristine if all the nested forms are pristine', function() {
+      doc = $compile(
+          '<form name="form">' +
+            '<div ng-form name="childForm1"></div>' +
+            '<div ng-form name="childForm2"></div>' +
+          '</form>')(scope);
+
+      var form = doc,
+          formCtrl = scope.form,
+          childFormCtrl1 = scope.childForm1,
+          childFormCtrl2 = scope.childForm2;
+
+      childFormCtrl1.$setDirty();
+      childFormCtrl2.$setDirty();
+      scope.$apply();
+      expect(form).not.toBePristine();
+
+      childFormCtrl1.$setPristine();
+      scope.$apply();
+      expect(form).not.toBePristine();
+
+      childFormCtrl2.$setPristine();
+      scope.$apply();
+      expect(form).toBePristine();
+    });
   });
 
   describe('$setUntouched', function() {

@@ -15,6 +15,7 @@ describe('ngModel', function() {
         $$setPending: jasmine.createSpy('$$setPending'),
         $setValidity: jasmine.createSpy('$setValidity'),
         $setDirty: jasmine.createSpy('$setDirty'),
+        $$updatePristine: jasmine.createSpy('$$updatePristine'),
         $$clearControlValidity: noop
       };
 
@@ -133,7 +134,6 @@ describe('ngModel', function() {
     });
 
     describe('setPristine', function() {
-
       it('should set control to its pristine state', function() {
         ctrl.$setViewValue('edit');
         expect(ctrl.$dirty).toBe(true);
@@ -142,6 +142,11 @@ describe('ngModel', function() {
         ctrl.$setPristine();
         expect(ctrl.$dirty).toBe(false);
         expect(ctrl.$pristine).toBe(true);
+      });
+
+      it('should set parent form to its pristine state', function() {
+        ctrl.$setPristine();
+        expect(parentFormCtrl.$$updatePristine).toHaveBeenCalledOnce();
       });
     });
 

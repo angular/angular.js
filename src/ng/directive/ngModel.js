@@ -364,12 +364,15 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    * This method can be called to remove the `ng-dirty` class and set the control to its pristine
    * state (`ng-pristine` class). A model is considered to be pristine when the control
    * has not been changed from when first compiled.
+   *
+   * This method will also propagate to parent forms.
    */
   this.$setPristine = function() {
     ctrl.$dirty = false;
     ctrl.$pristine = true;
     $animate.removeClass($element, DIRTY_CLASS);
     $animate.addClass($element, PRISTINE_CLASS);
+    parentForm.$$updatePristine();
   };
 
   /**
