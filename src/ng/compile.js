@@ -279,6 +279,10 @@
  * passed to the linking function will also be an object with matching keys, whose values will hold the corresponding
  * controllers.
  *
+ * If the `require` property is an object and the directive provides a controller, then the required controllers are
+ * bound to the controller using the keys of the `require` property. See the {@link $compileProvider#component} helper
+ * for an example of how this can be used.
+ *
  * If no such directive(s) can be found, or if the directive does not have a controller, then an error is raised
  * (unless no link function is specified, in which case error checking is skipped). The name can be prefixed with:
  *
@@ -1024,6 +1028,80 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
    *   });
    *
    * ```
+   *
+   * ### Intercomponent Communication
+   * Directives can require the controllers of other directives to enable communication
+   * between the directives. This can be achieved in a component by providing an
+   * object mapping for the `require` property.  Here is the tab pane example built
+   * from components...
+   *
+   * <example module="docsTabsExample">
+   *   <file name="script.js">
+   * angular.module('docsTabsExample', [])
+   *   .component('myTabs', {
+   *     transclude: true,
+   *     controller: function() {
+   *       var panes = this.panes = [];
+   *
+   *       this.select = function(pane) {
+   *         angular.forEach(panes, function(pane) {
+   *           pane.selected = false;
+   *         });
+   *         pane.selected = true;
+   *       };
+   *
+   *       this.addPane = function(pane) {
+   *         if (panes.length === 0) {
+   *           this.select(pane);
+   *         }
+   *         panes.push(pane);
+   *       };
+   *     },
+   *     templateUrl: 'my-tabs.html'
+   *   })
+   *   .component('myPane', {
+   *     transclude: true,
+   *     require: {tabsCtrl: '^myTabs'},
+   *     bindings: {
+   *       title: '@'
+   *     },
+   *     controller: function() {
+   *       this.$onInit = function() {
+   *         this.tabsCtrl.addPane(this);
+   *         console.log(this);
+   *       };
+   *     },
+   *     templateUrl: 'my-pane.html'
+   *   });
+   *   </file>
+   *   <file name="index.html">
+   *   <my-tabs>
+   *     <my-pane title="Hello">
+   *       <h4>Hello</h4>
+   *       <p>Lorem ipsum dolor sit amet</p>
+   *     </my-pane>
+   *     <my-pane title="World">
+   *       <h4>World</h4>
+   *       <em>Mauris elementum elementum enim at suscipit.</em>
+   *       <p><a href ng-click="i = i + 1">counter: {{i || 0}}</a></p>
+   *     </my-pane>
+   *   </my-tabs>
+   *   </file>
+   *   <file name="my-tabs.html">
+   *   <div class="tabbable">
+   *     <ul class="nav nav-tabs">
+   *       <li ng-repeat="pane in $ctrl.panes" ng-class="{active:pane.selected}">
+   *         <a href="" ng-click="$ctrl.select(pane)">{{pane.title}}</a>
+   *       </li>
+   *     </ul>
+   *     <div class="tab-content" ng-transclude></div>
+   *   </div>
+   *   </file>
+   *   <file name="my-pane.html">
+   *     <div class="tab-pane" ng-show="$ctrl.selected" ng-transclude></div>
+   *   </file>
+   * </example>
+   *
    *
    * <br />
    * Components are also useful as route templates (e.g. when using
