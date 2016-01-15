@@ -220,7 +220,7 @@
  * When an isolate scope is used for a directive (see above), `bindToController: true` will
  * allow a component to have its properties bound to the controller, rather than to scope.
  *
- * After the controller is instantiated, the initial values of the isolate scope bindings will bound to the controller
+ * After the controller is instantiated, the initial values of the isolate scope bindings will be bound to the controller
  * properties. You can access these bindings once they have been initialized by providing a controller method called
  * `$onInit`, which is called after all the controllers on an element have been constructed and had their bindings
  * initialized.
