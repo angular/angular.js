@@ -4284,12 +4284,10 @@ describe('$compile', function() {
                                  'dir-str="Hello, {{whom}}!" ' +
                                  'dir-fn="fn()"></div>')($rootScope);
         expect(Controller.prototype.$onInit).toHaveBeenCalled();
-        element.data('$fooDirController').check();
         expect(controllerCalled).toBe(true);
       });
       /*jshint +W061 */
     });
-
 
 
     it('should update @-bindings on controller when bindToController and attribute change observed', function() {
