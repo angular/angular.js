@@ -8,7 +8,8 @@
  * @description
  * Text input that converts between a delimited string and an array of strings. The default
  * delimiter is a comma followed by a space - equivalent to `ng-list=", "`. You can specify a custom
- * delimiter as the value of the `ngList` attribute - for example, `ng-list=" | "`.
+ * delimiter as the value of the `ngList` attribute - for example, `ng-list=" | "`. you can use empty
+ * string as a delimeter by specify `ng-list-no-separator`=`"true"`.
  *
  * The behaviour of the directive is affected by the use of the `ngTrim` attribute.
  * * If `ngTrim` is set to `"false"` then whitespace around both the separator and each
@@ -18,6 +19,12 @@
  * * Otherwise whitespace around the delimiter is ignored when splitting (although it is respected
  *   when joining the list items back together) and whitespace around each list item is stripped
  *   before it is added to the model.
+ *
+ * The The behaviour of the directive is affected by the use of the `ngListNoSeparator` attribute.
+ * * If `ngListNoSeparator` is set to `"true"` then default delimiter will be an empty string `""`
+ *   so it will split the input value on empty string. for example if input value is `"abc"`
+ *   then the model value will be [`"a"`, `"b"`, `"c"`], so it override the default delimiter value
+ *   with empty string.
  *
  * ### Example with Validation
  *
@@ -82,6 +89,22 @@
  *   </file>
  * </example>
  *
+ * ### Example - splitting on empty string
+ * <example name="ngList-directive-empty-string">
+ *   <file name="index.html">
+ *    <input ng-model="list" ng-list="" ng-list-no-separator="true"/>
+ *    <pre>{{ list | json }}</pre>
+ *   </file>
+ *   <file name="protractor.js" type="protractor">
+ *     it("should split the text by empty string", function() {
+ *       var listInput = element(by.model('list'));
+ *       var output = element(by.binding('list | json'));
+ *       listInput.sendKeys('abc');
+ *       expect(output.getText()).toContain('[\n  "a",\n  "b",\n  "c"\n]');
+ *     });
+ *   </file>
+ * </example>
+ *
  * @element input
  * @param {string=} ngList optional delimiter that should be used to split the value.
  */
@@ -93,7 +116,20 @@ var ngListDirective = function() {
     link: function(scope, element, attr, ctrl) {
       // We want to control whitespace trimming so we use this convoluted approach
       // to access the ngList attribute, which doesn't pre-trim the attribute
-      var ngList = element.attr(attr.$attr.ngList) || ', ';
+
+      var ngListNoSeparator = attr.$attr.ngListNoSeparator ? element.attr(attr.$attr.ngListNoSeparator) : false;
+      var ngList = '';
+
+      // if attr.$attr.ngListNoSeparator attr is added to the element
+      // and it's value is true this means that list has not separator
+      // so string "abcd" will be changed to ["a", "b", "c", "d"]
+      // or if it is not true
+      // it will read the separator from attr.$attr.ngList
+      // and split the string based on it
+      if (!ngListNoSeparator) {
+        ngList = element.attr(attr.$attr.ngList) || ', ';
+      }
+
       var trimValues = attr.ngTrim !== 'false';
       var separator = trimValues ? trim(ngList) : ngList;
 

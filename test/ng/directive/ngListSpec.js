@@ -137,6 +137,14 @@ describe('ngList', function() {
       helper.changeInputValueTo('a\nb');
       expect($rootScope.list).toEqual(['a','b']);
     });
+
+    it("should support splitting on no separator", function() {
+      helper.compileInput('<input type="text" ng-model="list" ng-list="" ng-list-no-separator="true"/>');
+      helper.changeInputValueTo('abc');
+      expect($rootScope.list).toEqual(['a','b', 'c']);
+    });
+
+
   });
 });
 
