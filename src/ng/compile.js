@@ -2490,12 +2490,15 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             removeControllerBindingWatches =
               initializeDirectiveBindings(controllerScope, attrs, controller.instance, bindings, controllerDirective);
           }
-
-          if (isObject(controllerDirective.require) && !isArray(controllerDirective.require)) {
-            var controllerObj = getControllers(name, controllerDirective.require, $element, elementControllers);
-            extend(controller.instance, controllerObj);
-          }
         }
+
+        // Bind the required controllers to the controller, if `require` is an object
+        forEach(controllerDirectives, function(controllerDirective, name) {
+          var require = controllerDirective.require;
+          if (!isArray(require) && isObject(require)) {
+            extend(elementControllers[name].instance, getControllers(name, require, $element, elementControllers));
+          }
+        });
 
         // Trigger the `$onInit` method on all controllers that have one
         forEach(elementControllers, function(controller) {

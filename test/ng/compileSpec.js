@@ -5430,6 +5430,53 @@ describe('$compile', function() {
     });
 
 
+    it('should bind required controllers to controllers that return an explicit constructor return value', function() {
+      var parentController, containerController, siblingController, friendController, meController;
+
+      function MeController() {
+        this.name = 'Me';
+        this.$onInit = function() {
+          containerController = this.container;
+          friendController = this.friend;
+        };
+      }
+      function ParentController() {
+        return parentController = { name: 'Parent' };
+      }
+      function SiblingController() {
+        return siblingController = { name: 'Sibling' };
+      }
+
+      angular.module('my', [])
+        .directive('me', function() {
+          return {
+            restrict: 'E',
+            scope: {},
+            require: { container: '^parent', friend: 'sibling' },
+            controller: MeController
+          };
+        })
+        .directive('parent', function() {
+          return {
+            restrict: 'E',
+            scope: {},
+            controller: ParentController
+          };
+        })
+        .directive('sibling', function() {
+          return {
+            controller: SiblingController
+          };
+        });
+
+      module('my');
+      inject(function($compile, $rootScope, meDirective) {
+        element = $compile('<parent><me sibling></me></parent>')($rootScope);
+        expect(containerController).toEqual(parentController);
+        expect(friendController).toEqual(siblingController);
+      });
+    });
+
     it('should require controller of an isolate directive from a non-isolate directive on the ' +
         'same element', function() {
       var IsolateController = function() {};
