@@ -148,6 +148,31 @@ describe("animations", function() {
       expect(copiedOptions).toEqual(initialOptions);
     }));
 
+    it("should skip animations entirely if the document is hidden", function() {
+      var doc;
+
+      module(function($provide) {
+        doc = jqLite({
+          body: document.body,
+          hidden: true
+        });
+        $provide.value('$document', doc);
+      });
+
+      inject(function($animate, $rootScope) {
+        $animate.enter(element, parent);
+        $rootScope.$digest();
+        expect(capturedAnimation).toBeFalsy();
+        expect(element[0].parentNode).toEqual(parent[0]);
+
+        doc[0].hidden = false;
+
+        $animate.leave(element);
+        $rootScope.$digest();
+        expect(capturedAnimation).toBeTruthy();
+      });
+    });
+
     it('should animate only the specified CSS className matched within $animateProvider.classNameFilter', function() {
       module(function($animateProvider) {
         $animateProvider.classNameFilter(/only-allow-this-animation/);
