@@ -5338,7 +5338,53 @@ describe('$compile', function() {
       });
     });
 
-    it('should bind the required controllers to the directive controller, if provided as an object', function() {
+    it('should bind the required controllers to the directive controller, if provided as an object and bindToController is truthy', function() {
+      var parentController, siblingController;
+
+      function ParentController() { this.name = 'Parent'; }
+      function SiblingController() { this.name = 'Sibling'; }
+      function MeController() { this.name = 'Me'; }
+      MeController.prototype.$onInit = function() {
+        parentController = this.container;
+        siblingController = this.friend;
+      };
+      spyOn(MeController.prototype, '$onInit').andCallThrough();
+
+      angular.module('my', [])
+        .directive('me', function() {
+          return {
+            restrict: 'E',
+            scope: {},
+            require: { container: '^parent', friend: 'sibling' },
+            bindToController: true,
+            controller: MeController,
+            controllerAs: '$ctrl'
+          };
+        })
+        .directive('parent', function() {
+          return {
+            restrict: 'E',
+            scope: {},
+            controller: ParentController
+          };
+        })
+        .directive('sibling', function() {
+          return {
+            controller: SiblingController
+          };
+        });
+
+      module('my');
+      inject(function($compile, $rootScope, meDirective) {
+        element = $compile('<parent><me sibling></me></parent>')($rootScope);
+        expect(MeController.prototype.$onInit).toHaveBeenCalled();
+        expect(parentController).toEqual(jasmine.any(ParentController));
+        expect(siblingController).toEqual(jasmine.any(SiblingController));
+      });
+    });
+
+
+    it('should not bind required controllers bindToController is falsy', function() {
       var parentController, siblingController;
 
       function ParentController() { this.name = 'Parent'; }
@@ -5376,8 +5422,8 @@ describe('$compile', function() {
       inject(function($compile, $rootScope, meDirective) {
         element = $compile('<parent><me sibling></me></parent>')($rootScope);
         expect(MeController.prototype.$onInit).toHaveBeenCalled();
-        expect(parentController).toEqual(jasmine.any(ParentController));
-        expect(siblingController).toEqual(jasmine.any(SiblingController));
+        expect(parentController).toBeUndefined();
+        expect(siblingController).toBeUndefined();
       });
     });
 
@@ -5404,7 +5450,9 @@ describe('$compile', function() {
             restrict: 'E',
             scope: {},
             require: { container: '^parent', friend: 'sibling' },
-            controller: MeController
+            bindToController: true,
+            controller: MeController,
+            controllerAs: '$ctrl'
           };
         })
         .directive('parent', function() {
@@ -5453,7 +5501,9 @@ describe('$compile', function() {
             restrict: 'E',
             scope: {},
             require: { container: '^parent', friend: 'sibling' },
-            controller: MeController
+            bindToController: true,
+            controller: MeController,
+            controllerAs: '$ctrl'
           };
         })
         .directive('parent', function() {

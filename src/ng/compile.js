@@ -280,7 +280,7 @@
  * passed to the linking function will also be an object with matching keys, whose values will hold the corresponding
  * controllers.
  *
- * If the `require` property is an object and the directive provides a controller, then the required controllers are
+ * If the `require` property is an object and `bindToController` is truthy, then the required controllers are
  * bound to the controller using the keys of the `require` property. This binding occurs after all the controllers
  * have been constructed but before `$onInit` is called.
  * See the {@link $compileProvider#component} helper for an example of how this can be used.
@@ -2497,7 +2497,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         // Bind the required controllers to the controller, if `require` is an object
         forEach(controllerDirectives, function(controllerDirective, name) {
           var require = controllerDirective.require;
-          if (!isArray(require) && isObject(require)) {
+          if (controllerDirective.bindToController && !isArray(require) && isObject(require)) {
             extend(elementControllers[name].instance, getControllers(name, require, $element, elementControllers));
           }
         });
