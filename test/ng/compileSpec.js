@@ -5382,7 +5382,7 @@ describe('$compile', function() {
     });
 
 
-    it('should not bind required controllers bindToController is falsy', function() {
+    it('should not bind required controllers if bindToController is falsy', function() {
       var parentController, siblingController;
 
       function ParentController() { this.name = 'Parent'; }
