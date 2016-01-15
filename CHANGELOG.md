@@ -111,8 +111,13 @@
 
 ## Breaking Changes
 
-- **linky:** due to [98c2db7f](https://github.com/angular/angular.js/commit/98c2db7f9c2d078a408576e722407d518c7ee10a),
+- **$compileProvider**: due to [25bc5318](https://github.com/angular/angular.js/commit/25bc5318),
 
+This release removes the ability to set the `restrict` option on directives created via the `module.component()` helper.
+All components are now element directives. If you need a directive that is not an element then you must use the
+`module.directive()` helper instead.
+
+- **linky:** due to [98c2db7f](https://github.com/angular/angular.js/commit/98c2db7f9c2d078a408576e722407d518c7ee10a),
 
 Before this change, the filter assumed that the input (if not undefined/null) was of type 'string'
 and that certain methods (such as `.match()`) would be available on it. Passing a non-string value
@@ -123,10 +128,6 @@ After this change, a proper (informative) error will be thrown. If you want to p
 values through `linky`, you need to explicitly convert them to strings first.
 Since input values could be initialized asynchronously, `undefined` or `null` will still be
 returned unchanged (without throwing an error).
-
-Closes #13547
-
-Closes #13693
 
 - **loader:** due to [6a47c0d7](https://github.com/angular/angular.js/commit/6a47c0d75d0c6f0bfb3b5492d1f05ec900387744),
 
