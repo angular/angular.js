@@ -5496,6 +5496,7 @@ describe('$compile', function() {
       angular.module('my', [])
         .directive('me', function() {
           return {
+            priority: 1, // make sure it is run before sibling to test this case correctly
             restrict: 'E',
             scope: {},
             require: { container: '^parent', friend: 'sibling' },
