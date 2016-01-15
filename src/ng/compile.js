@@ -267,7 +267,8 @@
  *
  * The controller can provide the following methods that act as life-cycle hooks:
  * * `$onInit` - Called on each controller after all the controllers on an element have been constructed and
- *   had their bindings initialized. This is a good place to put initialization code for your controller.
+ *   had their bindings initialized (and before the pre &amp; post linking functions for the directives on
+ *   this element). This is a good place to put initialization code for your controller.
  *
  * #### `require`
  * Require another directive and inject its controller as the fourth argument to the linking function. The
@@ -280,11 +281,12 @@
  * controllers.
  *
  * If the `require` property is an object and the directive provides a controller, then the required controllers are
- * bound to the controller using the keys of the `require` property. See the {@link $compileProvider#component} helper
- * for an example of how this can be used.
+ * bound to the controller using the keys of the `require` property. This binding occurs after all the controllers
+ * have been constructed but before `$onInit` is called.
+ * See the {@link $compileProvider#component} helper for an example of how this can be used.
  *
- * If no such directive(s) can be found, or if the directive does not have a controller, then an error is raised
- * (unless no link function is specified, in which case error checking is skipped). The name can be prefixed with:
+ * If no such required directive(s) can be found, or if the directive does not have a controller, then an error is
+ * raised (unless no link function is specified, in which case error checking is skipped). The name can be prefixed with:
  *
  * * (no prefix) - Locate the required controller on the current element. Throw an error if not found.
  * * `?` - Attempt to locate the required controller or pass `null` to the `link` fn if not found.
