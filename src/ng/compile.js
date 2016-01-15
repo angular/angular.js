@@ -286,7 +286,8 @@
  * See the {@link $compileProvider#component} helper for an example of how this can be used.
  *
  * If no such required directive(s) can be found, or if the directive does not have a controller, then an error is
- * raised (unless no link function is specified, in which case error checking is skipped). The name can be prefixed with:
+ * raised (unless no link function is specified and the required controllers are not being bound to the directive
+ * controller, in which case error checking is skipped). The name can be prefixed with:
  *
  * * (no prefix) - Locate the required controller on the current element. Throw an error if not found.
  * * `?` - Attempt to locate the required controller or pass `null` to the `link` fn if not found.
