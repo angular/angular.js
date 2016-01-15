@@ -4258,7 +4258,7 @@ describe('$compile', function() {
         "    controllerCalled = true;\n" +
         "  }\n" +
         "}");
-      spyOn(Controller.prototype, '$onInit');
+      spyOn(Controller.prototype, '$onInit').andCallThrough();
 
       module(function($compileProvider) {
         $compileProvider.directive('fooDir', valueFn({
