@@ -2,6 +2,35 @@
 # 1.5.0-rc.1 quantum-fermentation (2016-01-15)
 
 
+## Features
+
+- **$compile:**
+  - Allow ES6 classes as controllers with `bindToController: true`
+  ([8955cfb6](https://github.com/angular/angular.js/commit/8955cfb6462f79a32caa641ffc002f1522f08220))
+  - Allow ES6 classes as controllers with `bindToController: true`
+  ([b0248b78](https://github.com/angular/angular.js/commit/b0248b7894649aa1e083698c66d01679fa66d1c1))
+- **$compileProvider:** - allow registering components with the component() method
+  ([feeb19787ca6e23e15578a4d1319f1c33853290c](https://github.com/angular/angular.js/commit/feeb19787ca6e23e15578a4d1319f1c33853290c))
+- **component:**
+  - default controllerAs to `$ctrl`
+  ([d91cf167](https://github.com/angular/angular.js/commit/d91cf167960d47ce38fec0d33cab6119268623f0),
+   [#13664](https://github.com/angular/angular.js/issues/13664), [#13710](https://github.com/angular/angular.js/issues/13710))
+  - disallow non-isolate scopes
+  ([f31c5a39](https://github.com/angular/angular.js/commit/f31c5a3924629795cd9169e69b9e20efd4a9d927),
+   [#13710](https://github.com/angular/angular.js/issues/13710))
+  - allow `component()` helper to copy over custom annotations
+  ([90975db5](https://github.com/angular/angular.js/commit/90975db5f91dfe44fa5dc4542e92c68e0d425929),
+   [#13741](https://github.com/angular/angular.js/issues/13741))
+- **$injector:** support instantiating classes.
+  ([8b6b4282](https://github.com/angular/angular.js/commit/8b6b42827186e5e4eb7a56f6b824c560a5058bd2))
+- **ngMock:** add support for `$animate.closeAndFlush()`
+  ([e1def1b8](https://github.com/angular/angular.js/commit/e1def1b8fe543fde09abda076d66606027f7dbeb),
+   [#13005](https://github.com/angular/angular.js/issues/13005), [#13576](https://github.com/angular/angular.js/issues/13576), [#13707](https://github.com/angular/angular.js/issues/13707))
+- **ngMock.$componentController:** add helper to instantiate controllers for components
+  ([dd14e0c4](https://github.com/angular/angular.js/commit/dd14e0c44d2963d217cd4eb28f1ad6e6a643d63f),
+   [#13683](https://github.com/angular/angular.js/issues/13683), [#13711](https://github.com/angular/angular.js/issues/13711))
+
+
 ## Bug Fixes
 
 - **$animate:**
@@ -24,13 +53,19 @@
   ([de9777d8](https://github.com/angular/angular.js/commit/de9777d8193531472df4b57fdeb6650d7f7c1846),
    [#12656](https://github.com/angular/angular.js/issues/12656), [#13333](https://github.com/angular/angular.js/issues/13333))
 - **$compile:**
-  - Add missing variable declaration
+  - add missing variable declaration
   ([6cdbda7c](https://github.com/angular/angular.js/commit/6cdbda7cf1cfc1d49eb98d42d8e823e65bebb90d))
-  - Fix namespace detection for achor elements
+  - fix namespace detection for anchor elements
   ([c9e6cf9b](https://github.com/angular/angular.js/commit/c9e6cf9be0d549fba234956f7e263f40d1bb1e76))
-- **$compileProvider:** remove the ability to set the `restrict` option on `component()` helper
+- **component:**
+  - remove the ability to set the `restrict` option on `component()` helper
   ([25bc5318](https://github.com/angular/angular.js/commit/25bc53180248bf5e8a6467c55d913cfa38fc7a3b),
    [#13741](https://github.com/angular/angular.js/issues/13741))
+  - use `false` as default value for `transclude` in `component()` helper
+  ([6a47c0d7](https://github.com/angular/angular.js/commit/6a47c0d75d0c6f0bfb3b5492d1f05ec900387744),
+   [#13566](https://github.com/angular/angular.js/issues/13566), [#13581](https://github.com/angular/angular.js/issues/13581))
+  - allow passing template/templateUrl in array notation
+  ([99d601a0](https://github.com/angular/angular.js/commit/99d601a048ac2b82e2f74ae88c96773e5d1a7258))
 - **$controller:** allow identifiers containing `$`
   ([4e1b36c2](https://github.com/angular/angular.js/commit/4e1b36c21686ad0ca4930d1d81f77a7d9cc35851),
    [#13736](https://github.com/angular/angular.js/issues/13736))
@@ -38,8 +73,6 @@
   ([fabc6ab5](https://github.com/angular/angular.js/commit/fabc6ab5b01dc687aa8385da067752ba34da6524))
 - **$q:** make instanceof work for $q promises
   ([b3ef5e08](https://github.com/angular/angular.js/commit/b3ef5e08528f5f1916876032700a016448fb196a))
-- **Module:** allow passing template/templateUrl in array notation
-  ([99d601a0](https://github.com/angular/angular.js/commit/99d601a048ac2b82e2f74ae88c96773e5d1a7258))
 - **copy:**
   - add support for ArrayBuffer, handle multiple references to ArrayBuffer
   ([986647a9](https://github.com/angular/angular.js/commit/986647a968858121c1de472fc4913221dc8d339a))
@@ -54,9 +87,6 @@
 - **linky:** throw error if input is not a string
   ([98c2db7f](https://github.com/angular/angular.js/commit/98c2db7f9c2d078a408576e722407d518c7ee10a),
    [#13547](https://github.com/angular/angular.js/issues/13547), [#13693](https://github.com/angular/angular.js/issues/13693))
-- **loader:** use `false` as default value for `transclude` in component helper
-  ([6a47c0d7](https://github.com/angular/angular.js/commit/6a47c0d75d0c6f0bfb3b5492d1f05ec900387744),
-   [#13566](https://github.com/angular/angular.js/issues/13566), [#13581](https://github.com/angular/angular.js/issues/13581))
 - **ngAnimate:**
   - only copy over the animation options once
   ([d4fa3313](https://github.com/angular/angular.js/commit/d4fa3313088a03d15ccbf266583d6ecaa0d22241),
@@ -82,40 +112,29 @@
    [#13583](https://github.com/angular/angular.js/issues/13583), [#13583](https://github.com/angular/angular.js/issues/13583), [#13663](https://github.com/angular/angular.js/issues/13663))
 
 
-## Features
-
-- **$compile:**
-  - Allow ES6 classes as controllers with `bindToController: true`
-  ([8955cfb6](https://github.com/angular/angular.js/commit/8955cfb6462f79a32caa641ffc002f1522f08220))
-  - Allow ES6 classes as controllers with `bindToController: true`
-  ([b0248b78](https://github.com/angular/angular.js/commit/b0248b7894649aa1e083698c66d01679fa66d1c1))
-- **$compileProvider:** allow `component()` helper to copy over custom annotations
-  ([90975db5](https://github.com/angular/angular.js/commit/90975db5f91dfe44fa5dc4542e92c68e0d425929),
-   [#13741](https://github.com/angular/angular.js/issues/13741))
-- **$injector:** support instantiating classes.
-  ([8b6b4282](https://github.com/angular/angular.js/commit/8b6b42827186e5e4eb7a56f6b824c560a5058bd2))
-- **component:**
-  - default controllerAs to be $ctrl
-  ([d91cf167](https://github.com/angular/angular.js/commit/d91cf167960d47ce38fec0d33cab6119268623f0),
-   [#13664](https://github.com/angular/angular.js/issues/13664), [#13710](https://github.com/angular/angular.js/issues/13710))
-  - disallow non-isolate scopes
-  ([f31c5a39](https://github.com/angular/angular.js/commit/f31c5a3924629795cd9169e69b9e20efd4a9d927),
-   [#13710](https://github.com/angular/angular.js/issues/13710))
-- **ngMock:** add support for `$animate.closeAndFlush()`
-  ([e1def1b8](https://github.com/angular/angular.js/commit/e1def1b8fe543fde09abda076d66606027f7dbeb),
-   [#13005](https://github.com/angular/angular.js/issues/13005), [#13576](https://github.com/angular/angular.js/issues/13576), [#13707](https://github.com/angular/angular.js/issues/13707))
-- **ngMock.$componentController:** add helper to instantiate controllers for components
-  ([dd14e0c4](https://github.com/angular/angular.js/commit/dd14e0c44d2963d217cd4eb28f1ad6e6a643d63f),
-   [#13683](https://github.com/angular/angular.js/issues/13683), [#13711](https://github.com/angular/angular.js/issues/13711))
-
-
 ## Breaking Changes
 
-- **$compileProvider**: due to [25bc5318](https://github.com/angular/angular.js/commit/25bc5318),
+- **$component**:
+*These breaking changes affect only applications updating from previous 1.5 beta / rc versions*
 
-This release removes the ability to set the `restrict` option on directives created via the `module.component()` helper.
-All components are now element directives. If you need a directive that is not an element then you must use the
+  - Due to [d91cf167](https://github.com/angular/angular.js/commit/d91cf167960d47ce38fec0d33cab6119268623f0),
+the default `controllerAs` value for components is now `$ctrl` (previously the name of the component was used).
+To migrate, either set `controllerAs` to the component name, or change the property name in your templates
+to `$ctrl`
+
+  - Due to [25bc5318](https://github.com/angular/angular.js/commit/25bc5318), it is no longer possible to
+set the `restrict` option on directives created via the `module.component()` helper.
+All components are now element directives (`restrict: 'E'`). If you need a directive that is not an element then you must use the
 `module.directive()` helper instead.
+
+  - Due to [f31c5a39](https://github.com/angular/angular.js/commit/f31c5a3924629795cd9169e69b9e20efd4a9d927),
+components are now always created with `scope: {}` (isolate scope). Previously, it was also possible to create components
+with `scope: true` or `scope: false`. If your components rely on this scope configuration, you will have to
+create a regular directive instead.
+
+  - Due to [6a47c0d7](https://github.com/angular/angular.js/commit/6a47c0d75d0c6f0bfb3b5492d1f05ec900387744),
+the `transclude` property is now `false` by default (previously `true`). If you created components that expected
+transclusion then you must change your code to specify `transclude: true`.
 
 - **linky:** due to [98c2db7f](https://github.com/angular/angular.js/commit/98c2db7f9c2d078a408576e722407d518c7ee10a),
 
@@ -128,12 +147,6 @@ After this change, a proper (informative) error will be thrown. If you want to p
 values through `linky`, you need to explicitly convert them to strings first.
 Since input values could be initialized asynchronously, `undefined` or `null` will still be
 returned unchanged (without throwing an error).
-
-- **loader:** due to [6a47c0d7](https://github.com/angular/angular.js/commit/6a47c0d75d0c6f0bfb3b5492d1f05ec900387744),
-
-Angular 1.5.0.beta.2 introduced the `module.component` helper where `transclude` was true by default.
-This changes the default for `transclude` to `false`. If you created components that expected
-transclusion then you must change your code to specify `transclude: true`.
 
 
 <a name="1.5.0-rc.0"></a>
