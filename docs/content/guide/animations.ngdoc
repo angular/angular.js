@@ -6,7 +6,7 @@
 
 # Animations
 
-AngularJS 1.3 provides animation hooks for common directives such as `ngRepeat`, `ngSwitch`, and `ngView`, as well as custom directives
+AngularJS provides animation hooks for common directives such as `ngRepeat`, `ngSwitch`, and `ngView`, as well as custom directives
 via the `$animate` service. These animation hooks are set in place to trigger animations during the life cycle of various directives and when
 triggered, will attempt to perform a CSS Transition, CSS Keyframe Animation or a JavaScript callback Animation (depending on if an animation is
 placed on the given directive). Animations can be placed using vanilla CSS by following the naming conventions set in place by AngularJS
@@ -274,6 +274,100 @@ myModule.directive('my-directive', ['$animate', function($animate) {
 }]);
 ```
 
+## Animations on app bootstrap / page load
+
+By default, animations are disabled when the Angular app {@link guide/bootstrap bootstraps}. If you are using the {@link ngApp} directive,
+this happens in the `DOMContentLoaded` event, so immediately after the page has been loaded.
+Animations are disabled, so that UI and content are instantly visible. Otherwise, with many animations on
+the page, the loading process may become too visually overwhelming, and the performance may suffer.
+
+Internally, `ngAnimate` waits until all template downloads that are started right after bootstrap have finished.
+Then, it waits for the currently running {@link ng.$rootScope.Scope#$digest} and the one after that to finish.
+This ensures that the whole app has been compiled fully before animations are attempted.
+
+If you do want your animations to play when the app bootstraps, you can enable animations globally in
+your main module's {@link angular.Module#run run} function:
+
+```js
+myModule.run(function($animate) {
+  $animate.enabled(true);
+});
+```
+
+## How to (selectively) enable, disable and skip animations
+
+There are three different ways to disable animations, both globally and for specific animations.
+Disabling specific animations can help to speed up the render performance, for example for large `ngRepeat`
+lists that don't actually have animations. Because ngAnimate checks at runtime if animations are present,
+performance will take a hit even if an element has no animation.
+
+### In the config: {@link $animateProvider#classNameFilter $animateProvider.classNameFilter()}
+
+This function can be called in the {@link angular.Module#config config} phase of an app. It takes a regex as the only argument,
+which will then be matched against the classes of any element that is about to be animated. The regex
+allows a lot of flexibility - you can either allow animations only for specific classes (useful when
+you are working with 3rd party animations), or exclude specific classes from getting animated.
+
+```js
+app.cofig($animateProvider) {
+  $animateProvider.classNameFilter(/animate-/);
+});
+```
+
+```css
+/&#42; prefixed with animate- &#42;/
+.animate-fade-add.animate-fade-add-active {
+  transition:1s linear all;
+  opacity:0;
+}
+```
+
+The classNameFilter approach generally applies the biggest speed boost, because the matching is
+done before any other animation disabling strategies are checked. However, that also means it is not
+possible to override class name matching with the two following strategies. It's of course still possible
+to enable / disable animations by changing an element's class name at runtime.
+
+### At runtime: {@link ng.$animate#enabled $animate.enabled()}
+
+This function can be used to enable / disable animations in two different ways:
+
+With a single `boolean` argument, it enables / disables animations globally: `$animate.enabled(false)`
+disables all animations in your app.
+
+When the second argument is a native DOM or jQuery element, the function enables / disables
+animations on this element *and all its children*: `$animate.enabled(false, myElement)`. This is the
+most flexible way to change the animation state. For example, even if you have used it to disable
+animations on a parent element, you can still re-enable it for a child element. And compared to the
+`classNameFilter`, you can change the animation status at runtime instead of during the config phase.
+
+Note however that the `$animate.enabled()` state for individual elements does not overwrite disabling
+rules that have been set in the {@link $animateProvider#classNameFilter classNameFilter}.
+
+### Via CSS styles: overwriting styles in the `ng-animate` CSS class
+Whenever an animation is started, ngAnimate applies the `ng-animate` class to the element for the
+whole duration of the animation. By applying CSS transition / animation styling to the class,
+you can skip an animation:
+
+```css
+
+.my-class{
+  transition: transform 2s;
+}
+
+.my-class:hover {
+  transform: translateX(50px);
+}
+
+my-class.ng-animate {
+  transition: 0s;
+}
+
+```
+
+By setting `transition: 0s`, ngAnimate will ignore the existing transition styles, and not try to animate them (Javascript
+animations will still execute, though). This can be used to prevent {@link guide/animations#preventing-collisions-with-existing-animations-and-third-party-libraries
+issues with existing animations interfering with ngAnimate}.
+
 ## Preventing flicker before an animation starts
 
 When nesting elements with structural animations such as `ngIf` into elements that have class-based
@@ -304,6 +398,47 @@ In that case, you can add styles to the CSS that make sure the element stays hid
 
 /* Other animation styles ... */
 ```
+
+## Preventing Collisions with Existing Animations and Third Party Libraries
+By default, any `ngAnimate` enabled directives will assume any transition / animation styles on the
+element are part of an `ngAnimate` animation. This can lead to problems when the styles are actually
+for animations that are independent of `ngAnimate`.
+
+For example, an element acts as a loading spinner. It has an inifinite css animation on it, and also an
+{@link ngIf `ngIf`} directive, for which no animations are defined:
+
+```css
+@keyframes rotating {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.spinner {
+    animation: rotating 2s linear infinite;
+}
+```
+
+Now, when the `ngIf` changes, `ngAnimate` will see the spinner animation and use
+it to animate the `enter`/`leave` event, which doesn't work because
+the animation is infinite. The element will still be added / removed after a timeout, but there will be a
+noticable delay.
+
+This might also happen because some third-party frameworks place animation duration defaults
+across many element or className selectors in order to make their code small and reuseable.
+
+You can prevent this unwanted behavior by adding CSS to the `.ng-animate` class that is added
+for the whole duration of an animation. Simply overwrite the transition / animation duration. In the
+case of the spinner, this would be:
+
+.spinner.ng-animate {
+    transition: 0s none;
+    animation: 0s none;
+}
+
+If you do have CSS transitions / animations defined for the animation events, make sure they have higher priority
+than any styles that are independent from ngAnimate.
+
+You can also use one of the two other {@link guide/animations#how-to-selectively-enable-disable-and-skip-animations strategies to disable animations}.
 
 ## More about animations
 
