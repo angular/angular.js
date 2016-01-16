@@ -5,6 +5,8 @@
 var nullFormCtrl = {
   $addControl: noop,
   $$renameControl: nullFormRenameControl,
+  $$increasePristine: noop,
+  $$decreasePristine: noop,
   $$updatePristine: noop,
   $removeControl: noop,
   $setValidity: noop,
@@ -77,6 +79,7 @@ function FormController(element, attrs, $scope, $animate, $interpolate) {
   form.$invalid = false;
   form.$submitted = false;
   form.$$parentForm = nullFormCtrl;
+  form.$$pristineChildsCounter = 0;
 
   /**
    * @ngdoc method
@@ -144,6 +147,10 @@ function FormController(element, attrs, $scope, $animate, $interpolate) {
     }
 
     control.$$parentForm = form;
+    // if form was pristine before - it will be after too
+    if (control.$pristine) {
+      form.$$pristineChildsCounter++;
+    }
   };
 
   // Private API: rename a form control
@@ -189,6 +196,10 @@ function FormController(element, attrs, $scope, $animate, $interpolate) {
 
     arrayRemove(controls, control);
     control.$$parentForm = nullFormCtrl;
+
+    if (control.$pristine) {
+      form.$$pristineChildsCounter--;
+    }
   };
 
 
@@ -239,6 +250,12 @@ function FormController(element, attrs, $scope, $animate, $interpolate) {
    * state (ng-dirty class). This method will also propagate to parent forms.
    */
   form.$setDirty = function() {
+    // see $setPristineBubbling
+    if (form.$pristine) {
+      form.$$parentForm.$$decreasePristine();
+    } else {
+      form.$$parentForm.$$updatePristine();
+    }
     $animate.removeClass(element, PRISTINE_CLASS);
     $animate.addClass(element, DIRTY_CLASS);
     form.$dirty = true;
@@ -261,39 +278,67 @@ function FormController(element, attrs, $scope, $animate, $interpolate) {
    * saving or resetting it.
    */
   form.$setPristine = function() {
-    form.$$setPristineSelf();
+    form.$$setPristineBubbling();
     forEach(controls, function(control) {
-      control.$setPristine();
+      // since we force pristine state, we don't want nested controls to
+      // change it
+      control.$$setPristineCapturing();
     });
   };
 
   // Private API: Sets the form to its pristine state.
-  // This method does not affect nested controls.
+  // This method does not affect nested/parent controls.
   form.$$setPristineSelf = function() {
     $animate.setClass(element, PRISTINE_CLASS, DIRTY_CLASS + ' ' + SUBMITTED_CLASS);
     form.$dirty = false;
     form.$pristine = true;
     form.$submitted = false;
-    form.$$parentForm.$$updatePristine();
+  };
+
+  // Private API: Sets the form to its pristine state.
+  // Propagates pristine-ness to parent form
+  form.$$setPristineBubbling = function() {
+    // propagate only if pristine state was actually changed
+    if (form.$dirty) {
+      form.$$parentForm.$$increasePristine();
+    } else {
+      // otherwise tell aprent form to calculate current value,
+      // since it can be changed after adding/removing nested controls.
+      // The same applies to $setDirty.
+      form.$$parentForm.$$updatePristine();
+    }
+    form.$$setPristineSelf();
+  };
+
+  // Private API: Sets the form to its pristine state.
+  // Propagates pristine-ness to the nested controls
+  form.$$setPristineCapturing = function() {
+    form.$$setPristineSelf();
+    forEach(controls, function(control) {
+      control.$$setPristineCapturing();
+    });
+  };
+
+  // Pivate API: nested control become pristine
+  form.$$increasePristine = function() {
+    form.$$pristineChildsCounter++;
+    form.$$updatePristine();
+  };
+
+  // Pivate API: nested control become dirty
+  form.$$decreasePristine = function() {
+    form.$$pristineChildsCounter--;
+    form.$$updatePristine();
   };
 
   // Private API: update form pristine-ness
   form.$$updatePristine = function() {
-    var isPristine = true,
-        controlsLength = controls.length,
-        i;
-
-    for (i = 0; i < controlsLength; i++) {
-      if (!controls[i].$pristine) {
-        isPristine = false;
-        break;
-      }
-    }
-
-    if (isPristine) {
-      // All the nested controls are already pristine.
-      // Set pristine-ness only for the form itself.
-      form.$$setPristineSelf();
+    if (form.$$pristineChildsCounter === controls.length) {
+      // since we got update from nested controls, we don't want to
+      // propagate it to them
+      form.$$setPristineBubbling();
+    } else {
+      form.$setDirty();
     }
   };
 

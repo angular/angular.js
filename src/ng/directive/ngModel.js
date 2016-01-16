@@ -379,11 +379,25 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    * has not been changed from when first compiled.
    */
   this.$setPristine = function() {
+    // propagate only if pristine state was actually changed
+    if (ctrl.$dirty) {
+      ctrl.$$parentForm.$$increasePristine();
+    } else {
+      // otherwise tell aprent form to calculate current value,
+      // since it can be changed after adding/removing nested controls.
+      // The same applies to $setDirty.
+      ctrl.$$parentForm.$$updatePristine();
+    }
+    ctrl.$$setPristineCapturing();
+  };
+
+  // Private API: Sets the control to its pristine state.
+  // This method does not affect parent form
+  this.$$setPristineCapturing = function() {
     ctrl.$dirty = false;
     ctrl.$pristine = true;
     $animate.removeClass($element, DIRTY_CLASS);
     $animate.addClass($element, PRISTINE_CLASS);
-    ctrl.$$parentForm.$$updatePristine();
   };
 
   /**
@@ -398,6 +412,12 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    * from when first compiled.
    */
   this.$setDirty = function() {
+    // see $setPristine
+    if (ctrl.$pristine) {
+      ctrl.$$parentForm.$$decreasePristine();
+    } else {
+      ctrl.$$parentForm.$$updatePristine();
+    }
     ctrl.$dirty = true;
     ctrl.$pristine = false;
     $animate.removeClass($element, PRISTINE_CLASS);

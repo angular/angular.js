@@ -16,6 +16,8 @@ describe('ngModel', function() {
         $setValidity: jasmine.createSpy('$setValidity'),
         $setDirty: jasmine.createSpy('$setDirty'),
         $$clearControlValidity: noop,
+        $$increasePristine: jasmine.createSpy('$$increasePristine'),
+        $$decreasePristine: jasmine.createSpy('$$decreasePristine'),
         $$updatePristine: jasmine.createSpy('$$updatePristine')
       };
 
@@ -147,9 +149,21 @@ describe('ngModel', function() {
         expect(ctrl.$pristine).toBe(true);
       });
 
-      it('should propagate pristine to the parent form', function() {
+      it('should propagate pristine to the parent form conditionally', function() {
         ctrl.$setPristine();
-        expect(parentFormCtrl.$$updatePristine).toHaveBeenCalledOnce();
+        ctrl.$setPristine();
+        expect(parentFormCtrl.$$increasePristine).not.toHaveBeenCalled();
+
+        ctrl.$setDirty();
+        expect(parentFormCtrl.$$decreasePristine).toHaveBeenCalledOnce();
+
+        parentFormCtrl.$$decreasePristine.reset();
+        ctrl.$setDirty();
+        ctrl.$setDirty();
+        expect(parentFormCtrl.$$decreasePristine).not.toHaveBeenCalled();
+
+        ctrl.$setPristine();
+        expect(parentFormCtrl.$$increasePristine).toHaveBeenCalledOnce();
       });
     });
 
