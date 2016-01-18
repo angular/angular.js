@@ -254,6 +254,16 @@ function jqLiteParseHTML(html, context) {
   return [];
 }
 
+function jqLiteWrapNode(node, wrapper) {
+  var parent = node.parentNode;
+
+  if (parent) {
+    parent.replaceChild(wrapper, node);
+  }
+
+  wrapper.appendChild(node);
+}
+
 
 // IE9-11 has no method "contains" in SVG element and in Node.prototype. Bug #10259.
 var jqLiteContains = Node.prototype.contains || function(arg) {
@@ -946,12 +956,7 @@ forEach({
   },
 
   wrap: function(element, wrapNode) {
-    wrapNode = jqLite(wrapNode).eq(0).clone()[0];
-    var parent = element.parentNode;
-    if (parent) {
-      parent.replaceChild(wrapNode, element);
-    }
-    wrapNode.appendChild(element);
+    jqLiteWrapNode(element, jqLite(wrapNode).eq(0).clone()[0]);
   },
 
   remove: jqLiteRemove,
