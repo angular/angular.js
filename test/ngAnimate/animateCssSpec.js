@@ -1309,6 +1309,29 @@ describe("ngAnimate $animateCss", function() {
           expect(getPossiblyPrefixedStyleValue(element, 'transition-delay')).toBeOneOf('', '0s');
         }));
 
+
+        it("should cancel the timeout when the animation is ended normally",
+          inject(function($animateCss, $document, $rootElement, $timeout) {
+
+          ss.addRule('.ng-enter', 'transition:10s linear all;');
+
+          var element = jqLite('<div></div>');
+          $rootElement.append(element);
+          jqLite($document[0].body).append($rootElement);
+
+          var animator = $animateCss(element, { event: 'enter', structural: true });
+          animator.start();
+          triggerAnimationStartFrame();
+
+          expect(element).toHaveClass('ng-enter');
+          expect(element).toHaveClass('ng-enter-active');
+
+          animator.end();
+
+          expect(element.data(ANIMATE_TIMER_KEY)).toBeUndefined();
+          expect(function() {$timeout.verifyNoPendingTasks();}).not.toThrow();
+        }));
+
       });
 
       describe("getComputedStyle", function() {
