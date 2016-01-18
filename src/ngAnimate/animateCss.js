@@ -756,6 +756,13 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
           element.off(events.join(' '), onAnimationProgress);
         }
 
+        //Cancel the fallback closing timeout and remove the timer data
+        var animationTimerData = element.data(ANIMATE_TIMER_KEY);
+        if (animationTimerData) {
+          $timeout.cancel(animationTimerData[0].timer);
+          element.removeData(ANIMATE_TIMER_KEY);
+        }
+
         // if the preparation function fails then the promise is not setup
         if (runner) {
           runner.complete(!rejected);
