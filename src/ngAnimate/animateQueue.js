@@ -571,6 +571,13 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
       return getDomNode(nodeOrElmA) === getDomNode(nodeOrElmB);
     }
 
+    /**
+     * This fn returns false if any of the following is true:
+     * a) animations on any parent element are disabled, and animations on the element aren't explicitly allowed
+     * b) a parent element has an ongoing structural animation, and animateChildren is false
+     * c) the element is not a child of the body
+     * d) the element is not a child of the $rootElement
+     */
     function areAnimationsAllowed(element, parentElement, event) {
       var bodyElement = jqLite($document[0].body);
       var bodyElementDetected = isMatchingElement(element, bodyElement) || element[0].nodeName === 'HTML';
@@ -604,10 +611,12 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
         if (!parentAnimationDetected) {
           var parentElementDisabled = disabledElementsLookup.get(parentNode);
 
-          // disable animations if the user hasn't explicitly enabled animations on the
-          // current element
           if (parentElementDisabled === true && elementDisabled !== false) {
+            // disable animations if the user hasn't explicitly enabled animations on the
+            // current element
             elementDisabled = true;
+            // element is disabled via parent element, no need to check anything else
+            break;
           } else if (parentElementDisabled === false) {
             elementDisabled = false;
           }
@@ -625,9 +634,15 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
         if (parentAnimationDetected && animateChildren === false) break;
 
         if (!bodyElementDetected) {
-          // we also need to ensure that the element is or will be apart of the body element
+          // we also need to ensure that the element is or will be a part of the body element
           // otherwise it is pointless to even issue an animation to be rendered
           bodyElementDetected = isMatchingElement(parentElement, bodyElement);
+        }
+
+        if (bodyElementDetected && rootElementDetected) {
+          // If both body and root have been found, any other checks are pointless,
+          // as no animation data should live outside the application
+          break;
         }
 
         if (!rootElementDetected) {
