@@ -138,6 +138,7 @@
     "jqLiteInheritedData": false,
     "jqLiteBuildFragment": false,
     "jqLiteParseHTML": false,
+    "jqLiteWrapNode": false,
     "getBooleanAttrName": false,
     "getAliasedAttrName": false,
     "createEventHandler": false,
