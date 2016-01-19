@@ -1,0 +1,28 @@
+@ngdoc error
+@name ngModel:nopromise
+@fullName No promise
+@description
+
+The return value of an async validator, must always be a promise. If you want to return a
+non-promise value, you can convert it to a promise using {@link ng.$q#resolve `$q.resolve()`} or
+{@link ng.$q#reject `$q.reject()`}.
+
+Example:
+
+```
+.directive('asyncValidator', function($q) {
+  return {
+    require: 'ngModel',
+    link: function(scope, elem, attrs, ngModel) {
+      ngModel.$asyncValidators.myAsyncValidation = function(modelValue, viewValue) {
+        if (/* I don't need to hit the backend API */) {
+          return $q.resolve();     // to mark as valid or
+          // return $q.reject();   // to mark as invalid
+        } else {
+          // ...send a request to the backend and return a promise
+        }
+      };
+    }
+  };
+})
+```

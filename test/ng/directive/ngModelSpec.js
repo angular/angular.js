@@ -906,7 +906,7 @@ describe('ngModel', function() {
 
         expect(function() {
           scope.$apply('value = "123"');
-        }).toThrowMinErr("ngModel", "$asyncValidators",
+        }).toThrowMinErr("ngModel", "nopromise",
           "Expected asynchronous validator to return a promise but got 'true' instead.");
       }));
 
