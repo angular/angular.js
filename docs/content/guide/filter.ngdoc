@@ -32,10 +32,13 @@ E.g. the markup `{{ 1234 | number:2 }}` formats the number 1234 with 2 decimal p
 
 ## Using filters in controllers, services, and directives
 
-You can also use filters in controllers, services, and directives. For this, inject a dependency
-with the name `<filterName>Filter` to your controller/service/directive. E.g. using the dependency
-`numberFilter` will inject the number filter. The injected argument is a function that takes the
-value to format as first argument and filter parameters starting with the second argument.
+You can also use filters in controllers, services, and directives.
+
+<div class="alert alert-info">
+For this, inject a dependency with the name `<filterName>Filter` into your controller/service/directive.
+E.g. a filter called `number` is injected by using the dependency `numberFilter`. The injected argument
+is a function that takes the value to format as first argument, and filter parameters starting with the second argument.
+</div>
 
 The example below uses the filter called {@link ng.filter:filter `filter`}.
 This filter reduces arrays into sub arrays based on
@@ -108,6 +111,7 @@ text upper-case.
       No filter: {{greeting}}<br>
       Reverse: {{greeting|reverse}}<br>
       Reverse + uppercase: {{greeting|reverse:true}}<br>
+      Reverse, filtered in controller: {{filteredGreeting}}<br>
     </div>
   </file>
 
@@ -127,8 +131,9 @@ text upper-case.
           return out;
         };
       })
-      .controller('MyController', ['$scope', function($scope) {
+      .controller('MyController', ['$scope', 'reverseFilter', function($scope, reverseFilter) {
         $scope.greeting = 'hello';
+        $scope.filteredGreeting = reverseFilter($scope.greeting);
       }]);
   </file>
 </example>
