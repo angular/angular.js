@@ -279,16 +279,9 @@ function FormController(element, attrs, $scope, $animate, $interpolate) {
 
   // Private API: update form pristine-ness
   form.$$updatePristine = function() {
-    var isPristine = true,
-        controlsLength = controls.length,
-        i;
-
-    for (i = 0; i < controlsLength; i++) {
-      if (!controls[i].$pristine) {
-        isPristine = false;
-        break;
-      }
-    }
+    var isPristine = controls.every(function(control) {
+      return control.$pristine;
+    });
 
     if (isPristine) {
       // All the nested controls are already pristine.

@@ -714,10 +714,7 @@ describe('form', function() {
       expect(form.$error.maxlength[0].$name).toBe('childform');
 
       inputController.$setPristine();
-      // this assertion prevents to propagate prestine to the parent form
-      // expect(form.$dirty).toBe(true);
-
-      form.$setPristine();
+      expect(form.$dirty).toBe(false);
 
       // remove child form
       form.$removeControl(childformController);
@@ -1057,7 +1054,7 @@ describe('form', function() {
 
       childFormCtrl.$setDirty();
       scope.$apply();
-      expect(parentForm).not.toBePristine();
+      expect(parentForm).toBeDirty();
 
       childFormCtrl.$setPristine();
       scope.$apply();
@@ -1068,55 +1065,138 @@ describe('form', function() {
     it('should be pristine if all the nested controls are pristine', function() {
       doc = $compile(
           '<form name="form">' +
-            '<input ng-model="inputModel1" name="input1">' +
-            '<input ng-model="inputModel2" name="input2">' +
+            '<div ng-form name="childForm">' +
+              '<input ng-model="inputModel1" name="input1">' +
+              '<input ng-model="inputModel2" name="input2">' +
+            '</div>' +
           '</form>')(scope);
 
       var form = doc,
-          formCtrl = scope.form,
+          childForm = form.find('div').eq(0),
           input1 = form.find('input').eq(0),
           input2 = form.find('input').eq(1),
           inputCtrl1 = input1.controller('ngModel'),
           inputCtrl2 = input2.controller('ngModel');
 
       inputCtrl1.$setDirty();
+      inputCtrl1.$setDirty();
+      scope.$apply();
+      expect(form).toBeDirty();
+      expect(childForm).toBeDirty();
+
+      inputCtrl2.$setDirty();
       inputCtrl2.$setDirty();
       scope.$apply();
-      expect(form).not.toBePristine();
+      expect(form).toBeDirty();
+      expect(childForm).toBeDirty();
 
       inputCtrl1.$setPristine();
       scope.$apply();
-      expect(form).not.toBePristine();
+      expect(form).toBeDirty();
+      expect(childForm).toBeDirty();
 
       inputCtrl2.$setPristine();
       scope.$apply();
       expect(form).toBePristine();
+      expect(childForm).toBePristine();
     });
 
     it('should be pristine if all the nested forms are pristine', function() {
       doc = $compile(
-          '<form name="form">' +
-            '<div ng-form name="childForm1"></div>' +
-            '<div ng-form name="childForm2"></div>' +
+          '<form name="outerForm1">' +
+            '<div ng-form name="outerForm2">' +
+              '<div ng-form name="childForm1"></div>' +
+              '<div ng-form name="childForm2"></div>' +
+            '</div>' +
           '</form>')(scope);
 
-      var form = doc,
-          formCtrl = scope.form,
+      var outerForm1 = doc,
+          outerForm2 = doc.find('div').eq(0),
           childFormCtrl1 = scope.childForm1,
           childFormCtrl2 = scope.childForm2;
 
       childFormCtrl1.$setDirty();
+      scope.$apply();
+      expect(outerForm1).toBeDirty();
+      expect(outerForm2).toBeDirty();
       childFormCtrl2.$setDirty();
       scope.$apply();
-      expect(form).not.toBePristine();
+      expect(outerForm1).toBeDirty();
+      expect(outerForm2).toBeDirty();
 
       childFormCtrl1.$setPristine();
       scope.$apply();
-      expect(form).not.toBePristine();
+      expect(outerForm1).toBeDirty();
+      expect(outerForm2).toBeDirty();
 
       childFormCtrl2.$setPristine();
       scope.$apply();
-      expect(form).toBePristine();
+      expect(outerForm1).toBePristine();
+      expect(outerForm2).toBePristine();
+    });
+
+    it('should properly handle added/removed controls', function() {
+
+      var test = function(input, inputCtrl) {
+        doc = $compile(
+            '<form name="outerForm">' +
+              '<div ng-form name="innerForm"></div>' +
+            '</form>')(scope);
+
+        var outerForm = doc,
+            innerForm = doc.find('div').eq(0),
+            innerFormCtrl = innerForm.controller('form');
+
+        inputCtrl.$setDirty();
+
+        // just add control does not change form pristine-ness
+        innerFormCtrl.$addControl(inputCtrl);
+        scope.$apply();
+        expect(innerForm).toBePristine();
+
+        // change after adding
+        inputCtrl.$setDirty();
+        scope.$apply();
+        expect(innerForm).toBeDirty();
+
+        innerFormCtrl.$removeControl(inputCtrl);
+
+        // removed control does not affect
+        inputCtrl.$setPristine();
+        scope.$apply();
+        expect(innerForm).toBeDirty();
+
+        innerFormCtrl.$addControl(inputCtrl);
+        scope.$apply();
+        expect(innerForm).toBeDirty();
+
+        inputCtrl.$setPristine();
+        scope.$apply();
+        expect(innerForm).toBePristine();
+
+        innerFormCtrl.$removeControl(inputCtrl);
+        inputCtrl.$setPristine();
+        innerFormCtrl.$addControl(inputCtrl);
+        scope.$apply();
+        expect(innerForm).toBePristine();
+
+        inputCtrl.$setDirty();
+        scope.$apply();
+        expect(outerForm).toBeDirty();
+      };
+
+      var input1 = $compile('<input ng-model="inputModel" name="input">')(scope),
+          inputCtrl1 = input1.controller('ngModel'),
+
+          input2 = $compile('<div ng-form name="input"></div>')(scope),
+          inputCtrl2 = input2.controller('form');
+
+      // test for input
+      test(input1, inputCtrl1);
+      dealoc(doc);
+
+      // test for ng-form
+      test(input2, inputCtrl2);
     });
   });
 
