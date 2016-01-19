@@ -1189,9 +1189,9 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
   this.$get = [
             '$injector', '$interpolate', '$exceptionHandler', '$templateRequest', '$parse',
-            '$controller', '$rootScope', '$document', '$sce', '$animate', '$$sanitizeUri',
+            '$controller', '$rootScope', '$document', '$sce', '$animate', '$$sanitizeUri', '$$jqLite',
     function($injector,   $interpolate,   $exceptionHandler,   $templateRequest,   $parse,
-             $controller,   $rootScope,   $document,   $sce,   $animate,   $$sanitizeUri) {
+             $controller,   $rootScope,   $document,   $sce,   $animate,   $$sanitizeUri, $$jqLite) {
 
     var SIMPLE_ATTR_NAME = /^\w/;
     var specialAttrHolder = document.createElement('div');
@@ -1447,7 +1447,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
     function safeAddClass($element, className) {
       try {
-        $element.addClass(className);
+        $$jqLite.addClass($element, className);
       } catch (e) {
         // ignore, since it means that we are trying to set class on
         // SVG element, where class name is read-only.

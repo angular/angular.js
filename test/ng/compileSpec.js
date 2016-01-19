@@ -501,6 +501,24 @@ describe('$compile', function() {
       }));
 
 
+      it('should preserve existing CSS classes on SVG elements when using jQuery', function() {
+        // Skip test if SVG or jQuery not present
+        if (!window.SVGElement || !window.jQuery) return;
+
+        module(function($compileProvider) {
+          // Force $compile to add 'ng-binding' class during compilation
+          $compileProvider.debugInfoEnabled(true);
+        });
+
+        inject(function($compile, $rootScope) {
+          // In Safari 6.1/7.0 jQuery will mess up existing classes during call to addClass
+          element = $compile('<svg><text class="test">{{1}}</text></svg>')($rootScope);
+          $rootScope.$digest();
+          expect(element.html()).toContain('test');
+        });
+      });
+
+
       it('should receive scope, element, and attributes', function() {
         var injector;
         module(function() {
