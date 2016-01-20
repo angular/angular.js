@@ -13,6 +13,156 @@ which drives many of these changes.
 * Several new features, especially animations, would not be possible without a few changes.
 * Finally, some outstanding bugs were best fixed by changing an existing API.
 
+
+
+
+
+# Migrate from 1.4 to 1.5
+
+Angular 1.5 takes a big step towards preparing developers for a smoother transition to Angular 2 in
+the future. Architecturing your applications using components, making use of lifecycle hooks in
+directive controllers and relying on native ES6 features (such as classes and arrow functions) are
+now all possible with Angular 1.5.
+
+
+This release includes numerous bug and security fixes, as well as performance improvements to core
+services, directives, filters and helper functions. Existing applications can start enjoying the
+benefits of such changes in `$compile`, `$parse`, `$animate`, `$animateCss`, `$sanitize`, `ngOptions`,
+`currencyFilter`, `numberFilter`, `copy()` (to name but a few) without any change in code.
+
+New features have been added to more than a dozen services, directives and filters across 7 modules.
+Among them, a few stand out:
+
+* `angular.component()`: Introducing "components", a special sort of directive that are easy to
+  configure and promote best practices (plus can bring Angular 1 applications closer to Angular 2's
+  style of architecture).
+* Multi-slot transclusion: Enabling the design of more powerful and complex UI elements with a much
+  simpler configuration and reduced boilerplate.
+* `ngAnimateSwap`: A new directive in `ngAnimate`, making it super easy to create rotating
+  banner-like components
+* Testing helpers: New helper functions in `ngMock`, simplifying testing for animations, component
+  controllers and routing.
+
+Also, notable is the improved support for ES6 features, such as classes and arrow functions. These
+features are now more reliably detected and correctly handled within the core.
+
+
+All this goodness doesn't come without a price, though. Below is a list of breaking changes (grouped
+by module) that need to be taken into account while migrating from 1.4. Fortunately, the majority of
+them should have a pretty low impact on most applications.
+
+
+## Core
+
+We tried to keep the breaking changes inside the core components to a bare minimum. Still, a few of
+them were unavoidable.
+
+### Services (`$parse`)
+
+Due to [0ea53503](https://github.com/angular/angular.js/commit/0ea535035a3a1a992948490c3533bffb83235052),
+a new special property, `$locals`, will be available for accessing the locals from an expression.
+This is a breaking change, only if a `$locals` property does already exist (and needs to be
+referenced) either on the `scope` or on the `locals` object. Your expressions should be changed to
+access such existing properties as `this.$locals` and `$locals.$locals` respectively.
+
+
+### Directives (`ngOptions`)
+
+A fair amount of work has been put into the `ngOptions` directive, fixing bugs and corner-cases and
+neutralizing browser quirks. A couple of breaking changes were made in the process:
+
+Due to [b71d7c3f](https://github.com/angular/angular.js/commit/b71d7c3f3c04e65b02d88b33c22dd90ae3cdfc27),
+falsy values (`''`, `0`, `false` and `null`) are properly recognized as option group identifiers for
+options passed to `ngOptions`. Previously, all of these values were ignored and the option was not
+assigned to any group. `undefined` is still interpreted as "no group".
+If you have options with falsy group indentifiers that should still not be assigned to any group,
+then you must filter the values before passing them to `ngOptions`, converting falsy values to
+`undefined`.
+
+Due to [ded25187](https://github.com/angular/angular.js/commit/ded2518756d4409fdfda0d4af243f2125bea01b5),
+`ngOptions` now explicitly requires `ngModel` on the same element, thus an error will be thrown if
+`ngModel` is not found. Previously, `ngOptions` would silently fail, which could lead to
+hard-to-debug errors.
+This is not expected to have any significant impact on applications, since `ngOptions` didn't work
+without `ngModel` before either. The main difference is that now it will fail with a more
+informative error message.
+
+
+### Filters (`orderBy`)
+
+Due to [2a85a634](https://github.com/angular/angular.js/commit/2a85a634f86c84f15b411ce009a3515fca7ba580),
+passing a non-array-like value (other than `undefined` or `null`) through the `orderBy` filter will
+throw an error. Previously, the input was returned unchanged, which could lead to hard-to-spot bugs
+and was not consistent with other filters (e.g. `filter`).
+Objects considered array-like include: arrays, array subclasses, strings, NodeLists,
+jqLite/jQuery collections
+
+
+## ngMessages (`ngMessage`)
+
+Due to [4971ef12](https://github.com/angular/angular.js/commit/4971ef12d4c2c268cb8d26f90385dc96eba19db8),
+the `ngMessage` directive is now compiled with a priority of 1, which means directives on the same
+element as `ngMessage` with a priority lower than 1 will be applied when `ngMessage` calls its
+`$transclude` function. Previously, they were applied during the initial compile phase and were
+passed the comment element created by the transclusion of `ngMessage`.
+If you have custom directives that relied on the previous behavior, you need to give them a priority
+of 1 or greater.
+
+
+## ngResource (`$resource`)
+
+The `$resource` service underwent a minor internal refactoring to finally solve a long-standing bug
+preventing requests from being cancelled using promises. Due to the nature of `$resource`'s
+configuration, it was not possible to follow the `$http` convention. A new `$cancelRequest()` method
+was introduced instead.
+
+Due to [98528be3](https://github.com/angular/angular.js/commit/98528be311b48269ba0e15ba4e3e2ad9b89693a9),
+using a promise as `timeout` in `$resource` is no longer supported and will log a warning. This is
+hardly expected to affect the behavior of your application, since a promise as `timeout` didn't work
+before either, but it will now warn you explicitly when trying to pass one.
+If you need to be able to cancel pending requests, you can now use the new `$cancelRequest()` that
+will be available on `$resource` instances.
+
+
+## ngRoute (`ngView`)
+
+Due to [983b0598](https://github.com/angular/angular.js/commit/983b0598121a8c5a3a51a30120e114d7e3085d4d),
+a new property will be available on the scope of the route, allowing easy access to the route's
+resolved values from the view's template. The default name for this property is `$resolve`. This is
+a breaking change, only if a `$resolve` property is already available on the scope, in which case
+the existing property will be hidden or overwritten.
+To fix this, you should choose a custom name for this property, that does not collide with other
+properties on the scope, by specifying the `resolveAs` property on the route.
+
+
+## ngSanitize (`$sanitize`, `linky`)
+
+The HTML sanitizer has been re-implemented using inert documents, increasing security, fixing some
+corner-cases that were difficult to handle and reducing its size by about 20% (in terms of loc). In
+order to make it more secure by default, a couple of breaking changes have been introduced:
+
+Due to [181fc567](https://github.com/angular/angular.js/commit/181fc567d873df065f1e84af7225deb70a8d2eb9),
+SVG support in `$sanitize` is now an opt-in feature (i.e. disabled by default), as it could make
+an application vulnerable to click-hijacking attacks. If your application relies on it, you can
+still turn it on with `$sanitizeProvider.enableSvg(true)`, but you extra precautions need to be
+taken in order to keep your application secure. Read the documentation for more information about
+the dangers and ways to mitigate them.
+
+Due to [7a668cdd](https://github.com/angular/angular.js/commit/7a668cdd7d08a7016883eb3c671cbcd586223ae8),
+the `$sanitize` service will now remove instances of the `<use>` tag from the content passed to it.
+This element is used to import external SVG resources, which is a security risk as the `$sanitize`
+service does not have access to the resource in order to sanitize it.
+
+Due to [98c2db7f](https://github.com/angular/angular.js/commit/98c2db7f9c2d078a408576e722407d518c7ee10a),
+passing a non-string value (other than `undefined` or `null`) through the `linky` filter will throw
+an error. This is not expected to have any significant impact on applications, since the input was
+always assumed to be of type 'string', so passing non-string values never worked correctly anyway.
+The main difference is that now it will fail faster and with a more informative error message.
+
+
+
+
+
 # Migrating from 1.3 to 1.4
 
 Angular 1.4 fixes major animation issues and introduces a new API for `ngCookies`. Further, there
