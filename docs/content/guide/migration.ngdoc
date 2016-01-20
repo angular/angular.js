@@ -94,6 +94,8 @@ Due to [2a85a634](https://github.com/angular/angular.js/commit/2a85a634f86c84f15
 passing a non-array-like value (other than `undefined` or `null`) through the `orderBy` filter will
 throw an error. Previously, the input was returned unchanged, which could lead to hard-to-spot bugs
 and was not consistent with other filters (e.g. `filter`).
+Objects considered array-like include: arrays, array subclasses, strings, NodeLists,
+jqLite/jQuery collections
 
 
 ## ngMessages (`ngMessage`)
@@ -142,9 +144,9 @@ order to make it more secure by default, a couple of breaking changes have been 
 Due to [181fc567](https://github.com/angular/angular.js/commit/181fc567d873df065f1e84af7225deb70a8d2eb9),
 SVG support in `$sanitize` is now an opt-in feature (i.e. disabled by default), as it could make
 an application vulnerable to click-hijacking attacks. If your application relies on it, you can
-still turn it on with `$sanitizeProvider.enabeSvg(true)`, but you extra precautions need to be taken
-in order to keep your application secure. Read the documentation for more information about the
-dangers and ways to mitigate them.
+still turn it on with `$sanitizeProvider.enableSvg(true)`, but you extra precautions need to be
+taken in order to keep your application secure. Read the documentation for more information about
+the dangers and ways to mitigate them.
 
 Due to [7a668cdd](https://github.com/angular/angular.js/commit/7a668cdd7d08a7016883eb3c671cbcd586223ae8),
 the `$sanitize` service will now remove instances of the `<use>` tag from the content passed to it.
