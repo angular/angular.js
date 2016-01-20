@@ -5,7 +5,7 @@
 
 # Interpolation and data-binding
 
-Interpolation markup with embedded @link {guide/expressions expressions} is used by Angular to
+Interpolation markup with embedded {@link guide/expressions expressions} is used by Angular to
 provide data-binding to text nodes and attribute values.
 
 An example of interpolation is shown below:
@@ -43,8 +43,8 @@ interpret the attribute as present, meaning that the button would always be disa
 ```
 
 For this reason, Angular provides special `ng`-prefixed directives for the following boolean attributes:
-{@link ngDisabled `disabled`}, [@link ngRequired `required`}, [@link ngSelected `selected`},
-{@link ngChecked `checked`}, {@link ngReadonly `readOnly`} , and [@link ngOpen `open`}.
+{@link ngDisabled `disabled`}, {@link ngRequired `required`}, {@link ngSelected `selected`},
+{@link ngChecked `checked`}, {@link ngReadonly `readOnly`} , and {@link ngOpen `open`}.
 
 These directives take an expression inside the attribute, and set the corresponding boolean attribute
 to true when the expression evaluates to truthy.
