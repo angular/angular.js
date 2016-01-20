@@ -819,7 +819,21 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       COMMENT_DIRECTIVE_REGEXP = /^\s*directive\:\s*([\w\-]+)\s+(.*)$/,
       CLASS_DIRECTIVE_REGEXP = /(([\w\-]+)(?:\:([^;]+))?;?)/,
       ALL_OR_NOTHING_ATTRS = makeMap('ngSrc,ngSrcset,src,srcset'),
-      REQUIRE_PREFIX_REGEXP = /^(?:(\^\^?)?(\?)?(\^\^?)?)?/;
+      REQUIRE_PREFIX_REGEXP = /^(?:(\^\^?)?(\?)?(\^\^?)?)?/,
+      ALIASED_COMPONENT_OPTIONS = {
+        bindToController: 'bindings'
+      },
+      UNSUPPORTED_COMPONENT_OPTIONS = [
+        'compile',
+        'link',
+        'multiElement',
+        'priority',
+        'replace',
+        'restrict',
+        'scope',
+        'templateNamespace',
+        'terminal'
+      ];
 
   // Ref: http://developers.whatwg.org/webappapis.html#event-handler-idl-attributes
   // The assumption is that future DOM event attribute names will begin with
@@ -900,6 +914,32 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       throw $compileMinErr('baddir',
             "Directive name '{0}' is invalid. The name should not contain leading or trailing whitespaces",
             name);
+    }
+  }
+
+  function verifyComponentOptions(options, componentName, $log) {
+    var optionKeys = Object.keys(options);
+
+    var unsupportedOpts = UNSUPPORTED_COMPONENT_OPTIONS.filter(isUsed);
+    if (unsupportedOpts.length) {
+      var warning = 'The following unsupported options were detected in the "' + componentName
+                    + '" component\'s Definition Object:\n  ' + unsupportedOpts.join(', ') + '\n'
+                    + 'Their values will be ignored or overwritten. If you need these features, '
+                    + 'you can use `.directive()` instead.';
+      $log.debug(warning);
+    }
+
+    var aliasedOpts = Object.keys(ALIASED_COMPONENT_OPTIONS).filter(isUsed);
+    aliasedOpts.forEach(function(opt) {
+      var alias = ALIASED_COMPONENT_OPTIONS[opt];
+      var warning = 'The "' + opt + '" option (used in the "' + componentName + '" component\'s '
+                    + 'Definition Object) will have no effect. For components, use "' + alias
+                    + '" instead.';
+      $log.debug(warning);
+    });
+
+    function isUsed(opt) {
+      return optionKeys.indexOf(opt) !== -1;
     }
   }
 
@@ -1160,7 +1200,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
   this.component = function registerComponent(name, options) {
     var controller = options.controller || function() {};
 
-    function factory($injector) {
+    function factory($injector, $log) {
       function makeInjectable(fn) {
         if (isFunction(fn) || isArray(fn)) {
           return function(tElement, tAttrs) {
@@ -1170,6 +1210,8 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           return fn;
         }
       }
+
+      verifyComponentOptions(options, name, $log);
 
       var template = (!options.template && !options.templateUrl ? '' : options.template);
       return {
@@ -1193,7 +1235,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       }
     });
 
-    factory.$inject = ['$injector'];
+    factory.$inject = ['$injector', '$log'];
 
     return this.directive(name, factory);
   };

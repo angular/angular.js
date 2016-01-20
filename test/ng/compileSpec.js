@@ -9592,6 +9592,66 @@ describe('$compile', function() {
       }));
     });
 
+    they('should log a warning for the unsupported option(s) $prop', [
+      'compile',
+      'link',
+      'multiElement',
+      'priority',
+      'replace',
+      'restrict',
+      'scope',
+      'templateNamespace',
+      'terminal',
+      'restrict, scope',
+      'compile, link, multiElement, priority, replace, templateNamespace, terminal'
+    ], function(optionStr) {
+      var warning = 'The following unsupported options were detected in the "myComponent'
+                    + '" component\'s Definition Object:\n  ' + optionStr + '\n'
+                    + 'Their values will be ignored or overwritten. If you need these features, '
+                    + 'you can use `.directive()` instead.';
+
+      module(function($compileProvider) {
+        var cdo = {controller: function(log) { log('OK'); }};
+        optionStr.split(', ').forEach(function(opt) { cdo[opt] = true; });
+
+        $compileProvider.component('myComponent', cdo);
+      });
+
+      inject(function($compile, $log, $rootScope, log) {
+        spyOn($log, 'debug');
+        element = $compile('<my-component></my-component>')($rootScope);
+
+        expect($log.debug).toHaveBeenCalledOnceWith(warning);
+        expect(log).toEqual('OK');
+      });
+    });
+
+    they('should log a warning for the aliased option(s) $prop', {
+      bindToController: {option: 'bindToController', alias: 'bindings'}
+    }, function(data) {
+      var option = data.option;
+      var alias = data.alias;
+
+      var warning = 'The "' + option + '" option (used in the "myComponent" component\'s '
+                    + 'Definition Object) will have no effect. For components, use "' + alias
+                    + '" instead.';
+
+      module(function($compileProvider) {
+        var cdo = {controller: function(log) { log('OK'); }};
+        cdo[option] = true;
+
+        $compileProvider.component('myComponent', cdo);
+      });
+
+      inject(function($compile, $log, $rootScope, log) {
+        spyOn($log, 'debug');
+        element = $compile('<my-component></my-component>')($rootScope);
+
+        expect($log.debug).toHaveBeenCalledOnceWith(warning);
+        expect(log).toEqual('OK');
+      });
+    });
+
     it('should return ddo with reasonable defaults', function() {
       angular.module('my', []).component('myComponent', {});
       module('my');
