@@ -4,8 +4,30 @@
 
 ## Bug Fixes
 
-### Core `ng` Module
-- **$animate:**
+- **Animation**
+  - ensure that animate promises resolve when the document is hidden
+  ([9a60408c](https://github.com/angular/angular.js/commit/9a60408c804a62a9517857bdb9a42182ab6769e3))
+  - do not trigger animations if the document is hidden
+  ([09f6061a](https://github.com/angular/angular.js/commit/09f6061a8ee41cae4268e8d44d727d3bf52e22a9),
+   [#12842](https://github.com/angular/angular.js/issues/12842), [#13776](https://github.com/angular/angular.js/issues/13776))
+  - only copy over the animation options once
+  ([2fc954d3](https://github.com/angular/angular.js/commit/2fc954d33a3a4c5d4f355be1e15a381664e02f1b),
+   [#13722](https://github.com/angular/angular.js/issues/13722), [#13578](https://github.com/angular/angular.js/issues/13578))
+  - allow event listeners on document in IE
+  ([5ba4419e](https://github.com/angular/angular.js/commit/5ba4419e265ff34c6c23bf3533a3332c99c5f014),
+   [#13548](https://github.com/angular/angular.js/issues/13548), [#13696](https://github.com/angular/angular.js/issues/13696))
+  - allow removing classes that are added by a running animation
+  ([6c4581fc](https://github.com/angular/angular.js/commit/6c4581fcb692b17295a41b8918c6038333e7bc3d),
+   [#13339](https://github.com/angular/angular.js/issues/13339), [#13380](https://github.com/angular/angular.js/issues/13380), [#13414](https://github.com/angular/angular.js/issues/13414), [#13472](https://github.com/angular/angular.js/issues/13472), [#13678](https://github.com/angular/angular.js/issues/13678))
+  - do not use `event.timeStamp` anymore for time tracking
+  ([620a20d1](https://github.com/angular/angular.js/commit/620a20d1b3376d95f85004ffa494e36bb19a2e4d),
+   [#13494](https://github.com/angular/angular.js/issues/13494), [#13495](https://github.com/angular/angular.js/issues/13495))
+  - ignore children without animation data when closing them
+  ([be01cebf](https://github.com/angular/angular.js/commit/be01cebfae9ca2383105e535820442b39a96b240),
+   [#11992](https://github.com/angular/angular.js/issues/11992), [#13424](https://github.com/angular/angular.js/issues/13424))
+  - do not alter the provided options data
+  ([7a81e6fe](https://github.com/angular/angular.js/commit/7a81e6fe2db084172e34d509f0baad2b33a8722c),
+   [#13040](https://github.com/angular/angular.js/issues/13040), [#13175](https://github.com/angular/angular.js/issues/13175))
   - correctly handle `$animate.pin()` host elements
   ([a985adfd](https://github.com/angular/angular.js/commit/a985adfdabd871f3f3f3ee59f371da50cd9611d9),
    [#13783](https://github.com/angular/angular.js/issues/13783))
@@ -20,7 +42,6 @@
   - ensure animate runner is the same with and without animations
   ([937942f5](https://github.com/angular/angular.js/commit/937942f5ada6de1bdacdf0ba465f6f118c270119),
    [#13205](https://github.com/angular/angular.js/issues/13205), [#13347](https://github.com/angular/angular.js/issues/13347))
-- **$animateCss:**
   - remove animation end event listeners on close
   ([d9157849](https://github.com/angular/angular.js/commit/d9157849df224a3a8d2e0bf03099d137f51499f6),
    [#13672](https://github.com/angular/angular.js/issues/13672))
@@ -62,33 +83,6 @@
 - **select:** re-define `ngModelCtrl.$render` in the `select` directive's postLink function
   ([529b2507](https://github.com/angular/angular.js/commit/529b2507bdb4fcc22dfa0f7ab462c79fc78d1413),
    [#13583](https://github.com/angular/angular.js/issues/13583), [#13583](https://github.com/angular/angular.js/issues/13583), [#13663](https://github.com/angular/angular.js/issues/13663))
-
-### `ngAnimate` Module
-
-- **ngAnimate:**
-  - ensure that animate promises resolve when the document is hidden
-  ([9a60408c](https://github.com/angular/angular.js/commit/9a60408c804a62a9517857bdb9a42182ab6769e3))
-  - do not trigger animations if the document is hidden
-  ([09f6061a](https://github.com/angular/angular.js/commit/09f6061a8ee41cae4268e8d44d727d3bf52e22a9),
-   [#12842](https://github.com/angular/angular.js/issues/12842), [#13776](https://github.com/angular/angular.js/issues/13776))
-  - only copy over the animation options once
-  ([2fc954d3](https://github.com/angular/angular.js/commit/2fc954d33a3a4c5d4f355be1e15a381664e02f1b),
-   [#13722](https://github.com/angular/angular.js/issues/13722), [#13578](https://github.com/angular/angular.js/issues/13578))
-  - allow event listeners on document in IE
-  ([5ba4419e](https://github.com/angular/angular.js/commit/5ba4419e265ff34c6c23bf3533a3332c99c5f014),
-   [#13548](https://github.com/angular/angular.js/issues/13548), [#13696](https://github.com/angular/angular.js/issues/13696))
-  - allow removing classes that are added by a running animation
-  ([6c4581fc](https://github.com/angular/angular.js/commit/6c4581fcb692b17295a41b8918c6038333e7bc3d),
-   [#13339](https://github.com/angular/angular.js/issues/13339), [#13380](https://github.com/angular/angular.js/issues/13380), [#13414](https://github.com/angular/angular.js/issues/13414), [#13472](https://github.com/angular/angular.js/issues/13472), [#13678](https://github.com/angular/angular.js/issues/13678))
-  - do not use `event.timeStamp` anymore for time tracking
-  ([620a20d1](https://github.com/angular/angular.js/commit/620a20d1b3376d95f85004ffa494e36bb19a2e4d),
-   [#13494](https://github.com/angular/angular.js/issues/13494), [#13495](https://github.com/angular/angular.js/issues/13495))
-  - ignore children without animation data when closing them
-  ([be01cebf](https://github.com/angular/angular.js/commit/be01cebfae9ca2383105e535820442b39a96b240),
-   [#11992](https://github.com/angular/angular.js/issues/11992), [#13424](https://github.com/angular/angular.js/issues/13424))
-  - do not alter the provided options data
-  ([7a81e6fe](https://github.com/angular/angular.js/commit/7a81e6fe2db084172e34d509f0baad2b33a8722c),
-   [#13040](https://github.com/angular/angular.js/issues/13040), [#13175](https://github.com/angular/angular.js/issues/13175))
 
 ## Minor Features
 
