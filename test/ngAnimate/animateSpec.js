@@ -6,10 +6,17 @@ describe("animations", function() {
   beforeEach(module('ngAnimateMock'));
 
   var element, applyAnimationClasses;
+
+  beforeEach(module(function() {
+    return function($$jqLite) {
+      applyAnimationClasses = applyAnimationClassesFactory($$jqLite);
+    };
+  }));
+
   afterEach(inject(function($$jqLite) {
-    applyAnimationClasses = applyAnimationClassesFactory($$jqLite);
     dealoc(element);
   }));
+
 
   it('should allow animations if the application is bootstrapped on the document node', function() {
     var capturedAnimation;
@@ -1081,7 +1088,7 @@ describe("animations", function() {
         expect(enterDone).toHaveBeenCalled();
       }));
 
-      it('should cancel the previously running addClass animation if a follow-up removeClass animation is using the same class value',
+      it('should finish off the previously running addClass animation if a follow-up removeClass animation is using the same class value',
         inject(function($animate, $rootScope) {
 
         parent.append(element);
@@ -1099,7 +1106,7 @@ describe("animations", function() {
         expect(doneHandler).toHaveBeenCalled();
       }));
 
-      it('should cancel the previously running removeClass animation if a follow-up addClass animation is using the same class value',
+      it('should finish off the previously running removeClass animation if a follow-up addClass animation is using the same class value',
         inject(function($animate, $rootScope) {
 
         element.addClass('active-class');
@@ -1116,6 +1123,25 @@ describe("animations", function() {
         $rootScope.$digest();
 
         expect(doneHandler).toHaveBeenCalled();
+      }));
+
+      it('should cancel the former class-based animation when the same CSS class is added/removed right after',
+        inject(function($animate, $rootScope, $$AnimateRunner) {
+
+        parent.append(element);
+
+        overriddenAnimationRunner = new $$AnimateRunner();
+        var endSpy = spyOn(overriddenAnimationRunner, 'end');
+
+        $animate.addClass(element, 'active-class');
+        $rootScope.$digest();
+
+        expect(endSpy).not.toHaveBeenCalled();
+
+        $animate.removeClass(element, 'active-class');
+        $rootScope.$digest();
+
+        expect(endSpy).toHaveBeenCalled();
       }));
 
       it('should immediately skip the class-based animation if there is an active structural animation',
