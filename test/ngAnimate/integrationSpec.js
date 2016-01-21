@@ -25,6 +25,32 @@ describe('ngAnimate integration tests', function() {
     ss.destroy();
   });
 
+ it('should cancel a running and started removeClass animation when a follow-up addClass animation adds the same class',
+    inject(function($animate, $rootScope, $$rAF, $document, $rootElement) {
+
+    jqLite($document[0].body).append($rootElement);
+    element = jqLite('<div></div>');
+    $rootElement.append(element);
+
+    element.addClass('active-class');
+
+    var runner = $animate.removeClass(element, 'active-class');
+    $rootScope.$digest();
+
+    var doneHandler = jasmine.createSpy('addClass done');
+    runner.done(doneHandler);
+
+    $$rAF.flush(); // Trigger the actual animation
+
+    expect(doneHandler).not.toHaveBeenCalled();
+
+    $animate.addClass(element, 'active-class');
+    $rootScope.$digest();
+
+    // Cancelling the removeClass animation triggers the done callback
+    expect(doneHandler).toHaveBeenCalled();
+  }));
+
   describe('CSS animations', function() {
     if (!browserSupportsCssAnimations()) return;
 

@@ -48,7 +48,7 @@
     "assertArg": false,
     "isPromiseLike": false,
     "mergeClasses": false,
-    "mergeAnimationOptions": false,
+    "mergeAnimationDetails": false,
     "prepareAnimationOptions": false,
     "applyAnimationStyles": false,
     "applyAnimationFromStyles": false,

@@ -6,10 +6,17 @@ describe("animations", function() {
   beforeEach(module('ngAnimateMock'));
 
   var element, applyAnimationClasses;
+
+  beforeEach(module(function() {
+    return function($$jqLite) {
+      applyAnimationClasses = applyAnimationClassesFactory($$jqLite);
+    };
+  }));
+
   afterEach(inject(function($$jqLite) {
-    applyAnimationClasses = applyAnimationClassesFactory($$jqLite);
     dealoc(element);
   }));
+
 
   it('should allow animations if the application is bootstrapped on the document node', function() {
     var capturedAnimation;
@@ -1116,6 +1123,21 @@ describe("animations", function() {
         $rootScope.$digest();
 
         expect(doneHandler).toHaveBeenCalled();
+      }));
+
+      it('should merge a follow-up animation that does not add classes into the previous animation (pre-digest)',
+        inject(function($animate, $rootScope) {
+
+        $animate.enter(element, parent);
+        $animate.animate(element, {height: 0}, {height: '100px'});
+
+        $rootScope.$digest();
+        expect(capturedAnimation).toBeTruthy();
+        expect(capturedAnimation[1]).toBe('enter'); // make sure the enter animation is present
+
+        // fake the style setting (because $$animation is mocked)
+        applyAnimationStyles(element, capturedAnimation[2]);
+        expect(element.css('height')).toContain('100px');
       }));
 
       it('should immediately skip the class-based animation if there is an active structural animation',
