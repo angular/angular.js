@@ -1,3 +1,136 @@
+<a name="1.4.9"></a>
+# 1.4.9 implicit-superannuation (2016-01-21)
+
+
+## Bug Fixes
+
+### Core `ng` Module
+- **$animate:**
+  - correctly handle `$animate.pin()` host elements
+  ([a985adfd](https://github.com/angular/angular.js/commit/a985adfdabd871f3f3f3ee59f371da50cd9611d9),
+   [#13783](https://github.com/angular/angular.js/issues/13783))
+  - allow animations when pinned element is parent element
+  ([4cb8ac61](https://github.com/angular/angular.js/commit/4cb8ac61c7574ab4039852c358dd5946268b69fb),
+   [#13466](https://github.com/angular/angular.js/issues/13466))
+  - allow enabled children to animate on disabled parents
+  ([6d85f24e](https://github.com/angular/angular.js/commit/6d85f24e2081d2a69c80697d90ebd45f228d9682),
+   [#13179](https://github.com/angular/angular.js/issues/13179), [#13695](https://github.com/angular/angular.js/issues/13695))
+  - correctly access `minErr`
+  ([0c1b54f0](https://github.com/angular/angular.js/commit/0c1b54f04cf5bd7c1fe42ac49b4fbfdf35c60979))
+  - ensure animate runner is the same with and without animations
+  ([937942f5](https://github.com/angular/angular.js/commit/937942f5ada6de1bdacdf0ba465f6f118c270119),
+   [#13205](https://github.com/angular/angular.js/issues/13205), [#13347](https://github.com/angular/angular.js/issues/13347))
+- **$animateCss:**
+  - remove animation end event listeners on close
+  ([d9157849](https://github.com/angular/angular.js/commit/d9157849df224a3a8d2e0bf03099d137f51499f6),
+   [#13672](https://github.com/angular/angular.js/issues/13672))
+  - consider options.delay value for closing timeout
+  ([592bf516](https://github.com/angular/angular.js/commit/592bf516e50b9729e446d9aa01f4d9ebdd72d187),
+   [#13355](https://github.com/angular/angular.js/issues/13355), [#13363](https://github.com/angular/angular.js/issues/13363))
+- **$controller:** allow identifiers containing `$`
+  ([2563ff7b](https://github.com/angular/angular.js/commit/2563ff7ba92d84af978e7e4131253190d4d00c20),
+   [#13736](https://github.com/angular/angular.js/issues/13736))
+- **$http:** throw if url passed is not a string
+  ([c5bf9dae](https://github.com/angular/angular.js/commit/c5bf9daef6dfdb3e4a2942c21155a9f67d92e237),
+   [#12925](https://github.com/angular/angular.js/issues/12925), [#13444](https://github.com/angular/angular.js/issues/13444))
+- **$parse:** handle interceptors with `undefined` expressions
+  ([7bb2414b](https://github.com/angular/angular.js/commit/7bb2414bf6461aa45a983fd322ae875f81814cc4))
+- **$resource:** don't allow using promises as `timeout` and log a warning
+  ([47486524](https://github.com/angular/angular.js/commit/474865242c89ba3e8143f0cd52f8c292979ea730))
+- **formatNumber:** cope with large and small number corner cases
+  ([9c49eb13](https://github.com/angular/angular.js/commit/9c49eb131a6100d58c965d01fb08bcd319032229),
+   [#13394](https://github.com/angular/angular.js/issues/13394), [#8674](https://github.com/angular/angular.js/issues/8674), [#12709](https://github.com/angular/angular.js/issues/12709), [#8705](https://github.com/angular/angular.js/issues/8705), [#12707](https://github.com/angular/angular.js/issues/12707), [#10246](https://github.com/angular/angular.js/issues/10246), [#10252](https://github.com/angular/angular.js/issues/10252))
+- **input:**
+  - fix URL validation being too strict
+  ([6610ae81](https://github.com/angular/angular.js/commit/6610ae816f78ee8fc1080b93a55bf19e4ce48d3e),
+   [#13528](https://github.com/angular/angular.js/issues/13528), [#13544](https://github.com/angular/angular.js/issues/13544))
+  - add missing chars to URL validation regex
+  ([2995b54a](https://github.com/angular/angular.js/commit/2995b54afdb9a3a2a81b0076a6ac0a9001041163),
+   [#13379](https://github.com/angular/angular.js/issues/13379), [#13460](https://github.com/angular/angular.js/issues/13460))
+- **isArrayLike:** recognize empty instances of an Array subclass
+  ([323f9ab7](https://github.com/angular/angular.js/commit/323f9ab73696f223c245ddefd62a769fe102615e),
+   [#13560](https://github.com/angular/angular.js/issues/13560), [#13708](https://github.com/angular/angular.js/issues/13708))
+- **ngInclude:** do not compile template if original scope is destroyed
+  ([9590bcf0](https://github.com/angular/angular.js/commit/9590bcf0620cd507a7795c55f9a6f4a48bfedbc1))
+- **ngOptions:**
+  - don't skip `optgroup` elements with `value === ''`
+  ([85e392f3](https://github.com/angular/angular.js/commit/85e392f3543ef5285c7e90e843af0ab522cb0531),
+   [#13487](https://github.com/angular/angular.js/issues/13487), [#13489](https://github.com/angular/angular.js/issues/13489))
+  - don't `$dirty` multiple select after compilation
+  ([f163c905](https://github.com/angular/angular.js/commit/f163c90555774426ccb14752d089fc707cb4029c),
+   [#13211](https://github.com/angular/angular.js/issues/13211), [#13326](https://github.com/angular/angular.js/issues/13326))
+- **select:** re-define `ngModelCtrl.$render` in the `select` directive's postLink function
+  ([529b2507](https://github.com/angular/angular.js/commit/529b2507bdb4fcc22dfa0f7ab462c79fc78d1413),
+   [#13583](https://github.com/angular/angular.js/issues/13583), [#13583](https://github.com/angular/angular.js/issues/13583), [#13663](https://github.com/angular/angular.js/issues/13663))
+
+### `ngAnimate` Module
+
+- **ngAnimate:**
+  - ensure that animate promises resolve when the document is hidden
+  ([9a60408c](https://github.com/angular/angular.js/commit/9a60408c804a62a9517857bdb9a42182ab6769e3))
+  - do not trigger animations if the document is hidden
+  ([09f6061a](https://github.com/angular/angular.js/commit/09f6061a8ee41cae4268e8d44d727d3bf52e22a9),
+   [#12842](https://github.com/angular/angular.js/issues/12842), [#13776](https://github.com/angular/angular.js/issues/13776))
+  - only copy over the animation options once
+  ([2fc954d3](https://github.com/angular/angular.js/commit/2fc954d33a3a4c5d4f355be1e15a381664e02f1b),
+   [#13722](https://github.com/angular/angular.js/issues/13722), [#13578](https://github.com/angular/angular.js/issues/13578))
+  - allow event listeners on document in IE
+  ([5ba4419e](https://github.com/angular/angular.js/commit/5ba4419e265ff34c6c23bf3533a3332c99c5f014),
+   [#13548](https://github.com/angular/angular.js/issues/13548), [#13696](https://github.com/angular/angular.js/issues/13696))
+  - allow removing classes that are added by a running animation
+  ([6c4581fc](https://github.com/angular/angular.js/commit/6c4581fcb692b17295a41b8918c6038333e7bc3d),
+   [#13339](https://github.com/angular/angular.js/issues/13339), [#13380](https://github.com/angular/angular.js/issues/13380), [#13414](https://github.com/angular/angular.js/issues/13414), [#13472](https://github.com/angular/angular.js/issues/13472), [#13678](https://github.com/angular/angular.js/issues/13678))
+  - do not use `event.timeStamp` anymore for time tracking
+  ([620a20d1](https://github.com/angular/angular.js/commit/620a20d1b3376d95f85004ffa494e36bb19a2e4d),
+   [#13494](https://github.com/angular/angular.js/issues/13494), [#13495](https://github.com/angular/angular.js/issues/13495))
+  - ignore children without animation data when closing them
+  ([be01cebf](https://github.com/angular/angular.js/commit/be01cebfae9ca2383105e535820442b39a96b240),
+   [#11992](https://github.com/angular/angular.js/issues/11992), [#13424](https://github.com/angular/angular.js/issues/13424))
+  - do not alter the provided options data
+  ([7a81e6fe](https://github.com/angular/angular.js/commit/7a81e6fe2db084172e34d509f0baad2b33a8722c),
+   [#13040](https://github.com/angular/angular.js/issues/13040), [#13175](https://github.com/angular/angular.js/issues/13175))
+
+## Minor Features
+
+- **ngLocale:** add support for standalone months
+  ([54c4041e](https://github.com/angular/angular.js/commit/54c4041ebc0cc4df70cf6996f43a6aaaf56d46bd),
+   [#3744](https://github.com/angular/angular.js/issues/3744), [#10247](https://github.com/angular/angular.js/issues/10247), [#12642](https://github.com/angular/angular.js/issues/12642), [#12844](https://github.com/angular/angular.js/issues/12844))
+- **ngMock:** add support for `$animate.closeAndFlush()`
+  ([512c0811](https://github.com/angular/angular.js/commit/512c08118786a419fabbd063fa17d224aba125cf))
+
+
+## Performance Improvements
+
+- **ngAnimate:** speed up `areAnimationsAllowed` check
+  ([2d3303dd](https://github.com/angular/angular.js/commit/2d3303ddda6330c4f45b381b6b17346f6cfe2d97))
+
+
+## Breaking Changes
+
+While we do not deem the following to be a real breaking change we are highlighting it here in the
+changelog to ensure that it does not surprise anyone.
+
+- **$resource:** due to [47486524](https://github.com/angular/angular.js/commit/474865242c89ba3e8143f0cd52f8c292979ea730),
+
+**Possible breaking change** for users who updated their code to provide a `timeout`
+promise for a `$resource` request in version 1.4.8.
+
+Up to v1.4.7 (included), using a promise as a timeout in `$resource`, would silently
+fail (i.e. have no effect).
+
+In v1.4.8, using a promise as timeout would have the (buggy) behaviour described
+in https://github.com/angular/angular.js/pull/12657#issuecomment-152108887
+(i.e. it will work as expected for the first time you resolve the promise and will
+cancel all subsequent requests after that - one has to re-create the resource
+class. This is feature was not documented.)
+
+With this change, using a promise as timeout in 1.4.9 onwsards is not allowed.
+It will log a warning and ignore the timeout value.
+
+If you need support for cancellable `$resource` actions, you should upgrade to
+version 1.5 or higher.
+
+
 <a name="1.5.0-rc.1"></a>
 # 1.5.0-rc.1 quantum-fermentation (2016-01-15)
 
