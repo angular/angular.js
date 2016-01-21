@@ -3,7 +3,7 @@
   "browser": true,
   "newcap": false,
   "globals": {
-    "mergeAnimationOptions": false,
+    "mergeAnimationDetails": false,
     "prepareAnimationOptions": false,
     "applyAnimationStyles": false,
     "applyAnimationFromStyles": false,
