@@ -1372,6 +1372,7 @@ describe('cancelling requests', function() {
   var httpSpy;
   var $httpBackend;
   var $resource;
+  var $timeout;
 
   beforeEach(module('ngResource', function($provide) {
     $provide.decorator('$http', function($delegate) {
@@ -1380,9 +1381,10 @@ describe('cancelling requests', function() {
     });
   }));
 
-  beforeEach(inject(function(_$httpBackend_, _$resource_) {
+  beforeEach(inject(function(_$httpBackend_, _$resource_, _$timeout_) {
     $httpBackend = _$httpBackend_;
     $resource = _$resource_;
+    $timeout = _$timeout_;
   }));
 
   it('should accept numeric timeouts in actions and pass them to $http', function() {
@@ -1531,7 +1533,9 @@ describe('cancelling requests', function() {
     expect(creditCard3.$cancelRequest).toBeUndefined();
   });
 
-  it('should not make the request cancellable if there is a timeout', function() {
+  it('should accept numeric timeouts in cancellable actions and cancel the request when timeout occurs', function() {
+    $httpBackend.whenGET('/CreditCard').respond({});
+
     var CreditCard = $resource('/CreditCard', {}, {
       get: {
         method: 'GET',
@@ -1540,9 +1544,13 @@ describe('cancelling requests', function() {
       }
     });
 
-    var creditCard = CreditCard.get();
+    CreditCard.get();
+    $timeout.flush();
+    expect($httpBackend.flush).toThrow(new Error('No pending request to flush !'));
 
-    expect(creditCard.$cancelRequest).toBeUndefined();
+    CreditCard.get();
+    expect($httpBackend.flush).not.toThrow();
+
   });
 
   it('should cancel the request (if cancellable), when calling `$cancelRequest`', function() {
@@ -1551,6 +1559,24 @@ describe('cancelling requests', function() {
     var CreditCard = $resource('/CreditCard', {}, {
       get: {
         method: 'GET',
+        cancellable: true
+      }
+    });
+
+    CreditCard.get().$cancelRequest();
+    expect($httpBackend.flush).toThrow(new Error('No pending request to flush !'));
+
+    CreditCard.get();
+    expect($httpBackend.flush).not.toThrow();
+  });
+
+  it('should cancel the request, when calling `$cancelRequest` in cancellable actions with timeout defined', function() {
+    $httpBackend.whenGET('/CreditCard').respond({});
+
+    var CreditCard = $resource('/CreditCard', {}, {
+      get: {
+        method: 'GET',
+        timeout: 10000,
         cancellable: true
       }
     });
