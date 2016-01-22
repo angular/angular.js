@@ -3996,7 +3996,7 @@ describe('$compile', function() {
 
         componentScope.ref = 'ignore me';
         expect(function() { $rootScope.$apply(); }).
-            toThrowMinErr("$compile", "nonassign", "Expression ''hello ' + name' used with directive 'myComponent' is non-assignable!");
+            toThrowMinErr("$compile", "nonassign", "Expression ''hello ' + name' in attribute 'ref' used with directive 'myComponent' is non-assignable!");
         expect(componentScope.ref).toBe('hello world');
         // reset since the exception was rethrown which prevented phase clearing
         $rootScope.$$phase = null;
@@ -4013,7 +4013,7 @@ describe('$compile', function() {
 
         componentScope.ref = 'ignore me';
         expect(function() { $rootScope.$apply(); }).
-            toThrowMinErr("$compile", "nonassign", "Expression 'undefined' used with directive 'myComponent' is non-assignable!");
+            toThrowMinErr("$compile", "nonassign", "Expression 'undefined' in attribute 'ref' used with directive 'myComponent' is non-assignable!");
         expect(componentScope.ref).toBeUndefined();
 
         $rootScope.$$phase = null; // reset since the exception was rethrown which prevented phase clearing
@@ -4070,7 +4070,7 @@ describe('$compile', function() {
           componentScope.reference = {name: 'b'};
           expect(function() {
             $rootScope.$apply();
-          }).toThrowMinErr("$compile", "nonassign", "Expression '{name: name}' used with directive 'myComponent' is non-assignable!");
+          }).toThrowMinErr("$compile", "nonassign", "Expression '{name: name}' in attribute 'reference' used with directive 'myComponent' is non-assignable!");
 
         }));
 
