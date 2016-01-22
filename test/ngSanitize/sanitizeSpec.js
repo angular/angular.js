@@ -153,6 +153,7 @@ describe('HTML', function() {
 
   it('should remove unsafe value', function() {
     expectHTML('<a href="javascript:alert()">').toEqual('<a></a>');
+    expectHTML('<img src="foo.gif" usemap="#foomap">').toEqual('<img src="foo.gif">');
   });
 
   it('should handle self closed elements', function() {
