@@ -358,5 +358,5 @@ module.exports = function(grunt) {
   grunt.registerTask('webserver', ['connect:devserver']);
   grunt.registerTask('package', ['bower', 'validate-angular-files', 'clean', 'buildall', 'minall', 'collect-errors', 'docs', 'copy', 'write', 'compress']);
   grunt.registerTask('ci-checks', ['ddescribe-iit', 'merge-conflict', 'jshint', 'jscs']);
-  grunt.registerTask('default', ['package']);
+  grunt.registerTask('default', []);
 };

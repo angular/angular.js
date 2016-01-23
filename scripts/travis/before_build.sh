@@ -12,7 +12,7 @@ fi
 npm install -g grunt-cli
 
 if [ $JOB != "ci-checks" ]; then
-  grunt package
+  # grunt package
   echo "wait_for_browser_provider"
   ./scripts/travis/wait_for_browser_provider.sh
 fi

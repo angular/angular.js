@@ -19,7 +19,7 @@ module.exports = function(config, specificOptions) {
       options: {
         // We need selenium version +2.46 for Firefox 39 and the last selenium version for OS X is 2.45.
         // TODO: Uncomment when there is a selenium 2.46 available for OS X.
-        // 'selenium-version': '2.46.0'
+        'selenium-version': '2.48.2'
       }
     },
 
@@ -49,6 +49,12 @@ module.exports = function(config, specificOptions) {
         browserName: 'safari',
         platform: 'OS X 10.10',
         version: '8'
+      },
+      'SL_Safari_9': {
+        base: 'SauceLabs',
+        browserName: 'safari',
+        platform: 'OS X 10.11',
+        version: '9'
       },
       'SL_IE_9': {
         base: 'SauceLabs',
