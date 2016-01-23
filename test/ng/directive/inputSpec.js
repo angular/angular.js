@@ -2103,6 +2103,83 @@ describe('input', function() {
     });
   });
 
+  ['month', 'week', 'time', 'date', 'datetime-local'].forEach(function(inputType) {
+    if (jqLite('<input type="' + inputType + '">').prop('type') !== inputType) {
+      return;
+    }
+
+    describe(inputType, function() {
+      they('should re-validate and dirty when partially editing the input value ($prop event)',
+        ['keydown', 'wheel', 'mousedown'],
+        function(validationEvent) {
+          var mockValidity = {valid: true, badInput: false};
+          var inputElm = helper.compileInput('<input type="' + inputType + '" ng-model="val" name="alias" />', mockValidity);
+
+          expect(inputElm).toBeValid();
+          expect($rootScope.form.alias.$pristine).toBeTruthy();
+
+          inputElm.triggerHandler({type: validationEvent});
+          mockValidity.valid = false;
+          mockValidity.badInput = true;
+          $browser.defer.flush();
+          expect(inputElm).toBeInvalid();
+          expect($rootScope.form.alias.$pristine).toBeFalsy();
+        }
+      );
+
+      they('should do nothing when $prop event fired but validity does not change',
+        ['keydown', 'wheel', 'mousedown'],
+        function(validationEvent) {
+          var mockValidity = {valid: true, badInput: false};
+          var inputElm = helper.compileInput('<input type="' + inputType + '" ng-model="val" name="alias" />', mockValidity);
+
+          expect(inputElm).toBeValid();
+          expect($rootScope.form.alias.$pristine).toBeTruthy();
+
+          inputElm.triggerHandler({type: validationEvent});
+          $browser.defer.flush();
+          expect(inputElm).toBeValid();
+          expect($rootScope.form.alias.$pristine).toBeTruthy();
+        }
+      );
+
+      they('should re-validate dirty when already $invalid and partially editing the input value ($prop event)',
+        ['keydown', 'wheel', 'mousedown'],
+        function(validationEvent) {
+          var mockValidity = {valid: false, valueMissing: true, badInput: false};
+          var inputElm = helper.compileInput('<input type="' + inputType + '" required ng-model="val" name="alias" />', mockValidity);
+
+          expect(inputElm).toBeInvalid();
+          expect($rootScope.form.alias.$pristine).toBeTruthy();
+
+          inputElm.triggerHandler({type: validationEvent});
+          mockValidity.valid = false;
+          mockValidity.valueMissing = true;
+          mockValidity.badInput = true;
+          $browser.defer.flush();
+          expect(inputElm).toBeInvalid();
+          expect($rootScope.form.alias.$pristine).toBeFalsy();
+        }
+      );
+
+      they('should do nothing when already $invalid and $prop event fired but validity does not change',
+        ['keydown', 'wheel', 'mousedown'],
+        function(validationEvent) {
+          var mockValidity = {valid: false, valueMissing: true, badInput: false};
+          var inputElm = helper.compileInput('<input type="' + inputType + '" required ng-model="val" name="alias" />', mockValidity);
+
+          expect(inputElm).toBeInvalid();
+          expect($rootScope.form.alias.$pristine).toBeTruthy();
+
+          inputElm.triggerHandler({type: validationEvent});
+          $browser.defer.flush();
+          expect(inputElm).toBeInvalid();
+          expect($rootScope.form.alias.$pristine).toBeTruthy();
+        }
+      );
+    });
+  });
+
 
   describe('number', function() {
 
