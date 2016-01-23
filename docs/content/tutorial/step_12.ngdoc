@@ -239,7 +239,7 @@ The name of the starting class is the name of the event that is fired (like `ent
 The active class name is the same as the starting class's but with an `-active` suffix.
 This two-class CSS naming convention allows the developer to craft an animation, beginning to end.
 
-In our example above, elements are expanded from a height of **0** to **120 pixels** when they're added to the 
+In our example above, elements are expanded from a height of **0** to **120 pixels** when they're added to the
 list and are collapsed back down to **0 pixels** before being removed from the list.
 There's also a nice fade-in and fade-out effect that occurs at the same time. All of this is handled
 by the CSS transition declarations at the top of the example code above.
@@ -357,10 +357,10 @@ For more on CSS animations, see the
 ## Animating `ngClass` with JavaScript
 
 Let's add another animation to our application. Switching to our `phone-detail.html` page,
-we see that we have a nice thumbnail swapper. By clicking on the thumbnails listed on the page,
+we see that we have a nice thumbnail swapper. By hovering over the thumbnails listed on the page,
 the profile phone image changes. But how can we change this around to add animations?
 
-Let's think about it first. Basically, when you click on a thumbnail image, you're changing the
+Let's think about it first. Basically, when you hover over a thumbnail image, you're changing the
 state of the profile image to reflect the newly selected thumbnail image.
 The best way to specify state changes within HTML is to use classes.
 Much like before, how we used a CSS class to specify an animation, this time the animation will
@@ -369,7 +369,7 @@ occur whenever the CSS class itself changes.
 Whenever a new phone thumbnail is selected, the state changes and the `.active` CSS class is added
 to the matching profile image and the animation plays.
 
-Let's get started and tweak our HTML code on the `phone-detail.html` page first. Notice that we 
+Let's get started and tweak our HTML code on the `phone-detail.html` page first. Notice that we
 have changed the way we display our large image:
 
 __`app/partials/phone-detail.html`.__
