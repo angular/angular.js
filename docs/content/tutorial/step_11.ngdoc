@@ -32,18 +32,18 @@ We are using [Bower][bower] to install client side dependencies.  This step upda
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "angular": "1.4.x",
-    "angular-mocks": "1.4.x",
+    "angular": "1.5.x",
+    "angular-mocks": "1.5.x",
     "jquery": "~2.1.1",
     "bootstrap": "~3.1.1",
-    "angular-route": "1.4.x",
-    "angular-resource": "1.4.x"
+    "angular-route": "1.5.x",
+    "angular-resource": "1.5.x"
   }
 }
 ```
 
-The new dependency `"angular-resource": "1.4.x"` tells bower to install a version of the
-angular-resource component that is compatible with version 1.4.x.  We must ask bower to download
+The new dependency `"angular-resource": "1.5.x"` tells bower to install a version of the
+angular-resource component that is compatible with version 1.5.x.  We must ask bower to download
 and install this dependency. We can do this by running:
 
 ```
@@ -108,16 +108,16 @@ __`app/js/app.js`.__
 
 ```js
 ...
-angular.module('phonecatApp', ['ngRoute', 'phonecatControllers','phonecatFilters', 'phonecatServices']).
+angular.module('phonecatApp', ['ngRoute', 'phonecatComponents','phonecatFilters', 'phonecatServices']).
 ...
 ```
 
 We need to add the 'phonecatServices' module dependency to 'phonecatApp' module's requires array.
 
 
-## Controller
+## Component and Controller
 
-We simplified our sub-controllers (`PhoneListCtrl` and `PhoneDetailCtrl`) by factoring out the
+We simplified our component controllers (`PhoneListCtrl` and `PhoneDetailCtrl`) by factoring out the
 lower-level {@link ng.$http $http} service, replacing it with a new service called
 `Phone`. Angular's {@link ngResource.$resource `$resource`} service is easier to
 use than `$http` for interacting with data sources exposed as RESTful resources. It is also easier
@@ -126,35 +126,42 @@ now to understand what the code in our controllers is doing.
 __`app/js/controllers.js`.__
 
 ```js
-var phonecatControllers = angular.module('phonecatControllers', []);
+var phonecatComponents = angular.module('phonecatComponents', []);
 
-...
-
-phonecatControllers.controller('PhoneListCtrl', ['$scope', 'Phone', function($scope, Phone) {
-  $scope.phones = Phone.query();
-  $scope.orderProp = 'age';
+phonecatComponents.component('phoneList', {
+  controller: 'PhoneListCtrl',
+  templateUrl: 'partials/phone-list.html'
+}).controller('PhoneListCtrl', ['Phone', function (Phone) {
+  this.phones = Phone.query();
+  this.orderProp = 'age';
 }]);
 
-phonecatControllers.controller('PhoneDetailCtrl', ['$scope', '$routeParams', 'Phone', function($scope, $routeParams, Phone) {
-  $scope.phone = Phone.get({phoneId: $routeParams.phoneId}, function(phone) {
-    $scope.mainImageUrl = phone.images[0];
-  });
 
-  $scope.setImage = function(imageUrl) {
-    $scope.mainImageUrl = imageUrl;
-  }
-}]);
+phonecatComponents.component('phoneDetail', {
+  controller: 'PhoneDetailCtrl',
+  templateUrl: 'partials/phone-detail.html'
+}).controller('PhoneDetailCtrl', ['$routeParams', 'Phone',
+  function($routeParams, Phone) {
+    var ctrl = this;
+    ctrl.phone = Phone.get({phoneId: $routeParams.phoneId}, function(phone) {
+      ctrl.mainImageUrl = phone.images[0];
+    });
+
+    ctrl.setImage = function(imageUrl) {
+      ctrl.mainImageUrl = imageUrl;
+    };
+  }]);
 ```
 
 Notice how in `PhoneListCtrl` we replaced:
 
     $http.get('phones/phones.json').success(function(data) {
-      $scope.phones = data;
+      ctrl.phones = data;
     });
 
 with:
 
-    $scope.phones = Phone.query();
+    this.phones = Phone.query();
 
 This is a simple statement that we want to query for all phones.
 
@@ -195,9 +202,9 @@ service correctly.
 The {@link ngResource.$resource $resource} service augments the response object
 with methods for updating and deleting the resource. If we were to use the standard `toEqual`
 matcher, our tests would fail because the test values would not match the responses exactly. To
-solve the problem, we use a newly-defined `toEqualData` [Jasmine matcher][jasmine-matchers]. When
-the `toEqualData` matcher compares two objects, it takes only object properties into account and
-ignores methods.
+solve the problem, we instruct Jasmine to use a [custom equality tester][jasmine-equality]
+to compare two objects. It takes only object properties into account and ignores properties
+added by the `$resource` service.
 
 __`test/unit/controllersSpec.js`:__
 
@@ -206,72 +213,13 @@ __`test/unit/controllersSpec.js`:__
 describe('PhoneCat controllers', function() {
 
   beforeEach(function(){
-    this.addMatchers({
-      toEqualData: function(expected) {
-        return angular.equals(this.actual, expected);
-      }
-    });
+    jasmine.addCustomEqualityTester(angular.equals);
   });
 
   beforeEach(module('phonecatApp'));
-  beforeEach(module('phonecatServices'));
 
+  // ...
 
-  describe('PhoneListCtrl', function(){
-    var scope, ctrl, $httpBackend;
-
-    beforeEach(inject(function(_$httpBackend_, $rootScope, $controller) {
-      $httpBackend = _$httpBackend_;
-      $httpBackend.expectGET('phones/phones.json').
-          respond([{name: 'Nexus S'}, {name: 'Motorola DROID'}]);
-
-      scope = $rootScope.$new();
-      ctrl = $controller('PhoneListCtrl', {$scope: scope});
-    }));
-
-
-    it('should create "phones" model with 2 phones fetched from xhr', function() {
-      expect(scope.phones).toEqualData([]);
-      $httpBackend.flush();
-
-      expect(scope.phones).toEqualData(
-          [{name: 'Nexus S'}, {name: 'Motorola DROID'}]);
-    });
-
-
-    it('should set the default value of orderProp model', function() {
-      expect(scope.orderProp).toBe('age');
-    });
-  });
-
-
-  describe('PhoneDetailCtrl', function(){
-    var scope, $httpBackend, ctrl,
-        xyzPhoneData = function() {
-          return {
-            name: 'phone xyz',
-            images: ['image/url1.png', 'image/url2.png']
-          }
-        };
-
-
-    beforeEach(inject(function(_$httpBackend_, $rootScope, $routeParams, $controller) {
-      $httpBackend = _$httpBackend_;
-      $httpBackend.expectGET('phones/xyz.json').respond(xyzPhoneData());
-
-      $routeParams.phoneId = 'xyz';
-      scope = $rootScope.$new();
-      ctrl = $controller('PhoneDetailCtrl', {$scope: scope});
-    }));
-
-
-    it('should fetch phone detail', function() {
-      expect(scope.phone).toEqualData({});
-      $httpBackend.flush();
-
-      expect(scope.phone).toEqualData(xyzPhoneData());
-    });
-  });
 });
 ```
 
@@ -282,12 +230,13 @@ You should now see the following output in the Karma tab:
 
 # Summary
 
-Now that we've seen how to build a custom service as a RESTful client, we're ready for {@link step_12 step 12} (the last step!) to
-learn how to improve this application with animations.
+Now that we've seen how to build a custom service as a RESTful client, we're
+ready for {@link step_12 step 12} to learn how to improve this application with
+animations.
 
 
 <ul doc-tutorial-nav="11"></ul>
 
 [restful]: http://en.wikipedia.org/wiki/Representational_State_Transfer
-[jasmine-matchers]: http://jasmine.github.io/1.3/introduction.html#section-Matchers
+[jasmine-equality]: http://jasmine.github.io/2.4/custom_equality.html
 [bower]: http://bower.io/

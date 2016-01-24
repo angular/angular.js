@@ -37,13 +37,16 @@ __`app/phones/phones.json`__ (sample snippet):
 
 ## Template
 
-__`app/index.html`:__
+__`app/partials/phone-list.html`:__
 
 ```html
 ...
         <ul class="phones">
-          <li ng-repeat="phone in phones | filter:query | orderBy:orderProp" class="thumbnail">
-            <a href="#/phones/{{phone.id}}" class="thumb"><img ng-src="{{phone.imageUrl}}" alt="{{phone.name}}"></a>
+          <li ng-repeat="phone in $ctrl.phones | filter:$ctrl.query | orderBy:$ctrl.orderProp"
+              class="thumbnail">
+            <a href="#/phones/{{phone.id}}" class="thumb">
+              <img ng-src="{{phone.imageUrl}}" alt="{{phone.name}}">
+            </a>
             <a href="#/phones/{{phone.id}}">{{phone.name}}</a>
             <p>{{phone.snippet}}</p>
           </li>
@@ -71,7 +74,7 @@ __`test/e2e/scenarios.js`__:
 ```js
 ...
     it('should render phone specific links', function() {
-      var query = element(by.model('query'));
+      var query = element(by.model('$ctrl.query'));
       query.sendKeys('nexus');
       element.all(by.css('.phones li a')).first().click();
       browser.getLocationAbsUrl().then(function(url) {

@@ -6,7 +6,7 @@
 <ul doc-tutorial-nav="12"></ul>
 
 
-In this final step, we will enhance our phonecat web application by attaching CSS and JavaScript
+In this step, we will enhance our phonecat web application by attaching CSS and JavaScript
 animations on top of the template code we created before.
 
 * We now use the `ngAnimate` module to enable animations throughout the application.
@@ -36,19 +36,19 @@ We are using [Bower][bower] to install client side dependencies.  This step upda
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "angular": "1.4.x",
-    "angular-mocks": "1.4.x",
+    "angular": "1.5.x",
+    "angular-mocks": "1.5.x",
     "jquery": "~2.1.1",
     "bootstrap": "~3.1.1",
-    "angular-route": "1.4.x",
-    "angular-resource": "1.4.x",
-    "angular-animate": "1.4.x"
+    "angular-route": "1.5.x",
+    "angular-resource": "1.5.x",
+    "angular-animate": "1.5.x"
   }
 }
 ```
 
-* `"angular-animate": "1.4.x"` tells bower to install a version of the
-angular-animate component that is compatible with version 1.4.x.
+* `"angular-animate": "1.5.x"` tells bower to install a version of the
+angular-animate component that is compatible with version 1.5.x.
 * `"jquery": "~2.1.1"` tells bower to install the 2.1.1 version of jQuery.  Note that this is not an
 Angular library, it is the standard jQuery library.  We can use bower to install a wide range of 3rd
 party libraries.
@@ -111,7 +111,7 @@ __`app/index.html`.__
 ```
 
 <div class="alert alert-error">
-  **Important:** Be sure to use jQuery version 2.1 or newer when using Angular 1.4; jQuery 1.x is
+  **Important:** Be sure to use jQuery version 2.1 or newer when using Angular 1.5; jQuery 1.x is
   not officially supported.
   Be sure to load jQuery before all AngularJS scripts, otherwise AngularJS won't detect jQuery and
   animations will not work as expected.
@@ -142,7 +142,7 @@ angular.module('phonecatApp', [
   'ngRoute',
 
   'phonecatAnimations',
-  'phonecatControllers',
+  'phonecatComponents',
   'phonecatFilters',
   'phonecatServices',
 ]);
@@ -165,9 +165,11 @@ __`app/partials/phone-list.html`.__
   which we will later use for animations:
 -->
 <ul class="phones">
-  <li ng-repeat="phone in phones | filter:query | orderBy:orderProp"
+  <li ng-repeat="phone in $ctrl.phones | filter:$ctrl.query | orderBy:$ctrl.orderProp"
       class="thumbnail phone-listing">
-    <a href="#/phones/{{phone.id}}" class="thumb"><img ng-src="{{phone.imageUrl}}"></a>
+    <a href="#/phones/{{phone.id}}" class="thumb">
+      <img ng-src="{{phone.imageUrl}}" alt="{{phone.name}}">
+    </a>
     <a href="#/phones/{{phone.id}}">{{phone.name}}</a>
     <p>{{phone.snippet}}</p>
   </li>
@@ -379,17 +381,17 @@ __`app/partials/phone-detail.html`.__
 <div class="phone-images">
   <img ng-src="{{img}}"
        class="phone"
-       ng-repeat="img in phone.images"
-       ng-class="{active:mainImageUrl==img}">
+       ng-repeat="img in $ctrl.phone.images"
+       ng-class="{active:$ctrl.mainImageUrl==img}">
 </div>
 
-<h1>{{phone.name}}</h1>
+<h1>{{$ctrl.phone.name}}</h1>
 
-<p>{{phone.description}}</p>
+<p>{{$ctrl.phone.description}}</p>
 
 <ul class="phone-thumbs">
-  <li ng-repeat="img in phone.images">
-    <img ng-src="{{img}}" ng-mouseenter="setImage(img)">
+  <li ng-repeat="img in $ctrl.phone.images">
+    <img ng-src="{{img}}" ng-click="$ctrl.setImage(img)">
   </li>
 </ul>
 ```
@@ -530,8 +532,8 @@ do any cleanup necessary for when the animation finishes.
 
 # Summary
 
-There you have it!  We have created a web app in a relatively short amount of time. In the {@link
-the_end closing notes} we'll cover where to go from here.
+Our application is now much more pleasant to use, thanks to the smooth transitions between pages
+and UI states. We're ready to move on to {@link step_13 step 13} where we'll prepare the code for future expansion.
 
 <ul doc-tutorial-nav="12"></ul>
 

@@ -51,20 +51,24 @@ Each of these files describes various properties of the phone using the same dat
 show this data in the phone detail view.
 
 
-## Controller
+## Component and Controller
 
 We'll expand the `PhoneDetailCtrl` by using the `$http` service to fetch the JSON files. This works
 the same way as the phone list controller.
 
-__`app/js/controllers.js`:__
+__`app/js/components.js`:__
 
 ```js
-var phonecatControllers = angular.module('phonecatControllers',[]);
+var phonecatComponents = angular.module('phonecatComponents',[]);
 
-phonecatControllers.controller('PhoneDetailCtrl', ['$scope', '$routeParams', '$http',
-  function($scope, $routeParams, $http) {
+phonecatComponents.component('phoneDetail', {
+  controller: 'PhoneDetailCtrl',
+  templateUrl: 'partials/phone-detail.html'
+}).controller('PhoneDetailCtrl', ['$routeParams', '$http',
+  function($routeParams, $http) {
+    var ctrl = this;
     $http.get('phones/' + $routeParams.phoneId + '.json').success(function(data) {
-      $scope.phone = data;
+      ctrl.phone = data;
     });
   }]);
 ```
@@ -83,14 +87,14 @@ our model into the view.
 __`app/partials/phone-detail.html`:__
 
 ```html
-<img ng-src="{{phone.images[0]}}" class="phone">
+<img ng-src="{{$ctrl.phone.images[0]}}" class="phone">
 
-<h1>{{phone.name}}</h1>
+<h1>{{$ctrl.phone.name}}</h1>
 
-<p>{{phone.description}}</p>
+<p>{{$ctrl.phone.description}}</p>
 
 <ul class="phone-thumbs">
-  <li ng-repeat="img in phone.images">
+  <li ng-repeat="img in $ctrl.phone.images">
     <img ng-src="{{img}}">
   </li>
 </ul>
@@ -100,13 +104,13 @@ __`app/partials/phone-detail.html`:__
     <span>Availability and Networks</span>
     <dl>
       <dt>Availability</dt>
-      <dd ng-repeat="availability in phone.availability">{{availability}}</dd>
+      <dd ng-repeat="availability in $ctrl.phone.availability">{{availability}}</dd>
     </dl>
   </li>
     ...
   <li>
     <span>Additional Features</span>
-    <dd>{{phone.additionalFeatures}}</dd>
+    <dd>{{$ctrl.phone.additionalFeatures}}</dd>
   </li>
 </ul>
 ```
@@ -130,23 +134,22 @@ __`test/unit/controllersSpec.js`:__
   ...
 
   describe('PhoneDetailCtrl', function(){
-    var scope, $httpBackend, ctrl;
+    var $httpBackend, ctrl;
 
-    beforeEach(inject(function(_$httpBackend_, $rootScope, $routeParams, $controller) {
+    beforeEach(inject(function(_$httpBackend_, $routeParams, $controller) {
       $httpBackend = _$httpBackend_;
       $httpBackend.expectGET('phones/xyz.json').respond({name:'phone xyz'});
 
       $routeParams.phoneId = 'xyz';
-      scope = $rootScope.$new();
-      ctrl = $controller('PhoneDetailCtrl', {$scope: scope});
+      ctrl = $controller('PhoneDetailCtrl');
     }));
 
 
     it('should fetch phone detail', function() {
-      expect(scope.phone).toBeUndefined();
+      expect(ctrl.phone).toBeUndefined();
       $httpBackend.flush();
 
-      expect(scope.phone).toEqual({name:'phone xyz'});
+      expect(ctrl.phone).toEqual({name:'phone xyz'});
     });
   });
 ...
@@ -172,7 +175,7 @@ __`test/e2e/scenarios.js`:__
 
 
     it('should display nexus-s page', function() {
-      expect(element(by.binding('phone.name')).getText()).toBe('Nexus S');
+      expect(element(by.binding('$ctrl.phone.name')).getText()).toBe('Nexus S');
     });
   });
 ...

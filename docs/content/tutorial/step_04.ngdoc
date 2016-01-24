@@ -19,28 +19,28 @@ the repeater, and letting the data binding magic do the rest of the work.
 
 ## Template
 
-__`app/index.html`:__
+__`app/partials/phone-list.html`:__
 
 ```html
-  Search: <input ng-model="query">
+  Search: <input ng-model="$ctrl.query">
   Sort by:
-  <select ng-model="orderProp">
+  <select ng-model="$ctrl.orderProp">
     <option value="name">Alphabetical</option>
     <option value="age">Newest</option>
   </select>
 
 
   <ul class="phones">
-    <li ng-repeat="phone in phones | filter:query | orderBy:orderProp">
+    <li ng-repeat="phone in $ctrl.phones | filter:$ctrl.query | orderBy:$ctrl.orderProp">
       <span>{{phone.name}}</span>
       <p>{{phone.snippet}}</p>
     </li>
   </ul>
 ```
 
-We made the following changes to the `index.html` template:
+We made the following changes to the `phone-list.html` template:
 
-* First, we added a `<select>` html element named `orderProp`, so that our users can pick from the
+* First, we added a `<select>` html element named `$ctrl.orderProp`, so that our users can pick from the
 two provided sorting options.
 
 <img class="diagram" src="img/tutorial/tutorial_04.png">
@@ -49,8 +49,8 @@ two provided sorting options.
 filter to further process the input into the repeater. `orderBy` is a filter that takes an input
 array, copies it and reorders the copy which is then returned.
 
-Angular creates a two way data-binding between the select element and the `orderProp` model.
-`orderProp` is then used as the input for the `orderBy` filter.
+Angular creates a two way data-binding between the select element and the `$ctrl.orderProp` model.
+`$ctrl.orderProp` is then used as the input for the `orderBy` filter.
 
 As we discussed in the section about data-binding and the repeater in step 3, whenever the model
 changes (for example because a user changes the order with the select drop down menu), Angular's
@@ -61,13 +61,16 @@ necessary!
 
 ## Controller
 
-__`app/js/controllers.js`:__
+__`app/js/components.js`:__
 
 ```js
 var phonecatApp = angular.module('phonecatApp', []);
 
-phonecatApp.controller('PhoneListCtrl', function ($scope) {
-  $scope.phones = [
+phonecatApp.component('phoneList', {
+  controller: 'PhoneListCtrl',
+  templateUrl: 'partials/phone-list.html'
+}).controller('PhoneListCtrl', function() {
+  this.phones = [
     {'name': 'Nexus S',
      'snippet': 'Fast just got faster with Nexus S.',
      'age': 1},
@@ -79,7 +82,7 @@ phonecatApp.controller('PhoneListCtrl', function ($scope) {
      'age': 3}
   ];
 
-  $scope.orderProp = 'age';
+  this.orderProp = 'age';
 });
 ```
 
@@ -110,22 +113,21 @@ __`test/unit/controllersSpec.js`:__
 describe('PhoneCat controllers', function() {
 
   describe('PhoneListCtrl', function(){
-    var scope, ctrl;
+    var ctrl;
 
     beforeEach(module('phonecatApp'));
 
     beforeEach(inject(function($controller) {
-      scope = {};
-      ctrl = $controller('PhoneListCtrl', {$scope:scope});
+      ctrl = $controller('PhoneListCtrl');
     }));
 
     it('should create "phones" model with 3 phones', function() {
-      expect(scope.phones.length).toBe(3);
+      expect(ctrl.phones.length).toBe(3);
     });
 
 
     it('should set the default value of orderProp model', function() {
-      expect(scope.orderProp).toBe('age');
+      expect(ctrl.orderProp).toBe('age');
     });
   });
 });
@@ -150,8 +152,8 @@ __`test/e2e/scenarios.js`:__
 ...
     it('should be possible to control phone order via the drop down select box', function() {
 
-      var phoneNameColumn = element.all(by.repeater('phone in phones').column('phone.name'));
-      var query = element(by.model('query'));
+      var phoneNameColumn = element.all(by.repeater('phone in $ctrl.phones').column('phone.name'));
+      var query = element(by.model('$ctrl.query'));
 
       function getNames() {
         return phoneNameColumn.map(function(elm) {
@@ -166,7 +168,7 @@ __`test/e2e/scenarios.js`:__
         "MOTOROLA XOOM\u2122"
       ]);
 
-      element(by.model('orderProp')).element(by.css('option[value="name"]')).click();
+      element(by.model('$ctrl.orderProp')).element(by.css('option[value="name"]')).click();
 
       expect(getNames()).toEqual([
         "MOTOROLA XOOM\u2122",
@@ -185,7 +187,7 @@ You can now rerun `npm run protractor` to see the tests run.
 you'll see that Angular will temporarily add a new blank ("unknown") option to the drop-down list and the
 ordering will default to unordered/natural order.
 
-* Add an `{{orderProp}}` binding into the `index.html` template to display its current value as
+* Add an `{{$ctrl.orderProp}}` binding into the `phone-list.html` template to display its current value as
 text.
 
 * Reverse the sort order by adding a `-` symbol before the sorting value: `<option value="-age">Oldest</option>`

@@ -14,23 +14,27 @@ clicking on the desired thumbnail image. Let's have a look at how we can do this
 
 <div doc-tutorial-reset="10"></div>
 
-## Controller
+## Component and Controller
 
-__`app/js/controllers.js`:__
+__`app/js/components.js`:__
 
 ```js
 ...
-var phonecatControllers = angular.module('phonecatControllers',[]);
+var phonecatComponents = angular.module('phonecatComponents', []);
 
-phonecatControllers.controller('PhoneDetailCtrl', ['$scope', '$routeParams', '$http',
-  function($scope, $routeParams, $http) {
+phonecatComponents.component('phoneDetail', {
+  controller: 'PhoneDetailCtrl',
+  templateUrl: 'partials/phone-detail.html'
+}).controller('PhoneDetailCtrl', ['$routeParams', '$http',
+  function($routeParams, $http) {
+    var ctrl = this;
     $http.get('phones/' + $routeParams.phoneId + '.json').success(function(data) {
-      $scope.phone = data;
-      $scope.mainImageUrl = data.images[0];
+      ctrl.phone = data;
+      ctrl.mainImageUrl = data.images[0];
     });
 
-    $scope.setImage = function(imageUrl) {
-      $scope.mainImageUrl = imageUrl;
+    ctrl.setImage = function(imageUrl) {
+      ctrl.mainImageUrl = imageUrl;
     };
   }]);
 ```
@@ -38,7 +42,7 @@ phonecatControllers.controller('PhoneDetailCtrl', ['$scope', '$routeParams', '$h
 In the `PhoneDetailCtrl` controller, we created the `mainImageUrl` model property and set its
 default value to the first phone image URL.
 
-We also created a `setImage` event handler function that will change the value of `mainImageUrl`.
+We also created a `setImage` event handler method that will change the value of `mainImageUrl`.
 
 
 ## Template
@@ -46,23 +50,23 @@ We also created a `setImage` event handler function that will change the value o
 __`app/partials/phone-detail.html`:__
 
 ```html
-<img ng-src="{{mainImageUrl}}" class="phone">
+<img ng-src="{{$ctrl.mainImageUrl}}" class="phone">
 
 ...
 
 <ul class="phone-thumbs">
-  <li ng-repeat="img in phone.images">
-    <img ng-src="{{img}}" ng-click="setImage(img)">
+  <li ng-repeat="img in $ctrl.phone.images">
+    <img ng-src="{{img}}" ng-click="$ctrl.setImage(img)">
   </li>
 </ul>
 ...
 ```
 
-We bound the `ngSrc` directive of the large image to the `mainImageUrl` property.
+We bound the `ngSrc` directive of the large image to the `$ctrl.mainImageUrl` property.
 
 We also registered an {@link ng.directive:ngClick `ngClick`}
 handler with thumbnail images. When a user clicks on one of the thumbnail images, the handler will
-use the `setImage` event handler function to change the value of the `mainImageUrl` property to the
+use the `$ctrl.setImage` event handler method to change the value of the `$ctrl.mainImageUrl` property to the
 URL of the thumbnail image.
 
 <div style="display: none">
@@ -115,7 +119,7 @@ __`test/unit/controllersSpec.js`:__
 ...
 
  describe('PhoneDetailCtrl', function(){
-    var scope, $httpBackend, ctrl,
+    var $httpBackend, ctrl,
         xyzPhoneData = function() {
           return {
             name: 'phone xyz',
@@ -124,21 +128,20 @@ __`test/unit/controllersSpec.js`:__
         };
 
 
-    beforeEach(inject(function(_$httpBackend_, $rootScope, $routeParams, $controller) {
+    beforeEach(inject(function(_$httpBackend_, $routeParams, $controller) {
       $httpBackend = _$httpBackend_;
       $httpBackend.expectGET('phones/xyz.json').respond(xyzPhoneData());
 
       $routeParams.phoneId = 'xyz';
-      scope = $rootScope.$new();
-      ctrl = $controller('PhoneDetailCtrl', {$scope: scope});
+      ctrl = $controller('PhoneDetailCtrl');
     }));
 
 
     it('should fetch phone detail', function() {
-      expect(scope.phone).toBeUndefined();
+      expect(ctrl.phone).toBeUndefined();
       $httpBackend.flush();
 
-      expect(scope.phone).toEqual(xyzPhoneData());
+      expect(ctrl.phone).toEqual(xyzPhoneData());
     });
   });
 ```
@@ -150,13 +153,13 @@ Your unit tests should now be passing.
 
 * Let's add a new controller method to `PhoneDetailCtrl`:
 
-          $scope.hello = function(name) {
+          ctrl.hello = function(name) {
               alert('Hello ' + (name || 'world') + '!');
           }
 
   and add:
 
-          <button ng-click="hello('Elmo')">Hello</button>
+          <button ng-click="$ctrl.hello('Elmo')">Hello</button>
 
   to the `phone-detail.html` template.
 
