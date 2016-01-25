@@ -5,7 +5,7 @@
 
 # Interpolation and data-binding
 
-Interpolation markup with embedded {@link guide/expressions expressions} is used by Angular to
+Interpolation markup with embedded {@link guide/expression expressions} is used by Angular to
 provide data-binding to text nodes and attribute values.
 
 An example of interpolation is shown below:
