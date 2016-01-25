@@ -593,7 +593,6 @@ angular.module('ngResource', ['ng']).
           } else {
             if(cancellable) {
               simulatedTimeout = action.timeout;
-              delete action.timeout;
             }
           }
 
@@ -665,11 +664,7 @@ angular.module('ngResource', ['ng']).
               httpConfig.timeout = timeoutDeferred.promise;
 
               if(simulatedTimeout) {
-                simulatedTimeoutPromise = $timeout(function() {
-                  if(timeoutDeferred) {
-                    timeoutDeferred.resolve();
-                  }
-                }, simulatedTimeout);
+                simulatedTimeoutPromise = $timeout(timeoutDeferred.resolve, simulatedTimeout);
               }
             }
 
@@ -723,6 +718,7 @@ angular.module('ngResource', ['ng']).
                 value.$cancelRequest = angular.noop;
                 timeoutDeferred = httpConfig.timeout = null;
                 $timeout.cancel(simulatedTimeoutPromise);
+                simulatedTimeoutPromise = null;
               }
             });
 
