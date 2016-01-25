@@ -401,7 +401,7 @@ This is clearly not a great solution.
 
 What we want to be able to do is separate the scope inside a directive from the scope
 outside, and then map the outer scope to a directive's inner scope. We can do this by creating what
-we call an **isolate scope**. To do this, we can use a directive's `scope` option:
+we call an **isolate scope**. To do this, we can use a {@link $compile#-scope- directive's `scope`} option:
 
 <example module="docsIsolateScopeDirective">
   <file name="script.js">
