@@ -79,6 +79,7 @@
     "parseKeyValue": false,
     "toKeyValue": false,
     "encodeUriSegment": false,
+    "decodeUriSegment": false,
     "encodeUriQuery": false,
     "angularInit": false,
     "bootstrap": false,

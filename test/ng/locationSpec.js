@@ -2492,8 +2492,21 @@ describe('$location', function() {
       locationUrl = new LocationHashbangUrl('http://server/pre/index.html', 'http://server/pre/', '#');
 
       locationUrl.$$parse('http://server/pre/index.html#http%3A%2F%2Fexample.com%2F');
+      expect(locationUrl.url()).toBe('/http:%2F%2Fexample.com%2F');
+      expect(locationUrl.absUrl()).toBe('http://server/pre/index.html#/http:%2F%2Fexample.com%2F');
+
+      locationUrl.$$parse('http://server/pre/index.html#http://example.com/');
       expect(locationUrl.url()).toBe('/http://example.com/');
       expect(locationUrl.absUrl()).toBe('http://server/pre/index.html#/http://example.com/');
+    });
+
+
+    it('should not decode `%2F` codes into forward slashes in the location path', function() {
+      locationUrl = new LocationHashbangUrl('http://server/pre/index.html', 'http://server/pre/', '#');
+
+      locationUrl.$$parse('http://server/pre/index.html#/abc%2Fxyz');
+      expect(locationUrl.url()).toBe('/abc%2Fxyz');
+      expect(locationUrl.absUrl()).toBe('http://server/pre/index.html#/abc%2Fxyz');
     });
 
     it('should throw on url(urlString, stateObject)', function() {

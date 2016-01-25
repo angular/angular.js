@@ -74,6 +74,7 @@
   parseKeyValue: true,
   toKeyValue: true,
   encodeUriSegment: true,
+  decodeUriSegment: true,
   encodeUriQuery: true,
   angularInit: true,
   bootstrap: true,
@@ -1338,9 +1339,21 @@ function toKeyValue(obj) {
  */
 function encodeUriSegment(val) {
   return encodeUriQuery(val, true).
+             replace(/%252F/gi, '%2F').
              replace(/%26/gi, '&').
              replace(/%3D/gi, '=').
              replace(/%2B/gi, '+');
+}
+
+
+/**
+ * We need our custom method because our segments may contain encoded forward slashes that should
+ * not be decoded.
+ */
+function decodeUriSegment(val) {
+  val = val.replace(/%2F/gi, '%252F');
+  val = decodeURIComponent(val);
+  return val;
 }
 
 
