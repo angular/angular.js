@@ -119,6 +119,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "km-kh",
+  "localeID": "km_KH",
   "pluralCat": function(n, opt_precision) {  return PLURAL_CATEGORY.OTHER;}
 });
 }]);
