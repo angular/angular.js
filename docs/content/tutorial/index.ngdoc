@@ -246,7 +246,7 @@ npm run update-webdriver
 
 *(You should only need to do this once.)*
 
-You will need to Java present on your dev machine to allow the Selenium standalone to be started.
+You will need to have Java present on your dev machine to allow the Selenium standalone to be started.
 Check if you already have java installed by opening a terminal/command line window and typing
 '''
 java -version
