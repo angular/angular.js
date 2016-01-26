@@ -73,7 +73,7 @@ describe("findLocaleId", function() {
   it("should throw an error otherwise", function() {
     expect(function() {
       findLocaleId("str", "otherwise")
-    }).toThrow("unknown type in findLocaleId: otherwise");
+    }).toThrowError("unknown type in findLocaleId: otherwise");
   });
 });
 
@@ -132,7 +132,10 @@ describe("extractCurrencySymbols", function() {
     ].join('\n');
 
     var localeInfo = {};
-    expect(extractCurrencySymbols(CONTENT)).toEqual({
+    var currencySymbols = extractCurrencySymbols(CONTENT);
+    expect(currencySymbols.GBP).toEqual([2, '£', 'GB£']);
+    expect(currencySymbols.AOA).toEqual([2, 'Kz', 'Kz']);
+    expect(currencySymbols).toEqual({
       'GBP':[2, '£', 'GB£'],
       'AOA':[2, 'Kz', 'Kz']
     });

@@ -50,10 +50,10 @@ function extractNumberSymbols(content, localeInfo, currencySymbols) {
 function extractCurrencySymbols(content) {
   //eval script in the current context so that we get access to all the symbols
   eval(content.toString());
-  var currencySymbols = goog.i18n.currency.CurrencyInfo;
-  currencySymbols.__proto__ = goog.i18n.currency.CurrencyInfoTier2;
+  // var currencySymbols = goog.i18n.currency.CurrencyInfo;
+  // currencySymbols.__proto__ = goog.i18n.currency.CurrencyInfoTier2;
 
-  return currencySymbols;
+  return Object.assign({}, goog.i18n.currency.CurrencyInfoTier2, goog.i18n.currency.CurrencyInfo);
 }
 
 function extractDateTimeSymbols(content, localeInfo) {
@@ -79,7 +79,7 @@ function pluralExtractor(content, localeInfo) {
     goog.LOCALE = localeIds[i].match(/[^_]+/)[0];
     try {
       eval(contentText);
-    } catch(e) {
+    } catch (e) {
       console.log("Error in eval(contentText): " + e.stack);
     }
     if (!goog.i18n.pluralRules.select) {
@@ -133,7 +133,7 @@ function canonicalizeForJsonStringify(unused_key, object) {
 
 function serializeContent(localeObj) {
   return JSON.stringify(localeObj, canonicalizeForJsonStringify, '  ')
-    .replace(new RegExp('[\\u007f-\\uffff]', 'g'), function(c) { return '\\u'+('0000'+c.charCodeAt(0).toString(16)).slice(-4); })
+    .replace(new RegExp('[\\u007f-\\uffff]', 'g'), function(c) { return '\\u' + ('0000' + c.charCodeAt(0).toString(16)).slice(-4); })
     .replace(/"@@|@@"/g, '');
 }
 
