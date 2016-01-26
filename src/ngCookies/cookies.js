@@ -40,7 +40,7 @@ angular.module('ngCookies', ['ng']).
      *   if the current domain is not a sub-domain of this domain or equal to it.
      * - **expires** - `{string|Date}` - String of the form "Wdy, DD Mon YYYY HH:MM:SS GMT"
      *   or a Date object indicating the exact date/time this cookie will expire.
-     * - **secure** - `{boolean}` - `true` if the cookie will be available only through a
+     * - **secure** - `{boolean}` - If `true`, then the cookie will only be available through a
      *   secured connection.
      *
      * Note: By default, the address that appears in your `<base>` tag will be used as the path.
