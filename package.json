@@ -16,7 +16,8 @@
   "scripts": {
     "preinstall": "node scripts/npm/check-node-modules.js --purge",
     "postinstall": "node scripts/npm/copy-npm-shrinkwrap.js",
-    "commit": "git-cz"
+    "commit": "git-cz",
+    "test-i18n": "jasmine-node i18n/spec"
   },
   "devDependencies": {
     "angular-benchpress": "0.x.x",
@@ -51,7 +52,7 @@
     "gulp-sourcemaps": "^1.2.2",
     "gulp-uglify": "^1.0.1",
     "gulp-util": "^3.0.1",
-    "jasmine-node": "~1.14.5",
+    "jasmine-node": "^2.0.0",
     "jasmine-reporters": "~1.0.1",
     "jshint-stylish": "~1.0.0",
     "karma": "^0.13.19",
