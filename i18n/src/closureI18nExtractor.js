@@ -161,6 +161,7 @@ function outputLocale(localeInfo, localeID) {
   if (!localeObj.DATETIME_FORMATS) {
     localeObj.DATETIME_FORMATS = fallBackObj.DATETIME_FORMATS;
   }
+  localeObj.localeID = localeID;
   localeObj.id = correctedLocaleId(localeID);
 
   var getDecimals = [
@@ -201,10 +202,11 @@ function outputLocale(localeInfo, localeID) {
     DATETIME_FORMATS: localeObj.DATETIME_FORMATS,
     NUMBER_FORMATS: localeObj.NUMBER_FORMATS,
     pluralCat: localeObj.pluralCat,
-    id: localeObj.id
+    id: localeObj.id,
+    localeID: localeID
   };
 
-  var content = serializeContent(localeInfo[localeID]);
+  var content = serializeContent(localeObj);
   if (content.indexOf('getVF(') < 0) {
     getVF = '';
   }

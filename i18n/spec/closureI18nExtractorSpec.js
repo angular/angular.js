@@ -4,6 +4,7 @@ findLocaleId = closureI18nExtractor.findLocaleId;
 extractNumberSymbols = closureI18nExtractor.extractNumberSymbols;
 extractCurrencySymbols = closureI18nExtractor.extractCurrencySymbols;
 extractDateTimeSymbols = closureI18nExtractor.extractDateTimeSymbols;
+outputLocale = closureI18nExtractor.outputLocale;
 
 
 function newTestLocaleInfo() {
@@ -272,3 +273,10 @@ describe("serializeContent", function() {
   });
 });
 
+describe("outputLocale", function() {
+  it("should render the correct locale ids", function() {
+    var output = outputLocale(newTestLocaleInfo(), 'fr_CA');
+    expect(output).toContain('"id": "fr-ca"');
+    expect(output).toContain('"localeID": "fr_CA"');
+  });
+});
