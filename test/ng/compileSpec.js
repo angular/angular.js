@@ -3137,6 +3137,54 @@ describe('$compile', function() {
     });
 
 
+    it('should support custom start interpolation symbol, even when `endSymbol` doesn\'t change',
+      function() {
+        module(function($compileProvider, $interpolateProvider) {
+          $interpolateProvider.startSymbol('[[');
+          $compileProvider.directive('myDirective', function() {
+            return {
+              template: '<span>{{ hello }}|{{ hello | uppercase }}</span>'
+            };
+          });
+        });
+
+        inject(function($compile, $rootScope) {
+          var tmpl = '<div>[[ hello | uppercase }}|<div my-directive></div></div>';
+          element = $compile(tmpl)($rootScope);
+
+          $rootScope.hello = 'ahoj';
+          $rootScope.$digest();
+
+          expect(element.text()).toBe('AHOJ|ahoj|AHOJ');
+        });
+      }
+    );
+
+
+    it('should support custom end interpolation symbol, even when `startSymbol` doesn\'t change',
+      function() {
+        module(function($compileProvider, $interpolateProvider) {
+          $interpolateProvider.endSymbol(']]');
+          $compileProvider.directive('myDirective', function() {
+            return {
+              template: '<span>{{ hello }}|{{ hello | uppercase }}</span>'
+            };
+          });
+        });
+
+        inject(function($compile, $rootScope) {
+          var tmpl = '<div>{{ hello | uppercase ]]|<div my-directive></div></div>';
+          element = $compile(tmpl)($rootScope);
+
+          $rootScope.hello = 'ahoj';
+          $rootScope.$digest();
+
+          expect(element.text()).toBe('AHOJ|ahoj|AHOJ');
+        });
+      }
+    );
+
+
     it('should support custom start/end interpolation symbols in async directive template',
         function() {
       module(function($interpolateProvider, $compileProvider) {
