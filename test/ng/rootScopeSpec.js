@@ -1387,7 +1387,7 @@ describe('Scope', function() {
       expect(child.log).toBe('child context');
     }));
 
-    it('should operate only with a single queue across all child and isolate scopes', inject(function($rootScope) {
+    it('should operate only with a single queue across all child and isolate scopes', inject(function($rootScope, $parse) {
       var childScope = $rootScope.$new();
       var isolateScope = $rootScope.$new(true);
 
@@ -1398,9 +1398,9 @@ describe('Scope', function() {
       expect(childScope.$$asyncQueue).toBe($rootScope.$$asyncQueue);
       expect(isolateScope.$$asyncQueue).toBeUndefined();
       expect($rootScope.$$asyncQueue).toEqual([
-        {scope: $rootScope, expression: 'rootExpression'},
-        {scope: childScope, expression: 'childExpression'},
-        {scope: isolateScope, expression: 'isolateExpression'}
+        {scope: $rootScope, expression: $parse('rootExpression')},
+        {scope: childScope, expression: $parse('childExpression')},
+        {scope: isolateScope, expression: $parse('isolateExpression')}
       ]);
     }));
 

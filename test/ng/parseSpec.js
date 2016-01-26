@@ -1681,7 +1681,6 @@ describe('parser', function() {
     $filterProvider = filterProvider;
   }]));
 
-
   forEach([true, false], function(cspEnabled) {
     describe('csp: ' + cspEnabled, function() {
 
@@ -2400,6 +2399,64 @@ describe('parser', function() {
                       '$parse', 'isecwindow', 'Referencing the Window in Angular expressions is disallowed! ' +
                       'Expression: foo.w = 1');
             }));
+
+            they('should propagate expensive checks when calling $prop',
+                ['foo.w && true',
+                 '$eval("foo.w && true")',
+                 'this["$eval"]("foo.w && true")',
+                 'bar;$eval("foo.w && true")',
+                 '$eval("foo.w && true");bar',
+                 '$eval("foo.w && true", null, false)',
+                 '$eval("foo");$eval("foo.w && true")',
+                 '$eval("$eval(\\"foo.w && true\\")")',
+                 '$eval("foo.e()")',
+                 '$evalAsync("foo.w && true")',
+                 'this["$evalAsync"]("foo.w && true")',
+                 'bar;$evalAsync("foo.w && true")',
+                 '$evalAsync("foo.w && true");bar',
+                 '$evalAsync("foo.w && true", null, false)',
+                 '$evalAsync("foo");$evalAsync("foo.w && true")',
+                 '$evalAsync("$evalAsync(\\"foo.w && true\\")")',
+                 '$evalAsync("foo.e()")',
+                 '$evalAsync("$eval(\\"foo.w && true\\")")',
+                 '$eval("$evalAsync(\\"foo.w && true\\")")',
+                 '$watch("foo.w && true")',
+                 '$watchCollection("foo.w && true", foo.f)',
+                 '$watchGroup(["foo.w && true"])',
+                 '$applyAsync("foo.w && true")'], function(expression) {
+              inject(function($parse, $window) {
+                scope.foo = {
+                    w: $window,
+                    bar: 'bar',
+                    e: function() { scope.$eval("foo.w && true"); },
+                    f: function() {}
+                };
+                expect($parse.$$runningExpensiveChecks()).toEqual(false);
+                expect(function() {
+                  scope.$eval($parse(expression, null, true));
+                  scope.$digest();
+                }).toThrowMinErr(
+                    '$parse', 'isecwindow', 'Referencing the Window in Angular expressions is disallowed! ' +
+                    'Expression: foo.w && true');
+                expect($parse.$$runningExpensiveChecks()).toEqual(false);
+              });
+            });
+
+            they('should restore the state of $$runningExpensiveChecks when the expression $prop throws',
+                ['$eval("foo.t()")',
+                 '$evalAsync("foo.t()", {foo: foo})'], function(expression) {
+              inject(function($parse, $window) {
+                scope.foo = {
+                    t: function() { throw new Error(); }
+                };
+                expect($parse.$$runningExpensiveChecks()).toEqual(false);
+                expect(function() {
+                  scope.$eval($parse(expression, null, true));
+                  scope.$digest();
+                }).toThrow();
+                expect($parse.$$runningExpensiveChecks()).toEqual(false);
+              });
+            });
           });
         });
 
@@ -2949,6 +3006,25 @@ describe('parser', function() {
 
         it('should stay stable once the value defined', inject(function($parse, $rootScope, log) {
           var fn = $parse('::foo');
+          $rootScope.$watch(fn, function(value, old) { if (value !== old) log(value); });
+
+          $rootScope.$digest();
+          expect($rootScope.$$watchers.length).toBe(1);
+
+          $rootScope.foo = 'bar';
+          $rootScope.$digest();
+          expect($rootScope.$$watchers.length).toBe(0);
+          expect(log).toEqual('bar');
+          log.reset();
+
+          $rootScope.foo = 'man';
+          $rootScope.$digest();
+          expect($rootScope.$$watchers.length).toBe(0);
+          expect(log).toEqual('');
+        }));
+
+        it('should work with expensive checks', inject(function($parse, $rootScope, log) {
+          var fn = $parse('::foo', null, true);
           $rootScope.$watch(fn, function(value, old) { if (value !== old) log(value); });
 
           $rootScope.$digest();
