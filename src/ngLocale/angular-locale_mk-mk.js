@@ -137,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "mk-mk",
+  "localeID": "mk_MK",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (vf.v == 0 && i % 10 == 1 || vf.f % 10 == 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

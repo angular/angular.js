@@ -119,6 +119,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "fr-ma",
+  "localeID": "fr_MA",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  if (i == 0 || i == 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

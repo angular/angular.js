@@ -119,6 +119,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "ms-latn-bn",
+  "localeID": "ms_Latn_BN",
   "pluralCat": function(n, opt_precision) {  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

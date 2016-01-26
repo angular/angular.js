@@ -119,6 +119,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "af-na",
+  "localeID": "af_NA",
   "pluralCat": function(n, opt_precision) {  if (n == 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);
