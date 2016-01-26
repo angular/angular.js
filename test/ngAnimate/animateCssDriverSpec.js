@@ -3,6 +3,7 @@
 describe("ngAnimate $$animateCssDriver", function() {
 
   beforeEach(module('ngAnimate'));
+  beforeEach(module('ngAnimateMock'));
 
   function int(x) {
     return parseInt(x, 10);
@@ -68,11 +69,11 @@ describe("ngAnimate $$animateCssDriver", function() {
 
       element = jqLite('<div></div>');
 
-      return function($$animateCssDriver, $document, $window) {
+      return function($$animateCssDriver, $document) {
         driver = function(details, cb) {
           return $$animateCssDriver(details, cb || noop);
         };
-        ss = createMockStyleSheet($document, $window);
+        ss = createMockStyleSheet($document);
       };
     }));
 
@@ -104,7 +105,7 @@ describe("ngAnimate $$animateCssDriver", function() {
         expect(capturedAnimation[1].applyClassesEarly).toBeFalsy();
 
         driver({ element: element, structural: true });
-        expect(capturedAnimation[1].applyClassesEarly).toBeFalsy();
+        expect(capturedAnimation[1].applyClassesEarly).toBeTruthy();
       }));
 
       it("should only set the event value if the animation is structural", inject(function() {
@@ -120,7 +121,7 @@ describe("ngAnimate $$animateCssDriver", function() {
       var from, to, fromAnimation, toAnimation;
 
       beforeEach(module(function() {
-        return function($rootElement, $$body) {
+        return function($rootElement, $document) {
           from = element;
           to = jqLite('<div></div>');
           fromAnimation = { element: from, event: 'enter' };
@@ -128,8 +129,14 @@ describe("ngAnimate $$animateCssDriver", function() {
           $rootElement.append(from);
           $rootElement.append(to);
 
-          // we need to do this so that style detection works
-          $$body.append($rootElement);
+          var doc = $document[0];
+
+          // there is one test in here that expects the rootElement
+          // to supersede the body node
+          if (!$rootElement[0].contains(doc.body)) {
+            // we need to do this so that style detection works
+            jqLite(doc.body).append($rootElement);
+          }
         };
       }));
 
@@ -414,7 +421,7 @@ describe("ngAnimate $$animateCssDriver", function() {
       }));
 
       it("should then do an addClass('ng-anchor-in') animation on the cloned anchor and remove the old class",
-        inject(function($rootElement, $$rAF) {
+        inject(function($rootElement) {
 
         var fromAnchor = jqLite('<div></div>');
         from.append(fromAnchor);
@@ -434,7 +441,6 @@ describe("ngAnimate $$animateCssDriver", function() {
         }).start();
 
         captureLog.pop().runner.end();
-        $$rAF.flush();
 
         var anchorDetails = captureLog.pop().args[1];
         expect(anchorDetails.removeClass.trim()).toBe('ng-anchor-out');
@@ -464,7 +470,7 @@ describe("ngAnimate $$animateCssDriver", function() {
           });
         });
 
-        inject(function($rootElement, $$rAF) {
+        inject(function($rootElement, $animate) {
           var fromAnchor = jqLite('<div></div>');
           from.append(fromAnchor);
           var toAnchor = jqLite('<div></div>');
@@ -488,7 +494,7 @@ describe("ngAnimate $$animateCssDriver", function() {
 
           expect(animationStarted).toBe(expectedClass);
           runner.end();
-          $$rAF.flush();
+          $animate.flush();
           expect(complete).toBe(true);
         });
       });
@@ -552,7 +558,7 @@ describe("ngAnimate $$animateCssDriver", function() {
         expect(int(fromStyles.left)).toBeGreaterThan(149);
       }));
 
-      it("should append a `px` value for all seeded animation styles", inject(function($rootElement, $$rAF) {
+      it("should append a `px` value for all seeded animation styles", inject(function($rootElement) {
         ss.addRule('.starting-element', 'width:10px; height:20px; display:inline-block;');
 
         var fromAnchor = jqLite('<div class="starting-element"' +
@@ -582,7 +588,6 @@ describe("ngAnimate $$animateCssDriver", function() {
 
         // the out animation goes first
         anchorAnimation.runner.end();
-        $$rAF.flush();
 
         anchorAnimation = captureLog.pop();
         anchorDetails = anchorAnimation.args[1];
@@ -593,7 +598,7 @@ describe("ngAnimate $$animateCssDriver", function() {
       }));
 
       it("should then do an removeClass('out') + addClass('in') animation on the cloned anchor",
-        inject(function($rootElement, $$rAF) {
+        inject(function($rootElement) {
 
         var fromAnchor = jqLite('<div></div>');
         from.append(fromAnchor);
@@ -614,7 +619,6 @@ describe("ngAnimate $$animateCssDriver", function() {
 
         // the out animation goes first
         captureLog.pop().runner.end();
-        $$rAF.flush();
 
         var anchorDetails = captureLog.pop().args[1];
         expect(anchorDetails.removeClass).toMatch(/\bout\b/);
@@ -623,7 +627,7 @@ describe("ngAnimate $$animateCssDriver", function() {
       }));
 
       it("should add the `ng-anchor` class to the cloned anchor element",
-        inject(function($rootElement, $$rAF) {
+        inject(function($rootElement) {
 
         var fromAnchor = jqLite('<div></div>');
         from.append(fromAnchor);
@@ -647,7 +651,7 @@ describe("ngAnimate $$animateCssDriver", function() {
       }));
 
       it("should add and remove the `ng-animate-shim` class on the in anchor element during the animation",
-        inject(function($rootElement, $$rAF) {
+        inject(function($rootElement) {
 
         var fromAnchor = jqLite('<div></div>');
         from.append(fromAnchor);
@@ -670,14 +674,13 @@ describe("ngAnimate $$animateCssDriver", function() {
 
         // the out animation goes first
         captureLog.pop().runner.end();
-        $$rAF.flush();
         captureLog.pop().runner.end();
 
         expect(fromAnchor).not.toHaveClass('ng-animate-shim');
       }));
 
       it("should add and remove the `ng-animate-shim` class on the out anchor element during the animation",
-        inject(function($rootElement, $$rAF) {
+        inject(function($rootElement) {
 
         var fromAnchor = jqLite('<div></div>');
         from.append(fromAnchor);
@@ -700,7 +703,6 @@ describe("ngAnimate $$animateCssDriver", function() {
 
         // the out animation goes first
         captureLog.pop().runner.end();
-        $$rAF.flush();
 
         expect(toAnchor).toHaveClass('ng-animate-shim');
         captureLog.pop().runner.end();
@@ -709,7 +711,7 @@ describe("ngAnimate $$animateCssDriver", function() {
       }));
 
       it("should create the cloned anchor with all of the classes from the from anchor element",
-        inject(function($rootElement, $$rAF) {
+        inject(function($rootElement) {
 
         var fromAnchor = jqLite('<div class="yes no maybe"></div>');
         from.append(fromAnchor);
@@ -733,7 +735,7 @@ describe("ngAnimate $$animateCssDriver", function() {
       }));
 
       it("should remove the classes of the starting anchor from the cloned anchor node during the in animation and also add the classes of the destination anchor within the same animation",
-        inject(function($rootElement, $$rAF) {
+        inject(function($rootElement) {
 
         var fromAnchor = jqLite('<div class="yes no maybe"></div>');
         from.append(fromAnchor);
@@ -754,7 +756,6 @@ describe("ngAnimate $$animateCssDriver", function() {
 
         // the out animation goes first
         captureLog.pop().runner.end();
-        $$rAF.flush();
 
         var anchorDetails = captureLog.pop().args[1];
         var removedClasses = anchorDetails.removeClass.split(' ');
@@ -765,7 +766,7 @@ describe("ngAnimate $$animateCssDriver", function() {
       }));
 
       it("should not attempt to add/remove any classes that contain a `ng-` prefix",
-        inject(function($rootElement, $$rAF) {
+        inject(function($rootElement) {
 
         var fromAnchor = jqLite('<div class="ng-yes ng-no sure"></div>');
         from.append(fromAnchor);
@@ -786,7 +787,6 @@ describe("ngAnimate $$animateCssDriver", function() {
 
         // the out animation goes first
         captureLog.pop().runner.end();
-        $$rAF.flush();
 
         var inAnimation = captureLog.pop();
         var details = inAnimation.args[1];
@@ -802,7 +802,7 @@ describe("ngAnimate $$animateCssDriver", function() {
       }));
 
       it("should not remove any shared CSS classes between the starting and destination anchor element during the in animation",
-        inject(function($rootElement, $$rAF) {
+        inject(function($rootElement) {
 
         var fromAnchor = jqLite('<div class="blue green red"></div>');
         from.append(fromAnchor);
@@ -823,7 +823,6 @@ describe("ngAnimate $$animateCssDriver", function() {
 
         // the out animation goes first
         captureLog.pop().runner.end();
-        $$rAF.flush();
 
         var inAnimation = captureLog.pop();
         var clonedAnchor = inAnimation.element;
@@ -851,7 +850,7 @@ describe("ngAnimate $$animateCssDriver", function() {
       }));
 
       it("should continue the anchor animation by seeding the to styles based on where the final anchor element will be positioned",
-      inject(function($rootElement, $$rAF) {
+      inject(function($rootElement) {
         ss.addRule('.ending-element', 'width:9999px; height:6666px; display:inline-block;');
 
         var fromAnchor = jqLite('<div></div>');
@@ -874,7 +873,6 @@ describe("ngAnimate $$animateCssDriver", function() {
         }).start();
 
         captureLog.pop().runner.end();
-        $$rAF.flush();
 
         var anchorAnimation = captureLog.pop();
         var anchorElement = anchorAnimation.element;
@@ -889,7 +887,7 @@ describe("ngAnimate $$animateCssDriver", function() {
       }));
 
       it("should remove the cloned anchor node from the DOM once the 'in' animation is complete",
-        inject(function($rootElement, $$rAF) {
+        inject(function($rootElement) {
 
         var fromAnchor = jqLite('<div class="blue green red"></div>');
         from.append(fromAnchor);
@@ -913,7 +911,6 @@ describe("ngAnimate $$animateCssDriver", function() {
         var clonedAnchor = inAnimation.element;
         expect(clonedAnchor.parent().length).toBe(1);
         inAnimation.runner.end();
-        $$rAF.flush();
 
         // now the in animation completes
         expect(clonedAnchor.parent().length).toBe(1);
@@ -923,7 +920,7 @@ describe("ngAnimate $$animateCssDriver", function() {
       }));
 
       it("should pass the provided domOperation into $animateCss to be run right after the element is animated if a leave animation is present",
-        inject(function($rootElement, $$rAF) {
+        inject(function($rootElement) {
 
         toAnimation.structural = true;
         toAnimation.event = 'enter';
@@ -949,7 +946,7 @@ describe("ngAnimate $$animateCssDriver", function() {
       }));
 
       it("should fire the returned runner promise when the from, to and anchor animations are all complete",
-        inject(function($rootElement, $rootScope, $$rAF) {
+        inject(function($rootElement, $rootScope, $animate) {
 
         ss.addRule('.ending-element', 'width:9999px; height:6666px; display:inline-block;');
 
@@ -978,11 +975,45 @@ describe("ngAnimate $$animateCssDriver", function() {
         captureLog.pop().runner.end(); //to
         captureLog.pop().runner.end(); //anchor(out)
         captureLog.pop().runner.end(); //anchor(in)
-        $$rAF.flush();
+
+        $animate.flush();
         $rootScope.$digest();
 
         expect(completed).toBe(true);
       }));
+
+      it("should use <body> as the element container if the rootElement exists outside of the <body> tag", function() {
+        module(function($provide) {
+          $provide.factory('$rootElement', function($document) {
+            return jqLite($document[0].querySelector('html'));
+          });
+        });
+        inject(function($rootElement, $rootScope, $animate, $document) {
+          ss.addRule('.ending-element', 'width:9999px; height:6666px; display:inline-block;');
+
+          var fromAnchor = jqLite('<div></div>');
+          from.append(fromAnchor);
+
+          var toAnchor = jqLite('<div></div>');
+          to.append(toAnchor);
+
+          $rootElement.append(fromAnchor);
+          $rootElement.append(toAnchor);
+
+          var completed = false;
+          driver({
+            from: fromAnimation,
+            to: toAnimation,
+            anchors: [{
+              'out': fromAnchor,
+              'in': toAnchor
+            }]
+          }).start();
+
+          var clone = captureLog[2].element[0];
+          expect(clone.parentNode).toBe($document[0].body);
+        });
+      });
     });
   });
 });

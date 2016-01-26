@@ -14,15 +14,15 @@
  *     exposed as $$____ properties
  *
  * Loop operations are optimized by using while(count--) { ... }
- *   - this means that in order to keep the same order of execution as addition we have to add
+ *   - This means that in order to keep the same order of execution as addition we have to add
  *     items to the array at the beginning (unshift) instead of at the end (push)
  *
  * Child scopes are created and removed often
- *   - Using an array would be slow since inserts in middle are expensive so we use linked list
+ *   - Using an array would be slow since inserts in the middle are expensive; so we use linked lists
  *
- * There are few watches then a lot of observers. This is why you don't want the observer to be
- * implemented in the same way as watch. Watch requires return of initialization function which
- * are expensive to construct.
+ * There are fewer watches than observers. This is why you don't want the observer to be implemented
+ * in the same way as watch. Watch requires return of the initialization function which is expensive
+ * to construct.
  */
 
 
@@ -64,7 +64,7 @@
  * Every application has a single root {@link ng.$rootScope.Scope scope}.
  * All other scopes are descendant scopes of the root scope. Scopes provide separation
  * between the model and the view, via a mechanism for watching the model for changes.
- * They also provide an event emission/broadcast and subscription facility. See the
+ * They also provide event emission/broadcast and subscription facility. See the
  * {@link guide/scope developer guide on scopes}.
  */
 function $RootScopeProvider() {
@@ -94,11 +94,34 @@ function $RootScopeProvider() {
     return ChildScope;
   }
 
-  this.$get = ['$injector', '$exceptionHandler', '$parse', '$browser',
-      function($injector, $exceptionHandler, $parse, $browser) {
+  this.$get = ['$exceptionHandler', '$parse', '$browser',
+      function($exceptionHandler, $parse, $browser) {
 
     function destroyChildScope($event) {
         $event.currentScope.$$destroyed = true;
+    }
+
+    function cleanUpScope($scope) {
+
+      if (msie === 9) {
+        // There is a memory leak in IE9 if all child scopes are not disconnected
+        // completely when a scope is destroyed. So this code will recurse up through
+        // all this scopes children
+        //
+        // See issue https://github.com/angular/angular.js/issues/10706
+        $scope.$$childHead && cleanUpScope($scope.$$childHead);
+        $scope.$$nextSibling && cleanUpScope($scope.$$nextSibling);
+      }
+
+      // The code below works around IE9 and V8's memory leaks
+      //
+      // See:
+      // - https://code.google.com/p/v8/issues/detail?id=2073#c26
+      // - https://github.com/angular/angular.js/issues/6794#issuecomment-38648909
+      // - https://github.com/angular/angular.js/issues/1313#issuecomment-10378451
+
+      $scope.$parent = $scope.$$nextSibling = $scope.$$prevSibling = $scope.$$childHead =
+          $scope.$$childTail = $scope.$root = $scope.$$watchers = null;
     }
 
     /**
@@ -109,12 +132,9 @@ function $RootScopeProvider() {
      * A root scope can be retrieved using the {@link ng.$rootScope $rootScope} key from the
      * {@link auto.$injector $injector}. Child scopes are created using the
      * {@link ng.$rootScope.Scope#$new $new()} method. (Most scopes are created automatically when
-     * compiled HTML template is executed.)
+     * compiled HTML template is executed.) See also the {@link guide/scope Scopes guide} for
+     * an in-depth introduction and usage examples.
      *
-     * Here is a simple scope snippet to show how you can interact with the scope.
-     * ```html
-     * <file src="./test/ng/rootScopeSpec.js" tag="docs1" />
-     * ```
      *
      * # Inheritance
      * A scope can inherit from a parent scope, as in this example:
@@ -256,10 +276,10 @@ function $RootScopeProvider() {
        * Registers a `listener` callback to be executed whenever the `watchExpression` changes.
        *
        * - The `watchExpression` is called on every call to {@link ng.$rootScope.Scope#$digest
-       *   $digest()} and should return the value that will be watched. (Since
-       *   {@link ng.$rootScope.Scope#$digest $digest()} reruns when it detects changes the
-       *   `watchExpression` can execute multiple times per
-       *   {@link ng.$rootScope.Scope#$digest $digest()} and should be idempotent.)
+       *   $digest()} and should return the value that will be watched. (`watchExpression` should not change
+       *   its value when executed multiple times with the same input because it may be executed multiple
+       *   times by {@link ng.$rootScope.Scope#$digest $digest()}. That is, `watchExpression` should be
+       *   [idempotent](http://en.wikipedia.org/wiki/Idempotence).
        * - The `listener` is called only when the value from the current `watchExpression` and the
        *   previous call to `watchExpression` are not equal (with the exception of the initial run,
        *   see below). Inequality is determined according to reference inequality,
@@ -359,7 +379,7 @@ function $RootScopeProvider() {
        *    - `newVal` contains the current value of the `watchExpression`
        *    - `oldVal` contains the previous value of the `watchExpression`
        *    - `scope` refers to the current scope
-       * @param {boolean=} objectEquality Compare for object equality using {@link angular.equals} instead of
+       * @param {boolean=} [objectEquality=false] Compare for object equality using {@link angular.equals} instead of
        *     comparing for reference equality.
        * @returns {function()} Returns a deregistration function for this listener.
        */
@@ -608,7 +628,7 @@ function $RootScopeProvider() {
             // copy the items to oldValue and look for changes.
             newLength = 0;
             for (key in newValue) {
-              if (newValue.hasOwnProperty(key)) {
+              if (hasOwnProperty.call(newValue, key)) {
                 newLength++;
                 newItem = newValue[key];
                 oldItem = oldValue[key];
@@ -630,7 +650,7 @@ function $RootScopeProvider() {
               // we used to have more keys, need to find them and destroy them.
               changeDetected++;
               for (key in oldValue) {
-                if (!newValue.hasOwnProperty(key)) {
+                if (!hasOwnProperty.call(newValue, key)) {
                   oldLength--;
                   delete oldValue[key];
                 }
@@ -900,16 +920,9 @@ function $RootScopeProvider() {
         this.$on = this.$watch = this.$watchGroup = function() { return noop; };
         this.$$listeners = {};
 
-        // All of the code below is bogus code that works around V8's memory leak via optimized code
-        // and inline caches.
-        //
-        // see:
-        // - https://code.google.com/p/v8/issues/detail?id=2073#c26
-        // - https://github.com/angular/angular.js/issues/6794#issuecomment-38648909
-        // - https://github.com/angular/angular.js/issues/1313#issuecomment-10378451
-
-        this.$parent = this.$$nextSibling = this.$$prevSibling = this.$$childHead =
-            this.$$childTail = this.$root = this.$$watchers = null;
+        // Disconnect the next sibling to prevent `cleanUpScope` destroying those too
+        this.$$nextSibling = null;
+        cleanUpScope(this);
       },
 
       /**

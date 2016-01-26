@@ -8,6 +8,20 @@ describe('Filter: orderBy', function() {
 
 
   describe('(Arrays)', function() {
+    it('should throw an exception if no array-like object is provided', function() {
+      expect(function() { orderBy({}); }).
+        toThrowMinErr('orderBy', 'notarray', 'Expected array but received: {}');
+    });
+
+    it('should not throw an exception if a null or undefined value is provided', function() {
+      expect(orderBy(null)).toEqual(null);
+      expect(orderBy(undefined)).toEqual(undefined);
+    });
+
+    it('should not throw an exception if an array-like object is provided', function() {
+      expect(orderBy('cba')).toEqual(['a', 'b', 'c']);
+    });
+
     it('should return sorted array if predicate is not provided', function() {
       expect(orderBy([2, 1, 3])).toEqual([1, 2, 3]);
 
@@ -193,6 +207,35 @@ describe('Filter: orderBy', function() {
 
     it('should sort mixed array of objects and values in a stable way', function() {
       expect(orderBy([{foo: 2}, {foo: {}}, {foo: 3}, {foo: 4}], 'foo')).toEqualData([{foo: 2}, {foo: 3}, {foo: 4}, {foo: {}}]);
+    });
+
+
+    it('should perform a stable sort', function() {
+      expect(orderBy([
+          {foo: 2, bar: 1}, {foo: 1, bar: 2}, {foo: 2, bar: 3},
+          {foo: 2, bar: 4}, {foo: 1, bar: 5}, {foo: 2, bar: 6},
+          {foo: 2, bar: 7}, {foo: 1, bar: 8}, {foo: 2, bar: 9},
+          {foo: 1, bar: 10}, {foo: 2, bar: 11}, {foo: 1, bar: 12}
+        ], 'foo'))
+          .toEqualData([
+          {foo: 1, bar: 2}, {foo: 1, bar: 5}, {foo: 1, bar: 8},
+          {foo: 1, bar: 10}, {foo: 1, bar: 12}, {foo: 2, bar: 1},
+          {foo: 2, bar: 3}, {foo: 2, bar: 4}, {foo: 2, bar: 6},
+          {foo: 2, bar: 7}, {foo: 2, bar: 9}, {foo: 2, bar: 11}
+          ]);
+
+      expect(orderBy([
+          {foo: 2, bar: 1}, {foo: 1, bar: 2}, {foo: 2, bar: 3},
+          {foo: 2, bar: 4}, {foo: 1, bar: 5}, {foo: 2, bar: 6},
+          {foo: 2, bar: 7}, {foo: 1, bar: 8}, {foo: 2, bar: 9},
+          {foo: 1, bar: 10}, {foo: 2, bar: 11}, {foo: 1, bar: 12}
+        ], 'foo', true))
+          .toEqualData([
+          {foo: 2, bar: 11}, {foo: 2, bar: 9}, {foo: 2, bar: 7},
+          {foo: 2, bar: 6}, {foo: 2, bar: 4}, {foo: 2, bar: 3},
+          {foo: 2, bar: 1}, {foo: 1, bar: 12}, {foo: 1, bar: 10},
+          {foo: 1, bar: 8}, {foo: 1, bar: 5}, {foo: 1, bar: 2}
+          ]);
     });
   });
 

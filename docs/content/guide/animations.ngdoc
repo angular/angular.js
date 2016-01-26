@@ -274,6 +274,37 @@ myModule.directive('my-directive', ['$animate', function($animate) {
 }]);
 ```
 
+## Preventing flicker before an animation starts
+
+When nesting elements with structural animations such as `ngIf` into elements that have class-based
+animations such as `ngClass`, it sometimes happens that before the actual animation starts, there is a brief flicker or flash of content
+where the animated element is briefly visible.
+
+To prevent this, you can apply styles to the `ng-[event]-prepare` class, which is added as soon as an animation is initialized,
+but removed before the actual animation starts (after waiting for a $digest). This class is only added for *structural*
+animations (`enter`, `move`, and `leave`).
+
+Here's an example where you might see flickering:
+
+```html
+<div ng-class="{red: myProp}">
+  <div ng-class="{blue: myProp}">
+    <div class="message" ng-if="myProp"></div>
+  </div>
+</div>
+```
+
+It is possible that during the `enter` event, the `.message` div will be briefly visible before it starts animating.
+In that case, you can add styles to the CSS that make sure the element stays hidden before the animation starts:
+
+```css
+.message.ng-enter-prepare {
+  opacity: 0;
+}
+
+/* Other animation styles ... */
+```
+
 ## More about animations
 
 For a full breakdown of each method available on `$animate`, see the {@link ng.$animate API documentation}.

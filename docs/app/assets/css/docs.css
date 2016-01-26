@@ -124,7 +124,7 @@ h1,h2,h3,h4,h5,h6 {
   font-size:1.2em;
   padding:0;
   margin:0;
-  border-bottom:1px soild #aaa;
+  border-bottom:1px solid #aaa;
   margin-bottom:5px;
 }
 
@@ -315,8 +315,13 @@ iframe.example {
   color:white;
 }
 
+.search-results-group .search-results {
+  padding: 0 5px 0;
+  list-style-type: none;
+}
+
 .search-results-frame > .search-results-group:first-child > .search-results {
-  border-right:1px solid #050505;
+  border-right:1px solid #222;
 }
 
 .search-results-group.col-group-api { width:30%; }
@@ -325,10 +330,57 @@ iframe.example {
 .search-results-group.col-group-misc,
 .search-results-group.col-group-error { width:15%; float: right; }
 
+@supports ((column-count: 2) or (-moz-column-count: 2) or (-ms-column-count: 2) or (-webkit-column-count: 2)) {
+  .search-results-group.col-group-api .search-results {
+    -moz-column-count: 2;
+    -ms-column-count: 2;
+    -webkit-column-count: 2;
+    column-count: 2;
+    /* Prevent bullets in the second column from being hidden in Chrome and IE */
+    -webkit-column-gap: 2em;
+    -ms-column-gap: 2em;
+    column-gap: 2em;
+  }
+}
+
+.search-results-group .search-result {
+  word-wrap: break-word;
+  -webkit-hyphens: auto;
+  -moz-hyphens: auto;
+  -ms-hyphens: auto;
+  hyphens: auto;
+  -ms-column-break-inside: avoid;
+  -webkit-column-break-inside: avoid;
+  -moz-column-break-inside: avoid; /* Unsupported */
+  column-break-inside: avoid;
+  text-indent: -0.65em;  /* Make sure line wrapped words are aligned vertically */
+}
+
+@supports (-moz-column-count: 2) {
+  .search-results-group .search-result {
+    /* Prevents column breaks inside words in FF, but has adverse effects in IE11 and Chrome */
+    overflow: hidden;
+    padding-left: 1em; /* In FF the list item bullet is otherwise  hidden */
+    margin-left: -1em; /* offset the padding left */
+  }
+}
+
+.search-result:before {
+  content: "\002D\00A0"; /* Dash and non-breaking space as List item type */
+  position: relative;
+}
 
 .search-results-group.col-group-api .search-result {
   width:48%;
   display:inline-block;
+  padding-left: 12px;
+}
+
+@supports ((column-count: 2) or (-moz-column-count: 2) or (-ms-column-count: 2) or (-webkit-column-count: 2)) {
+  .search-results-group.col-group-api .search-result {
+    width:auto;
+    display: list-item;
+  }
 }
 
 .search-close {
@@ -589,6 +641,12 @@ ul.events > li {
   vertical-align: top;
 }
 
+.table > tbody > tr.head > td,
+.table > tbody > tr.head > th {
+  border-bottom: 2px solid #ddd;
+  padding-top: 50px;
+}
+
 @media only screen and (min-width: 769px) and (max-width: 991px) {
   .main-body-grid {
     margin-top: 160px;
@@ -682,6 +740,11 @@ ul.events > li {
     padding-bottom:60px;
     text-align:left;
   }
+
+  .search-results-frame > .search-results-group:first-child > .search-results {
+    border-right: none;
+  }
+
   .search-results-group {
     float:none!important;
     display:block!important;
@@ -689,14 +752,42 @@ ul.events > li {
     border:0!important;
     padding:0!important;
   }
+
+  @supports ((column-count: 2) or (-moz-column-count: 2) or (-ms-column-count: 2) or (-webkit-column-count: 2)) {
+    .search-results-group .search-results {
+      -moz-column-count: 2;
+      -ms-column-count: 2;
+      -webkit-column-count: 2;
+      column-count: 2;
+    }
+  }
+
   .search-results-group .search-result {
     display:inline-block!important;
     padding:0 5px;
     width:auto!important;
+    text-indent: initial;
+    margin-left: 0;
   }
+
   .search-results-group .search-result:after {
     content:", ";
   }
+
+  .search-results-group .search-result:before {
+    content: "";
+  }
+
+  @supports ((column-count: 2) or (-moz-column-count: 2) or (-ms-column-count: 2) or (-webkit-column-count: 2)) {
+    .search-results-group .search-result {
+      display: list-item !important;
+    }
+
+    .search-results-group .search-result:after {
+      content: "";
+    }
+  }
+
   #wrapper {
     padding-bottom:0px;
   }

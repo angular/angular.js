@@ -20,8 +20,16 @@ $interpolateMinErr.interr = function(text, err) {
  *
  * Used for configuring the interpolation markup. Defaults to `{{` and `}}`.
  *
+ * <div class="alert alert-danger">
+ * This feature is sometimes used to mix different markup languages, e.g. to wrap an Angular
+ * template within a Python Jinja template (or any other template language). Mixing templating
+ * languages is **very dangerous**. The embedding template language will not safely escape Angular
+ * expressions, so any user-controlled values in the template will cause Cross Site Scripting (XSS)
+ * security bugs!
+ * </div>
+ *
  * @example
-<example module="customInterpolationApp">
+<example name="custom-interpolation-markup" module="customInterpolationApp">
 <file name="index.html">
 <script>
   var customInterpolationApp = angular.module('customInterpolationApp', []);
@@ -36,7 +44,7 @@ $interpolateMinErr.interr = function(text, err) {
       this.label = "This binding is brought you by // interpolation symbols.";
   });
 </script>
-<div ng-app="App" ng-controller="DemoController as demo">
+<div ng-controller="DemoController as demo">
     //demo.label//
 </div>
 </file>
@@ -120,6 +128,15 @@ function $InterpolateProvider() {
       return value;
     }
 
+    //TODO: this is the same as the constantWatchDelegate in parse.js
+    function constantWatchDelegate(scope, listener, objectEquality, constantInterp) {
+      var unwatch;
+      return unwatch = scope.$watch(function constantInterpolateWatch(scope) {
+        unwatch();
+        return constantInterp(scope);
+      }, listener, objectEquality);
+    }
+
     /**
      * @ngdoc service
      * @name $interpolate
@@ -139,7 +156,7 @@ function $InterpolateProvider() {
      * ```js
      *   var $interpolate = ...; // injected
      *   var exp = $interpolate('Hello {{name | uppercase}}!');
-     *   expect(exp({name:'Angular'}).toEqual('Hello ANGULAR!');
+     *   expect(exp({name:'Angular'})).toEqual('Hello ANGULAR!');
      * ```
      *
      * `$interpolate` takes an optional fourth argument, `allOrNothing`. If `allOrNothing` is
@@ -215,6 +232,19 @@ function $InterpolateProvider() {
      * - `context`: evaluation context for all expressions embedded in the interpolated text
      */
     function $interpolate(text, mustHaveExpression, trustedContext, allOrNothing) {
+      // Provide a quick exit and simplified result function for text with no interpolation
+      if (!text.length || text.indexOf(startSymbol) === -1) {
+        var constantInterp;
+        if (!mustHaveExpression) {
+          var unescapedText = unescapeText(text);
+          constantInterp = valueFn(unescapedText);
+          constantInterp.exp = text;
+          constantInterp.expressions = [];
+          constantInterp.$$watchDelegate = constantWatchDelegate;
+        }
+        return constantInterp;
+      }
+
       allOrNothing = !!allOrNothing;
       var startIndex,
           endIndex,

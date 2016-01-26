@@ -2,8 +2,8 @@
 
 
 function $IntervalProvider() {
-  this.$get = ['$rootScope', '$window', '$q', '$$q',
-       function($rootScope,   $window,   $q,   $$q) {
+  this.$get = ['$rootScope', '$window', '$q', '$$q', '$browser',
+       function($rootScope,   $window,   $q,   $$q,   $browser) {
     var intervals = {};
 
 
@@ -144,11 +144,12 @@ function $IntervalProvider() {
 
       count = isDefined(count) ? count : 0;
 
-      promise.then(null, null, (!hasParams) ? fn : function() {
-        fn.apply(null, args);
-      });
-
       promise.$$intervalId = setInterval(function tick() {
+        if (skipApply) {
+          $browser.defer(callback);
+        } else {
+          $rootScope.$evalAsync(callback);
+        }
         deferred.notify(iteration++);
 
         if (count > 0 && iteration >= count) {
@@ -164,6 +165,14 @@ function $IntervalProvider() {
       intervals[promise.$$intervalId] = deferred;
 
       return promise;
+
+      function callback() {
+        if (!hasParams) {
+          fn(iteration);
+        } else {
+          fn.apply(null, args);
+        }
+      }
     }
 
 
@@ -174,7 +183,7 @@ function $IntervalProvider() {
       * @description
       * Cancels a task associated with the `promise`.
       *
-      * @param {promise} promise returned by the `$interval` function.
+      * @param {Promise=} promise returned by the `$interval` function.
       * @returns {boolean} Returns `true` if the task was successfully canceled.
       */
     interval.cancel = function(promise) {

@@ -72,6 +72,25 @@ describe('input', function() {
     expect($rootScope.form.$$renameControl).not.toHaveBeenCalled();
   });
 
+
+  it('should not set the `val` property when the value is equal to the current value', inject(function($rootScope, $compile) {
+    // This is a workaround for Firefox validation. Look at #12102.
+    var input = jqLite('<input type="text" ng-model="foo" required/>');
+    var setterCalls = 0;
+    $rootScope.foo = '';
+    Object.defineProperty(input[0], 'value', {
+      get: function() {
+        return '';
+      },
+      set: function() {
+        setterCalls++;
+      }
+    });
+    $compile(input)($rootScope);
+    $rootScope.$digest();
+    expect(setterCalls).toBe(0);
+  }));
+
   describe('compositionevents', function() {
     it('should not update the model between "compositionstart" and "compositionend" on non android', function() {
 
@@ -122,7 +141,7 @@ describe('input', function() {
     //  focus (which visually removes the placeholder value): focusin focus *input*
     //  blur (which visually creates the placeholder value):  focusout *input* blur
     //However none of these occur if the placeholder is not visible at the time of the event.
-    //These tests try simulate various scenerios which do/do-not fire the extra input event
+    //These tests try simulate various scenarios which do/do-not fire the extra input event
 
     it('should not dirty the model on an input event in response to a placeholder change', function() {
       var inputElm = helper.compileInput('<input type="text" placeholder="Test" attr-capture ng-model="unsetValue" name="name" />');
@@ -688,6 +707,14 @@ describe('input', function() {
         expect(inputElm).toBeInvalid();
         expect($rootScope.form.alias.$error.min).toBeTruthy();
       });
+
+      it('should validate if min is empty', function() {
+        $rootScope.minVal = undefined;
+        $rootScope.value = new Date(-9999, 0, 1, 0, 0, 0);
+        $rootScope.$digest();
+
+        expect($rootScope.form.alias.$error.min).toBeFalsy();
+      });
     });
 
     describe('max', function() {
@@ -721,6 +748,14 @@ describe('input', function() {
 
         expect(inputElm).toBeInvalid();
         expect($rootScope.form.alias.$error.max).toBeTruthy();
+      });
+
+      it('should validate if max is empty', function() {
+        $rootScope.maxVal = undefined;
+        $rootScope.value = new Date(9999, 11, 31, 23, 59, 59);
+        $rootScope.$digest();
+
+        expect($rootScope.form.alias.$error.max).toBeFalsy();
       });
     });
   });
@@ -886,6 +921,14 @@ describe('input', function() {
         expect(inputElm).toBeInvalid();
         expect($rootScope.form.alias.$error.min).toBeTruthy();
       });
+
+      it('should validate if min is empty', function() {
+        $rootScope.minVal = undefined;
+        $rootScope.value = new Date(-9999, 0, 1, 0, 0, 0);
+        $rootScope.$digest();
+
+        expect($rootScope.form.alias.$error.min).toBeFalsy();
+      });
     });
 
     describe('max', function() {
@@ -920,6 +963,14 @@ describe('input', function() {
 
         expect(inputElm).toBeInvalid();
         expect($rootScope.form.alias.$error.max).toBeTruthy();
+      });
+
+      it('should validate if max is empty', function() {
+        $rootScope.maxVal = undefined;
+        $rootScope.value = new Date(9999, 11, 31, 23, 59, 59);
+        $rootScope.$digest();
+
+        expect($rootScope.form.alias.$error.max).toBeFalsy();
       });
     });
   });
@@ -1119,6 +1170,14 @@ describe('input', function() {
         expect(inputElm).toBeInvalid();
         expect($rootScope.form.alias.$error.min).toBeTruthy();
       });
+
+      it('should validate if min is empty', function() {
+        $rootScope.minVal = undefined;
+        $rootScope.value = new Date(-9999, 0, 1, 0, 0, 0);
+        $rootScope.$digest();
+
+        expect($rootScope.form.alias.$error.min).toBeFalsy();
+      });
     });
 
     describe('max', function() {
@@ -1152,6 +1211,14 @@ describe('input', function() {
 
         expect(inputElm).toBeInvalid();
         expect($rootScope.form.alias.$error.max).toBeTruthy();
+      });
+
+      it('should validate if max is empty', function() {
+        $rootScope.maxVal = undefined;
+        $rootScope.value = new Date(3000, 11, 31, 23, 59, 59);
+        $rootScope.$digest();
+
+        expect($rootScope.form.alias.$error.max).toBeFalsy();
       });
     });
 
@@ -1428,12 +1495,21 @@ describe('input', function() {
         expect(inputElm).toBeInvalid();
         expect($rootScope.form.alias.$error.min).toBeTruthy();
       });
+
+      it('should validate if min is empty', function() {
+        $rootScope.minVal = undefined;
+        $rootScope.value = new Date(-9999, 0, 1, 0, 0, 0);
+        $rootScope.$digest();
+
+        expect($rootScope.form.alias.$error.min).toBeFalsy();
+      });
     });
 
     describe('max', function() {
       var inputElm;
       beforeEach(function() {
-        inputElm = helper.compileInput('<input type="time" ng-model="value" name="alias" max="22:30:00" />');
+        $rootScope.maxVal = '22:30:00';
+        inputElm = helper.compileInput('<input type="time" ng-model="value" name="alias" max="{{ maxVal }}" />');
       });
 
       it('should invalidate', function() {
@@ -1449,11 +1525,19 @@ describe('input', function() {
         expect(+$rootScope.value).toBe(+new Date(1970, 0, 1, 5, 30, 0));
         expect($rootScope.form.alias.$error.max).toBeFalsy();
       });
+
+     it('should validate if max is empty', function() {
+        $rootScope.maxVal = undefined;
+        $rootScope.value = new Date(9999, 11, 31, 23, 59, 59);
+        $rootScope.$digest();
+
+        expect($rootScope.form.alias.$error.max).toBeFalsy();
+      });
     });
 
 
     it('should validate even if max value changes on-the-fly', function() {
-      $rootScope.max = '4:02:00';
+      $rootScope.max = '04:02:00';
       var inputElm = helper.compileInput('<input type="time" ng-model="value" name="alias" max="{{max}}" />');
 
       helper.changeInputValueTo('05:34:00');
@@ -1481,7 +1565,7 @@ describe('input', function() {
 
 
     it('should validate even if ng-max value changes on-the-fly', function() {
-      $rootScope.max = '4:02:00';
+      $rootScope.max = '04:02:00';
       var inputElm = helper.compileInput('<input type="time" ng-model="value" name="alias" ng-max="max" />');
 
       helper.changeInputValueTo('05:34:00');
@@ -1706,6 +1790,16 @@ describe('input', function() {
 
         expect($rootScope.form.myControl.$error.min).toBeTruthy();
       });
+
+      it('should validate if min is empty', function() {
+        var inputElm = helper.compileInput(
+            '<input type="date" name="alias" ng-model="value" min />');
+
+        $rootScope.value = new Date(-9999, 0, 1, 0, 0, 0);
+        $rootScope.$digest();
+
+        expect($rootScope.form.alias.$error.min).toBeFalsy();
+      });
     });
 
     describe('max', function() {
@@ -1734,6 +1828,16 @@ describe('input', function() {
         $rootScope.$digest();
 
         expect($rootScope.form.myControl.$error.max).toBeTruthy();
+      });
+
+      it('should validate if max is empty', function() {
+        var inputElm = helper.compileInput(
+            '<input type="date" name="alias" ng-model="value" max />');
+
+        $rootScope.value = new Date(9999, 11, 31, 23, 59, 59);
+        $rootScope.$digest();
+
+        expect($rootScope.form.alias.$error.max).toBeFalsy();
       });
     });
 
@@ -2450,10 +2554,115 @@ describe('input', function() {
 
 
     describe('URL_REGEXP', function() {
-      /* global URL_REGEXP: false */
-      it('should validate url', function() {
-        expect(URL_REGEXP.test('http://server:123/path')).toBe(true);
-        expect(URL_REGEXP.test('a@B.c')).toBe(false);
+      // See valid URLs in RFC3987 (http://tools.ietf.org/html/rfc3987)
+      // Note: We are being more lenient, because browsers are too.
+      var urls = [
+        ['scheme://hostname', true],
+        ['scheme://username:password@host.name:7678/pa/t.h?q=u&e=r&y#fragment', true],
+
+        // Validating `scheme`
+        ['://example.com', false],
+        ['0scheme://example.com', false],
+        ['.scheme://example.com', false],
+        ['+scheme://example.com', false],
+        ['-scheme://example.com', false],
+        ['_scheme://example.com', false],
+        ['scheme0://example.com', true],
+        ['scheme.://example.com', true],
+        ['scheme+://example.com', true],
+        ['scheme-://example.com', true],
+        ['scheme_://example.com', false],
+
+        // Vaidating `:` and `/` after `scheme`
+        ['scheme//example.com', false],
+        ['scheme:example.com', true],
+        ['scheme:/example.com', true],
+        ['scheme:///example.com', true],
+
+        // Validating `username` and `password`
+        ['scheme://@example.com', true],
+        ['scheme://username@example.com', true],
+        ['scheme://u0s.e+r-n_a~m!e@example.com', true],
+        ['scheme://u#s$e%r^n&a*m;e@example.com', true],
+        ['scheme://:password@example.com', true],
+        ['scheme://username:password@example.com', true],
+        ['scheme://username:pass:word@example.com', true],
+        ['scheme://username:p0a.s+s-w_o~r!d@example.com', true],
+        ['scheme://username:p#a$s%s^w&o*r;d@example.com', true],
+
+        // Validating `hostname`
+        ['scheme:', false],                                  // Chrome, FF: true
+        ['scheme://', false],                                // Chrome, FF: true
+        ['scheme:// example.com:', false],                   // Chrome, FF: true
+        ['scheme://example com:', false],                    // Chrome, FF: true
+        ['scheme://:', false],                               // Chrome, FF: true
+        ['scheme://?', false],                               // Chrome, FF: true
+        ['scheme://#', false],                               // Chrome, FF: true
+        ['scheme://username:password@:', false],             // Chrome, FF: true
+        ['scheme://username:password@/', false],             // Chrome, FF: true
+        ['scheme://username:password@?', false],             // Chrome, FF: true
+        ['scheme://username:password@#', false],             // Chrome, FF: true
+        ['scheme://host.name', true],
+        ['scheme://123.456.789.10', true],
+        ['scheme://[1234:0000:0000:5678:9abc:0000:0000:def]', true],
+        ['scheme://[1234:0000:0000:5678:9abc:0000:0000:def]:7678', true],
+        ['scheme://[1234:0:0:5678:9abc:0:0:def]', true],
+        ['scheme://[1234::5678:9abc::def]', true],
+        ['scheme://~`!@$%^&*-_=+|\\;\'",.()[]{}<>', true],
+
+        // Validating `port`
+        ['scheme://example.com/no-port', true],
+        ['scheme://example.com:7678', true],
+        ['scheme://example.com:76T8', false],                // Chrome, FF: true
+        ['scheme://example.com:port', false],                // Chrome, FF: true
+
+        // Validating `path`
+        ['scheme://example.com/', true],
+        ['scheme://example.com/path', true],
+        ['scheme://example.com/path/~`!@$%^&*-_=+|\\;:\'",./()[]{}<>', true],
+
+        // Validating `query`
+        ['scheme://example.com?query', true],
+        ['scheme://example.com/?query', true],
+        ['scheme://example.com/path?query', true],
+        ['scheme://example.com/path?~`!@$%^&*-_=+|\\;:\'",.?/()[]{}<>', true],
+
+        // Validating `fragment`
+        ['scheme://example.com#fragment', true],
+        ['scheme://example.com/#fragment', true],
+        ['scheme://example.com/path#fragment', true],
+        ['scheme://example.com/path/#fragment', true],
+        ['scheme://example.com/path?query#fragment', true],
+        ['scheme://example.com/path?query#~`!@#$%^&*-_=+|\\;:\'",.?/()[]{}<>', true],
+
+        // Validating miscellaneous
+        ['scheme://☺.✪.⌘.➡/䨹', true],
+        ['scheme://مثال.إختبار', true],
+        ['scheme://例子.测试', true],
+        ['scheme://उदाहरण.परीक्षा', true],
+
+        // Legacy tests
+        ['http://server:123/path', true],
+        ['https://server:123/path', true],
+        ['file:///home/user', true],
+        ['mailto:user@example.com?subject=Foo', true],
+        ['r2-d2.c3-p0://localhost/foo', true],
+        ['abc:/foo', true],
+        ['http://example.com/path;path', true],
+        ['http://example.com/[]$\'()*,~)', true],
+        ['http:', false],                                            // FF: true
+        ['a@B.c', false],
+        ['a_B.c', false],
+        ['0scheme://example.com', false],
+        ['http://example.com:9999/``', true]
+      ];
+
+      they('should validate url: $prop', urls, function(item) {
+        var url = item[0];
+        var valid = item[1];
+
+        /* global URL_REGEXP: false */
+        expect(URL_REGEXP.test(url)).toBe(valid);
       });
     });
   });
@@ -2598,14 +2807,17 @@ describe('input', function() {
     });
 
 
-    it('should set the ngTrueValue when required directive is present', function() {
-      var inputElm = helper.compileInput('<input type="checkbox" ng-model="value" required ng-true-value="\'yes\'" />');
+    it('should pass validation for "required" when trueValue is a string', function() {
+      var inputElm = helper.compileInput('<input type="checkbox" required name="cb"' +
+        'ng-model="value" ng-true-value="\'yes\'" />');
 
       expect(inputElm).toBeInvalid();
+      expect($rootScope.form.cb.$error.required).toBe(true);
 
       browserTrigger(inputElm, 'click');
       expect(inputElm[0].checked).toBe(true);
       expect(inputElm).toBeValid();
+      expect($rootScope.form.cb.$error.required).toBeUndefined();
     });
   });
 

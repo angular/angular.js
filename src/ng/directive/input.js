@@ -6,12 +6,24 @@
   DIRTY_CLASS: false,
   UNTOUCHED_CLASS: false,
   TOUCHED_CLASS: false,
-  $ngModelMinErr: false,
+  ngModelMinErr: false,
 */
 
 // Regex code is obtained from SO: https://stackoverflow.com/questions/3143070/javascript-regex-iso-datetime#answer-3143231
 var ISO_DATE_REGEXP = /\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+([+-][0-2]\d:[0-5]\d|Z)/;
-var URL_REGEXP = /^(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?$/;
+// See valid URLs in RFC3987 (http://tools.ietf.org/html/rfc3987)
+// Note: We are being more lenient, because browsers are too.
+//   1. Scheme
+//   2. Slashes
+//   3. Username
+//   4. Password
+//   5. Hostname
+//   6. Port
+//   7. Path
+//   8. Query
+//   9. Fragment
+//                 1111111111111111 222   333333    44444        555555555555555555555555    666     77777777     8888888     999
+var URL_REGEXP = /^[a-z][a-z\d.+-]*:\/*(?:[^:@]+(?::[^@]+)?@)?(?:[^\s:/?#]+|\[[a-f\d:]+\])(?::\d+)?(?:\/[^?#]*)?(?:\?[^#]*)?(?:#.*)?$/i;
 var EMAIL_REGEXP = /^[a-z0-9!#$%&'*+\/=?^_`{|}~.-]+@[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)*$/i;
 var NUMBER_REGEXP = /^\s*(\-|\+)?(\d+|(\d*(\.\d*)))([eE][+-]?\d+)?\s*$/;
 var DATE_REGEXP = /^(\d{4})-(\d{2})-(\d{2})$/;
@@ -44,8 +56,8 @@ var inputType = {
    * @param {string=} pattern Similar to `ngPattern` except that the attribute value is the actual string
    *    that contains the regular expression body that will be converted to a regular expression
    *    as in the ngPattern directive.
-   * @param {string=} ngPattern Sets `pattern` validation error key if the ngModel value does not match
-   *    a RegExp found by evaluating the Angular expression given in the attribute value.
+   * @param {string=} ngPattern Sets `pattern` validation error key if the ngModel {@link ngModel.NgModelController#$viewValue $viewValue}
+   *    does not match a RegExp found by evaluating the Angular expression given in the attribute value.
    *    If the expression evaluates to a RegExp object, then this is used directly.
    *    If the expression evaluates to a string, then it will be converted to a RegExp
    *    after wrapping it in `^` and `$` characters. For instance, `"abc"` will be converted to
@@ -138,9 +150,17 @@ var inputType = {
      * @param {string} ngModel Assignable angular expression to data-bind to.
      * @param {string=} name Property name of the form under which the control is published.
      * @param {string=} min Sets the `min` validation error key if the value entered is less than `min`. This must be a
-     * valid ISO date string (yyyy-MM-dd).
+     *   valid ISO date string (yyyy-MM-dd). You can also use interpolation inside this attribute
+     *   (e.g. `min="{{minDate | date:'yyyy-MM-dd'}}"`). Note that `min` will also add native HTML5
+     *   constraint validation.
      * @param {string=} max Sets the `max` validation error key if the value entered is greater than `max`. This must be
-     * a valid ISO date string (yyyy-MM-dd).
+     *   a valid ISO date string (yyyy-MM-dd). You can also use interpolation inside this attribute
+     *   (e.g. `max="{{maxDate | date:'yyyy-MM-dd'}}"`). Note that `max` will also add native HTML5
+     *   constraint validation.
+     * @param {(date|string)=} ngMin Sets the `min` validation constraint to the Date / ISO date string
+     *   the `ngMin` expression evaluates to. Note that it does not set the `min` attribute.
+     * @param {(date|string)=} ngMax Sets the `max` validation constraint to the Date / ISO date string
+     *   the `ngMax` expression evaluates to. Note that it does not set the `max` attribute.
      * @param {string=} required Sets `required` validation error key if the value is not entered.
      * @param {string=} ngRequired Adds `required` attribute and `required` validation constraint to
      *    the element when the ngRequired expression evaluates to true. Use `ngRequired` instead of
@@ -232,10 +252,18 @@ var inputType = {
     *
     * @param {string} ngModel Assignable angular expression to data-bind to.
     * @param {string=} name Property name of the form under which the control is published.
-    * @param {string=} min Sets the `min` validation error key if the value entered is less than `min`. This must be a
-    * valid ISO datetime format (yyyy-MM-ddTHH:mm:ss).
-    * @param {string=} max Sets the `max` validation error key if the value entered is greater than `max`. This must be
-    * a valid ISO datetime format (yyyy-MM-ddTHH:mm:ss).
+    * @param {string=} min Sets the `min` validation error key if the value entered is less than `min`.
+    *   This must be a valid ISO datetime format (yyyy-MM-ddTHH:mm:ss). You can also use interpolation
+    *   inside this attribute (e.g. `min="{{minDatetimeLocal | date:'yyyy-MM-ddTHH:mm:ss'}}"`).
+    *   Note that `min` will also add native HTML5 constraint validation.
+    * @param {string=} max Sets the `max` validation error key if the value entered is greater than `max`.
+    *   This must be a valid ISO datetime format (yyyy-MM-ddTHH:mm:ss). You can also use interpolation
+    *   inside this attribute (e.g. `max="{{maxDatetimeLocal | date:'yyyy-MM-ddTHH:mm:ss'}}"`).
+    *   Note that `max` will also add native HTML5 constraint validation.
+    * @param {(date|string)=} ngMin Sets the `min` validation error key to the Date / ISO datetime string
+    *   the `ngMin` expression evaluates to. Note that it does not set the `min` attribute.
+    * @param {(date|string)=} ngMax Sets the `max` validation error key to the Date / ISO datetime string
+    *   the `ngMax` expression evaluates to. Note that it does not set the `max` attribute.
     * @param {string=} required Sets `required` validation error key if the value is not entered.
     * @param {string=} ngRequired Adds `required` attribute and `required` validation constraint to
     *    the element when the ngRequired expression evaluates to true. Use `ngRequired` instead of
@@ -316,7 +344,7 @@ var inputType = {
    *
    * @description
    * Input with time validation and transformation. In browsers that do not yet support
-   * the HTML5 date input, a text element will be used. In that case, the text must be entered in a valid ISO-8601
+   * the HTML5 time input, a text element will be used. In that case, the text must be entered in a valid ISO-8601
    * local time format (HH:mm:ss), for example: `14:57:00`. Model must be a Date object. This binding will always output a
    * Date object to the model of January 1, 1970, or local date `new Date(1970, 0, 1, HH, mm, ss)`.
    *
@@ -328,10 +356,18 @@ var inputType = {
    *
    * @param {string} ngModel Assignable angular expression to data-bind to.
    * @param {string=} name Property name of the form under which the control is published.
-   * @param {string=} min Sets the `min` validation error key if the value entered is less than `min`. This must be a
-   * valid ISO time format (HH:mm:ss).
-   * @param {string=} max Sets the `max` validation error key if the value entered is greater than `max`. This must be a
-   * valid ISO time format (HH:mm:ss).
+   * @param {string=} min Sets the `min` validation error key if the value entered is less than `min`.
+   *   This must be a valid ISO time format (HH:mm:ss). You can also use interpolation inside this
+   *   attribute (e.g. `min="{{minTime | date:'HH:mm:ss'}}"`). Note that `min` will also add
+   *   native HTML5 constraint validation.
+   * @param {string=} max Sets the `max` validation error key if the value entered is greater than `max`.
+   *   This must be a valid ISO time format (HH:mm:ss). You can also use interpolation inside this
+   *   attribute (e.g. `max="{{maxTime | date:'HH:mm:ss'}}"`). Note that `max` will also add
+   *   native HTML5 constraint validation.
+   * @param {(date|string)=} ngMin Sets the `min` validation constraint to the Date / ISO time string the
+   *   `ngMin` expression evaluates to. Note that it does not set the `min` attribute.
+   * @param {(date|string)=} ngMax Sets the `max` validation constraint to the Date / ISO time string the
+   *   `ngMax` expression evaluates to. Note that it does not set the `max` attribute.
    * @param {string=} required Sets `required` validation error key if the value is not entered.
    * @param {string=} ngRequired Adds `required` attribute and `required` validation constraint to
    *    the element when the ngRequired expression evaluates to true. Use `ngRequired` instead of
@@ -423,10 +459,18 @@ var inputType = {
     *
     * @param {string} ngModel Assignable angular expression to data-bind to.
     * @param {string=} name Property name of the form under which the control is published.
-    * @param {string=} min Sets the `min` validation error key if the value entered is less than `min`. This must be a
-    * valid ISO week format (yyyy-W##).
-    * @param {string=} max Sets the `max` validation error key if the value entered is greater than `max`. This must be
-    * a valid ISO week format (yyyy-W##).
+    * @param {string=} min Sets the `min` validation error key if the value entered is less than `min`.
+    *   This must be a valid ISO week format (yyyy-W##). You can also use interpolation inside this
+    *   attribute (e.g. `min="{{minWeek | date:'yyyy-Www'}}"`). Note that `min` will also add
+    *   native HTML5 constraint validation.
+    * @param {string=} max Sets the `max` validation error key if the value entered is greater than `max`.
+    *   This must be a valid ISO week format (yyyy-W##). You can also use interpolation inside this
+    *   attribute (e.g. `max="{{maxWeek | date:'yyyy-Www'}}"`). Note that `max` will also add
+    *   native HTML5 constraint validation.
+    * @param {(date|string)=} ngMin Sets the `min` validation constraint to the Date / ISO week string
+    *   the `ngMin` expression evaluates to. Note that it does not set the `min` attribute.
+    * @param {(date|string)=} ngMax Sets the `max` validation constraint to the Date / ISO week string
+    *   the `ngMax` expression evaluates to. Note that it does not set the `max` attribute.
     * @param {string=} required Sets `required` validation error key if the value is not entered.
     * @param {string=} ngRequired Adds `required` attribute and `required` validation constraint to
     *    the element when the ngRequired expression evaluates to true. Use `ngRequired` instead of
@@ -520,10 +564,19 @@ var inputType = {
    *
    * @param {string} ngModel Assignable angular expression to data-bind to.
    * @param {string=} name Property name of the form under which the control is published.
-   * @param {string=} min Sets the `min` validation error key if the value entered is less than `min`. This must be
-   * a valid ISO month format (yyyy-MM).
-   * @param {string=} max Sets the `max` validation error key if the value entered is greater than `max`. This must
-   * be a valid ISO month format (yyyy-MM).
+   * @param {string=} min Sets the `min` validation error key if the value entered is less than `min`.
+   *   This must be a valid ISO month format (yyyy-MM). You can also use interpolation inside this
+   *   attribute (e.g. `min="{{minMonth | date:'yyyy-MM'}}"`). Note that `min` will also add
+   *   native HTML5 constraint validation.
+   * @param {string=} max Sets the `max` validation error key if the value entered is greater than `max`.
+   *   This must be a valid ISO month format (yyyy-MM). You can also use interpolation inside this
+   *   attribute (e.g. `max="{{maxMonth | date:'yyyy-MM'}}"`). Note that `max` will also add
+   *   native HTML5 constraint validation.
+   * @param {(date|string)=} ngMin Sets the `min` validation constraint to the Date / ISO week string
+   *   the `ngMin` expression evaluates to. Note that it does not set the `min` attribute.
+   * @param {(date|string)=} ngMax Sets the `max` validation constraint to the Date / ISO week string
+   *   the `ngMax` expression evaluates to. Note that it does not set the `max` attribute.
+
    * @param {string=} required Sets `required` validation error key if the value is not entered.
    * @param {string=} ngRequired Adds `required` attribute and `required` validation constraint to
    *    the element when the ngRequired expression evaluates to true. Use `ngRequired` instead of
@@ -638,8 +691,8 @@ var inputType = {
    * @param {string=} pattern Similar to `ngPattern` except that the attribute value is the actual string
    *    that contains the regular expression body that will be converted to a regular expression
    *    as in the ngPattern directive.
-   * @param {string=} ngPattern Sets `pattern` validation error key if the ngModel value does not match
-   *    a RegExp found by evaluating the Angular expression given in the attribute value.
+   * @param {string=} ngPattern Sets `pattern` validation error key if the ngModel {@link ngModel.NgModelController#$viewValue $viewValue}
+   *    does not match a RegExp found by evaluating the Angular expression given in the attribute value.
    *    If the expression evaluates to a RegExp object, then this is used directly.
    *    If the expression evaluates to a string, then it will be converted to a RegExp
    *    after wrapping it in `^` and `$` characters. For instance, `"abc"` will be converted to
@@ -736,8 +789,8 @@ var inputType = {
    * @param {string=} pattern Similar to `ngPattern` except that the attribute value is the actual string
    *    that contains the regular expression body that will be converted to a regular expression
    *    as in the ngPattern directive.
-   * @param {string=} ngPattern Sets `pattern` validation error key if the ngModel value does not match
-   *    a RegExp found by evaluating the Angular expression given in the attribute value.
+   * @param {string=} ngPattern Sets `pattern` validation error key if the ngModel {@link ngModel.NgModelController#$viewValue $viewValue}
+   *    does not match a RegExp found by evaluating the Angular expression given in the attribute value.
    *    If the expression evaluates to a RegExp object, then this is used directly.
    *    If the expression evaluates to a string, then it will be converted to a RegExp
    *    after wrapping it in `^` and `$` characters. For instance, `"abc"` will be converted to
@@ -835,8 +888,8 @@ var inputType = {
    * @param {string=} pattern Similar to `ngPattern` except that the attribute value is the actual string
    *    that contains the regular expression body that will be converted to a regular expression
    *    as in the ngPattern directive.
-   * @param {string=} ngPattern Sets `pattern` validation error key if the ngModel value does not match
-   *    a RegExp found by evaluating the Angular expression given in the attribute value.
+   * @param {string=} ngPattern Sets `pattern` validation error key if the ngModel {@link ngModel.NgModelController#$viewValue $viewValue}
+   *    does not match a RegExp found by evaluating the Angular expression given in the attribute value.
    *    If the expression evaluates to a RegExp object, then this is used directly.
    *    If the expression evaluates to a string, then it will be converted to a RegExp
    *    after wrapping it in `^` and `$` characters. For instance, `"abc"` will be converted to
@@ -1243,7 +1296,7 @@ function createDateInputType(type, regexp, parseDate, format) {
 
     ctrl.$formatters.push(function(value) {
       if (value && !isDate(value)) {
-        throw $ngModelMinErr('datefmt', 'Expected `{0}` to be a date', value);
+        throw ngModelMinErr('datefmt', 'Expected `{0}` to be a date', value);
       }
       if (isValidDate(value)) {
         previousDate = value;
@@ -1285,7 +1338,7 @@ function createDateInputType(type, regexp, parseDate, format) {
     }
 
     function parseObservedDateValue(val) {
-      return isDefined(val) ? (isDate(val) ? val : parseDate(val)) : undefined;
+      return isDefined(val) && !isDate(val) ? parseDate(val) || undefined : val;
     }
   };
 }
@@ -1296,11 +1349,7 @@ function badInputChecker(scope, element, attr, ctrl) {
   if (nativeValidation) {
     ctrl.$parsers.push(function(value) {
       var validity = element.prop(VALIDITY_STATE_PROPERTY) || {};
-      // Detect bug in FF35 for input[email] (https://bugzilla.mozilla.org/show_bug.cgi?id=1064430):
-      // - also sets validity.badInput (should only be validity.typeMismatch).
-      // - see http://www.whatwg.org/specs/web-apps/current-work/multipage/forms.html#e-mail-state-(type=email)
-      // - can ignore this case as we can still read out the erroneous email...
-      return validity.badInput && !validity.typeMismatch ? undefined : value;
+      return validity.badInput || validity.typeMismatch ? undefined : value;
     });
   }
 }
@@ -1319,7 +1368,7 @@ function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   ctrl.$formatters.push(function(value) {
     if (!ctrl.$isEmpty(value)) {
       if (!isNumber(value)) {
-        throw $ngModelMinErr('numfmt', 'Expected `{0}` to be a number', value);
+        throw ngModelMinErr('numfmt', 'Expected `{0}` to be a number', value);
       }
       value = value.toString();
     }
@@ -1412,7 +1461,7 @@ function parseConstantExpr($parse, context, name, expression, fallback) {
   if (isDefined(expression)) {
     parseFn = $parse(expression);
     if (!parseFn.constant) {
-      throw minErr('ngModel')('constexpr', 'Expected constant expression for `{0}`, but saw ' +
+      throw ngModelMinErr('constexpr', 'Expected constant expression for `{0}`, but saw ' +
                                    '`{1}`.', name, expression);
     }
     return parseFn(context);
@@ -1472,8 +1521,8 @@ function checkboxInputType(scope, element, attr, ctrl, $sniffer, $browser, $filt
  * @param {number=} ngMaxlength Sets `maxlength` validation error key if the value is longer than
  *    maxlength. Setting the attribute to a negative or non-numeric value, allows view values of any
  *    length.
- * @param {string=} ngPattern Sets `pattern` validation error key if the ngModel value does not match
- *    a RegExp found by evaluating the Angular expression given in the attribute value.
+ * @param {string=} ngPattern Sets `pattern` validation error key if the ngModel {@link ngModel.NgModelController#$viewValue $viewValue}
+ *    does not match a RegExp found by evaluating the Angular expression given in the attribute value.
  *    If the expression evaluates to a RegExp object, then this is used directly.
  *    If the expression evaluates to a string, then it will be converted to a RegExp
  *    after wrapping it in `^` and `$` characters. For instance, `"abc"` will be converted to
@@ -1511,8 +1560,8 @@ function checkboxInputType(scope, element, attr, ctrl, $sniffer, $browser, $filt
  * @param {number=} ngMaxlength Sets `maxlength` validation error key if the value is longer than
  *    maxlength. Setting the attribute to a negative or non-numeric value, allows view values of any
  *    length.
- * @param {string=} ngPattern Sets `pattern` validation error key if the ngModel value does not match
- *    a RegExp found by evaluating the Angular expression given in the attribute value.
+ * @param {string=} ngPattern Sets `pattern` validation error key if the ngModel {@link ngModel.NgModelController#$viewValue $viewValue}
+ *    value does not match a RegExp found by evaluating the Angular expression given in the attribute value.
  *    If the expression evaluates to a RegExp object, then this is used directly.
  *    If the expression evaluates to a string, then it will be converted to a RegExp
  *    after wrapping it in `^` and `$` characters. For instance, `"abc"` will be converted to

@@ -133,7 +133,7 @@ describe('ngList', function() {
     });
 
     it("should support splitting on newlines", function() {
-      helper.compileInput('<textarea type="text" ng-model="list" ng-trim="false" ng-list="&#10;"></textarea');
+      helper.compileInput('<textarea type="text" ng-model="list" ng-trim="false" ng-list="&#10;"></textarea>');
       helper.changeInputValueTo('a\nb');
       expect($rootScope.list).toEqual(['a','b']);
     });

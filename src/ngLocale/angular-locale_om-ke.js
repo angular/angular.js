@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "Sad",
       "Mud"
     ],
+    "STANDALONEMONTH": [
+      "Amajjii",
+      "Guraandhala",
+      "Bitooteessa",
+      "Elba",
+      "Caamsa",
+      "Waxabajjii",
+      "Adooleessa",
+      "Hagayya",
+      "Fuulbana",
+      "Onkololeessa",
+      "Sadaasa",
+      "Muddee"
+    ],
     "WEEKENDRANGE": [
       5,
       6

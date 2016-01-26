@@ -188,7 +188,7 @@ describe('Scope', function() {
       expect(child1.$$watchersCount).toBe(1);
       expect($rootScope.$$watchersCount).toBe(2);
 
-      // Execute everything a second time to be sure that calling the remove funciton
+      // Execute everything a second time to be sure that calling the remove function
       // several times, it only decrements the counter once
       remove2();
       expect(child2.$$watchersCount).toBe(1);
@@ -822,6 +822,7 @@ describe('Scope', function() {
           expect(log.empty()).toEqual([{newVal: {b: {}, c: 'B'}, oldVal: {a: [], b: {}, c: 'B'}}]);
         });
 
+
         it('should not infinitely digest when current value is NaN', function() {
           $rootScope.obj = {a: NaN};
           expect(function() {
@@ -829,6 +830,18 @@ describe('Scope', function() {
           }).not.toThrow();
         });
 
+
+        it('should handle objects created using `Object.create(null)`', function() {
+          $rootScope.obj = Object.create(null);
+          $rootScope.obj.a = 'a';
+          $rootScope.obj.b = 'b';
+          $rootScope.$digest();
+          expect(log.empty()[0].newVal).toEqual({a: 'a', b: 'b'});
+
+          delete $rootScope.obj.b;
+          $rootScope.$digest();
+          expect(log.empty()[0].newVal).toEqual({a: 'a'});
+        });
       });
     });
 
@@ -1198,6 +1211,36 @@ describe('Scope', function() {
       expect(child.parentModel).toBe('parent');
       expect(child.childModel).toBe('child');
     }));
+
+
+    if (msie === 9) {
+      // See issue https://github.com/angular/angular.js/issues/10706
+      it('should completely disconnect all child scopes on IE9', inject(function($rootScope) {
+        var parent = $rootScope.$new(),
+            child1 = parent.$new(),
+            child2 = parent.$new(),
+            grandChild1 = child1.$new(),
+            grandChild2 = child1.$new();
+
+        child1.$destroy();
+        $rootScope.$digest();
+
+        expect(isDisconnected(parent)).toBe(false);
+        expect(isDisconnected(child1)).toBe(true);
+        expect(isDisconnected(child2)).toBe(false);
+        expect(isDisconnected(grandChild1)).toBe(true);
+        expect(isDisconnected(grandChild2)).toBe(true);
+
+        function isDisconnected($scope) {
+          return $scope.$$nextSibling === null &&
+                 $scope.$$prevSibling === null &&
+                 $scope.$$childHead === null &&
+                 $scope.$$childTail === null &&
+                 $scope.$root === null &&
+                 $scope.$$watchers === null;
+        }
+      }));
+    }
   });
 
 

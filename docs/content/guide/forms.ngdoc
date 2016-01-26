@@ -33,7 +33,7 @@ for other directives to augment its behavior.
         <input type="button" ng-click="reset()" value="Reset" />
         <input type="submit" ng-click="update(user)" value="Save" />
       </form>
-      <pre>form = {{user | json}}</pre>
+      <pre>user = {{user | json}}</pre>
       <pre>master = {{master | json}}</pre>
     </div>
 
@@ -95,6 +95,8 @@ and failing to satisfy its validity.
         <input type="button" ng-click="reset()" value="Reset" />
         <input type="submit" ng-click="update(user)" value="Save" />
       </form>
+      <pre>user = {{user | json}}</pre>
+      <pre>master = {{master | json}}</pre>
     </div>
 
     <style type="text/css">
@@ -183,6 +185,8 @@ didn't interact with a control
         <input type="button" ng-click="reset(form)" value="Reset" />
         <input type="submit" ng-click="update(user)" value="Save" />
       </form>
+      <pre>user = {{user | json}}</pre>
+      <pre>master = {{master | json}}</pre>
     </div>
   </file>
 
@@ -379,7 +383,7 @@ In the following example we create two directives:
       return {
         require: 'ngModel',
         link: function(scope, elm, attrs, ctrl) {
-        var usernames = ['Jim', 'John', 'Jill', 'Jackie'];
+          var usernames = ['Jim', 'John', 'Jill', 'Jackie'];
 
           ctrl.$asyncValidators.username = function(modelValue, viewValue) {
 

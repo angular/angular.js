@@ -53,27 +53,8 @@ function prepareAnimateOptions(options) {
       : {};
 }
 
-var $$CoreAnimateRunnerProvider = function() {
-  this.$get = ['$q', '$$rAF', function($q, $$rAF) {
-    function AnimateRunner() {}
-    AnimateRunner.all = noop;
-    AnimateRunner.chain = noop;
-    AnimateRunner.prototype = {
-      end: noop,
-      cancel: noop,
-      resume: noop,
-      pause: noop,
-      complete: noop,
-      then: function(pass, fail) {
-        return $q(function(resolve) {
-          $$rAF(function() {
-            resolve();
-          });
-        }).then(pass, fail);
-      }
-    };
-    return AnimateRunner;
-  }];
+var $$CoreAnimateJsProvider = function() {
+  this.$get = function() {};
 };
 
 // this is prefixed with Core since it conflicts with
@@ -101,65 +82,75 @@ var $$CoreAnimateQueueProvider = function() {
           addRemoveClassesPostDigest(element, options.addClass, options.removeClass);
         }
 
-        return new $$AnimateRunner(); // jshint ignore:line
+        var runner = new $$AnimateRunner(); // jshint ignore:line
+
+        // since there are no animations to run the runner needs to be
+        // notified that the animation call is complete.
+        runner.complete();
+        return runner;
       }
     };
 
-    function addRemoveClassesPostDigest(element, add, remove) {
-      var classVal, data = postDigestQueue.get(element);
 
-      if (!data) {
-        postDigestQueue.put(element, data = {});
-        postDigestElements.push(element);
-      }
-
-      var updateData = function(classes, value) {
-        var changed = false;
-        if (classes) {
-          classes = isString(classes) ? classes.split(' ') :
-                    isArray(classes) ? classes : [];
-          forEach(classes, function(className) {
-            if (className) {
-              changed = true;
-              data[className] = value;
-            }
-          });
-        }
-        return changed;
-      };
-
-      var classesAdded = updateData(add, true);
-      var classesRemoved = updateData(remove, false);
-      if ((!classesAdded && !classesRemoved) || postDigestElements.length > 1) return;
-
-      $rootScope.$$postDigest(function() {
-        forEach(postDigestElements, function(element) {
-          var data = postDigestQueue.get(element);
-          if (data) {
-            var existing = splitClasses(element.attr('class'));
-            var toAdd = '';
-            var toRemove = '';
-            forEach(data, function(status, className) {
-              var hasClass = !!existing[className];
-              if (status !== hasClass) {
-                if (status) {
-                  toAdd += (toAdd.length ? ' ' : '') + className;
-                } else {
-                  toRemove += (toRemove.length ? ' ' : '') + className;
-                }
-              }
-            });
-
-            forEach(element, function(elm) {
-              toAdd    && jqLiteAddClass(elm, toAdd);
-              toRemove && jqLiteRemoveClass(elm, toRemove);
-            });
-            postDigestQueue.remove(element);
+    function updateData(data, classes, value) {
+      var changed = false;
+      if (classes) {
+        classes = isString(classes) ? classes.split(' ') :
+                  isArray(classes) ? classes : [];
+        forEach(classes, function(className) {
+          if (className) {
+            changed = true;
+            data[className] = value;
           }
         });
+      }
+      return changed;
+    }
 
-        postDigestElements.length = 0;
+    function handleCSSClassChanges() {
+      forEach(postDigestElements, function(element) {
+        var data = postDigestQueue.get(element);
+        if (data) {
+          var existing = splitClasses(element.attr('class'));
+          var toAdd = '';
+          var toRemove = '';
+          forEach(data, function(status, className) {
+            var hasClass = !!existing[className];
+            if (status !== hasClass) {
+              if (status) {
+                toAdd += (toAdd.length ? ' ' : '') + className;
+              } else {
+                toRemove += (toRemove.length ? ' ' : '') + className;
+              }
+            }
+          });
+
+          forEach(element, function(elm) {
+            toAdd    && jqLiteAddClass(elm, toAdd);
+            toRemove && jqLiteRemoveClass(elm, toRemove);
+          });
+          postDigestQueue.remove(element);
+        }
       });
+      postDigestElements.length = 0;
+    }
+
+
+    function addRemoveClassesPostDigest(element, add, remove) {
+      var data = postDigestQueue.get(element) || {};
+
+      var classesAdded = updateData(data, add, true);
+      var classesRemoved = updateData(data, remove, false);
+
+      if (classesAdded || classesRemoved) {
+
+        postDigestQueue.put(element, data);
+        postDigestElements.push(element);
+
+        if (postDigestElements.length === 1) {
+          $rootScope.$$postDigest(handleCSSClassChanges);
+        }
+      }
     }
   }];
 };
@@ -280,7 +271,7 @@ var $AnimateProvider = ['$provide', function($provide) {
      * when an animation is detected (and animations are enabled), $animate will do the heavy lifting
      * to ensure that animation runs with the triggered DOM operation.
      *
-     * By default $animate doesn't trigger an animations. This is because the `ngAnimate` module isn't
+     * By default $animate doesn't trigger any animations. This is because the `ngAnimate` module isn't
      * included and only when it is active then the animation hooks that `$animate` triggers will be
      * functional. Once active then all structural `ng-` directives will trigger animations as they perform
      * their DOM-related operations (enter, leave and move). Other directives such as `ngClass`,
@@ -338,8 +329,8 @@ var $AnimateProvider = ['$provide', function($provide) {
        * // remove all the animation event listeners listening for `enter` on the given element and its children
        * $animate.off('enter', container);
        *
-       * // remove the event listener function provided by `listenerFn` that is set
-       * // to listen for `enter` on the given `element` as well as its children
+       * // remove the event listener function provided by `callback` that is set
+       * // to listen for `enter` on the given `container` as well as its children
        * $animate.off('enter', container, callback);
        * ```
        *
@@ -561,17 +552,30 @@ var $AnimateProvider = ['$provide', function($provide) {
        * @kind function
        *
        * @description Performs an inline animation on the element which applies the provided to and from CSS styles to the element.
-       * If any detected CSS transition, keyframe or JavaScript matches the provided className value then the animation will take
-       * on the provided styles. For example, if a transition animation is set for the given className then the provided from and
-       * to styles will be applied alongside the given transition. If a JavaScript animation is detected then the provided styles
-       * will be given in as function paramters into the `animate` method (or as apart of the `options` parameter).
+       * If any detected CSS transition, keyframe or JavaScript matches the provided className value, then the animation will take
+       * on the provided styles. For example, if a transition animation is set for the given classNamem, then the provided `from` and
+       * `to` styles will be applied alongside the given transition. If the CSS style provided in `from` does not have a corresponding
+       * style in `to`, the style in `from` is applied immediately, and no animation is run.
+       * If a JavaScript animation is detected then the provided styles will be given in as function parameters into the `animate`
+       * method (or as part of the `options` parameter):
+       *
+       * ```js
+       * ngModule.animation('.my-inline-animation', function() {
+       *   return {
+       *     animate : function(element, from, to, done, options) {
+       *       //animation
+       *       done();
+       *     }
+       *   }
+       * });
+       * ```
        *
        * @param {DOMElement} element the element which the CSS styles will be applied to
        * @param {object} from the from (starting) CSS styles that will be applied to the element and across the animation.
        * @param {object} to the to (destination) CSS styles that will be applied to the element and across the animation.
        * @param {string=} className an optional CSS class that will be applied to the element for the duration of the animation. If
        *    this value is left as empty then a CSS class of `ng-inline-animate` will be applied to the element.
-       *    (Note that if no animation is detected then this value will not be appplied to the element.)
+       *    (Note that if no animation is detected then this value will not be applied to the element.)
        * @param {object=} options an optional collection of options/styles that will be applied to the element
        *
        * @return {Promise} the animation callback promise

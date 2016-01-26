@@ -719,8 +719,6 @@ describe('ngMock', function() {
 
     it('should serialize scope that has overridden "hasOwnProperty"', inject(function($rootScope, $sniffer) {
       /* jshint -W001 */
-      // MS IE8 just doesn't work for this kind of thing, since "for ... in" doesn't return
-      // things like hasOwnProperty even if it is explicitly defined on the actual object!
       $rootScope.hasOwnProperty = 'X';
       expect(d($rootScope)).toMatch(/Scope\(.*\): \{/);
       expect(d($rootScope)).toMatch(/hasOwnProperty: "X"/);
@@ -833,6 +831,19 @@ describe('ngMock', function() {
         });
       });
 
+      describe('nested calls', function() {
+        it('should invoke nested module calls immediately', function() {
+          module(function($provide) {
+            $provide.constant('someConst', 'blah');
+            module(function(someConst) {
+              log = someConst;
+            });
+          });
+          inject(function() {
+            expect(log).toBe('blah');
+          });
+        });
+      });
 
       describe('inline in test', function() {
         it('should load module', function() {
@@ -906,10 +917,6 @@ describe('ngMock', function() {
       });
 
 
-      // We don't run the following tests on IE8.
-      // IE8 throws "Object does not support this property or method." error,
-      // when thrown from a function defined on window (which `inject` is).
-
       it('should not change thrown Errors', inject(function($sniffer) {
         expect(function() {
           inject(function() {
@@ -954,6 +961,11 @@ describe('ngMock', function() {
       expect(typeof hb.whenPATCH).toBe("function");
       expect(typeof hb.whenDELETE).toBe("function");
       expect(typeof hb.whenHEAD).toBe("function");
+    });
+
+    it('should provide "route" shortcuts for expect and when', function() {
+      expect(typeof hb.whenRoute).toBe("function");
+      expect(typeof hb.expectRoute).toBe("function");
     });
 
 
@@ -1136,14 +1148,38 @@ describe('ngMock', function() {
       });
 
       it('should take function', function() {
-        hb.expect('GET', '/some').respond(function(m, u, d, h) {
-          return [301, m + u + ';' + d + ';a=' + h.a, {'Connection': 'keep-alive'}, 'Moved Permanently'];
+        hb.expect('GET', '/some?q=s').respond(function(m, u, d, h, p) {
+          return [301, m + u + ';' + d + ';a=' + h.a + ';q=' + p.q, {'Connection': 'keep-alive'}, 'Moved Permanently'];
         });
 
-        hb('GET', '/some', 'data', callback, {a: 'b'});
+        hb('GET', '/some?q=s', 'data', callback, {a: 'b'});
         hb.flush();
 
-        expect(callback).toHaveBeenCalledOnceWith(301, 'GET/some;data;a=b', 'Connection: keep-alive', 'Moved Permanently');
+        expect(callback).toHaveBeenCalledOnceWith(301, 'GET/some?q=s;data;a=b;q=s', 'Connection: keep-alive', 'Moved Permanently');
+      });
+
+      it('should decode query parameters in respond() function', function() {
+        hb.expect('GET', '/url?query=l%E2%80%A2ng%20string%20w%2F%20spec%5Eal%20char%24&id=1234&orderBy=-name')
+        .respond(function(m, u, d, h, p) {
+          return [200, "id=" + p.id + ";orderBy=" + p.orderBy + ";query=" + p.query];
+        });
+
+        hb('GET', '/url?query=l%E2%80%A2ng%20string%20w%2F%20spec%5Eal%20char%24&id=1234&orderBy=-name', null, callback);
+        hb.flush();
+
+        expect(callback).toHaveBeenCalledOnceWith(200, 'id=1234;orderBy=-name;query=l•ng string w/ spec^al char$', '', '');
+      });
+
+      it('should include regex captures in respond() params when keys provided', function() {
+        hb.expect('GET', /\/(.+)\/article\/(.+)/, undefined, undefined, ['id', 'name'])
+        .respond(function(m, u, d, h, p) {
+          return [200, "id=" + p.id + ";name=" + p.name];
+        });
+
+        hb('GET', '/1234/article/cool-angular-article', null, callback);
+        hb.flush();
+
+        expect(callback).toHaveBeenCalledOnceWith(200, 'id=1234;name=cool-angular-article', '', '');
       });
 
       it('should default response headers to ""', function() {
@@ -1508,6 +1544,35 @@ describe('ngMock', function() {
       });
     });
 
+    describe('expectRoute/whenRoute shortcuts', function() {
+      angular.forEach(['expectRoute', 'whenRoute'], function(routeShortcut) {
+        var methods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'JSONP'];
+        they('should provide ' + routeShortcut + ' shortcut with $prop method', methods,
+          function() {
+            hb[routeShortcut](this, '/route').respond('path');
+            hb(this, '/route', undefined, callback);
+            hb.flush();
+            expect(callback).toHaveBeenCalledOnceWith(200, 'path', '', '');
+          }
+        );
+        they('should match colon deliminated parameters in ' + routeShortcut + ' $prop method', methods,
+          function() {
+            hb[routeShortcut](this, '/route/:id/path/:s_id').respond('path');
+            hb(this, '/route/123/path/456', undefined, callback);
+            hb.flush();
+            expect(callback).toHaveBeenCalledOnceWith(200, 'path', '', '');
+          }
+        );
+        they('should ignore query param when matching in ' + routeShortcut + ' $prop method', methods,
+          function() {
+            hb[routeShortcut](this, '/route/:id').respond('path');
+            hb(this, '/route/123?q=str&foo=bar', undefined, callback);
+            hb.flush();
+            expect(callback).toHaveBeenCalledOnceWith(200, 'path', '', '');
+          }
+        );
+      });
+    });
 
     describe('MockHttpExpectation', function() {
       /* global MockHttpExpectation */
@@ -1581,6 +1646,25 @@ describe('ngMock', function() {
   describe('$rootElement', function() {
     it('should create mock application root', inject(function($rootElement) {
       expect($rootElement.text()).toEqual('');
+    }));
+  });
+
+
+  describe('$rootScope', function() {
+    var destroyed = false;
+    var oldRootScope;
+
+    it('should destroy $rootScope after each test', inject(function($rootScope) {
+      $rootScope.$on('$destroy', function() {
+        destroyed = true;
+      });
+      oldRootScope = $rootScope;
+    }));
+
+    it('should have destroyed the $rootScope from the previous test', inject(function($rootScope) {
+      expect(destroyed).toBe(true);
+      expect($rootScope).not.toBe(oldRootScope);
+      expect(oldRootScope.$$destroyed).toBe(true);
     }));
   });
 
@@ -1773,6 +1857,207 @@ describe('ngMock', function() {
       });
     });
   });
+
+
+  describe('$componentController', function() {
+    it('should instantiate a simple controller defined inline in a component', function() {
+      function TestController($scope, a, b) {
+        this.$scope = $scope;
+        this.a = a;
+        this.b = b;
+      }
+      module(function($compileProvider) {
+        $compileProvider.component('test', {
+          controller: TestController
+        });
+      });
+      inject(function($componentController, $rootScope) {
+        var $scope = {};
+        var ctrl = $componentController('test', { $scope: $scope, a: 'A', b: 'B' }, { x: 'X', y: 'Y' });
+        expect(ctrl).toEqual({ $scope: $scope, a: 'A', b: 'B', x: 'X', y: 'Y' });
+        expect($scope.$ctrl).toBe(ctrl);
+      });
+    });
+
+    it('should instantiate a controller with $$inject annotation defined inline in a component', function() {
+      function TestController(x, y, z) {
+        this.$scope = x;
+        this.a = y;
+        this.b = z;
+      }
+      TestController.$inject = ['$scope', 'a', 'b'];
+      module(function($compileProvider) {
+        $compileProvider.component('test', {
+          controller: TestController
+        });
+      });
+      inject(function($componentController, $rootScope) {
+        var $scope = {};
+        var ctrl = $componentController('test', { $scope: $scope, a: 'A', b: 'B' }, { x: 'X', y: 'Y' });
+        expect(ctrl).toEqual({ $scope: $scope, a: 'A', b: 'B', x: 'X', y: 'Y' });
+        expect($scope.$ctrl).toBe(ctrl);
+      });
+    });
+
+    it('should instantiate a named controller defined in a component', function() {
+      function TestController($scope, a, b) {
+        this.$scope = $scope;
+        this.a = a;
+        this.b = b;
+      }
+      module(function($controllerProvider, $compileProvider) {
+        $controllerProvider.register('TestController', TestController);
+        $compileProvider.component('test', {
+          controller: 'TestController'
+        });
+      });
+      inject(function($componentController, $rootScope) {
+        var $scope = {};
+        var ctrl = $componentController('test', { $scope: $scope, a: 'A', b: 'B' }, { x: 'X', y: 'Y' });
+        expect(ctrl).toEqual({ $scope: $scope, a: 'A', b: 'B', x: 'X', y: 'Y' });
+        expect($scope.$ctrl).toBe(ctrl);
+      });
+    });
+
+    it('should instantiate a named controller with `controller as` syntax defined in a component', function() {
+      function TestController($scope, a, b) {
+        this.$scope = $scope;
+        this.a = a;
+        this.b = b;
+      }
+      module(function($controllerProvider, $compileProvider) {
+        $controllerProvider.register('TestController', TestController);
+        $compileProvider.component('test', {
+          controller: 'TestController as testCtrl'
+        });
+      });
+      inject(function($componentController, $rootScope) {
+        var $scope = {};
+        var ctrl = $componentController('test', { $scope: $scope, a: 'A', b: 'B' }, { x: 'X', y: 'Y' });
+        expect(ctrl).toEqual({ $scope: $scope, a: 'A', b: 'B', x: 'X', y: 'Y' });
+        expect($scope.testCtrl).toBe(ctrl);
+      });
+    });
+
+    it('should instantiate the controller of the restrict:\'E\' component if there are more directives with the same name but not restricted to \'E\'', function() {
+      function TestController() {
+        this.r = 6779;
+      }
+      module(function($compileProvider) {
+        $compileProvider.directive('test', function() {
+          return { restrict: 'A' };
+        });
+        $compileProvider.component('test', {
+          controller: TestController
+        });
+      });
+      inject(function($componentController, $rootScope) {
+        var ctrl = $componentController('test', { $scope: {} });
+        expect(ctrl).toEqual({ r: 6779 });
+      });
+    });
+
+    it('should instantiate the controller of the restrict:\'E\' component if there are more directives with the same name and restricted to \'E\' but no controller', function() {
+      function TestController() {
+        this.r = 22926;
+      }
+      module(function($compileProvider) {
+        $compileProvider.directive('test', function() {
+          return { restrict: 'E' };
+        });
+        $compileProvider.component('test', {
+          controller: TestController
+        });
+      });
+      inject(function($componentController, $rootScope) {
+        var ctrl = $componentController('test', { $scope: {} });
+        expect(ctrl).toEqual({ r: 22926 });
+      });
+    });
+
+    it('should instantiate the controller of the directive with controller, controllerAs and restrict:\'E\' if there are more directives', function() {
+      function TestController() {
+        this.r = 18842;
+      }
+      module(function($compileProvider) {
+        $compileProvider.directive('test', function() {
+          return { };
+        });
+        $compileProvider.directive('test', function() {
+          return {
+            restrict: 'E',
+            controller: TestController,
+            controllerAs: '$ctrl'
+          };
+        });
+      });
+      inject(function($componentController, $rootScope) {
+        var ctrl = $componentController('test', { $scope: {} });
+        expect(ctrl).toEqual({ r: 18842 });
+      });
+    });
+
+    it('should fail if there is no directive with restrict:\'E\' and controller', function() {
+      function TestController() {
+        this.r = 31145;
+      }
+      module(function($compileProvider) {
+        $compileProvider.directive('test', function() {
+          return {
+            restrict: 'AC',
+            controller: TestController
+          };
+        });
+        $compileProvider.directive('test', function() {
+          return {
+            restrict: 'E',
+            controller: TestController
+          };
+        });
+        $compileProvider.directive('test', function() {
+          return {
+            restrict: 'EA',
+            controller: TestController,
+            controllerAs: '$ctrl'
+          };
+        });
+        $compileProvider.directive('test', function() {
+          return { restrict: 'E' };
+        });
+      });
+      inject(function($componentController, $rootScope) {
+        expect(function() {
+          $componentController('test', { $scope: {} });
+        }).toThrow('No component found');
+      });
+    });
+
+    it('should fail if there more than two components with same name', function() {
+      function TestController($scope, a, b) {
+        this.$scope = $scope;
+        this.a = a;
+        this.b = b;
+      }
+      module(function($compileProvider) {
+        $compileProvider.directive('test', function() {
+          return {
+            restrict: 'E',
+            controller: TestController,
+            controllerAs: '$ctrl'
+          };
+        });
+        $compileProvider.component('test', {
+          controller: TestController
+        });
+      });
+      inject(function($componentController, $rootScope) {
+        expect(function() {
+          var $scope = {};
+          $componentController('test', { $scope: $scope, a: 'A', b: 'B' }, { x: 'X', y: 'Y' });
+        }).toThrow('Too many components found');
+      });
+    });
+  });
 });
 
 
@@ -1831,6 +2116,269 @@ describe('ngMockE2E', function() {
         expect(callback).not.toHaveBeenCalled();
         $browser.defer.flush();
         expect(callback).toHaveBeenCalledOnce();
+      }));
+    });
+  });
+
+  describe('ngAnimateMock', function() {
+
+    beforeEach(module('ngAnimate'));
+    beforeEach(module('ngAnimateMock'));
+
+    var ss, element, trackedAnimations, animationLog;
+
+    afterEach(function() {
+      if (element) {
+        element.remove();
+      }
+      if (ss) {
+        ss.destroy();
+      }
+    });
+
+    beforeEach(module(function($animateProvider) {
+      trackedAnimations = [];
+      animationLog = [];
+
+      $animateProvider.register('.animate', function() {
+        return {
+          leave: logFn('leave'),
+          addClass: logFn('addClass')
+        };
+
+        function logFn(method) {
+          return function(element) {
+            animationLog.push('start ' + method);
+            trackedAnimations.push(getDoneCallback(arguments));
+
+            return function closingFn(cancel) {
+              var lab = cancel ? 'cancel' : 'end';
+              animationLog.push(lab + ' ' + method);
+            };
+          };
+        }
+
+        function getDoneCallback(args) {
+          for (var i = args.length; i > 0; i--) {
+            if (angular.isFunction(args[i])) return args[i];
+          }
+        }
+      });
+
+      return function($animate, $rootElement, $document, $rootScope) {
+        ss = createMockStyleSheet($document);
+
+        element = angular.element('<div class="animate"></div>');
+        $rootElement.append(element);
+        angular.element($document[0].body).append($rootElement);
+        $animate.enabled(true);
+        $rootScope.$digest();
+      };
+    }));
+
+    describe('$animate.queue', function() {
+      it('should maintain a queue of the executed animations', inject(function($animate) {
+        element.removeClass('animate'); // we don't care to test any actual animations
+        var options = {};
+
+        $animate.addClass(element, 'on', options);
+        var first = $animate.queue[0];
+        expect(first.element).toBe(element);
+        expect(first.event).toBe('addClass');
+        expect(first.options).toBe(options);
+
+        $animate.removeClass(element, 'off', options);
+        var second = $animate.queue[1];
+        expect(second.element).toBe(element);
+        expect(second.event).toBe('removeClass');
+        expect(second.options).toBe(options);
+
+        $animate.leave(element, options);
+        var third = $animate.queue[2];
+        expect(third.element).toBe(element);
+        expect(third.event).toBe('leave');
+        expect(third.options).toBe(options);
+      }));
+    });
+
+    describe('$animate.flush()', function() {
+      it('should throw an error if there is nothing to animate', inject(function($animate) {
+        expect(function() {
+          $animate.flush();
+        }).toThrow('No pending animations ready to be closed or flushed');
+      }));
+
+      it('should trigger the animation to start',
+        inject(function($animate) {
+
+        expect(trackedAnimations.length).toBe(0);
+        $animate.leave(element);
+        $animate.flush();
+        expect(trackedAnimations.length).toBe(1);
+      }));
+
+      it('should trigger the animation to end once run and called',
+        inject(function($animate) {
+
+        $animate.leave(element);
+        $animate.flush();
+        expect(element.parent().length).toBe(1);
+
+        trackedAnimations[0]();
+        $animate.flush();
+        expect(element.parent().length).toBe(0);
+      }));
+
+      it('should trigger the animation promise callback to fire once run and closed',
+        inject(function($animate) {
+
+        var doneSpy = jasmine.createSpy();
+        $animate.leave(element).then(doneSpy);
+        $animate.flush();
+
+        trackedAnimations[0]();
+        expect(doneSpy).not.toHaveBeenCalled();
+        $animate.flush();
+        expect(doneSpy).toHaveBeenCalled();
+      }));
+
+      it('should trigger a series of CSS animations to trigger and start once run',
+        inject(function($animate, $rootScope) {
+
+        if (!browserSupportsCssAnimations()) return;
+
+        ss.addRule('.leave-me.ng-leave', 'transition:1s linear all;');
+
+        var i, elm, elms = [];
+        for (i = 0; i < 5; i++) {
+          elm = angular.element('<div class="leave-me"></div>');
+          element.append(elm);
+          elms.push(elm);
+
+          $animate.leave(elm);
+        }
+
+        $rootScope.$digest();
+
+        for (i = 0; i < 5; i++) {
+          elm = elms[i];
+          expect(elm.hasClass('ng-leave')).toBe(true);
+          expect(elm.hasClass('ng-leave-active')).toBe(false);
+        }
+
+        $animate.flush();
+
+        for (i = 0; i < 5; i++) {
+          elm = elms[i];
+          expect(elm.hasClass('ng-leave')).toBe(true);
+          expect(elm.hasClass('ng-leave-active')).toBe(true);
+        }
+      }));
+
+      it('should trigger parent and child animations to run within the same flush',
+        inject(function($animate, $rootScope) {
+
+        var child = angular.element('<div class="animate child"></div>');
+        element.append(child);
+
+        expect(trackedAnimations.length).toBe(0);
+
+        $animate.addClass(element, 'go');
+        $animate.addClass(child, 'start');
+        $animate.flush();
+
+        expect(trackedAnimations.length).toBe(2);
+      }));
+
+      it('should trigger animation callbacks when called',
+        inject(function($animate, $rootScope) {
+
+        var spy = jasmine.createSpy();
+        $animate.on('addClass', element, spy);
+
+        $animate.addClass(element, 'on');
+        expect(spy).not.toHaveBeenCalled();
+
+        $animate.flush();
+        expect(spy.callCount).toBe(1);
+
+        trackedAnimations[0]();
+        $animate.flush();
+        expect(spy.callCount).toBe(2);
+      }));
+    });
+
+    describe('$animate.closeAndFlush()', function() {
+      it('should close the currently running $animateCss animations',
+        inject(function($animateCss, $animate) {
+
+        if (!browserSupportsCssAnimations()) return;
+
+        var spy = jasmine.createSpy();
+        var runner = $animateCss(element, {
+          duration: 1,
+          to: { color: 'red' }
+        }).start();
+
+        runner.then(spy);
+
+        expect(spy).not.toHaveBeenCalled();
+        $animate.closeAndFlush();
+        expect(spy).toHaveBeenCalled();
+      }));
+
+      it('should close the currently running $$animateJs animations',
+        inject(function($$animateJs, $animate) {
+
+        var spy = jasmine.createSpy();
+        var runner = $$animateJs(element, 'leave', 'animate', {}).start();
+        runner.then(spy);
+
+        expect(spy).not.toHaveBeenCalled();
+        $animate.closeAndFlush();
+        expect(spy).toHaveBeenCalled();
+      }));
+
+      it('should run the closing javascript animation function upon flush',
+        inject(function($$animateJs, $animate) {
+
+        $$animateJs(element, 'leave', 'animate', {}).start();
+
+        expect(animationLog).toEqual(['start leave']);
+        $animate.closeAndFlush();
+        expect(animationLog).toEqual(['start leave', 'end leave']);
+      }));
+
+      it('should not throw when a regular animation has no javascript animation',
+        inject(function($animate, $$animation, $rootElement) {
+
+        if (!browserSupportsCssAnimations()) return;
+
+        var element = jqLite('<div></div>');
+        $rootElement.append(element);
+
+        // Make sure the animation has valid $animateCss options
+        $$animation(element, null, {
+          from: { background: 'red' },
+          to: { background: 'blue' },
+          duration: 1,
+          transitionStyle: 'all 1s'
+        });
+
+        expect(function() {
+          $animate.closeAndFlush();
+        }).not.toThrow();
+
+        dealoc(element);
+      }));
+
+      it('should throw an error if there are no animations to close and flush',
+        inject(function($animate) {
+
+        expect(function() {
+          $animate.closeAndFlush();
+        }).toThrow('No pending animations ready to be closed or flushed');
+
       }));
     });
   });

@@ -55,11 +55,15 @@
 
   $AnchorScrollProvider,
   $AnimateProvider,
+  $CoreAnimateCssProvider,
+  $$CoreAnimateJsProvider,
   $$CoreAnimateQueueProvider,
-  $$CoreAnimateRunnerProvider,
+  $$AnimateRunnerFactoryProvider,
+  $$AnimateAsyncRunFactoryProvider,
   $BrowserProvider,
   $CacheFactoryProvider,
   $ControllerProvider,
+  $DateProvider,
   $DocumentProvider,
   $ExceptionHandlerProvider,
   $FilterProvider,
@@ -71,6 +75,7 @@
   $HttpParamSerializerProvider,
   $HttpParamSerializerJQLikeProvider,
   $HttpBackendProvider,
+  $xhrFactoryProvider,
   $LocationProvider,
   $LogProvider,
   $ParseProvider,
@@ -97,8 +102,9 @@
  * @name angular.version
  * @module ng
  * @description
- * An object that contains information about the current AngularJS version. This object has the
- * following properties:
+ * An object that contains information about the current AngularJS version.
+ *
+ * This object has the following properties:
  *
  * - `full` – `{string}` – Full version string, such as "0.9.18".
  * - `major` – `{number}` – Major version number, such as "0".
@@ -212,8 +218,11 @@ function publishExternalAPI(angular) {
       $provide.provider({
         $anchorScroll: $AnchorScrollProvider,
         $animate: $AnimateProvider,
+        $animateCss: $CoreAnimateCssProvider,
+        $$animateJs: $$CoreAnimateJsProvider,
         $$animateQueue: $$CoreAnimateQueueProvider,
-        $$AnimateRunner: $$CoreAnimateRunnerProvider,
+        $$AnimateRunner: $$AnimateRunnerFactoryProvider,
+        $$animateAsyncRun: $$AnimateAsyncRunFactoryProvider,
         $browser: $BrowserProvider,
         $cacheFactory: $CacheFactoryProvider,
         $controller: $ControllerProvider,
@@ -227,6 +236,7 @@ function publishExternalAPI(angular) {
         $httpParamSerializer: $HttpParamSerializerProvider,
         $httpParamSerializerJQLike: $HttpParamSerializerJQLikeProvider,
         $httpBackend: $HttpBackendProvider,
+        $xhrFactory: $xhrFactoryProvider,
         $location: $LocationProvider,
         $log: $LogProvider,
         $parse: $ParseProvider,

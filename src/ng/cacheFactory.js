@@ -67,10 +67,10 @@
            $scope.keys = [];
            $scope.cache = $cacheFactory('cacheId');
            $scope.put = function(key, value) {
-             if ($scope.cache.get(key) === undefined) {
+             if (angular.isUndefined($scope.cache.get(key))) {
                $scope.keys.push(key);
              }
-             $scope.cache.put(key, value === undefined ? null : value);
+             $scope.cache.put(key, angular.isUndefined(value) ? null : value);
            };
          }]);
      </file>
@@ -93,9 +93,9 @@ function $CacheFactoryProvider() {
 
       var size = 0,
           stats = extend({}, options, {id: cacheId}),
-          data = {},
+          data = createMap(),
           capacity = (options && options.capacity) || Number.MAX_VALUE,
-          lruHash = {},
+          lruHash = createMap(),
           freshEnd = null,
           staleEnd = null;
 
@@ -223,6 +223,8 @@ function $CacheFactoryProvider() {
             delete lruHash[key];
           }
 
+          if (!(key in data)) return;
+
           delete data[key];
           size--;
         },
@@ -237,9 +239,9 @@ function $CacheFactoryProvider() {
          * Clears the cache object of any entries.
          */
         removeAll: function() {
-          data = {};
+          data = createMap();
           size = 0;
-          lruHash = {};
+          lruHash = createMap();
           freshEnd = staleEnd = null;
         },
 
@@ -399,4 +401,3 @@ function $TemplateCacheProvider() {
     return $cacheFactory('templates');
   }];
 }
-

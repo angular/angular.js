@@ -133,6 +133,19 @@ describe('$cacheFactory', function() {
         expect(cache.info().size).toBe(0);
       }));
 
+      it('should only decrement size when an element is actually removed via remove', inject(function($cacheFactory) {
+        cache.put('foo', 'bar');
+        expect(cache.info().size).toBe(1);
+
+        cache.remove('undefined');
+        expect(cache.info().size).toBe(1);
+
+        cache.remove('hasOwnProperty');
+        expect(cache.info().size).toBe(1);
+
+        cache.remove('foo');
+        expect(cache.info().size).toBe(0);
+      }));
 
       it('should return cache id', inject(function($cacheFactory) {
         expect(cache.info().id).toBe('test');

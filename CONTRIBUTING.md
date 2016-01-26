@@ -19,7 +19,7 @@ Help us keep Angular open and inclusive. Please read and follow our [Code of Con
 ## <a name="question"></a> Got a Question or Problem?
 
 If you have questions about how to use AngularJS, please direct these to the [Google Group][groups]
-discussion list or [StackOverflow][stackoverflow]. We are also available on [IRC][irc].
+discussion list or [StackOverflow][stackoverflow]. We are also available on [IRC][irc] and [Gitter][gitter].
 
 ## <a name="issue"></a> Found an Issue?
 If you find a bug in the source code or a mistake in the documentation, you can help us by
@@ -71,7 +71,7 @@ chances of your issue being dealt with quickly:
 * **Angular Version(s)** - is it a regression?
 * **Browsers and Operating System** - is this a problem with all browsers or only IE8?
 * **Reproduce the Error** - provide a live example (using [Plunker][plunker] or
-  [JSFiddle][jsfiddle]) or a unambiguous set of steps.
+  [JSFiddle][jsfiddle]) or an unambiguous set of steps.
 * **Related Issues** - has a similar issue been reported before?
 * **Suggest a Fix** - if you can't fix the bug yourself, perhaps you can point to what might be
   causing the problem (line of code or commit)
@@ -123,12 +123,18 @@ Before you submit your pull request consider the following guidelines:
 * If we suggest changes then:
   * Make the required updates.
   * Re-run the Angular test suite to ensure tests are still passing.
-  * Rebase your branch and force push to your GitHub repository (this will update your Pull Request):
+  * Commit your changes to your branch (e.g. `my-fix-branch`).
+  * Push the changes to your GitHub repository (this will update your Pull Request).
+
+If the PR gets too outdated we may ask you to rebase and force push to update the PR:
 
     ```shell
     git rebase master -i
     git push origin my-fix-branch -f
     ```
+
+*WARNING. Squashing or reverting commits and forced push thereafter may remove GitHub comments
+on code that were previously made by you and others in your commits.*
 
 That's it! Thank you for your contribution!
 
@@ -187,6 +193,8 @@ We have very precise rules over how our git commit messages can be formatted.  T
 readable messages** that are easy to follow when looking through the **project history**.  But also,
 we use the git commit messages to **generate the AngularJS change log**.
 
+The commit message formatting can be added using a typical git workflow or through the use of a CLI wizard ([Commitizen](https://github.com/commitizen/cz-cli)). To use the wizard, run `npm run commit` in your terminal after staging your changes in git.
+
 ### Commit Message Format
 Each commit message consists of a **header**, a **body** and a **footer**.  The header has a special
 format that includes a **type**, a **scope** and a **subject**:
@@ -202,7 +210,7 @@ format that includes a **type**, a **scope** and a **subject**:
 The **header** is mandatory and the **scope** of the header is optional.
 
 Any line of the commit message cannot be longer 100 characters! This allows the message to be easier
-to read on github as well as in various git tools.
+to read on GitHub as well as in various git tools.
 
 ### Revert
 If the commit reverts a previous commit, it should begin with `revert: `, followed by the header of the reverted commit. In the body it should say: `This reverts commit <hash>.`, where the hash is the SHA of the commit being reverted.
@@ -215,7 +223,7 @@ Must be one of the following:
 * **docs**: Documentation only changes
 * **style**: Changes that do not affect the meaning of the code (white-space, formatting, missing
   semi-colons, etc)
-* **refactor**: A code change that neither fixes a bug or adds a feature
+* **refactor**: A code change that neither fixes a bug nor adds a feature
 * **perf**: A code change that improves performance
 * **test**: Adding missing tests
 * **chore**: Changes to the build process or auxiliary tools and libraries such as documentation
@@ -233,7 +241,7 @@ The subject contains succinct description of the change:
 * no dot (.) at the end
 
 ### Body
-Just as in the **subject**, use the imperative, present tense: "change" not "changed" nor "changes"
+Just as in the **subject**, use the imperative, present tense: "change" not "changed" nor "changes".
 The body should include the motivation for the change and contrast this with previous behavior.
 
 ### Footer
@@ -268,6 +276,7 @@ You can find out more detailed information about contributing in the
 [corporate-cla]: http://code.google.com/legal/corporate-cla-v1.0.html
 [dev-doc]: https://docs.angularjs.org/guide
 [github]: https://github.com/angular/angular.js
+[gitter]: https://gitter.im/angular/angular.js
 [groups]: https://groups.google.com/forum/?fromgroups#!forum/angular
 [individual-cla]: http://code.google.com/legal/individual-cla-v1.0.html
 [irc]: http://webchat.freenode.net/?channels=angularjs&uio=d4

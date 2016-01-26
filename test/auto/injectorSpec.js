@@ -1,5 +1,7 @@
 'use strict';
 
+/* globals support: false */
+
 describe('injector', function() {
   var providers;
   var injector;
@@ -122,6 +124,10 @@ describe('injector', function() {
     expect($injector).not.toBe(providerInjector);
   }));
 
+  it('should have an false strictDi property', inject(function($injector) {
+    expect($injector.strictDi).toBe(false);
+  }));
+
 
   describe('invoke', function() {
     var args;
@@ -240,6 +246,49 @@ describe('injector', function() {
       expect(function() {
         annotate({});
       }).toThrow();
+    });
+
+
+    describe('es6', function() {
+      /*jshint -W061 */
+      if (support.ES6Function) {
+        // The functions are generated using `eval` as just having the ES6 syntax can break some browsers.
+        it('should be possible to annotate functions that are declared using ES6 syntax', function() {
+          expect(annotate(eval('({ fn(x) { return; } })').fn)).toEqual(['x']);
+        });
+      }
+
+
+      if (support.fatArrow) {
+        it('should create $inject for arrow functions', function() {
+          expect(annotate(eval('(a, b) => a'))).toEqual(['a', 'b']);
+        });
+      }
+
+
+      if (support.fatArrow) {
+        it('should create $inject for arrow functions with no parenthesis', function() {
+          expect(annotate(eval('a => a'))).toEqual(['a']);
+        });
+      }
+
+
+      if (support.fatArrow) {
+        it('should take args before first arrow', function() {
+          expect(annotate(eval('a => b => b'))).toEqual(['a']);
+        });
+      }
+
+      if (support.classes) {
+        it('should be possible to instantiate ES6 classes', function() {
+          providers('a', function() { return 'a-value'; });
+          var clazz = eval('(class { constructor(a) { this.a = a; } aVal() { return this.a; } })');
+          var instance = injector.instantiate(clazz);
+          expect(instance).toEqual({a: 'a-value'});
+          expect(instance.aVal()).toEqual('a-value');
+        });
+      }
+      /*jshint +W061 */
     });
 
 
@@ -656,6 +705,23 @@ describe('injector', function() {
           expect(log.join('; ')).
             toBe('myDecoratedService:input,dependency1; myService:decInput; dec+origReturn');
         });
+
+
+        it('should allow for decorators to $injector', function() {
+          injector = createInjector(['ng', function($provide) {
+            $provide.decorator('$injector', function($delegate) {
+              return extend({}, $delegate, {get: function(val) {
+                if (val === 'key') {
+                  return 'value';
+                }
+                return $delegate.get(val);
+              }});
+            });
+          }]);
+
+          expect(injector.get('key')).toBe('value');
+          expect(injector.get('$http')).not.toBeUndefined();
+        });
       });
     });
 
@@ -1042,4 +1108,8 @@ describe('strict-di injector', function() {
     inject(function($test) {});
     expect(called).toBe(true);
   });
+
+  it('should set strictDi property to true on the injector instance', inject(function($injector) {
+    expect($injector.strictDi).toBe(true);
+  }));
 });

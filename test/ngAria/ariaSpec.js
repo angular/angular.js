@@ -616,10 +616,37 @@ describe('$aria', function() {
   describe('tabindex', function() {
     beforeEach(injectScopeAndCompiler);
 
-    it('should attach tabindex to role="checkbox", ng-click, and ng-dblclick', function() {
+    they('should not attach to native control $prop', {
+      'button': "<button ng-click='something'></button>",
+      'a': "<a ng-href='#/something'>",
+      'input[text]': "<input type='text' ng-model='val'>",
+      'input[radio]': "<input type='radio' ng-model='val'>",
+      'input[checkbox]': "<input type='checkbox' ng-model='val'>",
+      'textarea': "<textarea ng-model='val'></textarea>",
+      'select': "<select ng-model='val'></select>",
+      'details': "<details ng-model='val'></details>"
+    }, function(html) {
+        compileElement(html);
+        expect(element.attr('tabindex')).toBeUndefined();
+    });
+
+    it('should not attach to random ng-model elements', function() {
+      compileElement('<div ng-model="val"></div>');
+      expect(element.attr('tabindex')).toBeUndefined();
+    });
+
+    it('should attach tabindex to custom inputs', function() {
+      compileElement('<div type="checkbox" ng-model="val"></div>');
+      expect(element.attr('tabindex')).toBe('0');
+
       compileElement('<div role="checkbox" ng-model="val"></div>');
       expect(element.attr('tabindex')).toBe('0');
 
+      compileElement('<div type="range" ng-model="val"></div>');
+      expect(element.attr('tabindex')).toBe('0');
+    });
+
+    it('should attach to ng-click and ng-dblclick', function() {
       compileElement('<div ng-click="someAction()"></div>');
       expect(element.attr('tabindex')).toBe('0');
 
@@ -639,26 +666,6 @@ describe('$aria', function() {
 
       compileElement('<div ng-dblclick="someAction()" tabindex="userSetValue"></div>');
       expect(element.attr('tabindex')).toBe('userSetValue');
-    });
-
-    it('should set proper tabindex values for radiogroup', function() {
-      compileElement('<div role="radiogroup">' +
-                     '<div role="radio" ng-model="val" value="one">1</div>' +
-                     '<div role="radio" ng-model="val" value="two">2</div>' +
-                   '</div>');
-
-      var one = element.contents().eq(0);
-      var two = element.contents().eq(1);
-
-      scope.$apply("val = 'one'");
-      expect(one.attr('tabindex')).toBe('0');
-      expect(two.attr('tabindex')).toBe('-1');
-
-      scope.$apply("val = 'two'");
-      expect(one.attr('tabindex')).toBe('-1');
-      expect(two.attr('tabindex')).toBe('0');
-
-      dealoc(element);
     });
   });
 

@@ -14,6 +14,9 @@ function init {
   TMP_DIR=$(resolveDir ../../tmp)
   BUILD_DIR=$(resolveDir ../../build)
   NEW_VERSION=$(cat $BUILD_DIR/version.txt)
+  PROJECT_DIR=$(resolveDir ../..)
+  # get the npm dist-tag from a custom property (distTag) in package.json
+  DIST_TAG=$(readJsonProp "$PROJECT_DIR/package.json" "distTag")
 }
 
 
@@ -95,19 +98,8 @@ function publish {
 
     # don't publish every build to npm
     if [ "${NEW_VERSION/+sha}" = "$NEW_VERSION" ] ; then
-      if [ "${NEW_VERSION/-}" = "$NEW_VERSION" ] ; then
-        if [[ $NEW_VERSION =~ ^1\.2\.[0-9]+$ ]] ; then
-          # publish 1.2.x releases with the appropriate tag
-          # this ensures that `npm install` by default will not grab `1.2.x` releases
-          npm publish --tag=old
-        else
-          # publish releases as "latest"
-          npm publish
-        fi
-      else
-        # publish prerelease builds with the beta tag
-        npm publish --tag=beta
-      fi
+      echo "-- Publishing to npm as $DIST_TAG"
+      npm publish --tag=$DIST_TAG
     fi
 
     cd $SCRIPT_DIR

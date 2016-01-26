@@ -14,6 +14,8 @@ var angularFiles = {
 
     'src/ng/anchorScroll.js',
     'src/ng/animate.js',
+    'src/ng/animateRunner.js',
+    'src/ng/animateCss.js',
     'src/ng/browser.js',
     'src/ng/cacheFactory.js',
     'src/ng/compile.js',
@@ -32,6 +34,7 @@ var angularFiles = {
     'src/ng/q.js',
     'src/ng/raf.js',
     'src/ng/rootScope.js',
+    'src/ng/rootElement.js',
     'src/ng/sanitizeUri.js',
     'src/ng/sce.js',
     'src/ng/sniffer.js',
@@ -77,13 +80,13 @@ var angularFiles = {
     'src/ng/directive/select.js',
     'src/ng/directive/style.js',
     'src/ng/directive/validators.js',
-    'src/angular.bind',
+    'src/angular.bind.js',
     'src/publishExternalApis.js',
     'src/ngLocale/angular-locale_en-us.js'
   ],
 
   'angularLoader': [
-    'stringify.js',
+    'src/stringify.js',
     'src/minErr.js',
     'src/loader.js'
   ],
@@ -91,15 +94,15 @@ var angularFiles = {
   'angularModules': {
     'ngAnimate': [
       'src/ngAnimate/shared.js',
-      'src/ngAnimate/body.js',
+      'src/ngAnimate/rafScheduler.js',
       'src/ngAnimate/animateChildrenDirective.js',
       'src/ngAnimate/animateCss.js',
       'src/ngAnimate/animateCssDriver.js',
       'src/ngAnimate/animateJs.js',
       'src/ngAnimate/animateJsDriver.js',
       'src/ngAnimate/animateQueue.js',
-      'src/ngAnimate/animateRunner.js',
       'src/ngAnimate/animation.js',
+      'src/ngAnimate/ngAnimateSwap.js',
       'src/ngAnimate/module.js'
     ],
     'ngCookies': [
@@ -191,7 +194,7 @@ var angularFiles = {
     'test/jquery_alias.js',
     'src/angular-bootstrap.js',
     'src/ngScenario/angular-bootstrap.js',
-    'src/angular.bind'
+    'src/angular.bind.js'
   ],
 
   'karmaScenario': [
@@ -227,7 +230,7 @@ var angularFiles = {
     'src/angular-bootstrap.js',
     'src/ngScenario/angular-bootstrap.js',
     'test/jquery_remove.js',
-    'src/angular.bind'
+    'src/angular.bind.js'
   ]
 };
 

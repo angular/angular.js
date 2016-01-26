@@ -37,6 +37,8 @@ beforeEach(function() {
   }
 
   this.addMatchers({
+    toBeEmpty: cssMatcher('ng-empty', 'ng-not-empty'),
+    toBeNotEmpty: cssMatcher('ng-not-empty', 'ng-empty'),
     toBeInvalid: cssMatcher('ng-invalid', 'ng-valid'),
     toBeValid: cssMatcher('ng-valid', 'ng-invalid'),
     toBeDirty: cssMatcher('ng-dirty', 'ng-pristine'),

@@ -29,7 +29,7 @@ describe('$interval', function() {
           if (fn.id === id) fnIndex = index;
         });
 
-        if (fnIndex !== undefined) {
+        if (isDefined(fnIndex)) {
           repeatFns.splice(fnIndex, 1);
           return true;
         }
@@ -113,6 +113,35 @@ describe('$interval', function() {
     expect(evalAsyncSpy).not.toHaveBeenCalled();
     expect(digestSpy).not.toHaveBeenCalled();
   }));
+
+
+  it('should not depend on `notify` to trigger the callback call', function() {
+    module(function($provide) {
+      $provide.decorator('$q', function($delegate) {
+        function replacement() {}
+        replacement.defer = function() {
+          var result = $delegate.defer();
+          result.notify = noop;
+          return result;
+        };
+        return replacement;
+      });
+    });
+
+    inject(function($interval, $window) {
+      var counter = 0;
+      $interval(function() { counter++; }, 1000);
+
+      expect(counter).toBe(0);
+
+      $window.flush(1000);
+      expect(counter).toBe(1);
+
+      $window.flush(1000);
+
+      expect(counter).toBe(2);
+    });
+  });
 
 
   it('should allow you to specify the delay time', inject(function($interval, $window) {

@@ -6,12 +6,14 @@
 <ul doc-tutorial-nav="0"></ul>
 
 
-You are now ready to build the AngularJS phonecat app. In this step, you will become familiar
-with the most important source code files, learn how to start the development servers bundled with
+In this step of the tutorial, you will become familiar with the most important source code files of
+the AngularJS phonecat app. You will also learn how to start the development servers bundled with
 angular-seed, and run the application in the browser.
 
+Before you continue, make sure you have set up your development environment and installed all necessary
+dependencies, as described in {@link index#get-started Get Started}.
 
-In `angular-phonecat` directory, run this command:
+In the `angular-phonecat` directory, run this command:
 
 ```
 git checkout -f step-0

@@ -19,8 +19,8 @@ var $$AnimationProvider = ['$animateProvider', function($animateProvider) {
     return element.data(RUNNER_STORAGE_KEY);
   }
 
-  this.$get = ['$$jqLite', '$rootScope', '$injector', '$$AnimateRunner', '$$HashMap', '$$forceReflow',
-       function($$jqLite,   $rootScope,   $injector,   $$AnimateRunner,   $$HashMap,   $$forceReflow) {
+  this.$get = ['$$jqLite', '$rootScope', '$injector', '$$AnimateRunner', '$$HashMap', '$$rAFScheduler',
+       function($$jqLite,   $rootScope,   $injector,   $$AnimateRunner,   $$HashMap,   $$rAFScheduler) {
 
     var animationQueue = [];
     var applyAnimationClasses = applyAnimationClassesFactory($$jqLite);
@@ -88,13 +88,10 @@ var $$AnimationProvider = ['$animateProvider', function($animateProvider) {
           if (remainingLevelEntries <= 0) {
             remainingLevelEntries = nextLevelEntries;
             nextLevelEntries = 0;
-            result = result.concat(row);
+            result.push(row);
             row = [];
           }
-          row.push({
-            fn: entry.fn,
-            terminal: entry.children.length === 0
-          });
+          row.push(entry.fn);
           entry.children.forEach(function(childEntry) {
             nextLevelEntries++;
             queue.push(childEntry);
@@ -103,24 +100,15 @@ var $$AnimationProvider = ['$animateProvider', function($animateProvider) {
         }
 
         if (row.length) {
-          result = result.concat(row);
+          result.push(row);
         }
 
-        var terminalAnimations = [];
-        var parentAnimations = [];
-        forEach(result, function(result) {
-          if (result.terminal) {
-            terminalAnimations.push(result.fn);
-          } else {
-            parentAnimations.push(result.fn);
-          }
-        });
-        return [parentAnimations, terminalAnimations];
+        return result;
       }
     }
 
     // TODO(matsko): document the signature in a better way
-    return function(element, event, options, onBeforeClassesAppliedCb) {
+    return function(element, event, options) {
       options = prepareAnimationOptions(options);
       var isStructural = ['enter', 'move', 'leave'].indexOf(event) >= 0;
 
@@ -145,6 +133,12 @@ var $$AnimationProvider = ['$animateProvider', function($animateProvider) {
       if (tempClasses) {
         classes += ' ' + tempClasses;
         options.tempClasses = null;
+      }
+
+      var prepareClassName;
+      if (isStructural) {
+        prepareClassName = 'ng-' + event + PREPARE_CLASS_SUFFIX;
+        $$jqLite.addClass(element, prepareClassName);
       }
 
       animationQueue.push({
@@ -172,8 +166,7 @@ var $$AnimationProvider = ['$animateProvider', function($animateProvider) {
           // the element was destroyed early on which removed the runner
           // form its storage. This means we can't animate this element
           // at all and it already has been closed due to destruction.
-          var elm = entry.element;
-          if (getRunner(elm) && getDomNode(elm).parentNode) {
+          if (getRunner(entry.element)) {
             animations.push(entry);
           } else {
             entry.close();
@@ -204,7 +197,7 @@ var $$AnimationProvider = ['$animateProvider', function($animateProvider) {
                   : animationEntry.element;
 
               if (getRunner(targetElement)) {
-                var operation = invokeFirstDriver(animationEntry, onBeforeClassesAppliedCb);
+                var operation = invokeFirstDriver(animationEntry);
                 if (operation) {
                   startAnimationFn = operation.start;
                 }
@@ -226,27 +219,7 @@ var $$AnimationProvider = ['$animateProvider', function($animateProvider) {
         // we need to sort each of the animations in order of parent to child
         // relationships. This ensures that the child classes are applied at the
         // right time.
-        var anim = sortAnimations(toBeSortedAnimations);
-        var finalLevel = anim.length - 1;
-
-        // sortAnimations will return two lists of animations. The first list
-        // is all of the parent animations that are likely class-based and the
-        // second list is a collection of the rest. Before we run the second
-        // list we must ensure that atleast one reflow has been passed such that
-        // the preparation classes (ng-enter, class-add, etc...) have been applied
-        // to their associated element.
-        if (anim[0].length) {
-          forEach(anim[0], function(triggerAnimation) {
-            $$forceReflow();
-            triggerAnimation();
-          });
-        } else {
-          $$forceReflow();
-        }
-
-        forEach(anim[1], function(triggerAnimation) {
-          triggerAnimation();
-        });
+        $$rAFScheduler(sortAnimations(toBeSortedAnimations));
       });
 
       return runner;
@@ -316,7 +289,7 @@ var $$AnimationProvider = ['$animateProvider', function($animateProvider) {
           var lookupKey = from.animationID.toString();
           if (!anchorGroups[lookupKey]) {
             var group = anchorGroups[lookupKey] = {
-              // TODO(matsko): double-check this code
+              structural: true,
               beforeStart: function() {
                 fromAnimation.beforeStart();
                 toAnimation.beforeStart();
@@ -332,7 +305,7 @@ var $$AnimationProvider = ['$animateProvider', function($animateProvider) {
             };
 
             // the anchor animations require that the from and to elements both have at least
-            // one shared CSS class which effictively marries the two elements together to use
+            // one shared CSS class which effectively marries the two elements together to use
             // the same animation driver and to properly sequence the anchor animation.
             if (group.classes.length) {
               preparedAnimations.push(group);
@@ -370,7 +343,7 @@ var $$AnimationProvider = ['$animateProvider', function($animateProvider) {
         return matches.join(' ');
       }
 
-      function invokeFirstDriver(animationDetails, onBeforeClassesAppliedCb) {
+      function invokeFirstDriver(animationDetails) {
         // we loop in reverse order since the more general drivers (like CSS and JS)
         // may attempt more elements, but custom drivers are more particular
         for (var i = drivers.length - 1; i >= 0; i--) {
@@ -378,7 +351,7 @@ var $$AnimationProvider = ['$animateProvider', function($animateProvider) {
           if (!$injector.has(driverName)) continue; // TODO(matsko): remove this check
 
           var factory = $injector.get(driverName);
-          var driver = factory(animationDetails, onBeforeClassesAppliedCb);
+          var driver = factory(animationDetails);
           if (driver) {
             return driver;
           }
@@ -389,6 +362,10 @@ var $$AnimationProvider = ['$animateProvider', function($animateProvider) {
         element.addClass(NG_ANIMATE_CLASSNAME);
         if (tempClasses) {
           $$jqLite.addClass(element, tempClasses);
+        }
+        if (prepareClassName) {
+          $$jqLite.removeClass(element, prepareClassName);
+          prepareClassName = null;
         }
       }
 

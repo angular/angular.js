@@ -1,0 +1,142 @@
+@ngdoc overview
+@name Interpolation
+@sortOrder 275
+@description
+
+# Interpolation and data-binding
+
+Interpolation markup with embedded {@link guide/expression expressions} is used by Angular to
+provide data-binding to text nodes and attribute values.
+
+An example of interpolation is shown below:
+
+```html
+<a ng-href="img/{{username}}.jpg">Hello {{username}}!</a>
+```
+
+### How text and attribute bindings work
+
+During the compilation process the {@link ng.$compile compiler} uses the {@link ng.$interpolate $interpolate}
+service to see if text nodes and element attributes contain interpolation markup with embedded expressions.
+
+If that is the case, the compiler adds an interpolateDirective to the node and
+registers {@link ng.$rootScope.Scope#$watch watches} on the computed interpolation function,
+which will update the corresponding text nodes or attribute values as part of the
+normal {@link ng.$rootScope.Scope#$digest digest} cycle.
+
+Note that the interpolateDirective has a priority of 100 and sets up the watch in the preLink function.
+
+### Binding to boolean attributes
+
+Attributes such as `disabled` are called `boolean` attributes, because their presence means `true` and
+their absence means `false`. We cannot use normal attribute bindings with them, because the HTML
+specification does not require browsers to preserve the values of boolean attributes. This means that
+if we put an Angular interpolation expression into such an attribute then the binding information
+would be lost, because the browser ignores the attribute value.
+
+In the following example, the interpolation information would be ignored and the browser would simply
+interpret the attribute as present, meaning that the button would always be disabled.
+
+ ```html
+  Disabled: <input type="checkbox" ng-model="isDisabled" />
+  <button disabled="{{isDisabled}}">Disabled</button>
+```
+
+For this reason, Angular provides special `ng`-prefixed directives for the following boolean attributes:
+{@link ngDisabled `disabled`}, {@link ngRequired `required`}, {@link ngSelected `selected`},
+{@link ngChecked `checked`}, {@link ngReadonly `readOnly`} , and {@link ngOpen `open`}.
+
+These directives take an expression inside the attribute, and set the corresponding boolean attribute
+to true when the expression evaluates to truthy.
+
+ ```html
+  Disabled: <input type="checkbox" ng-model="isDisabled" />
+  <button ng-disabled="isDisabled">Disabled</button>
+```
+
+### `ngAttr` for binding to arbitrary attributes
+
+Web browsers are sometimes picky about what values they consider valid for attributes.
+
+For example, considering this template:
+
+```html
+<svg>
+  <circle cx="{{cx}}"></circle>
+</svg>
+```
+
+We would expect Angular to be able to bind to this, but when we check the console we see
+something like `Error: Invalid value for attribute cx="{{cx}}"`. Because of the SVG DOM API's
+restrictions, you cannot simply write `cx="{{cx}}"`.
+
+With `ng-attr-cx` you can work around this problem.
+
+If an attribute with a binding is prefixed with the `ngAttr` prefix (denormalized as `ng-attr-`)
+then during the binding it will be applied to the corresponding unprefixed attribute. This allows
+you to bind to attributes that would otherwise be eagerly processed by browsers
+(e.g. an SVG element's `circle[cx]` attributes). When using `ngAttr`, the `allOrNothing` flag of
+{@link ng.$interpolate $interpolate} is used, so if any expression in the interpolated string
+results in `undefined`, the attribute is removed and not added to the element.
+
+For example, we could fix the example above by instead writing:
+
+```html
+<svg>
+  <circle ng-attr-cx="{{cx}}"></circle>
+</svg>
+```
+
+If one wants to modify a camelcased attribute (SVG elements have valid camelcased attributes),
+such as `viewBox` on the `svg` element, one can use underscores to denote that the attribute to bind
+to is naturally camelcased.
+
+For example, to bind to `viewBox`, we can write:
+
+```html
+<svg ng-attr-view_box="{{viewBox}}">
+</svg>
+```
+
+The following attributes are also known to cause problems when used with normal bindings:
+
+- **size** in `<select>` elements (see [Github issue 1619](https://github.com/angular/angular.js/issues/1619))
+- **placeholder** in `<textarea>` in Internet Explorer 10/11 (see [Github issue 5025](https://github.com/angular/angular.js/issues/5025))
+
+
+### Embedding interpolation markup inside expressions
+
+Angular directives take either expressions or interpolation markup with embedded expressions. So the
+following example which embeds interpolation inside an expression is a bad practice:
+
+```html
+<div ng-show="form{{$index}}.$invalid"></div>
+```
+
+You should instead delegate the computation of complex expressions to the scope, like this:
+
+```html
+<div ng-show="getForm($index).$invalid"></div>
+```
+
+```js
+  function getForm() {
+    return $scope['form' + $index];
+  }
+```
+
+You can also access the `scope` with `this` in your templates:
+
+```html
+<div ng-show="this['form' + $index].$invalid"></div>
+```
+
+#### Why mixing interpolation and expressions is bad practice:
+
+- It increases the complexity of the markup
+- There is no guarantee that it works for every directive, because interpolation itself is a directive.
+If another directive accesses attribute data before interpolation has run, it will get the raw
+interpolation markup and not data.
+- It impacts performance, as interpolation adds another watcher to the scope.
+- Since this is not recommended usage, we do not test for this, and changes to
+Angular core may break your code.

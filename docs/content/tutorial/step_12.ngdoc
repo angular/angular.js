@@ -36,20 +36,20 @@ We are using [Bower][bower] to install client side dependencies.  This step upda
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "angular": "~1.3.0",
-    "angular-mocks": "~1.3.0",
-    "bootstrap": "~3.1.1",
-    "angular-route": "~1.3.0",
-    "angular-resource": "~1.3.0",
+    "angular": "1.4.x",
+    "angular-mocks": "1.4.x",
     "jquery": "~2.1.1",
-    "angular-animate": "~1.3.0"
+    "bootstrap": "~3.1.1",
+    "angular-route": "1.4.x",
+    "angular-resource": "1.4.x",
+    "angular-animate": "1.4.x"
   }
 }
 ```
 
-* `"angular-animate": "~1.3.0"` tells bower to install a version of the
-angular-animate component that is compatible with version 1.3.x.
-* `"jquery": "2.1.1"` tells bower to install the 2.1.1 version of jQuery.  Note that this is not an
+* `"angular-animate": "1.4.x"` tells bower to install a version of the
+angular-animate component that is compatible with version 1.4.x.
+* `"jquery": "~2.1.1"` tells bower to install the 2.1.1 version of jQuery.  Note that this is not an
 Angular library, it is the standard jQuery library.  We can use bower to install a wide range of 3rd
 party libraries.
 
@@ -111,7 +111,7 @@ __`app/index.html`.__
 ```
 
 <div class="alert alert-error">
-  **Important:** Be sure to use jQuery version 2.1 or newer when using Angular 1.3; jQuery 1.x is
+  **Important:** Be sure to use jQuery version 2.1 or newer when using Angular 1.4; jQuery 1.x is
   not officially supported.
   Be sure to load jQuery before all AngularJS scripts, otherwise AngularJS won't detect jQuery and
   animations will not work as expected.
@@ -239,9 +239,9 @@ The name of the starting class is the name of the event that is fired (like `ent
 The active class name is the same as the starting class's but with an `-active` suffix.
 This two-class CSS naming convention allows the developer to craft an animation, beginning to end.
 
-In our example above, elements expand from a height of **0** to **120 pixels** when items are added or moved,
-around and collapsing the items before removing them from the list.
-There's also a nice fade-in and fade-out effect that also occurs at the same time. All of this is handled
+In our example above, elements are expanded from a height of **0** to **120 pixels** when they're added to the
+list and are collapsed back down to **0 pixels** before being removed from the list.
+There's also a nice fade-in and fade-out effect that occurs at the same time. All of this is handled
 by the CSS transition declarations at the top of the example code above.
 
 Although most modern browsers have good support for [CSS transitions](http://caniuse.com/#feat=css-transitions)
@@ -357,10 +357,10 @@ For more on CSS animations, see the
 ## Animating `ngClass` with JavaScript
 
 Let's add another animation to our application. Switching to our `phone-detail.html` page,
-we see that we have a nice thumbnail swapper. By clicking on the thumbnails listed on the page,
+we see that we have a nice thumbnail swapper. By hovering over the thumbnails listed on the page,
 the profile phone image changes. But how can we change this around to add animations?
 
-Let's think about it first. Basically, when you click on a thumbnail image, you're changing the
+Let's think about it first. Basically, when you hover over a thumbnail image, you're changing the
 state of the profile image to reflect the newly selected thumbnail image.
 The best way to specify state changes within HTML is to use classes.
 Much like before, how we used a CSS class to specify an animation, this time the animation will
@@ -369,7 +369,7 @@ occur whenever the CSS class itself changes.
 Whenever a new phone thumbnail is selected, the state changes and the `.active` CSS class is added
 to the matching profile image and the animation plays.
 
-Let's get started and tweak our HTML code on the `phone-detail.html` page first. Notice that we 
+Let's get started and tweak our HTML code on the `phone-detail.html` page first. Notice that we
 have changed the way we display our large image:
 
 __`app/partials/phone-detail.html`.__

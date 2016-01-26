@@ -1,12 +1,12 @@
 'use strict';
 
-describe('$$rAFMutex', function() {
-  beforeEach(module('ngAnimate'));
+/* jshint newcap: false */
 
+describe('$$animateAsyncRun', function() {
   it('should fire the callback only when one or more RAFs have passed',
-    inject(function($$rAF, $$rAFMutex) {
+    inject(function($$animateAsyncRun, $$rAF) {
 
-    var trigger = $$rAFMutex();
+    var trigger = $$animateAsyncRun();
     var called = false;
     trigger(function() {
       called = true;
@@ -18,9 +18,9 @@ describe('$$rAFMutex', function() {
   }));
 
   it('should immediately fire the callback if a RAF has passed since construction',
-    inject(function($$rAF, $$rAFMutex) {
+    inject(function($$animateAsyncRun, $$rAF) {
 
-    var trigger = $$rAFMutex();
+    var trigger = $$animateAsyncRun();
     $$rAF.flush();
 
     var called = false;
@@ -32,9 +32,6 @@ describe('$$rAFMutex', function() {
 });
 
 describe("$$AnimateRunner", function() {
-
-  beforeEach(module('ngAnimate'));
-
   they("should trigger the host $prop function",
     ['end', 'cancel', 'pause', 'resume'], function(method) {
 
@@ -89,7 +86,7 @@ describe("$$AnimateRunner", function() {
   they("should immediately resolve each combined runner in a bottom-up order when $prop is called",
     ['end', 'cancel'], function(method) {
 
-    inject(function($$AnimateRunner, $$rAF) {
+    inject(function($$AnimateRunner) {
       var runner1 = new $$AnimateRunner();
       var runner2 = new $$AnimateRunner();
       runner1.setHost(runner2);
@@ -165,6 +162,43 @@ describe("$$AnimateRunner", function() {
     expect(animationFailed).toBe(true);
   }));
 
+  it("should use timeouts to trigger async operations when the document is hidden", function() {
+    var doc;
+
+    module(function($provide) {
+      doc = jqLite({
+        body: document.body,
+        hidden: true
+      });
+      $provide.value('$document', doc);
+    });
+
+    inject(function($$AnimateRunner, $rootScope, $$rAF, $timeout) {
+      var spy = jasmine.createSpy();
+      var runner = new $$AnimateRunner();
+      runner.done(spy);
+      runner.complete(true);
+      expect(spy).not.toHaveBeenCalled();
+      $$rAF.flush();
+      expect(spy).not.toHaveBeenCalled();
+      $timeout.flush();
+      expect(spy).toHaveBeenCalled();
+
+      doc[0].hidden = false;
+
+      spy = jasmine.createSpy();
+      runner = new $$AnimateRunner();
+      runner.done(spy);
+      runner.complete(true);
+      expect(spy).not.toHaveBeenCalled();
+      $$rAF.flush();
+      expect(spy).toHaveBeenCalled();
+      expect(function() {
+        $timeout.flush();
+      }).toThrow();
+    });
+  });
+
   they("should expose the `finally` promise function to handle the final state when $prop",
     { 'rejected': 'cancel', 'resolved': 'end' }, function(method) {
     inject(function($$AnimateRunner, $rootScope) {
@@ -206,7 +240,7 @@ describe("$$AnimateRunner", function() {
     they("should immediately resolve if and when all runners have been $prop",
       { ended: 'end', cancelled: 'cancel' }, function(method) {
 
-      inject(function($$rAF, $$AnimateRunner) {
+      inject(function($$AnimateRunner) {
         var runner1 = new $$AnimateRunner();
         var runner2 = new $$AnimateRunner();
         var runner3 = new $$AnimateRunner();
@@ -227,7 +261,7 @@ describe("$$AnimateRunner", function() {
     });
 
     it("should return a status of `false` if one or more runners was cancelled",
-      inject(function($$rAF, $$AnimateRunner) {
+      inject(function($$AnimateRunner) {
 
       var runner1 = new $$AnimateRunner();
       var runner2 = new $$AnimateRunner();

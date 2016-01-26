@@ -43,7 +43,7 @@ __`app/index.html`:__
 ...
         <ul class="phones">
           <li ng-repeat="phone in phones | filter:query | orderBy:orderProp" class="thumbnail">
-            <a href="#/phones/{{phone.id}}" class="thumb"><img ng-src="{{phone.imageUrl}}"></a>
+            <a href="#/phones/{{phone.id}}" class="thumb"><img ng-src="{{phone.imageUrl}}" alt="{{phone.name}}"></a>
             <a href="#/phones/{{phone.id}}">{{phone.name}}</a>
             <p>{{phone.snippet}}</p>
           </li>
@@ -59,8 +59,8 @@ the element attribute.
 We also added phone images next to each record using an image tag with the {@link
 ng.directive:ngSrc ngSrc} directive. That directive prevents the
 browser from treating the Angular `{{ expression }}` markup literally, and initiating a request to
-invalid URL `http://localhost:8000/app/{{phone.imageUrl}}`, which it would have done if we had only
-specified an attribute binding in a regular `src` attribute (`<img src="{{phone.imageUrl}}">`).
+an invalid URL `http://localhost:8000/app/{{phone.imageUrl}}`, which it would have done if we had
+only specified an attribute binding in a regular `src` attribute (`<img src="{{phone.imageUrl}}">`).
 Using the `ngSrc` directive prevents the browser from making an http request to an invalid location.
 
 
@@ -75,7 +75,7 @@ __`test/e2e/scenarios.js`__:
       query.sendKeys('nexus');
       element.all(by.css('.phones li a')).first().click();
       browser.getLocationAbsUrl().then(function(url) {
-        expect(url.split('#')[1]).toBe('/phones/nexus-s');
+        expect(url).toBe('/phones/nexus-s');
       });
     });
 ...

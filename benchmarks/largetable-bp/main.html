@@ -8,20 +8,20 @@
       Large table rendered with AngularJS
       </p>
 
-      <div>none: <input type="radio" ng-model="benchmarkType" value="none"></div>
-      <div>baseline binding: <input type="radio" ng-model="benchmarkType" value="baselineBinding"></div>
-      <div>baseline interpolation: <input type="radio" ng-model="benchmarkType" value="baselineInterpolation"></div>
-      <div>ngBind: <input type="radio" ng-model="benchmarkType" value="ngBind"></div>
-      <div>ngBindOnce: <input type="radio" ng-model="benchmarkType" value="ngBindOnce"></div>
-      <div>interpolation: <input type="radio" ng-model="benchmarkType" value="interpolation"></div>
-      <div>interpolation + bind-once: <input type="radio" ng-model="benchmarkType" value="bindOnceInterpolation"></div>
-      <div>attribute interpolation: <input type="radio" ng-model="benchmarkType" value="interpolationAttr"></div>
-      <div>ngBind + fnInvocation: <input type="radio" ng-model="benchmarkType" value="ngBindFn"></div>
-      <div>interpolation + fnInvocation: <input type="radio" ng-model="benchmarkType" value="interpolationFn"></div>
-      <div>ngBind + filter: <input type="radio" ng-model="benchmarkType" value="ngBindFilter"></div>
-      <div>interpolation + filter: <input type="radio" ng-model="benchmarkType" value="interpolationFilter"></div>
-      <div>ngModel (const name): <input type="radio" ng-model="benchmarkType" value="ngModelConstName"></div>
-      <div>ngModel (interp name): <input type="radio" ng-model="benchmarkType" value="ngModelInterpName"></div>
+      <div><label><input type="radio" ng-model="benchmarkType" value="none">none: </label></div>
+      <div><label><input type="radio" ng-model="benchmarkType" value="baselineBinding">baseline binding: </label></div>
+      <div><label><input type="radio" ng-model="benchmarkType" value="baselineInterpolation">baseline interpolation: </label></div>
+      <div><label><input type="radio" ng-model="benchmarkType" value="ngBind">ngBind: </label></div>
+      <div><label><input type="radio" ng-model="benchmarkType" value="ngBindOnce">ngBindOnce: </label></div>
+      <div><label><input type="radio" ng-model="benchmarkType" value="interpolation">interpolation: </label></div>
+      <div><label><input type="radio" ng-model="benchmarkType" value="bindOnceInterpolation">interpolation + bind-once: </label></div>
+      <div><label><input type="radio" ng-model="benchmarkType" value="interpolationAttr">attribute interpolation: </label></div>
+      <div><label><input type="radio" ng-model="benchmarkType" value="ngBindFn">ngBind + fnInvocation: </label></div>
+      <div><label><input type="radio" ng-model="benchmarkType" value="interpolationFn">interpolation + fnInvocation: </label></div>
+      <div><label><input type="radio" ng-model="benchmarkType" value="ngBindFilter">ngBind + filter: </label></div>
+      <div><label><input type="radio" ng-model="benchmarkType" value="interpolationFilter">interpolation + filter: </label></div>
+      <div><label><input type="radio" ng-model="benchmarkType" value="ngModelConstName">ngModel (const name): </label></div>
+      <div><label><input type="radio" ng-model="benchmarkType" value="ngModelInterpName">ngModel (interp name): </label></div>
 
       <ng-switch on="benchmarkType">
         <baseline-binding-table ng-switch-when="baselineBinding">

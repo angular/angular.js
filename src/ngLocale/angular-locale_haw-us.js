@@ -62,6 +62,20 @@ $provide.value("$locale", {
       "Now.",
       "Kek."
     ],
+    "STANDALONEMONTH": [
+      "Ianuali",
+      "Pepeluali",
+      "Malaki",
+      "\u02bbApelila",
+      "Mei",
+      "Iune",
+      "Iulai",
+      "\u02bbAukake",
+      "Kepakemapa",
+      "\u02bbOkakopa",
+      "Nowemapa",
+      "Kekemapa"
+    ],
     "WEEKENDRANGE": [
       5,
       6

@@ -8,22 +8,22 @@
 This section briefly touches on all of the important parts of AngularJS using a simple example.
 For a more in-depth explanation, see the {@link tutorial/ tutorial}.
 
-| Concept          | Description                     |
-|------------------|------------------------------------------|
-|{@link concepts#template Template}          | HTML with additional markup |
-|{@link concepts#directive Directives}        | extend HTML with custom attributes and elements |
-|{@link concepts#model Model}             | the data shown to the user in the view and with which the user interacts |
-|{@link concepts#scope Scope}             | context where the model is stored so that controllers, directives and expressions can access it |
-|{@link concepts#expression Expressions}       | access variables and functions from the scope |
-|{@link concepts#compiler Compiler}          | parses the template and instantiates directives and expressions |
-|{@link concepts#filter Filter}            | formats the value of an expression for display to the user |
-|{@link concepts#view View}              | what the user sees (the DOM) |
-|{@link concepts#databinding Data Binding}      | sync data between the model and the view |
-|{@link concepts#controller Controller}        | the business logic behind views |
-|{@link concepts#di Dependency Injection} | Creates and wires objects and functions |
-|{@link concepts#injector Injector}          | dependency injection container |
-|{@link concepts#module Module}            | a container for the different parts of an app including controllers, services, filters, directives which configures the Injector |
-|{@link concepts#service Service}           | reusable business logic independent of views |
+| Concept                                    | Description                                                              |
+|--------------------------------------------|--------------------------------------------------------------------------|
+|{@link concepts#template Template}          | HTML with additional markup                                              |
+|{@link concepts#directive Directives}       | extend HTML with custom attributes and elements                          |
+|{@link concepts#model Model}                | the data shown to the user in the view and with which the user interacts |
+|{@link concepts#scope Scope}                | context where the model is stored so that controllers, directives and expressions can access it |
+|{@link concepts#expression Expressions}     | access variables and functions from the scope                            |
+|{@link concepts#compiler Compiler}          | parses the template and instantiates directives and expressions          |
+|{@link concepts#filter Filter}              | formats the value of an expression for display to the user               |
+|{@link concepts#view View}                  | what the user sees (the DOM)                                             |
+|{@link concepts#databinding Data Binding}   | sync data between the model and the view                                 |
+|{@link concepts#controller Controller}      | the business logic behind views                                          |
+|{@link concepts#di Dependency Injection}    | Creates and wires objects and functions                                  |
+|{@link concepts#injector Injector}          | dependency injection container                                           |
+|{@link concepts#module Module}              | a container for the different parts of an app including controllers, services, filters, directives which configures the Injector |
+|{@link concepts#service Service}            | reusable business logic independent of views                             |
 
 
 ## A first example: Data binding
@@ -76,7 +76,7 @@ stores/updates the value of the input field into/from a variable.
 The second kind of new markup are the double curly braces `{{ expression | filter }}`:
 When the compiler encounters this markup, it will replace it with the evaluated value of the markup.
 An <a name="expression">{@link expression expression}</a> in a template is a JavaScript-like code snippet that allows
-to read and write variables. Note that those variables are not global variables.
+Angular to read and write variables. Note that those variables are not global variables.
 Just like variables in a JavaScript function live in a scope,
 Angular provides a <a name="scope">{@link scope scope}</a> for the variables accessible to expressions.
 The values that are stored in variables on the scope are referred to as the <a name="model"></a>*model*
@@ -334,9 +334,9 @@ The following example shows how this is done with Angular:
         var refresh = function() {
           var url = YAHOO_FINANCE_URL_PATTERN.
                      replace('PAIRS', 'USD' + currencies.join('","USD'));
-          return $http.jsonp(url).success(function(data) {
+          return $http.jsonp(url).then(function(response) {
             var newUsdToForeignRates = {};
-            angular.forEach(data.query.results.rate, function(rate) {
+            angular.forEach(response.data.query.results.rate, function(rate) {
               var currency = rate.id.substring(3,6);
               newUsdToForeignRates[currency] = window.parseFloat(rate.Rate);
             });
@@ -348,8 +348,7 @@ The following example shows how this is done with Angular:
 
         return {
           currencies: currencies,
-          convert: convert,
-          refresh: refresh
+          convert: convert
         };
       }]);
   </file>

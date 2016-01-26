@@ -90,7 +90,7 @@
                     <li class="disabled"><a href="http://angularjs.org/">Why AngularJS?</a></li>
                     <li><a href="http://www.youtube.com/user/angularjs">Watch</a></li>
                     <li><a href="tutorial">Tutorial</a></li>
-                    <li><a href="http://builtwith.angularjs.org/">Case Studies</a></li>
+                    <li><a href="https://www.madewithangular.com/">Case Studies</a></li>
                     <li><a href="https://github.com/angular/angular-seed">Seed App project template</a></li>
                     <li><a href="misc/faq">FAQ</a></li>
                   </ul>
@@ -147,13 +147,13 @@
         <div class="search-results-container" ng-show="hasResults">
           <div class="container">
             <div class="search-results-frame">
-              <div ng-repeat="(key, value) in results" class="search-results-group" ng-class="colClassName + ' col-group-' + key">
+              <div ng-repeat="(key, value) in results track by key" class="search-results-group" ng-class="colClassName + ' col-group-' + key" ng-show="value.length > 0">
                 <h4 class="search-results-group-heading">{{ key }}</h4>
-                <div class="search-results">
-                  <div ng-repeat="item in value" class="search-result">
-                    - <a ng-click="hideResults()" ng-href="{{ item.path }}">{{ item.name }}</a>
-                  </div>
-                </div>
+                <ul class="search-results">
+                  <!-- Do not insert a line break between li and a. Chrome will insert an actual line-break, which breaks the list item view.
+                  TODO: use a html minifier instead -->
+                  <li ng-repeat="item in value" class="search-result"><a ng-click="hideResults()" ng-href="{{ item.path }}">{{ item.name }}</a></li>
+                </ul>
               </div>
             </div>
             <a href="" ng-click="hideResults()" class="search-close">
@@ -220,7 +220,7 @@
         <p class="pull-right"><a back-to-top>Back to top</a></p>
 
         <p>
-          Super-powered by Google  ©2010-2015
+          Super-powered by Google  ©2010-2016
           ( <a id="version"
                ng-href="https://github.com/angular/angular.js/blob/master/CHANGELOG.md#{{versionNumber}}"
                ng-bind-template="v{{version}}" title="Changelog of this version of Angular JS">

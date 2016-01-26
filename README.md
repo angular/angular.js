@@ -21,7 +21,7 @@ piece of cake. Best of all?? It makes development fun!
 
 Building AngularJS
 ---------
-[Once you have your environment setup](http://docs.angularjs.org/misc/contribute) just run:
+[Once you have your environment set up](http://docs.angularjs.org/misc/contribute) just run:
 
     grunt package
 

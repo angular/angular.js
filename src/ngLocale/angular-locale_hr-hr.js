@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "stu",
       "pro"
     ],
+    "STANDALONEMONTH": [
+      "sije\u010danj",
+      "velja\u010da",
+      "o\u017eujak",
+      "travanj",
+      "svibanj",
+      "lipanj",
+      "srpanj",
+      "kolovoz",
+      "rujan",
+      "listopad",
+      "studeni",
+      "prosinac"
+    ],
     "WEEKENDRANGE": [
       5,
       6

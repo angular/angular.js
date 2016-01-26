@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "Kas",
       "Cis"
     ],
+    "STANDALONEMONTH": [
+      "Ciongo",
+      "L\u00f9ishi",
+      "Lus\u00f2lo",
+      "M\u00f9uy\u00e0",
+      "Lum\u00f9ng\u00f9l\u00f9",
+      "Lufuimi",
+      "Kab\u00e0l\u00e0sh\u00ecp\u00f9",
+      "L\u00f9sh\u00eck\u00e0",
+      "Lutongolo",
+      "Lung\u00f9di",
+      "Kasw\u00e8k\u00e8s\u00e8",
+      "Cisw\u00e0"
+    ],
     "WEEKENDRANGE": [
       5,
       6

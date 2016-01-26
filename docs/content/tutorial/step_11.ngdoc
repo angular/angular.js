@@ -32,17 +32,18 @@ We are using [Bower][bower] to install client side dependencies.  This step upda
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "angular": "~1.3.0",
-    "angular-mocks": "~1.3.0",
+    "angular": "1.4.x",
+    "angular-mocks": "1.4.x",
+    "jquery": "~2.1.1",
     "bootstrap": "~3.1.1",
-    "angular-route": "~1.3.0",
-    "angular-resource": "~1.3.0"
+    "angular-route": "1.4.x",
+    "angular-resource": "1.4.x"
   }
 }
 ```
 
-The new dependency `"angular-resource": "~1.3.0"` tells bower to install a version of the
-angular-resource component that is compatible with version 1.3.x.  We must ask bower to download
+The new dependency `"angular-resource": "1.4.x"` tells bower to install a version of the
+angular-resource component that is compatible with version 1.4.x.  We must ask bower to download
 and install this dependency. We can do this by running:
 
 ```

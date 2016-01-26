@@ -5,12 +5,14 @@
 //  by the time...
 
 var $$AnimateJsProvider = ['$animateProvider', function($animateProvider) {
-  this.$get = ['$injector', '$$AnimateRunner', '$$rAFMutex', '$$jqLite',
-       function($injector,   $$AnimateRunner,   $$rAFMutex,   $$jqLite) {
+  this.$get = ['$injector', '$$AnimateRunner', '$$jqLite',
+       function($injector,   $$AnimateRunner,   $$jqLite) {
 
     var applyAnimationClasses = applyAnimationClassesFactory($$jqLite);
          // $animateJs(element, 'enter');
     return function(element, event, classes, options) {
+      var animationClosed = false;
+
       // the `classes` argument is optional and if it is not used
       // then the classes will be resolved from the element's className
       // property as well as options.addClass/options.removeClass.
@@ -63,8 +65,32 @@ var $$AnimateJsProvider = ['$animateProvider', function($animateProvider) {
         applyAnimationClasses(element, options);
       }
 
+      function close() {
+        animationClosed = true;
+        applyOptions();
+        applyAnimationStyles(element, options);
+      }
+
+      var runner;
+
       return {
+        $$willAnimate: true,
+        end: function() {
+          if (runner) {
+            runner.end();
+          } else {
+            close();
+            runner = new $$AnimateRunner();
+            runner.complete(true);
+          }
+          return runner;
+        },
         start: function() {
+          if (runner) {
+            return runner;
+          }
+
+          runner = new $$AnimateRunner();
           var closeActiveAnimations;
           var chain = [];
 
@@ -89,8 +115,7 @@ var $$AnimateJsProvider = ['$animateProvider', function($animateProvider) {
             });
           }
 
-          var animationClosed = false;
-          var runner = new $$AnimateRunner({
+          runner.setHost({
             end: function() {
               endAnimations();
             },
@@ -103,9 +128,7 @@ var $$AnimateJsProvider = ['$animateProvider', function($animateProvider) {
           return runner;
 
           function onComplete(success) {
-            animationClosed = true;
-            applyOptions();
-            applyAnimationStyles(element, options);
+            close(success);
             runner.complete(success);
           }
 

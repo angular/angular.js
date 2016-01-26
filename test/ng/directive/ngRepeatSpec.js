@@ -166,6 +166,26 @@ describe('ngRepeat', function() {
     expect(element.text()).toEqual('age:20|wealth:20|prodname:Bingo|dogname:Bingo|codename:20|');
   });
 
+
+  it('should iterate over on object created using `Object.create(null)`', function() {
+    element = $compile(
+      '<ul>' +
+        '<li ng-repeat="(key, value) in items">{{key}}:{{value}}|</li>' +
+      '</ul>')(scope);
+
+    var items = Object.create(null);
+    items.misko = 'swe';
+    items.shyam = 'set';
+
+    scope.items = items;
+    scope.$digest();
+    expect(element.text()).toEqual('misko:swe|shyam:set|');
+
+    delete items.shyam;
+    scope.$digest();
+    expect(element.text()).toEqual('misko:swe|');
+  });
+
   describe('track by', function() {
     it('should track using expression function', function() {
       element = $compile(
@@ -592,6 +612,15 @@ describe('ngRepeat', function() {
     expect(element.text()).toEqual('misko:m:0|shyam:s:1|frodo:f:2|');
   });
 
+  it('should expose iterator offset as $index when iterating over objects with length key value 0', function() {
+    element = $compile(
+      '<ul>' +
+        '<li ng-repeat="(key, val) in items">{{key}}:{{val}}:{{$index}}|</li>' +
+      '</ul>')(scope);
+    scope.items = {'misko':'m', 'shyam':'s', 'frodo':'f', 'length':0};
+    scope.$digest();
+    expect(element.text()).toEqual('misko:m:0|shyam:s:1|frodo:f:2|length:0:3|');
+  });
 
   it('should expose iterator position as $first, $middle and $last when iterating over arrays',
       function() {
@@ -1462,11 +1491,11 @@ describe('ngRepeat animations', function() {
   }));
 
   it('should not change the position of the block that is being animated away via a leave animation',
-    inject(function($compile, $rootScope, $animate, $document, $window, $sniffer, $timeout, $$rAF) {
+    inject(function($compile, $rootScope, $animate, $document, $sniffer, $timeout) {
       if (!$sniffer.transitions) return;
 
       var item;
-      var ss = createMockStyleSheet($document, $window);
+      var ss = createMockStyleSheet($document);
 
       try {
 
@@ -1487,7 +1516,7 @@ describe('ngRepeat animations', function() {
         $rootScope.$digest();
 
         expect(element.text()).toBe('123'); // the original order should be preserved
-        $$rAF.flush();
+        $animate.flush();
         $timeout.flush(1500); // 1s * 1.5 closing buffer
         expect(element.text()).toBe('13');
       } finally {

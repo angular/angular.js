@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "Kpt",
       "Kpa"
     ],
+    "STANDALONEMONTH": [
+      "Mulgul",
+      "Ng\u2019atyaato",
+      "Kiptaamo",
+      "Iwootkuut",
+      "Mamuut",
+      "Paagi",
+      "Ng\u2019eiyeet",
+      "Rooptui",
+      "Bureet",
+      "Epeeso",
+      "Kipsuunde ne taai",
+      "Kipsuunde nebo aeng\u2019"
+    ],
     "WEEKENDRANGE": [
       5,
       6

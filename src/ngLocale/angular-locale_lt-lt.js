@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "lapkr.",
       "gruod."
     ],
+    "STANDALONEMONTH": [
+      "sausis",
+      "vasaris",
+      "kovas",
+      "balandis",
+      "gegu\u017e\u0117",
+      "bir\u017eelis",
+      "liepa",
+      "rugpj\u016btis",
+      "rugs\u0117jis",
+      "spalis",
+      "lapkritis",
+      "gruodis"
+    ],
     "WEEKENDRANGE": [
       5,
       6

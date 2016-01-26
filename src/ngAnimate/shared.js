@@ -2,6 +2,7 @@
 
 /* jshint ignore:start */
 var noop        = angular.noop;
+var copy        = angular.copy;
 var extend      = angular.extend;
 var jqLite      = angular.element;
 var forEach     = angular.forEach;
@@ -20,6 +21,7 @@ var ADD_CLASS_SUFFIX = '-add';
 var REMOVE_CLASS_SUFFIX = '-remove';
 var EVENT_CLASS_PREFIX = 'ng-';
 var ACTIVE_CLASS_SUFFIX = '-active';
+var PREPARE_CLASS_SUFFIX = '-prepare';
 
 var NG_ANIMATE_CLASSNAME = 'ng-animate';
 var NG_ANIMATE_CHILDREN_DATA = '$$ngAnimateChildren';
@@ -36,7 +38,7 @@ var CSS_PREFIX = '', TRANSITION_PROP, TRANSITIONEND_EVENT, ANIMATION_PROP, ANIMA
 // Also, the only modern browser that uses vendor prefixes for transitions/keyframes is webkit
 // therefore there is no reason to test anymore for other vendor prefixes:
 // http://caniuse.com/#search=transition
-if (window.ontransitionend === undefined && window.onwebkittransitionend !== undefined) {
+if (isUndefined(window.ontransitionend) && isDefined(window.onwebkittransitionend)) {
   CSS_PREFIX = '-webkit-';
   TRANSITION_PROP = 'WebkitTransition';
   TRANSITIONEND_EVENT = 'webkitTransitionEnd transitionend';
@@ -45,7 +47,7 @@ if (window.ontransitionend === undefined && window.onwebkittransitionend !== und
   TRANSITIONEND_EVENT = 'transitionend';
 }
 
-if (window.onanimationend === undefined && window.onwebkitanimationend !== undefined) {
+if (isUndefined(window.onanimationend) && isDefined(window.onwebkitanimationend)) {
   CSS_PREFIX = '-webkit-';
   ANIMATION_PROP = 'WebkitAnimation';
   ANIMATIONEND_EVENT = 'webkitAnimationEnd animationend';
@@ -69,8 +71,9 @@ var TRANSITION_DURATION_PROP = TRANSITION_PROP + DURATION_KEY;
 
 var isPromiseLike = function(p) {
   return p && p.then ? true : false;
-}
+};
 
+var ngMinErr = angular.$$minErr('ng');
 function assertArg(arg, name, reason) {
   if (!arg) {
     throw ngMinErr('areq', "Argument '{0}' is {1}", (name || '?'), (reason || "required"));
@@ -215,7 +218,10 @@ function applyAnimationToStyles(element, options) {
   }
 }
 
-function mergeAnimationOptions(element, target, newOptions) {
+function mergeAnimationDetails(element, oldAnimation, newAnimation) {
+  var target = oldAnimation.options || {};
+  var newOptions = newAnimation.options || {};
+
   var toAdd = (target.addClass || '') + ' ' + (newOptions.addClass || '');
   var toRemove = (target.removeClass || '') + ' ' + (newOptions.removeClass || '');
   var classes = resolveElementClasses(element.attr('class'), toAdd, toRemove);
@@ -225,7 +231,15 @@ function mergeAnimationOptions(element, target, newOptions) {
     delete newOptions.preparationClasses;
   }
 
+  // noop is basically when there is no callback; otherwise something has been set
+  var realDomOperation = target.domOperation !== noop ? target.domOperation : null;
+
   extend(target, newOptions);
+
+  // TODO(matsko or sreeramu): proper fix is to maintain all animation callback in array and call at last,but now only leave has the callback so no issue with this.
+  if (realDomOperation) {
+    target.domOperation = realDomOperation;
+  }
 
   if (classes.addClass) {
     target.addClass = classes.addClass;
@@ -238,6 +252,9 @@ function mergeAnimationOptions(element, target, newOptions) {
   } else {
     target.removeClass = null;
   }
+
+  oldAnimation.addClass = target.addClass;
+  oldAnimation.removeClass = target.removeClass;
 
   return target;
 }

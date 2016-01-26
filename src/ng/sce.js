@@ -144,13 +144,15 @@ function $SceDelegateProvider() {
    * @kind function
    *
    * @param {Array=} whitelist When provided, replaces the resourceUrlWhitelist with the value
-   *     provided.  This must be an array or null.  A snapshot of this array is used so further
-   *     changes to the array are ignored.
+   *    provided.  This must be an array or null.  A snapshot of this array is used so further
+   *    changes to the array are ignored.
    *
-   *     Follow {@link ng.$sce#resourceUrlPatternItem this link} for a description of the items
-   *     allowed in this array.
+   *    Follow {@link ng.$sce#resourceUrlPatternItem this link} for a description of the items
+   *    allowed in this array.
    *
-   *     Note: **an empty whitelist array will block all URLs**!
+   *    <div class="alert alert-warning">
+   *    **Note:** an empty whitelist array will block all URLs!
+   *    </div>
    *
    * @return {Array} the currently set whitelist array.
    *
@@ -173,17 +175,17 @@ function $SceDelegateProvider() {
    * @kind function
    *
    * @param {Array=} blacklist When provided, replaces the resourceUrlBlacklist with the value
-   *     provided.  This must be an array or null.  A snapshot of this array is used so further
-   *     changes to the array are ignored.
+   *    provided.  This must be an array or null.  A snapshot of this array is used so further
+   *    changes to the array are ignored.
    *
-   *     Follow {@link ng.$sce#resourceUrlPatternItem this link} for a description of the items
-   *     allowed in this array.
+   *    Follow {@link ng.$sce#resourceUrlPatternItem this link} for a description of the items
+   *    allowed in this array.
    *
-   *     The typical usage for the blacklist is to **block
-   *     [open redirects](http://cwe.mitre.org/data/definitions/601.html)** served by your domain as
-   *     these would otherwise be trusted but actually return content from the redirected domain.
+   *    The typical usage for the blacklist is to **block
+   *    [open redirects](http://cwe.mitre.org/data/definitions/601.html)** served by your domain as
+   *    these would otherwise be trusted but actually return content from the redirected domain.
    *
-   *     Finally, **the blacklist overrides the whitelist** and has the final say.
+   *    Finally, **the blacklist overrides the whitelist** and has the final say.
    *
    * @return {Array} the currently set blacklist array.
    *
@@ -294,7 +296,7 @@ function $SceDelegateProvider() {
             'Attempted to trust a value in invalid context. Context: {0}; Value: {1}',
             type, trustedValue);
       }
-      if (trustedValue === null || trustedValue === undefined || trustedValue === '') {
+      if (trustedValue === null || isUndefined(trustedValue) || trustedValue === '') {
         return trustedValue;
       }
       // All the current contexts in SCE_CONTEXTS happen to be strings.  In order to avoid trusting
@@ -342,6 +344,11 @@ function $SceDelegateProvider() {
      * returns the originally supplied value if the queried context type is a supertype of the
      * created type.  If this condition isn't satisfied, throws an exception.
      *
+     * <div class="alert alert-danger">
+     * Disabling auto-escaping is extremely dangerous, it usually creates a Cross Site Scripting
+     * (XSS) vulnerability in your application.
+     * </div>
+     *
      * @param {string} type The kind of context in which this value is to be used.
      * @param {*} maybeTrusted The result of a prior {@link ng.$sceDelegate#trustAs
      *     `$sceDelegate.trustAs`} call.
@@ -349,7 +356,7 @@ function $SceDelegateProvider() {
      *     `$sceDelegate.trustAs`} if valid in this context.  Otherwise, throws an exception.
      */
     function getTrusted(type, maybeTrusted) {
-      if (maybeTrusted === null || maybeTrusted === undefined || maybeTrusted === '') {
+      if (maybeTrusted === null || isUndefined(maybeTrusted) || maybeTrusted === '') {
         return maybeTrusted;
       }
       var constructor = (byType.hasOwnProperty(type) ? byType[type] : null);
@@ -484,7 +491,7 @@ function $SceDelegateProvider() {
  * By default, Angular only loads templates from the same domain and protocol as the application
  * document.  This is done by calling {@link ng.$sce#getTrustedResourceUrl
  * $sce.getTrustedResourceUrl} on the template URL.  To load templates from other domains and/or
- * protocols, you may either either {@link ng.$sceDelegateProvider#resourceUrlWhitelist whitelist
+ * protocols, you may either {@link ng.$sceDelegateProvider#resourceUrlWhitelist whitelist
  * them} or {@link ng.$sce#trustAsResourceUrl wrap it} into a trusted value.
  *
  * *Please note*:
@@ -542,7 +549,7 @@ function $SceDelegateProvider() {
  *    - There are exactly **two wildcard sequences** - `*` and `**`.  All other characters
  *      match themselves.
  *    - `*`: matches zero or more occurrences of any character other than one of the following 6
- *      characters: '`:`', '`/`', '`.`', '`?`', '`&`' and ';'.  It's a useful wildcard for use
+ *      characters: '`:`', '`/`', '`.`', '`?`', '`&`' and '`;`'.  It's a useful wildcard for use
  *      in a whitelist.
  *    - `**`: matches zero or more occurrences of *any* character.  As such, it's not
  *      appropriate for use in a scheme, domain, etc. as it would match too much.  (e.g.
