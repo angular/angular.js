@@ -19,13 +19,13 @@ which drives many of these changes.
 
 # Migrate from 1.4 to 1.5
 
-Angular 1.5 takes a big step towards enabling developers to prepare themselves for a smoother
-transition to Angular 2 in the future. Architecturing your applications using components, making use
-of lifecycle hooks in directive controllers and relying on native ES6 features (such as classes and
-arrow functions) are now all possible with Angular 1.5.
+Angular 1.5 takes a big step towards preparing developers for a smoother transition to Angular 2 in
+the future. Architecturing your applications using components, making use of lifecycle hooks in
+directive controllers and relying on native ES6 features (such as classes and arrow functions) are
+now all possible with Angular 1.5.
 
 
-This release includes numerous bug and security fixes as well as performance improvements to core
+This release includes numerous bug and security fixes, as well as performance improvements to core
 services, directives, filters and helper functions. Existing applications can start enjoying the
 benefits of such changes in `$compile`, `$parse`, `$animate`, `$animateCss`, `$sanitize`, `ngOptions`,
 `currencyFilter`, `numberFilter`, `copy()` (to name but a few) without any change in code.
@@ -33,7 +33,7 @@ benefits of such changes in `$compile`, `$parse`, `$animate`, `$animateCss`, `$s
 New features have been added to more than a dozen services, directives and filters across 7 modules.
 Among them, a few stand out:
 
-* `angular.component()`: Introducing "components", a special sort of directives that are easy to
+* `angular.component()`: Introducing "components", a special sort of directive that are easy to
   configure and promote best practices (plus can bring Angular 1 applications closer to Angular 2's
   style of architecture).
 * Multi-slot transclusion: Enabling the design of more powerful and complex UI elements with a much
@@ -61,7 +61,7 @@ them were unavoidable.
 
 Due to [0ea53503](https://github.com/angular/angular.js/commit/0ea535035a3a1a992948490c3533bffb83235052),
 a new special property, `$locals`, will be available for accessing the locals from an expression.
-This change will only affect you, if a `$locals` property does already exist (and needs to be
+This is a breaking change, only if a `$locals` property does already exist (and needs to be
 referenced) either on the `scope` or on the `locals` object. Your expressions should be changed to
 access such existing properties as `this.$locals` and `$locals.$locals` respectively.
 
@@ -118,7 +118,7 @@ was introduced instead.
 
 Due to [98528be3](https://github.com/angular/angular.js/commit/98528be311b48269ba0e15ba4e3e2ad9b89693a9),
 using a promise as `timeout` in `$resource` is no longer supported and will log a warning. This is
-hardly expected to affect the bahavior of your application, since a promise as `timeout` didn't work
+hardly expected to affect the behavior of your application, since a promise as `timeout` didn't work
 before either, but it will now warn you explicitly when trying to pass one.
 If you need to be able to cancel pending requests, you can now use the new `$cancelRequest()` that
 will be available on `$resource` instances.
@@ -128,9 +128,9 @@ will be available on `$resource` instances.
 
 Due to [983b0598](https://github.com/angular/angular.js/commit/983b0598121a8c5a3a51a30120e114d7e3085d4d),
 a new property will be available on the scope of the route, allowing easy access to the route's
-resolved values from the view's template. The default name for this property is `$resolve`. This
-change will only affect you, if a `$resolve` property is already available on the scope, in which
-case the existing property will be hidden or overwritten.
+resolved values from the view's template. The default name for this property is `$resolve`. This is
+a breaking change, only if a `$resolve` property is already available on the scope, in which case
+the existing property will be hidden or overwritten.
 To fix this, you should choose a custom name for this property, that does not collide with other
 properties on the scope, by specifying the `resolveAs` property on the route.
 
