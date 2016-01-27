@@ -374,8 +374,8 @@ function $HttpProvider() {
    **/
   var interceptorFactories = this.interceptors = [];
 
-  this.$get = ['$httpBackend', '$$cookieReader', '$cacheFactory', '$rootScope', '$q', '$injector',
-      function($httpBackend, $$cookieReader, $cacheFactory, $rootScope, $q, $injector) {
+  this.$get = ['$browser', '$httpBackend', '$$cookieReader', '$cacheFactory', '$rootScope', '$q', '$injector',
+      function($browser, $httpBackend, $$cookieReader, $cacheFactory, $rootScope, $q, $injector) {
 
     var defaultCache = $cacheFactory('$http');
 
@@ -981,7 +981,7 @@ function $HttpProvider() {
       };
 
       var chain = [serverRequest, undefined];
-      var promise = $q.when(config);
+      var promise = initiateOutstandingRequest(config);
 
       // apply interceptors
       forEach(reversedInterceptors, function(interceptor) {
@@ -999,6 +999,8 @@ function $HttpProvider() {
 
         promise = promise.then(thenFn, rejectFn);
       }
+
+      promise.finally(completeOutstandingRequest);
 
       if (useLegacyPromise) {
         promise.success = function(fn) {
@@ -1024,6 +1026,15 @@ function $HttpProvider() {
       }
 
       return promise;
+
+      function initiateOutstandingRequest(config) {
+        $browser.$$incOutstandingRequestCount();
+        return $q.when(config);
+      }
+
+      function completeOutstandingRequest() {
+        $browser.$$completeOutstandingRequest(noop);
+      }
 
       function transformResponse(response) {
         // make a copy since the response must be cacheable

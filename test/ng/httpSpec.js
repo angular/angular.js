@@ -1896,6 +1896,37 @@ describe('$http', function() {
         expect(paramSerializer({foo: 'foo', bar: ['bar', 'baz']})).toEqual('bar=bar&bar=baz&foo=foo');
       });
     });
+
+    describe('$browser\'s outstandingRequestCount', function() {
+      var incOutstandingRequestCountSpy, completeOutstandingRequestSpy;
+
+      beforeEach(inject(function($browser) {
+        incOutstandingRequestCountSpy
+          = spyOn($browser, '$$incOutstandingRequestCount').andCallThrough();
+        completeOutstandingRequestSpy
+          = spyOn($browser, '$$completeOutstandingRequest').andCallThrough();
+      }));
+
+      it('should update $browser outstandingRequestCount on success', function() {
+        $httpBackend.when('GET').respond(200);
+
+        expect(incOutstandingRequestCountSpy).not.toHaveBeenCalled();
+        $http.get('');
+        expect(incOutstandingRequestCountSpy).toHaveBeenCalledOnce();
+        $httpBackend.flush();
+        expect(completeOutstandingRequestSpy).toHaveBeenCalledOnce();
+      });
+
+      it('should update $browser outstandingRequestCount on error', function() {
+        $httpBackend.when('GET').respond(500);
+
+        expect(incOutstandingRequestCountSpy).not.toHaveBeenCalled();
+        $http.get('');
+        expect(incOutstandingRequestCountSpy).toHaveBeenCalledOnce();
+        $httpBackend.flush();
+        expect(completeOutstandingRequestSpy).toHaveBeenCalledOnce();
+      });
+    });
   });
 
 
