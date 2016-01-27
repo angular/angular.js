@@ -65,7 +65,7 @@ function shallowClearAndCopy(src, dst) {
  * @requires $http
  * @requires ng.$log
  * @requires $q
- * @requires $timeout
+ * @requires ng.$timeout
  *
  * @description
  * A factory which creates a resource object that lets you interact with
