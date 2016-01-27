@@ -7,12 +7,16 @@
  *
  * # ngTouch
  *
- * The `ngTouch` module provides touch events and other helpers for touch-enabled devices.
- * The implementation is based on jQuery Mobile touch event handling
- * ([jquerymobile.com](http://jquerymobile.com/)).
+ * The `ngTouch` module provides the touch-event based {@link ngTouch.$swipe `$swipe`} directive.
  *
+ * <div class="alert alert-info">
+ * Angular 1.5.0 has **removed** the override to the `ngClick` directive that eliminates the 300ms delay
+ * after a tap on mobile browsers. It was removed because the implementation was unreliable, and because
+ * the 300ms delay is on its way out on modern mobile browsers.
+ * If you need this behavior, consider using [FastClick](https://github.com/ftlabs/fastclick) or
+ * [Tappy!](https://github.com/filamentgroup/tappy/)
+ * </div>
  *
- * See {@link ngTouch.$swipe `$swipe`} for usage.
  *
  * <div doc-module-components="ngTouch"></div>
  *
