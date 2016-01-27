@@ -107,18 +107,18 @@ changelog to ensure that it does not surprise anyone.
 - **$resource:** due to [47486524](https://github.com/angular/angular.js/commit/474865242c89ba3e8143f0cd52f8c292979ea730),
 
 **Possible breaking change** for users who updated their code to provide a `timeout`
-promise for a `$resource` request in version 1.4.8.
+promise for a `$resource` request in version v1.4.8.
 
 Up to v1.4.7 (included), using a promise as a timeout in `$resource`, would silently
 fail (i.e. have no effect).
 
 In v1.4.8, using a promise as timeout would have the (buggy) behaviour described
-in https://github.com/angular/angular.js/pull/12657#issuecomment-152108887
-(i.e. it will work as expected for the first time you resolve the promise and will
+in https://github.com/angular/angular.js/pull/12657#issuecomment-152108887.
+(I.e. it will work as expected for the first time you resolve the promise and will
 cancel all subsequent requests after that - one has to re-create the resource
-class. This is feature was not documented.)
+class. This was not documented.)
 
-With this change, using a promise as timeout in 1.4.9 onwsards is not allowed.
+With this change, using a promise as timeout in v1.4.9 onwards is not allowed.
 It will log a warning and ignore the timeout value.
 
 If you need support for cancellable `$resource` actions, you should upgrade to
@@ -568,57 +568,24 @@ is  `$locals`.
   - fix scoping of transclusion directives inside a replace directive
   ([1a98c0ee](https://github.com/angular/angular.js/commit/1a98c0ee346b718b9462da1abf4352a4605cbc7f),
    [#12975](https://github.com/angular/angular.js/issues/12975), [#12936](https://github.com/angular/angular.js/issues/12936), [#13244](https://github.com/angular/angular.js/issues/13244))
-  - use createMap() for $$observe listeners when initialized from attr interpolation
-  ([76c2491a](https://github.com/angular/angular.js/commit/76c2491a316d6b296c721227529fcb09087d369a),
-   [#10446](https://github.com/angular/angular.js/issues/10446))
-  - properly sanitize xlink:href attribute interpolation
-  ([f33ce173](https://github.com/angular/angular.js/commit/f33ce173c90736e349cf594df717ae3ee41e0f7a),
-   [#12524](https://github.com/angular/angular.js/issues/12524))
 - **$http:** apply `transformResponse` even when `data` is empty
   ([7c0731ed](https://github.com/angular/angular.js/commit/7c0731edb2f72bdf0efa186f641dab3b6aecc5d5),
    [#12976](https://github.com/angular/angular.js/issues/12976), [#12979](https://github.com/angular/angular.js/issues/12979))
 - **$location:** ensure `$locationChangeSuccess` fires even if URL ends with `#`
   ([4412fe23](https://github.com/angular/angular.js/commit/4412fe238f37f79a2017ee7b20ba089c0acd73e9),
    [#12175](https://github.com/angular/angular.js/issues/12175), [#13251](https://github.com/angular/angular.js/issues/13251))
-- **$parse:**
-  - evaluate simple expressions in interpolations only once
+- **$parse:** evaluate simple expressions in interpolations only once
   ([1caf0b6b](https://github.com/angular/angular.js/commit/1caf0b6bee5781589e20f7a27a8c60e8b1b784f5),
    [#12983](https://github.com/angular/angular.js/issues/12983), [#13002](https://github.com/angular/angular.js/issues/13002))
-  - fix typo in error message ("assing" -> "assign")
-  ([70dac5ae](https://github.com/angular/angular.js/commit/70dac5ae82ffe9c6250681274905583747523b5d),
-   [#12940](https://github.com/angular/angular.js/issues/12940))
-  - block assigning to fields of a constructor
-  ([e1f4f23f](https://github.com/angular/angular.js/commit/e1f4f23f781a79ae8a4046b21130283cec3f2917),
-   [#12860](https://github.com/angular/angular.js/issues/12860))
-  - safer conversion of computed properties to strings
-  ([20cf7d5e](https://github.com/angular/angular.js/commit/20cf7d5e3a0af766b1929e24794859c79439351c))
 - **$resource:** allow XHR request to be cancelled via a timeout promise
   ([4fc73466](https://github.com/angular/angular.js/commit/4fc734665e5dddef26ed30a9d4f75632cd269481),
    [#12657](https://github.com/angular/angular.js/issues/12657), [#12675](https://github.com/angular/angular.js/issues/12675), [#10890](https://github.com/angular/angular.js/issues/10890), [#9332](https://github.com/angular/angular.js/issues/9332))
 - **$rootScope:** prevent IE9 memory leak when destroying scopes
   ([8fe781fb](https://github.com/angular/angular.js/commit/8fe781fbe7c42c64eb895c28d9fd5479b037d020),
    [#10706](https://github.com/angular/angular.js/issues/10706), [#11786](https://github.com/angular/angular.js/issues/11786))
-- **$sanitize:**
-  - strip urls starting with 'unsafe:' as opposed to 'unsafe'
-  ([a4dfa4d0](https://github.com/angular/angular.js/commit/a4dfa4d061fd2f6baf9821f0863dcce7888232ab),
-   [#12524](https://github.com/angular/angular.js/issues/12524))
-  - add mXSS protection
-  ([bc0d8c4e](https://github.com/angular/angular.js/commit/bc0d8c4eea9a34bff5e29dd492dcdd668251be40),
-   [#12524](https://github.com/angular/angular.js/issues/12524))
-  - support void elements, fixups, remove dead code, typos
-  ([94207f8f](https://github.com/angular/angular.js/commit/94207f8fb6ee8fe26fe18657f6b5aca6def99605),
-   [#12524](https://github.com/angular/angular.js/issues/12524))
 - **Angular.js:** fix `isArrayLike` for unusual cases
   ([2c8d87e0](https://github.com/angular/angular.js/commit/2c8d87e064dca99a49ed35d1db885b1f2e40dcf4),
    [#10186](https://github.com/angular/angular.js/issues/10186), [#8000](https://github.com/angular/angular.js/issues/8000), [#4855](https://github.com/angular/angular.js/issues/4855), [#4751](https://github.com/angular/angular.js/issues/4751), [#10272](https://github.com/angular/angular.js/issues/10272))
-- **filters:** ensure `formatNumber` observes i18n decimal separators
-  ([658a865c](https://github.com/angular/angular.js/commit/658a865c5b2580eed53b340e7394945cd76e2260),
-   [#10342](https://github.com/angular/angular.js/issues/10342), [#12850](https://github.com/angular/angular.js/issues/12850))
-- **injector:** support arrow functions with no parentheses
-  ([03726f7f](https://github.com/angular/angular.js/commit/03726f7fbd5d71c0604b8dd40e97cb2fb0fb777f),
-   [#12890](https://github.com/angular/angular.js/issues/12890))
-- **input:** remove workaround for Firefox bug
-  ([b366f035](https://github.com/angular/angular.js/commit/b366f0352abccfe4c4868b5a9e8c0b88659bd1ee))
 - **isArrayLike:** handle jQuery objects of length 0
   ([773efd08](https://github.com/angular/angular.js/commit/773efd0812097a89944c889c595485a5744326f6))
 - **jqLite:**
@@ -637,12 +604,6 @@ is  `$locals`.
   - clone elements instead of treating them like simple objects
   ([17715fa3](https://github.com/angular/angular.js/commit/17715fa3668b1fcabaedcd82e2e57b2a80e0a0c2),
    [#12286](https://github.com/angular/angular.js/issues/12286))
-- **ngAnimate:**
-  - ensure anchoring uses body as a container when needed
-  ([240d5896](https://github.com/angular/angular.js/commit/240d5896ecdfac2351f9bd6147b52de52c0b7608),
-   [#12872](https://github.com/angular/angular.js/issues/12872))
-  - callback detection should only use RAF when necessary
-  ([8b27c3f0](https://github.com/angular/angular.js/commit/8b27c3f064b34532ba99d709cadf09fc4c0cbeab))
 - **ngAria:** don't add tabindex to radio and checkbox inputs
   ([662fb282](https://github.com/angular/angular.js/commit/662fb282c176ca00a85b6dec7af90446ea90f662),
    [#12492](https://github.com/angular/angular.js/issues/12492), [#13095](https://github.com/angular/angular.js/issues/13095))
@@ -652,9 +613,6 @@ is  `$locals`.
 - **ngMessage:** make ngMessage compatible with ngBind
   ([4971ef12](https://github.com/angular/angular.js/commit/4971ef12d4c2c268cb8d26f90385dc96eba19db8),
    [#8089](https://github.com/angular/angular.js/issues/8089), [#13074](https://github.com/angular/angular.js/issues/13074))
-- **ngMessages:** prevent race condition with ngAnimate
-  ([8366622b](https://github.com/angular/angular.js/commit/8366622bed009d2cad7d0cff28b9c1e48bfbd4e1),
-   [#12856](https://github.com/angular/angular.js/issues/12856), [#12903](https://github.com/angular/angular.js/issues/12903))
 - **ngMock:** reset cache before every test
   ([fd83d372](https://github.com/angular/angular.js/commit/fd83d3724ad30a93254f08cb82f981eaddb5dbff),
    [#13013](https://github.com/angular/angular.js/issues/13013))
@@ -665,18 +623,6 @@ is  `$locals`.
   - override select option registration to allow compilation of empty option
   ([2fcfd75a](https://github.com/angular/angular.js/commit/2fcfd75a142200e1a4b1b7ed4fb588e3befcbd57),
    [#11685](https://github.com/angular/angular.js/issues/11685), [#12972](https://github.com/angular/angular.js/issues/12972), [#12968](https://github.com/angular/angular.js/issues/12968), [#13012](https://github.com/angular/angular.js/issues/13012))
-  - prevent frozen select ui in IE
-  ([42c97c5d](https://github.com/angular/angular.js/commit/42c97c5db5921e9e5447fb32bdae1f48da42844f),
-   [#11314](https://github.com/angular/angular.js/issues/11314), [#11795](https://github.com/angular/angular.js/issues/11795))
-  - allow falsy values as option group identifiers
-  ([b71d7c3f](https://github.com/angular/angular.js/commit/b71d7c3f3c04e65b02d88b33c22dd90ae3cdfc27),
-   [#7015](https://github.com/angular/angular.js/issues/7015), [#7024](https://github.com/angular/angular.js/issues/7024), [#12888](https://github.com/angular/angular.js/issues/12888))
-  - throw if ngModel is not present
-  ([ded25187](https://github.com/angular/angular.js/commit/ded2518756d4409fdfda0d4af243f2125bea01b5),
-   [#7047](https://github.com/angular/angular.js/issues/7047), [#12840](https://github.com/angular/angular.js/issues/12840))
-- **ngResource:** encode `&` in URL query param values
-  ([1c97a605](https://github.com/angular/angular.js/commit/1c97a6057bc013262be761bca5e5c22224c4bbf8),
-   [#12201](https://github.com/angular/angular.js/issues/12201))
 - **orderByFilter:** throw error if input is not array-like
   ([2a85a634](https://github.com/angular/angular.js/commit/2a85a634f86c84f15b411ce009a3515fca7ba580),
    [#11255](https://github.com/angular/angular.js/issues/11255), [#11719](https://github.com/angular/angular.js/issues/11719))
@@ -684,24 +630,11 @@ is  `$locals`.
 
 ## Features
 
-- **$animateCss:** add support for temporary styles via `cleanupStyles`
-  ([9f67da62](https://github.com/angular/angular.js/commit/9f67da625293441e27559ebde7503cc63408a95c),
-   [#12930](https://github.com/angular/angular.js/issues/12930))
 - **$compile:** multiple transclusion via named slots
   ([a4ada8ba](https://github.com/angular/angular.js/commit/a4ada8ba9c4358273575e16778e76446ad080054),
    [#4357](https://github.com/angular/angular.js/issues/4357), [#12742](https://github.com/angular/angular.js/issues/12742), [#11736](https://github.com/angular/angular.js/issues/11736), [#12934](https://github.com/angular/angular.js/issues/12934))
-- **$http:** add `$xhrFactory` service to enable creation of custom xhr objects
-  ([106f90aa](https://github.com/angular/angular.js/commit/106f90aafa0fa5a81ad7af7ffc9d1e00ab97ffef),
-   [#2318](https://github.com/angular/angular.js/issues/2318), [#9319](https://github.com/angular/angular.js/issues/9319), [#12159](https://github.com/angular/angular.js/issues/12159))
-- **$injector:**
-  - Allow specifying a decorator on $injector
+- **$injector:** allow specifying a decorator on $injector
   ([29a05984](https://github.com/angular/angular.js/commit/29a05984fe46c2c18ca51404f07c866dd92d1eec))
-  - add strictDi property to $injector instance
-  ([79577c5d](https://github.com/angular/angular.js/commit/79577c5d316c7bf0204d7d1747ddc5b15bfe2955),
-   [#11728](https://github.com/angular/angular.js/issues/11728), [#11734](https://github.com/angular/angular.js/issues/11734))
-- **$sanitize:** make svg support an opt-in
-  ([181fc567](https://github.com/angular/angular.js/commit/181fc567d873df065f1e84af7225deb70a8d2eb9),
-   [#12524](https://github.com/angular/angular.js/issues/12524))
 - **$templateRequest:** support configuration of $http options
   ([b2fc39d2](https://github.com/angular/angular.js/commit/b2fc39d2ddac64249b4f2961ee18b878a1e98251),
    [#13188](https://github.com/angular/angular.js/issues/13188), [#11868](https://github.com/angular/angular.js/issues/11868), [#6860](https://github.com/angular/angular.js/issues/6860))
@@ -720,18 +653,12 @@ is  `$locals`.
   - invoke nested calls to `module()` immediately
   ([51a27c0f](https://github.com/angular/angular.js/commit/51a27c0f1ad6cd8d3e33ab0d71de22c1627c7ec3),
    [#12887](https://github.com/angular/angular.js/issues/12887))
-- **ngModel:** provide ng-empty and ng-not-empty CSS classes
-  ([630280c7](https://github.com/angular/angular.js/commit/630280c7fb04a83208d09c97c2efb81be3a3db74),
-   [#10050](https://github.com/angular/angular.js/issues/10050), [#12848](https://github.com/angular/angular.js/issues/12848))
 
 
 ## Performance Improvements
 
-- **$compile:**
-  - use static jquery data method to avoid creating new instances
+- **$compile:** use static jquery data method to avoid creating new instances
   ([9b90c32f](https://github.com/angular/angular.js/commit/9b90c32f31fd56e348539674128acec6536cd846))
-  - lazily compile the `transclude` function
-  ([652b83eb](https://github.com/angular/angular.js/commit/652b83eb226131d131a44453520a569202aa4aac))
 - **$interpolate:** provide a simplified result for constant expressions
   ([cf83b4f4](https://github.com/angular/angular.js/commit/cf83b4f445d3a1fc18fc140e65e670754401d50b))
 - **copy:**
@@ -747,13 +674,6 @@ is  `$locals`.
 
 ## Breaking Changes
 
-- **$sanitize:** due to [181fc567](https://github.com/angular/angular.js/commit/181fc567d873df065f1e84af7225deb70a8d2eb9),
-  The svg support in  is now an opt-in option
-
-Applications that depend on this option can use  to turn the option back on,
-but while doing so, please read the warning provided in the  documentation for
-information on preventing click-hijacking attacks when this option is turned on.
-
 - **ngMessage:** due to [4971ef12](https://github.com/angular/angular.js/commit/4971ef12d4c2c268cb8d26f90385dc96eba19db8),
 
 ngMessage is now compiled with a priority of 1, which means directives
@@ -764,14 +684,6 @@ passed the comment element created by the transclusion of ngMessage.
 To restore this behavior, custom directives need to have
 their priority increased to at least "1".
 
-- **ngOptions:** due to [ded25187](https://github.com/angular/angular.js/commit/ded2518756d4409fdfda0d4af243f2125bea01b5),
-
-`ngOptions` will now throw if `ngModel` is not present on the `select`
-element. Previously, having no `ngModel` let `ngOptions` silently
-fail, which could lead to hard to debug errors. The change should
-therefore not affect any applications, as it simply makes the
-requirement more strict and alerts the developer explicitly.
-
 - **orderByFilter:** due to [2a85a634](https://github.com/angular/angular.js/commit/2a85a634f86c84f15b411ce009a3515fca7ba580),
 
 Previously, an non array-like input would pass through the orderBy filter unchanged.
@@ -780,9 +692,6 @@ to an array, either manually or using a filter such as
 https://github.com/petebacondarwin/angular-toArrayFilter.
 (`null` and `undefined` still pass through without an error, in order to
 support asynchronous loading of resources.)
-
-Closes #11255
-Closes #11719
 
 
 
