@@ -1866,6 +1866,24 @@ describe('$http', function() {
         expect(paramSerializer({foo: 'foo', bar: ['bar', 'baz']})).toEqual('bar=bar&bar=baz&foo=foo');
       });
     });
+
+    describe('$browser outstandingRequests', function() {
+      var $browser;
+
+      beforeEach(inject(['$browser', function(browser) {
+        $browser = browser;
+      }]));
+
+      it('should update $brower outstandingRequestCount', function() {
+        $httpBackend.when('GET').respond(200);
+
+        expect($browser.$$outstandingRequestCount).toBe(0);
+        $http({method: 'GET', url: '/some'});
+        expect($browser.$$outstandingRequestCount).toBe(1);
+        $httpBackend.flush();
+        expect($browser.$$outstandingRequestCount).toBe(0);
+      });
+    });
   });
 
 
