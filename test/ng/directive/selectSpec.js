@@ -44,6 +44,17 @@ describe('select', function() {
         }
       };
     });
+
+    $compileProvider.directive('myOptions', function() {
+      return {
+        scope: {myOptions: '='},
+        replace: true,
+        template:
+            '<option value="{{ option.value }}" ng-repeat="option in myOptions">' +
+              '{{ options.label }}' +
+            '</option>'
+      };
+    });
   }));
 
   beforeEach(inject(function($rootScope, _$compile_) {
@@ -313,7 +324,7 @@ describe('select', function() {
       });
 
 
-    it('should cope with a dynamic empty option added to a static empty option', function() {
+      it('should cope with a dynamic empty option added to a static empty option', function() {
         scope.dynamicOptions = [];
         scope.robot = 'x';
         compile('<select ng-model="robot">' +
@@ -340,7 +351,7 @@ describe('select', function() {
         scope.dynamicOptions = [];
         scope.$digest();
         expect(element).toEqualSelect(['']);
-    });
+      });
 
       it('should select the empty option when model is undefined', function() {
         compile('<select ng-model="robot">' +
@@ -611,6 +622,20 @@ describe('select', function() {
 
     });
 
+
+    it('should not break when adding options via a directive with `replace: true` '
+        + 'and a structural directive in its template',
+      function() {
+        scope.options = [
+          {value: '1', label: 'Option 1'},
+          {value: '2', label: 'Option 2'},
+          {value: '3', label: 'Option 3'}
+        ];
+        compile('<select ng-model="mySelect"><option my-options="options"></option></select>');
+
+        expect(element).toEqualSelect([unknownValue()], '1', '2', '3');
+      }
+    );
   });
 
 
