@@ -1492,6 +1492,22 @@ describe("animations", function() {
       dealoc(element);
       dealoc(child);
     }));
+
+    it('should respect the value if the directive is on an element with ngIf',
+      inject(function($animate, $rootScope, $rootElement, $compile) {
+
+      parent.attr('ng-animate-children', 'true');
+      parent.attr('ng-if', 'true');
+      element.attr('ng-if', 'true');
+
+      $rootElement.append(parent);
+      parent.append(element);
+
+      $compile(parent)($rootScope);
+      $rootScope.$digest();
+
+      expect(captureLog.length).toBe(2);
+    }));
   });
 
   describe('.pin()', function() {
