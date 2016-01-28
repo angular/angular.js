@@ -2457,6 +2457,13 @@ describe('parser', function() {
                 expect($parse.$$runningExpensiveChecks()).toEqual(false);
               });
             });
+
+            it('should handle `inputs` when running with expensive checks', inject(function($parse) {
+              expect(function() {
+                scope.$watch($parse('a + b', null, true), noop);
+                scope.$digest();
+              }).not.toThrow();
+            }));
           });
         });
 
