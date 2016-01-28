@@ -320,7 +320,7 @@ goog.i18n.currency.CurrencyInfo = {
   'SEK': [2, 'kr', 'kr'],
   'SGD': [2, '$', 'S$'],
   'THB': [2, '\u0e3f', 'THB'],
-  'TRY': [2, 'TL', 'YTL'],
+  'TRY': [2, 'TL', 'TRY'],
   'TWD': [2, 'NT$', 'NT$'],
   'TZS': [0, 'TSh', 'TSh'],
   'UAH': [2, '\u20B4', 'UAH'],
