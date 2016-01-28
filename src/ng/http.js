@@ -375,8 +375,8 @@ function $HttpProvider() {
    **/
   var interceptorFactories = this.interceptors = [];
 
-  this.$get = ['$httpBackend', '$$cookieReader', '$cacheFactory', '$rootScope', '$q', '$injector', '$browser',
-      function($httpBackend, $$cookieReader, $cacheFactory, $rootScope, $q, $injector, $browser) {
+  this.$get = ['$browser', '$httpBackend', '$$cookieReader', '$cacheFactory', '$rootScope', '$q', '$injector',
+      function($browser, $httpBackend, $$cookieReader, $cacheFactory, $rootScope, $q, $injector) {
 
     var defaultCache = $cacheFactory('$http');
 
@@ -976,7 +976,6 @@ function $HttpProvider() {
       }
 
       promise.finally(completeOutstandingRequest);
-
 
       if (useLegacyPromise) {
         promise.success = function(fn) {
