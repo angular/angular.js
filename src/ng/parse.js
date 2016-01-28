@@ -1819,6 +1819,7 @@ function $ParseProvider() {
       for (var i = 0; fn.inputs && i < fn.inputs.length; ++i) {
         fn.inputs[i] = expensiveChecksInterceptor(fn.inputs[i]);
       }
+      expensiveCheckFn.inputs = fn.inputs;
 
       return expensiveCheckFn;
 
