@@ -956,7 +956,7 @@ function $HttpProvider() {
       };
 
       var chain = [serverRequest, undefined];
-      var promise = $q.when(config);
+      var promise = initiateOutstandingRequest(config);
 
       // apply interceptors
       forEach(reversedInterceptors, function(interceptor) {
@@ -968,8 +968,6 @@ function $HttpProvider() {
         }
       });
 
-      $browser.$$incOutstandingRequestCount();
-
       while (chain.length) {
         var thenFn = chain.shift();
         var rejectFn = chain.shift();
@@ -977,9 +975,8 @@ function $HttpProvider() {
         promise = promise.then(thenFn, rejectFn);
       }
 
-      promise.finally(function() {
-        $browser.$$completeOutstandingRequest(noop);
-      });
+      promise.finally(completeOutstandingRequest);
+
 
       if (useLegacyPromise) {
         promise.success = function(fn) {
@@ -1005,6 +1002,15 @@ function $HttpProvider() {
       }
 
       return promise;
+
+      function initiateOutstandingRequest(config) {
+        $browser.$$incOutstandingRequestCount();
+        return $q.when(config);
+      }
+
+      function completeOutstandingRequest() {
+        $browser.$$completeOutstandingRequest(noop);
+      }
 
       function transformResponse(response) {
         // make a copy since the response must be cacheable

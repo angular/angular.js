@@ -1871,15 +1871,27 @@ describe('$http', function() {
       var incOutstandingRequestCountSpy, completeOutstandingRequestSpy;
 
       beforeEach(inject(function($browser) {
-        incOutstandingRequestCountSpy = spyOn($browser, '$$incOutstandingRequestCount').andCallThrough();
-        completeOutstandingRequestSpy = spyOn($browser, '$$completeOutstandingRequest').andCallThrough();
+        incOutstandingRequestCountSpy
+          = spyOn($browser, '$$incOutstandingRequestCount').andCallThrough();
+        completeOutstandingRequestSpy
+          = spyOn($browser, '$$completeOutstandingRequest').andCallThrough();
       }));
 
-      it('should update $browser outstandingRequestCount', function() {
+      it('should update $browser outstandingRequestCount on success', function() {
         $httpBackend.when('GET').respond(200);
 
         expect(incOutstandingRequestCountSpy).not.toHaveBeenCalled();
-        $http({method: 'GET', url: '/some'});
+        $http.get('');
+        expect(incOutstandingRequestCountSpy).toHaveBeenCalledOnce();
+        $httpBackend.flush();
+        expect(completeOutstandingRequestSpy).toHaveBeenCalledOnce();
+      });
+
+      it('should update $browser outstandingRequestCount on error', function() {
+        $httpBackend.when('GET').respond(500);
+
+        expect(incOutstandingRequestCountSpy).not.toHaveBeenCalled();
+        $http.get('');
         expect(incOutstandingRequestCountSpy).toHaveBeenCalledOnce();
         $httpBackend.flush();
         expect(completeOutstandingRequestSpy).toHaveBeenCalledOnce();
