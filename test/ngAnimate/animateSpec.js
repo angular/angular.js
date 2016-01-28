@@ -1494,7 +1494,7 @@ describe("animations", function() {
     }));
 
     it('should respect the value if the directive is on an element with ngIf',
-      inject(function($animate, $rootScope, $rootElement, $compile) {
+      inject(function($rootScope, $rootElement, $compile) {
 
       parent.attr('ng-animate-children', 'true');
       parent.attr('ng-if', 'true');
