@@ -1869,6 +1869,177 @@ describe('$http', function() {
   });
 
 
+  describe('$browser\'s outstandingRequestCount', function() {
+    var $http;
+    var $httpBackend;
+    var $rootScope;
+    var incOutstandingRequestCountSpy;
+    var completeOutstandingRequestSpy;
+
+
+    describe('without interceptors', function() {
+      beforeEach(setupServicesAndSpies);
+
+
+      it('should immediately call `$browser.$$incOutstandingRequestCount()`', function() {
+        expect(incOutstandingRequestCountSpy).not.toHaveBeenCalled();
+        $http.get('');
+        expect(incOutstandingRequestCountSpy).toHaveBeenCalledOnce();
+      });
+
+
+      it('should call `$browser.$$completeOutstandingRequest()` upon response', function() {
+        $httpBackend.when('GET').respond(200);
+
+        expect(completeOutstandingRequestSpy).not.toHaveBeenCalled();
+        $http.get('');
+        expect(completeOutstandingRequestSpy).not.toHaveBeenCalled();
+        $httpBackend.flush();
+        expect(completeOutstandingRequestSpy).toHaveBeenCalledOnce();
+      });
+
+
+      it('should call `$browser.$$completeOutstandingRequest()` upon error', function() {
+        $httpBackend.when('GET').respond(500);
+
+        expect(completeOutstandingRequestSpy).not.toHaveBeenCalled();
+        $http.get('');
+        expect(completeOutstandingRequestSpy).not.toHaveBeenCalled();
+        $httpBackend.flush();
+        expect(completeOutstandingRequestSpy).toHaveBeenCalledOnce();
+      });
+
+
+      it('should properly increment/decrement `outstandingRequestCount` '
+          + 'upon error in transformRequest',
+        inject(function($exceptionHandler) {
+          expect(incOutstandingRequestCountSpy).not.toHaveBeenCalled();
+          expect(completeOutstandingRequestSpy).not.toHaveBeenCalled();
+
+          $http.get('', {transformRequest: function() { throw new Error(); }});
+
+          expect(incOutstandingRequestCountSpy).toHaveBeenCalledOnce();
+          expect(completeOutstandingRequestSpy).not.toHaveBeenCalled();
+
+          $rootScope.$digest();
+
+          expect(incOutstandingRequestCountSpy).toHaveBeenCalledOnce();
+          expect(completeOutstandingRequestSpy).toHaveBeenCalledOnce();
+
+          $exceptionHandler.errors = [];
+        })
+      );
+
+
+      it('should properly increment/decrement `outstandingRequestCount` '
+          + 'upon error in transformResponse',
+        inject(function($exceptionHandler) {
+          expect(incOutstandingRequestCountSpy).not.toHaveBeenCalled();
+          expect(completeOutstandingRequestSpy).not.toHaveBeenCalled();
+
+          $httpBackend.when('GET').respond(200);
+          $http.get('', {transformResponse: function() { throw new Error(); }});
+
+          expect(incOutstandingRequestCountSpy).toHaveBeenCalledOnce();
+          expect(completeOutstandingRequestSpy).not.toHaveBeenCalled();
+
+          $httpBackend.flush();
+
+          expect(incOutstandingRequestCountSpy).toHaveBeenCalledOnce();
+          expect(completeOutstandingRequestSpy).toHaveBeenCalledOnce();
+
+          $exceptionHandler.errors = [];
+        })
+      );
+    });
+
+
+    describe('with interceptors', function() {
+      var requestInterceptorCalled;
+      var responseInterceptorCalled;
+
+
+      beforeEach(module(function($httpProvider) {
+        requestInterceptorCalled = false;
+        responseInterceptorCalled = false;
+
+        $httpProvider.interceptors.push(function($q) {
+          return {
+            request: function(config) {
+              requestInterceptorCalled = true;
+              return config._requestError ? $q.reject() : config;
+            },
+            response: function() {
+              responseInterceptorCalled = true;
+              return $q.reject();
+            }
+          };
+        });
+      }));
+      beforeEach(setupServicesAndSpies);
+
+
+      it('should properly increment/decrement `outstandingRequestCount` '
+          + 'upon error in request interceptor',
+        function() {
+          expect(incOutstandingRequestCountSpy).not.toHaveBeenCalled();
+          expect(completeOutstandingRequestSpy).not.toHaveBeenCalled();
+          expect(requestInterceptorCalled).toBe(false);
+
+          $http.get('', {_requestError: true});
+
+          expect(incOutstandingRequestCountSpy).toHaveBeenCalledOnce();
+          expect(completeOutstandingRequestSpy).not.toHaveBeenCalled();
+          expect(requestInterceptorCalled).toBe(false);
+
+          $rootScope.$digest();
+
+          expect(incOutstandingRequestCountSpy).toHaveBeenCalledOnce();
+          expect(completeOutstandingRequestSpy).toHaveBeenCalledOnce();
+          expect(requestInterceptorCalled).toBe(true);
+        }
+      );
+
+
+      it('should properly increment/decrement `outstandingRequestCount` '
+          + 'upon error in response interceptor',
+        function() {
+          expect(incOutstandingRequestCountSpy).not.toHaveBeenCalled();
+          expect(completeOutstandingRequestSpy).not.toHaveBeenCalled();
+          expect(responseInterceptorCalled).toBe(false);
+
+          $httpBackend.when('GET').respond(200);
+          $http.get('', {_requestError: false});
+
+          expect(incOutstandingRequestCountSpy).toHaveBeenCalledOnce();
+          expect(completeOutstandingRequestSpy).not.toHaveBeenCalled();
+          expect(responseInterceptorCalled).toBe(false);
+
+          $httpBackend.flush();
+
+          expect(incOutstandingRequestCountSpy).toHaveBeenCalledOnce();
+          expect(completeOutstandingRequestSpy).toHaveBeenCalledOnce();
+          expect(responseInterceptorCalled).toBe(true);
+        }
+      );
+    });
+
+
+    function setupServicesAndSpies() {
+      inject(function($browser, _$http_, _$httpBackend_, _$rootScope_) {
+        $http = _$http_;
+        $httpBackend = _$httpBackend_;
+        $rootScope = _$rootScope_;
+
+        incOutstandingRequestCountSpy
+            = spyOn($browser, '$$incOutstandingRequestCount').andCallThrough();
+        completeOutstandingRequestSpy
+            = spyOn($browser, '$$completeOutstandingRequest').andCallThrough();
+      });
+    }
+  });
+
+
   it('should pass timeout, withCredentials and responseType', function() {
     var $httpBackend = jasmine.createSpy('$httpBackend');
 

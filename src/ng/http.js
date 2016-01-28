@@ -375,8 +375,8 @@ function $HttpProvider() {
    **/
   var interceptorFactories = this.interceptors = [];
 
-  this.$get = ['$httpBackend', '$$cookieReader', '$cacheFactory', '$rootScope', '$q', '$injector',
-      function($httpBackend, $$cookieReader, $cacheFactory, $rootScope, $q, $injector) {
+  this.$get = ['$browser', '$httpBackend', '$$cookieReader', '$cacheFactory', '$rootScope', '$q', '$injector',
+      function($browser, $httpBackend, $$cookieReader, $cacheFactory, $rootScope, $q, $injector) {
 
     var defaultCache = $cacheFactory('$http');
 
@@ -955,25 +955,23 @@ function $HttpProvider() {
         return sendReq(config, reqData).then(transformResponse, transformResponse);
       };
 
-      var chain = [serverRequest, undefined];
+      var requestInterceptors = [];
+      var responseInterceptors = [];
       var promise = $q.when(config);
 
       // apply interceptors
       forEach(reversedInterceptors, function(interceptor) {
         if (interceptor.request || interceptor.requestError) {
-          chain.unshift(interceptor.request, interceptor.requestError);
+          requestInterceptors.unshift(interceptor.request, interceptor.requestError);
         }
         if (interceptor.response || interceptor.responseError) {
-          chain.push(interceptor.response, interceptor.responseError);
+          responseInterceptors.push(interceptor.response, interceptor.responseError);
         }
       });
 
-      while (chain.length) {
-        var thenFn = chain.shift();
-        var rejectFn = chain.shift();
-
-        promise = promise.then(thenFn, rejectFn);
-      }
+      promise = chainInterceptors(promise, requestInterceptors).then(serverRequest);
+      promise.finally(completeOutstandingRequest);
+      promise = chainInterceptors(promise, responseInterceptors);
 
       if (useLegacyPromise) {
         promise.success = function(fn) {
@@ -998,6 +996,8 @@ function $HttpProvider() {
         promise.error = $httpMinErrLegacyFn('error');
       }
 
+      $browser.$$incOutstandingRequestCount();
+
       return promise;
 
       function transformResponse(response) {
@@ -1008,6 +1008,21 @@ function $HttpProvider() {
         return (isSuccess(response.status))
           ? resp
           : $q.reject(resp);
+      }
+
+      function chainInterceptors(promise, interceptors) {
+        while (interceptors.length) {
+          var thenFn = interceptors.shift();
+          var rejectFn = interceptors.shift();
+
+          promise = promise.then(thenFn, rejectFn);
+        }
+
+        return promise;
+      }
+
+      function completeOutstandingRequest() {
+        $browser.$$completeOutstandingRequest(noop);
       }
 
       function executeHeaderFns(headers, config) {
