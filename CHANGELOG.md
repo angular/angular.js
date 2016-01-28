@@ -1,3 +1,104 @@
+<a name="1.5.0-rc.2"></a>
+# 1.5.0-rc.2 controller-requisition (2016-01-28)
+
+## Deprecation Warning
+
+- The `ngTouch` module's `ngClick` directive has been deprecated and disabled by default. See the breaking
+changes section for more information
+
+## Bug Fixes
+
+- **$compile:**
+  - properly denormalize templates when only one of the start/end symbols is different
+  ([8348365d](https://github.com/angular/angular.js/commit/8348365df9b9e2d4c9c8d5211e3424d4b9a29767),
+   [#13848](https://github.com/angular/angular.js/issues/13848))
+  - handle boolean attributes in `@` bindings
+  ([db5e0ffe](https://github.com/angular/angular.js/commit/db5e0ffe124ac588f01ef0fe79efebfa72f5eec7),
+   [#13767](https://github.com/angular/angular.js/issues/13767), [#13769](https://github.com/angular/angular.js/issues/13769))
+- **$parse:** Preserve expensive checks when runnning $eval inside an expression
+  ([acfda102](https://github.com/angular/angular.js/commit/acfda1022d23ecaea34bbc8931588a0715b3ab03))
+- **dateFilter:** follow the CLDR on pattern escape sequences
+  ([1ab4e444](https://github.com/angular/angular.js/commit/1ab4e44443716c33cd857dcb1098d20580dbb0cc),
+   [#12839](https://github.com/angular/angular.js/issues/12839))
+- **ngAnimate:**
+  - cancel fallback timeout when animation ends normally
+  ([e9c406b2](https://github.com/angular/angular.js/commit/e9c406b2464614c9784f7324d8910180c81c38a7),
+   [#13787](https://github.com/angular/angular.js/issues/13787))
+  - correctly handle `$animate.pin()` host elements
+  ([7700e2df](https://github.com/angular/angular.js/commit/7700e2df096cf50dfdf84841cab7e2d24d2eb96d),
+   [#13783](https://github.com/angular/angular.js/issues/13783))
+  - properly cancel-out previously running class-based animations
+  ([20b8ece4](https://github.com/angular/angular.js/commit/20b8ece444408a64ac69f7b5d45ddb3af0c418a0),
+   [#10156](https://github.com/angular/angular.js/issues/10156), [#13822](https://github.com/angular/angular.js/issues/13822))
+  - ensure that animate promises resolve when the document is hidden
+  ([52ea4110](https://github.com/angular/angular.js/commit/52ea4110d33b7de2845a698913682a03365aa074))
+  - do not trigger animations if the document is hidden
+  ([a3a7afd3](https://github.com/angular/angular.js/commit/a3a7afd3aa70d981b0210088df53fa2cf68d3a3d),
+   [#12842](https://github.com/angular/angular.js/issues/12842), [#13776](https://github.com/angular/angular.js/issues/13776))
+- **ngSanitize:** Blacklist the attribute `usemap`
+  ([234053fc](https://github.com/angular/angular.js/commit/234053fc9ad90e0d05be7e8359c6af66be94c094))
+- **ngTouch:** deprecate ngClick and disable it by default
+  ([0dfc1dfe](https://github.com/angular/angular.js/commit/0dfc1dfebf26af7f951f301c4e3848ac46f05d7f),
+   [#4030](https://github.com/angular/angular.js/issues/4030), [#5307](https://github.com/angular/angular.js/issues/5307), [#6001](https://github.com/angular/angular.js/issues/6001), [#6432](https://github.com/angular/angular.js/issues/6432), [#7231](https://github.com/angular/angular.js/issues/7231), [#11358](https://github.com/angular/angular.js/issues/11358), [#12082](https://github.com/angular/angular.js/issues/12082), [#12153](https://github.com/angular/angular.js/issues/12153), [#12392](https://github.com/angular/angular.js/issues/12392), [#12545](https://github.com/angular/angular.js/issues/12545), [#12867](https://github.com/angular/angular.js/issues/12867), [#13213](https://github.com/angular/angular.js/issues/13213), [#13558](https://github.com/angular/angular.js/issues/13558), [#3296](https://github.com/angular/angular.js/issues/3296), [#3347](https://github.com/angular/angular.js/issues/3347), [#3447](https://github.com/angular/angular.js/issues/3447), [#3999](https://github.com/angular/angular.js/issues/3999), [#4428](https://github.com/angular/angular.js/issues/4428), [#6251](https://github.com/angular/angular.js/issues/6251), [#6330](https://github.com/angular/angular.js/issues/6330), [#7134](https://github.com/angular/angular.js/issues/7134), [#7935](https://github.com/angular/angular.js/issues/7935), [#9724](https://github.com/angular/angular.js/issues/9724), [#9744](https://github.com/angular/angular.js/issues/9744), [#9872](https://github.com/angular/angular.js/issues/9872), [#10211](https://github.com/angular/angular.js/issues/10211), [#10366](https://github.com/angular/angular.js/issues/10366), [#10918](https://github.com/angular/angular.js/issues/10918), [#11197](https://github.com/angular/angular.js/issues/11197), [#11261](https://github.com/angular/angular.js/issues/11261), [#11342](https://github.com/angular/angular.js/issues/11342), [#11577](https://github.com/angular/angular.js/issues/11577), [#12150](https://github.com/angular/angular.js/issues/12150), [#12317](https://github.com/angular/angular.js/issues/12317), [#12455](https://github.com/angular/angular.js/issues/12455), [#12734](https://github.com/angular/angular.js/issues/12734), [#13122](https://github.com/angular/angular.js/issues/13122), [#13272](https://github.com/angular/angular.js/issues/13272), [#13447](https://github.com/angular/angular.js/issues/13447))
+
+
+## Features
+
+- **$compile:**
+  - allow required controllers to be bound to the directive controller
+  ([56c3666f](https://github.com/angular/angular.js/commit/56c3666fe50955aa7d1c1b6159626f1c1cb34637),
+   [#6040](https://github.com/angular/angular.js/issues/6040), [#5893](https://github.com/angular/angular.js/issues/5893), [#13763](https://github.com/angular/angular.js/issues/13763))
+  - allow directive definition property `require` to be an object
+  ([cd21216f](https://github.com/angular/angular.js/commit/cd21216ff7eb6d81fc9aa1d1ef994c3d8e046394),
+   [#8401](https://github.com/angular/angular.js/issues/8401), [#13763](https://github.com/angular/angular.js/issues/13763))
+  - call `$ngOnInit` on directive controllers after all sibling controllers have been constructed
+  ([3ffdf380](https://github.com/angular/angular.js/commit/3ffdf380c522cbf15a4ce5a8b08d21d40d5f8859),
+   [#13763](https://github.com/angular/angular.js/issues/13763))
+- **$locale:** include original locale ID in `$locale`
+  ([63492a02](https://github.com/angular/angular.js/commit/63492a02614a33a50cc28f9fdd73bae731352dd5),
+   [#13390](https://github.com/angular/angular.js/issues/13390))
+- **$resource:** add support for timeout in cancellable actions
+  ([d641901b](https://github.com/angular/angular.js/commit/d641901be6887cdd93dc678eb514366eb759d21e),
+   [#13824](https://github.com/angular/angular.js/issues/13824))
+
+
+## Performance Improvements
+
+- **$compile:** avoid needless overhead when wrapping text nodes
+  ([92e4801d](https://github.com/angular/angular.js/commit/92e4801d88fbe9b7ef719fd3d0175d85420e1cc4))
+- **ngAnimate:** speed up `areAnimationsAllowed` check
+  ([683bd92f](https://github.com/angular/angular.js/commit/683bd92f56990bf1bfeabf619d997716909ebf6b))
+
+
+## Breaking Changes
+
+- **ngTouch:** due to [0dfc1dfe](https://github.com/angular/angular.js/commit/0dfc1dfebf26af7f951f301c4e3848ac46f05d7f),
+
+
+The `ngClick` override directive from the `ngTouch` module is **deprecated and disabled by default**.
+This means that on touch-based devices, users might now experience a 300ms delay before a click event is fired.
+
+If you rely on this directive, you can still enable it with the `$touchProvider.ngClickOverrideEnabled()`method:
+
+```js
+angular.module('myApp').config(function($touchProvider) {
+  $touchProvider.ngClickOverrideEnabled(true);
+});
+```
+
+Going forward, we recommend using [FastClick](https://github.com/ftlabs/fastclick) or perhaps one of the [Angular
+3rd party touch-related modules](http://ngmodules.org/tags/touch) that provide similar functionality.
+
+Also note that modern browsers already remove the 300ms delay under some circumstances:
+- Chrome and Firefox for Android remove the 300ms delay when the well-known `<meta name="viewport" content="width=device-width">` is set
+- Internet Explorer removes the delay when  `touch-action` css property is set to `none` or `manipulation`
+- Since iOs 8, Safari removes the delay on so-called "slow taps"
+
+See this [article by Telerik](http://developer.telerik.com/featured/300-ms-click-delay-ios-8/) for more info on the topic.
+
+**Note that this change does not affect the `ngSwipe` directive.**
+
+
 <a name="1.4.9"></a>
 # 1.4.9 implicit-superannuation (2016-01-21)
 
