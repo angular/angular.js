@@ -4219,7 +4219,7 @@ goog.i18n.DateTimeSymbols_tr = {
   SHORTQUARTERS: ['Ç1', 'Ç2', 'Ç3', 'Ç4'],
   QUARTERS: ['1. çeyrek', '2. çeyrek', '3. çeyrek', '4. çeyrek'],
   AMPMS: ['ÖÖ', 'ÖS'],
-  DATEFORMATS: ['d MMMM y EEEE', 'd MMMM y', 'd MMM y', 'd MM y'],
+  DATEFORMATS: ['d MMMM y EEEE', 'd MMMM y', 'd MMM y', 'd.MM.y'],
   TIMEFORMATS: ['HH:mm:ss zzzz', 'HH:mm:ss z', 'HH:mm:ss', 'HH:mm'],
   DATETIMEFORMATS: ['{1} {0}', '{1} {0}', '{1} {0}', '{1} {0}'],
   FIRSTDAYOFWEEK: 0,
