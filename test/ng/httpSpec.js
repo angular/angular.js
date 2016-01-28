@@ -1867,21 +1867,22 @@ describe('$http', function() {
       });
     });
 
-    describe('$browser outstandingRequests', function() {
-      var $browser;
+    describe('$browser\'s outstandingRequestCount', function() {
+      var incOutstandingRequestCountSpy, completeOutstandingRequestSpy;
 
-      beforeEach(inject(['$browser', function(browser) {
-        $browser = browser;
-      }]));
+      beforeEach(inject(function($browser) {
+        incOutstandingRequestCountSpy = spyOn($browser, '$$incOutstandingRequestCount').andCallThrough();
+        completeOutstandingRequestSpy = spyOn($browser, '$$completeOutstandingRequest').andCallThrough();
+      }));
 
-      it('should update $brower outstandingRequestCount', function() {
+      it('should update $browser outstandingRequestCount', function() {
         $httpBackend.when('GET').respond(200);
 
-        expect($browser.$$outstandingRequestCount).toBe(0);
+        expect(incOutstandingRequestCountSpy).not.toHaveBeenCalled();
         $http({method: 'GET', url: '/some'});
-        expect($browser.$$outstandingRequestCount).toBe(1);
+        expect(incOutstandingRequestCountSpy).toHaveBeenCalledOnce();
         $httpBackend.flush();
-        expect($browser.$$outstandingRequestCount).toBe(0);
+        expect(completeOutstandingRequestSpy).toHaveBeenCalledOnce();
       });
     });
   });
