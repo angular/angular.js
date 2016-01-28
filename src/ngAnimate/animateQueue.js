@@ -585,7 +585,7 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
       var animateChildren;
       var elementDisabled = disabledElementsLookup.get(getDomNode(element));
 
-      var parentHost = element.data(NG_ANIMATE_PIN_DATA);
+      var parentHost = jqLite.data(element[0], NG_ANIMATE_PIN_DATA);
       if (parentHost) {
         parentElement = parentHost;
       }
@@ -623,7 +623,7 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
         }
 
         if (isUndefined(animateChildren) || animateChildren === true) {
-          var value = parentElement.data(NG_ANIMATE_CHILDREN_DATA);
+          var value = jqLite.data(parentElement[0], NG_ANIMATE_CHILDREN_DATA);
           if (isDefined(value)) {
             animateChildren = value;
           }
@@ -646,7 +646,7 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
 
         if (!rootElementDetected) {
           // If no rootElement is detected, check if the parentElement is pinned to another element
-          parentHost = parentElement.data(NG_ANIMATE_PIN_DATA);
+          parentHost = jqLite.data(parentElement[0], NG_ANIMATE_PIN_DATA);
           if (parentHost) {
             // The pin target element becomes the next parent element
             parentElement = parentHost;
