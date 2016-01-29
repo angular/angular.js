@@ -269,7 +269,7 @@ it upwards to the heroList component, which updates it.
   <hr>
   <div>
     Name: {{$ctrl.hero.name}}<br>
-    Location: <editable-field field-value="{{$ctrl.hero.location}}" field-type="text" on-update="$ctrl.update('name', value)"></editable-field><br>
+    Location: <editable-field field-value="{{$ctrl.hero.location}}" field-type="text" on-update="$ctrl.update('location', value)"></editable-field><br>
     <button ng-click="$ctrl.onDelete({hero: $ctrl.hero})">Delete</button>
   </div>
 </file>
