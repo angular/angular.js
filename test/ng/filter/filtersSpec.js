@@ -1,7 +1,6 @@
 'use strict';
 
 describe('filters', function() {
-
   var filter;
 
   beforeEach(inject(function($filter) {
@@ -165,13 +164,12 @@ describe('filters', function() {
     }));
   });
 
-
   describe('number', function() {
     var number;
 
-    beforeEach(inject(function($rootScope) {
+    beforeEach(function() {
       number = filter('number');
-    }));
+    });
 
 
     it('should do basic filter', function() {
@@ -270,17 +268,16 @@ describe('filters', function() {
   });
 
   describe('date', function() {
-
-    var morning  = new angular.mock.TzDate(+5, '2010-09-03T12:05:08.001Z'); //7am
-    var noon =     new angular.mock.TzDate(+5, '2010-09-03T17:05:08.012Z'); //12pm
-    var midnight = new angular.mock.TzDate(+5, '2010-09-03T05:05:08.123Z'); //12am
-    var earlyDate = new angular.mock.TzDate(+5, '0001-09-03T05:05:08.000Z');
-    var secondWeek = new angular.mock.TzDate(+5, '2013-01-11T12:00:00.000Z'); //Friday Jan 11, 2012
+    var morning    = new angular.mock.TzDate(+5, '2010-09-03T12:05:08.001Z'); //7am
+    var noon       = new angular.mock.TzDate(+5, '2010-09-03T17:05:08.012Z'); //12pm
+    var midnight   = new angular.mock.TzDate(+5, '2010-09-03T05:05:08.123Z'); //12am
+    var earlyDate  = new angular.mock.TzDate(+5, '0001-09-03T05:05:08.000Z');
+    var secondWeek = new angular.mock.TzDate(+5, '2013-01-11T12:00:00.000Z'); //Friday Jan 11, 2013
     var date;
 
-    beforeEach(inject(function($filter) {
-      date = $filter('date');
-    }));
+    beforeEach(function() {
+      date = filter('date');
+    });
 
     it('should ignore falsy inputs', function() {
       expect(date(null)).toBeNull();
@@ -456,7 +453,6 @@ describe('filters', function() {
       expect(date(morning, 'yy/xxx')).toEqual('10/xxx');
     });
 
-
     it('should support various iso8061 date strings with timezone as input', function() {
       var format = 'yyyy-MM-dd ss';
 
@@ -478,7 +474,6 @@ describe('filters', function() {
       //no minutes
       expect(date('2003-09-10T13Z', format)).toEqual('2003-09-' + localDay + ' 00');
     });
-
 
     it('should parse iso8061 date strings without timezone as local time', function() {
       var format = 'yyyy-MM-dd HH-mm-ss';
@@ -514,7 +509,13 @@ describe('filters', function() {
     });
 
     it('should support conversion to any timezone', function() {
-      expect(date(new Date(Date.UTC(2003, 8, 10, 3, 2, 4)), 'yyyy-MM-dd HH-mm-ssZ', 'GMT+0500')).toEqual('2003-09-10 08-02-04+0500');
+      var dateObj = new Date(Date.UTC(2003, 8, 10, 3, 2, 4));
+      var format = 'yyyy-MM-dd HH-mm-ssZ';
+
+      expect(date(dateObj, format, '+0500')).toEqual('2003-09-10 08-02-04+0500');
+      expect(date(dateObj, format, '+05:00')).toEqual('2003-09-10 08-02-04+0500');
+      expect(date(dateObj, format, 'GMT+0500')).toEqual('2003-09-10 08-02-04+0500');
+      expect(date(dateObj, format, 'GMT+05:00')).toEqual('2003-09-10 08-02-04+0500');
     });
 
     it('should fallback to default timezone in case an unknown timezone was passed', function() {
