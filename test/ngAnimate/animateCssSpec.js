@@ -12,6 +12,13 @@ describe("ngAnimate $animateCss", function() {
         : expect(className).not.toMatch(regex);
   }
 
+  function getPossiblyPrefixedStyleValue(element, styleProp) {
+    var value = element.css(prefix + styleProp);
+    if (isUndefined(value)) value = element.css(styleProp);
+
+    return value;
+  }
+
   function keyframeProgress(element, duration, delay) {
     browserTrigger(element, 'animationend',
       { timeStamp: Date.now() + ((delay || 1) * 1000), elapsedTime: duration });
@@ -28,9 +35,10 @@ describe("ngAnimate $animateCss", function() {
 
   var ss, prefix, triggerAnimationStartFrame;
   beforeEach(module(function() {
-    return function($document, $window, $sniffer, $$rAF, $animate) {
+    return function($document, $sniffer, $$rAF, $animate) {
       prefix = '-' + $sniffer.vendorPrefix.toLowerCase() + '-';
-      ss = createMockStyleSheet($document, $window);
+      ss = createMockStyleSheet($document, prefix);
+
       $animate.enabled(true);
       triggerAnimationStartFrame = function() {
         $$rAF.flush();
@@ -325,7 +333,7 @@ describe("ngAnimate $animateCss", function() {
         triggerAnimationStartFrame();
 
         runner.pause();
-        expect(element.css(prefix + 'animation-play-state')).toEqual('paused');
+        expect(getPossiblyPrefixedStyleValue(element, 'animation-play-state')).toEqual('paused');
         runner.resume();
         expect(element.attr('style')).toBeFalsy();
       }));
@@ -346,7 +354,7 @@ describe("ngAnimate $animateCss", function() {
         triggerAnimationStartFrame();
 
         runner.pause();
-        expect(element.css(prefix + 'animation-play-state')).toEqual('paused');
+        expect(getPossiblyPrefixedStyleValue(element, 'animation-play-state')).toEqual('paused');
         runner.end();
         expect(element.attr('style')).toBeFalsy();
       }));
@@ -784,8 +792,8 @@ describe("ngAnimate $animateCss", function() {
 
           jqLite($document[0].body).append($rootElement);
 
-          ss.addRule('.ng-enter-stagger', prefix + 'animation-delay:0.2s');
-          ss.addRule('.ng-enter', prefix + 'animation:my_animation 2s;');
+          ss.addPossiblyPrefixedRule('.ng-enter-stagger', 'animation-delay:0.2s');
+          ss.addPossiblyPrefixedRule('.ng-enter', 'animation:my_animation 2s;');
 
           var i, element, elements = [];
           for (i = 0; i < 5; i++) {
@@ -803,7 +811,7 @@ describe("ngAnimate $animateCss", function() {
             if (i === 0) { // the first element is always run right away
               expect(element.attr('style')).toBeFalsy();
             } else {
-              expect(element.css(prefix + 'animation-play-state')).toBe('paused');
+              expect(getPossiblyPrefixedStyleValue(element, 'animation-play-state')).toBe('paused');
             }
           }
         }));
@@ -879,7 +887,7 @@ describe("ngAnimate $animateCss", function() {
           jqLite($document[0].body).append($rootElement);
 
           ss.addRule('.ng-enter-stagger', 'transition-delay:0.2s');
-          ss.addRule('.transition-animation', prefix + 'animation:2s 5s my_animation;');
+          ss.addPossiblyPrefixedRule('.transition-animation', 'animation: 2s 5s my_animation;');
 
           for (var i = 0; i < 5; i++) {
             var elm = jqLite('<div class="transition-animation"></div>');
@@ -898,11 +906,11 @@ describe("ngAnimate $animateCss", function() {
 
           jqLite($document[0].body).append($rootElement);
 
-          ss.addRule('.ng-enter-stagger', 'transition-delay:0.5s;' +
-                                 prefix + 'animation-delay:1s');
+          ss.addPossiblyPrefixedRule('.ng-enter-stagger', 'transition-delay: 0.5s; ' +
+                                                          'animation-delay: 1s');
 
-          ss.addRule('.ng-enter', 'transition:10s linear all;' +
-                         prefix + 'animation:my_animation 20s');
+          ss.addPossiblyPrefixedRule('.ng-enter', 'transition: 10s linear all; ' +
+                                                  'animation: 20s my_animation');
 
           var i, elm, elements = [];
           for (i = 0; i < 5; i++) {
@@ -1258,14 +1266,14 @@ describe("ngAnimate $animateCss", function() {
           // At this point, the animation should still be running (closing timeout is 7500ms ... duration * 1.5 + delay => 7.5)
           $timeout.flush(7000);
 
-          expect(element.css(prefix + 'transition-delay')).toBe('3s');
-          expect(element.css(prefix + 'transition-duration')).toBe('3s');
+          expect(getPossiblyPrefixedStyleValue(element, 'transition-delay')).toBe('3s');
+          expect(getPossiblyPrefixedStyleValue(element, 'transition-duration')).toBe('3s');
 
           // Let's flush the remaining amount of time for the timeout timer to kick in
           $timeout.flush(500);
 
-          expect(element.css(prefix + 'transition-duration')).toBeOneOf('', '0s');
-          expect(element.css(prefix + 'transition-delay')).toBeOneOf('', '0s');
+          expect(getPossiblyPrefixedStyleValue(element, 'transition-duration')).toBeOneOf('', '0s');
+          expect(getPossiblyPrefixedStyleValue(element, 'transition-delay')).toBeOneOf('', '0s');
         }));
 
         it("should ignore a boolean options.delay value for the closing timeout",
@@ -1291,14 +1299,37 @@ describe("ngAnimate $animateCss", function() {
           // At this point, the animation should still be running (closing timeout is 4500ms ... duration * 1.5 => 4.5)
           $timeout.flush(4000);
 
-          expect(element.css(prefix + 'transition-delay')).toBeOneOf('initial', '0s');
-          expect(element.css(prefix + 'transition-duration')).toBe('3s');
+          expect(getPossiblyPrefixedStyleValue(element, 'transition-delay')).toBeOneOf('initial', '0s');
+          expect(getPossiblyPrefixedStyleValue(element, 'transition-duration')).toBe('3s');
 
           // Let's flush the remaining amount of time for the timeout timer to kick in
           $timeout.flush(500);
 
-          expect(element.css(prefix + 'transition-duration')).toBeOneOf('', '0s');
-          expect(element.css(prefix + 'transition-delay')).toBeOneOf('', '0s');
+          expect(getPossiblyPrefixedStyleValue(element, 'transition-duration')).toBeOneOf('', '0s');
+          expect(getPossiblyPrefixedStyleValue(element, 'transition-delay')).toBeOneOf('', '0s');
+        }));
+
+
+        it("should cancel the timeout when the animation is ended normally",
+          inject(function($animateCss, $document, $rootElement, $timeout) {
+
+          ss.addRule('.ng-enter', 'transition:10s linear all;');
+
+          var element = jqLite('<div></div>');
+          $rootElement.append(element);
+          jqLite($document[0].body).append($rootElement);
+
+          var animator = $animateCss(element, { event: 'enter', structural: true });
+          animator.start();
+          triggerAnimationStartFrame();
+
+          expect(element).toHaveClass('ng-enter');
+          expect(element).toHaveClass('ng-enter-active');
+
+          animator.end();
+
+          expect(element.data(ANIMATE_TIMER_KEY)).toBeUndefined();
+          expect(function() {$timeout.verifyNoPendingTasks();}).not.toThrow();
         }));
 
       });
@@ -1502,6 +1533,39 @@ describe("ngAnimate $animateCss", function() {
               expect(elementOffSpy.mostRecentCall.args[0]).toBe(event);
             });
         });
+
+        they("should not add or remove $prop event listeners when no animation styles are detected",
+          [TRANSITIONEND_EVENT, ANIMATIONEND_EVENT], function(event) {
+            inject(function($animateCss, $timeout) {
+
+              progress = event === TRANSITIONEND_EVENT ? transitionProgress : keyframeProgress;
+
+              // Make sure other event listeners are not affected
+              var otherEndSpy = jasmine.createSpy('otherEndSpy');
+              element.on(event, otherEndSpy);
+
+              expect(elementOnSpy).toHaveBeenCalledOnce();
+              elementOnSpy.reset();
+
+              var animator = $animateCss(element, {
+                event: 'enter',
+                structural: true
+              });
+
+              expect(animator.$$willAnimate).toBeFalsy();
+
+              // This will close the animation because no styles have been detected
+              var runner = animator.start();
+              triggerAnimationStartFrame();
+
+              expect(elementOnSpy).not.toHaveBeenCalled();
+              expect(elementOffSpy).not.toHaveBeenCalled();
+
+              progress(element, 10);
+              expect(otherEndSpy).toHaveBeenCalledOnce();
+            });
+        });
+
       });
     });
 
@@ -1995,6 +2059,28 @@ describe("ngAnimate $animateCss", function() {
         expect(copiedOptions).toEqual(initialOptions);
       }));
 
+      it("should not create a copy of the provided options if they have already been prepared earlier",
+        inject(function($animate, $animateCss) {
+
+        var options = {
+          from: { height: '50px' },
+          to: { width: '50px' },
+          addClass: 'one',
+          removeClass: 'two'
+        };
+
+        options.$$prepared = true;
+        var runner = $animateCss(element, options).start();
+        runner.end();
+
+        $animate.flush();
+
+        expect(options.addClass).toBeFalsy();
+        expect(options.removeClass).toBeFalsy();
+        expect(options.to).toBeFalsy();
+        expect(options.from).toBeFalsy();
+      }));
+
       describe("[$$skipPreparationClasses]", function() {
         it('should not apply and remove the preparation classes to the element when true',
           inject(function($animateCss) {
@@ -2071,7 +2157,7 @@ describe("ngAnimate $animateCss", function() {
           triggerAnimationStartFrame();
 
 
-          expect(element.css(prefix + 'animation-duration')).toEqual('5s');
+          expect(getPossiblyPrefixedStyleValue(element, 'animation-duration')).toEqual('5s');
         }));
 
         it("should remove all inline keyframe styling when an animation completes if a custom duration was applied",
@@ -2112,7 +2198,7 @@ describe("ngAnimate $animateCss", function() {
           triggerAnimationStartFrame();
 
 
-          expect(element.css(prefix + 'animation-delay')).toEqual('5s');
+          expect(getPossiblyPrefixedStyleValue(element, 'animation-delay')).toEqual('5s');
 
           browserTrigger(element, 'animationend',
             { timeStamp: Date.now() + 5000, elapsedTime: 1.5 });
@@ -2266,7 +2352,7 @@ describe("ngAnimate $animateCss", function() {
           triggerAnimationStartFrame();
 
 
-          expect(element.css(prefix + 'animation-delay')).toEqual('400s');
+          expect(getPossiblyPrefixedStyleValue(element, 'animation-delay')).toEqual('400s');
           expect(element.attr('style')).not.toContain('transition-delay');
         }));
 
@@ -2290,7 +2376,7 @@ describe("ngAnimate $animateCss", function() {
           triggerAnimationStartFrame();
 
 
-          expect(element.css(prefix + 'animation-delay')).toEqual('10s');
+          expect(getPossiblyPrefixedStyleValue(element, 'animation-delay')).toEqual('10s');
           expect(element.css('transition-delay')).toEqual('10s');
         }));
 
@@ -2330,7 +2416,7 @@ describe("ngAnimate $animateCss", function() {
             var assertionsRun = false;
             classSpy = function() {
               assertionsRun = true;
-              expect(element.css(prefix + 'animation-delay')).toEqual('2s');
+              expect(getPossiblyPrefixedStyleValue(element, 'animation-delay')).toEqual('2s');
               expect(element.css('transition-delay')).toEqual('2s');
               expect(element).not.toHaveClass('superman');
             };
@@ -2364,8 +2450,8 @@ describe("ngAnimate $animateCss", function() {
         it("should consider a negative value when delay:true is used with a keyframe animation",
           inject(function($animateCss, $rootElement) {
 
-          ss.addRule('.ng-enter', prefix + 'animation:2s keyframe_animation; ' +
-                                  prefix + 'animation-delay: -1s;');
+          ss.addPossiblyPrefixedRule('.ng-enter', 'animation: 2s keyframe_animation; ' +
+                                                  'animation-delay: -1s;');
 
           var options = {
             delay: true,
@@ -2378,7 +2464,7 @@ describe("ngAnimate $animateCss", function() {
           animator.start();
           triggerAnimationStartFrame();
 
-          expect(element.css(prefix + 'animation-delay')).toContain('-1s');
+          expect(getPossiblyPrefixedStyleValue(element, 'animation-delay')).toContain('-1s');
         }));
 
         they("should consider a negative value when a negative option delay is provided for a $prop animation", {
@@ -2388,17 +2474,17 @@ describe("ngAnimate $animateCss", function() {
               css: 'transition:2s linear all'
             };
           },
-          'keyframe': function(prefix) {
+          'keyframe': function() {
             return {
-              prop: prefix + 'animation-delay',
-              css: prefix + 'animation:2s keyframe_animation'
+              prop: 'animation-delay',
+              css: 'animation: 2s keyframe_animation'
             };
           }
         }, function(testDetailsFactory) {
           inject(function($animateCss, $rootElement) {
             var testDetails = testDetailsFactory(prefix);
 
-            ss.addRule('.ng-enter', testDetails.css);
+            ss.addPossiblyPrefixedRule('.ng-enter', testDetails.css);
             var options = {
               delay: -2,
               event: 'enter',
@@ -2410,7 +2496,7 @@ describe("ngAnimate $animateCss", function() {
             animator.start();
             triggerAnimationStartFrame();
 
-            expect(element.css(testDetails.prop)).toContain('-2s');
+            expect(getPossiblyPrefixedStyleValue(element, testDetails.prop)).toContain('-2s');
           });
         });
 
@@ -2421,18 +2507,18 @@ describe("ngAnimate $animateCss", function() {
               css: 'transition:5s linear all; transition-delay: -2s'
             };
           },
-          'animation': function(prefix) {
+          'animation': function() {
             return {
               event: 'animationend',
-              css: prefix + 'animation:5s keyframe_animation; ' + prefix + 'animation-delay: -2s;'
+              css: 'animation: 5s keyframe_animation; animation-delay: -2s;'
             };
           }
         }, function(testDetailsFactory) {
           inject(function($animateCss, $rootElement) {
-            var testDetails = testDetailsFactory(prefix);
+            var testDetails = testDetailsFactory();
             var event = testDetails.event;
 
-            ss.addRule('.ng-enter', testDetails.css);
+            ss.addPossiblyPrefixedRule('.ng-enter', testDetails.css);
             var options = { event: 'enter', structural: true };
 
             var animator = $animateCss(element, options);
@@ -2538,15 +2624,15 @@ describe("ngAnimate $animateCss", function() {
           $animateCss(element, options).start();
           triggerAnimationStartFrame();
 
-          expect(element.css(prefix + 'transition-delay')).not.toEqual('4s');
-          expect(element.css(prefix + 'transition-duration')).not.toEqual('6s');
+          expect(getPossiblyPrefixedStyleValue(element, 'transition-delay')).not.toEqual('4s');
+          expect(getPossiblyPrefixedStyleValue(element, 'transition-duration')).not.toEqual('6s');
 
           options.to = { color: 'brown' };
           $animateCss(element, options).start();
           triggerAnimationStartFrame();
 
-          expect(element.css(prefix + 'transition-delay')).toEqual('4s');
-          expect(element.css(prefix + 'transition-duration')).toEqual('6s');
+          expect(getPossiblyPrefixedStyleValue(element, 'transition-delay')).toEqual('4s');
+          expect(getPossiblyPrefixedStyleValue(element, 'transition-duration')).toEqual('6s');
         }));
       });
 
@@ -2619,9 +2705,9 @@ describe("ngAnimate $animateCss", function() {
           triggerAnimationStartFrame();
 
 
-          expect(element.css(prefix + 'animation-delay')).toEqual('50s');
-          expect(element.css(prefix + 'animation-duration')).toEqual('5.5s');
-          expect(element.css(prefix + 'animation-name')).toEqual('my_animation');
+          expect(getPossiblyPrefixedStyleValue(element, 'animation-delay')).toEqual('50s');
+          expect(getPossiblyPrefixedStyleValue(element, 'animation-duration')).toEqual('5.5s');
+          expect(getPossiblyPrefixedStyleValue(element, 'animation-name')).toEqual('my_animation');
         }));
 
         it("should be able to execute the animation if it is the only provided value",
@@ -2636,9 +2722,9 @@ describe("ngAnimate $animateCss", function() {
           animator.start();
           triggerAnimationStartFrame();
 
-          expect(element.css(prefix + 'animation-delay')).toEqual('10s');
-          expect(element.css(prefix + 'animation-duration')).toEqual('5.5s');
-          expect(element.css(prefix + 'animation-name')).toEqual('my_animation');
+          expect(getPossiblyPrefixedStyleValue(element, 'animation-delay')).toEqual('10s');
+          expect(getPossiblyPrefixedStyleValue(element, 'animation-duration')).toEqual('5.5s');
+          expect(getPossiblyPrefixedStyleValue(element, 'animation-name')).toEqual('my_animation');
         }));
       });
 
@@ -2931,7 +3017,7 @@ describe("ngAnimate $animateCss", function() {
 
 
           expect(element.css('transition-duration')).toMatch('10s');
-          expect(element.css(prefix + 'animation-duration')).toEqual('10s');
+          expect(getPossiblyPrefixedStyleValue(element, 'animation-duration')).toEqual('10s');
         }));
       });
 
@@ -2971,7 +3057,7 @@ describe("ngAnimate $animateCss", function() {
           inject(function($animateCss) {
 
           ss.addRule('.red', 'transition: 1s linear all;');
-          ss.addRule('.blue', prefix + 'animation:my_keyframe 1s;');
+          ss.addPossiblyPrefixedRule('.blue', 'animation: 1s my_keyframe;');
           var easing = 'ease-out';
           var animator = $animateCss(element, { addClass: 'red blue', easing: easing });
           animator.start();

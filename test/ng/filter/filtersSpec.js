@@ -421,6 +421,8 @@ describe('filters', function() {
     it('should treat a sequence of two single quotes as a literal single quote', function() {
       expect(date(midnight, "yyyy'de' 'a''dd' 'adZ' h=H:m:saZ")).
                       toEqual("2010de a'dd adZ 12=0:5:8AM-0500");
+      expect(date(midnight, "EEE, MMM d, ''yy")).
+                      toEqual("Fri, Sep 3, '10");
     });
 
     it('should accept default formats', function() {

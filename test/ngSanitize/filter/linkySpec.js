@@ -20,6 +20,37 @@ describe('linky', function() {
     expect(linky(undefined)).not.toBeDefined();
   });
 
+  it('should return `undefined`/`null`/`""` values unchanged', function() {
+    expect(linky(undefined)).toBe(undefined);
+    expect(linky(null)).toBe(null);
+    expect(linky('')).toBe('');
+  });
+
+  it('should throw an error when used with a non-string value (other than `undefined`/`null`)',
+    function() {
+      expect(function() { linky(false); }).
+        toThrowMinErr('linky', 'notstring', 'Expected string but received: false');
+
+      expect(function() { linky(true); }).
+        toThrowMinErr('linky', 'notstring', 'Expected string but received: true');
+
+      expect(function() { linky(0); }).
+        toThrowMinErr('linky', 'notstring', 'Expected string but received: 0');
+
+      expect(function() { linky(42); }).
+        toThrowMinErr('linky', 'notstring', 'Expected string but received: 42');
+
+      expect(function() { linky({}); }).
+        toThrowMinErr('linky', 'notstring', 'Expected string but received: {}');
+
+      expect(function() { linky([]); }).
+        toThrowMinErr('linky', 'notstring', 'Expected string but received: []');
+
+      expect(function() { linky(noop); }).
+        toThrowMinErr('linky', 'notstring', 'Expected string but received: function noop()');
+    }
+  );
+
   it('should be case-insensitive', function() {
     expect(linky('WWW.example.com')).toEqual('<a href="http://WWW.example.com">WWW.example.com</a>');
     expect(linky('WWW.EXAMPLE.COM')).toEqual('<a href="http://WWW.EXAMPLE.COM">WWW.EXAMPLE.COM</a>');

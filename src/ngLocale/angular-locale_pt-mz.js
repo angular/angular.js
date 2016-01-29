@@ -119,6 +119,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "pt-mz",
+  "localeID": "pt_MZ",
   "pluralCat": function(n, opt_precision) {  if (n >= 0 && n <= 2 && n != 2) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

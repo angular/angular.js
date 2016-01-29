@@ -119,6 +119,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "uz-cyrl",
+  "localeID": "uz_Cyrl",
   "pluralCat": function(n, opt_precision) {  if (n == 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

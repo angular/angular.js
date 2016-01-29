@@ -69,11 +69,11 @@ describe("ngAnimate $$animateCssDriver", function() {
 
       element = jqLite('<div></div>');
 
-      return function($$animateCssDriver, $document, $window) {
+      return function($$animateCssDriver, $document) {
         driver = function(details, cb) {
           return $$animateCssDriver(details, cb || noop);
         };
-        ss = createMockStyleSheet($document, $window);
+        ss = createMockStyleSheet($document);
       };
     }));
 

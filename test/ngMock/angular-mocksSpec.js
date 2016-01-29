@@ -1857,6 +1857,207 @@ describe('ngMock', function() {
       });
     });
   });
+
+
+  describe('$componentController', function() {
+    it('should instantiate a simple controller defined inline in a component', function() {
+      function TestController($scope, a, b) {
+        this.$scope = $scope;
+        this.a = a;
+        this.b = b;
+      }
+      module(function($compileProvider) {
+        $compileProvider.component('test', {
+          controller: TestController
+        });
+      });
+      inject(function($componentController, $rootScope) {
+        var $scope = {};
+        var ctrl = $componentController('test', { $scope: $scope, a: 'A', b: 'B' }, { x: 'X', y: 'Y' });
+        expect(ctrl).toEqual({ $scope: $scope, a: 'A', b: 'B', x: 'X', y: 'Y' });
+        expect($scope.$ctrl).toBe(ctrl);
+      });
+    });
+
+    it('should instantiate a controller with $$inject annotation defined inline in a component', function() {
+      function TestController(x, y, z) {
+        this.$scope = x;
+        this.a = y;
+        this.b = z;
+      }
+      TestController.$inject = ['$scope', 'a', 'b'];
+      module(function($compileProvider) {
+        $compileProvider.component('test', {
+          controller: TestController
+        });
+      });
+      inject(function($componentController, $rootScope) {
+        var $scope = {};
+        var ctrl = $componentController('test', { $scope: $scope, a: 'A', b: 'B' }, { x: 'X', y: 'Y' });
+        expect(ctrl).toEqual({ $scope: $scope, a: 'A', b: 'B', x: 'X', y: 'Y' });
+        expect($scope.$ctrl).toBe(ctrl);
+      });
+    });
+
+    it('should instantiate a named controller defined in a component', function() {
+      function TestController($scope, a, b) {
+        this.$scope = $scope;
+        this.a = a;
+        this.b = b;
+      }
+      module(function($controllerProvider, $compileProvider) {
+        $controllerProvider.register('TestController', TestController);
+        $compileProvider.component('test', {
+          controller: 'TestController'
+        });
+      });
+      inject(function($componentController, $rootScope) {
+        var $scope = {};
+        var ctrl = $componentController('test', { $scope: $scope, a: 'A', b: 'B' }, { x: 'X', y: 'Y' });
+        expect(ctrl).toEqual({ $scope: $scope, a: 'A', b: 'B', x: 'X', y: 'Y' });
+        expect($scope.$ctrl).toBe(ctrl);
+      });
+    });
+
+    it('should instantiate a named controller with `controller as` syntax defined in a component', function() {
+      function TestController($scope, a, b) {
+        this.$scope = $scope;
+        this.a = a;
+        this.b = b;
+      }
+      module(function($controllerProvider, $compileProvider) {
+        $controllerProvider.register('TestController', TestController);
+        $compileProvider.component('test', {
+          controller: 'TestController as testCtrl'
+        });
+      });
+      inject(function($componentController, $rootScope) {
+        var $scope = {};
+        var ctrl = $componentController('test', { $scope: $scope, a: 'A', b: 'B' }, { x: 'X', y: 'Y' });
+        expect(ctrl).toEqual({ $scope: $scope, a: 'A', b: 'B', x: 'X', y: 'Y' });
+        expect($scope.testCtrl).toBe(ctrl);
+      });
+    });
+
+    it('should instantiate the controller of the restrict:\'E\' component if there are more directives with the same name but not restricted to \'E\'', function() {
+      function TestController() {
+        this.r = 6779;
+      }
+      module(function($compileProvider) {
+        $compileProvider.directive('test', function() {
+          return { restrict: 'A' };
+        });
+        $compileProvider.component('test', {
+          controller: TestController
+        });
+      });
+      inject(function($componentController, $rootScope) {
+        var ctrl = $componentController('test', { $scope: {} });
+        expect(ctrl).toEqual({ r: 6779 });
+      });
+    });
+
+    it('should instantiate the controller of the restrict:\'E\' component if there are more directives with the same name and restricted to \'E\' but no controller', function() {
+      function TestController() {
+        this.r = 22926;
+      }
+      module(function($compileProvider) {
+        $compileProvider.directive('test', function() {
+          return { restrict: 'E' };
+        });
+        $compileProvider.component('test', {
+          controller: TestController
+        });
+      });
+      inject(function($componentController, $rootScope) {
+        var ctrl = $componentController('test', { $scope: {} });
+        expect(ctrl).toEqual({ r: 22926 });
+      });
+    });
+
+    it('should instantiate the controller of the directive with controller, controllerAs and restrict:\'E\' if there are more directives', function() {
+      function TestController() {
+        this.r = 18842;
+      }
+      module(function($compileProvider) {
+        $compileProvider.directive('test', function() {
+          return { };
+        });
+        $compileProvider.directive('test', function() {
+          return {
+            restrict: 'E',
+            controller: TestController,
+            controllerAs: '$ctrl'
+          };
+        });
+      });
+      inject(function($componentController, $rootScope) {
+        var ctrl = $componentController('test', { $scope: {} });
+        expect(ctrl).toEqual({ r: 18842 });
+      });
+    });
+
+    it('should fail if there is no directive with restrict:\'E\' and controller', function() {
+      function TestController() {
+        this.r = 31145;
+      }
+      module(function($compileProvider) {
+        $compileProvider.directive('test', function() {
+          return {
+            restrict: 'AC',
+            controller: TestController
+          };
+        });
+        $compileProvider.directive('test', function() {
+          return {
+            restrict: 'E',
+            controller: TestController
+          };
+        });
+        $compileProvider.directive('test', function() {
+          return {
+            restrict: 'EA',
+            controller: TestController,
+            controllerAs: '$ctrl'
+          };
+        });
+        $compileProvider.directive('test', function() {
+          return { restrict: 'E' };
+        });
+      });
+      inject(function($componentController, $rootScope) {
+        expect(function() {
+          $componentController('test', { $scope: {} });
+        }).toThrow('No component found');
+      });
+    });
+
+    it('should fail if there more than two components with same name', function() {
+      function TestController($scope, a, b) {
+        this.$scope = $scope;
+        this.a = a;
+        this.b = b;
+      }
+      module(function($compileProvider) {
+        $compileProvider.directive('test', function() {
+          return {
+            restrict: 'E',
+            controller: TestController,
+            controllerAs: '$ctrl'
+          };
+        });
+        $compileProvider.component('test', {
+          controller: TestController
+        });
+      });
+      inject(function($componentController, $rootScope) {
+        expect(function() {
+          var $scope = {};
+          $componentController('test', { $scope: $scope, a: 'A', b: 'B' }, { x: 'X', y: 'Y' });
+        }).toThrow('Too many components found');
+      });
+    });
+  });
 });
 
 
@@ -1924,7 +2125,7 @@ describe('ngMockE2E', function() {
     beforeEach(module('ngAnimate'));
     beforeEach(module('ngAnimateMock'));
 
-    var ss, element, trackedAnimations;
+    var ss, element, trackedAnimations, animationLog;
 
     afterEach(function() {
       if (element) {
@@ -1937,6 +2138,8 @@ describe('ngMockE2E', function() {
 
     beforeEach(module(function($animateProvider) {
       trackedAnimations = [];
+      animationLog = [];
+
       $animateProvider.register('.animate', function() {
         return {
           leave: logFn('leave'),
@@ -1945,7 +2148,13 @@ describe('ngMockE2E', function() {
 
         function logFn(method) {
           return function(element) {
+            animationLog.push('start ' + method);
             trackedAnimations.push(getDoneCallback(arguments));
+
+            return function closingFn(cancel) {
+              var lab = cancel ? 'cancel' : 'end';
+              animationLog.push(lab + ' ' + method);
+            };
           };
         }
 
@@ -1956,8 +2165,8 @@ describe('ngMockE2E', function() {
         }
       });
 
-      return function($animate, $rootElement, $document, $rootScope, $window) {
-        ss = createMockStyleSheet($document, $window);
+      return function($animate, $rootElement, $document, $rootScope) {
+        ss = createMockStyleSheet($document);
 
         element = angular.element('<div class="animate"></div>');
         $rootElement.append(element);
@@ -2096,6 +2305,80 @@ describe('ngMockE2E', function() {
         trackedAnimations[0]();
         $animate.flush();
         expect(spy.callCount).toBe(2);
+      }));
+    });
+
+    describe('$animate.closeAndFlush()', function() {
+      it('should close the currently running $animateCss animations',
+        inject(function($animateCss, $animate) {
+
+        if (!browserSupportsCssAnimations()) return;
+
+        var spy = jasmine.createSpy();
+        var runner = $animateCss(element, {
+          duration: 1,
+          to: { color: 'red' }
+        }).start();
+
+        runner.then(spy);
+
+        expect(spy).not.toHaveBeenCalled();
+        $animate.closeAndFlush();
+        expect(spy).toHaveBeenCalled();
+      }));
+
+      it('should close the currently running $$animateJs animations',
+        inject(function($$animateJs, $animate) {
+
+        var spy = jasmine.createSpy();
+        var runner = $$animateJs(element, 'leave', 'animate', {}).start();
+        runner.then(spy);
+
+        expect(spy).not.toHaveBeenCalled();
+        $animate.closeAndFlush();
+        expect(spy).toHaveBeenCalled();
+      }));
+
+      it('should run the closing javascript animation function upon flush',
+        inject(function($$animateJs, $animate) {
+
+        $$animateJs(element, 'leave', 'animate', {}).start();
+
+        expect(animationLog).toEqual(['start leave']);
+        $animate.closeAndFlush();
+        expect(animationLog).toEqual(['start leave', 'end leave']);
+      }));
+
+      it('should not throw when a regular animation has no javascript animation',
+        inject(function($animate, $$animation, $rootElement) {
+
+        if (!browserSupportsCssAnimations()) return;
+
+        var element = jqLite('<div></div>');
+        $rootElement.append(element);
+
+        // Make sure the animation has valid $animateCss options
+        $$animation(element, null, {
+          from: { background: 'red' },
+          to: { background: 'blue' },
+          duration: 1,
+          transitionStyle: 'all 1s'
+        });
+
+        expect(function() {
+          $animate.closeAndFlush();
+        }).not.toThrow();
+
+        dealoc(element);
+      }));
+
+      it('should throw an error if there are no animations to close and flush',
+        inject(function($animate) {
+
+        expect(function() {
+          $animate.closeAndFlush();
+        }).toThrow('No pending animations ready to be closed or flushed');
+
       }));
     });
   });

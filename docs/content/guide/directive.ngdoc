@@ -99,8 +99,13 @@ For example, the following forms are all equivalent and match the {@link ngBind}
   </file>
   <file name="protractor.js" type="protractor">
     it('should show off bindings', function() {
-      expect(element(by.css('div[ng-controller="Controller"] span[ng-bind]')).getText())
-          .toBe('Max Karl Ernst Ludwig Planck (April 23, 1858 – October 4, 1947)');
+      var containerElm = element(by.css('div[ng-controller="Controller"]'));
+      var nameBindings = containerElm.all(by.binding('name'));
+
+      expect(nameBindings.count()).toBe(5);
+      nameBindings.each(function(elem) {
+        expect(elem.getText()).toEqual('Max Karl Ernst Ludwig Planck (April 23, 1858 – October 4, 1947)');
+      });
     });
   </file>
 </example>
@@ -139,63 +144,6 @@ AngularJS 1.2 introduces {@link ng.directive:ngRepeat `ng-repeat-start` and `ng-
 as a better solution to this problem. Developers are encouraged to use this over custom comment
 directives when possible.
 </div>
-
-
-
-### Text and attribute bindings
-
-During the compilation process the {@link ng.$compile compiler} matches text and attributes
-using the {@link ng.$interpolate $interpolate} service to see if they contain embedded
-expressions. These expressions are registered as {@link ng.$rootScope.Scope#$watch watches}
-and will update as part of normal {@link ng.$rootScope.Scope#$digest digest} cycle. An
-example of interpolation is shown below:
-
-```html
-<a ng-href="img/{{username}}.jpg">Hello {{username}}!</a>
-```
-
-
-### `ngAttr` attribute bindings
-
-Web browsers are sometimes picky about what values they consider valid for attributes.
-
-For example, considering this template:
-
-```html
-<svg>
-  <circle cx="{{cx}}"></circle>
-</svg>
-```
-
-We would expect Angular to be able to bind to this, but when we check the console we see
-something like `Error: Invalid value for attribute cx="{{cx}}"`. Because of the SVG DOM API's
-restrictions, you cannot simply write `cx="{{cx}}"`.
-
-With `ng-attr-cx` you can work around this problem.
-
-If an attribute with a binding is prefixed with the `ngAttr` prefix (denormalized as `ng-attr-`)
-then during the binding it will be applied to the corresponding unprefixed attribute. This allows
-you to bind to attributes that would otherwise be eagerly processed by browsers
-(e.g. an SVG element's `circle[cx]` attributes). When using `ngAttr`, the `allOrNothing` flag of
-{@link ng.$interpolate $interpolate} is used, so if any expression in the interpolated string
-results in `undefined`, the attribute is removed and not added to the element.
-
-For example, we could fix the example above by instead writing:
-
-```html
-<svg>
-  <circle ng-attr-cx="{{cx}}"></circle>
-</svg>
-```
-
-If one wants to modify a camelcased attribute (SVG elements have valid camelcased attributes), such as `viewBox` on the `svg` element, one can use underscores to denote that the attribute to bind to is naturally camelcased.
-
-For example, to bind to `viewBox`, we can write:
-
-```html
-<svg ng-attr-view_box="{{viewBox}}">
-</svg>
-```
 
 
 ## Creating Directives
@@ -458,7 +406,7 @@ This is clearly not a great solution.
 
 What we want to be able to do is separate the scope inside a directive from the scope
 outside, and then map the outer scope to a directive's inner scope. We can do this by creating what
-we call an **isolate scope**. To do this, we can use a directive's `scope` option:
+we call an **isolate scope**. To do this, we can use a {@link $compile#-scope- directive's `scope`} option:
 
 <example module="docsIsolateScopeDirective">
   <file name="script.js">

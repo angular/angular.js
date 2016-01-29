@@ -86,6 +86,7 @@ describe('angular', function() {
         expect(copy(src) instanceof Uint8Array).toBeTruthy();
         expect(dst).toEqual(src);
         expect(dst).not.toBe(src);
+        expect(dst.buffer).not.toBe(src.buffer);
       }
     });
 
@@ -97,6 +98,7 @@ describe('angular', function() {
         expect(copy(src) instanceof Uint8ClampedArray).toBeTruthy();
         expect(dst).toEqual(src);
         expect(dst).not.toBe(src);
+        expect(dst.buffer).not.toBe(src.buffer);
       }
     });
 
@@ -108,6 +110,7 @@ describe('angular', function() {
         expect(copy(src) instanceof Uint16Array).toBeTruthy();
         expect(dst).toEqual(src);
         expect(dst).not.toBe(src);
+        expect(dst.buffer).not.toBe(src.buffer);
       }
     });
 
@@ -119,6 +122,7 @@ describe('angular', function() {
         expect(copy(src) instanceof Uint32Array).toBeTruthy();
         expect(dst).toEqual(src);
         expect(dst).not.toBe(src);
+        expect(dst.buffer).not.toBe(src.buffer);
       }
     });
 
@@ -130,6 +134,7 @@ describe('angular', function() {
         expect(copy(src) instanceof Int8Array).toBeTruthy();
         expect(dst).toEqual(src);
         expect(dst).not.toBe(src);
+        expect(dst.buffer).not.toBe(src.buffer);
       }
     });
 
@@ -141,6 +146,7 @@ describe('angular', function() {
         expect(copy(src) instanceof Int16Array).toBeTruthy();
         expect(dst).toEqual(src);
         expect(dst).not.toBe(src);
+        expect(dst.buffer).not.toBe(src.buffer);
       }
     });
 
@@ -152,6 +158,7 @@ describe('angular', function() {
         expect(copy(src) instanceof Int32Array).toBeTruthy();
         expect(dst).toEqual(src);
         expect(dst).not.toBe(src);
+        expect(dst.buffer).not.toBe(src.buffer);
       }
     });
 
@@ -163,6 +170,7 @@ describe('angular', function() {
         expect(copy(src) instanceof Float32Array).toBeTruthy();
         expect(dst).toEqual(src);
         expect(dst).not.toBe(src);
+        expect(dst.buffer).not.toBe(src.buffer);
       }
     });
 
@@ -174,6 +182,49 @@ describe('angular', function() {
         expect(copy(src) instanceof Float64Array).toBeTruthy();
         expect(dst).toEqual(src);
         expect(dst).not.toBe(src);
+        expect(dst.buffer).not.toBe(src.buffer);
+      }
+    });
+
+    it('should copy an ArrayBuffer with no destination', function() {
+      if (typeof ArrayBuffer !== 'undefined') {
+        var src = new ArrayBuffer(8);
+        new Int32Array(src).set([1, 2]);
+
+        var dst = copy(src);
+        expect(dst instanceof ArrayBuffer).toBeTruthy();
+        expect(dst).toEqual(src);
+        expect(dst).not.toBe(src);
+      }
+    });
+
+    it('should handle ArrayBuffer objects with multiple references', function() {
+      if (typeof ArrayBuffer !== 'undefined') {
+        var buffer = new ArrayBuffer(8);
+        var src = [new Int32Array(buffer), new Float32Array(buffer)];
+        src[0].set([1, 2]);
+
+        var dst = copy(src);
+        expect(dst).toEqual(src);
+        expect(dst[0]).not.toBe(src[0]);
+        expect(dst[1]).not.toBe(src[1]);
+        expect(dst[0].buffer).toBe(dst[1].buffer);
+        expect(dst[0].buffer).not.toBe(buffer);
+      }
+    });
+
+    it('should handle Int32Array objects with multiple references', function() {
+      if (typeof Int32Array !== 'undefined') {
+        var arr = new Int32Array(2);
+        var src = [arr, arr];
+        arr.set([1, 2]);
+
+        var dst = copy(src);
+        expect(dst).toEqual(src);
+        expect(dst).not.toBe(src);
+        expect(dst[0]).not.toBe(src[0]);
+        expect(dst[0]).toBe(dst[1]);
+        expect(dst[0].buffer).toBe(dst[1].buffer);
       }
     });
 
@@ -253,6 +304,15 @@ describe('angular', function() {
       if (typeof Float64Array !== 'undefined') {
         var src = new Float64Array();
         var dst = new Float64Array(5);
+        expect(function() { copy(src, dst); })
+          .toThrowMinErr("ng", "cpta", "Can't copy! TypedArray destination cannot be mutated.");
+      }
+    });
+
+    it("should throw an exception if an ArrayBuffer is the destination", function() {
+      if (typeof ArrayBuffer !== 'undefined') {
+        var src = new ArrayBuffer(5);
+        var dst = new ArrayBuffer(5);
         expect(function() { copy(src, dst); })
           .toThrowMinErr("ng", "cpta", "Can't copy! TypedArray destination cannot be mutated.");
       }
@@ -470,6 +530,45 @@ describe('angular', function() {
       expect(dest.b).toBe(2);
       expect(dest.c).toBe(3);
       expect(Object.keys(dest)).toEqual(['a', 'b', 'c']);
+    });
+
+    it('should copy String() objects', function() {
+      /*jshint -W053 */
+      var obj = new String('foo');
+      /*jshint +W053 */
+      var dest = copy(obj);
+      expect(dest).not.toBe(obj);
+      expect(isObject(dest)).toBe(true);
+      expect(dest.valueOf()).toBe(obj.valueOf());
+    });
+
+    it('should copy Boolean() objects', function() {
+      /*jshint -W053 */
+      var obj = new Boolean(true);
+      /*jshint +W053 */
+      var dest = copy(obj);
+      expect(dest).not.toBe(obj);
+      expect(isObject(dest)).toBe(true);
+      expect(dest.valueOf()).toBe(obj.valueOf());
+    });
+
+    it('should copy Number() objects', function() {
+      /*jshint -W053 */
+      var obj = new Number(42);
+      /*jshint +W053 */
+      var dest = copy(obj);
+      expect(dest).not.toBe(obj);
+      expect(isObject(dest)).toBe(true);
+      expect(dest.valueOf()).toBe(obj.valueOf());
+    });
+
+    it('should copy falsy String/Boolean/Number objects', function() {
+      /*jshint -W053 */
+      expect(copy(new String('')).valueOf()).toBe('');
+      expect(copy(new Boolean(false)).valueOf()).toBe(false);
+      expect(copy(new Number(0)).valueOf()).toBe(0);
+      expect(copy(new Number(NaN)).valueOf()).toBeNaN();
+      /*jshint +W053 */
     });
   });
 
@@ -1119,17 +1218,38 @@ describe('angular', function() {
     });
 
     it('should return true if passed a nodelist', function() {
-      var nodes = document.body.childNodes;
-      expect(isArrayLike(nodes)).toBe(true);
+      var nodes1 = document.body.childNodes;
+      expect(isArrayLike(nodes1)).toBe(true);
+
+      var nodes2 = document.getElementsByTagName('nonExistingTagName');
+      expect(isArrayLike(nodes2)).toBe(true);
     });
 
     it('should return false for objects with `length` but no matching indexable items', function() {
-      var obj = {
+      var obj1 = {
         a: 'a',
         b:'b',
         length: 10
       };
-      expect(isArrayLike(obj)).toBe(false);
+      expect(isArrayLike(obj1)).toBe(false);
+
+      var obj2 = {
+        length: 0
+      };
+      expect(isArrayLike(obj2)).toBe(false);
+    });
+
+    it('should return true for empty instances of an Array subclass', function() {
+      function ArrayLike() {}
+      ArrayLike.prototype = Array.prototype;
+
+      var arrLike = new ArrayLike();
+      expect(arrLike.length).toBe(0);
+      expect(isArrayLike(arrLike)).toBe(true);
+
+      arrLike.push(1, 2, 3);
+      expect(arrLike.length).toBe(3);
+      expect(isArrayLike(arrLike)).toBe(true);
     });
   });
 
