@@ -628,17 +628,22 @@ describe('input', function() {
     });
 
 
-    it('should use any timezone if specified in the options', function() {
-      var inputElm = helper.compileInput('<input type="month" ng-model="value" ng-model-options="{timezone: \'+0500\'}" />');
+    they('should use any timezone if specified in the options (format: $prop)',
+      {'+HHmm': '+0500', '+HH:mm': '+05:00'},
+      function(tz) {
+        var ngModelOptions = "{timezone: '" + tz + "'}";
+        var inputElm = helper.compileInput(
+            '<input type="month" ng-model="value" ng-model-options="' + ngModelOptions + '" />');
 
-      helper.changeInputValueTo('2013-07');
-      expect(+$rootScope.value).toBe(Date.UTC(2013, 5, 30, 19, 0, 0));
+        helper.changeInputValueTo('2013-07');
+        expect(+$rootScope.value).toBe(Date.UTC(2013, 5, 30, 19, 0, 0));
 
-      $rootScope.$apply(function() {
-        $rootScope.value = new Date(Date.UTC(2014, 5, 30, 19, 0, 0));
-      });
-      expect(inputElm.val()).toBe('2014-07');
-    });
+        $rootScope.$apply(function() {
+          $rootScope.value = new Date(Date.UTC(2014, 5, 30, 19, 0, 0));
+        });
+        expect(inputElm.val()).toBe('2014-07');
+      }
+    );
 
 
     it('should label parse errors as `month`', function() {
@@ -865,17 +870,22 @@ describe('input', function() {
     });
 
 
-    it('should use any timezone if specified in the options', function() {
-      var inputElm = helper.compileInput('<input type="week" ng-model="value" ng-model-options="{timezone: \'+0500\'}" />');
+    they('should use any timezone if specified in the options (format: $prop)',
+      {'+HHmm': '+0500', '+HH:mm': '+05:00'},
+      function(tz) {
+        var ngModelOptions = "{timezone: '" + tz + "'}";
+        var inputElm = helper.compileInput(
+            '<input type="week" ng-model="value" ng-model-options="' + ngModelOptions + '" />');
 
-      helper.changeInputValueTo('2013-W03');
-      expect(+$rootScope.value).toBe(Date.UTC(2013, 0, 16, 19, 0, 0));
+        helper.changeInputValueTo('2013-W03');
+        expect(+$rootScope.value).toBe(Date.UTC(2013, 0, 16, 19, 0, 0));
 
-      $rootScope.$apply(function() {
-        $rootScope.value = new Date(Date.UTC(2014, 0, 16, 19, 0, 0));
-      });
-      expect(inputElm.val()).toBe('2014-W03');
-    });
+        $rootScope.$apply(function() {
+          $rootScope.value = new Date(Date.UTC(2014, 0, 16, 19, 0, 0));
+        });
+        expect(inputElm.val()).toBe('2014-W03');
+      }
+    );
 
 
     it('should label parse errors as `week`', function() {
@@ -1066,17 +1076,22 @@ describe('input', function() {
     });
 
 
-    it('should use any timezone if specified in the options', function() {
-      var inputElm = helper.compileInput('<input type="datetime-local" ng-model="value" ng-model-options="{timezone: \'+0500\'}" />');
+    they('should use any timezone if specified in the options (format: $prop)',
+      {'+HHmm': '+0500', '+HH:mm': '+05:00'},
+      function(tz) {
+        var ngModelOptions = "{timezone: '" + tz + "'}";
+        var inputElm = helper.compileInput(
+            '<input type="datetime-local" ng-model="value" ng-model-options="' + ngModelOptions + '" />');
 
-      helper.changeInputValueTo('2000-01-01T06:02');
-      expect(+$rootScope.value).toBe(Date.UTC(2000, 0, 1, 1, 2, 0));
+        helper.changeInputValueTo('2000-01-01T06:02');
+        expect(+$rootScope.value).toBe(Date.UTC(2000, 0, 1, 1, 2, 0));
 
-      $rootScope.$apply(function() {
-        $rootScope.value = new Date(Date.UTC(2001, 0, 1, 1, 2, 0));
-      });
-      expect(inputElm.val()).toBe('2001-01-01T06:02:00.000');
-    });
+        $rootScope.$apply(function() {
+          $rootScope.value = new Date(Date.UTC(2001, 0, 1, 1, 2, 0));
+        });
+        expect(inputElm.val()).toBe('2001-01-01T06:02:00.000');
+      }
+    );
 
 
     it('should fallback to default timezone in case an unknown timezone was passed', function() {
@@ -1390,17 +1405,22 @@ describe('input', function() {
     });
 
 
-    it('should use any timezone if specified in the options', function() {
-      var inputElm = helper.compileInput('<input type="time" ng-model="value" ng-model-options="{timezone: \'+0500\'}" />');
+    they('should use any timezone if specified in the options (format: $prop)',
+      {'+HHmm': '+0500', '+HH:mm': '+05:00'},
+      function(tz) {
+        var ngModelOptions = "{timezone: '" + tz + "'}";
+        var inputElm = helper.compileInput(
+            '<input type="time" ng-model="value" ng-model-options="' + ngModelOptions + '" />');
 
-      helper.changeInputValueTo('23:02:00');
-      expect(+$rootScope.value).toBe(Date.UTC(1970, 0, 1, 18, 2, 0));
+        helper.changeInputValueTo('23:02:00');
+        expect(+$rootScope.value).toBe(Date.UTC(1970, 0, 1, 18, 2, 0));
 
-      $rootScope.$apply(function() {
-        $rootScope.value = new Date(Date.UTC(1971, 0, 1, 18, 2, 0));
-      });
-      expect(inputElm.val()).toBe('23:02:00.000');
-    });
+        $rootScope.$apply(function() {
+          $rootScope.value = new Date(Date.UTC(1971, 0, 1, 18, 2, 0));
+        });
+        expect(inputElm.val()).toBe('23:02:00.000');
+      }
+    );
 
 
     it('should allow to specify the milliseconds', function() {
@@ -1697,17 +1717,22 @@ describe('input', function() {
     });
 
 
-    it('should use any timezone if specified in the options', function() {
-      var inputElm = helper.compileInput('<input type="date" ng-model="value" ng-model-options="{timezone: \'+0500\'}" />');
+    they('should use any timezone if specified in the options (format: $prop)',
+      {'+HHmm': '+0500', '+HH:mm': '+05:00'},
+      function(tz) {
+        var ngModelOptions = "{timezone: '" + tz + "'}";
+        var inputElm = helper.compileInput(
+            '<input type="date" ng-model="value" ng-model-options="' + ngModelOptions + '" />');
 
-      helper.changeInputValueTo('2000-01-01');
-      expect(+$rootScope.value).toBe(Date.UTC(1999, 11, 31, 19, 0, 0));
+        helper.changeInputValueTo('2000-01-01');
+        expect(+$rootScope.value).toBe(Date.UTC(1999, 11, 31, 19, 0, 0));
 
-      $rootScope.$apply(function() {
-        $rootScope.value = new Date(Date.UTC(2000, 11, 31, 19, 0, 0));
-      });
-      expect(inputElm.val()).toBe('2001-01-01');
-    });
+        $rootScope.$apply(function() {
+          $rootScope.value = new Date(Date.UTC(2000, 11, 31, 19, 0, 0));
+        });
+        expect(inputElm.val()).toBe('2001-01-01');
+      }
+    );
 
 
     it('should label parse errors as `date`', function() {
