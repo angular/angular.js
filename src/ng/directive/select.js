@@ -81,7 +81,7 @@ var SelectController =
   // Tell the select control that an option, with the given value, has been added
   self.addOption = function(value, element) {
     // Skip comment nodes, as they only pollute the `optionsMap`
-    if (element.prop('nodeType') === NODE_TYPE_COMMENT) return;
+    if (element[0].nodeType === NODE_TYPE_COMMENT) return;
 
     assertNotHasOwnProperty(value, '"option value"');
     if (value === '') {
