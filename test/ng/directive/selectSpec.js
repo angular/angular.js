@@ -50,8 +50,8 @@ describe('select', function() {
         scope: {myOptions: '='},
         replace: true,
         template:
-            '<option value="{{ ::option.value }}" ng-repeat="option in ::myOptions">' +
-              '{{ ::options.label }}' +
+            '<option value="{{ option.value }}" ng-repeat="option in myOptions">' +
+              '{{ options.label }}' +
             '</option>'
       };
     });
@@ -631,13 +631,9 @@ describe('select', function() {
           {value: '2', label: 'Option 2'},
           {value: '3', label: 'Option 3'}
         ];
+        compile('<select ng-model="mySelect"><option my-options="options"></option></select>');
 
-        expect(function() {
-          compile(
-              '<select ng-model="mySelect">' +
-                '<option my-options="options"></option>' +
-              '</select>');
-        }).not.toThrow();
+        expect(element).toEqualSelect([unknownValue()], '1', '2', '3');
       }
     );
   });
