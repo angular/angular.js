@@ -525,6 +525,23 @@ function isBlankObject(value) {
 
 /**
  * @ngdoc function
+ * @name angular.isBoolean
+ * @module ng
+ * @kind function
+ *
+ * @description
+ * Determines if a reference is a `Boolean`.
+ *
+ * @param {*} value Reference to check.
+ * @returns {boolean} True if `value` is a `Boolean`.
+ */
+function isBoolean(value) {
+  return typeof value === 'boolean';
+}
+
+
+/**
+ * @ngdoc function
  * @name angular.isString
  * @module ng
  * @kind function
@@ -646,11 +663,6 @@ function isFormData(obj) {
 
 function isBlob(obj) {
   return toString.call(obj) === '[object Blob]';
-}
-
-
-function isBoolean(value) {
-  return typeof value === 'boolean';
 }
 
 
