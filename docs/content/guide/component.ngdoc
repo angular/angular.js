@@ -21,7 +21,7 @@ When not to use Components:
 
 - for directives that rely on DOM manipulation, adding event listeners etc, because the compile
 and link functions are unavailable
-- when you need advanced directive defintion options like priority, terminal, multi-element
+- when you need advanced directive definition options like priority, terminal, multi-element
 - when you want a directive that is triggered by an attribute or CSS class, rather than an element
 
 ## Creating and configuring a Component
