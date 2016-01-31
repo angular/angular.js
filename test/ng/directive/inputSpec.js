@@ -664,7 +664,7 @@ describe('input', function() {
       expect(+$rootScope.value).toBe(Date.UTC(10123, 2, 1, 0, 0, 0));
 
       $rootScope.$apply(function() {
-        $rootScope.value = new Date(Date.UTC(10123, 2, 1, 0, 0 , 0));
+        $rootScope.value = new Date(Date.UTC(10123, 2, 1, 0, 0, 0));
       });
       expect(inputElm.val()).toBe('10123-03');
     });
