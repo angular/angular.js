@@ -303,6 +303,7 @@ The `restrict` option is typically set to:
 * `'A'` - only matches attribute name
 * `'E'` - only matches element name
 * `'C'` - only matches class name
+* `'M'` - only matches comment
 
 These restrictions can all be combined as needed:
 
@@ -646,6 +647,7 @@ To do this, we need to use the `transclude` option.
         return {
           restrict: 'E',
           transclude: true,
+          scope: {},
           templateUrl: 'my-dialog.html'
         };
       });
@@ -656,8 +658,7 @@ To do this, we need to use the `transclude` option.
     </div>
   </file>
   <file name="my-dialog.html">
-    <div class="alert" ng-transclude>
-    </div>
+    <div class="alert" ng-transclude></div>
   </file>
 </example>
 
@@ -679,7 +680,7 @@ that redefines `name` as `Jeff`. What do you think the `{{name}}` binding will r
           transclude: true,
           scope: {},
           templateUrl: 'my-dialog.html',
-          link: function (scope, element) {
+          link: function (scope) {
             scope.name = 'Jeff';
           }
         };
@@ -691,8 +692,7 @@ that redefines `name` as `Jeff`. What do you think the `{{name}}` binding will r
     </div>
   </file>
   <file name="my-dialog.html">
-    <div class="alert" ng-transclude>
-    </div>
+    <div class="alert" ng-transclude></div>
   </file>
 </example>
 
@@ -703,7 +703,7 @@ The `transclude` option changes the way scopes are nested. It makes it so that t
 transcluded directive have whatever scope is outside the directive, rather than whatever scope is on
 the inside. In doing so, it gives the contents access to the outside scope.
 
-Note that if the directive did not create its own scope, then `scope` in `scope.name = 'Jeff';` would
+Note that if the directive did not create its own scope, then `scope` in `scope.name = 'Jeff'` would
 reference the outside scope and we would see `Jeff` in the output.
 
 This behavior makes sense for a directive that wraps some content, because otherwise you'd have to
@@ -776,9 +776,9 @@ function.
 
 Often it's desirable to pass data from the isolate scope via an expression to the
 parent scope, this can be done by passing a map of local variable names and values into the expression
-wrapper fn. For example, the hideDialog function takes a message to display when the dialog is hidden.
-This is specified in the directive by calling `close({message: 'closing for now'})`. Then the local
-variable `message` will be available within the `on-close` expression.
+wrapper function. For example, the `hideDialog` function takes a message to display when the dialog
+is hidden. This is specified in the directive by calling `close({message: 'closing for now'})`.
+Then the local variable `message` will be available within the `on-close` expression.
 
 <div class="alert alert-success">
 **Best Practice:** use `&attr` in the `scope` option when you want your directive
@@ -837,7 +837,7 @@ element?
       }]);
   </file>
   <file name="index.html">
-    <span my-draggable>Drag ME</span>
+    <span my-draggable>Drag Me</span>
   </file>
 </example>
 
@@ -882,7 +882,7 @@ to which tab is active.
       })
       .directive('myPane', function() {
         return {
-          require: '^myTabs',
+          require: '^^myTabs',
           restrict: 'E',
           transclude: true,
           scope: {
@@ -898,11 +898,9 @@ to which tab is active.
   <file name="index.html">
     <my-tabs>
       <my-pane title="Hello">
-        <h4>Hello</h4>
         <p>Lorem ipsum dolor sit amet</p>
       </my-pane>
       <my-pane title="World">
-        <h4>World</h4>
         <em>Mauris elementum elementum enim at suscipit.</em>
         <p><a href ng-click="i = i + 1">counter: {{i || 0}}</a></p>
       </my-pane>
@@ -919,22 +917,25 @@ to which tab is active.
     </div>
   </file>
   <file name="my-pane.html">
-    <div class="tab-pane" ng-show="selected" ng-transclude>
+    <div class="tab-pane" ng-show="selected">
+      <h4>{{title}}</h4>
+      <div ng-transclude></div>
     </div>
   </file>
 </example>
 
-The `myPane` directive has a `require` option with value `^myTabs`. When a directive uses this
-option, `$compile` will throw an error unless the specified controller is found. The `^` prefix
-means that this directive searches for the controller on its parents (without the `^` prefix, the
-directive would look for the controller on just its own element).
+The `myPane` directive has a `require` option with value `^^myTabs`. When a directive uses this
+option, `$compile` will throw an error unless the specified controller is found. The `^^` prefix
+means that this directive searches for the controller on its parents. (A `^` prefix would make the
+directive look for the controller on its own element or its parents; without any prefix, the
+directive would look on its own element only.)
 
 So where does this `myTabs` controller come from? Directives can specify controllers using
 the unsurprisingly named `controller` option. As you can see, the `myTabs` directive uses this
 option. Just like `ngController`, this option attaches a controller to the template of the directive.
 
-If it is necessary to reference the controller or any functions bound to the controller's scope in
-the template, you can use the option `controllerAs` to specify the name of the controller as an alias.
+If it is necessary to reference the controller or any functions bound to the controller from the
+template, you can use the option `controllerAs` to specify the name of the controller as an alias.
 The directive needs to define a scope for this configuration to be used. This is particularly useful
 in the case when the directive is used as a component.
 
@@ -949,7 +950,7 @@ The corresponding parameter being sent to the `link` function will also be an ar
 angular.module('docsTabsExample', [])
   .directive('myPane', function() {
     return {
-      require: ['^myTabs', '^ngModel'],
+      require: ['^^myTabs', 'ngModel'],
       restrict: 'E',
       transclude: true,
       scope: {
@@ -985,4 +986,3 @@ available in the {@link guide/compiler compiler guide}.
 
 The {@link ng.$compile `$compile` API} page has a comprehensive list of directive options for
 reference.
-
