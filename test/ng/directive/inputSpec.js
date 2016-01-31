@@ -657,7 +657,7 @@ describe('input', function() {
       expect($rootScope.form.alias.$error.month).toBeTruthy();
     });
 
-    it('should allow to specify four or more digits in year', function() {
+    it('should allow four or more digits in year', function() {
       var inputElm = helper.compileInput('<input type="month" ng-model="value"  ng-model-options="{timezone: \'UTC\'}"/>');
 
       helper.changeInputValueTo('10123-03');
@@ -868,11 +868,10 @@ describe('input', function() {
       expect(inputElm).toBeValid();
     });
 
-    it('should allow to specify four or more digits in year', function() {
+    it('should allow four or more digits in year', function() {
       var inputElm = helper.compileInput('<input type="week" ng-model="value"  ng-model-options="{timezone: \'UTC\'}"/>');
 
       helper.changeInputValueTo('10123-W03');
-      console.log(new Date($rootScope.value).toUTCString());
       expect(+$rootScope.value).toBe(Date.UTC(10123, 0, 21));
 
       $rootScope.$apply(function() {
@@ -1758,7 +1757,7 @@ describe('input', function() {
       }
     );
 
-    it('should allow to specify four or more digits in year', function() {
+    it('should allow four or more digits in year', function() {
       var inputElm = helper.compileInput('<input type="date" ng-model="value" ng-model-options="{timezone: \'UTC\'}" />');
 
         helper.changeInputValueTo('10123-01-01');
