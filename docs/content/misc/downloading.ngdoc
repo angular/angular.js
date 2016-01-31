@@ -46,7 +46,7 @@ Download the version you want and have fun.
 Each directory under <http://code.angularjs.org/> includes the following set of files:
 
 * __`angular.js`__ — This file is non-obfuscated, non-minified, and human-readable by
-opening it it any editor or browser. In order to get better error messages during development, you
+opening it in any editor or browser. In order to get better error messages during development, you
 should always use this non-minified angular script.
 
 * __`angular.min.js`__ — This is a minified and obfuscated version of
