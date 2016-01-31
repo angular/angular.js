@@ -117,6 +117,20 @@ describe('Scope', function() {
     }));
 
 
+    it('should not expose the `inner working of watch', inject(function($rootScope) {
+      function Getter() {
+        expect(this).toBeUndefined();
+        return 'foo';
+      }
+      function Listener() {
+        expect(this).toBeUndefined();
+      }
+      if (msie < 10) return;
+      $rootScope.$watch(Getter, Listener);
+      $rootScope.$digest();
+    }));
+
+
     it('should watch and fire on expression change', inject(function($rootScope) {
       var spy = jasmine.createSpy();
       $rootScope.$watch('name.first', spy);
