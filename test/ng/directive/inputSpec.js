@@ -657,6 +657,18 @@ describe('input', function() {
       expect($rootScope.form.alias.$error.month).toBeTruthy();
     });
 
+    it('should allow to specify four or more digits in year', function() {
+      var inputElm = helper.compileInput('<input type="month" ng-model="value"  ng-model-options="{timezone: \'UTC\'}"/>');
+
+      helper.changeInputValueTo('10123-03');
+      expect(+$rootScope.value).toBe(Date.UTC(10123, 2, 1, 0, 0, 0));
+
+      $rootScope.$apply(function() {
+        $rootScope.value = new Date(Date.UTC(10123, 2, 1, 0, 0 , 0));
+      });
+      expect(inputElm.val()).toBe('10123-03');
+    });
+
 
     it('should only change the month of a bound date', function() {
       var inputElm = helper.compileInput('<input type="month" ng-model="value" ng-model-options="{timezone: \'UTC\'}" />');
@@ -856,6 +868,18 @@ describe('input', function() {
       expect(inputElm).toBeValid();
     });
 
+    it('should allow to specify four or more digits in year', function() {
+      var inputElm = helper.compileInput('<input type="week" ng-model="value"  ng-model-options="{timezone: \'UTC\'}"/>');
+
+      helper.changeInputValueTo('10123-W03');
+      console.log(new Date($rootScope.value).toUTCString());
+      expect(+$rootScope.value).toBe(Date.UTC(10123, 0, 21));
+
+      $rootScope.$apply(function() {
+        $rootScope.value = new Date(Date.UTC(10321, 0, 21));
+      });
+      expect(inputElm.val()).toBe('10321-W03');
+    });
 
     it('should use UTC if specified in the options', function() {
       var inputElm = helper.compileInput('<input type="week" ng-model="value" ng-model-options="{timezone: \'UTC\'}" />');
@@ -1734,6 +1758,19 @@ describe('input', function() {
       }
     );
 
+    it('should allow to specify four or more digits in year', function() {
+      var inputElm = helper.compileInput('<input type="date" ng-model="value" ng-model-options="{timezone: \'UTC\'}" />');
+
+        helper.changeInputValueTo('10123-01-01');
+        expect(+$rootScope.value).toBe(Date.UTC(10123, 0, 1, 0, 0, 0));
+
+        $rootScope.$apply(function() {
+          $rootScope.value = new Date(Date.UTC(10123, 0, 1, 0, 0, 0));
+        });
+        expect(inputElm.val()).toBe('10123-01-01');
+      }
+    );
+
 
     it('should label parse errors as `date`', function() {
       var inputElm = helper.compileInput('<input type="date" ng-model="val" name="alias" />', {
@@ -1940,6 +1977,111 @@ describe('input', function() {
       $rootScope.$digest();
 
       expect(inputElm).toBeValid();
+    });
+
+    describe('ISO_DATE_REGEXP', function() {
+      var dates = [
+        // Validate date
+        ['00:00:00.0000+01:01', false],             // date must be specified
+        ['2010.06.15T00:00:00.0000+01:01', false],  // date must use dash seperator
+        ['x2010-06-15T00:00:00.0000+01:01', false], // invalid leading characters
+
+        // Validate year
+        ['2010-06-15T00:00:00.0000+01:01', true],
+        ['20100-06-15T00:00:00.0000+01:01', true],
+        ['-06-15T00:00:00.0000+01:01', false],      // year too few digits
+        ['2-06-15T00:00:00.0000+01:01', false],     // year too few digits
+        ['20-06-15T00:00:00.0000+01:01', false],    // year too few digits
+        ['201-06-15T00:00:00.0000+01:01', false],   // year too few digits
+
+        // Validate month
+        ['2010-01-15T00:00:00.0000+01:01', true],
+        ['2010--15T00:00:00.0000+01:01', false],    // month too few digits
+        ['2010-0-15T00:00:00.0000+01:01', false],   // month too few digits
+        ['2010-1-15T00:00:00.0000+01:01', false],   // month too few digits
+        ['2010-111-15T00:00:00.0000+01:01', false], // month too many digits
+        ['2010-22-15T00:00:00.0000+01:01', false],  // month value too large
+
+        // Validate day
+        ['2010-01-01T00:00:00.0000+01:01', true],
+        ['2010-01-T00:00:00.0000+01:01', false],    // day too few digits
+        ['2010-01-1T00:00:00.0000+01:01', false],   // day too few digits
+        ['2010-01-41T00:00:00.0000+01:01', false],  // day value too large
+        ['2010-01-200T00:00:00.0000+01:01', false], // day value too many digits
+
+        // Validate time
+        ['2010-01-01', false],                      // time must be specified
+        ['2010-01-0101:00:00.0000+01:01', false],   // missing date time seperator
+        ['2010-01-01V01:00:00.0000+01:01', false],  // invalid date time seperator
+        ['2010-01-01T01-00-00.0000+01:01', false],  // time must use period seperator
+
+        // Validate hour
+        ['2010-01-01T01:00:00.0000+01:01', true],
+        ['2010-01-01T:00:00.0000+01:01', false],    // hour value must be specified
+        ['2010-01-01T1:00:00.0000+01:01', false],   // hour value too few digits
+        ['2010-01-01T-01:00:00.0000+01:01', false], // hour value must be positive
+        ['2010-01-01T32:00:00.0000+01:01', false],  // hour value too large
+        ['2010-01-01T220:00:00.0000+01:01', false], // hour value too many digits
+
+        // Validate minutes
+        ['2010-01-01T01:00:00.0000+01:01', true],
+        ['2010-01-01T01::00.0000+01:01', false],    // minute value must be specified
+        ['2010-01-01T01:0:00.0000+01:01', false],   // minute value too few digits
+        ['2010-01-01T01:-00:00.0000+01:01', false], // minute value must be positive
+        ['2010-01-01T01:60:00.0000+01:01', false],  // minute value too large
+        ['2010-01-01T01:100:00.0000+01:01', false], // minute value too many digits
+
+        // Validate seconds
+        ['2010-01-01T01:00:00.0000+01:01', true],
+        ['2010-01-01T01:00:.0000+01:01', false],    // second value must be specified
+        ['2010-01-01T01:00:0.0000+01:01', false],   // second value too few digits
+        ['2010-01-01T01:00:-00.0000+01:01', false], // second value must be positive
+        ['2010-01-01T01:00:60.0000+01:01', false],  // second value too large
+        ['2010-01-01T01:00:100.0000+01:01', false], // second value too many digits
+
+        // Validate milliseconds
+        ['2010-01-01T01:00:00+01:01', false],       // millisecond value must be specified
+        ['2010-01-01T01:00:00.+01:01', false],      // millisecond value must be specified
+        ['2010-01-01T01:00:00.-0000+01:01', false], // millisecond value must be positive
+
+        // Validate timezone
+        ['20123-06-15T00:00:00.0000', false],       // timezone must be specified
+
+        // Validate timezone offset
+        ['2010-06-15T00:00:00.0000+01:01', true],
+        ['2010-06-15T00:00:00.0000-01:01', true],
+        ['2010-06-15T00:00:00.0000~01:01', false],  // timezone must have valid postive/negative indicator
+        ['2010-06-15T00:00:00.000001:01', false],   // timezone must have valid postive/negative indicator
+        ['2010-06-15T00:00:00.0000+00:01Z', false], // timezone invalid trailing characters
+        ['2010-06-15T00:00:00.0000+00:01 ', false], // timezone invalid trailing characters
+
+        // Validate timezone hour offset
+        ['2010-06-15T00:00:00.0000+:01', false],    // timezone hour offset must be specified
+        ['2010-06-15T00:00:00.0000+0:01', false],   // timezone hour offset too few digits
+        ['2010-06-15T00:00:00.0000+31:01', false],  // timezone hour offset value too large
+        ['2010-06-15T00:00:00.0000+211:01', false], // timezone hour offset too many digits
+
+        // Validate timezone minute offset
+        ['2010-06-15T00:00:00.0000+00:-01', false], // timezone minute offset must be positive
+        ['2010-06-15T00:00:00.0000+00:', false],    // timezone minute offset must be specified
+        ['2010-06-15T00:00:00.0000+00:0', false],   // timezone minute offset too few digits
+        ['2010-06-15T00:00:00.0000+00:61', false],  // timezone minute offset value too large
+        ['2010-06-15T00:00:00.0000+00:211', false], // timezone minute offset too many digits
+
+        // Validate timezone UTC
+        ['20123-06-15T00:00:00.0000Z', true],
+        ['20123-06-15T00:00:00.0000K', false],      // UTC timezone indicator is invalid
+        ['20123-06-15T00:00:00.0000ZZ', false],     // UTC timezone indicator invalid trailing characters
+        ['20123-06-15T00:00:00.0000Z ', false]      // UTC timezone indicator invalid trailing characters
+      ];
+
+      they('should validate date: $prop', dates, function(item) {
+        var date = item[0];
+        var valid = item[1];
+
+        /* global ISO_DATE_REGEXP: false */
+        expect(ISO_DATE_REGEXP.test(date)).toBe(valid);
+      });
     });
   });
 
