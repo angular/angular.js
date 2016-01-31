@@ -85,6 +85,26 @@ describe('filters', function() {
       expect(num).toBe('123.100');
     });
 
+    it('should work with negative fractionSize', function() {
+      expect(formatNumber(49, pattern, ',', '.', -2)).toBe('0');
+      expect(formatNumber(50, pattern, ',', '.', -2)).toBe('100');
+      expect(formatNumber(51, pattern, ',', '.', -2)).toBe('100');
+      expect(formatNumber(1234, pattern, ',', '.', -1)).toBe('1,230');
+      expect(formatNumber(1234.567, pattern, ',', '.', -1)).toBe('1,230');
+      expect(formatNumber(1235, pattern, ',', '.', -1)).toBe('1,240');
+      expect(formatNumber(1235, pattern, ',', '.', -2)).toBe('1,200');
+      expect(formatNumber(1235, pattern, ',', '.', -3)).toBe('1,000');
+      expect(formatNumber(1235, pattern, ',', '.', -4)).toBe('0');
+      expect(formatNumber(1250, pattern, ',', '.', -2)).toBe('1,300');
+      expect(formatNumber(1000, pattern, ',', '.', -3)).toBe('1,000');
+      expect(formatNumber(1000, pattern, ',', '.', -4)).toBe('0');
+      expect(formatNumber(1000, pattern, ',', '.', -5)).toBe('0');
+      expect(formatNumber(1, pattern, ',', '.', -1)).toBe('0');
+      expect(formatNumber(1, pattern, ',', '.', -2)).toBe('0');
+      expect(formatNumber(9, pattern, ',', '.', -1)).toBe('10');
+      expect(formatNumber(501, pattern, ',', '.', -3)).toBe('1,000');
+    });
+
     it('should format numbers that round to zero as nonnegative', function() {
       expect(formatNumber(-0.01, pattern, ',', '.', 1)).toBe('0.0');
       expect(formatNumber(-1e-10, pattern, ',', '.', 1)).toBe('0.0');
