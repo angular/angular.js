@@ -2100,6 +2100,13 @@ describe('input', function() {
         /* global ISO_DATE_REGEXP: false */
         expect(ISO_DATE_REGEXP.test(date)).toBe(valid);
       });
+
+      it('should be non-capturing', function() {
+        // Non-capturing to increase performance, has no functional impact
+        var result = ISO_DATE_REGEXP.exec('2010-06-15T00:00:00.0000+01:01');
+        expect(result[0]).toBe('2010-06-15T00:00:00.0000+01:01');
+        expect(result.length).toBe(1);
+      });
     });
   });
 
