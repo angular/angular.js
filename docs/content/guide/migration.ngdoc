@@ -20,9 +20,9 @@ which drives many of these changes.
 # Migrate from 1.4 to 1.5
 
 Angular 1.5 takes a big step towards preparing developers for a smoother transition to Angular 2 in
-the future. Architecturing your applications using components, making use of lifecycle hooks in
-directive controllers and relying on native ES6 features (such as classes and arrow functions) are
-now all possible with Angular 1.5.
+the future. Architecturing your applications using components, multi-slot transclusion, using
+lifecycle hooks in directive controllers and relying on native ES6 features (such as classes and
+arrow functions) are now all possible with Angular 1.5.
 
 
 This release includes numerous bug and security fixes, as well as performance improvements to core
@@ -38,8 +38,11 @@ Among them, a few stand out:
   style of architecture).
 * Multi-slot transclusion: Enabling the design of more powerful and complex UI elements with a much
   simpler configuration and reduced boilerplate.
+* `$onInit` lifecycle hook: Introducing a new lifecycle hook for directive controllers, called after
+  all required controllers have been constructed. This enables access to required controllers from
+  a directive's controller, without having to rely on the linking function.
 * `ngAnimateSwap`: A new directive in `ngAnimate`, making it super easy to create rotating
-  banner-like components
+  banner-like components.
 * Testing helpers: New helper functions in `ngMock`, simplifying testing for animations, component
   controllers and routing.
 
@@ -153,11 +156,53 @@ the `$sanitize` service will now remove instances of the `<use>` tag from the co
 This element is used to import external SVG resources, which is a security risk as the `$sanitize`
 service does not have access to the resource in order to sanitize it.
 
+Similarly, due to [234053fc](https://github.com/angular/angular.js/commit/234053fc9ad90e0d05be7e8359c6af66be94c094),
+the `$sanitize` service will now also remove instances of the `usemap` attribute from any elements
+passedto it. This attribute is used to reference another element by `name` or `id`. Since the `name`
+and `id` attributes are already blacklisted, a sanitized `usemap` attribute could only reference
+unsanitized content, which is a security risk.
+
 Due to [98c2db7f](https://github.com/angular/angular.js/commit/98c2db7f9c2d078a408576e722407d518c7ee10a),
 passing a non-string value (other than `undefined` or `null`) through the `linky` filter will throw
 an error. This is not expected to have any significant impact on applications, since the input was
 always assumed to be of type 'string', so passing non-string values never worked correctly anyway.
 The main difference is that now it will fail faster and with a more informative error message.
+
+
+## ngTouch (`ngClick`)
+
+Due to [0dfc1dfe](https://github.com/angular/angular.js/commit/0dfc1dfebf26af7f951f301c4e3848ac46f05d7f),
+the `ngClick` override directive from the `ngTouch` module is **deprecated and disabled by default**.
+This means that on touch-based devices, users might now experience a 300ms delay before a click
+event is fired.
+
+If you rely on this directive, you can still enable it using
+`$touchProvider.ngClickOverrideEnabled()`:
+
+```js
+angular.module('myApp').config(function($touchProvider) {
+  $touchProvider.ngClickOverrideEnabled(true);
+});
+```
+
+Going forward, we recommend using [FastClick](https://github.com/ftlabs/fastclick) or perhaps one of
+the [Angular 3rd party touch-related modules](http://ngmodules.org/tags/touch) that provide similar
+functionality.
+
+Also note that modern browsers already remove the 300ms delay under some circumstances:
+
+- **Chrome and Firefox for Android** remove the 300ms delay when the well-known
+  `<meta name="viewport" content="width=device-width">` is set.
+- **Internet Explorer** removes the delay, when the `touch-action` css property is set to `none` or
+  `manipulation`.
+- Since **iOS 8, Safari** removes the delay on so-called "slow taps".
+
+For more info on the topic, you can take a look at this
+[article by Telerik](http://developer.telerik.com/featured/300-ms-click-delay-ios-8/).
+
+<div class="alert alert-warning">
+  **Note:** This change does **not** affect the `ngSwipe` directive.
+</div>
 
 
 
