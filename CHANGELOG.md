@@ -51,7 +51,7 @@ changes section for more information
   - allow directive definition property `require` to be an object
   ([cd21216f](https://github.com/angular/angular.js/commit/cd21216ff7eb6d81fc9aa1d1ef994c3d8e046394),
    [#8401](https://github.com/angular/angular.js/issues/8401), [#13763](https://github.com/angular/angular.js/issues/13763))
-  - call `$ngOnInit` on directive controllers after all sibling controllers have been constructed
+  - call `$onInit` on directive controllers after all sibling controllers have been constructed
   ([3ffdf380](https://github.com/angular/angular.js/commit/3ffdf380c522cbf15a4ce5a8b08d21d40d5f8859),
    [#13763](https://github.com/angular/angular.js/issues/13763))
 - **$locale:** include original locale ID in `$locale`
