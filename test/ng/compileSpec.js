@@ -1,5 +1,6 @@
 'use strict';
 
+/* globals support: false */
 
 describe('$compile', function() {
   function isUnknownElement(el) {
@@ -4307,7 +4308,7 @@ describe('$compile', function() {
 
 
     it('should eventually expose isolate scope variables on ES6 class controller with controllerAs when bindToController is true', function() {
-      if (!/chrome/i.test(navigator.userAgent)) return;
+      if (!support.classes) return;
       /*jshint -W061 */
       var controllerCalled = false;
       var Controller = eval(

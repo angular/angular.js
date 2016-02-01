@@ -833,17 +833,6 @@ function createInjector(modulesToLoad, strictDi) {
       return args;
     }
 
-    function isClass(func) {
-      // IE 9-11 do not support classes and IE9 leaks with the code below.
-      if (msie <= 11) {
-        return false;
-      }
-      // Workaround for MS Edge.
-      // Check https://connect.microsoft.com/IE/Feedback/Details/2211653
-      return typeof func === 'function'
-        && /^(?:class\s|constructor\()/.test(Function.prototype.toString.call(func));
-    }
-
     function invoke(fn, self, locals, serviceName) {
       if (typeof locals === 'string') {
         serviceName = locals;
@@ -855,15 +844,16 @@ function createInjector(modulesToLoad, strictDi) {
         fn = fn[fn.length - 1];
       }
 
-      if (!isClass(fn)) {
+      try {
         // http://jsperf.com/angularjs-invoke-apply-vs-switch
-        // #5388
         return fn.apply(self, args);
-      } else {
-        args.unshift(null);
-        /*jshint -W058 */ // Applying a constructor without immediate parentheses is the point here.
-        return new (Function.prototype.bind.apply(fn, args));
-        /*jshint +W058 */
+      } catch (e) {
+        // if `fn` is a class, then it needs to be called using `new`
+        if (e instanceof TypeError) {
+          return new (Function.prototype.bind.apply(fn, [null].concat(args)))();
+        } else {
+          throw e;
+        }
       }
     }
 
@@ -875,9 +865,7 @@ function createInjector(modulesToLoad, strictDi) {
       var args = injectionArgs(Type, locals, serviceName);
       // Empty object at position 0 is ignored for invocation with `new`, but required.
       args.unshift(null);
-      /*jshint -W058 */ // Applying a constructor without immediate parentheses is the point here.
-      return new (Function.prototype.bind.apply(ctor, args));
-      /*jshint +W058 */
+      return new (Function.prototype.bind.apply(ctor, args))();
     }
 
 
