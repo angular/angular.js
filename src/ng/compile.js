@@ -3065,13 +3065,13 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             destination[scopeName] = parentGet(scope);
 
             if (definition.collection) {
-              removeWatch = scope.$watchCollection(attrs[attrName], function onParentCollectionValueChange(newParentValue) {
+              removeWatch = scope.$watchCollection(parentGet, function parentCollectionValueWatchAction(newParentValue) {
                 destination[scopeName] = newParentValue;
               });
             } else {
-              removeWatch = scope.$watch(attrs[attrName], function onParentValueChange(newParentValue) {
+              removeWatch = scope.$watch(parentGet, function parentValueWatchAction(newParentValue) {
                 destination[scopeName] = newParentValue;
-              });
+              }, parentGet.literal);
             }
             removeWatchCollection.push(removeWatch);
             break;

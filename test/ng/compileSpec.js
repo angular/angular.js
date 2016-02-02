@@ -4384,7 +4384,7 @@ describe('$compile', function() {
         }));
 
 
-        it('should not change the isolate when origin does not change', inject(function() {
+        it('should not change the isolated scope when origin does not change', inject(function() {
           compile('<div><span my-component ref="{name: name}">');
 
           $rootScope.name = 'a';
@@ -4392,6 +4392,34 @@ describe('$compile', function() {
           var lastComponentValue = componentScope.owRef;
           $rootScope.$apply();
           expect(componentScope.owRef).toBe(lastComponentValue);
+        }));
+
+
+        it('should deep-watch array literals', inject(function() {
+          $rootScope.name = 'georgios';
+          $rootScope.obj = {name: 'pete'};
+          compile('<div><span my-component ow-ref="[{name: name}, obj]">');
+          $rootScope.$apply();
+          expect(componentScope.owRef).toEqual([{name: 'georgios'}, {name: 'pete'}]);
+
+          $rootScope.name = 'lucas';
+          $rootScope.obj = {name: 'martin'};
+          $rootScope.$apply();
+          expect(componentScope.owRef).toEqual([{name: 'lucas'}, {name: 'martin'}]);
+        }));
+
+
+        it('should deep-watch object literals', inject(function() {
+          $rootScope.name = 'georgios';
+          $rootScope.obj = {name: 'pete'};
+          compile('<div><span my-component ow-ref="{name: name, item: obj}">');
+          $rootScope.$apply();
+          expect(componentScope.owRef).toEqual({name: 'georgios', item: {name: 'pete'}});
+
+          $rootScope.name = 'lucas';
+          $rootScope.obj = {name: 'martin'};
+          $rootScope.$apply();
+          expect(componentScope.owRef).toEqual({name: 'lucas', item: {name: 'martin'}});
         }));
 
 
@@ -4430,8 +4458,8 @@ describe('$compile', function() {
         describe('optional one-way binding', function() {
           it('should update local when origin changes', inject(function() {
             compile('<div><span my-component ow-optref="name">');
-            expect(componentScope.owOptRef).toBe(undefined);
-            expect(componentScope.owOptRefAlias).toBe(componentScope.owOptRef);
+            expect(componentScope.owOptref).toBe(undefined);
+            expect(componentScope.owOptrefAlias).toBe(componentScope.owOptref);
 
             $rootScope.name = 'misko';
             $rootScope.$apply();
