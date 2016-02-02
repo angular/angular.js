@@ -2074,11 +2074,11 @@ describe('input', function() {
         ['2010-06-15T00:00:00.0000+31:01', false],  // timezone hour offset value too large
 
         // Validate timezone minute offset
-        ['2010-06-15T00:00:00.0000+00', true],      // timezone minute offset is optional
-        ['2010-06-15T00:00:00.0000+0101', true],    // timezone minute offset seperator is optional
         ['2010-06-15T00:00:00.0000+00:-01', false], // timezone minute offset must be positive
         ['2010-06-15T00:00:00.0000+00.01', false],  // timezone minute offset must use colon seperator
-        ['2010-06-15T00:00:00.0000+010', false],    // timezone minute offset has too few digits
+        ['2010-06-15T00:00:00.0000+0101', false],   // timezone minute offset must use colon seperator
+        ['2010-06-15T00:00:00.0000+010', false],    // timezone minute offset must use colon seperator
+        ['2010-06-15T00:00:00.0000+00', false],     // timezone minute offset has too few digits
         ['2010-06-15T00:00:00.0000+00:', false],    // timezone minute offset has too few digits
         ['2010-06-15T00:00:00.0000+00:0', false],   // timezone minute offset has too few digits
         ['2010-06-15T00:00:00.0000+00:211', false], // timezone minute offset has too many digits
