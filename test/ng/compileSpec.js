@@ -4395,7 +4395,7 @@ describe('$compile', function() {
         }));
 
 
-        iit('should not complain when the isolated scope changes', inject(function() {
+        it('should not complain when the isolated scope changes', inject(function() {
           compile('<div><span my-component ow-ref="{name: name}">');
 
           $rootScope.name = 'a';
@@ -4405,9 +4405,13 @@ describe('$compile', function() {
 
           expect(componentScope.owRef).toEqual({name: 'b'});
           expect($rootScope.name).toBe('a');
+
+          $rootScope.name = 'c';
+          $rootScope.$apply();
+          expect(componentScope.owRef).toEqual({name: 'c'});
         }));
 
-        iit('should work for primitive literals', inject(function() {
+        it('should work for primitive literals', inject(function() {
           test('1', 1);
           test('null', null);
           test('undefined', undefined);
