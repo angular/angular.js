@@ -3537,7 +3537,6 @@ describe('$compile', function() {
             owRefAlias: '< owRef',
             owOptref: '<?',
             owOptrefAlias: '<? owOptref',
-            owOptreference: '<?',
             owColref: '<*',
             owColrefAlias: '<* owColref',
             expr: '&',
@@ -4134,7 +4133,7 @@ describe('$compile', function() {
           test('null', null);
           test('undefined', undefined);
           test("'someString'", 'someString');
-
+          test('true', true);
 
           function test(literalString, literalValue) {
             compile('<div><span my-component reference="' + literalString + '">');
@@ -4142,9 +4141,7 @@ describe('$compile', function() {
             $rootScope.$apply();
             expect(componentScope.reference).toBe(literalValue);
             dealoc(element);
-
           }
-
         }));
 
       });
@@ -4332,7 +4329,7 @@ describe('$compile', function() {
       }));
 
 
-      it('should not throw on non assignable changes', inject(function() {
+      it('should not throw on non assignable expressions in the parent', inject(function() {
         compile('<div><span my-component ow-ref="\'hello \' + name">');
         $rootScope.name = 'world';
         $rootScope.$apply();
@@ -4367,7 +4364,8 @@ describe('$compile', function() {
         var isolateScope = element.isolateScope();
         expect(isolateScope.owRef).toBeNaN();
 
-        $rootScope.$apply(function(scope) { scope.num = 64; });
+        $rootScope.num = 64;
+        $rootScope.$apply();
         expect(isolateScope.owRef).toBe(64);
       }));
 
@@ -4397,23 +4395,24 @@ describe('$compile', function() {
         }));
 
 
-        it('should not complain when the component changes', inject(function() {
+        iit('should not complain when the isolated scope changes', inject(function() {
           compile('<div><span my-component ow-ref="{name: name}">');
 
           $rootScope.name = 'a';
           $rootScope.$apply();
           componentScope.owRef = {name: 'b'};
           componentScope.$apply();
+
           expect(componentScope.owRef).toEqual({name: 'b'});
           expect($rootScope.name).toBe('a');
         }));
 
-
-        it('should work for primitive literals', inject(function() {
+        iit('should work for primitive literals', inject(function() {
           test('1', 1);
           test('null', null);
           test('undefined', undefined);
           test("'someString'", 'someString');
+          test('true', true);
 
           function test(literalString, literalValue) {
             compile('<div><span my-component ow-ref="' + literalString + '">');
@@ -4446,7 +4445,6 @@ describe('$compile', function() {
 
             expect(componentScope.owOptref).toBe(undefined);
             expect(componentScope.owOptrefAlias).toBe(undefined);
-            expect(componentScope.owOptreference).toBe(undefined);
           }));
         });
 
