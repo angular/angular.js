@@ -72,8 +72,15 @@ changes section for more information
 
 ## Breaking Changes
 
-- **ngTouch:** due to [0dfc1dfe](https://github.com/angular/angular.js/commit/0dfc1dfebf26af7f951f301c4e3848ac46f05d7f),
+- **ngSanitize:** due to [234053fc](https://github.com/angular/angular.js/commit/234053fc9ad90e0d05be7e8359c6af66be94c094),
 
+The `$sanitize` service will now remove instances of the `usemap` attribute from any elements passed to it.
+
+This attribute is used to reference another element by `name` or `id`. Since the `name` and `id`
+attributes are already blacklisted, a sanitized `usemap` attribute could only reference unsanitized
+content, which is a security risk.
+
+- **ngTouch:** due to [0dfc1dfe](https://github.com/angular/angular.js/commit/0dfc1dfebf26af7f951f301c4e3848ac46f05d7f),
 
 The `ngClick` override directive from the `ngTouch` module is **deprecated and disabled by default**.
 This means that on touch-based devices, users might now experience a 300ms delay before a click event is fired.
