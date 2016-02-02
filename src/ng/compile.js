@@ -186,6 +186,28 @@
  *   you want to shallow watch for changes (i.e. $watchCollection instead of $watch) you can use
  *   `=*` or `=*attr` (`=*?` or `=*?attr` if the property is optional).
  *
+ * * `<` or `<attr` - set up one-way (one-directional) binding between a local scope property and the
+ *   parent scope property of name defined via the value of the `attr` attribute. If no `attr`
+ *   name is specified then the attribute name is assumed to be the same as the local name.
+ *   Given `<dir my-attr="parentModel">` and directive definition of
+ *   `scope: { localModel:'<myAttr' }`, then isolate scope property `localModel` will reflect the
+ *   value of `parentModel` on the parent scope. Any changes to `parentModel` will be reflected
+ *   in `localModel`, but changes in `localModel` will not reflect in `parentModel`. There are however
+ *   two caveats:
+ *     1. one-way binding does not copy the value from the parent to the isolate scope, it simply
+ *     sets the same value. That means if your bound value is an object, changes to its properties
+ *     in the isolate scope will be reflected in the parent scope.
+ *     2. one-way binding watches changes to the **identity** of the parent value. That is important should
+ *     you one-way bind an object, and then replace that object in the isolated scope. If you now change
+ *     a property of the object in your parent scope, the change will not be propagated to the isolated
+ *     scope, because the identity of the object has not changed. Instead you must assign a new object.
+ *
+ *   One-way binding is useful if you do not plan to propagate changes to your isolated scope bindings
+ *   back to the parent. However, it does not make this completely impossible.
+ *
+ *   Same as with bi-directional bindings, you can also use shallow watch for changes (i.e. $watchCollection instead of $watch):
+ *   `<*` or `<*attr` (`<*?` or `<*?attr` if the property is optional).
+ *
  * * `&` or `&attr` - provides a way to execute an expression in the context of the parent scope.
  *   If no `attr` name is specified then the attribute name is assumed to be the same as the
  *   local name. Given `<widget my-attr="count = count + value">` and widget definition of
@@ -826,7 +848,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
   var EVENT_HANDLER_ATTR_REGEXP = /^(on[a-z]+|formaction)$/;
 
   function parseIsolateBindings(scope, directiveName, isController) {
-    var LOCAL_REGEXP = /^\s*([@&]|=(\*?))(\??)\s*(\w*)\s*$/;
+    var LOCAL_REGEXP = /^\s*([@&]|[=<](\*?))(\??)\s*(\w*)\s*$/;
 
     var bindings = {};
 
@@ -2962,7 +2984,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         optional = definition.optional,
         mode = definition.mode, // @, =, or &
         lastValue,
-        parentGet, parentSet, compare;
+        parentGet, parentSet, compare, removeWatch;
 
         switch (mode) {
 
@@ -3023,11 +3045,33 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
               return lastValue = parentValue;
             };
             parentValueWatch.$stateful = true;
-            var removeWatch;
             if (definition.collection) {
               removeWatch = scope.$watchCollection(attrs[attrName], parentValueWatch);
             } else {
               removeWatch = scope.$watch($parse(attrs[attrName], parentValueWatch), null, parentGet.literal);
+            }
+            removeWatchCollection.push(removeWatch);
+            break;
+
+          case '<':
+            if (!hasOwnProperty.call(attrs, attrName)) {
+              if (optional) break;
+              attrs[attrName] = void 0;
+            }
+            if (optional && !attrs[attrName]) break;
+
+            parentGet = $parse(attrs[attrName]);
+
+            destination[scopeName] = parentGet(scope);
+
+            if (definition.collection) {
+              removeWatch = scope.$watchCollection(attrs[attrName], function onParentCollectionValueChange(newParentValue) {
+                destination[scopeName] = newParentValue;
+              });
+            } else {
+              removeWatch = scope.$watch(attrs[attrName], function onParentValueChange(newParentValue) {
+                destination[scopeName] = newParentValue;
+              });
             }
             removeWatchCollection.push(removeWatch);
             break;

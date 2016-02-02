@@ -3533,6 +3533,13 @@ describe('$compile', function() {
             optreference: '=?',
             colref: '=*',
             colrefAlias: '=* colref',
+            owRef: '<',
+            owRefAlias: '< owRef',
+            owOptref: '<?',
+            owOptrefAlias: '<? owOptref',
+            owOptreference: '<?',
+            owColref: '<*',
+            owColrefAlias: '<* owColref',
             expr: '&',
             optExpr: '&?',
             exprAlias: '&expr',
@@ -4219,6 +4226,303 @@ describe('$compile', function() {
     });
 
 
+    describe('one-way binding', function() {
+      it('should update isolate when the identity of origin changes', inject(function() {
+        compile('<div><span my-component ow-ref="obj">');
+        expect(componentScope.owRef).toBe(undefined);
+        expect(componentScope.owRefAlias).toBe(componentScope.owRef);
+
+        $rootScope.obj = {value: 'initial'};
+        $rootScope.$apply();
+
+        expect($rootScope.obj).toEqual({value: 'initial'});
+        expect(componentScope.owRef).toEqual({value: 'initial'});
+        expect(componentScope.owRefAlias).toBe(componentScope.owRef);
+
+        // This changes in both scopes because of reference
+        $rootScope.obj.value = 'origin1';
+        $rootScope.$apply();
+        expect(componentScope.owRef.value).toBe('origin1');
+        expect(componentScope.owRefAlias.value).toBe('origin1');
+
+        componentScope.owRef = {value: 'isolate1'};
+        componentScope.$apply();
+        expect($rootScope.obj.value).toBe('origin1');
+
+        // Change does not propagate because object identity hasn't changed
+        $rootScope.obj.value = 'origin2';
+        $rootScope.$apply();
+        expect(componentScope.owRef.value).toBe('isolate1');
+        expect(componentScope.owRefAlias.value).toBe('origin2');
+
+        // Change does propagate because object identity changes
+        $rootScope.obj = {value: 'origin3'};
+        $rootScope.$apply();
+        expect(componentScope.owRef.value).toBe('origin3');
+        expect(componentScope.owRef).toBe($rootScope.obj);
+        expect(componentScope.owRefAlias).toBe($rootScope.obj);
+      }));
+
+      it('should update isolate when both change', inject(function() {
+        compile('<div><span my-component ow-ref="name">');
+        $rootScope.name = {mark:123};
+        componentScope.owRef = 'misko';
+
+        $rootScope.$apply();
+        expect($rootScope.name).toEqual({mark:123});
+        expect(componentScope.owRef).toBe($rootScope.name);
+        expect(componentScope.owRefAlias).toBe($rootScope.name);
+
+        $rootScope.name = 'igor';
+        componentScope.owRef = {};
+        $rootScope.$apply();
+        expect($rootScope.name).toEqual('igor');
+        expect(componentScope.owRef).toBe($rootScope.name);
+        expect(componentScope.owRefAlias).toBe($rootScope.name);
+      }));
+
+
+      it('should not break when isolate and origin both change to the same value', inject(function() {
+        $rootScope.name = 'aaa';
+        compile('<div><span my-component ow-ref="name">');
+
+        //change both sides to the same item within the same digest cycle
+        componentScope.owRef = 'same';
+        $rootScope.name = 'same';
+        $rootScope.$apply();
+
+        //change origin back to its previous value
+        $rootScope.name = 'aaa';
+        $rootScope.$apply();
+
+        expect($rootScope.name).toBe('aaa');
+        expect(componentScope.owRef).toBe('aaa');
+      }));
+
+
+      it('should not update origin when identity of isolate changes', inject(function() {
+        $rootScope.name = {mark:123};
+        compile('<div><span my-component ow-ref="name">');
+
+        $rootScope.$apply();
+        expect($rootScope.name).toEqual({mark:123});
+        expect(componentScope.owRef).toBe($rootScope.name);
+        expect(componentScope.owRefAlias).toBe($rootScope.name);
+
+        componentScope.owRef = 'martin';
+        $rootScope.$apply();
+        expect($rootScope.name).toEqual({mark: 123});
+        expect(componentScope.owRef).toBe('martin');
+        expect(componentScope.owRefAlias).toEqual({mark: 123});
+      }));
+
+
+      it('should update origin when property of isolate object reference changes', inject(function() {
+        $rootScope.obj = {mark:123};
+        compile('<div><span my-component ow-ref="obj">');
+
+        $rootScope.$apply();
+        expect($rootScope.obj).toEqual({mark:123});
+        expect(componentScope.owRef).toBe($rootScope.obj);
+
+        componentScope.owRef.mark = 789;
+        $rootScope.$apply();
+        expect($rootScope.obj).toEqual({mark: 789});
+        expect(componentScope.owRef).toBe($rootScope.obj);
+      }));
+
+
+      it('should not throw on non assignable changes', inject(function() {
+        compile('<div><span my-component ow-ref="\'hello \' + name">');
+        $rootScope.name = 'world';
+        $rootScope.$apply();
+        expect(componentScope.owRef).toBe('hello world');
+
+        componentScope.owRef = 'ignore me';
+        expect(componentScope.owRef).toBe('ignore me');
+        expect($rootScope.name).toBe('world');
+
+        $rootScope.name = 'misko';
+        $rootScope.$apply();
+        expect(componentScope.owRef).toBe('hello misko');
+      }));
+
+
+      it('should not throw when assigning to undefined', inject(function() {
+        compile('<div><span my-component>');
+        $rootScope.$apply();
+        expect(componentScope.owRef).toBeUndefined();
+
+        componentScope.owRef = 'ignore me';
+        expect(componentScope.owRef).toBe('ignore me');
+
+        $rootScope.$apply();
+        expect(componentScope.owRef).toBe('ignore me');
+      }));
+
+
+      it('should update isolate scope when "<"-bound NaN changes', inject(function() {
+        $rootScope.num = NaN;
+        compile('<div my-component ow-ref="num"></div>');
+        var isolateScope = element.isolateScope();
+        expect(isolateScope.owRef).toBeNaN();
+
+        $rootScope.$apply(function(scope) { scope.num = 64; });
+        expect(isolateScope.owRef).toBe(64);
+      }));
+
+
+      describe('literal objects', function() {
+        it('should copy parent changes', inject(function() {
+          compile('<div><span my-component ow-ref="{name: name}">');
+
+          $rootScope.name = 'a';
+          $rootScope.$apply();
+          expect(componentScope.owRef).toEqual({name: 'a'});
+
+          $rootScope.name = 'b';
+          $rootScope.$apply();
+          expect(componentScope.owRef).toEqual({name: 'b'});
+        }));
+
+
+        it('should not change the isolate when origin does not change', inject(function() {
+          compile('<div><span my-component ref="{name: name}">');
+
+          $rootScope.name = 'a';
+          $rootScope.$apply();
+          var lastComponentValue = componentScope.owRef;
+          $rootScope.$apply();
+          expect(componentScope.owRef).toBe(lastComponentValue);
+        }));
+
+
+        it('should not complain when the component changes', inject(function() {
+          compile('<div><span my-component ow-ref="{name: name}">');
+
+          $rootScope.name = 'a';
+          $rootScope.$apply();
+          componentScope.owRef = {name: 'b'};
+          componentScope.$apply();
+          expect(componentScope.owRef).toEqual({name: 'b'});
+          expect($rootScope.name).toBe('a');
+        }));
+
+
+        it('should work for primitive literals', inject(function() {
+          test('1', 1);
+          test('null', null);
+          test('undefined', undefined);
+          test("'someString'", 'someString');
+
+          function test(literalString, literalValue) {
+            compile('<div><span my-component ow-ref="' + literalString + '">');
+
+            $rootScope.$apply();
+            expect(componentScope.owRef).toBe(literalValue);
+            dealoc(element);
+          }
+        }));
+
+        describe('optional one-way binding', function() {
+          it('should update local when origin changes', inject(function() {
+            compile('<div><span my-component ow-optref="name">');
+            expect(componentScope.owOptRef).toBe(undefined);
+            expect(componentScope.owOptRefAlias).toBe(componentScope.owOptRef);
+
+            $rootScope.name = 'misko';
+            $rootScope.$apply();
+            expect(componentScope.owOptref).toBe($rootScope.name);
+            expect(componentScope.owOptrefAlias).toBe($rootScope.name);
+
+            $rootScope.name = {};
+            $rootScope.$apply();
+            expect(componentScope.owOptref).toBe($rootScope.name);
+            expect(componentScope.owOptrefAlias).toBe($rootScope.name);
+          }));
+
+          it('should not throw exception when reference does not exist', inject(function() {
+            compile('<div><span my-component>');
+
+            expect(componentScope.owOptref).toBe(undefined);
+            expect(componentScope.owOptrefAlias).toBe(undefined);
+            expect(componentScope.owOptreference).toBe(undefined);
+          }));
+        });
+
+        describe('collection object reference', function() {
+          it('should update isolate scope when origin scope changes', inject(function() {
+            $rootScope.collection = [{
+              name: 'Gabriel',
+              value: 18
+            }, {
+              name: 'Tony',
+              value: 91
+            }];
+            $rootScope.query = "";
+            $rootScope.$apply();
+
+            compile('<div><span my-component ow-colref="collection | filter:query">');
+
+            expect(componentScope.owColref).toEqual($rootScope.collection);
+            expect(componentScope.owColrefAlias).toEqual(componentScope.owColref);
+
+            $rootScope.query = "Gab";
+            $rootScope.$apply();
+
+            expect(componentScope.owColref).toEqual([$rootScope.collection[0]]);
+            expect(componentScope.owColrefAlias).toEqual([$rootScope.collection[0]]);
+          }));
+
+
+          it('should not update the origin scope when isolate scope collection is replaced', inject(function() {
+            $rootScope.collection = [{
+              name: 'Gabriel',
+              value: 18
+            }, {
+              name: 'Tony',
+              value: 91
+            }];
+
+            compile('<div><span my-component ow-colref="collection">');
+
+            componentScope.owColref = [{
+              name: 'Boris',
+              value: 55
+            }];
+            componentScope.$apply();
+
+            expect($rootScope.collection[1]).toEqual({name: 'Tony', value: 91});
+          }));
+
+
+          it('should update the origin scope when isolate scope item changes', inject(function() {
+            $rootScope.collection = [{
+              name: 'Gabriel',
+              value: 18
+            }, {
+              name: 'Tony',
+              value: 91
+            }];
+
+            compile('<div><span my-component ow-colref="collection">');
+
+            var newItem = {
+              name: 'Pablo',
+              value: 10
+            };
+            componentScope.owColref[0].value = 72;
+            componentScope.owColref.push(newItem);
+            componentScope.$apply();
+
+            expect($rootScope.collection[0].value).toBe(72);
+            expect($rootScope.collection[2]).toEqual(newItem);
+          }));
+
+        });
+      });
+    });
+
     describe('executable expression', function() {
       it('should allow expression execution with locals', inject(function() {
         compile('<div><span my-component expr="count = count + offset">');
@@ -4254,6 +4558,9 @@ describe('$compile', function() {
       expect(componentScope.$$isolateBindings.refAlias.attrName).toBe('ref');
       expect(componentScope.$$isolateBindings.reference.mode).toBe('=');
       expect(componentScope.$$isolateBindings.reference.attrName).toBe('reference');
+      expect(componentScope.$$isolateBindings.owRef.mode).toBe('<');
+      expect(componentScope.$$isolateBindings.owRef.attrName).toBe('owRef');
+      expect(componentScope.$$isolateBindings.owRefAlias.attrName).toBe('owRef');
       expect(componentScope.$$isolateBindings.expr.mode).toBe('&');
       expect(componentScope.$$isolateBindings.expr.attrName).toBe('expr');
       expect(componentScope.$$isolateBindings.exprAlias.attrName).toBe('expr');
@@ -4268,18 +4575,23 @@ describe('$compile', function() {
     }));
 
 
-    it('should expose isolate scope variables on controller with controllerAs when bindToController is true', function() {
+    it('should expose isolate scope variables on controller with controllerAs when bindToController is true (template)', function() {
       var controllerCalled = false;
       module(function($compileProvider) {
         $compileProvider.directive('fooDir', valueFn({
           template: '<p>isolate</p>',
           scope: {
             'data': '=dirData',
+            'oneway': '<dirData',
             'str': '@dirStr',
             'fn': '&dirFn'
           },
           controller: function($scope) {
             expect(this.data).toEqualData({
+              'foo': 'bar',
+              'baz': 'biz'
+            });
+            expect(this.oneway).toEqualData({
               'foo': 'bar',
               'baz': 'biz'
             });
@@ -4319,6 +4631,10 @@ describe('$compile', function() {
         "      'foo': 'bar',\n" +
         "      'baz': 'biz'\n" +
         "    });\n" +
+        "    expect(this.oneway).toEqualData({\n" +
+        "      'foo': 'bar',\n" +
+        "      'baz': 'biz'\n" +
+        "    });\n" +
         "    expect(this.str).toBe('Hello, world!');\n" +
         "    expect(this.fn()).toBe('called!');\n" +
         "    controllerCalled = true;\n" +
@@ -4331,6 +4647,7 @@ describe('$compile', function() {
           template: '<p>isolate</p>',
           scope: {
             'data': '=dirData',
+            'oneway': '<dirData',
             'str': '@dirStr',
             'fn': '&dirFn'
           },
@@ -4382,18 +4699,23 @@ describe('$compile', function() {
     });
 
 
-    it('should expose isolate scope variables on controller with controllerAs when bindToController is true', function() {
+    it('should expose isolate scope variables on controller with controllerAs when bindToController is true (templateUrl)', function() {
       var controllerCalled = false;
       module(function($compileProvider) {
         $compileProvider.directive('fooDir', valueFn({
           templateUrl: 'test.html',
           scope: {
             'data': '=dirData',
+            'oneway': '<dirData',
             'str': '@dirStr',
             'fn': '&dirFn'
           },
           controller: function($scope) {
             expect(this.data).toEqualData({
+              'foo': 'bar',
+              'baz': 'biz'
+            });
+            expect(this.oneway).toEqualData({
               'foo': 'bar',
               'baz': 'biz'
             });
@@ -4428,6 +4750,7 @@ describe('$compile', function() {
           templateUrl: 'test.html',
           scope: {
             'data': '=dirData',
+            'oneway': '<dirData',
             'str': '@dirStr',
             'fn': '&dirFn'
           },
@@ -4450,6 +4773,7 @@ describe('$compile', function() {
           templateUrl: 'test.html',
           scope: {
             'data': '=dirData',
+            'oneway': '<dirData',
             'str': '@dirStr',
             'fn': '&dirFn'
           },
@@ -4473,6 +4797,7 @@ describe('$compile', function() {
           templateUrl: 'test.html',
           scope: {
             'data': '=dirData',
+            'oneway': '<dirData',
             'str': '@dirStr',
             'fn': '&dirFn'
           },
@@ -4497,6 +4822,10 @@ describe('$compile', function() {
             'foo': 'bar',
             'baz': 'biz'
           });
+          expect(this.oneway).toEqualData({
+            'foo': 'bar',
+            'baz': 'biz'
+          });
           expect(this.str).toBe('Hello, world!');
           expect(this.fn()).toBe('called!');
           controllerCalled = true;
@@ -4505,6 +4834,7 @@ describe('$compile', function() {
           templateUrl: 'test.html',
           bindToController: {
             'data': '=dirData',
+            'oneway': '<dirData',
             'str': '@dirStr',
             'fn': '&dirFn'
           },
@@ -4537,6 +4867,10 @@ describe('$compile', function() {
             'foo': 'bar',
             'baz': 'biz'
           });
+          expect(this.data).toEqualData({
+            'foo': 'bar',
+            'baz': 'biz'
+          });
           expect(this.str).toBe('Hello, world!');
           expect(this.fn()).toBe('called!');
           controllerCalled = true;
@@ -4545,6 +4879,7 @@ describe('$compile', function() {
           templateUrl: 'test.html',
           bindToController: {
             'data': '=dirData',
+            'oneway': '<dirData',
             'str': '@dirStr',
             'fn': '&dirFn'
           },
@@ -4576,12 +4911,14 @@ describe('$compile', function() {
         $compileProvider.directive('foo', valueFn({
           bindToController: {
             'data': '=fooData',
+            'oneway': '<fooData',
             'str': '@fooStr',
             'fn': '&fooFn'
           },
           controllerAs: 'fooCtrl',
           controller: function() {
             expect(this.data).toEqualData({'foo': 'bar', 'baz': 'biz'});
+            expect(this.oneway).toEqualData({'foo': 'bar', 'baz': 'biz'});
             expect(this.str).toBe('Hello, world!');
             expect(this.fn()).toBe('called!');
             controller1Called = true;
@@ -4590,12 +4927,14 @@ describe('$compile', function() {
         $compileProvider.directive('bar', valueFn({
           bindToController: {
             'data': '=barData',
+            'oneway': '<barData',
             'str': '@barStr',
             'fn': '&barFn'
           },
           controllerAs: 'barCtrl',
           controller: function() {
             expect(this.data).toEqualData({'foo2': 'bar2', 'baz2': 'biz2'});
+            expect(this.oneway).toEqualData({'foo2': 'bar2', 'baz2': 'biz2'});
             expect(this.str).toBe('Hello, second world!');
             expect(this.fn()).toBe('second called!');
             controller2Called = true;
@@ -4634,6 +4973,7 @@ describe('$compile', function() {
         $compileProvider.directive('foo', valueFn({
           bindToController: {
             'data': '=fooData',
+            'oneway': '<fooData',
             'str': '@fooStr',
             'fn': '&fooFn'
           },
@@ -4641,6 +4981,7 @@ describe('$compile', function() {
           controllerAs: 'fooCtrl',
           controller: function() {
             expect(this.data).toEqualData({'foo': 'bar', 'baz': 'biz'});
+            expect(this.oneway).toEqualData({'foo': 'bar', 'baz': 'biz'});
             expect(this.str).toBe('Hello, world!');
             expect(this.fn()).toBe('called!');
             controller1Called = true;
@@ -4649,12 +4990,14 @@ describe('$compile', function() {
         $compileProvider.directive('bar', valueFn({
           bindToController: {
             'data': '=barData',
+            'oneway': '<barData',
             'str': '@barStr',
             'fn': '&barFn'
           },
           controllerAs: 'barCtrl',
           controller: function() {
             expect(this.data).toEqualData({'foo2': 'bar2', 'baz2': 'biz2'});
+            expect(this.oneway).toEqualData({'foo2': 'bar2', 'baz2': 'biz2'});
             expect(this.str).toBe('Hello, second world!');
             expect(this.fn()).toBe('second called!');
             controller2Called = true;
@@ -4693,6 +5036,7 @@ describe('$compile', function() {
         $compileProvider.directive('foo', valueFn({
           bindToController: {
             'data': '=fooData',
+            'oneway': '<fooData',
             'str': '@fooStr',
             'fn': '&fooFn'
           },
@@ -4700,6 +5044,7 @@ describe('$compile', function() {
           controllerAs: 'fooCtrl',
           controller: function() {
             expect(this.data).toEqualData({'foo': 'bar', 'baz': 'biz'});
+            expect(this.oneway).toEqualData({'foo': 'bar', 'baz': 'biz'});
             expect(this.str).toBe('Hello, world!');
             expect(this.fn()).toBe('called!');
             controller1Called = true;
@@ -4708,6 +5053,7 @@ describe('$compile', function() {
         $compileProvider.directive('bar', valueFn({
           bindToController: {
             'data': '=barData',
+            'oneway': '<barData',
             'str': '@barStr',
             'fn': '&barFn'
           },
@@ -4715,6 +5061,7 @@ describe('$compile', function() {
           controllerAs: 'barCtrl',
           controller: function() {
             expect(this.data).toEqualData({'foo2': 'bar2', 'baz2': 'biz2'});
+            expect(this.oneway).toEqualData({'foo2': 'bar2', 'baz2': 'biz2'});
             expect(this.str).toBe('Hello, second world!');
             expect(this.fn()).toBe('second called!');
             controller2Called = true;
@@ -4754,11 +5101,13 @@ describe('$compile', function() {
               this.value1 = 'parent1';
               this.value2 = 'parent2';
               this.value3 = function() { return 'parent3'; };
+              this.value4 = 'parent4';
             },
             'ChildCtrl': function() {
               this.value1 = 'child1';
               this.value2 = 'child2';
               this.value3 = function() { return 'child3'; };
+              this.value4 = 'child4';
             }
           });
 
@@ -4768,7 +5117,8 @@ describe('$compile', function() {
             bindToController: {
               fromParent1: '@',
               fromParent2: '=',
-              fromParent3: '&'
+              fromParent3: '&',
+              fromParent4: '<'
             },
             template: ''
           }));
@@ -4780,7 +5130,8 @@ describe('$compile', function() {
                 '<child ' +
                     'from-parent-1="{{ ctrl.value1 }}" ' +
                     'from-parent-2="ctrl.value2" ' +
-                    'from-parent-3="ctrl.value3">' +
+                    'from-parent-3="ctrl.value3" ' +
+                    'from-parent-4="ctrl.value4">' +
                 '</child>' +
               '</div>')($rootScope);
           $rootScope.$digest();
@@ -4794,6 +5145,8 @@ describe('$compile', function() {
           expect(childCtrl.fromParent2).not.toBe(childCtrl.value2);
           expect(childCtrl.fromParent3()()).toBe(parentCtrl.value3());
           expect(childCtrl.fromParent3()()).not.toBe(childCtrl.value3());
+          expect(childCtrl.fromParent4).toBe(parentCtrl.value4);
+          expect(childCtrl.fromParent4).not.toBe(childCtrl.value4);
 
           childCtrl.fromParent2 = 'modified';
           $rootScope.$digest();
@@ -4813,11 +5166,13 @@ describe('$compile', function() {
               this.value1 = 'parent1';
               this.value2 = 'parent2';
               this.value3 = function() { return 'parent3'; };
+              this.value4 = 'parent4';
             },
             'ChildCtrl': function() {
               this.value1 = 'child1';
               this.value2 = 'child2';
               this.value3 = function() { return 'child3'; };
+              this.value4 = 'child4';
             }
           });
 
@@ -4827,7 +5182,8 @@ describe('$compile', function() {
             bindToController: {
               fromParent1: '@',
               fromParent2: '=',
-              fromParent3: '&'
+              fromParent3: '&',
+              fromParent4: '<'
             },
             template: ''
           }));
@@ -4839,7 +5195,8 @@ describe('$compile', function() {
                 '<child ' +
                     'from-parent-1="{{ ctrl.value1 }}" ' +
                     'from-parent-2="ctrl.value2" ' +
-                    'from-parent-3="ctrl.value3">' +
+                    'from-parent-3="ctrl.value3" ' +
+                    'from-parent-4="ctrl.value4">' +
                 '</child>' +
               '</div>')($rootScope);
           $rootScope.$digest();
@@ -4853,6 +5210,8 @@ describe('$compile', function() {
           expect(childCtrl.fromParent2).not.toBe(childCtrl.value2);
           expect(childCtrl.fromParent3()()).toBe(parentCtrl.value3());
           expect(childCtrl.fromParent3()()).not.toBe(childCtrl.value3());
+          expect(childCtrl.fromParent4).toBe(parentCtrl.value4);
+          expect(childCtrl.fromParent4).not.toBe(childCtrl.value4);
 
           childCtrl.fromParent2 = 'modified';
           $rootScope.$digest();
@@ -4902,6 +5261,10 @@ describe('$compile', function() {
           'foo': 'bar',
           'baz': 'biz'
         });
+        expect(this.oneway).toEqualData({
+          'foo': 'bar',
+          'baz': 'biz'
+        });
         expect(this.str).toBe('Hello, world!');
         expect(this.fn()).toBe('called!');
       };
@@ -4916,6 +5279,7 @@ describe('$compile', function() {
           templateUrl: 'test.html',
           bindToController: {
             'data': '=dirData',
+            'oneway': '<dirData',
             'str': '@dirStr',
             'fn': '&dirFn'
           },
@@ -4956,6 +5320,10 @@ describe('$compile', function() {
           'foo': 'bar',
           'baz': 'biz'
         });
+        expect(this.oneway).toEqualData({
+          'foo': 'bar',
+          'baz': 'biz'
+        });
         expect(this.str).toBe('Hello, world!');
         expect(this.fn()).toBe('called!');
       };
@@ -4971,6 +5339,7 @@ describe('$compile', function() {
           bindToController: true,
           scope: {
             'data': '=dirData',
+            'oneway': '<dirData',
             'str': '@dirStr',
             'fn': '&dirFn'
           },
@@ -5081,6 +5450,7 @@ describe('$compile', function() {
         });
       });
     });
+
   });
 
 
