@@ -976,6 +976,42 @@ describe("basic usage", function() {
         expect(callback).toHaveBeenCalledOnce();
         expect(ccs.$resolved).toBe(true);
       });
+
+      it('should add $new method to the collection', function() {
+        $httpBackend.expect('GET', '/CreditCard?key=value').respond([{id: 1}, {id: 2}]);
+        var ccs = CreditCard.query({key: 'value'});
+
+        ccs.$promise.then(callback);
+        $httpBackend.flush();
+
+        expect(ccs.$new).toBeDefined();
+        expect(typeof ccs.$new).toBe('function');
+      });
+
+      it('should allow $new to create a new instance from a collection', function() {
+        $httpBackend.expect('GET', '/CreditCard?key=value').respond([{id: 1}, {id: 2}]);
+        var ccs = CreditCard.query({key: 'value'});
+
+        ccs.$promise.then(callback);
+        $httpBackend.flush();
+
+        expect(ccs.$new() instanceof CreditCard).toBeTruthy();
+      });
+
+      it('should allow saving $new instance created from an empty collection', function() {
+        $httpBackend.expect('GET', '/CreditCard?key=value').respond([]);
+        var ccs = CreditCard.query({key: 'value'});
+
+        ccs.$promise.then(callback);
+        $httpBackend.flush();
+
+        var newItem = ccs.$new({name: 'New Item'});
+
+        $httpBackend.expect('POST', '/CreditCard', '{"name":"New Item"}').respond({_id: {_key:'123'}, count: 1});
+        newItem.$save();
+        $httpBackend.flush();
+        expect(newItem).toEqualData({_id: {_key: '123'}, count: 1});
+      });
     });
 
     it('should allow per action response interceptor that gets full response', function() {
