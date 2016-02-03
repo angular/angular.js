@@ -3537,8 +3537,6 @@ describe('$compile', function() {
             owRefAlias: '< owRef',
             owOptref: '<?',
             owOptrefAlias: '<? owOptref',
-            owColref: '<*',
-            owColrefAlias: '<* owColref',
             expr: '&',
             optExpr: '&?',
             exprAlias: '&expr',
@@ -4478,77 +4476,6 @@ describe('$compile', function() {
             expect(componentScope.owOptref).toBe(undefined);
             expect(componentScope.owOptrefAlias).toBe(undefined);
           }));
-        });
-
-        describe('collection object reference', function() {
-          it('should update isolate scope when origin scope changes', inject(function() {
-            $rootScope.collection = [{
-              name: 'Gabriel',
-              value: 18
-            }, {
-              name: 'Tony',
-              value: 91
-            }];
-            $rootScope.query = "";
-            $rootScope.$apply();
-
-            compile('<div><span my-component ow-colref="collection | filter:query">');
-
-            expect(componentScope.owColref).toEqual($rootScope.collection);
-            expect(componentScope.owColrefAlias).toEqual(componentScope.owColref);
-
-            $rootScope.query = "Gab";
-            $rootScope.$apply();
-
-            expect(componentScope.owColref).toEqual([$rootScope.collection[0]]);
-            expect(componentScope.owColrefAlias).toEqual([$rootScope.collection[0]]);
-          }));
-
-
-          it('should not update the origin scope when isolate scope collection is replaced', inject(function() {
-            $rootScope.collection = [{
-              name: 'Gabriel',
-              value: 18
-            }, {
-              name: 'Tony',
-              value: 91
-            }];
-
-            compile('<div><span my-component ow-colref="collection">');
-
-            componentScope.owColref = [{
-              name: 'Boris',
-              value: 55
-            }];
-            componentScope.$apply();
-
-            expect($rootScope.collection[1]).toEqual({name: 'Tony', value: 91});
-          }));
-
-
-          it('should update the origin scope when isolate scope item changes', inject(function() {
-            $rootScope.collection = [{
-              name: 'Gabriel',
-              value: 18
-            }, {
-              name: 'Tony',
-              value: 91
-            }];
-
-            compile('<div><span my-component ow-colref="collection">');
-
-            var newItem = {
-              name: 'Pablo',
-              value: 10
-            };
-            componentScope.owColref[0].value = 72;
-            componentScope.owColref.push(newItem);
-            componentScope.$apply();
-
-            expect($rootScope.collection[0].value).toBe(72);
-            expect($rootScope.collection[2]).toEqual(newItem);
-          }));
-
         });
       });
     });
