@@ -35,7 +35,7 @@ changes section for more information
   - do not trigger animations if the document is hidden
   ([a3a7afd3](https://github.com/angular/angular.js/commit/a3a7afd3aa70d981b0210088df53fa2cf68d3a3d),
    [#12842](https://github.com/angular/angular.js/issues/12842), [#13776](https://github.com/angular/angular.js/issues/13776))
-- **ngSanitize:** Blacklist the attribute `usemap`
+- **ngSanitize:** blacklist the attribute `usemap` as it can be used as a security exploit
   ([234053fc](https://github.com/angular/angular.js/commit/234053fc9ad90e0d05be7e8359c6af66be94c094))
 - **ngTouch:** deprecate ngClick and disable it by default
   ([0dfc1dfe](https://github.com/angular/angular.js/commit/0dfc1dfebf26af7f951f301c4e3848ac46f05d7f),
