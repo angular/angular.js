@@ -191,7 +191,7 @@
  *   parent scope. If no `attr` name is specified then the attribute name is assumed to be the same as the
  *   local name. You can also make the binding optional by adding `?`: `<?` or `<?attr`.
  *
- *   For example, given `<dir my-attr="parentModel">` and directive definition of
+ *   For example, given `<my-component my-attr="parentModel">` and directive definition of
  *   `scope: { localModel:'<myAttr' }`, then the isolated scope property `localModel` will reflect the
  *   value of `parentModel` on the parent scope. Any changes to `parentModel` will be reflected
  *   in `localModel`, but changes in `localModel` will not reflect in `parentModel`. There are however
@@ -200,12 +200,12 @@
  *     sets the same value. That means if your bound value is an object, changes to its properties
  *     in the isolated scope will be reflected in the parent scope (because both reference the same object).
  *     2. one-way binding watches changes to the **identity** of the parent value. That means the
- *     {@link ng.$rootScope.Scope#$watch`$watch`} on the parent value only fires if the reference
+ *     {@link ng.$rootScope.Scope#$watch `$watch`} on the parent value only fires if the reference
  *     to the value has changed. In most cases, this should not be of concern, but can be important
  *     to know if you one-way bind to an object, and then replace that object in the isolated scope.
- *     If you now change a property of the object in
- *     your parent scope, the change will not be propagated to the isolated scope, because the identity
- *     of the object has not changed. Instead you must assign a new object.
+ *     If you now change a property of the object in your parent scope, the change will not be
+ *     propagated to the isolated scope, because the identity of the object on the parent scope
+ *     has not changed. Instead you must assign a new object.
  *
  *   One-way binding is useful if you do not plan to propagate changes to your isolated scope bindings
  *   back to the parent. However, it does not make this completely impossible.
