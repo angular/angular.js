@@ -158,9 +158,9 @@ service does not have access to the resource in order to sanitize it.
 
 Similarly, due to [234053fc](https://github.com/angular/angular.js/commit/234053fc9ad90e0d05be7e8359c6af66be94c094),
 the `$sanitize` service will now also remove instances of the `usemap` attribute from any elements
-passedto it. This attribute is used to reference another element by `name` or `id`. Since the `name`
-and `id` attributes are already blacklisted, a sanitized `usemap` attribute could only reference
-unsanitized content, which is a security risk.
+passed to it. This attribute is used to reference another element by `name` or `id`. Since the
+`name` and `id` attributes are already blacklisted, a sanitized `usemap` attribute could only
+reference unsanitized content, which is a security risk.
 
 Due to [98c2db7f](https://github.com/angular/angular.js/commit/98c2db7f9c2d078a408576e722407d518c7ee10a),
 passing a non-string value (other than `undefined` or `null`) through the `linky` filter will throw
