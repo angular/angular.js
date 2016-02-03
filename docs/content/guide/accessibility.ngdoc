@@ -41,7 +41,7 @@ Currently, ngAria interfaces with the following directives:
 
 <h2 id="ngmodel">ngModel</h2>
 
-Much of ngAria's heavy lifting happens in the {@link ngModel ngModel}
+Much of ngAria's heavy lifting happens in the {@link ng/directive/ngModel}
 directive. For elements using ngModel, special attention is paid by ngAria if that element also
 has a role or type of `checkbox`, `radio`, `range` or `textbox`.
 
@@ -134,14 +134,14 @@ attributes (if they have not been explicitly specified by the developer):
 
 ngAria will also add `tabIndex`, ensuring custom elements with these roles will be reachable from
 the keyboard. It is still up to **you** as a developer to **ensure custom controls will be
-accessible**. As a rule, any time you create a widget involving user interaction, be sure to test 
+accessible**. As a rule, any time you create a widget involving user interaction, be sure to test
 it with your keyboard and at least one mobile and desktop screen reader.
 
 <h2 id="ngdisabled">ngDisabled</h2>
 
 The `disabled` attribute is only valid for certain elements such as `button`, `input` and
 `textarea`. To properly disable custom element directives such as `<md-checkbox>` or `<taco-tab>`,
-using ngAria with [ngDisabled](https://docs.angularjs.org/api/ng/directive/ngDisabled) will also
+using ngAria with {@link ng/directive/ngDisabled} will also
 add `aria-disabled`. This tells assistive technologies when a non-native input is disabled, helping
 custom controls to be more accessible.
 
@@ -162,7 +162,7 @@ Becomes:
 
 <h2 id="ngshow">ngShow</h2>
 
->The [ngShow](https://docs.angularjs.org/api/ng/directive/ngShow) directive shows or hides the
+>The {@link ng/directive/ngShow} directive shows or hides the
 given HTML element based on the expression provided to the `ngShow` attribute. The element is
 shown or hidden by removing or adding the `.ng-hide` CSS class onto the element.
 
@@ -199,7 +199,7 @@ Becomes:
 
 <h2 id="nghide">ngHide</h2>
 
->The [ngHide](https://docs.angularjs.org/api/ng/directive/ngHide) directive shows or hides the
+>The {@link ng/directive/ngHide} directive shows or hides the
 given HTML element based on the expression provided to the `ngHide` attribute. The element is
 shown or hidden by removing or adding the `.ng-hide` CSS class onto the element.
 
@@ -208,7 +208,7 @@ The default CSS for `ngHide`, the inverse method to `ngShow`, makes ngAria redun
 `display: none`. See explanation for {@link guide/accessibility#ngshow ngShow} when overriding the default CSS.
 
 <h2><span id="ngclick">ngClick</span> and <span id="ngdblclick">ngDblclick</span></h2>
-If `ng-click` or `ng-dblclick` is encountered, ngAria will add `tabindex="0"` to any element not in 
+If `ng-click` or `ng-dblclick` is encountered, ngAria will add `tabindex="0"` to any element not in
 a node blacklist:
 
  * Button
@@ -218,14 +218,14 @@ a node blacklist:
  * Select
  * Details/Summary
 
-To fix widespread accessibility problems with `ng-click` on `div` elements, ngAria will 
+To fix widespread accessibility problems with `ng-click` on `div` elements, ngAria will
 dynamically bind a keypress event by default as long as the element isn't in the node blacklist.
-You can turn this functionality on or off with the `bindKeypress` configuration option. 
+You can turn this functionality on or off with the `bindKeypress` configuration option.
 
 ngAria will also add the `button` role to communicate to users of assistive technologies. This can
 be disabled with the `bindRoleForClick` configuration option.
 
-For `ng-dblclick`, you must still manually add `ng-keypress` and a role to non-interactive elements 
+For `ng-dblclick`, you must still manually add `ng-keypress` and a role to non-interactive elements
 such as `div` or `taco-button` to enable keyboard access.
 
 <h3>Example</h3>
