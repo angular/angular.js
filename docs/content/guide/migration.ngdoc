@@ -3,21 +3,34 @@
 @sortOrder 550
 @description
 
+# Migrating an App to a newer version
+
 Minor version releases in AngularJS introduce several breaking changes that may require changes to your
 application's source code; for instance from 1.0 to 1.2 and from 1.2 to 1.3.
 
-Although we try to avoid breaking changes, there are some cases where it is unavoidable.
+Although we try to avoid breaking changes, there are some cases where it is unavoidable:
 
 * AngularJS has undergone thorough security reviews to make applications safer by default,
 which drives many of these changes.
 * Several new features, especially animations, would not be possible without a few changes.
 * Finally, some outstanding bugs were best fixed by changing an existing API.
 
+<hr />
+
+## Contents
+
+<ul class="nav nav-list">
+  <li>{@link guide/migration#migrating-from-1-4-to-1-5 Migrating from 1.4 to 1.5}</li>
+  <li>{@link guide/migration#migrating-from-1-3-to-1-4 Migrating from 1.3 to 1.4}</li>
+  <li>{@link guide/migration#migrating-from-1-2-to-1-3 Migrating from 1.2 to 1.3}</li>
+  <li>{@link guide/migration#migrating-from-1-0-to-1-2 Migrating from 1.0 to 1.2}</li>
+</ul>
 
 
 
 
-# Migrate from 1.4 to 1.5
+
+## Migrating from 1.4 to 1.5
 
 Angular 1.5 takes a big step towards preparing developers for a smoother transition to Angular 2 in
 the future. Architecturing your applications using components, multi-slot transclusion, using
@@ -55,12 +68,12 @@ by module) that need to be taken into account while migrating from 1.4. Fortunat
 them should have a pretty low impact on most applications.
 
 
-## Core
+### Core
 
 We tried to keep the breaking changes inside the core components to a bare minimum. Still, a few of
 them were unavoidable.
 
-### Services (`$parse`)
+#### Services (`$parse`)
 
 Due to [0ea53503](https://github.com/angular/angular.js/commit/0ea535035a3a1a992948490c3533bffb83235052),
 a new special property, `$locals`, will be available for accessing the locals from an expression.
@@ -69,7 +82,7 @@ referenced) either on the `scope` or on the `locals` object. Your expressions sh
 access such existing properties as `this.$locals` and `$locals.$locals` respectively.
 
 
-### Directives (`ngOptions`)
+#### Directives (`ngOptions`)
 
 A fair amount of work has been put into the `ngOptions` directive, fixing bugs and corner-cases and
 neutralizing browser quirks. A couple of breaking changes were made in the process:
@@ -91,7 +104,7 @@ without `ngModel` before either. The main difference is that now it will fail wi
 informative error message.
 
 
-### Filters (`orderBy`)
+#### Filters (`orderBy`)
 
 Due to [2a85a634](https://github.com/angular/angular.js/commit/2a85a634f86c84f15b411ce009a3515fca7ba580),
 passing a non-array-like value (other than `undefined` or `null`) through the `orderBy` filter will
@@ -101,7 +114,7 @@ Objects considered array-like include: arrays, array subclasses, strings, NodeLi
 jqLite/jQuery collections
 
 
-## ngMessages (`ngMessage`)
+### ngMessages (`ngMessage`)
 
 Due to [4971ef12](https://github.com/angular/angular.js/commit/4971ef12d4c2c268cb8d26f90385dc96eba19db8),
 the `ngMessage` directive is now compiled with a priority of 1, which means directives on the same
@@ -112,7 +125,7 @@ If you have custom directives that relied on the previous behavior, you need to 
 of 1 or greater.
 
 
-## ngResource (`$resource`)
+### ngResource (`$resource`)
 
 The `$resource` service underwent a minor internal refactoring to finally solve a long-standing bug
 preventing requests from being cancelled using promises. Due to the nature of `$resource`'s
@@ -127,7 +140,7 @@ If you need to be able to cancel pending requests, you can now use the new `$can
 will be available on `$resource` instances.
 
 
-## ngRoute (`ngView`)
+### ngRoute (`ngView`)
 
 Due to [983b0598](https://github.com/angular/angular.js/commit/983b0598121a8c5a3a51a30120e114d7e3085d4d),
 a new property will be available on the scope of the route, allowing easy access to the route's
@@ -138,7 +151,7 @@ To fix this, you should choose a custom name for this property, that does not co
 properties on the scope, by specifying the `resolveAs` property on the route.
 
 
-## ngSanitize (`$sanitize`, `linky`)
+### ngSanitize (`$sanitize`, `linky`)
 
 The HTML sanitizer has been re-implemented using inert documents, increasing security, fixing some
 corner-cases that were difficult to handle and reducing its size by about 20% (in terms of loc). In
@@ -208,7 +221,7 @@ For more info on the topic, you can take a look at this
 
 
 
-# Migrating from 1.3 to 1.4
+## Migrating from 1.3 to 1.4
 
 Angular 1.4 fixes major animation issues and introduces a new API for `ngCookies`. Further, there
 are changes to `ngMessages`, `$compile`, `ngRepeat`, `ngOptions `and some fixes to core filters:
@@ -232,7 +245,7 @@ relatively straightforward otherwise.
 
 
 
-## Animation (`ngAnimate`)
+### Animation (`ngAnimate`)
 
 Animations in 1.4 have been refactored internally, but the API has stayed much the same. There are, however,
 some breaking changes that need to be addressed when upgrading to 1.4.
@@ -331,9 +344,9 @@ class based animations (animations triggered via ngClass) in order to ensure tha
 
 
 
-## Forms (`ngMessages`, `ngOptions`, `select`)
+### Forms (`ngMessages`, `ngOptions`, `select`)
 
-### ngMessages
+#### ngMessages
 The ngMessages module has also been subject to an internal refactor to allow it to be more flexible
 and compatible with dynamic message data. The `ngMessage` directive now supports a new attribute
 called `ng-message-exp` which will evaluate an expression and will keep track of that expression
@@ -384,7 +397,7 @@ ctrl.getMessages = function($index) {
 }
 ```
 
-### ngOptions
+#### ngOptions
 
 The `ngOptions` directive has also been refactored and as a result some long-standing bugs
 have been fixed. The breaking changes are comparatively minor and should not affect most applications.
@@ -408,7 +421,7 @@ setting the ngOptions attribute expression after the element is compiled, will n
 This worked previously because the ngOptions logic was part of the select directive, while
 it is now implemented in the ngOptions directive itself.
 
-### select
+#### select
 
 Due to [7fda214c](https://github.com/angular/angular.js/commit/7fda214c4f65a6a06b25cf5d5aff013a364e9cef),
 the `select` directive will now use strict comparison of the `ngModel` scope value against `option`
@@ -439,9 +452,9 @@ ngModelCtrl.$formatters.push(function(value) {
 });
 ```
 
-## Templating (`ngRepeat`, `$compile`)
+### Templating (`ngRepeat`, `$compile`)
 
-### ngRepeat
+#### ngRepeat
 
 Due to [c260e738](https://github.com/angular/angular.js/commit/c260e7386391877625eda086480de73e8a0ba921),
 previously, the order of items when using ngRepeat to iterate over object properties was guaranteed to be consistent
@@ -460,7 +473,7 @@ https://github.com/petebacondarwin/angular-toArrayFilter
 or some other mechanism, and then sort them manually in the order you need.
 
 
-### $compile
+#### $compile
 
 Due to [6a38dbfd](https://github.com/angular/angular.js/commit/6a38dbfd3c34c8f9efff503d17eb3cbeb666d422),
 previously, '&' expressions would always set up a function in the isolate scope. Now, if the binding
@@ -471,7 +484,7 @@ returning an object from a controller constructor function will now override the
 controllerAs method will no longer get the this reference, but the returned object.
 
 
-## Cookies (`ngCookies`)
+### Cookies (`ngCookies`)
 
 Due to [38fbe3ee](https://github.com/angular/angular.js/commit/38fbe3ee8370fc449b82d80df07b5c2ed2cd5fbe),
 `$cookies` will no longer expose properties that represent the current browser cookie
@@ -510,7 +523,7 @@ delegates calls.
 
 
 
-## Server Requests (`$http`)
+### Server Requests (`$http`)
 
 Due to [5da1256](https://github.com/angular/angular.js/commit/5da1256fc2812d5b28fb0af0de81256054856369),
 `transformRequest` functions can no longer modify request headers.
@@ -543,9 +556,9 @@ $http.get(url, {
 
 
 
-## Filters (`filter`, `limitTo`)
+### Filters (`filter`, `limitTo`)
 
-### `filter` filter
+#### `filter` filter
 Due to [cea8e751](https://github.com/angular/angular.js/commit/cea8e75144e6910b806b63a6ec2a6d118316fddd),
 the `filter` filter will throw an error when used with a non-array. Beforehand it would silently
 return an empty array.
@@ -553,7 +566,7 @@ return an empty array.
 If necessary, this can be worked around by converting an object to an array,
 using a filter such as https://github.com/petebacondarwin/angular-toArrayFilter.
 
-### `limitTo` filter
+#### `limitTo` filter
 Due to [a3c3bf33](https://github.com/angular/angular.js/commit/a3c3bf3332e5685dc319c46faef882cb6ac246e1),
 the limitTo filter has changed behavior when the provided limit value is invalid.
 Now, instead of returning empty object/array, it returns unchanged input.
@@ -562,9 +575,9 @@ Now, instead of returning empty object/array, it returns unchanged input.
 
 
 
-# Migrating from 1.2 to 1.3
+## Migrating from 1.2 to 1.3
 
-## Controllers
+### Controllers
 
 Due to [3f2232b5](https://github.com/angular/angular.js/commit/3f2232b5a181512fac23775b1df4a6ebda67d018),
 `$controller` will no longer look for controllers on `window`.
@@ -602,7 +615,7 @@ angular.module('myModule').config(['$controllerProvider', function($controllerPr
 }]);
 ```
 
-## Angular Expression Parsing (`$parse` + `$interpolate`)
+### Angular Expression Parsing (`$parse` + `$interpolate`)
 
 - due to [77ada4c8](https://github.com/angular/angular.js/commit/77ada4c82d6b8fc6d977c26f3cdb48c2f5fbe5a5),
 
@@ -660,7 +673,7 @@ expression parser; there are six of them: false, null, undefined, NaN, 0 and "".
 
 
 
-## Miscellaneous Angular helpers
+### Miscellaneous Angular helpers
 
 - **Angular.copy:** due to [b59b04f9](https://github.com/angular/angular.js/commit/b59b04f98a0b59eead53f6a53391ce1bbcbe9b57),
 
@@ -698,7 +711,7 @@ It will still strip properties starting with `$$` though.
 
 
 
-## jqLite / JQuery
+### jqLite / JQuery
 
 - **jqLite:** due to [a196c8bc](https://github.com/angular/angular.js/commit/a196c8bca82a28c08896d31f1863cf4ecd11401c),
   previously it was possible to set jqLite data on Text/Comment
@@ -714,7 +727,7 @@ jQuery. We don't expect that app code actually depends on this accidental featur
 
 
 
-## Angular HTML Compiler (`$compile`)
+### Angular HTML Compiler (`$compile`)
 
 
 - due to [2ee29c5d](https://github.com/angular/angular.js/commit/2ee29c5da81ffacdc1cabb438f5d125d5e116cb9),
@@ -811,7 +824,7 @@ link: function(scope, element, attr) {
 
 
 
-## Forms, Inputs and ngModel
+### Forms, Inputs and ngModel
 
 - due to [1be9bb9d](https://github.com/angular/angular.js/commit/1be9bb9d3527e0758350c4f7417a4228d8571440),
 
@@ -891,7 +904,7 @@ $scope.resetWithCancel = function (e) {
   See [c90cefe1614](https://github.com/angular/angular.js/commit/c90cefe16142d973a123e945fc9058e8a874c357)
 
 
-## Scopes and Digests (`$scope`)
+### Scopes and Digests (`$scope`)
 
 - due to [8c6a8171](https://github.com/angular/angular.js/commit/8c6a8171f9bdaa5cdabc0cc3f7d3ce10af7b434d),
   Scope#$id is now of type number rather than string. Since the
@@ -911,7 +924,7 @@ anyone.
 
 
 
-## Server Requests (`$http`, `$resource`)
+### Server Requests (`$http`, `$resource`)
 - **$http:** due to [ad4336f9](https://github.com/angular/angular.js/commit/ad4336f9359a073e272930f8f9bcd36587a8648f),
 
 
@@ -978,7 +991,7 @@ More details on the new interceptors API (which has been around as of v1.1.4) ca
 
 
 
-## Modules and Injector (`$inject`)
+### Modules and Injector (`$inject`)
 
 - due to [c0b4e2db](https://github.com/angular/angular.js/commit/c0b4e2db9cbc8bc3164cedc4646145d3ab72536e),
 
@@ -1020,7 +1033,7 @@ app. This is no longer possible within a single module.
 
 
 
-## Animation (`ngAnimate`)
+### Animation (`ngAnimate`)
 
 
 - due to [1cb8584e](https://github.com/angular/angular.js/commit/1cb8584e8490ecdb1b410a8846c4478c6c2c0e53),
@@ -1073,7 +1086,7 @@ After:
 Please view the documentation for ngAnimate for more info.
 
 
-## Testing
+### Testing
 
 - due to [85880a64](https://github.com/angular/angular.js/commit/85880a64900fa22a61feb926bf52de0965332ca5), some deprecated features of
 Protractor tests no longer work.
@@ -1112,7 +1125,7 @@ or simply use:
     var el = element(by.repeater('foo in foos').row(2))
 
 
-## Internet Explorer 8
+### Internet Explorer 8
 
 - due to [eaa1d00b](https://github.com/angular/angular.js/commit/eaa1d00b24008f590b95ad099241b4003688cdda),
   As communicated before, IE8 is no longer supported.
@@ -1122,7 +1135,7 @@ or simply use:
 
 
 
-# Migrating from 1.0 to 1.2
+## Migrating from 1.0 to 1.2
 
 
 <div class="alert alert-warning">
@@ -1165,7 +1178,7 @@ below should still apply, but you may want to consult the
 </ul>
 
 
-## ngRoute has been moved into its own module
+### ngRoute has been moved into its own module
 
 Just like `ngResource`, `ngRoute` is now its own module.
 
@@ -1196,7 +1209,7 @@ var myApp = angular.module('myApp', ['ngRoute', 'someOtherModule']);
 See [5599b55b](https://github.com/angular/angular.js/commit/5599b55b04788c2e327d7551a4a699d75516dd21).
 
 
-## Templates no longer automatically unwrap promises
+### Templates no longer automatically unwrap promises
 
 `$parse` and templates in general will no longer automatically unwrap promises.
 
@@ -1230,7 +1243,7 @@ See [5dc35b52](https://github.com/angular/angular.js/commit/5dc35b527b3c99f6544b
 [b6a37d11](https://github.com/angular/angular.js/commit/b6a37d112b3e1478f4d14a5f82faabf700443748).
 
 
-## Syntax for named wildcard parameters changed in `$route`
+### Syntax for named wildcard parameters changed in `$route`
 
 To migrate the code, follow the example below. Here, `*highlight` becomes `:highlight*`
 
@@ -1251,7 +1264,7 @@ $routeProvider.when('/Book1/:book/Chapter/:chapter/:highlight*/edit',
 See [04cebcc1](https://github.com/angular/angular.js/commit/04cebcc133c8b433a3ac5f72ed19f3631778142b).
 
 
-## You can only bind one expression to `*[src]`, `*[ng-src]` or `action`
+### You can only bind one expression to `*[src]`, `*[ng-src]` or `action`
 
 With the exception of `<a>` and `<img>` elements, you cannot bind more than one expression to the
 `src` or `action` attribute of elements.
@@ -1326,7 +1339,7 @@ scope.getIframeSrc = function() {
 See [38deedd6](https://github.com/angular/angular.js/commit/38deedd6e3d806eb8262bb43f26d47245f6c2739).
 
 
-## Interpolations inside DOM event handlers are now disallowed
+### Interpolations inside DOM event handlers are now disallowed
 
 DOM event handlers execute arbitrary Javascript code. Using an interpolation for such handlers
 means that the interpolated value is a JS string that is evaluated. Storing or generating such
@@ -1353,7 +1366,7 @@ HTML: <div ng-click="foo()">
 See [39841f2e](https://github.com/angular/angular.js/commit/39841f2ec9b17b3b2920fd1eb548d444251f4f56).
 
 
-## Directives cannot end with -start or -end
+### Directives cannot end with -start or -end
 
 This change was necessary to enable multi-element directives. The best fix is to rename existing
 directives so that they don't end with these suffixes.
@@ -1361,7 +1374,7 @@ directives so that they don't end with these suffixes.
 See [e46100f7](https://github.com/angular/angular.js/commit/e46100f7097d9a8f174bdb9e15d4c6098395c3f2).
 
 
-## In $q, promise.always has been renamed promise.finally
+### In $q, promise.always has been renamed promise.finally
 
 The reason for this change is to align `$q` with the [Q promise
 library](https://github.com/kriskowal/q), despite the fact that this makes it a bit more difficult
@@ -1393,7 +1406,7 @@ $http.get('/foo')['finally'](doSomething);
 See [f078762d](https://github.com/angular/angular.js/commit/f078762d48d0d5d9796dcdf2cb0241198677582c).
 
 
-## ngMobile is now ngTouch
+### ngMobile is now ngTouch
 
 Many touch-enabled devices are not mobile devices, so we decided to rename this module to better
 reflect its concerns.
@@ -1404,7 +1417,7 @@ To migrate, replace all references to `ngMobile` with `ngTouch` and `angular-mob
 See [94ec84e7](https://github.com/angular/angular.js/commit/94ec84e7b9c89358dc00e4039009af9e287bbd05).
 
 
-## resource.$then has been removed
+### resource.$then has been removed
 
 Resource instances do not have a `$then` function anymore. Use the `$promise.then` instead.
 
@@ -1423,7 +1436,7 @@ Resource.query().$promise.then(callback);
 See [05772e15](https://github.com/angular/angular.js/commit/05772e15fbecfdc63d4977e2e8839d8b95d6a92d).
 
 
-## Resource methods return the promise
+### Resource methods return the promise
 
 Methods of a resource instance return the promise rather than the instance itself.
 
@@ -1443,7 +1456,7 @@ resource.chaining = true;
 See [05772e15](https://github.com/angular/angular.js/commit/05772e15fbecfdc63d4977e2e8839d8b95d6a92d).
 
 
-## Resource promises are resolved with the resource instance
+### Resource promises are resolved with the resource instance
 
 On success, the resource promise is resolved with the resource instance rather than HTTP response object.
 
@@ -1474,7 +1487,7 @@ var Resource = $resource('/url', {}, {
 See [05772e15](https://github.com/angular/angular.js/commit/05772e15fbecfdc63d4977e2e8839d8b95d6a92d).
 
 
-## $location.search supports multiple keys
+### $location.search supports multiple keys
 
 {@link ng.$location#search `$location.search`} now supports multiple keys with the
 same value provided that the values are stored in an array.
@@ -1491,7 +1504,7 @@ passing it to `$location`.
 See [80739409](https://github.com/angular/angular.js/commit/807394095b991357225a03d5fed81fea5c9a1abe).
 
 
-## ngBindHtmlUnsafe has been removed and replaced by ngBindHtml
+### ngBindHtmlUnsafe has been removed and replaced by ngBindHtml
 
 `ngBindHtml` provides `ngBindHtmlUnsafe` like
 behavior (evaluate an expression and innerHTML the result into the DOM) when bound to the result
@@ -1507,7 +1520,7 @@ trusted.
 See [dae69473](https://github.com/angular/angular.js/commit/dae694739b9581bea5dbc53522ec00d87b26ae55).
 
 
-## Form names that are expressions are evaluated
+### Form names that are expressions are evaluated
 
 If you have form names that will evaluate as an expression:
 
@@ -1539,7 +1552,7 @@ Supporting the previous behavior offers no benefit.
 See [8ea802a1](https://github.com/angular/angular.js/commit/8ea802a1d23ad8ecacab892a3a451a308d9c39d7).
 
 
-## hasOwnProperty disallowed as an input name
+### hasOwnProperty disallowed as an input name
 
 Inputs with name equal to `hasOwnProperty` are not allowed inside form or ngForm directives.
 
@@ -1550,7 +1563,7 @@ and bad practice. To migrate, change your input name.
 See [7a586e5c](https://github.com/angular/angular.js/commit/7a586e5c19f3d1ecc3fefef084ce992072ee7f60).
 
 
-## Directives: Order of postLink functions reversed
+### Directives: Order of postLink functions reversed
 
 The order of postLink fn is now mirror opposite of the order in which corresponding preLinking and compile functions execute.
 
@@ -1606,7 +1619,7 @@ attribute interpolation directive was adjusted.
 See [31f190d4](https://github.com/angular/angular.js/commit/31f190d4d53921d32253ba80d9ebe57d6c1de82b).
 
 
-## Directive priority
+### Directive priority
 
 the priority of ngRepeat, ngSwitchWhen, ngIf, ngInclude and ngView has changed. This could affect directives that explicitly specify their priority.
 
@@ -1624,7 +1637,7 @@ ngView           | 1000         | 400
 See [b7af76b4](https://github.com/angular/angular.js/commit/b7af76b4c5aa77648cc1bfd49935b48583419023).
 
 
-## ngScenario
+### ngScenario
 
 browserTrigger now uses an eventData object instead of direct parameters for mouse events.
 To migrate, place the `keys`,`x` and `y` parameters inside of an object and place that as the
@@ -1633,7 +1646,7 @@ third parameter for the browserTrigger function.
 See [28f56a38](https://github.com/angular/angular.js/commit/28f56a383e9d1ff378e3568a3039e941c7ffb1d8).
 
 
-## ngInclude and ngView replace its entire element on update
+### ngInclude and ngView replace its entire element on update
 
 Previously `ngInclude` and `ngView` only updated its element's content. Now these directives will
 recreate the element every time a new content is included.
@@ -1645,7 +1658,7 @@ See [7d69d52a](https://github.com/angular/angular.js/commit/7d69d52acff8578e0f7d
 [aa2133ad](https://github.com/angular/angular.js/commit/aa2133ad818d2e5c27cbd3933061797096356c8a).
 
 
-## URLs are now sanitized against a whitelist
+### URLs are now sanitized against a whitelist
 
 A whitelist configured via `$compileProvider` can be used to configure what URLs are considered safe.
 By default all common protocol prefixes are whitelisted including `data:` URIs with mime types `image/*`.
@@ -1655,7 +1668,7 @@ See [1adf29af](https://github.com/angular/angular.js/commit/1adf29af13890d612868
 [3e39ac7e](https://github.com/angular/angular.js/commit/3e39ac7e1b10d4812a44dad2f959a93361cd823b).
 
 
-## Isolate scope only exposed to directives with `scope` property
+### Isolate scope only exposed to directives with `scope` property
 
 If you declare a scope option on a directive, that directive will have an
 [isolate scope](https://github.com/angular/angular.js/wiki/Understanding-Scopes). In Angular 1.0, if a
@@ -1728,7 +1741,7 @@ See [909cabd3](https://github.com/angular/angular.js/commit/909cabd36d779598763c
 [#2500](https://github.com/angular/angular.js/issues/2500).
 
 
-## Change to interpolation priority
+### Change to interpolation priority
 
 Previously, the interpolation priority was `-100` in 1.2.0-rc.2, and `100` before 1.2.0-rc.2.
 Before this change the binding was setup in the post-linking phase.
@@ -1741,7 +1754,7 @@ See [79223eae](https://github.com/angular/angular.js/commit/79223eae502283889334
 [#4528](https://github.com/angular/angular.js/issues/4528), and
 [#4649](https://github.com/angular/angular.js/issues/4649)
 
-## Underscore-prefixed/suffixed properties are non-bindable
+### Underscore-prefixed/suffixed properties are non-bindable
 
 <div class="alert alert-info">
 <p>**Reverted**: This breaking change has been reverted in 1.2.1, and so can be ignored if you're using **version 1.2.1 or higher**</p>
@@ -1780,7 +1793,7 @@ are actually needed by the expressions.
 See [3d6a89e8](https://github.com/angular/angular.js/commit/3d6a89e8888b14ae5cb5640464e12b7811853c7e).
 
 
-## You cannot bind to select[multiple]
+### You cannot bind to select[multiple]
 
 Switching between `select[single]` and `select[multiple]` has always been odd due to browser quirks.
 This feature never worked with two-way data-binding so it's not expected that anyone is using it.
@@ -1790,7 +1803,7 @@ If you are interested in properly adding this feature, please submit a pull requ
 See [d87fa004](https://github.com/angular/angular.js/commit/d87fa0042375b025b98c40bff05e5f42c00af114).
 
 
-## Uncommon region-specific local files were removed from i18n
+### Uncommon region-specific local files were removed from i18n
 
 AngularJS uses the Google Closure library's locale files. The following locales were removed from
 Closure, so Angular is not able to continue to support them:
@@ -1806,7 +1819,7 @@ load and use your copy of the locale file provided that you maintain it yourself
 
 See [6382e21f](https://github.com/angular/angular.js/commit/6382e21fb28541a2484ac1a241d41cf9fbbe9d2c).
 
-## Services can now return functions
+### Services can now return functions
 
 Previously, the service constructor only returned objects regardless of whether a function was returned.
 
