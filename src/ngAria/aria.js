@@ -236,7 +236,7 @@ ngAriaModule.directive('ngShow', ['$aria', function($aria) {
 
   return {
     restrict: 'A',
-    require: '?ngModel',
+    require: 'ngModel',
     priority: 200, //Make sure watches are fired after any other directives that affect the ngModel value
     compile: function(elem, attr) {
       var shape = getShape(attr, elem);

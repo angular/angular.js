@@ -44,7 +44,7 @@ Currently, ngAria interfaces with the following directives:
 
 <h2 id="ngmodel">ngModel</h2>
 
-Much of ngAria's heavy lifting happens in the {@link ng/directive/ngModel}
+Much of ngAria's heavy lifting happens in the {@link ng.ngModel ngModel}
 directive. For elements using ngModel, special attention is paid by ngAria if that element also
 has a role or type of `checkbox`, `radio`, `range` or `textbox`.
 
@@ -143,7 +143,7 @@ it with your keyboard and at least one mobile and desktop screen reader.
 <h2 id="ngvaluechecked">ngValue and ngChecked</h2>
 
 To ease the transition between native inputs and custom controls, ngAria now supports
-{@link ng/directive/ngValue ngValue} and {@link ng/directive/ngChecked ngChecked}.
+{@link ng.ngValue ngValue} and {@link ng.ngChecked ngChecked}.
 The original directives were created for native inputs only, so ngAria extends
 support to custom elements by managing `aria-checked` for accessibility.
 
@@ -165,7 +165,7 @@ Becomes:
 
 The `disabled` attribute is only valid for certain elements such as `button`, `input` and
 `textarea`. To properly disable custom element directives such as `<md-checkbox>` or `<taco-tab>`,
-using ngAria with {@link ng/directive/ngDisabled} will also
+using ngAria with {@link ng.ngDisabled ngDisabled} will also
 add `aria-disabled`. This tells assistive technologies when a non-native input is disabled, helping
 custom controls to be more accessible.
 
@@ -188,7 +188,7 @@ Becomes:
 
 The boolean `required` attribute is only valid for native form controls such as `input` and
 `textarea`. To properly indicate custom element directives such as `<md-checkbox>` or `<custom-input>`
-as required, using ngAria with {@link ng/directive/ngRequired ngRequired} will also add
+as required, using ngAria with {@link ng.ngRequired ngRequired} will also add
 `aria-required`. This tells accessibility APIs when a custom control is required.
 
 ###Example
@@ -205,7 +205,7 @@ Becomes:
 
 <h2 id="ngshow">ngShow</h2>
 
->The {@link ng/directive/ngShow} directive shows or hides the
+>The {@link ng.ngShow ngShow} directive shows or hides the
 given HTML element based on the expression provided to the `ngShow` attribute. The element is
 shown or hidden by removing or adding the `.ng-hide` CSS class onto the element.
 
@@ -242,7 +242,7 @@ Becomes:
 
 <h2 id="nghide">ngHide</h2>
 
->The {@link ng/directive/ngHide} directive shows or hides the
+>The {@link ng.ngHide ngHide} directive shows or hides the
 given HTML element based on the expression provided to the `ngHide` attribute. The element is
 shown or hidden by removing or adding the `.ng-hide` CSS class onto the element.
 

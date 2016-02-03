@@ -404,7 +404,7 @@ describe('$aria', function() {
       expect(element.attr('aria-required')).toBeUndefined();
     });
 
-     it('should attach to custom controls with ngModel and required', function() {
+    it('should attach to custom controls with ngModel and required', function() {
       compileElement('<div ng-model="val" role="checkbox" required></div>');
       expect(element.attr('aria-required')).toBe('true');
     });
