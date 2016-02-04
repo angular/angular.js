@@ -69,6 +69,27 @@ describe('$sniffer', function() {
         return mockWindow;
       }
     });
+
+
+    it('should not try to access `history.pushState` in Chrome Packaged Apps', function() {
+      var pushStateAccessCount = 0;
+
+      var mockHistory = Object.create(Object.prototype, {
+        pushState: {get: function() { pushStateAccessCount++; return noop; }},
+      });
+      var mockWindow = {
+        chrome: {
+          app: {
+            runtime: {}
+          }
+        },
+        history: mockHistory
+      };
+
+      sniffer(mockWindow);
+
+      expect(pushStateAccessCount).toBe(0);
+    });
   });
 
 
