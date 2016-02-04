@@ -43,6 +43,32 @@ describe('$sniffer', function() {
 
       expect(sniffer(mockWindow).history).toBe(false);
     });
+
+
+    it('should be false on Chrome Packaged Apps', function() {
+      // Chrome Packaged Apps are not allowed to access `window.history.pushState`.
+      // In Chrome, `window.app` might be available in "normal" webpages, but `window.app.runtime`
+      // only exists in the context of a packaged app.
+
+      expect(sniffer(createMockWindow()).history).toBe(true);
+      expect(sniffer(createMockWindow(true)).history).toBe(true);
+      expect(sniffer(createMockWindow(true, true)).history).toBe(false);
+
+      function createMockWindow(isChrome, isPackagedApp) {
+        var mockWindow = {
+          history: {
+            pushState: noop
+          }
+        };
+
+        if (isChrome) {
+          var chromeAppObj = isPackagedApp ? {runtime: {}} : {};
+          mockWindow.chrome = {app: chromeAppObj};
+        }
+
+        return mockWindow;
+      }
+    });
   });
 
 
