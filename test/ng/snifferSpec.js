@@ -75,7 +75,7 @@ describe('$sniffer', function() {
       var pushStateAccessCount = 0;
 
       var mockHistory = Object.create(Object.prototype, {
-        pushState: {get: function() { pushStateAccessCount++; return noop; }},
+        pushState: {get: function() { pushStateAccessCount++; return noop; }}
       });
       var mockWindow = {
         chrome: {
