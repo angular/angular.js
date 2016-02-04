@@ -86,7 +86,14 @@ function Browser(window, document, $log, $sniffer) {
   var cachedState, lastHistoryState,
       lastBrowserUrl = location.href,
       baseElement = document.find('base'),
-      pendingLocation = null;
+      pendingLocation = null,
+      getCurrentState = !$sniffer.history ? noop : function getCurrentState() {
+        try {
+          return history.state;
+        } catch (e) {
+          // MSIE can reportedly throw when there is no state (UNCONFIRMED).
+        }
+      };
 
   cacheState();
   lastHistoryState = cachedState;
@@ -192,14 +199,6 @@ function Browser(window, document, $log, $sniffer) {
     pendingLocation = null;
     cacheState();
     fireUrlChange();
-  }
-
-  function getCurrentState() {
-    try {
-      return history.state;
-    } catch (e) {
-      // MSIE can reportedly throw when there is no state (UNCONFIRMED).
-    }
   }
 
   // This variable should be used *only* inside the cacheState function.
