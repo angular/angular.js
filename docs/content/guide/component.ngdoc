@@ -109,13 +109,20 @@ change will be reflected in the parent component. For components however, only t
 the data should modify it, to make it easy to reason about what data is changed, and when. For that reason,
 components should follow a few simple conventions:
 
-  - Inputs are realized with `@` and `=` bindings
+  - Inputs should be using `<` and `@` bindings. The `<` symbol denotes {@link $compile#-scope- one-way bindings} which are
+    available since 1.5. The difference to `=` is that the bound properties in the component scope are not watched, which means
+    if you assign a new value to the property in the component scope, it will not update the parent scope. Note however, that both parent
+    and component scope reference the same object, so if you are changing object properties or array elements in the
+    component, the parent will still reflect that change.
+    The general rule should therefore be to never change an object or array property in the component scope.
+    `@` bindings can be used when the input is a string, especially when the value of the binding doesn't change.
     ```js
       bindings: {
-        hero: `=`,
+        hero: `<`,
+        comment: '@'
       }
     ```
-  - Outputs are realized with `&` bindings, which function as callbacks to component events
+  - Outputs are realized with `&` bindings, which function as callbacks to component events.
     ```js
       bindings: {
         onDelete: '&',
@@ -153,11 +160,11 @@ above:
 Instead of an ngController, we now have a heroList component that holds the data of
 different heroes, and creates a heroDetail for each of them.
 
-The heroDetail component now contains the following new functionality:
-- a delete button that calls the bound onDelete function of the heroList component
+The heroDetail component now contains new functionality:
+- a delete button that calls the bound `onDelete` function of the heroList component
 - an input to change the hero location, in the form of a reusable editableField component. Instead
-of manipulating the hero object itself, it sends the changes upwards to the heroDetail, which sends
-it upwards to the heroList component, which updates it.
+of manipulating the hero object itself, it sends a changeset upwards to the heroDetail, which sends
+it upwards to the heroList component, which updates the original data.
 
 <example name="heroComponentTree" module="heroApp">
 <file name="index.js">
@@ -212,7 +219,7 @@ it upwards to the heroList component, which updates it.
     templateUrl: 'heroDetail.html',
     controller: HeroDetailController,
     bindings: {
-      hero: '=',
+      hero: '<',
       onDelete: '&',
       onUpdate: '&'
     }
@@ -252,8 +259,8 @@ it upwards to the heroList component, which updates it.
     templateUrl: 'editableField.html',
     controller: EditableFieldController,
     bindings: {
-      fieldValue: '@',
-      fieldType: '@',
+      fieldValue: '<',
+      fieldType: '@?',
       onUpdate: '&'
     }
   });
@@ -269,7 +276,7 @@ it upwards to the heroList component, which updates it.
   <hr>
   <div>
     Name: {{$ctrl.hero.name}}<br>
-    Location: <editable-field field-value="{{$ctrl.hero.location}}" field-type="text" on-update="$ctrl.update('location', value)"></editable-field><br>
+    Location: <editable-field field-value="$ctrl.hero.location" field-type="text" on-update="$ctrl.update('location', value)"></editable-field><br>
     <button ng-click="$ctrl.onDelete({hero: $ctrl.hero})">Delete</button>
   </div>
 </file>
@@ -303,17 +310,25 @@ application, every view is a component:
 ```
 <br />
 When using {@link ngRoute.$routeProvider $routeProvider}, you can often avoid some
-boilerplate, by assigning the resolved dependencies directly to the route scope:
+boilerplate, by passing the resolved route dependencies directly to the component. Since 1.5,
+ngRoute automatically assigns the resolves to the route scope property `$resolve` (you can also
+configure the property name via `resolveAs`). When using components, you can take advantage of this and pass resolves
+directly into your component without creating an extra route controller:
+
 ```js
   var myMod = angular.module('myMod', ['ngRoute']);
   myMod.component('home', {
     template: '<h1>Home</h1><p>Hello, {{ $ctrl.user.name }} !</p>',
-    bindings: {user: '='}
+    bindings: {
+      user: '<'
+    }
   });
   myMod.config(function($routeProvider) {
     $routeProvider.when('/', {
       template: '<home user="$resolve.user"></home>',
-      resolve: {user: function($http) { return $http.get('...'); }}
+      resolve: {
+        user: function($http) { return $http.get('...'); }
+      }
     });
   });
 ```
@@ -349,7 +364,9 @@ angular.module('docsTabsExample', [])
   })
   .component('myPane', {
     transclude: true,
-    require: {tabsCtrl: '^myTabs'},
+    require: {
+      tabsCtrl: '^myTabs'
+    },
     bindings: {
       title: '@'
     },
