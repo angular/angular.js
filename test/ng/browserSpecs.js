@@ -545,8 +545,31 @@ describe('browser', function() {
       currentHref = fakeWindow.location.href;
     });
 
+    it('should not access `history.state` when `$sniffer.history` is false', function() {
+      // In the context of a Chrome Packaged App, although `history.state` is present, accessing it
+      // is not allowed and logs an error in the console. We should not try to access
+      // `history.state` in contexts where `$sniffer.history` is false.
+
+      var historyStateAccessed = false;
+      var mockSniffer = {histroy: false};
+      var mockWindow = new MockWindow();
+
+      var _state = mockWindow.history.state;
+      Object.defineProperty(mockWindow.history, 'state', {
+        get: function() {
+          historyStateAccessed = true;
+          return _state;
+        }
+      });
+
+      var browser = new Browser(mockWindow, fakeDocument, fakeLog, mockSniffer);
+
+      expect(historyStateAccessed).toBe(false);
+    });
+
     describe('in IE', runTests({msie: true}));
     describe('not in IE', runTests({msie: false}));
+
 
     function runTests(options) {
       return function() {
