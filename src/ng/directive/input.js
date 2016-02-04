@@ -7,6 +7,7 @@
   UNTOUCHED_CLASS: false,
   TOUCHED_CLASS: false,
   ngModelMinErr: false,
+  KEYS_PER_DATE_INPUT_TYPE: true
 */
 
 // Regex code is obtained from SO: https://stackoverflow.com/questions/3143070/javascript-regex-iso-datetime#answer-3143231
@@ -31,6 +32,34 @@ var DATETIMELOCAL_REGEXP = /^(\d{4})-(\d\d)-(\d\d)T(\d\d):(\d\d)(?::(\d\d)(\.\d{
 var WEEK_REGEXP = /^(\d{4})-W(\d\d)$/;
 var MONTH_REGEXP = /^(\d{4})-(\d\d)$/;
 var TIME_REGEXP = /^(\d\d):(\d\d)(?::(\d\d)(\.\d{1,3})?)?$/;
+
+var KEYS = {
+  backspace: 8,
+  del: 46,
+  down: 40,
+  up: 38
+};
+var KEY_RANGES = {
+  numeric: [48, 57],
+  numpadNumeric: [96, 105],
+  alpha: [65, 90]
+};
+var DEFAULT_KEYS_FOR_DATE_INPUT_TYPE = [
+  KEY_RANGES.numeric,
+  KEY_RANGES.numpadNumeric,
+  KEYS.up,
+  KEYS.down,
+  KEYS.backspace,
+  KEYS.del
+];
+var KEYS_PER_DATE_INPUT_TYPE = {
+  date: DEFAULT_KEYS_FOR_DATE_INPUT_TYPE,
+  'datetime-local': DEFAULT_KEYS_FOR_DATE_INPUT_TYPE,
+  month: DEFAULT_KEYS_FOR_DATE_INPUT_TYPE.concat([KEY_RANGES.alpha]),
+  time: DEFAULT_KEYS_FOR_DATE_INPUT_TYPE,
+  week: DEFAULT_KEYS_FOR_DATE_INPUT_TYPE
+};
+var DATE_INPUT_TYPES = Object.keys(KEYS_PER_DATE_INPUT_TYPE);
 
 var inputType = {
 
@@ -1099,6 +1128,24 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   stringBasedInputType(ctrl);
 }
 
+function createKeyupListener(type, callback) {
+  // A list containing single keyCodes and keyCode-ranges (in the form [min, max])
+  var keys = KEYS_PER_DATE_INPUT_TYPE[type];
+
+  return function keyupListener(evt) {
+    // Ignore if a modifier key is also pressed
+    if (!evt || evt.altKey || evt.ctrlKey || evt.metaKey || evt.shiftKey) return;
+
+    var key = evt.keyCode;
+    var affectsInput = keys.some(function(keyOrRange) {
+      return !isArray(keyOrRange)
+          ? (key === keyOrRange) : (keyOrRange[0] <= key) && (key <= keyOrRange[1]);
+    });
+
+    if (affectsInput) callback('input');
+  };
+}
+
 function baseInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   var type = lowercase(element[0].type);
 
@@ -1146,6 +1193,15 @@ function baseInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   // input event on backspace, delete or cut
   if ($sniffer.hasEvent('input')) {
     element.on('input', listener);
+
+    // On date-family inputs, we also need to listen for `keyup` in case the date is partially
+    // edited by the user using the keyboard, resulting in a change in the validity state, but
+    // without an accompanying change in the input value (thus no `input` event).
+    // (This is only necessary on browsers that support inputs of that type - other browsers set the
+    //  `type` property to "text".)
+    var browserSupportsType = (type === attr.type);
+    var listenForKeyup = browserSupportsType && (DATE_INPUT_TYPES.indexOf(type) !== -1);
+    if (listenForKeyup) element.on('keyup', createKeyupListener(type, listener));
   } else {
     var timeout;
 
@@ -1768,6 +1824,3 @@ var ngValueDirective = function() {
     }
   };
 };
-
-
-

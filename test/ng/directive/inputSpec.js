@@ -1,6 +1,8 @@
 'use strict';
 
-/* globals getInputCompileHelper: false */
+/* globals getInputCompileHelper: false,
+  KEYS_PER_DATE_INPUT_TYPE: false
+ */
 
 describe('input', function() {
   var helper, $compile, $rootScope, $browser, $sniffer, $timeout, $q;
@@ -669,6 +671,7 @@ describe('input', function() {
       expect(inputElm.val()).toBe('2013-12');
     });
 
+
     it('should only change the month of a bound date in any timezone', function() {
       var inputElm = helper.compileInput('<input type="month" ng-model="value" ng-model-options="{timezone: \'+0500\'}" />');
 
@@ -679,6 +682,106 @@ describe('input', function() {
       expect(+$rootScope.value).toBe(Date.UTC(2013, 7, 31, 20, 0, 0));
       expect(inputElm.val()).toBe('2013-09');
     });
+
+
+    they('should re-validate when partially editing the input value (keyCode: $prop)',
+      getKeyCodesForType('month'),
+      function(keyCode) {
+        // This testcase simulates keyboard interactions that lead to a change in the validity state
+        // of the element, but no change in its value (thus no 'input' event).
+        // For a more detailed explanation, see: https://github.com/angular/angular.js/pull/12902
+
+        var inputType = 'month';
+
+        if (browserSupportsInputTypeAndEvent(inputType, 'input')) {
+          var mockValidity = {valid: true, badInput: false};
+          helper.compileInput('<input type="' + inputType + '" ng-model="val" />', mockValidity);
+          var inputElm = helper.inputElm;
+
+          expect(inputElm).toBeValid();
+
+          mockValidity.valid = false;
+          mockValidity.badInput = true;
+          inputElm.triggerHandler({type: 'keyup', keyCode: keyCode});
+          expect(inputElm).toBeInvalid();
+
+          mockValidity.valid = true;
+          mockValidity.badInput = false;
+          inputElm.triggerHandler({type: 'keyup', keyCode: keyCode});
+          expect(inputElm).toBeValid();
+        }
+      }
+    );
+
+
+    they('should not re-validate when a modifier key is pressed (modifier: $prop)',
+      ['alt', 'ctrl', 'meta', 'shift'],
+      function(modifier) {
+        // This testcase simulates keyboard interactions that lead to a change in the validity state
+        // of the element, but no change in its value (thus no 'input' event).
+        // For a more detailed explanation, see: https://github.com/angular/angular.js/pull/12902
+
+        var inputType = 'month';
+
+        if (browserSupportsInputTypeAndEvent(inputType, 'input')) {
+          var mockValidity = {valid: true, badInput: false};
+          helper.compileInput('<input type="' + inputType + '" ng-model="val" />', mockValidity);
+          var inputElm = helper.inputElm;
+          var mockEvt = {type: 'keyup', keyCode: 8};
+
+          expect(inputElm).toBeValid();
+
+          mockValidity.valid = false;
+          mockValidity.badInput = true;
+          inputElm.triggerHandler(mockEvt);
+          expect(inputElm).toBeInvalid();
+
+          mockEvt[modifier + 'Key'] = true;
+
+          mockValidity.valid = true;
+          mockValidity.badInput = false;
+          inputElm.triggerHandler(mockEvt);
+          expect(inputElm).toBeInvalid();
+        }
+      }
+    );
+
+
+    they('should not re-validate on keys that can\'t affect the input (keyCode: $prop)',
+      getIgnoredKeyCodesForType('month'),
+      function(keyCode) {
+        var inputType = 'month';
+
+        if (browserSupportsInputTypeAndEvent(inputType, 'input')) {
+          var mockValidity = {valid: true, badInput: false};
+          helper.compileInput('<input type="' + inputType + '" ng-model="val" />', mockValidity);
+          var inputElm = helper.inputElm;
+
+          expect(inputElm).toBeValid();
+
+          mockValidity.valid = false;
+          mockValidity.badInput = true;
+          inputElm.triggerHandler({type: 'keyup', keyCode: keyCode});
+          expect(inputElm).toBeValid();
+        }
+      }
+    );
+
+
+    it('should listen for \'keyup\' only on browsers that support this input type', function() {
+      var inputType = 'month';
+
+      var shouldListenForKeyup = browserSupportsInputTypeAndEvent(inputType, 'input');
+      var keyCode = getKeyCodesForType(inputType)[0];
+      var inputElm = helper.compileInput('<input type="' + inputType + '" ng-model="val" />');
+      var ctrl = inputElm.controller('ngModel');
+      spyOn(ctrl, '$setViewValue');
+
+      inputElm.triggerHandler({type: 'keyup', keyCode: keyCode});
+
+      expect(ctrl.$setViewValue.callCount).toBe(shouldListenForKeyup ? 1 : 0);
+    });
+
 
     describe('min', function() {
       var inputElm;
@@ -721,6 +824,7 @@ describe('input', function() {
         expect($rootScope.form.alias.$error.min).toBeFalsy();
       });
     });
+
 
     describe('max', function() {
       var inputElm;
@@ -899,6 +1003,106 @@ describe('input', function() {
       expect($rootScope.form.alias.$error.week).toBeTruthy();
     });
 
+
+    they('should re-validate when partially editing the input value (keyCode: $prop)',
+      getKeyCodesForType('week'),
+      function(keyCode) {
+        // This testcase simulates keyboard interactions that lead to a change in the validity state
+        // of the element, but no change in its value (thus no 'input' event).
+        // For a more detailed explanation, see: https://github.com/angular/angular.js/pull/12902
+
+        var inputType = 'week';
+
+        if (browserSupportsInputTypeAndEvent(inputType, 'input')) {
+          var mockValidity = {valid: true, badInput: false};
+          helper.compileInput('<input type="' + inputType + '" ng-model="val" />', mockValidity);
+          var inputElm = helper.inputElm;
+
+          expect(inputElm).toBeValid();
+
+          mockValidity.valid = false;
+          mockValidity.badInput = true;
+          inputElm.triggerHandler({type: 'keyup', keyCode: keyCode});
+          expect(inputElm).toBeInvalid();
+
+          mockValidity.valid = true;
+          mockValidity.badInput = false;
+          inputElm.triggerHandler({type: 'keyup', keyCode: keyCode});
+          expect(inputElm).toBeValid();
+        }
+      }
+    );
+
+
+    they('should not re-validate when a modifier key is pressed (modifier: $prop)',
+      ['alt', 'ctrl', 'meta', 'shift'],
+      function(modifier) {
+        // This testcase simulates keyboard interactions that lead to a change in the validity state
+        // of the element, but no change in its value (thus no 'input' event).
+        // For a more detailed explanation, see: https://github.com/angular/angular.js/pull/12902
+
+        var inputType = 'week';
+
+        if (browserSupportsInputTypeAndEvent(inputType, 'input')) {
+          var mockValidity = {valid: true, badInput: false};
+          helper.compileInput('<input type="' + inputType + '" ng-model="val" />', mockValidity);
+          var inputElm = helper.inputElm;
+          var mockEvt = {type: 'keyup', keyCode: 8};
+
+          expect(inputElm).toBeValid();
+
+          mockValidity.valid = false;
+          mockValidity.badInput = true;
+          inputElm.triggerHandler(mockEvt);
+          expect(inputElm).toBeInvalid();
+
+          mockEvt[modifier + 'Key'] = true;
+
+          mockValidity.valid = true;
+          mockValidity.badInput = false;
+          inputElm.triggerHandler(mockEvt);
+          expect(inputElm).toBeInvalid();
+        }
+      }
+    );
+
+
+    they('should not re-validate on keys that can\'t affect the input (keyCode: $prop)',
+      getIgnoredKeyCodesForType('week'),
+      function(keyCode) {
+        var inputType = 'week';
+
+        if (browserSupportsInputTypeAndEvent(inputType, 'input')) {
+          var mockValidity = {valid: true, badInput: false};
+          helper.compileInput('<input type="' + inputType + '" ng-model="val" />', mockValidity);
+          var inputElm = helper.inputElm;
+
+          expect(inputElm).toBeValid();
+
+          mockValidity.valid = false;
+          mockValidity.badInput = true;
+          inputElm.triggerHandler({type: 'keyup', keyCode: keyCode});
+          expect(inputElm).toBeValid();
+        }
+      }
+    );
+
+
+    it('should listen for \'keyup\' only on browsers that support this input type', function() {
+      var inputType = 'week';
+
+      var shouldListenForKeyup = browserSupportsInputTypeAndEvent(inputType, 'input');
+      var keyCode = getKeyCodesForType(inputType)[0];
+      var inputElm = helper.compileInput('<input type="' + inputType + '" ng-model="val" />');
+      var ctrl = inputElm.controller('ngModel');
+      spyOn(ctrl, '$setViewValue');
+
+      inputElm.triggerHandler({type: 'keyup', keyCode: keyCode});
+
+      expect(ctrl.$setViewValue.callCount).toBe(shouldListenForKeyup ? 1 : 0);
+    });
+
+
     describe('min', function() {
       var inputElm;
       beforeEach(function() {
@@ -940,6 +1144,7 @@ describe('input', function() {
         expect($rootScope.form.alias.$error.min).toBeFalsy();
       });
     });
+
 
     describe('max', function() {
       var inputElm;
@@ -1153,6 +1358,106 @@ describe('input', function() {
       expect($rootScope.form.alias.$error.datetimelocal).toBeTruthy();
     });
 
+
+    they('should re-validate when partially editing the input value (keyCode: $prop)',
+      getKeyCodesForType('datetime-local'),
+      function(keyCode) {
+        // This testcase simulates keyboard interactions that lead to a change in the validity state
+        // of the element, but no change in its value (thus no 'input' event).
+        // For a more detailed explanation, see: https://github.com/angular/angular.js/pull/12902
+
+        var inputType = 'datetime-local';
+
+        if (browserSupportsInputTypeAndEvent(inputType, 'input')) {
+          var mockValidity = {valid: true, badInput: false};
+          helper.compileInput('<input type="' + inputType + '" ng-model="val" />', mockValidity);
+          var inputElm = helper.inputElm;
+
+          expect(inputElm).toBeValid();
+
+          mockValidity.valid = false;
+          mockValidity.badInput = true;
+          inputElm.triggerHandler({type: 'keyup', keyCode: keyCode});
+          expect(inputElm).toBeInvalid();
+
+          mockValidity.valid = true;
+          mockValidity.badInput = false;
+          inputElm.triggerHandler({type: 'keyup', keyCode: keyCode});
+          expect(inputElm).toBeValid();
+        }
+      }
+    );
+
+
+    they('should not re-validate when a modifier key is pressed (modifier: $prop)',
+      ['alt', 'ctrl', 'meta', 'shift'],
+      function(modifier) {
+        // This testcase simulates keyboard interactions that lead to a change in the validity state
+        // of the element, but no change in its value (thus no 'input' event).
+        // For a more detailed explanation, see: https://github.com/angular/angular.js/pull/12902
+
+        var inputType = 'datetime-local';
+
+        if (browserSupportsInputTypeAndEvent(inputType, 'input')) {
+          var mockValidity = {valid: true, badInput: false};
+          helper.compileInput('<input type="' + inputType + '" ng-model="val" />', mockValidity);
+          var inputElm = helper.inputElm;
+          var mockEvt = {type: 'keyup', keyCode: 8};
+
+          expect(inputElm).toBeValid();
+
+          mockValidity.valid = false;
+          mockValidity.badInput = true;
+          inputElm.triggerHandler(mockEvt);
+          expect(inputElm).toBeInvalid();
+
+          mockEvt[modifier + 'Key'] = true;
+
+          mockValidity.valid = true;
+          mockValidity.badInput = false;
+          inputElm.triggerHandler(mockEvt);
+          expect(inputElm).toBeInvalid();
+        }
+      }
+    );
+
+
+    they('should not re-validate on keys that can\'t affect the input (keyCode: $prop)',
+      getIgnoredKeyCodesForType('datetime-local'),
+      function(keyCode) {
+        var inputType = 'datetime-local';
+
+        if (browserSupportsInputTypeAndEvent(inputType, 'input')) {
+          var mockValidity = {valid: true, badInput: false};
+          helper.compileInput('<input type="' + inputType + '" ng-model="val" />', mockValidity);
+          var inputElm = helper.inputElm;
+
+          expect(inputElm).toBeValid();
+
+          mockValidity.valid = false;
+          mockValidity.badInput = true;
+          inputElm.triggerHandler({type: 'keyup', keyCode: keyCode});
+          expect(inputElm).toBeValid();
+        }
+      }
+    );
+
+
+    it('should listen for \'keyup\' only on browsers that support this input type', function() {
+      var inputType = 'datetime-local';
+
+      var shouldListenForKeyup = browserSupportsInputTypeAndEvent(inputType, 'input');
+      var keyCode = getKeyCodesForType(inputType)[0];
+      var inputElm = helper.compileInput('<input type="' + inputType + '" ng-model="val" />');
+      var ctrl = inputElm.controller('ngModel');
+      spyOn(ctrl, '$setViewValue');
+
+      inputElm.triggerHandler({type: 'keyup', keyCode: keyCode});
+
+      expect(ctrl.$setViewValue.callCount).toBe(shouldListenForKeyup ? 1 : 0);
+    });
+
+
     describe('min', function() {
       var inputElm;
       beforeEach(function() {
@@ -1194,6 +1499,7 @@ describe('input', function() {
         expect($rootScope.form.alias.$error.min).toBeFalsy();
       });
     });
+
 
     describe('max', function() {
       var inputElm;
@@ -1483,6 +1789,106 @@ describe('input', function() {
       expect(+$rootScope.value).toBe(+new Date(2013, 2, 3, 1, 2, 0));
     });
 
+
+    they('should re-validate when partially editing the input value (keyCode: $prop)',
+      getKeyCodesForType('time'),
+      function(keyCode) {
+        // This testcase simulates keyboard interactions that lead to a change in the validity state
+        // of the element, but no change in its value (thus no 'input' event).
+        // For a more detailed explanation, see: https://github.com/angular/angular.js/pull/12902
+
+        var inputType = 'time';
+
+        if (browserSupportsInputTypeAndEvent(inputType, 'input')) {
+          var mockValidity = {valid: true, badInput: false};
+          helper.compileInput('<input type="' + inputType + '" ng-model="val" />', mockValidity);
+          var inputElm = helper.inputElm;
+
+          expect(inputElm).toBeValid();
+
+          mockValidity.valid = false;
+          mockValidity.badInput = true;
+          inputElm.triggerHandler({type: 'keyup', keyCode: keyCode});
+          expect(inputElm).toBeInvalid();
+
+          mockValidity.valid = true;
+          mockValidity.badInput = false;
+          inputElm.triggerHandler({type: 'keyup', keyCode: keyCode});
+          expect(inputElm).toBeValid();
+        }
+      }
+    );
+
+
+    they('should not re-validate when a modifier key is pressed (modifier: $prop)',
+      ['alt', 'ctrl', 'meta', 'shift'],
+      function(modifier) {
+        // This testcase simulates keyboard interactions that lead to a change in the validity state
+        // of the element, but no change in its value (thus no 'input' event).
+        // For a more detailed explanation, see: https://github.com/angular/angular.js/pull/12902
+
+        var inputType = 'time';
+
+        if (browserSupportsInputTypeAndEvent(inputType, 'input')) {
+          var mockValidity = {valid: true, badInput: false};
+          helper.compileInput('<input type="' + inputType + '" ng-model="val" />', mockValidity);
+          var inputElm = helper.inputElm;
+          var mockEvt = {type: 'keyup', keyCode: 8};
+
+          expect(inputElm).toBeValid();
+
+          mockValidity.valid = false;
+          mockValidity.badInput = true;
+          inputElm.triggerHandler(mockEvt);
+          expect(inputElm).toBeInvalid();
+
+          mockEvt[modifier + 'Key'] = true;
+
+          mockValidity.valid = true;
+          mockValidity.badInput = false;
+          inputElm.triggerHandler(mockEvt);
+          expect(inputElm).toBeInvalid();
+        }
+      }
+    );
+
+
+    they('should not re-validate on keys that can\'t affect the input (keyCode: $prop)',
+      getIgnoredKeyCodesForType('time'),
+      function(keyCode) {
+        var inputType = 'time';
+
+        if (browserSupportsInputTypeAndEvent(inputType, 'input')) {
+          var mockValidity = {valid: true, badInput: false};
+          helper.compileInput('<input type="' + inputType + '" ng-model="val" />', mockValidity);
+          var inputElm = helper.inputElm;
+
+          expect(inputElm).toBeValid();
+
+          mockValidity.valid = false;
+          mockValidity.badInput = true;
+          inputElm.triggerHandler({type: 'keyup', keyCode: keyCode});
+          expect(inputElm).toBeValid();
+        }
+      }
+    );
+
+
+    it('should listen for \'keyup\' only on browsers that support this input type', function() {
+      var inputType = 'time';
+
+      var shouldListenForKeyup = browserSupportsInputTypeAndEvent(inputType, 'input');
+      var keyCode = getKeyCodesForType(inputType)[0];
+      var inputElm = helper.compileInput('<input type="' + inputType + '" ng-model="val" />');
+      var ctrl = inputElm.controller('ngModel');
+      spyOn(ctrl, '$setViewValue');
+
+      inputElm.triggerHandler({type: 'keyup', keyCode: keyCode});
+
+      expect(ctrl.$setViewValue.callCount).toBe(shouldListenForKeyup ? 1 : 0);
+    });
+
+
     describe('min', function() {
       var inputElm;
       beforeEach(function() {
@@ -1524,6 +1930,7 @@ describe('input', function() {
         expect($rootScope.form.alias.$error.min).toBeFalsy();
       });
     });
+
 
     describe('max', function() {
       var inputElm;
@@ -1788,6 +2195,106 @@ describe('input', function() {
       dealoc(formElm);
     });
 
+
+    they('should re-validate when partially editing the input value (keyCode: $prop)',
+      getKeyCodesForType('date'),
+      function(keyCode) {
+        // This testcase simulates keyboard interactions that lead to a change in the validity state
+        // of the element, but no change in its value (thus no 'input' event).
+        // For a more detailed explanation, see: https://github.com/angular/angular.js/pull/12902
+
+        var inputType = 'date';
+
+        if (browserSupportsInputTypeAndEvent(inputType, 'input')) {
+          var mockValidity = {valid: true, badInput: false};
+          helper.compileInput('<input type="' + inputType + '" ng-model="val" />', mockValidity);
+          var inputElm = helper.inputElm;
+
+          expect(inputElm).toBeValid();
+
+          mockValidity.valid = false;
+          mockValidity.badInput = true;
+          inputElm.triggerHandler({type: 'keyup', keyCode: keyCode});
+          expect(inputElm).toBeInvalid();
+
+          mockValidity.valid = true;
+          mockValidity.badInput = false;
+          inputElm.triggerHandler({type: 'keyup', keyCode: keyCode});
+          expect(inputElm).toBeValid();
+        }
+      }
+    );
+
+
+    they('should not re-validate when a modifier key is pressed (modifier: $prop)',
+      ['alt', 'ctrl', 'meta', 'shift'],
+      function(modifier) {
+        // This testcase simulates keyboard interactions that lead to a change in the validity state
+        // of the element, but no change in its value (thus no 'input' event).
+        // For a more detailed explanation, see: https://github.com/angular/angular.js/pull/12902
+
+        var inputType = 'date';
+
+        if (browserSupportsInputTypeAndEvent(inputType, 'input')) {
+          var mockValidity = {valid: true, badInput: false};
+          helper.compileInput('<input type="' + inputType + '" ng-model="val" />', mockValidity);
+          var inputElm = helper.inputElm;
+          var mockEvt = {type: 'keyup', keyCode: 8};
+
+          expect(inputElm).toBeValid();
+
+          mockValidity.valid = false;
+          mockValidity.badInput = true;
+          inputElm.triggerHandler(mockEvt);
+          expect(inputElm).toBeInvalid();
+
+          mockEvt[modifier + 'Key'] = true;
+
+          mockValidity.valid = true;
+          mockValidity.badInput = false;
+          inputElm.triggerHandler(mockEvt);
+          expect(inputElm).toBeInvalid();
+        }
+      }
+    );
+
+
+    they('should not re-validate on keys that can\'t affect the input (keyCode: $prop)',
+      getIgnoredKeyCodesForType('date'),
+      function(keyCode) {
+        var inputType = 'date';
+
+        if (browserSupportsInputTypeAndEvent(inputType, 'input')) {
+          var mockValidity = {valid: true, badInput: false};
+          helper.compileInput('<input type="' + inputType + '" ng-model="val" />', mockValidity);
+          var inputElm = helper.inputElm;
+
+          expect(inputElm).toBeValid();
+
+          mockValidity.valid = false;
+          mockValidity.badInput = true;
+          inputElm.triggerHandler({type: 'keyup', keyCode: keyCode});
+          expect(inputElm).toBeValid();
+        }
+      }
+    );
+
+
+    it('should listen for \'keyup\' only on browsers that support this input type', function() {
+      var inputType = 'date';
+
+      var shouldListenForKeyup = browserSupportsInputTypeAndEvent(inputType, 'input');
+      var keyCode = getKeyCodesForType(inputType)[0];
+      var inputElm = helper.compileInput('<input type="' + inputType + '" ng-model="val" />');
+      var ctrl = inputElm.controller('ngModel');
+      spyOn(ctrl, '$setViewValue');
+
+      inputElm.triggerHandler({type: 'keyup', keyCode: keyCode});
+
+      expect(ctrl.$setViewValue.callCount).toBe(shouldListenForKeyup ? 1 : 0);
+    });
+
+
     describe('min', function() {
 
       it('should invalidate', function() {
@@ -1826,6 +2333,7 @@ describe('input', function() {
         expect($rootScope.form.alias.$error.min).toBeFalsy();
       });
     });
+
 
     describe('max', function() {
 
@@ -3008,4 +3516,45 @@ describe('input', function() {
       dealoc(inputElm);
     });
   });
+
+
+  // Helpers
+  function browserSupportsInputTypeAndEvent(inputType, event) {
+    var input = jqLite('<input type="' + inputType + '" />');
+
+    var supportsType = (inputType === input.prop('type'));
+    var supportsEvent = $sniffer.hasEvent(event);
+
+    return supportsType && supportsEvent;
+  }
+
+  function getKeyCodesForType(type) {
+    var keyCodes = [];
+
+    (KEYS_PER_DATE_INPUT_TYPE[type] || []).forEach(function(keyOrRange) {
+      if (isArray(keyOrRange)) {
+        var min = keyOrRange[0];
+        var max = keyOrRange[1];
+
+        for (var i = min; i <= max; i++) {
+          keyCodes.push(i);
+        }
+      } else {
+        keyCodes.push(keyOrRange);
+      }
+    });
+
+    return keyCodes;
+  }
+
+  function getIgnoredKeyCodesForType(type) {
+    var keyCodes = [];
+
+    var notIgnored = getKeyCodesForType(type);
+    for (var i = 1; i <= 222; i++) {
+      if (notIgnored.indexOf(i) === -1) keyCodes.push(i);
+    }
+
+    return keyCodes;
+  }
 });
