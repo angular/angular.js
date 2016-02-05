@@ -1,3 +1,42 @@
+<a name="1.5.0"></a>
+# 1.5.0 ennoblement-facilitation (2016-02-05)
+
+## Bug Fixes
+
+- **$parse:** Copy `inputs` for expressions with expensive checks
+  ([37cb9ad4](https://github.com/angular/angular.js/commit/37cb9ad43619e2b14055b3105a954f4474cd933c))
+- **$rootScope:** Set no `this` context when calling helper functions for `$watch`
+  ([1c6edd41](https://github.com/angular/angular.js/commit/1c6edd416b4baad0c8b01148f429eb78e0ad7eaa))
+- **$route:** allow route reload to be prevented
+  ([2f0a50b5](https://github.com/angular/angular.js/commit/2f0a50b526c5d0263879d3e845866e1af6fd9791),
+   [#9824](https://github.com/angular/angular.js/issues/9824), [#13894](https://github.com/angular/angular.js/issues/13894))
+- **dateFilter, input:** fix Date parsing in IE/Edge when timezone offset contains `:`
+  ([622c4216](https://github.com/angular/angular.js/commit/622c42169699ec07fc6daaa19fe6d224e5d2f70e),
+   [#13880](https://github.com/angular/angular.js/issues/13880), [#13887](https://github.com/angular/angular.js/issues/13887))
+- **ngAnimateChildren:** make it compatible with `ngIf`
+  ([8aecf46a](https://github.com/angular/angular.js/commit/8aecf46ad2b3324dd504a8083a61d5bf18d870ed),
+   [#13865](https://github.com/angular/angular.js/issues/13865), [#13876](https://github.com/angular/angular.js/issues/13876))
+- **ngAria:** Apply ARIA attrs correctly
+  ([d06431e5](https://github.com/angular/angular.js/commit/d06431e5309bb0125588877451dc79b935808134),
+   [#13078](https://github.com/angular/angular.js/issues/13078), [#11374](https://github.com/angular/angular.js/issues/11374), [#11830](https://github.com/angular/angular.js/issues/11830), [#13483](https://github.com/angular/angular.js/issues/13483))
+- **select:** handle the corner case of adding options via a custom directive
+  ([ca5b27bd](https://github.com/angular/angular.js/commit/ca5b27bd0b5243a25730be672c35dfed8ca1d28d),
+   [#13874](https://github.com/angular/angular.js/issues/13874), [#13878](https://github.com/angular/angular.js/issues/13878))
+
+
+## Features
+
+- **$compile:** add one-way binding to the isolate scope definition
+  ([4ac23c0a](https://github.com/angular/angular.js/commit/4ac23c0ac59c269d65b7f78efec75d060121bd18),
+   [#13928](https://github.com/angular/angular.js/issues/13928), [#13854](https://github.com/angular/angular.js/issues/13854), [#12835](https://github.com/angular/angular.js/issues/12835), [#13900](https://github.com/angular/angular.js/issues/13900))
+
+
+## Breaking Changes
+
+- **ngAria:** due to [d06431e5](https://github.com/angular/angular.js/commit/d06431e5309bb0125588877451dc79b935808134),
+  Where appropriate, ngAria now applies ARIA to custom controls only, not native inputs. Because of this, support for `aria-multiline` on textareas has been removed.
+
+
 <a name="1.5.0-rc.2"></a>
 # 1.5.0-rc.2 controller-requisition (2016-01-28)
 
@@ -35,7 +74,7 @@ changes section for more information
   - do not trigger animations if the document is hidden
   ([a3a7afd3](https://github.com/angular/angular.js/commit/a3a7afd3aa70d981b0210088df53fa2cf68d3a3d),
    [#12842](https://github.com/angular/angular.js/issues/12842), [#13776](https://github.com/angular/angular.js/issues/13776))
-- **ngSanitize:** Blacklist the attribute `usemap`
+- **ngSanitize:** blacklist the attribute `usemap` as it can be used as a security exploit
   ([234053fc](https://github.com/angular/angular.js/commit/234053fc9ad90e0d05be7e8359c6af66be94c094))
 - **ngTouch:** deprecate ngClick and disable it by default
   ([0dfc1dfe](https://github.com/angular/angular.js/commit/0dfc1dfebf26af7f951f301c4e3848ac46f05d7f),
@@ -72,8 +111,15 @@ changes section for more information
 
 ## Breaking Changes
 
-- **ngTouch:** due to [0dfc1dfe](https://github.com/angular/angular.js/commit/0dfc1dfebf26af7f951f301c4e3848ac46f05d7f),
+- **ngSanitize:** due to [234053fc](https://github.com/angular/angular.js/commit/234053fc9ad90e0d05be7e8359c6af66be94c094),
 
+The `$sanitize` service will now remove instances of the `usemap` attribute from any elements passed to it.
+
+This attribute is used to reference another element by `name` or `id`. Since the `name` and `id`
+attributes are already blacklisted, a sanitized `usemap` attribute could only reference unsanitized
+content, which is a security risk.
+
+- **ngTouch:** due to [0dfc1dfe](https://github.com/angular/angular.js/commit/0dfc1dfebf26af7f951f301c4e3848ac46f05d7f),
 
 The `ngClick` override directive from the `ngTouch` module is **deprecated and disabled by default**.
 This means that on touch-based devices, users might now experience a 300ms delay before a click event is fired.
