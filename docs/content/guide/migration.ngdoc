@@ -114,6 +114,27 @@ Objects considered array-like include: arrays, array subclasses, strings, NodeLi
 jqLite/jQuery collections
 
 
+### ngAria
+
+Due to [d06431e](https://github.com/angular/angular.js/commit/d06431e5309bb0125588877451dc79b935808134),
+the `ngAria`-enhanced directives (e.g. `ngModel`, `ngDisabled` etc) will not apply ARIA attributes
+to native inputs, unless necessary. Previously, ARIA attributes were always applied to native
+inputs, despite this being unnecessary in most cases.
+In the context of `ngAria`, elements considered "native inputs" include:
+`<a>`, `<button>`, `<details>`, `<input>`, `<select>`, `<summary>`, `<textarea>`
+
+This change will not affect the accessibility of your applications (since native inputs are
+accessible by default), but if you relied on ARIA attributes being present on native inputs (for
+whatever reason), you'll have to add and update them manually.
+
+Additionally, the `aria-multiline` attribute, which was previously added to elements with a `type`
+or `role` of `textbox`, will not be added anymore, since there is no way `ngAria` can tell if the
+textbox element is multiline or not.
+If you relied on `aria-multiline="true"` being automatically added by `ngAria`, you need to apply it
+yourself. E.g. change your code from `<div role="textbox" ng-model="..." ...>` to
+`<div role="textbox" ng-model="..." ... aria-multiline="true">`.
+
+
 ### ngMessages (`ngMessage`)
 
 Due to [4971ef12](https://github.com/angular/angular.js/commit/4971ef12d4c2c268cb8d26f90385dc96eba19db8),
