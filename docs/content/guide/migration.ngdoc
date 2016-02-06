@@ -1055,7 +1055,7 @@ to:
 
   Any class-based animation code that makes use of transitions
 and uses the setup CSS classes (such as class-add and class-remove) must now
-provide a empty transition value to ensure that its styling is applied right
+provide an empty transition value to ensure that its styling is applied right
 away. In other words if your animation code is expecting any styling to be
 applied that is defined in the setup class then it will not be applied
 "instantly" unless a `transition:0s none` value is present in the styling
