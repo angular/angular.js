@@ -977,44 +977,112 @@ function shallowCopy(src, dst) {
  * @returns {boolean} True if arguments are equal.
  */
 function equals(o1, o2) {
-  if (o1 === o2) return true;
-  if (o1 === null || o2 === null) return false;
-  if (o1 !== o1 && o2 !== o2) return true; // NaN === NaN
-  var t1 = typeof o1, t2 = typeof o2, length, key, keySet;
-  if (t1 == t2 && t1 == 'object') {
-    if (isArray(o1)) {
-      if (!isArray(o2)) return false;
-      if ((length = o1.length) == o2.length) {
-        for (key = 0; key < length; key++) {
-          if (!equals(o1[key], o2[key])) return false;
-        }
-        return true;
-      }
-    } else if (isDate(o1)) {
-      if (!isDate(o2)) return false;
-      return equals(o1.getTime(), o2.getTime());
-    } else if (isRegExp(o1)) {
-      if (!isRegExp(o2)) return false;
-      return o1.toString() == o2.toString();
-    } else {
-      if (isScope(o1) || isScope(o2) || isWindow(o1) || isWindow(o2) ||
-        isArray(o2) || isDate(o2) || isRegExp(o2)) return false;
-      keySet = createMap();
-      for (key in o1) {
-        if (key.charAt(0) === '$' || isFunction(o1[key])) continue;
-        if (!equals(o1[key], o2[key])) return false;
-        keySet[key] = true;
-      }
-      for (key in o2) {
-        if (!(key in keySet) &&
-            key.charAt(0) !== '$' &&
-            isDefined(o2[key]) &&
-            !isFunction(o2[key])) return false;
-      }
-      return true;
-    }
-  }
+
+  if (areBothEqualValue(o1, o2)) return true;
+  if (isAnyOneHasValueEqualNull(o1, o2)) return false;
+  if (areBothValuesEqualNaN(o1, o2)) return true;
+  if (areBothObjectsEqual(o1, o2)) return true;
+
   return false;
+}
+
+function areBothEqualValue(o1, o2) {
+  return (o1 === o2);
+}
+
+function isAnyOneHasValueEqualNull(o1, o2) {
+  return (o1 === null || o2 === null);
+}
+
+function areBothValuesEqualNaN(o1, o2) {
+  return (o1 !== o1 && o2 !== o2);
+}
+
+function areBothObjectsEqual(o1, o2) {
+
+  if (areBothObjectsEqualType(o1, o2)) {
+    var isO1ArrayType = isArray(o1);
+    var isO2ArrayType = isArray(o2);
+    if (isO1ArrayType || isO2ArrayType) {
+      if (isO2ArrayType && isO2ArrayType) {
+        return areBothArraysEqual(o1, o2);
+      }
+      return false;
+    }
+
+    var isO1DateType = isDate(o1);
+    var isO2DateType = isDate(o2);
+    if (isO1DateType || isO2DateType) {
+      if (isO1DateType && isO2DateType) {
+        return areBothDatesEqual(o1, o2);
+      }
+      return false;
+    }
+
+    var isO1RegExpType = isRegExp(o1);
+    var isO2RegExpType = isRegExp(o2);
+
+    if (isO1RegExpType || isO2RegExpType) {
+      if (isO1RegExpType && isO2RegExpType) {
+        return areBothRegExpEqual(o1, o2);
+      }
+      return false;
+
+    }
+
+    if (isScope(o1) || isScope(o2) || isWindow(o1) || isWindow(o2)) return false;
+
+    return areBothMapsEqual(o1, o2);
+
+  }
+
+  return false;
+}
+
+function areBothObjectsEqualType(o1, o2) {
+  var t1 = typeof o1;
+  var t2 = typeof o2;
+
+  return (t1 == t2 && t1 == 'object');
+}
+
+function areBothArraysEqual(o1, o2) {
+  var length, key;
+
+  if ((length = o1.length) == o2.length) {
+    for (key = 0; key < length; key++) {
+      if (!equals(o1[key], o2[key])) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  return false;
+}
+
+function areBothDatesEqual(o1, o2) {
+  return equals(o1.getTime(), o2.getTime());
+}
+
+function areBothRegExpEqual(o1, o2) {
+  return (o1.toString() == o2.toString());
+}
+
+function areBothMapsEqual(o1, o2) {
+  var keySet, key;
+  keySet = createMap();
+  for (key in o1) {
+    if (key.charAt(0) === '$' || isFunction(o1[key])) continue;
+    if (!equals(o1[key], o2[key])) return false;
+    keySet[key] = true;
+  }
+  for (key in o2) {
+    if (!(key in keySet) &&
+        key.charAt(0) !== '$' &&
+        isDefined(o2[key]) && !isFunction(o2[key])) return false;
+  }
+  return true;
 }
 
 var csp = function() {
