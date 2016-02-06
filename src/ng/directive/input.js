@@ -1743,10 +1743,8 @@ var CONSTANT_VALUE_REGEXP = /^(true|false|\d+)$/;
  * `ngValue` is useful when dynamically generating lists of radio buttons using
  * {@link ngRepeat `ngRepeat`}, as shown below.
  *
- * Likewise, `ngValue` can be used to generate `<option>` elements for
- * the {@link select `select`} element. In that case however, only strings are supported
- * for the `value `attribute, so the resulting `ngModel` will always be a string.
- * Support for `select` models with non-string values is available via `ngOptions`.
+ * Likewise, `ngValue` can be used to set the value of `<option>` elements for
+ * the {@link select `select`} element.
  *
  * @element input
  * @param {string=} ngValue angular expression, whose value will be bound to the `value` attribute

@@ -1,7 +1,7 @@
 'use strict';
 
 describe('select', function() {
-  var scope, formElement, element, $compile, ngModelCtrl, selectCtrl, renderSpy;
+  var scope, formElement, element, $compile, ngModelCtrl, selectCtrl, renderSpy, optionAttributesList = [];
 
   function compile(html) {
     formElement = jqLite('<form name="form">' + html + '</form>');
@@ -55,6 +55,18 @@ describe('select', function() {
             '</option>'
       };
     });
+
+    $compileProvider.directive('exposeAttributes', function() {
+      return {
+        require: '^^select',
+        link: {
+          pre: function(scope, element, attrs, ctrl) {
+            optionAttributesList.push(attrs);
+          }
+        }
+      };
+    });
+
   }));
 
   beforeEach(inject(function($rootScope, _$compile_) {
@@ -297,7 +309,7 @@ describe('select', function() {
       expect(selectCtrl.writeValue).not.toHaveBeenCalled();
 
       scope.$digest();
-      expect(selectCtrl.writeValue).toHaveBeenCalledOnce();
+      expect(selectCtrl.writeValue).toHaveBeenCalled();
       dealoc(select);
     });
 
@@ -1222,6 +1234,225 @@ describe('select', function() {
                   '<option>{{hasOwnPropertyOption}}</option>' +
                 '</select>');
       }).toThrowMinErr('ng','badname', 'hasOwnProperty is not a valid "option value" name');
+    });
+
+    describe('with ngValue (and non-primitive values)', function() {
+
+      they('should set the option attribute and select it for value $prop', [
+          'string',
+          undefined,
+          1,
+          true,
+          null,
+          {prop: 'value'},
+          ['a'],
+          NaN
+        ], function(prop) {
+          scope.option1 = prop;
+          scope.selected = 'NOMATCH';
+
+          compile('<select ng-model="selected">' +
+            '<option ng-value="option1">{{option1}}</option>' +
+          '</select>');
+
+          scope.$digest();
+          expect(element.find('option').eq(0).val()).toBe('? string:NOMATCH ?');
+
+          scope.selected = prop;
+          scope.$digest();
+
+          expect(element.find('option').eq(0).val()).toBe(hashKey(prop));
+
+          // Reset
+          scope.selected = false;
+          scope.$digest();
+
+          expect(element.find('option').eq(0).val()).toBe('? boolean:false ?');
+
+          browserTrigger(element.find('option').eq(0));
+          if (typeof prop === 'number' && isNaN(prop)) {
+            expect(scope.selected).toBeNaN();
+          } else {
+            expect(scope.selected).toBe(prop);
+          }
+      });
+
+
+      they('should update the option attribute and select it for value $prop', [
+          'string',
+          undefined,
+          1,
+          true,
+          null,
+          {prop: 'value'},
+          ['a'],
+          NaN
+        ], function(prop) {
+          scope.option = prop;
+          scope.selected = 'NOMATCH';
+
+          compile('<select ng-model="selected">' +
+            '<option ng-value="option">{{option}}</option>' +
+          '</select>');
+
+          var selectController = element.controller('select');
+          spyOn(selectController, 'removeOption').and.callThrough();
+
+          scope.$digest();
+          expect(selectController.removeOption).not.toHaveBeenCalled();
+          expect(element.find('option').eq(0).val()).toBe('? string:NOMATCH ?');
+
+          scope.selected = prop;
+          scope.$digest();
+
+          expect(element.find('option').eq(0).val()).toBe(hashKey(prop));
+          expect(element[0].selectedIndex).toBe(0);
+
+          scope.option = 'UPDATEDVALUE';
+          scope.$digest();
+
+          expect(selectController.removeOption.calls.count()).toBe(1);
+
+          // Updating the option value currently does not update the select model
+          if (typeof prop === 'number' && isNaN(prop)) {
+            expect(selectController.removeOption.calls.argsFor(0)[0]).toBeNaN();
+          } else {
+            expect(selectController.removeOption.calls.argsFor(0)[0]).toBe(prop);
+          }
+
+          expect(scope.selected).toBe(null);
+          expect(element[0].selectedIndex).toBe(0);
+          expect(element.find('option').length).toBe(2);
+          expect(element.find('option').eq(0).prop('selected')).toBe(true);
+          expect(element.find('option').eq(0).val()).toBe(unknownValue(prop));
+          expect(element.find('option').eq(1).prop('selected')).toBe(false);
+          expect(element.find('option').eq(1).val()).toBe('string:UPDATEDVALUE');
+
+          scope.selected = 'UPDATEDVALUE';
+          scope.$digest();
+
+          expect(element[0].selectedIndex).toBe(0);
+          expect(element.find('option').eq(0).val()).toBe('string:UPDATEDVALUE');
+      });
+
+      it('should interact with custom attribute $observe and $set calls', function() {
+        var log = [], optionAttr;
+
+        compile('<select ng-model="selected">' +
+          '<option expose-attributes ng-value="option">{{option}}</option>' +
+        '</select>');
+
+        optionAttr = optionAttributesList[0];
+        optionAttr.$observe('value', function(newVal) {
+          log.push(newVal);
+        });
+
+        scope.option = 'init';
+        scope.$digest();
+
+        expect(log[0]).toBe('init');
+        expect(element.find('option').eq(1).val()).toBe('string:init');
+
+        optionAttr.$set('value', 'update');
+        expect(log[1]).toBe('update');
+        expect(element.find('option').eq(1).val()).toBe('string:update');
+
+      });
+
+    it('should ignore the option text / value attribute if the ngValue attribute exists', function() {
+      scope.ngvalue = 'abc';
+      scope.value = 'def';
+      scope.textvalue = 'ghi';
+
+      compile('<select ng-model="x"><option ng-value="ngvalue" value="{{value}}">{{textvalue}}</option></select>');
+      expect(element).toEqualSelect([unknownValue(undefined)], 'string:abc');
+    });
+
+    it('should ignore option text with multiple interpolations if the ngValue attribute exists', function() {
+      scope.ngvalue = 'abc';
+      scope.textvalue = 'def';
+      scope.textvalue2 = 'ghi';
+
+      compile('<select ng-model="x"><option ng-value="ngvalue">{{textvalue}} {{textvalue2}}</option></select>');
+      expect(element).toEqualSelect([unknownValue(undefined)], 'string:abc');
+    });
+
+      describe('and select[multiple]', function() {
+
+        it('should allow multiple selection', function() {
+            scope.options = {
+              a: 'string',
+              b: undefined,
+              c: 1,
+              d: true,
+              e: null,
+              f: {prop: 'value'},
+              g: ['a'],
+              h: NaN
+            };
+            scope.selected = [];
+
+            compile('<select multiple ng-model="selected">' +
+              '<option ng-value="options.a">{{options.a}}</option>' +
+              '<option ng-value="options.b">{{options.b}}</option>' +
+              '<option ng-value="options.c">{{options.c}}</option>' +
+              '<option ng-value="options.d">{{options.d}}</option>' +
+              '<option ng-value="options.e">{{options.e}}</option>' +
+              '<option ng-value="options.f">{{options.f}}</option>' +
+              '<option ng-value="options.g">{{options.g}}</option>' +
+              '<option ng-value="options.h">{{options.h}}</option>' +
+            '</select>');
+
+            scope.$digest();
+            expect(element).toEqualSelect(
+              'string:string',
+              'undefined:undefined',
+              'number:1',
+              'boolean:true',
+              'object:null',
+              'object:4',
+              'object:5',
+              'number:NaN'
+            );
+
+            scope.selected = ['string', 1];
+            scope.$digest();
+
+            expect(element.find('option').eq(0).prop('selected')).toBe(true);
+            expect(element.find('option').eq(2).prop('selected')).toBe(true);
+
+            browserTrigger(element.find('option').eq(1));
+            expect(scope.selected).toEqual([undefined]);
+
+            //reset
+            scope.selected = [];
+            scope.$digest();
+
+            forEach(element.find('option'), function(option) {
+              // browserTrigger can't produce click + ctrl, so set selection manually
+              jqLite(option).prop('selected', true);
+            });
+
+            browserTrigger(element, 'change');
+
+            var arrayVal = ['a'];
+            arrayVal.$$hashKey = 'object:5';
+
+            expect(scope.selected).toEqual([
+              'string',
+              undefined,
+              1,
+              true,
+              null,
+              {prop: 'value', $$hashKey: 'object:4'},
+              arrayVal,
+              NaN
+            ]);
+        });
+
+      });
+
+
     });
 
   });
