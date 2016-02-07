@@ -45,7 +45,7 @@ To learn more about the grunt tasks, run `grunt --help` and also read our
 
 What to Use AngularJS for and When to Use it
 ---------
-AngularJS is the next generation framework where each component is designed to work with every other component in an interconnected way like a well oiled machine. AngularJS is JavaScript MVC made easy and done right. (Well it is not really MVC, read on, to understand what this means.)
+AngularJS is the next generation framework where each component is designed to work with every other component in an interconnected way like a well-oiled machine. AngularJS is JavaScript MVC made easy and done right. (Well it is not really MVC, read on, to understand what this means.)
 
 #### MVC, no, MV* done the right way!
 MVC, short for Model-View-Controller, is a design pattern, i.e. how the code should be organized and how the different parts of an application separated for proper readability and debugging. Model is the data and the database. View is the user interface and what the user sees. Controller is the main link between Model and View. These are the three pillars of major programming frameworks present on the market today. On the other hand AngularJS works on MV*, short of Model-View-_Whatever_. The _Whatever_ is AngularJS way of telling that you may create any kind of linking between the Model and the View here. 
@@ -65,4 +65,4 @@ One of AngularJS's strongest features. Two-way Data Binding means that if someth
 Everything in AngularJS is created to enable the programmer ends up writing less code that is easily maintainable and readable by any other new person on the team. Believe it or not, one can write a complete working two-way binded application in less 10 lines of code. Try and see for yourself!
 
 #### Testing Ready
-AngularJS has Dependency Injection, i.e. it takes care of providing all the necessary dependencies to its controllers whenever required. This helps in making the AngularJS code ready for unit testing by making use of mock dependencies created and injected. This makes AngularJS more modular and easily testable thus in turn helping a team create more robust application.
+AngularJS has Dependency Injection, i.e. it takes care of providing all the necessary dependencies to its controllers whenever required. This helps in making the AngularJS code ready for unit testing by making use of mock dependencies created and injected. This makes AngularJS more modular and easily testable thus in turn helping a team create more robust applications.
