@@ -148,9 +148,9 @@ function classDirective(name, selector) {
  * new classes added.
  *
  * @animations
- * **add** - happens just before the class is applied to the elements
+ * `.ng-add` - happens just before the class is applied to the elements
  *
- * **remove** - happens just before the class is removed from the element
+ * `.ng-remove` - happens just before the class is removed from the element
  *
  * @element ANY
  * @param {expression} ngClass {@link guide/expression Expression} to eval. The result
