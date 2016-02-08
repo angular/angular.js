@@ -430,5 +430,13 @@ If your directive uses `templateUrl`, consider using
 to pre-compile HTML templates and thus avoid having to load them over HTTP during test execution.
 Otherwise you may run into issues if the test directory hierarchy differs from the application's.
 
+## Testing Promises
+
+When testing promises, it's important to know that the resolution of promises is tied to the {@link ng.$rootScope.Scope#$digest digest cycle}.
+That means a promise's `then`, `catch` and `finally` callback functions are only called after a digest has run.
+In tests, you can trigger a digest by calling a scope's {@link ng.$rootScope.Scope#$apply `$apply` function}.
+If you don't have a scope in your test, you can inject the {@link ng.$rootScope $rootScope} and call `$apply` on it.
+There is also an example of testing promises in the {@link ng.$q#testing `$q` service documentation}.
+
 ## Sample project
 See the [angular-seed](https://github.com/angular/angular-seed) project for an example.
