@@ -234,7 +234,7 @@ When the browser calls into JavaScript the code executes outside the Angular exe
 which means that Angular is unaware of model modifications. To properly process model
 modifications the execution has to enter the Angular execution context using the {@link
 ng.$rootScope.Scope#$apply `$apply`} method. Only model modifications which
-execute inside the `$apply` method will be properly accounted for by Angular. For example if a
+execute inside the `$apply` method will be properly accounted by Angular. For example if a
 directive listens on DOM events, such as {@link
 ng.directive:ngClick `ng-click`} it must evaluate the
 expression inside the `$apply` method.
