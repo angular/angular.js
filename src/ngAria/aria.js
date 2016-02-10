@@ -377,6 +377,28 @@ ngAriaModule.directive('ngShow', ['$aria', function($aria) {
             });
           }
         }
+
+        if ($aria.config('bindKeypress') && isNodeOneOf(elem, ['A', 'BUTTON'])) {
+          elem.on('keypress', function(event) {
+            var keyCode = event.which || event.keyCode;
+
+            if (elem[0].nodeName==='A') {
+              var hasHref = elem.attr('href') != null && elem.attr('href') != '';
+              if ((keyCode === 13 && !hasHref) || keyCode === 32) {
+                scope.$apply(callback);
+              }
+            } 
+            else if (elem[0].nodeName==='BUTTON') {
+              if (keyCode === 32) {
+                scope.$apply(callback);
+              }
+            }
+            
+            function callback() {
+              fn(scope, { $event: event });
+            }
+          });
+        }
       };
     }
   };

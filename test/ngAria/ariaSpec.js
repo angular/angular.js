@@ -755,6 +755,35 @@ describe('$aria', function() {
       element.triggerHandler({ type: 'keypress', keyCode: 13 });
       expect(element.text()).toBe('');
     });
+
+    it('should bind keypress to anchor elements without href defined', function() {
+      compileElement('<a ng-click="event = $event">{{event.type}}{{event.keyCode}}</a>');
+      expect(element.text()).toBe('');
+      element.triggerHandler({ type: 'keypress', keyCode: 13 });
+      expect(element.text()).toBe('keypress13');
+    });
+
+    it('should bind keypress to anchor elements with empty href defined', function() {
+      compileElement('<a href="" ng-click="event = $event">{{event.type}}{{event.keyCode}}</a>');
+      expect(element.text()).toBe('');
+      element.triggerHandler({ type: 'keypress', keyCode: 13 });
+      expect(element.text()).toBe('keypress13');
+    });
+
+    it('should not bind keypress to anchor elements with href defined', function() {
+      compileElement('<a href="http://somwehere" ng-click="event = $event">{{event.type}}{{event.keyCode}}</a>');
+      expect(element.text()).toBe('');
+      element.triggerHandler({ type: 'keypress', keyCode: 13 });
+      expect(element.text()).toBe('');
+    });
+    
+    it('should bind space keypress to button elements', function() {
+      compileElement('<button ng-click="event = $event">{{event.type}}{{event.keyCode}}</button>');
+      expect(element.text()).toBe('');
+      element.triggerHandler({ type: 'keypress', keyCode: 32 });
+      expect(element.text()).toBe('keypress32');
+    });
+
   });
 
   describe('actions when bindRoleForClick is set to false', function() {
