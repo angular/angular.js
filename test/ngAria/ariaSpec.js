@@ -776,7 +776,7 @@ describe('$aria', function() {
       element.triggerHandler({ type: 'keypress', keyCode: 13 });
       expect(element.text()).toBe('');
     });
-    
+
     it('should bind space keypress to button elements', function() {
       compileElement('<button ng-click="event = $event">{{event.type}}{{event.keyCode}}</button>');
       expect(element.text()).toBe('');
