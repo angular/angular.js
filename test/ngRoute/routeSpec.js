@@ -974,6 +974,32 @@ describe('$route', function() {
     });
 
 
+    it('should properly process route params which are both eager and optional', function() {
+      module(function($routeProvider) {
+        $routeProvider.when('/foo/:param1*?/:param2', {templateUrl: 'foo.html'});
+      });
+
+      inject(function($location, $rootScope, $route) {
+        $location.path('/foo/bar1/bar2/bar3/baz');
+        $rootScope.$digest();
+
+        expect($location.path()).toEqual('/foo/bar1/bar2/bar3/baz');
+        expect($route.current.params.param1).toEqual('bar1/bar2/bar3');
+        expect($route.current.params.param2).toEqual('baz');
+        expect($route.current.templateUrl).toEqual('foo.html');
+
+        $location.path('/foo/baz');
+        $rootScope.$digest();
+
+        expect($location.path()).toEqual('/foo/baz');
+        expect($route.current.params.param1).toEqual(undefined);
+        expect($route.current.params.param2).toEqual('baz');
+        expect($route.current.templateUrl).toEqual('foo.html');
+
+      });
+    });
+
+
     it('should properly interpolate optional and eager route vars ' +
        'when redirecting from path with trailing slash', function() {
       module(function($routeProvider) {
