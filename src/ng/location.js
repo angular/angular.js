@@ -37,10 +37,10 @@ function parseAppUrl(relativeUrl, locationObj) {
     relativeUrl = '/' + relativeUrl;
   }
   var match = urlResolve(relativeUrl);
-  locationObj.$$path = decodeURIComponent(prefixed && match.pathname.charAt(0) === '/' ?
+  locationObj.$$path = tryDecodeURIComponent(prefixed && match.pathname.charAt(0) === '/' ?
       match.pathname.substring(1) : match.pathname);
   locationObj.$$search = parseKeyValue(match.search);
-  locationObj.$$hash = decodeURIComponent(match.hash);
+  locationObj.$$hash = tryDecodeURIComponent(match.hash);
 
   // make sure path starts with '/';
   if (locationObj.$$path && locationObj.$$path.charAt(0) != '/') {
@@ -385,7 +385,7 @@ var locationPrototype = {
     }
 
     var match = PATH_MATCH.exec(url);
-    if (match[1] || url === '') this.path(decodeURIComponent(match[1]));
+    if (match[1] || url === '') this.path(tryDecodeURIComponent(match[1]));
     if (match[2] || match[1] || url === '') this.search(match[3] || '');
     this.hash(match[5] || '');
 
