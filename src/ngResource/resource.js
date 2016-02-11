@@ -101,7 +101,8 @@ function shallowClearAndCopy(src, dst) {
  *
  * @param {Object=} paramDefaults Default values for `url` parameters. These can be overridden in
  *   `actions` methods. If a parameter value is a function, it will be executed every time
- *   when a param value needs to be obtained for a request (unless the param was overridden).
+ *   when a param value needs to be obtained for a request (unless the param was overridden). The
+ *   function will be passed a hash of the parameter keys and values.
  *
  *   Each key value in the parameter object is first bound to url template if present and then any
  *   excess keys are appended to the url search query after the `?`.
@@ -130,7 +131,8 @@ function shallowClearAndCopy(src, dst) {
  *     `DELETE`, `JSONP`, etc).
  *   - **`params`** – {Object=} – Optional set of pre-bound parameters for this action. If any of
  *     the parameter value is a function, it will be executed every time when a param value needs to
- *     be obtained for a request (unless the param was overridden).
+ *     be obtained for a request (unless the param was overridden). The function will be passed a
+ *     hash of the parameter keys and values.
  *   - **`url`** – {string} – action specific `url` override. The url templating is supported just
  *     like for the resource-level urls.
  *   - **`isArray`** – {boolean=} – If true then the returned object for this action is an array,
@@ -551,7 +553,7 @@ angular.module('ngResource', ['ng']).
           var ids = {};
           actionParams = extend({}, paramDefaults, actionParams);
           forEach(actionParams, function(value, key) {
-            if (isFunction(value)) { value = value(); }
+            if (isFunction(value)) { value = value(actionParams); }
             ids[key] = value && value.charAt && value.charAt(0) == '@' ?
               lookupDottedPath(data, value.substr(1)) : value;
           });

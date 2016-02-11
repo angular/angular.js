@@ -403,6 +403,35 @@ describe("basic usage", function() {
     inst.$post();
   });
 
+  it("should build resource by passing parameter values to functions in action params", function() {
+    $httpBackend.expect('GET', '/C/Customer/123').respond({id: 'abc'});
+    var TypeItem = $resource('/:typeAbbr/:type/:typeId', {
+      type: 'Customer',
+      typeAbbr: 'P'
+    },{get: {method: 'GET', params: {
+      typeAbbr: function(params) {
+          return params.type.substring(0,1);
+      }
+    }}});
+    var item = TypeItem.get({type: 'Customer', typeId: 123});
+
+    $httpBackend.flush();
+    expect(item).toEqualData({id: 'abc'});
+  });
+
+  it("should build resource by passing parameter values to functions in default params", function() {
+    $httpBackend.expect('GET', '/C/Customer/123').respond({id: 'abc'});
+    var TypeItem = $resource('/:typeAbbr/:type/:typeId', {
+      type: 'Customer',
+      typeAbbr: function(params) {
+          return params.type.substring(0,1);
+      }
+    },{get: {method: 'GET'}});
+    var item = TypeItem.get({type: 'Customer', typeId: 123});
+
+    $httpBackend.flush();
+    expect(item).toEqualData({id: 'abc'});
+  });
 
   it('should not throw TypeError on null default params', function() {
     $httpBackend.expect('GET', '/Path').respond('{}');
