@@ -349,6 +349,21 @@ describe('filters', function() {
                       toEqual('September 03, 2010 Anno Domini');
     });
 
+    it('should support STANDALONEMONTH in format (`LLLL`)', inject(function($locale) {
+      var standAloneMonth = $locale.DATETIME_FORMATS.STANDALONEMONTH;
+      var september = standAloneMonth[8];
+      var standAloneSeptember = 'StandAlone' + september;
+
+      // Overwrite September in STANDALONEMONTH
+      standAloneMonth[8] = standAloneSeptember;
+
+      expect(date(noon, 'MMMM')).toEqual(september);
+      expect(date(noon, 'LLLL')).toEqual(standAloneSeptember);
+
+      // Restore September in STANDALONEMONTH
+      standAloneMonth[8] = september;
+    }));
+
     it('should accept negative numbers as strings', function() {
       //Note: this tests a timestamp set for 3 days before the unix epoch.
       //The behavior of `date` depends on your timezone, which is why we check just
