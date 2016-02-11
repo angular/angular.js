@@ -981,20 +981,20 @@ describe('$route', function() {
 
       inject(function($location, $rootScope, $route) {
         $location.path('/foo/bar1/bar2/bar3/baz');
-	$rootScope.$digest();
+        $rootScope.$digest();
 
-	expect($location.path()).toEqual('/foo/bar1/bar2/bar3/baz');
-	expect($route.current.params.param1).toEqual('bar1/bar2/bar3');
-	expect($route.current.params.param2).toEqual('baz');
-	expect($route.current.templateUrl).toEqual('foo.html');
+        expect($location.path()).toEqual('/foo/bar1/bar2/bar3/baz');
+        expect($route.current.params.param1).toEqual('bar1/bar2/bar3');
+        expect($route.current.params.param2).toEqual('baz');
+        expect($route.current.templateUrl).toEqual('foo.html');
 
-	$location.path('/foo/baz');
-	$rootScope.$digest();
+        $location.path('/foo/baz');
+        $rootScope.$digest();
 
-	expect($location.path()).toEqual('/foo/baz');
-	expect($route.current.params.param1).toEqual(undefined);
-	expect($route.current.params.param2).toEqual('baz');
-	expect($route.current.templateUrl).toEqual('foo.html');
+        expect($location.path()).toEqual('/foo/baz');
+        expect($route.current.params.param1).toEqual(undefined);
+        expect($route.current.params.param2).toEqual('baz');
+        expect($route.current.templateUrl).toEqual('foo.html');
 
       });
     });
