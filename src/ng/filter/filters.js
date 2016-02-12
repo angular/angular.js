@@ -331,11 +331,15 @@ function formatNumber(number, pattern, groupSep, decimalSep, fractionSize) {
   }
 }
 
-function padNumber(num, digits, trim) {
+function padNumber(num, digits, trim, negWrap) {
   var neg = '';
-  if (num < 0) {
-    neg =  '-';
-    num = -num;
+  if (num < 0 || (negWrap && num <= 0)) {
+    if (negWrap) {
+      num = -num + 1;
+    } else {
+      num = -num;
+      neg = '-';
+    }
   }
   num = '' + num;
   while (num.length < digits) num = ZERO_CHAR + num;
@@ -346,7 +350,7 @@ function padNumber(num, digits, trim) {
 }
 
 
-function dateGetter(name, size, offset, trim) {
+function dateGetter(name, size, offset, trim, negWrap) {
   offset = offset || 0;
   return function(date) {
     var value = date['get' + name]();
@@ -354,7 +358,7 @@ function dateGetter(name, size, offset, trim) {
       value += offset;
     }
     if (value === 0 && offset == -12) value = 12;
-    return padNumber(value, size, trim);
+    return padNumber(value, size, trim, negWrap);
   };
 }
 
@@ -417,9 +421,9 @@ function longEraGetter(date, formats) {
 }
 
 var DATE_FORMATS = {
-  yyyy: dateGetter('FullYear', 4),
-    yy: dateGetter('FullYear', 2, 0, true),
-     y: dateGetter('FullYear', 1),
+  yyyy: dateGetter('FullYear', 4, 0, false, true),
+    yy: dateGetter('FullYear', 2, 0, true, true),
+     y: dateGetter('FullYear', 1, 0, false, true),
   MMMM: dateStrGetter('Month'),
    MMM: dateStrGetter('Month', true),
     MM: dateGetter('Month', 2, 1),
