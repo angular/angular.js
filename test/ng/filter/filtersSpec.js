@@ -272,6 +272,8 @@ describe('filters', function() {
     var noon       = new angular.mock.TzDate(+5, '2010-09-03T17:05:08.012Z'); //12pm
     var midnight   = new angular.mock.TzDate(+5, '2010-09-03T05:05:08.123Z'); //12am
     var earlyDate  = new angular.mock.TzDate(+5, '0001-09-03T05:05:08.000Z');
+    var year0Date  = new angular.mock.TzDate(+5, '0000-12-25T05:05:08.000Z');
+    var bcDate     = new angular.mock.TzDate(+5, '-0026-01-16T05:05:08.000Z');
     var secondWeek = new angular.mock.TzDate(+5, '2013-01-11T12:00:00.000Z'); //Friday Jan 11, 2013
     var date;
 
@@ -335,6 +337,15 @@ describe('filters', function() {
 
       expect(date(earlyDate, "MMMM dd, y")).
                       toEqual('September 03, 1');
+
+      expect(date(earlyDate, "MMMM dd, yyyy")).
+                      toEqual('September 03, 0001');
+
+      expect(date(year0Date, "dd MMMM y G")).
+                      toEqual('25 December 1 BC');
+
+      expect(date(bcDate, "dd MMMM y G")).
+                      toEqual('16 January 27 BC');
 
       expect(date(noon, "MMMM dd, y G")).
                       toEqual('September 03, 2010 AD');
