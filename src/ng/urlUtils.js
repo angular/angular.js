@@ -88,7 +88,7 @@ function urlResolve(url) {
  * or a parsed URL object.
  * @returns {string|object} parsed url.
  */
-function parseUrl(url){
+function parseUrl(url) {
   return (isString(url)) ? urlResolve(url) : url;
 }
 /**
