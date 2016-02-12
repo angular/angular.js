@@ -1544,7 +1544,13 @@ describe('cancelling requests', function() {
       }
     });
 
-    CreditCard.get();
+    var creditCard = CreditCard.get();
+
+    creditCard.$promise.catch(function(err) {
+      expect(err.status).toEqual(-1);
+      expect(err.statusText).toEqual("timeout");
+    });
+
     $timeout.flush();
     expect($httpBackend.flush).toThrow(new Error('No pending request to flush !'));
 
@@ -1563,7 +1569,14 @@ describe('cancelling requests', function() {
       }
     });
 
-    CreditCard.get().$cancelRequest();
+    var creditCard = CreditCard.get();
+
+    creditCard.$promise.catch(function(err) {
+      expect(err.status).toEqual(-1);
+      expect(err.statusText).toEqual("cancelled");
+    });
+
+    creditCard.$cancelRequest();
     expect($httpBackend.flush).toThrow(new Error('No pending request to flush !'));
 
     CreditCard.get();
@@ -1581,7 +1594,14 @@ describe('cancelling requests', function() {
       }
     });
 
-    CreditCard.get().$cancelRequest();
+    var creditCard = CreditCard.get();
+
+    creditCard.$promise.catch(function(err) {
+        expect(err.status).toEqual(-1);
+        expect(err.statusText).toEqual("cancelled");
+    });
+
+    creditCard.$cancelRequest();
     expect($httpBackend.flush).toThrow(new Error('No pending request to flush !'));
 
     CreditCard.get();

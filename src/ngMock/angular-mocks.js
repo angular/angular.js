@@ -1346,11 +1346,15 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
                  copy(response[3] || ''));
       }
 
-      function handleTimeout() {
+      function handleTimeout(statusText) {
         for (var i = 0, ii = responses.length; i < ii; i++) {
           if (responses[i] === handleResponse) {
             responses.splice(i, 1);
-            callback(-1, undefined, '');
+            if (statusText) {
+                callback(-1, undefined, '', statusText);
+            } else {
+                callback(-1, undefined, '');
+            }
             break;
           }
         }

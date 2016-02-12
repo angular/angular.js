@@ -1399,6 +1399,24 @@ describe('ngMock', function() {
     });
 
 
+    it('should abort requests when timeout promise resolves with statusText', function() {
+      hb.expect('GET', '/url1').respond(200);
+
+      var canceler, then = jasmine.createSpy('then').andCallFake(function(fn) {
+        canceler = fn;
+      });
+
+      hb('GET', '/url1', null, callback, null, {then: then});
+      expect(typeof canceler).toBe('function');
+
+      canceler('whatever');  // simulate promise resolution
+
+      expect(callback).toHaveBeenCalledWith(-1, undefined, '', 'whatever');
+      hb.verifyNoOutstandingExpectation();
+      hb.verifyNoOutstandingRequest();
+    });
+
+
     it('should abort requests when timeout passed as a numeric value', inject(function($timeout) {
       hb.expect('GET', '/url1').respond(200);
 
