@@ -8780,6 +8780,18 @@ describe('$compile', function() {
       expect(element.attr('src')).toEqual('http://example.com/image2.png');
     }));
 
+    it('should NOT require trusted values for video / audio / track src', inject(function($rootScope, $compile, $sce) {
+      element = $compile('<video src="{{testUrl}}"></video>')($rootScope);
+      $rootScope.testUrl = 'http://example.com/image.mp4';
+      $rootScope.$digest();
+      expect(element.attr('src')).toEqual('http://example.com/image.mp4');
+
+      // But it should accept trusted values anyway.
+      $rootScope.testUrl = $sce.trustAsUrl('http://example.com/image2.mp4');
+      $rootScope.$digest();
+      expect(element.attr('src')).toEqual('http://example.com/image2.mp4');
+    }));
+
     it('should not sanitize attributes other than src', inject(function($compile, $rootScope) {
       /* jshint scripturl:true */
       element = $compile('<img title="{{testUrl}}"></img>')($rootScope);
