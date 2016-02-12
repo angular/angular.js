@@ -81,7 +81,16 @@ function urlResolve(url) {
       : '/' + urlParsingNode.pathname
   };
 }
-
+/**
+ * Parse a request URL
+ *
+ * @param {string|object} url The url of the request as a string that will be resolved
+ * or a parsed URL object.
+ * @returns {string|object} parsed url.
+ */
+function parseUrl(url){
+  return (isString(url)) ? urlResolve(url) : url;
+}
 /**
  * Parse a request URL and determine whether this is a same-origin request as the application document.
  *
@@ -90,7 +99,7 @@ function urlResolve(url) {
  * @returns {boolean} Whether the request is for the same origin as the application document.
  */
 function urlIsSameOrigin(requestUrl) {
-  var parsed = (isString(requestUrl)) ? urlResolve(requestUrl) : requestUrl;
+  var parsed = parseUrl(requestUrl);
   return (parsed.protocol === originUrl.protocol &&
           parsed.host === originUrl.host);
 }
@@ -103,6 +112,6 @@ function urlIsSameOrigin(requestUrl) {
   * @returns {boolean} Whether the request is for the same origin as the application document.
   */
 function urlIsFromFile(requestUrl) {
-  var parsed = (isString(requestUrl)) ? urlResolve(requestUrl) : requestUrl;
+  var parsed = parseUrl(requestUrl);
   return parsed.protocol.indexOf('file') > -1;
 }
