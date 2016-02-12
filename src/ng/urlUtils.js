@@ -94,15 +94,3 @@ function urlIsSameOrigin(requestUrl) {
   return (parsed.protocol === originUrl.protocol &&
           parsed.host === originUrl.host);
 }
-
-  /**
-  * Parse a request URL & determine if its file protocol to avoid $$cookieReader of XSRF token in case of file.
-  *
-  * @param {string|object} requestUrl The url of the request as a string that will be resolved
-  * or a parsed URL object.
-  * @returns {boolean} Whether the request is for the same origin as the application document.
-  */
-function urlIsFromFile(requestUrl) {
-  var parsed = (isString(requestUrl)) ? urlResolve(requestUrl) : requestUrl;
-  return parsed.protocol.indexOf('file') > -1;
-}
