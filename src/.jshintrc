@@ -156,7 +156,6 @@
     "urlResolve": false,
     "urlIsSameOrigin": false,
     "urlIsFromFile": false,
-    "parseUrl": false,
 
     /* ng/controller.js */
     "identifierForController": false,
