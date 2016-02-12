@@ -13,6 +13,7 @@ function $$CookieReader($document) {
   var rawDocument = $document[0] || {};
   var lastCookies = {};
   var lastCookieString = '';
+  var cookieSupported = true;
 
   function safeDecodeURIComponent(str) {
     try {
@@ -21,10 +22,16 @@ function $$CookieReader($document) {
       return str;
     }
   }
-
+  //Checking if cookie is supported as there are some old browsers & some OS not support cookie.
+  try {
+    rawDocument.cookie;
+  }
+  catch (e) {
+    cookieSupported = false;
+  }
   return function() {
     var cookieArray, cookie, i, index, name;
-    var currentCookieString = rawDocument.cookie || '';
+    var currentCookieString = cookieSupported ? rawDocument.cookie || '' : '';
 
     if (currentCookieString !== lastCookieString) {
       lastCookieString = currentCookieString;
