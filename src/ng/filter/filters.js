@@ -358,11 +358,11 @@ function dateGetter(name, size, offset, trim) {
   };
 }
 
-function dateStrGetter(name, shortForm, formatProp) {
+function dateStrGetter(name, shortForm, standAlone) {
   return function(date, formats) {
     var value = date['get' + name]();
-    var propName = formatProp || name;
-    var get = uppercase(shortForm ? ('SHORT' + propName) : propName);
+    var propPrefix = (standAlone ? 'STANDALONE' : '') + (shortForm ? 'SHORT' : '');
+    var get = uppercase(propPrefix + name);
 
     return formats[get][value];
   };
@@ -424,7 +424,7 @@ var DATE_FORMATS = {
    MMM: dateStrGetter('Month', true),
     MM: dateGetter('Month', 2, 1),
      M: dateGetter('Month', 1, 1),
-  LLLL: dateStrGetter('Month', false, 'StandaloneMonth'),
+  LLLL: dateStrGetter('Month', false, true),
     dd: dateGetter('Date', 2),
      d: dateGetter('Date', 1),
     HH: dateGetter('Hours', 2),

@@ -350,18 +350,18 @@ describe('filters', function() {
     });
 
     it('should support STANDALONEMONTH in format (`LLLL`)', inject(function($locale) {
-      var sam = $locale.DATETIME_FORMATS.STANDALONEMONTH;
-      var _sept = sam[8];
-      var _saSept = 'standalone-' + _sept;
+      var standAloneMonth = $locale.DATETIME_FORMATS.STANDALONEMONTH;
+      var september = standAloneMonth[8];
+      var standAloneSeptember = 'StandAlone' + september;
 
       // Overwrite September in STANDALONEMONTH
-      sam[8] = _saSept;
+      standAloneMonth[8] = standAloneSeptember;
 
-      expect(date(noon, 'MMMM')).toEqual(_sept);
-      expect(date(noon, 'LLLL')).toEqual(_saSept);
+      expect(date(noon, 'MMMM')).toEqual(september);
+      expect(date(noon, 'LLLL')).toEqual(standAloneSeptember);
 
       // Restore September in STANDALONEMONTH
-      sam[8] = _sept;
+      standAloneMonth[8] = september;
     }));
 
     it('should accept negative numbers as strings', function() {
