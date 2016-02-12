@@ -8766,8 +8766,7 @@ describe('$compile', function() {
     });
   });
 
-
-  describe('img[src] sanitization', function() {
+  describe('*[src] context requirement', function() {
 
     it('should NOT require trusted values for img src', inject(function($rootScope, $compile, $sce) {
       element = $compile('<img src="{{testUrl}}"></img>')($rootScope);
@@ -8780,17 +8779,24 @@ describe('$compile', function() {
       expect(element.attr('src')).toEqual('http://example.com/image2.png');
     }));
 
-    it('should NOT require trusted values for video / audio / track src', inject(function($rootScope, $compile, $sce) {
-      element = $compile('<video src="{{testUrl}}"></video>')($rootScope);
-      $rootScope.testUrl = 'http://example.com/image.mp4';
-      $rootScope.$digest();
-      expect(element.attr('src')).toEqual('http://example.com/image.mp4');
+    // Older IEs seem to reject the video tag with "Error: Not implemented"
+    if (!msie || msie > 9) {
+      it('should NOT require trusted values for video src',
+          inject(function($rootScope, $compile, $sce) {
+        element = $compile('<video src="{{testUrl}}"></video>')($rootScope);
+        $rootScope.testUrl = 'http://example.com/image.mp4';
+        $rootScope.$digest();
+        expect(element.attr('src')).toEqual('http://example.com/image.mp4');
 
-      // But it should accept trusted values anyway.
-      $rootScope.testUrl = $sce.trustAsUrl('http://example.com/image2.mp4');
-      $rootScope.$digest();
-      expect(element.attr('src')).toEqual('http://example.com/image2.mp4');
-    }));
+        // But it should accept trusted values anyway.
+        $rootScope.testUrl = $sce.trustAsUrl('http://example.com/image2.mp4');
+        $rootScope.$digest();
+        expect(element.attr('src')).toEqual('http://example.com/image2.mp4');
+      }));
+    }
+  });
+
+  describe('img[src] sanitization', function() {
 
     it('should not sanitize attributes other than src', inject(function($compile, $rootScope) {
       /* jshint scripturl:true */
