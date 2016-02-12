@@ -382,7 +382,7 @@ ngAriaModule.directive('ngShow', ['$aria', function($aria) {
           if ($aria.config('bindRoleForClick') && !attr.href && !attr.xlinkHref && !attr.role) {
               elem.attr('role', 'link');
           }
-          if($aria.config('bindKeypress')) {
+          if ($aria.config('bindKeypress')) {
             elem.on('keypress', function(event) {
               var keyCode = event.which || event.keyCode;
               var hasHref = (attr.href || attr.xlinkHref);
