@@ -22,7 +22,7 @@ function $$CookieReader($document) {
       return str;
     }
   }
-  //Checking if cookie is supported as there are some old browsers & some OS not support cookie.
+  //Checking if cookie is supported as there are some old browsers & some OS as WebOS not support cookie.
   try {
     rawDocument.cookie;
   }
@@ -31,7 +31,7 @@ function $$CookieReader($document) {
   }
   return function() {
     var cookieArray, cookie, i, index, name;
-    var currentCookieString = cookieSupported ? rawDocument.cookie || '' : '';
+    var currentCookieString = (cookieSupported && rawDocument.cookie) || '';
 
     if (currentCookieString !== lastCookieString) {
       lastCookieString = currentCookieString;
