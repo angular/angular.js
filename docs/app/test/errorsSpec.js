@@ -156,5 +156,11 @@ describe('errors', function() {
       expect(errorLinkFilter.callCount).toBe(1);
       expect(errorLinkFilter).toHaveBeenCalledWith('foo = foo', '_blank');
     });
+
+
+    it('should encode `<` and `>`', function() {
+      var elem = $compile('<span error-display="&lt;xyz&gt;"></span>')($rootScope);
+      expect(elem.text()).toBe('<xyz>');
+    });
   });
 });
