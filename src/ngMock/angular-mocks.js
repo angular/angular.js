@@ -1879,9 +1879,9 @@ angular.mock.$RAFDecorator = ['$delegate', function($delegate) {
  *
  */
 angular.mock.$RootElementProvider = function() {
-  this.$get = function() {
-    return angular.element('<div ng-app></div>');
-  };
+  this.$get = ['$injector', function($injector) {
+    return angular.element('<div ng-app></div>').data('$injector', $injector);
+  }];
 };
 
 /**
