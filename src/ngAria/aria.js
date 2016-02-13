@@ -387,7 +387,7 @@ ngAriaModule.directive('ngShow', ['$aria', function($aria) {
               var keyCode = event.which || event.keyCode;
               var hasHref = (attr.href || attr.xlinkHref);
               if ((keyCode === 32 || (keyCode === 13 && !hasHref)) && !attr.ngKeypress) {
-                scope.$apply(callback);
+                elem[0].click();
               }
 
               function callback() {

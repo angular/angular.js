@@ -765,7 +765,7 @@ describe('$aria', function() {
       compileElement('<a ng-click="event = $event">{{event.type}}{{event.keyCode}}</a>');
       expect(element.text()).toBe('');
       element.triggerHandler({ type: 'keypress', keyCode: 32 });
-      expect(element.text()).toBe('keypress32');
+      expect(element.text()).toContain('click');
     });
 
     it('should not bind keypress to anchor elements when keypress is not falsy', function() {
@@ -775,13 +775,6 @@ describe('$aria', function() {
       expect(element.text()).toBe('');
       element.triggerHandler({ type: 'keypress', keyCode: 13 });
       expect(element.text()).toBe('');
-    });
-
-    it('should bind SPACE keypress to anchor elements', function() {
-      compileElement('<a href="http://somwehere" ng-click="event = $event">{{event.type}}{{event.keyCode}}</a>');
-      expect(element.text()).toBe('');
-      element.triggerHandler({ type: 'keypress', keyCode: 32 });
-      expect(element.text()).toBe('keypress32');
     });
 
     it('should not bind ENTER keypress to anchor elements when href is not falsy', function() {
