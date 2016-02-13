@@ -1322,13 +1322,14 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
         var node = this.$$element[0],
             booleanKey = getBooleanAttrName(node, key),
+            valueKey = getValueAttrName(node, key),
             aliasedKey = getAliasedAttrName(key),
             observer = key,
             nodeName;
 
-        if (booleanKey) {
+        if (booleanKey || valueKey) {
           this.$$element.prop(key, value);
-          attrName = booleanKey;
+          attrName = booleanKey ? booleanKey : valueKey;
         } else if (aliasedKey) {
           this[aliasedKey] = value;
           observer = aliasedKey;

@@ -15,6 +15,7 @@
   addEventListenerFn: true,
   removeEventListenerFn: true,
   BOOLEAN_ATTR: true,
+  VALUE_ATTR: true,
   ALIASED_ATTR: true,
 */
 
@@ -577,6 +578,15 @@ var BOOLEAN_ELEMENTS = {};
 forEach('input,select,option,textarea,button,form,details'.split(','), function(value) {
   BOOLEAN_ELEMENTS[value] = true;
 });
+
+var VALUE_ATTR = {};
+VALUE_ATTR['value'] = 'value';
+
+var VALUE_ELEMENTS = {};
+forEach('input,textarea'.split(','), function(value) {
+  VALUE_ELEMENTS[value] = true;
+});
+
 var ALIASED_ATTR = {
   'ngMinlength': 'minlength',
   'ngMaxlength': 'maxlength',
@@ -591,6 +601,14 @@ function getBooleanAttrName(element, name) {
 
   // booleanAttr is here twice to minimize DOM access
   return booleanAttr && BOOLEAN_ELEMENTS[nodeName_(element)] && booleanAttr;
+}
+
+function getValueAttrName(element, name) {
+  // check dom last since we will most likely fail on name
+  var valueAttr = VALUE_ATTR[name.toLowerCase()];
+
+  // booleanAttr is here twice to minimize DOM access
+  return valueAttr && VALUE_ELEMENTS[nodeName_(element)] && valueAttr;
 }
 
 function getAliasedAttrName(name) {

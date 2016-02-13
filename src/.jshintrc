@@ -140,6 +140,7 @@
     "jqLiteParseHTML": false,
     "jqLiteWrapNode": false,
     "getBooleanAttrName": false,
+    "getValueAttrName": false,
     "getAliasedAttrName": false,
     "createEventHandler": false,
     "JQLitePrototype": false,

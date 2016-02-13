@@ -3046,6 +3046,26 @@ describe('input', function() {
       expect(inputElm[0].getAttribute('value')).toBe('something');
     });
 
+    it('should update the input "value" property and attribute after change the "value" property', function() {
+      var inputElm = helper.compileInput('<input type="text" ng-value="value">');
+
+      $rootScope.$apply(function() {
+        $rootScope.value = 'something';
+      });
+      expect(inputElm[0].value).toBe('something');
+      expect(inputElm[0].getAttribute('value')).toBe('something');
+
+      helper.changeInputValueTo('newValue');
+
+      $rootScope.$apply(function() {
+        $rootScope.value = 'anotherValue';
+      });
+      expect(inputElm[0].value).toBe('anotherValue');
+      expect(inputElm[0].getAttribute('value')).toBe('anotherValue');
+
+
+    });
+
 
     it('should evaluate and set constant expressions', function() {
       var inputElm = helper.compileInput('<input type="radio" ng-model="selected" ng-value="true">' +
