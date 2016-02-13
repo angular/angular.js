@@ -1647,6 +1647,10 @@ describe('ngMock', function() {
     it('should create mock application root', inject(function($rootElement) {
       expect($rootElement.text()).toEqual('');
     }));
+
+    it('should attach the `$injector` to `$rootElement`', inject(function($injector, $rootElement) {
+      expect($rootElement.injector()).toBe($injector);
+    }));
   });
 
 
