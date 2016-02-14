@@ -403,31 +403,39 @@ describe("basic usage", function() {
     inst.$post();
   });
 
-  it("should build resource by passing parameter values to functions in action params", function() {
-    $httpBackend.expect('GET', '/C/Customer/123').respond({id: 'abc'});
-    var TypeItem = $resource('/:typeAbbr/:type/:typeId', {
-      type: 'Customer',
-      typeAbbr: 'P'
-    },{get: {method: 'GET', params: {
-      typeAbbr: function(params) {
-          return params.type.substring(0,1);
+  it("should build resource by passing values to functions in action params", function() {
+    $httpBackend.expect('POST', '/C/Customer/123').respond({id: 'abc'});
+    var TypeItem = $resource('/:typeAbrev/:type/:id', {
+      type: 'Customer'
+    },{
+      create: {method: 'POST', params: {
+        id: function(paramDefaults, data) {
+          return data.customerId;
+        },
+        typeAbrev: function(paramDefaults, data) {
+          return paramDefaults.type.substring(0,1);
+        }
       }
-    }}});
-    var item = TypeItem.get({type: 'Customer', typeId: 123});
+    }});
+    var item = TypeItem.create({customerId: 123});
 
     $httpBackend.flush();
     expect(item).toEqualData({id: 'abc'});
   });
 
-  it("should build resource by passing parameter values to functions in default params", function() {
-    $httpBackend.expect('GET', '/C/Customer/123').respond({id: 'abc'});
-    var TypeItem = $resource('/:typeAbbr/:type/:typeId', {
-      type: 'Customer',
-      typeAbbr: function(params) {
-          return params.type.substring(0,1);
+  it("should build resource by passing values to functions in default params", function() {
+    $httpBackend.expect('POST', '/C/Customer/123').respond({id: 'abc'});
+    var TypeItem = $resource('/:typeAbrev/:type/:id', {
+      id: function(paramDefaults, data) {
+        return data.customerId;
+      },
+      typeAbrev: function(paramDefaults, data) {
+        return paramDefaults.type.substring(0,1);
       }
-    },{get: {method: 'GET'}});
-    var item = TypeItem.get({type: 'Customer', typeId: 123});
+    },{create: {method: 'POST', params: {
+      type: 'Customer'
+    }}});
+    var item = TypeItem.create({customerId: 123});
 
     $httpBackend.flush();
     expect(item).toEqualData({id: 'abc'});
