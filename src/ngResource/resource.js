@@ -134,7 +134,7 @@ function shallowClearAndCopy(src, dst) {
  *   - **`params`** – {Object=} – Optional set of pre-bound parameters for this action. If any of
  *     the parameter value is a function, it will be executed every time when a param value needs to
  *     be obtained for a request (unless the param was overridden). The function will be passed two
- *     parameters, a hash of the parameter keys with values and the body for `POST`, `PUT`, and 
+ *     parameters, a hash of the parameter keys with values and the body for `POST`, `PUT`, and
  *    `PATCH` requests. The second parameter will be undefined for all other requests.
  *   - **`url`** – {string} – action specific `url` override. The url templating is supported just
  *     like for the resource-level urls.
