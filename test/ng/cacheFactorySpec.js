@@ -55,7 +55,7 @@ describe('$cacheFactory', function() {
     }));
 
 
-    describe('put, get & remove', function() {
+    describe('put, get, has & remove', function() {
 
       it('should add cache entries via add and retrieve them via get', inject(function($cacheFactory) {
         cache.put('key1', 'bar');
@@ -74,6 +74,12 @@ describe('$cacheFactory', function() {
         expect(cache.info().size).toBe(0);
       }));
 
+      it('should return boolean indicating if entry exists', inject(function($cacheFactory) {
+        cache.put('key1', 'bar');
+
+        expect(cache.has('key1')).toBe(true);
+        expect(cache.has('key2')).toBe(false);
+      }));
 
       it('should remove entries via remove', inject(function($cacheFactory) {
         cache.put('k1', 'foo');
@@ -240,6 +246,14 @@ describe('$cacheFactory', function() {
         cache.put('id2', 2);
         expect(cache.get('id0')).toBe('00');
         expect(cache.get('id1')).toBeUndefined();
+        expect(cache.get('id2')).toBe(2);
+      }));
+
+      it('should not refresh an entry via has', inject(function($cacheFactory) {
+        cache.has('id0');
+        cache.put('id2', 2);
+        expect(cache.get('id0')).toBeUndefined();
+        expect(cache.get('id1')).toBe(1);
         expect(cache.get('id2')).toBe(2);
       }));
 
