@@ -26,7 +26,7 @@ Building AngularJS
     grunt package
 
 
-Running Tests
+Running tests
 -------------
 To execute all unit tests, use:
 
@@ -43,7 +43,7 @@ To learn more about the grunt tasks, run `grunt --help` and also read our
 
 [![Analytics](https://ga-beacon.appspot.com/UA-8594346-11/angular.js/README.md?pixel)](https://github.com/igrigorik/ga-beacon)
 
-What to Use AngularJS for and When to Use it
+What to use AngularJS for and when to use it
 ---------
 AngularJS is the next generation framework where each component is designed to work with every other component in an interconnected way like a well-oiled machine. AngularJS is JavaScript MVC made easy and done right. (Well it is not really MVC, read on, to understand what this means.)
 
