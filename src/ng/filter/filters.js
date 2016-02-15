@@ -78,6 +78,86 @@ function currencyFilter($locale) {
 
 /**
  * @ngdoc filter
+ * @name uncurrency
+ * @kind function
+ *
+ * @description
+ * Converts a string containing a Currency (ie $1,234.56) into a Number.
+ *
+ * Inspired by [Open Exchange Rates's accounting.js](https://github.com/openexchangerates/accounting.js) `unformat` function.
+ *
+ * @param {string} Currency to filter.
+ * @param {string=} Decimal separator, defaults to decimal separator for current locale.
+ * @returns {number} Unformatted number.
+ *
+ *
+ * @example
+   <example module="uncurrencyExample">
+     <file name="index.html">
+       <script>
+         angular.module('uncurrencyExample', [])
+           .controller('ExampleController', ['$scope', function($scope) {
+             $scope.amount = 1234.56;
+           }]);
+       </script>
+       <div ng-controller="ExampleController">
+         <input type="text" ng-model="amount" aria-label="amount"> <br>
+         default currency symbol ($): <span id="uncurrency-default">{{amount | currency | uncurrency}}</span><br>
+       </div>
+     </file>
+     <file name="protractor.js" type="protractor">
+      it('should be a number', function() {
+        expect(element(by.id('uncurrency-default')).getText()).toMatch(/^[-+]?[0-9]*\.?[0-9]+$/);
+      });
+      it('should init with 1234.56', function() {
+        expect(element(by.id('uncurrency-default')).getText()).toBe('1234.56');
+      });
+      it('uncurrency should update', function() {
+        if (browser.params.browser == 'safari') {
+          // Safari does not understand the minus key. See
+          // https://github.com/angular/protractor/issues/481
+          return;
+        }
+        element(by.model('amount')).clear();
+        element(by.model('amount')).sendKeys('1234.56');
+  expect(element(by.id('uncurrency-default')).getText()).toBe('1234.56');
+      });
+     </file>
+   </example>
+ */
+uncurrencyFilter.$inject = ['$locale'];
+function uncurrencyFilter($locale) {
+  var formats = $locale.NUMBER_FORMATS;
+
+  return function(value, decimalSymbol) {
+    if (isUndefined(decimalSymbol)) {
+      decimalSymbol = formats.DECIMAL_SEP;
+    }
+
+    // mostly from https://github.com/openexchangerates/accounting.js/blob/master/accounting.js which is Copyright (c) 2014 Open Exchange Rates
+    // Fails silently (need decent errors):
+    value = value || 0;
+
+    // Return the value as-is if it's already a number:
+    if (typeof value === 'number') return value;
+
+    // Build regex to strip out everything except digits, decimal point and minus sign:
+    var regex = new RegExp('[^0-9-' + decimalSymbol + ']', ['g']);
+
+    var unformatted = parseFloat(
+        ('' + value)
+        .replace(/\((.+)\)/, '-$1') // replace bracketed values with negatives
+        .replace(regex, '')         // strip out any cruft
+        .replace(decimalSymbol, '.')      // make sure decimal point is standard
+      );
+
+    // This will fail silently which may cause trouble, let's wait and see:
+    return !isNaN(unformatted) ? unformatted : 0;
+  };
+}
+
+/**
+ * @ngdoc filter
  * @name number
  * @kind function
  *

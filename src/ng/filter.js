@@ -1,6 +1,7 @@
 'use strict';
 
 /* global currencyFilter: true,
+ uncurrencyFilter: true,
  dateFilter: true,
  filterFilter: true,
  jsonFilter: true,
@@ -142,6 +143,7 @@ function $FilterProvider($provide) {
 
   /* global
     currencyFilter: false,
+    uncurrencyFilter: false,
     dateFilter: false,
     filterFilter: false,
     jsonFilter: false,
@@ -153,6 +155,7 @@ function $FilterProvider($provide) {
   */
 
   register('currency', currencyFilter);
+  register('uncurrency', uncurrencyFilter);
   register('date', dateFilter);
   register('filter', filterFilter);
   register('json', jsonFilter);

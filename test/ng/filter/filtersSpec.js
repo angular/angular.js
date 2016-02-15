@@ -164,6 +164,36 @@ describe('filters', function() {
     }));
   });
 
+  describe('uncurrency', function() {
+    var uncurrency;
+
+    beforeEach(function() {
+      uncurrency = filter('uncurrency');
+    });
+
+    // mostly from https://github.com/openexchangerates/accounting.js/blob/master/tests/jasmine/core/unformatSpec.js which is Copyright (c) 2014 Open Exchange Rates
+    it('should remove padding special chars', function() {
+      expect(uncurrency('$ 123,456')).toBe(123456);
+      expect(uncurrency('$ 123,456.78')).toBe(123456.78);
+      expect(uncurrency('&*()$ 123,456')).toBe(123456);
+      expect(uncurrency(';$@#$%^&123,456.78')).toBe(123456.78);
+    });
+
+    it('should work with negative numbers', function() {
+      expect(uncurrency('$ -123,456')).toBe(-123456);
+      expect(uncurrency('$ -123,456.78')).toBe(-123456.78);
+      expect(uncurrency('&*()$ -123,456')).toBe(-123456);
+      expect(uncurrency(';$@#$%^&-123,456.78')).toBe(-123456.78);
+    });
+
+    it('should accept different decimal separators', function() {
+      expect(uncurrency('$ 123,456', ',')).toBe(123.456);
+      expect(uncurrency('$ 123456|78', '|')).toBe(123456.78);
+      expect(uncurrency('&*()$ 123>456', '>')).toBe(123.456);
+      expect(uncurrency(';$@#$%^&123,456\'78', '\'')).toBe(123456.78);
+    });
+  });
+
   describe('number', function() {
     var number;
 

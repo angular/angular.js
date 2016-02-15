@@ -9,6 +9,7 @@ describe("localized filters", function() {
       expect(binding('input | date:"longDate"')).toBe("3 de junio de 1977");
       expect(binding('input | number')).toBe('234.234.443.432');
       expect(binding('input | currency')).toBe('€\u00a0234.234.443.432,00');
+      expect(binding('input | currency | uncurrency')).toBe(234234443432);
     });
   });
 
@@ -22,6 +23,7 @@ describe("localized filters", function() {
       expect(binding('input | date:"longDate"')).toBe("3. června 1977");
       expect(binding('input | number')).toBe('234\u00a0234\u00a0443\u00a0432');
       expect(binding('input | currency')).toBe('234\u00a0234\u00a0443\u00a0432,00\u00a0K\u010d');
+      expect(binding('input | currency | uncurrency')).toBe(234234443432);
     });
   });
 
@@ -35,6 +37,7 @@ describe("localized filters", function() {
       expect(binding('input | date:"longDate"')).toBe("3. Juni 1977");
       expect(binding('input | number')).toBe('234.234.443.432');
       expect(binding('input | currency')).toBe('234.234.443.432,00\u00a0€');
+      expect(binding('input | currency | uncurrency')).toBe(234234443432);
     });
   });
 
@@ -48,6 +51,7 @@ describe("localized filters", function() {
       expect(binding('input | date:"longDate"')).toBe("June 3, 1977");
       expect(binding('input | number')).toBe('234,234,443,432');
       expect(binding('input | currency')).toBe('$234,234,443,432.00');
+      expect(binding('input | currency | uncurrency')).toBe(234234443432);
     });
 
 
@@ -103,6 +107,7 @@ describe("localized filters", function() {
       expect(binding('input | date:"longDate"')).toBe("3. júna 1977");
       expect(binding('input | number')).toBe('234\u00a0234\u00a0443\u00a0432');
       expect(binding('input | currency')).toBe('234\u00a0234\u00a0443\u00a0432,00\u00a0Sk');
+      expect(binding('input | currency | uncurrency')).toBe(234234443432);
     });
 
 
@@ -142,6 +147,7 @@ describe("localized filters", function() {
       expect(binding('input | date:"longDate"')).toBe("1977年6月3日");
       expect(binding('input | number')).toBe('234,234,443,432');
       expect(binding('input | currency')).toBe('¥234,234,443,432.00');
+      expect(binding('input | currency | uncurrency')).toBe(234234443432);
     });
 
 
