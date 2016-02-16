@@ -430,10 +430,12 @@ You can prevent this unwanted behavior by adding CSS to the `.ng-animate` class 
 for the whole duration of an animation. Simply overwrite the transition / animation duration. In the
 case of the spinner, this would be:
 
+```css
 .spinner.ng-animate {
     transition: 0s none;
     animation: 0s none;
 }
+```
 
 If you do have CSS transitions / animations defined for the animation events, make sure they have higher priority
 than any styles that are independent from ngAnimate.
