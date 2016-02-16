@@ -34,7 +34,7 @@ angular.module('errors', ['ngSanitize'])
 
 
 .directive('errorDisplay', ['$location', 'errorLinkFilter', function ($location, errorLinkFilter) {
-  var encodeAngularBrackets = function (text) {
+  var encodeAngleBrackets = function (text) {
     return text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
   };
 
@@ -62,7 +62,7 @@ angular.module('errors', ['ngSanitize'])
         formatArgs.push(search['p'+i]);
       }
 
-      formattedText = encodeAngularBrackets(interpolate.apply(null, formatArgs));
+      formattedText = encodeAngleBrackets(interpolate.apply(null, formatArgs));
       element.html(errorLinkFilter(formattedText, '_blank'));
     }
   };
