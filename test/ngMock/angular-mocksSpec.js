@@ -1648,7 +1648,7 @@ describe('ngMock', function() {
       expect($rootElement.text()).toEqual('');
     }));
 
-    it('should attack the `$injector` to `$rootElement`', inject(function($injector, $rootElement) {
+    it('should attach the `$injector` to `$rootElement`', inject(function($injector, $rootElement) {
       expect($rootElement.injector()).toBe($injector);
     }));
   });
