@@ -282,7 +282,7 @@ it upwards to the heroList component, which updates the original data.
 </file>
 <file name="editableField.html">
   <span ng-switch="$ctrl.editMode">
-    <input ng-switch-when="true" type="text" ng-model="$ctrl.fieldValue">
+    <input ng-switch-when="true" type="{{$ctrl.fieldType}}" ng-model="$ctrl.fieldValue">
     <span ng-switch-default>{{$ctrl.fieldValue}}</span>
   </span>
   <button ng-click="$ctrl.handleModeChange()">{{$ctrl.editMode ? 'Save' : 'Edit'}}</button>
