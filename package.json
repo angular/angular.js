@@ -1,7 +1,7 @@
 {
   "name": "angularjs",
   "license": "MIT",
-  "branchVersion": "^1.4.x",
+  "branchVersion": "1.4.x",
   "branchPattern": "1.4.*",
   "distTag": "previous_1_4",
   "repository": {
