@@ -1350,11 +1350,7 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
         for (var i = 0, ii = responses.length; i < ii; i++) {
           if (responses[i] === handleResponse) {
             responses.splice(i, 1);
-            if (statusText) {
-                callback(-1, undefined, '', statusText);
-            } else {
-                callback(-1, undefined, '');
-            }
+            callback(-1, undefined, '', statusText);
             break;
           }
         }

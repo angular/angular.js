@@ -1393,7 +1393,7 @@ describe('ngMock', function() {
 
       canceler();  // simulate promise resolution
 
-      expect(callback).toHaveBeenCalledWith(-1, undefined, '');
+      expect(callback).toHaveBeenCalledWith(-1, undefined, '', undefined);
       hb.verifyNoOutstandingExpectation();
       hb.verifyNoOutstandingRequest();
     });
@@ -1423,7 +1423,7 @@ describe('ngMock', function() {
       hb('GET', '/url1', null, callback, null, 200);
       $timeout.flush(300);
 
-      expect(callback).toHaveBeenCalledWith(-1, undefined, '');
+      expect(callback).toHaveBeenCalledWith(-1, undefined, '', undefined);
       hb.verifyNoOutstandingExpectation();
       hb.verifyNoOutstandingRequest();
     }));
