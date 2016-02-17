@@ -228,6 +228,18 @@ describe('angular', function() {
       }
     });
 
+    it('should handle Blob objects', function() {
+      if (typeof Blob !== 'undefined') {
+        var src = new Blob(['foo'], {type: 'bar'});
+        var dst = copy(src);
+
+        expect(dst).not.toBe(src);
+        expect(dst.size).toBe(3);
+        expect(dst.type).toBe('bar');
+        expect(isBlob(dst)).toBe(true);
+      }
+    });
+
     it("should throw an exception if a Uint8Array is the destination", function() {
       if (typeof Uint8Array !== 'undefined') {
         var src = new Uint8Array();

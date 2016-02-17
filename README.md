@@ -26,7 +26,7 @@ Building AngularJS
     grunt package
 
 
-Running Tests
+Running tests
 -------------
 To execute all unit tests, use:
 
@@ -43,7 +43,7 @@ To learn more about the grunt tasks, run `grunt --help` and also read our
 
 [![Analytics](https://ga-beacon.appspot.com/UA-8594346-11/angular.js/README.md?pixel)](https://github.com/igrigorik/ga-beacon)
 
-What to Use AngularJS for and When to Use it
+What to use AngularJS for and when to use it
 ---------
 AngularJS is the next generation framework where each component is designed to work with every other component in an interconnected way like a well-oiled machine. AngularJS is JavaScript MVC made easy and done right. (Well it is not really MVC, read on, to understand what this means.)
 
@@ -61,7 +61,7 @@ Data and Data Models in AngularJS are plain JavaScript objects and one can add a
 #### Two-way Data Binding
 One of AngularJS's strongest features. Two-way Data Binding means that if something changes in the Model, the change gets reflected in the View instantaneously, and the same happens the other way around. This is also referred to as Reactive Programming, i.e. suppose `a = b + c` is being programmed and after this, if the value of `b` and/or `c` is changed then the value of `a` will be automatically updated to reflect the change. AngularJS uses its "scopes" as a glue between the Model and View and makes these updates in one available for the other.
 
-#### Less Written Code and Easily Maintable Code
+#### Less Written Code and Easily Maintainable Code
 Everything in AngularJS is created to enable the programmer ends up writing less code that is easily maintainable and readable by any other new person on the team. Believe it or not, one can write a complete working two-way data binded application in less than 10 lines of code. Try and see for yourself!
 
 #### Testing Ready

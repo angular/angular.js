@@ -1011,6 +1011,26 @@ describe('ngMock', function() {
     });
 
 
+    it('should be able to handle Blobs as mock data', function() {
+      if (typeof Blob !== 'undefined') {
+        var mockBlob = new Blob(['{"foo":"bar"}'], {type: 'application/json'});
+
+        hb.when('GET', '/url1').respond(200, mockBlob, {});
+
+        callback.andCallFake(function(status, response) {
+          expect(response).not.toBe(mockBlob);
+          expect(response.size).toBe(13);
+          expect(response.type).toBe('application/json');
+          expect(response.toString()).toBe('[object Blob]');
+        });
+
+        hb('GET', '/url1', null, callback);
+        hb.flush();
+        expect(callback).toHaveBeenCalledOnce();
+      }
+    });
+
+
     it('should throw error when unexpected request', function() {
       hb.when('GET', '/url1').respond(200, 'content');
       expect(function() {
@@ -1647,6 +1667,10 @@ describe('ngMock', function() {
     it('should create mock application root', inject(function($rootElement) {
       expect($rootElement.text()).toEqual('');
     }));
+
+    it('should attach the `$injector` to `$rootElement`', inject(function($injector, $rootElement) {
+      expect($rootElement.injector()).toBe($injector);
+    }));
   });
 
 
@@ -2081,10 +2105,10 @@ describe('ngMockE2E', function() {
     describe('passThrough()', function() {
       it('should delegate requests to the real backend when passThrough is invoked', function() {
         hb.when('GET', /\/passThrough\/.*/).passThrough();
-        hb('GET', '/passThrough/23', null, callback, {}, null, true);
+        hb('GET', '/passThrough/23', null, callback, {}, null, true, 'blob');
 
         expect(realHttpBackend).toHaveBeenCalledOnceWith(
-            'GET', '/passThrough/23', null, callback, {}, null, true);
+            'GET', '/passThrough/23', null, callback, {}, null, true, 'blob');
       });
 
       it('should be able to override a respond definition with passThrough', function() {
@@ -2093,7 +2117,7 @@ describe('ngMockE2E', function() {
         hb('GET', '/passThrough/23', null, callback, {}, null, true);
 
         expect(realHttpBackend).toHaveBeenCalledOnceWith(
-            'GET', '/passThrough/23', null, callback, {}, null, true);
+            'GET', '/passThrough/23', null, callback, {}, null, true, undefined);
       });
 
       it('should be able to override a respond definition with passThrough', inject(function($browser) {
