@@ -681,8 +681,8 @@ describe('$aria', function() {
       var divElement = elements.find('div');
       var liElement = elements.find('li');
 
-      divElement.triggerHandler({type: 'keypress', keyCode: 32});
-      liElement.triggerHandler({type: 'keypress', keyCode: 32});
+      divElement.triggerHandler({type: 'keydown', keyCode: 32});
+      liElement.triggerHandler({type: 'keydown', keyCode: 32});
 
       expect(clickFn).toHaveBeenCalledWith('div');
       expect(clickFn).toHaveBeenCalledWith('li');
@@ -703,32 +703,57 @@ describe('$aria', function() {
       var divElement = elements.find('div');
       var liElement = elements.find('li');
 
-      divElement.triggerHandler({type: 'keypress', which: 32});
-      liElement.triggerHandler({type: 'keypress', which: 32});
+      divElement.triggerHandler({type: 'keydown', which: 32});
+      liElement.triggerHandler({type: 'keydown', which: 32});
 
       expect(clickFn).toHaveBeenCalledWith('div');
       expect(clickFn).toHaveBeenCalledWith('li');
     });
 
-    it('should not override existing ng-keypress', function() {
-      scope.someOtherAction = function() {};
-      var keypressFn = spyOn(scope, 'someOtherAction');
+    it('should not bind to key events if there is existing ng-keydown', function() {
+      scope.onClick = jasmine.createSpy('onClick');
+      scope.onKeydown = jasmine.createSpy('onKeydown');
 
-      scope.someAction = function() {};
-      clickFn = spyOn(scope, 'someAction');
-      compileElement('<div ng-click="someAction()" ng-keypress="someOtherAction()" tabindex="0"></div>');
+      var tmpl = '<div ng-click="onClick()" ng-keydown="onKeydown()" tabindex="0"></div>';
+      compileElement(tmpl);
+
+      element.triggerHandler({type: 'keydown', keyCode: 32});
+
+      expect(scope.onKeydown).toHaveBeenCalled();
+      expect(scope.onClick).not.toHaveBeenCalled();
+    });
+
+    it('should not bind to key events if there is existing ng-keypress', function() {
+      scope.onClick = jasmine.createSpy('onClick');
+      scope.onKeypress = jasmine.createSpy('onKeypress');
+
+      var tmpl = '<div ng-click="onClick()" ng-keypress="onKeypress()" tabindex="0"></div>';
+      compileElement(tmpl);
 
       element.triggerHandler({type: 'keypress', keyCode: 32});
 
-      expect(clickFn).not.toHaveBeenCalled();
-      expect(keypressFn).toHaveBeenCalled();
+      expect(scope.onKeypress).toHaveBeenCalled();
+      expect(scope.onClick).not.toHaveBeenCalled();
     });
 
-    it('should update bindings when keypress handled', function() {
+    it('should not bind to key events if there is existing ng-keyup', function() {
+      scope.onClick = jasmine.createSpy('onClick');
+      scope.onKeyup = jasmine.createSpy('onKeyup');
+
+      var tmpl = '<div ng-click="onClick()" ng-keyup="onKeyup()" tabindex="0"></div>';
+      compileElement(tmpl);
+
+      element.triggerHandler({type: 'keyup', keyCode: 32});
+
+      expect(scope.onKeyup).toHaveBeenCalled();
+      expect(scope.onClick).not.toHaveBeenCalled();
+    });
+
+    it('should update bindings when keydown is handled', function() {
       compileElement('<div ng-click="text = \'clicked!\'">{{text}}</div>');
       expect(element.text()).toBe('');
       spyOn(scope.$root, '$digest').and.callThrough();
-      element.triggerHandler({ type: 'keypress', keyCode: 13 });
+      element.triggerHandler({ type: 'keydown', keyCode: 13 });
       expect(element.text()).toBe('clicked!');
       expect(scope.$root.$digest).toHaveBeenCalledOnce();
     });
@@ -737,14 +762,14 @@ describe('$aria', function() {
       compileElement('<div ng-click="event = $event">{{event.type}}' +
                       '{{event.keyCode}}</div>');
       expect(element.text()).toBe('');
-      element.triggerHandler({ type: 'keypress', keyCode: 13 });
-      expect(element.text()).toBe('keypress13');
+      element.triggerHandler({ type: 'keydown', keyCode: 13 });
+      expect(element.text()).toBe('keydown13');
     });
 
-    it('should not bind keypress to elements not in the default config', function() {
+    it('should not bind keydown to natively interactive elements', function() {
       compileElement('<button ng-click="event = $event">{{event.type}}{{event.keyCode}}</button>');
       expect(element.text()).toBe('');
-      element.triggerHandler({ type: 'keypress', keyCode: 13 });
+      element.triggerHandler({ type: 'keydown', keyCode: 13 });
       expect(element.text()).toBe('');
     });
   });
@@ -761,21 +786,29 @@ describe('$aria', function() {
     });
   });
 
-  describe('actions when bindKeypress is set to false', function() {
+  describe('actions when bindKeydown is set to false', function() {
     beforeEach(configAriaProvider({
-      bindKeypress: false
+      bindKeydown: false
     }));
     beforeEach(injectScopeAndCompiler);
 
-    it('should not a trigger click', function() {
-      scope.someAction = function() {};
-      var clickFn = spyOn(scope, 'someAction');
+    it('should not trigger click', function() {
+      scope.someAction = jasmine.createSpy('someAction');
 
       element = $compile('<div ng-click="someAction()" tabindex="0"></div>')(scope);
 
+      element.triggerHandler({type: 'keydown', keyCode: 13});
+      element.triggerHandler({type: 'keydown', keyCode: 32});
+      element.triggerHandler({type: 'keypress', keyCode: 13});
       element.triggerHandler({type: 'keypress', keyCode: 32});
+      element.triggerHandler({type: 'keyup', keyCode: 13});
+      element.triggerHandler({type: 'keyup', keyCode: 32});
 
-      expect(clickFn).not.toHaveBeenCalled();
+      expect(scope.someAction).not.toHaveBeenCalled();
+
+      element.triggerHandler({type: 'click', keyCode: 32});
+
+      expect(scope.someAction).toHaveBeenCalledOnce();
     });
   });
 
