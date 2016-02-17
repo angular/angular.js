@@ -913,6 +913,9 @@ function copy(source, destination) {
         var re = new RegExp(source.source, source.toString().match(/[^\/]*$/)[0]);
         re.lastIndex = source.lastIndex;
         return re;
+
+      case '[object Blob]':
+        return new source.constructor([source], {type: source.type});
     }
 
     if (isFunction(source.cloneNode)) {
