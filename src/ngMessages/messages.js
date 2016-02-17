@@ -24,57 +24,61 @@ var jqLite = angular.element;
  * `ngMessage` and `ngMessageExp` directives.
  *
  * # Usage
- * The `ngMessages` directive listens on a key/value collection which is set on the ngMessages attribute of a container element.
- * There should be one such element for each field whose error messages are to be displayed.
- * The container element should have a series of child elements which each correspond to a possible error message for that field.
- * The {@link ngModel ngModel} directive exposes an `$error` object which can be bound to the container element's `ngMessages`
- * attribute to allow error messages to be dynamically shown and hidden with minimal developmental effort.
+ * The `ngMessages` directive allows individual keys in a key/value collection to each be associated with an element
+ * (or 'message') that will show or hide based on the truthiness of that key's value in the collection. A common use
+ * case for `ngMessages` is for annotating form inputs with error messages using the `$error` object exposed by the
+ * {@link ngModel ngModel} directive.
  *
- * Consider the following example, which illustrates a typical use case of `ngMessages`. Within the form `myForm` we have
- * a text input named `myField` which is bound to the scope variable `field` using the {@link ngModel ngModel} directive.
+ * Setting an element's `ngMessages` attribute to the name of a key/value collection will allow its child elements to
+ * be conditionally shown or hidden based on whether their associated keys (declared on each using `ngMessage`)
+ * have truthy values.
  *
- * The `myField` field is a required field with a minimum length of five characters.
+ *
+ * Consider the following example, which illustrates a typical use case of `ngMessages`. Within the form `myForm` we
+ * have a text input named `myField` which is bound to the scope variable `field` using the {@link ngModel ngModel}
+ * directive.
+ *
+ * The `myField` field is a required field with a maximum length of 15 characters.
  *
  * ```html
  * <form name="myForm">
  *   <label>
  *     Enter text:
- *     <input type="text" ng-model="field" name="myField" required minlength="5" />
+ *     <input type="email" ng-model="field" name="myField" required maxlength="15" />
  *   </label>
  *   <div ng-messages="myForm.myField.$error" role="alert">
- *     <div ng-message="required">You did not enter a field</div>
- *     <div ng-message="minlength, maxlength">
- *       Your email must be between 5 and 100 characters long
- *     </div>
+ *     <div ng-message="required">Please enter a value for this field.</div>
+ *     <div ng-message="email">This field must be a valid email address.</div>
+ *     <div ng-message="maxlength">This field can be at most 15 characters long.</div>
  *   </div>
  * </form>
  * ```
  *
- * In order to show error messages corresponding to `myField` we first create a container element with an `ngMessages` attribute
+ * In order to show error messages corresponding to `myField` we first create an element with an `ngMessages` attribute
  * set to the `$error` object owned by the `myField` input in our `myForm` form.
  *
- * Within this container we create separate elements for each of the possible errors that `myField` could be annotated with. Exactly
- * which error a particular element corresponds to is declared using the `ngMessage` attribute - for example, `ng-message="required"`
- * specified that this particular element should be displayed when the corresponding field is `required` but has no value.
+ * Within this element we then create separate elements for each of the possible errors that the user's submission for
+ * `myField` could have. The `ngMessage` attribute is used to declare which element(s) will appear for which error
+ * - for example, setting `ng-message="required"` specifies that this particular element should be displayed when there
+ * is no value present for the required field `myField` (because the key `required` will be `true` in the object
+ * `myForm.myField.$error`).
  *
- * By default, `ngMessages` will only display one error message for a particular field at any one time. Whether or not an error (child)
- * element will be displayed is determined by whether the corresponding property in the error object is `true`, and the position of
- * that element relative to other relevant error elements in the container - error elements which appear first in the DOM will be
- * displayed above others in cases where more than one such element is deemed to be relevant.
+ * By default, `ngMessages` will only display one message for a particular key/value collection at any time. If more
+ * than one message is applicable then the decision of which message to show is determined by the order of messages in
+ * the HTML template code (messages declared first are prioritised). This mechanism means the developer does not have to
+ * prioritise messages using custom JavaScript code.
  *
- * Given the following error object for our example (which informs us that the field `myField` is currently erroneous in terms of both its
- * `required` and its `minlength` atrributes):
+ * Given the following error object for our example (which informs us that the field `myField` is currently erroneous
+ * in terms of both its `required` and `email` atrributes):
  *
  * ```javascript
  * <!-- keep in mind that ngModel automatically sets these error flags -->
- * myField.$error = { minlength : true, required : true };
+ * myField.$error = { required : true, email: true, maxlength: false };
  * ```
- * The `required` message will be displayed first to the user since it appears before the `minlength` message in the DOM.
- * Once the user types a single character, the `required` message will disappear (since the field now has a value) and the
- * `minlength` message will now be displayed since the value of `myField` still fails to meet this requirement.
+ * The `required` message will be displayed to the user since it appears before the `email` message in the DOM.
+ * Once the user types a single character, the `required` message will disappear (since the field now has a value)
+ * but the `email` message will be visible because it is still applicable.
  *
- * Inferring error message priority by position in this way allows the developer to declare priorities quickly without
- * having to write custom JavaScript code.
  *
  * While `ngMessages` will by default only display one error element at a time, the `ng-messages-multiple` attribute can
  * be applied to the `ngMessages` container element to cause it to display all applicable error messages at once:
