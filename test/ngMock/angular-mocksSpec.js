@@ -1011,6 +1011,26 @@ describe('ngMock', function() {
     });
 
 
+    it('should be able to handle Blobs as mock data', function() {
+      if (typeof Blob !== 'undefined') {
+        var mockBlob = new Blob(['{"foo":"bar"}'], {type: 'application/json'});
+
+        hb.when('GET', '/url1').respond(200, mockBlob, {});
+
+        callback.andCallFake(function(status, response) {
+          expect(response).not.toBe(mockBlob);
+          expect(response.size).toBe(13);
+          expect(response.type).toBe('application/json');
+          expect(response.toString()).toBe('[object Blob]');
+        });
+
+        hb('GET', '/url1', null, callback);
+        hb.flush();
+        expect(callback).toHaveBeenCalledOnce();
+      }
+    });
+
+
     it('should throw error when unexpected request', function() {
       hb.when('GET', '/url1').respond(200, 'content');
       expect(function() {
