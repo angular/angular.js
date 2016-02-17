@@ -608,8 +608,8 @@ describe('$aria', function() {
       var divElement = elements.find('div');
       var liElement = elements.find('li');
 
-      divElement.triggerHandler({type: 'keypress', keyCode: 32});
-      liElement.triggerHandler({type: 'keypress', keyCode: 32});
+      divElement.triggerHandler({type: 'keydown', keyCode: 32});
+      liElement.triggerHandler({type: 'keydown', keyCode: 32});
 
       expect(clickFn).toHaveBeenCalledWith('div');
       expect(clickFn).toHaveBeenCalledWith('li');
@@ -630,32 +630,18 @@ describe('$aria', function() {
       var divElement = elements.find('div');
       var liElement = elements.find('li');
 
-      divElement.triggerHandler({type: 'keypress', which: 32});
-      liElement.triggerHandler({type: 'keypress', which: 32});
+      divElement.triggerHandler({type: 'keydown', which: 32});
+      liElement.triggerHandler({type: 'keydown', which: 32});
 
       expect(clickFn).toHaveBeenCalledWith('div');
       expect(clickFn).toHaveBeenCalledWith('li');
     });
 
-    it('should not override existing ng-keypress', function() {
-      scope.someOtherAction = function() {};
-      var keypressFn = spyOn(scope, 'someOtherAction');
-
-      scope.someAction = function() {};
-      clickFn = spyOn(scope, 'someAction');
-      compileElement('<div ng-click="someAction()" ng-keypress="someOtherAction()" tabindex="0"></div>');
-
-      element.triggerHandler({type: 'keypress', keyCode: 32});
-
-      expect(clickFn).not.toHaveBeenCalled();
-      expect(keypressFn).toHaveBeenCalled();
-    });
-
-    it('should update bindings when keypress handled', function() {
+    it('should update bindings when keydown handled', function() {
       compileElement('<div ng-click="text = \'clicked!\'">{{text}}</div>');
       expect(element.text()).toBe('');
       spyOn(scope.$root, '$digest').andCallThrough();
-      element.triggerHandler({ type: 'keypress', keyCode: 13 });
+      element.triggerHandler({ type: 'keydown', keyCode: 13 });
       expect(element.text()).toBe('clicked!');
       expect(scope.$root.$digest).toHaveBeenCalledOnce();
     });
@@ -664,14 +650,14 @@ describe('$aria', function() {
       compileElement('<div ng-click="event = $event">{{event.type}}' +
                       '{{event.keyCode}}</div>');
       expect(element.text()).toBe('');
-      element.triggerHandler({ type: 'keypress', keyCode: 13 });
-      expect(element.text()).toBe('keypress13');
+      element.triggerHandler({ type: 'keydown', keyCode: 13 });
+      expect(element.text()).toBe('keydown13');
     });
 
-    it('should not bind keypress to elements not in the default config', function() {
+    it('should not bind keydown to elements not in the default config', function() {
       compileElement('<button ng-click="event = $event">{{event.type}}{{event.keyCode}}</button>');
       expect(element.text()).toBe('');
-      element.triggerHandler({ type: 'keypress', keyCode: 13 });
+      element.triggerHandler({ type: 'keydown', keyCode: 13 });
       expect(element.text()).toBe('');
     });
   });
@@ -688,9 +674,9 @@ describe('$aria', function() {
     });
   });
 
-  describe('actions when bindKeypress is set to false', function() {
+  describe('actions when bindKeydown is set to false', function() {
     beforeEach(configAriaProvider({
-      bindKeypress: false
+      bindKeydown: false
     }));
     beforeEach(injectScopeAndCompiler);
 
@@ -700,7 +686,7 @@ describe('$aria', function() {
 
       element = $compile('<div ng-click="someAction()" tabindex="0"></div>')(scope);
 
-      element.triggerHandler({type: 'keypress', keyCode: 32});
+      element.triggerHandler({type: 'keydown', keyCode: 32});
 
       expect(clickFn).not.toHaveBeenCalled();
     });
