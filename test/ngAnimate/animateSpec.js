@@ -157,14 +157,12 @@ describe("animations", function() {
     }));
 
     it("should skip animations entirely if the document is hidden", function() {
-      var doc;
+      var hidden = true;
 
       module(function($provide) {
-        doc = jqLite({
-          body: document.body,
-          hidden: true
+        $provide.value('$$isDocumentHidden', function() {
+          return hidden;
         });
-        $provide.value('$document', doc);
       });
 
       inject(function($animate, $rootScope) {
@@ -173,7 +171,7 @@ describe("animations", function() {
         expect(capturedAnimation).toBeFalsy();
         expect(element[0].parentNode).toEqual(parent[0]);
 
-        doc[0].hidden = false;
+        hidden = false;
 
         $animate.leave(element);
         $rootScope.$digest();

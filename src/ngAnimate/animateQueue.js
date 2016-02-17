@@ -102,8 +102,10 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
 
   this.$get = ['$$rAF', '$rootScope', '$rootElement', '$document', '$$HashMap',
                '$$animation', '$$AnimateRunner', '$templateRequest', '$$jqLite', '$$forceReflow',
+               '$$isDocumentHidden',
        function($$rAF,   $rootScope,   $rootElement,   $document,   $$HashMap,
-                $$animation,   $$AnimateRunner,   $templateRequest,   $$jqLite,   $$forceReflow) {
+                $$animation,   $$AnimateRunner,   $templateRequest,   $$jqLite,   $$forceReflow,
+                $$isDocumentHidden) {
 
     var activeAnimationsLookup = new $$HashMap();
     var disabledElementsLookup = new $$HashMap();
@@ -374,7 +376,7 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
       // past this point if not enabled
       // Animations are also disabled if the document is currently hidden (page is not visible
       // to the user), because browsers slow down or do not flush calls to requestAnimationFrame
-      var skipAnimations = !animationsEnabled || documentHidden || disabledElementsLookup.get(node);
+      var skipAnimations = !animationsEnabled || $$isDocumentHidden() || disabledElementsLookup.get(node);
       var existingAnimation = (!skipAnimations && activeAnimationsLookup.get(node)) || {};
       var hasExistingAnimation = !!existingAnimation.state;
 

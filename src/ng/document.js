@@ -30,3 +30,19 @@ function $DocumentProvider() {
     return jqLite(window.document);
   }];
 }
+
+
+function $$IsDocumentHiddenProvider() {
+  this.$get = ['$document', function($document) {
+    var doc = $document[0];
+    var hidden = doc && doc.hidden;
+
+    $document.on('visibilitychange', function() {
+      hidden = doc.hidden;
+    });
+
+    return function() {
+      return hidden;
+    };
+  }];
+}
