@@ -1012,7 +1012,7 @@ describe('ngMock', function() {
 
 
     it('should be able to handle Blobs as mock data', function() {
-      if (typeof Blob !== 'udefined') {
+      if (typeof Blob !== 'undefined') {
         var mockBlob = new Blob(['{"foo":"bar"}'], {type: 'application/json'});
 
         hb.when('GET', '/url1').respond(200, mockBlob, {});
