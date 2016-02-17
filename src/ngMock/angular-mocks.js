@@ -2121,7 +2121,7 @@ angular.mock.$RootElementProvider = function() {
  *
  * myMod.controller('MyDirectiveController', ['$log', function($log) {
  *   $log.info(this.name);
- * })];
+ * }]);
  *
  *
  * // In a test ...
