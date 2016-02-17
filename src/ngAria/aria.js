@@ -114,7 +114,7 @@ function $AriaProvider() {
    *  - **ariaValue** – `{boolean}` – Enables/disables aria-valuemin, aria-valuemax and aria-valuenow tags
    *  - **tabindex** – `{boolean}` – Enables/disables tabindex tags
    *  - **bindKeydown** – `{boolean}` – Enables/disables keydown event binding on `div` and
-   *    `li;` elements with ng-click
+   *    `li` elements with ng-click
    *  - **bindRoleForClick** – `{boolean}` – Adds role=button to non-interactive elements like `div`
    *    using ng-click, making them more accessible to users of assistive technologies
    *
