@@ -637,6 +637,20 @@ describe('$aria', function() {
       expect(clickFn).toHaveBeenCalledWith('li');
     });
 
+    it('should not override existing ng-keydown', function() {
+      scope.someOtherAction = function() {};
+      var keydownFn = spyOn(scope, 'someOtherAction');
+
+      scope.someAction = function() {};
+      clickFn = spyOn(scope, 'someAction');
+      compileElement('<div ng-click="someAction()" ng-keydown="someOtherAction()" tabindex="0"></div>');
+
+      element.triggerHandler({type: 'keydown', keyCode: 32});
+
+      expect(clickFn).not.toHaveBeenCalled();
+      expect(keydownFn).toHaveBeenCalled();
+    });
+
     it('should update bindings when keydown handled', function() {
       compileElement('<div ng-click="text = \'clicked!\'">{{text}}</div>');
       expect(element.text()).toBe('');

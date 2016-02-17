@@ -364,7 +364,7 @@ ngAriaModule.directive('ngShow', ['$aria', function($aria) {
             elem.attr('tabindex', 0);
           }
 
-          if ($aria.config('bindKeydown') && !attr.ngKeypress) {
+          if ($aria.config('bindKeydown') && !attr.ngKeydown) {
             elem.on('keydown', function(event) {
               var keyCode = event.which || event.keyCode;
               if (keyCode === 32 || keyCode === 13) {
