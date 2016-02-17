@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "Nwa",
       "Duj"
     ],
+    "STANDALONEMONTH": [
+      "Yennayer",
+      "Yebrayer",
+      "Mars",
+      "Ibrir",
+      "Mayyu",
+      "Yunyu",
+      "Yulyuz",
+      "\u0194uct",
+      "Cutanbir",
+      "K\u1e6duber",
+      "Nwanbir",
+      "Dujanbir"
+    ],
     "WEEKENDRANGE": [
       4,
       5
@@ -123,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "tzm-latn-ma",
+  "localeID": "tzm_Latn_MA",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

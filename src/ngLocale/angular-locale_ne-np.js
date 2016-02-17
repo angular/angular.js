@@ -62,6 +62,20 @@ $provide.value("$locale", {
       "\u0928\u094b\u092d\u0947\u092e\u094d\u092c\u0930",
       "\u0921\u093f\u0938\u0947\u092e\u094d\u092c\u0930"
     ],
+    "STANDALONEMONTH": [
+      "\u091c\u0928\u0935\u0930\u0940",
+      "\u092b\u0947\u092c\u094d\u0930\u0941\u0905\u0930\u0940",
+      "\u092e\u093e\u0930\u094d\u091a",
+      "\u0905\u092a\u094d\u0930\u093f\u0932",
+      "\u092e\u0947",
+      "\u091c\u0941\u0928",
+      "\u091c\u0941\u0932\u093e\u0908",
+      "\u0905\u0917\u0938\u094d\u091f",
+      "\u0938\u0947\u092a\u094d\u091f\u0947\u092e\u094d\u092c\u0930",
+      "\u0905\u0915\u094d\u091f\u094b\u092c\u0930",
+      "\u0928\u094b\u092d\u0947\u092e\u094d\u092c\u0930",
+      "\u0921\u093f\u0938\u0947\u092e\u094d\u092c\u0930"
+    ],
     "WEEKENDRANGE": [
       5,
       6
@@ -105,6 +119,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "ne-np",
+  "localeID": "ne_NP",
   "pluralCat": function(n, opt_precision) {  if (n == 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

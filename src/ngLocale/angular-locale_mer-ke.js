@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "NOV",
       "DEC"
     ],
+    "STANDALONEMONTH": [
+      "Januar\u0129",
+      "Feburuar\u0129",
+      "Machi",
+      "\u0128pur\u0169",
+      "M\u0129\u0129",
+      "Njuni",
+      "Njura\u0129",
+      "Agasti",
+      "Septemba",
+      "Okt\u0169ba",
+      "Novemba",
+      "Dicemba"
+    ],
     "WEEKENDRANGE": [
       5,
       6
@@ -123,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "mer-ke",
+  "localeID": "mer_KE",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

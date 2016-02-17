@@ -491,8 +491,20 @@ function annotate(fn, strictDi, name) {
  *
  * Register a **service constructor**, which will be invoked with `new` to create the service
  * instance.
- * This is short for registering a service where its provider's `$get` property is the service
- * constructor function that will be used to instantiate the service instance.
+ * This is short for registering a service where its provider's `$get` property is a factory
+ * function that returns an instance instantiated by the injector from the service constructor
+ * function.
+ *
+ * Internally it looks a bit like this:
+ *
+ * ```
+ * {
+ *   $get: function() {
+ *     return $injector.instantiate(constructor);
+ *   }
+ * }
+ * ```
+ *
  *
  * You should use {@link auto.$provide#service $provide.service(class)} if you define your service
  * as a type/class.
@@ -593,7 +605,7 @@ function annotate(fn, strictDi, name) {
  * @description
  *
  * Register a **service decorator** with the {@link auto.$injector $injector}. A service decorator
- * intercepts the creation of a service, allowing it to override or modify the behaviour of the
+ * intercepts the creation of a service, allowing it to override or modify the behavior of the
  * service. The object returned by the decorator may be the original service, or a new service
  * object which replaces or wraps and delegates to the original service.
  *
@@ -642,16 +654,19 @@ function createInjector(modulesToLoad, strictDi) {
             throw $injectorMinErr('unpr', "Unknown provider: {0}", path.join(' <- '));
           })),
       instanceCache = {},
-      instanceInjector = (instanceCache.$injector =
+      protoInstanceInjector =
           createInternalInjector(instanceCache, function(serviceName, caller) {
             var provider = providerInjector.get(serviceName + providerSuffix, caller);
-            return instanceInjector.invoke(provider.$get, provider, undefined, serviceName);
-          }));
+            return instanceInjector.invoke(
+                provider.$get, provider, undefined, serviceName);
+          }),
+      instanceInjector = protoInstanceInjector;
 
-
-  forEach(loadModules(modulesToLoad), function(fn) { if (fn) instanceInjector.invoke(fn); });
-
+  providerCache['$injector' + providerSuffix] = { $get: valueFn(protoInstanceInjector) };
+  var runBlocks = loadModules(modulesToLoad);
+  instanceInjector = protoInstanceInjector.get('$injector');
   instanceInjector.strictDi = strictDi;
+  forEach(runBlocks, function(fn) { if (fn) instanceInjector.invoke(fn); });
 
   return instanceInjector;
 
@@ -801,47 +816,66 @@ function createInjector(modulesToLoad, strictDi) {
       }
     }
 
+
+    function injectionArgs(fn, locals, serviceName) {
+      var args = [],
+          $inject = createInjector.$$annotate(fn, strictDi, serviceName);
+
+      for (var i = 0, length = $inject.length; i < length; i++) {
+        var key = $inject[i];
+        if (typeof key !== 'string') {
+          throw $injectorMinErr('itkn',
+                  'Incorrect injection token! Expected service name as string, got {0}', key);
+        }
+        args.push(locals && locals.hasOwnProperty(key) ? locals[key] :
+                                                         getService(key, serviceName));
+      }
+      return args;
+    }
+
+    function isClass(func) {
+      // IE 9-11 do not support classes and IE9 leaks with the code below.
+      if (msie <= 11) {
+        return false;
+      }
+      // Workaround for MS Edge.
+      // Check https://connect.microsoft.com/IE/Feedback/Details/2211653
+      return typeof func === 'function'
+        && /^(?:class\s|constructor\()/.test(Function.prototype.toString.call(func));
+    }
+
     function invoke(fn, self, locals, serviceName) {
       if (typeof locals === 'string') {
         serviceName = locals;
         locals = null;
       }
 
-      var args = [],
-          $inject = createInjector.$$annotate(fn, strictDi, serviceName),
-          length, i,
-          key;
-
-      for (i = 0, length = $inject.length; i < length; i++) {
-        key = $inject[i];
-        if (typeof key !== 'string') {
-          throw $injectorMinErr('itkn',
-                  'Incorrect injection token! Expected service name as string, got {0}', key);
-        }
-        args.push(
-          locals && locals.hasOwnProperty(key)
-          ? locals[key]
-          : getService(key, serviceName)
-        );
-      }
+      var args = injectionArgs(fn, locals, serviceName);
       if (isArray(fn)) {
-        fn = fn[length];
+        fn = fn[fn.length - 1];
       }
 
-      // http://jsperf.com/angularjs-invoke-apply-vs-switch
-      // #5388
-      return fn.apply(self, args);
+      if (!isClass(fn)) {
+        // http://jsperf.com/angularjs-invoke-apply-vs-switch
+        // #5388
+        return fn.apply(self, args);
+      } else {
+        args.unshift(null);
+        return new (Function.prototype.bind.apply(fn, args))();
+      }
     }
+
 
     function instantiate(Type, locals, serviceName) {
       // Check if Type is annotated and use just the given function at n-1 as parameter
       // e.g. someModule.factory('greeter', ['$window', function(renamed$window) {}]);
-      // Object creation: http://jsperf.com/create-constructor/2
-      var instance = Object.create((isArray(Type) ? Type[Type.length - 1] : Type).prototype || null);
-      var returnedValue = invoke(Type, instance, locals, serviceName);
-
-      return isObject(returnedValue) || isFunction(returnedValue) ? returnedValue : instance;
+      var ctor = (isArray(Type) ? Type[Type.length - 1] : Type);
+      var args = injectionArgs(Type, locals, serviceName);
+      // Empty object at position 0 is ignored for invocation with `new`, but required.
+      args.unshift(null);
+      return new (Function.prototype.bind.apply(ctor, args))();
     }
+
 
     return {
       invoke: invoke,

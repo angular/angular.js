@@ -62,6 +62,20 @@ $provide.value("$locale", {
       "Samh",
       "Noll"
     ],
+    "STANDALONEMONTH": [
+      "Ean\u00e1ir",
+      "Feabhra",
+      "M\u00e1rta",
+      "Aibre\u00e1n",
+      "Bealtaine",
+      "Meitheamh",
+      "I\u00fail",
+      "L\u00fanasa",
+      "Me\u00e1n F\u00f3mhair",
+      "Deireadh F\u00f3mhair",
+      "Samhain",
+      "Nollaig"
+    ],
     "WEEKENDRANGE": [
       5,
       6
@@ -105,6 +119,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "ga",
+  "localeID": "ga",
   "pluralCat": function(n, opt_precision) {  if (n == 1) {    return PLURAL_CATEGORY.ONE;  }  if (n == 2) {    return PLURAL_CATEGORY.TWO;  }  if (n >= 3 && n <= 6) {    return PLURAL_CATEGORY.FEW;  }  if (n >= 7 && n <= 10) {    return PLURAL_CATEGORY.MANY;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

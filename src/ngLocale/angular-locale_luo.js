@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "DGI",
       "DAG"
     ],
+    "STANDALONEMONTH": [
+      "Dwe mar Achiel",
+      "Dwe mar Ariyo",
+      "Dwe mar Adek",
+      "Dwe mar Ang\u2019wen",
+      "Dwe mar Abich",
+      "Dwe mar Auchiel",
+      "Dwe mar Abiriyo",
+      "Dwe mar Aboro",
+      "Dwe mar Ochiko",
+      "Dwe mar Apar",
+      "Dwe mar gi achiel",
+      "Dwe mar Apar gi ariyo"
+    ],
     "WEEKENDRANGE": [
       5,
       6
@@ -123,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "luo",
+  "localeID": "luo",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

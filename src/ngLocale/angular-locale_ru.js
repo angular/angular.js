@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "\u043d\u043e\u044f\u0431.",
       "\u0434\u0435\u043a."
     ],
+    "STANDALONEMONTH": [
+      "\u044f\u043d\u0432\u0430\u0440\u044c",
+      "\u0444\u0435\u0432\u0440\u0430\u043b\u044c",
+      "\u043c\u0430\u0440\u0442",
+      "\u0430\u043f\u0440\u0435\u043b\u044c",
+      "\u043c\u0430\u0439",
+      "\u0438\u044e\u043d\u044c",
+      "\u0438\u044e\u043b\u044c",
+      "\u0430\u0432\u0433\u0443\u0441\u0442",
+      "\u0441\u0435\u043d\u0442\u044f\u0431\u0440\u044c",
+      "\u043e\u043a\u0442\u044f\u0431\u0440\u044c",
+      "\u043d\u043e\u044f\u0431\u0440\u044c",
+      "\u0434\u0435\u043a\u0430\u0431\u0440\u044c"
+    ],
     "WEEKENDRANGE": [
       5,
       6
@@ -123,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "ru",
+  "localeID": "ru",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (vf.v == 0 && i % 10 == 1 && i % 100 != 11) {    return PLURAL_CATEGORY.ONE;  }  if (vf.v == 0 && i % 10 >= 2 && i % 10 <= 4 && (i % 100 < 12 || i % 100 > 14)) {    return PLURAL_CATEGORY.FEW;  }  if (vf.v == 0 && i % 10 == 0 || vf.v == 0 && i % 10 >= 5 && i % 10 <= 9 || vf.v == 0 && i % 100 >= 11 && i % 100 <= 14) {    return PLURAL_CATEGORY.MANY;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

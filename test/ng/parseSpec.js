@@ -2,15 +2,6 @@
 
 describe('parser', function() {
 
-  beforeEach(function() {
-    /* global getterFnCacheDefault: true */
-    /* global getterFnCacheExpensive: true */
-    // clear caches
-    getterFnCacheDefault = createMap();
-    getterFnCacheExpensive = createMap();
-  });
-
-
   describe('lexer', function() {
     var lex;
 
@@ -550,8 +541,23 @@ describe('parser', function() {
     });
 
 
-    it('should not confuse `this`, `undefined`, `true`, `false`, `null` when used as identfiers', function() {
-      forEach(['this', 'undefined', 'true', 'false', 'null'], function(identifier) {
+    it('should understand the `$locals` expression', function() {
+      expect(createAst('$locals')).toEqual(
+        {
+          type: 'Program',
+          body: [
+            {
+              type: 'ExpressionStatement',
+              expression: { type: 'LocalsExpression' }
+            }
+          ]
+        }
+      );
+    });
+
+
+    it('should not confuse `this`, `$locals`, `undefined`, `true`, `false`, `null` when used as identfiers', function() {
+      forEach(['this', '$locals', 'undefined', 'true', 'false', 'null'], function(identifier) {
         expect(createAst('foo.' + identifier)).toEqual(
           {
             type: 'Program',
@@ -1675,7 +1681,6 @@ describe('parser', function() {
     $filterProvider = filterProvider;
   }]));
 
-
   forEach([true, false], function(cspEnabled) {
     describe('csp: ' + cspEnabled, function() {
 
@@ -2195,6 +2200,19 @@ describe('parser', function() {
         expect(scope.$eval('true || false || run()')).toBe(true);
       });
 
+      it('should throw TypeError on using a \'broken\' object as a key to access a property', function() {
+        scope.object = {};
+        forEach([
+          { toString: 2 },
+          { toString: null },
+          { toString: function() { return {}; } }
+        ], function(brokenObject) {
+          scope.brokenObject = brokenObject;
+          expect(function() {
+            scope.$eval('object[brokenObject]');
+          }).toThrow();
+        });
+      });
 
       it('should support method calls on primitive types', function() {
         scope.empty = '';
@@ -2380,6 +2398,71 @@ describe('parser', function() {
               }).toThrowMinErr(
                       '$parse', 'isecwindow', 'Referencing the Window in Angular expressions is disallowed! ' +
                       'Expression: foo.w = 1');
+            }));
+
+            they('should propagate expensive checks when calling $prop',
+                ['foo.w && true',
+                 '$eval("foo.w && true")',
+                 'this["$eval"]("foo.w && true")',
+                 'bar;$eval("foo.w && true")',
+                 '$eval("foo.w && true");bar',
+                 '$eval("foo.w && true", null, false)',
+                 '$eval("foo");$eval("foo.w && true")',
+                 '$eval("$eval(\\"foo.w && true\\")")',
+                 '$eval("foo.e()")',
+                 '$evalAsync("foo.w && true")',
+                 'this["$evalAsync"]("foo.w && true")',
+                 'bar;$evalAsync("foo.w && true")',
+                 '$evalAsync("foo.w && true");bar',
+                 '$evalAsync("foo.w && true", null, false)',
+                 '$evalAsync("foo");$evalAsync("foo.w && true")',
+                 '$evalAsync("$evalAsync(\\"foo.w && true\\")")',
+                 '$evalAsync("foo.e()")',
+                 '$evalAsync("$eval(\\"foo.w && true\\")")',
+                 '$eval("$evalAsync(\\"foo.w && true\\")")',
+                 '$watch("foo.w && true")',
+                 '$watchCollection("foo.w && true", foo.f)',
+                 '$watchGroup(["foo.w && true"])',
+                 '$applyAsync("foo.w && true")'], function(expression) {
+              inject(function($parse, $window) {
+                scope.foo = {
+                    w: $window,
+                    bar: 'bar',
+                    e: function() { scope.$eval("foo.w && true"); },
+                    f: function() {}
+                };
+                expect($parse.$$runningExpensiveChecks()).toEqual(false);
+                expect(function() {
+                  scope.$eval($parse(expression, null, true));
+                  scope.$digest();
+                }).toThrowMinErr(
+                    '$parse', 'isecwindow', 'Referencing the Window in Angular expressions is disallowed! ' +
+                    'Expression: foo.w && true');
+                expect($parse.$$runningExpensiveChecks()).toEqual(false);
+              });
+            });
+
+            they('should restore the state of $$runningExpensiveChecks when the expression $prop throws',
+                ['$eval("foo.t()")',
+                 '$evalAsync("foo.t()", {foo: foo})'], function(expression) {
+              inject(function($parse, $window) {
+                scope.foo = {
+                    t: function() { throw new Error(); }
+                };
+                expect($parse.$$runningExpensiveChecks()).toEqual(false);
+                expect(function() {
+                  scope.$eval($parse(expression, null, true));
+                  scope.$digest();
+                }).toThrow();
+                expect($parse.$$runningExpensiveChecks()).toEqual(false);
+              });
+            });
+
+            it('should handle `inputs` when running with expensive checks', inject(function($parse) {
+              expect(function() {
+                scope.$watch($parse('a + b', null, true), noop);
+                scope.$digest();
+              }).not.toThrow();
             }));
           });
         });
@@ -2740,6 +2823,12 @@ describe('parser', function() {
           expect(function() {
             scope.$eval("objConstructor = {}.constructor; objConstructor.join = ''");
           }).toThrow();
+          expect(function() {
+            scope.$eval("'a'.constructor.prototype.charAt=[].join");
+          }).toThrow();
+          expect(function() {
+            scope.$eval("'a'.constructor.prototype.charCodeAt=[].concat");
+          }).toThrow();
         });
       });
 
@@ -2924,6 +3013,25 @@ describe('parser', function() {
 
         it('should stay stable once the value defined', inject(function($parse, $rootScope, log) {
           var fn = $parse('::foo');
+          $rootScope.$watch(fn, function(value, old) { if (value !== old) log(value); });
+
+          $rootScope.$digest();
+          expect($rootScope.$$watchers.length).toBe(1);
+
+          $rootScope.foo = 'bar';
+          $rootScope.$digest();
+          expect($rootScope.$$watchers.length).toBe(0);
+          expect(log).toEqual('bar');
+          log.reset();
+
+          $rootScope.foo = 'man';
+          $rootScope.$digest();
+          expect($rootScope.$$watchers.length).toBe(0);
+          expect(log).toEqual('');
+        }));
+
+        it('should work with expensive checks', inject(function($parse, $rootScope, log) {
+          var fn = $parse('::foo', null, true);
           $rootScope.$watch(fn, function(value, old) { if (value !== old) log(value); });
 
           $rootScope.$digest();
@@ -3161,6 +3269,17 @@ describe('parser', function() {
           expect(called).toBe(false);
 
           scope.a++;
+          scope.$digest();
+          expect(called).toBe(true);
+        }));
+
+        it('should invoke interceptors when the expression is `undefined`', inject(function($parse) {
+          var called = false;
+          function interceptor(v) {
+            called = true;
+            return v;
+          }
+          scope.$watch($parse(undefined, interceptor));
           scope.$digest();
           expect(called).toBe(true);
         }));
@@ -3571,6 +3690,30 @@ describe('parser', function() {
         it('should allow accessing null/undefined properties on `this`', inject(function($rootScope) {
           $rootScope.null = {a: 42};
           expect($rootScope.$eval('this.null.a')).toBe(42);
+        }));
+
+        it('should allow accessing $locals', inject(function($rootScope) {
+          $rootScope.foo = 'foo';
+          $rootScope.bar = 'bar';
+          $rootScope.$locals = 'foo';
+          var locals = {foo: 42};
+          expect($rootScope.$eval('$locals')).toBeUndefined();
+          expect($rootScope.$eval('$locals.foo')).toBeUndefined();
+          expect($rootScope.$eval('this.$locals')).toBe('foo');
+          expect(function() {
+            $rootScope.$eval('$locals = {}');
+          }).toThrow();
+          expect(function() {
+            $rootScope.$eval('$locals.bar = 23');
+          }).toThrow();
+          expect($rootScope.$eval('$locals', locals)).toBe(locals);
+          expect($rootScope.$eval('$locals.foo', locals)).toBe(42);
+          expect($rootScope.$eval('this.$locals', locals)).toBe('foo');
+          expect(function() {
+            $rootScope.$eval('$locals = {}', locals);
+          }).toThrow();
+          expect($rootScope.$eval('$locals.bar = 23', locals)).toEqual(23);
+          expect(locals.bar).toBe(23);
         }));
       });
     });

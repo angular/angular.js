@@ -8,6 +8,20 @@ describe('Filter: orderBy', function() {
 
 
   describe('(Arrays)', function() {
+    it('should throw an exception if no array-like object is provided', function() {
+      expect(function() { orderBy({}); }).
+        toThrowMinErr('orderBy', 'notarray', 'Expected array but received: {}');
+    });
+
+    it('should not throw an exception if a null or undefined value is provided', function() {
+      expect(orderBy(null)).toEqual(null);
+      expect(orderBy(undefined)).toEqual(undefined);
+    });
+
+    it('should not throw an exception if an array-like object is provided', function() {
+      expect(orderBy('cba')).toEqual(['a', 'b', 'c']);
+    });
+
     it('should return sorted array if predicate is not provided', function() {
       expect(orderBy([2, 1, 3])).toEqual([1, 2, 3]);
 

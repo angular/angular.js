@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "Nob",
       "Dis"
     ],
+    "STANDALONEMONTH": [
+      "Enero",
+      "Pebrero",
+      "Marso",
+      "Abril",
+      "Mayo",
+      "Hunyo",
+      "Hulyo",
+      "Agosto",
+      "Setyembre",
+      "Oktubre",
+      "Nobyembre",
+      "Disyembre"
+    ],
     "WEEKENDRANGE": [
       5,
       6
@@ -123,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "fil",
+  "localeID": "fil",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (vf.v == 0 && (i == 1 || i == 2 || i == 3) || vf.v == 0 && i % 10 != 4 && i % 10 != 6 && i % 10 != 9 || vf.v != 0 && vf.f % 10 != 4 && vf.f % 10 != 6 && vf.f % 10 != 9) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

@@ -62,6 +62,20 @@ $provide.value("$locale", {
       "thg 11",
       "thg 12"
     ],
+    "STANDALONEMONTH": [
+      "Th\u00e1ng 1",
+      "Th\u00e1ng 2",
+      "Th\u00e1ng 3",
+      "Th\u00e1ng 4",
+      "Th\u00e1ng 5",
+      "Th\u00e1ng 6",
+      "Th\u00e1ng 7",
+      "Th\u00e1ng 8",
+      "Th\u00e1ng 9",
+      "Th\u00e1ng 10",
+      "Th\u00e1ng 11",
+      "Th\u00e1ng 12"
+    ],
     "WEEKENDRANGE": [
       5,
       6
@@ -105,6 +119,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "vi-vn",
+  "localeID": "vi_VN",
   "pluralCat": function(n, opt_precision) {  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

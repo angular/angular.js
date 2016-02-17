@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "P\u025bsa\u014b Nts\u0254\u030cpm\u0254\u0301",
       "P\u025bsa\u014b Nts\u0254\u030cpp\u00e1"
     ],
+    "STANDALONEMONTH": [
+      "Ndu\u014bmbi Sa\u014b",
+      "P\u025bsa\u014b P\u025b\u0301p\u00e1",
+      "P\u025bsa\u014b P\u025b\u0301t\u00e1t",
+      "P\u025bsa\u014b P\u025b\u0301n\u025b\u0301kwa",
+      "P\u025bsa\u014b Pataa",
+      "P\u025bsa\u014b P\u025b\u0301n\u025b\u0301nt\u00fak\u00fa",
+      "P\u025bsa\u014b Saamb\u00e1",
+      "P\u025bsa\u014b P\u025b\u0301n\u025b\u0301f\u0254m",
+      "P\u025bsa\u014b P\u025b\u0301n\u025b\u0301pf\u00fa\ua78b\u00fa",
+      "P\u025bsa\u014b N\u025bg\u025b\u0301m",
+      "P\u025bsa\u014b Nts\u0254\u030cpm\u0254\u0301",
+      "P\u025bsa\u014b Nts\u0254\u030cpp\u00e1"
+    ],
     "WEEKENDRANGE": [
       5,
       6
@@ -123,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "jgo-cm",
+  "localeID": "jgo_CM",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

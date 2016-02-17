@@ -99,8 +99,13 @@ For example, the following forms are all equivalent and match the {@link ngBind}
   </file>
   <file name="protractor.js" type="protractor">
     it('should show off bindings', function() {
-      expect(element(by.css('div[ng-controller="Controller"] span[ng-bind]')).getText())
-          .toBe('Max Karl Ernst Ludwig Planck (April 23, 1858 – October 4, 1947)');
+      var containerElm = element(by.css('div[ng-controller="Controller"]'));
+      var nameBindings = containerElm.all(by.binding('name'));
+
+      expect(nameBindings.count()).toBe(5);
+      nameBindings.each(function(elem) {
+        expect(elem.getText()).toEqual('Max Karl Ernst Ludwig Planck (April 23, 1858 – October 4, 1947)');
+      });
     });
   </file>
 </example>
@@ -139,63 +144,6 @@ AngularJS 1.2 introduces {@link ng.directive:ngRepeat `ng-repeat-start` and `ng-
 as a better solution to this problem. Developers are encouraged to use this over custom comment
 directives when possible.
 </div>
-
-
-
-### Text and attribute bindings
-
-During the compilation process the {@link ng.$compile compiler} matches text and attributes
-using the {@link ng.$interpolate $interpolate} service to see if they contain embedded
-expressions. These expressions are registered as {@link ng.$rootScope.Scope#$watch watches}
-and will update as part of normal {@link ng.$rootScope.Scope#$digest digest} cycle. An
-example of interpolation is shown below:
-
-```html
-<a ng-href="img/{{username}}.jpg">Hello {{username}}!</a>
-```
-
-
-### `ngAttr` attribute bindings
-
-Web browsers are sometimes picky about what values they consider valid for attributes.
-
-For example, considering this template:
-
-```html
-<svg>
-  <circle cx="{{cx}}"></circle>
-</svg>
-```
-
-We would expect Angular to be able to bind to this, but when we check the console we see
-something like `Error: Invalid value for attribute cx="{{cx}}"`. Because of the SVG DOM API's
-restrictions, you cannot simply write `cx="{{cx}}"`.
-
-With `ng-attr-cx` you can work around this problem.
-
-If an attribute with a binding is prefixed with the `ngAttr` prefix (denormalized as `ng-attr-`)
-then during the binding it will be applied to the corresponding unprefixed attribute. This allows
-you to bind to attributes that would otherwise be eagerly processed by browsers
-(e.g. an SVG element's `circle[cx]` attributes). When using `ngAttr`, the `allOrNothing` flag of
-{@link ng.$interpolate $interpolate} is used, so if any expression in the interpolated string
-results in `undefined`, the attribute is removed and not added to the element.
-
-For example, we could fix the example above by instead writing:
-
-```html
-<svg>
-  <circle ng-attr-cx="{{cx}}"></circle>
-</svg>
-```
-
-If one wants to modify a camelcased attribute (SVG elements have valid camelcased attributes), such as `viewBox` on the `svg` element, one can use underscores to denote that the attribute to bind to is naturally camelcased.
-
-For example, to bind to `viewBox`, we can write:
-
-```html
-<svg ng-attr-view_box="{{viewBox}}">
-</svg>
-```
 
 
 ## Creating Directives
@@ -355,6 +303,7 @@ The `restrict` option is typically set to:
 * `'A'` - only matches attribute name
 * `'E'` - only matches element name
 * `'C'` - only matches class name
+* `'M'` - only matches comment
 
 These restrictions can all be combined as needed:
 
@@ -458,7 +407,7 @@ This is clearly not a great solution.
 
 What we want to be able to do is separate the scope inside a directive from the scope
 outside, and then map the outer scope to a directive's inner scope. We can do this by creating what
-we call an **isolate scope**. To do this, we can use a directive's `scope` option:
+we call an **isolate scope**. To do this, we can use a {@link $compile#-scope- directive's `scope`} option:
 
 <example module="docsIsolateScopeDirective">
   <file name="script.js">
@@ -587,14 +536,24 @@ want to reuse throughout your app.
 In this example we will build a directive that displays the current time.
 Once a second, it updates the DOM to reflect the current time.
 
-Directives that want to modify the DOM typically use the `link` option.
-`link` takes a function with the following signature, `function link(scope, element, attrs) { ... }`
-where:
+Directives that want to modify the DOM typically use the `link` option to register DOM listeners
+as well as update the DOM. It is executed after the template has been cloned and is where
+directive logic will be put.
+
+ `link` takes a function with the following signature,
+`function link(scope, element, attrs, controller, transcludeFn) { ... }`, where:
 
 * `scope` is an Angular scope object.
 * `element` is the jqLite-wrapped element that this directive matches.
 * `attrs` is a hash object with key-value pairs of normalized attribute names and their
   corresponding attribute values.
+* `controller` is the directive's required controller instance(s) or its own controller (if any).
+  The exact value depends on the directive's require property.
+* `transcludeFn` is a transclude linking function pre-bound to the correct transclusion scope.
+
+<div class="alert alert-info">
+For more details on the `link` option refer to the {@link ng.$compile#-link- `$compile` API} page.
+</div>
 
 In our `link` function, we want to update the displayed time once a second, or whenever a user
 changes the time formatting string that our directive binds to. We will use the `$interval` service
@@ -688,6 +647,7 @@ To do this, we need to use the `transclude` option.
         return {
           restrict: 'E',
           transclude: true,
+          scope: {},
           templateUrl: 'my-dialog.html'
         };
       });
@@ -698,8 +658,7 @@ To do this, we need to use the `transclude` option.
     </div>
   </file>
   <file name="my-dialog.html">
-    <div class="alert" ng-transclude>
-    </div>
+    <div class="alert" ng-transclude></div>
   </file>
 </example>
 
@@ -721,7 +680,7 @@ that redefines `name` as `Jeff`. What do you think the `{{name}}` binding will r
           transclude: true,
           scope: {},
           templateUrl: 'my-dialog.html',
-          link: function (scope, element) {
+          link: function (scope) {
             scope.name = 'Jeff';
           }
         };
@@ -733,8 +692,7 @@ that redefines `name` as `Jeff`. What do you think the `{{name}}` binding will r
     </div>
   </file>
   <file name="my-dialog.html">
-    <div class="alert" ng-transclude>
-    </div>
+    <div class="alert" ng-transclude></div>
   </file>
 </example>
 
@@ -745,7 +703,7 @@ The `transclude` option changes the way scopes are nested. It makes it so that t
 transcluded directive have whatever scope is outside the directive, rather than whatever scope is on
 the inside. In doing so, it gives the contents access to the outside scope.
 
-Note that if the directive did not create its own scope, then `scope` in `scope.name = 'Jeff';` would
+Note that if the directive did not create its own scope, then `scope` in `scope.name = 'Jeff'` would
 reference the outside scope and we would see `Jeff` in the output.
 
 This behavior makes sense for a directive that wraps some content, because otherwise you'd have to
@@ -818,9 +776,9 @@ function.
 
 Often it's desirable to pass data from the isolate scope via an expression to the
 parent scope, this can be done by passing a map of local variable names and values into the expression
-wrapper fn. For example, the hideDialog function takes a message to display when the dialog is hidden.
-This is specified in the directive by calling `close({message: 'closing for now'})`. Then the local
-variable `message` will be available within the `on-close` expression.
+wrapper function. For example, the `hideDialog` function takes a message to display when the dialog
+is hidden. This is specified in the directive by calling `close({message: 'closing for now'})`.
+Then the local variable `message` will be available within the `on-close` expression.
 
 <div class="alert alert-success">
 **Best Practice:** use `&attr` in the `scope` option when you want your directive
@@ -879,7 +837,7 @@ element?
       }]);
   </file>
   <file name="index.html">
-    <span my-draggable>Drag ME</span>
+    <span my-draggable>Drag Me</span>
   </file>
 </example>
 
@@ -924,7 +882,7 @@ to which tab is active.
       })
       .directive('myPane', function() {
         return {
-          require: '^myTabs',
+          require: '^^myTabs',
           restrict: 'E',
           transclude: true,
           scope: {
@@ -940,11 +898,9 @@ to which tab is active.
   <file name="index.html">
     <my-tabs>
       <my-pane title="Hello">
-        <h4>Hello</h4>
         <p>Lorem ipsum dolor sit amet</p>
       </my-pane>
       <my-pane title="World">
-        <h4>World</h4>
         <em>Mauris elementum elementum enim at suscipit.</em>
         <p><a href ng-click="i = i + 1">counter: {{i || 0}}</a></p>
       </my-pane>
@@ -961,22 +917,25 @@ to which tab is active.
     </div>
   </file>
   <file name="my-pane.html">
-    <div class="tab-pane" ng-show="selected" ng-transclude>
+    <div class="tab-pane" ng-show="selected">
+      <h4>{{title}}</h4>
+      <div ng-transclude></div>
     </div>
   </file>
 </example>
 
-The `myPane` directive has a `require` option with value `^myTabs`. When a directive uses this
-option, `$compile` will throw an error unless the specified controller is found. The `^` prefix
-means that this directive searches for the controller on its parents (without the `^` prefix, the
-directive would look for the controller on just its own element).
+The `myPane` directive has a `require` option with value `^^myTabs`. When a directive uses this
+option, `$compile` will throw an error unless the specified controller is found. The `^^` prefix
+means that this directive searches for the controller on its parents. (A `^` prefix would make the
+directive look for the controller on its own element or its parents; without any prefix, the
+directive would look on its own element only.)
 
 So where does this `myTabs` controller come from? Directives can specify controllers using
 the unsurprisingly named `controller` option. As you can see, the `myTabs` directive uses this
 option. Just like `ngController`, this option attaches a controller to the template of the directive.
 
-If it is necessary to reference the controller or any functions bound to the controller's scope in
-the template, you can use the option `controllerAs` to specify the name of the controller as an alias.
+If it is necessary to reference the controller or any functions bound to the controller from the
+template, you can use the option `controllerAs` to specify the name of the controller as an alias.
 The directive needs to define a scope for this configuration to be used. This is particularly useful
 in the case when the directive is used as a component.
 
@@ -991,7 +950,7 @@ The corresponding parameter being sent to the `link` function will also be an ar
 angular.module('docsTabsExample', [])
   .directive('myPane', function() {
     return {
-      require: ['^myTabs', '^ngModel'],
+      require: ['^^myTabs', 'ngModel'],
       restrict: 'E',
       transclude: true,
       scope: {
@@ -1027,4 +986,3 @@ available in the {@link guide/compiler compiler guide}.
 
 The {@link ng.$compile `$compile` API} page has a comprehensive list of directive options for
 reference.
-

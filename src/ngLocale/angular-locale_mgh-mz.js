@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "Moj",
       "Yel"
     ],
+    "STANDALONEMONTH": [
+      "Mweri wo kwanza",
+      "Mweri wo unayeli",
+      "Mweri wo uneraru",
+      "Mweri wo unecheshe",
+      "Mweri wo unethanu",
+      "Mweri wo thanu na mocha",
+      "Mweri wo saba",
+      "Mweri wo nane",
+      "Mweri wo tisa",
+      "Mweri wo kumi",
+      "Mweri wo kumi na moja",
+      "Mweri wo kumi na yel\u2019li"
+    ],
     "WEEKENDRANGE": [
       5,
       6
@@ -123,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "mgh-mz",
+  "localeID": "mgh_MZ",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

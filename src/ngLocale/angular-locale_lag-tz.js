@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "Saano",
       "Sasat\u0289"
     ],
+    "STANDALONEMONTH": [
+      "K\u0289f\u00fangat\u0268",
+      "K\u0289naan\u0268",
+      "K\u0289keenda",
+      "Kwiikumi",
+      "Kwiinyamb\u00e1la",
+      "Kwiidwaata",
+      "K\u0289m\u0289\u0289nch\u0268",
+      "K\u0289v\u0268\u0268r\u0268",
+      "K\u0289saat\u0289",
+      "Kwiinyi",
+      "K\u0289saano",
+      "K\u0289sasat\u0289"
+    ],
     "WEEKENDRANGE": [
       5,
       6
@@ -123,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "lag-tz",
+  "localeID": "lag_TZ",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

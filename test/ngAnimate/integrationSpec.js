@@ -7,10 +7,10 @@ describe('ngAnimate integration tests', function() {
 
   var element, html, ss;
   beforeEach(module(function() {
-    return function($rootElement, $document, $window, $animate) {
+    return function($rootElement, $document, $animate) {
       $animate.enabled(true);
 
-      ss = createMockStyleSheet($document, $window);
+      ss = createMockStyleSheet($document);
 
       var body = jqLite($document[0].body);
       html = function(element) {
@@ -25,8 +25,55 @@ describe('ngAnimate integration tests', function() {
     ss.destroy();
   });
 
+ it('should cancel a running and started removeClass animation when a follow-up addClass animation adds the same class',
+    inject(function($animate, $rootScope, $$rAF, $document, $rootElement) {
+
+    jqLite($document[0].body).append($rootElement);
+    element = jqLite('<div></div>');
+    $rootElement.append(element);
+
+    element.addClass('active-class');
+
+    var runner = $animate.removeClass(element, 'active-class');
+    $rootScope.$digest();
+
+    var doneHandler = jasmine.createSpy('addClass done');
+    runner.done(doneHandler);
+
+    $$rAF.flush(); // Trigger the actual animation
+
+    expect(doneHandler).not.toHaveBeenCalled();
+
+    $animate.addClass(element, 'active-class');
+    $rootScope.$digest();
+
+    // Cancelling the removeClass animation triggers the done callback
+    expect(doneHandler).toHaveBeenCalled();
+  }));
+
   describe('CSS animations', function() {
     if (!browserSupportsCssAnimations()) return;
+
+    it("should only create a single copy of the provided animation options",
+      inject(function($rootScope, $rootElement, $animate) {
+
+      ss.addRule('.animate-me', 'transition:2s linear all;');
+
+      var element = jqLite('<div class="animate-me"></div>');
+      html(element);
+
+      var myOptions = {to: { 'color': 'red' }};
+
+      var spy = spyOn(window, 'copy');
+      expect(spy).not.toHaveBeenCalled();
+
+      var animation = $animate.leave(element, myOptions);
+      $rootScope.$digest();
+      $animate.flush();
+
+      expect(spy).toHaveBeenCalledOnce();
+      dealoc(element);
+    }));
 
     they('should render an $prop animation',
       ['enter', 'leave', 'move', 'addClass', 'removeClass', 'setClass'], function(event) {
@@ -268,6 +315,42 @@ describe('ngAnimate integration tests', function() {
       });
     });
 
+    it('should add the preparation class for an enter animation before a parent class-based animation is applied', function() {
+      module('ngAnimateMock');
+      inject(function($animate, $compile, $rootScope, $rootElement, $document) {
+        element = jqLite(
+          '<div ng-class="{parent:exp}">' +
+            '<div ng-if="exp">' +
+            '</div>' +
+          '</div>'
+        );
+
+        ss.addRule('.ng-enter', 'transition:2s linear all;');
+        ss.addRule('.parent-add', 'transition:5s linear all;');
+
+        $rootElement.append(element);
+        jqLite($document[0].body).append($rootElement);
+
+        $compile(element)($rootScope);
+        $rootScope.exp = true;
+        $rootScope.$digest();
+
+        var parent = element;
+        var child = element.find('div');
+
+        expect(parent).not.toHaveClass('parent');
+        expect(parent).toHaveClass('parent-add');
+        expect(child).not.toHaveClass('ng-enter');
+        expect(child).toHaveClass('ng-enter-prepare');
+
+        $animate.flush();
+        expect(parent).toHaveClass('parent parent-add parent-add-active');
+        expect(child).toHaveClass('ng-enter ng-enter-active');
+        expect(child).not.toHaveClass('ng-enter-prepare');
+      });
+    });
+
+
     it('should pack level elements into their own RAF flush', function() {
       module('ngAnimateMock');
       inject(function($animate, $compile, $rootScope, $rootElement, $document) {
@@ -351,6 +434,71 @@ describe('ngAnimate integration tests', function() {
 
       dealoc(element);
     }));
+
+
+    it("should remove a class when the same class is currently being added by a joined class-based animation",
+      inject(function($animate, $animateCss, $rootScope, $document, $rootElement, $$rAF) {
+
+      ss.addRule('.hide', 'opacity: 0');
+      ss.addRule('.hide-add, .hide-remove', 'transition: 1s linear all');
+
+      jqLite($document[0].body).append($rootElement);
+      element = jqLite('<div></div>');
+      $rootElement.append(element);
+
+      // These animations will be joined together
+      $animate.addClass(element, 'red');
+      $animate.addClass(element, 'hide');
+      $rootScope.$digest();
+
+      expect(element).toHaveClass('red-add');
+      expect(element).toHaveClass('hide-add');
+
+      // When a digest has passed, but no $rAF has been issued yet, .hide hasn't been added to
+      // the element yet
+      $animate.removeClass(element, 'hide');
+      $rootScope.$digest();
+      $$rAF.flush();
+
+      expect(element).not.toHaveClass('hide-add hide-add-active');
+      expect(element).toHaveClass('hide-remove hide-remove-active');
+
+      //End the animation process
+      browserTrigger(element, 'transitionend',
+        { timeStamp: Date.now() + 1000, elapsedTime: 2 });
+      $animate.flush();
+
+      expect(element).not.toHaveClass('hide-add-active red-add-active');
+      expect(element).toHaveClass('red');
+      expect(element).not.toHaveClass('hide');
+    }));
+
+    it('should handle ng-if & ng-class with a class that is removed before its add animation has concluded', function() {
+      inject(function($animate, $rootScope, $compile, $timeout, $$rAF) {
+
+        ss.addRule('.animate-me', 'transition: all 0.5s;');
+
+        element = jqLite('<section><div ng-if="true" class="animate-me" ng-class="{' +
+          'red: red,' +
+          'blue: blue' +
+          '}"></div></section>');
+
+        html(element);
+        $rootScope.blue = true;
+        $rootScope.red = true;
+        $compile(element)($rootScope);
+        $rootScope.$digest();
+
+        var child = element.find('div');
+
+        // Trigger class removal before the add animation has been concluded
+        $rootScope.blue = false;
+        $animate.closeAndFlush();
+
+        expect(child).toHaveClass('red');
+        expect(child).not.toHaveClass('blue');
+      });
+    });
   });
 
   describe('JS animations', function() {
@@ -560,6 +708,51 @@ describe('ngAnimate integration tests', function() {
         } else {
           expect(safeClassMatchString).toContain(' cool ');
         }
+      });
+    });
+
+    it("should not alter the provided options values in anyway throughout the animation", function() {
+      var animationSpy = jasmine.createSpy();
+      module(function($animateProvider) {
+        $animateProvider.register('.this-animation', function() {
+          return {
+            enter: function(element, done) {
+              animationSpy();
+              done();
+            }
+          };
+        });
+      });
+
+      inject(function($animate, $rootScope, $compile) {
+        element = jqLite('<div class="parent-man"></div>');
+        var child = jqLite('<div class="child-man one"></div>');
+
+        var initialOptions = {
+          from: { height: '50px' },
+          to: { width: '100px' },
+          addClass: 'one',
+          removeClass: 'two'
+        };
+
+        var copiedOptions = copy(initialOptions);
+        expect(copiedOptions).toEqual(initialOptions);
+
+        html(element);
+        $compile(element)($rootScope);
+
+        $animate.enter(child, element, null, copiedOptions);
+        $rootScope.$digest();
+        expect(copiedOptions).toEqual(initialOptions);
+
+        $animate.flush();
+        expect(copiedOptions).toEqual(initialOptions);
+
+        expect(child).toHaveClass('one');
+        expect(child).not.toHaveClass('two');
+
+        expect(child.attr('style')).toContain('100px');
+        expect(child.attr('style')).toContain('50px');
       });
     });
   });

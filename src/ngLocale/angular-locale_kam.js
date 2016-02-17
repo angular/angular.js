@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "\u0128km",
       "\u0128kl"
     ],
+    "STANDALONEMONTH": [
+      "Mwai wa mbee",
+      "Mwai wa kel\u0129",
+      "Mwai wa katat\u0169",
+      "Mwai wa kana",
+      "Mwai wa katano",
+      "Mwai wa thanthat\u0169",
+      "Mwai wa muonza",
+      "Mwai wa nyaanya",
+      "Mwai wa kenda",
+      "Mwai wa \u0129kumi",
+      "Mwai wa \u0129kumi na \u0129mwe",
+      "Mwai wa \u0129kumi na il\u0129"
+    ],
     "WEEKENDRANGE": [
       5,
       6
@@ -123,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "kam",
+  "localeID": "kam",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

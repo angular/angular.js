@@ -221,6 +221,15 @@ describe('q', function() {
       expect(typeof promise.finally).toBe('function');
     });
 
+    it('should support the instanceof operator', function() {
+      /*jshint newcap: false */
+      var promise = new q(noop);
+      expect(promise instanceof q).toBe(true);
+      promise = q(noop);
+      expect(promise instanceof q).toBe(true);
+      /*jshint newcap: true */
+    });
+
 
     describe('resolve', function() {
       it('should fulfill the promise and execute all success callbacks in the registration order',

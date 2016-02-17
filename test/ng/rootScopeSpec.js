@@ -117,6 +117,20 @@ describe('Scope', function() {
     }));
 
 
+    it('should not expose the `inner working of watch', inject(function($rootScope) {
+      function Getter() {
+        expect(this).toBeUndefined();
+        return 'foo';
+      }
+      function Listener() {
+        expect(this).toBeUndefined();
+      }
+      if (msie < 10) return;
+      $rootScope.$watch(Getter, Listener);
+      $rootScope.$digest();
+    }));
+
+
     it('should watch and fire on expression change', inject(function($rootScope) {
       var spy = jasmine.createSpy();
       $rootScope.$watch('name.first', spy);
@@ -188,7 +202,7 @@ describe('Scope', function() {
       expect(child1.$$watchersCount).toBe(1);
       expect($rootScope.$$watchersCount).toBe(2);
 
-      // Execute everything a second time to be sure that calling the remove funciton
+      // Execute everything a second time to be sure that calling the remove function
       // several times, it only decrements the counter once
       remove2();
       expect(child2.$$watchersCount).toBe(1);
@@ -1211,6 +1225,36 @@ describe('Scope', function() {
       expect(child.parentModel).toBe('parent');
       expect(child.childModel).toBe('child');
     }));
+
+
+    if (msie === 9) {
+      // See issue https://github.com/angular/angular.js/issues/10706
+      it('should completely disconnect all child scopes on IE9', inject(function($rootScope) {
+        var parent = $rootScope.$new(),
+            child1 = parent.$new(),
+            child2 = parent.$new(),
+            grandChild1 = child1.$new(),
+            grandChild2 = child1.$new();
+
+        child1.$destroy();
+        $rootScope.$digest();
+
+        expect(isDisconnected(parent)).toBe(false);
+        expect(isDisconnected(child1)).toBe(true);
+        expect(isDisconnected(child2)).toBe(false);
+        expect(isDisconnected(grandChild1)).toBe(true);
+        expect(isDisconnected(grandChild2)).toBe(true);
+
+        function isDisconnected($scope) {
+          return $scope.$$nextSibling === null &&
+                 $scope.$$prevSibling === null &&
+                 $scope.$$childHead === null &&
+                 $scope.$$childTail === null &&
+                 $scope.$root === null &&
+                 $scope.$$watchers === null;
+        }
+      }));
+    }
   });
 
 
@@ -1357,7 +1401,7 @@ describe('Scope', function() {
       expect(child.log).toBe('child context');
     }));
 
-    it('should operate only with a single queue across all child and isolate scopes', inject(function($rootScope) {
+    it('should operate only with a single queue across all child and isolate scopes', inject(function($rootScope, $parse) {
       var childScope = $rootScope.$new();
       var isolateScope = $rootScope.$new(true);
 
@@ -1368,9 +1412,9 @@ describe('Scope', function() {
       expect(childScope.$$asyncQueue).toBe($rootScope.$$asyncQueue);
       expect(isolateScope.$$asyncQueue).toBeUndefined();
       expect($rootScope.$$asyncQueue).toEqual([
-        {scope: $rootScope, expression: 'rootExpression'},
-        {scope: childScope, expression: 'childExpression'},
-        {scope: isolateScope, expression: 'isolateExpression'}
+        {scope: $rootScope, expression: $parse('rootExpression')},
+        {scope: childScope, expression: $parse('childExpression')},
+        {scope: isolateScope, expression: $parse('isolateExpression')}
       ]);
     }));
 

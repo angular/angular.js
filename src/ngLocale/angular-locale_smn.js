@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "M11",
       "M12"
     ],
+    "STANDALONEMONTH": [
+      "u\u0111\u0111\u00e2ivem\u00e1\u00e1nu",
+      "kuov\u00e2m\u00e1\u00e1nu",
+      "njuh\u010d\u00e2m\u00e1\u00e1nu",
+      "cu\u00e1\u014buim\u00e1\u00e1nu",
+      "vyesim\u00e1\u00e1nu",
+      "kesim\u00e1\u00e1nu",
+      "syeinim\u00e1\u00e1nu",
+      "porgem\u00e1\u00e1nu",
+      "\u010doh\u010d\u00e2m\u00e1\u00e1nu",
+      "roovv\u00e2dm\u00e1\u00e1nu",
+      "skamm\u00e2m\u00e1\u00e1nu",
+      "juovl\u00e2m\u00e1\u00e1nu"
+    ],
     "WEEKENDRANGE": [
       5,
       6
@@ -123,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "smn",
+  "localeID": "smn",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

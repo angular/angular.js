@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "Win",
       "Chr"
     ],
+    "STANDALONEMONTH": [
+      "Jenner",
+      "Hornig",
+      "M\u00e4rze",
+      "Abrille",
+      "Meije",
+      "Br\u00e1\u010det",
+      "Heiwet",
+      "\u00d6ig\u0161te",
+      "Herb\u0161tm\u00e1net",
+      "W\u00edm\u00e1net",
+      "Winterm\u00e1net",
+      "Chri\u0161tm\u00e1net"
+    ],
     "WEEKENDRANGE": [
       5,
       6
@@ -123,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "wae-ch",
+  "localeID": "wae_CH",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

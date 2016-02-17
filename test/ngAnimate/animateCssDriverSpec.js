@@ -69,11 +69,11 @@ describe("ngAnimate $$animateCssDriver", function() {
 
       element = jqLite('<div></div>');
 
-      return function($$animateCssDriver, $document, $window) {
+      return function($$animateCssDriver, $document) {
         driver = function(details, cb) {
           return $$animateCssDriver(details, cb || noop);
         };
-        ss = createMockStyleSheet($document, $window);
+        ss = createMockStyleSheet($document);
       };
     }));
 
@@ -132,7 +132,7 @@ describe("ngAnimate $$animateCssDriver", function() {
           var doc = $document[0];
 
           // there is one test in here that expects the rootElement
-          // to superceed the body node
+          // to supersede the body node
           if (!$rootElement[0].contains(doc.body)) {
             // we need to do this so that style detection works
             jqLite(doc.body).append($rootElement);

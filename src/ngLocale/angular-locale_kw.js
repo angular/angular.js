@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "Du",
       "Kev"
     ],
+    "STANDALONEMONTH": [
+      "mis Genver",
+      "mis Hwevrer",
+      "mis Meurth",
+      "mis Ebrel",
+      "mis Me",
+      "mis Metheven",
+      "mis Gortheren",
+      "mis Est",
+      "mis Gwynngala",
+      "mis Hedra",
+      "mis Du",
+      "mis Kevardhu"
+    ],
     "WEEKENDRANGE": [
       5,
       6
@@ -123,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "kw",
+  "localeID": "kw",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

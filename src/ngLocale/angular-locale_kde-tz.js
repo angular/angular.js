@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "Nov",
       "Des"
     ],
+    "STANDALONEMONTH": [
+      "Mwedi Ntandi",
+      "Mwedi wa Pili",
+      "Mwedi wa Tatu",
+      "Mwedi wa Nchechi",
+      "Mwedi wa Nnyano",
+      "Mwedi wa Nnyano na Umo",
+      "Mwedi wa Nnyano na Mivili",
+      "Mwedi wa Nnyano na Mitatu",
+      "Mwedi wa Nnyano na Nchechi",
+      "Mwedi wa Nnyano na Nnyano",
+      "Mwedi wa Nnyano na Nnyano na U",
+      "Mwedi wa Nnyano na Nnyano na M"
+    ],
     "WEEKENDRANGE": [
       5,
       6
@@ -123,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "kde-tz",
+  "localeID": "kde_TZ",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

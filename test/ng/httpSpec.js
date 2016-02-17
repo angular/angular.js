@@ -302,6 +302,13 @@ describe('$http', function() {
       }).toThrowMinErr('$http','badreq', 'Http request configuration must be an object.  Received: /url');
     });
 
+    it('should throw error if the request configuration url is not a string', function() {
+      expect(function() {
+          $http({url: false});
+      }).toThrowMinErr('$http','badreq', 'Http request configuration url must be a string.  Received: false');
+    });
+
+
     it('should send GET requests if no method specified', function() {
       $httpBackend.expect('GET', '/url').respond('');
       $http({url: '/url'});
@@ -345,7 +352,7 @@ describe('$http', function() {
 
 
       it('should not encode @ in url params', function() {
-        //encodeURIComponent is too agressive and doesn't follow http://www.ietf.org/rfc/rfc3986.txt
+        //encodeURIComponent is too aggressive and doesn't follow http://www.ietf.org/rfc/rfc3986.txt
         //with regards to the character set (pchar) allowed in path segments
         //so we need this test to make sure that we don't over-encode the params and break stuff
         //like buzz api which uses @self
@@ -1078,7 +1085,7 @@ describe('$http', function() {
             };
 
             // I'm really sorry for doing this :-D
-            // Unfortunatelly I don't know how to trick toString.apply(obj) comparison
+            // Unfortunately I don't know how to trick toString.apply(obj) comparison
             spyOn(window, 'isFile').andReturn(true);
 
             $httpBackend.expect('POST', '/some', file).respond('');
@@ -1390,6 +1397,25 @@ describe('$http', function() {
 
           expect(callback).toHaveBeenCalledOnce();
           expect(callback.mostRecentCall.args[0]).toBe('RESP-FIRST:V1');
+        });
+
+
+        it('should apply `transformResponse` even if the response data is empty', function(data) {
+          var callback = jasmine.createSpy('transformResponse');
+          var config = {transformResponse: callback};
+
+          $httpBackend.expect('GET', '/url1').respond(200, undefined);
+          $httpBackend.expect('GET', '/url2').respond(200, null);
+          $httpBackend.expect('GET', '/url3').respond(200, '');
+          $http.get('/url1', config);
+          $http.get('/url2', config);
+          $http.get('/url3', config);
+          $httpBackend.flush();
+
+          expect(callback.callCount).toBe(3);
+          expect(callback.calls[0].args[0]).toBe(undefined);
+          expect(callback.calls[1].args[0]).toBe(null);
+          expect(callback.calls[2].args[0]).toBe('');
         });
       });
     });

@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "Kur",
       "Tid"
     ],
+    "STANDALONEMONTH": [
+      "Tiop thar p\u025bt",
+      "P\u025bt",
+      "Du\u0254\u0331\u0254\u0331\u014b",
+      "Guak",
+      "Du\u00e4t",
+      "Kornyoot",
+      "Pay yie\u0331tni",
+      "Tho\u0331o\u0331r",
+      "T\u025b\u025br",
+      "Laath",
+      "Kur",
+      "Tio\u0331p in di\u0331i\u0331t"
+    ],
     "WEEKENDRANGE": [
       5,
       6
@@ -123,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "nus",
+  "localeID": "nus",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

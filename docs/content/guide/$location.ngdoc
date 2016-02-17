@@ -771,8 +771,8 @@ then uses the information it obtains to compose hashbang URLs (such as
     </tr>
 
     <tr class="head">
-      <td>Navigation outside the app</td>
-      <td>Use lower level API</td>
+      <th>Navigation outside the app</td>
+      <th>Use lower level API</td>
     </tr>
 
     <tr>
@@ -786,8 +786,8 @@ then uses the information it obtains to compose hashbang URLs (such as
     </tr>
 
     <tr class="head">
-      <td>Read access</td>
-      <td>Change to</td>
+      <th>Read access</td>
+      <th>Change to</td>
     </tr>
 
     <tr>

@@ -20,7 +20,7 @@
  * using the --for_closure flag.
  * File generated from CLDR ver. 27.0.1
  *
- * This file coveres those locales that are not covered in
+ * This file covers those locales that are not covered in
  * "numberformatsymbols.js".
  *
  * Before checkin, this file could have been manually edited. This is

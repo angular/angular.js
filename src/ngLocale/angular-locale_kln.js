@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "Kpt",
       "Kpa"
     ],
+    "STANDALONEMONTH": [
+      "Mulgul",
+      "Ng\u2019atyaato",
+      "Kiptaamo",
+      "Iwootkuut",
+      "Mamuut",
+      "Paagi",
+      "Ng\u2019eiyeet",
+      "Rooptui",
+      "Bureet",
+      "Epeeso",
+      "Kipsuunde ne taai",
+      "Kipsuunde nebo aeng\u2019"
+    ],
     "WEEKENDRANGE": [
       5,
       6
@@ -123,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "kln",
+  "localeID": "kln",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

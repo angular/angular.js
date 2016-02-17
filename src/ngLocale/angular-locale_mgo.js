@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "im\u0259g z\u00f2",
       "im\u0259g krizmed"
     ],
+    "STANDALONEMONTH": [
+      "im\u0259g mbegtug",
+      "imeg \u00e0b\u00f9b\u00ec",
+      "imeg mb\u0259\u014bchubi",
+      "im\u0259g ngw\u0259\u0300t",
+      "im\u0259g fog",
+      "im\u0259g ichiib\u0254d",
+      "im\u0259g \u00e0d\u00f9mb\u0259\u0300\u014b",
+      "im\u0259g ichika",
+      "im\u0259g kud",
+      "im\u0259g t\u00e8si\u02bce",
+      "im\u0259g z\u00f2",
+      "im\u0259g krizmed"
+    ],
     "WEEKENDRANGE": [
       5,
       6
@@ -123,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "mgo",
+  "localeID": "mgo",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

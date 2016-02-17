@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "Ugu.",
       "Uku."
     ],
+    "STANDALONEMONTH": [
+      "Nzero",
+      "Ruhuhuma",
+      "Ntwarante",
+      "Ndamukiza",
+      "Rusama",
+      "Ruheshi",
+      "Mukakaro",
+      "Nyandagaro",
+      "Nyakanga",
+      "Gitugutu",
+      "Munyonyo",
+      "Kigarama"
+    ],
     "WEEKENDRANGE": [
       5,
       6
@@ -123,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "rn-bi",
+  "localeID": "rn_BI",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

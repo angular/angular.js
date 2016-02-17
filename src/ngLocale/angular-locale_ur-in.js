@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "\u0646\u0648\u0645\u0628\u0631",
       "\u062f\u0633\u0645\u0628\u0631"
     ],
+    "STANDALONEMONTH": [
+      "\u062c\u0646\u0648\u0631\u06cc",
+      "\u0641\u0631\u0648\u0631\u06cc",
+      "\u0645\u0627\u0631\u0686",
+      "\u0627\u067e\u0631\u06cc\u0644",
+      "\u0645\u0626\u06cc",
+      "\u062c\u0648\u0646",
+      "\u062c\u0648\u0644\u0627\u0626\u06cc",
+      "\u0627\u06af\u0633\u062a",
+      "\u0633\u062a\u0645\u0628\u0631",
+      "\u0627\u06a9\u062a\u0648\u0628\u0631",
+      "\u0646\u0648\u0645\u0628\u0631",
+      "\u062f\u0633\u0645\u0628\u0631"
+    ],
     "WEEKENDRANGE": [
       6,
       6
@@ -123,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "ur-in",
+  "localeID": "ur_IN",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

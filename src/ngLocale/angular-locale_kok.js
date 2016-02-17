@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "\u0928\u094b\u0935\u094d\u0939\u0947\u0902\u092c\u0930",
       "\u0921\u093f\u0938\u0947\u0902\u092c\u0930"
     ],
+    "STANDALONEMONTH": [
+      "\u091c\u093e\u0928\u0947\u0935\u093e\u0930\u0940",
+      "\u092b\u0947\u092c\u094d\u0930\u0941\u0935\u093e\u0930\u0940",
+      "\u092e\u093e\u0930\u094d\u091a",
+      "\u090f\u092a\u094d\u0930\u093f\u0932",
+      "\u092e\u0947",
+      "\u091c\u0942\u0928",
+      "\u091c\u0941\u0932\u0948",
+      "\u0913\u0917\u0938\u094d\u091f",
+      "\u0938\u0947\u092a\u094d\u091f\u0947\u0902\u092c\u0930",
+      "\u0913\u0915\u094d\u091f\u094b\u092c\u0930",
+      "\u0928\u094b\u0935\u094d\u0939\u0947\u0902\u092c\u0930",
+      "\u0921\u093f\u0938\u0947\u0902\u092c\u0930"
+    ],
     "WEEKENDRANGE": [
       6,
       6
@@ -123,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "kok",
+  "localeID": "kok",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

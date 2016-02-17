@@ -391,7 +391,7 @@ implementing custom event callbacks, or when working with third-party library ca
   5. The {@link ng.$rootScope.Scope#$watch $watch} list is a set of expressions
      which may have changed since last iteration. If a change is detected then the `$watch`
      function is called which typically updates the DOM with the new value.
-  6. Once the Angular {@link ng.$rootScope.Scope#$digest $digest} loop finishes
+  6. Once the Angular {@link ng.$rootScope.Scope#$digest $digest} loop finishes, 
      the execution leaves the Angular and JavaScript context. This is followed by the browser
      re-rendering the DOM to reflect any changes.
 
@@ -419,4 +419,4 @@ user enters text into the text field.
         which in turn updates the DOM.
      6. Angular exits the execution context, which in turn exits the `keydown` event and with it
         the JavaScript execution context.
-     7. The browser re-renders the view with update text.
+     7. The browser re-renders the view with the updated text.

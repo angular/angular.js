@@ -1,6 +1,6 @@
 @ngdoc error
 @name $location:nobase
-@fullName $location in HTML5 mode requires a <base> tag to be present!
+@fullName $location in HTML5 mode requires a &lt;base&gt; tag to be present!
 @description
 
 If you configure {@link ng.$location `$location`} to use
@@ -15,7 +15,7 @@ $locationProvider.html5Mode({
 });
 ```
 
-Note that removing the requirement for a <base> tag will have adverse side effects when resolving
+Note that removing the requirement for a `<base>` tag will have adverse side effects when resolving
 relative paths with `$location` in IE9.
 
 The base URL is then used to resolve all relative URLs throughout the application regardless of the

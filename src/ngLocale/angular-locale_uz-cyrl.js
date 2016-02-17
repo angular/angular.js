@@ -62,6 +62,20 @@ $provide.value("$locale", {
       "\u041d\u043e\u044f",
       "\u0414\u0435\u043a"
     ],
+    "STANDALONEMONTH": [
+      "\u042f\u043d\u0432\u0430\u0440",
+      "\u0424\u0435\u0432\u0440\u0430\u043b",
+      "\u041c\u0430\u0440\u0442",
+      "\u0410\u043f\u0440\u0435\u043b",
+      "\u041c\u0430\u0439",
+      "\u0418\u044e\u043d",
+      "\u0418\u044e\u043b",
+      "\u0410\u0432\u0433\u0443\u0441\u0442",
+      "\u0421\u0435\u043d\u0442\u044f\u0431\u0440",
+      "\u041e\u043a\u0442\u044f\u0431\u0440",
+      "\u041d\u043e\u044f\u0431\u0440",
+      "\u0414\u0435\u043a\u0430\u0431\u0440"
+    ],
     "WEEKENDRANGE": [
       5,
       6
@@ -105,6 +119,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "uz-cyrl",
+  "localeID": "uz_Cyrl",
   "pluralCat": function(n, opt_precision) {  if (n == 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

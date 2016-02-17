@@ -14,6 +14,7 @@ var angularFiles = {
 
     'src/ng/anchorScroll.js',
     'src/ng/animate.js',
+    'src/ng/animateRunner.js',
     'src/ng/animateCss.js',
     'src/ng/browser.js',
     'src/ng/cacheFactory.js',
@@ -33,6 +34,7 @@ var angularFiles = {
     'src/ng/q.js',
     'src/ng/raf.js',
     'src/ng/rootScope.js',
+    'src/ng/rootElement.js',
     'src/ng/sanitizeUri.js',
     'src/ng/sce.js',
     'src/ng/sniffer.js',
@@ -84,7 +86,7 @@ var angularFiles = {
   ],
 
   'angularLoader': [
-    'stringify.js',
+    'src/stringify.js',
     'src/minErr.js',
     'src/loader.js'
   ],
@@ -99,8 +101,8 @@ var angularFiles = {
       'src/ngAnimate/animateJs.js',
       'src/ngAnimate/animateJsDriver.js',
       'src/ngAnimate/animateQueue.js',
-      'src/ngAnimate/animateRunner.js',
       'src/ngAnimate/animation.js',
+      'src/ngAnimate/ngAnimateSwap.js',
       'src/ngAnimate/module.js'
     ],
     'ngCookies': [

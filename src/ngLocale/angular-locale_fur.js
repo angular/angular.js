@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "Nov",
       "Dic"
     ],
+    "STANDALONEMONTH": [
+      "Zen\u00e2r",
+      "Fevr\u00e2r",
+      "Mar\u00e7",
+      "Avr\u00eel",
+      "Mai",
+      "Jugn",
+      "Lui",
+      "Avost",
+      "Setembar",
+      "Otubar",
+      "Novembar",
+      "Dicembar"
+    ],
     "WEEKENDRANGE": [
       5,
       6
@@ -123,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "fur",
+  "localeID": "fur",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

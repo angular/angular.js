@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "lis",
       "pro"
     ],
+    "STANDALONEMONTH": [
+      "leden",
+      "\u00fanor",
+      "b\u0159ezen",
+      "duben",
+      "kv\u011bten",
+      "\u010derven",
+      "\u010dervenec",
+      "srpen",
+      "z\u00e1\u0159\u00ed",
+      "\u0159\u00edjen",
+      "listopad",
+      "prosinec"
+    ],
     "WEEKENDRANGE": [
       5,
       6
@@ -123,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "cs-cz",
+  "localeID": "cs_CZ",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  if (i >= 2 && i <= 4 && vf.v == 0) {    return PLURAL_CATEGORY.FEW;  }  if (vf.v != 0) {    return PLURAL_CATEGORY.MANY;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

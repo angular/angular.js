@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "KNK",
       "KNB"
     ],
+    "STANDALONEMONTH": [
+      "Okwokubanza",
+      "Okwakabiri",
+      "Okwakashatu",
+      "Okwakana",
+      "Okwakataana",
+      "Okwamukaaga",
+      "Okwamushanju",
+      "Okwamunaana",
+      "Okwamwenda",
+      "Okwaikumi",
+      "Okwaikumi na kumwe",
+      "Okwaikumi na ibiri"
+    ],
     "WEEKENDRANGE": [
       5,
       6
@@ -123,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "cgg",
+  "localeID": "cgg",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

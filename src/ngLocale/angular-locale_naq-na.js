@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "Nov",
       "Dec"
     ],
+    "STANDALONEMONTH": [
+      "\u01c3Khanni",
+      "\u01c3Khan\u01c0g\u00f4ab",
+      "\u01c0Khuu\u01c1kh\u00e2b",
+      "\u01c3H\u00f4a\u01c2khaib",
+      "\u01c3Khaits\u00e2b",
+      "Gama\u01c0aeb",
+      "\u01c2Khoesaob",
+      "Ao\u01c1khuum\u00fb\u01c1kh\u00e2b",
+      "Tara\u01c0khuum\u00fb\u01c1kh\u00e2b",
+      "\u01c2N\u00fb\u01c1n\u00e2iseb",
+      "\u01c0Hoo\u01c2gaeb",
+      "H\u00f4asore\u01c1kh\u00e2b"
+    ],
     "WEEKENDRANGE": [
       5,
       6
@@ -123,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "naq-na",
+  "localeID": "naq_NA",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

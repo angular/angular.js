@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "Tob",
       "Tow"
     ],
+    "STANDALONEMONTH": [
+      "Lapa le obo",
+      "Lapa le waare",
+      "Lapa le okuni",
+      "Lapa le ong\u2019wan",
+      "Lapa le imet",
+      "Lapa le ile",
+      "Lapa le sapa",
+      "Lapa le isiet",
+      "Lapa le saal",
+      "Lapa le tomon",
+      "Lapa le tomon obo",
+      "Lapa le tomon waare"
+    ],
     "WEEKENDRANGE": [
       5,
       6
@@ -123,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "saq",
+  "localeID": "saq",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

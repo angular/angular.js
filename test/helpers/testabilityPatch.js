@@ -11,6 +11,28 @@ if (window._jQuery) _jQuery.event.special.change = undefined;
 
 if (window.bindJQuery) bindJQuery();
 
+var supportTests = {
+  classes: '(class {})',
+  fatArrow: 'a => a',
+  ES6Function: '({ fn(x) { return; } })'
+};
+
+var support = {};
+
+for (var prop in supportTests) {
+  if (supportTests.hasOwnProperty(prop)) {
+    /*jshint -W061 */
+    try {
+      eval(supportTests[prop]);
+      support[prop] = true;
+    } catch (e) {
+      support[prop] = false;
+    }
+    /*jshint +W061 */
+  }
+}
+
+
 beforeEach(function() {
 
   // all this stuff is not needed for module tests, where jqlite and publishExternalAPI and jqLite are not global vars

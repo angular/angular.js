@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "Nab",
       "Kak"
     ],
+    "STANDALONEMONTH": [
+      "Nyenye",
+      "Fulund\u00efgi",
+      "Mb\u00e4ng\u00fc",
+      "Ngub\u00f9e",
+      "B\u00eal\u00e4w\u00fc",
+      "F\u00f6ndo",
+      "Lengua",
+      "K\u00fck\u00fcr\u00fc",
+      "Mvuka",
+      "Ngberere",
+      "Nab\u00e4nd\u00fcru",
+      "Kakauka"
+    ],
     "WEEKENDRANGE": [
       5,
       6
@@ -123,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "sg-cf",
+  "localeID": "sg_CF",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

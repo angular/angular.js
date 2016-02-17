@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "N\u014dv",
       "T\u012bs"
     ],
+    "STANDALONEMONTH": [
+      "S\u0101nuali",
+      "F\u0113pueli",
+      "Ma\u02bbasi",
+      "\u02bbEpeleli",
+      "M\u0113",
+      "Sune",
+      "Siulai",
+      "\u02bbAokosi",
+      "Sepitema",
+      "\u02bbOkatopa",
+      "N\u014dvema",
+      "T\u012bsema"
+    ],
     "WEEKENDRANGE": [
       5,
       6
@@ -123,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "to",
+  "localeID": "to",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

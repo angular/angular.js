@@ -315,7 +315,7 @@ describe('Filter: filter', function() {
     expect(filter(items, expr, true).length).toBe(1);
     expect(filter(items, expr, true)[0]).toBe(items[0]);
 
-    // Inherited function proprties
+    // Inherited function properties
     function Expr(text) {
         this.text = text;
     }
@@ -541,7 +541,7 @@ describe('Filter: filter', function() {
 
 
     it('should consider objects with custom `toString()` in non-strict comparison', function() {
-      var obj = new Date(1970, 0);
+      var obj = new Date(1970, 1);
       var items = [{test: obj}];
       expect(filter(items, '1970').length).toBe(1);
       expect(filter(items, 1970).length).toBe(1);

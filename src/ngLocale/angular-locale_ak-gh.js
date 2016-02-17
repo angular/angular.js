@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "\u0186-O",
       "M-\u0186"
     ],
+    "STANDALONEMONTH": [
+      "Sanda-\u0186p\u025bp\u0254n",
+      "Kwakwar-\u0186gyefuo",
+      "Eb\u0254w-\u0186benem",
+      "Eb\u0254bira-Oforisuo",
+      "Esusow Aketseaba-K\u0254t\u0254nimba",
+      "Obirade-Ay\u025bwohomumu",
+      "Ay\u025bwoho-Kitawonsa",
+      "Difuu-\u0186sandaa",
+      "Fankwa-\u0190b\u0254",
+      "\u0186b\u025bs\u025b-Ahinime",
+      "\u0186ber\u025bf\u025bw-Obubuo",
+      "Mumu-\u0186p\u025bnimba"
+    ],
     "WEEKENDRANGE": [
       5,
       6
@@ -123,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "ak-gh",
+  "localeID": "ak_GH",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

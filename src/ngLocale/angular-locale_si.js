@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "\u0db1\u0ddc\u0dc0\u0dd0",
       "\u0daf\u0dd9\u0dc3\u0dd0"
     ],
+    "STANDALONEMONTH": [
+      "\u0da2\u0db1\u0dc0\u0dcf\u0dbb\u0dd2",
+      "\u0db4\u0dd9\u0db6\u0dbb\u0dc0\u0dcf\u0dbb\u0dd2",
+      "\u0db8\u0dcf\u0dbb\u0dca\u0dad\u0dd4",
+      "\u0d85\u0db4\u0dca\u200d\u0dbb\u0dda\u0dbd\u0dca",
+      "\u0db8\u0dd0\u0dba\u0dd2",
+      "\u0da2\u0dd6\u0db1\u0dd2",
+      "\u0da2\u0dd6\u0dbd\u0dd2",
+      "\u0d85\u0d9c\u0ddd\u0dc3\u0dca\u0dad\u0dd4",
+      "\u0dc3\u0dd0\u0db4\u0dca\u0dad\u0dd0\u0db8\u0dca\u0db6\u0dbb\u0dca",
+      "\u0d94\u0d9a\u0dca\u0dad\u0ddd\u0db6\u0dbb\u0dca",
+      "\u0db1\u0ddc\u0dc0\u0dd0\u0db8\u0dca\u0db6\u0dbb\u0dca",
+      "\u0daf\u0dd9\u0dc3\u0dd0\u0db8\u0dca\u0db6\u0dbb\u0dca"
+    ],
     "WEEKENDRANGE": [
       5,
       6
@@ -123,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "si",
+  "localeID": "si",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if ((n == 0 || n == 1) || i == 0 && vf.f == 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

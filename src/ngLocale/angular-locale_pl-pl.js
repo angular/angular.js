@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "lis",
       "gru"
     ],
+    "STANDALONEMONTH": [
+      "stycze\u0144",
+      "luty",
+      "marzec",
+      "kwiecie\u0144",
+      "maj",
+      "czerwiec",
+      "lipiec",
+      "sierpie\u0144",
+      "wrzesie\u0144",
+      "pa\u017adziernik",
+      "listopad",
+      "grudzie\u0144"
+    ],
     "WEEKENDRANGE": [
       5,
       6
@@ -123,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "pl-pl",
+  "localeID": "pl_PL",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  if (vf.v == 0 && i % 10 >= 2 && i % 10 <= 4 && (i % 100 < 12 || i % 100 > 14)) {    return PLURAL_CATEGORY.FEW;  }  if (vf.v == 0 && i != 1 && i % 10 >= 0 && i % 10 <= 1 || vf.v == 0 && i % 10 >= 5 && i % 10 <= 9 || vf.v == 0 && i % 100 >= 12 && i % 100 <= 14) {    return PLURAL_CATEGORY.MANY;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

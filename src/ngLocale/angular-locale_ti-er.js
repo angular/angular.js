@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "\u1215\u12f3\u122d",
       "\u1273\u1215\u1233"
     ],
+    "STANDALONEMONTH": [
+      "\u1325\u122a",
+      "\u1208\u12ab\u1272\u1275",
+      "\u1218\u130b\u1262\u1275",
+      "\u121a\u12eb\u12dd\u12eb",
+      "\u130d\u1295\u1266\u1275",
+      "\u1230\u1290",
+      "\u1213\u121d\u1208",
+      "\u1290\u1213\u1230",
+      "\u1218\u1235\u12a8\u1228\u121d",
+      "\u1325\u1245\u121d\u1272",
+      "\u1215\u12f3\u122d",
+      "\u1273\u1215\u1233\u1235"
+    ],
     "WEEKENDRANGE": [
       5,
       6
@@ -123,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "ti-er",
+  "localeID": "ti_ER",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

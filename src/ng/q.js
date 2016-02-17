@@ -53,6 +53,8 @@
  *
  * Note: progress/notify callbacks are not currently supported via the ES6-style interface.
  *
+ * Note: unlike ES6 behavior, an exception thrown in the constructor function will NOT implicitly reject the promise.
+ *
  * However, the more traditional CommonJS-style usage is still available, and documented below.
  *
  * [The CommonJS Promise proposal](http://wiki.commonjs.org/wiki/Promises) describes a promise as an
@@ -184,7 +186,7 @@
  * - Q has many more features than $q, but that comes at a cost of bytes. $q is tiny, but contains
  *   all the important functionality needed for common async tasks.
  *
- *  # Testing
+ * # Testing
  *
  *  ```js
  *    it('should simulate promise', inject(function($q, $rootScope) {
@@ -241,18 +243,6 @@ function $$QProvider() {
  */
 function qFactory(nextTick, exceptionHandler) {
   var $qMinErr = minErr('$q', TypeError);
-  function callOnce(self, resolveFn, rejectFn) {
-    var called = false;
-    function wrap(fn) {
-      return function(value) {
-        if (called) return;
-        called = true;
-        fn.call(self, value);
-      };
-    }
-
-    return [wrap(resolveFn), wrap(rejectFn)];
-  }
 
   /**
    * @ngdoc method
@@ -265,7 +255,12 @@ function qFactory(nextTick, exceptionHandler) {
    * @returns {Deferred} Returns a new instance of deferred.
    */
   var defer = function() {
-    return new Deferred();
+    var d = new Deferred();
+    //Necessary to support unbound execution :/
+    d.resolve = simpleBind(d, d.resolve);
+    d.reject = simpleBind(d, d.reject);
+    d.notify = simpleBind(d, d.notify);
+    return d;
   };
 
   function Promise() {
@@ -338,10 +333,6 @@ function qFactory(nextTick, exceptionHandler) {
 
   function Deferred() {
     this.promise = new Promise();
-    //Necessary to support unbound execution :/
-    this.resolve = simpleBind(this, this.resolve);
-    this.reject = simpleBind(this, this.reject);
-    this.notify = simpleBind(this, this.notify);
   }
 
   extend(Deferred.prototype, {
@@ -359,22 +350,33 @@ function qFactory(nextTick, exceptionHandler) {
     },
 
     $$resolve: function(val) {
-      var then, fns;
-
-      fns = callOnce(this, this.$$resolve, this.$$reject);
+      var then;
+      var that = this;
+      var done = false;
       try {
         if ((isObject(val) || isFunction(val))) then = val && val.then;
         if (isFunction(then)) {
           this.promise.$$state.status = -1;
-          then.call(val, fns[0], fns[1], this.notify);
+          then.call(val, resolvePromise, rejectPromise, simpleBind(this, this.notify));
         } else {
           this.promise.$$state.value = val;
           this.promise.$$state.status = 1;
           scheduleProcessQueue(this.promise.$$state);
         }
       } catch (e) {
-        fns[1](e);
+        rejectPromise(e);
         exceptionHandler(e);
+      }
+
+      function resolvePromise(val) {
+        if (done) return;
+        done = true;
+        that.$$resolve(val);
+      }
+      function rejectPromise(val) {
+        if (done) return;
+        done = true;
+        that.$$reject(val);
       }
     },
 
@@ -564,11 +566,6 @@ function qFactory(nextTick, exceptionHandler) {
       throw $qMinErr('norslvr', "Expected resolverFn, got '{0}'", resolver);
     }
 
-    if (!(this instanceof Q)) {
-      // More useful when $Q is the Promise itself.
-      return new Q(resolver);
-    }
-
     var deferred = new Deferred();
 
     function resolveFn(value) {
@@ -583,6 +580,10 @@ function qFactory(nextTick, exceptionHandler) {
 
     return deferred.promise;
   };
+
+  // Let's make the instanceof operator work for promises, so that
+  // `new $q(fn) instanceof $q` would evaluate to true.
+  $Q.prototype = Promise.prototype;
 
   $Q.defer = defer;
   $Q.reject = reject;

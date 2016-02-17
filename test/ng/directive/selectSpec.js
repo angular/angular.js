@@ -1,7 +1,7 @@
 'use strict';
 
 describe('select', function() {
-  var scope, formElement, element, $compile;
+  var scope, formElement, element, $compile, ngModelCtrl, selectCtrl, renderSpy;
 
   function compile(html) {
     formElement = jqLite('<form name="form">' + html + '</form>');
@@ -10,9 +10,52 @@ describe('select', function() {
     scope.$apply();
   }
 
+  function compileRepeatedOptions() {
+    compile('<select ng-model="robot">' +
+              '<option value="{{item.value}}" ng-repeat="item in robots">{{item.label}}</option>' +
+            '</select>');
+  }
+
+  function compileGroupedOptions() {
+    compile(
+      '<select ng-model="mySelect">' +
+        '<option ng-repeat="item in values">{{item.name}}</option>' +
+        '<optgroup ng-repeat="group in groups" label="{{group.name}}">' +
+          '<option ng-repeat="item in group.values">{{item.name}}</option>' +
+        '</optgroup>' +
+      '</select>');
+  }
+
   function unknownValue(value) {
     return '? ' + hashKey(value) + ' ?';
   }
+
+  beforeEach(module(function($compileProvider) {
+    $compileProvider.directive('spyOnWriteValue', function() {
+      return {
+        require: 'select',
+        link: {
+          pre: function(scope, element, attrs, ctrl) {
+            selectCtrl = ctrl;
+            renderSpy = jasmine.createSpy('renderSpy');
+            selectCtrl.ngModelCtrl.$render = renderSpy.andCallFake(selectCtrl.ngModelCtrl.$render);
+            spyOn(selectCtrl, 'writeValue').andCallThrough();
+          }
+        }
+      };
+    });
+
+    $compileProvider.directive('myOptions', function() {
+      return {
+        scope: {myOptions: '='},
+        replace: true,
+        template:
+            '<option value="{{ option.value }}" ng-repeat="option in myOptions">' +
+              '{{ options.label }}' +
+            '</option>'
+      };
+    });
+  }));
 
   beforeEach(inject(function($rootScope, _$compile_) {
     scope = $rootScope.$new(); //create a child scope because the root scope can't be $destroy-ed
@@ -47,12 +90,14 @@ describe('select', function() {
       toEqualSelectWithOptions: function(expected) {
         var actualValues = {};
         var optionGroup;
+        var optionValue;
 
         forEach(this.actual.find('option'), function(option) {
           optionGroup = option.parentNode.label || '';
           actualValues[optionGroup] = actualValues[optionGroup] || [];
           // IE9 doesn't populate the label property from the text property like other browsers
-          actualValues[optionGroup].push(option.label || option.text);
+          optionValue = option.label || option.text;
+          actualValues[optionGroup].push(option.selected ? [optionValue] : optionValue);
         });
 
         this.message = function() {
@@ -198,6 +243,50 @@ describe('select', function() {
     });
 
 
+    it('should select options in a group when there is a linebreak before an option', function() {
+      scope.mySelect = 'B';
+      scope.$apply();
+
+      var select = jqLite(
+        '<select ng-model="mySelect">' +
+          '<optgroup label="first">' +
+            '<option value="A">A</option>' +
+        '</optgroup>' +
+        '<optgroup label="second">' + '\n' +
+            '<option value="B">B</option>' +
+        '</optgroup>      ' +
+      '</select>');
+
+      $compile(select)(scope);
+      scope.$apply();
+
+      expect(select).toEqualSelectWithOptions({'first':['A'], 'second': [['B']]});
+      dealoc(select);
+    });
+
+
+    it('should only call selectCtrl.writeValue after a digest has occured', function() {
+      scope.mySelect = 'B';
+      scope.$apply();
+
+      var select = jqLite(
+        '<select spy-on-write-value ng-model="mySelect">' +
+          '<optgroup label="first">' +
+            '<option value="A">A</option>' +
+        '</optgroup>' +
+        '<optgroup label="second">' + '\n' +
+            '<option value="B">B</option>' +
+        '</optgroup>      ' +
+      '</select>');
+
+      $compile(select)(scope);
+      expect(selectCtrl.writeValue).not.toHaveBeenCalled();
+
+      scope.$digest();
+      expect(selectCtrl.writeValue).toHaveBeenCalledOnce();
+      dealoc(select);
+    });
+
     describe('empty option', function() {
 
       it('should allow empty option to be added and removed dynamically', function() {
@@ -235,7 +324,7 @@ describe('select', function() {
       });
 
 
-    it('should cope with a dynamic empty option added to a static empty option', function() {
+      it('should cope with a dynamic empty option added to a static empty option', function() {
         scope.dynamicOptions = [];
         scope.robot = 'x';
         compile('<select ng-model="robot">' +
@@ -262,7 +351,7 @@ describe('select', function() {
         scope.dynamicOptions = [];
         scope.$digest();
         expect(element).toEqualSelect(['']);
-    });
+      });
 
       it('should select the empty option when model is undefined', function() {
         compile('<select ng-model="robot">' +
@@ -533,26 +622,24 @@ describe('select', function() {
 
     });
 
+
+    it('should not break when adding options via a directive with `replace: true` '
+        + 'and a structural directive in its template',
+      function() {
+        scope.options = [
+          {value: '1', label: 'Option 1'},
+          {value: '2', label: 'Option 2'},
+          {value: '3', label: 'Option 3'}
+        ];
+        compile('<select ng-model="mySelect"><option my-options="options"></option></select>');
+
+        expect(element).toEqualSelect([unknownValue()], '1', '2', '3');
+      }
+    );
   });
 
 
   describe('selectController.hasOption', function() {
-
-    function compileRepeatedOptions() {
-      compile('<select ng-model="robot">' +
-                '<option value="{{item.value}}" ng-repeat="item in robots">{{item.label}}</option>' +
-              '</select>');
-    }
-
-    function compileGroupedOptions() {
-      compile(
-        '<select ng-model="mySelect">' +
-          '<option ng-repeat="item in values">{{item.name}}</option>' +
-          '<optgroup ng-repeat="group in groups" label="{{group.name}}">' +
-            '<option ng-repeat="item in group.values">{{item.name}}</option>' +
-          '</optgroup>' +
-        '</select>');
-    }
 
     describe('flat options', function() {
       it('should return false for options shifted via ngRepeat', function() {
@@ -624,7 +711,7 @@ describe('select', function() {
         expect(selectCtrl.hasOption('A')).toBe(true);
         expect(selectCtrl.hasOption('B')).toBe(true);
         expect(selectCtrl.hasOption('C')).toBe(true);
-        expect(element).toEqualSelectWithOptions({'': ['A', 'B', 'C']});
+        expect(element).toEqualSelectWithOptions({'': ['A', 'B', ['C']]});
       });
     });
 
@@ -665,7 +752,7 @@ describe('select', function() {
         expect(selectCtrl.hasOption('C')).toBe(true);
         expect(selectCtrl.hasOption('D')).toBe(true);
         expect(selectCtrl.hasOption('E')).toBe(true);
-        expect(element).toEqualSelectWithOptions({'': [''], 'first':['B', 'C'], 'second': ['D', 'E']});
+        expect(element).toEqualSelectWithOptions({'': [['']], 'first':['B', 'C'], 'second': ['D', 'E']});
       });
 
 
@@ -702,7 +789,7 @@ describe('select', function() {
         expect(selectCtrl.hasOption('C')).toBe(true);
         expect(selectCtrl.hasOption('D')).toBe(true);
         expect(selectCtrl.hasOption('E')).toBe(true);
-        expect(element).toEqualSelectWithOptions({'': [''], 'first':['B', 'C', 'D'], 'second': ['E']});
+        expect(element).toEqualSelectWithOptions({'': [['']], 'first':['B', 'C', 'D'], 'second': ['E']});
       });
 
 
@@ -741,7 +828,7 @@ describe('select', function() {
         expect(selectCtrl.hasOption('D')).toBe(true);
         expect(selectCtrl.hasOption('E')).toBe(true);
         expect(selectCtrl.hasOption('F')).toBe(false);
-        expect(element).toEqualSelectWithOptions({'': ['', 'A'], 'first':['B', 'C'], 'second': ['D', 'E']});
+        expect(element).toEqualSelectWithOptions({'': [[''], 'A'], 'first':['B', 'C'], 'second': ['D', 'E']});
       });
 
 
@@ -778,7 +865,7 @@ describe('select', function() {
         expect(selectCtrl.hasOption('C')).toBe(false);
         expect(selectCtrl.hasOption('D')).toBe(true);
         expect(selectCtrl.hasOption('E')).toBe(true);
-        expect(element).toEqualSelectWithOptions({'': ['', 'A'], 'first':['B', 'D'], 'second': ['E']});
+        expect(element).toEqualSelectWithOptions({'': [[''], 'A'], 'first':['B', 'D'], 'second': ['E']});
       });
 
 
@@ -813,7 +900,7 @@ describe('select', function() {
         expect(selectCtrl.hasOption('C')).toBe(true);
         expect(selectCtrl.hasOption('D')).toBe(false);
         expect(selectCtrl.hasOption('E')).toBe(true);
-        expect(element).toEqualSelectWithOptions({'': ['', 'A'], 'first':['B', 'C'], 'second': ['E']});
+        expect(element).toEqualSelectWithOptions({'': [[''], 'A'], 'first':['B', 'C'], 'second': ['E']});
       });
 
 
@@ -848,7 +935,7 @@ describe('select', function() {
         expect(selectCtrl.hasOption('C')).toBe(true);
         expect(selectCtrl.hasOption('D')).toBe(false);
         expect(selectCtrl.hasOption('E')).toBe(false);
-        expect(element).toEqualSelectWithOptions({'': ['', 'A'], 'first':['B', 'C']});
+        expect(element).toEqualSelectWithOptions({'': [[''], 'A'], 'first':['B', 'C']});
       });
     });
   });

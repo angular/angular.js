@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "Nov",
       "Dis"
     ],
+    "STANDALONEMONTH": [
+      "Januari",
+      "Februari",
+      "Machi",
+      "Epreo",
+      "Mei",
+      "Juni",
+      "Julai",
+      "Ogasti",
+      "Septemba",
+      "Oktoba",
+      "Novemba",
+      "Disemba"
+    ],
     "WEEKENDRANGE": [
       5,
       6
@@ -123,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "bem",
+  "localeID": "bem",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

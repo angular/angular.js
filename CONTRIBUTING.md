@@ -71,7 +71,7 @@ chances of your issue being dealt with quickly:
 * **Angular Version(s)** - is it a regression?
 * **Browsers and Operating System** - is this a problem with all browsers or only IE8?
 * **Reproduce the Error** - provide a live example (using [Plunker][plunker] or
-  [JSFiddle][jsfiddle]) or a unambiguous set of steps.
+  [JSFiddle][jsfiddle]) or an unambiguous set of steps.
 * **Related Issues** - has a similar issue been reported before?
 * **Suggest a Fix** - if you can't fix the bug yourself, perhaps you can point to what might be
   causing the problem (line of code or commit)
@@ -123,12 +123,18 @@ Before you submit your pull request consider the following guidelines:
 * If we suggest changes then:
   * Make the required updates.
   * Re-run the Angular test suite to ensure tests are still passing.
-  * Rebase your branch and force push to your GitHub repository (this will update your Pull Request):
+  * Commit your changes to your branch (e.g. `my-fix-branch`).
+  * Push the changes to your GitHub repository (this will update your Pull Request).
+
+If the PR gets too outdated we may ask you to rebase and force push to update the PR:
 
     ```shell
     git rebase master -i
     git push origin my-fix-branch -f
     ```
+
+*WARNING. Squashing or reverting commits and forced push thereafter may remove GitHub comments
+on code that were previously made by you and others in your commits.*
 
 That's it! Thank you for your contribution!
 
@@ -186,6 +192,8 @@ To ensure consistency throughout the source code, keep these rules in mind as yo
 We have very precise rules over how our git commit messages can be formatted.  This leads to **more
 readable messages** that are easy to follow when looking through the **project history**.  But also,
 we use the git commit messages to **generate the AngularJS change log**.
+
+The commit message formatting can be added using a typical git workflow or through the use of a CLI wizard ([Commitizen](https://github.com/commitizen/cz-cli)). To use the wizard, run `npm run commit` in your terminal after staging your changes in git.
 
 ### Commit Message Format
 Each commit message consists of a **header**, a **body** and a **footer**.  The header has a special

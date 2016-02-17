@@ -62,6 +62,20 @@ $provide.value("$locale", {
       "\u0a28\u0a35\u0a70",
       "\u0a26\u0a38\u0a70"
     ],
+    "STANDALONEMONTH": [
+      "\u0a1c\u0a28\u0a35\u0a30\u0a40",
+      "\u0a2b\u0a3c\u0a30\u0a35\u0a30\u0a40",
+      "\u0a2e\u0a3e\u0a30\u0a1a",
+      "\u0a05\u0a2a\u0a4d\u0a30\u0a48\u0a32",
+      "\u0a2e\u0a08",
+      "\u0a1c\u0a42\u0a28",
+      "\u0a1c\u0a41\u0a32\u0a3e\u0a08",
+      "\u0a05\u0a17\u0a38\u0a24",
+      "\u0a38\u0a24\u0a70\u0a2c\u0a30",
+      "\u0a05\u0a15\u0a24\u0a42\u0a2c\u0a30",
+      "\u0a28\u0a35\u0a70\u0a2c\u0a30",
+      "\u0a26\u0a38\u0a70\u0a2c\u0a30"
+    ],
     "WEEKENDRANGE": [
       6,
       6
@@ -105,6 +119,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "pa-guru-in",
+  "localeID": "pa_Guru_IN",
   "pluralCat": function(n, opt_precision) {  if (n >= 0 && n <= 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

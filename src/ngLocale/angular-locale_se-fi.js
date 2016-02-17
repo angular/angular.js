@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "sk\u00e1bma",
       "juovla"
     ],
+    "STANDALONEMONTH": [
+      "o\u0111\u0111ajagem\u00e1nnu",
+      "guovvam\u00e1nnu",
+      "njuk\u010dam\u00e1nnu",
+      "cuo\u014bom\u00e1nnu",
+      "miessem\u00e1nnu",
+      "geassem\u00e1nnu",
+      "suoidnem\u00e1nnu",
+      "borgem\u00e1nnu",
+      "\u010dak\u010dam\u00e1nnu",
+      "golggotm\u00e1nnu",
+      "sk\u00e1bmam\u00e1nnu",
+      "juovlam\u00e1nnu"
+    ],
     "WEEKENDRANGE": [
       5,
       6
@@ -123,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "se-fi",
+  "localeID": "se_FI",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

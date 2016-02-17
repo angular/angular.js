@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "\u09a8\u09ad\u09c7",
       "\u09a1\u09bf\u09b8\u09c7"
     ],
+    "STANDALONEMONTH": [
+      "\u099c\u09be\u09a8\u09c1\u09f1\u09be\u09f0\u09c0",
+      "\u09ab\u09c7\u09ac\u09cd\u09f0\u09c1\u09f1\u09be\u09f0\u09c0",
+      "\u09ae\u09be\u09f0\u09cd\u099a",
+      "\u098f\u09aa\u09cd\u09f0\u09bf\u09b2",
+      "\u09ae\u09c7",
+      "\u099c\u09c1\u09a8",
+      "\u099c\u09c1\u09b2\u09be\u0987",
+      "\u0986\u0997\u09b7\u09cd\u099f",
+      "\u099b\u09c7\u09aa\u09cd\u09a4\u09c7\u09ae\u09cd\u09ac\u09f0",
+      "\u0985\u0995\u09cd\u099f\u09cb\u09ac\u09f0",
+      "\u09a8\u09f1\u09c7\u09ae\u09cd\u09ac\u09f0",
+      "\u09a1\u09bf\u099a\u09c7\u09ae\u09cd\u09ac\u09f0"
+    ],
     "WEEKENDRANGE": [
       6,
       6
@@ -123,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "as",
+  "localeID": "as",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

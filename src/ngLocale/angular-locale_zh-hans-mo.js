@@ -62,6 +62,20 @@ $provide.value("$locale", {
       "11\u6708",
       "12\u6708"
     ],
+    "STANDALONEMONTH": [
+      "\u4e00\u6708",
+      "\u4e8c\u6708",
+      "\u4e09\u6708",
+      "\u56db\u6708",
+      "\u4e94\u6708",
+      "\u516d\u6708",
+      "\u4e03\u6708",
+      "\u516b\u6708",
+      "\u4e5d\u6708",
+      "\u5341\u6708",
+      "\u5341\u4e00\u6708",
+      "\u5341\u4e8c\u6708"
+    ],
     "WEEKENDRANGE": [
       5,
       6
@@ -105,6 +119,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "zh-hans-mo",
+  "localeID": "zh_Hans_MO",
   "pluralCat": function(n, opt_precision) {  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

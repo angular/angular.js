@@ -14,3 +14,32 @@ perform this check - it's up to the developer to not expose such sensitive and p
 directly on the scope chain.
 
 To resolve this error, avoid Window access.
+
+### Common CoffeeScript Issue
+
+Be aware that if you are using CoffeeScript, it automatically returns the value of the last statement in a
+function. So for instance
+
+```coffeescript
+  scope.foo = ->
+    window.open 'https://example.com'
+```
+
+compiles to something like
+
+```js
+  scope.foo = function() {
+    return window.open('https://example.com');
+  };
+```
+
+You can see that this function will return the result of calling `window.open`, which is a `Window`
+object.
+
+You can avoid this by explicitly returning something else from the function:
+
+```coffeescript
+  scope.foo = ->
+    window.open 'https://example.com'
+    return true;
+```

@@ -80,6 +80,20 @@ $provide.value("$locale", {
       "\u05e0\u05d5\u05d1\u05f3",
       "\u05d3\u05e6\u05de\u05f3"
     ],
+    "STANDALONEMONTH": [
+      "\u05d9\u05e0\u05d5\u05d0\u05e8",
+      "\u05e4\u05d1\u05e8\u05d5\u05d0\u05e8",
+      "\u05de\u05e8\u05e5",
+      "\u05d0\u05e4\u05e8\u05d9\u05dc",
+      "\u05de\u05d0\u05d9",
+      "\u05d9\u05d5\u05e0\u05d9",
+      "\u05d9\u05d5\u05dc\u05d9",
+      "\u05d0\u05d5\u05d2\u05d5\u05e1\u05d8",
+      "\u05e1\u05e4\u05d8\u05de\u05d1\u05e8",
+      "\u05d0\u05d5\u05e7\u05d8\u05d5\u05d1\u05e8",
+      "\u05e0\u05d5\u05d1\u05de\u05d1\u05e8",
+      "\u05d3\u05e6\u05de\u05d1\u05e8"
+    ],
     "WEEKENDRANGE": [
       4,
       5
@@ -123,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "he-il",
+  "localeID": "he_IL",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  if (i == 2 && vf.v == 0) {    return PLURAL_CATEGORY.TWO;  }  if (vf.v == 0 && (n < 0 || n > 10) && n % 10 == 0) {    return PLURAL_CATEGORY.MANY;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

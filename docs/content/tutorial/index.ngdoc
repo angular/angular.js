@@ -61,7 +61,7 @@ a few git commands.
 
 ### Install Git
 
-You can download and install Git from http://git-scm.com/download. Once installed you should have
+You can download and install Git from http://git-scm.com/download. Once installed, you should have
 access to the `git` command line tool.  The main commands that you will need to use are:
 
 - `git clone ...` : clone a remote repository onto your local machine
@@ -123,7 +123,7 @@ npm --version
   </a>.
 </div>
 
-Once you have Node.js installed on your machine you can download the tool dependencies by running:
+Once you have Node.js installed on your machine, you can download the tool dependencies by running:
 
 ```
 npm install
@@ -198,7 +198,7 @@ http://localhost:8000/app/index.html
 ```
 
 <div class="alert alert-info">
-To serve the web app on a different ip address or port, edit the "start" script within package.json.
+To serve the web app on a different IP address or port, edit the "start" script within package.json.
 You can use `-a` to set the address and `-p` to set the port.
 </div>
 
@@ -246,6 +246,15 @@ npm run update-webdriver
 
 *(You should only need to do this once.)*
 
+You will need to have Java present on your dev machine to allow the Selenium standalone to be started.
+Check if you already have java installed by opening a terminal/command line window and typing
+'''
+java -version
+'''
+If java is already installed and exists in the PATH then you will be shown the version installed,
+if, however you receive a message that "java is not recognized as an internal command or external
+command" you will need to install [java].
+
 Since Protractor works by interacting with a running application, we need to start our web server:
 
 ```
@@ -280,3 +289,4 @@ Now that you have set up your local machine, let's get started with the tutorial
 [bower]: http://bower.io/
 [http-server]: https://github.com/nodeapps/http-server
 [karma]: https://github.com/karma-runner/karma
+[java]: https://www.java.com/en/download/help/download_options.xml
