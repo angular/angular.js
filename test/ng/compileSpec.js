@@ -2712,6 +2712,25 @@ describe('$compile', function() {
                 expect(checkedVal).toEqual(true);
               });
             });
+
+            it('should handle updates to @ bindings on BOOLEAN attributes', function() {
+              var componentScope;
+              module(function($compileProvider) {
+                $compileProvider.directive('test', function() {
+                  return {
+                    scope: {checked: '@'},
+                    link: function(scope, element, attrs) {
+                      componentScope = scope;
+                      attrs.$set('checked', true);
+                    }
+                  };
+                });
+              });
+              inject(function($compile, $rootScope) {
+                $compile('<test></test>')($rootScope);
+                expect(componentScope.checked).toBe(true);
+              });
+            });
           });
 
 
