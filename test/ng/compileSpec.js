@@ -8792,6 +8792,11 @@ describe('$compile', function() {
         $rootScope.testUrl = $sce.trustAsUrl('http://example.com/image2.mp4');
         $rootScope.$digest();
         expect(element.attr('src')).toEqual('http://example.com/image2.mp4');
+
+        // and trustedResourceUrls for retrocompatibility
+        $rootScope.testUrl = $sce.trustAsResourceUrl('http://example.com/image3.mp4');
+        $rootScope.$digest();
+        expect(element.attr('src')).toEqual('http://example.com/image3.mp4');
       }));
     }
   });
