@@ -756,7 +756,7 @@ describe('$aria', function() {
       expect(element.text()).toBe('');
     });
 
-    it('should bind keypress to anchor elements when href is falsy', function() {
+    it('should apply role to anchor elements without href ', function() {
       compileElement('<a ng-click="event = $event">{{event.type}}{{event.keyCode}}</a>');
       expect(element.attr('role')).toBe('link');
     });
@@ -765,7 +765,9 @@ describe('$aria', function() {
       compileElement('<a ng-click="event = $event">{{event.type}}{{event.keyCode}}</a>');
       expect(element.text()).toBe('');
       element.triggerHandler({ type: 'keypress', keyCode: 32 });
-      expect(element.text()).toContain('click');
+      expect(element.text()).toBe('keypress32');
+      element.triggerHandler({ type: 'keypress', keyCode: 13 });
+      expect(element.text()).toBe('keypress13');
     });
 
     it('should not bind keypress to anchor elements when keypress is not falsy', function() {
@@ -777,8 +779,10 @@ describe('$aria', function() {
       expect(element.text()).toBe('');
     });
 
-    it('should not bind ENTER keypress to anchor elements when href is not falsy', function() {
+    it('should not bind keypress to anchor elements when href is not falsy', function() {
       compileElement('<a href="http://somwehere" ng-click="event = $event">{{event.type}}{{event.keyCode}}</a>');
+      expect(element.text()).toBe('');
+      element.triggerHandler({ type: 'keypress', keyCode: 32 });
       expect(element.text()).toBe('');
       element.triggerHandler({ type: 'keypress', keyCode: 13 });
       expect(element.text()).toBe('');
