@@ -2812,7 +2812,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       // img and various html5 media tags. Note that track src allows files
       // containing CSS, so leave that to RESOURCE_URL level.
       if (attrNormalizedName == "src" || attrNormalizedName == "ngSrc") {
-        if (["img", "video", "audio"].indexOf(tag) == -1) {
+        if (["img", "video", "audio", "source"].indexOf(tag) == -1) {
           return $sce.RESOURCE_URL;
         }
       // maction[xlink:href] can source SVG.  It's not limited to <maction>.
