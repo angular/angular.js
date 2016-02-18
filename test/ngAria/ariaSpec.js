@@ -637,7 +637,7 @@ describe('$aria', function() {
       expect(clickFn).toHaveBeenCalledWith('li');
     });
 
-    it('should not override existing ng-keydown', function() {
+    it('should not bind to key events if there is existing ng-keydown', function() {
       scope.someOtherAction = function() {};
       var keydownFn = spyOn(scope, 'someOtherAction');
 
@@ -649,6 +649,34 @@ describe('$aria', function() {
 
       expect(clickFn).not.toHaveBeenCalled();
       expect(keydownFn).toHaveBeenCalled();
+    });
+
+    it('should not bind to key events if there is existing ng-keyup', function() {
+      scope.someOtherAction = function() {};
+      var keyupFn = spyOn(scope, 'someOtherAction');
+
+      scope.someAction = function() {};
+      clickFn = spyOn(scope, 'someAction');
+      compileElement('<div ng-click="someAction()" ng-keyup="someOtherAction()" tabindex="0"></div>');
+
+      element.triggerHandler({type: 'keyup', keyCode: 32});
+
+      expect(clickFn).not.toHaveBeenCalled();
+      expect(keyupFn).toHaveBeenCalled();
+    });
+
+    it('should not bind to key events if there is existing ng-keypress', function() {
+      scope.someOtherAction = function() {};
+      var keypressFn = spyOn(scope, 'someOtherAction');
+
+      scope.someAction = function() {};
+      clickFn = spyOn(scope, 'someAction');
+      compileElement('<div ng-click="someAction()" ng-keypress="someOtherAction()" tabindex="0"></div>');
+
+      element.triggerHandler({type: 'keypress', keyCode: 32});
+
+      expect(clickFn).not.toHaveBeenCalled();
+      expect(keypressFn).toHaveBeenCalled();
     });
 
     it('should update bindings when keydown handled', function() {
@@ -688,9 +716,9 @@ describe('$aria', function() {
     });
   });
 
-  describe('actions when bindKeydown is set to false', function() {
+  describe('actions when bindKeyEvents is set to false', function() {
     beforeEach(configAriaProvider({
-      bindKeydown: false
+      bindKeyEvents: false
     }));
     beforeEach(injectScopeAndCompiler);
 
@@ -701,6 +729,8 @@ describe('$aria', function() {
       element = $compile('<div ng-click="someAction()" tabindex="0"></div>')(scope);
 
       element.triggerHandler({type: 'keydown', keyCode: 32});
+      element.triggerHandler({type: 'keypress', keyCode: 32});
+      element.triggerHandler({type: 'keyup', keyCode: 32});
 
       expect(clickFn).not.toHaveBeenCalled();
     });
