@@ -8,7 +8,7 @@ synchronizes data from your UI (view) with your JavaScript objects (model) throu
 binding. To help you structure your application better and make it easy to test, AngularJS teaches
 the browser how to do dependency injection and inversion of control.
 
-Oh yeah and it helps with server-side communication, taming async callbacks with promises and 
+Oh yeah and it helps with server-side communication, taming async callbacks with promises and
 deferreds. It also makes client-side navigation and deeplinking with hashbang urls or HTML5 pushState a
 piece of cake. Best of all?? It makes development fun!
 
@@ -18,8 +18,8 @@ piece of cake. Best of all?? It makes development fun!
 * Developer Guide: http://docs.angularjs.org/guide
 * Contribution guidelines: [CONTRIBUTING.md](https://github.com/angular/angular.js/blob/master/CONTRIBUTING.md)
 * Dashboard: http://dashboard.angularjs.org
- 
-Building AngularJS
+
+Building AngularJS TEST NEW
 ---------
 [Once you have your environment set up](http://docs.angularjs.org/misc/contribute) just run:
 
@@ -48,7 +48,7 @@ What to use AngularJS for and when to use it
 AngularJS is the next generation framework where each component is designed to work with every other component in an interconnected way like a well-oiled machine. AngularJS is JavaScript MVC made easy and done right. (Well it is not really MVC, read on, to understand what this means.)
 
 #### MVC, no, MV* done the right way!
-MVC, short for Model-View-Controller, is a design pattern, i.e. how the code should be organized and how the different parts of an application separated for proper readability and debugging. Model is the data and the database. View is the user interface and what the user sees. Controller is the main link between Model and View. These are the three pillars of major programming frameworks present on the market today. On the other hand AngularJS works on MV*, short for Model-View-_Whatever_. The _Whatever_ is AngularJS's way of telling that you may create any kind of linking between the Model and the View here. 
+MVC, short for Model-View-Controller, is a design pattern, i.e. how the code should be organized and how the different parts of an application separated for proper readability and debugging. Model is the data and the database. View is the user interface and what the user sees. Controller is the main link between Model and View. These are the three pillars of major programming frameworks present on the market today. On the other hand AngularJS works on MV*, short for Model-View-_Whatever_. The _Whatever_ is AngularJS's way of telling that you may create any kind of linking between the Model and the View here.
 
 Unlike other frameworks in any programming language, where MVC, the three separate components, each one has to be written and then connected by the programmer, AngularJS helps the programmer by asking him/her to just create these and everything else will be taken care of by AngularJS.
 
