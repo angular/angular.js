@@ -19,7 +19,7 @@ piece of cake. Best of all?? It makes development fun!
 * Contribution guidelines: [CONTRIBUTING.md](https://github.com/angular/angular.js/blob/master/CONTRIBUTING.md)
 * Dashboard: http://dashboard.angularjs.org
 
-Building AngularJS TEST
+Building AngularJS TEST NEW
 ---------
 [Once you have your environment set up](http://docs.angularjs.org/misc/contribute) just run:
 
