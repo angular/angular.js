@@ -1667,6 +1667,10 @@ describe('ngMock', function() {
     it('should create mock application root', inject(function($rootElement) {
       expect($rootElement.text()).toEqual('');
     }));
+
+    it('should attach the `$injector` to `$rootElement`', inject(function($injector, $rootElement) {
+      expect($rootElement.injector()).toBe($injector);
+    }));
   });
 
 
@@ -2404,9 +2408,122 @@ describe('ngMockE2E', function() {
   });
 });
 
+
 describe('make sure that we can create an injector outside of tests', function() {
   //since some libraries create custom injectors outside of tests,
   //we want to make sure that this is not breaking the internals of
   //how we manage annotated function cleanup during tests. See #10967
   angular.injector([function($injector) {}]);
+});
+
+
+describe('`afterEach` clean-up', function() {
+  describe('undecorated `$rootElement`', function() {
+    var prevRootElement;
+    var prevCleanDataSpy;
+
+
+    it('should set up spies so the next test can verify `$rootElement` was cleaned up', function() {
+      module(function($provide) {
+        $provide.decorator('$rootElement', function($delegate) {
+          prevRootElement = $delegate;
+
+          // Spy on `angular.element.cleanData()`, so the next test can verify
+          // that it has been called as necessary
+          prevCleanDataSpy = spyOn(angular.element, 'cleanData').andCallThrough();
+
+          return $delegate;
+        });
+      });
+
+      // Inject the `$rootElement` to ensure it has been created
+      inject(function($rootElement) {
+        expect($rootElement.injector()).toBeDefined();
+      });
+    });
+
+
+    it('should clean up `$rootElement` after each test', function() {
+      // One call is made by `testabilityPatch`'s `dealoc()`
+      // We want to verify the subsequent call, made by `angular-mocks`
+      expect(prevCleanDataSpy.callCount).toBe(2);
+
+      var cleanUpNodes = prevCleanDataSpy.calls[1].args[0];
+      expect(cleanUpNodes.length).toBe(1);
+      expect(cleanUpNodes[0]).toBe(prevRootElement[0]);
+    });
+  });
+
+
+  describe('decorated `$rootElement`', function() {
+    var prevOriginalRootElement;
+    var prevRootElement;
+    var prevCleanDataSpy;
+
+
+    it('should set up spies so the next text can verify `$rootElement` was cleaned up', function() {
+      module(function($provide) {
+        $provide.decorator('$rootElement', function($delegate) {
+          prevOriginalRootElement = $delegate;
+
+          // Mock `$rootElement` to be able to verify that the correct object is cleaned up
+          prevRootElement = angular.element('<div></div>');
+
+          // Spy on `angular.element.cleanData()`, so the next test can verify
+          // that it has been called as necessary
+          prevCleanDataSpy = spyOn(angular.element, 'cleanData').andCallThrough();
+
+          return prevRootElement;
+        });
+      });
+
+      // Inject the `$rootElement` to ensure it has been created
+      inject(function($rootElement) {
+        expect($rootElement).toBe(prevRootElement);
+        expect(prevOriginalRootElement.injector()).toBeDefined();
+        expect(prevRootElement.injector()).toBeUndefined();
+
+        // If we don't clean up `prevOriginalRootElement`-related data now, `testabilityPatch` will
+        // complain about a memory leak, because it doesn't clean up after the original
+        // `$rootElement`
+        // This is a false alarm, because `angular-mocks` would have cleaned up in a subsequent
+        // `afterEach` block
+        prevOriginalRootElement.removeData();
+      });
+    });
+
+
+    it('should clean up `$rootElement` (both original and decorated) after each test', function() {
+      // One call is made by `testabilityPatch`'s `dealoc()`
+      // We want to verify the subsequent call, made by `angular-mocks`
+      expect(prevCleanDataSpy.callCount).toBe(2);
+
+      var cleanUpNodes = prevCleanDataSpy.calls[1].args[0];
+      expect(cleanUpNodes.length).toBe(2);
+      expect(cleanUpNodes[0]).toBe(prevOriginalRootElement[0]);
+      expect(cleanUpNodes[1]).toBe(prevRootElement[0]);
+    });
+  });
+
+
+  describe('uninstantiated or falsy `$rootElement`', function() {
+    it('should not break if `$rootElement` was never instantiated', function() {
+      // Just an empty test to verify that `angular-mocks` doesn't break,
+      // when trying to clean up `$rootElement`, if `$rootElement` was never injected in the test
+      // (and thus never instantiated/created)
+
+      // Ensure the `$injector` is created - if there is no `$injector`, no clean-up takes places
+      inject(function() {});
+    });
+
+
+    it('should not break if the decorated `$rootElement` is falsy (e.g. `null`)', function() {
+      module(function($provide) {
+        $provide.value('$rootElement', null);
+      });
+
+      // Ensure the `$injector` is created - if there is no `$injector`, no clean-up takes places
+      inject(function() {});
+    });
+  });
 });
