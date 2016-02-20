@@ -127,12 +127,12 @@ angular.mock.$Browser = function() {
 };
 angular.mock.$Browser.prototype = {
 
-/**
-  * @name $browser#poll
-  *
-  * @description
-  * run all fns in pollFns
-  */
+  /**
+   * @name $browser#poll
+   *
+   * @description
+   * run all fns in pollFns
+   */
   poll: function poll() {
     angular.forEach(this.pollFns, function(pollFn) {
       pollFn();
@@ -1879,10 +1879,12 @@ angular.mock.$RAFDecorator = ['$delegate', function($delegate) {
 /**
  *
  */
+var originalRootElement;
 angular.mock.$RootElementProvider = function() {
-  this.$get = function() {
-    return angular.element('<div ng-app></div>');
-  };
+  this.$get = ['$injector', function($injector) {
+    originalRootElement = angular.element('<div ng-app></div>').data('$injector', $injector);
+    return originalRootElement;
+  }];
 };
 
 /**
@@ -2296,6 +2298,7 @@ if (window.jasmine || window.mocha) {
 
 
   (window.beforeEach || window.setup)(function() {
+    originalRootElement = null;
     annotatedFunctions = [];
     currentSpec = this;
   });
@@ -2318,7 +2321,15 @@ if (window.jasmine || window.mocha) {
     currentSpec = null;
 
     if (injector) {
-      injector.get('$rootElement').off();
+      // Ensure `$rootElement` is instantiated, before checking `originalRootElement`
+      var $rootElement = injector.get('$rootElement');
+      var rootNode = $rootElement && $rootElement[0];
+      var cleanUpNodes = !originalRootElement ? [] : [originalRootElement[0]];
+      if (rootNode && (!originalRootElement || rootNode !== originalRootElement[0])) {
+        cleanUpNodes.push(rootNode);
+      }
+      angular.element.cleanData(cleanUpNodes);
+
     }
 
     // clean up jquery's fragment cache
