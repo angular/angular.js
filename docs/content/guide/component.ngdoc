@@ -337,8 +337,15 @@ directly into your component without creating an extra route controller:
 
 Directives can require the controllers of other directives to enable communication
 between each other. This can be achieved in a component by providing an
-object mapping for the `require` property.  Here is a tab pane example built
-from components:
+object mapping for the `require` property. The object keys specify the property names under which
+the required controllers (object values) will be bound to the requiring component's controller.
+
+<div class="alert alert-warning">
+Note that the required controllers will not be available during the instantiation of the controller,
+but they are guaranteed to be available just before the `$onInit` method is executed!
+</div>
+
+Here is a tab pane example built from components:
 
 <example module="docsTabsExample">
   <file name="script.js">
