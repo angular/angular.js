@@ -62,7 +62,7 @@ Data and Data Models in AngularJS are plain JavaScript objects and one can add a
 One of AngularJS's strongest features. Two-way Data Binding means that if something changes in the Model, the change gets reflected in the View instantaneously, and the same happens the other way around. This is also referred to as Reactive Programming, i.e. suppose `a = b + c` is being programmed and after this, if the value of `b` and/or `c` is changed then the value of `a` will be automatically updated to reflect the change. AngularJS uses its "scopes" as a glue between the Model and View and makes these updates in one available for the other.
 
 #### Less Written Code and Easily Maintainable Code
-Everything in AngularJS is created to enable the programmer ends up writing less code that is easily maintainable and readable by any other new person on the team. Believe it or not, one can write a complete working two-way data binded application in less than 10 lines of code. Try and see for yourself!
+Everything in AngularJS is created to enable the programmer to end up writing less code that is easily maintainable and readable by any other new person on the team. Believe it or not, one can write a complete working two-way data binded application in less than 10 lines of code. Try and see for yourself!
 
 #### Testing Ready
 AngularJS has Dependency Injection, i.e. it takes care of providing all the necessary dependencies to its controllers whenever required. This helps in making the AngularJS code ready for unit testing by making use of mock dependencies created and injected. This makes AngularJS more modular and easily testable thus in turn helping a team create more robust applications.
