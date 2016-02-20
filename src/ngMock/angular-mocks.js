@@ -127,12 +127,12 @@ angular.mock.$Browser = function() {
 };
 angular.mock.$Browser.prototype = {
 
-/**
-  * @name $browser#poll
-  *
-  * @description
-  * run all fns in pollFns
-  */
+  /**
+   * @name $browser#poll
+   *
+   * @description
+   * run all fns in pollFns
+   */
   poll: function poll() {
     angular.forEach(this.pollFns, function(pollFn) {
       pollFn();
@@ -2089,10 +2089,12 @@ angular.mock.$RAFDecorator = ['$delegate', function($delegate) {
 /**
  *
  */
+var originalRootElement;
 angular.mock.$RootElementProvider = function() {
-  this.$get = function() {
-    return angular.element('<div ng-app></div>');
-  };
+  this.$get = ['$injector', function($injector) {
+    originalRootElement = angular.element('<div ng-app></div>').data('$injector', $injector);
+    return originalRootElement;
+  }];
 };
 
 /**
@@ -2600,7 +2602,17 @@ if (window.jasmine || window.mocha) {
     currentSpec = null;
 
     if (injector) {
-      injector.get('$rootElement').off();
+      var cleanUpElems = [originalRootElement];
+      var $rootElement = injector.get('$rootElement');
+      if ($rootElement !== originalRootElement) cleanUpElems.push($rootElement);
+      cleanUpElems.forEach(function(elem) {
+        // The `$rootElement` might not have been created or
+        // a mocked `$rootElement` might not have the standard methods
+        if (elem && elem.off) elem.off();
+        if (elem && elem.removeData) elem.removeData();
+      });
+      if (window.jQuery) window.jQuery.cleanData(cleanUpElems);
+
       injector.get('$rootScope').$destroy();
     }
 

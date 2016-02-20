@@ -1667,6 +1667,10 @@ describe('ngMock', function() {
     it('should create mock application root', inject(function($rootElement) {
       expect($rootElement.text()).toEqual('');
     }));
+
+    it('should attach the `$injector` to `$rootElement`', inject(function($injector, $rootElement) {
+      expect($rootElement.injector()).toBe($injector);
+    }));
   });
 
 
@@ -2404,9 +2408,134 @@ describe('ngMockE2E', function() {
   });
 });
 
+
 describe('make sure that we can create an injector outside of tests', function() {
   //since some libraries create custom injectors outside of tests,
   //we want to make sure that this is not breaking the internals of
   //how we manage annotated function cleanup during tests. See #10967
   angular.injector([function($injector) {}]);
+});
+
+
+describe('don\'t leak memory between tests', function() {
+  var jQuery = window.jQuery;
+  var prevRootElement;
+  var prevRemoveDataSpy;
+  var prevCleanDataSpy;
+
+  it('should run a test to keep track of `removeData()`/`cleanData()` calls for later inspection',
+    function() {
+      module(function($provide) {
+        $provide.decorator('$rootElement', function($delegate) {
+          // Spy on `.removeData()` and `jQuery.cleanData()`,
+          // so the next test can verify that they have been called as necessary
+          prevRootElement = $delegate;
+          prevRemoveDataSpy = spyOn($delegate, 'removeData').andCallThrough();
+
+          if (jQuery) {
+            prevCleanDataSpy = spyOn(jQuery, 'cleanData').andCallThrough();
+          }
+
+          return $delegate;
+        });
+      });
+
+      // Inject the `$rootElement` to ensure it has been created
+      inject(function($rootElement) {
+        expect($rootElement.injector()).toBeDefined();
+      });
+    }
+  );
+
+  it('should clean up `$rootElement`-related data after each test', function() {
+    // One call is made by `testabilityPatch`'s `dealoc()`
+    // We want to verify the subsequent call, made by `angular-mocks`
+    // (Since `testabilityPatch` re-wrapps `$rootElement` and because jQuery
+    //  returns a different object, we don't capture the 1st call when using jQuery)
+    expect(prevRemoveDataSpy.callCount).toBe(jQuery ? 1 : 2);
+
+    if (jQuery) {
+      // One call is made by `testabilityPatch`'s `dealoc()`
+      // We want to verify the subsequent call, made by `angular-mocks`
+      expect(prevCleanDataSpy.callCount).toBe(2);
+
+      var cleanUpElems = prevCleanDataSpy.calls[1].args[0];
+      expect(cleanUpElems.length).toBe(1);
+      expect(cleanUpElems[0][0]).toBe(prevRootElement[0]);
+    }
+  });
+});
+
+describe('don\'t leak memory between tests with mocked `$rootScope`', function() {
+  var jQuery = window.jQuery;
+  var prevOriginalRootElement;
+  var prevOriginalRemoveDataSpy;
+  var prevRootElement;
+  var prevRemoveDataSpy;
+  var prevCleanDataSpy;
+
+  it('should run a test to keep track of `removeData()`/`cleanData()` calls for later inspection',
+    function() {
+      module(function($provide) {
+        $provide.decorator('$rootElement', function($delegate) {
+          // Mock `$rootElement` to be able to verify that the correct object is cleaned up
+          var mockRootElement = angular.element('<div></div>');
+
+          // Spy on `.removeData()` and `jQuery.cleanData()`,
+          // so the next test can verify that they have been called as necessary
+          prevOriginalRootElement = $delegate;
+          prevOriginalRemoveDataSpy = spyOn($delegate, 'removeData').andCallThrough();
+
+          prevRootElement = mockRootElement;
+          prevRemoveDataSpy = spyOn(mockRootElement, 'removeData').andCallThrough();
+
+          if (jQuery) {
+            prevCleanDataSpy = spyOn(jQuery, 'cleanData').andCallThrough();
+          }
+
+          return mockRootElement;
+        });
+      });
+
+      // Inject the `$rootElement` to ensure it has been created
+      inject(function($rootElement) {
+        expect($rootElement).toBe(prevRootElement);
+        expect(prevOriginalRootElement.injector()).toBeDefined();
+        expect(prevRootElement.injector()).toBeUndefined();
+
+        // If we don't clean up `prevOriginalRootElement`-related data now, `testabilityPatch` will
+        // complain about a memory leak, because it doesn't clean up after the original
+        // `$rootElement`.
+        // This is a false alarm, because `angular-mocks` will clean up later.
+        prevOriginalRootElement.removeData();
+        prevOriginalRemoveDataSpy.reset();
+
+        expect(prevOriginalRemoveDataSpy.callCount).toBe(0);
+      });
+    }
+  );
+
+  it('should clean up after the `$rootElement` (both original and decorated) after each test',
+    function() {
+      // Only `angular-mocks` cleans up after the original `$rootElement`, not `testabilityPatch`
+      expect(prevOriginalRemoveDataSpy.callCount).toBe(1);
+
+      // One call is made by `testabilityPatch`'s `dealoc()`
+      // We want to verify the subsequent call, made by `angular-mocks`
+      // (Since `testabilityPatch` re-wrapps `$rootElement` and because jQuery
+      //  returns a different object, we don't capture the 1st call when using jQuery)
+      expect(prevRemoveDataSpy.callCount).toBe(jQuery ? 1 : 2);
+
+      if (jQuery) {
+        // One call is made by `testabilityPatch`'s `dealoc()`
+        // We want to verify the subsequent call, made by `angular-mocks`
+        expect(prevCleanDataSpy.callCount).toBe(2);
+
+        var cleanUpElems = prevCleanDataSpy.calls[1].args[0];
+        expect(cleanUpElems.length).toBe(2);
+        expect(cleanUpElems[0][0]).toBe(prevOriginalRootElement[0]);
+        expect(cleanUpElems[1][0]).toBe(prevRootElement[0]);
+      }
+    }
+  );
 });
