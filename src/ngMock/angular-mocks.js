@@ -2561,11 +2561,16 @@ angular.mock.$RootScopeDecorator = ['$delegate', function($delegate) {
 }];
 
 
-if (window.jasmine || window.mocha) {
+!(function(jasmineOrMocha) {
+
+  if (!jasmineOrMocha) {
+    return;
+  }
 
   var currentSpec = null,
+      injectorState = new InjectorState(),
       annotatedFunctions = [],
-      isSpecRunning = function() {
+      wasInjectorCreated = function() {
         return !!currentSpec;
       };
 
@@ -2577,14 +2582,165 @@ if (window.jasmine || window.mocha) {
     return angular.mock.$$annotate.apply(this, arguments);
   };
 
+  /**
+   * @ngdoc function
+   * @name angular.mock.module
+   * @description
+   *
+   * *NOTE*: This function is also published on window for easy access.<br>
+   * *NOTE*: This function is declared ONLY WHEN running tests with jasmine or mocha
+   *
+   * This function registers a module configuration code. It collects the configuration information
+   * which will be used when the injector is created by {@link angular.mock.inject inject}.
+   *
+   * See {@link angular.mock.inject inject} for usage example
+   *
+   * @param {...(string|Function|Object)} fns any number of modules which are represented as string
+   *        aliases or as anonymous module initialization functions. The modules are used to
+   *        configure the injector. The 'ng' and 'ngMock' modules are automatically loaded. If an
+   *        object literal is passed each key-value pair will be registered on the module via
+   *        {@link auto.$provide $provide}.value, the key being the string name (or token) to associate
+   *        with the value on the injector.
+   */
+  var module = window.module = angular.mock.module = function() {
+    var moduleFns = Array.prototype.slice.call(arguments, 0);
+    return wasInjectorCreated() ? workFn() : workFn;
+    /////////////////////
+    function workFn() {
+      if (currentSpec.$injector) {
+        throw new Error('Injector already created, can not register a module!');
+      } else {
+        var fn, modules = currentSpec.$modules || (currentSpec.$modules = []);
+        angular.forEach(moduleFns, function(module) {
+          if (angular.isObject(module) && !angular.isArray(module)) {
+            fn = ['$provide', function($provide) {
+              angular.forEach(module, function(value, key) {
+                $provide.value(key, value);
+              });
+            }];
+          } else {
+            fn = module;
+          }
+          if (currentSpec.$providerInjector) {
+            currentSpec.$providerInjector.invoke(fn);
+          } else {
+            modules.push(fn);
+          }
+        });
+      }
+    }
+  };
 
-  (window.beforeEach || window.setup)(function() {
-    originalRootElement = null;
-    annotatedFunctions = [];
-    currentSpec = this;
-  });
+  module.$$beforeAllHook = (window.before || window.beforeAll);
+  module.$$afterAllHook = (window.after || window.afterAll);
 
-  (window.afterEach || window.teardown)(function() {
+  // purely for testing ngMock itself
+  module.$$currentSpec = function(to) {
+    if (arguments.length === 0) return to;
+    currentSpec = to;
+  };
+
+  /**
+   * @ngdoc function
+   * @name angular.mock.module.sharedInjector
+   * @description
+   *
+   * *NOTE*: This function is declared ONLY WHEN running tests with jasmine or mocha
+   *
+   * This function ensures a single injector will be used for all tests in a given describe context.
+   * This contrasts with the default behaviour where a new injector is created per test case.
+   *
+   * Use sharedInjector when you want to take advantage of Jasmine's `beforeAll()`, or mocha's
+   * `before()` methods. Call `module.sharedInjector()` before you setup any other hooks that
+   * will create (i.e call `module()`) or use (i.e call `inject()`) the injector.
+   *
+   * You cannot call `sharedInjector()` from within a context already using `sharedInjector()`.
+   *
+   * ## Example
+   *
+   * Typically beforeAll is used to make many assertions about a single operation. This can
+   * cut down test run-time as the test setup doesn't need to be re-run, and enabling focussed
+   * tests each with a single assertion.
+   *
+   * ```js
+   * describe("Deep Thought", function() {
+   *
+   *   module.sharedInjector();
+   *
+   *   beforeAll(module("UltimateQuestion"));
+   *
+   *   beforeAll(inject(function(DeepThought) {
+   *     expect(DeepThought.answer).toBe(undefined);
+   *     DeepThought.generateAnswer();
+   *   }));
+   *
+   *   it("has calculated the answer correctly", inject(function(DeepThought) {
+   *     // Because of sharedInjector, we have access to the instance of the DeepThought service
+   *     // that was provided to the beforeAll() hook. Therefore we can test the generated answer
+   *     expect(DeepThought.answer).toBe(42);
+   *   }));
+   *
+   *   it("has calculated the answer within the expected time", inject(function(DeepThought) {
+   *     expect(DeepThought.runTimeMillennia).toBeLessThan(8000);
+   *   }));
+   *
+   *   it("has double checked the answer", inject(function(DeepThought) {
+   *     expect(DeepThought.absolutelySureItIsTheRightAnswer).toBe(true);
+   *   }));
+   *
+   * });
+   *
+   * ```
+   */
+  module.sharedInjector = function() {
+    if (!(module.$$beforeAllHook && module.$$afterAllHook)) {
+      throw Error("sharedInjector() cannot be used unless your test runner defines beforeAll/afterAll");
+    }
+
+    var initialized = false;
+
+    module.$$beforeAllHook(function() {
+      if (injectorState.shared) {
+        injectorState.sharedError = Error("sharedInjector() cannot be called inside a context that has already called sharedInjector()");
+        throw injectorState.sharedError;
+      }
+      initialized = true;
+      currentSpec = this;
+      injectorState.shared = true;
+    });
+
+    module.$$afterAllHook(function() {
+      if (initialized) {
+        injectorState = new InjectorState();
+        module.$$cleanup();
+      } else {
+        injectorState.sharedError = null;
+      }
+    });
+  };
+
+  module.$$beforeEach = function() {
+    if (injectorState.shared && currentSpec && currentSpec != this) {
+      var state = currentSpec;
+      currentSpec = this;
+      angular.forEach(["$injector","$modules","$providerInjector", "$injectorStrict"], function(k) {
+        currentSpec[k] = state[k];
+        state[k] = null;
+      });
+    } else {
+      currentSpec = this;
+      originalRootElement = null;
+      annotatedFunctions = [];
+    }
+  };
+
+  module.$$afterEach = function() {
+    if (injectorState.cleanupAfterEach()) {
+      module.$$cleanup();
+    }
+  };
+
+  module.$$cleanup = function() {
     var injector = currentSpec.$injector;
 
     annotatedFunctions.forEach(function(fn) {
@@ -2629,56 +2785,10 @@ if (window.jasmine || window.mocha) {
       delete angular.callbacks[key];
     });
     angular.callbacks.counter = 0;
-  });
-
-  /**
-   * @ngdoc function
-   * @name angular.mock.module
-   * @description
-   *
-   * *NOTE*: This function is also published on window for easy access.<br>
-   * *NOTE*: This function is declared ONLY WHEN running tests with jasmine or mocha
-   *
-   * This function registers a module configuration code. It collects the configuration information
-   * which will be used when the injector is created by {@link angular.mock.inject inject}.
-   *
-   * See {@link angular.mock.inject inject} for usage example
-   *
-   * @param {...(string|Function|Object)} fns any number of modules which are represented as string
-   *        aliases or as anonymous module initialization functions. The modules are used to
-   *        configure the injector. The 'ng' and 'ngMock' modules are automatically loaded. If an
-   *        object literal is passed each key-value pair will be registered on the module via
-   *        {@link auto.$provide $provide}.value, the key being the string name (or token) to associate
-   *        with the value on the injector.
-   */
-  window.module = angular.mock.module = function() {
-    var moduleFns = Array.prototype.slice.call(arguments, 0);
-    return isSpecRunning() ? workFn() : workFn;
-    /////////////////////
-    function workFn() {
-      if (currentSpec.$injector) {
-        throw new Error('Injector already created, can not register a module!');
-      } else {
-        var fn, modules = currentSpec.$modules || (currentSpec.$modules = []);
-        angular.forEach(moduleFns, function(module) {
-          if (angular.isObject(module) && !angular.isArray(module)) {
-            fn = ['$provide', function($provide) {
-              angular.forEach(module, function(value, key) {
-                $provide.value(key, value);
-              });
-            }];
-          } else {
-            fn = module;
-          }
-          if (currentSpec.$providerInjector) {
-            currentSpec.$providerInjector.invoke(fn);
-          } else {
-            modules.push(fn);
-          }
-        });
-      }
-    }
   };
+
+  (window.beforeEach || window.setup)(module.$$beforeEach);
+  (window.afterEach || window.teardown)(module.$$afterEach);
 
   /**
    * @ngdoc function
@@ -2782,7 +2892,7 @@ if (window.jasmine || window.mocha) {
   window.inject = angular.mock.inject = function() {
     var blockFns = Array.prototype.slice.call(arguments, 0);
     var errorForStack = new Error('Declaration Location');
-    return isSpecRunning() ? workFn.call(currentSpec) : workFn;
+    return wasInjectorCreated() ? workFn.call(currentSpec) : workFn;
     /////////////////////
     function workFn() {
       var modules = currentSpec.$modules || [];
@@ -2830,7 +2940,7 @@ if (window.jasmine || window.mocha) {
 
   angular.mock.inject.strictDi = function(value) {
     value = arguments.length ? !!value : true;
-    return isSpecRunning() ? workFn() : workFn;
+    return wasInjectorCreated() ? workFn() : workFn;
 
     function workFn() {
       if (value !== currentSpec.$injectorStrict) {
@@ -2842,4 +2952,13 @@ if (window.jasmine || window.mocha) {
       }
     }
   };
-}
+
+  function InjectorState() {
+    this.shared = false;
+    this.sharedError = null;
+
+    this.cleanupAfterEach = function() {
+      return !this.shared || this.sharedError;
+    };
+  }
+})(window.jasmine || window.mocha);
