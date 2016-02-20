@@ -2397,7 +2397,6 @@ describe('make sure that we can create an injector outside of tests', function()
   angular.injector([function($injector) {}]);
 });
 
-
 describe('`afterEach` clean-up', function() {
   describe('`$rootElement`', function() {
     describe('undecorated', function() {
@@ -2560,4 +2559,264 @@ describe('`afterEach` clean-up', function() {
       });
     });
   });
+});
+
+describe('sharedInjector', function() {
+  // this is of a bit tricky feature to test as we hit angular's own testing
+  // mechanisms (e.g around jQuery cache checking), as ngMock augments the very
+  // jasmine test runner we're using to test ngMock!
+  //
+  // with that in mind, we define a stubbed test framework
+  // to simulate test cases being run with the ngMock hooks
+
+
+  // we use the 'module' and 'inject' globals from ngMock
+
+  it("allowes me to mutate a single instace of a module (proving it has been shared)", ngMockTest(function() {
+    sdescribe("test state is shared", function() {
+      angular.module("sharedInjectorTestModuleA", [])
+        .factory("testService", function() {
+          return { state: 0 };
+        });
+
+      module.sharedInjector();
+
+      sbeforeAll(module("sharedInjectorTestModuleA"));
+
+      sit("access and mutate", inject(function(testService) {
+        testService.state += 1;
+      }));
+
+      sit("expect mutation to have persisted", inject(function(testService) {
+        expect(testService.state).toEqual(1);
+      }));
+    });
+  }));
+
+
+  it("works with standard beforeEach", ngMockTest(function() {
+    sdescribe("test state is not shared", function() {
+      angular.module("sharedInjectorTestModuleC", [])
+        .factory("testService", function() {
+          return { state: 0 };
+        });
+
+      sbeforeEach(module("sharedInjectorTestModuleC"));
+
+      sit("access and mutate", inject(function(testService) {
+        testService.state += 1;
+      }));
+
+      sit("expect mutation not to have persisted", inject(function(testService) {
+        expect(testService.state).toEqual(0);
+      }));
+    });
+  }));
+
+
+  it('allows me to stub with shared injector', ngMockTest(function() {
+    sdescribe("test state is shared", function() {
+      angular.module("sharedInjectorTestModuleD", [])
+        .value("testService", 43);
+
+      module.sharedInjector();
+
+      sbeforeAll(module("sharedInjectorTestModuleD", function($provide) {
+        $provide.value("testService", 42);
+      }));
+
+      sit("expected access stubbed value", inject(function(testService) {
+        expect(testService).toEqual(42);
+      }));
+    });
+  }));
+
+  it("doesn't interfere with other test describes", ngMockTest(function() {
+    angular.module("sharedInjectorTestModuleE", [])
+      .factory("testService", function() {
+        return { state: 0 };
+      });
+
+    sdescribe("with stubbed injector", function() {
+
+      module.sharedInjector();
+
+      sbeforeAll(module("sharedInjectorTestModuleE"));
+
+      sit("access and mutate", inject(function(testService) {
+        expect(testService.state).toEqual(0);
+        testService.state += 1;
+      }));
+
+      sit("expect mutation to have persisted", inject(function(testService) {
+        expect(testService.state).toEqual(1);
+      }));
+    });
+
+    sdescribe("without stubbed injector", function() {
+      sbeforeEach(module("sharedInjectorTestModuleE"));
+
+      sit("access and mutate", inject(function(testService) {
+        expect(testService.state).toEqual(0);
+        testService.state += 1;
+      }));
+
+      sit("expect original, unmutated value", inject(function(testService) {
+        expect(testService.state).toEqual(0);
+      }));
+    });
+  }));
+
+  it("prevents nested use of sharedInjector()", function() {
+    var test = ngMockTest(function() {
+      sdescribe("outer", function() {
+
+        module.sharedInjector();
+
+        sdescribe("inner", function() {
+
+          module.sharedInjector();
+
+          sit("should not get here", function() {
+            throw Error("should have thrown before here!");
+          });
+        });
+
+      });
+
+    });
+
+    assertThrowsErrorMatching(test.bind(this), /already called sharedInjector()/);
+  });
+
+  it('warns that shared injector cannot be used unless test frameworks define before/after all hooks', function() {
+    assertThrowsErrorMatching(function() {
+      module.sharedInjector();
+    }, /sharedInjector()/);
+  });
+
+  function assertThrowsErrorMatching(fn, re) {
+    try {
+      fn();
+    } catch (e) {
+      if (re.test(e.message)) {
+        return;
+      }
+      throw Error("thrown error '" + e.message + "' did not match:" + re);
+    }
+    throw Error("should have thrown error");
+  }
+
+  // run a set of test cases in the sdescribe stub test framework
+  function ngMockTest(define) {
+    return function() {
+      var spec = this;
+      module.$$currentSpec(null);
+
+      // configure our stubbed test framework and then hook ngMock into it
+      // in much the same way
+      module.$$beforeAllHook = sbeforeAll;
+      module.$$afterAllHook = safterAll;
+
+      sdescribe.root = sdescribe("root", function() {});
+
+      sdescribe.root.beforeEach.push(module.$$beforeEach);
+      sdescribe.root.afterEach.push(module.$$afterEach);
+
+      try {
+        define();
+        sdescribe.root.run();
+      } finally {
+        // avoid failing testability for the additional
+        // injectors etc created
+        angular.element.cache = {};
+
+        // clear up
+        module.$$beforeAllHook = null;
+        module.$$afterAllHook = null;
+        module.$$currentSpec(spec);
+      }
+    };
+  }
+
+  // stub test framework that follows the pattern of hooks that
+  // jasmine/mocha do
+  function sdescribe(name, define) {
+    var self = { name: name };
+    self.parent = sdescribe.current || sdescribe.root;
+    if (self.parent) {
+      self.parent.describes.push(self);
+    }
+
+    var previous = sdescribe.current;
+    sdescribe.current = self;
+
+    self.beforeAll = [];
+    self.beforeEach = [];
+    self.afterAll = [];
+    self.afterEach = [];
+    self.define = define;
+    self.tests = [];
+    self.describes = [];
+
+    self.run = function() {
+      var spec = {};
+      self.hooks("beforeAll", spec);
+
+      self.tests.forEach(function(test) {
+        if (self.parent) self.parent.hooks("beforeEach", spec);
+        self.hooks("beforeEach", spec);
+        test.run.call(spec);
+        self.hooks("afterEach", spec);
+        if (self.parent) self.parent.hooks("afterEach", spec);
+      });
+
+      self.describes.forEach(function(d) {
+        d.run();
+      });
+
+      self.hooks("afterAll", spec);
+    };
+
+    self.hooks = function(hook, spec) {
+      self[hook].forEach(function(f) {
+        f.call(spec);
+      });
+    };
+
+    define();
+
+    sdescribe.current = previous;
+
+    return self;
+  }
+
+  function sit(name, fn) {
+    if (typeof fn !== "function") throw Error("not fn", fn);
+    sdescribe.current.tests.push({
+      name: name,
+      run: fn
+    });
+  }
+
+  function sbeforeAll(fn) {
+    if (typeof fn !== "function") throw Error("not fn", fn);
+    sdescribe.current.beforeAll.push(fn);
+  }
+
+  function safterAll(fn) {
+    if (typeof fn !== "function") throw Error("not fn", fn);
+    sdescribe.current.afterAll.push(fn);
+  }
+
+  function sbeforeEach(fn) {
+    if (typeof fn !== "function") throw Error("not fn", fn);
+    sdescribe.current.beforeEach.push(fn);
+  }
+
+  function safterEach(fn) {
+    if (typeof fn !== "function") throw Error("not fn", fn);
+    sdescribe.current.afterEach.push(fn);
+  }
+
 });
