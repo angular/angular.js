@@ -427,12 +427,13 @@ The examples use the [Jasmine](http://jasmine.github.io/) testing framework.
 **Controller Test:**
 ```js
 describe('component: heroDetail', function() {
-  var component, scope, hero;
+  var component, scope, hero, $componentController;
 
   beforeEach(module('simpleComponent'));
 
-  beforeEach(inject(function($rootScope, $componentController) {
+  beforeEach(inject(function($rootScope, _$componentController_) {
     scope = $rootScope.$new();
+    $componentController = _$componentController_;
     hero = {name: 'Wolverine'};
   }));
 
