@@ -189,10 +189,35 @@ describe('$$testability', function() {
 
   describe('waiting for stability', function() {
     it('should process callbacks immediately with no outstanding requests',
-      inject(function($$testability) {
+      inject(function($$testability, $timeout) {
         var callback = jasmine.createSpy('callback');
-        $$testability.whenStable(callback);
-        expect(callback).toHaveBeenCalled();
+        runs(function() {
+          $$testability.whenStable(callback);
+          $timeout.flush();
+        });
+
+        waitsFor(function() {
+          return callback.calls.length > 0;
+        }, "The callback should be called.", 500);
+      }));
+
+    it('should wait for new $http calls asynchronously',
+      inject(function($$testability, $httpBackend, $http, $timeout) {
+        var callback = jasmine.createSpy('callback');
+        runs(function() {
+          $httpBackend.when('GET').respond(200);
+
+          $http.get('');
+          $$testability.whenStable(callback);
+          expect(callback).not.toHaveBeenCalled();
+
+          $httpBackend.flush();
+          $timeout.flush();
+        });
+
+        waitsFor(function() {
+          return callback.calls.length > 0;
+        }, "The callback should be called.", 500);
       }));
   });
 });
