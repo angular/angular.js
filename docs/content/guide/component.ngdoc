@@ -118,7 +118,7 @@ components should follow a few simple conventions:
     `@` bindings can be used when the input is a string, especially when the value of the binding doesn't change.
     ```js
       bindings: {
-        hero: `<`,
+        hero: '<',
         comment: '@'
       }
     ```
