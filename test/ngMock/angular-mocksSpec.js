@@ -2419,23 +2419,18 @@ describe('make sure that we can create an injector outside of tests', function()
 
 describe('`afterEach` clean-up', function() {
   describe('undecorated `$rootElement`', function() {
-    var jQuery = window.jQuery;
     var prevRootElement;
-    var prevRemoveDataSpy;
     var prevCleanDataSpy;
 
 
     it('should set up spies so the next test can verify `$rootElement` was cleaned up', function() {
       module(function($provide) {
         $provide.decorator('$rootElement', function($delegate) {
-          // Spy on `$rootElement.removeData()` and `jQuery.cleanData()`,
-          // so the next test can verify that they have been called as necessary
           prevRootElement = $delegate;
-          prevRemoveDataSpy = spyOn($delegate, 'removeData').andCallThrough();
 
-          if (jQuery) {
-            prevCleanDataSpy = spyOn(jQuery, 'cleanData').andCallThrough();
-          }
+          // Spy on `angular.element.cleanData()`, so the next test can verify
+          // that it has been called as necessary
+          prevCleanDataSpy = spyOn(angular.element, 'cleanData').andCallThrough();
 
           return $delegate;
         });
@@ -2451,51 +2446,34 @@ describe('`afterEach` clean-up', function() {
     it('should clean up `$rootElement` after each test', function() {
       // One call is made by `testabilityPatch`'s `dealoc()`
       // We want to verify the subsequent call, made by `angular-mocks`
-      // (Since `testabilityPatch` re-wrapps `$rootElement` and because jQuery returns a different
-      //  object when re-wrapping, we don't capture the 1st call when using jQuery)
-      expect(prevRemoveDataSpy.callCount).toBe(jQuery ? 1 : 2);
+      expect(prevCleanDataSpy.callCount).toBe(2);
 
-      if (jQuery) {
-        // One call is made by `testabilityPatch`'s `dealoc()`
-        // We want to verify the subsequent call, made by `angular-mocks`
-        expect(prevCleanDataSpy.callCount).toBe(2);
-
-        var cleanUpElems = prevCleanDataSpy.calls[1].args[0];
-        expect(cleanUpElems.length).toBe(1);
-        expect(cleanUpElems[0][0]).toBe(prevRootElement[0]);
-      }
+      var cleanUpElems = prevCleanDataSpy.calls[1].args[0];
+      expect(cleanUpElems.length).toBe(1);
+      expect(cleanUpElems[0]).toBe(prevRootElement[0]);
     });
   });
 
 
   describe('decorated `$rootElement`', function() {
-    var jQuery = window.jQuery;
     var prevOriginalRootElement;
-    var prevOriginalRemoveDataSpy;
     var prevRootElement;
-    var prevRemoveDataSpy;
     var prevCleanDataSpy;
 
 
     it('should set up spies so the next text can verify `$rootElement` was cleaned up', function() {
       module(function($provide) {
         $provide.decorator('$rootElement', function($delegate) {
-          // Mock `$rootElement` to be able to verify that the correct object is cleaned up
-          var mockRootElement = angular.element('<div></div>');
-
-          // Spy on `$rootElement.removeData()` and `jQuery.cleanData()`,
-          // so the next test can verify that they have been called as necessary
           prevOriginalRootElement = $delegate;
-          prevOriginalRemoveDataSpy = spyOn($delegate, 'removeData').andCallThrough();
 
-          prevRootElement = mockRootElement;
-          prevRemoveDataSpy = spyOn(mockRootElement, 'removeData').andCallThrough();
+          // Mock `$rootElement` to be able to verify that the correct object is cleaned up
+          prevRootElement = angular.element('<div></div>');
 
-          if (jQuery) {
-            prevCleanDataSpy = spyOn(jQuery, 'cleanData').andCallThrough();
-          }
+          // Spy on `angular.element.cleanData()`, so the next test can verify
+          // that it has been called as necessary
+          prevCleanDataSpy = spyOn(angular.element, 'cleanData').andCallThrough();
 
-          return mockRootElement;
+          return prevRootElement;
         });
       });
 
@@ -2511,33 +2489,19 @@ describe('`afterEach` clean-up', function() {
         // This is a false alarm, because `angular-mocks` would have cleaned up in a subsequent
         // `afterEach` block
         prevOriginalRootElement.removeData();
-        prevOriginalRemoveDataSpy.reset();
-
-        expect(prevOriginalRemoveDataSpy.callCount).toBe(0);
       });
     });
 
 
     it('should clean up `$rootElement` (both original and decorated) after each test', function() {
-      // Only `angular-mocks` cleans up after the original `$rootElement`, not `testabilityPatch`
-      expect(prevOriginalRemoveDataSpy.callCount).toBe(1);
-
       // One call is made by `testabilityPatch`'s `dealoc()`
       // We want to verify the subsequent call, made by `angular-mocks`
-      // (Since `testabilityPatch` re-wrapps `$rootElement` and because jQuery returns a different
-      //  object when re-wrapping, we don't capture the 1st call when using jQuery)
-      expect(prevRemoveDataSpy.callCount).toBe(jQuery ? 1 : 2);
+      expect(prevCleanDataSpy.callCount).toBe(2);
 
-      if (jQuery) {
-        // One call is made by `testabilityPatch`'s `dealoc()`
-        // We want to verify the subsequent call, made by `angular-mocks`
-        expect(prevCleanDataSpy.callCount).toBe(2);
-
-        var cleanUpElems = prevCleanDataSpy.calls[1].args[0];
-        expect(cleanUpElems.length).toBe(2);
-        expect(cleanUpElems[0][0]).toBe(prevOriginalRootElement[0]);
-        expect(cleanUpElems[1][0]).toBe(prevRootElement[0]);
-      }
+      var cleanUpElems = prevCleanDataSpy.calls[1].args[0];
+      expect(cleanUpElems.length).toBe(2);
+      expect(cleanUpElems[0]).toBe(prevOriginalRootElement[0]);
+      expect(cleanUpElems[1]).toBe(prevRootElement[0]);
     });
   });
 });

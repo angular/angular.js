@@ -2602,16 +2602,10 @@ if (window.jasmine || window.mocha) {
     currentSpec = null;
 
     if (injector) {
-      var cleanUpElems = [originalRootElement];
-      var $rootElement = injector.get('$rootElement');
-      if ($rootElement !== originalRootElement) cleanUpElems.push($rootElement);
-      cleanUpElems.forEach(function(elem) {
-        // The `$rootElement` might not have been created or
-        // a mocked `$rootElement` might not have the standard methods
-        if (elem && elem.off) elem.off();
-        if (elem && elem.removeData) elem.removeData();
-      });
-      if (window.jQuery) window.jQuery.cleanData(cleanUpElems);
+      var cleanUpElems = [originalRootElement[0]];
+      var rootNode = injector.get('$rootElement')[0];
+      if (rootNode && (rootNode !== originalRootElement[0])) cleanUpElems.push(rootNode);
+      angular.element.cleanData(cleanUpElems);
 
       injector.get('$rootScope').$destroy();
     }
