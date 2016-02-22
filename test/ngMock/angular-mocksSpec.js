@@ -2448,9 +2448,9 @@ describe('`afterEach` clean-up', function() {
       // We want to verify the subsequent call, made by `angular-mocks`
       expect(prevCleanDataSpy.callCount).toBe(2);
 
-      var cleanUpElems = prevCleanDataSpy.calls[1].args[0];
-      expect(cleanUpElems.length).toBe(1);
-      expect(cleanUpElems[0]).toBe(prevRootElement[0]);
+      var cleanUpNodes = prevCleanDataSpy.calls[1].args[0];
+      expect(cleanUpNodes.length).toBe(1);
+      expect(cleanUpNodes[0]).toBe(prevRootElement[0]);
     });
   });
 
@@ -2498,10 +2498,32 @@ describe('`afterEach` clean-up', function() {
       // We want to verify the subsequent call, made by `angular-mocks`
       expect(prevCleanDataSpy.callCount).toBe(2);
 
-      var cleanUpElems = prevCleanDataSpy.calls[1].args[0];
-      expect(cleanUpElems.length).toBe(2);
-      expect(cleanUpElems[0]).toBe(prevOriginalRootElement[0]);
-      expect(cleanUpElems[1]).toBe(prevRootElement[0]);
+      var cleanUpNodes = prevCleanDataSpy.calls[1].args[0];
+      expect(cleanUpNodes.length).toBe(2);
+      expect(cleanUpNodes[0]).toBe(prevOriginalRootElement[0]);
+      expect(cleanUpNodes[1]).toBe(prevRootElement[0]);
+    });
+  });
+
+
+  describe('uninstantiated or falsy `$rootElement`', function() {
+    it('should not break if `$rootElement` was never instantiated', function() {
+      // Just an empty test to verify that `angular-mocks` doesn't break,
+      // when trying to clean up `$rootElement`, if `$rootElement` was never injected in the test
+      // (and thus never instantiated/created)
+
+      // Ensure the `$injector` is created - if there is no `$injector`, no clean-up takes places
+      inject(function() {});
+    });
+
+
+    it('should not break if the decorated `$rootElement` is falsy (e.g. `null`)', function() {
+      module(function($provide) {
+        $provide.value('$rootElement', null);
+      });
+
+      // Ensure the `$injector` is created - if there is no `$injector`, no clean-up takes places
+      inject(function() {});
     });
   });
 });

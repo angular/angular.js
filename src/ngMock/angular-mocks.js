@@ -2579,6 +2579,7 @@ if (window.jasmine || window.mocha) {
 
 
   (window.beforeEach || window.setup)(function() {
+    originalRootElement = null;
     annotatedFunctions = [];
     currentSpec = this;
   });
@@ -2602,10 +2603,14 @@ if (window.jasmine || window.mocha) {
     currentSpec = null;
 
     if (injector) {
-      var cleanUpElems = [originalRootElement[0]];
-      var rootNode = injector.get('$rootElement')[0];
-      if (rootNode && (rootNode !== originalRootElement[0])) cleanUpElems.push(rootNode);
-      angular.element.cleanData(cleanUpElems);
+      // Ensure `$rootElement` is instantiated, before checking `originalRootElement`
+      var $rootElement = injector.get('$rootElement');
+      var rootNode = $rootElement && $rootElement[0];
+      var cleanUpNodes = !originalRootElement ? [] : [originalRootElement[0]];
+      if (rootNode && (!originalRootElement || rootNode !== originalRootElement[0])) {
+        cleanUpNodes.push(rootNode);
+      }
+      angular.element.cleanData(cleanUpNodes);
 
       injector.get('$rootScope').$destroy();
     }
