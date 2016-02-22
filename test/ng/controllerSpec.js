@@ -57,6 +57,21 @@ describe('$controller', function() {
       expect(ctrl instanceof BarCtrl).toBe(true);
     });
 
+    it('should return true when having an existing controller, should return false otherwise', function() {
+      $controllerProvider.register('FooCtrl', noop);
+      $controllerProvider.register('BarCtrl', ['dep1', 'dep2', noop]);
+      $controllerProvider.register({
+        'BazCtrl': noop,
+        'QuxCtrl': ['dep1', 'dep2', noop]
+      });
+
+      expect($controllerProvider.has('FooCtrl')).toBe(true);
+      expect($controllerProvider.has('BarCtrl')).toBe(true);
+      expect($controllerProvider.has('BazCtrl')).toBe(true);
+      expect($controllerProvider.has('QuxCtrl')).toBe(true);
+
+      expect($controllerProvider.has('UnknownCtrl')).toBe(false);
+    });
 
     it('should allow registration of controllers annotated with arrays', function() {
       var FooCtrl = function($scope) { $scope.foo = 'bar'; },
