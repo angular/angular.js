@@ -24,9 +24,9 @@ var jqLite = angular.element;
  * `ngMessage` and `ngMessageExp` directives.
  *
  * # Usage
- * The `ngMessages` directive allows individual keys in a key/value collection to each be associated with an element
+ * The `ngMessages` directive allows keys in a key/value collection to be associated with a child element
  * (or 'message') that will show or hide based on the truthiness of that key's value in the collection. A common use
- * case for `ngMessages` is for annotating form inputs with error messages using the `$error` object exposed by the
+ * case for `ngMessages` is to display error messages for inputs using the `$error` object exposed by the
  * {@link ngModel ngModel} directive.
  *
  * Setting an element's `ngMessages` attribute to the name of a key/value collection will allow its child elements to
@@ -57,19 +57,19 @@ var jqLite = angular.element;
  * In order to show error messages corresponding to `myField` we first create an element with an `ngMessages` attribute
  * set to the `$error` object owned by the `myField` input in our `myForm` form.
  *
- * Within this element we then create separate elements for each of the possible errors that the user's submission for
- * `myField` could have. The `ngMessage` attribute is used to declare which element(s) will appear for which error
- * - for example, setting `ng-message="required"` specifies that this particular element should be displayed when there
+ * Within this element we then create separate elements for each of the possible errors that `myField` could have.
+ * The `ngMessage` attribute is used to declare which element(s) will appear for which error - for example,
+ * setting `ng-message="required"` specifies that this particular element should be displayed when there
  * is no value present for the required field `myField` (because the key `required` will be `true` in the object
  * `myForm.myField.$error`).
  *
  * By default, `ngMessages` will only display one message for a particular key/value collection at any time. If more
- * than one message is applicable then the decision of which message to show is determined by the order of messages in
- * the HTML template code (messages declared first are prioritised). This mechanism means the developer does not have to
- * prioritise messages using custom JavaScript code.
+ * than one message (or error) key is currently true, then which message is shown is determined by the order of messages
+ * in the HTML template code (messages declared first are prioritised). This mechanism means the developer does not have
+ * to prioritise messages using custom JavaScript code.
  *
- * Given the following error object for our example (which informs us that the field `myField` is currently erroneous
- * in terms of both its `required` and `email` atrributes):
+ * Given the following error object for our example (which informs us that the field `myField` currently has both the
+ * `required` and `email` errors):
  *
  * ```javascript
  * <!-- keep in mind that ngModel automatically sets these error flags -->
