@@ -2612,7 +2612,10 @@ if (window.jasmine || window.mocha) {
       }
       angular.element.cleanData(cleanUpNodes);
 
-      injector.get('$rootScope').$destroy();
+      // Ensure `$destroy()` is available, before calling it
+      // (a mocked `$rootScope` might not implement it (or not even be an object at all))
+      var $rootScope = injector.get('$rootScope');
+      if ($rootScope && $rootScope.$destroy) $rootScope.$destroy();
     }
 
     // clean up jquery's fragment cache
