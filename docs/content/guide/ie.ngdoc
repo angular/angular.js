@@ -29,3 +29,6 @@ To ensure your Angular application works on IE please consider:
 
 1. Use `ng-style` tags instead of `style="{{ someCss }}"`. The latter works in Chrome and Firefox
    but does not work in Internet Explorer <= 11 (the most recent version at time of writing).
+2. For the `type` attribute of buttons, use `ng-attr-type` tags instead of 
+   `type="{{ someExpression }}"`.  If using the latter, Internet Explorer overwrites the expression
+   with `type="submit"` before Angular has a chance to interpolate it.
