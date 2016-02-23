@@ -2537,7 +2537,18 @@ describe('`afterEach` clean-up', function() {
     });
 
 
-    describe('without `$destroy()` method', function() {
+    describe('falsy or without `$destroy()` method', function() {
+      it('should not break if `$rootScope` is falsy (e.g. `null`)', function() {
+        // Just an empty test to verify that `angular-mocks` doesn't break,
+        // when trying to clean up a mocked `$rootScope` set to `null`
+
+        module({$rootScope: null});
+
+        // Ensure the `$injector` is created - if there is no `$injector`, no clean-up takes places
+        inject(function() {});
+      });
+
+
       it('should not break if `$rootScope.$destroy` is not a function', function() {
         // Just an empty test to verify that `angular-mocks` doesn't break,
         // when trying to clean up a mocked `$rootScope` without a `$destroy()` method
