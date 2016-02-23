@@ -2133,7 +2133,7 @@ angular.mock.$RootElementProvider = function() {
  *     var ctrl = $controller('MyDirectiveController', { /* no locals &#42;/ }, { name: 'Clark Kent' });
  *     expect(ctrl.name).toEqual('Clark Kent');
  *     expect($log.info.logs).toEqual(['Clark Kent']);
- *   });
+ *   }));
  * });
  *
  * ```
