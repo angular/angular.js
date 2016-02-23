@@ -309,7 +309,7 @@ allows a lot of flexibility - you can either allow animations only for specific 
 you are working with 3rd party animations), or exclude specific classes from getting animated.
 
 ```js
-app.cofig($animateProvider) {
+app.config(function($animateProvider) {
   $animateProvider.classNameFilter(/animate-/);
 });
 ```
