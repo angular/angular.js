@@ -2,8 +2,8 @@
 
 
 function $$TestabilityProvider() {
-  this.$get = ['$rootScope', '$browser', '$location', '$window',
-       function($rootScope,   $browser,   $location, $window) {
+  this.$get = ['$rootScope', '$browser', '$location',
+       function($rootScope,   $browser,   $location) {
 
     /**
      * @name $testability
