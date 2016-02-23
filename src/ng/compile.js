@@ -1030,7 +1030,8 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
    *      See {@link ng.$compile#-bindtocontroller- `bindToController`}.
    *    - `transclude` – `{boolean=}` – whether {@link $compile#transclusion content transclusion} is enabled.
    *      Disabled by default.
-   *    - `$...` – `{function()=}` – additional annotations to provide to the directive factory function.
+   *    - `$...` – additional properties to attach to the directive factory function and the controller
+   *      constructor function. (This is used by the component router to annotate)
    *
    * @returns {ng.$compileProvider} the compile provider itself, for chaining of function calls.
    * @description
@@ -1106,6 +1107,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
     forEach(options, function(val, key) {
       if (key.charAt(0) === '$') {
         factory[key] = val;
+        controller[key] = val;
       }
     });
 
