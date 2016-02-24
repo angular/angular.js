@@ -298,6 +298,40 @@ describe('ngOptions', function() {
 
   });
 
+  it('should set the "selected" attribute and property on selected options', function() {
+    scope.values = [{
+      id: 'FF0000',
+      display: 'red'
+    }, {
+      id: '0000FF',
+      display: 'blue'
+    }];
+    scope.selected = 'FF0000';
+
+    createSelect({
+      'ng-model': 'selected',
+      'ng-options': 'option.id as option.display for option in values'
+    });
+    scope.$digest();
+
+    var options = element.find('option');
+    expect(options.length).toEqual(2);
+    expect(options.eq(0)).toEqualOption('FF0000', 'red');
+    expect(options.eq(1)).toEqualOption('0000FF', 'blue');
+
+    expect(options.eq(0)[0].getAttribute('selected')).toBe('selected');
+    expect(options.eq(0).attr('selected')).toBe('selected');
+    expect(options.eq(0)[0].selected).toBe(true);
+    expect(options.eq(0).prop('selected')).toBe(true);
+
+    scope.selected = '0000FF';
+    scope.$digest();
+
+    expect(options.eq(1)[0].getAttribute('selected')).toBe('selected');
+    expect(options.eq(1).attr('selected')).toBe('selected');
+    expect(options.eq(1)[0].selected).toBe(true);
+    expect(options.eq(1).prop('selected')).toBe(true);
+  });
 
   it('should render zero as a valid display value', function() {
     createSingleSelect();
