@@ -22,7 +22,7 @@ https://plnkr.co or similar (you can use this template as a starting point: http
 
 
 * **Which version of Angular, and which browser and OS does this issue affect?** Did this work in previous
-versions of Angular? Please also test with the latest stable ánd snapshot versions.
+versions of Angular? Please also test with the latest stable and snapshot versions.
 
 
 
