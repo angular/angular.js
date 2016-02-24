@@ -296,6 +296,8 @@
  * * `$onInit` - Called on each controller after all the controllers on an element have been constructed and
  *   had their bindings initialized (and before the pre &amp; post linking functions for the directives on
  *   this element). This is a good place to put initialization code for your controller.
+ * * `$onDestroy` - Called when the controller's scope has been destroyed. This is a good place to put
+ * code for tearing down your controller and for example removing event listeners.
  *
  * #### `require`
  * Require another directive and inject its controller as the fourth argument to the linking function. The
@@ -2423,6 +2425,9 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         forEach(elementControllers, function(controller) {
           if (isFunction(controller.instance.$onInit)) {
             controller.instance.$onInit();
+          }
+          if (isFunction(controller.instance.$onDestroy)) {
+            scope.$on('$destroy', controller.instance.$onDestroy);
           }
         });
 
