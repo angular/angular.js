@@ -2427,7 +2427,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             controller.instance.$onInit();
           }
           if (isFunction(controller.instance.$onDestroy)) {
-            scope.$on('$destroy', controller.instance.$onDestroy);
+            scope.$on('$destroy', controller.instance.$onDestroy.bind(controller.instance));
           }
         });
 

@@ -5359,13 +5359,16 @@ describe('$compile', function() {
 
     it('should call `controller.$onDestroy`, if provided when the controllers is destroyed', function() {
 
+      function check() {
+        /*jshint validthis:true */
+        expect(this.element.controller('d1').id).toEqual(1);
+        expect(this.element.controller('d2').id).toEqual(2);
+      }
       function Controller1($element) { this.id = 1; this.element = $element; }
-      Controller1.prototype.$onDestroy = function() {};
-      spyOn(Controller1.prototype, '$onDestroy').andCallThrough();
+      Controller1.prototype.$onDestroy = jasmine.createSpy('$onDestroy').andCallFake(check);
 
       function Controller2($element) { this.id = 2; this.element = $element; }
-      Controller2.prototype.$onDestroy = function() {};
-      spyOn(Controller2.prototype, '$onDestroy').andCallThrough();
+      Controller2.prototype.$onDestroy = jasmine.createSpy('$onDestroy').andCallFake(check);
 
       angular.module('my', [])
         .directive('d1', valueFn({ controller: Controller1 }))
