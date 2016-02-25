@@ -401,7 +401,9 @@ describe('ngInclude', function() {
   it('should not compile template if original scope is destroyed', function() {
     module(function($provide) {
       $provide.decorator('$compile', function($delegate) {
-        return jasmine.createSpy('$compile').andCallFake($delegate);
+        var result = jasmine.createSpy('$compile').andCallFake($delegate);
+        result.$$createComment = $delegate.$$createComment;
+        return result;
       });
     });
     inject(function($rootScope, $httpBackend, $compile) {
