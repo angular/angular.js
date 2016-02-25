@@ -10162,4 +10162,28 @@ describe('$compile', function() {
       });
     });
   });
+
+  describe('$$createComment', function() {
+    it('should create empty comments if `debugInfoEnabled` is false', function() {
+      module(function($compileProvider) {
+        $compileProvider.debugInfoEnabled(false);
+      });
+
+      inject(function($compile) {
+        var comment = $compile.$$createComment('foo', 'bar');
+        expect(comment.data).toBe('');
+      });
+    });
+
+    it('should create descriptive comments if `debugInfoEnabled` is true', function() {
+      module(function($compileProvider) {
+        $compileProvider.debugInfoEnabled(true);
+      });
+
+      inject(function($compile) {
+        var comment = $compile.$$createComment('foo', 'bar');
+        expect(comment.data).toBe(' foo: bar ');
+      });
+    });
+  });
 });
