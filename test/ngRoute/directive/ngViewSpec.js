@@ -160,6 +160,61 @@ describe('ngView', function() {
     });
   });
 
+  it('should reference resolved locals via $scope.$resolve in controller', function() {
+    var controllerScope,
+        Ctrl = function($scope) {
+          controllerScope = $scope;
+          controllerScope.mutated = $scope.$resolve.name + 'bar';
+        };
+
+    module(function($routeProvider) {
+      $routeProvider.when('/foo', {
+        resolve: {
+          name: function() {
+            return 'foo';
+          }
+        },
+        template: '<div>{{mutated}}</div>',
+        controller: Ctrl
+      });
+    });
+
+    inject(function($location, $rootScope) {
+      $location.path('/foo');
+      $rootScope.$digest();
+      expect(element.text()).toEqual('foobar');
+    });
+
+  });
+
+  it('should reference resolved locals via alias in controller using resolveAs', function() {
+    var controllerScope,
+        Ctrl = function($scope) {
+          controllerScope = $scope;
+          controllerScope.mutated = $scope.myResolve.name + 'bar';
+        };
+
+    module(function($routeProvider) {
+      $routeProvider.when('/foo', {
+        resolveAs: 'myResolve',
+        resolve: {
+          name: function() {
+            return 'foo';
+          }
+        },
+        template: '<div>{{mutated}}</div>',
+        controller: Ctrl
+      });
+    });
+
+    inject(function($location, $rootScope) {
+      $location.path('/foo');
+      $rootScope.$digest();
+      expect(element.text()).toEqual('foobar');
+    });
+
+  });
+
 
   it('should load content via xhr when route changes', function() {
     module(function($routeProvider) {
