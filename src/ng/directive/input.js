@@ -1666,7 +1666,7 @@ var inputDirective = ['$browser', '$sniffer', '$filter', '$parse',
     function($browser, $sniffer, $filter, $parse) {
   return {
     restrict: 'E',
-    require: ['?ngModel'],
+    require: ['^?ngModel'],
     link: {
       pre: function(scope, element, attr, ctrls) {
         if (ctrls[0]) {
