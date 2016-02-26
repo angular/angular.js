@@ -262,15 +262,17 @@ function ngViewFillContentFactory($compile, $controller, $route) {
     priority: -400,
     link: function(scope, $element) {
       var current = $route.current,
-          locals = current.locals;
+          locals = current.locals,
+          resolveAs = current.resolveAs || '$resolve';
 
       $element.html(locals.$template);
 
       var link = $compile($element.contents());
 
-      scope[current.resolveAs || '$resolve'] = locals;
+      scope[resolveAs] = locals;
 
       if (current.controller) {
+        locals[resolveAs] = locals;
         locals.$scope = scope;
         var controller = $controller(current.controller, locals);
         if (current.controllerAs) {
