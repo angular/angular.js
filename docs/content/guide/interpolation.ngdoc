@@ -124,8 +124,8 @@ You should instead delegate the computation of complex expressions to the scope,
 ```
 
 ```js
-  function getForm() {
-    return $scope['form' + $index];
+  function getForm(index) {
+    return $scope['form' + index];
   }
 ```
 
