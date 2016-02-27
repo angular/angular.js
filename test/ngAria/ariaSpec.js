@@ -248,7 +248,7 @@ describe('$aria', function() {
     });
 
     it('should not add a role to a native checkbox', function() {
-      compileElement('<input type="checkbox" ng-model="val"></div>');
+      compileElement('<input type="checkbox" ng-model="val"/>');
       expect(element.attr('role')).toBe(undefined);
     });
 
@@ -258,7 +258,7 @@ describe('$aria', function() {
     });
 
     it('should not add a role to a native radio button', function() {
-      compileElement('<input type="radio" ng-model="val"></div>');
+      compileElement('<input type="radio" ng-model="val"/>');
       expect(element.attr('role')).toBe(undefined);
     });
 
@@ -268,7 +268,7 @@ describe('$aria', function() {
     });
 
     it('should not add a role to a native range input', function() {
-      compileElement('<input type="range" ng-model="val"></div>');
+      compileElement('<input type="range" ng-model="val"/>');
       expect(element.attr('role')).toBe(undefined);
     });
   });
