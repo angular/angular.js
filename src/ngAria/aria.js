@@ -228,8 +228,8 @@ ngAriaModule.directive('ngShow', ['$aria', function($aria) {
   function shouldAttachRole(role, elem) {
     // if element does not have role attribute
     // AND element type is equal to role (if custom element has a type equaling shape) <-- remove?
-    // AND element is not INPUT
-    return !elem.attr('role') && (elem.attr('type') === role) && (elem[0].nodeName !== 'INPUT');
+    // AND element is not in nodeBlackList
+    return !elem.attr('role') && (elem.attr('type') === role) && !isNodeOneOf(elem, nodeBlackList);
   }
 
   function getShape(attr, elem) {

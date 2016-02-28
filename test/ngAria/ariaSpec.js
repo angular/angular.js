@@ -272,6 +272,19 @@ describe('$aria', function() {
       compileElement('<input type="range" ng-model="val"/>');
       expect(element.attr('role')).toBeUndefined();
     });
+
+    they('should not add role to native $prop controls', {
+      input: '<input type="text" ng-model="val">',
+      select: '<select type="checkbox" ng-model="val"></select>',
+      textarea: '<textarea type="checkbox" ng-model="val"></textarea>',
+      button: '<button ng-click="doClick()"></button>',
+      summary: '<summary ng-click="doClick()"></summary>',
+      details: '<details ng-click="doClick()"></details>',
+      a: '<a ng-click="doClick()"></a>'
+    }, function(tmpl) {
+      var element = $compile(tmpl)(scope);
+      expect(element.attr('role')).toBeUndefined();
+    });
   });
 
   describe('aria-checked when disabled', function() {
