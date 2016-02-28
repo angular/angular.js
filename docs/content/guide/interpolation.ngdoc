@@ -98,16 +98,20 @@ For example, to bind to `viewBox`, we can write:
 </svg>
 ```
 
-The following attributes are also known to cause problems when used with normal bindings:
+Other attributes may also not work as expected when they contain interpolation markup, and
+can be used with `ngAttr` instead. The following is a list of known problematic attributes:
 
-- **size** in `<select>` elements (see [Github issue 1619](https://github.com/angular/angular.js/issues/1619))
-- **placeholder** in `<textarea>` in Internet Explorer 10/11 (see [Github issue 5025](https://github.com/angular/angular.js/issues/5025))
+- **size** in `<select>` elements (see [issue 1619](https://github.com/angular/angular.js/issues/1619))
+- **placeholder** in `<textarea>` in Internet Explorer 10/11 (see [issue 5025](https://github.com/angular/angular.js/issues/5025))
+- **type** in `<button>` in Internet Explorer 11 (see [issue 14117](https://github.com/angular/angular.js/issues/5025))
 
 
 ### Embedding interpolation markup inside expressions
 
-Angular directives take either expressions or interpolation markup with embedded expressions. So the
-following example which embeds interpolation inside an expression is a bad practice:
+<div class="alert alert-danger">
+**Note:** Angular directive attributes take either expressions *or* interpolation markup with embedded expressions.
+It is considered **bad practice** to embed interpolation markup inside an expression:
+</div>
 
 ```html
 <div ng-show="form{{$index}}.$invalid"></div>
