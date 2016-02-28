@@ -28,12 +28,13 @@ added it as a dependency, you can test a few things:
  * Fire up a screen reader such as VoiceOver or NVDA to check for ARIA support.
 [Helpful screen reader tips.](http://webaim.org/articles/screenreader_testing/)
 
-##Supported directives
+## Supported directives
 Currently, ngAria interfaces with the following directives:
 
  * {@link guide/accessibility#ngmodel ngModel}
  * {@link guide/accessibility#ngdisabled ngDisabled}
  * {@link guide/accessibility#ngrequired ngRequired}
+ * {@link guide/accessibility#ngreadonly ngReadonly}
  * {@link guide/accessibility#ngvaluechecked ngChecked}
  * {@link guide/accessibility#ngvaluechecked ngValue}
  * {@link guide/accessibility#ngshow ngShow}
@@ -57,6 +58,7 @@ attributes (if they have not been explicitly specified by the developer):
  * aria-valuenow
  * aria-invalid
  * aria-required
+ * aria-readonly
 
 ###Example
 
@@ -201,6 +203,25 @@ Becomes:
 
 ```html
 <md-checkbox ng-required="val" aria-required="true"></md-checkbox>
+```
+
+<h2 id="ngreadonly">ngReadonly</h2>
+
+The boolean `readonly` attribute is only valid for native form controls such as `input` and
+`textarea`. To properly indicate custom element directives such as `<md-checkbox>` or `<custom-input>`
+as required, using ngAria with {@link ng.ngReadonly ngReadonly} will also add
+`aria-readonly`. This tells accessibility APIs when a custom control is read-only.
+
+###Example
+
+```html
+<md-checkbox ng-readonly="val"></md-checkbox>
+```
+
+Becomes:
+
+```html
+<md-checkbox ng-readonly="val" aria-readonly="true"></md-checkbox>
 ```
 
 <h2 id="ngshow">ngShow</h2>
