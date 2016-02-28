@@ -396,6 +396,66 @@ describe('$aria', function() {
     });
   });
 
+  describe('aria-readonly', function() {
+    beforeEach(injectScopeAndCompiler);
+
+    they('should not attach itself to native $prop controls', {
+      input: '<input ng-readonly="val">',
+      textarea: '<textarea ng-readonly="val"></textarea>',
+      select: '<select ng-readonly="val"></select>',
+      button: '<button ng-readonly="val"></button>'
+    }, function(tmpl) {
+      var element = $compile(tmpl)(scope);
+      scope.$apply('val = true');
+
+      expect(element.attr('readonly')).toBeDefined();
+      expect(element.attr('aria-readonly')).toBeUndefined();
+    });
+
+    it('should attach itself to custom controls', function() {
+      compileElement('<div ng-readonly="val"></div>');
+      expect(element.attr('aria-readonly')).toBe('false');
+
+      scope.$apply('val = true');
+      expect(element.attr('aria-readonly')).toBe('true');
+
+    });
+
+    it('should not attach itself if an aria-readonly attribute is already present', function() {
+      compileElement('<div ng-readonly="val" aria-readonly="userSetValue"></div>');
+
+      expect(element.attr('aria-readonly')).toBe('userSetValue');
+    });
+
+    it('should always set aria-readonly to a boolean value', function() {
+      compileElement('<div ng-readonly="val"></div>');
+
+      scope.$apply('val = "test angular"');
+      expect(element.attr('aria-readonly')).toBe('true');
+
+      scope.$apply('val = null');
+      expect(element.attr('aria-readonly')).toBe('false');
+
+      scope.$apply('val = {}');
+      expect(element.attr('aria-readonly')).toBe('true');
+    });
+  });
+
+  describe('aria-readonly when disabled', function() {
+    beforeEach(configAriaProvider({
+      ariaReadonly: false
+    }));
+    beforeEach(injectScopeAndCompiler);
+
+    it('should not add the aria-readonly attribute', function() {
+      compileElement("<input ng-model='val' readonly>");
+      expect(element.attr('aria-readonly')).toBeUndefined();
+
+      compileElement("<div ng-model='val' ng-readonly='true'></div>");
+      expect(element.attr('aria-readonly')).toBeUndefined();
+    });
+  });
+
   describe('aria-required', function() {
     beforeEach(injectScopeAndCompiler);
 
