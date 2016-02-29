@@ -1519,6 +1519,43 @@ describe('$q.when', function() {
 });
 ```
 
+- **form:** Due to [94533e57](https://github.com/angular/angular.js/commit/94533e570673e6b2eb92073955541fa289aabe02),
+  the `name` attribute of `form` elements can now only contain characters that can be evaluated as part
+  of an Angular expression. This is because Angular uses the value of `name` as an assignable expression
+  to set the form on the `$scope`. For example, `name="myForm"` assigns the form to `$scope.myForm` and
+  `name="myObj.myForm"` assigns it to `$scope.myObj.myForm`.
+
+  Previously, it was possible to also use names such `name="my:name"`, because Angular used a special setter
+  function for the form name. Now the general, more robust `$parse` setter is used.
+
+  The easiest way to migrate your code is therefore to remove all special characters from the `name` attribute.
+
+  If you need to keep the special characters, you can use the following directive, which will replace
+  the `name` with a value that can be evaluated as an expression in the compile function, and then
+  re-set the original name in the postLink function. This ensures that (1), the form is published on
+  the scope, and (2), the form has the original name, which might be important if you are doing server-side
+  form submission.
+
+  ```js
+  angular.module('myApp').directive('form', function() {
+    return {
+      restrict: 'E',
+      priority: 1000,
+      compile: function(element, attrs) {
+        var unsupportedCharacter = ':'; // change accordingly
+        var originalName = attrs.name;
+        if (attrs.name && attrs.name.indexOf(unsupportedCharacter) > 0) {
+          attrs.$set('name', 'this["' + originalName + '"]');
+        }
+
+        return postLinkFunction(scope, element) {
+          // Don't trigger $observers
+          element.setAttribute('name', originalName);
+        }
+      }
+    };
+  });
+  ```
 
 <a name="1.4.3"></a>
 # 1.4.3 foam-acceleration (2015-07-15)
