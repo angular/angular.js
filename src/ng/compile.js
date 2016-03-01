@@ -1215,7 +1215,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
     var SIMPLE_ATTR_NAME = /^\w/;
     var specialAttrHolder = document.createElement('div');
-    var Attributes = function(element, attributesToCopy) {
+    function Attributes(element, attributesToCopy) {
       if (attributesToCopy) {
         var keys = Object.keys(attributesToCopy);
         var i, l, key;
@@ -1229,7 +1229,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       }
 
       this.$$element = element;
-    };
+    }
 
     Attributes.prototype = {
       /**
@@ -1718,8 +1718,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
     }
 
     function createBoundTranscludeFn(scope, transcludeFn, previousBoundTranscludeFn) {
-
-      var boundTranscludeFn = function(transcludedScope, cloneFn, controllers, futureParentElement, containingScope) {
+      function boundTranscludeFn(transcludedScope, cloneFn, controllers, futureParentElement, containingScope) {
 
         if (!transcludedScope) {
           transcludedScope = scope.$new(false, containingScope);
@@ -1731,7 +1730,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           transcludeControllers: controllers,
           futureParentElement: futureParentElement
         });
-      };
+      }
 
       // We need  to attach the transclusion slots onto the `boundTranscludeFn`
       // so that they are available inside the `controllersBoundTransclude` function
@@ -1896,7 +1895,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
      * @returns {Function}
      */
     function groupElementsLinkFnWrapper(linkFn, attrStart, attrEnd) {
-      return function(scope, element, attrs, controllers, transcludeFn) {
+      return function groupedElementsLink(scope, element, attrs, controllers, transcludeFn) {
         element = groupScan(element[0], attrStart, attrEnd);
         return linkFn(scope, element, attrs, controllers, transcludeFn);
       };
@@ -1919,7 +1918,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       if (eager) {
         return compile($compileNodes, transcludeFn, maxPriority, ignoreDirective, previousCompileContext);
       }
-      return function() {
+      return function lazyCompilation() {
         if (!compiled) {
           compiled = compile($compileNodes, transcludeFn, maxPriority, ignoreDirective, previousCompileContext);
 
@@ -2985,7 +2984,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
     // only occurs for isolate scopes and new scopes with controllerAs.
     function initializeDirectiveBindings(scope, attrs, destination, bindings, directive) {
       var removeWatchCollection = [];
-      forEach(bindings, function(definition, scopeName) {
+      forEach(bindings, function initializeBinding(definition, scopeName) {
         var attrName = definition.attrName,
         optional = definition.optional,
         mode = definition.mode, // @, =, or &
@@ -3027,7 +3026,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             if (parentGet.literal) {
               compare = equals;
             } else {
-              compare = function(a, b) { return a === b || (a !== a && b !== b); };
+              compare = function simpleCompare(a, b) { return a === b || (a !== a && b !== b); };
             }
             parentSet = parentGet.assign || function() {
               // reset the change, or we will throw this exception on every $digest
