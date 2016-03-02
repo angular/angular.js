@@ -7,6 +7,7 @@
 var isArray;
 var isObject;
 var isDefined;
+var noop;
 
 /**
  * @ngdoc module
@@ -54,6 +55,7 @@ function $RouteProvider() {
   isArray = angular.isArray;
   isObject = angular.isObject;
   isDefined = angular.isDefined;
+  noop = angular.noop;
 
   function inherit(parent, extra) {
     return angular.extend(Object.create(parent), extra);
@@ -350,7 +352,8 @@ function $RouteProvider() {
                '$injector',
                '$templateRequest',
                '$sce',
-      function($rootScope, $location, $routeParams, $q, $injector, $templateRequest, $sce) {
+               '$browser',
+      function($rootScope, $location, $routeParams, $q, $injector, $templateRequest, $sce, $browser) {
 
     /**
      * @ngdoc service
@@ -776,6 +779,7 @@ function $RouteProvider() {
 
     function resolveLocals(route) {
       if (route) {
+        $browser.$$incOutstandingRequestCount();
         var locals = angular.extend({}, route.resolve);
         angular.forEach(locals, function(value, key) {
           locals[key] = angular.isString(value) ?
@@ -786,7 +790,9 @@ function $RouteProvider() {
         if (angular.isDefined(template)) {
           locals['$template'] = template;
         }
-        return $q.all(locals);
+        return $q.all(locals).finally(function(locals) {
+          $browser.$$completeOutstandingRequest(noop);
+        });
       }
     }
 
