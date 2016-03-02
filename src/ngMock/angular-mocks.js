@@ -37,10 +37,30 @@ angular.mock.$Browser = function() {
   self.$$lastUrl = self.$$url; // used by url polling fn
   self.pollFns = [];
 
-  // TODO(vojta): remove this temporary api
-  self.$$completeOutstandingRequest = angular.noop;
-  self.$$incOutstandingRequestCount = angular.noop;
+  // Testability API
 
+  var outstandingRequestCount = 0;
+  var outstandingRequestCallbacks = [];
+  self.$$incOutstandingRequestCount = function() { outstandingRequestCount++; };
+  self.$$completeOutstandingRequest = function(fn) {
+    try {
+      fn();
+    } finally {
+      outstandingRequestCount--;
+      if (!outstandingRequestCount) {
+        while (outstandingRequestCallbacks.length) {
+          outstandingRequestCallbacks.pop()();
+        }
+      }
+    }
+  };
+  self.notifyWhenNoOutstandingRequests = function(callback) {
+    if (outstandingRequestCount) {
+      outstandingRequestCallbacks.push(callback);
+    } else {
+      callback();
+    }
+  };
 
   // register url polling fn
 
@@ -65,6 +85,8 @@ angular.mock.$Browser = function() {
   self.deferredNextId = 0;
 
   self.defer = function(fn, delay) {
+    // Note that we do not use `$$incOutstandingRequestCount` or `$$completeOutstandingRequest`
+    // in this mock implementation.
     delay = delay || 0;
     self.deferredFns.push({time:(self.defer.now + delay), fn:fn, id: self.deferredNextId});
     self.deferredFns.sort(function(a, b) { return a.time - b.time;});
@@ -166,10 +188,6 @@ angular.mock.$Browser.prototype = {
 
   state: function() {
     return this.$$state;
-  },
-
-  notifyWhenNoOutstandingRequests: function(fn) {
-    fn();
   }
 };
 
