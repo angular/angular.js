@@ -786,6 +786,7 @@ angular.module('ngAnimate', [], function initAngularHelpers() {
   .factory('$$rAFScheduler', $$rAFSchedulerFactory)
 
   .provider('$$animateQueue', $$AnimateQueueProvider)
+  .provider('$$animateCache', $$AnimateCacheProvider)
   .provider('$$animation', $$AnimationProvider)
 
   .provider('$animateCss', $AnimateCssProvider)
