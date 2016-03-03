@@ -3,6 +3,7 @@
   "browser": true,
   "newcap": false,
   "globals": {
+    "getDomNode": false,
     "mergeAnimationDetails": false,
     "prepareAnimationOptions": false,
     "applyAnimationStyles": false,

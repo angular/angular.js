@@ -303,33 +303,6 @@ function getCssTransitionDurationStyle(duration, applyOnlyDuration) {
   return [style, value];
 }
 
-function createLocalCacheLookup() {
-  var cache = Object.create(null);
-  return {
-    flush: function() {
-      cache = Object.create(null);
-    },
-
-    count: function(key) {
-      var entry = cache[key];
-      return entry ? entry.total : 0;
-    },
-
-    get: function(key) {
-      var entry = cache[key];
-      return entry && entry.value;
-    },
-
-    put: function(key, value) {
-      if (!cache[key]) {
-        cache[key] = { total: 1, value: value };
-      } else {
-        cache[key].total++;
-      }
-    }
-  };
-}
-
 // we do not reassign an already present style value since
 // if we detect the style property value again we may be
 // detecting styles that were added via the `from` styles.
@@ -348,26 +321,15 @@ function registerRestorableStyles(backup, node, properties) {
 }
 
 var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
-  var gcsLookup = createLocalCacheLookup();
-  var gcsStaggerLookup = createLocalCacheLookup();
-
-  this.$get = ['$window', '$$jqLite', '$$AnimateRunner', '$timeout',
+  this.$get = ['$window', '$$jqLite', '$$AnimateRunner', '$timeout', '$$animateCache',
                '$$forceReflow', '$sniffer', '$$rAFScheduler', '$$animateQueue',
-       function($window,   $$jqLite,   $$AnimateRunner,   $timeout,
+       function($window,   $$jqLite,   $$AnimateRunner,   $timeout,   $$animateCache,
                 $$forceReflow,   $sniffer,   $$rAFScheduler, $$animateQueue) {
 
     var applyAnimationClasses = applyAnimationClassesFactory($$jqLite);
 
-    var parentCounter = 0;
-    function gcsHashFn(node, extraClasses) {
-      var KEY = "$$ngAnimateParentKey";
-      var parentNode = node.parentNode;
-      var parentID = parentNode[KEY] || (parentNode[KEY] = ++parentCounter);
-      return parentID + '-' + node.getAttribute('class') + '-' + extraClasses;
-    }
-
-    function computeCachedCssStyles(node, className, cacheKey, properties) {
-      var timings = gcsLookup.get(cacheKey);
+    function computeCachedCssStyles(node, className, cacheKey, allowInvalid, properties) {
+      var timings = $$animateCache.get(cacheKey);
 
       if (!timings) {
         timings = computeCssStyles($window, node, properties);
@@ -376,20 +338,26 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
         }
       }
 
+      // if an GCS call doesn't return anything valid for the animation then we
+      // should mark that so that repeated classAdd/removeRemove calls are skipped
+      var isValid = allowInvalid || (timings.transitionDuration > 0 || timings.animationDuration > 0);
+
       // we keep putting this in multiple times even though the value and the cacheKey are the same
       // because we're keeping an internal tally of how many duplicate animations are detected.
-      gcsLookup.put(cacheKey, timings);
+      $$animateCache.put(cacheKey, timings, isValid);
+
       return timings;
     }
 
     function computeCachedCssStaggerStyles(node, className, cacheKey, properties) {
       var stagger;
+      var staggerCacheKey = 'stagger-' + cacheKey;
 
       // if we have one or more existing matches of matching elements
       // containing the same parent + CSS styles (which is how cacheKey works)
       // then staggering is possible
-      if (gcsLookup.count(cacheKey) > 0) {
-        stagger = gcsStaggerLookup.get(cacheKey);
+      if ($$animateCache.count(cacheKey) > 0) {
+        stagger = $$animateCache.get(staggerCacheKey);
 
         if (!stagger) {
           var staggerClassName = pendClasses(className, '-stagger');
@@ -404,7 +372,7 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
 
           $$jqLite.removeClass(node, staggerClassName);
 
-          gcsStaggerLookup.put(cacheKey, stagger);
+          $$animateCache.put(staggerCacheKey, stagger, true);
         }
       }
 
@@ -416,8 +384,7 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
     function waitUntilQuiet(callback) {
       rafWaitQueue.push(callback);
       $$rAFScheduler.waitUntilQuiet(function() {
-        gcsLookup.flush();
-        gcsStaggerLookup.flush();
+        $$animateCache.flush();
 
         // DO NOT REMOVE THIS LINE OR REFACTOR OUT THE `pageWidth` variable.
         // PLEASE EXAMINE THE `$$forceReflow` service to understand why.
@@ -432,8 +399,8 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
       });
     }
 
-    function computeTimings(node, className, cacheKey) {
-      var timings = computeCachedCssStyles(node, className, cacheKey, DETECT_CSS_PROPERTIES);
+    function computeTimings(node, className, cacheKey, allowInvalid) {
+      var timings = computeCachedCssStyles(node, className, cacheKey, allowInvalid, DETECT_CSS_PROPERTIES);
       var aD = timings.animationDelay;
       var tD = timings.transitionDelay;
       timings.maxDelay = aD && tD
@@ -520,7 +487,6 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
 
       var preparationClasses = [structuralClassName, addRemoveClassName].join(' ').trim();
       var fullClassName = classes + ' ' + preparationClasses;
-      var activeClasses = pendClasses(preparationClasses, ACTIVE_CLASS_SUFFIX);
       var hasToStyles = styles.to && Object.keys(styles.to).length > 0;
       var containsKeyframeAnimation = (options.keyframeStyle || '').length > 0;
 
@@ -533,7 +499,12 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
         return closeAndReturnNoopAnimator();
       }
 
-      var cacheKey, stagger;
+      var stagger, cacheKey = $$animateCache.cacheKey(node, method, options.addClass, options.removeClass);
+      if (!$$animateCache.containsCachedValidAnimation(cacheKey)) {
+        preparationClasses = null;
+        return closeAndReturnNoopAnimator();
+      }
+
       if (options.stagger > 0) {
         var staggerVal = parseFloat(options.stagger);
         stagger = {
@@ -543,7 +514,6 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
           animationDuration: 0
         };
       } else {
-        cacheKey = gcsHashFn(node, fullClassName);
         stagger = computeCachedCssStaggerStyles(node, preparationClasses, cacheKey, DETECT_STAGGER_CSS_PROPERTIES);
       }
 
@@ -577,7 +547,7 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
       var itemIndex = stagger
           ? options.staggerIndex >= 0
               ? options.staggerIndex
-              : gcsLookup.count(cacheKey)
+              : $$animateCache.count(cacheKey)
           : 0;
 
       var isFirst = itemIndex === 0;
@@ -592,7 +562,7 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
         blockTransitions(node, SAFE_FAST_FORWARD_DURATION_VALUE);
       }
 
-      var timings = computeTimings(node, fullClassName, cacheKey);
+      var timings = computeTimings(node, fullClassName, cacheKey, !isStructural);
       var relativeDelay = timings.maxDelay;
       maxDelay = Math.max(relativeDelay, 0);
       maxDuration = timings.maxDuration;
@@ -629,6 +599,8 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
       if (maxDuration === 0 && !flags.recalculateTimingStyles) {
         return closeAndReturnNoopAnimator();
       }
+
+      var activeClasses = pendClasses(preparationClasses, ACTIVE_CLASS_SUFFIX);
 
       if (options.delay != null) {
         var delayStyle;
@@ -717,10 +689,13 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
         animationClosed = true;
         animationPaused = false;
 
-        if (!options.$$skipPreparationClasses) {
+        if (preparationClasses && !options.$$skipPreparationClasses) {
           $$jqLite.removeClass(element, preparationClasses);
         }
-        $$jqLite.removeClass(element, activeClasses);
+
+        if (activeClasses) {
+          $$jqLite.removeClass(element, activeClasses);
+        }
 
         blockKeyframeAnimations(node, false);
         blockTransitions(node, false);
@@ -893,9 +868,9 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
 
           if (flags.recalculateTimingStyles) {
             fullClassName = node.className + ' ' + preparationClasses;
-            cacheKey = gcsHashFn(node, fullClassName);
+            cacheKey = $$animateCache.cacheKey(node, method, options.addClass, options.removeClass);
 
-            timings = computeTimings(node, fullClassName, cacheKey);
+            timings = computeTimings(node, fullClassName, cacheKey, false);
             relativeDelay = timings.maxDelay;
             maxDelay = Math.max(relativeDelay, 0);
             maxDuration = timings.maxDuration;

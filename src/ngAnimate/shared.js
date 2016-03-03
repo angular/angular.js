@@ -321,7 +321,7 @@ function getDomNode(element) {
   return (element instanceof angular.element) ? element[0] : element;
 }
 
-function applyGeneratedPreparationClasses(element, event, options) {
+function applyGeneratedPreparationClasses($$jqLite, element, event, options) {
   var classes = '';
   if (event) {
     classes = pendClasses(event, EVENT_CLASS_PREFIX, true);
@@ -334,7 +334,7 @@ function applyGeneratedPreparationClasses(element, event, options) {
   }
   if (classes.length) {
     options.preparationClasses = classes;
-    element.addClass(classes);
+    $$jqLite.addClass(element, classes);
   }
 }
 
