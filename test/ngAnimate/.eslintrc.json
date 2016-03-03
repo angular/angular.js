@@ -3,6 +3,7 @@
     "new-cap": "off"
   },
   "globals": {
+    "getDomNode": false,
     "mergeAnimationDetails": false,
     "prepareAnimationOptions": false,
     "applyAnimationStyles": false,
