@@ -194,13 +194,18 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
       return matches;
     }
 
-    return {
+    var $animate = {
       on: function(event, container, callback) {
         var node = extractElementNode(container);
         callbackRegistry[event] = callbackRegistry[event] || [];
         callbackRegistry[event].push({
           node: node,
           callback: callback
+        });
+
+        // Remove the callback when the element is removed from the DOM
+        jqLite(container).on('$destroy', function() {
+          $animate.off(event, container, callback);
         });
       },
 
@@ -268,6 +273,8 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
         return bool;
       }
     };
+
+    return $animate;
 
     function queueAnimation(element, event, initialOptions) {
       // we always make a copy of the options since
