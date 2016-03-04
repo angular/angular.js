@@ -248,14 +248,11 @@
  * allow a component to have its properties bound to the controller, rather than to scope.
  *
  * After the controller is instantiated, the initial values of the isolate scope bindings will be bound to the controller
- * properties. You can access these bindings once they have been initialized by providing a controller method called
- * `$onInit`, which is called after all the controllers on an element have been constructed and had their bindings
- * initialized.
+ * properties.
  *
  * <div class="alert alert-warning">
  * **Deprecation warning:** although bindings for non-ES6 class controllers are currently
- * bound to `this` before the controller constructor is called, this use is now deprecated. Please place initialization
- * code that relies upon bindings inside a `$onInit` method on the controller, instead.
+ * bound to `this` before the controller constructor is called, this use is now deprecated.
  * </div>
  *
  * It is also possible to set `bindToController` to an object hash with the same format as the `scope` property.
@@ -293,9 +290,9 @@
  *    `true` if the specified slot contains content (i.e. one or more DOM nodes).
  *
  * The controller can provide the following methods that act as life-cycle hooks:
- * * `$onInit` - Called on each controller after all the controllers on an element have been constructed and
- *   had their bindings initialized (and before the pre &amp; post linking functions for the directives on
- *   this element). This is a good place to put initialization code for your controller.
+ * * `$onInit` - Called on each controller after all the controllers on an element have been constructed
+ * 	 (and before the pre &amp; post linking functions for the directives on this element).
+ * 	 This is a good place to put initialization code for your controller.
  *
  * #### `require`
  * Require another directive and inject its controller as the fourth argument to the linking function. The
