@@ -25,7 +25,7 @@ This resets your workspace to step 0 of the tutorial app.
 You must repeat this for every future step in the tutorial and change the number to the number of
 the step you are on. This will cause any changes you made within your working directory to be lost.
 
-If you haven't already done so you need to install the dependencies by running:
+If you haven't already install all the necessary dependencies you need to install them first by running:
 
 ```
 npm install
