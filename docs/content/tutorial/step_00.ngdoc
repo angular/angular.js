@@ -67,7 +67,7 @@ __`app/index.html`:__
 
 ## What is the code doing?
 
-**`ng-app` directive:**
+** `ng-app` Attribute & `ngApp` Directive:**
 
           <html ng-app>
 
