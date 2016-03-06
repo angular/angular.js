@@ -356,7 +356,7 @@ describe('jqLite', function() {
 
       expect(div.controller()).toBe('ngController');
       expect(div.controller('ngController')).toBe('ngController');
-      expect(div.controller('other')).toBe(undefined);
+      expect(div.controller('other')).toBeUndefined();
 
       dealoc(div);
     });

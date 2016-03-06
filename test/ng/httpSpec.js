@@ -1413,7 +1413,7 @@ describe('$http', function() {
           $httpBackend.flush();
 
           expect(callback.callCount).toBe(3);
-          expect(callback.calls[0].args[0]).toBe(undefined);
+          expect(callback.calls[0].args[0]).toBeUndefined();
           expect(callback.calls[1].args[0]).toBe(null);
           expect(callback.calls[2].args[0]).toBe('');
         });

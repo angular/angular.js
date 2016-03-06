@@ -161,7 +161,7 @@ describe('filters', function() {
     });
 
     it('should pass through null and undefined to be compatible with one-time binding', function() {
-      expect(currency(undefined)).toBe(undefined);
+      expect(currency(undefined)).toBeUndefined();
       expect(currency(null)).toBe(null);
     });
 
@@ -233,7 +233,7 @@ describe('filters', function() {
 
     it('should pass through null and undefined to be compatible with one-time binding', function() {
       expect(number(null)).toBe(null);
-      expect(number(undefined)).toBe(undefined);
+      expect(number(undefined)).toBeUndefined();
     });
 
     it('should filter exponentially large numbers', function() {

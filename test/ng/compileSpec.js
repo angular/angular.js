@@ -3498,11 +3498,11 @@ describe('$compile', function() {
         expect(element.attr('ng-my-attr')).toEqual('value');
 
         attr.$set('ngMyAttr', undefined);
-        expect(element.attr('ng-my-attr')).toBe(undefined);
+        expect(element.attr('ng-my-attr')).toBeUndefined();
 
         attr.$set('ngMyAttr', 'value');
         attr.$set('ngMyAttr', null);
-        expect(element.attr('ng-my-attr')).toBe(undefined);
+        expect(element.attr('ng-my-attr')).toBeUndefined();
       });
 
 
@@ -3987,7 +3987,7 @@ describe('$compile', function() {
     describe('object reference', function() {
       it('should update local when origin changes', inject(function() {
         compile('<div><span my-component ref="name">');
-        expect(componentScope.ref).toBe(undefined);
+        expect(componentScope.ref).toBeUndefined();
         expect(componentScope.refAlias).toBe(componentScope.ref);
 
         $rootScope.name = 'misko';
@@ -4150,7 +4150,7 @@ describe('$compile', function() {
     describe('optional object reference', function() {
       it('should update local when origin changes', inject(function() {
         compile('<div><span my-component optref="name">');
-        expect(componentScope.optRef).toBe(undefined);
+        expect(componentScope.optRef).toBeUndefined();
         expect(componentScope.optRefAlias).toBe(componentScope.optRef);
 
         $rootScope.name = 'misko';
@@ -4167,9 +4167,9 @@ describe('$compile', function() {
       it('should not throw exception when reference does not exist', inject(function() {
         compile('<div><span my-component>');
 
-        expect(componentScope.optref).toBe(undefined);
-        expect(componentScope.optrefAlias).toBe(undefined);
-        expect(componentScope.optreference).toBe(undefined);
+        expect(componentScope.optref).toBeUndefined();
+        expect(componentScope.optrefAlias).toBeUndefined();
+        expect(componentScope.optreference).toBeUndefined();
       }));
     });
 
@@ -4224,7 +4224,7 @@ describe('$compile', function() {
     describe('one-way binding', function() {
       it('should update isolate when the identity of origin changes', inject(function() {
         compile('<div><span my-component ow-ref="obj">');
-        expect(componentScope.owRef).toBe(undefined);
+        expect(componentScope.owRef).toBeUndefined();
         expect(componentScope.owRefAlias).toBe(componentScope.owRef);
 
         $rootScope.obj = {value: 'initial'};
@@ -4456,7 +4456,7 @@ describe('$compile', function() {
         describe('optional one-way binding', function() {
           it('should update local when origin changes', inject(function() {
             compile('<div><span my-component ow-optref="name">');
-            expect(componentScope.owOptref).toBe(undefined);
+            expect(componentScope.owOptref).toBeUndefined();
             expect(componentScope.owOptrefAlias).toBe(componentScope.owOptref);
 
             $rootScope.name = 'misko';
@@ -4473,8 +4473,8 @@ describe('$compile', function() {
           it('should not throw exception when reference does not exist', inject(function() {
             compile('<div><span my-component>');
 
-            expect(componentScope.owOptref).toBe(undefined);
-            expect(componentScope.owOptrefAlias).toBe(undefined);
+            expect(componentScope.owOptref).toBeUndefined();
+            expect(componentScope.owOptrefAlias).toBeUndefined();
           }));
         });
       });

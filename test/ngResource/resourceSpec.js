@@ -81,10 +81,10 @@ describe("basic usage", function() {
     });
 
     it('should skip over null/undefined members', function() {
-      expect(lookupDottedPath(data, 'a.b.c')).toBe(undefined);
-      expect(lookupDottedPath(data, 'a.c.c')).toBe(undefined);
-      expect(lookupDottedPath(data, 'a.b.c.d')).toBe(undefined);
-      expect(lookupDottedPath(data, 'NOT_EXIST')).toBe(undefined);
+      expect(lookupDottedPath(data, 'a.b.c')).toBeUndefined();
+      expect(lookupDottedPath(data, 'a.c.c')).toBeUndefined();
+      expect(lookupDottedPath(data, 'a.b.c.d')).toBeUndefined();
+      expect(lookupDottedPath(data, 'NOT_EXIST')).toBeUndefined();
     });
   });
 
