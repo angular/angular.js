@@ -1914,7 +1914,7 @@ describe('parser', function() {
         expect(scope.$eval('a.b.c.d')).toBeUndefined();
         scope.a = undefined;
         expect(scope.$eval('a - b')).toBe(0);
-        expect(scope.$eval('a + b')).toBe(undefined);
+        expect(scope.$eval('a + b')).toBeUndefined();
         scope.a = 0;
         expect(scope.$eval('a - b')).toBe(0);
         expect(scope.$eval('a + b')).toBe(0);

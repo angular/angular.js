@@ -122,11 +122,11 @@ describe('SCE', function() {
     }));
 
     it('should wrap undefined into undefined', inject(function($sce) {
-      expect($sce.trustAsHtml(undefined)).toBe(undefined);
+      expect($sce.trustAsHtml(undefined)).toBeUndefined();
     }));
 
     it('should unwrap undefined into undefined', inject(function($sce) {
-      expect($sce.getTrusted($sce.HTML, undefined)).toBe(undefined);
+      expect($sce.getTrusted($sce.HTML, undefined)).toBeUndefined();
     }));
 
     it('should wrap null into null', inject(function($sce) {
@@ -207,7 +207,7 @@ describe('SCE', function() {
       expect($sce.parseAsJs('true')()).toBe(true);
       expect($sce.parseAsJs('false')()).toBe(false);
       expect($sce.parseAsJs('null')()).toBe(null);
-      expect($sce.parseAsJs('undefined')()).toBe(undefined);
+      expect($sce.parseAsJs('undefined')()).toBeUndefined();
       expect($sce.parseAsJs('"string"')()).toBe("string");
     }));
 

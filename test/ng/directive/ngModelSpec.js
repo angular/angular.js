@@ -117,8 +117,8 @@ describe('ngModel', function() {
         expect(ctrl.$invalid).toBe(true);
 
         ctrl.$setValidity('third', undefined);
-        expect(ctrl.$valid).toBe(undefined);
-        expect(ctrl.$invalid).toBe(undefined);
+        expect(ctrl.$valid).toBeUndefined();
+        expect(ctrl.$invalid).toBeUndefined();
 
         ctrl.$setValidity('third', null);
         expect(ctrl.$valid).toBe(false);
@@ -1001,15 +1001,15 @@ describe('ngModel', function() {
 
         scope.$apply('value = "123"');
         expect(ctrl.$pending).toEqual({async: true});
-        expect(ctrl.$valid).toBe(undefined);
-        expect(ctrl.$invalid).toBe(undefined);
+        expect(ctrl.$valid).toBeUndefined();
+        expect(ctrl.$invalid).toBeUndefined();
         expect(defers.length).toBe(1);
         expect(isObject(ctrl.$pending)).toBe(true);
 
         scope.$apply('value = "456"');
         expect(ctrl.$pending).toEqual({async: true});
-        expect(ctrl.$valid).toBe(undefined);
-        expect(ctrl.$invalid).toBe(undefined);
+        expect(ctrl.$valid).toBeUndefined();
+        expect(ctrl.$invalid).toBeUndefined();
         expect(defers.length).toBe(2);
         expect(isObject(ctrl.$pending)).toBe(true);
 
@@ -1034,8 +1034,8 @@ describe('ngModel', function() {
         };
 
         ctrl.$setViewValue('x..y..z');
-        expect(ctrl.$valid).toBe(undefined);
-        expect(ctrl.$invalid).toBe(undefined);
+        expect(ctrl.$valid).toBeUndefined();
+        expect(ctrl.$invalid).toBeUndefined();
 
         failParser = true;
 
@@ -1145,8 +1145,8 @@ describe('ngModel', function() {
         $rootScope.$digest();
 
         expect(formCtrl.$pending.usernameAvailability).toBeTruthy();
-        expect(usernameCtrl.$invalid).toBe(undefined);
-        expect(formCtrl.$invalid).toBe(undefined);
+        expect(usernameCtrl.$invalid).toBeUndefined();
+        expect(formCtrl.$invalid).toBeUndefined();
 
         usernameDefer.resolve();
         $rootScope.$digest();
@@ -1892,7 +1892,7 @@ describe('ngModelOptions attributes', function() {
         '/>');
 
     browserTrigger(inputElm, 'click');
-    expect($rootScope.checkbox).toBe(undefined);
+    expect($rootScope.checkbox).toBeUndefined();
 
     browserTrigger(inputElm, 'blur');
     expect($rootScope.checkbox).toBe(true);
@@ -1980,9 +1980,9 @@ describe('ngModelOptions attributes', function() {
         '/>');
 
     browserTrigger(inputElm, 'click');
-    expect($rootScope.checkbox).toBe(undefined);
+    expect($rootScope.checkbox).toBeUndefined();
     $timeout.flush(2000);
-    expect($rootScope.checkbox).toBe(undefined);
+    expect($rootScope.checkbox).toBeUndefined();
     $timeout.flush(9000);
     expect($rootScope.checkbox).toBe(true);
   });
@@ -2038,9 +2038,9 @@ describe('ngModelOptions attributes', function() {
         '/>');
 
     helper.changeInputValueTo('a');
-    expect($rootScope.checkbox).toBe(undefined);
+    expect($rootScope.checkbox).toBeUndefined();
     $timeout.flush(6000);
-    expect($rootScope.checkbox).toBe(undefined);
+    expect($rootScope.checkbox).toBeUndefined();
     $timeout.flush(4000);
     expect($rootScope.name).toEqual('a');
     helper.changeInputValueTo('b');
@@ -2060,9 +2060,9 @@ describe('ngModelOptions attributes', function() {
 
     inputElm[0].checked = false;
     browserTrigger(inputElm, 'click');
-    expect($rootScope.checkbox).toBe(undefined);
+    expect($rootScope.checkbox).toBeUndefined();
     $timeout.flush(8000);
-    expect($rootScope.checkbox).toBe(undefined);
+    expect($rootScope.checkbox).toBeUndefined();
     $timeout.flush(3000);
     expect($rootScope.checkbox).toBe(true);
     inputElm[0].checked = true;
@@ -2083,9 +2083,9 @@ describe('ngModelOptions attributes', function() {
 
     inputElm[0].checked = false;
     browserTrigger(inputElm, 'click');
-    expect($rootScope.checkbox).toBe(undefined);
+    expect($rootScope.checkbox).toBeUndefined();
     $timeout.flush(8000);
-    expect($rootScope.checkbox).toBe(undefined);
+    expect($rootScope.checkbox).toBeUndefined();
     $timeout.flush(3000);
     expect($rootScope.checkbox).toBe(true);
     inputElm[0].checked = true;
@@ -2108,9 +2108,9 @@ describe('ngModelOptions attributes', function() {
     helper.changeGivenInputTo(inputElm, 'a');
     expect($rootScope.name).toEqual(undefined);
     browserTrigger(inputElm, 'blur');
-    expect($rootScope.name).toBe(undefined);
+    expect($rootScope.name).toBeUndefined();
     $timeout.flush(2000);
-    expect($rootScope.name).toBe(undefined);
+    expect($rootScope.name).toBeUndefined();
     $timeout.flush(9000);
     expect($rootScope.name).toEqual('a');
     dealoc(doc);

@@ -272,7 +272,7 @@ describe("serializeContent", function() {
   it("should not transform arrays into objects", function() {
     var serializedContent = closureI18nExtractor.serializeContent(newTestLocaleInfo().fr_CA);
     var deserializedLocale = eval("(" + serializedContent + ")");
-    expect(deserializedLocale.DATETIME_FORMATS.MONTH.length).not.toBe(undefined);
+    expect(deserializedLocale.DATETIME_FORMATS.MONTH.length).not.toBeUndefined();
   });
 });
 

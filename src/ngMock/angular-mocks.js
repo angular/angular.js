@@ -2670,7 +2670,7 @@ angular.mock.$RootScopeDecorator = ['$delegate', function($delegate) {
    *   beforeAll(module("UltimateQuestion"));
    *
    *   beforeAll(inject(function(DeepThought) {
-   *     expect(DeepThought.answer).toBe(undefined);
+   *     expect(DeepThought.answer).toBeUndefined();
    *     DeepThought.generateAnswer();
    *   }));
    *

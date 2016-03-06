@@ -1068,7 +1068,7 @@ describe('angular', function() {
     });
 
     it('should return undefined when jq is not set, no jQuery found (the default)', function() {
-      expect(jq()).toBe(undefined);
+      expect(jq()).toBeUndefined();
     });
 
     it('should return empty string when jq is enabled manually via [ng-jq] with empty string', function() {

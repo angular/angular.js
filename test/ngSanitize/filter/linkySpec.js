@@ -21,7 +21,7 @@ describe('linky', function() {
   });
 
   it('should return `undefined`/`null`/`""` values unchanged', function() {
-    expect(linky(undefined)).toBe(undefined);
+    expect(linky(undefined)).toBeUndefined();
     expect(linky(null)).toBe(null);
     expect(linky('')).toBe('');
   });
