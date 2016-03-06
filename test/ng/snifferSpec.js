@@ -122,7 +122,7 @@ describe('$sniffer', function() {
   describe('animations', function() {
     it('should be either true or false', function() {
       inject(function($sniffer) {
-        expect($sniffer.animations).not.toBe(undefined);
+        expect($sniffer.animations).not.toBeUndefined();
       });
     });
 
@@ -218,7 +218,7 @@ describe('$sniffer', function() {
 
     it('should be either true or false', function() {
       inject(function($sniffer) {
-        expect($sniffer.transitions).not.toBe(undefined);
+        expect($sniffer.transitions).not.toBeUndefined();
       });
     });
 

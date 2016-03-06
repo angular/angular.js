@@ -161,7 +161,7 @@ describe('input', function() {
 
       helper.attrs.$set('placeholder', undefined);
       msie && browserTrigger(inputElm, 'input');
-      expect(inputElm.attr('placeholder')).toBe(undefined);
+      expect(inputElm.attr('placeholder')).toBeUndefined();
       expect(inputElm).toBePristine();
 
       helper.changeInputValueTo('foo');
