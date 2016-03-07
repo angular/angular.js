@@ -16,7 +16,7 @@ Neither `__name__` or `__identifier__` may contain spaces.
 Example of incorrect usage that leads to this error:
 ```html
 <!-- unclosed ng-controller attribute messes up the format -->
-<div ng-controller="myController>
+<div ng-controller="myController">
 ```
 
 or
