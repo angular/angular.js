@@ -223,7 +223,7 @@ describe('parser', function() {
       /* global AST: false */
       createAst = function() {
         var lexer = new Lexer({csp: false});
-        var ast = new AST(lexer, {csp: false});
+        var ast = new AST(lexer, {csp: false, literals: {'true': true, 'false': false, 'undefined': undefined, 'null': null}});
         return ast.ast.apply(ast, arguments);
       };
     });
@@ -1680,6 +1680,19 @@ describe('parser', function() {
   beforeEach(module(['$filterProvider', function(filterProvider) {
     $filterProvider = filterProvider;
   }]));
+
+  forEach([true, false], function(cspEnabled) {
+    beforeEach(module(['$parseProvider', function(parseProvider) {
+      parseProvider.addLiteral('Infinity', Infinity);
+    }]));
+
+    it('should allow extending literals with csp ' + cspEnabled, inject(function($rootScope) {
+      expect($rootScope.$eval("Infinity")).toEqual(Infinity);
+      expect($rootScope.$eval("-Infinity")).toEqual(-Infinity);
+      expect(function() {$rootScope.$eval("Infinity = 1");}).toThrow();
+      expect($rootScope.$eval("Infinity")).toEqual(Infinity);
+    }));
+  });
 
   forEach([true, false], function(cspEnabled) {
     describe('csp: ' + cspEnabled, function() {
