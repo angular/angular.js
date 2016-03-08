@@ -444,7 +444,7 @@ Jasmine's `beforeAll()` and mocha's `before()` hooks are often useful for sharin
 
 By default, ngMock will create an injector per test case to ensure your tests do not affect each other. However, if we want to use `beforeAll()`, ngMock will have to create the injector before any test cases are run, and share that injector through all the cases for that `describe`. That is where {@link angular.mock.module.sharedInjector module.sharedInjector()} comes in. When it's called within a `describe` block, a single injector is shared between all hooks and test cases run in that block.
 
-In the example below we are testing a service that takes a long time to generate its answer. To avoid having all of the assertions we want to write in a single test case, {@link angular.mock.module.sharedInjector module.sharedInjector()} and Jasmine's `beforeAll()` are used to run the service only one. The test cases then all make assertions about the properties added to the service instance.
+In the example below we are testing a service that takes a long time to generate its answer. To avoid having all of the assertions we want to write in a single test case, {@link angular.mock.module.sharedInjector module.sharedInjector()} and Jasmine's `beforeAll()` are used to run the service only once. The test cases then all make assertions about the properties added to the service instance.
 
 ```javascript
 describe("Deep Thought", function() {
