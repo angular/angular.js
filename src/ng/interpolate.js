@@ -97,12 +97,19 @@ function $InterpolateProvider() {
 
 
   this.$get = ['$parse', '$exceptionHandler', '$sce', function($parse, $exceptionHandler, $sce) {
-    var startSymbolLength = startSymbol.length,
+    var EVERY_CHAR = /./g,
+        startSymbolLength = startSymbol.length,
         endSymbolLength = endSymbol.length,
-        escapedStartRegexp = new RegExp(startSymbol.replace(/./g, escape), 'g'),
-        escapedEndRegexp = new RegExp(endSymbol.replace(/./g, escape), 'g');
+        escapedStartSymbol = startSymbol.replace(EVERY_CHAR, escapeForString),
+        escapedEndSymbol = endSymbol.replace(EVERY_CHAR, escapeForString),
+        escapedStartRegexp = new RegExp(startSymbol.replace(EVERY_CHAR, escapeForRegex), 'g'),
+        escapedEndRegexp = new RegExp(endSymbol.replace(EVERY_CHAR, escapeForRegex), 'g');
 
-    function escape(ch) {
+    function escapeForString(ch) {
+      return '\\' + ch;
+    }
+
+    function escapeForRegex(ch) {
       return '\\\\\\' + ch;
     }
 
@@ -194,13 +201,6 @@ function $InterpolateProvider() {
      * replacing angle brackets (&lt;, &gt;) with &amp;lt; and &amp;gt; respectively, and replacing all
      * interpolation start/end markers with their escaped counterparts.**
      *
-     * Escaped interpolation markers are only replaced with the actual interpolation markers in rendered
-     * output when the $interpolate service processes the text. So, for HTML elements interpolated
-     * by {@link ng.$compile $compile}, or otherwise interpolated with the `mustHaveExpression` parameter
-     * set to `true`, the interpolated text must contain an unescaped interpolation expression. As such,
-     * this is typically useful only when user-data is used in rendering a template from the server, or
-     * when otherwise untrusted data is used by a directive.
-     *
      * <example>
      *  <file name="index.html">
      *    <div ng-init="username='A user'">
@@ -232,10 +232,13 @@ function $InterpolateProvider() {
      * - `context`: evaluation context for all expressions embedded in the interpolated text
      */
     function $interpolate(text, mustHaveExpression, trustedContext, allOrNothing) {
+      var hasEscapedMarkers = text.length &&
+          (text.indexOf(escapedStartSymbol) !== -1 || text.indexOf(escapedEndSymbol) !== -1);
+
       // Provide a quick exit and simplified result function for text with no interpolation
       if (!text.length || text.indexOf(startSymbol) === -1) {
         var constantInterp;
-        if (!mustHaveExpression) {
+        if (!mustHaveExpression || hasEscapedMarkers) {
           var unescapedText = unescapeText(text);
           constantInterp = valueFn(unescapedText);
           constantInterp.exp = text;
@@ -257,8 +260,8 @@ function $InterpolateProvider() {
           expressionPositions = [];
 
       while (index < textLength) {
-        if (((startIndex = text.indexOf(startSymbol, index)) != -1) &&
-             ((endIndex = text.indexOf(endSymbol, startIndex + startSymbolLength)) != -1)) {
+        if (((startIndex = text.indexOf(startSymbol, index)) !== -1) &&
+            ((endIndex = text.indexOf(endSymbol, startIndex + startSymbolLength)) !== -1)) {
           if (index !== startIndex) {
             concat.push(unescapeText(text.substring(index, startIndex)));
           }
@@ -331,6 +334,12 @@ function $InterpolateProvider() {
               lastValue = currValue;
             });
           }
+        });
+      } else if (hasEscapedMarkers) {
+        return extend(valueFn(unescapeText(text)), {
+          exp: text,
+          expressions: [],
+          $$watchDelegate: constantWatchDelegate
         });
       }
 

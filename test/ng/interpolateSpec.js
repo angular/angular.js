@@ -200,6 +200,47 @@ describe('$interpolate', function() {
     }));
 
 
+    it('should always unescape markers in uninterpolated strings', inject(function($interpolate) {
+        // Exercise the "quick exit" path
+        expect($interpolate('\\{\\{foo\\}\\}', false)(obj)).toBe('{{foo}}');
+        expect($interpolate('\\{\\{foo\\}\\}', true)(obj)).toBe('{{foo}}');
+
+        // Exercise the "slow" path, where we can't immediately tell that there are no expressions
+        expect($interpolate('}}{{\\{\\{foo\\}\\}', false)(obj)).toBe('}}{{{{foo}}');
+        expect($interpolate('}}{{\\{\\{foo\\}\\}', true)(obj)).toBe('}}{{{{foo}}');
+      })
+    );
+
+
+    it('should always unescape custom markers in uninterpolated strings', function() {
+      module(function($interpolateProvider) {
+        $interpolateProvider.startSymbol('[[');
+        $interpolateProvider.endSymbol(']]');
+      });
+      inject(function($interpolate) {
+        // Exercise the "quick exit" path
+        expect($interpolate('\\[\\[foo\\]\\]', false)(obj)).toBe('[[foo]]');
+        expect($interpolate('\\[\\[foo\\]\\]', true)(obj)).toBe('[[foo]]');
+
+        // Exercise the "slow" path, where we can't immediately tell that there are no expressions
+        expect($interpolate(']][[\\[\\[foo\\]\\]', false)(obj)).toBe(']][[[[foo]]');
+        expect($interpolate(']][[\\[\\[foo\\]\\]', true)(obj)).toBe(']][[[[foo]]');
+      });
+    });
+
+
+    it('should not interpolate escaped expressions after unescaping',
+      inject(function($compile, $rootScope) {
+        var elem = $compile('<div>\\{\\{foo\\}\\}</div>')($rootScope);
+        $rootScope.foo = 'bar';
+        $rootScope.$digest();
+        $rootScope.$digest();
+
+        expect(elem.text()).toBe('{{foo}}');
+      })
+    );
+
+
     // This test demonstrates that the web-server is responsible for escaping every single instance
     // of interpolation start/end markers in an expression which they do not wish to evaluate,
     // because AngularJS will not protect them from being evaluated (due to the added complexity
