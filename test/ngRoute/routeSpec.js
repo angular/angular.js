@@ -1073,7 +1073,7 @@ describe('$route', function() {
 
         expect($location.path()).toEqual('/bar/id3');
         expect($browserUrl.calls.mostRecent().args)
-            .toEqual(['http://server/#/bar/id3?extra=eId', true, null]);
+            .toEqual(['http://server/#!/bar/id3?extra=eId', true, null]);
       });
     });
   });

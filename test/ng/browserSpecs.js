@@ -755,9 +755,9 @@ describe('browser', function() {
           $rootScope.$apply(function() {
             $location.path('/initialPath');
           });
-          expect(fakeWindow.location.href).toBe('http://server/#/initialPath');
+          expect(fakeWindow.location.href).toBe('http://server/#!/initialPath');
 
-          fakeWindow.location.href = 'http://server/#/someTestHash';
+          fakeWindow.location.href = 'http://server/#!/someTestHash';
 
           $rootScope.$digest();
 
@@ -774,9 +774,9 @@ describe('browser', function() {
           $rootScope.$apply(function() {
             $location.path('/initialPath');
           });
-          expect(fakeWindow.location.href).toBe('http://server/#/initialPath');
+          expect(fakeWindow.location.href).toBe('http://server/#!/initialPath');
 
-          fakeWindow.location.href = 'http://server/#/someTestHash';
+          fakeWindow.location.href = 'http://server/#!/someTestHash';
 
           $rootScope.$digest();
 
@@ -793,9 +793,9 @@ describe('browser', function() {
           $rootScope.$apply(function() {
             $location.path('/initialPath');
           });
-          expect(fakeWindow.location.href).toBe('http://server/#/initialPath');
+          expect(fakeWindow.location.href).toBe('http://server/#!/initialPath');
 
-          fakeWindow.location.href = 'http://server/#/someTestHash';
+          fakeWindow.location.href = 'http://server/#!/someTestHash';
 
           $rootScope.$digest();
 
@@ -846,7 +846,7 @@ describe('browser', function() {
         $rootScope.$digest();
 
         // from $location for rewriting the initial url into a hash url
-        expect(browser.url).toHaveBeenCalledWith('http://server/#/some/deep/path', true);
+        expect(browser.url).toHaveBeenCalledWith('http://server/#!/some/deep/path', true);
         expect(changeUrlCount).toBe(1);
       });
 
