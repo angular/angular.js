@@ -206,7 +206,7 @@ describe('$compile', function() {
       module(function() {
         expect(function() {
           directive('BadDirectiveName', function() { });
-        }).toThrowMinErr('$compile','baddir', "Directive name 'BadDirectiveName' is invalid. The first character must be a lowercase letter");
+        }).toThrowMinErr('$compile','baddir', "Directive/Component name 'BadDirectiveName' is invalid. The first character must be a lowercase letter");
       });
       inject(function($compile) {});
     });
@@ -216,7 +216,7 @@ describe('$compile', function() {
           expect(function() {
             directive(name, function() { });
           }).toThrowMinErr(
-            '$compile','baddir', 'Directive name \'' + name + '\' is invalid. ' +
+            '$compile','baddir', 'Directive/Component name \'' + name + '\' is invalid. ' +
             "The name should not contain leading or trailing whitespaces");
         }
         assertLeadingOrTrailingWhitespaceInDirectiveName(' leadingWhitespaceDirectiveName');
