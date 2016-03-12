@@ -1195,7 +1195,12 @@ function toJson(obj, pretty) {
   if (!isNumber(pretty)) {
     pretty = pretty ? 2 : null;
   }
-  return JSON.stringify(obj, toJsonReplacer, pretty);
+  try {
+    return JSON.stringify(obj, toJsonReplacer, pretty);
+  } catch (RangeError) {
+    // In Safari, 'Invalid Date's throw a range error. 'null' is returned in all other browsers.
+    return 'null';
+  }
 }
 
 
