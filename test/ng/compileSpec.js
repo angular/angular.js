@@ -8843,6 +8843,86 @@ describe('$compile', function() {
     });
   });
 
+  describe('dynamic multi-slot transclude', function() {
+    it('should allow passing the transclude slots configuration - simple', function () {
+      module(function () {
+        directive('minionComponent', function () {
+          return {
+            restrict: 'E',
+            transclude: 'dynamic',
+            scope: {
+              transcludeSlots: '<'
+            },
+            template: '<div class="minions" ng-transclude="bobSlot"></div>'
+          };
+        });
+      });
+      inject(function ($rootScope, $compile) {
+        element = $compile(
+          '<minion-component transclude-slots="{ bobSlot: \'bob\' }">' +
+          '<stuart><span>stuart</span></stuart>' +
+          '<kevin><span>kevin</span></kevin>' +
+          '<bob><span>bob</span></bob>' +
+          '<gru><span>gru</span></gru>' +
+          '</minion-component>')($rootScope);
+        $rootScope.$apply();
+        expect(element.text()).toEqual('bob');
+      });
+    });
+
+    it('should allow passing the transclude slots configuration - complex usage', function () {
+      module(function () {
+        directive('minionComponent', function () {
+          return {
+            restrict: 'E',
+            transclude: 'dynamic',
+            scope: {
+              transcludeSlots: '<'
+            },
+            template: '<div class="minions"><span ng-repeat="(slot, name) in transcludeSlots"><span ng-transclude="{{slot}}"></span>!</span></div>'
+          };
+        });
+      });
+      inject(function ($rootScope, $compile) {
+        element = $compile(
+          '<minion-component transclude-slots="{ bobSlot: \'bob\', gruSlot: \'gru\', kevinSlot: \'kevin\', stuartSlot: \'stuart\' }">' +
+          '<stuart><span>stuart</span></stuart>' +
+          '<kevin><span>kevin</span></kevin>' +
+          '<bob><span>bob</span></bob>' +
+          '<gru><span>gru</span></gru>' +
+          '</minion-component>')($rootScope);
+        $rootScope.$apply();
+        expect(element.text()).toEqual('bob!gru!kevin!stuart!');
+      });
+    });
+
+    it('should error if slot config is not provided when using the directive', function() {
+      module(function () {
+        directive('minionComponent', function () {
+          return {
+            restrict: 'E',
+            transclude: 'dynamic',
+            scope: {
+              transcludeSlots: '<'
+            },
+            template: '<div class="minions"><span ng-repeat="(slot, name) in transcludeSlots"><span ng-transclude="{{slot}}"></span>!</span></div>'
+          };
+        });
+      });
+      inject(function ($rootScope, $compile) {
+        expect(function() {
+          element = $compile(
+            '<minion-component>' +
+            '<stuart><span>stuart</span></stuart>' +
+            '<kevin><span>kevin</span></kevin>' +
+            '<bob><span>bob</span></bob>' +
+            '<gru><span>gru</span></gru>' +
+            '</minion-component>')($rootScope);
+        }).toThrowMinErr('$compile', 'reqdyn',
+          'Directive `minionComponent` requests dynamic transclusion slots but are not provided.');
+      });
+    });
+  });
 
   describe('img[src] sanitization', function() {
 

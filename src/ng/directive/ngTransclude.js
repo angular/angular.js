@@ -157,6 +157,56 @@
  *      });
  *   </file>
  * </example>
+ *
+ * @example
+ * ### Dynamic multi-slot transclusion
+ * This example demonstrates using dynamic approach with multi-slot transclusion in a component directive.
+ * In this example, we use this mode to define a custom table component, while allowing the consumers to cleanly but
+ * optionally define their own cell templates:
+ * <example name="dynamicMultiSlotTranscludeExample" module="dynamicMultiSlotTranscludeExample">
+ *   <file name="index.html">
+ *    <style>
+ *      .title, .footer {
+ *        background-color: gray
+ *      }
+ *    </style>
+ *    <div>
+ *      <my-table transclude-slots="{ firstName: 'myFn', lastName: 'myLn' }"
+ *                headers="[{name: 'firstName', caption: 'First Name'}, {name: 'middleName', caption: 'Middle Name'}, {name: 'lastName', caption: 'Last Name'}]"
+ *                data="[{firstName: 'Ann', middleName: 'Margaret', lastName: 'Smith'}, {firstName: 'Edward', middleName: 'John', lastName: 'Williams'}]">
+ *        <my-fn><strong>{{$parent.row['firstName']}}</strong></my-fn>
+ *        <my-ln>{{$parent.row['lastName'].toUpperCase()}}</my-ln>
+ *      </my-table>
+ *    </div>
+ *   </file>
+ *   <file name="app.js">
+ *    angular.module('dynamicMultiSlotTranscludeExample', [])
+ *      .directive('myTable', function() {
+ *        return {
+ *          restrict: 'E',
+ *          transclude: 'dynamic',
+ *          template: '<table>' +
+ *                      '<thead>' +
+ *                        '<th ng-repeat="header in headers">{{header.caption}}</th>' +
+ *                      '</thead>' +
+ *                      '<tbody>' +
+ *                        '<tr ng-repeat="row in data">' +
+ *                          '<td ng-repeat="header in headers">' +
+ *                            '<div ng-if="transcludeSlots[header.name]"><div ng-transclude="{{header.name}}"></div></div>' +
+ *                            '<div ng-if="!transcludeSlots[header.name]">{{row[header.name]}}</div>' +
+ *                          '</td>' +
+ *                        '</tr>' +
+ *                      '</tbody>' +
+ *                    '</table>',
+ *          scope: {
+ *            transcludeSlots: '=',
+ *            headers: '=',
+ *            data: '='
+ *          }
+ *        };
+*       });
+ *   </file>
+ * </example>
  */
 var ngTranscludeMinErr = minErr('ngTransclude');
 var ngTranscludeDirective = ngDirective({

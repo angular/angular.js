@@ -536,14 +536,16 @@
  * Testing Transclusion Directives}.
  * </div>
  *
- * There are three kinds of transclusion depending upon whether you want to transclude just the contents of the
- * directive's element, the entire element or multiple parts of the element contents:
+ * There are four kinds of transclusion depending upon whether you want to transclude just the contents of the
+ * directive's element, the entire element, multiple parts of the element contents, or multiple parts dynamically:
  *
  * * `true` - transclude the content (i.e. the child nodes) of the directive's element.
  * * `'element'` - transclude the whole of the directive's element including any directives on this
  *   element that defined at a lower priority than this directive. When used, the `template`
  *   property is ignored.
  * * **`{...}` (an object hash):** - map elements of the content onto transclusion "slots" in the template.
+ * * `'dynamic'` - allow dynamic mulit-slot transclusion, by providing the slot configuration when using the component
+ *   (in the transclusion-slot attrbiute)
  *
  * **Mult-slot transclusion** is declared by providing an object for the `transclude` property.
  *
@@ -562,6 +564,13 @@
  * in the transclude content. If you wish to know if an optional slot was filled with content, then you can call
  * `$transclude.isSlotFilled(slotName)` on the transclude function passed to the directive's link function and
  * injectable into the directive's controller.
+ *
+ * **Dynamic mult-slot transclusion** is declared by using the 'dynamic' value on the component and then passing the
+ * transclusion slot configuration "later" (when actually using the component - via the transclude-slots attribute).
+ * Using this mode requires clear contract agreement between the component and the consumers, but it enables the
+ * possibility of arbitrary slots being used (in number and names).
+ *
+ * For an example of the dynamic mode usage, see {@link ngTransclude#dynamic-multi-slot-transclusion}.
  *
  *
  * #### Transclusion Functions
@@ -2084,6 +2093,13 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             var slots = createMap();
 
             $template = jqLite(jqLiteClone(compileNode)).contents();
+
+            if (directiveValue === 'dynamic') {
+              if (!templateAttrs.transcludeSlots) {
+                throw $compileMinErr('reqdyn', 'Directive `{0}` requests dynamic transclusion slots but are not provided.', directive.name);
+              }
+              directiveValue = $parse(templateAttrs.transcludeSlots)();
+            }
 
             if (isObject(directiveValue)) {
 
