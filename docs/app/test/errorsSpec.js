@@ -4,7 +4,7 @@ describe('errors', function() {
   // Mock `ngSanitize` module
   angular.
     module('ngSanitize', []).
-    value('$sanitize', jasmine.createSpy('$sanitize').andCallFake(angular.identity));
+    value('$sanitize', jasmine.createSpy('$sanitize').and.callFake(angular.identity));
 
   beforeEach(module('errors'));
 
@@ -103,12 +103,12 @@ describe('errors', function() {
 
 
     it('should pass the final string through `$sanitize`', function() {
-      $sanitize.reset();
+      $sanitize.calls.reset();
 
       var input = 'start https://foo/bar?baz#qux end';
       var output = errorLinkFilter(input);
 
-      expect($sanitize.callCount).toBe(1);
+      expect($sanitize).toHaveBeenCalledTimes(1);
       expect($sanitize).toHaveBeenCalledWith(output);
     });
   });
@@ -123,7 +123,7 @@ describe('errors', function() {
     beforeEach(module(function($provide) {
       $provide.decorator('errorLinkFilter', function() {
         errorLinkFilter = jasmine.createSpy('errorLinkFilter');
-        errorLinkFilter.andCallFake(angular.identity);
+        errorLinkFilter.and.callFake(angular.identity);
 
         return errorLinkFilter;
       });
@@ -142,7 +142,7 @@ describe('errors', function() {
 
 
     it('should interpolate the contents against `$location.search()`', function() {
-      spyOn($location, 'search').andReturn({p0: 'foo', p1: 'bar'});
+      spyOn($location, 'search').and.returnValue({p0: 'foo', p1: 'bar'});
 
       var elem = $compile('<span error-display="foo = {0}, bar = {1}"></span>')($rootScope);
       expect(elem.html()).toBe('foo = foo, bar = bar');
@@ -150,10 +150,10 @@ describe('errors', function() {
 
 
     it('should pass the interpolated text through `errorLinkFilter`', function() {
-      $location.search = jasmine.createSpy('search').andReturn({p0: 'foo'});
+      $location.search = jasmine.createSpy('search').and.returnValue({p0: 'foo'});
 
       var elem = $compile('<span error-display="foo = {0}"></span>')($rootScope);
-      expect(errorLinkFilter.callCount).toBe(1);
+      expect(errorLinkFilter).toHaveBeenCalledTimes(1);
       expect(errorLinkFilter).toHaveBeenCalledWith('foo = foo', '_blank');
     });
 

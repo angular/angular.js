@@ -330,7 +330,7 @@ describe('form', function() {
 
       var inputElm = form.find('input').eq(0);
       changeInputValue(inputElm, 'a');
-      scope.submit = jasmine.createSpy('submit').andCallFake(function() {
+      scope.submit = jasmine.createSpy('submit').and.callFake(function() {
         expect(scope.name).toEqual('a');
       });
       browserTrigger(form, 'submit');
@@ -377,7 +377,8 @@ describe('form', function() {
 
   describe('preventing default submission', function() {
 
-    it('should prevent form submission', function() {
+    it('should prevent form submission', function(done) {
+      var job = createAsync(done);
       var nextTurn = false,
           submitted = false,
           reloadPrevented;
@@ -402,77 +403,80 @@ describe('form', function() {
 
       // let the browser process all events (and potentially reload the page)
       setTimeout(function() { nextTurn = true;});
-
-      waitsFor(function() { return nextTurn; });
-
-      runs(function() {
+      job.waitsFor(function() { return nextTurn; })
+      .runs(function() {
         expect(reloadPrevented).toBe(true);
         expect(submitted).toBe(true);
 
         // prevent mem leak in test
         removeEventListenerFn(doc[0], 'submit', assertPreventDefaultListener);
+      })
+      .done();
+      job.start();
+    });
+
+
+    it('should prevent the default when the form is destroyed by a submission via a click event', function(done) {
+      inject(function($timeout) {
+        doc = jqLite('<div>' +
+                        '<form ng-submit="submitMe()">' +
+                          '<button ng-click="destroy()"></button>' +
+                        '</form>' +
+                      '</div>');
+
+        var form = doc.find('form'),
+            destroyed = false,
+            nextTurn = false,
+            submitted = false,
+            reloadPrevented;
+
+        scope.destroy = function() {
+          // yes, I know, scope methods should not do direct DOM manipulation, but I wanted to keep
+          // this test small. Imagine that the destroy action will cause a model change (e.g.
+          // $location change) that will cause some directive to destroy the dom (e.g. ngView+$route)
+          doc.empty();
+          destroyed = true;
+        };
+
+        scope.submitMe = function() {
+          submitted = true;
+        };
+
+        var assertPreventDefaultListener = function(e) {
+          reloadPrevented = e.defaultPrevented || (e.returnValue === false);
+        };
+
+        $compile(doc)(scope);
+
+        addEventListenerFn(form[0], 'submit', assertPreventDefaultListener);
+
+        browserTrigger(doc.find('button'), 'click');
+
+        // let the browser process all events (and potentially reload the page)
+        setTimeout(function() { nextTurn = true;}, 100);
+
+        var job = createAsync(done);
+        job.waitsFor(function() { return nextTurn; })
+        .runs(function() {
+          expect(doc.html()).toBe('');
+          expect(destroyed).toBe(true);
+          expect(submitted).toBe(false); // this is known corner-case that is not currently handled
+                                         // the issue is that the submit listener is destroyed before
+                                         // the event propagates there. we can fix this if we see
+                                         // the issue in the wild, I'm not going to bother to do it
+                                         // now. (i)
+
+          // prevent mem leak in test
+          removeEventListenerFn(form[0], 'submit', assertPreventDefaultListener);
+        })
+        .done();
+        job.start();
       });
     });
 
 
-    it('should prevent the default when the form is destroyed by a submission via a click event',
-        inject(function($timeout) {
-      doc = jqLite('<div>' +
-                      '<form ng-submit="submitMe()">' +
-                        '<button ng-click="destroy()"></button>' +
-                      '</form>' +
-                    '</div>');
-
-      var form = doc.find('form'),
-          destroyed = false,
-          nextTurn = false,
-          submitted = false,
-          reloadPrevented;
-
-      scope.destroy = function() {
-        // yes, I know, scope methods should not do direct DOM manipulation, but I wanted to keep
-        // this test small. Imagine that the destroy action will cause a model change (e.g.
-        // $location change) that will cause some directive to destroy the dom (e.g. ngView+$route)
-        doc.empty();
-        destroyed = true;
-      };
-
-      scope.submitMe = function() {
-        submitted = true;
-      };
-
-      var assertPreventDefaultListener = function(e) {
-        reloadPrevented = e.defaultPrevented || (e.returnValue === false);
-      };
-
-      $compile(doc)(scope);
-
-      addEventListenerFn(form[0], 'submit', assertPreventDefaultListener);
-
-      browserTrigger(doc.find('button'), 'click');
-
-      // let the browser process all events (and potentially reload the page)
-      setTimeout(function() { nextTurn = true;}, 100);
-
-      waitsFor(function() { return nextTurn; });
-
-      runs(function() {
-        expect(doc.html()).toBe('');
-        expect(destroyed).toBe(true);
-        expect(submitted).toBe(false); // this is known corner-case that is not currently handled
-                                       // the issue is that the submit listener is destroyed before
-                                       // the event propagates there. we can fix this if we see
-                                       // the issue in the wild, I'm not going to bother to do it
-                                       // now. (i)
-
-        // prevent mem leak in test
-        removeEventListenerFn(form[0], 'submit', assertPreventDefaultListener);
-      });
-    }));
-
-
     it('should NOT prevent form submission if action attribute present', function() {
-      var callback = jasmine.createSpy('submit').andCallFake(function(event) {
+      var callback = jasmine.createSpy('submit').and.callFake(function(event) {
         expect(event.isDefaultPrevented()).toBe(false);
         event.preventDefault();
       });

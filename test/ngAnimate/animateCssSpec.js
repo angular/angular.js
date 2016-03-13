@@ -1171,11 +1171,11 @@ describe("ngAnimate $animateCss", function() {
           inject(function($animateCss, $document, $rootElement, $timeout, $animate) {
 
           var now = 0;
-          spyOn(Date, 'now').andCallFake(function() {
+          spyOn(Date, 'now').and.callFake(function() {
             return now;
           });
 
-          var cancelSpy = spyOn($timeout, 'cancel').andCallThrough();
+          var cancelSpy = spyOn($timeout, 'cancel').and.callThrough();
           var doneSpy = jasmine.createSpy();
 
           ss.addRule('.elm', 'transition:1s linear all;');
@@ -1198,7 +1198,7 @@ describe("ngAnimate $animateCss", function() {
           expect(doneSpy).not.toHaveBeenCalled();
           expect(cancelSpy).toHaveBeenCalled();
 
-          cancelSpy.reset();
+          cancelSpy.calls.reset();
 
           // timeout will not be set again since the former animation is longer
           animate(element, 'green', doneSpy);
@@ -1210,7 +1210,7 @@ describe("ngAnimate $animateCss", function() {
           $animate.flush();
 
           expect(doneSpy).toHaveBeenCalled();
-          expect(doneSpy.callCount).toBe(3);
+          expect(doneSpy).toHaveBeenCalledTimes(3);
 
           function fastForwardClock(time) {
             now += time;
@@ -1458,8 +1458,8 @@ describe("ngAnimate $animateCss", function() {
           $rootElement.append(element);
           jqLite($document[0].body).append($rootElement);
 
-          elementOnSpy = spyOn(element, 'on').andCallThrough();
-          elementOffSpy = spyOn(element, 'off').andCallThrough();
+          elementOnSpy = spyOn(element, 'on').and.callThrough();
+          elementOffSpy = spyOn(element, 'off').and.callThrough();
         }));
 
         they('should remove the $prop event listeners on cancel',
@@ -1477,12 +1477,12 @@ describe("ngAnimate $animateCss", function() {
               triggerAnimationStartFrame();
 
               expect(elementOnSpy).toHaveBeenCalledOnce();
-              expect(elementOnSpy.mostRecentCall.args[0]).toBe(event);
+              expect(elementOnSpy.calls.mostRecent().args[0]).toBe(event);
 
               runner.cancel();
 
               expect(elementOffSpy).toHaveBeenCalledOnce();
-              expect(elementOffSpy.mostRecentCall.args[0]).toBe(event);
+              expect(elementOffSpy.calls.mostRecent().args[0]).toBe(event);
             });
         });
 
@@ -1501,12 +1501,12 @@ describe("ngAnimate $animateCss", function() {
               triggerAnimationStartFrame();
 
               expect(elementOnSpy).toHaveBeenCalledOnce();
-              expect(elementOnSpy.mostRecentCall.args[0]).toBe(event);
+              expect(elementOnSpy.calls.mostRecent().args[0]).toBe(event);
 
               progress(element, 10);
 
               expect(elementOffSpy).toHaveBeenCalledOnce();
-              expect(elementOffSpy.mostRecentCall.args[0]).toBe(event);
+              expect(elementOffSpy.calls.mostRecent().args[0]).toBe(event);
             });
         });
 
@@ -1525,12 +1525,12 @@ describe("ngAnimate $animateCss", function() {
               triggerAnimationStartFrame();
 
               expect(elementOnSpy).toHaveBeenCalledOnce();
-              expect(elementOnSpy.mostRecentCall.args[0]).toBe(event);
+              expect(elementOnSpy.calls.mostRecent().args[0]).toBe(event);
 
               $timeout.flush(15000);
 
               expect(elementOffSpy).toHaveBeenCalledOnce();
-              expect(elementOffSpy.mostRecentCall.args[0]).toBe(event);
+              expect(elementOffSpy.calls.mostRecent().args[0]).toBe(event);
             });
         });
 
@@ -1545,7 +1545,7 @@ describe("ngAnimate $animateCss", function() {
               element.on(event, otherEndSpy);
 
               expect(elementOnSpy).toHaveBeenCalledOnce();
-              elementOnSpy.reset();
+              elementOnSpy.calls.reset();
 
               var animator = $animateCss(element, {
                 event: 'enter',
@@ -1789,7 +1789,7 @@ describe("ngAnimate $animateCss", function() {
             data.event = event;
           }
 
-          var blockSpy = spyOn($window, 'blockTransitions').andCallThrough();
+          var blockSpy = spyOn($window, 'blockTransitions').and.callThrough();
 
           data.skipBlocking = true;
           var animator = $animateCss(element, data);

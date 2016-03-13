@@ -1,6 +1,5 @@
 'use strict';
 
-
 describe('$compile', function() {
   function isUnknownElement(el) {
     return !!el.toString().match(/Unknown/);
@@ -1927,7 +1926,7 @@ describe('$compile', function() {
 
             $rootScope.$apply();
 
-            expect(controllerSpy.callCount).toBe(2);
+            expect(controllerSpy).toHaveBeenCalledTimes(2);
             expect(element.text()).toBe('boom!1|boom!2|');
           });
         });
@@ -3060,7 +3059,7 @@ describe('$compile', function() {
 
 
     it('should delegate exceptions to $exceptionHandler', function() {
-      observeSpy = jasmine.createSpy('$observe attr').andThrow('ERROR');
+      observeSpy = jasmine.createSpy('$observe attr').and.throwError('ERROR');
 
       module(function($exceptionHandlerProvider) {
         $exceptionHandlerProvider.mode('log');
@@ -3077,8 +3076,8 @@ describe('$compile', function() {
         $rootScope.$digest();
 
         expect(observeSpy).toHaveBeenCalled();
-        expect(observeSpy.callCount).toBe(2);
-        expect($exceptionHandler.errors).toEqual(['ERROR', 'ERROR']);
+        expect(observeSpy).toHaveBeenCalledTimes(2);
+        expect($exceptionHandler.errors).toEqual([new Error('ERROR'), new Error('ERROR')]);
       });
     });
 
@@ -3445,8 +3444,8 @@ describe('$compile', function() {
 
         expect(spies[0]).toHaveBeenCalledOnceWith('id_1');
         expect(spies[1]).toHaveBeenCalledOnceWith('id_2');
-        spies[0].reset();
-        spies[1].reset();
+        spies[0].calls.reset();
+        spies[1].calls.reset();
 
         $rootScope.$apply(function() {
           $rootScope.items[0].id = 5;
@@ -4598,7 +4597,7 @@ describe('$compile', function() {
         "    controllerCalled = true;\n" +
         "  }\n" +
         "}");
-      spyOn(Controller.prototype, '$onInit').andCallThrough();
+      spyOn(Controller.prototype, '$onInit').and.callThrough();
 
       module(function($compileProvider) {
         $compileProvider.directive('fooDir', valueFn({
@@ -5334,10 +5333,10 @@ describe('$compile', function() {
       }
 
       function Controller1($element) { this.id = 1; this.element = $element; }
-      Controller1.prototype.$onInit = jasmine.createSpy('$onInit').andCallFake(check);
+      Controller1.prototype.$onInit = jasmine.createSpy('$onInit').and.callFake(check);
 
       function Controller2($element) { this.id = 2; this.element = $element; }
-      Controller2.prototype.$onInit = jasmine.createSpy('$onInit').andCallFake(check);
+      Controller2.prototype.$onInit = jasmine.createSpy('$onInit').and.callFake(check);
 
       angular.module('my', [])
         .directive('d1', valueFn({ controller: Controller1 }))
@@ -5740,7 +5739,7 @@ describe('$compile', function() {
         parentController = this.container;
         siblingController = this.friend;
       };
-      spyOn(MeController.prototype, '$onInit').andCallThrough();
+      spyOn(MeController.prototype, '$onInit').and.callThrough();
 
       angular.module('my', [])
         .directive('me', function() {
@@ -5786,7 +5785,7 @@ describe('$compile', function() {
         parentController = this.container;
         siblingController = this.friend;
       };
-      spyOn(MeController.prototype, '$onInit').andCallThrough();
+      spyOn(MeController.prototype, '$onInit').and.callThrough();
 
       angular.module('my', [])
         .directive('me', function() {
@@ -5832,7 +5831,7 @@ describe('$compile', function() {
             siblingController = this.friend;
           }
         };
-        spyOn(meController, '$onInit').andCallThrough();
+        spyOn(meController, '$onInit').and.callThrough();
         return meController;
       }
 
@@ -8891,7 +8890,7 @@ describe('$compile', function() {
         element = $compile('<img src="{{testUrl}}"></img>')($rootScope);
         $rootScope.testUrl = "someUrl";
 
-        $$sanitizeUri.andReturn('someSanitizedUrl');
+        $$sanitizeUri.and.returnValue('someSanitizedUrl');
         $rootScope.$apply();
         expect(element.attr('src')).toBe('someSanitizedUrl');
         expect($$sanitizeUri).toHaveBeenCalledWith($rootScope.testUrl, true);
@@ -8921,7 +8920,7 @@ describe('$compile', function() {
         element = $compile('<img srcset="{{testUrl}}"></img>')($rootScope);
         $rootScope.testUrl = "someUrl";
 
-        $$sanitizeUri.andReturn('someSanitizedUrl');
+        $$sanitizeUri.and.returnValue('someSanitizedUrl');
         $rootScope.$apply();
         expect(element.attr('srcset')).toBe('someSanitizedUrl');
         expect($$sanitizeUri).toHaveBeenCalledWith($rootScope.testUrl, true);
@@ -9013,7 +9012,7 @@ describe('$compile', function() {
         element = $compile('<a href="{{testUrl}}"></a>')($rootScope);
         $rootScope.testUrl = "someUrl";
 
-        $$sanitizeUri.andReturn('someSanitizedUrl');
+        $$sanitizeUri.and.returnValue('someSanitizedUrl');
         $rootScope.$apply();
         expect(element.attr('href')).toBe('someSanitizedUrl');
         expect($$sanitizeUri).toHaveBeenCalledWith($rootScope.testUrl, false);
@@ -9029,7 +9028,7 @@ describe('$compile', function() {
         element = $compile('<a ng-href="{{testUrl}}"></a>')($rootScope);
         $rootScope.testUrl = "someUrl";
 
-        $$sanitizeUri.andReturn('someSanitizedUrl');
+        $$sanitizeUri.and.returnValue('someSanitizedUrl');
         $rootScope.$apply();
         expect(element.attr('href')).toBe('someSanitizedUrl');
         expect($$sanitizeUri).toHaveBeenCalledWith($rootScope.testUrl, false);
@@ -9045,7 +9044,7 @@ describe('$compile', function() {
         element = $compile('<svg><a xlink:href="" ng-href="{{ testUrl }}"></a></svg>')($rootScope);
         $rootScope.testUrl = "evilUrl";
 
-        $$sanitizeUri.andReturn('someSanitizedUrl');
+        $$sanitizeUri.and.returnValue('someSanitizedUrl');
         $rootScope.$apply();
         expect(element.find('a').prop('href').baseVal).toBe('someSanitizedUrl');
         expect($$sanitizeUri).toHaveBeenCalledWith($rootScope.testUrl, false);
@@ -9062,7 +9061,7 @@ describe('$compile', function() {
         element = $compile('<svg><a xlink:href="" ng-href="{{ testUrl }}"></a></svg>')($rootScope);
         $rootScope.testUrl = "evilUrl";
 
-        $$sanitizeUri.andReturn('someSanitizedUrl');
+        $$sanitizeUri.and.returnValue('someSanitizedUrl');
         $rootScope.$apply();
         expect(element.find('a').prop('href').baseVal).toBe('someSanitizedUrl');
         expect($$sanitizeUri).toHaveBeenCalledWith($rootScope.testUrl, false);
