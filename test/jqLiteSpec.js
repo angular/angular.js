@@ -711,8 +711,12 @@ describe('jqLite', function() {
   describe('class', function() {
 
     it('should properly do  with SVG elements', function() {
-      // this is a jqLite & SVG only test (jquery doesn't behave this way right now, which is a bug)
-      if (!window.SVGElement || !_jqLiteMode) return;
+      // This is not working correctly in jQuery prior to v3.0.
+      // See https://github.com/jquery/jquery/issues/2199 for details.
+      var jQueryVersion = window.jQuery && window.jQuery.fn.jquery.split('.')[0];
+      var jQuery3xOrNewer = jQueryVersion && (Number(jQueryVersion) >= 3);
+      if (!_jqLiteMode && !jQuery3xOrNewer) return;
+
       var svg = jqLite('<svg><rect></rect></svg>');
       var rect = svg.children();
 
@@ -1536,6 +1540,10 @@ describe('jqLite', function() {
 
 
     describe('native listener deregistration', function() {
+      var jQueryVersionString = window.jQuery && window.jQuery.fn.jquery;
+      var jQueryMajor = jQueryVersionString && Number(jQueryVersionString.split('.')[0]);
+      var jQueryMinor = jQueryVersionString && Number(jQueryVersionString.split('.')[1]);
+      var jQuery21 = jQueryMajor === 2 && jQueryMinor === 1;
 
       it('should deregister the native listener when all jqLite listeners for given type are gone ' +
          'after off("eventName", listener) call',  function() {
@@ -1547,12 +1555,22 @@ describe('jqLite', function() {
         var jqLiteListener = function() {};
         aElem.on('click', jqLiteListener);
 
-        expect(addEventListenerSpy).toHaveBeenCalledOnceWith('click', jasmine.any(Function), false);
+        // jQuery <2.2 passes the non-needed `false` useCapture parameter.
+        // See https://github.com/jquery/jquery/issues/2199 for details.
+        if (jQuery21) {
+          expect(addEventListenerSpy).toHaveBeenCalledOnceWith('click', jasmine.any(Function), false);
+        } else {
+          expect(addEventListenerSpy).toHaveBeenCalledOnceWith('click', jasmine.any(Function));
+        }
         nativeListenerFn = addEventListenerSpy.calls.mostRecent().args[1];
         expect(removeEventListenerSpy).not.toHaveBeenCalled();
 
         aElem.off('click', jqLiteListener);
-        expect(removeEventListenerSpy).toHaveBeenCalledOnceWith('click', nativeListenerFn, false);
+        if (jQuery21) {
+          expect(removeEventListenerSpy).toHaveBeenCalledOnceWith('click', nativeListenerFn, false);
+        } else {
+          expect(removeEventListenerSpy).toHaveBeenCalledOnceWith('click', nativeListenerFn);
+        }
       });
 
 
@@ -1564,12 +1582,20 @@ describe('jqLite', function() {
         var nativeListenerFn;
 
         aElem.on('click', function() {});
-        expect(addEventListenerSpy).toHaveBeenCalledOnceWith('click', jasmine.any(Function), false);
+        if (jQuery21) {
+          expect(addEventListenerSpy).toHaveBeenCalledOnceWith('click', jasmine.any(Function), false);
+        } else {
+          expect(addEventListenerSpy).toHaveBeenCalledOnceWith('click', jasmine.any(Function));
+        }
         nativeListenerFn = addEventListenerSpy.calls.mostRecent().args[1];
         expect(removeEventListenerSpy).not.toHaveBeenCalled();
 
         aElem.off('click');
-        expect(removeEventListenerSpy).toHaveBeenCalledOnceWith('click', nativeListenerFn, false);
+        if (jQuery21) {
+          expect(removeEventListenerSpy).toHaveBeenCalledOnceWith('click', nativeListenerFn, false);
+        } else {
+          expect(removeEventListenerSpy).toHaveBeenCalledOnceWith('click', nativeListenerFn);
+        }
       });
 
 
@@ -1581,19 +1607,32 @@ describe('jqLite', function() {
         var nativeListenerFn;
 
         aElem.on('click', function() {});
-        expect(addEventListenerSpy).toHaveBeenCalledOnceWith('click', jasmine.any(Function), false);
+        if (jQuery21) {
+          expect(addEventListenerSpy).toHaveBeenCalledOnceWith('click', jasmine.any(Function), false);
+        } else {
+          expect(addEventListenerSpy).toHaveBeenCalledOnceWith('click', jasmine.any(Function));
+        }
         nativeListenerFn = addEventListenerSpy.calls.mostRecent().args[1];
         addEventListenerSpy.calls.reset();
 
         aElem.on('dblclick', function() {});
-        expect(addEventListenerSpy).toHaveBeenCalledOnceWith('dblclick', nativeListenerFn, false);
+        if (jQuery21) {
+          expect(addEventListenerSpy).toHaveBeenCalledOnceWith('dblclick', nativeListenerFn, false);
+        } else {
+          expect(addEventListenerSpy).toHaveBeenCalledOnceWith('dblclick', nativeListenerFn);
+        }
 
         expect(removeEventListenerSpy).not.toHaveBeenCalled();
 
         aElem.off('click dblclick');
 
-        expect(removeEventListenerSpy).toHaveBeenCalledWith('click', nativeListenerFn, false);
-        expect(removeEventListenerSpy).toHaveBeenCalledWith('dblclick', nativeListenerFn, false);
+        if (jQuery21) {
+          expect(removeEventListenerSpy).toHaveBeenCalledWith('click', nativeListenerFn, false);
+          expect(removeEventListenerSpy).toHaveBeenCalledWith('dblclick', nativeListenerFn, false);
+        } else {
+          expect(removeEventListenerSpy).toHaveBeenCalledWith('click', nativeListenerFn);
+          expect(removeEventListenerSpy).toHaveBeenCalledWith('dblclick', nativeListenerFn);
+        }
         expect(removeEventListenerSpy).toHaveBeenCalledTimes(2);
       });
 
@@ -1606,17 +1645,30 @@ describe('jqLite', function() {
         var nativeListenerFn;
 
         aElem.on('click', function() {});
-        expect(addEventListenerSpy).toHaveBeenCalledOnceWith('click', jasmine.any(Function), false);
+        if (jQuery21) {
+          expect(addEventListenerSpy).toHaveBeenCalledOnceWith('click', jasmine.any(Function), false);
+        } else {
+          expect(addEventListenerSpy).toHaveBeenCalledOnceWith('click', jasmine.any(Function));
+        }
         nativeListenerFn = addEventListenerSpy.calls.mostRecent().args[1];
         addEventListenerSpy.calls.reset();
 
         aElem.on('dblclick', function() {});
-        expect(addEventListenerSpy).toHaveBeenCalledOnceWith('dblclick', nativeListenerFn, false);
+        if (jQuery21) {
+          expect(addEventListenerSpy).toHaveBeenCalledOnceWith('dblclick', nativeListenerFn, false);
+        } else {
+          expect(addEventListenerSpy).toHaveBeenCalledOnceWith('dblclick', nativeListenerFn);
+        }
 
         aElem.off();
 
-        expect(removeEventListenerSpy).toHaveBeenCalledWith('click', nativeListenerFn, false);
-        expect(removeEventListenerSpy).toHaveBeenCalledWith('dblclick', nativeListenerFn, false);
+        if (jQuery21) {
+          expect(removeEventListenerSpy).toHaveBeenCalledWith('click', nativeListenerFn, false);
+          expect(removeEventListenerSpy).toHaveBeenCalledWith('dblclick', nativeListenerFn, false);
+        } else {
+          expect(removeEventListenerSpy).toHaveBeenCalledWith('click', nativeListenerFn);
+          expect(removeEventListenerSpy).toHaveBeenCalledWith('dblclick', nativeListenerFn);
+        }
         expect(removeEventListenerSpy).toHaveBeenCalledTimes(2);
       });
     });

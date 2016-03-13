@@ -117,8 +117,6 @@
     "getBooleanAttrName": false,
     "createEventHandler": false,
     "JQLitePrototype": false,
-    "addEventListenerFn": false,
-    "removeEventListenerFn": false,
     "jqLiteDocumentLoaded": false,
 
     /* apis.js */
