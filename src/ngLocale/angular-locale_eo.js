@@ -34,6 +34,15 @@ $provide.value("$locale", {
       "vendredo",
       "sabato"
     ],
+    "ERANAMES": [
+      "aK",
+      "pK"
+    ],
+    "ERAS": [
+      "aK",
+      "pK"
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "januaro",
       "februaro",
@@ -71,6 +80,24 @@ $provide.value("$locale", {
       "nov",
       "dec"
     ],
+    "STANDALONEMONTH": [
+      "januaro",
+      "februaro",
+      "marto",
+      "aprilo",
+      "majo",
+      "junio",
+      "julio",
+      "a\u016dgusto",
+      "septembro",
+      "oktobro",
+      "novembro",
+      "decembro"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
+    ],
     "fullDate": "EEEE, d-'a' 'de' MMMM y",
     "longDate": "y-MMMM-dd",
     "medium": "y-MMM-dd HH:mm:ss",
@@ -102,7 +129,7 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "\u00a4\u00a0-",
+        "negPre": "-\u00a4\u00a0",
         "negSuf": "",
         "posPre": "\u00a4\u00a0",
         "posSuf": ""
@@ -110,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "eo",
+  "localeID": "eo",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

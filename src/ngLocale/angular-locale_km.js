@@ -16,6 +16,15 @@ $provide.value("$locale", {
       "\u179f\u17bb\u1780\u17d2\u179a",
       "\u179f\u17c5\u179a\u17cd"
     ],
+    "ERANAMES": [
+      "\u1798\u17bb\u1793\u200b\u1782\u17d2\u179a\u17b7\u179f\u17d2\u178f\u179f\u1780\u179a\u17b6\u1787",
+      "\u1782\u17d2\u179a\u17b7\u179f\u17d2\u178f\u179f\u1780\u179a\u17b6\u1787"
+    ],
+    "ERAS": [
+      "\u1798\u17bb\u1793 \u1782.\u179f.",
+      "\u1782.\u179f."
+    ],
+    "FIRSTDAYOFWEEK": 6,
     "MONTH": [
       "\u1798\u1780\u179a\u17b6",
       "\u1780\u17bb\u1798\u17d2\u1797\u17c8",
@@ -53,6 +62,24 @@ $provide.value("$locale", {
       "\u179c\u17b7\u1785\u17d2\u1786\u17b7\u1780\u17b6",
       "\u1792\u17d2\u1793\u17bc"
     ],
+    "STANDALONEMONTH": [
+      "\u1798\u1780\u179a\u17b6",
+      "\u1780\u17bb\u1798\u17d2\u1797\u17c8",
+      "\u1798\u17b8\u1793\u17b6",
+      "\u1798\u17c1\u179f\u17b6",
+      "\u17a7\u179f\u1797\u17b6",
+      "\u1798\u17b7\u1790\u17bb\u1793\u17b6",
+      "\u1780\u1780\u17d2\u1780\u178a\u17b6",
+      "\u179f\u17b8\u17a0\u17b6",
+      "\u1780\u1789\u17d2\u1789\u17b6",
+      "\u178f\u17bb\u179b\u17b6",
+      "\u179c\u17b7\u1785\u17d2\u1786\u17b7\u1780\u17b6",
+      "\u1792\u17d2\u1793\u17bc"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
+    ],
     "fullDate": "EEEE d MMMM y",
     "longDate": "d MMMM y",
     "medium": "d MMM y h:mm:ss a",
@@ -84,7 +111,7 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "\u00a4-",
+        "negPre": "-\u00a4",
         "negSuf": "",
         "posPre": "\u00a4",
         "posSuf": ""
@@ -92,6 +119,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "km",
+  "localeID": "km",
   "pluralCat": function(n, opt_precision) {  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

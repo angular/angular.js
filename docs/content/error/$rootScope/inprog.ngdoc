@@ -100,7 +100,7 @@ To resolve this type of issue, either fix the api to be always synchronous or as
 your callback handler to always run asynchronously by using the `$timeout` service.
 
 ```
-function MyController($scope, thirdPartyComponent) {
+function MyController($scope, $timeout, thirdPartyComponent) {
   thirdPartyComponent.getData(function(someData) {
     $timeout(function() {
       $scope.someData = someData;
@@ -161,7 +161,7 @@ In this second scenario, we are already inside a `$digest` when the ngFocus dire
 call to `$apply()`, causing this error to be thrown.
 
 It is possible to workaround this problem by moving the call to set the focus outside of the digest,
-by using `$timeout(fn, 0, false)`, where the `false` value tells Angular not to wrap this `fn` in a
+by using `$timeout(fn, 0, false)`, where the `false` value tells Angular not to wrap this `fn` in an
 `$apply` block:
 
 ```
@@ -200,7 +200,7 @@ the top of the call stack.
 Once you have identified this call you work your way up the stack to see what the problem is.
 
 * If the second call was made in your application code then you should look at why this code has been
-called from within a `$apply`/`$digest`.  It may be a simple oversight or maybe it fits with the
+called from within an `$apply`/`$digest`.  It may be a simple oversight or maybe it fits with the
 sync/async scenario described earlier.
 
 * If the second call was made inside an Angular directive then it is likely that it matches the second

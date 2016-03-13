@@ -16,6 +16,15 @@ $provide.value("$locale", {
       "\u0436\u0443\u043c\u0430",
       "\u0448\u0430\u043d\u0431\u0430"
     ],
+    "ERANAMES": [
+      "\u041c.\u0410.",
+      "\u042d"
+    ],
+    "ERAS": [
+      "\u041c.\u0410.",
+      "\u042d"
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "\u042f\u043d\u0432\u0430\u0440",
       "\u0424\u0435\u0432\u0440\u0430\u043b",
@@ -53,6 +62,24 @@ $provide.value("$locale", {
       "\u041d\u043e\u044f",
       "\u0414\u0435\u043a"
     ],
+    "STANDALONEMONTH": [
+      "\u042f\u043d\u0432\u0430\u0440",
+      "\u0424\u0435\u0432\u0440\u0430\u043b",
+      "\u041c\u0430\u0440\u0442",
+      "\u0410\u043f\u0440\u0435\u043b",
+      "\u041c\u0430\u0439",
+      "\u0418\u044e\u043d",
+      "\u0418\u044e\u043b",
+      "\u0410\u0432\u0433\u0443\u0441\u0442",
+      "\u0421\u0435\u043d\u0442\u044f\u0431\u0440",
+      "\u041e\u043a\u0442\u044f\u0431\u0440",
+      "\u041d\u043e\u044f\u0431\u0440",
+      "\u0414\u0435\u043a\u0430\u0431\u0440"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
+    ],
     "fullDate": "EEEE, y MMMM dd",
     "longDate": "y MMMM d",
     "medium": "y MMM d HH:mm:ss",
@@ -63,7 +90,7 @@ $provide.value("$locale", {
     "shortTime": "HH:mm"
   },
   "NUMBER_FORMATS": {
-    "CURRENCY_SYM": "\u20ac",
+    "CURRENCY_SYM": "so\u02bcm",
     "DECIMAL_SEP": ",",
     "GROUP_SEP": "\u00a0",
     "PATTERNS": [
@@ -84,7 +111,7 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "\u00a4\u00a0-",
+        "negPre": "-\u00a4\u00a0",
         "negSuf": "",
         "posPre": "\u00a4\u00a0",
         "posSuf": ""
@@ -92,6 +119,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "uz-cyrl",
+  "localeID": "uz_Cyrl",
   "pluralCat": function(n, opt_precision) {  if (n == 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

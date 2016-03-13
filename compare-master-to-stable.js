@@ -44,7 +44,7 @@ var noArgs = function (fn) {
 
 var identity = function (i) { return i; };
 
-// like Q.all, but runs the comands in series
+// like Q.all, but runs the commands in series
 // useful for ensuring env state (like which branch is checked out)
 var allInSeries = function (fn) {
   return function (args) {
@@ -103,10 +103,10 @@ then(function (tags) {
     sort(semver.rcompare);
 }).
 then(function (tags) {
-  var major = tags[0].split('.')[0] + '.x';
+  var major = tags[0].split('.')[0];
   return tags.
     filter(function (ver) {
-      return semver.satisfies(ver, major);
+      return semver(ver).major == major;
     });
 }).
 then(function (tags) {

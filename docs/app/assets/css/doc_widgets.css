@@ -56,7 +56,7 @@ li.doc-example-live {
 }
 
 div.syntaxhighlighter {
-  padding-bottom: 1px !important; /* fix to remove unnecessary scrollbars http://is.gd/gSMgC */
+  padding-bottom: 1px !important; /* fix to remove unnecessary scrollbars */
 }
 
 /* TABS - tutorial environment navigation */

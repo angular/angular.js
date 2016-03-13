@@ -16,6 +16,15 @@ $provide.value("$locale", {
       "c\u00fcm\u0259",
       "\u015f\u0259nb\u0259"
     ],
+    "ERANAMES": [
+      "eram\u0131zdan \u0259vv\u0259l",
+      "bizim eram\u0131z\u0131n"
+    ],
+    "ERAS": [
+      "e.\u0259.",
+      "b.e."
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "yanvar",
       "fevral",
@@ -53,6 +62,24 @@ $provide.value("$locale", {
       "noy",
       "dek"
     ],
+    "STANDALONEMONTH": [
+      "Yanvar",
+      "Fevral",
+      "Mart",
+      "Aprel",
+      "May",
+      "\u0130yun",
+      "\u0130yul",
+      "Avqust",
+      "Sentyabr",
+      "Oktyabr",
+      "Noyabr",
+      "Dekabr"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
+    ],
     "fullDate": "d MMMM y, EEEE",
     "longDate": "d MMMM y",
     "medium": "d MMM y HH:mm:ss",
@@ -84,7 +111,7 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "\u00a4\u00a0-",
+        "negPre": "-\u00a4\u00a0",
         "negSuf": "",
         "posPre": "\u00a4\u00a0",
         "posSuf": ""
@@ -92,6 +119,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "az",
+  "localeID": "az",
   "pluralCat": function(n, opt_precision) {  if (n == 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

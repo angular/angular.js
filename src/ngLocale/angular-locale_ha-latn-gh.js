@@ -34,6 +34,15 @@ $provide.value("$locale", {
       "Jumma\u02bca",
       "Asabar"
     ],
+    "ERANAMES": [
+      "Kafin haihuwar annab",
+      "Bayan haihuwar annab"
+    ],
+    "ERAS": [
+      "KHAI",
+      "BHAI"
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "Janairu",
       "Faburairu",
@@ -71,6 +80,24 @@ $provide.value("$locale", {
       "Nuw",
       "Dis"
     ],
+    "STANDALONEMONTH": [
+      "Janairu",
+      "Faburairu",
+      "Maris",
+      "Afirilu",
+      "Mayu",
+      "Yuni",
+      "Yuli",
+      "Agusta",
+      "Satumba",
+      "Oktoba",
+      "Nuwamba",
+      "Disamba"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
+    ],
     "fullDate": "EEEE, d MMMM, y",
     "longDate": "d MMMM, y",
     "medium": "d MMM, y HH:mm:ss",
@@ -102,7 +129,7 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "\u00a4\u00a0-",
+        "negPre": "-\u00a4\u00a0",
         "negSuf": "",
         "posPre": "\u00a4\u00a0",
         "posSuf": ""
@@ -110,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "ha-latn-gh",
+  "localeID": "ha_Latn_GH",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

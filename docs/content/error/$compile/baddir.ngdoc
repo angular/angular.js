@@ -1,0 +1,8 @@
+@ngdoc error
+@name $compile:baddir
+@fullName Invalid Directive Name
+@description
+
+This error occurs when the name of a directive is not valid.
+
+Directives must start with a lowercase character and must not contain leading or trailing whitespaces.

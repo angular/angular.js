@@ -34,6 +34,15 @@ $provide.value("$locale", {
       "\u0186j\u0254\u0301 \u0190t\u00ec",
       "\u0186j\u0254\u0301 \u00c0b\u00e1m\u025b\u0301ta"
     ],
+    "ERANAMES": [
+      "Saju Kristi",
+      "Lehin Kristi"
+    ],
+    "ERAS": [
+      "SK",
+      "LK"
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "Osh\u00f9 Sh\u025b\u0301r\u025b\u0301",
       "Osh\u00f9 \u00c8r\u00e8l\u00e8",
@@ -71,6 +80,24 @@ $provide.value("$locale", {
       "B\u00e9l\u00fa",
       "\u0186\u0300p\u025b\u0300"
     ],
+    "STANDALONEMONTH": [
+      "Osh\u00f9 Sh\u025b\u0301r\u025b\u0301",
+      "Osh\u00f9 \u00c8r\u00e8l\u00e8",
+      "Osh\u00f9 \u0190r\u025b\u0300n\u00e0",
+      "Osh\u00f9 \u00ccgb\u00e9",
+      "Osh\u00f9 \u0190\u0300bibi",
+      "Osh\u00f9 \u00d2k\u00fadu",
+      "Osh\u00f9 Ag\u025bm\u0254",
+      "Osh\u00f9 \u00d2g\u00fan",
+      "Osh\u00f9 Owewe",
+      "Osh\u00f9 \u0186\u0300w\u00e0r\u00e0",
+      "Osh\u00f9 B\u00e9l\u00fa",
+      "Osh\u00f9 \u0186\u0300p\u025b\u0300"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
+    ],
     "fullDate": "EEEE, d MMMM y",
     "longDate": "d MMMM y",
     "medium": "d MMM y h:mm:ss a",
@@ -102,7 +129,7 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "\u00a4-",
+        "negPre": "-\u00a4",
         "negSuf": "",
         "posPre": "\u00a4",
         "posSuf": ""
@@ -110,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "yo-bj",
+  "localeID": "yo_BJ",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

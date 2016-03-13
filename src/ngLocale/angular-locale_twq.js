@@ -34,6 +34,15 @@ $provide.value("$locale", {
       "Alzuma",
       "Asibti"
     ],
+    "ERANAMES": [
+      "Isaa jine",
+      "Isaa zamanoo"
+    ],
+    "ERAS": [
+      "IJ",
+      "IZ"
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "\u017danwiye",
       "Feewiriye",
@@ -70,6 +79,24 @@ $provide.value("$locale", {
       "Okt",
       "Noo",
       "Dee"
+    ],
+    "STANDALONEMONTH": [
+      "\u017danwiye",
+      "Feewiriye",
+      "Marsi",
+      "Awiril",
+      "Me",
+      "\u017duwe\u014b",
+      "\u017duyye",
+      "Ut",
+      "Sektanbur",
+      "Oktoobur",
+      "Noowanbur",
+      "Deesanbur"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE d MMMM y",
     "longDate": "d MMMM y",
@@ -110,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "twq",
+  "localeID": "twq",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

@@ -26,11 +26,11 @@
     "manualUppercase": false,
     "isArrayLike": false,
     "forEach": false,
-    "sortedKeys": false,
     "reverseParams": false,
     "nextUid": false,
     "setHashKey": false,
     "extend": false,
+    "merge": false,
     "toInt": false,
     "inherit": false,
     "noop": false,
@@ -61,6 +61,7 @@
     "shallowCopy": false,
     "equals": false,
     "csp": false,
+    "jq": false,
     "concat": false,
     "sliceArgs": false,
     "bind": false,
@@ -142,6 +143,10 @@
     "waitsFor": false,
     "runs": false,
     "dump": false,
+    "they": false,
+    "tthey": false,
+    "xthey": false,
+    "assertCompareNodes": false,
 
     /* e2e */
     "browser": false,
@@ -161,6 +166,7 @@
     "provideLog": false,
     "spyOnlyCallsWithArgs": false,
     "createMockStyleSheet": false,
+    "browserSupportsCssAnimations": false,
     "browserTrigger": false,
     "jqLiteCacheSize": false
   }

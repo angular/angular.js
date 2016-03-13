@@ -34,6 +34,15 @@ $provide.value("$locale", {
       "mvf\u00f2 m\u00e0ga ly\u025b\u030c\u02bc",
       "m\u00e0ga ly\u025b\u030c\u02bc"
     ],
+    "ERANAMES": [
+      "m\u00e9 zy\u00e9 Y\u011bs\u00f4",
+      "m\u00e9 g\u00ffo \u0144zy\u00e9 Y\u011bs\u00f4"
+    ],
+    "ERAS": [
+      "m.z.Y.",
+      "m.g.n.Y."
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "sa\u014b tsets\u025b\u0300\u025b l\u00f9m",
       "sa\u014b k\u00e0g ngw\u00f3\u014b",
@@ -71,6 +80,24 @@ $provide.value("$locale", {
       "sa\u014b mejwo\u014b\u00f3",
       "sa\u014b l\u00f9m"
     ],
+    "STANDALONEMONTH": [
+      "sa\u014b tsets\u025b\u0300\u025b l\u00f9m",
+      "sa\u014b k\u00e0g ngw\u00f3\u014b",
+      "sa\u014b lepy\u00e8 sh\u00fam",
+      "sa\u014b c\u00ff\u00f3",
+      "sa\u014b ts\u025b\u0300\u025b c\u00ff\u00f3",
+      "sa\u014b nj\u00ffol\u00e1\u02bc",
+      "sa\u014b ty\u025b\u0300b ty\u025b\u0300b mb\u0289\u0300",
+      "sa\u014b mb\u0289\u0300\u014b",
+      "sa\u014b ngw\u0254\u0300\u02bc mb\u00ff\u025b",
+      "sa\u014b t\u00e0\u014ba tsets\u00e1\u02bc",
+      "sa\u014b mejwo\u014b\u00f3",
+      "sa\u014b l\u00f9m"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
+    ],
     "fullDate": "EEEE , 'ly\u025b'\u030c\u02bc d 'na' MMMM, y",
     "longDate": "'ly\u025b'\u030c\u02bc d 'na' MMMM, y",
     "medium": "d MMM, y HH:mm:ss",
@@ -102,7 +129,7 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "\u00a4\u00a0-",
+        "negPre": "-\u00a4\u00a0",
         "negSuf": "",
         "posPre": "\u00a4\u00a0",
         "posSuf": ""
@@ -110,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "nnh-cm",
+  "localeID": "nnh_CM",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

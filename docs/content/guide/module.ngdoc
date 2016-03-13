@@ -75,9 +75,8 @@ that you break your application to multiple modules like this:
   * And an application level module which depends on the above modules and contains any
     initialization code.
 
-We've also
-[written a document](http://blog.angularjs.org/2014/02/an-angularjs-style-guide-and-best.html)
-on how we organize large apps at Google.
+You can find a community  
+[style guide](https://github.com/johnpapa/angular-styleguide) to help yourself when application grows.
 
 The above is a suggestion. Tailor it to your needs.
 
@@ -140,7 +139,7 @@ The above is a suggestion. Tailor it to your needs.
 # Module Loading & Dependencies
 
 A module is a collection of configuration and run blocks which get applied to the application
-during the bootstrap process. In its simplest form the module consist of a collection of two kinds
+during the bootstrap process. In its simplest form the module consists of a collection of two kinds
 of blocks:
 
   1. **Configuration blocks** - get executed during the provider registrations and configuration

@@ -51,7 +51,7 @@ describe('q', function() {
       log.push(logPrefix + '->throw(' +  _argToString(returnVal) + ')');
       throw returnVal;
     } else {
-      if (returnVal === undefined) {
+      if (isUndefined(returnVal)) {
         log.push(logPrefix);
       } else {
         log.push(logPrefix + '->' +  _argToString(returnVal));
@@ -219,6 +219,15 @@ describe('q', function() {
       expect(typeof promise.then).toBe('function');
       expect(typeof promise.catch).toBe('function');
       expect(typeof promise.finally).toBe('function');
+    });
+
+    it('should support the instanceof operator', function() {
+      /*jshint newcap: false */
+      var promise = new q(noop);
+      expect(promise instanceof q).toBe(true);
+      promise = q(noop);
+      expect(promise instanceof q).toBe(true);
+      /*jshint newcap: true */
     });
 
 
@@ -1639,6 +1648,14 @@ describe('q', function() {
         expect(logStr()).toBe('');
         syncNotify(deferred, 'notification');
         expect(logStr()).toBe('progress(notification)->notification');
+      });
+    });
+
+
+    describe('resolve', function() {
+      it('should be an alias of the "when" function', function() {
+        expect(q.resolve).toBeDefined();
+        expect(q.resolve).toEqual(q.when);
       });
     });
 

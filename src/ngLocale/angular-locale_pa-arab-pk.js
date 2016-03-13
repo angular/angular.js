@@ -16,6 +16,15 @@ $provide.value("$locale", {
       "\u062c\u0645\u0639\u06c1",
       "\u06c1\u0641\u062a\u06c1"
     ],
+    "ERANAMES": [
+      "\u0627\u064a\u0633\u0627\u067e\u0648\u0631\u0648",
+      "\u0633\u06ba"
+    ],
+    "ERAS": [
+      "BCE",
+      "CE"
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "\u062c\u0646\u0648\u0631\u06cc",
       "\u0641\u0631\u0648\u0631\u06cc",
@@ -53,6 +62,24 @@ $provide.value("$locale", {
       "\u0646\u0648\u0645\u0628\u0631",
       "\u062f\u0633\u0645\u0628\u0631"
     ],
+    "STANDALONEMONTH": [
+      "\u062c\u0646\u0648\u0631\u06cc",
+      "\u0641\u0631\u0648\u0631\u06cc",
+      "\u0645\u0627\u0631\u0686",
+      "\u0627\u067e\u0631\u06cc\u0644",
+      "\u0645\u0626",
+      "\u062c\u0648\u0646",
+      "\u062c\u0648\u0644\u0627\u0626\u06cc",
+      "\u0627\u06af\u0633\u062a",
+      "\u0633\u062a\u0645\u0628\u0631",
+      "\u0627\u06a9\u062a\u0648\u0628\u0631",
+      "\u0646\u0648\u0645\u0628\u0631",
+      "\u062f\u0633\u0645\u0628\u0631"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
+    ],
     "fullDate": "EEEE, dd MMMM y",
     "longDate": "d MMMM y",
     "medium": "d MMM y h:mm:ss a",
@@ -84,7 +111,7 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "\u00a4\u00a0-",
+        "negPre": "-\u00a4\u00a0",
         "negSuf": "",
         "posPre": "\u00a4\u00a0",
         "posSuf": ""
@@ -92,6 +119,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "pa-arab-pk",
+  "localeID": "pa_Arab_PK",
   "pluralCat": function(n, opt_precision) {  if (n >= 0 && n <= 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

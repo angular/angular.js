@@ -5,7 +5,7 @@ set -e
 BASE_DIR=`dirname $0`
 cd $BASE_DIR
 
-./run-tests.sh
+npm run test-i18n
 
 node src/closureSlurper.js
 

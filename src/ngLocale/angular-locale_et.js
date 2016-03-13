@@ -34,6 +34,15 @@ $provide.value("$locale", {
       "reede",
       "laup\u00e4ev"
     ],
+    "ERANAMES": [
+      "enne meie aega",
+      "meie aja j\u00e4rgi"
+    ],
+    "ERAS": [
+      "e.m.a.",
+      "m.a.j."
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "jaanuar",
       "veebruar",
@@ -70,6 +79,24 @@ $provide.value("$locale", {
       "okt",
       "nov",
       "dets"
+    ],
+    "STANDALONEMONTH": [
+      "jaanuar",
+      "veebruar",
+      "m\u00e4rts",
+      "aprill",
+      "mai",
+      "juuni",
+      "juuli",
+      "august",
+      "september",
+      "oktoober",
+      "november",
+      "detsember"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE, d. MMMM y",
     "longDate": "d. MMMM y",
@@ -110,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "et",
+  "localeID": "et",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

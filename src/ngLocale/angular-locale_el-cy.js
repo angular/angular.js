@@ -16,6 +16,15 @@ $provide.value("$locale", {
       "\u03a0\u03b1\u03c1\u03b1\u03c3\u03ba\u03b5\u03c5\u03ae",
       "\u03a3\u03ac\u03b2\u03b2\u03b1\u03c4\u03bf"
     ],
+    "ERANAMES": [
+      "\u03c0\u03c1\u03bf \u03a7\u03c1\u03b9\u03c3\u03c4\u03bf\u03cd",
+      "\u03bc\u03b5\u03c4\u03ac \u03a7\u03c1\u03b9\u03c3\u03c4\u03cc\u03bd"
+    ],
+    "ERAS": [
+      "\u03c0.\u03a7.",
+      "\u03bc.\u03a7."
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "\u0399\u03b1\u03bd\u03bf\u03c5\u03b1\u03c1\u03af\u03bf\u03c5",
       "\u03a6\u03b5\u03b2\u03c1\u03bf\u03c5\u03b1\u03c1\u03af\u03bf\u03c5",
@@ -53,6 +62,24 @@ $provide.value("$locale", {
       "\u039d\u03bf\u03b5",
       "\u0394\u03b5\u03ba"
     ],
+    "STANDALONEMONTH": [
+      "\u0399\u03b1\u03bd\u03bf\u03c5\u03ac\u03c1\u03b9\u03bf\u03c2",
+      "\u03a6\u03b5\u03b2\u03c1\u03bf\u03c5\u03ac\u03c1\u03b9\u03bf\u03c2",
+      "\u039c\u03ac\u03c1\u03c4\u03b9\u03bf\u03c2",
+      "\u0391\u03c0\u03c1\u03af\u03bb\u03b9\u03bf\u03c2",
+      "\u039c\u03ac\u03b9\u03bf\u03c2",
+      "\u0399\u03bf\u03cd\u03bd\u03b9\u03bf\u03c2",
+      "\u0399\u03bf\u03cd\u03bb\u03b9\u03bf\u03c2",
+      "\u0391\u03cd\u03b3\u03bf\u03c5\u03c3\u03c4\u03bf\u03c2",
+      "\u03a3\u03b5\u03c0\u03c4\u03ad\u03bc\u03b2\u03c1\u03b9\u03bf\u03c2",
+      "\u039f\u03ba\u03c4\u03ce\u03b2\u03c1\u03b9\u03bf\u03c2",
+      "\u039d\u03bf\u03ad\u03bc\u03b2\u03c1\u03b9\u03bf\u03c2",
+      "\u0394\u03b5\u03ba\u03ad\u03bc\u03b2\u03c1\u03b9\u03bf\u03c2"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
+    ],
     "fullDate": "EEEE, d MMMM y",
     "longDate": "d MMMM y",
     "medium": "d MMM y h:mm:ss a",
@@ -84,14 +111,15 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "\u00a4-",
-        "negSuf": "",
-        "posPre": "\u00a4",
-        "posSuf": ""
+        "negPre": "-",
+        "negSuf": "\u00a0\u00a4",
+        "posPre": "",
+        "posSuf": "\u00a0\u00a4"
       }
     ]
   },
   "id": "el-cy",
+  "localeID": "el_CY",
   "pluralCat": function(n, opt_precision) {  if (n == 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

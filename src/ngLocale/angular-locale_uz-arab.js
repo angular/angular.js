@@ -16,6 +16,15 @@ $provide.value("$locale", {
       "\u062c\u0645\u0639\u0647",
       "\u0634\u0646\u0628\u0647"
     ],
+    "ERANAMES": [
+      "\u0642.\u0645.",
+      "\u0645."
+    ],
+    "ERAS": [
+      "\u0642.\u0645.",
+      "\u0645."
+    ],
+    "FIRSTDAYOFWEEK": 5,
     "MONTH": [
       "\u062c\u0646\u0648\u0631\u06cc",
       "\u0641\u0628\u0631\u0648\u0631\u06cc",
@@ -52,6 +61,24 @@ $provide.value("$locale", {
       "\u0627\u06a9\u062a",
       "\u0646\u0648\u0645",
       "\u062f\u0633\u0645"
+    ],
+    "STANDALONEMONTH": [
+      "\u062c\u0646\u0648\u0631\u06cc",
+      "\u0641\u0628\u0631\u0648\u0631\u06cc",
+      "\u0645\u0627\u0631\u0686",
+      "\u0627\u067e\u0631\u06cc\u0644",
+      "\u0645\u06cc",
+      "\u062c\u0648\u0646",
+      "\u062c\u0648\u0644\u0627\u06cc",
+      "\u0627\u06af\u0633\u062a",
+      "\u0633\u067e\u062a\u0645\u0628\u0631",
+      "\u0627\u06a9\u062a\u0648\u0628\u0631",
+      "\u0646\u0648\u0645\u0628\u0631",
+      "\u062f\u0633\u0645\u0628\u0631"
+    ],
+    "WEEKENDRANGE": [
+      3,
+      4
     ],
     "fullDate": "y \u0646\u0686\u06cc \u06cc\u06cc\u0644 d \u0646\u0686\u06cc MMMM EEEE \u06a9\u0648\u0646\u06cc",
     "longDate": "d \u0646\u0686\u06cc MMMM y",
@@ -92,6 +119,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "uz-arab",
+  "localeID": "uz_Arab",
   "pluralCat": function(n, opt_precision) {  if (n == 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

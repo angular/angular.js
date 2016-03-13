@@ -6,12 +6,14 @@
 <ul doc-tutorial-nav="0"></ul>
 
 
-You are now ready to build the AngularJS phonecat app. In this step, you will become familiar
-with the most important source code files, learn how to start the development servers bundled with
+In this step of the tutorial, you will become familiar with the most important source code files of
+the AngularJS phonecat app. You will also learn how to start the development servers bundled with
 angular-seed, and run the application in the browser.
 
+Before you continue, make sure you have set up your development environment and installed all necessary
+dependencies, as described in {@link index#get-started Get Started}.
 
-In `angular-phonecat` directory, run this command:
+In the `angular-phonecat` directory, run this command:
 
 ```
 git checkout -f step-0
@@ -31,7 +33,10 @@ npm install
 
 To see the app running in a browser, open a *separate* terminal/command line tab or window, then
 run `npm start` to start the web server. Now, open a browser window for the app and navigate to
-<a href="http://localhost:8000/app/" target="_blank">`http://localhost:8000/app/`</a>
+<a href="http://localhost:8000/app/" target="_blank" title="Open app on localhost">`http://localhost:8000/app/`</a>
+
+Note that if you already ran the master branch app prior to checking out step-0, you may see the cached
+master version of the app in your browser window at this point. Just hit refresh to re-load the page.
 
 You can now see the page in your browser. It's not very exciting, but that's OK.
 
@@ -62,7 +67,7 @@ __`app/index.html`:__
 
 ## What is the code doing?
 
-* `ng-app` directive:
+**`ng-app` directive:**
 
           <html ng-app>
 
@@ -74,41 +79,41 @@ __`app/index.html`:__
   This gives application developers the freedom to tell Angular if the entire html page or only a
   portion of it should be treated as the Angular application.
 
-* AngularJS script tag:
+**AngularJS script tag:**
 
           <script src="bower_components/angular/angular.js">
 
-  This code downloads the `angular.js` script and registers a callback that will be executed by the
+  This code downloads the `angular.js` script which registers a callback that will be executed by the
 browser when the containing HTML page is fully downloaded. When the callback is executed, Angular
 looks for the {@link ng.directive:ngApp ngApp} directive. If
 Angular finds the directive, it will bootstrap the application with the root of the application DOM
 being the element on which the `ngApp` directive was defined.
 
-* Double-curly binding with an expression:
+**Double-curly binding with an expression:**
 
           Nothing here {{'yet' + '!'}}
 
-  This line demonstrates two core features of Angular's templating capabilities:
+This line demonstrates two core features of Angular's templating capabilities:
 
-    * a binding, denoted by double-curlies `{{ }}`
-    * a simple expression `'yet' + '!'` used in this binding.
+  * a binding, denoted by double-curlies `{{ }}`
+  * a simple expression `'yet' + '!'` used in this binding.
 
-  The binding tells Angular that it should evaluate an expression and insert the result into the
-  DOM in place of the binding. Rather than a one-time insert, as we'll see in the next steps, a
-  binding will result in efficient continuous updates whenever the result of the expression
-  evaluation changes.
+The binding tells Angular that it should evaluate an expression and insert the result into the
+DOM in place of the binding. Rather than a one-time insert, as we'll see in the next steps, a
+binding will result in efficient continuous updates whenever the result of the expression
+evaluation changes.
 
-  {@link guide/expression Angular expression} is a JavaScript-like code snippet that is
-  evaluated by Angular in the context of the current model scope, rather than within the scope of
-  the global context (`window`).
+{@link guide/expression Angular expression} is a JavaScript-like code snippet that is
+evaluated by Angular in the context of the current model scope, rather than within the scope of
+the global context (`window`).
 
-  As expected, once this template is processed by Angular, the html page contains the text:
-  "Nothing here yet!".
+As expected, once this template is processed by Angular, the html page contains the text:
+"Nothing here yet!".
 
 ## Bootstrapping AngularJS apps
 
 Bootstrapping AngularJS apps automatically using the `ngApp` directive is very easy and suitable
-for most cases. In advanced cases, such as when using script loaders, you can use
+for most cases. In advanced cases, such as when using script loaders, you can use the
 {@link guide/bootstrap imperative / manual way} to bootstrap the app.
 
 There are 3 important things that happen during the app bootstrap:

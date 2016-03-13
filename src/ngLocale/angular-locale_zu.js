@@ -16,6 +16,15 @@ $provide.value("$locale", {
       "Lwesihlanu",
       "Mgqibelo"
     ],
+    "ERANAMES": [
+      "BC",
+      "AD"
+    ],
+    "ERAS": [
+      "BC",
+      "AD"
+    ],
+    "FIRSTDAYOFWEEK": 6,
     "MONTH": [
       "Januwari",
       "Februwari",
@@ -53,6 +62,24 @@ $provide.value("$locale", {
       "Nov",
       "Dis"
     ],
+    "STANDALONEMONTH": [
+      "Januwari",
+      "Februwari",
+      "Mashi",
+      "Apreli",
+      "Meyi",
+      "Juni",
+      "Julayi",
+      "Agasti",
+      "Septhemba",
+      "Okthoba",
+      "Novemba",
+      "Disemba"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
+    ],
     "fullDate": "EEEE, MMMM d, y",
     "longDate": "MMMM d, y",
     "medium": "MMM d, y h:mm:ss a",
@@ -84,7 +111,7 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "\u00a4-",
+        "negPre": "-\u00a4",
         "negSuf": "",
         "posPre": "\u00a4",
         "posSuf": ""
@@ -92,6 +119,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "zu",
+  "localeID": "zu",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  if (i == 0 || n == 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

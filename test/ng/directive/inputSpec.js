@@ -72,6 +72,25 @@ describe('input', function() {
     expect($rootScope.form.$$renameControl).not.toHaveBeenCalled();
   });
 
+
+  it('should not set the `val` property when the value is equal to the current value', inject(function($rootScope, $compile) {
+    // This is a workaround for Firefox validation. Look at #12102.
+    var input = jqLite('<input type="text" ng-model="foo" required/>');
+    var setterCalls = 0;
+    $rootScope.foo = '';
+    Object.defineProperty(input[0], 'value', {
+      get: function() {
+        return '';
+      },
+      set: function() {
+        setterCalls++;
+      }
+    });
+    $compile(input)($rootScope);
+    $rootScope.$digest();
+    expect(setterCalls).toBe(0);
+  }));
+
   describe('compositionevents', function() {
     it('should not update the model between "compositionstart" and "compositionend" on non android', function() {
 
@@ -122,7 +141,7 @@ describe('input', function() {
     //  focus (which visually removes the placeholder value): focusin focus *input*
     //  blur (which visually creates the placeholder value):  focusout *input* blur
     //However none of these occur if the placeholder is not visible at the time of the event.
-    //These tests try simulate various scenerios which do/do-not fire the extra input event
+    //These tests try simulate various scenarios which do/do-not fire the extra input event
 
     it('should not dirty the model on an input event in response to a placeholder change', function() {
       var inputElm = helper.compileInput('<input type="text" placeholder="Test" attr-capture ng-model="unsetValue" name="name" />');
@@ -142,7 +161,7 @@ describe('input', function() {
 
       helper.attrs.$set('placeholder', undefined);
       msie && browserTrigger(inputElm, 'input');
-      expect(inputElm.attr('placeholder')).toBe(undefined);
+      expect(inputElm.attr('placeholder')).toBeUndefined();
       expect(inputElm).toBePristine();
 
       helper.changeInputValueTo('foo');
@@ -551,12 +570,8 @@ describe('input', function() {
 
       expect(inputElm.val()).toBe('2013-01');
 
-      try {
-        //set to text for browsers with datetime-local validation.
-        inputElm[0].setAttribute('type', 'text');
-      } catch (e) {
-        //for IE8
-      }
+      //set to text for browsers with datetime-local validation.
+      inputElm[0].setAttribute('type', 'text');
 
       helper.changeInputValueTo('stuff');
       expect(inputElm.val()).toBe('stuff');
@@ -613,6 +628,24 @@ describe('input', function() {
     });
 
 
+    they('should use any timezone if specified in the options (format: $prop)',
+      {'+HHmm': '+0500', '+HH:mm': '+05:00'},
+      function(tz) {
+        var ngModelOptions = "{timezone: '" + tz + "'}";
+        var inputElm = helper.compileInput(
+            '<input type="month" ng-model="value" ng-model-options="' + ngModelOptions + '" />');
+
+        helper.changeInputValueTo('2013-07');
+        expect(+$rootScope.value).toBe(Date.UTC(2013, 5, 30, 19, 0, 0));
+
+        $rootScope.$apply(function() {
+          $rootScope.value = new Date(Date.UTC(2014, 5, 30, 19, 0, 0));
+        });
+        expect(inputElm.val()).toBe('2014-07');
+      }
+    );
+
+
     it('should label parse errors as `month`', function() {
       var inputElm = helper.compileInput('<input type="month" ng-model="val" name="alias" />', {
         valid: false,
@@ -622,6 +655,18 @@ describe('input', function() {
       helper.changeInputValueTo('xxx');
       expect(inputElm).toBeInvalid();
       expect($rootScope.form.alias.$error.month).toBeTruthy();
+    });
+
+    it('should allow four or more digits in year', function() {
+      var inputElm = helper.compileInput('<input type="month" ng-model="value"  ng-model-options="{timezone: \'UTC\'}"/>');
+
+      helper.changeInputValueTo('10123-03');
+      expect(+$rootScope.value).toBe(Date.UTC(10123, 2, 1, 0, 0, 0));
+
+      $rootScope.$apply(function() {
+        $rootScope.value = new Date(Date.UTC(20456, 3, 1, 0, 0, 0));
+      });
+      expect(inputElm.val()).toBe('20456-04');
     });
 
 
@@ -634,6 +679,17 @@ describe('input', function() {
       helper.changeInputValueTo('2013-12');
       expect(+$rootScope.value).toBe(Date.UTC(2013, 11, 1, 1, 0, 0, 0));
       expect(inputElm.val()).toBe('2013-12');
+    });
+
+    it('should only change the month of a bound date in any timezone', function() {
+      var inputElm = helper.compileInput('<input type="month" ng-model="value" ng-model-options="{timezone: \'+0500\'}" />');
+
+      $rootScope.$apply(function() {
+        $rootScope.value = new Date(Date.UTC(2013, 6, 31, 20, 0, 0));
+      });
+      helper.changeInputValueTo('2013-09');
+      expect(+$rootScope.value).toBe(Date.UTC(2013, 7, 31, 20, 0, 0));
+      expect(inputElm.val()).toBe('2013-09');
     });
 
     describe('min', function() {
@@ -668,6 +724,14 @@ describe('input', function() {
         expect(inputElm).toBeInvalid();
         expect($rootScope.form.alias.$error.min).toBeTruthy();
       });
+
+      it('should validate if min is empty', function() {
+        $rootScope.minVal = undefined;
+        $rootScope.value = new Date(-9999, 0, 1, 0, 0, 0);
+        $rootScope.$digest();
+
+        expect($rootScope.form.alias.$error.min).toBeFalsy();
+      });
     });
 
     describe('max', function() {
@@ -701,6 +765,14 @@ describe('input', function() {
 
         expect(inputElm).toBeInvalid();
         expect($rootScope.form.alias.$error.max).toBeTruthy();
+      });
+
+      it('should validate if max is empty', function() {
+        $rootScope.maxVal = undefined;
+        $rootScope.value = new Date(9999, 11, 31, 23, 59, 59);
+        $rootScope.$digest();
+
+        expect($rootScope.form.alias.$error.max).toBeFalsy();
       });
     });
   });
@@ -752,12 +824,8 @@ describe('input', function() {
 
       expect(inputElm.val()).toBe('2013-W02');
 
-      try {
-        //set to text for browsers with datetime-local validation.
-        inputElm[0].setAttribute('type', 'text');
-      } catch (e) {
-        //for IE8
-      }
+      //set to text for browsers with datetime-local validation.
+      inputElm[0].setAttribute('type', 'text');
 
       helper.changeInputValueTo('stuff');
       expect(inputElm.val()).toBe('stuff');
@@ -800,6 +868,17 @@ describe('input', function() {
       expect(inputElm).toBeValid();
     });
 
+    it('should allow four or more digits in year', function() {
+      var inputElm = helper.compileInput('<input type="week" ng-model="value"  ng-model-options="{timezone: \'UTC\'}"/>');
+
+      helper.changeInputValueTo('10123-W03');
+      expect(+$rootScope.value).toBe(Date.UTC(10123, 0, 21));
+
+      $rootScope.$apply(function() {
+        $rootScope.value = new Date(Date.UTC(20456, 0, 28));
+      });
+      expect(inputElm.val()).toBe('20456-W04');
+    });
 
     it('should use UTC if specified in the options', function() {
       var inputElm = helper.compileInput('<input type="week" ng-model="value" ng-model-options="{timezone: \'UTC\'}" />');
@@ -812,6 +891,24 @@ describe('input', function() {
       });
       expect(inputElm.val()).toBe('2014-W03');
     });
+
+
+    they('should use any timezone if specified in the options (format: $prop)',
+      {'+HHmm': '+0500', '+HH:mm': '+05:00'},
+      function(tz) {
+        var ngModelOptions = "{timezone: '" + tz + "'}";
+        var inputElm = helper.compileInput(
+            '<input type="week" ng-model="value" ng-model-options="' + ngModelOptions + '" />');
+
+        helper.changeInputValueTo('2013-W03');
+        expect(+$rootScope.value).toBe(Date.UTC(2013, 0, 16, 19, 0, 0));
+
+        $rootScope.$apply(function() {
+          $rootScope.value = new Date(Date.UTC(2014, 0, 16, 19, 0, 0));
+        });
+        expect(inputElm.val()).toBe('2014-W03');
+      }
+    );
 
 
     it('should label parse errors as `week`', function() {
@@ -857,6 +954,14 @@ describe('input', function() {
         expect(inputElm).toBeInvalid();
         expect($rootScope.form.alias.$error.min).toBeTruthy();
       });
+
+      it('should validate if min is empty', function() {
+        $rootScope.minVal = undefined;
+        $rootScope.value = new Date(-9999, 0, 1, 0, 0, 0);
+        $rootScope.$digest();
+
+        expect($rootScope.form.alias.$error.min).toBeFalsy();
+      });
     });
 
     describe('max', function() {
@@ -891,6 +996,14 @@ describe('input', function() {
 
         expect(inputElm).toBeInvalid();
         expect($rootScope.form.alias.$error.max).toBeTruthy();
+      });
+
+      it('should validate if max is empty', function() {
+        $rootScope.maxVal = undefined;
+        $rootScope.value = new Date(9999, 11, 31, 23, 59, 59);
+        $rootScope.$digest();
+
+        expect($rootScope.form.alias.$error.max).toBeFalsy();
       });
     });
   });
@@ -928,12 +1041,8 @@ describe('input', function() {
 
       expect(inputElm.val()).toBe('2009-01-06T16:25:00.000');
 
-      try {
-        //set to text for browsers with datetime-local validation.
-        inputElm[0].setAttribute('type', 'text');
-      } catch (e) {
-        //for IE8
-      }
+      //set to text for browsers with datetime-local validation.
+      inputElm[0].setAttribute('type', 'text');
 
       helper.changeInputValueTo('stuff');
       expect(inputElm.val()).toBe('stuff');
@@ -990,6 +1099,35 @@ describe('input', function() {
     });
 
 
+    they('should use any timezone if specified in the options (format: $prop)',
+      {'+HHmm': '+0500', '+HH:mm': '+05:00'},
+      function(tz) {
+        var ngModelOptions = "{timezone: '" + tz + "'}";
+        var inputElm = helper.compileInput(
+            '<input type="datetime-local" ng-model="value" ng-model-options="' + ngModelOptions + '" />');
+
+        helper.changeInputValueTo('2000-01-01T06:02');
+        expect(+$rootScope.value).toBe(Date.UTC(2000, 0, 1, 1, 2, 0));
+
+        $rootScope.$apply(function() {
+          $rootScope.value = new Date(Date.UTC(2001, 0, 1, 1, 2, 0));
+        });
+        expect(inputElm.val()).toBe('2001-01-01T06:02:00.000');
+      }
+    );
+
+
+    it('should fallback to default timezone in case an unknown timezone was passed', function() {
+      var inputElm = helper.compileInput(
+        '<input type="datetime-local" ng-model="value1" ng-model-options="{timezone: \'WTF\'}" />' +
+        '<input type="datetime-local" ng-model="value2" />');
+
+      helper.changeGivenInputTo(inputElm.eq(0), '2000-01-01T06:02');
+      helper.changeGivenInputTo(inputElm.eq(1), '2000-01-01T06:02');
+      expect($rootScope.value1).toEqual($rootScope.value2);
+    });
+
+
     it('should allow to specify the milliseconds', function() {
       var inputElm = helper.compileInput('<input type="datetime-local" ng-model="value"" />');
 
@@ -1026,6 +1164,18 @@ describe('input', function() {
       expect(+$rootScope.value).toBe(+new Date(2000, 0, 1, 1, 2, 0));
     });
 
+    it('should allow four or more digits in year', function() {
+      var inputElm = helper.compileInput('<input type="datetime-local" ng-model="value" />');
+
+        helper.changeInputValueTo('10123-01-01T01:02');
+        expect(+$rootScope.value).toBe(+new Date(10123, 0, 1, 1, 2, 0));
+
+        $rootScope.$apply(function() {
+          $rootScope.value = new Date(20456, 1, 1, 1, 2, 0);
+        });
+        expect(inputElm.val()).toBe('20456-02-01T01:02:00.000');
+      }
+    );
 
     it('should label parse errors as `datetimelocal`', function() {
       var inputElm = helper.compileInput('<input type="datetime-local" ng-model="val" name="alias" />', {
@@ -1070,6 +1220,14 @@ describe('input', function() {
         expect(inputElm).toBeInvalid();
         expect($rootScope.form.alias.$error.min).toBeTruthy();
       });
+
+      it('should validate if min is empty', function() {
+        $rootScope.minVal = undefined;
+        $rootScope.value = new Date(-9999, 0, 1, 0, 0, 0);
+        $rootScope.$digest();
+
+        expect($rootScope.form.alias.$error.min).toBeFalsy();
+      });
     });
 
     describe('max', function() {
@@ -1103,6 +1261,14 @@ describe('input', function() {
 
         expect(inputElm).toBeInvalid();
         expect($rootScope.form.alias.$error.max).toBeTruthy();
+      });
+
+      it('should validate if max is empty', function() {
+        $rootScope.maxVal = undefined;
+        $rootScope.value = new Date(3000, 11, 31, 23, 59, 59);
+        $rootScope.$digest();
+
+        expect($rootScope.form.alias.$error.max).toBeFalsy();
       });
     });
 
@@ -1216,12 +1382,8 @@ describe('input', function() {
 
       expect(inputElm.val()).toBe('16:25:00.000');
 
-      try {
-        //set to text for browsers with time validation.
-        inputElm[0].setAttribute('type', 'text');
-      } catch (e) {
-        //for IE8
-      }
+      //set to text for browsers with time validation.
+      inputElm[0].setAttribute('type', 'text');
 
       helper.changeInputValueTo('stuff');
       expect(inputElm.val()).toBe('stuff');
@@ -1276,6 +1438,24 @@ describe('input', function() {
       });
       expect(inputElm.val()).toBe('23:02:00.000');
     });
+
+
+    they('should use any timezone if specified in the options (format: $prop)',
+      {'+HHmm': '+0500', '+HH:mm': '+05:00'},
+      function(tz) {
+        var ngModelOptions = "{timezone: '" + tz + "'}";
+        var inputElm = helper.compileInput(
+            '<input type="time" ng-model="value" ng-model-options="' + ngModelOptions + '" />');
+
+        helper.changeInputValueTo('23:02:00');
+        expect(+$rootScope.value).toBe(Date.UTC(1970, 0, 1, 18, 2, 0));
+
+        $rootScope.$apply(function() {
+          $rootScope.value = new Date(Date.UTC(1971, 0, 1, 18, 2, 0));
+        });
+        expect(inputElm.val()).toBe('23:02:00.000');
+      }
+    );
 
 
     it('should allow to specify the milliseconds', function() {
@@ -1370,12 +1550,21 @@ describe('input', function() {
         expect(inputElm).toBeInvalid();
         expect($rootScope.form.alias.$error.min).toBeTruthy();
       });
+
+      it('should validate if min is empty', function() {
+        $rootScope.minVal = undefined;
+        $rootScope.value = new Date(-9999, 0, 1, 0, 0, 0);
+        $rootScope.$digest();
+
+        expect($rootScope.form.alias.$error.min).toBeFalsy();
+      });
     });
 
     describe('max', function() {
       var inputElm;
       beforeEach(function() {
-        inputElm = helper.compileInput('<input type="time" ng-model="value" name="alias" max="22:30:00" />');
+        $rootScope.maxVal = '22:30:00';
+        inputElm = helper.compileInput('<input type="time" ng-model="value" name="alias" max="{{ maxVal }}" />');
       });
 
       it('should invalidate', function() {
@@ -1391,11 +1580,19 @@ describe('input', function() {
         expect(+$rootScope.value).toBe(+new Date(1970, 0, 1, 5, 30, 0));
         expect($rootScope.form.alias.$error.max).toBeFalsy();
       });
+
+     it('should validate if max is empty', function() {
+        $rootScope.maxVal = undefined;
+        $rootScope.value = new Date(9999, 11, 31, 23, 59, 59);
+        $rootScope.$digest();
+
+        expect($rootScope.form.alias.$error.max).toBeFalsy();
+      });
     });
 
 
     it('should validate even if max value changes on-the-fly', function() {
-      $rootScope.max = '4:02:00';
+      $rootScope.max = '04:02:00';
       var inputElm = helper.compileInput('<input type="time" ng-model="value" name="alias" max="{{max}}" />');
 
       helper.changeInputValueTo('05:34:00');
@@ -1423,7 +1620,7 @@ describe('input', function() {
 
 
     it('should validate even if ng-max value changes on-the-fly', function() {
-      $rootScope.max = '4:02:00';
+      $rootScope.max = '04:02:00';
       var inputElm = helper.compileInput('<input type="time" ng-model="value" name="alias" ng-max="max" />');
 
       helper.changeInputValueTo('05:34:00');
@@ -1497,12 +1694,8 @@ describe('input', function() {
 
       expect(inputElm.val()).toBe('2014-09-14');
 
-      try {
-        //set to text for browsers with date validation.
-        inputElm[0].setAttribute('type', 'text');
-      } catch (e) {
-        //for IE8
-      }
+      //set to text for browsers with date validation.
+      inputElm[0].setAttribute('type', 'text');
 
       helper.changeInputValueTo('1-2-3');
       expect(inputElm.val()).toBe('1-2-3');
@@ -1557,6 +1750,37 @@ describe('input', function() {
       });
       expect(inputElm.val()).toBe('2001-01-01');
     });
+
+
+    they('should use any timezone if specified in the options (format: $prop)',
+      {'+HHmm': '+0500', '+HH:mm': '+05:00'},
+      function(tz) {
+        var ngModelOptions = "{timezone: '" + tz + "'}";
+        var inputElm = helper.compileInput(
+            '<input type="date" ng-model="value" ng-model-options="' + ngModelOptions + '" />');
+
+        helper.changeInputValueTo('2000-01-01');
+        expect(+$rootScope.value).toBe(Date.UTC(1999, 11, 31, 19, 0, 0));
+
+        $rootScope.$apply(function() {
+          $rootScope.value = new Date(Date.UTC(2000, 11, 31, 19, 0, 0));
+        });
+        expect(inputElm.val()).toBe('2001-01-01');
+      }
+    );
+
+    it('should allow four or more digits in year', function() {
+      var inputElm = helper.compileInput('<input type="date" ng-model="value" ng-model-options="{timezone: \'UTC\'}" />');
+
+        helper.changeInputValueTo('10123-01-01');
+        expect(+$rootScope.value).toBe(Date.UTC(10123, 0, 1, 0, 0, 0));
+
+        $rootScope.$apply(function() {
+          $rootScope.value = new Date(Date.UTC(20456, 1, 1, 0, 0, 0));
+        });
+        expect(inputElm.val()).toBe('20456-02-01');
+      }
+    );
 
 
     it('should label parse errors as `date`', function() {
@@ -1639,11 +1863,21 @@ describe('input', function() {
 
         expect($rootScope.form.myControl.$error.min).toBeTruthy();
       });
+
+      it('should validate if min is empty', function() {
+        var inputElm = helper.compileInput(
+            '<input type="date" name="alias" ng-model="value" min />');
+
+        $rootScope.value = new Date(-9999, 0, 1, 0, 0, 0);
+        $rootScope.$digest();
+
+        expect($rootScope.form.alias.$error.min).toBeFalsy();
+      });
     });
 
-    describe('max', function()  {
+    describe('max', function() {
 
-      it('should invalidate', function()  {
+      it('should invalidate', function() {
         var inputElm = helper.compileInput('<input type="date" ng-model="value" name="alias" max="2019-01-01" />');
         helper.changeInputValueTo('2019-12-31');
         expect(inputElm).toBeInvalid();
@@ -1667,6 +1901,16 @@ describe('input', function() {
         $rootScope.$digest();
 
         expect($rootScope.form.myControl.$error.max).toBeTruthy();
+      });
+
+      it('should validate if max is empty', function() {
+        var inputElm = helper.compileInput(
+            '<input type="date" name="alias" ng-model="value" max />');
+
+        $rootScope.value = new Date(9999, 11, 31, 23, 59, 59);
+        $rootScope.$digest();
+
+        expect($rootScope.form.alias.$error.max).toBeFalsy();
       });
     });
 
@@ -1745,6 +1989,195 @@ describe('input', function() {
 
       expect(inputElm).toBeValid();
     });
+
+    describe('ISO_DATE_REGEXP', function() {
+      var dates = [
+        // Validate date
+        ['00:00:00.0000+01:01', false],             // date must be specified
+        ['2010.06.15T00:00:00.0000+01:01', false],  // date must use dash seperator
+        ['x2010-06-15T00:00:00.0000+01:01', false], // invalid leading characters
+
+        // Validate year
+        ['2010-06-15T00:00:00.0000+01:01', true],   // year has four or more digits
+        ['20100-06-15T00:00:00.0000+01:01', true],  // year has four or more digits
+        ['-06-15T00:00:00.0000+01:01', false],      // year has too few digits
+        ['2-06-15T00:00:00.0000+01:01', false],     // year has too few digits
+        ['20-06-15T00:00:00.0000+01:01', false],    // year has too few digits
+        ['201-06-15T00:00:00.0000+01:01', false],   // year has too few digits
+
+        // Validate month
+        ['2010-01-15T00:00:00.0000+01:01', true],   // month has two digits
+        ['2010--15T00:00:00.0000+01:01', false],    // month has too few digits
+        ['2010-0-15T00:00:00.0000+01:01', false],   // month has too few digits
+        ['2010-1-15T00:00:00.0000+01:01', false],   // month has too few digits
+        ['2010-111-15T00:00:00.0000+01:01', false], // month has too many digits
+        ['2010-22-15T00:00:00.0000+01:01', false],  // month is too large
+
+        // Validate day
+        ['2010-01-01T00:00:00.0000+01:01', true],   // day has two digits
+        ['2010-01-T00:00:00.0000+01:01', false],    // day has too few digits
+        ['2010-01-1T00:00:00.0000+01:01', false],   // day has too few digits
+        ['2010-01-200T00:00:00.0000+01:01', false], // day has too many digits
+        ['2010-01-41T00:00:00.0000+01:01', false],  // day is too large
+
+        // Validate time
+        ['2010-01-01', false],                      // time must be specified
+        ['2010-01-0101:00:00.0000+01:01', false],   // missing date time seperator
+        ['2010-01-01V01:00:00.0000+01:01', false],  // invalid date time seperator
+        ['2010-01-01T01-00-00.0000+01:01', false],  // time must use colon seperator
+
+        // Validate hour
+        ['2010-01-01T01:00:00.0000+01:01', true],   // hour has two digits
+        ['2010-01-01T-01:00:00.0000+01:01', false], // hour must be positive
+        ['2010-01-01T:00:00.0000+01:01', false],    // hour has too few digits
+        ['2010-01-01T1:00:00.0000+01:01', false],   // hour has too few digits
+        ['2010-01-01T220:00:00.0000+01:01', false], // hour has too many digits
+        ['2010-01-01T32:00:00.0000+01:01', false],  // hour is too large
+
+        // Validate minutes
+        ['2010-01-01T01:00:00.0000+01:01', true],   // minute has two digits
+        ['2010-01-01T01:-00:00.0000+01:01', false], // minute must be positive
+        ['2010-01-01T01::00.0000+01:01', false],    // minute has too few digits
+        ['2010-01-01T01:0:00.0000+01:01', false],   // minute has too few digits
+        ['2010-01-01T01:100:00.0000+01:01', false], // minute has too many digits
+        ['2010-01-01T01:60:00.0000+01:01', false],  // minute is too large
+
+        // Validate seconds
+        ['2010-01-01T01:00:00.0000+01:01', true],   // second has two digits
+        ['2010-01-01T01:00:-00.0000+01:01', false], // second must be positive
+        ['2010-01-01T01:00:.0000+01:01', false],    // second has too few digits
+        ['2010-01-01T01:00:0.0000+01:01', false],   // second has too few digits
+        ['2010-01-01T01:00:100.0000+01:01', false], // second has too many digits
+        ['2010-01-01T01:00:60.0000+01:01', false],  // second is too large
+
+        // Validate milliseconds
+        ['2010-01-01T01:00:00+01:01', false],       // millisecond must be specified
+        ['2010-01-01T01:00:00.-0000+01:01', false], // millisecond must be positive
+        ['2010-01-01T01:00:00:0000+01:01', false],  // millisecond must use period seperator
+        ['2010-01-01T01:00:00.+01:01', false],      // millisecond has too few digits
+
+        // Validate timezone
+        ['2010-06-15T00:00:00.0000', false],        // timezone must be specified
+
+        // Validate timezone offset
+        ['2010-06-15T00:00:00.0000+01:01', true],   // timezone offset can be positive hours and minutes
+        ['2010-06-15T00:00:00.0000-01:01', true],   // timezone offset can be negative hours and minutes
+        ['2010-06-15T00:00:00.0000~01:01', false],  // timezone has postive/negative indicator
+        ['2010-06-15T00:00:00.000001:01', false],   // timezone has postive/negative indicator
+        ['2010-06-15T00:00:00.0000+00:01Z', false], // timezone invalid trailing characters
+        ['2010-06-15T00:00:00.0000+00:01 ', false], // timezone invalid trailing characters
+
+        // Validate timezone hour offset
+        ['2010-06-15T00:00:00.0000+:01', false],    // timezone hour offset has too few digits
+        ['2010-06-15T00:00:00.0000+0:01', false],   // timezone hour offset has too few digits
+        ['2010-06-15T00:00:00.0000+211:01', false], // timezone hour offset too many digits
+        ['2010-06-15T00:00:00.0000+31:01', false],  // timezone hour offset value too large
+
+        // Validate timezone minute offset
+        ['2010-06-15T00:00:00.0000+00:-01', false], // timezone minute offset must be positive
+        ['2010-06-15T00:00:00.0000+00.01', false],  // timezone minute offset must use colon seperator
+        ['2010-06-15T00:00:00.0000+0101', false],   // timezone minute offset must use colon seperator
+        ['2010-06-15T00:00:00.0000+010', false],    // timezone minute offset must use colon seperator
+        ['2010-06-15T00:00:00.0000+00', false],     // timezone minute offset has too few digits
+        ['2010-06-15T00:00:00.0000+00:', false],    // timezone minute offset has too few digits
+        ['2010-06-15T00:00:00.0000+00:0', false],   // timezone minute offset has too few digits
+        ['2010-06-15T00:00:00.0000+00:211', false], // timezone minute offset has too many digits
+        ['2010-06-15T00:00:00.0000+01010', false],  // timezone minute offset has too many digits
+        ['2010-06-15T00:00:00.0000+00:61', false],  // timezone minute offset is too large
+
+        // Validate timezone UTC
+        ['2010-06-15T00:00:00.0000Z', true],        // UTC timezone can be indicated with Z
+        ['2010-06-15T00:00:00.0000K', false],       // UTC timezone indicator is invalid
+        ['2010-06-15T00:00:00.0000 Z', false],      // UTC timezone indicator has extra space
+        ['2010-06-15T00:00:00.0000ZZ', false],      // UTC timezone indicator invalid trailing characters
+        ['2010-06-15T00:00:00.0000Z ', false]       // UTC timezone indicator invalid trailing characters
+      ];
+
+      they('should validate date: $prop', dates, function(item) {
+        var date = item[0];
+        var valid = item[1];
+
+        /* global ISO_DATE_REGEXP: false */
+        expect(ISO_DATE_REGEXP.test(date)).toBe(valid);
+      });
+    });
+  });
+
+  ['month', 'week', 'time', 'date', 'datetime-local'].forEach(function(inputType) {
+    if (jqLite('<input type="' + inputType + '">').prop('type') !== inputType) {
+      return;
+    }
+
+    describe(inputType, function() {
+      they('should re-validate and dirty when partially editing the input value ($prop event)',
+        ['keydown', 'wheel', 'mousedown'],
+        function(validationEvent) {
+          var mockValidity = {valid: true, badInput: false};
+          var inputElm = helper.compileInput('<input type="' + inputType + '" ng-model="val" name="alias" />', mockValidity);
+
+          expect(inputElm).toBeValid();
+          expect($rootScope.form.alias.$pristine).toBeTruthy();
+
+          inputElm.triggerHandler({type: validationEvent});
+          mockValidity.valid = false;
+          mockValidity.badInput = true;
+          $browser.defer.flush();
+          expect(inputElm).toBeInvalid();
+          expect($rootScope.form.alias.$pristine).toBeFalsy();
+        }
+      );
+
+      they('should do nothing when $prop event fired but validity does not change',
+        ['keydown', 'wheel', 'mousedown'],
+        function(validationEvent) {
+          var mockValidity = {valid: true, badInput: false};
+          var inputElm = helper.compileInput('<input type="' + inputType + '" ng-model="val" name="alias" />', mockValidity);
+
+          expect(inputElm).toBeValid();
+          expect($rootScope.form.alias.$pristine).toBeTruthy();
+
+          inputElm.triggerHandler({type: validationEvent});
+          $browser.defer.flush();
+          expect(inputElm).toBeValid();
+          expect($rootScope.form.alias.$pristine).toBeTruthy();
+        }
+      );
+
+      they('should re-validate dirty when already $invalid and partially editing the input value ($prop event)',
+        ['keydown', 'wheel', 'mousedown'],
+        function(validationEvent) {
+          var mockValidity = {valid: false, valueMissing: true, badInput: false};
+          var inputElm = helper.compileInput('<input type="' + inputType + '" required ng-model="val" name="alias" />', mockValidity);
+
+          expect(inputElm).toBeInvalid();
+          expect($rootScope.form.alias.$pristine).toBeTruthy();
+
+          inputElm.triggerHandler({type: validationEvent});
+          mockValidity.valid = false;
+          mockValidity.valueMissing = true;
+          mockValidity.badInput = true;
+          $browser.defer.flush();
+          expect(inputElm).toBeInvalid();
+          expect($rootScope.form.alias.$pristine).toBeFalsy();
+        }
+      );
+
+      they('should do nothing when already $invalid and $prop event fired but validity does not change',
+        ['keydown', 'wheel', 'mousedown'],
+        function(validationEvent) {
+          var mockValidity = {valid: false, valueMissing: true, badInput: false};
+          var inputElm = helper.compileInput('<input type="' + inputType + '" required ng-model="val" name="alias" />', mockValidity);
+
+          expect(inputElm).toBeInvalid();
+          expect($rootScope.form.alias.$pristine).toBeTruthy();
+
+          inputElm.triggerHandler({type: validationEvent});
+          $browser.defer.flush();
+          expect(inputElm).toBeInvalid();
+          expect($rootScope.form.alias.$pristine).toBeTruthy();
+        }
+      );
+    });
   });
 
 
@@ -1756,12 +2189,10 @@ describe('input', function() {
       $rootScope.$apply('age = 123');
       expect(inputElm.val()).toBe('123');
 
-      try {
-        // to allow non-number values, we have to change type so that
-        // the browser which have number validation will not interfere with
-        // this test. IE8 won't allow it hence the catch.
-        inputElm[0].setAttribute('type', 'text');
-      } catch (e) {}
+      // to allow non-number values, we have to change type so that
+      // the browser which have number validation will not interfere with
+      // this test.
+      inputElm[0].setAttribute('type', 'text');
 
       helper.changeInputValueTo('123X');
       expect(inputElm.val()).toBe('123X');
@@ -1852,6 +2283,71 @@ describe('input', function() {
     });
 
 
+    it('should parse exponential notation', function() {
+      var inputElm = helper.compileInput('<input type="number" name="alias" ng-model="value" />');
+
+      // #.###e+##
+      $rootScope.form.alias.$setViewValue("1.23214124123412412e+26");
+      expect(inputElm).toBeValid();
+      expect($rootScope.value).toBe(1.23214124123412412e+26);
+
+      // #.###e##
+      $rootScope.form.alias.$setViewValue("1.23214124123412412e26");
+      expect(inputElm).toBeValid();
+      expect($rootScope.value).toBe(1.23214124123412412e26);
+
+      // #.###e-##
+      $rootScope.form.alias.$setViewValue("1.23214124123412412e-26");
+      expect(inputElm).toBeValid();
+      expect($rootScope.value).toBe(1.23214124123412412e-26);
+
+      // ####e+##
+      $rootScope.form.alias.$setViewValue("123214124123412412e+26");
+      expect(inputElm).toBeValid();
+      expect($rootScope.value).toBe(123214124123412412e26);
+
+      // ####e##
+      $rootScope.form.alias.$setViewValue("123214124123412412e26");
+      expect(inputElm).toBeValid();
+      expect($rootScope.value).toBe(123214124123412412e26);
+
+      // ####e-##
+      $rootScope.form.alias.$setViewValue("123214124123412412e-26");
+      expect(inputElm).toBeValid();
+      expect($rootScope.value).toBe(123214124123412412e-26);
+
+      // #.###E+##
+      $rootScope.form.alias.$setViewValue("1.23214124123412412E+26");
+      expect(inputElm).toBeValid();
+      expect($rootScope.value).toBe(1.23214124123412412e+26);
+
+      // #.###E##
+      $rootScope.form.alias.$setViewValue("1.23214124123412412E26");
+      expect(inputElm).toBeValid();
+      expect($rootScope.value).toBe(1.23214124123412412e26);
+
+      // #.###E-##
+      $rootScope.form.alias.$setViewValue("1.23214124123412412E-26");
+      expect(inputElm).toBeValid();
+      expect($rootScope.value).toBe(1.23214124123412412e-26);
+
+      // ####E+##
+      $rootScope.form.alias.$setViewValue("123214124123412412E+26");
+      expect(inputElm).toBeValid();
+      expect($rootScope.value).toBe(123214124123412412e26);
+
+      // ####E##
+      $rootScope.form.alias.$setViewValue("123214124123412412E26");
+      expect(inputElm).toBeValid();
+      expect($rootScope.value).toBe(123214124123412412e26);
+
+      // ####E-##
+      $rootScope.form.alias.$setViewValue("123214124123412412E-26");
+      expect(inputElm).toBeValid();
+      expect($rootScope.value).toBe(123214124123412412e-26);
+    });
+
+
     describe('min', function() {
 
       it('should validate', function() {
@@ -1869,10 +2365,15 @@ describe('input', function() {
       });
 
       it('should validate even if min value changes on-the-fly', function() {
-        $rootScope.min = 10;
+        $rootScope.min = undefined;
         var inputElm = helper.compileInput('<input type="number" ng-model="value" name="alias" min="{{min}}" />');
+        expect(inputElm).toBeValid();
 
         helper.changeInputValueTo('15');
+        expect(inputElm).toBeValid();
+
+        $rootScope.min = 10;
+        $rootScope.$digest();
         expect(inputElm).toBeValid();
 
         $rootScope.min = 20;
@@ -1910,10 +2411,15 @@ describe('input', function() {
       });
 
       it('should validate even if the ngMin value changes on-the-fly', function() {
-        $rootScope.min = 10;
+        $rootScope.min = undefined;
         var inputElm = helper.compileInput('<input type="number" ng-model="value" name="alias" ng-min="min" />');
+        expect(inputElm).toBeValid();
 
         helper.changeInputValueTo('15');
+        expect(inputElm).toBeValid();
+
+        $rootScope.min = 10;
+        $rootScope.$digest();
         expect(inputElm).toBeValid();
 
         $rootScope.min = 20;
@@ -1952,10 +2458,15 @@ describe('input', function() {
       });
 
       it('should validate even if max value changes on-the-fly', function() {
-        $rootScope.max = 10;
+        $rootScope.max = undefined;
         var inputElm = helper.compileInput('<input type="number" ng-model="value" name="alias" max="{{max}}" />');
+        expect(inputElm).toBeValid();
 
         helper.changeInputValueTo('5');
+        expect(inputElm).toBeValid();
+
+        $rootScope.max = 10;
+        $rootScope.$digest();
         expect(inputElm).toBeValid();
 
         $rootScope.max = 0;
@@ -1993,10 +2504,15 @@ describe('input', function() {
       });
 
       it('should validate even if the ngMax value changes on-the-fly', function() {
-        $rootScope.max = 10;
+        $rootScope.max = undefined;
         var inputElm = helper.compileInput('<input type="number" ng-model="value" name="alias" ng-max="max" />');
+        expect(inputElm).toBeValid();
 
         helper.changeInputValueTo('5');
+        expect(inputElm).toBeValid();
+
+        $rootScope.max = 10;
+        $rootScope.$digest();
         expect(inputElm).toBeValid();
 
         $rootScope.max = 0;
@@ -2300,10 +2816,115 @@ describe('input', function() {
 
 
     describe('URL_REGEXP', function() {
-      /* global URL_REGEXP: false */
-      it('should validate url', function() {
-        expect(URL_REGEXP.test('http://server:123/path')).toBe(true);
-        expect(URL_REGEXP.test('a@B.c')).toBe(false);
+      // See valid URLs in RFC3987 (http://tools.ietf.org/html/rfc3987)
+      // Note: We are being more lenient, because browsers are too.
+      var urls = [
+        ['scheme://hostname', true],
+        ['scheme://username:password@host.name:7678/pa/t.h?q=u&e=r&y#fragment', true],
+
+        // Validating `scheme`
+        ['://example.com', false],
+        ['0scheme://example.com', false],
+        ['.scheme://example.com', false],
+        ['+scheme://example.com', false],
+        ['-scheme://example.com', false],
+        ['_scheme://example.com', false],
+        ['scheme0://example.com', true],
+        ['scheme.://example.com', true],
+        ['scheme+://example.com', true],
+        ['scheme-://example.com', true],
+        ['scheme_://example.com', false],
+
+        // Vaidating `:` and `/` after `scheme`
+        ['scheme//example.com', false],
+        ['scheme:example.com', true],
+        ['scheme:/example.com', true],
+        ['scheme:///example.com', true],
+
+        // Validating `username` and `password`
+        ['scheme://@example.com', true],
+        ['scheme://username@example.com', true],
+        ['scheme://u0s.e+r-n_a~m!e@example.com', true],
+        ['scheme://u#s$e%r^n&a*m;e@example.com', true],
+        ['scheme://:password@example.com', true],
+        ['scheme://username:password@example.com', true],
+        ['scheme://username:pass:word@example.com', true],
+        ['scheme://username:p0a.s+s-w_o~r!d@example.com', true],
+        ['scheme://username:p#a$s%s^w&o*r;d@example.com', true],
+
+        // Validating `hostname`
+        ['scheme:', false],                                  // Chrome, FF: true
+        ['scheme://', false],                                // Chrome, FF: true
+        ['scheme:// example.com:', false],                   // Chrome, FF: true
+        ['scheme://example com:', false],                    // Chrome, FF: true
+        ['scheme://:', false],                               // Chrome, FF: true
+        ['scheme://?', false],                               // Chrome, FF: true
+        ['scheme://#', false],                               // Chrome, FF: true
+        ['scheme://username:password@:', false],             // Chrome, FF: true
+        ['scheme://username:password@/', false],             // Chrome, FF: true
+        ['scheme://username:password@?', false],             // Chrome, FF: true
+        ['scheme://username:password@#', false],             // Chrome, FF: true
+        ['scheme://host.name', true],
+        ['scheme://123.456.789.10', true],
+        ['scheme://[1234:0000:0000:5678:9abc:0000:0000:def]', true],
+        ['scheme://[1234:0000:0000:5678:9abc:0000:0000:def]:7678', true],
+        ['scheme://[1234:0:0:5678:9abc:0:0:def]', true],
+        ['scheme://[1234::5678:9abc::def]', true],
+        ['scheme://~`!@$%^&*-_=+|\\;\'",.()[]{}<>', true],
+
+        // Validating `port`
+        ['scheme://example.com/no-port', true],
+        ['scheme://example.com:7678', true],
+        ['scheme://example.com:76T8', false],                // Chrome, FF: true
+        ['scheme://example.com:port', false],                // Chrome, FF: true
+
+        // Validating `path`
+        ['scheme://example.com/', true],
+        ['scheme://example.com/path', true],
+        ['scheme://example.com/path/~`!@$%^&*-_=+|\\;:\'",./()[]{}<>', true],
+
+        // Validating `query`
+        ['scheme://example.com?query', true],
+        ['scheme://example.com/?query', true],
+        ['scheme://example.com/path?query', true],
+        ['scheme://example.com/path?~`!@$%^&*-_=+|\\;:\'",.?/()[]{}<>', true],
+
+        // Validating `fragment`
+        ['scheme://example.com#fragment', true],
+        ['scheme://example.com/#fragment', true],
+        ['scheme://example.com/path#fragment', true],
+        ['scheme://example.com/path/#fragment', true],
+        ['scheme://example.com/path?query#fragment', true],
+        ['scheme://example.com/path?query#~`!@#$%^&*-_=+|\\;:\'",.?/()[]{}<>', true],
+
+        // Validating miscellaneous
+        ['scheme://☺.✪.⌘.➡/䨹', true],
+        ['scheme://مثال.إختبار', true],
+        ['scheme://例子.测试', true],
+        ['scheme://उदाहरण.परीक्षा', true],
+
+        // Legacy tests
+        ['http://server:123/path', true],
+        ['https://server:123/path', true],
+        ['file:///home/user', true],
+        ['mailto:user@example.com?subject=Foo', true],
+        ['r2-d2.c3-p0://localhost/foo', true],
+        ['abc:/foo', true],
+        ['http://example.com/path;path', true],
+        ['http://example.com/[]$\'()*,~)', true],
+        ['http:', false],                                            // FF: true
+        ['a@B.c', false],
+        ['a_B.c', false],
+        ['0scheme://example.com', false],
+        ['http://example.com:9999/``', true]
+      ];
+
+      they('should validate url: $prop', urls, function(item) {
+        var url = item[0];
+        var valid = item[1];
+
+        /* global URL_REGEXP: false */
+        expect(URL_REGEXP.test(url)).toBe(valid);
       });
     });
   });
@@ -2448,14 +3069,17 @@ describe('input', function() {
     });
 
 
-    it('should set the ngTrueValue when required directive is present', function() {
-      var inputElm = helper.compileInput('<input type="checkbox" ng-model="value" required ng-true-value="\'yes\'" />');
+    it('should pass validation for "required" when trueValue is a string', function() {
+      var inputElm = helper.compileInput('<input type="checkbox" required name="cb"' +
+        'ng-model="value" ng-true-value="\'yes\'" />');
 
       expect(inputElm).toBeInvalid();
+      expect($rootScope.form.cb.$error.required).toBe(true);
 
       browserTrigger(inputElm, 'click');
       expect(inputElm[0].checked).toBe(true);
       expect(inputElm).toBeValid();
+      expect($rootScope.form.cb.$error.required).toBeUndefined();
     });
   });
 

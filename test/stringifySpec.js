@@ -9,7 +9,7 @@ describe('toDebugString', function() {
     expect(toDebugString()).toEqual('undefined');
     var a = { };
     a.a = a;
-    expect(toDebugString(a)).toEqual('{"a":"<<already seen>>"}');
-    expect(toDebugString([a,a])).toEqual('[{"a":"<<already seen>>"},"<<already seen>>"]');
+    expect(toDebugString(a)).toEqual('{"a":"..."}');
+    expect(toDebugString([a,a])).toEqual('[{"a":"..."},"..."]');
   });
 });

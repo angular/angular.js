@@ -83,52 +83,64 @@ describe('ngPluralize', function() {
     }));
 
 
-    it('should show single/plural strings with mal-formed inputs', inject(function($rootScope) {
-      $rootScope.email = '';
-      $rootScope.$digest();
-      expect(element.text()).toBe('');
-      expect(elementAlt.text()).toBe('');
+    it('should show single/plural strings with mal-formed inputs', inject(
+      function($log, $rootScope) {
+        $rootScope.email = '';
+        $rootScope.$digest();
+        expect(element.text()).toBe('');
+        expect(elementAlt.text()).toBe('');
+        expect($log.debug.logs.shift()).toEqual([
+          "ngPluralize: no rule defined for 'NaN' in {" +
+          "'-1': 'You have negative email. Whohoo!'," +
+          "'0': 'You have no new email'," +
+          "'one': 'You have one new email'," +
+          "'other': 'You have {} new emails'}"
+        ]);
+        expect($log.debug.logs.shift()).toEqual([
+          "ngPluralize: no rule defined for 'NaN' in undefined"
+        ]);
 
-      $rootScope.email = null;
-      $rootScope.$digest();
-      expect(element.text()).toBe('');
-      expect(elementAlt.text()).toBe('');
+        $rootScope.email = null;
+        $rootScope.$digest();
+        expect(element.text()).toBe('');
+        expect(elementAlt.text()).toBe('');
 
-      $rootScope.email = undefined;
-      $rootScope.$digest();
-      expect(element.text()).toBe('');
-      expect(elementAlt.text()).toBe('');
+        $rootScope.email = undefined;
+        $rootScope.$digest();
+        expect(element.text()).toBe('');
+        expect(elementAlt.text()).toBe('');
 
-      $rootScope.email = 'a3';
-      $rootScope.$digest();
-      expect(element.text()).toBe('');
-      expect(elementAlt.text()).toBe('');
+        $rootScope.email = 'a3';
+        $rootScope.$digest();
+        expect(element.text()).toBe('');
+        expect(elementAlt.text()).toBe('');
 
-      $rootScope.email = '011';
-      $rootScope.$digest();
-      expect(element.text()).toBe('You have 11 new emails');
-      expect(elementAlt.text()).toBe('You have 11 new emails');
+        $rootScope.email = '011';
+        $rootScope.$digest();
+        expect(element.text()).toBe('You have 11 new emails');
+        expect(elementAlt.text()).toBe('You have 11 new emails');
 
-      $rootScope.email = '-011';
-      $rootScope.$digest();
-      expect(element.text()).toBe('You have -11 new emails');
-      expect(elementAlt.text()).toBe('You have -11 new emails');
+        $rootScope.email = '-011';
+        $rootScope.$digest();
+        expect(element.text()).toBe('You have -11 new emails');
+        expect(elementAlt.text()).toBe('You have -11 new emails');
 
-      $rootScope.email = '1fff';
-      $rootScope.$digest();
-      expect(element.text()).toBe('You have one new email');
-      expect(elementAlt.text()).toBe('You have one new email');
+        $rootScope.email = '1fff';
+        $rootScope.$digest();
+        expect(element.text()).toBe('You have one new email');
+        expect(elementAlt.text()).toBe('You have one new email');
 
-      $rootScope.email = '0aa22';
-      $rootScope.$digest();
-      expect(element.text()).toBe('You have no new email');
-      expect(elementAlt.text()).toBe('You have no new email');
+        $rootScope.email = '0aa22';
+        $rootScope.$digest();
+        expect(element.text()).toBe('You have no new email');
+        expect(elementAlt.text()).toBe('You have no new email');
 
-      $rootScope.email = '000001';
-      $rootScope.$digest();
-      expect(element.text()).toBe('You have one new email');
-      expect(elementAlt.text()).toBe('You have one new email');
-    }));
+        $rootScope.email = '000001';
+        $rootScope.$digest();
+        expect(element.text()).toBe('You have one new email');
+        expect(elementAlt.text()).toBe('You have one new email');
+      }
+    ));
   });
 
 
@@ -143,6 +155,33 @@ describe('ngPluralize', function() {
       $rootScope.email = '0';
       $rootScope.$digest();
       expect(element.text()).toBe('');
+    }));
+
+    it('should be able to specify a message for null/undefined values', inject(
+      function($compile, $rootScope) {
+        element = $compile(
+            '<ng:pluralize count="email"' +
+                          "when=\"{'NaN': 'Unspecified email count'," +
+                                  "'0': ''," +
+                                  "'one': 'Some text'," +
+                                  "'other': 'Some text'}\">" +
+            '</ng:pluralize>')($rootScope);
+
+      $rootScope.email = '0';
+      $rootScope.$digest();
+      expect(element.text()).toBe('');
+
+      $rootScope.email = undefined;
+      $rootScope.$digest();
+      expect(element.text()).toBe('Unspecified email count');
+
+      $rootScope.email = '1';
+      $rootScope.$digest();
+      expect(element.text()).toBe('Some text');
+
+      $rootScope.email = null;
+      $rootScope.$digest();
+      expect(element.text()).toBe('Unspecified email count');
     }));
   });
 
@@ -195,6 +234,10 @@ describe('ngPluralize', function() {
       $rootScope.email = '1';
       $rootScope.$digest();
       expect(element.text()).toBe('Some text');
+
+      $rootScope.email = null;
+      $rootScope.$digest();
+      expect(element.text()).toBe('');
     }));
   });
 
@@ -243,6 +286,11 @@ describe('ngPluralize', function() {
       $rootScope.$digest();
       expect(element.text()).toBe('Igor, Misko and 2 other people are viewing.');
       expect(elementAlt.text()).toBe('Igor, Misko and 2 other people are viewing.');
+
+      $rootScope.viewCount = null;
+      $rootScope.$digest();
+      expect(element.text()).toBe('');
+      expect(elementAlt.text()).toBe('');
     }));
   });
 
@@ -296,7 +344,6 @@ describe('ngPluralize', function() {
 
 
   describe('bind-once', function() {
-
     it('should support for `count` to be a one-time expression',
       inject(function($compile, $rootScope) {
         element = $compile(
@@ -316,6 +363,11 @@ describe('ngPluralize', function() {
         expect(elementAlt.text()).toBe('');
 
         $rootScope.email = 3;
+        $rootScope.$digest();
+        expect(element.text()).toBe('You have 3 new emails');
+        expect(elementAlt.text()).toBe('You have 3 new emails');
+
+        $rootScope.email = null;
         $rootScope.$digest();
         expect(element.text()).toBe('You have 3 new emails');
         expect(elementAlt.text()).toBe('You have 3 new emails');

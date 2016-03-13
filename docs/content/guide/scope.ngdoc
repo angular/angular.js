@@ -5,7 +5,7 @@
 
 # What are Scopes?
 
-{@link ng.$rootScope.Scope scope} is an object that refers to the application
+{@link ng.$rootScope.Scope Scope} is an object that refers to the application
 model. It is an execution context for {@link expression expressions}. Scopes are
 arranged in hierarchical structure which mimic the DOM structure of the application. Scopes can
 watch {@link guide/expression expressions} and propagate events.
@@ -245,7 +245,7 @@ of the `$watch` expressions and compares them with the previous value. This dirt
 asynchronously. This means that assignment such as `$scope.username="angular"` will not
 immediately cause a `$watch` to be notified, instead the `$watch` notification is delayed until
 the `$digest` phase. This delay is desirable, since it coalesces multiple model updates into one
-`$watch` notification as well as it guarantees that during the `$watch` notification no other
+`$watch` notification as well as guarantees that during the `$watch` notification no other
 `$watch`es are running. If a `$watch` changes the value of the model, it will force additional
 `$digest` cycle.
 
@@ -264,7 +264,7 @@ the `$digest` phase. This delay is desirable, since it coalesces multiple model 
   3. **Model mutation**
 
      For mutations to be properly observed, you should make them only within the {@link
-     ng.$rootScope.Scope#$apply scope.$apply()}. (Angular APIs do this
+     ng.$rootScope.Scope#$apply scope.$apply()}. Angular APIs do this
      implicitly, so no extra `$apply` call is needed when doing synchronous work in controllers,
      or asynchronous work with {@link ng.$http $http}, {@link ng.$timeout $timeout}
      or {@link ng.$interval $interval} services.
@@ -391,7 +391,7 @@ implementing custom event callbacks, or when working with third-party library ca
   5. The {@link ng.$rootScope.Scope#$watch $watch} list is a set of expressions
      which may have changed since last iteration. If a change is detected then the `$watch`
      function is called which typically updates the DOM with the new value.
-  6. Once the Angular {@link ng.$rootScope.Scope#$digest $digest} loop finishes
+  6. Once the Angular {@link ng.$rootScope.Scope#$digest $digest} loop finishes, 
      the execution leaves the Angular and JavaScript context. This is followed by the browser
      re-rendering the DOM to reflect any changes.
 
@@ -419,4 +419,4 @@ user enters text into the text field.
         which in turn updates the DOM.
      6. Angular exits the execution context, which in turn exits the `keydown` event and with it
         the JavaScript execution context.
-     7. The browser re-renders the view with update text.
+     7. The browser re-renders the view with the updated text.

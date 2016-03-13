@@ -29,19 +29,28 @@ $provide.value("$locale", {
       "nedelja",
       "ponedeljak",
       "utorak",
-      "srijeda",
+      "sreda",
       "\u010detvrtak",
       "petak",
       "subota"
     ],
+    "ERANAMES": [
+      "Pre nove ere",
+      "Nove ere"
+    ],
+    "ERAS": [
+      "p. n. e.",
+      "n. e."
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "januar",
       "februar",
       "mart",
       "april",
       "maj",
-      "juni",
-      "juli",
+      "jun",
+      "jul",
       "avgust",
       "septembar",
       "oktobar",
@@ -52,7 +61,7 @@ $provide.value("$locale", {
       "ned",
       "pon",
       "uto",
-      "sri",
+      "sre",
       "\u010det",
       "pet",
       "sub"
@@ -71,13 +80,31 @@ $provide.value("$locale", {
       "nov",
       "dec"
     ],
+    "STANDALONEMONTH": [
+      "januar",
+      "februar",
+      "mart",
+      "april",
+      "maj",
+      "jun",
+      "jul",
+      "avgust",
+      "septembar",
+      "oktobar",
+      "novembar",
+      "decembar"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
+    ],
     "fullDate": "EEEE, dd. MMMM y.",
     "longDate": "dd. MMMM y.",
-    "medium": "y-MM-dd HH:mm:ss",
-    "mediumDate": "y-MM-dd",
+    "medium": "dd.MM.y. HH:mm:ss",
+    "mediumDate": "dd.MM.y.",
     "mediumTime": "HH:mm:ss",
-    "short": "yy-MM-dd HH:mm",
-    "shortDate": "yy-MM-dd",
+    "short": "d.M.yy. HH:mm",
+    "shortDate": "d.M.yy.",
     "shortTime": "HH:mm"
   },
   "NUMBER_FORMATS": {
@@ -110,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "sr-latn-ba",
+  "localeID": "sr_Latn_BA",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (vf.v == 0 && i % 10 == 1 && i % 100 != 11 || vf.f % 10 == 1 && vf.f % 100 != 11) {    return PLURAL_CATEGORY.ONE;  }  if (vf.v == 0 && i % 10 >= 2 && i % 10 <= 4 && (i % 100 < 12 || i % 100 > 14) || vf.f % 10 >= 2 && vf.f % 10 <= 4 && (vf.f % 100 < 12 || vf.f % 100 > 14)) {    return PLURAL_CATEGORY.FEW;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

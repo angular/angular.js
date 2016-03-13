@@ -61,7 +61,7 @@ by the value of the expressions.
 We have added a new directive, called `ng-controller`, which attaches a `PhoneListCtrl`
 __controller__ to the &lt;body&gt; tag.  At this point:
 
-* The expressions in curly braces (`{{phone.name}}` and `{{phone.snippet}}` denote
+* The expressions in curly braces (`{{phone.name}}` and `{{phone.snippet}}`) denote
 bindings, which are referring to our application model, which is set up in our `PhoneListCtrl`
 controller.
 
@@ -132,6 +132,8 @@ The "Angular way" of separating controller from the view, makes it easy to test 
 developed. If our controller is available on the global namespace then we could simply instantiate it
 with a mock `scope` object:
 
+__`test/e2e/scenarios.js`:__
+
 ```js
 describe('PhoneListCtrl', function(){
 
@@ -195,8 +197,19 @@ to ensure that Karma and its necessary plugins are installed. You can do this by
 
 To run the tests, and then watch the files for changes: `npm test`.
 
-* Karma will start a new instance of Chrome browser automatically. Just ignore it and let it run in
-   the background. Karma will use this browser for test execution.
+* Karma will start new instances of Chrome and Firefox browsers automatically. Just ignore them and
+  let them run in the background. Karma will use these browsers for test execution.
+* If you only have one of the browsers installed on your machine (either Chrome or Firefox), make
+  sure to update the karma configuration file before running the test. Locate the configuration file
+  in `test/karma.conf.js`, then update the `browsers` property.
+
+  E.g. if you only have Chrome installed:
+  <pre>
+    ...
+    browsers: ['Chrome'],
+    ...
+  </pre>
+
 * You should see the following or similar output in the terminal:
 
   <pre>
@@ -250,7 +263,7 @@ browser is limited, which results in your karma tests running extremely slow.
             <tr><th>row number</th></tr>
             <tr ng-repeat="i in [0, 1, 2, 3, 4, 5, 6, 7]"><td>{{i+1}}</td></tr>
           </table>
-  
+
   Extra points: try and make an 8x8 table using an additional `ng-repeat`.
 
 * Make the unit test fail by changing `expect(scope.phones.length).toBe(3)` to instead use `toBe(4)`.

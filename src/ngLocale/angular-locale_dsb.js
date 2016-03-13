@@ -34,6 +34,15 @@ $provide.value("$locale", {
       "p\u011btk",
       "sobota"
     ],
+    "ERANAMES": [
+      "p\u015bed Kristusowym naro\u017aenim",
+      "p\u00f3 Kristusowem naro\u017aenju"
+    ],
+    "ERAS": [
+      "p\u015b.Chr.n.",
+      "p\u00f3 Chr.n."
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "januara",
       "februara",
@@ -70,6 +79,24 @@ $provide.value("$locale", {
       "okt.",
       "now.",
       "dec."
+    ],
+    "STANDALONEMONTH": [
+      "januar",
+      "februar",
+      "m\u011brc",
+      "apryl",
+      "maj",
+      "junij",
+      "julij",
+      "awgust",
+      "september",
+      "oktober",
+      "nowember",
+      "december"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE, d. MMMM y",
     "longDate": "d. MMMM y",
@@ -110,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "dsb",
+  "localeID": "dsb",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

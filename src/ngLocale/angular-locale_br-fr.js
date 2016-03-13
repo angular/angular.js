@@ -16,6 +16,15 @@ $provide.value("$locale", {
       "Gwener",
       "Sadorn"
     ],
+    "ERANAMES": [
+      "BCE",
+      "CE"
+    ],
+    "ERAS": [
+      "BCE",
+      "CE"
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "Genver",
       "C\u02bchwevrer",
@@ -52,6 +61,24 @@ $provide.value("$locale", {
       "Here",
       "Du",
       "Ker"
+    ],
+    "STANDALONEMONTH": [
+      "Genver",
+      "C\u02bchwevrer",
+      "Meurzh",
+      "Ebrel",
+      "Mae",
+      "Mezheven",
+      "Gouere",
+      "Eost",
+      "Gwengolo",
+      "Here",
+      "Du",
+      "Kerzu"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "y MMMM d, EEEE",
     "longDate": "y MMMM d",
@@ -92,6 +119,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "br-fr",
+  "localeID": "br_FR",
   "pluralCat": function(n, opt_precision) {  if (n % 10 == 1 && n % 100 != 11 && n % 100 != 71 && n % 100 != 91) {    return PLURAL_CATEGORY.ONE;  }  if (n % 10 == 2 && n % 100 != 12 && n % 100 != 72 && n % 100 != 92) {    return PLURAL_CATEGORY.TWO;  }  if ((n % 10 >= 3 && n % 10 <= 4 || n % 10 == 9) && (n % 100 < 10 || n % 100 > 19) && (n % 100 < 70 || n % 100 > 79) && (n % 100 < 90 || n % 100 > 99)) {    return PLURAL_CATEGORY.FEW;  }  if (n != 0 && n % 1000000 == 0) {    return PLURAL_CATEGORY.MANY;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

@@ -15,14 +15,14 @@ development.
 production.
 
 To point your code to an angular script on the Google CDN server, use the following template.  This
-example points to the minified version 1.2.0:
+example points to the minified version 1.4.5:
 
 ```
   <!doctype html>
   <html ng-app>
     <head>
       <title>My Angular App</title>
-      <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular.min.js"></script>
+      <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
     </head>
     <body>
     </body>
@@ -46,7 +46,7 @@ Download the version you want and have fun.
 Each directory under <http://code.angularjs.org/> includes the following set of files:
 
 * __`angular.js`__ — This file is non-obfuscated, non-minified, and human-readable by
-opening it it any editor or browser. In order to get better error messages during development, you
+opening it in any editor or browser. In order to get better error messages during development, you
 should always use this non-minified angular script.
 
 * __`angular.min.js`__ — This is a minified and obfuscated version of

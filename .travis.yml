@@ -1,6 +1,13 @@
 language: node_js
+sudo: false
 node_js:
-  - '0.10'
+  - '4.2'
+
+cache:
+  directories:
+    - node_modules
+    - bower_components
+    - docs/bower_components
 
 branches:
   except:
@@ -8,52 +15,54 @@ branches:
 
 env:
   matrix:
+    - JOB=ci-checks
     - JOB=unit BROWSER_PROVIDER=saucelabs
     - JOB=docs-e2e BROWSER_PROVIDER=saucelabs
     - JOB=e2e TEST_TARGET=jqlite BROWSER_PROVIDER=saucelabs
     - JOB=e2e TEST_TARGET=jquery BROWSER_PROVIDER=saucelabs
-    - JOB=unit BROWSER_PROVIDER=browserstack
-    - JOB=docs-e2e BROWSER_PROVIDER=browserstack
-    - JOB=e2e TEST_TARGET=jqlite BROWSER_PROVIDER=browserstack
-    - JOB=e2e TEST_TARGET=jquery BROWSER_PROVIDER=browserstack
   global:
+    - CXX=g++-4.8  # node 4 likes the G++ v4.8 compiler
     - SAUCE_USERNAME=angular-ci
     - SAUCE_ACCESS_KEY=9b988f434ff8-fbca-8aa4-4ae3-35442987
-    - BROWSER_STACK_USERNAME=VojtaJina
-    - BROWSER_STACK_ACCESS_KEY=QCQJ1ZpWXpBkSwEdD8ev
     - LOGS_DIR=/tmp/angular-build/logs
     - BROWSER_PROVIDER_READY_FILE=/tmp/browsersprovider-tunnel-ready
 
-matrix:
-  allow_failures:
-    - env: "JOB=unit BROWSER_PROVIDER=browserstack"
+# node 4 likes the G++ v4.8 compiler
+# see https://docs.travis-ci.com/user/languages/javascript-with-nodejs#Node.js-v4-(or-io.js-v3)-compiler-requirements
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-4.8
 
 install:
+  # Check the size of caches
+  - du -sh ./node_modules ./bower_components/ ./docs/bower_components/ || true
   # - npm config set registry http://23.251.144.68
   # Disable the spinner, it looks bad on Travis
   - npm config set spin false
   # Log HTTP requests
   - npm config set loglevel http
-  - time ./scripts/travis/npm-bundle-deps.sh
-  - time npm install
+  #- npm install -g npm@2.5
+  # Install npm dependencies and ensure that npm cache is not stale
+  - npm install
 
 before_script:
-  - mkdir -p $LOGS_DIR
-  - ./scripts/travis/start_browser_provider.sh
-  - npm install -g grunt-cli
-  - grunt package
-  - ./scripts/travis/wait_for_browser_provider.sh
+  - ./scripts/travis/before_build.sh
 
 script:
   - ./scripts/travis/build.sh
 
 after_script:
+  - ./scripts/travis/tear_down_browser_provider.sh
   - ./scripts/travis/print_logs.sh
 
 notifications:
   webhooks:
     urls:
       - https://webhooks.gitter.im/e/d2120f3f2bb39a4531b2
-    on_success: change  # options: [always|never|change] default: always
+      - http://104.197.9.155:8484/hubot/travis/activity #hubot-server
+    on_success: always  # options: [always|never|change] default: always
     on_failure: always  # options: [always|never|change] default: always
-    on_start: false     # default: false
+    on_start: always    # default: false

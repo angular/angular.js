@@ -34,6 +34,15 @@ $provide.value("$locale", {
       "\u2d59\u2d49\u2d4e\u2d61\u2d30\u2d59",
       "\u2d30\u2d59\u2d49\u2d39\u2d62\u2d30\u2d59"
     ],
+    "ERANAMES": [
+      "\u2d37\u2d30\u2d5c \u2d4f \u2d44\u2d49\u2d59\u2d30",
+      "\u2d37\u2d3c\u2d3c\u2d49\u2d54 \u2d4f \u2d44\u2d49\u2d59\u2d30"
+    ],
+    "ERAS": [
+      "\u2d37\u2d30\u2d44",
+      "\u2d37\u2d3c\u2d44"
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "\u2d49\u2d4f\u2d4f\u2d30\u2d62\u2d54",
       "\u2d31\u2d55\u2d30\u2d62\u2d55",
@@ -71,6 +80,24 @@ $provide.value("$locale", {
       "\u2d4f\u2d53\u2d61",
       "\u2d37\u2d53\u2d4a"
     ],
+    "STANDALONEMONTH": [
+      "\u2d49\u2d4f\u2d4f\u2d30\u2d62\u2d54",
+      "\u2d31\u2d55\u2d30\u2d62\u2d55",
+      "\u2d4e\u2d30\u2d55\u2d5a",
+      "\u2d49\u2d31\u2d54\u2d49\u2d54",
+      "\u2d4e\u2d30\u2d62\u2d62\u2d53",
+      "\u2d62\u2d53\u2d4f\u2d62\u2d53",
+      "\u2d62\u2d53\u2d4d\u2d62\u2d53\u2d63",
+      "\u2d56\u2d53\u2d5b\u2d5c",
+      "\u2d5b\u2d53\u2d5c\u2d30\u2d4f\u2d31\u2d49\u2d54",
+      "\u2d3d\u2d5c\u2d53\u2d31\u2d54",
+      "\u2d4f\u2d53\u2d61\u2d30\u2d4f\u2d31\u2d49\u2d54",
+      "\u2d37\u2d53\u2d4a\u2d30\u2d4f\u2d31\u2d49\u2d54"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
+    ],
     "fullDate": "EEEE d MMMM y",
     "longDate": "d MMMM y",
     "medium": "d MMM, y HH:mm:ss",
@@ -81,7 +108,7 @@ $provide.value("$locale", {
     "shortTime": "HH:mm"
   },
   "NUMBER_FORMATS": {
-    "CURRENCY_SYM": "\u20ac",
+    "CURRENCY_SYM": "dh",
     "DECIMAL_SEP": ",",
     "GROUP_SEP": "\u00a0",
     "PATTERNS": [
@@ -110,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "shi-tfng",
+  "localeID": "shi_Tfng",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

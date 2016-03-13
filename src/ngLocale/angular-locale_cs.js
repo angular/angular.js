@@ -22,8 +22,8 @@ function getVF(n, opt_precision) {
 $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": [
-      "AM",
-      "PM"
+      "dopoledne",
+      "odpoledne"
     ],
     "DAY": [
       "ned\u011ble",
@@ -34,6 +34,15 @@ $provide.value("$locale", {
       "p\u00e1tek",
       "sobota"
     ],
+    "ERANAMES": [
+      "p\u0159. n. l.",
+      "n. l."
+    ],
+    "ERAS": [
+      "p\u0159. n. l.",
+      "n. l."
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "ledna",
       "\u00fanora",
@@ -70,6 +79,24 @@ $provide.value("$locale", {
       "\u0159\u00edj",
       "lis",
       "pro"
+    ],
+    "STANDALONEMONTH": [
+      "leden",
+      "\u00fanor",
+      "b\u0159ezen",
+      "duben",
+      "kv\u011bten",
+      "\u010derven",
+      "\u010dervenec",
+      "srpen",
+      "z\u00e1\u0159\u00ed",
+      "\u0159\u00edjen",
+      "listopad",
+      "prosinec"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE d. MMMM y",
     "longDate": "d. MMMM y",
@@ -110,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "cs",
+  "localeID": "cs",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  if (i >= 2 && i <= 4 && vf.v == 0) {    return PLURAL_CATEGORY.FEW;  }  if (vf.v != 0) {    return PLURAL_CATEGORY.MANY;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

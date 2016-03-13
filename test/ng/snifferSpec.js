@@ -73,8 +73,11 @@ describe('$sniffer', function() {
 
 
   describe('csp', function() {
-    it('should be false by default', function() {
-      expect(sniffer({}).csp).toBe(false);
+    it('should have all rules set to false by default', function() {
+      var csp = sniffer({}).csp;
+      forEach(Object.keys(csp), function(key) {
+        expect(csp[key]).toEqual(false);
+      });
     });
   });
 
@@ -85,13 +88,13 @@ describe('$sniffer', function() {
       inject(function($sniffer, $window) {
         var expectedPrefix;
         var ua = $window.navigator.userAgent.toLowerCase();
-        if (/chrome/i.test(ua) || /safari/i.test(ua) || /webkit/i.test(ua)) {
+        if (/edge/i.test(ua)) {
+          expectedPrefix = 'Ms';
+        } else if (/chrome/i.test(ua) || /safari/i.test(ua) || /webkit/i.test(ua)) {
           expectedPrefix = 'Webkit';
-        }
-        else if (/firefox/i.test(ua)) {
+        } else if (/firefox/i.test(ua)) {
           expectedPrefix = 'Moz';
-        }
-        else if (/ie/i.test(ua) || /trident/i.test(ua)) {
+        } else if (/ie/i.test(ua) || /trident/i.test(ua)) {
           expectedPrefix = 'Ms';
         }
         expect($sniffer.vendorPrefix).toBe(expectedPrefix);
@@ -119,7 +122,7 @@ describe('$sniffer', function() {
   describe('animations', function() {
     it('should be either true or false', function() {
       inject(function($sniffer) {
-        expect($sniffer.animations).not.toBe(undefined);
+        expect($sniffer.animations).not.toBeUndefined();
       });
     });
 
@@ -215,7 +218,7 @@ describe('$sniffer', function() {
 
     it('should be either true or false', function() {
       inject(function($sniffer) {
-        expect($sniffer.transitions).not.toBe(undefined);
+        expect($sniffer.transitions).not.toBeUndefined();
       });
     });
 

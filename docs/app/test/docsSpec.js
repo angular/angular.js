@@ -3,7 +3,6 @@ describe("DocsController", function() {
 
   angular.module('fake', [])
     .value('$cookies', {})
-    .value('openPlunkr', function() {})
     .value('NG_PAGES', {})
     .value('NG_NAVIGATION', {})
     .value('NG_VERSION', {});

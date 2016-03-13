@@ -34,6 +34,15 @@ $provide.value("$locale", {
       "f\u00falad\u00e9",
       "s\u00e9rad\u00e9"
     ],
+    "ERANAMES": [
+      "os\u00fas\u00faa Y\u00e9sus kiri",
+      "\u00e1mvus Y\u00e9sus Kir\u00eds"
+    ],
+    "ERAS": [
+      "oyk",
+      "ayk"
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "ng\u0254n os\u00fa",
       "ng\u0254n b\u025b\u030c",
@@ -70,6 +79,24 @@ $provide.value("$locale", {
       "nga",
       "ngad",
       "ngab"
+    ],
+    "STANDALONEMONTH": [
+      "ng\u0254n os\u00fa",
+      "ng\u0254n b\u025b\u030c",
+      "ng\u0254n l\u00e1la",
+      "ng\u0254n nyina",
+      "ng\u0254n t\u00e1na",
+      "ng\u0254n sam\u0259na",
+      "ng\u0254n zamgb\u00e1la",
+      "ng\u0254n mwom",
+      "ng\u0254n ebul\u00fa",
+      "ng\u0254n aw\u00f3m",
+      "ng\u0254n aw\u00f3m ai dzi\u00e1",
+      "ng\u0254n aw\u00f3m ai b\u025b\u030c"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE d MMMM y",
     "longDate": "d MMMM y",
@@ -110,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "ewo-cm",
+  "localeID": "ewo_CM",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

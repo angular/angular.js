@@ -2,12 +2,6 @@
 
 describe('SCE', function() {
 
-  // Work around an IE8 bug.  Though window.inject === angular.mock.inject, if it's invoked the
-  // window scope, IE8 loses the exception object that bubbles up and replaces it with a TypeError.
-  // By using a local alias, it gets invoked on the global scope instead of window.
-  // Ref: https://github.com/angular/angular.js/pull/4221#/issuecomment-25515813
-  var inject = angular.mock.inject;
-
   describe('when disabled', function() {
     beforeEach(function() {
       module(function($sceProvider) {
@@ -128,11 +122,11 @@ describe('SCE', function() {
     }));
 
     it('should wrap undefined into undefined', inject(function($sce) {
-      expect($sce.trustAsHtml(undefined)).toBe(undefined);
+      expect($sce.trustAsHtml(undefined)).toBeUndefined();
     }));
 
     it('should unwrap undefined into undefined', inject(function($sce) {
-      expect($sce.getTrusted($sce.HTML, undefined)).toBe(undefined);
+      expect($sce.getTrusted($sce.HTML, undefined)).toBeUndefined();
     }));
 
     it('should wrap null into null', inject(function($sce) {
@@ -213,7 +207,7 @@ describe('SCE', function() {
       expect($sce.parseAsJs('true')()).toBe(true);
       expect($sce.parseAsJs('false')()).toBe(false);
       expect($sce.parseAsJs('null')()).toBe(null);
-      expect($sce.parseAsJs('undefined')()).toBe(undefined);
+      expect($sce.parseAsJs('undefined')()).toBeUndefined();
       expect($sce.parseAsJs('"string"')()).toBe("string");
     }));
 
@@ -288,10 +282,10 @@ describe('SCE', function() {
     function runTest(cfg, testFn) {
       return function() {
         module(function($sceDelegateProvider) {
-          if (cfg.whiteList !== undefined) {
+          if (isDefined(cfg.whiteList)) {
             $sceDelegateProvider.resourceUrlWhitelist(cfg.whiteList);
           }
-          if (cfg.blackList !== undefined) {
+          if (isDefined(cfg.blackList)) {
             $sceDelegateProvider.resourceUrlBlacklist(cfg.blackList);
           }
         });

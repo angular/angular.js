@@ -34,6 +34,15 @@ $provide.value("$locale", {
       "Ijumaa",
       "Jumamosi"
     ],
+    "ERANAMES": [
+      "Ashanali uKilisito",
+      "Pamwandi ya Kilisto"
+    ],
+    "ERAS": [
+      "AK",
+      "PK"
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "Mupalangulwa",
       "Mwitope",
@@ -70,6 +79,24 @@ $provide.value("$locale", {
       "Mok",
       "Mus",
       "Muh"
+    ],
+    "STANDALONEMONTH": [
+      "Mupalangulwa",
+      "Mwitope",
+      "Mushende",
+      "Munyi",
+      "Mushende Magali",
+      "Mujimbi",
+      "Mushipepo",
+      "Mupuguto",
+      "Munyense",
+      "Mokhu",
+      "Musongandembwe",
+      "Muhaano"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE, d MMMM y",
     "longDate": "d MMMM y",
@@ -110,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "sbp",
+  "localeID": "sbp",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

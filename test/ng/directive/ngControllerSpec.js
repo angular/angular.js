@@ -37,6 +37,10 @@ describe('ngController', function() {
       this.mark = 'works';
     });
 
+    var Foo = function($scope) {
+      $scope.mark = 'foo';
+    };
+    $controllerProvider.register('BoundFoo', ['$scope', Foo.bind(null)]);
   }));
 
   afterEach(function() {
@@ -50,6 +54,11 @@ describe('ngController', function() {
     expect(element.text()).toBe('Hello Misko!');
   }));
 
+  it('should instantiate bound constructor functions', inject(function($compile, $rootScope) {
+    element = $compile('<div ng-controller="BoundFoo">{{mark}}</div>')($rootScope);
+    $rootScope.$digest();
+    expect(element.text()).toBe('foo');
+  }));
 
   it('should publish controller into scope', inject(function($compile, $rootScope) {
     element = $compile('<div ng-controller="Public as p">{{p.mark}}</div>')($rootScope);

@@ -118,6 +118,75 @@ describe('angular.scenario.Application', function() {
     expect(called).toBeTruthy();
   });
 
+  it('should set rootElement when navigateTo instigates bootstrap', inject(function($injector, $browser) {
+    var called;
+    var testWindow = {
+      document: jqLite('<div class="test-foo"></div>')[0],
+      angular: {
+        element: jqLite,
+        service: {},
+        resumeBootstrap: noop
+      }
+    };
+    jqLite(testWindow.document).data('$injector', $injector);
+    var resumeBootstrapSpy = spyOn(testWindow.angular, 'resumeBootstrap').andReturn($injector);
+
+    var injectorGet = $injector.get;
+    spyOn($injector, 'get').andCallFake(function(name) {
+      switch (name) {
+        case "$rootElement": return jqLite(testWindow.document);
+        default: return injectorGet(name);
+      }
+    });
+
+    app.getWindow_ = function() {
+      return testWindow;
+    };
+    app.navigateTo('http://localhost/', noop);
+    callLoadHandlers(app);
+    expect(app.rootElement).toBe(testWindow.document);
+    expect(resumeBootstrapSpy).toHaveBeenCalled();
+    dealoc(testWindow.document);
+  }));
+
+  it('should set setup resumeDeferredBootstrap if resumeBootstrap is not yet defined', inject(function($injector, $browser) {
+    var called;
+    var testWindow = {
+      document: jqLite('<div class="test-foo"></div>')[0],
+      angular: {
+        element: jqLite,
+        service: {},
+        resumeBootstrap: null
+      }
+    };
+    jqLite(testWindow.document).data('$injector', $injector);
+
+    var injectorGet = $injector.get;
+    var injectorSpy = spyOn($injector, 'get').andCallFake(function(name) {
+      switch (name) {
+        case "$rootElement": return jqLite(testWindow.document);
+        default: return injectorGet(name);
+      }
+    });
+
+    app.getWindow_ = function() {
+      return testWindow;
+    };
+    app.navigateTo('http://localhost/', noop);
+    expect(testWindow.angular.resumeDeferredBootstrap).toBeUndefined();
+    callLoadHandlers(app);
+    expect(testWindow.angular.resumeDeferredBootstrap).toBeDefined();
+    expect(app.rootElement).toBeUndefined;
+    expect(injectorSpy).not.toHaveBeenCalled();
+
+    var resumeBootstrapSpy = spyOn(testWindow.angular, 'resumeBootstrap').andReturn($injector);
+    testWindow.angular.resumeDeferredBootstrap();
+    expect(app.rootElement).toBe(testWindow.document);
+    expect(resumeBootstrapSpy).toHaveBeenCalled();
+    expect(injectorSpy).toHaveBeenCalledWith("$rootElement");
+    dealoc(testWindow.document);
+  }));
+
   it('should wait for pending requests in executeAction', inject(function($injector, $browser) {
     var called, polled;
     var handlers = [];
@@ -131,6 +200,34 @@ describe('angular.scenario.Application', function() {
     $browser.notifyWhenNoOutstandingRequests = function(fn) {
       handlers.push(fn);
     };
+    jqLite(testWindow.document).data('$injector', $injector);
+    app.getWindow_ = function() {
+      return testWindow;
+    };
+    app.executeAction(function($window, $document) {
+      expect($window).toEqual(testWindow);
+      expect($document).toBeDefined();
+      expect($document[0].className).toEqual('test-foo');
+    });
+    expect(handlers.length).toEqual(1);
+    handlers[0]();
+    dealoc(testWindow.document);
+  }));
+
+  it('should allow explicit rootElement', inject(function($injector, $browser) {
+    var called, polled;
+    var handlers = [];
+    var testWindow = {
+      document: jqLite('<div class="test-foo"></div>')[0],
+      angular: {
+        element: jqLite,
+        service: {}
+      }
+    };
+    $browser.notifyWhenNoOutstandingRequests = function(fn) {
+      handlers.push(fn);
+    };
+    app.rootElement = testWindow.document;
     jqLite(testWindow.document).data('$injector', $injector);
     app.getWindow_ = function() {
       return testWindow;

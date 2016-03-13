@@ -3,6 +3,8 @@
 @sortOrder 280
 @description
 
+# Filters
+
 A filter formats the value of an expression for display to the user. They can be used in view templates,
 controllers or services and it is easy to define your own filter.
 
@@ -32,10 +34,13 @@ E.g. the markup `{{ 1234 | number:2 }}` formats the number 1234 with 2 decimal p
 
 ## Using filters in controllers, services, and directives
 
-You can also use filters in controllers, services, and directives. For this, inject a dependency
-with the name `<filterName>Filter` to your controller/service/directive. E.g. using the dependency
-`numberFilter` will inject the number filter. The injected argument is a function that takes the
-value to format as first argument and filter parameters starting with the second argument.
+You can also use filters in controllers, services, and directives.
+
+<div class="alert alert-info">
+For this, inject a dependency with the name `<filterName>Filter` into your controller/service/directive.
+E.g. a filter called `number` is injected by using the dependency `numberFilter`. The injected argument
+is a function that takes the value to format as first argument, and filter parameters starting with the second argument.
+</div>
 
 The example below uses the filter called {@link ng.filter:filter `filter`}.
 This filter reduces arrays into sub arrays based on
@@ -92,8 +97,10 @@ means that it should be stateless and idempotent. Angular relies on these proper
 the filter only when the inputs to the function change.
 
 <div class="alert alert-warning">
-**Note:** filter names must be valid angular expression identifiers, such as `uppercase` or `orderBy`.
-Names with special characters, such as hyphens and dots, are not allowed.
+**Note:** Filter names must be valid angular {@link expression} identifiers, such as `uppercase` or `orderBy`.
+Names with special characters, such as hyphens and dots, are not allowed.  If you wish to namespace
+your filters, then you can use capitalization (`myappSubsectionFilterx`) or underscores
+(`myapp_subsection_filterx`).
 </div>
 
 The following sample filter reverses a text string. In addition, it conditionally makes the
@@ -106,6 +113,7 @@ text upper-case.
       No filter: {{greeting}}<br>
       Reverse: {{greeting|reverse}}<br>
       Reverse + uppercase: {{greeting|reverse:true}}<br>
+      Reverse, filtered in controller: {{filteredGreeting}}<br>
     </div>
   </file>
 
@@ -125,8 +133,9 @@ text upper-case.
           return out;
         };
       })
-      .controller('MyController', ['$scope', function($scope) {
+      .controller('MyController', ['$scope', 'reverseFilter', function($scope, reverseFilter) {
         $scope.greeting = 'hello';
+        $scope.filteredGreeting = reverseFilter($scope.greeting);
       }]);
   </file>
 </example>

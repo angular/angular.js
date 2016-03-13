@@ -1,12 +1,6 @@
 /* global $LogProvider: false */
 'use strict';
 
-function initService(debugEnabled) {
-    return module(function($logProvider) {
-      $logProvider.debugEnabled(debugEnabled);
-    });
-  }
-
 describe('$log', function() {
   var $window, logger, log, warn, info, error, debug;
 
@@ -144,16 +138,26 @@ describe('$log', function() {
   describe('$log.error', function() {
     var e, $log, errorArgs;
 
-    beforeEach(function() {
-      e = new Error('');
-      e.message = undefined;
-      e.sourceURL = undefined;
-      e.line = undefined;
-      e.stack = undefined;
+    function TestError() {
+      Error.prototype.constructor.apply(this, arguments);
+      this.message = undefined;
+      this.sourceURL = undefined;
+      this.line = undefined;
+      this.stack = undefined;
+    }
+    TestError.prototype = Object.create(Error.prototype);
+    TestError.prototype.constructor = TestError;
 
-      $log = new $LogProvider().$get[1]({console:{error:function() {
-        errorArgs = [].slice.call(arguments, 0);
-      }}});
+    beforeEach(function() {
+      e = new TestError('');
+      var mockWindow = {
+        console: {
+          error: function() {
+            errorArgs = [].slice.call(arguments, 0);
+          }
+        }
+      };
+      $log = new $LogProvider().$get[1](mockWindow);
     });
 
 
@@ -178,4 +182,11 @@ describe('$log', function() {
       expect(errorArgs).toEqual(['abc', 'message\nsourceURL:123']);
     });
   });
+
+  function initService(debugEnabled) {
+    return module(function($logProvider) {
+      $logProvider.debugEnabled(debugEnabled);
+    });
+  }
+
 });

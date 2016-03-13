@@ -78,6 +78,33 @@ describe('jqLite', function() {
     });
 
 
+    // This is not working correctly in jQuery prior to v3.0.
+    // See https://github.com/jquery/jquery/issues/1987 for details.
+    it('should properly handle dash-delimited node names', function() {
+      var jQueryVersion = window.jQuery && window.jQuery.fn.jquery.split('.')[0];
+      var jQuery3xOrNewer = jQueryVersion && (Number(jQueryVersion) >= 3);
+
+      if (_jqLiteMode || jQuery3xOrNewer) {
+        var nodeNames = 'thead tbody tfoot colgroup caption tr th td div kung'.split(' ');
+        var nodeNamesTested = 0;
+        var nodes, customNodeName;
+
+        forEach(nodeNames, function(nodeName) {
+          var customNodeName = nodeName + '-foo';
+          var nodes = jqLite('<' + customNodeName + '>Hello, world !</' + customNodeName + '>');
+
+          expect(nodes.length).toBe(1);
+          expect(nodeName_(nodes)).toBe(customNodeName);
+          expect(nodes.html()).toBe('Hello, world !');
+
+          nodeNamesTested++;
+        });
+
+        expect(nodeNamesTested).toBe(10);
+      }
+    });
+
+
     it('should allow creation of comment tags', function() {
       var nodes = jqLite('<!-- foo -->');
       expect(nodes.length).toBe(1);
@@ -329,7 +356,7 @@ describe('jqLite', function() {
 
       expect(div.controller()).toBe('ngController');
       expect(div.controller('ngController')).toBe('ngController');
-      expect(div.controller('other')).toBe(undefined);
+      expect(div.controller('other')).toBeUndefined();
 
       dealoc(div);
     });
@@ -405,10 +432,13 @@ describe('jqLite', function() {
     it('should provide the non-wrapped data calls', function() {
       var node = document.createElement('div');
 
+      expect(jqLite.hasData(node)).toBe(false);
       expect(jqLite.data(node, "foo")).toBeUndefined();
+      expect(jqLite.hasData(node)).toBe(false);
 
       jqLite.data(node, "foo", "bar");
 
+      expect(jqLite.hasData(node)).toBe(true);
       expect(jqLite.data(node, "foo")).toBe("bar");
       expect(jqLite(node).data("foo")).toBe("bar");
 
@@ -421,6 +451,9 @@ describe('jqLite', function() {
       jqLite.removeData(node);
       jqLite.removeData(node);
       expect(jqLite.data(node, "bar")).toBeUndefined();
+
+      jqLite(node).remove();
+      expect(jqLite.hasData(node)).toBe(false);
     });
 
     it('should emit $destroy event if element removed via remove()', function() {
@@ -611,6 +644,30 @@ describe('jqLite', function() {
       expect(elm.attr('readonly')).toBeUndefined();
       expect(elm.attr('readOnly')).toBeUndefined();
       expect(elm.attr('disabled')).toBeUndefined();
+    });
+
+    it('should do nothing when setting or getting on attribute nodes', function() {
+      var attrNode = jqLite(document.createAttribute('myattr'));
+      expect(attrNode).toBeDefined();
+      expect(attrNode[0].nodeType).toEqual(2);
+      expect(attrNode.attr('some-attribute','somevalue')).toEqual(attrNode);
+      expect(attrNode.attr('some-attribute')).toBeUndefined();
+    });
+
+    it('should do nothing when setting or getting on text nodes', function() {
+      var textNode = jqLite(document.createTextNode('some text'));
+      expect(textNode).toBeDefined();
+      expect(textNode[0].nodeType).toEqual(3);
+      expect(textNode.attr('some-attribute','somevalue')).toEqual(textNode);
+      expect(textNode.attr('some-attribute')).toBeUndefined();
+    });
+
+    it('should do nothing when setting or getting on comment nodes', function() {
+      var comment = jqLite(document.createComment('some comment'));
+      expect(comment).toBeDefined();
+      expect(comment[0].nodeType).toEqual(8);
+      expect(comment.attr('some-attribute','somevalue')).toEqual(comment);
+      expect(comment.attr('some-attribute')).toBeUndefined();
     });
   });
 
@@ -1136,21 +1193,45 @@ describe('jqLite', function() {
     });
 
     describe('mouseenter-mouseleave', function() {
-      var root, parent, sibling, child, log;
+      var root, parent, child, log;
 
-      beforeEach(function() {
+      function setup(html, parentNode, childNode) {
         log = '';
-        root = jqLite('<div>root<p>parent<span>child</span></p><ul></ul></div>');
-        parent = root.find('p');
-        sibling = root.find('ul');
-        child = parent.find('span');
+        root = jqLite(html);
+        parent = root.find(parentNode);
+        child = parent.find(childNode);
 
         parent.on('mouseenter', function() { log += 'parentEnter;'; });
         parent.on('mouseleave', function() { log += 'parentLeave;'; });
 
         child.on('mouseenter', function() { log += 'childEnter;'; });
         child.on('mouseleave', function() { log += 'childLeave;'; });
-      });
+      }
+
+      function browserMoveTrigger(from, to) {
+        var fireEvent = function(type, element, relatedTarget) {
+          var evnt;
+          evnt = document.createEvent('MouseEvents');
+
+          var originalPreventDefault = evnt.preventDefault,
+          appWindow = window,
+          fakeProcessDefault = true,
+          finalProcessDefault;
+
+          evnt.preventDefault = function() {
+            fakeProcessDefault = false;
+            return originalPreventDefault.apply(evnt, arguments);
+          };
+
+          var x = 0, y = 0;
+          evnt.initMouseEvent(type, true, true, window, 0, x, y, x, y, false, false,
+          false, false, 0, relatedTarget);
+
+          element.dispatchEvent(evnt);
+        };
+        fireEvent('mouseout', from[0], to[0]);
+        fireEvent('mouseover', to[0], from[0]);
+      }
 
       afterEach(function() {
         dealoc(root);
@@ -1158,30 +1239,8 @@ describe('jqLite', function() {
 
       it('should fire mouseenter when coming from outside the browser window', function() {
         if (window.jQuery) return;
-        var browserMoveTrigger = function(from, to) {
-          var fireEvent = function(type, element, relatedTarget) {
-            var evnt;
-            evnt = document.createEvent('MouseEvents');
 
-            var originalPreventDefault = evnt.preventDefault,
-            appWindow = window,
-            fakeProcessDefault = true,
-            finalProcessDefault;
-
-            evnt.preventDefault = function() {
-              fakeProcessDefault = false;
-              return originalPreventDefault.apply(evnt, arguments);
-            };
-
-            var x = 0, y = 0;
-            evnt.initMouseEvent(type, true, true, window, 0, x, y, x, y, false, false,
-            false, false, 0, relatedTarget);
-
-            element.dispatchEvent(evnt);
-          };
-          fireEvent('mouseout', from[0], to[0]);
-          fireEvent('mouseover', to[0], from[0]);
-        };
+        setup('<div>root<p>parent<span>child</span></p><ul></ul></div>', 'p', 'span');
 
         browserMoveTrigger(root, parent);
         expect(log).toEqual('parentEnter;');
@@ -1195,6 +1254,28 @@ describe('jqLite', function() {
         browserMoveTrigger(parent, root);
         expect(log).toEqual('parentEnter;childEnter;childLeave;parentLeave;');
 
+      });
+
+      it('should fire the mousenter on SVG elements', function() {
+        if (window.jQuery) return;
+
+        setup(
+          '<div>' +
+          '<svg xmlns="http://www.w3.org/2000/svg"' +
+          '     viewBox="0 0 18.75 18.75"' +
+          '     width="18.75"' +
+          '     height="18.75"' +
+          '     version="1.1">' +
+          '       <path d="M0,0c0,4.142,3.358,7.5,7.5,7.5s7.5-3.358,7.5-7.5-3.358-7.5-7.5-7.5-7.5,3.358-7.5,7.5"' +
+          '             fill-rule="nonzero"' +
+          '             fill="#CCC"' +
+          '             ng-attr-fill="{{data.color || \'#CCC\'}}"/>' +
+          '</svg>' +
+          '</div>',
+          'svg', 'path');
+
+        browserMoveTrigger(parent, child);
+        expect(log).toEqual('childEnter;');
       });
     });
 
@@ -1347,6 +1428,60 @@ describe('jqLite', function() {
       aElem.off('click', clickSpy2);
       browserTrigger(a, 'click');
       expect(clickSpy2).not.toHaveBeenCalled();
+    });
+
+
+    it('should correctly deregister the mouseenter/mouseleave listeners', function() {
+      var aElem = jqLite(a);
+      var onMouseenter = jasmine.createSpy('onMouseenter');
+      var onMouseleave = jasmine.createSpy('onMouseleave');
+
+      aElem.on('mouseenter', onMouseenter);
+      aElem.on('mouseleave', onMouseleave);
+      aElem.off('mouseenter', onMouseenter);
+      aElem.off('mouseleave', onMouseleave);
+      aElem.on('mouseenter', onMouseenter);
+      aElem.on('mouseleave', onMouseleave);
+
+      browserTrigger(a, 'mouseover', {relatedTarget: b});
+      expect(onMouseenter).toHaveBeenCalledOnce();
+
+      browserTrigger(a, 'mouseout', {relatedTarget: b});
+      expect(onMouseleave).toHaveBeenCalledOnce();
+    });
+
+
+    it('should call a `mouseenter/leave` listener only once when `mouseenter/leave` and `mouseover/out` '
+       + 'are triggered simultaneously', function() {
+      var aElem = jqLite(a);
+      var onMouseenter = jasmine.createSpy('mouseenter');
+      var onMouseleave = jasmine.createSpy('mouseleave');
+
+      aElem.on('mouseenter', onMouseenter);
+      aElem.on('mouseleave', onMouseleave);
+
+      browserTrigger(a, 'mouseenter', {relatedTarget: b});
+      browserTrigger(a, 'mouseover', {relatedTarget: b});
+      expect(onMouseenter).toHaveBeenCalledOnce();
+
+      browserTrigger(a, 'mouseleave', {relatedTarget: b});
+      browserTrigger(a, 'mouseout', {relatedTarget: b});
+      expect(onMouseleave).toHaveBeenCalledOnce();
+    });
+
+    it('should call a `mouseenter/leave` listener when manually triggering the event', function() {
+      var aElem = jqLite(a);
+      var onMouseenter = jasmine.createSpy('mouseenter');
+      var onMouseleave = jasmine.createSpy('mouseleave');
+
+      aElem.on('mouseenter', onMouseenter);
+      aElem.on('mouseleave', onMouseleave);
+
+      aElem.triggerHandler('mouseenter');
+      expect(onMouseenter).toHaveBeenCalledOnce();
+
+      aElem.triggerHandler('mouseleave');
+      expect(onMouseleave).toHaveBeenCalledOnce();
     });
 
 

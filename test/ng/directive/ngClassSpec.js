@@ -33,6 +33,32 @@ describe('ngClass', function() {
   }));
 
 
+  it('should add new and remove old classes with same names as Object.prototype properties dynamically', inject(function($rootScope, $compile) {
+    /* jshint -W001 */
+    element = $compile('<div class="existing" ng-class="dynClass"></div>')($rootScope);
+    $rootScope.dynClass = { watch: true, hasOwnProperty: true, isPrototypeOf: true };
+    $rootScope.$digest();
+    expect(element.hasClass('existing')).toBe(true);
+    expect(element.hasClass('watch')).toBe(true);
+    expect(element.hasClass('hasOwnProperty')).toBe(true);
+    expect(element.hasClass('isPrototypeOf')).toBe(true);
+
+    $rootScope.dynClass.watch = false;
+    $rootScope.$digest();
+    expect(element.hasClass('existing')).toBe(true);
+    expect(element.hasClass('watch')).toBe(false);
+    expect(element.hasClass('hasOwnProperty')).toBe(true);
+    expect(element.hasClass('isPrototypeOf')).toBe(true);
+
+    delete $rootScope.dynClass;
+    $rootScope.$digest();
+    expect(element.hasClass('existing')).toBe(true);
+    expect(element.hasClass('watch')).toBe(false);
+    expect(element.hasClass('hasOwnProperty')).toBe(false);
+    expect(element.hasClass('isPrototypeOf')).toBe(false);
+  }));
+
+
   it('should support adding multiple classes via an array', inject(function($rootScope, $compile) {
     element = $compile('<div class="existing" ng-class="[\'A\', \'B\']"></div>')($rootScope);
     $rootScope.$digest();
@@ -63,6 +89,17 @@ describe('ngClass', function() {
     expect(element.hasClass('AnotB')).toBeFalsy();
   }));
 
+  it('should support adding multiple classes via an array mixed with conditionally via a map', inject(function($rootScope, $compile) {
+    element = $compile('<div class="existing" ng-class="[\'A\', {\'B\': condition}]"></div>')($rootScope);
+    $rootScope.$digest();
+    expect(element.hasClass('existing')).toBeTruthy();
+    expect(element.hasClass('A')).toBeTruthy();
+    expect(element.hasClass('B')).toBeFalsy();
+    $rootScope.condition = true;
+    $rootScope.$digest();
+    expect(element.hasClass('B')).toBeTruthy();
+
+  }));
 
   it('should remove classes when the referenced object is the same but its property is changed',
     inject(function($rootScope, $compile) {
@@ -414,14 +451,13 @@ describe('ngClass animations', function() {
     });
   });
 
-  it("should consider the ngClass expression evaluation before performing an animation", function() {
+  it("should combine the ngClass evaluation with the enter animation", function() {
 
     //mocks are not used since the enter delegation method is called before addClass and
     //it makes it impossible to test to see that addClass is called first
     module('ngAnimate');
     module('ngAnimateMock');
 
-    var digestQueue = [];
     module(function($animateProvider) {
       $animateProvider.register('.crazy', function() {
         return {
@@ -431,25 +467,9 @@ describe('ngClass animations', function() {
           }
         };
       });
-
-      return function($rootScope) {
-        var before = $rootScope.$$postDigest;
-        $rootScope.$$postDigest = function() {
-          var args = arguments;
-          digestQueue.push(function() {
-            before.apply($rootScope, args);
-          });
-        };
-      };
     });
-    inject(function($compile, $rootScope, $browser, $rootElement, $animate, $timeout, $document) {
-
-      // Animations need to digest twice in order to be enabled regardless if there are no template HTTP requests.
-      $rootScope.$digest();
-      digestQueue.shift()();
-
-      $rootScope.$digest();
-      digestQueue.shift()();
+    inject(function($compile, $rootScope, $browser, $rootElement, $animate, $document) {
+      $animate.enabled(true);
 
       $rootScope.val = 'crazy';
       element = angular.element('<div ng-class="val"></div>');
@@ -467,25 +487,13 @@ describe('ngClass animations', function() {
       expect(element.hasClass('crazy')).toBe(false);
       expect(enterComplete).toBe(false);
 
-      expect(digestQueue.length).toBe(1);
       $rootScope.$digest();
-
-      $timeout.flush();
+      $animate.flush();
+      $rootScope.$digest();
 
       expect(element.hasClass('crazy')).toBe(true);
-      expect(enterComplete).toBe(false);
-
-      digestQueue.shift()(); //enter
-      expect(digestQueue.length).toBe(0);
-
-      //we don't normally need this, but since the timing between digests
-      //is spaced-out then it is required so that the original digestion
-      //is kicked into gear
-      $rootScope.$digest();
-      $animate.triggerCallbacks();
-
-      expect(element.data('state')).toBe('crazy-enter');
       expect(enterComplete).toBe(true);
+      expect(element.data('state')).toBe('crazy-enter');
     });
   });
 

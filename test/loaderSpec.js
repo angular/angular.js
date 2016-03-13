@@ -32,12 +32,14 @@ describe('module loader', function() {
     var myModule = window.angular.module('my', ['other'], 'config');
 
     expect(myModule.
+      decorator('dk', 'dv').
       provider('sk', 'sv').
       factory('fk', 'fv').
       service('a', 'aa').
       value('k', 'v').
       filter('f', 'ff').
       directive('d', 'dd').
+      component('c', 'cc').
       controller('ctrl', 'ccc').
       config('init2').
       constant('abc', 123).
@@ -46,12 +48,14 @@ describe('module loader', function() {
     expect(myModule.requires).toEqual(['other']);
     expect(myModule._invokeQueue).toEqual([
       ['$provide', 'constant', ['abc', 123]],
+      ['$provide', 'decorator', ['dk', 'dv']],
       ['$provide', 'provider', ['sk', 'sv']],
       ['$provide', 'factory', ['fk', 'fv']],
       ['$provide', 'service', ['a', 'aa']],
       ['$provide', 'value', ['k', 'v']],
       ['$filterProvider', 'register', ['f', 'ff']],
       ['$compileProvider', 'directive', ['d', 'dd']],
+      ['$compileProvider', 'component', ['c', 'cc']],
       ['$controllerProvider', 'register', ['ctrl', 'ccc']]
     ]);
     expect(myModule._configBlocks).toEqual([

@@ -34,6 +34,15 @@ $provide.value("$locale", {
       "vineri",
       "s\u00e2mb\u0103t\u0103"
     ],
+    "ERANAMES": [
+      "\u00eenainte de Hristos",
+      "dup\u0103 Hristos"
+    ],
+    "ERAS": [
+      "\u00ee.Hr.",
+      "d.Hr."
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "ianuarie",
       "februarie",
@@ -70,6 +79,24 @@ $provide.value("$locale", {
       "oct.",
       "nov.",
       "dec."
+    ],
+    "STANDALONEMONTH": [
+      "Ianuarie",
+      "Februarie",
+      "Martie",
+      "Aprilie",
+      "Mai",
+      "Iunie",
+      "Iulie",
+      "August",
+      "Septembrie",
+      "Octombrie",
+      "Noiembrie",
+      "Decembrie"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE, d MMMM y",
     "longDate": "d MMMM y",
@@ -110,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "ro-ro",
+  "localeID": "ro_RO",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  if (vf.v != 0 || n == 0 || n != 1 && n % 100 >= 1 && n % 100 <= 19) {    return PLURAL_CATEGORY.FEW;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

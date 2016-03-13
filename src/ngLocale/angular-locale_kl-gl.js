@@ -34,6 +34,15 @@ $provide.value("$locale", {
       "tallimanngorneq",
       "arfininngorneq"
     ],
+    "ERANAMES": [
+      "Kristusip inunngornerata siornagut",
+      "Kristusip inunngornerata kingornagut"
+    ],
+    "ERAS": [
+      "Kr.in.si.",
+      "Kr.in.king."
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "januari",
       "februari",
@@ -70,6 +79,24 @@ $provide.value("$locale", {
       "okt",
       "nov",
       "dec"
+    ],
+    "STANDALONEMONTH": [
+      "januari",
+      "februari",
+      "martsi",
+      "aprili",
+      "maji",
+      "juni",
+      "juli",
+      "augustusi",
+      "septemberi",
+      "oktoberi",
+      "novemberi",
+      "decemberi"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE dd MMMM y",
     "longDate": "dd MMMM y",
@@ -110,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "kl-gl",
+  "localeID": "kl_GL",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

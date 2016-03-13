@@ -12,7 +12,7 @@ succinctly. Angular's data binding and dependency injection eliminate much of th
 would otherwise have to write. And it all happens within the browser, making it
 an ideal partner with any server technology.
 
-Angular is what HTML would have been had it been designed for applications. HTML is a great
+Angular is what HTML would have been, had it been designed for applications. HTML is a great
 declarative language for static documents. It does not contain much in the way of creating
 applications, and as a result building web applications is an exercise in *what do I have to do
 to trick the browser into doing what I want?*
@@ -28,10 +28,10 @@ The impedance mismatch between dynamic applications and static documents is ofte
 
 Angular takes another approach. It attempts to minimize the impedance mismatch between document
 centric HTML and what an application needs by creating new HTML constructs. Angular teaches the
-browser new syntax through a construct we call directives. Examples include:
+browser new syntax through a construct we call *directives*. Examples include:
 
   * Data binding, as in `{{}}`.
-  * DOM control structures for repeating/hiding DOM fragments.
+  * DOM control structures for repeating, showing and hiding DOM fragments.
   * Support for forms and form validation.
   * Attaching new behavior to DOM elements, such as DOM event handling.
   * Grouping of HTML into reusable components.
@@ -42,20 +42,20 @@ browser new syntax through a construct we call directives. Examples include:
 
 Angular is not a single piece in the overall puzzle of building the client-side of a web
 application. It handles all of the DOM and AJAX glue code you once wrote by hand and puts it in a
-well-defined structure. This makes Angular opinionated about how a CRUD application should be
-built. But while it is opinionated, it also tries to make sure that its opinion is just a
-starting point you can easily change. Angular comes with the following out-of-the-box:
+well-defined structure. This makes Angular opinionated about how a CRUD (Create, Read, Update, Delete)
+application should be built. But while it is opinionated, it also tries to make sure that its opinion 
+is just a starting point you can easily change. Angular comes with the following out-of-the-box:
 
-  * Everything you need to build a CRUD app in a cohesive set: data-binding, basic templating
-    directives, form validation, routing, deep-linking, reusable components, dependency injection.
-  * Testability story: unit-testing, end-to-end testing, mocks, test harnesses.
+  * Everything you need to build a CRUD app in a cohesive set: Data-binding, basic templating
+    directives, form validation, routing, deep-linking, reusable components and dependency injection.
+  * Testability story: Unit-testing, end-to-end testing, mocks and test harnesses.
   * Seed application with directory layout and test scripts as a starting point.
 
 
-## Angular Sweet Spot
+## Angular's sweet spot
 
 Angular simplifies application development by presenting a higher level of abstraction to the
-developer. Like any abstraction, it comes at a cost of flexibility. In other words not every app
+developer. Like any abstraction, it comes at a cost of flexibility. In other words, not every app
 is a good fit for Angular. Angular was built with the CRUD application in mind. Luckily CRUD
 applications represent the majority of web applications. To understand what Angular is
 good at, though, it helps to understand when an app is not a good fit for Angular.
@@ -78,7 +78,7 @@ expressing business logic.
   * It is an excellent idea to decouple the client side of an app from the server side. This
     allows development work to progress in parallel, and allows for reuse of both sides.
   * It is very helpful indeed if the framework guides developers through the entire journey of
-    building an app: from designing the UI, through writing the business logic, to testing.
+    building an app: From designing the UI, through writing the business logic, to testing.
   * It is always good to make common tasks trivial and difficult tasks possible.
 
 

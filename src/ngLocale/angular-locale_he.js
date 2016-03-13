@@ -34,6 +34,15 @@ $provide.value("$locale", {
       "\u05d9\u05d5\u05dd \u05e9\u05d9\u05e9\u05d9",
       "\u05d9\u05d5\u05dd \u05e9\u05d1\u05ea"
     ],
+    "ERANAMES": [
+      "\u05dc\u05e4\u05e0\u05d9 \u05d4\u05e1\u05e4\u05d9\u05e8\u05d4",
+      "\u05dc\u05e1\u05e4\u05d9\u05e8\u05d4"
+    ],
+    "ERAS": [
+      "\u05dc\u05e4\u05e0\u05d4\u05f4\u05e1",
+      "\u05dc\u05e1\u05e4\u05d9\u05e8\u05d4"
+    ],
+    "FIRSTDAYOFWEEK": 6,
     "MONTH": [
       "\u05d9\u05e0\u05d5\u05d0\u05e8",
       "\u05e4\u05d1\u05e8\u05d5\u05d0\u05e8",
@@ -71,14 +80,32 @@ $provide.value("$locale", {
       "\u05e0\u05d5\u05d1\u05f3",
       "\u05d3\u05e6\u05de\u05f3"
     ],
+    "STANDALONEMONTH": [
+      "\u05d9\u05e0\u05d5\u05d0\u05e8",
+      "\u05e4\u05d1\u05e8\u05d5\u05d0\u05e8",
+      "\u05de\u05e8\u05e5",
+      "\u05d0\u05e4\u05e8\u05d9\u05dc",
+      "\u05de\u05d0\u05d9",
+      "\u05d9\u05d5\u05e0\u05d9",
+      "\u05d9\u05d5\u05dc\u05d9",
+      "\u05d0\u05d5\u05d2\u05d5\u05e1\u05d8",
+      "\u05e1\u05e4\u05d8\u05de\u05d1\u05e8",
+      "\u05d0\u05d5\u05e7\u05d8\u05d5\u05d1\u05e8",
+      "\u05e0\u05d5\u05d1\u05de\u05d1\u05e8",
+      "\u05d3\u05e6\u05de\u05d1\u05e8"
+    ],
+    "WEEKENDRANGE": [
+      4,
+      5
+    ],
     "fullDate": "EEEE, d \u05d1MMMM y",
     "longDate": "d \u05d1MMMM y",
-    "medium": "d \u05d1MMM y HH:mm:ss",
+    "medium": "d \u05d1MMM y H:mm:ss",
     "mediumDate": "d \u05d1MMM y",
-    "mediumTime": "HH:mm:ss",
-    "short": "d.M.y HH:mm",
+    "mediumTime": "H:mm:ss",
+    "short": "d.M.y H:mm",
     "shortDate": "d.M.y",
-    "shortTime": "HH:mm"
+    "shortTime": "H:mm"
   },
   "NUMBER_FORMATS": {
     "CURRENCY_SYM": "\u20aa",
@@ -110,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "he",
+  "localeID": "he",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  if (i == 2 && vf.v == 0) {    return PLURAL_CATEGORY.TWO;  }  if (vf.v == 0 && (n < 0 || n > 10) && n % 10 == 0) {    return PLURAL_CATEGORY.MANY;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

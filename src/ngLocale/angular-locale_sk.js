@@ -34,6 +34,15 @@ $provide.value("$locale", {
       "piatok",
       "sobota"
     ],
+    "ERANAMES": [
+      "pred Kristom",
+      "po Kristovi"
+    ],
+    "ERAS": [
+      "pred Kr.",
+      "po Kr."
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "janu\u00e1ra",
       "febru\u00e1ra",
@@ -70,6 +79,24 @@ $provide.value("$locale", {
       "okt",
       "nov",
       "dec"
+    ],
+    "STANDALONEMONTH": [
+      "janu\u00e1r",
+      "febru\u00e1r",
+      "marec",
+      "apr\u00edl",
+      "m\u00e1j",
+      "j\u00fan",
+      "j\u00fal",
+      "august",
+      "september",
+      "okt\u00f3ber",
+      "november",
+      "december"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE, d. MMMM y",
     "longDate": "d. MMMM y",
@@ -110,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "sk",
+  "localeID": "sk",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  if (i >= 2 && i <= 4 && vf.v == 0) {    return PLURAL_CATEGORY.FEW;  }  if (vf.v != 0) {    return PLURAL_CATEGORY.MANY;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

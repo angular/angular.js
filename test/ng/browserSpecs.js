@@ -12,11 +12,19 @@ function MockWindow(options) {
   var events = {};
   var timeouts = this.timeouts = [];
   var locationHref = 'http://server/';
+  var committedHref = 'http://server/';
   var mockWindow = this;
   var msie = options.msie;
   var ieState;
 
   historyEntriesLength = 1;
+
+  function replaceHash(href, hash) {
+    // replace the hash with the new one (stripping off a leading hash if there is one)
+    // See hash setter spec: https://url.spec.whatwg.org/#urlutils-and-urlutilsreadonly-members
+    return stripHash(href) + '#' + hash.replace(/^#/,'');
+  }
+
 
   this.setTimeout = function(fn) {
     return timeouts.push(fn) - 1;
@@ -46,22 +54,28 @@ function MockWindow(options) {
 
   this.location = {
     get href() {
-      return locationHref;
+      return committedHref;
     },
     set href(value) {
       locationHref = value;
       mockWindow.history.state = null;
       historyEntriesLength++;
+      if (!options.updateAsync) this.flushHref();
     },
     get hash() {
-      return getHash(locationHref);
+      return getHash(committedHref);
     },
     set hash(value) {
-      locationHref = stripHash(locationHref) + '#' + value;
+      locationHref = replaceHash(locationHref, value);
+      if (!options.updateAsync) this.flushHref();
     },
     replace: function(url) {
       locationHref = url;
       mockWindow.history.state = null;
+      if (!options.updateAsync) this.flushHref();
+    },
+    flushHref: function() {
+      committedHref = locationHref;
     }
   };
 
@@ -130,7 +144,7 @@ describe('browser', function() {
 
     logs = {log:[], warn:[], info:[], error:[]};
 
-    var fakeLog = {log: function() { logs.log.push(slice.call(arguments)); },
+    fakeLog = {log: function() { logs.log.push(slice.call(arguments)); },
                    warn: function() { logs.warn.push(slice.call(arguments)); },
                    info: function() { logs.info.push(slice.call(arguments)); },
                    error: function() { logs.error.push(slice.call(arguments)); }};
@@ -189,11 +203,7 @@ describe('browser', function() {
     }
   });
 
-  it('should contain cookie cruncher', function() {
-    expect(browser.cookies).toBeDefined();
-  });
-
-  describe('outstading requests', function() {
+  describe('outstanding requests', function() {
     it('should process callbacks immedietly with no outstanding requests', function() {
       var callback = jasmine.createSpy('callback');
       browser.notifyWhenNoOutstandingRequests(callback);
@@ -252,248 +262,6 @@ describe('browser', function() {
     });
   });
 
-
-  describe('cookies', function() {
-
-    function deleteAllCookies() {
-      var cookies = document.cookie.split(";");
-      var path = location.pathname;
-
-      for (var i = 0; i < cookies.length; i++) {
-        var cookie = cookies[i];
-        var eqPos = cookie.indexOf("=");
-        var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
-        var parts = path.split('/');
-        while (parts.length) {
-          document.cookie = name + "=;path=" + (parts.join('/') || '/') + ";expires=Thu, 01 Jan 1970 00:00:00 GMT";
-          parts.pop();
-        }
-      }
-    }
-
-    beforeEach(function() {
-      deleteAllCookies();
-      expect(document.cookie).toEqual('');
-    });
-
-
-    afterEach(function() {
-      deleteAllCookies();
-      expect(document.cookie).toEqual('');
-    });
-
-
-    describe('remove all via (null)', function() {
-
-      it('should do nothing when no cookies are set', function() {
-        browser.cookies(null);
-        expect(document.cookie).toEqual('');
-        expect(browser.cookies()).toEqual({});
-      });
-
-    });
-
-    describe('remove via cookies(cookieName, undefined)', function() {
-
-      it('should remove a cookie when it is present', function() {
-        document.cookie = 'foo=bar;path=/';
-
-        browser.cookies('foo', undefined);
-
-        expect(document.cookie).toEqual('');
-        expect(browser.cookies()).toEqual({});
-      });
-
-
-      it('should do nothing when an nonexisting cookie is being removed', function() {
-        browser.cookies('doesntexist', undefined);
-        expect(document.cookie).toEqual('');
-        expect(browser.cookies()).toEqual({});
-      });
-    });
-
-
-    describe('put via cookies(cookieName, string)', function() {
-
-      it('should create and store a cookie', function() {
-        browser.cookies('cookieName', 'cookie=Value');
-        expect(document.cookie).toMatch(/cookieName=cookie%3DValue;? ?/);
-        expect(browser.cookies()).toEqual({'cookieName':'cookie=Value'});
-      });
-
-
-      it('should overwrite an existing unsynced cookie', function() {
-        document.cookie = "cookie=new;path=/";
-
-        var oldVal = browser.cookies('cookie', 'newer');
-
-        expect(document.cookie).toEqual('cookie=newer');
-        expect(browser.cookies()).toEqual({'cookie':'newer'});
-        expect(oldVal).not.toBeDefined();
-      });
-
-      it('should encode both name and value', function() {
-        browser.cookies('cookie1=', 'val;ue');
-        browser.cookies('cookie2=bar;baz', 'val=ue');
-
-        var rawCookies = document.cookie.split("; "); //order is not guaranteed, so we need to parse
-        expect(rawCookies.length).toEqual(2);
-        expect(rawCookies).toContain('cookie1%3D=val%3Bue');
-        expect(rawCookies).toContain('cookie2%3Dbar%3Bbaz=val%3Due');
-      });
-
-      it('should log warnings when 4kb per cookie storage limit is reached', function() {
-        var i, longVal = '', cookieStr;
-
-        for (i = 0; i < 4083; i++) {
-          longVal += 'x';
-        }
-
-        cookieStr = document.cookie;
-        browser.cookies('x', longVal); //total size 4093-4096, so it should go through
-        expect(document.cookie).not.toEqual(cookieStr);
-        expect(browser.cookies()['x']).toEqual(longVal);
-        expect(logs.warn).toEqual([]);
-
-        browser.cookies('x', longVal + 'xxxx'); //total size 4097-4099, a warning should be logged
-        expect(logs.warn).toEqual(
-          [["Cookie 'x' possibly not set or overflowed because it was too large (4097 > 4096 " +
-             "bytes)!"]]);
-
-        //force browser to dropped a cookie and make sure that the cache is not out of sync
-        browser.cookies('x', 'shortVal');
-        expect(browser.cookies().x).toEqual('shortVal'); //needed to prime the cache
-        cookieStr = document.cookie;
-        browser.cookies('x', longVal + longVal + longVal); //should be too long for all browsers
-
-        if (document.cookie !== cookieStr) {
-          this.fail(new Error("browser didn't drop long cookie when it was expected. make the " +
-              "cookie in this test longer"));
-        }
-
-        expect(browser.cookies().x).toEqual('shortVal');
-      });
-    });
-
-    describe('put via cookies(cookieName, string), if no <base href> ', function() {
-      beforeEach(function() {
-        fakeDocument.basePath = undefined;
-      });
-
-      it('should default path in cookie to "" (empty string)', function() {
-        browser.cookies('cookie', 'bender');
-        // This only fails in Safari and IE when cookiePath returns undefined
-        // Where it now succeeds since baseHref return '' instead of undefined
-        expect(document.cookie).toEqual('cookie=bender');
-      });
-    });
-
-    describe('get via cookies()[cookieName]', function() {
-
-      it('should return undefined for nonexistent cookie', function() {
-        expect(browser.cookies().nonexistent).not.toBeDefined();
-      });
-
-
-      it ('should return a value for an existing cookie', function() {
-        document.cookie = "foo=bar=baz;path=/";
-        expect(browser.cookies().foo).toEqual('bar=baz');
-      });
-
-      it('should return the the first value provided for a cookie', function() {
-        // For a cookie that has different values that differ by path, the
-        // value for the most specific path appears first.  browser.cookies()
-        // should provide that value for the cookie.
-        document.cookie = 'foo="first"; foo="second"';
-        expect(browser.cookies()['foo']).toBe('"first"');
-      });
-
-      it ('should decode cookie values that were encoded by puts', function() {
-        document.cookie = "cookie2%3Dbar%3Bbaz=val%3Due;path=/";
-        expect(browser.cookies()['cookie2=bar;baz']).toEqual('val=ue');
-      });
-
-
-      it('should preserve leading & trailing spaces in names and values', function() {
-        browser.cookies(' cookie name ', ' cookie value ');
-        expect(browser.cookies()[' cookie name ']).toEqual(' cookie value ');
-        expect(browser.cookies()['cookie name']).not.toBeDefined();
-      });
-
-      it('should decode special characters in cookie values', function() {
-        document.cookie = 'cookie_name=cookie_value_%E2%82%AC';
-        expect(browser.cookies()['cookie_name']).toEqual('cookie_value_€');
-      });
-
-      it('should not decode cookie values that do not appear to be encoded', function() {
-        // see #9211 - sometimes cookies contain a value that causes decodeURIComponent to throw
-        document.cookie = 'cookie_name=cookie_value_%XX';
-        expect(browser.cookies()['cookie_name']).toEqual('cookie_value_%XX');
-      });
-    });
-
-
-    describe('getAll via cookies()', function() {
-
-      it('should return cookies as hash', function() {
-        document.cookie = "foo1=bar1;path=/";
-        document.cookie = "foo2=bar2;path=/";
-        expect(browser.cookies()).toEqual({'foo1':'bar1', 'foo2':'bar2'});
-      });
-
-
-      it('should return empty hash if no cookies exist', function() {
-        expect(browser.cookies()).toEqual({});
-      });
-    });
-
-
-    it('should pick up external changes made to browser cookies', function() {
-      browser.cookies('oatmealCookie', 'drool');
-      expect(browser.cookies()).toEqual({'oatmealCookie':'drool'});
-
-      document.cookie = 'oatmealCookie=changed;path=/';
-      expect(browser.cookies().oatmealCookie).toEqual('changed');
-    });
-
-
-    it('should initialize cookie cache with existing cookies', function() {
-      document.cookie = "existingCookie=existingValue;path=/";
-      expect(browser.cookies()).toEqual({'existingCookie':'existingValue'});
-    });
-
-  });
-
-  describe('poller', function() {
-
-    it('should call functions in pollFns in regular intervals', function() {
-      var log = '';
-      browser.addPollFn(function() {log+='a';});
-      browser.addPollFn(function() {log+='b';});
-      expect(log).toEqual('');
-      fakeWindow.setTimeout.flush();
-      expect(log).toEqual('ab');
-      fakeWindow.setTimeout.flush();
-      expect(log).toEqual('abab');
-    });
-
-    it('should startPoller', function() {
-      expect(fakeWindow.timeouts.length).toEqual(0);
-
-      browser.addPollFn(function() {});
-      expect(fakeWindow.timeouts.length).toEqual(1);
-
-      //should remain 1 as it is the check fn
-      browser.addPollFn(function() {});
-      expect(fakeWindow.timeouts.length).toEqual(1);
-    });
-
-    it('should return fn that was passed into addPollFn', function() {
-      var fn = function() { return 1; };
-      var returnedFn = browser.addPollFn(fn);
-      expect(returnedFn).toBe(fn);
-    });
-  });
 
   describe('url', function() {
     var pushState, replaceState, locationReplace;
@@ -893,6 +661,23 @@ describe('browser', function() {
         };
       }
     });
+
+
+    it("should stop calling callbacks when application has been torn down", function() {
+      sniffer.history = true;
+      browser.onUrlChange(callback);
+      fakeWindow.location.href = 'http://server/new';
+
+      browser.$$applicationDestroyed();
+
+      fakeWindow.fire('popstate');
+      expect(callback).not.toHaveBeenCalled();
+
+      fakeWindow.fire('hashchange');
+      fakeWindow.setTimeout.flush();
+      expect(callback).not.toHaveBeenCalled();
+    });
+
   });
 
 
@@ -930,7 +715,11 @@ describe('browser', function() {
   describe('integration tests with $location', function() {
 
     function setup(options) {
+      fakeWindow = new MockWindow(options);
+      browser = new Browser(fakeWindow, fakeDocument, fakeLog, sniffer);
+
       module(function($provide, $locationProvider) {
+
         spyOn(fakeWindow.history, 'pushState').andCallFake(function(stateObj, title, newUrl) {
           fakeWindow.location.href = newUrl;
         });
@@ -938,7 +727,6 @@ describe('browser', function() {
           fakeWindow.location.href = newUrl;
         });
         $provide.value('$browser', browser);
-        browser.pollFns = [];
 
         sniffer.history = options.history;
         $provide.value('$sniffer', sniffer);
@@ -1055,13 +843,38 @@ describe('browser', function() {
       });
 
     });
+
+    // issue #12241
+    it('should not infinite digest if the browser does not synchronously update the location properties', function() {
+      setup({
+        history: true,
+        html5Mode: true,
+        updateAsync: true // Simulate a browser that doesn't update the href synchronously
+      });
+
+      inject(function($location, $rootScope) {
+
+        // Change the hash within Angular and check that we don't infinitely digest
+        $location.hash('newHash');
+        expect(function() { $rootScope.$digest(); }).not.toThrow();
+        expect($location.absUrl()).toEqual('http://server/#newHash');
+
+        // Now change the hash from outside Angular and check that $location updates correctly
+        fakeWindow.location.hash = '#otherHash';
+
+        // simulate next tick - since this browser doesn't update synchronously
+        fakeWindow.location.flushHref();
+        fakeWindow.fire('hashchange');
+
+        expect($location.absUrl()).toEqual('http://server/#otherHash');
+      });
+    });
   });
 
   describe('integration test with $rootScope', function() {
 
     beforeEach(module(function($provide, $locationProvider) {
       $provide.value('$browser', browser);
-      browser.pollFns = [];
     }));
 
     it('should not interfere with legacy browser url replace behavior', function() {

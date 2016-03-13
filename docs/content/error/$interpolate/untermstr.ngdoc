@@ -1,0 +1,6 @@
+@ngdoc error
+@name $interpolate:untermstr
+@fullName Unterminated string literal
+@description
+
+The string literal was not terminated in your Angular expression.

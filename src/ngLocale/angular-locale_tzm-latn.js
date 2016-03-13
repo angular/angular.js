@@ -34,6 +34,15 @@ $provide.value("$locale", {
       "Asimwas",
       "Asi\u1e0dyas"
     ],
+    "ERANAMES": [
+      "Zdat \u0190isa (TA\u0194)",
+      "\u1e0ceffir \u0190isa (TA\u0194)"
+    ],
+    "ERAS": [
+      "Z\u0190",
+      "\u1e0c\u0190"
+    ],
+    "FIRSTDAYOFWEEK": 5,
     "MONTH": [
       "Yennayer",
       "Yebrayer",
@@ -71,6 +80,24 @@ $provide.value("$locale", {
       "Nwa",
       "Duj"
     ],
+    "STANDALONEMONTH": [
+      "Yennayer",
+      "Yebrayer",
+      "Mars",
+      "Ibrir",
+      "Mayyu",
+      "Yunyu",
+      "Yulyuz",
+      "\u0194uct",
+      "Cutanbir",
+      "K\u1e6duber",
+      "Nwanbir",
+      "Dujanbir"
+    ],
+    "WEEKENDRANGE": [
+      4,
+      5
+    ],
     "fullDate": "EEEE, d MMMM y",
     "longDate": "d MMMM y",
     "medium": "d MMM y h:mm:ss a",
@@ -81,7 +108,7 @@ $provide.value("$locale", {
     "shortTime": "h:mm a"
   },
   "NUMBER_FORMATS": {
-    "CURRENCY_SYM": "\u20ac",
+    "CURRENCY_SYM": "dh",
     "DECIMAL_SEP": ",",
     "GROUP_SEP": "\u00a0",
     "PATTERNS": [
@@ -110,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "tzm-latn",
+  "localeID": "tzm_Latn",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

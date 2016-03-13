@@ -20,7 +20,7 @@ The following is done automatically so you don't have to worry about it:
 This process based on the idea of minimizing user pain
 [from this blog post](http://www.lostgarden.com/2008/05/improving-bug-triage-with-user-pain.html).
 
-1. Open the list of [non triaged issues](https://github.com/angular/angular.js/issues?direction=desc&milestone=none&page=1&sort=created&state=open)
+1. Open the list of [non triaged issues](https://github.com/angular/angular.js/issues?q=is%3Aopen+sort%3Acreated-desc+no%3Amilestone)
     * Sort by submit date, with the newest issues first
     * You don't have to do issues in order; feel free to pick and choose issues as you please.
     * You can triage older issues as well
@@ -55,7 +55,11 @@ This process based on the idea of minimizing user pain
     * inconvenience - causes ugly/boilerplate code in apps
 1. Label `component: *`
     * In rare cases, it's ok to have multiple components.
-1. Label `PRs plz!` - These issues are good targets for PRs from the open source community. Apply to issues where the problem and solution are well defined in the comments, and it's not too complex.
+1. Label `PRs plz!` - These issues are good targets for PRs from the open source community. In addition to applying this label, you must:
+    * Leave a comment explaining the problem and solution so someone can easily finish it.
+    * Assign the issue to yourself.
+    * Give feedback on PRs addressing this issue.
+    * You are responsible for mentoring contributors helping with this issue.
 1. Label `origin: google` for issues from Google
 1. Assign a milestone:
    * Backlog - triaged fixes and features, should be the default choice

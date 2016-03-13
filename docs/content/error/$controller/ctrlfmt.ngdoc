@@ -1,0 +1,46 @@
+@ngdoc error
+@name $controller:ctrlfmt
+@fullName Badly formed controller string
+@description
+
+This error occurs when {@link ng.$controller $controller} service is called
+with a string that does not match the supported controller string formats.
+
+Supported formats:
+
+1. `__name__`
+2. `__name__ as __identifier__`
+
+Neither `__name__` or `__identifier__` may contain spaces.
+
+Example of incorrect usage that leads to this error:
+```html
+<!-- unclosed ng-controller attribute messes up the format -->
+<div ng-controller="myController>
+```
+
+or
+
+```js
+// does not match `__name__` or `__name__ as __identifier__`
+var myCtrl = $controller("mY contRoller", { $scope: newScope });
+```
+
+or
+
+```js
+directive("myDirective", function() {
+  return {
+    // does not match `__name__` or `__name__ as __identifier__`
+    controller: "mY contRoller",
+    link: function() {}
+  };
+});
+```
+
+To fix the examples above, ensure that the controller string matches the supported
+formats, and that any html attributes which are used as controller expressions are
+closed.
+
+
+Please consult the {@link ng.$controller $controller} service api docs to learn more.

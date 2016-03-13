@@ -42,8 +42,9 @@ angular.scenario.dsl = angular.scenario.dsl || function(name, fn) {
     /* jshint -W040 *//* The dsl binds `this` for us when calling chained functions */
     function executeStatement(statement, args) {
       var result = statement.apply(this, args);
-      if (angular.isFunction(result) || result instanceof angular.scenario.Future)
+      if (angular.isFunction(result) || result instanceof angular.scenario.Future) {
         return result;
+      }
       var self = this;
       var chain = angular.extend({}, result);
       angular.forEach(chain, function(value, name) {
@@ -292,7 +293,7 @@ _jQuery.fn.bindings = function(windowJquery, bindExp) {
   }
 
   function push(value) {
-    if (value === undefined) {
+    if (angular.isUndefined(value)) {
       value = '';
     } else if (typeof value !== 'string') {
       value = angular.toJson(value);
@@ -304,7 +305,7 @@ _jQuery.fn.bindings = function(windowJquery, bindExp) {
     var element = windowJquery(this),
         bindings;
     if (bindings = element.data('$binding')) {
-      for (var expressions = [], binding, j=0, jj=bindings.length;  j < jj; j++) {
+      for (var expressions = [], binding, j=0, jj=bindings.length; j < jj; j++) {
         binding = bindings[j];
 
         if (binding.expressions) {

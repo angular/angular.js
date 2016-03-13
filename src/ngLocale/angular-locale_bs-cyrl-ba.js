@@ -34,6 +34,15 @@ $provide.value("$locale", {
       "\u043f\u0435\u0442\u0430\u043a",
       "\u0441\u0443\u0431\u043e\u0442\u0430"
     ],
+    "ERANAMES": [
+      "\u041f\u0440\u0435 \u043d\u043e\u0432\u0435 \u0435\u0440\u0435",
+      "\u041d\u043e\u0432\u0435 \u0435\u0440\u0435"
+    ],
+    "ERAS": [
+      "\u043f. \u043d. \u0435.",
+      "\u043d. \u0435."
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "\u0458\u0430\u043d\u0443\u0430\u0440",
       "\u0444\u0435\u0431\u0440\u0443\u0430\u0440",
@@ -70,6 +79,24 @@ $provide.value("$locale", {
       "\u043e\u043a\u0442",
       "\u043d\u043e\u0432",
       "\u0434\u0435\u0446"
+    ],
+    "STANDALONEMONTH": [
+      "\u0458\u0430\u043d\u0443\u0430\u0440",
+      "\u0444\u0435\u0431\u0440\u0443\u0430\u0440",
+      "\u043c\u0430\u0440\u0442",
+      "\u0430\u043f\u0440\u0438\u043b",
+      "\u043c\u0430\u0458",
+      "\u0458\u0443\u043d\u0438",
+      "\u0458\u0443\u043b\u0438",
+      "\u0430\u0432\u0433\u0443\u0441\u0442",
+      "\u0441\u0435\u043f\u0442\u0435\u043c\u0431\u0430\u0440",
+      "\u043e\u043a\u0442\u043e\u0431\u0430\u0440",
+      "\u043d\u043e\u0432\u0435\u043c\u0431\u0430\u0440",
+      "\u0434\u0435\u0446\u0435\u043c\u0431\u0430\u0440"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE, dd. MMMM y.",
     "longDate": "dd. MMMM y.",
@@ -110,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "bs-cyrl-ba",
-  "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
+  "localeID": "bs_Cyrl_BA",
+  "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (vf.v == 0 && i % 10 == 1 && i % 100 != 11 || vf.f % 10 == 1 && vf.f % 100 != 11) {    return PLURAL_CATEGORY.ONE;  }  if (vf.v == 0 && i % 10 >= 2 && i % 10 <= 4 && (i % 100 < 12 || i % 100 > 14) || vf.f % 10 >= 2 && vf.f % 10 <= 4 && (vf.f % 100 < 12 || vf.f % 100 > 14)) {    return PLURAL_CATEGORY.FEW;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

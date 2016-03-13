@@ -39,9 +39,14 @@ function convertDatetimeData(dataObj) {
 
   datetimeFormats.MONTH = dataObj.MONTHS;
   datetimeFormats.SHORTMONTH = dataObj.SHORTMONTHS;
+  datetimeFormats.STANDALONEMONTH = dataObj.STANDALONEMONTHS;
   datetimeFormats.DAY = dataObj.WEEKDAYS;
   datetimeFormats.SHORTDAY = dataObj.SHORTWEEKDAYS;
   datetimeFormats.AMPMS = dataObj.AMPMS;
+  datetimeFormats.FIRSTDAYOFWEEK = dataObj.FIRSTDAYOFWEEK;
+  datetimeFormats.WEEKENDRANGE = dataObj.WEEKENDRANGE;
+  datetimeFormats.ERAS = dataObj.ERAS;
+  datetimeFormats.ERANAMES = dataObj.ERANAMES;
 
 
   datetimeFormats.medium      = dataObj.DATEFORMATS[2] + ' ' + dataObj.TIMEFORMATS[2];

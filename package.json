@@ -1,9 +1,23 @@
 {
   "name": "angularjs",
-  "branchVersion": "1.3.*",
+  "license": "MIT",
+  "branchVersion": "^1.5.0-beta.2",
+  "branchPattern": "1.5.*",
+  "distTag": "beta",
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/angular.js.git"
+  },
+  "engines": {
+    "node": "<5",
+    "npm": "~2.5"
+  },
+  "engineStrict": true,
+  "scripts": {
+    "preinstall": "node scripts/npm/check-node-modules.js --purge",
+    "postinstall": "node scripts/npm/copy-npm-shrinkwrap.js",
+    "commit": "git-cz",
+    "test-i18n": "jasmine-node i18n/spec"
   },
   "devDependencies": {
     "angular-benchpress": "0.x.x",
@@ -11,9 +25,13 @@
     "bower": "~1.3.9",
     "browserstacktunnel-wrapper": "~1.3.1",
     "canonical-path": "0.0.2",
+    "cheerio": "^0.17.0",
+    "commitizen": "^2.3.0",
+    "cz-conventional-changelog": "1.1.4",
     "dgeni": "^0.4.0",
-    "dgeni-packages": "^0.10.0",
+    "dgeni-packages": "^0.11.0",
     "event-stream": "~3.1.0",
+    "glob": "^6.0.1",
     "grunt": "~0.4.2",
     "grunt-bump": "~0.0.13",
     "grunt-contrib-clean": "~0.6.0",
@@ -23,7 +41,7 @@
     "grunt-contrib-jshint": "~0.10.0",
     "grunt-ddescribe-iit": "~0.0.1",
     "grunt-jasmine-node": "git://github.com/vojtajina/grunt-jasmine-node.git#fix-grunt-exit-code",
-    "grunt-jscs": "~0.7.1",
+    "grunt-jscs": "^2.1.0",
     "grunt-merge-conflict": "~0.0.1",
     "grunt-shell": "~1.1.1",
     "gulp": "~3.8.0",
@@ -34,24 +52,24 @@
     "gulp-sourcemaps": "^1.2.2",
     "gulp-uglify": "^1.0.1",
     "gulp-util": "^3.0.1",
-    "jasmine-node": "~1.14.5",
+    "jasmine-node": "^2.0.0",
     "jasmine-reporters": "~1.0.1",
     "jshint-stylish": "~1.0.0",
-    "karma": "vojtajina/karma#socketio_10",
-    "karma-browserstack-launcher": "0.1.2",
-    "karma-chrome-launcher": "0.1.5",
-    "karma-firefox-launcher": "0.1.3",
-    "karma-jasmine": "0.1.5",
-    "karma-junit-reporter": "0.2.2",
-    "karma-ng-scenario": "0.1.0",
-    "karma-sauce-launcher": "0.2.10",
-    "karma-script-launcher": "0.1.0",
+    "karma": "^0.13.19",
+    "karma-browserstack-launcher": "^0.1.8",
+    "karma-chrome-launcher": "^0.2.2",
+    "karma-firefox-launcher": "^0.1.7",
+    "karma-jasmine": "^0.1.6",
+    "karma-junit-reporter": "^0.3.8",
+    "karma-ng-scenario": "^0.1.0",
+    "karma-sauce-launcher": "^0.3.0",
+    "karma-script-launcher": "^0.1.0",
     "load-grunt-tasks": "~0.6.0",
     "lodash": "~2.4.1",
     "marked": "~0.3.0",
     "node-html-encoder": "0.0.2",
     "promises-aplus-tests": "~2.1.0",
-    "protractor": "1.4.0",
+    "protractor": "^2.1.0",
     "q": "~1.0.0",
     "q-io": "^1.10.9",
     "qq": "^0.3.5",
@@ -59,8 +77,7 @@
     "semver": "~4.0.3",
     "shelljs": "~0.3.0",
     "sorted-object": "^1.0.0",
-    "stringmap": "^0.2.2",
-    "cheerio": "^0.17.0"
+    "stringmap": "^0.2.2"
   },
   "licenses": [
     {
@@ -68,5 +85,10 @@
       "url": "https://github.com/angular/angular.js/blob/master/LICENSE"
     }
   ],
-  "dependencies": {}
+  "dependencies": {},
+  "config": {
+    "commitizen": {
+      "path": "node_modules/cz-conventional-changelog"
+    }
+  }
 }

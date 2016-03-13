@@ -4,6 +4,7 @@ findLocaleId = closureI18nExtractor.findLocaleId;
 extractNumberSymbols = closureI18nExtractor.extractNumberSymbols;
 extractCurrencySymbols = closureI18nExtractor.extractCurrencySymbols;
 extractDateTimeSymbols = closureI18nExtractor.extractDateTimeSymbols;
+outputLocale = closureI18nExtractor.outputLocale;
 
 
 function newTestLocaleInfo() {
@@ -11,6 +12,8 @@ function newTestLocaleInfo() {
     DATETIME_FORMATS: {
       MONTH: ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre',
         'octobre', 'novembre', 'décembre'],
+      STANDALONEMONTH: ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre',
+          'octobre', 'novembre', 'décembre'],
       SHORTMONTH: ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.',
         'nov.', 'déc.'],
       DAY: ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'],
@@ -70,7 +73,7 @@ describe("findLocaleId", function() {
   it("should throw an error otherwise", function() {
     expect(function() {
       findLocaleId("str", "otherwise")
-    }).toThrow("unknown type in findLocaleId: otherwise");
+    }).toThrowError("unknown type in findLocaleId: otherwise");
   });
 });
 
@@ -129,7 +132,10 @@ describe("extractCurrencySymbols", function() {
     ].join('\n');
 
     var localeInfo = {};
-    expect(extractCurrencySymbols(CONTENT)).toEqual({
+    var currencySymbols = extractCurrencySymbols(CONTENT);
+    expect(currencySymbols.GBP).toEqual([2, '£', 'GB£']);
+    expect(currencySymbols.AOA).toEqual([2, 'Kz', 'Kz']);
+    expect(currencySymbols).toEqual({
       'GBP':[2, '£', 'GB£'],
       'AOA':[2, 'Kz', 'Kz']
     });
@@ -140,65 +146,71 @@ describe("extractCurrencySymbols", function() {
 describe("extractDateTimeSymbols", function() {
   it("should extract date time data", function() {
     var CONTENT = [
-"goog.i18n.DateTimeSymbols_fr_CA = {",
-"  ERAS: ['av. J.-C.', 'ap. J.-C.'],",
-"  ERANAMES: ['avant Jésus-Christ', 'après Jésus-Christ'],",
-"  NARROWMONTHS: ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],",
-"  STANDALONENARROWMONTHS: ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O',",
-"      'N', 'D'],",
-"  MONTHS: ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet',",
-"      'août', 'septembre', 'octobre', 'novembre', 'décembre'],",
-"  STANDALONEMONTHS: ['janvier', 'février', 'mars', 'avril', 'mai', 'juin',",
-"      'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'],",
-"  SHORTMONTHS: ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.',",
-"      'août', 'sept.', 'oct.', 'nov.', 'déc.'],",
-"  STANDALONESHORTMONTHS: ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin',",
-"      'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'],",
-"  WEEKDAYS: ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi',",
-"      'samedi'],",
-"  STANDALONEWEEKDAYS: ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi',",
-"      'vendredi', 'samedi'],",
-"  SHORTWEEKDAYS: ['dim.', 'lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.'],",
-"  STANDALONESHORTWEEKDAYS: ['dim.', 'lun.', 'mar.', 'mer.', 'jeu.', 'ven.',",
-"      'sam.'],",
-"  NARROWWEEKDAYS: ['D', 'L', 'M', 'M', 'J', 'V', 'S'],",
-"  STANDALONENARROWWEEKDAYS: ['D', 'L', 'M', 'M', 'J', 'V', 'S'],",
-"  SHORTQUARTERS: ['T1', 'T2', 'T3', 'T4'],",
-"  QUARTERS: ['1er trimestre', '2e trimestre', '3e trimestre', '4e trimestre'],",
-"  AMPMS: ['AM', 'PM'],",
-"  DATEFORMATS: ['EEEE d MMMM y', 'd MMMM y', 'yyyy-MM-dd', 'yy-MM-dd'],",
-"  TIMEFORMATS: ['HH \\'h\\' mm \\'min\\' ss \\'s\\' zzzz', 'HH:mm:ss z',",
-"      'HH:mm:ss', 'HH:mm'],",
-"  FIRSTDAYOFWEEK: 6,",
-"  WEEKENDRANGE: [5, 6],",
-"  FIRSTWEEKCUTOFFDAY: 2",
-"};"
+      "goog.i18n.DateTimeSymbols_fr_CA = {",
+      "  ERAS: ['av. J.-C.', 'ap. J.-C.'],",
+      "  ERANAMES: ['avant Jésus-Christ', 'après Jésus-Christ'],",
+      "  NARROWMONTHS: ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],",
+      "  STANDALONENARROWMONTHS: ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O',",
+      "      'N', 'D'],",
+      "  MONTHS: ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet',",
+      "      'août', 'septembre', 'octobre', 'novembre', 'décembre'],",
+      "  STANDALONEMONTHS: ['janvier', 'février', 'mars', 'avril', 'mai', 'juin',",
+      "      'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'],",
+      "  SHORTMONTHS: ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.',",
+      "      'août', 'sept.', 'oct.', 'nov.', 'déc.'],",
+      "  STANDALONESHORTMONTHS: ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin',",
+      "      'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'],",
+      "  WEEKDAYS: ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi',",
+      "      'samedi'],",
+      "  STANDALONEWEEKDAYS: ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi',",
+      "      'vendredi', 'samedi'],",
+      "  SHORTWEEKDAYS: ['dim.', 'lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.'],",
+      "  STANDALONESHORTWEEKDAYS: ['dim.', 'lun.', 'mar.', 'mer.', 'jeu.', 'ven.',",
+      "      'sam.'],",
+      "  NARROWWEEKDAYS: ['D', 'L', 'M', 'M', 'J', 'V', 'S'],",
+      "  STANDALONENARROWWEEKDAYS: ['D', 'L', 'M', 'M', 'J', 'V', 'S'],",
+      "  SHORTQUARTERS: ['T1', 'T2', 'T3', 'T4'],",
+      "  QUARTERS: ['1er trimestre', '2e trimestre', '3e trimestre', '4e trimestre'],",
+      "  AMPMS: ['AM', 'PM'],",
+      "  DATEFORMATS: ['EEEE d MMMM y', 'd MMMM y', 'yyyy-MM-dd', 'yy-MM-dd'],",
+      "  TIMEFORMATS: ['HH \\'h\\' mm \\'min\\' ss \\'s\\' zzzz', 'HH:mm:ss z',",
+      "      'HH:mm:ss', 'HH:mm'],",
+      "  FIRSTDAYOFWEEK: 6,",
+      "  WEEKENDRANGE: [5, 6],",
+      "  FIRSTWEEKCUTOFFDAY: 2",
+      "};"
     ].join('\n');
-      var localeInfo = {};
-      var expectedLocaleInfo = {
-          fr_CA: {
-              DATETIME_FORMATS: {
-                  MONTH: ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre',
-                      'octobre', 'novembre', 'décembre'],
-                  SHORTMONTH: ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.',
-                      'nov.', 'déc.'],
-                  DAY: ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'],
-                  SHORTDAY: ['dim.', 'lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.'],
-                  AMPMS: ['AM', 'PM'],
-                  medium: 'yyyy-MM-dd HH:mm:ss',
-                  short: 'yy-MM-dd HH:mm',
-                  fullDate: 'EEEE d MMMM y',
-                  longDate: 'd MMMM y',
-                  mediumDate: 'yyyy-MM-dd',
-                  shortDate: 'yy-MM-dd',
-                  mediumTime: 'HH:mm:ss',
-                  shortTime: 'HH:mm'
-              }
+    var localeInfo = {};
+    var expectedLocaleInfo = {
+        fr_CA: {
+            DATETIME_FORMATS: {
+                MONTH: ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre',
+                    'octobre', 'novembre', 'décembre'],
+                STANDALONEMONTH: ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet',
+                    'août', 'septembre', 'octobre', 'novembre', 'décembre'],
+                SHORTMONTH: ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.',
+                    'nov.', 'déc.'],
+                DAY: ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'],
+                SHORTDAY: ['dim.', 'lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.'],
+                FIRSTDAYOFWEEK: 6,
+                WEEKENDRANGE: [5, 6],
+                AMPMS: ['AM', 'PM'],
+                ERAS: ['av. J.-C.', 'ap. J.-C.'],
+                ERANAMES: ['avant Jésus-Christ', 'après Jésus-Christ'],
+                medium: 'yyyy-MM-dd HH:mm:ss',
+                short: 'yy-MM-dd HH:mm',
+                fullDate: 'EEEE d MMMM y',
+                longDate: 'd MMMM y',
+                mediumDate: 'yyyy-MM-dd',
+                shortDate: 'yy-MM-dd',
+                mediumTime: 'HH:mm:ss',
+                shortTime: 'HH:mm'
             }
-          };
-      extractDateTimeSymbols(CONTENT, localeInfo);
-      expect(localeInfo).toEqual(expectedLocaleInfo);
-      })
+          }
+        };
+    extractDateTimeSymbols(CONTENT, localeInfo);
+    expect(localeInfo).toEqual(expectedLocaleInfo);
+  });
 });
 
 describe("pluralExtractor", function() {
@@ -260,7 +272,14 @@ describe("serializeContent", function() {
   it("should not transform arrays into objects", function() {
     var serializedContent = closureI18nExtractor.serializeContent(newTestLocaleInfo().fr_CA);
     var deserializedLocale = eval("(" + serializedContent + ")");
-    expect(deserializedLocale.DATETIME_FORMATS.MONTH.length).not.toBe(undefined);
+    expect(deserializedLocale.DATETIME_FORMATS.MONTH.length).not.toBeUndefined();
   });
 });
 
+describe("outputLocale", function() {
+  it("should render the correct locale ids", function() {
+    var output = outputLocale(newTestLocaleInfo(), 'fr_CA');
+    expect(output).toContain('"id": "fr-ca"');
+    expect(output).toContain('"localeID": "fr_CA"');
+  });
+});
