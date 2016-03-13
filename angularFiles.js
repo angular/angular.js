@@ -226,6 +226,15 @@ var angularFiles = {
     '@angularTest'
   ],
 
+  'karmaJqueryOld': [
+    'bower_components/jquery-old/dist/jquery.js',
+    'test/jquery_alias.js',
+    '@angularSrc',
+    '@angularSrcModules',
+    '@angularScenario',
+    '@angularTest'
+  ],
+
   'karmaJqueryExclude': [
     'src/angular-bootstrap.js',
     'src/ngScenario/angular-bootstrap.js',
