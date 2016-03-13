@@ -29,7 +29,7 @@ describe('$sniffer', function() {
 
     beforeEach(function() {
       mockDocument = {createElement: jasmine.createSpy('createElement')};
-      mockDocument.createElement.andCallFake(function(elm) {
+      mockDocument.createElement.and.callFake(function(elm) {
         if (elm === 'div') return mockDivElement;
       });
 

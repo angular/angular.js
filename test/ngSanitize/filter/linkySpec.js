@@ -113,7 +113,7 @@ describe('linky', function() {
 
 
     it('should pass url as parameter to custom attribute function', function() {
-      var linkParameters = jasmine.createSpy('linkParameters').andReturn({"class": "blue"});
+      var linkParameters = jasmine.createSpy('linkParameters').and.returnValue({"class": "blue"});
       linky("http://example.com", "_self", linkParameters);
       expect(linkParameters).toHaveBeenCalledWith('http://example.com');
     });

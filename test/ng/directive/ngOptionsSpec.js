@@ -19,87 +19,107 @@ describe('ngOptions', function() {
 
 
   beforeEach(function() {
-    this.addMatchers({
-      toEqualSelectValue: function(value, multiple) {
-        var errors = [];
-        var actual = this.actual.val();
+    jasmine.addMatchers({
+      toEqualSelectValue: function() {
+        return {
+          compare: function(_actual_, value, multiple) {
+            var errors = [];
+            var actual = _actual_.val();
 
-        if (multiple) {
-          value = value.map(function(val) { return hashKey(val); });
-          actual = actual || [];
-        } else {
-          value = hashKey(value);
-        }
+            if (multiple) {
+              value = value.map(function(val) { return hashKey(val); });
+              actual = actual || [];
+            } else {
+              value = hashKey(value);
+            }
 
-        if (!equals(actual, value)) {
-          errors.push('Expected select value "' + actual + '" to equal "' + value + '"');
-        }
-        this.message = function() {
-          return errors.join('\n');
+            if (!equals(actual, value)) {
+              errors.push('Expected select value "' + actual + '" to equal "' + value + '"');
+            }
+            var message = function() {
+              return errors.join('\n');
+            };
+
+            return { pass: errors.length === 0, message: message };
+          }
         };
-
-        return errors.length === 0;
       },
-      toEqualOption: function(value, text, label) {
-        var errors = [];
-        var hash = hashKey(value);
-        if (this.actual.attr('value') !== hash) {
-          errors.push('Expected option value "' + this.actual.attr('value') + '" to equal "' + hash + '"');
-        }
-        if (text && this.actual.text() !== text) {
-          errors.push('Expected option text "' + this.actual.text() + '" to equal "' + text + '"');
-        }
-        if (label && this.actual.attr('label') !== label) {
-          errors.push('Expected option label "' + this.actual.attr('label') + '" to equal "' + label + '"');
-        }
+      toEqualOption: function() {
+        return {
+          compare: function(actual, value, text, label) {
+            var errors = [];
+            var hash = hashKey(value);
+            if (actual.attr('value') !== hash) {
+              errors.push('Expected option value "' + actual.attr('value') + '" to equal "' + hash + '"');
+            }
+            if (text && actual.text() !== text) {
+              errors.push('Expected option text "' + actual.text() + '" to equal "' + text + '"');
+            }
+            if (label && actual.attr('label') !== label) {
+              errors.push('Expected option label "' + actual.attr('label') + '" to equal "' + label + '"');
+            }
 
-        this.message = function() {
-          return errors.join('\n');
+            var message = function() {
+              return errors.join('\n');
+            };
+
+            return { pass: errors.length === 0, message: message };
+          }
         };
-
-        return errors.length === 0;
       },
-      toEqualTrackedOption: function(value, text, label) {
-        var errors = [];
-        if (this.actual.attr('value') !== '' + value) {
-          errors.push('Expected option value "' + this.actual.attr('value') + '" to equal "' + value + '"');
-        }
-        if (text && this.actual.text() !== text) {
-          errors.push('Expected option text "' + this.actual.text() + '" to equal "' + text + '"');
-        }
-        if (label && this.actual.attr('label') !== label) {
-          errors.push('Expected option label "' + this.actual.attr('label') + '" to equal "' + label + '"');
-        }
+      toEqualTrackedOption: function() {
+        return {
+          compare: function(actual, value, text, label) {
+            var errors = [];
+            if (actual.attr('value') !== '' + value) {
+              errors.push('Expected option value "' + actual.attr('value') + '" to equal "' + value + '"');
+            }
+            if (text && actual.text() !== text) {
+              errors.push('Expected option text "' + actual.text() + '" to equal "' + text + '"');
+            }
+            if (label && actual.attr('label') !== label) {
+              errors.push('Expected option label "' + actual.attr('label') + '" to equal "' + label + '"');
+            }
 
-        this.message = function() {
-          return errors.join('\n');
+            var message = function() {
+              return errors.join('\n');
+            };
+
+            return { pass: errors.length === 0, message: message };
+          }
         };
-
-        return errors.length === 0;
       },
       toEqualUnknownOption: function() {
-        var errors = [];
-        if (this.actual.attr('value') !== '?') {
-          errors.push('Expected option value "' + this.actual.attr('value') + '" to equal "?"');
-        }
+        return {
+          compare: function(actual) {
+            var errors = [];
+            if (actual.attr('value') !== '?') {
+              errors.push('Expected option value "' + actual.attr('value') + '" to equal "?"');
+            }
 
-        this.message = function() {
-          return errors.join('\n');
+            var message = function() {
+              return errors.join('\n');
+            };
+
+            return { pass: errors.length === 0, message: message };
+          }
         };
-
-        return errors.length === 0;
       },
-      toEqualUnknownValue: function(value) {
-        var errors = [];
-        if (this.actual !== '?') {
-          errors.push('Expected select value "' + this.actual + '" to equal "?"');
-        }
+      toEqualUnknownValue: function() {
+        return {
+          compare: function(actual, value) {
+            var errors = [];
+            if (actual !== '?') {
+              errors.push('Expected select value "' + actual + '" to equal "?"');
+            }
 
-        this.message = function() {
-          return errors.join('\n');
+            var message = function() {
+              return errors.join('\n');
+            };
+
+            return { pass: errors.length === 0, message: message };
+          }
         };
-
-        return errors.length === 0;
       }
     });
   });
@@ -534,7 +554,7 @@ describe('ngOptions', function() {
       'ng-options': 'value as createLabel(value) for value in array',
       'ng-model': 'selected'
     });
-    scope.createLabel = jasmine.createSpy('createLabel').andCallFake(function(value) { return value; });
+    scope.createLabel = jasmine.createSpy('createLabel').and.callFake(function(value) { return value; });
     scope.array = ['a', 'b', 'c'];
     scope.array.$$private = 'do not watch';
     scope.array.$property = 'do not watch';
@@ -556,7 +576,7 @@ describe('ngOptions', function() {
       'ng-options': 'key as createLabel(key) for (key, value) in object',
       'ng-model': 'selected'
     });
-    scope.createLabel = jasmine.createSpy('createLabel').andCallFake(function(value) { return value; });
+    scope.createLabel = jasmine.createSpy('createLabel').and.callFake(function(value) { return value; });
     scope.object = {'regularProperty': 'visible', '$$private': 'invisible', '$property': 'invisible'};
     scope.selected = 'regularProperty';
     scope.$digest();

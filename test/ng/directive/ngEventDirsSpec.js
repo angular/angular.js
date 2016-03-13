@@ -78,7 +78,7 @@ describe('event directives', function() {
     it('should call the listener synchronously inside of $apply if outside of $apply',
         inject(function($rootScope, $compile) {
       element = $compile('<input type="text" ng-focus="focus()" ng-model="value">')($rootScope);
-      $rootScope.focus = jasmine.createSpy('focus').andCallFake(function() {
+      $rootScope.focus = jasmine.createSpy('focus').and.callFake(function() {
         $rootScope.value = 'newValue';
       });
 
@@ -139,7 +139,7 @@ describe('event directives', function() {
     it('should call the listener synchronously inside of $apply if outside of $apply',
         inject(function($rootScope, $compile) {
       element = $compile('<input type="text" ng-blur="blur()" ng-model="value">')($rootScope);
-      $rootScope.blur = jasmine.createSpy('blur').andCallFake(function() {
+      $rootScope.blur = jasmine.createSpy('blur').and.callFake(function() {
         $rootScope.value = 'newValue';
       });
 

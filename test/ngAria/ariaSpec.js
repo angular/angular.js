@@ -654,7 +654,7 @@ describe('$aria', function() {
     it('should update bindings when keypress handled', function() {
       compileElement('<div ng-click="text = \'clicked!\'">{{text}}</div>');
       expect(element.text()).toBe('');
-      spyOn(scope.$root, '$digest').andCallThrough();
+      spyOn(scope.$root, '$digest').and.callThrough();
       element.triggerHandler({ type: 'keypress', keyCode: 13 });
       expect(element.text()).toBe('clicked!');
       expect(scope.$root.$digest).toHaveBeenCalledOnce();
