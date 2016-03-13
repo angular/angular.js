@@ -1,14 +1,6 @@
 /* global jQuery: true, uid: true, jqCache: true */
 'use strict';
 
-/**
- * Here is the problem: http://bugs.jquery.com/ticket/7292
- * basically jQuery treats change event on some browsers (IE) as a
- * special event and changes it form 'change' to 'click/keydown' and
- * few others. This horrible hack removes the special treatment
- */
-if (window._jQuery) _jQuery.event.special.change = undefined;
-
 if (window.bindJQuery) bindJQuery();
 
 var supportTests = {
