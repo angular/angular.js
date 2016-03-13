@@ -29,7 +29,7 @@ describe('$swipe', function() {
 
     beforeEach(function() {
       usedEvents = [];
-      spyOn(element, 'on').andCallFake(function(events) {
+      spyOn(element, 'on').and.callFake(function(events) {
         angular.forEach(events.split(/\s+/), function(eventName) {
           usedEvents.push(eventName);
         });
@@ -224,7 +224,7 @@ describe('$swipe', function() {
         });
 
         expect(events.start).toHaveBeenCalled();
-        expect(events.move.calls.length).toBe(7);
+        expect(events.move).toHaveBeenCalledTimes(7);
 
         expect(events.cancel).not.toHaveBeenCalled();
         expect(events.end).not.toHaveBeenCalled();
@@ -236,7 +236,7 @@ describe('$swipe', function() {
         });
 
         expect(events.start).toHaveBeenCalled();
-        expect(events.move.calls.length).toBe(7);
+        expect(events.move).toHaveBeenCalledTimes(7);
         expect(events.end).toHaveBeenCalled();
 
         expect(events.cancel).not.toHaveBeenCalled();
@@ -289,7 +289,7 @@ describe('$swipe', function() {
         });
 
         expect(events.start).toHaveBeenCalled();
-        expect(events.move.calls.length).toBe(3);
+        expect(events.move).toHaveBeenCalledTimes(3);
 
         expect(events.cancel).not.toHaveBeenCalled();
         expect(events.end).not.toHaveBeenCalled();
@@ -301,7 +301,7 @@ describe('$swipe', function() {
         });
 
         expect(events.start).toHaveBeenCalled();
-        expect(events.move.calls.length).toBe(3);
+        expect(events.move).toHaveBeenCalledTimes(3);
         expect(events.end).toHaveBeenCalled();
 
         expect(events.cancel).not.toHaveBeenCalled();

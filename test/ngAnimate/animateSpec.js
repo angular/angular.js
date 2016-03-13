@@ -142,7 +142,8 @@ describe("animations", function() {
         from: { height: '50px' },
         to: { width: '50px' },
         addClass: 'one',
-        removeClass: 'two'
+        removeClass: 'two',
+        domOperation: undefined
       };
 
       var copiedOptions = copy(initialOptions);
@@ -1954,15 +1955,15 @@ describe("animations", function() {
       $rootScope.$digest();
       registerCallback();
 
-      expect(spy.callCount).toBe(0);
+      expect(spy).not.toHaveBeenCalled();
       $animate.flush();
 
       // this is not 3 since the 3rd callback
       // was added after the first callback
       // was fired
-      expect(spy.callCount).toBe(2);
+      expect(spy).toHaveBeenCalledTimes(2);
 
-      spy.reset();
+      spy.calls.reset();
       runner.end();
 
       $animate.flush();
@@ -1970,7 +1971,7 @@ describe("animations", function() {
       // now we expect all three callbacks
       // to fire when the animation ends since
       // the callback detection happens again
-      expect(spy.callCount).toBe(3);
+      expect(spy).toHaveBeenCalledTimes(3);
 
       function registerCallback() {
         $animate.on('enter', element, spy);

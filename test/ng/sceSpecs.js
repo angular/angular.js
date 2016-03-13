@@ -198,7 +198,7 @@ describe('SCE', function() {
   });
 
 
-  describe('$sce.parseAs', function($sce) {
+  describe('$sce.parseAs', function() {
     it('should parse constant literals as trusted', inject(function($sce) {
       expect($sce.parseAsJs('1')()).toBe(1);
       expect($sce.parseAsJs('1', $sce.ANY)()).toBe(1);

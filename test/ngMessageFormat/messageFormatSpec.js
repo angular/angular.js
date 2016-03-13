@@ -100,7 +100,7 @@ describe('$$ngMessageFormat', function() {
           $rootScope.$digest();
           expect($rootScope.$countWatchers()).toBe(0);
           expect(spy).toHaveBeenCalledWith('foo', 'foo', $rootScope);
-          expect(spy.calls.length).toBe(1);
+          expect(spy).toHaveBeenCalledTimes(1);
         });
 
         it('should stop watching strings with only constant expressions after first execution', function() {
@@ -109,7 +109,7 @@ describe('$$ngMessageFormat', function() {
           $rootScope.$digest();
           expect($rootScope.$countWatchers()).toBe(0);
           expect(spy).toHaveBeenCalledWith('foo 42', 'foo 42', $rootScope);
-          expect(spy.calls.length).toBe(1);
+          expect(spy).toHaveBeenCalledTimes(1);
         });
 
 
@@ -408,7 +408,7 @@ describe('$$ngMessageFormat', function() {
           $rootScope.$digest();
           expect($rootScope.$countWatchers()).toBe(0);
           expect(spy).toHaveBeenCalledWith('foo', 'foo', $rootScope);
-          expect(spy.calls.length).toBe(1);
+          expect(spy).toHaveBeenCalledTimes(1);
         })
       );
 
@@ -419,7 +419,7 @@ describe('$$ngMessageFormat', function() {
           $rootScope.$digest();
           expect($rootScope.$countWatchers()).toBe(0);
           expect(spy).toHaveBeenCalledWith('foo 42', 'foo 42', $rootScope);
-          expect(spy.calls.length).toBe(1);
+          expect(spy).toHaveBeenCalledTimes(1);
         })
       );
     });

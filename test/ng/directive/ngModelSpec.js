@@ -1,6 +1,6 @@
 'use strict';
 
-/* globals getInputCompileHelper: false */
+/* globals generateInputCompilerHelper: false */
 
 describe('ngModel', function() {
 
@@ -220,7 +220,7 @@ describe('ngModel', function() {
         ctrl.$viewChangeListeners.push(spy);
         ctrl.$setViewValue('val');
         expect(spy).toHaveBeenCalledOnce();
-        spy.reset();
+        spy.calls.reset();
 
         // invalid
         ctrl.$parsers.push(function() {return undefined;});
@@ -270,7 +270,7 @@ describe('ngModel', function() {
         // further digests
         scope.$apply('value = "aaa"');
         expect(ctrl.$viewValue).toBe('aaa');
-        ctrl.$render.reset();
+        ctrl.$render.calls.reset();
 
         ctrl.$setViewValue('cccc');
         expect(ctrl.$modelValue).toBeUndefined();
@@ -286,7 +286,7 @@ describe('ngModel', function() {
         expect(ctrl.$dirty).toBe(true);
         expect(parentFormCtrl.$setDirty).toHaveBeenCalledOnce();
 
-        parentFormCtrl.$setDirty.reset();
+        parentFormCtrl.$setDirty.calls.reset();
         ctrl.$setViewValue('');
         expect(ctrl.$pristine).toBe(false);
         expect(ctrl.$dirty).toBe(true);
@@ -474,7 +474,7 @@ describe('ngModel', function() {
 
         scope.$apply('value = 3');
         expect(ctrl.$render).toHaveBeenCalledOnce();
-        ctrl.$render.reset();
+        ctrl.$render.calls.reset();
 
         ctrl.$formatters.push(function() {return 3;});
         scope.$apply('value = 5');
@@ -756,7 +756,7 @@ describe('ngModel', function() {
         it('should always perform validations using the parsed model value', function() {
           var captures;
           ctrl.$validators.raw = function() {
-            captures = arguments;
+            captures = Array.prototype.slice.call(arguments);
             return captures[0];
           };
 
@@ -773,7 +773,7 @@ describe('ngModel', function() {
         it('should always perform validations using the formatted view value', function() {
           var captures;
           ctrl.$validators.raw = function() {
-            captures = arguments;
+            captures = Array.prototype.slice.call(arguments);
             return captures[0];
           };
 
@@ -1197,12 +1197,12 @@ describe('ngModel', function() {
           return true;
         };
 
-        spyOn(ctrl.$validators, 'mock').andCallThrough();
+        spyOn(ctrl.$validators, 'mock').and.callThrough();
 
         ctrl.$setViewValue('ab');
 
         expect(ctrl.$validators.mock).toHaveBeenCalledWith('a', 'a');
-        expect(ctrl.$validators.mock.calls.length).toEqual(2);
+        expect(ctrl.$validators.mock).toHaveBeenCalledTimes(2);
       });
 
 
@@ -1219,17 +1219,17 @@ describe('ngModel', function() {
           return true;
         };
 
-        spyOn(ctrl.$validators, 'mock').andCallThrough();
+        spyOn(ctrl.$validators, 'mock').and.callThrough();
 
         ctrl.$setViewValue('a');
 
         expect(ctrl.$validators.mock).toHaveBeenCalledWith('a', 'a');
-        expect(ctrl.$validators.mock.calls.length).toEqual(1);
+        expect(ctrl.$validators.mock).toHaveBeenCalledTimes(1);
 
         ctrl.$setViewValue('ab');
 
         expect(ctrl.$validators.mock).toHaveBeenCalledWith('a', 'ab');
-        expect(ctrl.$validators.mock.calls.length).toEqual(2);
+        expect(ctrl.$validators.mock).toHaveBeenCalledTimes(2);
       });
 
       it('should validate correctly when $parser name equals $validator key', function() {
@@ -1772,16 +1772,9 @@ describe('ngModel', function() {
 
 describe('ngModelOptions attributes', function() {
 
-  var helper, $rootScope, $compile, $timeout, $q;
+  var helper = {}, $rootScope, $compile, $timeout, $q;
 
-  beforeEach(function() {
-    helper = getInputCompileHelper(this);
-  });
-
-  afterEach(function() {
-    helper.dealoc();
-  });
-
+  generateInputCompilerHelper(helper);
 
   beforeEach(inject(function(_$compile_, _$rootScope_, _$timeout_, _$q_) {
     $compile = _$compile_;
@@ -2240,7 +2233,7 @@ describe('ngModelOptions attributes', function() {
       '<input type="text" ng-model="name" ' +
         'ng-model-options="{ getterSetter: true }" />');
 
-    var spy = $rootScope.name = jasmine.createSpy('setterSpy').andCallFake(function() {
+    var spy = $rootScope.name = jasmine.createSpy('setterSpy').and.callFake(function() {
       return 'b';
     });
     $rootScope.$apply();
@@ -2291,7 +2284,7 @@ describe('ngModelOptions attributes', function() {
         return this.value;
       }
     };
-    spyOn($rootScope.someService, 'getterSetter').andCallThrough();
+    spyOn($rootScope.someService, 'getterSetter').and.callThrough();
     $rootScope.$apply();
 
     expect(inputElm.val()).toBe('a');

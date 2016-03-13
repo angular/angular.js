@@ -441,8 +441,8 @@ describe("basic usage", function() {
     $httpBackend.flush();
     expect(cc).toEqualData({id: 123, name: 'misko'});
     expect(callback).toHaveBeenCalledOnce();
-    expect(callback.mostRecentCall.args[0]).toEqual(cc);
-    expect(callback.mostRecentCall.args[1]()).toEqual({});
+    expect(callback.calls.mostRecent().args[0]).toEqual(cc);
+    expect(callback.calls.mostRecent().args[1]()).toEqual(Object.create(null));
   });
 
 
@@ -456,8 +456,8 @@ describe("basic usage", function() {
 
     $httpBackend.flush();
     expect(cc).toEqualData({id: 123, number: '9876'});
-    expect(callback.mostRecentCall.args[0]).toEqual(cc);
-    expect(callback.mostRecentCall.args[1]()).toEqual({});
+    expect(callback.calls.mostRecent().args[0]).toEqual(cc);
+    expect(callback.calls.mostRecent().args[1]()).toEqual(Object.create(null));
   });
 
 
@@ -484,8 +484,8 @@ describe("basic usage", function() {
     $httpBackend.expect('GET', '/CreditCard/123').respond({id: {key: 123}, number: '9876'});
     cc.$get(callback);
     $httpBackend.flush();
-    expect(callback.mostRecentCall.args[0]).toEqual(cc);
-    expect(callback.mostRecentCall.args[1]()).toEqual({});
+    expect(callback.calls.mostRecent().args[0]).toEqual(cc);
+    expect(callback.calls.mostRecent().args[1]()).toEqual(Object.create(null));
     expect(cc.number).toEqual('9876');
   });
 
@@ -510,8 +510,8 @@ describe("basic usage", function() {
 
     $httpBackend.flush();
     expect(ccs).toEqualData([{id:1}, {id:2}]);
-    expect(callback.mostRecentCall.args[0]).toEqual(ccs);
-    expect(callback.mostRecentCall.args[1]()).toEqual({});
+    expect(callback.calls.mostRecent().args[0]).toEqual(ccs);
+    expect(callback.calls.mostRecent().args[1]()).toEqual(Object.create(null));
   });
 
 
@@ -533,17 +533,17 @@ describe("basic usage", function() {
     expect(callback).not.toHaveBeenCalled();
 
     $httpBackend.flush();
-    expect(callback.mostRecentCall.args[0]).toEqualData({});
-    expect(callback.mostRecentCall.args[1]()).toEqual({});
+    expect(callback.calls.mostRecent().args[0]).toEqualData({});
+    expect(callback.calls.mostRecent().args[1]()).toEqual(Object.create(null));
 
-    callback.reset();
+    callback.calls.reset();
     $httpBackend.expect('DELETE', '/CreditCard/333').respond(204, null);
     CreditCard.remove({id:333}, callback);
     expect(callback).not.toHaveBeenCalled();
 
     $httpBackend.flush();
-    expect(callback.mostRecentCall.args[0]).toEqualData({});
-    expect(callback.mostRecentCall.args[1]()).toEqual({});
+    expect(callback.calls.mostRecent().args[0]).toEqualData({});
+    expect(callback.calls.mostRecent().args[1]()).toEqual(Object.create(null));
   });
 
 
@@ -591,8 +591,8 @@ describe("basic usage", function() {
 
     $httpBackend.flush();
     expect(cc).toEqualData({id:123});
-    expect(callback.mostRecentCall.args[0]).toEqual(cc);
-    expect(callback.mostRecentCall.args[1]()).toEqual({header1: 'a'});
+    expect(callback.calls.mostRecent().args[0]).toEqual(cc);
+    expect(callback.calls.mostRecent().args[1]()).toEqual(extend(Object.create(null), {header1: 'a'}));
   });
 
 
@@ -714,7 +714,7 @@ describe("basic usage", function() {
         $httpBackend.flush();
 
         expect(callback).toHaveBeenCalledOnce();
-        expect(callback.mostRecentCall.args[0]).toBe(cc);
+        expect(callback.calls.mostRecent().args[0]).toBe(cc);
       });
 
 
@@ -725,7 +725,7 @@ describe("basic usage", function() {
         cc.$promise.then(callback);
         $httpBackend.flush();
 
-        callback.reset();
+        callback.calls.reset();
 
         cc.$promise.then(callback);
         $rootScope.$apply(); //flush async queue
@@ -766,7 +766,7 @@ describe("basic usage", function() {
         cc.$promise.then(null, callback);
         $httpBackend.flush();
 
-        var response = callback.mostRecentCall.args[0];
+        var response = callback.calls.mostRecent().args[0];
 
         expect(response.data).toEqual('resource not found');
         expect(response.status).toEqual(404);
@@ -824,7 +824,7 @@ describe("basic usage", function() {
         $httpBackend.flush();
         expect(callback).toHaveBeenCalledOnce();
         expect(cc).toEqualData({id: 123, number: '9876'});
-        callback.reset();
+        callback.calls.reset();
 
         $httpBackend.expect('POST', '/CreditCard').respond({id: 1, number: '9'});
 
@@ -907,7 +907,7 @@ describe("basic usage", function() {
         $httpBackend.flush();
 
         expect(callback).toHaveBeenCalledOnce();
-        expect(callback.mostRecentCall.args[0]).toBe(ccs);
+        expect(callback.calls.mostRecent().args[0]).toBe(ccs);
       });
 
 
@@ -918,7 +918,7 @@ describe("basic usage", function() {
         ccs.$promise.then(callback);
         $httpBackend.flush();
 
-        callback.reset();
+        callback.calls.reset();
 
         ccs.$promise.then(callback);
         $rootScope.$apply(); //flush async queue
@@ -945,7 +945,7 @@ describe("basic usage", function() {
         ccs.$promise.then(null, callback);
         $httpBackend.flush();
 
-        var response = callback.mostRecentCall.args[0];
+        var response = callback.calls.mostRecent().args[0];
 
         expect(response.data).toEqual('resource not found');
         expect(response.status).toEqual(404);
@@ -1000,7 +1000,7 @@ describe("basic usage", function() {
       $httpBackend.flush();
       expect(callback).toHaveBeenCalledOnce();
 
-      var response = callback.mostRecentCall.args[0];
+      var response = callback.calls.mostRecent().args[0];
       expect(response.resource).toBe(ccs);
       expect(response.status).toBe(200);
       expect(response.config).toBeDefined();
@@ -1029,7 +1029,7 @@ describe("basic usage", function() {
       $httpBackend.flush();
       expect(callback).toHaveBeenCalledOnce();
 
-      var response = callback.mostRecentCall.args[0];
+      var response = callback.calls.mostRecent().args[0];
       expect(response.status).toBe(404);
       expect(response.config).toBeDefined();
     });
@@ -1042,7 +1042,7 @@ describe("basic usage", function() {
         errorCB;
 
     beforeEach(function() {
-      errorCB = jasmine.createSpy('error').andCallFake(function(response) {
+      errorCB = jasmine.createSpy('error').and.callFake(function(response) {
         expect(response.data).toBe(ERROR_RESPONSE);
         expect(response.status).toBe(ERROR_CODE);
       });
@@ -1210,8 +1210,8 @@ describe("basic usage", function() {
         $httpBackend.flush();
         expect(user).toEqualData({id: 123, name: 'user1'});
         expect(callback).toHaveBeenCalledOnce();
-        expect(callback.mostRecentCall.args[0]).toEqual(user);
-        expect(callback.mostRecentCall.args[1]()).toEqual({});
+        expect(callback.calls.mostRecent().args[0]).toEqual(user);
+        expect(callback.calls.mostRecent().args[1]()).toEqual(Object.create(null));
       });
 
       it('should append when an id is supplied', function() {
@@ -1222,8 +1222,8 @@ describe("basic usage", function() {
         $httpBackend.flush();
         expect(user).toEqualData({id: 123, name: 'newName'});
         expect(callback).toHaveBeenCalledOnce();
-        expect(callback.mostRecentCall.args[0]).toEqual(user);
-        expect(callback.mostRecentCall.args[1]()).toEqual({});
+        expect(callback.calls.mostRecent().args[0]).toEqual(user);
+        expect(callback.calls.mostRecent().args[1]()).toEqual(Object.create(null));
       });
 
       it('should append when an id is supplied and the format is a parameter', function() {
@@ -1234,8 +1234,8 @@ describe("basic usage", function() {
         $httpBackend.flush();
         expect(user).toEqualData({id: 123, name: 'newName'});
         expect(callback).toHaveBeenCalledOnce();
-        expect(callback.mostRecentCall.args[0]).toEqual(user);
-        expect(callback.mostRecentCall.args[1]()).toEqual({});
+        expect(callback.calls.mostRecent().args[0]).toEqual(user);
+        expect(callback.calls.mostRecent().args[1]()).toEqual(Object.create(null));
       });
     });
 
@@ -1345,7 +1345,7 @@ describe('errors', function() {
 
     expect(successSpy).not.toHaveBeenCalled();
     expect(failureSpy).toHaveBeenCalled();
-    expect(failureSpy.mostRecentCall.args[0]).toMatch(
+    expect(failureSpy.calls.mostRecent().args[0]).toMatch(
         /^\[\$resource:badcfg\] Error in resource configuration for action `query`\. Expected response to contain an array but got an object \(Request: GET \/Customer\/123\)/
       );
   });
@@ -1362,7 +1362,7 @@ describe('errors', function() {
 
     expect(successSpy).not.toHaveBeenCalled();
     expect(failureSpy).toHaveBeenCalled();
-    expect(failureSpy.mostRecentCall.args[0]).toMatch(
+    expect(failureSpy.calls.mostRecent().args[0]).toMatch(
         /^\[\$resource:badcfg\] Error in resource configuration for action `get`\. Expected response to contain an object but got an array \(Request: GET \/Customer\/123\)/
       );
   });
@@ -1376,7 +1376,7 @@ describe('cancelling requests', function() {
 
   beforeEach(module('ngResource', function($provide) {
     $provide.decorator('$http', function($delegate) {
-      httpSpy = jasmine.createSpy('$http').andCallFake($delegate);
+      httpSpy = jasmine.createSpy('$http').and.callFake($delegate);
       return httpSpy;
     });
   }));
@@ -1401,7 +1401,7 @@ describe('cancelling requests', function() {
     $httpBackend.flush();
 
     expect(httpSpy).toHaveBeenCalledOnce();
-    expect(httpSpy.calls[0].args[0].timeout).toBe(10000);
+    expect(httpSpy.calls.argsFor(0)[0].timeout).toBe(10000);
   });
 
   it('should delete non-numeric timeouts in actions and log a $debug message',
@@ -1420,7 +1420,7 @@ describe('cancelling requests', function() {
       $httpBackend.flush();
 
       expect(httpSpy).toHaveBeenCalledOnce();
-      expect(httpSpy.calls[0].args[0].timeout).toBeUndefined();
+      expect(httpSpy.calls.argsFor(0)[0].timeout).toBeUndefined();
       expect($log.debug).toHaveBeenCalledOnceWith('ngResource:\n' +
           '  Only numeric values are allowed as `timeout`.\n' +
           '  Promises are not supported in $resource, because the same value would ' +
@@ -1444,8 +1444,8 @@ describe('cancelling requests', function() {
 
       var creditCard = CreditCard.get();
       expect(creditCard.$cancelRequest).toBeDefined();
-      expect(httpSpy.calls[0].args[0].timeout).toEqual(jasmine.any($q));
-      expect(httpSpy.calls[0].args[0].timeout.then).toBeDefined();
+      expect(httpSpy.calls.argsFor(0)[0].timeout).toEqual(jasmine.any($q));
+      expect(httpSpy.calls.argsFor(0)[0].timeout.then).toBeDefined();
 
       expect($log.debug).toHaveBeenCalledOnceWith('ngResource:\n' +
           '  Only numeric values are allowed as `timeout`.\n' +

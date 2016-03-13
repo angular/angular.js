@@ -293,7 +293,7 @@ describe('$http', function() {
       $httpBackend = $hb;
       $http = $h;
       $rootScope = $rs;
-      spyOn($rootScope, '$apply').andCallThrough();
+      spyOn($rootScope, '$apply').and.callThrough();
     }]));
 
     it('should throw error if the request configuration is not an object', function() {
@@ -394,7 +394,7 @@ describe('$http', function() {
         $http({url: '/url', method: 'GET'}).then(function(response) {
           expect(response.data).toBe('my content');
           expect(response.status).toBe(207);
-          expect(response.headers()).toEqual({'content-encoding': 'smurf'});
+          expect(response.headers()).toEqual(extend(Object.create(null), {'content-encoding': 'smurf'}));
           expect(response.config.url).toBe('/url');
           callback();
         });
@@ -433,7 +433,7 @@ describe('$http', function() {
         $http({url: '/url', method: 'GET'}).then(null, function(response) {
           expect(response.data).toBe('bad error');
           expect(response.status).toBe(543);
-          expect(response.headers()).toEqual({'request-id': '123'});
+          expect(response.headers()).toEqual(extend(Object.create(null), {'request-id': '123'}));
           expect(response.config.url).toBe('/url');
           callback();
         });
@@ -449,7 +449,7 @@ describe('$http', function() {
           $http({url: '/url', method: 'GET'}).success(function(data, status, headers, config) {
             expect(data).toBe('my content');
             expect(status).toBe(207);
-            expect(headers()).toEqual({'content-encoding': 'smurf'});
+            expect(headers()).toEqual(extend(Object.create(null), {'content-encoding': 'smurf'}));
             expect(config.url).toBe('/url');
             callback();
           });
@@ -501,7 +501,7 @@ describe('$http', function() {
           $http({url: '/url', method: 'GET'}).error(function(data, status, headers, config) {
             expect(data).toBe('bad error');
             expect(status).toBe(543);
-            expect(headers()).toEqual({'request-id': '123'});
+            expect(headers()).toEqual(extend(Object.create(null), {'request-id': '123'}));
             expect(config.url).toBe('/url');
             callback();
           });
@@ -552,7 +552,7 @@ describe('$http', function() {
 
       it('should return single header', function() {
         $httpBackend.expect('GET', '/url').respond('', {'date': 'date-val'});
-        callback.andCallFake(function(r) {
+        callback.and.callFake(function(r) {
           expect(r.headers('date')).toBe('date-val');
         });
 
@@ -565,7 +565,7 @@ describe('$http', function() {
 
       it('should return null when single header does not exist', function() {
         $httpBackend.expect('GET', '/url').respond('', {'Some-Header': 'Fake'});
-        callback.andCallFake(function(r) {
+        callback.and.callFake(function(r) {
           r.headers(); // we need that to get headers parsed first
           expect(r.headers('nothing')).toBe(null);
         });
@@ -583,8 +583,8 @@ describe('$http', function() {
           'server': 'Apache'
         });
 
-        callback.andCallFake(function(r) {
-          expect(r.headers()).toEqual({'content-encoding': 'gzip', 'server': 'Apache'});
+        callback.and.callFake(function(r) {
+          expect(r.headers()).toEqual(extend(Object.create(null), {'content-encoding': 'gzip', 'server': 'Apache'}));
         });
 
         $http({url: '/url', method: 'GET'}).then(callback);
@@ -595,8 +595,8 @@ describe('$http', function() {
 
 
       it('should return empty object for jsonp request', function() {
-        callback.andCallFake(function(r) {
-          expect(r.headers()).toEqual({});
+        callback.and.callFake(function(r) {
+          expect(r.headers()).toEqual(Object.create(null));
         });
 
         $httpBackend.expect('JSONP', '/some').respond(200);
@@ -660,7 +660,7 @@ describe('$http', function() {
 
       it('should parse CRLF as delimiter', function() {
         // IE does use CRLF
-        expect(parseHeaders('a: b\r\nc: d\r\n')).toEqual({a: 'b', c: 'd'});
+        expect(parseHeaders('a: b\r\nc: d\r\n')).toEqual(extend(Object.create(null), {a: 'b', c: 'd'}));
         expect(parseHeaders('a: b\r\nc: d\r\n').a).toBe('b');
       });
 
@@ -904,7 +904,7 @@ describe('$http', function() {
       it('should check the cache before checking the XSRF cookie', inject(function($cacheFactory) {
         var testCache = $cacheFactory('testCache');
 
-        spyOn(testCache, 'get').andCallFake(function() {
+        spyOn(testCache, 'get').and.callFake(function() {
           mockedCookies['XSRF-TOKEN'] = 'foo';
         });
 
@@ -943,7 +943,7 @@ describe('$http', function() {
        $http.get('/url').then(callback);
        $httpBackend.flush();
        expect(callback).toHaveBeenCalledOnce();
-       var headers = callback.mostRecentCall.args[0].headers;
+       var headers = callback.calls.mostRecent().args[0].headers;
        expect(headers('custom-empty-response-Header')).toEqual('');
        expect(headers('ToString')).toBe(null);
        expect(headers('Constructor')).toBe('');
@@ -1039,7 +1039,7 @@ describe('$http', function() {
 
       it('should $apply even if exception thrown during callback', inject(function($exceptionHandler) {
         $httpBackend.when('GET').respond(200);
-        callback.andThrow('error in callback');
+        callback.and.throwError('error in callback');
 
         $http({method: 'GET', url: '/some'}).then(callback);
         $httpBackend.flush();
@@ -1086,7 +1086,7 @@ describe('$http', function() {
 
             // I'm really sorry for doing this :-D
             // Unfortunately I don't know how to trick toString.apply(obj) comparison
-            spyOn(window, 'isFile').andReturn(true);
+            spyOn(window, 'isFile').and.returnValue(true);
 
             $httpBackend.expect('POST', '/some', file).respond('');
             $http({method: 'POST', url: '/some', data: file});
@@ -1182,7 +1182,7 @@ describe('$http', function() {
             $httpBackend.flush();
 
             expect(callback).toHaveBeenCalledOnce();
-            expect(callback.mostRecentCall.args[0]).toEqual({foo: 'bar', baz: 23});
+            expect(callback.calls.mostRecent().args[0]).toEqual({foo: 'bar', baz: 23});
           });
 
 
@@ -1192,7 +1192,7 @@ describe('$http', function() {
             $httpBackend.flush();
 
             expect(callback).toHaveBeenCalledOnce();
-            expect(callback.mostRecentCall.args[0]).toEqual([1, 'abc', {foo: 'bar'}]);
+            expect(callback.calls.mostRecent().args[0]).toEqual([1, 'abc', {foo: 'bar'}]);
           });
 
 
@@ -1202,7 +1202,7 @@ describe('$http', function() {
             $httpBackend.flush();
 
             expect(callback).toHaveBeenCalledOnce();
-            expect(callback.mostRecentCall.args[0]).toEqual({foo: 'bar', baz: 23});
+            expect(callback.calls.mostRecent().args[0]).toEqual({foo: 'bar', baz: 23});
           });
 
 
@@ -1213,7 +1213,7 @@ describe('$http', function() {
             $httpBackend.flush();
 
             expect(callback).toHaveBeenCalledOnce();
-            expect(callback.mostRecentCall.args[0]).toEqual(123);
+            expect(callback.calls.mostRecent().args[0]).toEqual(123);
           });
 
 
@@ -1224,7 +1224,7 @@ describe('$http', function() {
             $httpBackend.flush();
 
             expect(callback).toHaveBeenCalledOnce();
-            expect(callback.mostRecentCall.args[0]).toEqual('asdf');
+            expect(callback.calls.mostRecent().args[0]).toEqual('asdf');
           });
 
 
@@ -1235,7 +1235,7 @@ describe('$http', function() {
             $httpBackend.flush();
 
             expect(callback).toHaveBeenCalledOnce();
-            expect(callback.mostRecentCall.args[0]).toEqual(null);
+            expect(callback.calls.mostRecent().args[0]).toEqual(null);
           });
 
 
@@ -1246,7 +1246,7 @@ describe('$http', function() {
             $httpBackend.flush();
 
             expect(callback).toHaveBeenCalledOnce();
-            expect(callback.mostRecentCall.args[0]).toEqual(true);
+            expect(callback.calls.mostRecent().args[0]).toEqual(true);
           });
 
 
@@ -1257,7 +1257,7 @@ describe('$http', function() {
             $httpBackend.flush();
 
             expect(callback).toHaveBeenCalledOnce();
-            expect(callback.mostRecentCall.args[0]).toEqual(false);
+            expect(callback.calls.mostRecent().args[0]).toEqual(false);
           });
 
 
@@ -1268,7 +1268,7 @@ describe('$http', function() {
             $httpBackend.flush();
 
             expect(callback).toHaveBeenCalledOnce();
-            expect(callback.mostRecentCall.args[0]).toEqual('');
+            expect(callback.calls.mostRecent().args[0]).toEqual('');
           });
 
 
@@ -1278,7 +1278,7 @@ describe('$http', function() {
             $httpBackend.flush();
 
             expect(callback).toHaveBeenCalledOnce();
-            expect(callback.mostRecentCall.args[0]).toEqual([1, 'abc', {foo:'bar'}]);
+            expect(callback.calls.mostRecent().args[0]).toEqual([1, 'abc', {foo:'bar'}]);
           });
 
 
@@ -1288,7 +1288,7 @@ describe('$http', function() {
             $httpBackend.flush();
 
             expect(callback).toHaveBeenCalledOnce();
-            expect(callback.mostRecentCall.args[0]).toEqual([1, 'abc', {foo:'bar'}]);
+            expect(callback.calls.mostRecent().args[0]).toEqual([1, 'abc', {foo:'bar'}]);
           });
 
 
@@ -1298,7 +1298,7 @@ describe('$http', function() {
             $httpBackend.flush();
 
             expect(callback).toHaveBeenCalledOnce();
-            expect(callback.mostRecentCall.args[0]).toEqual(')]}\',\n This is not JSON !');
+            expect(callback.calls.mostRecent().args[0]).toEqual(')]}\',\n This is not JSON !');
           });
 
 
@@ -1310,7 +1310,7 @@ describe('$http', function() {
             $httpBackend.flush();
 
             expect(callback).toHaveBeenCalledOnce();
-            expect(callback.mostRecentCall.args[0]).toEqual('');
+            expect(callback.calls.mostRecent().args[0]).toEqual('');
           });
 
           it('should not attempt to deserialize json for an empty response whose header contains application/json', function() {
@@ -1321,7 +1321,7 @@ describe('$http', function() {
             $httpBackend.flush();
 
             expect(callback).toHaveBeenCalledOnce();
-            expect(callback.mostRecentCall.args[0]).toEqual('');
+            expect(callback.calls.mostRecent().args[0]).toEqual('');
           });
 
           it('should not attempt to deserialize json for a blank response whose header contains application/json', function() {
@@ -1332,7 +1332,7 @@ describe('$http', function() {
             $httpBackend.flush();
 
             expect(callback).toHaveBeenCalledOnce();
-            expect(callback.mostRecentCall.args[0]).toEqual(' ');
+            expect(callback.calls.mostRecent().args[0]).toEqual(' ');
           });
 
           it('should not deserialize tpl beginning with ng expression', function() {
@@ -1341,7 +1341,7 @@ describe('$http', function() {
             $httpBackend.flush();
 
             expect(callback).toHaveBeenCalledOnce();
-            expect(callback.mostRecentCall.args[0]).toEqual('{{some}}');
+            expect(callback.calls.mostRecent().args[0]).toEqual('{{some}}');
           });
 
           it('should not deserialize json when the opening and closing brackets do not match',
@@ -1352,9 +1352,9 @@ describe('$http', function() {
               $http.get('/url2').success(callback);
               $httpBackend.flush();
 
-              expect(callback.calls.length).toBe(2);
-              expect(callback.calls[0].args[0]).toEqual('[Code](url): function() {}');
-              expect(callback.calls[1].args[0]).toEqual('{"is": "not"} ["json"]');
+              expect(callback).toHaveBeenCalledTimes(2);
+              expect(callback.calls.argsFor(0)[0]).toEqual('[Code](url): function() {}');
+              expect(callback.calls.argsFor(1)[0]).toEqual('{"is": "not"} ["json"]');
             }
           );
         });
@@ -1370,7 +1370,7 @@ describe('$http', function() {
           $httpBackend.flush();
 
           expect(callback).toHaveBeenCalledOnce();
-          expect(callback.mostRecentCall.args[0]).toBe('header1');
+          expect(callback.calls.mostRecent().args[0]).toBe('header1');
         });
 
         it('should have access to response status', function() {
@@ -1383,7 +1383,7 @@ describe('$http', function() {
           $httpBackend.flush();
 
           expect(callback).toHaveBeenCalledOnce();
-          expect(callback.mostRecentCall.args[0]).toBe(200);
+          expect(callback.calls.mostRecent().args[0]).toBe(200);
         });
 
 
@@ -1396,11 +1396,11 @@ describe('$http', function() {
           $httpBackend.flush();
 
           expect(callback).toHaveBeenCalledOnce();
-          expect(callback.mostRecentCall.args[0]).toBe('RESP-FIRST:V1');
+          expect(callback.calls.mostRecent().args[0]).toBe('RESP-FIRST:V1');
         });
 
 
-        it('should apply `transformResponse` even if the response data is empty', function(data) {
+        it('should apply `transformResponse` even if the response data is empty', function() {
           var callback = jasmine.createSpy('transformResponse');
           var config = {transformResponse: callback};
 
@@ -1412,10 +1412,10 @@ describe('$http', function() {
           $http.get('/url3', config);
           $httpBackend.flush();
 
-          expect(callback.callCount).toBe(3);
-          expect(callback.calls[0].args[0]).toBeUndefined();
-          expect(callback.calls[1].args[0]).toBe(null);
-          expect(callback.calls[2].args[0]).toBe('');
+          expect(callback).toHaveBeenCalledTimes(3);
+          expect(callback.calls.argsFor(0)[0]).toBeUndefined();
+          expect(callback.calls.argsFor(1)[0]).toBe(null);
+          expect(callback.calls.argsFor(2)[0]).toBe('');
         });
       });
     });
@@ -1444,7 +1444,7 @@ describe('$http', function() {
         $rootScope.$digest();
 
         expect(callback).toHaveBeenCalledOnce();
-        expect(callback.mostRecentCall.args[0]).toBe('content');
+        expect(callback.calls.mostRecent().args[0]).toBe('content');
       }));
 
       it('should cache JSONP request when cache is provided', inject(function($rootScope) {
@@ -1456,7 +1456,7 @@ describe('$http', function() {
         $rootScope.$digest();
 
         expect(callback).toHaveBeenCalledOnce();
-        expect(callback.mostRecentCall.args[0]).toBe('content');
+        expect(callback.calls.mostRecent().args[0]).toBe('content');
       }));
 
       it('should cache request when cache is provided and no method specified', function() {
@@ -1466,7 +1466,7 @@ describe('$http', function() {
         $rootScope.$digest();
 
         expect(callback).toHaveBeenCalledOnce();
-        expect(callback.mostRecentCall.args[0]).toBe('content');
+        expect(callback.calls.mostRecent().args[0]).toBe('content');
       });
 
 
@@ -1503,7 +1503,7 @@ describe('$http', function() {
         $httpBackend.flush();
 
         expect(callback).toHaveBeenCalledOnce();
-        expect(callback.mostRecentCall.args[0]).toBe('content2');
+        expect(callback.calls.mostRecent().args[0]).toBe('content2');
       });
 
 
@@ -1515,7 +1515,7 @@ describe('$http', function() {
         $httpBackend.flush();
 
         expect(callback).toHaveBeenCalledOnce();
-        expect(callback.mostRecentCall.args[0]).toBe('content2');
+        expect(callback.calls.mostRecent().args[0]).toBe('content2');
       });
 
 
@@ -1538,14 +1538,14 @@ describe('$http', function() {
         $httpBackend.flush();
 
         expect(callback).toHaveBeenCalledOnce();
-        expect(callback.mostRecentCall.args[0]).toBe('content2');
+        expect(callback.calls.mostRecent().args[0]).toBe('content2');
       });
 
 
       it('should cache the headers as well', inject(function($rootScope) {
         doFirstCacheRequest('GET', 200, {'content-encoding': 'gzip', 'server': 'Apache'});
-        callback.andCallFake(function(r, s, headers) {
-          expect(headers()).toEqual({'content-encoding': 'gzip', 'server': 'Apache'});
+        callback.and.callFake(function(r, s, headers) {
+          expect(headers()).toEqual(extend(Object.create(null), {'content-encoding': 'gzip', 'server': 'Apache'}));
           expect(headers('server')).toBe('Apache');
         });
 
@@ -1557,7 +1557,7 @@ describe('$http', function() {
 
       it('should not share the cached headers object instance', inject(function($rootScope) {
         doFirstCacheRequest('GET', 200, {'content-encoding': 'gzip', 'server': 'Apache'});
-        callback.andCallFake(function(r, s, headers) {
+        callback.and.callFake(function(r, s, headers) {
           expect(headers()).toEqual(cache.get('/url')[2]);
           expect(headers()).not.toBe(cache.get('/url')[2]);
         });
@@ -1570,7 +1570,7 @@ describe('$http', function() {
 
       it('should not share the pending cached headers object instance', inject(function($rootScope) {
         var firstResult;
-        callback.andCallFake(function(result) {
+        callback.and.callFake(function(result) {
           expect(result.headers()).toEqual(firstResult.headers());
           expect(result.headers()).not.toBe(firstResult.headers());
         });
@@ -1588,7 +1588,7 @@ describe('$http', function() {
 
       it('should cache status code as well', inject(function($rootScope) {
         doFirstCacheRequest('GET', 201);
-        callback.andCallFake(function(r, status, h) {
+        callback.and.callFake(function(r, status, h) {
           expect(status).toBe(201);
         });
 
@@ -1601,7 +1601,7 @@ describe('$http', function() {
       it('should use cache even if second request was made before the first returned', function() {
         $httpBackend.expect('GET', '/url').respond(201, 'fake-response');
 
-        callback.andCallFake(function(response, status, headers) {
+        callback.and.callFake(function(response, status, headers) {
           expect(response).toBe('fake-response');
           expect(status).toBe(201);
         });
@@ -1611,7 +1611,7 @@ describe('$http', function() {
 
         $httpBackend.flush();
         expect(callback).toHaveBeenCalled();
-        expect(callback.callCount).toBe(2);
+        expect(callback).toHaveBeenCalledTimes(2);
       });
 
 
@@ -1623,7 +1623,7 @@ describe('$http', function() {
         $http({method: 'GET', url: '/url', cache: cache, headers: {foo: 'baz'}}).then(callback);
         $rootScope.$digest();
 
-        expect(callback.mostRecentCall.args[0].config.headers.foo).toBe('baz');
+        expect(callback.calls.mostRecent().args[0].config.headers.foo).toBe('baz');
       });
 
 
@@ -1634,7 +1634,7 @@ describe('$http', function() {
         $http({method: 'GET', url: '/url', cache: cache, headers: {foo: 'baz'}}).then(callback);
         $httpBackend.flush();
 
-        expect(callback.mostRecentCall.args[0].config.headers.foo).toBe('baz');
+        expect(callback.calls.mostRecent().args[0].config.headers.foo).toBe('baz');
       });
 
 
@@ -1645,14 +1645,14 @@ describe('$http', function() {
         $http({method: 'GET', url: '/url', cache: cache, headers: {foo: 'baz'}}).catch(callback);
         $httpBackend.flush();
 
-        expect(callback.mostRecentCall.args[0].config.headers.foo).toBe('baz');
+        expect(callback.calls.mostRecent().args[0].config.headers.foo).toBe('baz');
       });
 
 
       it('should allow the cached value to be an empty string', function() {
         cache.put('/abc', '');
 
-        callback.andCallFake(function(response, status, headers) {
+        callback.and.callFake(function(response, status, headers) {
           expect(response).toBe('');
           expect(status).toBe(200);
         });
@@ -1669,7 +1669,7 @@ describe('$http', function() {
             $http.get('/myurl', {cache: cache}).success(function(data, status, headers) {
               expect(data).toBe('simple response');
               expect(status).toBe(200);
-              expect(headers()).toEqual({});
+              expect(headers()).toEqual(Object.create(null));
               callback();
             });
 
@@ -1697,7 +1697,7 @@ describe('$http', function() {
           $rootScope.$digest();
 
           expect(callback).toHaveBeenCalledOnce();
-          expect(callback.mostRecentCall.args[0]).toBe('content');
+          expect(callback.calls.mostRecent().args[0]).toBe('content');
 
           // Invalidate cache entry.
           $http.defaults.cache.remove("/url");
@@ -1726,14 +1726,14 @@ describe('$http', function() {
           $http({method: 'get', url: '/url'}).success(callback);
           $rootScope.$digest();
           expect(callback).toHaveBeenCalledOnce();
-          expect(callback.mostRecentCall.args[0]).toBe('content-default-cache');
-          callback.reset();
+          expect(callback.calls.mostRecent().args[0]).toBe('content-default-cache');
+          callback.calls.reset();
 
           // Serve request from local cache when it is given (but default filled too).
           $http({method: 'get', url: '/url', cache: localCache}).success(callback);
           $rootScope.$digest();
           expect(callback).toHaveBeenCalledOnce();
-          expect(callback.mostRecentCall.args[0]).toBe('content-local-cache');
+          expect(callback.calls.mostRecent().args[0]).toBe('content-local-cache');
         }));
 
         it('should be skipped if {cache: false} is passed in request config', function() {
@@ -1762,7 +1762,7 @@ describe('$http', function() {
             function(response) {
               expect(response.data).toBeUndefined();
               expect(response.status).toBe(-1);
-              expect(response.headers()).toEqual({});
+              expect(response.headers()).toEqual(Object.create(null));
               expect(response.config.url).toBe('/some');
               callback();
             });
@@ -1819,7 +1819,7 @@ describe('$http', function() {
         expect($http.pendingRequests.length).toBe(0);
 
         $http({method: 'get', url: '/cached', cache: true});
-        spyOn($http.pendingRequests, 'push').andCallThrough();
+        spyOn($http.pendingRequests, 'push').and.callThrough();
         $rootScope.$digest();
         expect($http.pendingRequests.push).toHaveBeenCalledOnce();
 
@@ -1872,7 +1872,7 @@ describe('$http', function() {
   it('should pass timeout, withCredentials and responseType', function() {
     var $httpBackend = jasmine.createSpy('$httpBackend');
 
-    $httpBackend.andCallFake(function(m, u, d, c, h, timeout, withCredentials, responseType) {
+    $httpBackend.and.callFake(function(m, u, d, c, h, timeout, withCredentials, responseType) {
       expect(timeout).toBe(12345);
       expect(withCredentials).toBe(true);
       expect(responseType).toBe('json');
@@ -1901,7 +1901,7 @@ describe('$http', function() {
   it('should use withCredentials from default', function() {
     var $httpBackend = jasmine.createSpy('$httpBackend');
 
-    $httpBackend.andCallFake(function(m, u, d, c, h, timeout, withCredentials, responseType) {
+    $httpBackend.and.callFake(function(m, u, d, c, h, timeout, withCredentials, responseType) {
       expect(withCredentials).toBe(true);
     });
 
@@ -1938,10 +1938,10 @@ describe('$http with $applyAsync', function() {
     $httpBackend = backend;
     $rootScope = scope;
     $browser = browser;
-    spyOn($rootScope, '$apply').andCallThrough();
-    spyOn($rootScope, '$applyAsync').andCallThrough();
-    spyOn($rootScope, '$digest').andCallThrough();
-    spyOn($browser.defer, 'cancel').andCallThrough();
+    spyOn($rootScope, '$apply').and.callThrough();
+    spyOn($rootScope, '$applyAsync').and.callThrough();
+    spyOn($rootScope, '$digest').and.callThrough();
+    spyOn($browser.defer, 'cancel').and.callThrough();
     log = logger;
   }]));
 

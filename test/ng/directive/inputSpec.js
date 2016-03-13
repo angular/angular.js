@@ -1,18 +1,11 @@
 'use strict';
 
-/* globals getInputCompileHelper: false */
+/* globals generateInputCompilerHelper: false */
 
 describe('input', function() {
-  var helper, $compile, $rootScope, $browser, $sniffer, $timeout, $q;
+  var helper = {}, $compile, $rootScope, $browser, $sniffer, $timeout, $q;
 
-  beforeEach(function() {
-    helper = getInputCompileHelper(this);
-  });
-
-  afterEach(function() {
-    helper.dealoc();
-  });
-
+  generateInputCompilerHelper(helper);
 
   beforeEach(inject(function(_$compile_, _$rootScope_, _$browser_, _$sniffer_, _$timeout_, _$q_) {
     $compile = _$compile_;
@@ -34,15 +27,22 @@ describe('input', function() {
 
 
   it('should not set readonly or disabled property on ie7', function() {
-    this.addMatchers({
-      toBeOff: function(attributeName) {
-        var actualValue = this.actual.attr(attributeName);
-        this.message = function() {
-          return "Attribute '" + attributeName + "' expected to be off but was '" + actualValue +
-            "' in: " + angular.mock.dump(this.actual);
-        };
+    jasmine.addMatchers({
+      toBeOff: function() {
+        return {
+          compare: function(actual, attributeName) {
+            var actualValue = actual.attr(attributeName);
+            var message = function() {
+              return "Attribute '" + attributeName + "' expected to be off but was '" + actualValue +
+                "' in: " + angular.mock.dump(actual);
+            };
 
-        return !actualValue || actualValue == 'false';
+            return {
+              pass: !actualValue || actualValue == 'false',
+              message: message
+            };
+          }
+        };
       }
     });
 

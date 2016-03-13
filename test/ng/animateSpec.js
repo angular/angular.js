@@ -313,7 +313,7 @@ describe("$animate", function() {
           $rootScope.$digest();
         }).not.toThrow();
 
-        var optionsArg = captureSpy.mostRecentCall.args[2];
+        var optionsArg = captureSpy.calls.mostRecent().args[2];
         expect(optionsArg).not.toBe(invalidOptions);
         expect(isObject(optionsArg)).toBeTruthy();
       });
@@ -322,7 +322,7 @@ describe("$animate", function() {
 
   it('should not issue a call to addClass if the provided class value is not a string or array', function() {
     inject(function($animate, $rootScope, $rootElement) {
-      var spy = spyOn(window, 'jqLiteAddClass').andCallThrough();
+      var spy = spyOn(window, 'jqLiteAddClass').and.callThrough();
 
       var element = jqLite('<div></div>');
       var parent = $rootElement;
@@ -358,7 +358,7 @@ describe("$animate", function() {
 
   it('should not issue a call to removeClass if the provided class value is not a string or array', function() {
     inject(function($animate, $rootScope, $rootElement) {
-      var spy = spyOn(window, 'jqLiteRemoveClass').andCallThrough();
+      var spy = spyOn(window, 'jqLiteRemoveClass').and.callThrough();
 
       var element = jqLite('<div></div>');
       var parent = $rootElement;
@@ -412,15 +412,15 @@ describe("$animate", function() {
 
     function setupClassManipulationSpies() {
       inject(function($animate) {
-        addClass = spyOn(window, 'jqLiteAddClass').andCallThrough();
-        removeClass = spyOn(window, 'jqLiteRemoveClass').andCallThrough();
+        addClass = spyOn(window, 'jqLiteAddClass').and.callThrough();
+        removeClass = spyOn(window, 'jqLiteRemoveClass').and.callThrough();
       });
     }
 
     function setupClassManipulationLogger(log) {
       inject(function() {
         var _addClass = jqLiteAddClass;
-        addClass = spyOn(window, 'jqLiteAddClass').andCallFake(function(element, classes) {
+        addClass = spyOn(window, 'jqLiteAddClass').and.callFake(function(element, classes) {
           var names = classes;
           if (Object.prototype.toString.call(classes) === '[object Array]') names = classes.join(' ');
           log('addClass(' + names + ')');
@@ -428,7 +428,7 @@ describe("$animate", function() {
         });
 
         var _removeClass = jqLiteRemoveClass;
-        removeClass = spyOn(window, 'jqLiteRemoveClass').andCallFake(function(element, classes) {
+        removeClass = spyOn(window, 'jqLiteRemoveClass').and.callFake(function(element, classes) {
           var names = classes;
           if (Object.prototype.toString.call(classes) === '[object Array]') names = classes.join(' ');
           log('removeClass(' + names + ')');
@@ -461,8 +461,8 @@ describe("$animate", function() {
       expect(element).toHaveClass('test-class2');
       expect(element).toHaveClass('test-class3');
       expect(log).toEqual(['addClass(test-class2 test-class3)']);
-      expect(addClass.callCount).toBe(1);
-      expect(removeClass.callCount).toBe(0);
+      expect(addClass).toHaveBeenCalledTimes(1);
+      expect(removeClass).not.toHaveBeenCalled();
     }));
 
 
@@ -483,8 +483,8 @@ describe("$animate", function() {
       expect(element).not.toHaveClass('test-class1');
       expect(element).toHaveClass('test-class2');
       expect(element).toHaveClass('test-class3');
-      expect(addClass.callCount).toBe(1);
-      expect(removeClass.callCount).toBe(1);
+      expect(addClass).toHaveBeenCalledTimes(1);
+      expect(removeClass).toHaveBeenCalledTimes(1);
     }));
 
 
@@ -552,8 +552,8 @@ describe("$animate", function() {
 
       expect(target).not.toHaveClass('test-class1');
       expect(target).toHaveClass('test-class2');
-      expect(addClass.callCount).toBe(1);
-      expect(removeClass.callCount).toBe(0);
+      expect(addClass).toHaveBeenCalledTimes(1);
+      expect(removeClass).not.toHaveBeenCalled();
     }));
 
 
@@ -575,8 +575,8 @@ describe("$animate", function() {
       expect(target).not.toHaveClass('test-class1');
       expect(target).toHaveClass('test-class2');
       expect(target).toHaveClass('test-class3');
-      expect(addClass.callCount).toBe(1);
-      expect(removeClass.callCount).toBe(1);
+      expect(addClass).toHaveBeenCalledTimes(1);
+      expect(removeClass).toHaveBeenCalledTimes(1);
     }));
 
 

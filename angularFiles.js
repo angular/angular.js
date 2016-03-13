@@ -205,6 +205,7 @@ var angularFiles = {
   "karmaModules": [
     'build/angular.js',
     '@angularSrcModules',
+    'test/modules/no_bootstrap.js',
     'src/ngScenario/browserTrigger.js',
     'test/helpers/*.js',
     'test/ngMessageFormat/*.js',

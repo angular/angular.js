@@ -186,7 +186,7 @@ describe('Binder', function() {
 
       $rootScope.error['throw'] =  function() { return 'X';};
       $rootScope.$apply();
-      expect(errorLogs.length).toMatch(0);
+      expect(errorLogs.length).toMatch('0');
     });
   });
 

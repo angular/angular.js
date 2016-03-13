@@ -833,7 +833,7 @@ describe('q', function() {
 
         expect(resolveSpy).not.toHaveBeenCalled();
         expect(rejectSpy).toHaveBeenCalled();
-        expect(rejectSpy.calls[0].args[0].message).
+        expect(rejectSpy.calls.argsFor(0)[0].message).
             toMatch(/\[\$q\:qcycle\] Expected promise to be resolved with value other than itself/);
       });
 
@@ -2090,7 +2090,7 @@ describe('q', function() {
 
       // Set up spies
       exceptionExceptionSpy = jasmine.createSpy('rethrowExceptionHandler')
-      .andCallFake(function rethrowExceptionHandler(e) {
+      .and.callFake(function rethrowExceptionHandler(e) {
         throw e;
       });
       errorSpy = jasmine.createSpy('errorSpy');
