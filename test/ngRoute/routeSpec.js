@@ -23,21 +23,6 @@ describe('$route', function() {
     dealoc(element);
   });
 
-  it('should be loaded upon initial load (even if `ngView` is loaded async)', function() {
-    module(function($routeProvider) {
-      $routeProvider.when('/', {template: 'Hello, world !'});
-    });
-
-    inject(function($location, $rootScope) {
-      $location.path('/');
-      $rootScope.$digest();
-    });
-
-    inject(function($route) {
-      expect($route.current).toBeDefined();
-    });
-  });
-
   it('should allow cancellation via $locationChangeStart via $routeChangeStart', function() {
     module(function($routeProvider) {
       $routeProvider.when('/Edit', {
