@@ -2323,6 +2323,36 @@ describe("animations", function() {
         expect(classSpy).not.toHaveBeenCalled();
       }));
 
+
+      describe('because the document is hidden', function() {
+        beforeEach(module(function($provide) {
+          var doc = jqLite({
+            body: document.body,
+            hidden: true
+          });
+          $provide.value('$document', doc);
+        }));
+
+        it('should trigger callbacks for an enter animation',
+          inject(function($animate, $rootScope, $rootElement, $document) {
+
+          var callbackTriggered = false;
+          var spy = jasmine.createSpy();
+          $animate.on('enter', jqLite($document[0].body), spy);
+
+          element = jqLite('<div></div>');
+          var runner = $animate.enter(element, $rootElement);
+          $rootScope.$digest();
+
+          $animate.flush(); // Flushes the animation frames for the callbacks
+
+          expect(spy.calls.count()).toBe(2);
+          expect(spy.calls.argsFor(0)[1]).toBe('start');
+          expect(spy.calls.argsFor(1)[1]).toBe('close');
+        }));
+      });
+
+
     });
 
   });
