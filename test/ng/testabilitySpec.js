@@ -188,7 +188,7 @@ describe('$$testability', function() {
   });
 
   describe('waiting for stability', function() {
-    it('should process callbacks immediately with no outstanding requests',
+    it('should process callbacks without waiting if there are no outstanding requests',
       inject(function($$testability, $timeout) {
         var callback = jasmine.createSpy('callback');
         runs(function() {
