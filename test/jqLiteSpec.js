@@ -1017,11 +1017,24 @@ describe('jqLite', function() {
           '<option>test 2</option>' +
         '</select>').val()).toEqual(['test 1']);
 
+      // In jQuery >= 3.0 .val() on select[multiple] with no selected options returns an
+      // empty array, not null.
+      // See https://github.com/jquery/jquery/issues/2562 for more details.
+      // jqLite will align with jQuery 3.0 behavior in Angular 1.6.
+      var val;
+      var jQueryVersion = window.jQuery && window.jQuery.fn.jquery.split('.')[0];
+      var jQuery3xOrNewer = jQueryVersion && (Number(jQueryVersion) >= 3);
+      if (!_jqLiteMode && jQuery3xOrNewer) {
+        val = [];
+      } else {
+        val = null;
+      }
+
       expect(jqLite(
         '<select multiple>' +
           '<option>test 1</option>' +
           '<option>test 2</option>' +
-        '</select>').val()).toEqual(null);
+        '</select>').val()).toEqual(val);
     });
   });
 
