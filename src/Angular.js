@@ -1001,13 +1001,15 @@ function shallowCopy(src, dst) {
     </form>
   </div>
   <script>
-    angular.module('equalExample', []) .controller('ExampleController', ['$scope',function($scope){
+    angular.module('equalExample', []) .controller('ExampleController', ['$scope', function($scope) {
       $scope.user1={};
       $scope.user2={};
       $scope.result;
+      
       $scope.compare = function() {
-        $scope.result = angular.equals($scope.user1,$scope.user2);
+        $scope.result = angular.equals($scope.user1, $scope.user2);
       };
+      
     }]);
   </script>
  </file>
