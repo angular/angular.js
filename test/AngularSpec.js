@@ -2060,7 +2060,7 @@ describe('angular', function() {
     });
 
     it('should serialize invalid dates to null', function() {
-      expect(toJson(new Date(1/0))).toEqual('null');
+      expect(toJson(new Date(1 / 0))).toEqual('null');
     });
   });
 
