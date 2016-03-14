@@ -1282,7 +1282,7 @@ describe("animations", function() {
         expect(element).not.toHaveClass('green');
       }));
 
-      it('should automatically cancel out class-based animations if the element already contains or doesn\' contain the applied classes',
+      it('should automatically cancel out class-based animations if the element already contains or doesn\'t contain the applied classes',
         inject(function($animate, $rootScope) {
 
         parent.append(element);
@@ -2191,7 +2191,7 @@ describe("animations", function() {
         });
     });
 
-    describe('when animations are skipped', function() {
+    describe('when animations are skipped, disabled, or invalid', function() {
 
       var overriddenAnimationRunner;
       var capturedAnimation;
@@ -2240,19 +2240,87 @@ describe("animations", function() {
         $rootScope.$digest();
         $animate.flush();
 
-        expect(moveSpy.callCount).toBe(1);
-        expect(moveSpy.calls[0].args[1]).toBe('start');
+        expect(moveSpy.calls.count()).toBe(1);
+        expect(moveSpy.calls.mostRecent().args[1]).toBe('start');
 
         $animate.leave(element);
         $rootScope.$digest();
         $animate.flush();
 
-        expect(moveSpy.callCount).toBe(2);
-        expect(moveSpy.calls[1].args[1]).toBe('close');
+        expect(moveSpy.calls.count()).toBe(2);
+        expect(moveSpy.calls.mostRecent().args[1]).toBe('close');
 
-        expect(leaveSpy.callCount).toBe(2);
-        expect(leaveSpy.calls[0].args[1]).toBe('start');
-        expect(leaveSpy.calls[1].args[1]).toBe('close');
+        expect(leaveSpy.calls.count()).toBe(2);
+        expect(leaveSpy.calls.argsFor(0)[1]).toBe('start');
+        expect(leaveSpy.calls.argsFor(1)[1]).toBe('close');
+      }));
+
+
+      it('should not trigger callbacks for the previous structural animation if a follow-up structural animation takes over before the postDigest',
+        inject(function($animate, $rootScope) {
+
+        var enterDone = jasmine.createSpy('enter animation done');
+
+        var enterSpy = jasmine.createSpy();
+        var leaveSpy = jasmine.createSpy();
+
+        $animate.on('enter', parent, enterSpy);
+        $animate.on('leave', parent, leaveSpy);
+
+        $animate.enter(element, parent).done(enterDone);
+        expect(enterDone).not.toHaveBeenCalled();
+
+        var runner = $animate.leave(element);
+        $animate.flush();
+        expect(enterDone).toHaveBeenCalled();
+
+        expect(enterSpy).not.toHaveBeenCalled();
+        expect(leaveSpy.calls.count()).toBe(1);
+        expect(leaveSpy.calls.mostRecent().args[1]).toBe('start');
+
+        leaveSpy.calls.reset();
+        runner.end();
+        $animate.flush();
+
+        expect(enterSpy).not.toHaveBeenCalled();
+        expect(leaveSpy.calls.count()).toBe(1);
+        expect(leaveSpy.calls.mostRecent().args[1]).toBe('close');
+      }));
+
+
+      it('should not trigger the callback if animations are disabled on the element',
+        inject(function($animate, $rootScope, $rootElement, $document) {
+
+        var callbackTriggered = false;
+        var spy = jasmine.createSpy('enter');
+        $animate.on('enter', jqLite($document[0].body), spy);
+
+        element = jqLite('<div></div>');
+        $animate.enabled(element, false);
+        var runner = $animate.enter(element, $rootElement);
+        $rootScope.$digest();
+
+        $animate.flush(); // Flushes the animation frames for the callbacks
+
+        expect(spy).not.toHaveBeenCalled();
+      }));
+
+
+      it('should not trigger the callbacks if the animation is skipped because there are no class-based animations and no structural animation',
+        inject(function($animate, $rootScope) {
+
+        parent.append(element);
+        var classSpy = jasmine.createSpy('classChange');
+        $animate.on('addClass', element, classSpy);
+        $animate.on('removeClass', element, classSpy);
+        element.addClass('one three');
+
+        $animate.addClass(element, 'one');
+        $animate.removeClass(element, 'four');
+
+        $rootScope.$digest();
+        $animate.flush();
+        expect(classSpy).not.toHaveBeenCalled();
       }));
 
     });
