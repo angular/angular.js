@@ -105,10 +105,12 @@ function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDoc
             statusText);
       };
 
+      var timeoutStatusText;
+
       var requestError = function() {
         // The response is always empty
         // See https://xhr.spec.whatwg.org/#request-error-steps and https://fetch.spec.whatwg.org/#concept-network-error
-        completeRequest(callback, -1, null, null, '');
+        completeRequest(callback, -1, null, null, timeoutStatusText || '');
       };
 
       xhr.onerror = requestError;
@@ -145,7 +147,8 @@ function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDoc
     }
 
 
-    function timeoutRequest() {
+    function timeoutRequest(statusText) {
+      timeoutStatusText = statusText;
       jsonpDone && jsonpDone();
       xhr && xhr.abort();
     }
@@ -155,7 +158,7 @@ function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDoc
       if (isDefined(timeoutId)) {
         $browserDefer.cancel(timeoutId);
       }
-      jsonpDone = xhr = null;
+      jsonpDone = xhr = timeoutStatusText = null;
 
       callback(status, response, headersString, statusText);
       $browser.$$completeOutstandingRequest(noop);

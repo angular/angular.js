@@ -1541,13 +1541,23 @@ describe('cancelling requests', function() {
       }
     });
 
-    CreditCard.get();
+    var errorCB = jasmine.createSpy('error').andCallFake(function(err) {
+      expect(err.status).toEqual(-1);
+      expect(err.statusText).toEqual("timeout");
+    });
+
+    var creditCard = CreditCard.get();
+
+    creditCard.$promise.catch(errorCB);
+
     $timeout.flush();
     expect($httpBackend.flush).toThrow(new Error('No pending request to flush !'));
+    expect(errorCB).toHaveBeenCalledOnce();
+    errorCB.reset();
 
     CreditCard.get();
     expect($httpBackend.flush).not.toThrow();
-
+    expect(errorCB).not.toHaveBeenCalled();
   });
 
   it('should cancel the request (if cancellable), when calling `$cancelRequest`', function() {
@@ -1560,11 +1570,23 @@ describe('cancelling requests', function() {
       }
     });
 
-    CreditCard.get().$cancelRequest();
+    var errorCB = jasmine.createSpy('error').andCallFake(function(err) {
+      expect(err.status).toEqual(-1);
+      expect(err.statusText).toEqual("cancelled");
+    });
+
+    var creditCard = CreditCard.get();
+
+    creditCard.$promise.catch(errorCB);
+
+    creditCard.$cancelRequest();
     expect($httpBackend.flush).toThrow(new Error('No pending request to flush !'));
+    expect(errorCB).toHaveBeenCalledOnce();
+    errorCB.reset();
 
     CreditCard.get();
     expect($httpBackend.flush).not.toThrow();
+    expect(errorCB).not.toHaveBeenCalled();
   });
 
   it('should cancel the request, when calling `$cancelRequest` in cancellable actions with timeout defined', function() {
@@ -1578,11 +1600,23 @@ describe('cancelling requests', function() {
       }
     });
 
-    CreditCard.get().$cancelRequest();
+    var errorCB = jasmine.createSpy('error').andCallFake(function(err) {
+      expect(err.status).toEqual(-1);
+      expect(err.statusText).toEqual("cancelled");
+    });
+
+    var creditCard = CreditCard.get();
+
+    creditCard.$promise.catch(errorCB);
+
+    creditCard.$cancelRequest();
     expect($httpBackend.flush).toThrow(new Error('No pending request to flush !'));
+    expect(errorCB).toHaveBeenCalledOnce();
+    errorCB.reset();
 
     CreditCard.get();
     expect($httpBackend.flush).not.toThrow();
+    expect(errorCB).not.toHaveBeenCalled();
   });
 
   it('should reset `$cancelRequest` after the response arrives', function() {

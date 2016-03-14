@@ -658,7 +658,9 @@ angular.module('ngResource', ['ng']).
               httpConfig.timeout = timeoutDeferred.promise;
 
               if (numericTimeout) {
-                numericTimeoutPromise = $timeout(timeoutDeferred.resolve, numericTimeout);
+                numericTimeoutPromise = $timeout(function() {
+                    timeoutDeferred.resolve("timeout");
+                }, numericTimeout);
               }
             }
 
@@ -729,7 +731,12 @@ angular.module('ngResource', ['ng']).
               // - return the instance / collection
               value.$promise = promise;
               value.$resolved = false;
-              if (cancellable) value.$cancelRequest = timeoutDeferred.resolve;
+
+              if (cancellable) {
+                  value.$cancelRequest = function() {
+                      timeoutDeferred.resolve("cancelled");
+                  };
+              }
 
               return value;
             }
