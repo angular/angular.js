@@ -2330,7 +2330,6 @@ if (window.jasmine || window.mocha) {
       }
       angular.element.cleanData(cleanUpNodes);
 
-      injector.get('$rootScope').$destroy();
     }
 
     // clean up jquery's fragment cache
