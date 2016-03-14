@@ -4584,6 +4584,7 @@ describe('$compile', function() {
         "class Foo {\n" +
         "  constructor($scope) {}\n" +
         "  $onInit() { this.check(); }\n" +
+        "  $onDestroy() {}\n" +
         "  check() {\n" +
         "    expect(this.data).toEqualData({\n" +
         "      'foo': 'bar',\n" +
@@ -4599,6 +4600,7 @@ describe('$compile', function() {
         "  }\n" +
         "}");
       spyOn(Controller.prototype, '$onInit').andCallThrough();
+      spyOn(Controller.prototype, '$onDestroy').andCallThrough();
 
       module(function($compileProvider) {
         $compileProvider.directive('fooDir', valueFn({
@@ -4625,7 +4627,11 @@ describe('$compile', function() {
                                  'dir-str="Hello, {{whom}}!" ' +
                                  'dir-fn="fn()"></div>')($rootScope);
         expect(Controller.prototype.$onInit).toHaveBeenCalled();
+        expect(Controller.prototype.$onDestroy).not.toHaveBeenCalled();
         expect(controllerCalled).toBe(true);
+        element.remove();
+        expect(Controller.prototype.$onDestroy).toHaveBeenCalled();
+
       });
       /*jshint +W061 */
     });
@@ -5351,6 +5357,78 @@ describe('$compile', function() {
       });
     });
 
+    it('should call `controller.$onDestroy`, if provided when the element is removed', function() {
+
+      function check() {
+        /*jshint validthis:true */
+        expect(this.element.controller('d1').id).toEqual(1);
+        expect(this.element.controller('d2').id).toEqual(2);
+      }
+      function Controller1($element) { this.id = 1; this.element = $element; }
+      Controller1.prototype.$onDestroy = jasmine.createSpy('$onDestroy').andCallFake(check);
+
+      function Controller2($element) { this.id = 2; this.element = $element; }
+      Controller2.prototype.$onDestroy = jasmine.createSpy('$onDestroy').andCallFake(check);
+
+      angular.module('my', [])
+        .directive('d1', valueFn({ controller: Controller1 }))
+        .directive('d2', valueFn({ controller: Controller2 }));
+
+      module('my');
+      inject(function($compile, $rootScope) {
+        element = $compile('<div d1 d2></div>')($rootScope);
+        element.remove();
+        expect(Controller1.prototype.$onDestroy).toHaveBeenCalledOnce();
+        expect(Controller2.prototype.$onDestroy).toHaveBeenCalledOnce();
+      });
+    });
+
+    it('should call `controller.$onDestroy`, if provided when the directive is removed using ngIf', function() {
+
+      function check() {
+        /*jshint validthis:true */
+        expect(this.element.controller('d1').id).toEqual(1);
+      }
+
+      function Controller1($element) { this.id = 1; this.element = $element; }
+      Controller1.prototype.$onDestroy = jasmine.createSpy('$onDestroy').andCallFake(check);
+
+      angular.module('my', [])
+        .directive('d1', valueFn({ controller: Controller1 }));
+
+      module('my');
+      inject(function($compile, $rootScope) {
+        element = $compile('<div><div ng-if="t"><d1></d1></div></div>')($rootScope);
+        $rootScope.t = true;
+        $rootScope.$apply();
+
+        $rootScope.t = false;
+        $rootScope.$apply();
+
+        expect(Controller1.prototype.$onDestroy).toHaveBeenCalledOnce();
+      });
+    });
+
+    it('should call `controller.$onDestroy`, when provided after controller initialization', function() {
+
+      function Controller1() {
+        this.setDestroy = function() {
+          Controller1.prototype.$onDestroy = jasmine.createSpy('$onDestroy');
+        };
+      }
+
+      angular.module('my', [])
+        .directive('d1', valueFn({ controller: Controller1 }));
+
+      module('my');
+      inject(function($compile, $rootScope) {
+        element = $compile('<div d1></div>')($rootScope);
+        element.controller('d1').setDestroy();
+        element.remove();
+        expect(Controller1.prototype.$onDestroy).toHaveBeenCalledOnce();
+      });
+    });
+
     describe('should not overwrite @-bound property each digest when not present', function() {
       it('when creating new scope', function() {
         module(function($compileProvider) {
@@ -5741,6 +5819,8 @@ describe('$compile', function() {
         siblingController = this.friend;
       };
       spyOn(MeController.prototype, '$onInit').andCallThrough();
+      MeController.prototype.$onDestroy = function() {};
+      spyOn(MeController.prototype, '$onDestroy').andCallThrough();
 
       angular.module('my', [])
         .directive('me', function() {
@@ -5770,8 +5850,12 @@ describe('$compile', function() {
       inject(function($compile, $rootScope, meDirective) {
         element = $compile('<parent><me sibling></me></parent>')($rootScope);
         expect(MeController.prototype.$onInit).toHaveBeenCalled();
+        expect(MeController.prototype.$onDestroy).not.toHaveBeenCalled();
         expect(parentController).toEqual(jasmine.any(ParentController));
         expect(siblingController).toEqual(jasmine.any(SiblingController));
+        element.remove();
+        expect(MeController.prototype.$onDestroy).toHaveBeenCalled();
+
       });
     });
 
@@ -5787,6 +5871,8 @@ describe('$compile', function() {
         siblingController = this.friend;
       };
       spyOn(MeController.prototype, '$onInit').andCallThrough();
+      MeController.prototype.$onDestroy = function() {};
+      spyOn(MeController.prototype, '$onDestroy').andCallThrough();
 
       angular.module('my', [])
         .directive('me', function() {
@@ -5814,8 +5900,12 @@ describe('$compile', function() {
       inject(function($compile, $rootScope, meDirective) {
         element = $compile('<parent><me sibling></me></parent>')($rootScope);
         expect(MeController.prototype.$onInit).toHaveBeenCalled();
+        expect(MeController.prototype.$onDestroy).not.toHaveBeenCalled();
         expect(parentController).toBeUndefined();
         expect(siblingController).toBeUndefined();
+        element.remove();
+        expect(MeController.prototype.$onDestroy).toHaveBeenCalled();
+
       });
     });
 
@@ -5830,9 +5920,12 @@ describe('$compile', function() {
           $onInit: function() {
             parentController = this.container;
             siblingController = this.friend;
-          }
+          },
+          $onDestroy: function() {}
         };
         spyOn(meController, '$onInit').andCallThrough();
+        spyOn(meController, '$onDestroy').andCallThrough();
+
         return meController;
       }
 
@@ -5864,8 +5957,11 @@ describe('$compile', function() {
       inject(function($compile, $rootScope, meDirective) {
         element = $compile('<parent><me sibling></me></parent>')($rootScope);
         expect(meController.$onInit).toHaveBeenCalled();
+        expect(meController.$onDestroy).not.toHaveBeenCalled();
         expect(parentController).toEqual(jasmine.any(ParentController));
         expect(siblingController).toEqual(jasmine.any(SiblingController));
+        element.remove();
+        expect(meController.$onDestroy).toHaveBeenCalled();
       });
     });
 
