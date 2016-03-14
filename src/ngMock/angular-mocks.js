@@ -1799,6 +1799,10 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
    * ```js
    *   afterEach($httpBackend.verifyNoOutstandingExpectation);
    * ```
+   *
+   * @param {boolean=} digest Whether to perform a `$rootScope.$digest()` (default is `true`).
+   *   If performing `verifyNoOutstandingExpectation` after a `flush` (which also performs
+   *   a digest), you can pass in `false` to prevent digest-in-progress errors.
    */
   $httpBackend.verifyNoOutstandingExpectation = function(digest) {
     if (digest !== false) $rootScope.$digest();
