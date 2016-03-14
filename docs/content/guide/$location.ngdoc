@@ -330,8 +330,8 @@ reload to the original link.
 ### Relative links
 
 Be sure to check all relative links, images, scripts etc. Angular requires you to specify the url
-base in the head of your main html file (`<base href="/my-base">`) unless `html5Mode.requireBase` is
-set to `false` in the html5Mode definition object passed to `$locationProvider.html5Mode()`. With
+base in the head of your main html file (`<base href="/my-base/index.html">`) unless `html5Mode.requireBase`
+is set to `false` in the html5Mode definition object passed to `$locationProvider.html5Mode()`. With
 that, relative urls will always be resolved to this base url, even if the initial url of the
 document was different.
 
@@ -339,12 +339,27 @@ There is one exception: Links that only contain a hash fragment (e.g. `<a href="
 will only change `$location.hash()` and not modify the url otherwise. This is useful for scrolling
 to anchors on the same page without needing to know on which page the user currently is.
 
+
 ### Server side
 
 Using this mode requires URL rewriting on server side, basically you have to rewrite all your links
 to entry point of your application (e.g. index.html). Requiring a `<base>` tag is also important for
 this case, as it allows Angular to differentiate between the part of the url that is the application
 base and the path that should be handled by the application.
+
+### Base href constraints
+
+The `$location` service is not able to function properly if the current URL is outside the URL given
+as the base href. This can have subtle confusing consequencies...
+
+Consider a base href set as follows: `<base href="/base/">` (i.e. the application exists in the "folder"
+called `/base`). The URL `/base` is actually outside the application (it refers to the `base` file found
+in the root `/` folder).
+
+If you wish to be able to navigate to the application via a URL such as `/base` then you should ensure that
+you server is setup to redirect such requests to `/base/`.
+
+See https://github.com/angular/angular.js/issues/14018 for more information.
 
 ### Sending links among different browsers
 
