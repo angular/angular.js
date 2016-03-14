@@ -956,9 +956,9 @@ respectively.
 
 **How do I prevent navigation from occurring?**
 
-Each **Component** can provide the `$routerCanActivate` and `$routerCanDeactivate` **Lifecycle Hooks**. The
-`$routerCanDeactivate` hook is an instance method on the **Component**. The `$routerCanActivate` hook is a
-static method defined on either the **Component Definition Object** or the **Component's** constructor function.
+Each **Component** can provide the `$canActivate` and `$routerCanDeactivate` **Lifecycle Hooks**. The
+`$routerCanDeactivate` hook is an instance method on the **Component**. The `$canActivate` hook is used as a
+static method defined on the **Component Definition Object**.
 
 The **Router** will call these hooks to control navigation from one **Route** to another. Each of these hooks can
 return a `boolean` or a Promise that will resolve to a `boolean`.
@@ -966,7 +966,7 @@ return a `boolean` or a Promise that will resolve to a `boolean`.
 During a navigation, some **Components** will become inactive and some will become active. Before the navigation
 can complete, all the **Components** must agree that they can be deactivated or activated, respectively.
 
-The **Router** will call the `$routerCanDeactivate` and `$routerCanActivate` hooks, if they are provided. If any
+The **Router** will call the `$routerCanDeactivate` and `$canActivate` hooks, if they are provided. If any
 of the hooks resolve to `false` then the navigation is cancelled.
 
 ### Dialog Box Service
