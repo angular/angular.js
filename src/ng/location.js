@@ -514,7 +514,7 @@ var locationPrototype = {
    * @param {string|Object.<string>|Object.<Array.<string>>} search New search params - string or
    * hash object.
    *
-   * When called with a single argument the method acts as a setter, setting the `search` component
+   * When called with a single argument, the method acts as a setter, setting the `search` component
    * of `$location` to the specified value.
    *
    * If the argument is a hash object containing an array of values, these values will be encoded
