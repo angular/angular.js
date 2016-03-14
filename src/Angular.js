@@ -778,7 +778,7 @@ function arrayRemove(array, value) {
 
       $scope.reset = function() {
         // Example with 2 arguments
-        angular.copy($scope.master, $scope.user);
+        angular.copy({}, $scope.user);
       };
 
       $scope.reset();
