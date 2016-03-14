@@ -32,7 +32,7 @@
  * | {@link ng.directive:ngHide ngHide}          | aria-hidden                                                                            |
  * | {@link ng.directive:ngDblclick ngDblclick}  | tabindex                                                                               |
  * | {@link module:ngMessages ngMessages}        | aria-live                                                                              |
- * | {@link ng.directive:ngClick ngClick}        | tabindex, keypress event, button role                                                  |
+ * | {@link ng.directive:ngClick ngClick}        | tabindex, keydown event, keyup event, keypress event, button role                      |
  *
  * Find out more information about each directive by reading the
  * {@link guide/accessibility ngAria Developer Guide}.
@@ -96,7 +96,7 @@ function $AriaProvider() {
     ariaInvalid: true,
     ariaValue: true,
     tabindex: true,
-    bindKeypress: true,
+    bindKeyEvents: true,
     bindRoleForClick: true
   };
 
@@ -113,7 +113,7 @@ function $AriaProvider() {
    *  - **ariaInvalid** – `{boolean}` – Enables/disables aria-invalid tags
    *  - **ariaValue** – `{boolean}` – Enables/disables aria-valuemin, aria-valuemax and aria-valuenow tags
    *  - **tabindex** – `{boolean}` – Enables/disables tabindex tags
-   *  - **bindKeypress** – `{boolean}` – Enables/disables keypress event binding on `div` and
+   *  - **bindKeyEvents** – `{boolean}` – Enables/disables keyboard event binding on `div` and
    *    `li` elements with ng-click
    *  - **bindRoleForClick** – `{boolean}` – Adds role=button to non-interactive elements like `div`
    *    using ng-click, making them more accessible to users of assistive technologies
@@ -364,8 +364,8 @@ ngAriaModule.directive('ngShow', ['$aria', function($aria) {
             elem.attr('tabindex', 0);
           }
 
-          if ($aria.config('bindKeypress') && !attr.ngKeypress) {
-            elem.on('keypress', function(event) {
+          if ($aria.config('bindKeyEvents') && !attr.ngKeypress && !attr.ngKeydown && !attr.ngKeyup) {
+            elem.on('keydown', function(event) {
               var keyCode = event.which || event.keyCode;
               if (keyCode === 32 || keyCode === 13) {
                 scope.$apply(callback);
