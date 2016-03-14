@@ -2191,5 +2191,71 @@ describe("animations", function() {
         });
     });
 
+    describe('when animations are skipped', function() {
+
+      var overriddenAnimationRunner;
+      var capturedAnimation;
+      var capturedAnimationHistory;
+      var defaultFakeAnimationRunner;
+      var parent;
+      var parent2;
+
+      beforeEach(module(function($provide) {
+        overriddenAnimationRunner = null;
+        capturedAnimation = null;
+        capturedAnimationHistory = [];
+
+        $provide.value('$$animation', function() {
+          capturedAnimationHistory.push(capturedAnimation = arguments);
+          return overriddenAnimationRunner || defaultFakeAnimationRunner;
+        });
+
+        return function($rootElement, $q, $animate, $$AnimateRunner, $document) {
+          defaultFakeAnimationRunner = new $$AnimateRunner();
+          $animate.enabled(true);
+
+          element = jqLite('<div class="element">element</div>');
+          parent = jqLite('<div class="parent1">parent</div>');
+          parent2 = jqLite('<div class="parent2">parent</div>');
+
+          $rootElement.append(parent);
+          $rootElement.append(parent2);
+          jqLite($document[0].body).append($rootElement);
+        };
+      }));
+
+
+      it('should trigger all callbacks if a follow-up structural animation takes over a running animation',
+        inject(function($animate, $rootScope) {
+
+        parent.append(element);
+        var moveSpy = jasmine.createSpy();
+        var leaveSpy = jasmine.createSpy();
+
+        $animate.on('move', parent2, moveSpy);
+        $animate.on('leave', parent2, leaveSpy);
+
+        $animate.move(element, parent2);
+
+        $rootScope.$digest();
+        $animate.flush();
+
+        expect(moveSpy.callCount).toBe(1);
+        expect(moveSpy.calls[0].args[1]).toBe('start');
+
+        $animate.leave(element);
+        $rootScope.$digest();
+        $animate.flush();
+
+        expect(moveSpy.callCount).toBe(2);
+        expect(moveSpy.calls[1].args[1]).toBe('close');
+
+        expect(leaveSpy.callCount).toBe(2);
+        expect(leaveSpy.calls[0].args[1]).toBe('start');
+        expect(leaveSpy.calls[1].args[1]).toBe('close');
+      }));
+
+    });
+
   });
 });
