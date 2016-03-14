@@ -771,7 +771,7 @@ describe('ngOptions', function() {
       });
 
 
-      it('should not select disabled options when model changes', function() {
+      it('should select disabled options when model changes', function() {
         scope.options = [
           { name: 'white', value: '#FFFFFF' },
           { name: 'one', value: 1, unavailable: true },
@@ -792,11 +792,14 @@ describe('ngOptions', function() {
         scope.$apply('selected = 1');
         options = element.find('option');
 
-        expect(element.val()).toEqualUnknownValue('?');
-        expect(options.length).toEqual(5);
-        expect(options.eq(0).prop('selected')).toEqual(true);
+        // jQuery returns null for val() when the option is disabled, see
+        // https://bugs.jquery.com/ticket/13097
+        expect(element[0].value).toBe('number:1');
+        expect(options.length).toEqual(4);
+        expect(options.eq(0).prop('selected')).toEqual(false);
+        expect(options.eq(1).prop('selected')).toEqual(true);
         expect(options.eq(2).prop('selected')).toEqual(false);
-        expect(options.eq(4).prop('selected')).toEqual(false);
+        expect(options.eq(3).prop('selected')).toEqual(false);
       });
 
 
@@ -816,11 +819,14 @@ describe('ngOptions', function() {
         scope.$apply('selected = 1');
         var options = element.find('option');
 
-        expect(element.val()).toEqualUnknownValue('?');
-        expect(options.length).toEqual(5);
-        expect(options.eq(0).prop('selected')).toEqual(true);
+        // jQuery returns null for val() when the option is disabled, see
+        // https://bugs.jquery.com/ticket/13097
+        expect(element[0].value).toBe('number:1');
+        expect(options.length).toEqual(4);
+        expect(options.eq(0).prop('selected')).toEqual(false);
+        expect(options.eq(1).prop('selected')).toEqual(true);
         expect(options.eq(2).prop('selected')).toEqual(false);
-        expect(options.eq(4).prop('selected')).toEqual(false);
+        expect(options.eq(3).prop('selected')).toEqual(false);
 
         // Now enable that option
         scope.$apply(function() {
@@ -861,7 +867,7 @@ describe('ngOptions', function() {
       });
 
 
-      it('should not select disabled options when model changes', function() {
+      it('should select disabled options when model changes', function() {
         scope.options = [
           { name: 'a', value: 0 },
           { name: 'b', value: 1, unavailable: true },
@@ -886,14 +892,14 @@ describe('ngOptions', function() {
         scope.$apply('selected = [1,3]');
         options = element.find('option');
         expect(options.eq(0).prop('selected')).toEqual(false);
-        expect(options.eq(1).prop('selected')).toEqual(false);
+        expect(options.eq(1).prop('selected')).toEqual(true);
         expect(options.eq(2).prop('selected')).toEqual(false);
         expect(options.eq(3).prop('selected')).toEqual(true);
 
         // Now only select the disabled option
         scope.$apply('selected = [1]');
         expect(options.eq(0).prop('selected')).toEqual(false);
-        expect(options.eq(1).prop('selected')).toEqual(false);
+        expect(options.eq(1).prop('selected')).toEqual(true);
         expect(options.eq(2).prop('selected')).toEqual(false);
         expect(options.eq(3).prop('selected')).toEqual(false);
       });
@@ -917,7 +923,7 @@ describe('ngOptions', function() {
         var options = element.find('option');
 
         expect(options.eq(0).prop('selected')).toEqual(false);
-        expect(options.eq(1).prop('selected')).toEqual(false);
+        expect(options.eq(1).prop('selected')).toEqual(true);
         expect(options.eq(2).prop('selected')).toEqual(false);
         expect(options.eq(3).prop('selected')).toEqual(false);
 
@@ -2533,37 +2539,6 @@ describe('ngOptions', function() {
       expect(element.find('option').length).toEqual(2);
       expect(element.find('option')[0].selected).toBeTruthy();
       expect(element.find('option')[1].selected).toBeTruthy();
-    });
-
-    it('should not write disabled selections from model', function() {
-      scope.selected = [30];
-      scope.options = [
-        { name: 'white', value: '#FFFFFF' },
-        { name: 'one', value: 1, unavailable: true },
-        { name: 'notTrue', value: false },
-        { name: 'thirty', value: 30, unavailable: false }
-      ];
-      createSelect({
-        'ng-options': 'o.value as o.name disable when o.unavailable for o in options',
-        'ng-model': 'selected',
-        'multiple': true
-      });
-
-      var options = element.find('option');
-
-      expect(options.eq(0).prop('selected')).toEqual(false);
-      expect(options.eq(1).prop('selected')).toEqual(false);
-      expect(options.eq(2).prop('selected')).toEqual(false);
-      expect(options.eq(3).prop('selected')).toEqual(true);
-
-      scope.$apply(function() {
-        scope.selected.push(1);
-      });
-
-      expect(options.eq(0).prop('selected')).toEqual(false);
-      expect(options.eq(1).prop('selected')).toEqual(false);
-      expect(options.eq(2).prop('selected')).toEqual(false);
-      expect(options.eq(3).prop('selected')).toEqual(true);
     });
 
 
