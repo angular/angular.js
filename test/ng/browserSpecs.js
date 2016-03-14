@@ -48,7 +48,13 @@ function MockWindow(options) {
 
   this.fire = function(name) {
     forEach(events[name], function(fn) {
-      fn({type: name}); // type to make jQuery happy
+      // type/target to make jQuery happy
+      fn({
+        type: name,
+        target: {
+          nodeType: 1
+        }
+      });
     });
   };
 
