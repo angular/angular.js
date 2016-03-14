@@ -10,6 +10,14 @@
  * into the browser's console (if present).
  *
  * The main purpose of this service is to simplify debugging and troubleshooting.
+ * Also, all `$log` methods are applied directly to `console`, streamlining using
+ * `$log` methods as handler functions (e.g. for {@link ng.$http $http}):
+ *
+ * ```js
+ *   $http.get('/api/widgets')
+ *   .then(function (response) { use(response); })
+ *   .catch($log.error) // replaces `console.error.bind(console)` or a wrapping function
+ * ```
  *
  * The default is to log `debug` messages. You can use
  * {@link ng.$logProvider ng.$logProvider#debugEnabled} to change this.
