@@ -1548,6 +1548,25 @@ function angularInit(element, bootstrap) {
   }
 }
 
+
+/**
+ * @ngdoc function
+ * @name angular.info
+ * @module ng
+ * @returns { Object }
+ *    An object containing the info about a module or an empty object if
+ *    the module has not been defined.
+ * @description
+ * Get the info about a given module.
+ */
+function info(moduleName) {
+  try {
+    return angularModule(moduleName).info();
+  } catch (e) {
+    return {};
+  }
+}
+
 /**
  * @ngdoc function
  * @name angular.bootstrap

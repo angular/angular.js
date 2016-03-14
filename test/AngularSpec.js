@@ -1849,6 +1849,21 @@ describe('angular', function() {
     });
   });
 
+
+  describe('info', function() {
+    it('should return the additional info for the named module', function() {
+      angular.module('a', []).info({some: 'thing'});
+      angular.module('b', ['dep'], function configFn() {}).info({other: 'thang'});
+
+      expect(info('a')).toEqual({some: 'thing'});
+      expect(info('b')).toEqual({other: 'thang'});
+    });
+
+    it('should return anh empty object if there is no such module', function() {
+      expect(info('no-such-module')).toEqual({});
+    });
+  });
+
   describe('bootstrap', function() {
     it('should bootstrap app', function() {
       var element = jqLite('<div>{{1+2}}</div>');

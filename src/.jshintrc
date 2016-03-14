@@ -81,6 +81,7 @@
     "encodeUriSegment": false,
     "encodeUriQuery": false,
     "angularInit": false,
+    "info": false,
     "bootstrap": false,
     "getTestability": false,
     "snake_case": false,
