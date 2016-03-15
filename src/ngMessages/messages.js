@@ -410,6 +410,13 @@ angular.module('ngMessages', [])
 
          $scope.$watchCollection($attrs.ngMessages || $attrs['for'], ctrl.render);
 
+         // If the element is destroyed, proactively destroy all the currently visible messages
+         $element.on('$destroy', function() {
+           forEach(messages, function(item) {
+             item.message.detach();
+           });
+         });
+
          this.reRender = function() {
            if (!renderLater) {
              renderLater = true;
@@ -444,6 +451,7 @@ angular.module('ngMessages', [])
          function findPreviousMessage(parent, comment) {
            var prevNode = comment;
            var parentLookup = [];
+
            while (prevNode && prevNode !== parent) {
              var prevKey = prevNode.$$ngMessageNode;
              if (prevKey && prevKey.length) {
@@ -455,8 +463,11 @@ angular.module('ngMessages', [])
              if (prevNode.childNodes.length && parentLookup.indexOf(prevNode) == -1) {
                parentLookup.push(prevNode);
                prevNode = prevNode.childNodes[prevNode.childNodes.length - 1];
+             } else if (prevNode.previousSibling) {
+               prevNode = prevNode.previousSibling;
              } else {
-               prevNode = prevNode.previousSibling || prevNode.parentNode;
+               prevNode = prevNode.parentNode;
+               parentLookup.push(prevNode);
              }
            }
          }
@@ -669,8 +680,8 @@ function ngMessageDirectiveFactory() {
                 // when we are destroying the node later.
                 var $$attachId = currentElement.$$attachId = ngMessagesCtrl.getAttachId();
 
-                // in the event that the parent element is destroyed
-                // by any other structural directive then it's time
+                // in the event that the element or a parent element is destroyed
+                // by another structural directive then it's time
                 // to deregister the message from the controller
                 currentElement.on('$destroy', function() {
                   if (currentElement && currentElement.$$attachId === $$attachId) {
