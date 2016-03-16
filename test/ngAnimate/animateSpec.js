@@ -1104,7 +1104,8 @@ describe("animations", function() {
         $animate.removeClass(element, 'active-class');
         $rootScope.$digest();
 
-        expect(doneHandler).toHaveBeenCalled();
+        // true = rejected
+        expect(doneHandler).toHaveBeenCalledWith(true);
       }));
 
       it('should cancel the previously running removeClass animation if a follow-up addClass animation is using the same class value',
@@ -1123,7 +1124,8 @@ describe("animations", function() {
         $animate.addClass(element, 'active-class');
         $rootScope.$digest();
 
-        expect(doneHandler).toHaveBeenCalled();
+        // true = rejected
+        expect(doneHandler).toHaveBeenCalledWith(true);
       }));
 
       it('should merge a follow-up animation that does not add classes into the previous animation (pre-digest)',
@@ -1198,6 +1200,29 @@ describe("animations", function() {
 
         expect(capturedAnimation[2].addClass).toBe('blue');
       }));
+
+      it('should NOT cancel a previously joined addClass+structural animation if a follow-up ' +
+        'removeClass animation is using the same class value (pre-digest)',
+        inject(function($animate, $rootScope) {
+
+        var runner = $animate.enter(element, parent);
+        $animate.addClass(element, 'active-class');
+
+        var doneHandler = jasmine.createSpy('enter done');
+        runner.done(doneHandler);
+
+        expect(doneHandler).not.toHaveBeenCalled();
+
+        $animate.removeClass(element, 'active-class');
+        $rootScope.$digest();
+
+        expect(capturedAnimation[1]).toBe('enter');
+        expect(capturedAnimation[2].addClass).toBe(null);
+        expect(capturedAnimation[2].removeClass).toBe(null);
+
+        expect(doneHandler).not.toHaveBeenCalled();
+      }));
+
     });
 
     describe('should merge', function() {

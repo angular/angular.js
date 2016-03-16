@@ -756,5 +756,43 @@ describe('ngAnimate integration tests', function() {
         expect(child.attr('style')).toContain('50px');
       });
     });
+
+
+    it('should execute the enter animation on a <form> with ngIf that has an ' +
+      '<input type="email" required>', function() {
+
+      var animationSpy = jasmine.createSpy();
+
+      module(function($animateProvider) {
+        $animateProvider.register('.animate-me', function() {
+          return {
+            enter: function(element, done) {
+              animationSpy();
+              done();
+            }
+          };
+        });
+      });
+
+      inject(function($animate, $rootScope, $compile) {
+
+        element = jqLite(
+          '<div>' +
+            '<form class="animate-me" ng-if="show">' +
+              '<input ng-model="myModel" type="email" required />' +
+            '</form>' +
+          '</div>');
+
+        html(element);
+
+        $compile(element)($rootScope);
+
+        $rootScope.show = true;
+        $rootScope.$digest();
+
+        $animate.flush();
+        expect(animationSpy).toHaveBeenCalled();
+      });
+    });
   });
 });
