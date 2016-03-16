@@ -392,10 +392,10 @@ describe('HTML', function() {
     describe('uri validation', function() {
       it('should call the uri validator', function() {
         writer.start('a', {href:'someUrl'}, false);
-        expect(uriValidator).toHaveBeenCalledWith('someUrl', false);
+        expect(uriValidator).toHaveBeenCalledWith('someUrl');
         uriValidator.calls.reset();
         writer.start('img', {src:'someImgUrl'}, false);
-        expect(uriValidator).toHaveBeenCalledWith('someImgUrl', true);
+        expect(uriValidator).toHaveBeenCalledWith('someImgUrl');
         uriValidator.calls.reset();
         writer.start('someTag', {src:'someNonUrl'}, false);
         expect(uriValidator).not.toHaveBeenCalled();
@@ -441,7 +441,7 @@ describe('HTML', function() {
         $$sanitizeUri.and.returnValue('someUri');
 
         expectHTML('<a href="someUri"></a>').toEqual('<a href="someUri"></a>');
-        expect($$sanitizeUri).toHaveBeenCalledWith('someUri', false);
+        expect($$sanitizeUri).toHaveBeenCalledWith('someUri');
 
         $$sanitizeUri.and.returnValue('unsafe:someUri');
         expectHTML('<a href="someUri"></a>').toEqual('<a></a>');
@@ -457,7 +457,7 @@ describe('HTML', function() {
         $$sanitizeUri.and.returnValue('someUri');
 
         expectHTML('<img src="someUri"/>').toEqual('<img src="someUri">');
-        expect($$sanitizeUri).toHaveBeenCalledWith('someUri', true);
+        expect($$sanitizeUri).toHaveBeenCalledWith('someUri');
 
         $$sanitizeUri.and.returnValue('unsafe:someUri');
         expectHTML('<img src="someUri"/>').toEqual('<img>');

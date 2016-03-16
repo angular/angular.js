@@ -118,7 +118,7 @@ describe('boolean attr directives', function() {
 describe('ngSrc', function() {
   it('should interpolate the expression and bind to src with raw same-domain value',
       inject(function($compile, $rootScope) {
-        var element = $compile('<div ng-src="{{id}}"></div>')($rootScope);
+        var element = $compile('<img ng-src="{{id}}"></div>')($rootScope);
 
         $rootScope.$digest();
         expect(element.attr('src')).toBeUndefined();
@@ -133,7 +133,7 @@ describe('ngSrc', function() {
 
 
   it('should interpolate the expression and bind to src with a trusted value', inject(function($compile, $rootScope, $sce) {
-    var element = $compile('<div ng-src="{{id}}"></div>')($rootScope);
+    var element = $compile('<iframe ng-src="{{id}}"></div>')($rootScope);
 
     $rootScope.$digest();
     expect(element.attr('src')).toBeUndefined();
@@ -147,14 +147,24 @@ describe('ngSrc', function() {
   }));
 
 
-  it('should NOT interpolate a multi-part expression for non-img src attribute', inject(function($compile, $rootScope) {
+  it('should NOT interpolate a multi-part expression for non-URL context src attribute', inject(function($compile, $rootScope) {
     expect(function() {
-      var element = $compile('<div ng-src="some/{{id}}"></div>')($rootScope);
+      var element = $compile('<iframe ng-src="some/{{id}}"></iframe>')($rootScope);
+      $rootScope.$apply(function() {
+        $rootScope.id = 1;
+      });
       dealoc(element);
     }).toThrowMinErr(
-          "$interpolate", "noconcat", "Error while interpolating: some/{{id}}\nStrict " +
-          "Contextual Escaping disallows interpolations that concatenate multiple expressions " +
-          "when a trusted value is required.  See http://docs.angularjs.org/api/ng.$sce");
+          "$interpolate", "noconcat", "Error");
+  }));
+
+  it('should interpolate a multi-part expression for img src attribute (URL context)', inject(function($compile, $rootScope) {
+    var element = $compile('<img ng-src="some/{{id}}"></img>')($rootScope);
+    expect(element.attr('src')).toBe(undefined);  // URL concatenations are all-or-nothing
+    $rootScope.$apply(function() {
+      $rootScope.id = 1;
+    });
+    expect(element.attr('src')).toEqual('some/1');
   }));
 
 
@@ -171,14 +181,13 @@ describe('ngSrc', function() {
 
   it('should NOT interpolate a wrongly typed expression', inject(function($compile, $rootScope, $sce) {
     expect(function() {
-      var element = $compile('<div ng-src="{{id}}"></div>')($rootScope);
+      var element = $compile('<iframe ng-src="{{id}}"></div>')($rootScope);
       $rootScope.$apply(function() {
         $rootScope.id = $sce.trustAsUrl('http://somewhere');
       });
       element.attr('src');
     }).toThrowMinErr(
-            "$interpolate", "interr", "Can't interpolate: {{id}}\nError: [$sce:insecurl] Blocked " +
-                "loading resource from url not allowed by $sceDelegate policy.  URL: http://somewhere");
+          "$interpolate", "interr", "Can't interpolate");
   }));
 
 
@@ -189,19 +198,19 @@ describe('ngSrc', function() {
           // then calling element.setAttribute('src', 'foo') doesn't do anything, so we need
           // to set the property as well to achieve the desired effect
 
-          var element = $compile('<div ng-src="{{id}}"></div>')($rootScope);
+          var element = $compile('<img ng-src="{{id}}"></div>')($rootScope);
 
           $rootScope.$digest();
           expect(element.prop('src')).toBeUndefined();
           dealoc(element);
 
-          element = $compile('<div ng-src="some/"></div>')($rootScope);
+          element = $compile('<img ng-src="some/"></div>')($rootScope);
 
           $rootScope.$digest();
           expect(element.prop('src')).toEqual('some/');
           dealoc(element);
 
-          element = $compile('<div ng-src="{{id}}"></div>')($rootScope);
+          element = $compile('<img ng-src="{{id}}"></div>')($rootScope);
           $rootScope.$apply(function() {
             $rootScope.id = $sce.trustAsResourceUrl('http://somewhere');
           });
@@ -215,7 +224,7 @@ describe('ngSrc', function() {
 
 describe('ngSrcset', function() {
   it('should interpolate the expression and bind to srcset', inject(function($compile, $rootScope) {
-    var element = $compile('<div ng-srcset="some/{{id}} 2x"></div>')($rootScope);
+    var element = $compile('<img ng-srcset="some/{{id}} 2x"></div>')($rootScope);
 
     $rootScope.$digest();
     expect(element.attr('srcset')).toBeUndefined();
@@ -239,7 +248,7 @@ describe('ngHref', function() {
 
 
   it('should interpolate the expression and bind to href', inject(function($compile, $rootScope) {
-    element = $compile('<div ng-href="some/{{id}}"></div>')($rootScope);
+    element = $compile('<a ng-href="some/{{id}}"></div>')($rootScope);
     $rootScope.$digest();
     expect(element.attr('href')).toEqual('some/');
 

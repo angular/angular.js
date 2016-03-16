@@ -149,7 +149,7 @@ function $SanitizeProvider() {
     return function(html) {
       var buf = [];
       htmlParser(html, htmlSanitizeWriter(buf, function(uri, isImage) {
-        return !/^unsafe:/.test($$sanitizeUri(uri, isImage));
+        return !/^unsafe:/.test($$sanitizeUri(uri));
       }));
       return buf.join('');
     };
@@ -445,7 +445,7 @@ function htmlSanitizeWriter(buf, uriValidator) {
           var lkey=angular.lowercase(key);
           var isImage = (tag === 'img' && lkey === 'src') || (lkey === 'background');
           if (validAttrs[lkey] === true &&
-            (uriAttrs[lkey] !== true || uriValidator(value, isImage))) {
+            (uriAttrs[lkey] !== true || uriValidator(value))) {
             out(' ');
             out(key);
             out('="');
