@@ -1105,6 +1105,21 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   stringBasedInputType(ctrl);
 }
 
+function isKanji(c) {
+    if (!c || c.length == 0) return false;
+    var code = c.charCodeAt(0);
+    if (code > 11904 && code < 12031) return true; //CJK Radicals Supplement
+    if (code > 12352 && code < 12543) return true; //Hiragana
+    if (code > 12736 && code < 19903) return true;
+    if (code > 19968 && code < 40959) return true; //CJK Unified Ideographs
+    if (code > 44032 && code < 55215) return true; //Hangul Syllables
+    if (code > 63744 && code < 64255) return true; //CJK Compatibility Ideographs
+    if (code > 65072 && code < 65103) return true; //CJK Compatibility Forms
+    if (code > 131072 && code < 173791) return true;
+    if (code > 194560 && code < 195103) return true;
+    return false;
+}
+
 function baseInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   var type = lowercase(element[0].type);
 
@@ -1112,10 +1127,13 @@ function baseInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   // hold the listener until composition is done.
   // More about composition events: https://developer.mozilla.org/en-US/docs/Web/API/CompositionEvent
   if (!$sniffer.android) {
-    var composing = false;
+    var composing = false,
+        msie11 = msie === 11,
+        isCJK = false;
 
     element.on('compositionstart', function(data) {
-      composing = true;
+      composing = !msie11 && true;
+      element.fire("compositionend");
     });
 
     element.on('compositionend', function() {
@@ -1131,7 +1149,7 @@ function baseInputType(scope, element, attr, ctrl, $sniffer, $browser) {
       $browser.defer.cancel(timeout);
       timeout = null;
     }
-    if (composing) return;
+    if (!msie11 && !isCJK && composing) return;
     var value = element.val(),
         event = ev && ev.type;
 
