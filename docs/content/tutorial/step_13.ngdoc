@@ -1,0 +1,435 @@
+@ngdoc tutorial
+@name 13 - Style Guide & Feature Folders
+@step 13
+@description
+
+<ul doc-tutorial-nav="13"></ul>
+
+In this final step, we will reorganize our application to prepare it for future development.
+
+The way we have organized code so far is to put all components in one file, all filters in
+another file, all services in a third file, and so on. This has worked relatively well,
+but if we plan to expand the application and maintain it for an extended period of time,
+it is likely to cause maintenance issues. If all components are in one file, the file is
+likely to get very large and it'll be difficult to navigate and find the code you're looking
+for.
+
+We can future-proof our code organization by applying a couple of tricks:
+
+* We'll organize our code by *feature area* instead of by function.
+* We'll put each part of the application in its own file, where it can be easily found.
+
+These principles are explained in great detail in the [Angular Style Guide][styleguide],
+which also contains many more techniques for effectively organizing Angular codebases.
+
+<div doc-tutorial-reset="13"></div>
+
+## Core Module and Services
+
+We now have a `core` subdirectory under `js` that contains common services that are used all across
+the application. At the moment we have two such services in particular: The `Phone` factory
+that currently resides in `services.js` and the `checkmark` filter that resides in `filters.js`.
+
+Inside the `core` folder there is a file that introduces a `phonecat.core` module:
+
+__`app/js/core/core.module.js`.__
+
+```js
+'use strict';
+
+angular.module('phonecat.core', ['ngResource']);
+```
+
+Since the `Phone` factory uses `ngResource`, it is defined as a dependency here.
+
+Also inside the `core` folder, there is a `phone.factory.js` file. This defines
+the `Phones` factory that was previously in `services.js` (which has been removed).
+The factory is added into the `phonecat.core` module:
+
+__`app/js/core/phone.factory.js`.__
+
+```js
+'use strict';
+
+angular.module('phonecat.core')
+  .factory('Phone', ['$resource',
+    function($resource) {
+      return $resource('phones/:phoneId.json', {}, {
+        query: {method:'GET', params:{phoneId:'phones'}, isArray:true}
+      });
+    }]);
+```
+
+The third file under `core` is `checkmark.filter.js`. It registers the `checkmark`
+filter and replaces the old `filters.js` file.
+
+__`app/js/core/checkmark.filter.js`.__
+
+```js
+'use strict';
+
+angular.module('phonecat.core').filter('checkmark', function() {
+  return function(input) {
+    return input ? '\u2713' : '\u2718';
+  };
+});
+```
+
+## Phone List Component Module
+
+In the new `phone_list` subdirectory there are four files:
+
+* `phone_list.module.js`
+* `phone_list.component.js`
+* `phone_list.controller.js`
+* `phone_list.template.html`
+
+These are all the constituent parts that make up the `phoneList` component, conveniently
+located in the same place and named consistently.
+
+The `phone_list.template.html` file is the same template that the component has previously,
+moved here from the `partials` directory.
+
+The module file introduces the component module. It has a dependency to the `phonecat.core`
+module because the component needs the `Phone` service from that module:
+
+__`app/js/phone_list/phone_list.module.js`.__
+
+```js
+'use strict';
+
+angular.module('phonecat.phoneList', ['phonecat.core']);
+```
+
+The component file adds the component definition to the module. This was previously
+in `components.js`:
+
+__`app/js/phone_list/phone_list.component.js`.__
+
+```js
+'use strict';
+
+angular.module('phonecat.phoneList')
+  .component('phoneList', {
+    controller: 'PhoneListCtrl',
+    templateUrl: 'js/phone_list/phone_list.html'
+  });
+```
+
+Note that we've changed the value of the `templateUrl` attribute because of the changed
+location of the component template.
+
+The controller file adds the component controller. This also was previously in
+`components.js`:
+
+__`app/js/phone_list/phone_list.component.js`.__
+
+```js
+'use strict';
+
+angular.module('phonecat.phoneList').controller('PhoneListCtrl',
+  ['Phone', function (Phone) {
+    this.phones = Phone.query();
+    this.orderProp = 'age';
+  }]);
+```
+
+## Phone Detail Component Module
+
+In the new `phone_detail` subdirectory we have five files:
+
+* `phone_detail.module.js`
+* `phone_detail.component.js`
+* `phone_detail.controller.js`
+* `phone_detail.template.html`
+* `phone.animation.js`
+
+These are the parts that make up the `phoneDetail` component, augmented by the
+JavaScript animation that we are using in that component.
+
+Again, the template file `phone_detail.template.html` is just the existing
+template, moved here from the `partials` directory.
+
+The module file introduces the module. It depends on `phonecat.core` for the
+`Phone` service, on `ngAnimate` for the JavaScript animation, and on `ngRoute`
+for the `$routeParams` dependency used in the controller.
+
+__`app/js/phone_detail/phone_detail.module.js`.__
+
+```js
+'use strict';
+
+angular.module('phonecat.phoneDetail', [
+  'ngAnimate',
+  'ngRoute',
+  'phonecat.core'
+]);
+```
+
+The component file registers the `phoneDetail` component definition:
+
+__`app/js/phone_detail/phone_detail.component.js`.__
+
+```js
+'use strict';
+
+angular.module('phonecat.phoneDetail').component('phoneDetail', {
+    controller: 'PhoneDetailCtrl',
+    templateUrl: 'js/phone_detail/phone_detail.html'
+  });
+```
+
+Here also we have changed the component's `templateUrl` to point to this
+new component directory.
+
+The controller file registers the component controller:
+
+__`app/js/phone_detail/phone_detail.controller.js`.__
+
+```js
+'use strict';
+
+angular.module('phonecat.phoneDetail').controller('PhoneDetailCtrl',
+  ['$routeParams', 'Phone', function($routeParams, Phone) {
+    var ctrl = this;
+    ctrl.phone = Phone.get({phoneId: $routeParams.phoneId}, function(phone) {
+      ctrl.mainImageUrl = phone.images[0];
+    });
+
+    ctrl.setImage = function(imageUrl) {
+      ctrl.mainImageUrl = imageUrl;
+    };
+  }]);
+```
+
+The `phone.animation.js` file registers the JavaScript animation. The code
+here is the same as what used to be in `animations.js`, the only difference
+being the Angular module into which the animation is registered. It is now
+in the phone detail component module:
+
+__`app/js/phone_detail/phone.animation.js`.__
+
+```js
+'use strict';
+
+angular.module('phonecat.phoneDetail').animation('.phone', function() {
+
+  var animateUp = function(element, className, done) {
+    // ...
+  }
+
+  var animateDown = function(element, className, done) {
+    // ...
+  }
+
+  return {
+    addClass: animateUp,
+    removeClass: animateDown
+  };
+});
+```
+
+## Main module and `index.html`
+
+Since the module structure of the application has changed, the dependencies of
+the main application module have changed as well. It no longer requires
+functional area modules like `phonecatServices` or `phonecatComponents`.
+Instead it requires the new feature area modules we have introduced. Also, to match
+our new file naming scheme, the name of the main module file has been renamed
+from `app.js` to `app.module.js`:
+
+__`app/js/app.module.js`.__
+
+```js
+var phonecatApp = angular.module('phonecatApp', [
+  'ngRoute',
+  'phonecat.core',
+  'phonecat.phoneList',
+  'phonecat.phoneDetail'
+]);
+```
+
+Also, in `index.html` the loaded files have changed. We need to replace the
+previous `<script>` tags with ones that match our new code structure:
+
+__`app/index.html`.__
+
+```html
+<script src="js/app.module.js"></script>
+<script src="js/core/core.module.js"></script>
+<script src="js/core/phone.factory.js"></script>
+<script src="js/core/checkmark.filter.js"></script>
+<script src="js/phone_list/phone_list.module.js"></script>
+<script src="js/phone_list/phone_list.component.js"></script>
+<script src="js/phone_list/phone_list.controller.js"></script>
+<script src="js/phone_detail/phone_detail.module.js"></script>
+<script src="js/phone_detail/phone_detail.component.js"></script>
+<script src="js/phone_detail/phone_detail.controller.js"></script>
+<script src="js/phone_detail/phone.animation.js"></script>
+```
+
+## Tests
+
+Our E2E Protractor test suite does not require any changes at this point. That's because
+it just uses the application UI and does not care how it's structured internally.
+
+Unit tests, on the other hand, need some work. We'll want to organize our unit test code
+so that it matches our application code as closely as possible. That means we want to have
+the tests of each service, filter, and controller in its own file, whose name matches the
+application code file.
+
+`filtersSpec.js` has been renamed to `checkmark.filter.spec.js`. It only loads the core
+module and only tests the checkmark filter:
+
+__`test/unit/checkmark.filter.spec.js`.__
+
+```js
+'use strict';
+
+describe('checkmarkFilter', function() {
+
+  beforeEach(module('phonecat.core'));
+
+  it('should convert boolean values to unicode checkmark or cross',
+      inject(function(checkmarkFilter) {
+    expect(checkmarkFilter(true)).toBe('\u2713');
+    expect(checkmarkFilter(false)).toBe('\u2718');
+  }));
+});
+```
+
+Likewise, `servicesSpec.js` is now `phone.factory.spec.js`. It also only loads the core
+module and only tests the phone factory:
+
+__`test/unit/phone.factory.spec.js`.__
+
+```js
+'use strict';
+
+describe('Phone', function() {
+
+  // load modules
+  beforeEach(module('phonecat.core'));
+
+  // Test service availability
+  it('check the existence of Phone factory', inject(function(Phone) {
+      expect(Phone).toBeDefined();
+    }));
+});
+```
+
+The `controllersSpec.js` file has been split into two: `phone_list.controller.spec.js` and
+`phone_detail.controller.spec.js`. The list controller spec has the tests for that
+controller. It only loads the phone list module:
+
+__`test/unit/phone_list.controller.spec.js`.__
+
+```js
+'use strict';
+
+describe('PhoneListCtrl', function() {
+
+  var ctrl, $httpBackend;
+
+  beforeEach(function(){
+    jasmine.addCustomEqualityTester(angular.equals);
+  });
+
+  beforeEach(module('phonecat.phoneList'));
+
+  beforeEach(inject(function(_$httpBackend_, $controller) {
+    $httpBackend = _$httpBackend_;
+    $httpBackend.expectGET('phones/phones.json').
+        respond([{name: 'Nexus S'}, {name: 'Motorola DROID'}]);
+
+    ctrl = $controller('PhoneListCtrl');
+  }));
+
+  it('should create "phones" model with 2 phones fetched from xhr', function() {
+    expect(ctrl.phones).toEqual([]);
+    $httpBackend.flush();
+
+    expect(ctrl.phones).toEqual(
+        [{name: 'Nexus S'}, {name: 'Motorola DROID'}]);
+  });
+
+  it('should set the default value of orderProp model', function() {
+    expect(ctrl.orderProp).toBe('age');
+  });
+
+});
+```
+
+The phone detail spec file contains the rest of the tests that used to be in
+`controllersSpec.js` - the ones for the phone details controller:
+
+__`test/unit/phone_detail.controller.spec.js`.__
+
+```js
+'use strict';
+
+describe('PhoneDetailCtrl', function() {
+
+  var $httpBackend, ctrl,
+    xyzPhoneData = function() {
+      return {
+        name: 'phone xyz',
+            images: ['image/url1.png', 'image/url2.png']
+      }
+    };
+
+  beforeEach(function() {
+    jasmine.addCustomEqualityTester(angular.equals);
+  });
+
+  beforeEach(module('phonecat.phoneDetail'));
+
+  beforeEach(inject(function(_$httpBackend_, $routeParams, $controller) {
+    $httpBackend = _$httpBackend_;
+    $httpBackend.expectGET('phones/xyz.json').respond(xyzPhoneData());
+
+    $routeParams.phoneId = 'xyz';
+    ctrl = $controller('PhoneDetailCtrl');
+  }));
+
+
+  it('should fetch phone detail', function() {
+    expect(ctrl.phone).toEqual({});
+    $httpBackend.flush();
+
+    expect(ctrl.phone).toEqual(xyzPhoneData());
+  });
+});
+```
+
+The final change we need for our unit tests is to tweak the load order used
+by Karma when it loads all the application files. It is important to load the
+module file of each of our modules first, and only then load all the component
+files that register things into that module. We can make this work easily because
+of the file naming scheme we're using. We can instruct it to first load all
+the application files that have `.module.js` in their name, and after that all
+the ones that don't:
+
+__`test/unit/karma.conf.js`.__
+
+```js
+files : [
+  'app/bower_components/angular/angular.js',
+  'app/bower_components/angular-route/angular-route.js',
+  'app/bower_components/angular-resource/angular-resource.js',
+  'app/bower_components/angular-animate/angular-animate.js',
+  'app/bower_components/angular-mocks/angular-mocks.js',
+  'app/js/**/*.module.js',
+  'app/js/**/*.!(module).js',
+  'test/unit/**/*.js'
+],
+```
+
+
+# Summary
+
+There you have it!  We have created a web app in a relatively short amount of time and organized
+it in a way that makes it very easy to extend in the future. In the {@link the_end closing notes}
+we'll cover where to go from here.
+
+[styleguide]: https://github.com/johnpapa/angular-styleguide

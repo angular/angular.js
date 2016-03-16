@@ -39,7 +39,7 @@ __`app/js/app.js`:__
 
 ```js
 ...
-angular.module('phonecatApp', ['ngRoute','phonecatControllers','phonecatFilters']);
+angular.module('phonecatApp', ['ngRoute','phonecatComponents','phonecatFilters']);
 ...
 ```
 
@@ -53,7 +53,7 @@ __`app/index.html`:__
 
 ```html
 ...
- <script src="js/controllers.js"></script>
+ <script src="js/components.js"></script>
  <script src="js/filters.js"></script>
 ...
 ```
@@ -72,9 +72,9 @@ __`app/partials/phone-detail.html`:__
 ...
     <dl>
       <dt>Infrared</dt>
-      <dd>{{phone.connectivity.infrared | checkmark}}</dd>
+      <dd>{{$ctrl.phone.connectivity.infrared | checkmark}}</dd>
       <dt>GPS</dt>
-      <dd>{{phone.connectivity.gps | checkmark}}</dd>
+      <dd>{{$ctrl.phone.connectivity.gps | checkmark}}</dd>
     </dl>
 ...
 ```
@@ -82,7 +82,7 @@ __`app/partials/phone-detail.html`:__
 
 ## Test
 
-Filters, like any other component, should be tested and these tests are very easy to write.
+Filters, like any other code, should be tested and these tests are very easy to write.
 
 __`test/unit/filtersSpec.js`:__
 

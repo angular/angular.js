@@ -29,9 +29,10 @@ When you finish the tutorial you will be able to:
 * Use data binding to wire up your data model to your views.
 * Create and run unit tests, with Karma.
 * Create and run end to end tests, with Protractor.
-* Move application logic out of the template and into Controllers.
+* Move application logic out of the template and into components and controllers.
 * Get data from a server using Angular services.
 * Apply animations to your application, using ngAnimate.
+* Organize your application code for larger projects.
 * Identify resources for learning more about AngularJS.
 
 The tutorial guides you through the entire process of building a simple application, including

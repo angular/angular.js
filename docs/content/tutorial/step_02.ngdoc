@@ -7,12 +7,12 @@
 
 
 Now it's time to make the web page dynamic — with AngularJS. We'll also add a test that verifies the
-code for the controller we are going to add.
+code for the component we are going to add.
 
 There are many ways to structure the code for an application. For Angular apps, we encourage the use of
 [the Model-View-Controller (MVC) design pattern](http://en.wikipedia.org/wiki/Model–View–Controller)
 to decouple the code and to separate concerns. With that in mind, let's use a little Angular and
-JavaScript to add model, view, and controller components to our app.
+JavaScript to add models, views, and controllers to our app.
 
 - The list of three phones is now generated dynamically from data
 
@@ -25,7 +25,31 @@ In Angular, the __view__ is a projection of the model through the HTML __templat
 whenever the model changes, Angular refreshes the appropriate binding points, which updates the
 view.
 
-The view component is constructed by Angular from this template:
+The view is constructed by Angular from this template.
+
+__`app/partials/phone-list.html`:__
+
+```html
+<ul>
+  <li ng-repeat="phone in $ctrl.phones">
+    <span>{{phone.name}}</span>
+    <p>{{phone.snippet}}</p>
+  </li>
+</ul>
+```
+
+Instead of a hard-coded phone list we've used the {@link ng.directive:ngRepeat ngRepeat directive}
+and two {@link guide/expression Angular expressions}:
+
+* The `ng-repeat="phone in $ctrl.phones"` attribute in the `<li>` tag is an Angular repeater directive.
+The repeater tells Angular to create a `<li>` element for each phone in the list using the `<li>`
+tag as the template.
+* The expressions wrapped in curly braces (`{{phone.name}}` and `{{phone.snippet}}`) will be replaced
+by the value of the expressions. The expressions denote bindings that refer to our application model,
+which is set up in our controller.
+
+In `index.html` we no longer have the hard-coded phone list. Instead we are using a `<phone-list>`
+component element:
 
 __`app/index.html`:__
 
@@ -34,58 +58,36 @@ __`app/index.html`:__
 <head>
   ...
   <script src="bower_components/angular/angular.js"></script>
-  <script src="js/controllers.js"></script>
+  <script src="js/components.js"></script>
 </head>
-<body ng-controller="PhoneListCtrl">
-
-  <ul>
-    <li ng-repeat="phone in phones">
-      <span>{{phone.name}}</span>
-      <p>{{phone.snippet}}</p>
-    </li>
-  </ul>
-
+<body>
+  <phone-list></phone-list>
 </body>
 </html>
 ```
 
-We replaced the hard-coded phone list with the {@link ng.directive:ngRepeat ngRepeat directive}
-and two {@link guide/expression Angular expressions}:
-
-* The `ng-repeat="phone in phones"` attribute in the `<li>` tag is an Angular repeater directive.
-The repeater tells Angular to create a `<li>` element for each phone in the list using the `<li>`
-tag as the template.
-* The expressions wrapped in curly braces (`{{phone.name}}` and `{{phone.snippet}}`) will be replaced
-by the value of the expressions.
-
-We have added a new directive, called `ng-controller`, which attaches a `PhoneListCtrl`
-__controller__ to the &lt;body&gt; tag.  At this point:
-
-* The expressions in curly braces (`{{phone.name}}` and `{{phone.snippet}}`) denote
-bindings, which are referring to our application model, which is set up in our `PhoneListCtrl`
-controller.
-
 <div class="alert alert-info">
 Note: We have specified an {@link angular.Module Angular Module} to load using `ng-app="phonecatApp"`,
-where `phonecatApp` is the name of our module.  This module will contain the `PhoneListCtrl`.
+where `phonecatApp` is the name of our module.  This module will contain the phone list component.
 </div>
 
-<img class="diagram" src="img/tutorial/tutorial_02.png">
-
-## Model and Controller
+## Component, Model, and Controller
 
 The data __model__ (a simple array  of phones in object literal notation) is now instantiated within
-the `PhoneListCtrl` __controller__. The __controller__ is simply a constructor function that takes a
-`$scope` parameter:
+the `PhoneListCtrl` __controller__. The __controller__ is simply a constructor function. It is used
+by the `phoneList` component:
 
-__`app/js/controllers.js`:__
+__`app/js/components.js`:__
 
 ```js
 
 var phonecatApp = angular.module('phonecatApp', []);
 
-phonecatApp.controller('PhoneListCtrl', function ($scope) {
-  $scope.phones = [
+phonecatApp.component('phoneList', {
+  controller: 'PhoneListCtrl',
+  templateUrl: 'partials/phone-list.html'
+}).controller('PhoneListCtrl', function() {
+  this.phones = [
     {'name': 'Nexus S',
      'snippet': 'Fast just got faster with Nexus S.'},
     {'name': 'Motorola XOOM™ with Wi-Fi',
@@ -97,40 +99,42 @@ phonecatApp.controller('PhoneListCtrl', function ($scope) {
 
 ```
 
-Here we declared a controller called `PhoneListCtrl` and registered it in an AngularJS
-module, `phonecatApp`. Notice that our `ng-app` directive (on the `<html>` tag) now specifies the `phonecatApp`
-module name as the module to load when bootstrapping the Angular application.
+Here we declared a component called `phoneList` and a controller called `PhoneListCtrl`
+and registered both in an AngularJS module, `phonecatApp`. Notice that our `ng-app` directive
+(on the `<html>` tag) now specifies the same `phonecatApp` module name as the module to load
+when bootstrapping the Angular application.
 
 Although the controller is not yet doing very much, it plays a crucial role. By providing context
 for our data model, the controller allows us to establish data-binding between
-the model and the view. We connected the dots between the presentation, data, and logic components
+the model and the view. We connected the dots between the presentation, data, and logic
 as follows:
 
-* The {@link ng.directive:ngController ngController} directive, located on the `<body>` tag,
-references the name of our controller, `PhoneListCtrl` (located in the JavaScript file
-`controllers.js`).
+* The `<phone-list></phone-list>` element, located on the `<body>` tag, creates a
+  `phoneList` component (located in the JavaScript file `components.js`).
 
-* The `PhoneListCtrl` controller attaches the phone data to the `$scope` that was injected into our
-controller function. This *scope* is a prototypical descendant of the *root scope* that was created
-when the application was defined. This controller scope is available to all bindings located within
-the `<body ng-controller="PhoneListCtrl">` tag.
+* The `phoneList` component creates an internal view from the `phone-list.html` template
+  and creates an instance of the controller `PhoneListCtrl`.
+
+* The `PhoneListCtrl` controller attaches the phone data to an attribute on itself. This controller
+  is available through the `$ctrl` alias to all bindings located within `phone-list.html` component
+  template.
 
 ### Scope
 
-The concept of a scope in Angular is crucial. A scope can be seen as the glue which allows the
-template, model and controller to work together. Angular uses scopes, along with the information
-contained in the template, data model, and controller, to keep models and views separate, but in
-sync. Any changes made to the model are reflected in the view; any changes that occur in the view
-are reflected in the model.
+Behind the scenes, Angular creates a **scope** for the component and uses it to bridge the component's controller and template together.
+
+Angular uses scopes, along with the information contained in the template, data model, and controller,
+to keep models and views separate, but in sync. Any changes made to the model are reflected in the view;
+any changes that occur in the view are reflected in the model.
 
 To learn more about Angular scopes, see the {@link ng.$rootScope.Scope angular scope documentation}.
 
+<img class="diagram" src="img/tutorial/tutorial_02.png">
 
 ## Tests
 
 The "Angular way" of separating controller from the view, makes it easy to test code as it is being
-developed. If our controller is available on the global namespace then we could simply instantiate it
-with a mock `scope` object:
+developed. If our controller is available on the global namespace then we could simply instantiate it:
 
 __`test/e2e/scenarios.js`:__
 
@@ -138,16 +142,15 @@ __`test/e2e/scenarios.js`:__
 describe('PhoneListCtrl', function(){
 
   it('should create "phones" model with 3 phones', function() {
-    var scope = {},
-        ctrl = new PhoneListCtrl(scope);
+    var ctrl = new PhoneListCtrl();
 
-    expect(scope.phones.length).toBe(3);
+    expect(ctrl.phones.length).toBe(3);
   });
 
 });
 ```
 
-The test instantiates `PhoneListCtrl` and verifies that the phones array property on the scope
+The test instantiates `PhoneListCtrl` and verifies that the phones array property on it
 contains three records. This example demonstrates how easy it is to create a unit test for code in
 Angular. Since testing is such a critical part of software development, we make it easy to create
 tests in Angular so that developers are encouraged to write them.
@@ -169,10 +172,9 @@ describe('PhoneListCtrl', function(){
   beforeEach(module('phonecatApp'));
 
   it('should create "phones" model with 3 phones', inject(function($controller) {
-    var scope = {},
-        ctrl = $controller('PhoneListCtrl', {$scope:scope});
+    var ctrl = $controller('PhoneListCtrl');
 
-    expect(scope.phones.length).toBe(3);
+    expect(ctrl.phones.length).toBe(3);
   }));
 
 });
@@ -181,14 +183,14 @@ describe('PhoneListCtrl', function(){
 * Before each test we tell Angular to load the `phonecatApp` module.
 * We ask Angular to `inject` the `$controller` service into our test function
 * We use `$controller` to create an instance of the `PhoneListCtrl`
-* With this instance, we verify that the phones array property on the scope contains three records.
+* With this instance, we verify that the phones array property on it contains three records.
 
 
 ### Writing and Running Tests
 
 Angular developers prefer the syntax of Jasmine's Behavior-driven Development  (BDD) framework when
 writing tests. Although Angular does not require you to use Jasmine, we wrote all of the tests in
-this tutorial in Jasmine v1.3. You can learn about Jasmine on the [Jasmine home page][jasmine] and
+this tutorial in Jasmine v2.4. You can learn about Jasmine on the [Jasmine home page][jasmine] and
 at the [Jasmine docs][jasmine-docs].
 
 The angular-seed project is pre-configured to run unit tests using [Karma][karma] but you will need
@@ -230,25 +232,25 @@ browser is limited, which results in your karma tests running extremely slow.
 
 # Experiments
 
-* Add another binding to `index.html`. For example:
+* Add another binding to `phone-list.html`. For example:
 
   ```html
-  <p>Total number of phones: {{phones.length}}</p>
+  <p>Total number of phones: {{ctrl.phones.length}}</p>
   ```
 
 * Create a new model property in the controller and bind to it from the template. For example:
 
-          $scope.name = "World";
+          this.name = "World";
 
-  Then add a new binding to `index.html`:
+  Then add a new binding to `phone-list.html`:
 
-          <p>Hello, {{name}}!</p>
+          <p>Hello, {{ctrl.name}}!</p>
 
   Refresh your browser and verify that it says "Hello, World!".
 
 * Update the unit test for the controller in `./test/unit/controllersSpec.js` to reflect the previous change. For example by adding:
 
-          expect(scope.name).toBe('World');
+          expect(ctrl.name).toBe('World');
 
 * Create a repeater in `index.html` that constructs a simple table:
 
@@ -266,12 +268,12 @@ browser is limited, which results in your karma tests running extremely slow.
 
   Extra points: try and make an 8x8 table using an additional `ng-repeat`.
 
-* Make the unit test fail by changing `expect(scope.phones.length).toBe(3)` to instead use `toBe(4)`.
+* Make the unit test fail by changing `expect(ctrl.phones.length).toBe(3)` to instead use `toBe(4)`.
 
 
 # Summary
 
-You now have a dynamic app that features separate model, view, and controller components, and you
+You now have a dynamic app that features separate models, views, and controllers, and you
 are testing as you go. Now, let's go to {@link step_03 step 3} to learn how to add full text search
 to the app.
 
@@ -279,5 +281,5 @@ to the app.
 <ul doc-tutorial-nav="2"></ul>
 
 [jasmine]: http://jasmine.github.io/
-[jasmine-docs]: http://jasmine.github.io/1.3/introduction.html
+[jasmine-docs]: http://jasmine.github.io/2.4/introduction.html
 [karma]: http://karma-runner.github.io/
