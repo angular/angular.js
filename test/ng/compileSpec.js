@@ -8844,9 +8844,9 @@ describe('$compile', function() {
   });
 
   describe('dynamic multi-slot transclude', function() {
-    it('should allow passing the transclude slots configuration - simple', function () {
-      module(function () {
-        directive('minionComponent', function () {
+    it('should allow passing the transclude slots configuration - simple', function() {
+      module(function() {
+        directive('minionComponent', function() {
           return {
             restrict: 'E',
             transclude: 'dynamic',
@@ -8857,7 +8857,7 @@ describe('$compile', function() {
           };
         });
       });
-      inject(function ($rootScope, $compile) {
+      inject(function($rootScope, $compile) {
         element = $compile(
           '<minion-component transclude-slots="{ bobSlot: \'bob\' }">' +
           '<stuart><span>stuart</span></stuart>' +
@@ -8870,9 +8870,9 @@ describe('$compile', function() {
       });
     });
 
-    it('should allow passing the transclude slots configuration - complex usage', function () {
-      module(function () {
-        directive('minionComponent', function () {
+    it('should allow passing the transclude slots configuration - complex usage', function() {
+      module(function() {
+        directive('minionComponent', function() {
           return {
             restrict: 'E',
             transclude: 'dynamic',
@@ -8883,7 +8883,7 @@ describe('$compile', function() {
           };
         });
       });
-      inject(function ($rootScope, $compile) {
+      inject(function($rootScope, $compile) {
         element = $compile(
           '<minion-component transclude-slots="{ bobSlot: \'bob\', gruSlot: \'gru\', kevinSlot: \'kevin\', stuartSlot: \'stuart\' }">' +
           '<stuart><span>stuart</span></stuart>' +
@@ -8897,8 +8897,8 @@ describe('$compile', function() {
     });
 
     it('should error if slot config is not provided when using the directive', function() {
-      module(function () {
-        directive('minionComponent', function () {
+      module(function() {
+        directive('minionComponent', function() {
           return {
             restrict: 'E',
             transclude: 'dynamic',
@@ -8909,7 +8909,7 @@ describe('$compile', function() {
           };
         });
       });
-      inject(function ($rootScope, $compile) {
+      inject(function($rootScope, $compile) {
         expect(function() {
           element = $compile(
             '<minion-component>' +
