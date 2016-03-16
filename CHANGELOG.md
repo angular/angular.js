@@ -1,3 +1,91 @@
+<a name="1.4.10"></a>
+# 1.4.10 benignant-oscillation (2016-03-16)
+
+
+## Bug Fixes
+
+- **core:** only call `console.log` when `window.console` exists
+  ([beb00e44](https://github.com/angular/angular.js/commit/beb00e44de947981dbe35d5cf7a116e10ea8dc67),
+   [#14006](https://github.com/angular/angular.js/issues/14006), [#14007](https://github.com/angular/angular.js/issues/14007), [#14047](https://github.com/angular/angular.js/issues/14047))
+- **$animateCss:** cancel fallback timeout when animation ends normally
+  ([a60bbc12](https://github.com/angular/angular.js/commit/a60bbc12e8c5170e70d95f1b2c3e309b3b95cb84),
+   [#13787](https://github.com/angular/angular.js/issues/13787))
+- **$compile:**
+  - allow directives to have decorators
+  ([77cdc37c](https://github.com/angular/angular.js/commit/77cdc37c65491b551fcf01a18ab848a693c293d7))
+  - properly denormalize templates when only one of the start/end symbols is different
+  ([2d44a681](https://github.com/angular/angular.js/commit/2d44a681eb912a81a8bc8e16a278c45dae91fa24),
+   [#13848](https://github.com/angular/angular.js/issues/13848))
+  - handle boolean attributes in `@` bindings
+  ([2ffbfb0a](https://github.com/angular/angular.js/commit/2ffbfb0ad0647d103ff339ee4b772b62d4823bf3),
+   [#13767](https://github.com/angular/angular.js/issues/13767), [#13769](https://github.com/angular/angular.js/issues/13769))
+- **$parse:**
+  - prevent assignment on constructor properties
+  ([f47e2180](https://github.com/angular/angular.js/commit/f47e218006029f39b4785d820b430de3a0eebcb0),
+   [#13417](https://github.com/angular/angular.js/issues/13417))
+  - preserve expensive checks when runnning `$eval` inside an expression
+  ([96d62cc0](https://github.com/angular/angular.js/commit/96d62cc0fc77248d7e3ec4aa458bac0d3e072629))
+  - copy `inputs` for expressions with expensive checks
+  ([0b7fff30](https://github.com/angular/angular.js/commit/0b7fff303f46202bbae1ff3ca9d0e5fa76e0fc9a))
+- **$rootScope:** set no context when calling helper functions for `$watch`
+  ([ab5c7698](https://github.com/angular/angular.js/commit/ab5c7698bb106669ca31b5f79a95afa54d65c5f1))
+- **$route:** allow preventing a route reload
+  ([4bc30314](https://github.com/angular/angular.js/commit/4bc3031497447ad527356f12bd0ceee1d7d09db5),
+   [#9824](https://github.com/angular/angular.js/issues/9824), [#13894](https://github.com/angular/angular.js/issues/13894))
+- **$routeProvider:** properly handle optional eager path named groups
+  ([6a4403a1](https://github.com/angular/angular.js/commit/6a4403a11845173d6a96232f77d73aa544b182af),
+   [#14011](https://github.com/angular/angular.js/issues/14011))
+- **copy:** add support for copying `Blob` objects
+  ([863a4232](https://github.com/angular/angular.js/commit/863a4232a6faa92428df45cd54d5a519be2434de),
+   [#9669](https://github.com/angular/angular.js/issues/9669), [#14064](https://github.com/angular/angular.js/issues/14064))
+- **dateFilter:** follow the CLDR on pattern escape sequences
+  ([f476060d](https://github.com/angular/angular.js/commit/f476060de6cc016380c0343490a184543f853652),
+   [#12839](https://github.com/angular/angular.js/issues/12839))
+- **dateFilter, input:** fix Date parsing in IE/Edge when timezone offset contains `:`
+  ([571afd65](https://github.com/angular/angular.js/commit/571afd6558786d7b99e2aebd307b4a94c9f2bb87),
+   [#13880](https://github.com/angular/angular.js/issues/13880), [#13887](https://github.com/angular/angular.js/issues/13887))
+- **input:** re-validate when partially editing date-family inputs
+  ([02929f82](https://github.com/angular/angular.js/commit/02929f82f30449301ff18fea84a6396a017683b1),
+   [#12207](https://github.com/angular/angular.js/issues/12207), [#13886](https://github.com/angular/angular.js/issues/13886))
+- **select:** handle corner case of adding options via a custom directive
+  ([df6e7315](https://github.com/angular/angular.js/commit/df6e731506831a3dc7f44c9a90abe17515450b3e),
+   [#13874](https://github.com/angular/angular.js/issues/13874), [#13878](https://github.com/angular/angular.js/issues/13878))
+- **ngOptions:** always set the 'selected' attribute for selected options
+  ([f87e8288](https://github.com/angular/angular.js/commit/f87e8288fb69526fd240a66a046f5de52ed204de),
+   [#14115](https://github.com/angular/angular.js/issues/14115))
+- **ngAnimate:** properly cancel previously running class-based animations
+  ([3b27dd37](https://github.com/angular/angular.js/commit/3b27dd37a2cc8a52992784ece6b371023dadf792),
+   [#10156](https://github.com/angular/angular.js/issues/10156), [#13822](https://github.com/angular/angular.js/issues/13822))
+- **ngAnimateChildren:** make it compatible with `ngIf`
+  ([dc158e7e](https://github.com/angular/angular.js/commit/dc158e7e40624ef94c66560386522ef7e991a9ce),
+   [#13865](https://github.com/angular/angular.js/issues/13865), [#13876](https://github.com/angular/angular.js/issues/13876))
+- **ngMockE2E:** pass `responseType` to `$delegate` when using `passThrough`
+  ([947cb4d1](https://github.com/angular/angular.js/commit/947cb4d1451afa4f5090a693df5b1968dd0df70c),
+   [#5415](https://github.com/angular/angular.js/issues/5415), [#5783](https://github.com/angular/angular.js/issues/5783))
+
+
+## Features
+
+- **$locale:** Include original locale ID in $locale
+  ([e69f3550](https://github.com/angular/angular.js/commit/e69f35507e10c994708ce4f1efba7573951d1acd),
+   [#13390](https://github.com/angular/angular.js/issues/13390))
+- **ngAnimate:** provide ng-[event]-prepare class for structural animations
+  ([796f7ab4](https://github.com/angular/angular.js/commit/796f7ab41487e124b5b0c02dbf0a03bd581bf073))
+
+
+## Performance Improvements
+
+- **$compile:** avoid needless overhead when wrapping text nodes
+  ([946d9ae9](https://github.com/angular/angular.js/commit/946d9ae90bb31fe911ebbe1b80cd4c8af5a665c6))
+- **ngRepeat:** avoid duplicate jqLite wrappers
+  ([d04c38c4](https://github.com/angular/angular.js/commit/d04c38c48968db777c3ea6a177ce2ff0116df7b4))
+- **ngAnimate:**
+  - avoid jqLite/jQuery for upward DOM traversal
+  ([ab95ba65](https://github.com/angular/angular.js/commit/ab95ba65c08b38cace83de6717b7681079182b45))
+  - avoid `$.fn.data` overhead with jQuery
+  ([86416bcb](https://github.com/angular/angular.js/commit/86416bcbee2192fa31c017163c5d856763182ade))
+
+
 <a name="1.5.1"></a>
 # 1.5.1 equivocal-sophistication (2016-03-16)
 
