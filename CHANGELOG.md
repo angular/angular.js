@@ -1,4 +1,4 @@
-<a name="v1.5.1"></a>
+<a name="1.5.1"></a>
 # 1.5.1 equivocal-sophistication (2016-03-16)
 
 
