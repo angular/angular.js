@@ -1,3 +1,79 @@
+<a name="v1.5.1"></a>
+# 1.5.1 equivocal-sophistication (2016-03-16)
+
+
+## Bug Fixes
+
+- **core:** only call `console.log` when `window.console` exists
+  ([ce138f3c](https://github.com/angular/angular.js/commit/ce138f3c552f8bf741721ab8d10994ed35a4b2f5),
+   [#14006](https://github.com/angular/angular.js/issues/14006), [#14007](https://github.com/angular/angular.js/issues/14007), [#14047](https://github.com/angular/angular.js/issues/14047))
+- **$compile:** allow directives to have decorators
+  ([0728cc2f](https://github.com/angular/angular.js/commit/0728cc2f2bb04d5dbdfca41f3afacea16c75ee07))
+- **$resource:** fix parse errors on older Android WebViews
+  ([df8db7b4](https://github.com/angular/angular.js/commit/df8db7b446b5bae83afef457d706d2805e597f29),
+   [#13989](https://github.com/angular/angular.js/issues/13989))
+- **$routeProvider:** properly handle optional eager path named groups
+  ([c0797c68](https://github.com/angular/angular.js/commit/c0797c68866c9ef8ff3c2f6985e6eb9374346151),
+   [#14011](https://github.com/angular/angular.js/issues/14011))
+- **copy:** add support for copying `Blob` objects
+  ([e9d579b6](https://github.com/angular/angular.js/commit/e9d579b608c2be8fdcf0326d0679a76bb9ae5b6e),
+   [#9669](https://github.com/angular/angular.js/issues/9669), [#14064](https://github.com/angular/angular.js/issues/14064))
+- **dateFilter:** correctly format BC years
+  ([e36205f5](https://github.com/angular/angular.js/commit/e36205f5af82b69362def7d2b6eeeb038f592311))
+- **formatNumber:** allow negative fraction size
+  ([e046c170](https://github.com/angular/angular.js/commit/e046c170bcf677f26e61af6470cb5fd2f751c969),
+   [#13913](https://github.com/angular/angular.js/issues/13913))
+- **input:** re-validate when partially editing date-family inputs
+  ([e383804c](https://github.com/angular/angular.js/commit/e383804c4ab62278fbaf4fdfaa03caeacff77fc4),
+   [#12207](https://github.com/angular/angular.js/issues/12207), [#13886](https://github.com/angular/angular.js/issues/13886))
+- **input\[date\]:** support years with more than 4 digits
+  ([d76951f1](https://github.com/angular/angular.js/commit/d76951f1747abd2da6e320d4ff9019f170d9793f),
+   [#13735](https://github.com/angular/angular.js/issues/13735), [#13905](https://github.com/angular/angular.js/issues/13905))
+- **ngOptions:** always set the 'selected' attribute for selected options
+  ([9f5a1722](https://github.com/angular/angular.js/commit/9f5a172291ff6926dcd246f0972288916a4c9bf6),
+   [#14115](https://github.com/angular/angular.js/issues/14115))
+- **ngRoute:** allow `ngView` to be included in an asynchronously loaded template
+  ([8237482d](https://github.com/angular/angular.js/commit/8237482d49e76e2c4994fe6207e3c9799ef04163),
+   [#1213](https://github.com/angular/angular.js/issues/1213), [#6812](https://github.com/angular/angular.js/issues/6812), [#14088](https://github.com/angular/angular.js/issues/14088))
+- **ngMock:**
+  - attach `$injector` to `$rootElement` and prevent memory leak due to attached data
+  ([75373dd4](https://github.com/angular/angular.js/commit/75373dd4bdae6c6035272942c69444c386f824cd),
+   [#14022](https://github.com/angular/angular.js/issues/14022), [#14094](https://github.com/angular/angular.js/issues/14094), [#14098](https://github.com/angular/angular.js/issues/14098))
+  - don't break if `$rootScope.$destroy()` is not a function
+  ([50ed8712](https://github.com/angular/angular.js/commit/50ed8712566d601c9fb76b71f7b534b5bc803a36),
+   [#14106](https://github.com/angular/angular.js/issues/14106), [#14107](https://github.com/angular/angular.js/issues/14107))
+- **ngMockE2E:** pass `responseType` to `$delegate` when using `passThrough`
+  ([d16faf9f](https://github.com/angular/angular.js/commit/d16faf9f2b9bd2b85d95e71d902cec0269282f2c),
+   [#5415](https://github.com/angular/angular.js/issues/5415), [#5783](https://github.com/angular/angular.js/issues/5783))
+
+
+## Features
+
+- **$compile:** add custom annotations to the controller
+  ([0c800930](https://github.com/angular/angular.js/commit/0c8009300b819c39c5e4892856724a731a8dcda6),
+   [#14114](https://github.com/angular/angular.js/issues/14114))
+- **$controllerProvider:** add a `has()` method for checking the existence of a controller
+  ([bb9575db](https://github.com/angular/angular.js/commit/bb9575dbd3428176216355df7b2933d2a72783cd),
+   [#13951](https://github.com/angular/angular.js/issues/13951), [#14109](https://github.com/angular/angular.js/issues/14109))
+- **dateFilter:** add support for STANDALONEMONTH in format (`LLLL`)
+  ([3e5b25b3](https://github.com/angular/angular.js/commit/3e5b25b33f278376def432698c704b1807fdb8c0),
+   [#13999](https://github.com/angular/angular.js/issues/13999), [#14013](https://github.com/angular/angular.js/issues/14013))
+- **ngMock:** add `sharedInjector()` to `angular.mock.module`
+  ([a46ab60f](https://github.com/angular/angular.js/commit/a46ab60fd5bf94896f0761e858ef38b998eb0f80),
+   [#14093](https://github.com/angular/angular.js/issues/14093), [#10238](https://github.com/angular/angular.js/issues/10238))
+
+
+## Performance Improvements
+
+- **ngRepeat:** avoid duplicate jqLite wrappers
+  ([632e15a3](https://github.com/angular/angular.js/commit/632e15a3afdcd30168700cec1367bd81966400d4))
+- **ngAnimate:**
+  - avoid jqLite/jQuery for upward DOM traversal
+  ([35251bd4](https://github.com/angular/angular.js/commit/35251bd4ce23251b5e9a2860cf414726c194721e))
+  - avoid `$.fn.data` overhead with jQuery
+  ([15915e60](https://github.com/angular/angular.js/commit/15915e606fdf5114592db1a0a5e3f12e639d7cdb))
+
+
 <a name="1.5.0"></a>
 # 1.5.0 ennoblement-facilitation (2016-02-05)
 
