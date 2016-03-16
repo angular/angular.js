@@ -3,7 +3,7 @@
   "license": "MIT",
   "branchVersion": "1.5.x",
   "branchPattern": "1.5.*",
-  "distTag": "beta",
+  "distTag": "latest",
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/angular.js.git"
