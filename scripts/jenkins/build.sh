@@ -4,10 +4,10 @@ echo "#################################"
 echo "####  Jenkins Build  ############"
 echo "#################################"
 
+source scripts/jenkins/set-node-version.sh
+
 # Enable tracing and exit on first failure
 set -xe
-
-scripts/jenkins/set-node-version.sh
 
 # This is the default set of browsers to use on the CI server unless overridden via env variable
 if [[ -z "$BROWSERS" ]]
