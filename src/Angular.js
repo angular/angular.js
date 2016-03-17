@@ -979,7 +979,7 @@ function shallowCopy(src, dst) {
  * @param {*} o2 Object or value to compare.
  * @returns {boolean} True if arguments are equal.
  * @example
- <example module="equalExample">
+ <example module="equalsExample">
  <file name="index.html">
  <div ng-controller="ExampleController">
     <form novalidate>
@@ -1001,7 +1001,7 @@ function shallowCopy(src, dst) {
     </form>
   </div>
   <script>
-    angular.module('equalExample', []) .controller('ExampleController', ['$scope', function($scope) {
+    angular.module('equalsExample', []) .controller('ExampleController', ['$scope', function($scope) {
       $scope.user1={};
       $scope.user2={};
       $scope.result;
