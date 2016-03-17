@@ -475,8 +475,9 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    *           e.preventDefault();
    *           if (rollback) {
    *             $scope.myForm[value].$rollbackViewValue();
-   *           }
-   *           $scope.model[value] = '';
+   *           }else{
+   *             $scope.model[value] = '';              
+   *           }         
    *         }
    *       };
    *     }]);
