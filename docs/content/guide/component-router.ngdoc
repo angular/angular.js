@@ -105,7 +105,7 @@ Here we have specified that the **Root Component** is the component directive wi
 Remember to instantiate this **Root Component** in our `index.html` file.
 
 ```html
-<my-app><my-app>
+<my-app></my-app>
 ```
 
 ## Route Matching
