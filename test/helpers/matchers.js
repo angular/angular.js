@@ -131,25 +131,38 @@ beforeEach(function() {
       return {
         compare: function(actual) {
           if (arguments.length > 1) {
-            throw new Error('toHaveBeenCalledOnce does not take arguments, use toHaveBeenCalledWith');
+            throw new Error('`toHaveBeenCalledOnce` does not take arguments, ' +
+                            'use `toHaveBeenCalledOnceWith`');
           }
 
           if (!jasmine.isSpy(actual)) {
             throw new Error('Expected a spy, but got ' + jasmine.pp(actual) + '.');
           }
 
+          var count = actual.calls.count();
+          var pass = count === 1;
+
           var message = function() {
-            var msg = 'Expected spy ' + actual.identity() + ' to have been called once, but was ',
-                count = this.actual.calls.count();
-            return [
-              count === 0 ? msg + 'never called.' :
-                            msg + 'called ' + count + ' times.',
-              msg.replace('to have', 'not to have') + 'called once.'
-            ];
+            var msg = 'Expected spy ' + actual.and.identity() + (pass ? ' not ' : ' ') +
+                      'to have been called once, but ';
+
+            switch (count) {
+              case 0:
+                msg += 'it was never called.';
+                break;
+              case 1:
+                msg += 'it was called once.';
+                break;
+              default:
+                msg += 'it was called ' + count + ' times.';
+                break;
+            }
+
+            return msg;
           };
 
           return {
-            pass: actual.calls.count() == 1,
+            pass: pass,
             message: message
           };
         }
@@ -158,43 +171,52 @@ beforeEach(function() {
 
     toHaveBeenCalledOnceWith: function(util, customEqualityTesters) {
       return {
-        compare: function(actual) {
-          var expectedArgs = Array.prototype.slice.call(arguments, 1);
+        compare: generateCompare(false),
+        negativeCompare: generateCompare(true)
+      };
+
+      function generateCompare(isNot) {
+        return function(actual) {
           if (!jasmine.isSpy(actual)) {
             throw new Error('Expected a spy, but got ' + jasmine.pp(actual) + '.');
           }
-          var message = function() {
-            if (actual.calls.count() != 1) {
-              if (actual.calls.count() === 0) {
-                return [
-                  'Expected spy ' + actual.identity() + ' to have been called once with ' +
-                    jasmine.pp(expectedArgs) + ' but it was never called.',
-                  'Expected spy ' + actual.identity() + ' not to have been called with ' +
-                    jasmine.pp(expectedArgs) + ' but it was.'
-                ];
-              }
 
-              return [
-                'Expected spy ' + actual.identity() + ' to have been called once with ' +
-                  jasmine.pp(expectedArgs) + ' but it was called ' + actual.calls.count() + ' times.',
-                'Expected spy ' + actual.identity() + ' not to have been called once with ' +
-                  jasmine.pp(expectedArgs) + ' but it was.'
-              ];
+          var expectedArgs = Array.prototype.slice.call(arguments, 1);
+          var actualCount = actual.calls.count();
+          var actualArgs = actualCount && actual.calls.argsFor(0);
+
+          var pass = (actualCount === 1) && util.equals(actualArgs, expectedArgs);
+          if (isNot) pass = !pass;
+
+          var message = function() {
+            var msg = 'Expected spy ' + actual.and.identity() + (isNot ? ' not ' : ' ') +
+                      'to have been called once with ' + jasmine.pp(expectedArgs) + ', but ';
+
+            if (isNot) {
+              msg += 'it was.';
             } else {
-              return [
-                'Expected spy ' + actual.identity() + ' to have been called once with ' +
-                  jasmine.pp(expectedArgs) + ' but was called with ' + jasmine.pp(actual.calls.argsFor(0)),
-                'Expected spy ' + actual.identity() + ' not to have been called once with ' +
-                  jasmine.pp(expectedArgs) + ' but was called with ' + jasmine.pp(actual.calls.argsFor(0))
-              ];
+              switch (actualCount) {
+                case 0:
+                  msg += 'it was never called.';
+                  break;
+                case 1:
+                  msg += 'it was called with ' + jasmine.pp(actualArgs) + '.';
+                  break;
+                default:
+                  msg += 'it was called ' + actualCount + ' times.';
+                  break;
+              }
             }
+
+            return msg;
           };
+
           return {
-            pass: actual.calls.count() === 1 && util.equals(actual.calls.argsFor(0), expectedArgs),
+            pass: pass,
             message: message
           };
-        }
-      };
+        };
+      }
     },
 
     toBeOneOf: function() {
