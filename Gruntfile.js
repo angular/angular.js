@@ -264,12 +264,17 @@ module.exports = function(grunt) {
       ],
       options: {
         disallowed: [
+          'fit',
           'iit',
           'xit',
+          'fthey',
           'tthey',
           'xthey',
+          'fdescribe',
           'ddescribe',
-          'xdescribe'
+          'xdescribe',
+          'it.only',
+          'describe.only'
         ]
       }
     },
