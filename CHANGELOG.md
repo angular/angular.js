@@ -214,7 +214,7 @@ This release reverts a breaking change that accidentally made it into the 1.5.1 
 ## Breaking Changes
 
 ### Upgrade to 1.5.1
-This version of AngularJS is problematic due to a issue during its release. Please upgrade to version 1.5.1.
+This version of AngularJS is problematic due to a issue during its release. Please upgrade to version [1.5.2](#1.5.2).
 
 - **ngAria:** due to [d06431e5](https://github.com/angular/angular.js/commit/d06431e5309bb0125588877451dc79b935808134),
   Where appropriate, ngAria now applies ARIA to custom controls only, not native inputs. Because of this, support for `aria-multiline` on textareas has been removed.
