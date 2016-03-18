@@ -972,7 +972,7 @@ describe('jqLite', function() {
 
 
   describe('text', function() {
-    it('should return null on empty', function() {
+    it('should return `""` on empty', function() {
       expect(jqLite().length).toEqual(0);
       expect(jqLite().text()).toEqual('');
     });
@@ -1040,7 +1040,7 @@ describe('jqLite', function() {
 
 
   describe('html', function() {
-    it('should return null on empty', function() {
+    it('should return `undefined` on empty', function() {
       expect(jqLite().length).toEqual(0);
       expect(jqLite().html()).toEqual(undefined);
     });
