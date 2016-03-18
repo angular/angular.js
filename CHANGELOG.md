@@ -1,3 +1,19 @@
+<a name="1.5.2"></a>
+# 1.5.2 differential-recovery (2016-03-18)
+
+This release reverts a breaking change that accidentally made it into the 1.5.1 release. See [fee7bac3](https://github.com/angular/angular.js/commit/fee7bac392db24b6006d6a57ba71526f3afa102c) for more info.
+
+
+## Bug Fixes
+
+- **ngAnimate.$animate:** remove animation callbacks when the element is removed
+  ([ce7f4000](https://github.com/angular/angular.js/commit/ce7f400011e1e2e1b9316f18ce87b87b79d878b4))
+
+
+## Breaking Changes
+
+
+
 <a name="1.4.10"></a>
 # 1.4.10 benignant-oscillation (2016-03-16)
 
@@ -196,6 +212,9 @@
 
 
 ## Breaking Changes
+
+### Upgrade to 1.5.1
+This version of AngularJS is problematic due to a issue during its release. Please upgrade to version 1.5.1.
 
 - **ngAria:** due to [d06431e5](https://github.com/angular/angular.js/commit/d06431e5309bb0125588877451dc79b935808134),
   Where appropriate, ngAria now applies ARIA to custom controls only, not native inputs. Because of this, support for `aria-multiline` on textareas has been removed.
