@@ -124,9 +124,9 @@ This process continues until we run out of **Routing Components** or consume the
 
 ![Routed Components](img/guide/component-routes.svg)
 
-In the previous diagram can see that the URL `/heros/2` has been matched against the `App`, `Heroes` and
+In the previous diagram can see that the URL `/heros/4` has been matched against the `App`, `Heroes` and
 `HeroDetail` **Routing Components**. The **Routers** for each of the **Routing Components** consumed a part
-of the URL: "/", "/heroes" and "/2" respectively.
+of the URL: "/", "/heroes" and "/4" respectively.
 
 The result is that we end up with a hierarchy of **Routing Components** rendered in **Outlets**, via the
 {@link ngOutlet} directive, in each **Routing Component's** template, as you can see in the following diagram.
