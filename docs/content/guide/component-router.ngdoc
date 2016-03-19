@@ -33,7 +33,7 @@ Here is a table of the main concepts used in the Component Router.
 
 ## Component-based Applications
 
-It recommended to develop AngularJS applications as a hierarchy of Components. Each Component
+It is recommended to develop AngularJS applications as a hierarchy of Components. Each Component
 is an isolated part of the application, which is responsible for its own user interface and has
 a well defined programmatic interface to the Component that contains it. Take a look at the
 {@link guide/component component guide} for more information.
@@ -124,7 +124,7 @@ This process continues until we run out of **Routing Components** or consume the
 
 ![Routed Components](img/guide/component-routes.svg)
 
-In the previous diagram can see that the URL `/heros/4` has been matched against the `App`, `Heroes` and
+In the previous diagram, we can see that the URL `/heros/4` has been matched against the `App`, `Heroes` and
 `HeroDetail` **Routing Components**. The **Routers** for each of the **Routing Components** consumed a part
 of the URL: "/", "/heroes" and "/4" respectively.
 
@@ -462,7 +462,7 @@ to display list and detail views of Heroes and Crises.
 
 ## Install the libraries
 
-It is simplest to use npm to install the **Component Router** module. For this guide we will also install
+It is easier to use npm to install the **Component Router** module. For this guide we will also install
 AngularJS itself via npm:
 
 ```bash
@@ -485,7 +485,7 @@ Just like any Angular application, we load the JavaScript files into our `index.
 
 ## Create the `app` module
 
-In the app.js file, create the main application module `app` which depends upon the `ngComponentRouter`
+In the app.js file, create the main application module `app` which depends on the `ngComponentRouter`
 module, which is provided by the **Component Router** script.
 
 ```js
@@ -494,10 +494,10 @@ angular.module('app', ['ngComponentRouter'])
 
 We must choose what **Location Mode** the **Router** should use. We are going to use HTML5 mode locations,
 so that we will not have hash-based paths. We must rely on the browser to provide `pushState` support,
-which is true of most modern browsers. See {@link $locationProvider#html5Mode} for more information.
+which is true for most modern browsers. See {@link $locationProvider#html5Mode} for more information.
 
 <div class="alert alert-info">
-  Using HTML5 mode means that we can have clean URLs for our application routes but it does require that our
+  Using HTML5 mode means that we can have clean URLs for our application routes. However, HTML5 mode does require that our
   web server, which hosts the application, understands that it must respond with the index.html file for
   requests to URLs that represent all our application routes. We are going to use the `lite-server` web server
   to do this for us.
@@ -550,7 +550,7 @@ Bootstrap the Angular application and add the top level App Component.
 
 # Implementing the AppComponent
 
-In the previous section we created a single top level **App Component**. Let's now create some more
+In the previous section we have created a single top level **App Component**. Let's now create some more
 **Routing Components** and wire up **Route Config** for those. We start with a Heroes Feature, which
 will display one of two views.
 
@@ -590,7 +590,7 @@ of this view will be rendered.
 ### ngLink
 
 We have used the `ng-link` directive to create a link to navigate to the Heroes Component. By using this
-directive we don't need to know what the actual URL will be. We can leave the Router to generate that for us.
+directive we don't need to know what the actual URL will be. We can let the Router generate that for us.
 
 We have included a link to the Crisis Center but have not included the `ng-link` directive as we have not yet
 implemented the CrisisCenter component.
@@ -765,7 +765,7 @@ function HeroListComponent(heroService) {
 Running the application should update the browser's location to `/heroes` and display the list of heroes
 returned from the `heroService`.
 
-By returning a promise for the list of heroes from `$routerOnActivate()` we can delay activation of the
+By returning a promise for the list of heroes from `$routerOnActivate()` we can delay the activation of the
 Route until the heroes have arrived successfully. This is similar to how a `resolve` works in {@link ngRoute}.
 
 
