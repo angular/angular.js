@@ -249,8 +249,8 @@ describe('$aria', function() {
     });
 
     it('should not add a role to a native checkbox', function() {
-      compileElement('<input type="checkbox" ng-model="val"></div>');
-      expect(element.attr('role')).toBe(undefined);
+      compileElement('<input type="checkbox" ng-model="val"/>');
+      expect(element.attr('role')).toBeUndefined();
     });
 
     it('should add missing role="radio" to custom input', function() {
@@ -259,8 +259,8 @@ describe('$aria', function() {
     });
 
     it('should not add a role to a native radio button', function() {
-      compileElement('<input type="radio" ng-model="val"></div>');
-      expect(element.attr('role')).toBe(undefined);
+      compileElement('<input type="radio" ng-model="val"/>');
+      expect(element.attr('role')).toBeUndefined();
     });
 
     it('should add missing role="slider" to custom input', function() {
@@ -269,8 +269,8 @@ describe('$aria', function() {
     });
 
     it('should not add a role to a native range input', function() {
-      compileElement('<input type="range" ng-model="val"></div>');
-      expect(element.attr('role')).toBe(undefined);
+      compileElement('<input type="range" ng-model="val"/>');
+      expect(element.attr('role')).toBeUndefined();
     });
   });
 
@@ -654,7 +654,7 @@ describe('$aria', function() {
     it('should update bindings when keypress handled', function() {
       compileElement('<div ng-click="text = \'clicked!\'">{{text}}</div>');
       expect(element.text()).toBe('');
-      spyOn(scope.$root, '$digest').andCallThrough();
+      spyOn(scope.$root, '$digest').and.callThrough();
       element.triggerHandler({ type: 'keypress', keyCode: 13 });
       expect(element.text()).toBe('clicked!');
       expect(scope.$root.$digest).toHaveBeenCalledOnce();

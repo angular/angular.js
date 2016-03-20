@@ -85,6 +85,26 @@ describe('filters', function() {
       expect(num).toBe('123.100');
     });
 
+    it('should work with negative fractionSize', function() {
+      expect(formatNumber(49, pattern, ',', '.', -2)).toBe('0');
+      expect(formatNumber(50, pattern, ',', '.', -2)).toBe('100');
+      expect(formatNumber(51, pattern, ',', '.', -2)).toBe('100');
+      expect(formatNumber(1234, pattern, ',', '.', -1)).toBe('1,230');
+      expect(formatNumber(1234.567, pattern, ',', '.', -1)).toBe('1,230');
+      expect(formatNumber(1235, pattern, ',', '.', -1)).toBe('1,240');
+      expect(formatNumber(1235, pattern, ',', '.', -2)).toBe('1,200');
+      expect(formatNumber(1235, pattern, ',', '.', -3)).toBe('1,000');
+      expect(formatNumber(1235, pattern, ',', '.', -4)).toBe('0');
+      expect(formatNumber(1250, pattern, ',', '.', -2)).toBe('1,300');
+      expect(formatNumber(1000, pattern, ',', '.', -3)).toBe('1,000');
+      expect(formatNumber(1000, pattern, ',', '.', -4)).toBe('0');
+      expect(formatNumber(1000, pattern, ',', '.', -5)).toBe('0');
+      expect(formatNumber(1, pattern, ',', '.', -1)).toBe('0');
+      expect(formatNumber(1, pattern, ',', '.', -2)).toBe('0');
+      expect(formatNumber(9, pattern, ',', '.', -1)).toBe('10');
+      expect(formatNumber(501, pattern, ',', '.', -3)).toBe('1,000');
+    });
+
     it('should format numbers that round to zero as nonnegative', function() {
       expect(formatNumber(-0.01, pattern, ',', '.', 1)).toBe('0.0');
       expect(formatNumber(-1e-10, pattern, ',', '.', 1)).toBe('0.0');
@@ -141,7 +161,7 @@ describe('filters', function() {
     });
 
     it('should pass through null and undefined to be compatible with one-time binding', function() {
-      expect(currency(undefined)).toBe(undefined);
+      expect(currency(undefined)).toBeUndefined();
       expect(currency(null)).toBe(null);
     });
 
@@ -213,7 +233,7 @@ describe('filters', function() {
 
     it('should pass through null and undefined to be compatible with one-time binding', function() {
       expect(number(null)).toBe(null);
-      expect(number(undefined)).toBe(undefined);
+      expect(number(undefined)).toBeUndefined();
     });
 
     it('should filter exponentially large numbers', function() {
@@ -272,6 +292,8 @@ describe('filters', function() {
     var noon       = new angular.mock.TzDate(+5, '2010-09-03T17:05:08.012Z'); //12pm
     var midnight   = new angular.mock.TzDate(+5, '2010-09-03T05:05:08.123Z'); //12am
     var earlyDate  = new angular.mock.TzDate(+5, '0001-09-03T05:05:08.000Z');
+    var year0Date  = new angular.mock.TzDate(+5, '0000-12-25T05:05:08.000Z');
+    var bcDate     = new angular.mock.TzDate(+5, '-0026-01-16T05:05:08.000Z');
     var secondWeek = new angular.mock.TzDate(+5, '2013-01-11T12:00:00.000Z'); //Friday Jan 11, 2013
     var date;
 
@@ -336,6 +358,15 @@ describe('filters', function() {
       expect(date(earlyDate, "MMMM dd, y")).
                       toEqual('September 03, 1');
 
+      expect(date(earlyDate, "MMMM dd, yyyy")).
+                      toEqual('September 03, 0001');
+
+      expect(date(year0Date, "dd MMMM y G")).
+                      toEqual('25 December 1 BC');
+
+      expect(date(bcDate, "dd MMMM y G")).
+                      toEqual('16 January 27 BC');
+
       expect(date(noon, "MMMM dd, y G")).
                       toEqual('September 03, 2010 AD');
 
@@ -348,6 +379,21 @@ describe('filters', function() {
       expect(date(noon, "MMMM dd, y GGGG")).
                       toEqual('September 03, 2010 Anno Domini');
     });
+
+    it('should support STANDALONEMONTH in format (`LLLL`)', inject(function($locale) {
+      var standAloneMonth = $locale.DATETIME_FORMATS.STANDALONEMONTH;
+      var september = standAloneMonth[8];
+      var standAloneSeptember = 'StandAlone' + september;
+
+      // Overwrite September in STANDALONEMONTH
+      standAloneMonth[8] = standAloneSeptember;
+
+      expect(date(noon, 'MMMM')).toEqual(september);
+      expect(date(noon, 'LLLL')).toEqual(standAloneSeptember);
+
+      // Restore September in STANDALONEMONTH
+      standAloneMonth[8] = september;
+    }));
 
     it('should accept negative numbers as strings', function() {
       //Note: this tests a timestamp set for 3 days before the unix epoch.

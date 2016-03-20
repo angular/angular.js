@@ -228,6 +228,18 @@ describe('angular', function() {
       }
     });
 
+    it('should handle Blob objects', function() {
+      if (typeof Blob !== 'undefined') {
+        var src = new Blob(['foo'], {type: 'bar'});
+        var dst = copy(src);
+
+        expect(dst).not.toBe(src);
+        expect(dst.size).toBe(3);
+        expect(dst.type).toBe('bar');
+        expect(isBlob(dst)).toBe(true);
+      }
+    });
+
     it("should throw an exception if a Uint8Array is the destination", function() {
       if (typeof Uint8Array !== 'undefined') {
         var src = new Uint8Array();
@@ -971,7 +983,7 @@ describe('angular', function() {
   describe('csp', function() {
 
     function mockCspElement(cspAttrName, cspAttrValue) {
-      return spyOn(document, 'querySelector').andCallFake(function(selector) {
+      return spyOn(document, 'querySelector').and.callFake(function(selector) {
         if (selector == '[' + cspAttrName + ']') {
           var html = '<div ' + cspAttrName + (cspAttrValue ? ('="' + cspAttrValue + '" ') : '') + '></div>';
           return jqLite(html)[0];
@@ -997,7 +1009,7 @@ describe('angular', function() {
 
 
     it('should return true for noUnsafeEval if eval causes a CSP security policy error', function() {
-      window.Function.andCallFake(function() { throw new Error('CSP test'); });
+      window.Function.and.callFake(function() { throw new Error('CSP test'); });
       expect(csp()).toEqual({ noUnsafeEval: true, noInlineStyle: false });
       expect(window.Function).toHaveBeenCalledWith('');
     });
@@ -1056,12 +1068,12 @@ describe('angular', function() {
     });
 
     it('should return undefined when jq is not set, no jQuery found (the default)', function() {
-      expect(jq()).toBe(undefined);
+      expect(jq()).toBeUndefined();
     });
 
     it('should return empty string when jq is enabled manually via [ng-jq] with empty string', function() {
       element.setAttribute('ng-jq', '');
-      spyOn(document, 'querySelector').andCallFake(function(selector) {
+      spyOn(document, 'querySelector').and.callFake(function(selector) {
         if (selector === '[ng-jq]') return element;
       });
       expect(jq()).toBe('');
@@ -1069,7 +1081,7 @@ describe('angular', function() {
 
     it('should return empty string when jq is enabled manually via [data-ng-jq] with empty string', function() {
       element.setAttribute('data-ng-jq', '');
-      spyOn(document, 'querySelector').andCallFake(function(selector) {
+      spyOn(document, 'querySelector').and.callFake(function(selector) {
         if (selector === '[data-ng-jq]') return element;
       });
       expect(jq()).toBe('');
@@ -1078,7 +1090,7 @@ describe('angular', function() {
 
     it('should return empty string when jq is enabled manually via [x-ng-jq] with empty string', function() {
       element.setAttribute('x-ng-jq', '');
-      spyOn(document, 'querySelector').andCallFake(function(selector) {
+      spyOn(document, 'querySelector').and.callFake(function(selector) {
         if (selector === '[x-ng-jq]') return element;
       });
       expect(jq()).toBe('');
@@ -1087,7 +1099,7 @@ describe('angular', function() {
 
     it('should return empty string when jq is enabled manually via [ng:jq] with empty string', function() {
       element.setAttribute('ng:jq', '');
-      spyOn(document, 'querySelector').andCallFake(function(selector) {
+      spyOn(document, 'querySelector').and.callFake(function(selector) {
         if (selector === '[ng\\:jq]') return element;
       });
       expect(jq()).toBe('');
@@ -1096,7 +1108,7 @@ describe('angular', function() {
 
     it('should return "jQuery" when jq is enabled manually via [ng-jq] with value "jQuery"', function() {
       element.setAttribute('ng-jq', 'jQuery');
-      spyOn(document, 'querySelector').andCallFake(function(selector) {
+      spyOn(document, 'querySelector').and.callFake(function(selector) {
         if (selector === '[ng-jq]') return element;
       });
       expect(jq()).toBe('jQuery');
@@ -1105,7 +1117,7 @@ describe('angular', function() {
 
     it('should return "jQuery" when jq is enabled manually via [data-ng-jq] with value "jQuery"', function() {
       element.setAttribute('data-ng-jq', 'jQuery');
-      spyOn(document, 'querySelector').andCallFake(function(selector) {
+      spyOn(document, 'querySelector').and.callFake(function(selector) {
         if (selector === '[data-ng-jq]') return element;
       });
       expect(jq()).toBe('jQuery');
@@ -1114,7 +1126,7 @@ describe('angular', function() {
 
     it('should return "jQuery" when jq is enabled manually via [x-ng-jq] with value "jQuery"', function() {
       element.setAttribute('x-ng-jq', 'jQuery');
-      spyOn(document, 'querySelector').andCallFake(function(selector) {
+      spyOn(document, 'querySelector').and.callFake(function(selector) {
         if (selector === '[x-ng-jq]') return element;
       });
       expect(jq()).toBe('jQuery');
@@ -1123,7 +1135,7 @@ describe('angular', function() {
 
     it('should return "jQuery" when jq is enabled manually via [ng:jq] with value "jQuery"', function() {
       element.setAttribute('ng:jq', 'jQuery');
-      spyOn(document, 'querySelector').andCallFake(function(selector) {
+      spyOn(document, 'querySelector').and.callFake(function(selector) {
         if (selector === '[ng\\:jq]') return element;
       });
       expect(jq()).toBe('jQuery');
@@ -1624,7 +1636,7 @@ describe('angular', function() {
 
       expect(function() {
         angularInit(appElement, angular.bootstrap);
-      }).toThrowMatching(
+      }).toThrowError(
         new RegExp('\\[\\$injector:modulerr] Failed to instantiate module doesntexist due to:\\n' +
                    '.*\\[\\$injector:nomod] Module \'doesntexist\' is not available! You either ' +
                    'misspelled the module name or forgot to load it\\.')
@@ -1638,7 +1650,7 @@ describe('angular', function() {
 
       expect(function() {
         angular.bootstrap(element);
-      }).toThrowMatching(
+      }).toThrowError(
         /\[ng:btstrpd\] App Already Bootstrapped with this Element '&lt;div class="?ng\-scope"?( ng[0-9]+="?[0-9]+"?)?&gt;'/i
       );
 
@@ -1650,7 +1662,7 @@ describe('angular', function() {
       angular.bootstrap(document.getElementsByTagName('html')[0]);
       expect(function() {
         angular.bootstrap(document);
-      }).toThrowMatching(
+      }).toThrowError(
         /\[ng:btstrpd\] App Already Bootstrapped with this Element 'document'/i
       );
 
@@ -1659,11 +1671,11 @@ describe('angular', function() {
 
 
     it('should bootstrap in strict mode when ng-strict-di attribute is specified', function() {
-      bootstrapSpy = spyOn(angular, 'bootstrap').andCallThrough();
+      bootstrapSpy = spyOn(angular, 'bootstrap').and.callThrough();
       var appElement = jqLite('<div ng-app="" ng-strict-di></div>');
       angularInit(jqLite('<div></div>').append(appElement[0])[0], bootstrapSpy);
       expect(bootstrapSpy).toHaveBeenCalledOnce();
-      expect(bootstrapSpy.mostRecentCall.args[2].strictDi).toBe(true);
+      expect(bootstrapSpy.calls.mostRecent().args[2].strictDi).toBe(true);
 
       var injector = appElement.injector();
       function testFactory($rootScope) {}
@@ -1851,7 +1863,7 @@ describe('angular', function() {
 
       expect(function() {
         angular.bootstrap(element, ['doesntexist']);
-      }).toThrowMatching(
+      }).toThrowError(
           new RegExp('\\[\\$injector:modulerr\\] Failed to instantiate module doesntexist due to:\\n' +
                      '.*\\[\\$injector:nomod\\] Module \'doesntexist\' is not available! You either ' +
                      'misspelled the module name or forgot to load it\\.'));
@@ -1985,7 +1997,7 @@ describe('angular', function() {
   describe('fromJson', function() {
 
     it('should delegate to JSON.parse', function() {
-      var spy = spyOn(JSON, 'parse').andCallThrough();
+      var spy = spyOn(JSON, 'parse').and.callThrough();
 
       expect(fromJson('{}')).toEqual({});
       expect(spy).toHaveBeenCalled();
@@ -1996,7 +2008,7 @@ describe('angular', function() {
   describe('toJson', function() {
 
     it('should delegate to JSON.stringify', function() {
-      var spy = spyOn(JSON, 'stringify').andCallThrough();
+      var spy = spyOn(JSON, 'stringify').and.callThrough();
 
       expect(toJson({})).toEqual('{}');
       expect(spy).toHaveBeenCalled();

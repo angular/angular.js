@@ -11,7 +11,7 @@ elif [ $JOB = "unit" ]; then
   if [ "$BROWSER_PROVIDER" == "browserstack" ]; then
     BROWSERS="BS_Chrome,BS_Safari,BS_Firefox,BS_IE_9,BS_IE_10,BS_IE_11,BS_iOS"
   else
-    BROWSERS="SL_Chrome,SL_Safari,SL_Firefox,SL_IE_9,SL_IE_10,SL_IE_11,SL_iOS"
+    BROWSERS="SL_Chrome,SL_Firefox,SL_Safari_8,SL_Safari_9,SL_IE_9,SL_IE_10,SL_IE_11,SL_iOS"
   fi
 
   grunt test:promises-aplus
@@ -20,12 +20,12 @@ elif [ $JOB = "unit" ]; then
 elif [ $JOB = "docs-e2e" ]; then
   grunt test:travis-protractor --specs "docs/app/e2e/**/*.scenario.js"
 elif [ $JOB = "e2e" ]; then
-  if [ $TEST_TARGET = "jquery" ]; then
+  if [[ $TEST_TARGET == jquery* ]]; then
     export USE_JQUERY=1
   fi
 
   export TARGET_SPECS="build/docs/ptore2e/**/default_test.js"
-  if [ $TEST_TARGET = "jquery" ]; then
+  if [[ $TEST_TARGET == jquery* ]]; then
     TARGET_SPECS="build/docs/ptore2e/**/jquery_test.js"
   fi
 

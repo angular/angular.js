@@ -118,7 +118,7 @@ components should follow a few simple conventions:
     `@` bindings can be used when the input is a string, especially when the value of the binding doesn't change.
     ```js
       bindings: {
-        hero: `<`,
+        hero: '<',
         comment: '@'
       }
     ```
@@ -133,7 +133,7 @@ components should follow a few simple conventions:
     For a deletion, that means the component doesn't delete the `hero` itself, but sends it back to
     the owner component via the correct event.
     ```html
-        <button ng-click="$ctrl.onDelete({hero: hero})">Delete</button>
+        <button ng-click="$ctrl.onDelete({hero: $ctrl.hero})">Delete</button>
     ```
   - That way, the parent component can decide what to do with the event (e.g. delete an item or update the properties)
     ```js
@@ -230,9 +230,9 @@ it upwards to the heroList component, which updates the original data.
 
   function EditableFieldController($scope, $element, $attrs) {
     var ctrl = this;
-    this.editMode = false;
+    ctrl.editMode = false;
 
-    this.handleModeChange = function() {
+    ctrl.handleModeChange = function() {
       if (ctrl.editMode) {
         ctrl.onUpdate({value: ctrl.fieldValue});
         ctrl.fieldValueCopy = ctrl.fieldValue;
@@ -240,17 +240,17 @@ it upwards to the heroList component, which updates the original data.
       ctrl.editMode = !ctrl.editMode;
     };
 
-    this.reset = function() {
+    ctrl.reset = function() {
       ctrl.fieldValue = ctrl.fieldValueCopy;
     };
 
-    this.$onInit = function() {
+    ctrl.$onInit = function() {
       // Make a copy of the initial value to be able to reset it later
-      this.fieldValueCopy = this.fieldValue;
+      ctrl.fieldValueCopy = ctrl.fieldValue;
 
       // Set a default fieldType
-      if (!this.fieldType) {
-        this.fieldType = 'text';
+      if (!ctrl.fieldType) {
+        ctrl.fieldType = 'text';
       }
     };
   }
@@ -282,7 +282,7 @@ it upwards to the heroList component, which updates the original data.
 </file>
 <file name="editableField.html">
   <span ng-switch="$ctrl.editMode">
-    <input ng-switch-when="true" type="text" ng-model="$ctrl.fieldValue">
+    <input ng-switch-when="true" type="{{$ctrl.fieldType}}" ng-model="$ctrl.fieldValue">
     <span ng-switch-default>{{$ctrl.fieldValue}}</span>
   </span>
   <button ng-click="$ctrl.handleModeChange()">{{$ctrl.editMode ? 'Save' : 'Edit'}}</button>
@@ -337,8 +337,15 @@ directly into your component without creating an extra route controller:
 
 Directives can require the controllers of other directives to enable communication
 between each other. This can be achieved in a component by providing an
-object mapping for the `require` property.  Here is a tab pane example built
-from components:
+object mapping for the `require` property. The object keys specify the property names under which
+the required controllers (object values) will be bound to the requiring component's controller.
+
+<div class="alert alert-warning">
+Note that the required controllers will not be available during the instantiation of the controller,
+but they are guaranteed to be available just before the `$onInit` method is executed!
+</div>
+
+Here is a tab pane example built from components:
 
 <example module="docsTabsExample">
   <file name="script.js">
@@ -420,12 +427,13 @@ The examples use the [Jasmine](http://jasmine.github.io/) testing framework.
 **Controller Test:**
 ```js
 describe('component: heroDetail', function() {
-  var component, scope, hero;
+  var component, scope, hero, $componentController;
 
   beforeEach(module('simpleComponent'));
 
-  beforeEach(inject(function($rootScope, $componentController) {
+  beforeEach(inject(function($rootScope, _$componentController_) {
     scope = $rootScope.$new();
+    $componentController = _$componentController_;
     hero = {name: 'Wolverine'};
   }));
 

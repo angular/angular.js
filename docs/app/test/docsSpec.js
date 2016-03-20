@@ -3,7 +3,6 @@ describe("DocsController", function() {
 
   angular.module('fake', [])
     .value('$cookies', {})
-    .value('openPlunkr', function() {})
     .value('NG_PAGES', {})
     .value('NG_NAVIGATION', {})
     .value('NG_VERSION', {});
@@ -26,7 +25,7 @@ describe("DocsController", function() {
 
     it("should update the Google Analytics with $location.path if currentPage is missing", inject(function($window, $location) {
       $window._gaq = [];
-      spyOn($location, 'path').andReturn('x/y/z');
+      spyOn($location, 'path').and.returnValue('x/y/z');
       $scope.$broadcast('$includeContentLoaded');
       expect($window._gaq.pop()).toEqual(['_trackPageview', 'x/y/z']);
     }));

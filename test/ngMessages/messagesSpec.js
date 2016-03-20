@@ -437,9 +437,9 @@ describe('ngMessages', function() {
 
     // Since we have spied on the `leave` method, the message node is still in the DOM
     expect($animate.leave).toHaveBeenCalledOnce();
-    var nodeToRemove = $animate.leave.mostRecentCall.args[0][0];
+    var nodeToRemove = $animate.leave.calls.mostRecent().args[0][0];
     expect(nodeToRemove).toBe(oldMessageNode);
-    $animate.leave.reset();
+    $animate.leave.calls.reset();
 
     // Add the message back in
     $rootScope.col = { primary: true };

@@ -223,7 +223,7 @@ describe('parser', function() {
       /* global AST: false */
       createAst = function() {
         var lexer = new Lexer({csp: false});
-        var ast = new AST(lexer, {csp: false});
+        var ast = new AST(lexer, {csp: false, literals: {'true': true, 'false': false, 'undefined': undefined, 'null': null}});
         return ast.ast.apply(ast, arguments);
       };
     });
@@ -1682,6 +1682,19 @@ describe('parser', function() {
   }]));
 
   forEach([true, false], function(cspEnabled) {
+    beforeEach(module(['$parseProvider', function(parseProvider) {
+      parseProvider.addLiteral('Infinity', Infinity);
+    }]));
+
+    it('should allow extending literals with csp ' + cspEnabled, inject(function($rootScope) {
+      expect($rootScope.$eval("Infinity")).toEqual(Infinity);
+      expect($rootScope.$eval("-Infinity")).toEqual(-Infinity);
+      expect(function() {$rootScope.$eval("Infinity = 1");}).toThrow();
+      expect($rootScope.$eval("Infinity")).toEqual(Infinity);
+    }));
+  });
+
+  forEach([true, false], function(cspEnabled) {
     describe('csp: ' + cspEnabled, function() {
 
       beforeEach(module(function() {
@@ -1711,7 +1724,7 @@ describe('parser', function() {
         expect(scope.$eval("+'1'")).toEqual(+'1');
         expect(scope.$eval("-'1'")).toEqual(-'1');
         expect(scope.$eval("+undefined")).toEqual(0);
-        expect(scope.$eval("-undefined")).toEqual(0);
+        expect(scope.$eval("-undefined")).toBe(0);
         expect(scope.$eval("+null")).toEqual(+null);
         expect(scope.$eval("-null")).toEqual(-null);
         expect(scope.$eval("+false")).toEqual(+false);
@@ -1914,7 +1927,7 @@ describe('parser', function() {
         expect(scope.$eval('a.b.c.d')).toBeUndefined();
         scope.a = undefined;
         expect(scope.$eval('a - b')).toBe(0);
-        expect(scope.$eval('a + b')).toBe(undefined);
+        expect(scope.$eval('a + b')).toBeUndefined();
         scope.a = 0;
         expect(scope.$eval('a - b')).toBe(0);
         expect(scope.$eval('a + b')).toBe(0);
@@ -3077,7 +3090,7 @@ describe('parser', function() {
           $rootScope.$digest();
           $rootScope.foo = 'foo';
           $rootScope.$digest();
-          expect(fn()).toEqual(null);
+          expect(fn()).toEqual(undefined);
         }));
 
         describe('literal expressions', function() {
@@ -3446,16 +3459,16 @@ describe('parser', function() {
           var value = 'foo';
           var spy = jasmine.createSpy();
 
-          spy.andCallFake(function() { return value; });
+          spy.and.callFake(function() { return value; });
           scope.foo = spy;
           scope.$watch("foo() | uppercase");
           scope.$digest();
-          expect(spy.calls.length).toEqual(2);
+          expect(spy).toHaveBeenCalledTimes(2);
           scope.$digest();
-          expect(spy.calls.length).toEqual(3);
+          expect(spy).toHaveBeenCalledTimes(3);
           value = 'bar';
           scope.$digest();
-          expect(spy.calls.length).toEqual(5);
+          expect(spy).toHaveBeenCalledTimes(5);
         }));
 
         it('should invoke all statements in multi-statement expressions', inject(function($parse) {

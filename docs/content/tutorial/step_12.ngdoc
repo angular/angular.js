@@ -38,7 +38,7 @@ We are using [Bower][bower] to install client side dependencies.  This step upda
   "dependencies": {
     "angular": "1.4.x",
     "angular-mocks": "1.4.x",
-    "jquery": "~2.1.1",
+    "jquery": "~2.2.1",
     "bootstrap": "~3.1.1",
     "angular-route": "1.4.x",
     "angular-resource": "1.4.x",
@@ -49,7 +49,7 @@ We are using [Bower][bower] to install client side dependencies.  This step upda
 
 * `"angular-animate": "1.4.x"` tells bower to install a version of the
 angular-animate component that is compatible with version 1.4.x.
-* `"jquery": "~2.1.1"` tells bower to install the 2.1.1 version of jQuery.  Note that this is not an
+* `"jquery": "~2.2.1"` tells bower to install the 2.2.1 version of jQuery.  Note that this is not an
 Angular library, it is the standard jQuery library.  We can use bower to install a wide range of 3rd
 party libraries.
 

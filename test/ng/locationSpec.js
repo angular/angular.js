@@ -387,7 +387,7 @@ describe('$location', function() {
     describe('state', function() {
       it('should set $$state and return itself', function() {
         var locationUrl = createLocationHtml5Url();
-        expect(locationUrl.$$state).toEqual(null);
+        expect(locationUrl.$$state).toEqual(undefined);
 
         var returned = locationUrl.state({a: 2});
         expect(locationUrl.$$state).toEqual({a: 2});
@@ -647,7 +647,7 @@ describe('$location', function() {
       mockUpBrowser({initialUrl:'http://new.com/a/b#', baseHref:'/base/'});
       inject(function($rootScope, $browser, $location) {
         $browser.url('http://new.com/a/b');
-        var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+        var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').and.callThrough();
         $rootScope.$digest();
         expect($browserUrl).not.toHaveBeenCalled();
       });
@@ -710,7 +710,7 @@ describe('$location', function() {
         initService({html5Mode: true, supportHistory: false});
         mockUpBrowser({initialUrl:'http://server/app/', baseHref:'/app/'});
         inject(function($rootScope, $location, $browser) {
-          var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+          var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').and.callThrough();
 
           updatePathOnLocationChangeSuccessTo('/Home');
 
@@ -718,7 +718,7 @@ describe('$location', function() {
 
           expect($browser.url()).toEqual('http://server/app/#/Home');
           expect($location.path()).toEqual('/Home');
-          expect($browserUrl.calls.length).toEqual(1);
+          expect($browserUrl).toHaveBeenCalledTimes(1);
         });
       });
 
@@ -726,7 +726,7 @@ describe('$location', function() {
         initService({html5Mode: true, supportHistory: false});
         mockUpBrowser({initialUrl:'http://server/app/Home', baseHref:'/app/'});
         inject(function($rootScope, $location, $browser, $window) {
-          var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+          var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').and.callThrough();
 
           updatePathOnLocationChangeSuccessTo('/');
 
@@ -734,8 +734,8 @@ describe('$location', function() {
 
           expect($browser.url()).toEqual('http://server/app/#/');
           expect($location.path()).toEqual('/');
-          expect($browserUrl.calls.length).toEqual(1);
-          expect($browserUrl.calls[0].args).toEqual(['http://server/app/#/', false, null]);
+          expect($browserUrl).toHaveBeenCalledTimes(1);
+          expect($browserUrl.calls.argsFor(0)).toEqual(['http://server/app/#/', false, null]);
         });
       });
 
@@ -743,15 +743,15 @@ describe('$location', function() {
         initService({html5Mode: true, supportHistory: false});
         mockUpBrowser({initialUrl:'http://server/app/', baseHref:'/app/'});
         inject(function($rootScope, $location, $browser) {
-          var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+          var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').and.callThrough();
 
           updatePathOnLocationChangeSuccessTo('/Home');
           $rootScope.$digest();
 
           expect($browser.url()).toEqual('http://server/app/#/Home');
           expect($location.path()).toEqual('/Home');
-          expect($browserUrl.calls.length).toEqual(1);
-          expect($browserUrl.calls[0].args).toEqual(['http://server/app/#/Home', false, null]);
+          expect($browserUrl).toHaveBeenCalledTimes(1);
+          expect($browserUrl.calls.argsFor(0)).toEqual(['http://server/app/#/Home', false, null]);
         });
       });
 
@@ -759,14 +759,14 @@ describe('$location', function() {
         initService({html5Mode: true, supportHistory: false});
         mockUpBrowser({initialUrl:'http://server/app/', baseHref:'/app/'});
         inject(function($rootScope, $location, $browser) {
-          var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+          var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').and.callThrough();
 
           updatePathOnLocationChangeSuccessTo('/');
           $rootScope.$digest();
 
           expect($browser.url()).toEqual('http://server/app/#/');
           expect($location.path()).toEqual('/');
-          expect($browserUrl.calls.length).toEqual(1);
+          expect($browserUrl).toHaveBeenCalledTimes(1);
         });
       });
     });
@@ -778,7 +778,7 @@ describe('$location', function() {
         initService({html5Mode: true, supportHistory: true});
         mockUpBrowser({initialUrl:'http://server/app/', baseHref:'/app/'});
         inject(function($rootScope, $injector, $browser) {
-          var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+          var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').and.callThrough();
 
           var $location = $injector.get('$location');
           updatePathOnLocationChangeSuccessTo('/Home');
@@ -787,7 +787,7 @@ describe('$location', function() {
 
           expect($browser.url()).toEqual('http://server/app/Home');
           expect($location.path()).toEqual('/Home');
-          expect($browserUrl.calls.length).toEqual(1);
+          expect($browserUrl).toHaveBeenCalledTimes(1);
         });
       });
 
@@ -795,7 +795,7 @@ describe('$location', function() {
         initService({html5Mode: true, supportHistory: true});
         mockUpBrowser({initialUrl:'http://server/app/', baseHref:'/app/'});
         inject(function($rootScope, $injector, $browser) {
-          var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+          var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').and.callThrough();
 
           var $location = $injector.get('$location');
           updatePathOnLocationChangeSuccessTo('/');
@@ -804,7 +804,7 @@ describe('$location', function() {
 
           expect($browser.url()).toEqual('http://server/app/');
           expect($location.path()).toEqual('/');
-          expect($browserUrl.calls.length).toEqual(0);
+          expect($browserUrl).not.toHaveBeenCalled();
         });
       });
 
@@ -812,7 +812,7 @@ describe('$location', function() {
         initService({html5Mode: true, supportHistory: true});
         mockUpBrowser({initialUrl:'http://server/app/', baseHref:'/app/'});
         inject(function($rootScope, $injector, $browser) {
-          var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+          var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').and.callThrough();
 
           var $location = $injector.get('$location');
           updatePathOnLocationChangeSuccessTo('/Home');
@@ -821,7 +821,7 @@ describe('$location', function() {
 
           expect($browser.url()).toEqual('http://server/app/Home');
           expect($location.path()).toEqual('/Home');
-          expect($browserUrl.calls.length).toEqual(1);
+          expect($browserUrl).toHaveBeenCalledTimes(1);
         });
       });
 
@@ -829,7 +829,7 @@ describe('$location', function() {
         initService({html5Mode: true, supportHistory: true});
         mockUpBrowser({initialUrl:'http://server/app/', baseHref:'/app/'});
         inject(function($rootScope, $injector, $browser) {
-          var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+          var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').and.callThrough();
 
           var $location = $injector.get('$location');
           updatePathOnLocationChangeSuccessTo('/');
@@ -838,7 +838,7 @@ describe('$location', function() {
 
           expect($browser.url()).toEqual('http://server/app/');
           expect($location.path()).toEqual('/');
-          expect($browserUrl.calls.length).toEqual(0);
+          expect($browserUrl).not.toHaveBeenCalled();
         });
       });
     });
@@ -851,7 +851,7 @@ describe('$location', function() {
       initService({html5Mode:false,hashPrefix: '!',supportHistory: true});
       mockUpBrowser({initialUrl:'http://new.com/a/b#!', baseHref:'/a/b'});
       inject(function($window, $browser, $location, $rootScope) {
-        spyOn($location, '$$parse').andCallThrough();
+        spyOn($location, '$$parse').and.callThrough();
         $window.location.href = 'http://new.com/a/b#!/aaa';
         $browser.$$checkUrlChange();
         expect($location.absUrl()).toBe('http://new.com/a/b#!/aaa');
@@ -906,7 +906,7 @@ describe('$location', function() {
       initService({html5Mode:false,hashPrefix: '!',supportHistory: true});
       mockUpBrowser({initialUrl:'http://new.com/a/b#!', baseHref:'/a/b'});
       inject(function($rootScope, $browser, $location) {
-        var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+        var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').and.callThrough();
         $location.path('/new/path');
         expect($browserUrl).not.toHaveBeenCalled();
         $rootScope.$apply();
@@ -921,7 +921,7 @@ describe('$location', function() {
       initService({html5Mode:false,hashPrefix: '!',supportHistory: true});
       mockUpBrowser({initialUrl:'http://new.com/a/b#!', baseHref:'/a/b'});
       inject(function($rootScope, $browser, $location) {
-        var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+        var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').and.callThrough();
         $location.path('/new/path');
 
         $rootScope.$watch(function() {
@@ -939,12 +939,12 @@ describe('$location', function() {
       initService({html5Mode:false,hashPrefix: '!',supportHistory: true});
       mockUpBrowser({initialUrl:'http://new.com/a/b#!', baseHref:'/a/b'});
       inject(function($rootScope, $browser, $location) {
-        var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+        var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').and.callThrough();
         $location.path('/n/url').replace();
         $rootScope.$apply();
 
         expect($browserUrl).toHaveBeenCalledOnce();
-        expect($browserUrl.mostRecentCall.args).toEqual(['http://new.com/a/b#!/n/url', true, null]);
+        expect($browserUrl.calls.mostRecent().args).toEqual(['http://new.com/a/b#!/n/url', true, null]);
         expect($location.$$replace).toBe(false);
       });
     });
@@ -1025,12 +1025,12 @@ describe('$location', function() {
       initService({html5Mode:true, supportHistory: true});
       mockUpBrowser({initialUrl:'http://new.com/a/b/', baseHref:'/a/b/'});
       inject(function($rootScope, $location, $browser) {
-        var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+        var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').and.callThrough();
         $location.path('/n/url').state({a: 2}).replace();
         $rootScope.$apply();
 
         expect($browserUrl).toHaveBeenCalledOnce();
-        expect($browserUrl.mostRecentCall.args).toEqual(['http://new.com/a/b/n/url', true, {a: 2}]);
+        expect($browserUrl.calls.mostRecent().args).toEqual(['http://new.com/a/b/n/url', true, {a: 2}]);
         expect($location.$$replace).toBe(false);
         expect($location.$$state).toEqual({a: 2});
       });
@@ -1041,12 +1041,12 @@ describe('$location', function() {
       mockUpBrowser({initialUrl:'http://new.com/a/b/', baseHref:'/a/b/'});
 
       inject(function($rootScope, $location, $browser) {
-        var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+        var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').and.callThrough();
         $location.path('/n/url').state({a: 2}).replace().state({b: 3}).path('/o/url');
         $rootScope.$apply();
 
         expect($browserUrl).toHaveBeenCalledOnce();
-        expect($browserUrl.mostRecentCall.args).toEqual(['http://new.com/a/b/o/url', true, {b: 3}]);
+        expect($browserUrl.calls.mostRecent().args).toEqual(['http://new.com/a/b/o/url', true, {b: 3}]);
         expect($location.$$replace).toBe(false);
         expect($location.$$state).toEqual({b: 3});
       });
@@ -1057,12 +1057,12 @@ describe('$location', function() {
       mockUpBrowser({initialUrl:'http://new.com/a/b/', baseHref:'/a/b/'});
 
       inject(function($rootScope, $location, $browser) {
-        var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+        var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').and.callThrough();
         $location.state({a: 2}).replace().state({b: 3});
         $rootScope.$apply();
 
         expect($browserUrl).toHaveBeenCalledOnce();
-        expect($browserUrl.mostRecentCall.args).toEqual(['http://new.com/a/b/', true, {b: 3}]);
+        expect($browserUrl.calls.mostRecent().args).toEqual(['http://new.com/a/b/', true, {b: 3}]);
         expect($location.$$replace).toBe(false);
         expect($location.$$state).toEqual({b: 3});
       });
@@ -1141,12 +1141,12 @@ describe('$location', function() {
         $location.url('/foo').state({a: 2});
         $rootScope.$apply();
 
-        var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+        var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').and.callThrough();
         $location.url('/bar');
         $rootScope.$apply();
 
         expect($browserUrl).toHaveBeenCalledOnce();
-        expect($browserUrl.mostRecentCall.args).toEqual(['http://new.com/a/b/bar', false, null]);
+        expect($browserUrl.calls.mostRecent().args).toEqual(['http://new.com/a/b/bar', false, null]);
       });
     });
 
@@ -1890,7 +1890,7 @@ describe('$location', function() {
         var event = {
           target: jqLite(window.document.body).find('a')[0],
           preventDefault: jasmine.createSpy('preventDefault'),
-          isDefaultPrevented: jasmine.createSpy().andReturn(false)
+          isDefaultPrevented: jasmine.createSpy().and.returnValue(false)
         };
 
 
@@ -1921,7 +1921,7 @@ describe('$location', function() {
         var event = {
           target: jqLite(window.document.body).find('a')[0],
           preventDefault: jasmine.createSpy('preventDefault'),
-          isDefaultPrevented: jasmine.createSpy().andReturn(false)
+          isDefaultPrevented: jasmine.createSpy().and.returnValue(false)
         };
 
 

@@ -83,7 +83,7 @@ describe('a', function() {
 
 
   it('should not preventDefault if anchor element is replaced with href-containing element', function() {
-    spyOn(jqLite.prototype, 'on').andCallThrough();
+    spyOn(jqLite.prototype, 'on').and.callThrough();
     element = $compile('<a link-to="https://www.google.com">')($rootScope);
     $rootScope.$digest();
 
@@ -100,7 +100,7 @@ describe('a', function() {
 
 
   it('should preventDefault if anchor element is replaced with element without href attribute', function() {
-    spyOn(jqLite.prototype, 'on').andCallThrough();
+    spyOn(jqLite.prototype, 'on').and.callThrough();
     element = $compile('<a link-not="https://www.google.com">')($rootScope);
     $rootScope.$digest();
 

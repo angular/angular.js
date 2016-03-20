@@ -23,9 +23,9 @@ if (window.jQuery) {
       expect(divSpy).not.toHaveBeenCalled();
 
       expect(spy1).toHaveBeenCalled();
-      expect(spy1.callCount).toEqual(1);
+      expect(spy1).toHaveBeenCalledTimes(1);
       expect(spy2).toHaveBeenCalled();
-      expect(spy2.callCount).toEqual(1);
+      expect(spy2).toHaveBeenCalledTimes(1);
     });
 
     describe('$detach event', function() {
@@ -82,7 +82,7 @@ if (window.jQuery) {
       it('should fire only on matched elements on remove(selector)', function() {
         doc.find('span').remove('.second');
         expect(spy2).toHaveBeenCalled();
-        expect(spy2.callCount).toEqual(1);
+        expect(spy2).toHaveBeenCalledTimes(1);
       });
 
       it('should not fire on html()', function() {

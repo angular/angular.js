@@ -142,7 +142,8 @@ describe("animations", function() {
         from: { height: '50px' },
         to: { width: '50px' },
         addClass: 'one',
-        removeClass: 'two'
+        removeClass: 'two',
+        domOperation: undefined
       };
 
       var copiedOptions = copy(initialOptions);
@@ -1911,14 +1912,16 @@ describe("animations", function() {
       expect(capturedElement).toBe(element);
     }));
 
-    it('should remove the event listener if the element is removed',
+    it('should remove all event listeners when the element is removed',
       inject(function($animate, $rootScope, $rootElement) {
 
       element = jqLite('<div></div>');
 
       var count = 0;
+      var runner;
+
       $animate.on('enter', element, counter);
-      $animate.on('addClass', element, counter);
+      $animate.on('addClass', element[0], counter);
 
       function counter(element, phase) {
         if (phase === 'start') {
@@ -1926,18 +1929,45 @@ describe("animations", function() {
         }
       }
 
-      $animate.enter(element, $rootElement);
+      runner = $animate.enter(element, $rootElement);
       $rootScope.$digest();
-      $animate.flush();
+      expect(capturedAnimation).toBeTruthy();
 
+      $animate.flush();
+      runner.end(); // Otherwise the class animation won't run because enter is still in progress
       expect(count).toBe(1);
+
+      capturedAnimation = null;
+
+      $animate.addClass(element, 'blue');
+      $rootScope.$digest();
+      expect(capturedAnimation).toBeTruthy();
+
+      $animate.flush();
+      expect(count).toBe(2);
+
+      capturedAnimation = null;
+
       element.remove();
 
-      $animate.addClass(element, 'viljami');
+      runner = $animate.enter(element, $rootElement);
       $rootScope.$digest();
 
+      expect(capturedAnimation).toBeTruthy();
+
       $animate.flush();
-      expect(count).toBe(1);
+      runner.end(); // Otherwise the class animation won't run because enter is still in progress
+
+      expect(count).toBe(2);
+
+      capturedAnimation = null;
+
+      $animate.addClass(element, 'red');
+      $rootScope.$digest();
+      expect(capturedAnimation).toBeTruthy();
+
+      $animate.flush();
+      expect(count).toBe(2);
     }));
 
     it('should always detect registered callbacks after one postDigest has fired',
@@ -1954,15 +1984,15 @@ describe("animations", function() {
       $rootScope.$digest();
       registerCallback();
 
-      expect(spy.callCount).toBe(0);
+      expect(spy).not.toHaveBeenCalled();
       $animate.flush();
 
       // this is not 3 since the 3rd callback
       // was added after the first callback
       // was fired
-      expect(spy.callCount).toBe(2);
+      expect(spy).toHaveBeenCalledTimes(2);
 
-      spy.reset();
+      spy.calls.reset();
       runner.end();
 
       $animate.flush();
@@ -1970,7 +2000,7 @@ describe("animations", function() {
       // now we expect all three callbacks
       // to fire when the animation ends since
       // the callback detection happens again
-      expect(spy.callCount).toBe(3);
+      expect(spy).toHaveBeenCalledTimes(3);
 
       function registerCallback() {
         $animate.on('enter', element, spy);
@@ -2114,7 +2144,6 @@ describe("animations", function() {
         inject(function($animate, $rootScope, $document) {
 
           var callbackTriggered = false;
-
 
           $animate.on($event, $document[0], function() {
             callbackTriggered = true;

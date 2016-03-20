@@ -47,20 +47,20 @@ describe('module loader', function() {
 
     expect(myModule.requires).toEqual(['other']);
     expect(myModule._invokeQueue).toEqual([
-      ['$provide', 'constant', ['abc', 123]],
-      ['$provide', 'decorator', ['dk', 'dv']],
-      ['$provide', 'provider', ['sk', 'sv']],
-      ['$provide', 'factory', ['fk', 'fv']],
-      ['$provide', 'service', ['a', 'aa']],
-      ['$provide', 'value', ['k', 'v']],
-      ['$filterProvider', 'register', ['f', 'ff']],
-      ['$compileProvider', 'directive', ['d', 'dd']],
-      ['$compileProvider', 'component', ['c', 'cc']],
-      ['$controllerProvider', 'register', ['ctrl', 'ccc']]
+      ['$provide', 'constant', jasmine.objectContaining(['abc', 123])],
+      ['$provide', 'decorator', jasmine.objectContaining(['dk', 'dv'])],
+      ['$provide', 'provider', jasmine.objectContaining(['sk', 'sv'])],
+      ['$provide', 'factory', jasmine.objectContaining(['fk', 'fv'])],
+      ['$provide', 'service', jasmine.objectContaining(['a', 'aa'])],
+      ['$provide', 'value', jasmine.objectContaining(['k', 'v'])],
+      ['$filterProvider', 'register', jasmine.objectContaining(['f', 'ff'])],
+      ['$compileProvider', 'directive', jasmine.objectContaining(['d', 'dd'])],
+      ['$compileProvider', 'component', jasmine.objectContaining(['c', 'cc'])],
+      ['$controllerProvider', 'register', jasmine.objectContaining(['ctrl', 'ccc'])]
     ]);
     expect(myModule._configBlocks).toEqual([
-      ['$injector', 'invoke', ['config']],
-      ['$injector', 'invoke', ['init2']]
+      ['$injector', 'invoke', jasmine.objectContaining(['config'])],
+      ['$injector', 'invoke', jasmine.objectContaining(['init2'])]
     ]);
     expect(myModule._runBlocks).toEqual(['runBlock']);
   });

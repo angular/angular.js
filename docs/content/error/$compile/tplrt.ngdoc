@@ -31,7 +31,7 @@ single root element, like the `div` element in this template:
 <div><b>Hello</b> World!</div>
 ```
 
-An an invalid template to be used with this directive is one that defines multiple root nodes or
+An invalid template to be used with this directive is one that defines multiple root nodes or
 elements. For example:
 
 ```
@@ -43,7 +43,7 @@ well.  Consider the following template:
 
 ```
 <div class='container'>
-  <div class='wrapper>
+  <div class='wrapper'>
      ...
   </div> <!-- wrapper -->
 </div> <!-- container -->

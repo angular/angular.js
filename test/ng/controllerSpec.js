@@ -78,6 +78,23 @@ describe('$controller', function() {
     });
 
 
+    it('should allow checking the availability of a controller', function() {
+      $controllerProvider.register('FooCtrl', noop);
+      $controllerProvider.register('BarCtrl', ['dep1', 'dep2', noop]);
+      $controllerProvider.register({
+        'BazCtrl': noop,
+        'QuxCtrl': ['dep1', 'dep2', noop]
+      });
+
+      expect($controllerProvider.has('FooCtrl')).toBe(true);
+      expect($controllerProvider.has('BarCtrl')).toBe(true);
+      expect($controllerProvider.has('BazCtrl')).toBe(true);
+      expect($controllerProvider.has('QuxCtrl')).toBe(true);
+
+      expect($controllerProvider.has('UnknownCtrl')).toBe(false);
+    });
+
+
     it('should instantiate a controller defined on window if allowGlobals is set',
       inject(function($window) {
         var scope = {};
