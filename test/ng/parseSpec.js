@@ -1739,6 +1739,7 @@ describe('parser', function() {
         expect(scope.$eval("!true")).toBeFalsy();
         expect(scope.$eval("1==1")).toBeTruthy();
         expect(scope.$eval("1==true")).toBeTruthy();
+        expect(scope.$eval('1!=true')).toBeFalsy();
         expect(scope.$eval("1===1")).toBeTruthy();
         expect(scope.$eval("1==='1'")).toBeFalsy();
         expect(scope.$eval("1===true")).toBeFalsy();

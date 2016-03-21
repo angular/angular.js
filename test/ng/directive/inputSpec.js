@@ -2953,6 +2953,19 @@ describe('input', function() {
     });
 
 
+    // We generally use strict comparison. This tests behavior we cannot change without a BC
+    it('should use non-strict comparison the evaluate checked-ness', function() {
+      var inputElm = helper.compileInput(
+          '<input type="radio" ng-model="model" value="0" />');
+
+      $rootScope.$apply("model = '0'");
+      expect(inputElm[0].checked).toBe(true);
+
+      $rootScope.$apply("model = 0");
+      expect(inputElm[0].checked).toBe(true);
+    });
+
+
     it('should allow {{expr}} as value', function() {
       $rootScope.some = 11;
       var inputElm = helper.compileInput(

@@ -442,7 +442,7 @@ angular.scenario.dsl('element', function() {
   angular.forEach(KEY_VALUE_METHODS, function(methodName) {
     chain[methodName] = function(name, value) {
       var args = arguments,
-          futureName = (args.length == 1)
+          futureName = (args.length === 1)
               ? "element '" + this.label + "' get " + methodName + " '" + name + "'"
               : "element '" + this.label + "' set " + methodName + " '" + name + "' to " + "'" +
                 value + "'";

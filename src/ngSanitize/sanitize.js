@@ -364,7 +364,7 @@ function htmlParser(html, handler) {
 
     var nextNode;
     if (!(nextNode = node.firstChild)) {
-      if (node.nodeType == 1) {
+      if (node.nodeType === 1) {
         handler.end(node.nodeName.toLowerCase());
       }
       nextNode = node.nextSibling;
@@ -373,7 +373,7 @@ function htmlParser(html, handler) {
           node = node.parentNode;
           if (node === inertBodyElement) break;
           nextNode = node.nextSibling;
-          if (node.nodeType == 1) {
+          if (node.nodeType === 1) {
             handler.end(node.nodeName.toLowerCase());
           }
         }

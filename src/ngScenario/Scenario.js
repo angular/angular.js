@@ -113,7 +113,7 @@ angular.scenario.setUpAndRun = function(config) {
   }
 
   angular.forEach(angular.scenario.output, function(fn, name) {
-    if (!output.length || output.indexOf(name) != -1) {
+    if (!output.length || output.indexOf(name) !== -1) {
       var context = body.append('<div></div>').find('div:last');
       context.attr('id', name);
       fn.call({}, context, $runner, objModel);
@@ -272,9 +272,9 @@ _jQuery.fn.bindings = function(windowJquery, bindExp) {
     match = function(actualExp) {
       if (actualExp) {
         actualExp = actualExp.replace(/\s/g, '');
-        if (actualExp == bindExp) return true;
+        if (actualExp === bindExp) return true;
         if (actualExp.indexOf(bindExp) === 0) {
-          return actualExp.charAt(bindExp.length) == '|';
+          return actualExp.charAt(bindExp.length) === '|';
         }
       }
     };
