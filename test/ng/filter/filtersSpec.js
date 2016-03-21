@@ -35,7 +35,11 @@ describe('filters', function() {
 
     it('should format according to different patterns', function() {
       pattern.gSize = 2;
-      var num = formatNumber(1234567.89, pattern, ',', '.');
+      var num = formatNumber(99, pattern, ',', '.');
+      expect(num).toBe('99');
+      num = formatNumber(888, pattern, ',', '.');
+      expect(num).toBe('888');
+      num = formatNumber(1234567.89, pattern, ',', '.');
       expect(num).toBe('12,34,567.89');
       num = formatNumber(1234.56, pattern, ',', '.');
       expect(num).toBe('1,234.56');
