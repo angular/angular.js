@@ -118,7 +118,7 @@ describe('boolean attr directives', function() {
 describe('ngSrc', function() {
   it('should interpolate the expression and bind to src with raw same-domain value',
       inject(function($compile, $rootScope) {
-        var element = $compile('<img ng-src="{{id}}"></div>')($rootScope);
+        var element = $compile('<img ng-src="{{id}}"></img>')($rootScope);
 
         $rootScope.$digest();
         expect(element.attr('src')).toBeUndefined();
@@ -133,7 +133,7 @@ describe('ngSrc', function() {
 
 
   it('should interpolate the expression and bind to src with a trusted value', inject(function($compile, $rootScope, $sce) {
-    var element = $compile('<iframe ng-src="{{id}}"></div>')($rootScope);
+    var element = $compile('<iframe ng-src="{{id}}"></iframe>')($rootScope);
 
     $rootScope.$digest();
     expect(element.attr('src')).toBeUndefined();
@@ -181,7 +181,7 @@ describe('ngSrc', function() {
 
   it('should NOT interpolate a wrongly typed expression', inject(function($compile, $rootScope, $sce) {
     expect(function() {
-      var element = $compile('<iframe ng-src="{{id}}"></div>')($rootScope);
+      var element = $compile('<iframe ng-src="{{id}}"></iframe>')($rootScope);
       $rootScope.$apply(function() {
         $rootScope.id = $sce.trustAsUrl('http://somewhere');
       });
@@ -198,19 +198,19 @@ describe('ngSrc', function() {
           // then calling element.setAttribute('src', 'foo') doesn't do anything, so we need
           // to set the property as well to achieve the desired effect
 
-          var element = $compile('<img ng-src="{{id}}"></div>')($rootScope);
+          var element = $compile('<img ng-src="{{id}}"></img>')($rootScope);
 
           $rootScope.$digest();
           expect(element.prop('src')).toBeUndefined();
           dealoc(element);
 
-          element = $compile('<img ng-src="some/"></div>')($rootScope);
+          element = $compile('<img ng-src="some/"></img>')($rootScope);
 
           $rootScope.$digest();
           expect(element.prop('src')).toEqual('some/');
           dealoc(element);
 
-          element = $compile('<img ng-src="{{id}}"></div>')($rootScope);
+          element = $compile('<img ng-src="{{id}}"></img>')($rootScope);
           $rootScope.$apply(function() {
             $rootScope.id = $sce.trustAsResourceUrl('http://somewhere');
           });
@@ -296,9 +296,8 @@ describe('ngHref', function() {
     // IE11/10/Edge fail when setting a href to a URL containing a % that isn't a valid escape sequence
     // See https://github.com/angular/angular.js/issues/13388
     it('should throw error if ng-href contains a non-escaped percent symbol', inject(function($rootScope, $compile) {
-      element = $compile('<a ng-href="http://www.google.com/{{\'a%link\'}}">')($rootScope);
-
       expect(function() {
+        element = $compile('<a ng-href="http://www.google.com/{{\'a%link\'}}">')($rootScope);
         $rootScope.$digest();
       }).toThrow();
     }));

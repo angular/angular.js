@@ -537,7 +537,7 @@ describe('$$ngMessageFormat', function() {
         }).toThrowMinErr(
                   "$interpolate", "noconcat", "Error while interpolating: {{foo}}{{bar}}\n" +
                   "Strict Contextual Escaping disallows interpolations that concatenate multiple " +
-                  "expressions when a trusted value is required.  See " +
+                  "expressions in some secure contexts. See " +
                   "http://docs.angularjs.org/api/ng.$sce");
       }));
     });
@@ -626,19 +626,19 @@ describe('$$ngMessageFormat', function() {
           }).toThrowMinErr(
               "$interpolate", "noconcat", "Error while interpolating: constant/{{var}}\nStrict " +
               "Contextual Escaping disallows interpolations that concatenate multiple expressions " +
-              "when a trusted value is required.  See http://docs.angularjs.org/api/ng.$sce");
+              "in some secure contexts. See http://docs.angularjs.org/api/ng.$sce");
         expect(function() {
           $interpolate('{{var}}/constant', true, isTrustedContext);
         }).toThrowMinErr(
             "$interpolate", "noconcat", "Error while interpolating: {{var}}/constant\nStrict " +
               "Contextual Escaping disallows interpolations that concatenate multiple expressions " +
-              "when a trusted value is required.  See http://docs.angularjs.org/api/ng.$sce");
+              "in some secure contexts. See http://docs.angularjs.org/api/ng.$sce");
         expect(function() {
             $interpolate('{{foo}}{{bar}}', true, isTrustedContext);
           }).toThrowMinErr(
               "$interpolate", "noconcat", "Error while interpolating: {{foo}}{{bar}}\nStrict " +
               "Contextual Escaping disallows interpolations that concatenate multiple expressions " +
-              "when a trusted value is required.  See http://docs.angularjs.org/api/ng.$sce");
+              "in some secure contexts. See http://docs.angularjs.org/api/ng.$sce");
       }));
 
       it('should interpolate a multi-part expression when isTrustedContext is false', inject(function($interpolate) {

@@ -9760,39 +9760,6 @@ describe('$compile', function() {
 
   describe('img[src] sanitization', function() {
 
-    it('should NOT require trusted values for img src', inject(function($rootScope, $compile, $sce) {
-      element = $compile('<img src="{{testUrl}}"></img>')($rootScope);
-      $rootScope.testUrl = 'http://example.com/image.png';
-      $rootScope.$digest();
-      expect(element.attr('src')).toEqual('http://example.com/image.png');
-      // But it should accept trusted values anyway.
-      $rootScope.testUrl = $sce.trustAsUrl('http://example.com/image2.png');
-      $rootScope.$digest();
-      expect(element.attr('src')).toEqual('http://example.com/image2.png');
-    }));
-
-    it('should accept trusted values for img src', inject(function($rootScope, $compile, $sce) {
-      /* jshint scripturl:true */
-      element = $compile('<img src="{{testUrl}}"></img>')($rootScope);
-      $rootScope.testUrl = $sce.trustAsUrl('javascript:foo();');
-      $rootScope.$digest();
-      expect(element.attr('src')).toEqual('javascript:foo();');
-    }));
-
-    it('should sanitize concatenated trusted values for img src', inject(function($rootScope, $compile, $sce) {
-      /* jshint scripturl:true */
-      element = $compile('<img src="{{testUrl}}ponies"></img>')($rootScope);
-      $rootScope.testUrl = $sce.trustAsUrl('javascript:foo();');
-      $rootScope.$digest();
-      expect(element.attr('src')).toEqual('unsafe:javascript:foo();ponies');
-
-      element = $compile('<img src="http://{{testUrl}}"></img>')($rootScope);
-      $rootScope.testUrl = $sce.trustAsUrl('javascript:foo();');
-      $rootScope.$digest();
-      expect(element.attr('src')).toEqual('http://javascript:foo();');
-    }));
-
-
     it('should not sanitize attributes other than src', inject(function($compile, $rootScope) {
       /* jshint scripturl:true */
       element = $compile('<img title="{{testUrl}}"></img>')($rootScope);
@@ -9849,6 +9816,45 @@ describe('$compile', function() {
         $rootScope.$apply();
         expect(element.attr('src')).toBe('someSanitizedUrl');
         expect($$sanitizeUri).toHaveBeenCalledWith($rootScope.testUrl);
+      });
+    });
+
+
+    it('should sanitize concatenated trusted values', function() {
+      /* jshint scripturl:true */
+      var $$sanitizeUri = jasmine.createSpy('$$sanitizeUri');
+      module(function($provide) {
+        $provide.value('$$sanitizeUri', $$sanitizeUri);
+      });
+      inject(function($compile, $rootScope, $sce) {
+        $$sanitizeUri.and.returnValue('someSanitizedUrl');
+        element = $compile('<img src="{{testUrl}}ponies"></img>')($rootScope);
+        $rootScope.testUrl = $sce.trustAsUrl('javascript:foo();');
+        $rootScope.$digest();
+        expect(element.attr('src')).toEqual('someSanitizedUrl');
+
+        element = $compile('<img src="http://{{testUrl}}"></img>')($rootScope);
+        $rootScope.testUrl = $sce.trustAsUrl('javascript:foo();');
+        $rootScope.$digest();
+        expect(element.attr('src')).toEqual('someSanitizedUrl');
+      });
+    });
+
+    it('should not use $$sanitizeUri with trusted values', function() {
+      /* jshint scripturl:true */
+      var $$sanitizeUri = jasmine.createSpy('$$sanitizeUri');
+      module(function($provide) {
+        $provide.value('$$sanitizeUri', $$sanitizeUri);
+      });
+      inject(function($compile, $rootScope, $sce) {
+
+        element = $compile('<img src="{{testUrl}}"></img>')($rootScope);
+        $rootScope.testUrl = $sce.trustAsUrl('javascript:foo();');
+
+        $$sanitizeUri.and.throwError('Should not have been called');
+        $rootScope.$apply();
+
+        expect(element.attr('src')).toEqual('javascript:foo();');
       });
     });
   });
@@ -9920,12 +9926,12 @@ describe('$compile', function() {
 
         element = $compile('<img srcset="{{testUrl}}, {{testUrl}}"></img>')($rootScope);
         $rootScope.testUrl = 'javascript:yay';
-        $rootScope.$digest();
+        $rootScope.$apply();
         expect(element.attr('srcset')).toEqual('someSanitizedUrl ,someSanitizedUrl');
 
         element = $compile('<img srcset="java{{testUrl}}"></img>')($rootScope);
         $rootScope.testUrl = 'script:yay, javascript:nay';
-        $rootScope.$digest();
+        $rootScope.$apply();
         expect(element.attr('srcset')).toEqual('someSanitizedUrl ,someSanitizedUrl');
       });
     });

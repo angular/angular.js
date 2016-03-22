@@ -1437,6 +1437,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
         nodeName = nodeName_(this.$$element);
 
+
         // img[srcset] is a bit too weird of a beast to handle through $sce.
         // Instead, for now at least, sanitize each of the URIs individually.
         // That works even dynamically, but it's not bypassable through the $sce.
@@ -2945,12 +2946,11 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           (tag !== "img" && (attrNormalizedName === "src" ||
                             attrNormalizedName === "ngSrc"))) {
         return $sce.RESOURCE_URL;
-      } else if (attrNormalizedName == "src" ||
-          attrNormalizedName == "href" ||
-          attrNormalizedName == "ngHref" ||
-          attrNormalizedName == "ngSrc") {
-        // All that is not a RESOURCE_URL but still a URL. This might be overkill for some
-        // attributes, but the sanitization is permissive, so it should not be troublesome.
+      } else if (tag == "img" && (attrNormalizedName == "src" ||
+                                  attrNormalizedName == "ngSrc") ||
+          tag == "a" && (attrNormalizedName == "href" ||
+                         attrNormalizedName == "xlinkHref" ||
+                         attrNormalizedName == "ngHref")) {
         return $sce.URL;
       }
     }
