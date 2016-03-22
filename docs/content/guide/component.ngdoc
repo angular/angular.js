@@ -29,7 +29,7 @@ and link functions are unavailable
 Components can be registered using the `.component()` method of an Angular module (returned by {@link module `angular.module()`}). The method takes two arguments:
 
   * The name of the Component (as string).
-  * The Component config object (note that, unlike the `.directive()` method, this method does **not** take a factory function.
+  * The Component config object. (Note that, unlike the `.directive()` method, this method does **not** take a factory function.)
 
 <example name="heroComponentSimple" module="heroApp">
 <file name="index.js">
