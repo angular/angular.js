@@ -254,10 +254,14 @@ describe("basic usage", function() {
     $httpBackend.expect('GET', '/Path/foo%231').respond('{}');
     $httpBackend.expect('GET', '/Path/doh!@foo?bar=baz%231').respond('{}');
     $httpBackend.expect('GET', '/Path/herp$').respond('{}');
+    $httpBackend.expect('GET', '/Path/foo;bar').respond('{}');
+    $httpBackend.expect('GET', '/Path/foo?bar=baz;qux').respond('{}');
 
     R.get({a: 'foo#1'});
     R.get({a: 'doh!@foo', bar: 'baz#1'});
     R.get({a: 'herp$'});
+    R.get({a: 'foo;bar'});
+    R.get({a: 'foo', bar: 'baz;qux'});
   });
 
   it('should not encode @ in url params', function() {
