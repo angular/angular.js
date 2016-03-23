@@ -609,6 +609,34 @@ describe('ngMessages', function() {
     });
   });
 
+
+  it('should clean-up the ngMessage scope when a message is removed',
+    inject(function($compile, $rootScope) {
+
+      var html =
+          '<div ng-messages="items">' +
+            '<div ng-message="a">{{forA}}</div>' +
+          '</div>';
+
+      element = $compile(html)($rootScope);
+      $rootScope.$apply(function() {
+        $rootScope.forA = 'A';
+        $rootScope.items = {a: true};
+      });
+
+      expect(element.text()).toBe('A');
+      var watchers = $rootScope.$countWatchers();
+
+      $rootScope.$apply('items.a = false');
+
+      expect(element.text()).toBe('');
+      // We don't know exactly how many watchers are on the scope, only that there should be
+      // one less now
+      expect($rootScope.$countWatchers()).toBe(watchers - 1);
+    })
+  );
+
+
   describe('when including templates', function() {
     they('should work with a dynamic collection model which is managed by ngRepeat',
       {'<div ng-messages-include="...">': '<div ng-messages="item">' +
