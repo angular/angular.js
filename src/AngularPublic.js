@@ -152,7 +152,9 @@ function publishExternalAPI(angular) {
     'getTestability': getTestability,
     '$$minErr': minErr,
     '$$csp': csp,
-    'reloadWithDebugInfo': reloadWithDebugInfo
+    'reloadWithDebugInfo': reloadWithDebugInfo,
+    '$$encodeUriSegment': encodeUriSegment,
+    '$$encodeUriQuery': encodeUriQuery
   });
 
   angularModule = setupModuleLoader(window);
