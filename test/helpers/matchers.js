@@ -233,6 +233,11 @@ beforeEach(function() {
         compare: generateCompare(false),
         negativeCompare: generateCompare(true)
       };
+      function hasClass(element, selector) {
+        if (!element.getAttribute) return false;
+        return ((" " + (element.getAttribute('class') || '') + " ").replace(/[\n\t]/g, " ").
+            indexOf(" " + selector + " ") > -1);
+      }
       function generateCompare(isNot) {
         return function(actual, clazz) {
           var message = function() {
@@ -240,7 +245,7 @@ beforeEach(function() {
           };
           var classes = clazz.trim().split(/\s+/);
           for (var i = 0; i < classes.length; ++i) {
-            if (!jqLiteHasClass(actual[0], classes[i])) {
+            if (!hasClass(actual[0], classes[i])) {
               return { pass: isNot };
             }
           }
