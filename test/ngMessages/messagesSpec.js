@@ -517,7 +517,7 @@ describe('ngMessages', function() {
         $rootScope.$digest(); // The next digest triggers the error
 
         // Make sure removing the element triggers the deregistration in ngMessages
-        expect(trim(deregisterSpy.calls.mostRecent().args[0].nodeValue)).toBe('ngMessage: a');
+        expect(trim(deregisterSpy.mostRecentCall.args[0].nodeValue)).toBe('ngMessage: a');
         expect(messageChildren(element).length).toBe(0);
       });
     });
@@ -558,7 +558,7 @@ describe('ngMessages', function() {
         $rootScope.$digest(); // The next digest triggers the error
 
         // Make sure removing the element triggers the deregistration in ngMessages
-        expect(trim(deregisterSpy.calls.mostRecent().args[0].nodeValue)).toBe('ngMessage: b');
+        expect(trim(deregisterSpy.mostRecentCall.args[0].nodeValue)).toBe('ngMessage: b');
         expect(messageChildren(element).length).toBe(1);
         expect(trim(element.text())).toEqual('A');
       });
@@ -794,7 +794,7 @@ describe('ngMessages', function() {
         jqLite(nodeB).remove();
 
         // Make sure removing the element triggers the deregistration in ngMessages
-        expect(trim(deregisterSpy.calls.mostRecent().args[0].nodeValue)).toBe('ngMessage: b');
+        expect(trim(deregisterSpy.mostRecentCall.args[0].nodeValue)).toBe('ngMessage: b');
 
         $rootScope.$apply('items.a = true');
 
