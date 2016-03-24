@@ -510,7 +510,7 @@ describe('ngMessages', function() {
         expect(trim(element.text())).toEqual('A');
 
         var ctrl = element.controller('ngMessages');
-        var deregisterSpy = spyOn(ctrl, 'deregister').and.callThrough();
+        var deregisterSpy = spyOn(ctrl, 'deregister').andCallThrough();
 
         var nodeA = element[0].querySelector('[ng-message="a"]');
         jqLite(nodeA).remove();
@@ -551,7 +551,7 @@ describe('ngMessages', function() {
         expect(trim(element.text())).toEqual('AB');
 
         var ctrl = element.controller('ngMessages');
-        var deregisterSpy = spyOn(ctrl, 'deregister').and.callThrough();
+        var deregisterSpy = spyOn(ctrl, 'deregister').andCallThrough();
 
         var nodeB = element[0].querySelector('[ng-message="b"]');
         jqLite(nodeB).remove();
@@ -788,7 +788,7 @@ describe('ngMessages', function() {
         expect(element.text()).toBe('B');
 
         var ctrl = element.controller('ngMessages');
-        var deregisterSpy = spyOn(ctrl, 'deregister').and.callThrough();
+        var deregisterSpy = spyOn(ctrl, 'deregister').andCallThrough();
 
         var nodeB = element[0].querySelector('[ng-message="b"]');
         jqLite(nodeB).remove();
