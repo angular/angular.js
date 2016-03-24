@@ -3515,6 +3515,391 @@ describe('$compile', function() {
     });
   });
 
+  describe('controller lifecycle hooks', function() {
+
+    describe('$onInit', function() {
+
+      it('should call `$onInit`, if provided, after all the controllers on the element have been initialized', function() {
+
+        function check() {
+          /*jshint validthis:true */
+          expect(this.element.controller('d1').id).toEqual(1);
+          expect(this.element.controller('d2').id).toEqual(2);
+        }
+
+        function Controller1($element) { this.id = 1; this.element = $element; }
+        Controller1.prototype.$onInit = jasmine.createSpy('$onInit').and.callFake(check);
+
+        function Controller2($element) { this.id = 2; this.element = $element; }
+        Controller2.prototype.$onInit = jasmine.createSpy('$onInit').and.callFake(check);
+
+        angular.module('my', [])
+          .directive('d1', valueFn({ controller: Controller1 }))
+          .directive('d2', valueFn({ controller: Controller2 }));
+
+        module('my');
+        inject(function($compile, $rootScope) {
+          element = $compile('<div d1 d2></div>')($rootScope);
+          expect(Controller1.prototype.$onInit).toHaveBeenCalledOnce();
+          expect(Controller2.prototype.$onInit).toHaveBeenCalledOnce();
+        });
+      });
+    });
+
+
+    describe('$onDestroy', function() {
+
+      it('should call `$onDestroy`, if provided, on the controller when its scope is destroyed', function() {
+
+        function TestController() { this.count = 0; }
+        TestController.prototype.$onDestroy = function() { this.count++; };
+
+        angular.module('my', [])
+          .directive('d1', valueFn({ scope: true, controller: TestController }))
+          .directive('d2', valueFn({ scope: {}, controller: TestController }))
+          .directive('d3', valueFn({ controller: TestController }));
+
+        module('my');
+        inject(function($compile, $rootScope) {
+
+          element = $compile('<div><d1 ng-if="show[0]"></d1><d2 ng-if="show[1]"></d2><div ng-if="show[2]"><d3></d3></div></div>')($rootScope);
+
+          $rootScope.$apply('show = [true, true, true]');
+          var d1Controller = element.find('d1').controller('d1');
+          var d2Controller = element.find('d2').controller('d2');
+          var d3Controller = element.find('d3').controller('d3');
+
+          expect([d1Controller.count, d2Controller.count, d3Controller.count]).toEqual([0,0,0]);
+          $rootScope.$apply('show = [false, true, true]');
+          expect([d1Controller.count, d2Controller.count, d3Controller.count]).toEqual([1,0,0]);
+          $rootScope.$apply('show = [false, false, true]');
+          expect([d1Controller.count, d2Controller.count, d3Controller.count]).toEqual([1,1,0]);
+          $rootScope.$apply('show = [false, false, false]');
+          expect([d1Controller.count, d2Controller.count, d3Controller.count]).toEqual([1,1,1]);
+        });
+      });
+
+
+      it('should call `$onDestroy` top-down (the same as `scope.$broadcast`)', function() {
+        var log = [];
+        function ParentController() { log.push('parent created'); }
+        ParentController.prototype.$onDestroy = function() { log.push('parent destroyed'); };
+        function ChildController() { log.push('child created'); }
+        ChildController.prototype.$onDestroy = function() { log.push('child destroyed'); };
+        function GrandChildController() { log.push('grand child created'); }
+        GrandChildController.prototype.$onDestroy = function() { log.push('grand child destroyed'); };
+
+        angular.module('my', [])
+          .directive('parent', valueFn({ scope: true, controller: ParentController }))
+          .directive('child', valueFn({ scope: true, controller: ChildController }))
+          .directive('grandChild', valueFn({ scope: true, controller: GrandChildController }));
+
+        module('my');
+        inject(function($compile, $rootScope) {
+
+          element = $compile('<parent ng-if="show"><child><grand-child></grand-child></child></parent>')($rootScope);
+          $rootScope.$apply('show = true');
+          expect(log).toEqual(['parent created', 'child created', 'grand child created']);
+          log = [];
+          $rootScope.$apply('show = false');
+          expect(log).toEqual(['parent destroyed', 'child destroyed', 'grand child destroyed']);
+        });
+      });
+    });
+
+
+    describe('$postLink', function() {
+
+      it('should call `$postLink`, if provided, after the element has completed linking (i.e. post-link)', function() {
+
+        var log = [];
+
+        function Controller1() { }
+        Controller1.prototype.$postLink = function() { log.push('d1 view init'); };
+
+        function Controller2() { }
+        Controller2.prototype.$postLink = function() { log.push('d2 view init'); };
+
+        angular.module('my', [])
+          .directive('d1', valueFn({
+            controller: Controller1,
+            link: { pre: function(s, e) { log.push('d1 pre: ' + e.text()); }, post: function(s, e) { log.push('d1 post: ' + e.text()); } },
+            template: '<d2></d2>'
+          }))
+          .directive('d2', valueFn({
+            controller: Controller2,
+            link: { pre: function(s, e) { log.push('d2 pre: ' + e.text()); }, post: function(s, e) { log.push('d2 post: ' + e.text()); } },
+            template: 'loaded'
+          }));
+
+        module('my');
+        inject(function($compile, $rootScope) {
+          element = $compile('<d1></d1>')($rootScope);
+          expect(log).toEqual([
+            'd1 pre: loaded',
+            'd2 pre: loaded',
+            'd2 post: loaded',
+            'd2 view init',
+            'd1 post: loaded',
+            'd1 view init'
+          ]);
+        });
+      });
+    });
+
+
+    describe('$onChanges', function() {
+
+      it('should call `$onChanges`, if provided, when a one-way (`<`) or interpolation (`@`) bindings are updated', function() {
+        var log = [];
+        function TestController() { }
+        TestController.prototype.$onChanges = function(change) { log.push(change); };
+
+        angular.module('my', [])
+          .component('c1', {
+            controller: TestController,
+            bindings: { 'prop1': '<', 'prop2': '<', 'other': '=', 'attr': '@' }
+          });
+
+        module('my');
+        inject(function($compile, $rootScope) {
+          // Setup a watch to indicate some complicated updated logic
+          $rootScope.$watch('val', function(val, oldVal) { $rootScope.val2 = val * 2; });
+          // Setup the directive with two bindings
+          element = $compile('<c1 prop1="val" prop2="val2" other="val3" attr="{{val4}}"></c1>')($rootScope);
+
+          // There should be no changes initially
+          expect(log).toEqual([]);
+
+          // Update val to trigger the onChanges
+          $rootScope.$apply('val = 42');
+          // Now we should have a single changes entry in the log
+          expect(log).toEqual([
+            {
+              prop1: {previousValue: undefined, currentValue: 42},
+              prop2: {previousValue: undefined, currentValue: 84}
+            }
+          ]);
+
+          // Clear the log
+          log = [];
+
+          // Update val to trigger the onChanges
+          $rootScope.$apply('val = 17');
+          // Now we should have a single changes entry in the log
+          expect(log).toEqual([
+            {
+              prop1: {previousValue: 42, currentValue: 17},
+              prop2: {previousValue: 84, currentValue: 34}
+            }
+          ]);
+
+          // Clear the log
+          log = [];
+
+          // Update val3 to trigger the "other" two-way binding
+          $rootScope.$apply('val3 = 63');
+          // onChanges should not have been called
+          expect(log).toEqual([]);
+
+          // Update val4 to trigger the "attr" interpolation binding
+          $rootScope.$apply('val4 = 22');
+          // onChanges should not have been called
+          expect(log).toEqual([
+            {
+              attr: {previousValue: '', currentValue: '22'}
+            }
+          ]);
+        });
+      });
+
+
+      it('should pass the original value as `previousValue` even if there were multiple changes in a single digest', function() {
+        var log = [];
+        function TestController() { }
+        TestController.prototype.$onChanges = function(change) { log.push(change); };
+
+        angular.module('my', [])
+          .component('c1', {
+            controller: TestController,
+            bindings: { 'prop': '<' }
+          });
+
+        module('my');
+        inject(function($compile, $rootScope) {
+          element = $compile('<c1 prop="a + b"></c1>')($rootScope);
+
+          // We add this watch after the compilation to ensure that it will run after the binding watchers
+          // therefore triggering the thing that this test is hoping to enfore
+          $rootScope.$watch('a', function(val) { $rootScope.b = val * 2; });
+
+          // There should be no changes initially
+          expect(log).toEqual([]);
+
+          // Update val to trigger the onChanges
+          $rootScope.$apply('a = 42');
+          // Now the change should have the real previous value (undefined), not the intermediate one (42)
+          expect(log).toEqual([{prop: {previousValue: undefined, currentValue: 126}}]);
+
+          // Clear the log
+          log = [];
+
+          // Update val to trigger the onChanges
+          $rootScope.$apply('a = 7');
+          // Now the change should have the real previous value (126), not the intermediate one, (91)
+          expect(log).toEqual([{ prop: {previousValue: 126, currentValue: 21}}]);
+        });
+      });
+
+
+      it('should only trigger one extra digest however many controllers have changes', function() {
+        var log = [];
+        function TestController1() { }
+        TestController1.prototype.$onChanges = function(change) { log.push(['TestController1', change]); };
+        function TestController2() { }
+        TestController2.prototype.$onChanges = function(change) { log.push(['TestController2', change]); };
+
+        angular.module('my', [])
+          .component('c1', {
+            controller: TestController1,
+            bindings: {'prop': '<'}
+          })
+          .component('c2', {
+            controller: TestController2,
+            bindings: {'prop': '<'}
+          });
+
+        module('my');
+        inject(function($compile, $rootScope) {
+
+          // Create a watcher to count the number of digest cycles
+          var watchCount = 0;
+          $rootScope.$watch(function() { watchCount++; });
+
+          // Setup two sibling components with bindings that will change
+          element = $compile('<div><c1 prop="val1"></c1><c2 prop="val2"></c2></div>')($rootScope);
+
+          // There should be no changes initially
+          expect(log).toEqual([]);
+
+          // Update val to trigger the onChanges
+          $rootScope.$apply('val1 = 42; val2 = 17');
+
+          expect(log).toEqual([
+            ['TestController1', {prop: {previousValue: undefined, currentValue: 42}}],
+            ['TestController2', {prop: {previousValue: undefined, currentValue: 17}}]
+          ]);
+          // A single apply should only trigger three turns of the digest loop
+          expect(watchCount).toEqual(3);
+        });
+      });
+
+
+      it('should cope with changes occuring inside `$onChanges()` hooks', function() {
+        var log = [];
+        function OuterController() { }
+        OuterController.prototype.$onChanges = function(change) {
+          log.push(['OuterController', change]);
+          // Make a change to the inner component
+          this.b = 72;
+        };
+
+        function InnerController() { }
+        InnerController.prototype.$onChanges = function(change) { log.push(['InnerController', change]); };
+
+        angular.module('my', [])
+          .component('outer', {
+            controller: OuterController,
+            bindings: {'prop1': '<'},
+            template: '<inner prop2="$ctrl.b"></inner>'
+          })
+          .component('inner', {
+            controller: InnerController,
+            bindings: {'prop2': '<'}
+          });
+
+        module('my');
+        inject(function($compile, $rootScope) {
+
+          // Setup the directive with two bindings
+          element = $compile('<outer prop1="a"></outer>')($rootScope);
+
+          // There should be no changes initially
+          expect(log).toEqual([]);
+
+          // Update val to trigger the onChanges
+          $rootScope.$apply('a = 42');
+
+          expect(log).toEqual([
+            ['OuterController', {prop1: {previousValue: undefined, currentValue: 42}}],
+            ['InnerController', {prop2: {previousValue: undefined, currentValue: 72}}]
+          ]);
+        });
+      });
+
+
+      it('should throw an error if `$onChanges()` hooks are not stable', function() {
+        function TestController() {}
+        TestController.prototype.$onChanges = function(change) {
+          this.onChange();
+        };
+
+        angular.module('my', [])
+          .component('c1', {
+            controller: TestController,
+            bindings: {'prop': '<', onChange: '&'}
+          });
+
+        module('my');
+        inject(function($compile, $rootScope) {
+
+          // Setup the directive with bindings that will keep updating the bound value forever
+          element = $compile('<c1 prop="a" on-change="a = -a"></c1>')($rootScope);
+
+          // Update val to trigger the unstable onChanges, which will result in an error
+          expect(function() {
+            $rootScope.$apply('a = 42');
+          }).toThrowMinErr('$compile', 'infchng');
+
+          dealoc(element);
+          element = $compile('<c1 prop="b" on-change=""></c1>')($rootScope);
+          $rootScope.$apply('b = 24');
+          $rootScope.$apply('b = 48');
+        });
+      });
+
+
+      it('should log an error if `$onChanges()` hooks are not stable', function() {
+        function TestController() {}
+        TestController.prototype.$onChanges = function(change) {
+          this.onChange();
+        };
+
+        angular.module('my', [])
+          .component('c1', {
+            controller: TestController,
+            bindings: {'prop': '<', onChange: '&'}
+          })
+          .config(function($exceptionHandlerProvider) {
+            // We need to test with the exceptionHandler not rethrowing...
+            $exceptionHandlerProvider.mode('log');
+          });
+
+        module('my');
+        inject(function($compile, $rootScope, $exceptionHandler) {
+
+          // Setup the directive with bindings that will keep updating the bound value forever
+          element = $compile('<c1 prop="a" on-change="a = -a"></c1>')($rootScope);
+
+          // Update val to trigger the unstable onChanges, which will result in an error
+          $rootScope.$apply('a = 42');
+          expect($exceptionHandler.errors.length).toEqual(1);
+          expect($exceptionHandler.errors[0].toString()).toContain('[$compile:infchng] 10 $onChanges() iterations reached.');
+        });
+      });
+    });
+  });
+
 
   describe('isolated locals', function() {
     var componentScope, regularScope;
@@ -5321,32 +5706,6 @@ describe('$compile', function() {
         expect(childScope.theCtrl).not.toBe(myCtrl);
         expect(childScope.theCtrl.constructor).toBe(MyCtrl);
         childScope.theCtrl.test();
-      });
-    });
-
-    it('should call `controller.$onInit`, if provided after all the controllers have been constructed', function() {
-
-      function check() {
-        /*jshint validthis:true */
-        expect(this.element.controller('d1').id).toEqual(1);
-        expect(this.element.controller('d2').id).toEqual(2);
-      }
-
-      function Controller1($element) { this.id = 1; this.element = $element; }
-      Controller1.prototype.$onInit = jasmine.createSpy('$onInit').and.callFake(check);
-
-      function Controller2($element) { this.id = 2; this.element = $element; }
-      Controller2.prototype.$onInit = jasmine.createSpy('$onInit').and.callFake(check);
-
-      angular.module('my', [])
-        .directive('d1', valueFn({ controller: Controller1 }))
-        .directive('d2', valueFn({ controller: Controller2 }));
-
-      module('my');
-      inject(function($compile, $rootScope) {
-        element = $compile('<div d1 d2></div>')($rootScope);
-        expect(Controller1.prototype.$onInit).toHaveBeenCalledOnce();
-        expect(Controller2.prototype.$onInit).toHaveBeenCalledOnce();
       });
     });
 
