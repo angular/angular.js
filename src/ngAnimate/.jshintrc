@@ -33,6 +33,8 @@
 
     "TRANSITION_DURATION_PROP": false,
     "TRANSITION_DELAY_PROP": false,
+    "TRANSITION_TIMING_PROP": false,
+    "TRANSITION_PROPERTY_PROP": false,
     "TRANSITION_PROP": false,
     "PROPERTY_KEY": false,
     "DURATION_KEY": false,

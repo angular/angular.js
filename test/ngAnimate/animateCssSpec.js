@@ -2,6 +2,10 @@
 
 describe("ngAnimate $animateCss", function() {
 
+  // Firefox transforms all transition timing function values to their cubic bezier equivalents
+  var CUBIC_BEZIER_LINEAR_EQUIVALENT = 'cubic-bezier(0, 0, 1, 1)';
+  var CUBIC_BEZIER_EASE_EQUIVALENT = 'cubic-bezier(0.25, 0.1, 0.25, 1)';
+
   beforeEach(module('ngAnimate'));
   beforeEach(module('ngAnimateMock'));
 
@@ -642,6 +646,86 @@ describe("ngAnimate $animateCss", function() {
           keyframeProgress(element, 1, 20);
           assertAnimationComplete(true);
         }));
+
+        it("should apply all transition shorthand properties that are already on the element",
+          inject(function($animateCss, $rootElement) {
+
+          ss.addRule('.action', 'transition: color 1s cubic-bezier(0.25, 0.1, 0.25, 1) 5s;');
+          element.addClass('action');
+
+          var options = {
+            to: { background: 'blue' }
+          };
+
+          var animator = $animateCss(element, options);
+          animator.start();
+          triggerAnimationStartFrame();
+
+          expect(element.css('transition-duration')).toMatch('1s');
+          expect(element.css('transition-delay')).toMatch('5s');
+          expect(element.css('transition-property')).toMatch('color');
+          expect(element.css('transition-timing-function')).toBe('cubic-bezier(0.25, 0.1, 0.25, 1)');
+        }));
+
+        it("should apply all explicit transition properties that are already on the element",
+          inject(function($animateCss, $rootElement) {
+
+          ss.addRule('.action', 'transition-duration: 1s;' +
+                                'transition-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);' +
+                                'transition-property: color;' +
+                                'transition-delay: 5s');
+          element.addClass('action');
+
+          var options = {
+            to: { background: 'blue' }
+          };
+
+          var animator = $animateCss(element, options);
+          animator.start();
+          triggerAnimationStartFrame();
+
+          expect(element.css('transition-duration')).toMatch('1s');
+          expect(element.css('transition-delay')).toMatch('5s');
+          expect(element.css('transition-property')).toMatch('color');
+          expect(element.css('transition-timing-function')).toBe('cubic-bezier(0.25, 0.1, 0.25, 1)');
+        }));
+
+        it("should use the default transition-property (spec: all) if none is supplied in shorthand",
+          inject(function($animateCss, $rootElement) {
+
+          ss.addRule('.action', 'transition: 1s ease');
+          element.addClass('action');
+
+          var options = {
+            to: { background: 'blue' }
+          };
+
+          var animator = $animateCss(element, options);
+          animator.start();
+          triggerAnimationStartFrame();
+
+          expect(element.css('transition-property')).toBe('all');
+        }));
+
+        it("should use the default easing (spec: ease) if none is supplied in shorthand",
+          inject(function($animateCss, $rootElement) {
+
+          ss.addRule('.action', 'transition: color 1s');
+          element.addClass('action');
+
+          var options = {
+            to: { background: 'blue' }
+          };
+
+          var animator = $animateCss(element, options);
+          animator.start();
+          triggerAnimationStartFrame();
+
+          // IE reports ease in cubic-bezier form
+          expect(element.css('transition-timing-function')).toBeOneOf('ease', CUBIC_BEZIER_EASE_EQUIVALENT);
+        }));
+
+
       });
 
       describe("staggering", function() {
@@ -2138,7 +2222,7 @@ describe("ngAnimate $animateCss", function() {
 
           var style = element.attr('style');
           expect(style).toContain('3000s');
-          expect(style).toContain('linear');
+          expect(element.css('transition-timing-function')).toBeOneOf('ease', CUBIC_BEZIER_EASE_EQUIVALENT);
         }));
 
         it("should be applied to a CSS keyframe animation directly if keyframes are detected within the CSS class",
@@ -2244,7 +2328,7 @@ describe("ngAnimate $animateCss", function() {
           expect(style).toMatch(/animation(?:-duration)?:\s*4s/);
           expect(element.css('transition-duration')).toMatch('4s');
           expect(element.css('transition-property')).toMatch('all');
-          expect(style).toContain('linear');
+          expect(element.css('transition-timing-function')).toBeOneOf('linear', CUBIC_BEZIER_LINEAR_EQUIVALENT);
         }));
       });
 
@@ -2408,7 +2492,7 @@ describe("ngAnimate $animateCss", function() {
             var animator = $animateCss(element, options);
 
             expect(element.attr('style') || '').not.toContain('animation-delay');
-            expect(element.attr('style') || '').not.toContain('transition-delay');
+            expect(element.css('transition-delay')).toEqual('-2s');
             expect(classSpy).not.toHaveBeenCalled();
 
             //redefine the classSpy to assert that the delay values have been
@@ -2575,7 +2659,7 @@ describe("ngAnimate $animateCss", function() {
           inject(function($animateCss, $rootElement) {
 
           var options = {
-            transitionStyle: '5.5s ease-in color',
+            transitionStyle: '5.5s ease color',
             duration: 4,
             event: 'enter',
             structural: true
@@ -2586,10 +2670,9 @@ describe("ngAnimate $animateCss", function() {
           animator.start();
           triggerAnimationStartFrame();
 
-          var style = element.attr('style');
           expect(element.css('transition-duration')).toMatch('4s');
           expect(element.css('transition-property')).toMatch('color');
-          expect(style).toContain('ease-in');
+          expect(element.css('transition-timing-function')).toBeOneOf('ease', CUBIC_BEZIER_EASE_EQUIVALENT);
         }));
 
         it("should give priority to the provided delay value, but only update the delay style itself",
@@ -2840,11 +2923,9 @@ describe("ngAnimate $animateCss", function() {
           animator.start();
           triggerAnimationStartFrame();
 
-
-          var style = element.attr('style');
           expect(element.css('transition-duration')).toMatch('2.5s');
           expect(element.css('transition-property')).toMatch('all');
-          expect(style).toContain('linear');
+          expect(element.css('transition-timing-function')).toBeOneOf('ease', CUBIC_BEZIER_EASE_EQUIVALENT);
         }));
 
         it("should remove all inline transition styling when an animation completes",
@@ -2989,10 +3070,9 @@ describe("ngAnimate $animateCss", function() {
           triggerAnimationStartFrame();
 
 
-          var style = element.attr('style');
           expect(element.css('transition-duration')).toMatch('1s');
-          expect(element.css('transition-property')).toMatch('all');
-          expect(style).toContain('linear');
+          expect(element.css('transition-property')).toMatch('color');
+          expect(element.css('transition-timing-function')).toBeOneOf('linear', CUBIC_BEZIER_LINEAR_EQUIVALENT);
         }));
 
         it("should apply a transition duration and an animation duration if duration + styles options are provided for a matching keyframe animation",
