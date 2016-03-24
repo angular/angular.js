@@ -218,7 +218,7 @@ beforeEach(function() {
           };
           var classes = clazz.trim().split(/\s+/);
           for (var i = 0; i < classes.length; ++i) {
-            if (!jqLiteHasClass(actual[0], classes[i])) {
+            if (!angular.element(actual[0]).hasClass(classes[i])) {
               return { pass: isNot };
             }
           }

@@ -12,6 +12,10 @@ describe('ngMessages', function() {
     return str.replace(/\s+/g,'');
   }
 
+  function trim(value) {
+    return isString(value) ? value.trim() : value;
+  }
+
   var element;
   afterEach(function() {
     dealoc(element);
