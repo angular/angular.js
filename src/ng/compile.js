@@ -2907,11 +2907,16 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         return $sce.HTML;
       }
       var tag = nodeName_(node);
+      // All tags with src attributes require a RESOURCE_URL value, except for
+      // img and various html5 media tags. Note that track src allows files
+      // containing CSS, so leave that to RESOURCE_URL level.
+      if (attrNormalizedName == "src" || attrNormalizedName == "ngSrc") {
+        if (["img", "video", "audio", "source"].indexOf(tag) == -1) {
+          return $sce.RESOURCE_URL;
+        }
       // maction[xlink:href] can source SVG.  It's not limited to <maction>.
-      if (attrNormalizedName == "xlinkHref" ||
-          (tag == "form" && attrNormalizedName == "action") ||
-          (tag != "img" && (attrNormalizedName == "src" ||
-                            attrNormalizedName == "ngSrc"))) {
+      } else if (attrNormalizedName == "xlinkHref" ||
+          (tag == "form" && attrNormalizedName == "action")) {
         return $sce.RESOURCE_URL;
       }
     }
