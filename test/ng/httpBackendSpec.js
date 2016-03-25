@@ -351,6 +351,14 @@ describe('$httpBackend', function() {
       expect(callbacks[callbackId]).toBe(angular.noop);
     });
 
+    it('should set the callback name when use JSONP_CALLBACK with a parameter', function() {
+      $backend('JSONP', 'http://example.org/path?cb=JSON_CALLBACK(someCallback)', null, callback);
+      var script = fakeDocument.$$scripts.shift(),
+          url = script.src.match(SCRIPT_URL);
+
+      expect(url[1]).toBe('http://example.org/path');
+      expect(url[2]).toBe('someCallback');
+    });
 
     // TODO(vojta): test whether it fires "async-start"
     // TODO(vojta): test whether it fires "async-end" on both success and error
