@@ -1,3 +1,33 @@
+<a name="1.5.3"></a>
+# 1.5.3 diplohaplontic-meiosis (2016-03-25)
+
+## Bug Fixes
+
+- **$compile:** workaround a GC bug in Chrome < 50
+  ([513199ee](https://github.com/angular/angular.js/commit/513199ee9f1c8eef1240983d6e52c824404adb98),
+   [#14041](https://github.com/angular/angular.js/issues/14041), [#14286](https://github.com/angular/angular.js/issues/14286))
+- **$sniffer:** fix history sniffing in Chrome Packaged Apps
+  ([457fd21a](https://github.com/angular/angular.js/commit/457fd21a1a0c10c66245c32a73602f3a09038bda),
+   [#11932](https://github.com/angular/angular.js/issues/11932), [#13945](https://github.com/angular/angular.js/issues/13945))
+- **formatNumber:** handle small numbers correctly when `gSize` !== `lgSize`
+  ([3277b885](https://github.com/angular/angular.js/commit/3277b885c4dec3edd51b8e8c3d1776057d6d4d1d),
+   [#14289](https://github.com/angular/angular.js/issues/14289), [#14290](https://github.com/angular/angular.js/issues/14290))
+- **ngAnimate:** run structural animations with cancelled out class changes
+  ([c7813e9e](https://github.com/angular/angular.js/commit/c7813e9ebf793fe89380dcad54e8e002fafdd985),
+   [#14249](https://github.com/angular/angular.js/issues/14249))
+- **ngMessages:** don't crash when nested messages are removed
+  ([ef91b04c](https://github.com/angular/angular.js/commit/ef91b04cdd794f308617bca7ebd0b1b747e4f7de),
+   [#14183](https://github.com/angular/angular.js/issues/14183), [#14242](https://github.com/angular/angular.js/issues/14242))
+
+
+## Features
+
+- **$compile:** add more lifecycle hooks to directive controllers
+  ([9cd9956d](https://github.com/angular/angular.js/commit/9cd9956dcbc8382e8e8757a805398bd251bbc67e),
+   [#14127](https://github.com/angular/angular.js/issues/14127), [#14030](https://github.com/angular/angular.js/issues/14030), [#14020](https://github.com/angular/angular.js/issues/14020), [#13991](https://github.com/angular/angular.js/issues/13991), [#14302](https://github.com/angular/angular.js/issues/14302))
+
+
+
 <a name="1.5.2"></a>
 # 1.5.2 differential-recovery (2016-03-18)
 
