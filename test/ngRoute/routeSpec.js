@@ -618,6 +618,11 @@ describe('$route', function() {
 
 
   describe('events', function() {
+
+    afterEach(inject(function($log) {
+      $log.reset();
+    }));
+
     it('should not fire $routeChangeStart/Success during bootstrap (if no route)', function() {
       var routeChangeSpy = jasmine.createSpy('route change');
 
@@ -705,6 +710,26 @@ describe('$route', function() {
         deferA.reject('MyError');
         $rootScope.$digest();
         expect(log).toEqual('before();failed(MyError);');
+      });
+    });
+
+    it('should log an error when $routeChangeError is fired', function() {
+      var deferA;
+      module(function($provide, $routeProvider) {
+        $routeProvider.when('/path', { template: 'foo', resolve: {
+          a: function($q) {
+            deferA = $q.defer();
+            return deferA.promise;
+          }
+        } });
+      });
+      inject(function($location,$log,$route,$rootScope) {
+        $location.path('/path');
+        $rootScope.$digest();
+        deferA.reject('fooError');
+        $rootScope.$digest();
+
+        expect($log.debug.logs[0][0]).toEqual('A $routeChangeError has happened: fooError');
       });
     });
 
