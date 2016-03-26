@@ -156,7 +156,7 @@ of the component. The following hook methods can be implemented:
     this element). This is a good place to put initialization code for your controller.
   * `$onChanges(changesObj)` - Called whenever one-way bindings are updated. The `changesObj` is a hash whose keys
     are the names of the bound properties that have changed, and the values are an object of the form
-    `{ currentValue: ..., previousValue: ... }`. Use this hook to trigger updates within a component such as
+    `{ currentValue, previousValue, isFirstChange() }`. Use this hook to trigger updates within a component such as
     cloning the bound value to prevent accidental mutation of the outer value.
   * `$onDestroy()` - Called on a controller when its containing scope is destroyed. Use this hook for releasing
     external resources, watches and event handlers.

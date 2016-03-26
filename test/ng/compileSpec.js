@@ -3676,8 +3676,9 @@ describe('$compile', function() {
           // Now we should have a single changes entry in the log
           expect(log).toEqual([
             {
-              prop1: {previousValue: undefined, currentValue: 42},
-              prop2: {previousValue: undefined, currentValue: 84}
+              prop1: jasmine.objectContaining({currentValue: 42}),
+              prop2: jasmine.objectContaining({currentValue: 84}),
+              attr: jasmine.objectContaining({currentValue: ''})
             }
           ]);
 
@@ -3689,8 +3690,8 @@ describe('$compile', function() {
           // Now we should have a single changes entry in the log
           expect(log).toEqual([
             {
-              prop1: {previousValue: 42, currentValue: 17},
-              prop2: {previousValue: 84, currentValue: 34}
+              prop1: jasmine.objectContaining({previousValue: 42, currentValue: 17}),
+              prop2: jasmine.objectContaining({previousValue: 84, currentValue: 34})
             }
           ]);
 
@@ -3707,7 +3708,7 @@ describe('$compile', function() {
           // onChanges should not have been called
           expect(log).toEqual([
             {
-              attr: {previousValue: '', currentValue: '22'}
+              attr: jasmine.objectContaining({previousValue: '', currentValue: '22'})
             }
           ]);
         });
@@ -3739,7 +3740,7 @@ describe('$compile', function() {
           // Update val to trigger the onChanges
           $rootScope.$apply('a = 42');
           // Now the change should have the real previous value (undefined), not the intermediate one (42)
-          expect(log).toEqual([{prop: {previousValue: undefined, currentValue: 126}}]);
+          expect(log).toEqual([{prop: jasmine.objectContaining({currentValue: 126})}]);
 
           // Clear the log
           log = [];
@@ -3747,7 +3748,46 @@ describe('$compile', function() {
           // Update val to trigger the onChanges
           $rootScope.$apply('a = 7');
           // Now the change should have the real previous value (126), not the intermediate one, (91)
-          expect(log).toEqual([{ prop: {previousValue: 126, currentValue: 21}}]);
+          expect(log).toEqual([{prop: jasmine.objectContaining({previousValue: 126, currentValue: 21})}]);
+        });
+      });
+
+
+      it('should trigger an initial onChanges call for each binding with the `isFirstChange()` returning true', function() {
+        var log = [];
+        function TestController() { }
+        TestController.prototype.$onChanges = function(change) { log.push(change); };
+
+        angular.module('my', [])
+          .component('c1', {
+            controller: TestController,
+            bindings: { 'prop': '<', attr: '@' }
+          });
+
+        module('my');
+        inject(function($compile, $rootScope) {
+          element = $compile('<c1 prop="a" attr="{{a}}"></c1>')($rootScope);
+          expect(log).toEqual([]);
+          $rootScope.$apply('a = 7');
+          expect(log).toEqual([
+            {
+              prop: jasmine.objectContaining({currentValue: 7}),
+              attr: jasmine.objectContaining({currentValue: '7'})
+            }
+          ]);
+          expect(log[0].prop.isFirstChange()).toEqual(true);
+          expect(log[0].attr.isFirstChange()).toEqual(true);
+
+          log = [];
+          $rootScope.$apply('a = 9');
+          expect(log).toEqual([
+            {
+              prop: jasmine.objectContaining({previousValue: 7, currentValue: 9}),
+              attr: jasmine.objectContaining({previousValue: '7', currentValue: '9'})
+            }
+          ]);
+          expect(log[0].prop.isFirstChange()).toEqual(false);
+          expect(log[0].attr.isFirstChange()).toEqual(false);
         });
       });
 
@@ -3786,8 +3826,8 @@ describe('$compile', function() {
           $rootScope.$apply('val1 = 42; val2 = 17');
 
           expect(log).toEqual([
-            ['TestController1', {prop: {previousValue: undefined, currentValue: 42}}],
-            ['TestController2', {prop: {previousValue: undefined, currentValue: 17}}]
+            ['TestController1', {prop: jasmine.objectContaining({currentValue: 42})}],
+            ['TestController2', {prop: jasmine.objectContaining({currentValue: 17})}]
           ]);
           // A single apply should only trigger three turns of the digest loop
           expect(watchCount).toEqual(3);
@@ -3831,8 +3871,9 @@ describe('$compile', function() {
           $rootScope.$apply('a = 42');
 
           expect(log).toEqual([
-            ['OuterController', {prop1: {previousValue: undefined, currentValue: 42}}],
-            ['InnerController', {prop2: {previousValue: undefined, currentValue: 72}}]
+            ['OuterController', {prop1: jasmine.objectContaining({currentValue: 42})}],
+            ['InnerController', {prop2: jasmine.objectContaining({currentValue: undefined})}],
+            ['InnerController', {prop2: jasmine.objectContaining({currentValue: 72})}]
           ]);
         });
       });
