@@ -170,8 +170,8 @@ module.exports = function(config, specificOptions) {
     '/someSanitizedUrl',
     '/{{testUrl}}'
   ];
-  var log4js = require('./node_modules/karma/node_modules/log4js');
-  var layouts = require('./node_modules/karma/node_modules/log4js/lib/layouts');
+  var log4js = require('log4js');
+  var layouts = require('log4js/lib/layouts');
   var originalConfigure = log4js.configure;
   log4js.configure = function(log4jsConfig) {
     var consoleAppender = log4jsConfig.appenders.shift();

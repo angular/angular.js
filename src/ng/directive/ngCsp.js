@@ -162,7 +162,7 @@
 
           beforeEach(function() {
             util = require('util');
-            webdriver = require('protractor/node_modules/selenium-webdriver');
+            webdriver = require('selenium-webdriver');
           });
 
           // For now, we only test on Chrome,
