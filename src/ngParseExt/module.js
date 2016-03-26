@@ -3,6 +3,7 @@
 /**
  * @ngdoc module
  * @name ngParseExt
+ * @packageName angular-parse-ext
  * @description
  *
  * # ngParseExt
