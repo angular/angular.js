@@ -5,7 +5,8 @@ angular.module('tutorials', [])
     '',
     'step_00', 'step_01', 'step_02', 'step_03', 'step_04',
     'step_05', 'step_06', 'step_07', 'step_08', 'step_09',
-    'step_10', 'step_11', 'step_12', 'the_end'
+    'step_10', 'step_11', 'step_12', 'step_13', 'step_14',
+    'the_end'
   ];
   return {
     scope: {},
@@ -43,7 +44,7 @@ angular.module('tutorials', [])
           '<a href="http://angular.github.io/angular-phonecat/step-{{step}}/app">Step {{step}} Live Demo</a>.</p>\n' +
       '</div>\n' +
       '<p>The most important changes are listed below. You can see the full diff on ' +
-        '<a ng-href="https://github.com/angular/angular-phonecat/compare/step-{{step ? (step - 1): \'0~1\'}}...step-{{step}}" title="See diff on Github">GitHub</a>\n' +
+        '<a ng-href="https://github.com/angular/angular-phonecat/compare/step-{{step ? (step - 1): \'0~1\'}}...step-{{step}}" title="See diff on Github">GitHub</a>.\n' +
       '</p>'
   };
 });

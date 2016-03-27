@@ -9,11 +9,18 @@ previous steps using the `git checkout` command.
 For more details and examples of the Angular concepts we touched on in this tutorial, see the
 {@link guide/ Developer Guide}.
 
-When you are ready to start developing a project using Angular, we recommend that you bootstrap
-your development with the [angular-seed](https://github.com/angular/angular-seed) project.
+When you are ready to start developing a project using AngularJS, we recommend that you bootstrap
+your development with the [angular-seed project][angular-seed].
 
-We hope this tutorial was useful to you and that you learned enough about Angular to make you want
-to learn more. We especially hope you are inspired to go out and develop Angular web apps of your
-own, and that you might be interested in {@link misc/contribute contributing} to Angular.
+We hope this tutorial was useful to you and that you learned enough about AngularJS to make you want
+to learn more. We especially hope you are inspired to go out and develop Angular web applications of
+your own, and that you might be interested in {@link misc/contribute contributing} to AngularJS.
 
-If you have questions or feedback or just want to say "hi", please post a message at (https://groups.google.com/forum/#!forum/angular).
+If you have questions or feedback or just want to say "hi", please post a message to the
+[mailing list][mailing-list]. You can also find us on [IRC][irc] or [Gitter][gitter].
+
+
+[angular-seed]: https://github.com/angular/angular-seed
+[gitter]: https://gitter.im/angular/angular.js
+[irc]: http://webchat.freenode.net/?channels=angularjs&uio=d4
+[mailing-list]: https://groups.google.com/forum/#!forum/angular
