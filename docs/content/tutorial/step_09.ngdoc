@@ -1,144 +1,429 @@
 @ngdoc tutorial
-@name 9 - Filters
+@name 9 - Routing & Multiple Views
 @step 9
 @description
 
 <ul doc-tutorial-nav="9"></ul>
 
-In this step you will learn how to create your own custom display filter.
 
-* In the previous step, the details page displayed either "true" or "false" to indicate whether
-certain phone features were present or not. We have used a custom filter to convert those text
-strings into glyphs: ✓ for "true", and ✘ for "false". Let's see what the filter code looks like.
+In this step, you will learn how to create a layout template and how to build an application that
+has multiple views by adding routing, using an Angular module called {@link ngRoute ngRoute}.
+
+* When you now navigate to `/index.html`, you are redirected to `/index.html#!/phones` and the phone
+  list appears in the browser.
+* When you click on a phone link, the URL changes to that specific phone and the stub of a phone
+  detail page is displayed.
+
 
 <div doc-tutorial-reset="9"></div>
 
 
-## Custom Filter
+## Dependencies
 
-In order to create a new filter, you are going to create a `phonecatFilters` module and register
-your custom filter with this module:
+The routing functionality added in this step is provided by Angular in the `ngRoute` module, which
+is distributed separately from the core Angular framework.
 
-__`app/js/filters.js`:__
+Since we are using [Bower][bower] to install client-side dependencies, this step updates the
+`bower.json` configuration file to include the new dependency:
 
-```js
-angular.module('phonecatFilters', []).filter('checkmark', function() {
-  return function(input) {
-    return input ? '\u2713' : '\u2718';
-  };
-});
+<br />
+**`bower.json`:**
+
+```json
+{
+  "name": "angular-phonecat",
+  "description": "A starter project for AngularJS",
+  "version": "0.0.0",
+  "homepage": "https://github.com/angular/angular-phonecat",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "angular": "1.5.x",
+    "angular-mocks": "1.5.x",
+    "angular-route": "1.5.x",
+    "bootstrap": "3.3.x"
+  }
+}
 ```
 
-The name of our filter is "checkmark". The `input` evaluates to either `true` or `false`, and we
-return one of the two unicode characters we have chosen to represent true (`\u2713` -> ✓) or false (`\u2718` -> ✘).
+The new dependency `"angular-route": "1.5.x"` tells bower to install a version of the angular-route
+module that is compatible with version 1.5.x of Angular. We must tell bower to download and install
+this dependency.
 
-Now that our filter is ready, we need to register the `phonecatFilters` module as a dependency for
-our main `phonecatApp` module.
-
-__`app/js/app.js`:__
-
-```js
-...
-angular.module('phonecatApp', ['ngRoute','phonecatControllers','phonecatFilters']);
-...
 ```
+npm install
+```
+
+<div class="alert alert-info">
+  **Note:** If you have bower installed globally, you can run `bower install`, but for this project
+  we have preconfigured `npm install` to run bower for us.
+</div>
+
+<div class="alert alert-warning">
+  **Warning:** If a new version of Angular has been released since you last ran `npm install`, then
+  you may have a problem with the `bower install` due to a conflict between the versions of
+  angular.js that need to be installed. If you run into this issue, simply delete your
+  `app/bower_components` directory and then run `npm install`.
+</div>
+
+
+## Multiple Views, Routing and Layout Templates
+
+Our app is slowly growing and becoming more complex. Prior to this step, the app provided our users
+with a single view (including the list of all phones), and all of the template code was located in
+the `phone-list.template.html` file. The next step in building the application is to add a view that
+will show detailed information about each of the devices in our list.
+
+To add the detailed view, we are going to turn `index.html` into what we call a "layout template".
+This is a template that is common for all views in our application. Other "partial templates" are
+then included into this layout template depending on the current "route" — the view that is
+currently displayed to the user.
+
+Application routes in Angular are declared via the {@link ngRoute.$routeProvider $routeProvider},
+which is the provider of the {@link ngRoute.$route $route} service. This service makes it easy to
+wire together controllers, view templates, and the current URL location in the browser. Using this
+feature, we can implement [deep linking][deep-linking], which lets us utilize the browser's history
+(back and forward navigation) and bookmarks.
+
+<div class="alert alert-success">
+  <p>
+    `ngRoute` allows as to associate a controller and a template with a specific URL (or URL
+    pattern). This is pretty close to what we did with `ngController` and `index.html` back in
+    {@link step_02 step 2}.
+  </p>
+  <p>
+    Since we have already learned that components allow us to combine controllers with templates in
+    a modular, testable way, we are going to use components for routing as well.
+    Each route will be associated with a component and that component will be in charge of providing
+    the view template and the controller.
+  </p>
+</div>
+
+
+### A Note about DI, Injector and Providers
+
+As you {@link step_07 noticed}, {@link guide/di dependency injection} (DI) is at the core of
+AngularJS, so it's important for you to understand a thing or two about how it works.
+
+When the application bootstraps, Angular creates an injector that will be used to find and inject
+all of the services that are required by your application. The injector itself doesn't know anything
+about what the `$http` or `$route` services do. In fact, the injector doesn't even know about the
+existence of these services, unless it is configured with proper module definitions.
+
+The injector only carries out the following steps:
+
+* Load the module definition(s) that you specify in your application.
+* Register all Providers defined in these module definition(s).
+* When asked to do so, lazily instantiate services and their dependencies, via their Providers, as 
+  parameters to an injectable function.
+
+Providers are objects that provide (create) instances of services and expose configuration APIs,
+that can be used to control the creation and runtime behavior of a service. In case of the `$route`
+service, the `$routeProvider` exposes APIs that allow you to define routes for your application.
+
+<div class="alert alert-warning">
+  **Note:** Providers can only be injected into `config` functions. Thus you could not inject
+  `$routeProvider` into `PhoneListController` at runtime.
+</div>
+
+Angular modules solve the problem of removing global variables from the application and provide a
+way of configuring the injector. As opposed to AMD or require.js modules, Angular modules don't try 
+to solve the problem of script load ordering or lazy script fetching. These goals are totally
+independent and both module systems can live side-by-side and fulfill their goals.
+
+To deepen your understanding on Angular's DI, see [Understanding Dependency Injection][wiki-di].
 
 
 ## Template
 
-Since the filter code lives in the `app/js/filters.js` file, we need to include this file in our
-layout template.
+The `$route` service is usually used in conjunction with the {@link ngRoute.directive:ngView ngView}
+directive. The role of the `ngView` directive is to include the view template for the current route
+into the layout template. This makes it a perfect fit for our `index.html` template.
 
-__`app/index.html`:__
-
-```html
-...
- <script src="js/controllers.js"></script>
- <script src="js/filters.js"></script>
-...
-```
-
-The syntax for using filters in Angular templates is as follows:
-
-    {{ expression | filter }}
-
-Let's employ the filter in the phone details template:
-
-
-
-__`app/partials/phone-detail.html`:__
+<br />
+**`app/index.html`:**
 
 ```html
-...
-    <dl>
-      <dt>Infrared</dt>
-      <dd>{{phone.connectivity.infrared | checkmark}}</dd>
-      <dt>GPS</dt>
-      <dd>{{phone.connectivity.gps | checkmark}}</dd>
-    </dl>
-...
+<head>
+  ...
+  <script src="bower_components/angular/angular.js"></script>
+  <script src="bower_components/angular-route/angular-route.js"></script>
+  <script src="app.module.js"></script>
+  <script src="app.config.js"></script>
+  ...
+  <script src="phone-detail/phone-detail.module.js"></script>
+  <script src="phone-detail/phone-detail.component.js"></script>
+</head>
+<body>
+
+  <div ng-view></div>
+
+</body>
 ```
 
+We have added four new `<script>` tags in our `index.html` file to load some extra JavaScript files
+into our application:
 
-## Test
+* `angular-route.js`: Defines the Angular `ngRoute` module, which provides us with routing.
+* `app.config.js`: Configures the providers available to our main module (see
+  [below](tutorial/step_09#configuring-a-module)).
+* `phone-detail.module.js`: Defines a new module containing a `phoneDetail` component.
+* `phone-detail.component.js`: Defines a dummy `phoneDetail` component (see
+  [below](tutorial/step_09#the-phonedetail-component)).
 
-Filters, like any other component, should be tested and these tests are very easy to write.
+Note that we removed the `<phone-list></phone-list>` line from the `index.html` template and
+replaced it with a `<div>` with the `ng-view` attribute.
 
-__`test/unit/filtersSpec.js`:__
+<img class="diagram" src="img/tutorial/tutorial_09.png">
+
+
+## Configuring a Module
+
+A module's {@link ng.angular.Module#config .config()} method gives us access to the available
+providers for configuration. To make the providers, services and directives defined in `ngRoute`
+available to our application, we need to add `ngRoute` as a dependency of our `phonecatApp` module.
+
+<br />
+**`app/app.module.js`:**
 
 ```js
-describe('filter', function() {
-
-  beforeEach(module('phonecatFilters'));
-
-  describe('checkmark', function() {
-
-    it('should convert boolean values to unicode checkmark or cross',
-        inject(function(checkmarkFilter) {
-      expect(checkmarkFilter(true)).toBe('\u2713');
-      expect(checkmarkFilter(false)).toBe('\u2718');
-    }));
-  });
-});
+angular.module('phonecatApp', [
+  'ngRoute',
+  ...
+]);
 ```
 
-We must call `beforeEach(module('phonecatFilters'))` before any of
-our filter tests execute. This call loads our `phonecatFilters` module into the injector
-for this test run.
+Now, in addition to the core services and directives, we can also configure the `$route` service
+(using it's provider) for our application. In order to be able to quickly locate the configuration
+code, we put it into a separate file and used the `.config` suffix.
 
-Note that we call the helper function, `inject(function(checkmarkFilter) { ... })`, to get
-access to the filter that we want to test.  See {@link angular.mock.inject angular.mock.inject()}.
+<br />
+**`app/app.config.js`:**
 
-Notice that the suffix 'Filter' is appended to your filter name when injected.
-See the {@link guide/filter#using-filters-in-controllers-services-and-directives Filter Guide}
-section where this is outlined.
+```js
+  angular.
+    module('phonecatApp').
+    config(['$locationProvider', '$routeProvider',
+      function config($locationProvider, $routeProvider) {
+        $locationProvider.hashPrefix('!');
 
-You should now see the following output in the Karma tab:
+        $routeProvider.
+          when('/phones', {
+            template: '<phone-list></phone-list>'
+          }).
+          when('/phones/:phoneId', {
+            template: '<phone-detail></phone-detail>'
+          }).
+          otherwise('/phones');
+      }
+    ]);
+```
 
-<pre>Chrome 22.0: Executed 4 of 4 SUCCESS (0.034 secs / 0.012 secs)</pre>
+Using the `.config()` method, we request the necessary providers (for example the `$routeProvider`)
+to be injected into our configuration function and then use their methods to specify the behavior of
+the corresponding services. Here, we use the
+{@link ngRoute.$routeProvider#when $routeProvider.when()} and
+{@link ngRoute.$routeProvider#otherwise $routeProvider.otherwise()} methods to define our
+application routes.
+
+<div class="alert alert-success">
+  <p>
+    We also used {@ink $locationProvider#hashPrefix $locationProvider.hashPrefix()} to set the
+    hash-prefix to `!`. This prefix will appear in the links to our client-side routes, right after
+    the hash (`#`) symbol and before the actual path (e.g. `index.html#!/some/path`).
+  </p>
+  <p>
+    Setting a prefix is not necessary, but it is considered a good practice (for reasons that are
+    outside the scope of this tutorial). `!` is the most commonly used prefix. 
+  </p>
+</div>
+
+Our routes are defined as follows:
+
+* `when('/phones')`: Determines the view that will be shown, when the URL hash fragment is
+  `/phones`. According to the specified template, Angular will create an instance of the `phoneList`
+  component to manage the view. Note that this is the same markup that we used to have in the
+  `index.html` file.
+
+* `when('/phones/:phoneId')`: Determines the view that will be shown, when the URL hash fragment
+  matches `/phones/<phoneId>`, where `<phoneId>` is a variable part of the URL. In charge of the
+  view will be the `phoneDetail` component.
+
+* `otherwise('/phones')`: Defines a fallback route to redirect to, when no route definition matches
+  the current URL.(Here it will redirect to `/phones`.)
+
+We reused the `phoneList` component that we have already built and a new "dummy" `phoneDetail`
+component. For now, the `phoneDetail` component will just display the selected phone's ID.
+(Not too impressive, but we will enhance it in the {@link step_10 next step}.)
+
+Note the use of the `:phoneId` parameter in the second route declaration. The `$route` service uses
+the route declaration — `'/phones/:phoneId'` — as a template that is matched against the current
+URL. All variables defined with the `:` prefix are extracted into the (injectable)
+{@link ngRoute.$routeParams $routeParams} object.
+
+
+## The `phoneDetail` Component
+
+We created a `phoneDetail` component to handle the phone details view. We followed the same
+conventions as with `phoneList`, using a separate directory and creating a `phoneDetail` module,
+which we added as a dependency of the `phonecatApp` module.
+
+<br />
+**`app/phone-detail/phone-detail.module.js`:**
+
+```js
+angular.module('phoneDetail', [
+  'ngRoute'
+]);
+```
+
+<br />
+**`app/phone-detail/phone-detail.component.js`:**
+
+```js
+  angular.
+    module('phoneDetail').
+    component('phoneDetail', {
+      template: 'TBD: Detail view for <span>{{$ctrl.phoneId}}</span>',
+      controller: ['$routeParams',
+        function PhoneDetailController($routeParams) {
+          this.phoneId = $routeParams.phoneId;
+        }
+      ]
+    });
+```
+
+<br />
+**`app/app.module.js`:**
+
+```js
+angular.module('phonecatApp', [
+  ...
+  'phoneDetail',
+  ...
+]);
+```
+
+### A Note on Sub-module Dependencies
+
+The `phoneDetail` module depends on the `ngRoute` module for providing the `$routeParams` object,
+which is used in the `phoneDetail` component's controller. Since `ngRoute` is also a dependency of
+the main `phonecatApp` module, its services and directives are already available everywhere in the
+application (including the `phoneDetail` component).
+
+This means that our application would continue to work even if we didn't include `ngRoute` in the
+list of dependencies for the `phoneDetail` component. Although it might be tempting to omit
+dependencies of a sub-module that are already imported by the main module, it breaks our hard-earned
+modularity.
+
+<div class="alert alert-warning">
+  Imagine what would happen if we decided to copy the `phoneDetail` feature over to another project
+  that does not declare a dependency on `ngRoute`. The injector would not be able to provide
+  `$routeParams` and our application would break.
+</div>
+
+The takeaway here is:
+
+* Always be explicit about the dependecies of a sub-module. Do not rely on dependencies inherited
+  from a parent module (because that parent module might not be there some day).
+
+<div class="alert alert-success">
+  Declaring the same dependency in multiple modules does not incur extra "cost", because Angular
+  will still load each dependency once. For more info on modules and their dependencies take a look
+  at the [Modules](guide/module) section of the Developer Guide.
+</div>
+
+
+# Testing
+
+Since some of our modules depend on {@link ngRoute ngRoute} now, it is necessary to update the Karma
+configuration file with angular-route. Other than that, the unit tests should (still) pass without
+any modification.
+
+<br />
+**`karma.conf.js`:**
+
+```js
+    files: [
+      'bower_components/angular/angular.js',
+      'bower_components/angular-route/angular-route.js',
+      ...
+    ],
+```
+
+<br />
+To automatically verify that everything is wired properly, we wrote E2E tests for navigating to
+various URLs and verifying that the correct view was rendered.
+
+<br />
+**`e2e-tests/scenarios.js`**
+
+```js
+  ...
+
+  it('should redirect `index.html` to `index.html#!/phones', function() {
+    browser.get('index.html');
+    expect(browser.getLocationAbsUrl()).toBe('/phones');
+  });
+
+  ...
+
+  describe('View: Phone list', function() {
+
+    beforeEach(function() {
+      browser.get('index.html#!/phones');
+    });
+
+    ...
+
+  });
+
+  ...
+
+  describe('View: Phone details', function() {
+
+    beforeEach(function() {
+      browser.get('index.html#!/phones/nexus-s');
+    });
+
+    it('should display placeholder page with `phoneId`', function() {
+      expect(element(by.binding('$ctrl.phoneId')).getText()).toBe('nexus-s');
+    });
+
+  });
+
+  ...
+```
+
+You can now rerun `npm run protractor` to see the tests run (and hopefully pass).
 
 
 # Experiments
 
-* Let's experiment with some of the {@link api/ng/filter built-in Angular filters} and add the
-following bindings to `index.html`:
-  * `{{ "lower cap string" | uppercase }}`
-  * `{{ {foo: "bar", baz: 23} | json }}`
-  * `{{ 1304375948024 | date }}`
-  * `{{ 1304375948024 | date:"MM/dd/yyyy @ h:mma" }}`
+<div></div>
 
-*  We can also create a model with an input element, and combine it with a filtered binding. Add
-  the following to index.html:
+* Try to add a `{{$ctrl.phoneId}` binding in the template string for the phone details view:
 
-  ```html
-  <input ng-model="userInput"> Uppercased: {{ userInput | uppercase }}
+  ```js
+  when('/phones/:phoneId', {
+    template: '{{$ctrl.phoneId}} <phone-detail></phone-detail>'
+  ...
   ```
+
+  You will see that nothing happens, even when you are in the phone details view. This is because
+  the `phoneId` model is visible only in the context set by the `phoneDetail` component. Again,
+  component isolation at work!
 
 
 # Summary
 
-Now that you have learned how to write and test a custom filter, go to {@link step_10 step 10} to
-learn how we can use Angular to enhance the phone details page further.
+With the routing set up and the phone list view implemented, we are ready to go to
+{@link step_10 step 10} and implement a proper phone details view.
 
 
 <ul doc-tutorial-nav="9"></ul>
+
+
+[bower]: http://bower.io
+[deep-linking]: https://en.wikipedia.org/wiki/Deep_linking
+[wiki-di]: https://github.com/angular/angular.js/wiki/Understanding-Dependency-Injection

@@ -14,7 +14,7 @@
    height="553pt"
    id="svg3336"
    inkscape:version="0.91 r13725"
-   sodipodi:docname="tutorial_03.svg"
+   sodipodi:docname="tutorial_05.svg"
    inkscape:export-filename="C:\Datafiles\Dev\AngularJS\angular.js\docs\img\tutorial\tutorial_03.png"
    inkscape:export-xdpi="65"
    inkscape:export-ydpi="65">
@@ -32,7 +32,7 @@
      id="namedview3683"
      showgrid="false"
      inkscape:zoom="0.9721519"
-     inkscape:cx="318.71745"
+     inkscape:cx="472.5"
      inkscape:cy="345.625"
      inkscape:window-x="70"
      inkscape:window-y="-8"
@@ -58,6 +58,264 @@
 </metadata>
   <defs
      id="defs3340">
+    <marker
+       inkscape:stockid="Arrow2Mstart"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="marker14870"
+       style="overflow:visible"
+       inkscape:isstock="true">
+      <path
+         id="path14872"
+         style="fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round;stroke:#000000;stroke-opacity:1;fill:#000000;fill-opacity:1"
+         d="M 8.7185878,4.0337352 L -2.2072895,0.016013256 L 8.7185884,-4.0017078 C 6.9730900,-1.6296469 6.9831476,1.6157441 8.7185878,4.0337352 z "
+         transform="scale(0.6) translate(0,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Tail"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="marker14254"
+       style="overflow:visible"
+       inkscape:isstock="true">
+      <g
+         id="g14256"
+         transform="scale(-1.2)"
+         style="stroke:#000000;stroke-opacity:1;fill:#000000;fill-opacity:1">
+        <path
+           id="path14258"
+           d="M -3.8048674,-3.9585227 L 0.54352094,0"
+           style="fill:#000000;fill-rule:evenodd;stroke:#000000;stroke-width:0.8;stroke-linecap:round;stroke-opacity:1;fill-opacity:1" />
+        <path
+           id="path14260"
+           d="M -1.2866832,-3.9585227 L 3.0617053,0"
+           style="fill:#000000;fill-rule:evenodd;stroke:#000000;stroke-width:0.8;stroke-linecap:round;stroke-opacity:1;fill-opacity:1" />
+        <path
+           id="path14262"
+           d="M 1.3053582,-3.9585227 L 5.6537466,0"
+           style="fill:#000000;fill-rule:evenodd;stroke:#000000;stroke-width:0.8;stroke-linecap:round;stroke-opacity:1;fill-opacity:1" />
+        <path
+           id="path14264"
+           d="M -3.8048674,4.1775838 L 0.54352094,0.21974226"
+           style="fill:#000000;fill-rule:evenodd;stroke:#000000;stroke-width:0.8;stroke-linecap:round;stroke-opacity:1;fill-opacity:1" />
+        <path
+           id="path14266"
+           d="M -1.2866832,4.1775838 L 3.0617053,0.21974226"
+           style="fill:#000000;fill-rule:evenodd;stroke:#000000;stroke-width:0.8;stroke-linecap:round;stroke-opacity:1;fill-opacity:1" />
+        <path
+           id="path14268"
+           d="M 1.3053582,4.1775838 L 5.6537466,0.21974226"
+           style="fill:#000000;fill-rule:evenodd;stroke:#000000;stroke-width:0.8;stroke-linecap:round;stroke-opacity:1;fill-opacity:1" />
+      </g>
+    </marker>
+    <marker
+       inkscape:stockid="DotL"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="DotL"
+       style="overflow:visible"
+       inkscape:isstock="true">
+      <path
+         id="path8587"
+         d="M -2.5,-1.0 C -2.5,1.7600000 -4.7400000,4.0 -7.5,4.0 C -10.260000,4.0 -12.5,1.7600000 -12.5,-1.0 C -12.5,-3.7600000 -10.260000,-6.0 -7.5,-6.0 C -4.7400000,-6.0 -2.5,-3.7600000 -2.5,-1.0 z "
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;stroke-opacity:1;fill:#000000;fill-opacity:1"
+         transform="scale(0.8) translate(7.4, 1)" />
+    </marker>
+    <marker
+       inkscape:stockid="CurveOut"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="CurveOut"
+       style="overflow:visible"
+       inkscape:isstock="true">
+      <path
+         id="path8713"
+         d="M -5.4129913,-5.0456926 C -2.6529913,-5.0456926 -0.41299131,-2.8056926 -0.41299131,-0.045692580 C -0.41299131,2.7143074 -2.6529913,4.9543074 -5.4129913,4.9543074"
+         style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1pt;stroke-opacity:1"
+         transform="scale(0.6)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow2Mend"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow2Mend"
+       style="overflow:visible;"
+       inkscape:isstock="true">
+      <path
+         id="path8553"
+         style="fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round;stroke:#000000;stroke-opacity:1;fill:#000000;fill-opacity:1"
+         d="M 8.7185878,4.0337352 L -2.2072895,0.016013256 L 8.7185884,-4.0017078 C 6.9730900,-1.6296469 6.9831476,1.6157441 8.7185878,4.0337352 z "
+         transform="scale(0.6) rotate(180) translate(0,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow2Mstart"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="marker12288"
+       style="overflow:visible"
+       inkscape:isstock="true">
+      <path
+         id="path12290"
+         style="fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round;stroke:#000000;stroke-opacity:1;fill:#000000;fill-opacity:1"
+         d="M 8.7185878,4.0337352 L -2.2072895,0.016013256 L 8.7185884,-4.0017078 C 6.9730900,-1.6296469 6.9831476,1.6157441 8.7185878,4.0337352 z "
+         transform="scale(0.6) translate(0,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow2Lstart"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow2Lstart"
+       style="overflow:visible"
+       inkscape:isstock="true">
+      <path
+         id="path8544"
+         style="fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round;stroke:#000000;stroke-opacity:1;fill:#000000;fill-opacity:1"
+         d="M 8.7185878,4.0337352 L -2.2072895,0.016013256 L 8.7185884,-4.0017078 C 6.9730900,-1.6296469 6.9831476,1.6157441 8.7185878,4.0337352 z "
+         transform="scale(1.1) translate(1,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow2Mstart"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="marker11424"
+       style="overflow:visible"
+       inkscape:isstock="true">
+      <path
+         id="path11426"
+         style="fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round;stroke:#000000;stroke-opacity:1;fill:#000000;fill-opacity:1"
+         d="M 8.7185878,4.0337352 L -2.2072895,0.016013256 L 8.7185884,-4.0017078 C 6.9730900,-1.6296469 6.9831476,1.6157441 8.7185878,4.0337352 z "
+         transform="scale(0.6) translate(0,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Lstart"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow1Lstart"
+       style="overflow:visible"
+       inkscape:isstock="true">
+      <path
+         id="path8526"
+         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;stroke-opacity:1;fill:#000000;fill-opacity:1"
+         transform="scale(0.8) translate(12.5,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Tail"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Tail"
+       style="overflow:visible"
+       inkscape:isstock="true">
+      <g
+         id="g8562"
+         transform="scale(-1.2)"
+         style="stroke:#000000;stroke-opacity:1;fill:#000000;fill-opacity:1">
+        <path
+           id="path8564"
+           d="M -3.8048674,-3.9585227 L 0.54352094,0"
+           style="fill:#000000;fill-rule:evenodd;stroke:#000000;stroke-width:0.8;stroke-linecap:round;stroke-opacity:1;fill-opacity:1" />
+        <path
+           id="path8566"
+           d="M -1.2866832,-3.9585227 L 3.0617053,0"
+           style="fill:#000000;fill-rule:evenodd;stroke:#000000;stroke-width:0.8;stroke-linecap:round;stroke-opacity:1;fill-opacity:1" />
+        <path
+           id="path8568"
+           d="M 1.3053582,-3.9585227 L 5.6537466,0"
+           style="fill:#000000;fill-rule:evenodd;stroke:#000000;stroke-width:0.8;stroke-linecap:round;stroke-opacity:1;fill-opacity:1" />
+        <path
+           id="path8570"
+           d="M -3.8048674,4.1775838 L 0.54352094,0.21974226"
+           style="fill:#000000;fill-rule:evenodd;stroke:#000000;stroke-width:0.8;stroke-linecap:round;stroke-opacity:1;fill-opacity:1" />
+        <path
+           id="path8572"
+           d="M -1.2866832,4.1775838 L 3.0617053,0.21974226"
+           style="fill:#000000;fill-rule:evenodd;stroke:#000000;stroke-width:0.8;stroke-linecap:round;stroke-opacity:1;fill-opacity:1" />
+        <path
+           id="path8574"
+           d="M 1.3053582,4.1775838 L 5.6537466,0.21974226"
+           style="fill:#000000;fill-rule:evenodd;stroke:#000000;stroke-width:0.8;stroke-linecap:round;stroke-opacity:1;fill-opacity:1" />
+      </g>
+    </marker>
+    <marker
+       inkscape:stockid="Arrow2Mstart"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="marker9862"
+       style="overflow:visible"
+       inkscape:isstock="true">
+      <path
+         id="path9864"
+         style="fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round;stroke:#000000;stroke-opacity:1;fill:#000000;fill-opacity:1"
+         d="M 8.7185878,4.0337352 L -2.2072895,0.016013256 L 8.7185884,-4.0017078 C 6.9730900,-1.6296469 6.9831476,1.6157441 8.7185878,4.0337352 z "
+         transform="scale(0.6) translate(0,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow2Mstart"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="marker9564"
+       style="overflow:visible"
+       inkscape:isstock="true">
+      <path
+         id="path9566"
+         style="fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round;stroke:#000000;stroke-opacity:1;fill:#000000;fill-opacity:1"
+         d="M 8.7185878,4.0337352 L -2.2072895,0.016013256 L 8.7185884,-4.0017078 C 6.9730900,-1.6296469 6.9831476,1.6157441 8.7185878,4.0337352 z "
+         transform="scale(0.6) translate(0,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Mstart"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow1Mstart"
+       style="overflow:visible"
+       inkscape:isstock="true">
+      <path
+         id="path8532"
+         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;stroke-opacity:1;fill:#000000;fill-opacity:1"
+         transform="scale(0.4) translate(10,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow2Mstart"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="marker9024"
+       style="overflow:visible"
+       inkscape:isstock="true">
+      <path
+         id="path9026"
+         style="fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round;stroke:#000000;stroke-opacity:1;fill:#000000;fill-opacity:1"
+         d="M 8.7185878,4.0337352 L -2.2072895,0.016013256 L 8.7185884,-4.0017078 C 6.9730900,-1.6296469 6.9831476,1.6157441 8.7185878,4.0337352 z "
+         transform="scale(0.6) translate(0,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow2Mstart"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow2Mstart"
+       style="overflow:visible"
+       inkscape:isstock="true">
+      <path
+         id="path8550"
+         style="fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round;stroke:#000000;stroke-opacity:1;fill:#000000;fill-opacity:1"
+         d="M 8.7185878,4.0337352 L -2.2072895,0.016013256 L 8.7185884,-4.0017078 C 6.9730900,-1.6296469 6.9831476,1.6157441 8.7185878,4.0337352 z "
+         transform="scale(0.6) translate(0,0)" />
+    </marker>
     <filter
        id="Shadow"
        filterUnits="userSpaceOnUse">
@@ -269,7 +527,7 @@
     <linearGradient
        id="Obj_Gradient_6"
        xlink:href="#Gradient"
-       gradientTransform="matrix(0,102.88779,-103.19865,0,394.21319,80.800018)" />
+       gradientTransform="matrix(0,102.88779,-103.19865,0,394.21319,16.800018)" />
     <font-face
        font-family="Courier New"
        font-size="11"
@@ -468,19 +726,9 @@
     <linearGradient
        inkscape:collect="always"
        xlink:href="#Gradient_3"
-       id="linearGradient4781"
-       x1="-144"
-       y1="113"
-       x2="-112"
-       y2="113"
-       gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(0.73313675,0,0,2.6042886,130.99791,-416.07607)" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#Gradient_3"
        id="linearGradient5160"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(1.7989586,0,0,2.9859898,471.04482,-498.47623)"
+       gradientTransform="matrix(2.1847006,0,0,2.9859898,532.99165,-493.67623)"
        x1="-144"
        y1="113"
        x2="-112"
@@ -490,7 +738,7 @@
        xlink:href="#Gradient_3"
        id="linearGradient5236"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(0.74459663,0,0,0.80526331,287.08128,-156.32299)"
+       gradientTransform="matrix(0.74459663,0,0,0.80526331,293.48128,-151.52299)"
        x1="-144"
        y1="113"
        x2="-112"
@@ -500,17 +748,7 @@
        xlink:href="#Gradient_3"
        id="linearGradient5255"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(0.74459663,0,0,0.80526324,385.77295,-156.77298)"
-       x1="-144"
-       y1="113"
-       x2="-112"
-       y2="113" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#Gradient_3"
-       id="linearGradient5273"
-       gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(0.74459663,0,0,0.80526049,212.86878,-1.2413087)"
+       gradientTransform="matrix(0.74459663,0,0,0.80526324,404.97295,-151.97298)"
        x1="-144"
        y1="113"
        x2="-112"
@@ -539,7 +777,17 @@
        inkscape:collect="always"
        xlink:href="#Gradient"
        id="linearGradient7626"
-       gradientTransform="matrix(0,61.742024,-90.853164,0,394.05902,114.66875)" />
+       gradientTransform="matrix(0,67.502431,-90.853164,0,394.05902,44.908307)" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#Gradient_3"
+       id="linearGradient19840"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(1.1817711,0,0,3.016852,303.63441,-489.89605)"
+       x1="-144"
+       y1="113"
+       x2="-112"
+       y2="113" />
   </defs>
   <g
      id="g3434"
@@ -557,27 +805,28 @@
        x="0"
        y="0"
        style="fill:#ffffff"
-       inkscape:export-filename="C:\Datafiles\Dev\AngularJS\angular.js\docs\img\tutorial\tutorial_03.png"
+       inkscape:export-filename="C:\Datafiles\Dev\AngularJS\angular.js\docs\img\tutorial\tutorial_05.png"
        inkscape:export-xdpi="66"
        inkscape:export-ydpi="66" />
     <g
-       id="g8412">
+       id="g8412"
+       transform="translate(0,-12.8)">
       <rect
-         y="146.47916"
+         y="97.927071"
          x="20.572918"
-         height="159.64584"
+         height="233.70833"
          width="260.86456"
          id="rect8405"
-         style="fill:#deffff;fill-opacity:1;stroke:#800080;stroke-width:1.20000005;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:2.4, 2.4;stroke-dashoffset:0;stroke-opacity:1" />
+         style="fill:#deffff;fill-opacity:1;stroke:#800080;stroke-width:1.20000005;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:2.39999997, 2.39999997;stroke-dashoffset:0;stroke-opacity:1" />
       <text
          sodipodi:linespacing="125%"
          id="text8407"
-         y="162.03207"
+         y="114.03195"
          x="133.79451"
          style="font-style:normal;font-weight:normal;font-size:12px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#800080;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
          xml:space="preserve"><tspan
            style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold'"
-           y="162.03207"
+           y="114.03195"
            x="133.79451"
            id="tspan8409"
            sodipodi:role="line">Component template</tspan></text>
@@ -586,10 +835,67 @@
        id="g7634"
        transform="translate(0,12.8)" />
     <g
+       id="g8492">
+      <ellipse
+         id="ellipse3521"
+         ry="51.443981"
+         rx="82.54731"
+         cy="68.243912"
+         cx="394.2132"
+         style="fill:url(#Obj_Gradient_6);stroke:#000000;stroke-width:1;stroke-opacity:1" />
+      <ellipse
+         id="ellipse7624"
+         ry="33.75127"
+         rx="72.67231"
+         cy="78.659889"
+         cx="394.05789"
+         style="fill:url(#linearGradient7626);stroke:#000000;stroke-width:1;stroke-opacity:1" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:12px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         x="393.35413"
+         y="68.625061"
+         id="text3746"
+         sodipodi:linespacing="125%"><tspan
+           id="tspan3838"
+           sodipodi:role="line"
+           x="393.35413"
+           y="68.625061"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:12px;line-height:150%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';text-align:center;writing-mode:lr-tb;text-anchor:middle"
+           dy="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0">PhoneListController</tspan><tspan
+           sodipodi:role="line"
+           x="394.40881"
+           y="79.179901"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:6px;line-height:150%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';text-align:center;writing-mode:lr-tb;text-anchor:middle"
+           dy="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0"
+           id="tspan8509"> </tspan><tspan
+           id="tspan7381"
+           sodipodi:role="line"
+           x="393.35413"
+           y="89.921165"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:10px;line-height:125%;font-family:'Courier New';-inkscape-font-specification:'Courier New Bold';text-align:center;writing-mode:lr-tb;text-anchor:middle">query: String</tspan><tspan
+           sodipodi:role="line"
+           x="393.35413"
+           y="102.42117"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10px;line-height:125%;font-family:'Courier New';-inkscape-font-specification:'Courier New';text-align:center;writing-mode:lr-tb;text-anchor:middle"
+           id="tspan8505">phones: Array</tspan></text>
+      <text
+         sodipodi:linespacing="125%"
+         id="text7630"
+         y="39.458328"
+         x="343.66037"
+         style="font-style:normal;font-weight:normal;font-size:12px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         xml:space="preserve"><tspan
+           y="39.458328"
+           x="343.66037"
+           id="tspan7632"
+           sodipodi:role="line">phoneList Scope</tspan></text>
+    </g>
+    <g
        id="g3440"
        inkscape:export-xdpi="66"
        inkscape:export-ydpi="66"
-       inkscape:export-filename="C:\Datafiles\Dev\AngularJS\angular.js\docs\img\tutorial\tutorial_02.png">
+       inkscape:export-filename="C:\Datafiles\Dev\AngularJS\angular.js\docs\img\tutorial\tutorial_05.png">
       <title
          id="title3442">Layer 1</title>
       <g
@@ -621,12 +927,12 @@
          id="g3648"
          transform="translate(-3.2,17.6)">
         <image
-           sodipodi:absref="C:\Datafiles\Dev\AngularJS\angular.js\images\docs\tutorial\tutorial_03.svg\image11.png"
-           xlink:href="image11.png"
-           width="216"
-           height="171"
+           sodipodi:absref="C:\Datafiles\Dev\AngularJS\angular.js\images\docs\tutorial\tutorial_05.svg\image13.png"
+           xlink:href="image13.png"
+           id="image3650"
            transform="translate(520,28)"
-           id="image3650" />
+           height="171"
+           width="216" />
       </g>
       <g
          id="g3444">
@@ -895,35 +1201,8 @@
              x="-186.18489"
              y="45.260418" /></flowRegion><flowPara
            id="flowPara3724" /></flowRoot>      <g
-         id="g4874"
-         transform="translate(-4.8,0)">
-        <g
-           id="g6499">
-          <rect
-             id="rect4773"
-             width="23.46034"
-             height="208.34314"
-             x="25.426043"
-             y="-225.96269"
-             style="fill:url(#linearGradient4781);fill-opacity:1;stroke:#000000;stroke-width:1.31046247;stroke-opacity:1"
-             transform="matrix(0,1,-1,0,0,0)" />
-          <text
-             xml:space="preserve"
-             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:11px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-             x="24.045816"
-             y="40.308334"
-             id="text4855"
-             sodipodi:linespacing="125%"><tspan
-               sodipodi:role="line"
-               id="tspan4861"
-               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:12px;font-family:'Courier New';-inkscape-font-specification:'Courier New'"
-               x="24.045816"
-               y="40.308334">&lt;html ng-app=&quot;phonecatApp&quot;&gt;</tspan></text>
-        </g>
-      </g>
-      <g
          id="g7346"
-         transform="translate(0,8)">
+         transform="translate(0,-56)">
         <line
            style="stroke:#000000;stroke-width:1.98176777;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:3.96353671, 3.96353671;marker-end:url(#FilledArrow_Marker_2)"
            id="line3535"
@@ -950,113 +1229,10 @@
          id="g5377" />
       <g
          id="g5401"
-         transform="translate(-4.8,0)">
-        <rect
-           transform="matrix(0,1,-1,0,0,0)"
-           style="fill:url(#linearGradient5160);fill-opacity:1;stroke:#000000;stroke-width:0.94374067;stroke-opacity:1"
-           y="-280.49896"
-           x="211.9948"
-           height="238.87918"
-           width="57.566677"
-           id="rect5152" />
-        <text
-           xml:space="preserve"
-           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10px;line-height:125%;font-family:'Courier New';-inkscape-font-specification:'Courier New, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-           x="47.227081"
-           y="224.94374"
-           id="text5134"
-           sodipodi:linespacing="125%"
-           transform="translate(1.6,0)"><tspan
-             sodipodi:role="line"
-             id="tspan5136"
-             x="47.227081"
-             y="224.94374"
-             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10px;font-family:'Courier New';-inkscape-font-specification:'Courier New'">&lt;li ng-repeat=&quot;phone in <tspan
-   style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:'Courier New';-inkscape-font-specification:'Courier New Bold'"
-   id="tspan7223">$ctrl.phones</tspan>&quot;&gt;</tspan><tspan
-             sodipodi:role="line"
-             x="47.227081"
-             y="237.44374"
-             id="tspan5138"
-             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10px;font-family:'Courier New';-inkscape-font-specification:'Courier New'">  &lt;span&gt;{{phone.name}}&lt;/span&gt;</tspan><tspan
-             sodipodi:role="line"
-             x="47.227081"
-             y="249.94374"
-             id="tspan5142"
-             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10px;font-family:'Courier New';-inkscape-font-specification:'Courier New'">  &lt;p&gt;{{phone.snippet}}&lt;/p&gt;</tspan><tspan
-             sodipodi:role="line"
-             x="47.227081"
-             y="262.44373"
-             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10px;font-family:'Courier New';-inkscape-font-specification:'Courier New'"
-             id="tspan5188">&lt;/li&gt;</tspan></text>
-        <rect
-           transform="matrix(0,1,-1,0,0,0)"
-           style="fill:url(#linearGradient5236);fill-opacity:1;stroke:#000000;stroke-width:0.94374055;stroke-opacity:1"
-           y="-97.538773"
-           x="179.85938"
-           height="64.421059"
-           width="23.827093"
-           id="rect5228" />
-        <text
-           sodipodi:linespacing="125%"
-           id="text5230"
-           y="194.925"
-           x="50.927048"
-           style="font-style:normal;font-weight:normal;font-size:32px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-           xml:space="preserve"><tspan
-             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:12px;line-height:125%;font-family:'Courier New';-inkscape-font-specification:'Courier New, Normal';text-align:start;writing-mode:lr-tb;text-anchor:start"
-             y="194.925"
-             x="50.927048"
-             id="tspan5232"
-             sodipodi:role="line">&lt;ul&gt;</tspan></text>
-        <rect
-           transform="matrix(0,1,-1,0,0,0)"
-           style="fill:url(#linearGradient5255);fill-opacity:1;stroke:#000000;stroke-width:0.94374055;stroke-opacity:1"
-           y="-97.988762"
-           x="278.55103"
-           height="64.421059"
-           width="23.827093"
-           id="rect5249" />
-        <text
-           sodipodi:linespacing="125%"
-           id="text5251"
-           y="293.61667"
-           x="46.577053"
-           style="font-style:normal;font-weight:normal;font-size:32px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-           xml:space="preserve"><tspan
-             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:12px;line-height:125%;font-family:'Courier New';-inkscape-font-specification:'Courier New, Normal';text-align:start;writing-mode:lr-tb;text-anchor:start"
-             y="293.61667"
-             x="46.577053"
-             id="tspan5253"
-             sodipodi:role="line">&lt;/ul&gt;</tspan></text>
-      </g>
-      <g
-         id="g5282"
-         transform="translate(134.27292,237.32083)">
-        <rect
-           id="rect5267"
-           width="23.827093"
-           height="64.420837"
-           x="105.64687"
-           y="57.542709"
-           style="fill:url(#linearGradient5273);fill-opacity:1;stroke:#000000;stroke-width:0.94374061;stroke-opacity:1"
-           transform="matrix(0,1,-1,0,0,0)" />
-        <text
-           xml:space="preserve"
-           style="font-style:normal;font-weight:normal;font-size:32px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-           x="-115.35419"
-           y="120.71252"
-           id="text5269"
-           sodipodi:linespacing="125%"><tspan
-             sodipodi:role="line"
-             x="-115.35419"
-             y="120.71252"
-             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:12px;line-height:125%;font-family:'Courier New';-inkscape-font-specification:'Courier New, Normal';text-align:start;writing-mode:lr-tb;text-anchor:start"
-             id="tspan5297">&lt;/html&gt;</tspan></text>
-      </g>
+         transform="translate(-4.8,0)" />
       <g
          id="g6511"
-         transform="translate(-4.8,0)">
+         transform="translate(-4.8,16)">
         <rect
            transform="matrix(0,1,-1,0,0,0)"
            style="fill:url(#linearGradient5295);fill-opacity:1;stroke:#000000;stroke-width:0.94374061;stroke-opacity:1"
@@ -1080,7 +1256,7 @@
       </g>
       <g
          id="g6516"
-         transform="translate(-3.2,-193.6)">
+         transform="translate(-3.2,-257.6)">
         <g
            id="g6526"
            transform="translate(-1.6,0)">
@@ -1107,13 +1283,13 @@
         </g>
       </g>
       <g
-         id="g7689">
+         id="g8517">
         <line
            style="stroke:#36ff37;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#FilledArrow_Marker_7)"
            id="line3619"
-           y2="194.15622"
+           y2="129.32898"
            x2="390.66364"
-           y1="228.27219"
+           y1="233.02008"
            x1="394.68604" />
         <ellipse
            style="fill:url(#Obj_Gradient_9);stroke:#000000;stroke-opacity:1"
@@ -1123,29 +1299,163 @@
            cy="263.80002"
            cx="408.25" />
         <line
-           style="stroke:#000000;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#FilledArrow_Marker_2)"
+           style="stroke:#000000;stroke-width:2.00000024;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#FilledArrow_Marker_2)"
            id="line3664"
-           y2="89.354668"
-           x2="519.58319"
-           y1="226.80002"
-           x1="423" />
+           y2="117.03761"
+           x2="538.03778"
+           y1="226.01949"
+           x1="422.24988" />
+      </g>
+      <path
+         style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.36000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-start:url(#FilledArrow_Marker_8);marker-end:url(#FilledArrow_Marker)"
+         d="M 450.3639,86.406248 556.06318,77.354166"
+         id="path19634"
+         inkscape:connector-curvature="0" />
+      <g
+         id="g19876"
+         transform="translate(0,-14.4)">
+        <rect
+           id="rect5152"
+           width="69.910423"
+           height="238.87918"
+           x="218.39481"
+           y="-275.69897"
+           style="fill:url(#linearGradient5160);fill-opacity:1;stroke:#000000;stroke-width:0.94374055;stroke-opacity:1"
+           transform="matrix(0,1,-1,0,0,0)" />
+        <text
+           sodipodi:linespacing="125%"
+           id="text5134"
+           y="231.34377"
+           x="44.027081"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10px;line-height:125%;font-family:'Courier New';-inkscape-font-specification:'Courier New, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           xml:space="preserve"><tspan
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10px;font-family:'Courier New';-inkscape-font-specification:'Courier New'"
+             y="231.34377"
+             x="44.027081"
+             id="tspan5136"
+             sodipodi:role="line">&lt;li ng-repeat=&quot;phone in $ctrl.phones</tspan><tspan
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10px;font-family:'Courier New';-inkscape-font-specification:'Courier New'"
+             y="243.84377"
+             x="44.027081"
+             sodipodi:role="line"
+             id="tspan3590"><tspan
+   style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:'Courier New';-inkscape-font-specification:'Courier New Bold'"
+   id="tspan3592">               | filter:$ctrl.query</tspan>&quot;&gt;</tspan><tspan
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10px;font-family:'Courier New';-inkscape-font-specification:'Courier New'"
+             id="tspan5138"
+             y="256.34375"
+             x="44.027081"
+             sodipodi:role="line">  &lt;span&gt;{{phone.name}}&lt;/span&gt;</tspan><tspan
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10px;font-family:'Courier New';-inkscape-font-specification:'Courier New'"
+             id="tspan5142"
+             y="268.84375"
+             x="44.027081"
+             sodipodi:role="line">  &lt;p&gt;{{phone.snippet}}&lt;/p&gt;</tspan><tspan
+             id="tspan5188"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10px;font-family:'Courier New';-inkscape-font-specification:'Courier New'"
+             y="281.34375"
+             x="44.027081"
+             sodipodi:role="line">&lt;/li&gt;</tspan></text>
+        <rect
+           id="rect5228"
+           width="23.827093"
+           height="64.421059"
+           x="186.2594"
+           y="-92.73877"
+           style="fill:url(#linearGradient5236);fill-opacity:1;stroke:#000000;stroke-width:0.94374055;stroke-opacity:1"
+           transform="matrix(0,1,-1,0,0,0)" />
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-weight:normal;font-size:32px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           x="46.127048"
+           y="201.32503"
+           id="text5230"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             id="tspan5232"
+             x="46.127048"
+             y="201.32503"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:12px;line-height:125%;font-family:'Courier New';-inkscape-font-specification:'Courier New, Normal';text-align:start;writing-mode:lr-tb;text-anchor:start">&lt;ul&gt;</tspan></text>
+        <rect
+           id="rect5249"
+           width="23.827093"
+           height="64.421059"
+           x="297.7511"
+           y="-93.188759"
+           style="fill:url(#linearGradient5255);fill-opacity:1;stroke:#000000;stroke-width:0.94374055;stroke-opacity:1"
+           transform="matrix(0,1,-1,0,0,0)" />
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-weight:normal;font-size:32px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           x="41.777054"
+           y="312.81674"
+           id="text5251"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             id="tspan5253"
+             x="41.777054"
+             y="312.81674"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:12px;line-height:125%;font-family:'Courier New';-inkscape-font-specification:'Courier New, Normal';text-align:start;writing-mode:lr-tb;text-anchor:start">&lt;/ul&gt;</tspan></text>
+        <g
+           id="g19858">
+          <rect
+             transform="matrix(0,1,-1,0,0,0)"
+             style="fill:url(#linearGradient19840);fill-opacity:1;stroke:#000000;stroke-width:0.94374061;stroke-opacity:1"
+             y="-269.66586"
+             x="133.45938"
+             height="241.34814"
+             width="37.816677"
+             id="rect19826" />
+          <text
+             sodipodi:linespacing="125%"
+             id="text19828"
+             y="146.925"
+             x="33.327061"
+             style="font-style:normal;font-weight:normal;font-size:32px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+             xml:space="preserve"><tspan
+               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:12px;line-height:125%;font-family:'Courier New';-inkscape-font-specification:'Courier New, Normal';text-align:start;writing-mode:lr-tb;text-anchor:start"
+               y="146.925"
+               x="33.327061"
+               id="tspan19830"
+               sodipodi:role="line">Search:</tspan><tspan
+               style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:12px;line-height:125%;font-family:'Courier New';-inkscape-font-specification:'Courier New Bold';text-align:start;writing-mode:lr-tb;text-anchor:start"
+               y="161.925"
+               x="33.327061"
+               sodipodi:role="line"
+               id="tspan19856">&lt;input ng-model=&quot;$ctrl.query&quot; /&gt;</tspan></text>
+        </g>
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-weight:normal;font-size:12px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           x="260"
+           y="223.39999"
+           id="text3584"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             id="tspan3586"
+             x="260"
+             y="223.39999"></tspan><tspan
+             sodipodi:role="line"
+             x="260"
+             y="238.39999"
+             id="tspan3588" /></text>
       </g>
     </g>
     <g
        id="g7694">
       <line
-         x1="431.42535"
-         y1="236.45663"
-         x2="519.04675"
-         y2="133.87585"
+         x1="430.58273"
+         y1="235.62433"
+         x2="537.27631"
+         y2="155.10843"
          id="line3662"
          style="stroke:#000000;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#FilledArrow_Marker_2)" />
       <line
-         style="stroke:#45ff51;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#FilledArrow_Marker_6)"
+         style="stroke:#45ff51;stroke-width:0.99999994;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#FilledArrow_Marker_6)"
          id="line3617"
-         y2="192.60309"
+         y2="129.35403"
          x2="396.98181"
-         y1="236.71809"
+         y1="240.31607"
          x1="407.2153" />
       <ellipse
          style="fill:url(#Obj_Gradient_a);stroke:#000000;stroke-opacity:1"
@@ -1154,31 +1464,6 @@
          rx="62.250099"
          cy="272.80002"
          cx="417.25" />
-    </g>
-    <g
-       id="g4948">
-      <ellipse
-         style="fill:url(#Obj_Gradient);stroke:#000000;stroke-opacity:1"
-         id="ellipse3456"
-         ry="19.500031"
-         rx="50.50008"
-         cy="36.799995"
-         cx="381" />
-      <text
-         sodipodi:linespacing="125%"
-         id="text3736"
-         y="32.779163"
-         x="382.65625"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:12px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-         xml:space="preserve"><tspan
-           y="32.779163"
-           x="382.65625"
-           id="tspan3738"
-           sodipodi:role="line">Root</tspan><tspan
-           id="tspan3740"
-           y="47.779163"
-           x="382.65625"
-           sodipodi:role="line">Scope</tspan></text>
     </g>
     <flowRoot
        xml:space="preserve"
@@ -1193,19 +1478,19 @@
          id="flowPara3806" /></flowRoot>    <g
        id="g7699">
       <line
-         style="stroke:#000000;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#FilledArrow_Marker_2)"
+         style="stroke:#000000;stroke-width:1.99999988;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#FilledArrow_Marker_2)"
          id="line3652"
-         y2="176.39316"
-         x2="518.27075"
-         y1="245.98273"
-         x1="436.84396" />
+         y2="192.08574"
+         x2="535.36487"
+         y1="245.05835"
+         x1="435.99106" />
       <line
          x1="420.08658"
-         y1="244.66832"
+         y1="247.57582"
          x2="404.3446"
-         y2="191.15108"
+         y2="129.64087"
          id="line3615"
-         style="stroke:#38ff41;stroke-width:0.99999994;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#FilledArrow_Marker_5)" />
+         style="stroke:#38ff41;stroke-width:0.99999988;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#FilledArrow_Marker_5)" />
       <ellipse
          style="fill:url(#Obj_Gradient_b);stroke:#000000;stroke-opacity:1"
          cx="426.25"
@@ -1240,28 +1525,6 @@
            sodipodi:role="line">phone: Object</tspan></text>
     </g>
     <g
-       id="g7338">
-      <line
-         style="stroke:#000000;stroke-width:1.78409266;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:3.5681858, 3.5681858;stroke-dashoffset:0;marker-end:url(#FilledArrow_Marker_2)"
-         id="line3499"
-         y2="36.799995"
-         x2="318.37701"
-         y1="36.799995"
-         x1="222.99382" />
-      <text
-         sodipodi:linespacing="125%"
-         id="text4869"
-         y="29.426964"
-         x="251.40479"
-         style="font-style:normal;font-weight:normal;font-size:32px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-         xml:space="preserve"><tspan
-           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:12px;font-family:'Courier New';-inkscape-font-specification:'Courier New'"
-           y="29.426964"
-           x="251.40479"
-           id="tspan4871"
-           sodipodi:role="line">ng-app</tspan></text>
-    </g>
-    <g
        id="g8326">
       <line
          style="stroke:#000000;stroke-width:1.99999988;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:4.00000008, 4.00000008;marker-end:url(#FilledArrow_Marker_2)"
@@ -1288,11 +1551,11 @@
          sodipodi:linespacing="125%"
          id="text5212"
          y="233.83336"
-         x="281.30841"
+         x="286.10843"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:12px;line-height:125%;font-family:'Courier New';-inkscape-font-specification:'Courier New, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
          xml:space="preserve"><tspan
            y="233.83336"
-           x="281.30841"
+           x="286.10843"
            id="tspan5214"
            sodipodi:role="line">ng-repeat</tspan></text>
     </g>
@@ -1302,76 +1565,5 @@
     <g
        id="g8428"
        transform="translate(-1.3938144,-0.9814433)" />
-    <g
-       id="g8434">
-      <ellipse
-         id="ellipse3521"
-         ry="51.443981"
-         rx="82.54731"
-         cy="132.24391"
-         cx="394.2132"
-         style="fill:url(#Obj_Gradient_6);stroke:#000000;stroke-width:1;stroke-opacity:1" />
-      <ellipse
-         id="ellipse7624"
-         ry="30.871063"
-         rx="72.67231"
-         cy="145.5401"
-         cx="394.05789"
-         style="fill:url(#linearGradient7626);stroke:#000000;stroke-width:1;stroke-opacity:1" />
-      <text
-         xml:space="preserve"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:12px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-         x="393.35413"
-         y="139.02505"
-         id="text3746"
-         sodipodi:linespacing="125%"><tspan
-           id="tspan3838"
-           sodipodi:role="line"
-           x="393.35413"
-           y="139.02505"
-           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:12px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';text-align:center;writing-mode:lr-tb;text-anchor:middle">PhoneListController</tspan><tspan
-           sodipodi:role="line"
-           x="393.35413"
-           y="154.02505"
-           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10px;line-height:125%;font-family:'Courier New';-inkscape-font-specification:'Courier New';text-align:center;writing-mode:lr-tb;text-anchor:middle"
-           id="tspan6556" /><tspan
-           id="tspan7381"
-           sodipodi:role="line"
-           x="393.35413"
-           y="165.80289"
-           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10px;line-height:125%;font-family:'Courier New';-inkscape-font-specification:'Courier New';text-align:center;writing-mode:lr-tb;text-anchor:middle">phones: Array</tspan></text>
-      <line
-         style="stroke:#2fff41;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#FilledArrow_Marker_4)"
-         id="line3613"
-         y2="66.074188"
-         x2="385.45029"
-         y1="80.168762"
-         x1="388.44269" />
-      <path
-         inkscape:connector-curvature="0"
-         id="path7194"
-         d="m 379.95926,68.99198 18.42235,18.199224"
-         style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#f10000;stroke-width:2.4000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-         sodipodi:nodetypes="cc"
-         transform="translate(-1.3938144,-0.98144328)" />
-      <path
-         inkscape:connector-curvature="0"
-         id="path6572"
-         d="M 398.3816,68.99198 379.95925,87.191204"
-         style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#f10000;stroke-width:2.4000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-         sodipodi:nodetypes="cc"
-         transform="translate(-1.3938144,-0.98144328)" />
-      <text
-         sodipodi:linespacing="125%"
-         id="text7630"
-         y="103.45833"
-         x="343.66037"
-         style="font-style:normal;font-weight:normal;font-size:12px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-         xml:space="preserve"><tspan
-           y="103.45833"
-           x="343.66037"
-           id="tspan7632"
-           sodipodi:role="line">phoneList Scope</tspan></text>
-    </g>
   </g>
 </svg>
