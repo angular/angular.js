@@ -480,7 +480,7 @@ The following example shows how to add two-way data-binding to contentEditable e
     <pre>model = {{content}}</pre>
 
     <style type="text/css">
-      div[contentEditable] {
+      div[content-editable] {
         cursor: pointer;
         background-color: #D0D0D0;
       }
@@ -488,7 +488,7 @@ The following example shows how to add two-way data-binding to contentEditable e
   </file>
 
   <file name="script.js">
-    angular.module('form-example2', []).directive('contenteditable', function() {
+    angular.module('form-example2', []).directive('contentEditable', function() {
       return {
         require: 'ngModel',
         link: function(scope, elm, attrs, ctrl) {
