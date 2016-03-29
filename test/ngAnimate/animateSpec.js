@@ -1999,63 +1999,96 @@ describe("animations", function() {
       expect(capturedElement).toBe(element);
     }));
 
-    it('should remove all event listeners when the element is removed',
-      inject(function($animate, $rootScope, $rootElement) {
 
-      element = jqLite('<div></div>');
+    they('should remove all event listeners when the element is removed via $prop',
+      ['leave()', 'remove()'], function(method) {
+      inject(function($animate, $rootScope, $rootElement, $$rAF) {
 
-      var count = 0;
-      var runner;
+        element = jqLite('<div></div>');
 
-      $animate.on('enter', element, counter);
-      $animate.on('addClass', element[0], counter);
+        var count = 0;
+        var enterSpy = jasmine.createSpy();
+        var addClassSpy = jasmine.createSpy();
+        var runner;
 
-      function counter(element, phase) {
-        if (phase === 'start') {
-          count++;
+        $animate.on('enter', element, enterSpy);
+        $animate.on('addClass', element[0], addClassSpy);
+
+        function counter(element, phase) {
+          if (phase === 'start') {
+            count++;
+          }
         }
-      }
 
-      runner = $animate.enter(element, $rootElement);
-      $rootScope.$digest();
-      expect(capturedAnimation).toBeTruthy();
+        runner = $animate.enter(element, $rootElement);
+        $rootScope.$digest();
+        expect(capturedAnimation).toBeTruthy();
 
-      $animate.flush();
-      runner.end(); // Otherwise the class animation won't run because enter is still in progress
-      expect(count).toBe(1);
+        $animate.flush();
+        expect(enterSpy.calls.count()).toBe(1);
+        expect(enterSpy.calls.mostRecent().args[1]).toBe('start');
 
-      capturedAnimation = null;
+        runner.end(); // Otherwise the class animation won't run because enter is still in progress
+        $$rAF.flush();
+        expect(enterSpy.calls.count()).toBe(2);
+        expect(enterSpy.calls.mostRecent().args[1]).toBe('close');
 
-      $animate.addClass(element, 'blue');
-      $rootScope.$digest();
-      expect(capturedAnimation).toBeTruthy();
+        enterSpy.calls.reset();
+        capturedAnimation = null;
 
-      $animate.flush();
-      expect(count).toBe(2);
+        runner = $animate.addClass(element, 'blue');
+        $rootScope.$digest();
+        expect(capturedAnimation).toBeTruthy();
 
-      capturedAnimation = null;
+        $animate.flush();
+        expect(addClassSpy.calls.count()).toBe(1);
+        expect(addClassSpy.calls.mostRecent().args[1]).toBe('start');
 
-      element.remove();
+        runner.end();
+        $$rAF.flush();
+        expect(addClassSpy.calls.count()).toBe(2);
+        expect(addClassSpy.calls.mostRecent().args[1]).toBe('close');
 
-      runner = $animate.enter(element, $rootElement);
-      $rootScope.$digest();
+        addClassSpy.calls.reset();
+        capturedAnimation = null;
 
-      expect(capturedAnimation).toBeTruthy();
+        if (method === 'leave()') {
+          runner = $animate.leave(element);
+          $animate.flush();
+          runner.end();
+        } else if (method === 'remove()') {
+          element.remove();
+        }
 
-      $animate.flush();
-      runner.end(); // Otherwise the class animation won't run because enter is still in progress
+        runner = $animate.enter(element, $rootElement);
+        $rootScope.$digest();
 
-      expect(count).toBe(2);
+        $animate.flush();
+        expect(enterSpy.calls.count()).toBe(0);
 
-      capturedAnimation = null;
+        runner.end(); // Otherwise the class animation won't run because enter is still in progress
+        expect(function() {
+          $$rAF.flush();
+        }).toThrowError('No rAF callbacks present'); // Try to flush any callbacks
+        expect(enterSpy.calls.count()).toBe(0);
 
-      $animate.addClass(element, 'red');
-      $rootScope.$digest();
-      expect(capturedAnimation).toBeTruthy();
+        capturedAnimation = null;
 
-      $animate.flush();
-      expect(count).toBe(2);
-    }));
+        $animate.addClass(element, 'red');
+        $rootScope.$digest();
+        expect(capturedAnimation).toBeTruthy();
+
+        $animate.flush();
+        expect(addClassSpy.calls.count()).toBe(0);
+
+        runner.end();
+        expect(function() {
+          $$rAF.flush();
+        }).toThrowError('No rAF callbacks present'); // Try to flush any callbacks
+        expect(addClassSpy.calls.count()).toBe(0);
+        expect(enterSpy.calls.count()).toBe(0);
+      });
+    });
 
     it('should always detect registered callbacks after one postDigest has fired',
       inject(function($animate, $rootScope, $rootElement) {
@@ -2120,104 +2153,187 @@ describe("animations", function() {
       }
     }));
 
-    it('leave: should remove the element even if another animation is called after',
-      inject(function($animate, $rootScope, $rootElement) {
+    describe('for leave', function() {
 
-      var outerContainer = jqLite('<div></div>');
-      element = jqLite('<div></div>');
-      outerContainer.append(element);
-      $rootElement.append(outerContainer);
+      it('should remove the element even if another animation is called afterwards',
+        inject(function($animate, $rootScope, $rootElement) {
 
-      var runner = $animate.leave(element, $rootElement);
-      $animate.removeClass(element,'rclass');
-      $rootScope.$digest();
-      runner.end();
-      $animate.flush();
+        var outerContainer = jqLite('<div></div>');
+        element = jqLite('<div></div>');
+        outerContainer.append(element);
+        $rootElement.append(outerContainer);
 
-      var isElementRemoved = !outerContainer[0].contains(element[0]);
-      expect(isElementRemoved).toBe(true);
-    }));
+        var runner = $animate.leave(element, $rootElement);
+        $animate.removeClass(element,'rclass');
+        $rootScope.$digest();
+        runner.end();
+        $animate.flush();
 
-    it('leave : should trigger a callback for an leave animation',
-      inject(function($animate, $rootScope, $$rAF, $rootElement, $document) {
+        var isElementRemoved = !outerContainer[0].contains(element[0]);
+        expect(isElementRemoved).toBe(true);
+      }));
 
-      var callbackTriggered = false;
-      $animate.on('leave', jqLite($document[0].body), function() {
-        callbackTriggered = true;
-      });
+      they('should trigger callbacks when the listener is on the $prop element', ['same', 'parent'],
+        function(elementRelation) {
+          inject(function($animate, $rootScope, $$rAF, $rootElement, $document) {
+            var listenerElement, callbackSpy = jasmine.createSpy();
 
-      element = jqLite('<div></div>');
-      $rootElement.append(element);
-      $animate.leave(element, $rootElement);
-      $rootScope.$digest();
+            element = jqLite('<div></div>');
+            listenerElement = elementRelation === 'same' ? element : jqLite($document[0].body);
+            $animate.on('leave', listenerElement, callbackSpy);
+            $rootElement.append(element);
+            var runner = $animate.leave(element, $rootElement);
+            $rootScope.$digest();
 
-      $$rAF.flush();
+            $$rAF.flush();
 
-      expect(callbackTriggered).toBe(true);
-    }));
+            expect(callbackSpy.calls.count()).toBe(1);
+            expect(callbackSpy.calls.mostRecent().args[1]).toBe('start');
+            callbackSpy.calls.reset();
 
-    it('leave : should not fire a callback if the element is outside of the given container',
-      inject(function($animate, $rootScope, $$rAF, $rootElement) {
+            runner.end();
+            $$rAF.flush();
 
-      var callbackTriggered = false;
-      var innerContainer = jqLite('<div></div>');
-      $rootElement.append(innerContainer);
+            expect(callbackSpy.calls.count()).toBe(1);
+            expect(callbackSpy.calls.mostRecent().args[1]).toBe('close');
+          });
+        }
+      );
 
-      $animate.on('leave', innerContainer,
-        function(element, phase, data) {
-        callbackTriggered = true;
-      });
+      it('should trigger callbacks for a leave animation',
+        inject(function($animate, $rootScope, $$rAF, $rootElement, $document) {
 
-      element = jqLite('<div></div>');
-      $rootElement.append(element);
-      $animate.leave(element, $rootElement);
-      $rootScope.$digest();
+        var callbackSpy = jasmine.createSpy();
+        $animate.on('leave', jqLite($document[0].body), callbackSpy);
 
-      expect(callbackTriggered).toBe(false);
-    }));
+        element = jqLite('<div></div>');
+        $rootElement.append(element);
+        $animate.leave(element, $rootElement);
+        $rootScope.$digest();
 
-    it('leave : should fire a `start` callback when the animation starts with the matching element',
-      inject(function($animate, $rootScope, $$rAF, $rootElement, $document) {
+        $$rAF.flush();
 
-      element = jqLite('<div></div>');
+        expect(callbackSpy).toHaveBeenCalled();
+        expect(callbackSpy.calls.count()).toBe(1);
+      }));
 
-      var capturedState;
-      var capturedElement;
-      $animate.on('leave', jqLite($document[0].body), function(element, phase) {
-        capturedState = phase;
-        capturedElement = element;
-      });
+      it('should trigger a callback for an leave animation (same element)',
+        inject(function($animate, $rootScope, $$rAF, $rootElement, $document) {
 
-      $rootElement.append(element);
-      $animate.leave(element, $rootElement);
-      $rootScope.$digest();
-      $$rAF.flush();
+        var callbackSpy = jasmine.createSpy();
 
-      expect(capturedState).toBe('start');
-      expect(capturedElement).toBe(element);
-    }));
+        element = jqLite('<div></div>');
+        $animate.on('leave', element, callbackSpy);
+        $rootElement.append(element);
+        var runner = $animate.leave(element, $rootElement);
+        $rootScope.$digest();
 
-    it('leave : should fire a `close` callback when the animation ends with the matching element',
-      inject(function($animate, $rootScope, $$rAF, $rootElement, $document) {
+        $$rAF.flush();
 
-      element = jqLite('<div></div>');
+        expect(callbackSpy.calls.count()).toBe(1);
+        expect(callbackSpy.calls.mostRecent().args[1]).toBe('start');
+        callbackSpy.calls.reset();
 
-      var capturedState;
-      var capturedElement;
-      $animate.on('leave', jqLite($document[0].body), function(element, phase) {
-        capturedState = phase;
-        capturedElement = element;
-      });
+        runner.end();
+        $$rAF.flush();
 
-      $rootElement.append(element);
-      var runner = $animate.leave(element, $rootElement);
-      $rootScope.$digest();
-      runner.end();
-      $$rAF.flush();
+        expect(callbackSpy.calls.count()).toBe(1);
+        expect(callbackSpy.calls.mostRecent().args[1]).toBe('close');
+      }));
 
-      expect(capturedState).toBe('close');
-      expect(capturedElement).toBe(element);
-    }));
+      it('should not fire a callback if the element is outside of the given container',
+        inject(function($animate, $rootScope, $$rAF, $rootElement) {
+
+        var callbackTriggered = false;
+        var innerContainer = jqLite('<div></div>');
+        $rootElement.append(innerContainer);
+
+        $animate.on('leave', innerContainer,
+          function(element, phase, data) {
+          callbackTriggered = true;
+        });
+
+        element = jqLite('<div></div>');
+        $rootElement.append(element);
+        $animate.leave(element, $rootElement);
+        $rootScope.$digest();
+
+        expect(callbackTriggered).toBe(false);
+      }));
+
+      it('should fire a `start` callback when the animation starts',
+        inject(function($animate, $rootScope, $$rAF, $rootElement, $document) {
+
+        element = jqLite('<div></div>');
+
+        var capturedState;
+        var capturedElement;
+        $animate.on('leave', jqLite($document[0].body), function(element, phase) {
+          capturedState = phase;
+          capturedElement = element;
+        });
+
+        $rootElement.append(element);
+        $animate.leave(element, $rootElement);
+        $rootScope.$digest();
+        $$rAF.flush();
+
+        expect(capturedState).toBe('start');
+        expect(capturedElement).toBe(element);
+      }));
+
+      it('should fire a `close` callback when the animation ends',
+        inject(function($animate, $rootScope, $$rAF, $rootElement, $document) {
+
+        element = jqLite('<div></div>');
+
+        var capturedState;
+        var capturedElement;
+        $animate.on('leave', jqLite($document[0].body), function(element, phase) {
+          capturedState = phase;
+          capturedElement = element;
+        });
+
+        $rootElement.append(element);
+        var runner = $animate.leave(element, $rootElement);
+        $rootScope.$digest();
+        runner.end();
+        $$rAF.flush();
+
+        expect(capturedState).toBe('close');
+        expect(capturedElement).toBe(element);
+      }));
+
+      it('should remove all event listeners after all callbacks for the "leave:close" phase have been called',
+        inject(function($animate, $rootScope, $rootElement, $$rAF) {
+
+        var leaveSpy = jasmine.createSpy();
+        var addClassSpy = jasmine.createSpy();
+
+        element = jqLite('<div></div>');
+        $animate.on('leave', element, leaveSpy);
+        $animate.on('addClass', element, addClassSpy);
+        $rootElement.append(element);
+        var runner = $animate.leave(element, $rootElement);
+        $animate.flush();
+
+        runner.end();
+        $$rAF.flush();
+
+        expect(leaveSpy.calls.mostRecent().args[1]).toBe('close');
+
+        $animate.addClass(element, 'blue');
+
+        $animate.flush();
+        runner.end();
+        expect(function() {
+          $$rAF.flush();
+        }).toThrowError('No rAF callbacks present');
+
+        expect(addClassSpy.calls.count()).toBe(0);
+      }));
+
+    });
 
     they('should trigger a callback for a $prop animation if the listener is on the document',
       ['enter', 'leave'], function($event) {
