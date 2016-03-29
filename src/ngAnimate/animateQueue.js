@@ -208,6 +208,14 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
       });
     }
 
+    function cleanupEventListeners(phase, element) {
+      if (phase === 'close' && !element[0].parentNode) {
+        // If the element is not attached to a parentNode, it has been removed by
+        // the domOperation, and we can safely remove the event callbacks
+        $animate.off(element);
+      }
+    }
+
     var $animate = {
       on: function(event, container, callback) {
         var node = extractElementNode(container);
@@ -219,7 +227,14 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
 
         // Remove the callback when the element is removed from the DOM
         jqLite(container).on('$destroy', function() {
-          $animate.off(event, container, callback);
+          var animationDetails = activeAnimationsLookup.get(node);
+
+          if (!animationDetails) {
+            // If there's an animation ongoing, the callback calling code will remove
+            // the event listeners. If we'd remove here, the callbacks would be removed
+            // before the animation ends
+            $animate.off(event, container, callback);
+          }
         });
       },
 
@@ -552,7 +567,10 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
               forEach(callbacks, function(callback) {
                 callback(element, phase, data);
               });
+              cleanupEventListeners(phase, element);
             });
+          } else {
+            cleanupEventListeners(phase, element);
           }
         });
         runner.progress(event, phase, data);
