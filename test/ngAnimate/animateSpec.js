@@ -1896,6 +1896,68 @@ describe("animations", function() {
       expect(count).toBe(3);
     }));
 
+    it('should remove all event listeners for an element when $animate.off(element) is called',
+      inject(function($animate, $rootScope, $rootElement, $document, $$rAF) {
+
+      element = jqLite('<div></div>');
+      var otherElement = jqLite('<div></div>');
+      $rootElement.append(otherElement);
+
+      var count = 0;
+      var runner;
+      $animate.on('enter', element, counter);
+      $animate.on('leave', element, counter);
+      $animate.on('addClass', element, counter);
+      $animate.on('addClass', otherElement, counter);
+
+      function counter(element, phase) {
+        count++;
+      }
+
+      runner = $animate.enter(element, $rootElement);
+      $rootScope.$digest();
+      $animate.flush();
+      runner.end();
+
+      runner = $animate.addClass(element, 'blue');
+      $rootScope.$digest();
+      $animate.flush();
+
+      runner.end();
+      $$rAF.flush();
+
+      expect(count).toBe(4);
+
+      $animate.off(element);
+
+      runner = $animate.enter(element, $rootElement);
+      $animate.flush();
+      expect(capturedAnimation[1]).toBe('enter');
+      runner.end();
+
+      runner = $animate.addClass(element, 'red');
+      $animate.flush();
+      expect(capturedAnimation[1]).toBe('addClass');
+      runner.end();
+
+      runner = $animate.leave(element);
+      $animate.flush();
+      expect(capturedAnimation[1]).toBe('leave');
+      runner.end();
+
+      // Try to flush all remaining callbacks
+      expect(function() {
+        $$rAF.flush();
+      }).toThrowError('No rAF callbacks present');
+
+      expect(count).toBe(4);
+
+      // Check that other elements' event listeners are not affected
+      $animate.addClass(otherElement, 'green');
+      $animate.flush();
+      expect(count).toBe(5);
+    }));
+
     it('should fire a `start` callback when the animation starts with the matching element',
       inject(function($animate, $rootScope, $rootElement, $document) {
 
