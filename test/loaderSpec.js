@@ -48,7 +48,6 @@ describe('module loader', function() {
     expect(myModule.requires).toEqual(['other']);
     expect(myModule._invokeQueue).toEqual([
       ['$provide', 'constant', jasmine.objectContaining(['abc', 123])],
-      ['$provide', 'decorator', jasmine.objectContaining(['dk', 'dv'])],
       ['$provide', 'provider', jasmine.objectContaining(['sk', 'sv'])],
       ['$provide', 'factory', jasmine.objectContaining(['fk', 'fv'])],
       ['$provide', 'service', jasmine.objectContaining(['a', 'aa'])],
@@ -60,9 +59,21 @@ describe('module loader', function() {
     ]);
     expect(myModule._configBlocks).toEqual([
       ['$injector', 'invoke', jasmine.objectContaining(['config'])],
+      ['$provide', 'decorator', jasmine.objectContaining(['dk', 'dv'])],
       ['$injector', 'invoke', jasmine.objectContaining(['init2'])]
     ]);
     expect(myModule._runBlocks).toEqual(['runBlock']);
+  });
+
+
+  it("should not throw error when `module.decorator` is declared before provider that it decorates", function() {
+    angular.module('theModule', []).
+      decorator('theProvider', function($delegate) { return $delegate; }).
+      factory('theProvider', function() { return {}; });
+
+    expect(function() {
+      createInjector(['theModule']);
+    }).not.toThrow();
   });
 
 
