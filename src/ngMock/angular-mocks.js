@@ -1416,12 +1416,14 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
    *   order to change how a matched request is handled.
    *
    *  - respond –
-   *      `{function([status,] data[, headers, statusText])
-   *      | function(function(method, url, data, headers, params)}`
+   *      ```js
+   *      {function([status,] data[, headers, statusText])
+   *      | function(function(method, url, data, headers, params)}
+   *      ```
    *    – The respond method takes a set of static data to be returned or a function that can
-   *    return an array containing response status (number), response data (string), response
-   *    headers (Object), and the text for the status (string). The respond method returns the
-   *    `requestHandler` object for possible overrides.
+   *    return an array containing response status (number), response data (Array|Object|string),
+   *    response headers (Object), and the text for the status (string). The respond method returns
+   *    the `requestHandler` object for possible overrides.
    */
   $httpBackend.when = function(method, url, data, headers, keys) {
     var definition = new MockHttpExpectation(method, url, data, headers, keys),
@@ -1606,12 +1608,14 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
    *  order to change how a matched request is handled.
    *
    *  - respond –
-   *    `{function([status,] data[, headers, statusText])
-   *    | function(function(method, url, data, headers, params)}`
+   *    ```
+   *    { function([status,] data[, headers, statusText])
+   *    | function(function(method, url, data, headers, params)}
+   *    ```
    *    – The respond method takes a set of static data to be returned or a function that can
-   *    return an array containing response status (number), response data (string), response
-   *    headers (Object), and the text for the status (string). The respond method returns the
-   *    `requestHandler` object for possible overrides.
+   *    return an array containing response status (number), response data (Array|Object|string),
+   *    response headers (Object), and the text for the status (string). The respond method returns
+   *    the `requestHandler` object for possible overrides.
    */
   $httpBackend.expect = function(method, url, data, headers, keys) {
     var expectation = new MockHttpExpectation(method, url, data, headers, keys),
@@ -2326,11 +2330,13 @@ angular.module('ngMockE2E', ['ng']).config(['$provide', function($provide) {
  *   `respond` or `passThrough` again in order to change how a matched request is handled.
  *
  *  - respond –
- *    `{function([status,] data[, headers, statusText])
- *    | function(function(method, url, data, headers, params)}`
+ *    ```
+ *    { function([status,] data[, headers, statusText])
+ *    | function(function(method, url, data, headers, params)}
+ *    ```
  *    – The respond method takes a set of static data to be returned or a function that can return
- *    an array containing response status (number), response data (string), response headers
- *    (Object), and the text for the status (string).
+ *    an array containing response status (number), response data (Array|Object|string), response
+ *    headers (Object), and the text for the status (string).
  *  - passThrough – `{function()}` – Any request matching a backend definition with
  *    `passThrough` handler will be passed through to the real backend (an XHR request will be made
  *    to the server.)
