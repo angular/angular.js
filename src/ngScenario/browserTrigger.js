@@ -61,7 +61,7 @@
           evnt = new TransitionEvent(eventType, eventData);
         }
         catch (e) {
-          evnt = document.createEvent('TransitionEvent');
+          evnt = window.document.createEvent('TransitionEvent');
           evnt.initTransitionEvent(eventType, null, null, null, eventData.elapsedTime || 0);
         }
       }
@@ -74,14 +74,14 @@
           evnt = new AnimationEvent(eventType, eventData);
         }
         catch (e) {
-          evnt = document.createEvent('AnimationEvent');
+          evnt = window.document.createEvent('AnimationEvent');
           evnt.initAnimationEvent(eventType, null, null, null, eventData.elapsedTime || 0);
         }
       }
     } else if (/touch/.test(eventType) && supportsTouchEvents()) {
       evnt = createTouchEvent(element, eventType, x, y);
     } else {
-      evnt = document.createEvent('MouseEvents');
+      evnt = window.document.createEvent('MouseEvents');
       x = x || 0;
       y = y || 0;
       evnt.initMouseEvent(eventType, true, true, window, 0, x, y, x, y, pressed('ctrl'),
@@ -120,12 +120,12 @@
     if ('_cached' in supportsTouchEvents) {
       return supportsTouchEvents._cached;
     }
-    if (!document.createTouch || !document.createTouchList) {
+    if (!window.document.createTouch || !window.document.createTouchList) {
       supportsTouchEvents._cached = false;
       return false;
     }
     try {
-      document.createEvent('TouchEvent');
+      window.document.createEvent('TouchEvent');
     } catch (e) {
       supportsTouchEvents._cached = false;
       return false;
@@ -135,12 +135,12 @@
   }
 
   function createTouchEvent(element, eventType, x, y) {
-    var evnt = new Event(eventType);
+    var evnt = new window.Event(eventType);
     x = x || 0;
     y = y || 0;
 
-    var touch = document.createTouch(window, element, Date.now(), x, y, x, y);
-    var touches = document.createTouchList(touch);
+    var touch = window.document.createTouch(window, element, Date.now(), x, y, x, y);
+    var touches = window.document.createTouchList(touch);
 
     evnt.touches = touches;
 

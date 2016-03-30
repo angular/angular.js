@@ -1,5 +1,9 @@
 "use strict";
 
+var fs = require('fs');
+var _ = require('lodash');
+var stripJsonComments = require('strip-json-comments');
+
 var gulp = require('gulp');
 var log = require('gulp-util').log;
 var concat = require('gulp-concat');
@@ -24,6 +28,23 @@ var src = 'app/src/**/*.js';
 var ignoredFiles = '!src/angular.bind.js';
 var assets = 'app/assets/**/*';
 
+
+var getJshintConfig = function(filepath) {
+    return JSON.parse(stripJsonComments(fs.readFileSync(filepath, {encoding: 'utf-8'})));
+};
+
+var getMergedJshintConfig = function(filepath) {
+  // "extends" doesn't work in configuration passed by an object, we need to do the extending ourselves.
+  var config = getJshintConfig(filepath);
+  var baseConfig = getJshintConfig('../.jshintrc-base');
+  _.merge(config, baseConfig);
+  delete config.extends;
+
+  // Examples don't run in strict mode; accept that for now.
+  config.strict = false;
+
+  return config;
+};
 
 var copyComponent = function(component, pattern, sourceFolder, packageFile) {
   pattern = pattern || '/**/*';
@@ -90,17 +111,35 @@ gulp.task('assets', ['bower'], function() {
 
 gulp.task('doc-gen', ['bower'], function() {
   var dgeni = new Dgeni([require('./config')]);
-  return dgeni.generate().catch(function(error) {
+  return dgeni.generate().catch(function() {
     process.exit(1);
   });
 });
 
 // JSHint the example and protractor test files
 gulp.task('jshint', ['doc-gen'], function() {
-  gulp.src([outputFolder + '/ptore2e/**/*.js', outputFolder + '/examples/**/*.js'])
-    .pipe(jshint())
-    .pipe(jshint.reporter('jshint-stylish'))
-    .pipe(jshint.reporter('fail'));
+  var examplesConfig = getMergedJshintConfig('../docs/app/test/.jshintrc');
+  // Some tests use `alert` which is not assumed to be available even with `"browser": true`.
+  examplesConfig.globals.alert = false;
+
+  var protractorConfig = getMergedJshintConfig('../docs/app/e2e/.jshintrc');
+
+  return merge(
+    gulp.src([
+      outputFolder + '/examples/**/*.js',
+      '!' + outputFolder + '/examples/**/protractor.js',
+    ])
+      .pipe(jshint(examplesConfig))
+      .pipe(jshint.reporter('jshint-stylish'))
+      .pipe(jshint.reporter('fail')),
+    gulp.src([
+      outputFolder + '/ptore2e/**/*.js',
+      outputFolder + '/examples/**/protractor.js',
+    ])
+      .pipe(jshint(protractorConfig))
+      .pipe(jshint.reporter('jshint-stylish'))
+      .pipe(jshint.reporter('fail'))
+  );
 });
 
 

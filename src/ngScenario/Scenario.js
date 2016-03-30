@@ -104,7 +104,7 @@ angular.scenario.matcher = angular.scenario.matcher || function(name, fn) {
  */
 angular.scenario.setUpAndRun = function(config) {
   var href = window.location.href;
-  var body = _jQuery(document.body);
+  var body = _jQuery(window.document.body);
   var output = [];
   var objModel = new angular.scenario.ObjectModel($runner);
 
