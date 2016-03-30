@@ -1,9 +1,10 @@
 {
   "extends": "../.jshintrc-base",
-  "browser": true,
   "eqeqeq": true,
   "eqnull": true,
   "globals": {
+    "window": false,
+
     /* auto/injector.js */
     "createInjector": false,
 

@@ -344,7 +344,7 @@ function htmlParser(html, handler) {
     mXSSAttempts--;
 
     // strip custom-namespaced attributes on IE<=11
-    if (document.documentMode <= 11) {
+    if (window.document.documentMode) {
       stripCustomNsAttrs(inertBodyElement);
     }
     html = inertBodyElement.innerHTML; //trigger mXSS
@@ -484,7 +484,7 @@ function htmlSanitizeWriter(buf, uriValidator) {
  * @param node Root element to process
  */
 function stripCustomNsAttrs(node) {
-  if (node.nodeType === Node.ELEMENT_NODE) {
+  if (node.nodeType === window.Node.ELEMENT_NODE) {
     var attrs = node.attributes;
     for (var i = 0, l = attrs.length; i < l; i++) {
       var attrNode = attrs[i];
