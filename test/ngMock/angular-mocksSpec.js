@@ -631,7 +631,6 @@ describe('ngMock', function() {
 
       inject(); // Trigger the tests in `module`
     });
-
   });
 
 
@@ -984,6 +983,22 @@ describe('ngMock', function() {
             });
           });
         }
+      });
+
+      describe('ErrorAddingDeclarationLocationStack', function() {
+        it('should be caught by Jasmine\'s `toThrowError()`', function() {
+          function throwErrorAddingDeclarationStack() {
+            module(function($provide) {
+              $provide.factory('badFactory', function() {
+                throw new Error('BadFactoryError');
+              });
+            });
+
+            inject(function(badFactory) {});
+          }
+
+          expect(throwErrorAddingDeclarationStack).toThrowError(/BadFactoryError/);
+        });
       });
     });
   });
@@ -2616,8 +2631,10 @@ describe('make sure that we can create an injector outside of tests', function()
   angular.injector([function($injector) {}]);
 });
 
+
 describe('`afterEach` clean-up', function() {
   describe('`$rootElement`', function() {
+
     describe('undecorated', function() {
       var prevRootElement;
       var prevCleanDataSpy;
@@ -2779,6 +2796,7 @@ describe('`afterEach` clean-up', function() {
     });
   });
 });
+
 
 describe('sharedInjector', function() {
   // this is of a bit tricky feature to test as we hit angular's own testing
@@ -3037,5 +3055,4 @@ describe('sharedInjector', function() {
     if (typeof fn !== "function") throw Error("not fn", fn);
     sdescribe.current.afterEach.push(fn);
   }
-
 });
