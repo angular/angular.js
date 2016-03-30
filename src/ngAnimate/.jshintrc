@@ -2,8 +2,9 @@
   "extends": "../../.jshintrc-base",
   "maxlen": false, /* ngAnimate docs contain wide tables */
   "newcap": false,
-  "browser": true,
   "globals": {
+    "window": false,
+
     "angular": false,
     "noop": false,
 

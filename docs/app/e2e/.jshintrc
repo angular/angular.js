@@ -19,9 +19,12 @@
     "dump": false,
 
     /* e2e */
+    "protractor": false,
     "browser": false,
     "element": false,
     "by": false,
+    "$": false,
+    "$$": false,
 
     /* testabilityPatch / matchers */
     "inject": false,
