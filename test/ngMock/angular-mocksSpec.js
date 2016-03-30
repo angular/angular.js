@@ -2507,40 +2507,40 @@ describe('`afterEach` clean-up', function() {
 
   describe('ErrorAddingDeclarationLocationStack', function() {
     it('should be caught by jasmine\'s toThrowError', function() {
-        //create function that causes an error
-        function causeNgMocksError() {
-            module(function($provide) {
-                //cause $provide.factory to include an error
-                $provide.factory('causeError', function() {
-                    //Say for example, some mock module caused an error when instantiated
-                    throw new Error("Error!");
-                });
-            });
-            
-            //call the injector on 'causeError' to make sure the provider is called
-            var causeError;
-            inject(function(_causeError_) {
-                causeError = _causeError_;
-            });
-        }
-        
-        //The following is a simplified implementation of future Jasmine's .toThrowError()
-        //  which is at the root of this problem
-        var error;
-        try {
-            causeNgMocksError();
-        } catch (e) {
-            error = e;
-        }
-        
-        //Apologies for inelegant pass/fail conditions
-        if (error instanceof Error) {
-            //pass test 
-            expect(true).toBe(true);
-        } else {
-            //fail test
-            throw new Error("Expected Error but got " + error);
-        }
+      //create function that causes an error
+      function causeNgMocksError() {
+        module(function($provide) {
+          //cause $provide.factory to include an error
+          $provide.factory('causeError', function() {
+            //Say for example, some mock module caused an error when instantiated
+            throw new Error("Error!");
+          });
+        });
+
+        //call the injector on 'causeError' to make sure the provider is called
+        var causeError;
+        inject(function(_causeError_) {
+          causeError = _causeError_;
+        });
+      }
+
+      //The following is a simplified implementation of future Jasmine's .toThrowError()
+      //  which is at the root of this problem
+      var error;
+      try {
+        causeNgMocksError();
+      } catch (e) {
+        error = e;
+      }
+
+      //Apologies for inelegant pass/fail conditions
+      if (error instanceof Error) {
+        //pass test
+        expect(true).toBe(true);
+      } else {
+        //fail test
+        throw new Error("Expected Error but got " + error);
+      }
     });
   });
 
