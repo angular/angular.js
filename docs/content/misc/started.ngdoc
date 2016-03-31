@@ -16,9 +16,9 @@ becoming an Angular expert.
    starter app with a directory layout, test harness, and scripts to begin building your application.
 
 
-#Further Steps
+# Further Steps
 
-##Watch Videos
+## Watch Videos
 
 If you haven’t had a chance to watch the videos from the homepage, please check out:
 
@@ -29,13 +29,13 @@ If you haven’t had a chance to watch the videos from the homepage, please chec
 And visit our [YouTube channel](http://www.youtube.com/user/angularjs) for more AngularJS video presentations and
 tutorials.
 
-##Subscribe
+## Subscribe
 
 * Subscribe to the [mailing list](http://groups.google.com/forum/?fromgroups#!forum/angular).  Ask questions here!
 * Follow us on [Twitter](https://twitter.com/intent/follow?original_referer=http%3A%2F%2Fangularjs.org%2F&region=follow_link&screen_name=angularjs&source=followbutton&variant=2.0)
 * Add us to your circles on [Google+](https://plus.google.com/110323587230527980117/posts)
 
-##Read more
+## Read more
 
 The AngularJS documentation includes the {@link guide/index Developer Guide} covering concepts and the
 {@link ./api API Reference} for syntax and usage.
