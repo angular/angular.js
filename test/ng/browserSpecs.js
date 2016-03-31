@@ -551,7 +551,7 @@ describe('browser', function() {
       // `history.state` in contexts where `$sniffer.history` is false.
 
       var historyStateAccessed = false;
-      var mockSniffer = {histroy: false};
+      var mockSniffer = {history: false};
       var mockWindow = new MockWindow();
 
       var _state = mockWindow.history.state;
