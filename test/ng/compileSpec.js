@@ -3668,17 +3668,25 @@ describe('$compile', function() {
           // Setup the directive with two bindings
           element = $compile('<c1 prop1="val" prop2="val2" other="val3" attr="{{val4}}"></c1>')($rootScope);
 
-          // There should be no changes initially
-          expect(log).toEqual([]);
+          expect(log).toEqual([
+            {
+              prop1: jasmine.objectContaining({currentValue: undefined}),
+              prop2: jasmine.objectContaining({currentValue: undefined}),
+              attr: jasmine.objectContaining({currentValue: ''})
+            }
+          ]);
+
+          // Clear the initial changes from the log
+          log = [];
 
           // Update val to trigger the onChanges
           $rootScope.$apply('val = 42');
+
           // Now we should have a single changes entry in the log
           expect(log).toEqual([
             {
               prop1: jasmine.objectContaining({currentValue: 42}),
-              prop2: jasmine.objectContaining({currentValue: 84}),
-              attr: jasmine.objectContaining({currentValue: ''})
+              prop2: jasmine.objectContaining({currentValue: 84})
             }
           ]);
 
@@ -3734,8 +3742,10 @@ describe('$compile', function() {
           // therefore triggering the thing that this test is hoping to enfore
           $rootScope.$watch('a', function(val) { $rootScope.b = val * 2; });
 
-          // There should be no changes initially
-          expect(log).toEqual([]);
+          expect(log).toEqual([{prop: jasmine.objectContaining({currentValue: undefined})}]);
+
+          // Clear the initial values from the log
+          log = [];
 
           // Update val to trigger the onChanges
           $rootScope.$apply('a = 42');
@@ -3766,9 +3776,9 @@ describe('$compile', function() {
 
         module('my');
         inject(function($compile, $rootScope) {
-          element = $compile('<c1 prop="a" attr="{{a}}"></c1>')($rootScope);
-          expect(log).toEqual([]);
+
           $rootScope.$apply('a = 7');
+          element = $compile('<c1 prop="a" attr="{{a}}"></c1>')($rootScope);
           expect(log).toEqual([
             {
               prop: jasmine.objectContaining({currentValue: 7}),
@@ -3784,6 +3794,45 @@ describe('$compile', function() {
             {
               prop: jasmine.objectContaining({previousValue: 7, currentValue: 9}),
               attr: jasmine.objectContaining({previousValue: '7', currentValue: '9'})
+            }
+          ]);
+          expect(log[0].prop.isFirstChange()).toEqual(false);
+          expect(log[0].attr.isFirstChange()).toEqual(false);
+        });
+      });
+
+
+      it('should trigger an initial onChanges call for each binding even if the hook is defined in the constructor', function() {
+        var log = [];
+        function TestController() {
+          this.$onChanges = function(change) { log.push(change); };
+        }
+
+        angular.module('my', [])
+          .component('c1', {
+            controller: TestController,
+            bindings: { 'prop': '<', attr: '@' }
+          });
+
+        module('my');
+        inject(function($compile, $rootScope) {
+          $rootScope.$apply('a = 7');
+          element = $compile('<c1 prop="a" attr="{{a}}"></c1>')($rootScope);
+          expect(log).toEqual([
+            {
+              prop: jasmine.objectContaining({currentValue: 7}),
+              attr: jasmine.objectContaining({currentValue: '7'})
+            }
+          ]);
+          expect(log[0].prop.isFirstChange()).toEqual(true);
+          expect(log[0].attr.isFirstChange()).toEqual(true);
+
+          log = [];
+          $rootScope.$apply('a = 10');
+          expect(log).toEqual([
+            {
+              prop: jasmine.objectContaining({previousValue: 7, currentValue: 10}),
+              attr: jasmine.objectContaining({previousValue: '7', currentValue: '10'})
             }
           ]);
           expect(log[0].prop.isFirstChange()).toEqual(false);
@@ -3819,8 +3868,8 @@ describe('$compile', function() {
           // Setup two sibling components with bindings that will change
           element = $compile('<div><c1 prop="val1"></c1><c2 prop="val2"></c2></div>')($rootScope);
 
-          // There should be no changes initially
-          expect(log).toEqual([]);
+          // Clear out initial changes
+          log = [];
 
           // Update val to trigger the onChanges
           $rootScope.$apply('val1 = 42; val2 = 17');
@@ -3837,11 +3886,13 @@ describe('$compile', function() {
 
       it('should cope with changes occuring inside `$onChanges()` hooks', function() {
         var log = [];
-        function OuterController() { }
+        function OuterController() {
+          this.prop1 = 0;
+        }
         OuterController.prototype.$onChanges = function(change) {
           log.push(['OuterController', change]);
           // Make a change to the inner component
-          this.b = 72;
+          this.b = this.prop1 * 2;
         };
 
         function InnerController() { }
@@ -3864,16 +3915,15 @@ describe('$compile', function() {
           // Setup the directive with two bindings
           element = $compile('<outer prop1="a"></outer>')($rootScope);
 
-          // There should be no changes initially
-          expect(log).toEqual([]);
+          // Clear out initial changes
+          log = [];
 
           // Update val to trigger the onChanges
           $rootScope.$apply('a = 42');
 
           expect(log).toEqual([
             ['OuterController', {prop1: jasmine.objectContaining({currentValue: 42})}],
-            ['InnerController', {prop2: jasmine.objectContaining({currentValue: undefined})}],
-            ['InnerController', {prop2: jasmine.objectContaining({currentValue: 72})}]
+            ['InnerController', {prop2: jasmine.objectContaining({currentValue: 84})}]
           ]);
         });
       });
