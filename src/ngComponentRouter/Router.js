@@ -81,7 +81,7 @@
  * @name  RouteDefinition
  * @description
  *
- * Each item in a the **RouteConfig** for a **Routing Component** is an instance of
+ * Each item in the **RouteConfig** for a **Routing Component** is an instance of
  * this type. It can have the following properties:
  *
  * * `path` or (`regex` and `serializer) - defines how to recognize and generate this route
