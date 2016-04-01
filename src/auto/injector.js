@@ -71,7 +71,7 @@ var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
 var $injectorMinErr = minErr('$injector');
 
 function extractArgs(fn) {
-  var fnText = fn.toString().replace(STRIP_COMMENTS, ''),
+  var fnText = Function.prototype.toString.call(fn).replace(STRIP_COMMENTS, ''),
       args = fnText.match(ARROW_ARG) || fnText.match(FN_ARGS);
   return args;
 }
