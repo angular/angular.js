@@ -3943,10 +3943,6 @@
         }
       }
     },
-    "grunt-jasmine-node": {
-      "version": "0.1.0",
-      "resolved": "git://github.com/vojtajina/grunt-jasmine-node.git#ced17cbe52c1412b2ada53160432a5b681f37cd7"
-    },
     "grunt-jscs": {
       "version": "2.8.0",
       "dependencies": {
