@@ -9,12 +9,120 @@ var $$AnimateCssDriverProvider = ['$$animationProvider', function($$animationPro
   var NG_OUT_ANCHOR_CLASS_NAME = 'ng-anchor-out';
   var NG_IN_ANCHOR_CLASS_NAME = 'ng-anchor-in';
 
+
+  var ANIMATED_PROPS = [
+    'MozOutlineRadius',
+    'MozOutlineRadiusBottomleft',
+    'MozOutlineRadiusBottomright',
+    'MozOutlineRadiusTopleft',
+    'MozOutlineRadiusTopright',
+    'WebkitTextStroke',
+    'WebkitTextStrokeColor',
+    'WebkitTouchCallout',
+    'backdropFilter',
+    'background',
+    'backgroundColor',
+    'backgroundPosition',
+    'backgroundSize',
+    'border',
+    'borderBottom',
+    'borderBottomColor',
+    'borderBottomLeftRadius',
+    'borderBottomRightRadius',
+    'borderBottomWidth',
+    'borderColor',
+    'borderLeft',
+    'borderLeftColor',
+    'borderLeftWidth',
+    'borderRadius',
+    'borderRight',
+    'borderRightColor',
+    'borderRightWidth',
+    'borderTop',
+    'borderTopColor',
+    'borderTopLeftRadius',
+    'borderTopRightRadius',
+    'borderTopWidth',
+    'borderWidth',
+    'bottom',
+    'boxShadow',
+    'clip',
+    'clipPath',
+    'color',
+    'columnCount',
+    'columnGap',
+    'columnRule',
+    'columnRuleColor',
+    'columnRuleWidth',
+    'columnWidth',
+    'columns',
+    'filter',
+    'flex',
+    'flexBasis',
+    'flexGrow',
+    'flexShrink',
+    'font',
+    'fontSize',
+    'fontSizeAdjust',
+    'fontStretch',
+    'fontWeight',
+    'gridColumnGap',
+    'gridGap',
+    'gridRowGap',
+    'letterSpacing',
+    'lineHeight',
+    'margin',
+    'marginBottom',
+    'marginLeft',
+    'marginRight',
+    'marginTop',
+    'mask',
+    'maskPosition',
+    'maskSize',
+    'maxHeight',
+    'maxWidth',
+    'minHeight',
+    'minWidth',
+    'motionOffset',
+    'motionRotation',
+    'objectPosition',
+    'opacity',
+    'order',
+    'outline',
+    'outlineColor',
+    'outlineOffset',
+    'outlineWidth',
+    'padding',
+    'paddingBottom',
+    'paddingLeft',
+    'paddingRight',
+    'paddingTop',
+    'perspective',
+    'perspectiveOrigin',
+    'scrollSnapCoordinate',
+    'scrollSnapDestination',
+    'shapeImageThreshold',
+    'shapeMargin',
+    'shapeOutside',
+    'textDecoration',
+    'textDecorationColor',
+    'textEmphasis',
+    'textEmphasisColor',
+    'textIndent',
+    'textShadow',
+    'transform',
+    'transformOrigin',
+    'verticalAlign',
+    'wordSpacing',
+    'zIndex'
+  ];
+
   function isDocumentFragment(node) {
     return node.parentNode && node.parentNode.nodeType === 11;
   }
 
-  this.$get = ['$animateCss', '$rootScope', '$$AnimateRunner', '$rootElement', '$sniffer', '$$jqLite', '$document',
-       function($animateCss,   $rootScope,   $$AnimateRunner,   $rootElement,   $sniffer,   $$jqLite,   $document) {
+  this.$get = ['$animateCss', '$rootScope', '$$AnimateRunner', '$rootElement', '$sniffer', '$$jqLite', '$document', '$window',
+       function($animateCss,   $rootScope,   $$AnimateRunner,   $rootElement,   $sniffer,   $$jqLite,   $document, $window) {
 
     // only browsers that support these properties can render animations
     if (!$sniffer.animations && !$sniffer.transitions) return noop;
@@ -121,11 +229,13 @@ var $$AnimateCssDriverProvider = ['$$animationProvider', function($$animationPro
       function calculateAnchorStyles(anchor) {
         var styles = {};
 
-        var coords = getDomNode(anchor).getBoundingClientRect();
+        var domNode = getDomNode(anchor);
+        var computedStyle = domNode.currentStyle || $window.getComputedStyle(domNode) || [];
+        var coords = domNode.getBoundingClientRect();
 
         // we iterate directly since safari messes up and doesn't return
         // all the keys for the coords object when iterated
-        forEach(['width','height','top','left'], function(key) {
+        forEach(['width','height','top','left', 'color'], function(key) {
           var value = coords[key];
           switch (key) {
             case 'top':
@@ -137,6 +247,10 @@ var $$AnimateCssDriverProvider = ['$$animationProvider', function($$animationPro
           }
           styles[key] = Math.floor(value) + 'px';
         });
+        forEach(ANIMATED_PROPS, function(prop){
+          styles[prop] = computedStyle[prop];
+        });
+
         return styles;
       }
 
