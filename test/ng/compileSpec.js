@@ -10493,7 +10493,7 @@ describe('$compile', function() {
       }));
     });
 
-    it('should add additional annotations to the controller constructor', function() {
+    it('should expose additional annotations on the directive definition object', function() {
       var myModule = angular.module('my', []).component('myComponent', {
         $canActivate: 'canActivate',
         $routeConfig: 'routeConfig',
@@ -10501,7 +10501,7 @@ describe('$compile', function() {
       });
       module('my');
       inject(function(myComponentDirective) {
-        expect(myComponentDirective[0].controller).toEqual(jasmine.objectContaining({
+        expect(myComponentDirective[0]).toEqual(jasmine.objectContaining({
           $canActivate: 'canActivate',
           $routeConfig: 'routeConfig',
           $customAnnotation: 'XXX'
@@ -10515,9 +10515,11 @@ describe('$compile', function() {
         controller: 'SomeNamedController'
       });
       module('my');
-      expect(function() {
-        inject(function(myComponentDirective) {});
-      }).not.toThrow();
+      inject(function(myComponentDirective) {
+        expect(myComponentDirective[0]).toEqual(jasmine.objectContaining({
+          $customAnnotation: 'XXX'
+        }));
+      });
     });
 
     it('should return ddo with reasonable defaults', function() {
