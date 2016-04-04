@@ -10509,6 +10509,17 @@ describe('$compile', function() {
       });
     });
 
+    it('should support custom annotations if the controller is named', function() {
+      var myModule = angular.module('my', []).component('myComponent', {
+        $customAnnotation: 'XXX',
+        controller: 'SomeNamedController'
+      });
+      module('my');
+      expect(function() {
+        inject(function(myComponentDirective) {});
+      }).not.toThrow();
+    });
+
     it('should return ddo with reasonable defaults', function() {
       angular.module('my', []).component('myComponent', {});
       module('my');
