@@ -54,7 +54,7 @@ function $HttpBackendProvider() {
 
 function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDocument) {
   // TODO(vojta): fix the signature
-  return function(method, url, post, callback, headers, timeout, withCredentials, responseType, eventHandlers) {
+  return function(method, url, post, callback, headers, timeout, withCredentials, responseType, eventHandlers, uploadEventHandlers) {
     $browser.$$incOutstandingRequestCount();
     url = url || $browser.url();
 
@@ -114,19 +114,13 @@ function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDoc
       xhr.onerror = requestError;
       xhr.onabort = requestError;
 
-      if (eventHandlers) {
-        forEach(eventHandlers, function(value, key) {
-          if (key !== 'upload') {
-            xhr.addEventListener(key, value);
-          }
-        });
+      forEach(eventHandlers, function(value, key) {
+          xhr.addEventListener(key, value);
+      });
 
-        if (eventHandlers.upload) {
-          forEach(eventHandlers.upload, function(value, key) {
-            xhr.upload.addEventListener(key, value);
-          });
-        }
-      }
+      forEach(uploadEventHandlers, function(value, key) {
+        xhr.upload.addEventListener(key, value);
+      });
 
       if (withCredentials) {
         xhr.withCredentials = true;

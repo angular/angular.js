@@ -244,12 +244,8 @@ describe('$httpBackend', function() {
   it('should set up event listeners', function() {
     var progressFn = function() {};
     var uploadProgressFn = function() {};
-    $backend('GET', '/url', null, callback, {}, null, null, null, {
-      progress: progressFn,
-      upload: {
-        progress: uploadProgressFn
-      }
-    });
+    $backend('GET', '/url', null, callback, {}, null, null, null,
+        {progress: progressFn}, {progress: uploadProgressFn});
     xhr = MockXhr.$$lastInstance;
     expect(xhr.$$events.progress[0]).toBe(progressFn);
     expect(xhr.upload.$$events.progress[0]).toBe(uploadProgressFn);

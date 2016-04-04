@@ -1,5 +1,7 @@
 'use strict';
 
+/* global MockXhr: false */
+
 describe('$http', function() {
 
   var callback, mockedCookies;
@@ -1019,7 +1021,7 @@ describe('$http', function() {
     });
 
 
-    describe('scope.$apply', function() {
+    describe('callbacks', function() {
 
       it('should $apply after success callback', function() {
         $httpBackend.when('GET').respond(200);
@@ -1047,6 +1049,33 @@ describe('$http', function() {
 
         $exceptionHandler.errors = [];
       }));
+
+
+      it('should pass the event handlers through to the backend', function() {
+        var progressFn = jasmine.createSpy('progressFn');
+        var uploadProgressFn = jasmine.createSpy('uploadProgressFn');
+        $httpBackend.when('GET').respond(200);
+        $http({
+          method: 'GET',
+          url: '/some',
+          eventHandlers: {progress: progressFn},
+          uploadEventHandlers: {progress: uploadProgressFn}
+        });
+        $rootScope.$apply();
+        var mockXHR = MockXhr.$$lastInstance;
+        expect(mockXHR.$$events.progress).toEqual(jasmine.any(Function));
+        expect(mockXHR.upload.$$events.progress).toEqual(jasmine.any(Function));
+
+        spyOn($rootScope, '$digest');
+
+        mockXHR.$$events.progress();
+        expect(progressFn).toHaveBeenCalledOnce();
+        expect($rootScope.$digest).toHaveBeenCalledTimes(1);
+
+        mockXHR.upload.$$events.progress();
+        expect(uploadProgressFn).toHaveBeenCalledOnce();
+        expect($rootScope.$digest).toHaveBeenCalledTimes(2);
+      });
     });
 
 
