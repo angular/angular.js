@@ -1,8 +1,27 @@
 /**
  * @ngdoc module
  * @name ngComponentRouter
+ * @installation
+ * ## Installation
+ *
+ * Currently use `npm` to install the **Component Router** module:
+ *
+ * ```bash
+ * npm install @angular/router --save
+ * ```
+ *
+ * Include `angular_1_router.js` in your HTML:
+ * ```html
+ * <script src="/node_modules/@angular/router/angular1/angular_1_router.js"></script>
+ *```
+ *
+ * Then load the module in your application by adding it as a dependent module:
+ *
+ * ```js
+ * angular.module('app', ['ngComponentRouter']);
+ * ```
+ *
  * @description
- * The new Angular Router
  */
 
 /**
