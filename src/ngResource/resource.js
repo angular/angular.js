@@ -585,8 +585,12 @@ angular.module('ngResource', ['ng']).
                       'contain an {1} but got an {2} (Request: {3} {4})', name, action.isArray ? 'array' : 'object',
                     angular.isArray(data) ? 'array' : 'object', httpConfig.method, httpConfig.url);
                 }
+                var transformedValue = null;
                 // jshint +W018
-                if (action.isArray) {
+                //If user provide transformResult function, returns user needed results
+                if(action.transformResult){
+                  transformedValue = action.transformResult(data);
+                } else if (action.isArray) {
                   value.length = 0;
                   forEach(data, function(item) {
                     if (typeof item === "object") {
@@ -606,7 +610,7 @@ angular.module('ngResource', ['ng']).
 
               value.$resolved = true;
 
-              response.resource = value;
+              response.resource = (action.transformResult)? transformedValue : value;
 
               return response;
             }, function(response) {
