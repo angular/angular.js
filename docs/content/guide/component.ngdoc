@@ -133,8 +133,13 @@ components should follow a few simple conventions:
     For a deletion, that means the component doesn't delete the `hero` itself, but sends it back to
     the owner component via the correct event.
     ```html
+        <editable-field on-update="$ctrl.update('location', value)"></editable-field><br>
         <button ng-click="$ctrl.onDelete({hero: $ctrl.hero})">Delete</button>
     ```
+    <div class="alert alert-warning">
+      Remember to convert from camelCase (onDelete, onUpdate) to snake-case (on-delete, on-update) for each bound event name 
+      in the parent component's template (ie.. onUpdate: '&' => on-update="expression").
+    </div>
   - That way, the parent component can decide what to do with the event (e.g. delete an item or update the properties)
     ```js
       ctrl.deleteHero(hero) {
