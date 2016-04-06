@@ -1420,7 +1420,7 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
    *      `{function([status,] data[, headers, statusText])
    *      | function(function(method, url, data, headers, params)}`
    *    – The respond method takes a set of static data to be returned or a function that can
-   *    return an array containing response status (number), response data (string), response
+   *    return an array containing response status (number), response data (Object | string), response
    *    headers (Object), and the text for the status (string). The respond method returns the
    *    `requestHandler` object for possible overrides.
    */
@@ -1610,7 +1610,7 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
    *    `{function([status,] data[, headers, statusText])
    *    | function(function(method, url, data, headers, params)}`
    *    – The respond method takes a set of static data to be returned or a function that can
-   *    return an array containing response status (number), response data (string), response
+   *    return an array containing response status (number), response data (Object | string), response
    *    headers (Object), and the text for the status (string). The respond method returns the
    *    `requestHandler` object for possible overrides.
    */
@@ -2330,7 +2330,7 @@ angular.module('ngMockE2E', ['ng']).config(['$provide', function($provide) {
  *    `{function([status,] data[, headers, statusText])
  *    | function(function(method, url, data, headers, params)}`
  *    – The respond method takes a set of static data to be returned or a function that can return
- *    an array containing response status (number), response data (string), response headers
+ *    an array containing response status (number), response data (Object | string), response headers
  *    (Object), and the text for the status (string).
  *  - passThrough – `{function()}` – Any request matching a backend definition with
  *    `passThrough` handler will be passed through to the real backend (an XHR request will be made
