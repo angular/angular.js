@@ -169,7 +169,7 @@ of the component. The following hook methods can be implemented:
     Since the compilation process is rather different in Angular 1 there is no direct mapping and care should
     be taken when upgrading.
 
-By implementing these methods, you component can take part in its lifecycle.
+By implementing these methods, your component can hook into its lifecycle.
 
 - **An application is a tree of components:**
 Ideally, the whole application should be a tree of components that implement clearly defined inputs
