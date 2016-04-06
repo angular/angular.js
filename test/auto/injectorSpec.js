@@ -240,10 +240,10 @@ describe('injector', function() {
       expect(annotate($f_n0)).toEqual(['$a_']);
       expect($f_n0.$inject).toEqual(['$a_']);
     });
-    
+
     it('should handle functions with overridden toString', function() {
       function fn(a) {}
-      fn.toString = function () { return 'fn'; };
+      fn.toString = function() { return 'fn'; };
       expect(annotate(fn)).toEqual(['a']);
       expect(fn.$inject).toEqual(['a']);
     });
