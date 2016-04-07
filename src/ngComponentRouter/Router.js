@@ -4,7 +4,8 @@
  * @installation
  * ## Installation
  *
- * Currently use `npm` to install the **Component Router** module:
+ * Currently, the **Component Router** module must be installed via `npm`, it is not yet available
+ * on Bower or the Google CDN.
  *
  * ```bash
  * npm install @angular/router --save
@@ -14,6 +15,14 @@
  * ```html
  * <script src="/node_modules/@angular/router/angular1/angular_1_router.js"></script>
  *```
+ *
+ * You also need to include ES6 shims to support running on Internet Explorer:
+ *  ```html
+ *  <!-- IE required polyfills, in this exact order -->
+ *  <script src="https://cdnjs.cloudflare.com/ajax/libs/es6-shim/0.33.3/es6-shim.min.js"></script>
+ *  <script src="https://cdnjs.cloudflare.com/ajax/libs/systemjs/0.19.20/system-polyfills.js"></script>
+ *  <script src="https://npmcdn.com/angular2/es6/dev/src/testing/shims_for_IE.js"></script>
+ *  ```
  *
  * Then load the module in your application by adding it as a dependent module:
  *
