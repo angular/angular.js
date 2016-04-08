@@ -26,9 +26,12 @@ If you find a bug in the source code or a mistake in the documentation, you can 
 submitting an issue to our [GitHub Repository][github]. Even better you can submit a Pull Request
 with a fix.
 
-***Localization Issue:*** *Angular.js uses the [Google Closure I18N library], to generate its own I18N files. This means that
-any changes to these files would be lost the next time that we import the library. The recommended
-approach is to submit a patch to the I18N project directly, instead of submitting it here.*
+**Localization Issues:** Angular.js uses the [Google Closure I18N library] to generate
+its own I18N files (the ngLocale module). This means that any changes to these files would be lost
+the next time that we import the library.
+Since the Closure library i18n data is itself auto-generated from the data of the
+[Common Locale Data Repository (CLDR)] project, errors in the data should
+be reported there. See also the [Closure guide to i18n changes].
 
 **Please see the Submission Guidelines below**.
 
@@ -287,5 +290,7 @@ You can find out more detailed information about contributing in the
 [plunker]: http://plnkr.co/edit
 [stackoverflow]: http://stackoverflow.com/questions/tagged/angularjs
 [unit-testing]: https://docs.angularjs.org/guide/unit-testing
+[Common Locale Data Repository (CLDR)]: http://cldr.unicode.org
+[Closure guide to i18n changes]: https://github.com/google/closure-library/wiki/Internationalization-%28i18n%29-changes-in-Closure-Library
 
 [![Analytics](https://ga-beacon.appspot.com/UA-8594346-11/angular.js/CONTRIBUTING.md?pixel)](https://github.com/igrigorik/ga-beacon)
