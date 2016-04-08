@@ -409,6 +409,37 @@ describe('ngClass', function() {
     expect(e2.hasClass('even')).toBeTruthy();
     expect(e2.hasClass('odd')).toBeFalsy();
   }));
+
+  describe('large objects', function() {
+
+    var verylargeobject, getProp;
+    beforeEach(function() {
+      getProp = jasmine.createSpy('getProp');
+      verylargeobject = {};
+      Object.defineProperty(verylargeobject, 'prop', {
+        get: getProp,
+        enumerable: true
+      });
+    });
+
+    it('should not copy large objects via hard map of classes', inject(function($rootScope, $compile) {
+      element = $compile('<div ng-class="{foo: verylargeobject}"></div>')($rootScope);
+      $rootScope.verylargeobject = verylargeobject;
+      $rootScope.$digest();
+
+      expect(getProp).not.toHaveBeenCalled();
+    }));
+
+    it('should not copy large objects via hard map of classes in one-time binding', inject(function($rootScope, $compile) {
+      element = $compile('<div ng-class="::{foo: verylargeobject}"></div>')($rootScope);
+      $rootScope.verylargeobject = verylargeobject;
+      $rootScope.$digest();
+
+      expect(getProp).not.toHaveBeenCalled();
+    }));
+  });
+
+
 });
 
 describe('ngClass animations', function() {
