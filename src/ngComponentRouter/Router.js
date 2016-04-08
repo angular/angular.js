@@ -60,7 +60,7 @@
  *
  * There is only one instance of this type in a Component Router application injectable as the
  * {@link $rootRouter} service. This **Router** is associate with the **Top Level Component**
- * ({@link $routerRootComponent}). It acts as the connection betweent he **Routers** and the **Location**.
+ * ({@link $routerRootComponent}). It acts as the connection between the **Routers** and the **Location**.
  */
 
 /**
