@@ -79,7 +79,7 @@ attributes (if they have not been explicitly specified by the developer):
       $scope.checked = false;
       $scope.toggleCheckbox = function(){
         $scope.checked = !$scope.checked;
-      }
+      };
     })
     .directive('someCheckbox', function(){
       return {
@@ -93,7 +93,7 @@ attributes (if they have not been explicitly specified by the developer):
             }
           });
         }
-      }
+      };
     })
     .directive('showAttrs', function() {
       return function($scope, $el, $attrs) {
@@ -110,7 +110,7 @@ attributes (if they have not been explicitly specified by the developer):
         }, function(newAttrs, oldAttrs) {
           pre.textContent = JSON.stringify(newAttrs, null, 2);
         }, true);
-      }
+      };
     });
   </file>
   <file name="style.css">
