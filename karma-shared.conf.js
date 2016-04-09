@@ -74,6 +74,12 @@ module.exports = function(config, specificOptions) {
         platform: 'Windows 8.1',
         version: '11'
       },
+      'SL_EDGE': {
+        base: 'SauceLabs',
+        browserName: 'microsoftedge',
+        platform: 'Windows 10',
+        version: '14'
+      },
       'SL_iOS': {
         base: 'SauceLabs',
         browserName: 'iphone',
@@ -119,6 +125,13 @@ module.exports = function(config, specificOptions) {
         browser_version: '11.0',
         os: 'Windows',
         os_version: '8.1'
+      },
+      'BS_EDGE': {
+        base: 'BrowserStack',
+        browser: 'edge',
+        browser_version: '14',
+        os: 'Windows',
+        os_version: '10'
       },
       'BS_iOS_8': {
         base: 'BrowserStack',
