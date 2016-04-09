@@ -410,6 +410,17 @@ describe('ngClass', function() {
     expect(e2.hasClass('odd')).toBeFalsy();
   }));
 
+  it('should support mixed array/object variable with a mutating object', inject(function($rootScope, $compile) {
+    $rootScope.classVar = ['', {orange: true}];
+    element = $compile('<div class="existing" ng-class="classVar"></div>')($rootScope);
+    $rootScope.$digest();
+
+    $rootScope.classVar[1].orange = false;
+    $rootScope.$digest();
+
+    expect(element.hasClass('orange')).toBeFalsy();
+  }));
+
   describe('large objects', function() {
 
     var verylargeobject, getProp;
@@ -438,7 +449,6 @@ describe('ngClass', function() {
       expect(getProp).not.toHaveBeenCalled();
     }));
   });
-
 
 });
 
