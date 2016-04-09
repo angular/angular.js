@@ -10538,7 +10538,7 @@ describe('$compile', function() {
     });
 
     it('should expose additional annotations on the directive definition object', function() {
-      var myModule = angular.module('my', []).component('myComponent', {
+      angular.module('my', []).component('myComponent', {
         $canActivate: 'canActivate',
         $routeConfig: 'routeConfig',
         $customAnnotation: 'XXX'
@@ -10554,7 +10554,7 @@ describe('$compile', function() {
     });
 
     it('should support custom annotations if the controller is named', function() {
-      var myModule = angular.module('my', []).component('myComponent', {
+      angular.module('my', []).component('myComponent', {
         $customAnnotation: 'XXX',
         controller: 'SomeNamedController'
       });
@@ -10563,6 +10563,26 @@ describe('$compile', function() {
         expect(myComponentDirective[0]).toEqual(jasmine.objectContaining({
           $customAnnotation: 'XXX'
         }));
+      });
+    });
+
+    it('should provide a new empty controller if none is specified', function() {
+      angular.
+        module('my', []).
+        component('myComponent1', {$customAnnotation1: 'XXX'}).
+        component('myComponent2', {$customAnnotation2: 'YYY'});
+
+      module('my');
+
+      inject(function(myComponent1Directive, myComponent2Directive) {
+        var ctrl1 = myComponent1Directive[0].controller;
+        var ctrl2 = myComponent2Directive[0].controller;
+
+        expect(ctrl1).not.toBe(ctrl2);
+        expect(ctrl1.$customAnnotation1).toBe('XXX');
+        expect(ctrl1.$customAnnotation2).toBeUndefined();
+        expect(ctrl2.$customAnnotation1).toBeUndefined();
+        expect(ctrl2.$customAnnotation2).toBe('YYY');
       });
     });
 
