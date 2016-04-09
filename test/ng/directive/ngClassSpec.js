@@ -409,6 +409,18 @@ describe('ngClass', function() {
     expect(e2.hasClass('even')).toBeTruthy();
     expect(e2.hasClass('odd')).toBeFalsy();
   }));
+
+  it('should support changing multiple classes via variable array mixed with conditionally via a map', inject(function($rootScope, $compile) {
+    $rootScope.classVar = ['', {orange: true}];
+    element = $compile('<div class="existing" ng-class="classVar"></div>')($rootScope);
+    $rootScope.$digest();
+
+    $rootScope.classVar[1].orange = false;
+    $rootScope.$digest();
+
+    expect(element.hasClass('orange')).toBeFalsy();
+  }));
+
 });
 
 describe('ngClass animations', function() {
