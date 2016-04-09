@@ -1946,6 +1946,8 @@ describe('ngOptions', function() {
         scope.options[1].unavailable = false;
       });
 
+      options = element.find('option');
+
       expect(scope.options[1].unavailable).toEqual(false);
       expect(options.eq(1).prop('disabled')).toEqual(false);
     });
