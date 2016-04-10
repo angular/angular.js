@@ -410,16 +410,20 @@ describe('ngClass', function() {
     expect(e2.hasClass('odd')).toBeFalsy();
   }));
 
-  it('should support changing multiple classes via variable array mixed with conditionally via a map', inject(function($rootScope, $compile) {
-    $rootScope.classVar = ['', {orange: true}];
-    element = $compile('<div class="existing" ng-class="classVar"></div>')($rootScope);
-    $rootScope.$digest();
+  it('should support mixed array/object variable with a mutating object',
+    inject(function($rootScope, $compile) {
+      element = $compile('<div ng-class="classVar"></div>')($rootScope);
 
-    $rootScope.classVar[1].orange = false;
-    $rootScope.$digest();
+      $rootScope.classVar = [{orange: true}];
+      $rootScope.$digest();
+      expect(element).toHaveClass('orange');
 
-    expect(element.hasClass('orange')).toBeFalsy();
-  }));
+      $rootScope.classVar[0].orange = false;
+      $rootScope.$digest();
+
+      expect(element).not.toHaveClass('orange');
+    })
+  );
 
 });
 
