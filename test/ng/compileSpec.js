@@ -3755,15 +3755,12 @@ describe('$compile', function() {
 
         module('my');
         inject(function($compile, $rootScope) {
-          $rootScope.getVal = function() { return $rootScope.val; };
           element = $compile('<c1 prop1="val"></c1>')($rootScope);
-          var isolateScope = element.isolateScope();
 
-          log = [];
           $rootScope.$apply('val = 1');
           expect(log.pop()).toEqual({prop1: jasmine.objectContaining({previousValue: undefined, currentValue: 1})});
 
-          isolateScope.$ctrl.prop1 = 2;
+          element.isolateScope().$ctrl.prop1 = 2;
           $rootScope.$apply('val = 2');
           expect(log.pop()).toEqual({prop1: jasmine.objectContaining({previousValue: 1, currentValue: 2})});
         });
