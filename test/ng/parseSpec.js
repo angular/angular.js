@@ -1250,6 +1250,7 @@ describe('parser', function() {
                     type: 'Property',
                     kind: 'init',
                     key: { type: 'Identifier', name: 'foo' },
+                    computed: false,
                     value: { type: 'Identifier', name: 'bar' }
                   }
                 ]
@@ -1271,6 +1272,7 @@ describe('parser', function() {
                     type: 'Property',
                     kind: 'init',
                     key: { type: 'Identifier', name: 'foo' },
+                    computed: false,
                     value: { type: 'Identifier', name: 'bar' }
                   }
                 ]
@@ -1292,18 +1294,21 @@ describe('parser', function() {
                     type: 'Property',
                     kind: 'init',
                     key: { type: 'Identifier', name: 'foo' },
+                    computed: false,
                     value: { type: 'Identifier', name: 'bar' }
                   },
                   {
                     type: 'Property',
                     kind: 'init',
                     key: { type: 'Literal', value: 'man' },
+                    computed: false,
                     value: { type: 'Literal', value: 'shell' }
                   },
                   {
                     type: 'Property',
                     kind: 'init',
                     key: { type: 'Literal', value: 42 },
+                    computed: false,
                     value: { type: 'Literal', value: 23 }
                   }
                 ]
@@ -1325,18 +1330,21 @@ describe('parser', function() {
                     type: 'Property',
                     kind: 'init',
                     key: { type: 'Identifier', name: 'foo' },
+                    computed: false,
                     value: { type: 'Identifier', name: 'bar' }
                   },
                   {
                     type: 'Property',
                     kind: 'init',
                     key: { type: 'Literal', value: 'man' },
+                    computed: false,
                     value: { type: 'Literal', value: 'shell' }
                   },
                   {
                     type: 'Property',
                     kind: 'init',
                     key: { type: 'Literal', value: 42 },
+                    computed: false,
                     value: { type: 'Literal', value: 23 }
                   }
                 ]
@@ -1347,6 +1355,97 @@ describe('parser', function() {
       );
     });
 
+    it('should understand ES6 object initializer', function() {
+      // Shorthand properties definitions.
+      expect(createAst('{x, y, z}')).toEqual(
+        {
+          type: 'Program',
+          body: [
+            {
+              type: 'ExpressionStatement',
+              expression: {
+                type: 'ObjectExpression',
+                properties: [
+                  {
+                    type: 'Property',
+                    kind: 'init',
+                    key: { type: 'Identifier', name: 'x' },
+                    computed: false,
+                    value: { type: 'Identifier', name: 'x' }
+                  },
+                  {
+                    type: 'Property',
+                    kind: 'init',
+                    key: { type: 'Identifier', name: 'y' },
+                    computed: false,
+                    value: { type: 'Identifier', name: 'y' }
+                  },
+                  {
+                    type: 'Property',
+                    kind: 'init',
+                    key: { type: 'Identifier', name: 'z' },
+                    computed: false,
+                    value: { type: 'Identifier', name: 'z' }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      );
+      expect(function() { createAst('{"foo"}'); }).toThrow();
+
+      // Computed properties
+      expect(createAst('{[x]: x}')).toEqual(
+        {
+          type: 'Program',
+          body: [
+            {
+              type: 'ExpressionStatement',
+              expression: {
+                type: 'ObjectExpression',
+                properties: [
+                  {
+                    type: 'Property',
+                    kind: 'init',
+                    key: { type: 'Identifier', name: 'x' },
+                    computed: true,
+                    value: { type: 'Identifier', name: 'x' }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      );
+      expect(createAst('{[x + 1]: x}')).toEqual(
+        {
+          type: 'Program',
+          body: [
+            {
+              type: 'ExpressionStatement',
+              expression: {
+                type: 'ObjectExpression',
+                properties: [
+                  {
+                    type: 'Property',
+                    kind: 'init',
+                    key: {
+                      type: 'BinaryExpression',
+                      operator: '+',
+                      left: { type: 'Identifier', name: 'x' },
+                      right: { type: 'Literal', value: 1 }
+                    },
+                    computed: true,
+                    value: { type: 'Identifier', name: 'x' }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      );
+    });
 
     it('should understand multiple expressions', function() {
       expect(createAst('foo = bar; man = shell')).toEqual(
@@ -1626,6 +1725,7 @@ describe('parser', function() {
                     type: 'Property',
                     kind: 'init',
                     key: { type: 'Identifier', name: 'foo' },
+                    computed: false,
                     value: {
                       type: 'AssignmentExpression',
                       left: { type: 'Identifier', name: 'bar' },
@@ -2091,11 +2191,18 @@ describe('parser', function() {
         expect(scope.$eval("{false:1}")).toEqual({false:1});
         expect(scope.$eval("{'false':1}")).toEqual({false:1});
         expect(scope.$eval("{'':1,}")).toEqual({"":1});
+
+        // ES6 object initializers.
+        expect(scope.$eval('{x, y}', {x: 'foo', y: 'bar'})).toEqual({x: 'foo', y: 'bar'});
+        expect(scope.$eval('{[x]: x}', {x: 'foo'})).toEqual({foo: 'foo'});
+        expect(scope.$eval('{[x + "z"]: x}', {x: 'foo'})).toEqual({fooz: 'foo'});
+        expect(scope.$eval('{x, 1: x, [x = x + 1]: x, 3: x + 1, [x = x + 2]: x, 5: x + 1}', {x: 1}))
+            .toEqual({x: 1, '1': 1, '2': 2, '3': 3, '4': 4, '5': 5});
       });
 
       it('should throw syntax error exception for non constant/identifier JSON keys', function() {
         expect(function() { scope.$eval("{[:0}"); }).toThrowMinErr("$parse", "syntax",
-          "Syntax Error: Token '[' invalid key at column 2 of the expression [{[:0}] starting at [[:0}]");
+          "Syntax Error: Token ':' not a primary expression at column 3 of the expression [{[:0}] starting at [:0}]");
         expect(function() { scope.$eval("{{:0}"); }).toThrowMinErr("$parse", "syntax",
           "Syntax Error: Token '{' invalid key at column 2 of the expression [{{:0}] starting at [{:0}]");
         expect(function() { scope.$eval("{?:0}"); }).toThrowMinErr("$parse", "syntax",
@@ -3654,6 +3761,7 @@ describe('parser', function() {
           expect($parse('"foo" + "bar"').constant).toBe(true);
           expect($parse('5 != null').constant).toBe(true);
           expect($parse('{standard: 4/3, wide: 16/9}').constant).toBe(true);
+          expect($parse('{[standard]: 4/3, wide: 16/9}').constant).toBe(false);
         }));
 
         it('should not mark any expression involving variables or function calls as constant', inject(function($parse) {
