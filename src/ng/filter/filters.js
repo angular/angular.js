@@ -93,7 +93,8 @@ function currencyFilter($locale) {
  * @param {(number|string)=} fractionSize Number of decimal places to round the number to.
  * If this is not provided then the fraction size is computed from the current locale's number
  * formatting pattern. In the case of the default locale, it will be 3.
- * @returns {string} Number rounded to fractionSize and places a “,” after each third digit.
+ * @returns {string} Number rounded to fractionSize with appropriate group separators (e.g.,
+ * “,” after each third digit in the en_US locale).
  *
  * @example
    <example module="numberFilterExample">
