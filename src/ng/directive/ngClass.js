@@ -1,6 +1,7 @@
 'use strict';
 
 function classDirective(name, selector) {
+  var staticMapClassRegEx = /^\s*(::)?\s*\{/;
   name = 'ngClass' + name;
   return ['$animate', function($animate) {
     return {
@@ -8,7 +9,8 @@ function classDirective(name, selector) {
       link: function(scope, element, attr) {
         var oldVal;
 
-        scope.$watch(attr[name], ngClassWatchAction, true);
+        // shortcut: if it is clearly a map of classes do not copy values, they are supposed to be boolean (truly/falsy)
+        scope[staticMapClassRegEx.test(attr[name]) ? '$watchCollection' : '$watch'](attr[name], ngClassWatchAction, true);
 
         attr.$observe('class', function(value) {
           ngClassWatchAction(scope.$eval(attr[name]));
@@ -78,7 +80,11 @@ function classDirective(name, selector) {
               updateClasses(oldClasses, newClasses);
             }
           }
-          oldVal = shallowCopy(newVal);
+          if (isArray(newVal)) {
+            oldVal = newVal.map(function(v) { return shallowCopy(v); });
+          } else {
+            oldVal = shallowCopy(newVal);
+          }
         }
       }
     };

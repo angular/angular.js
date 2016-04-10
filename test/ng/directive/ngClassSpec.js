@@ -409,6 +409,47 @@ describe('ngClass', function() {
     expect(e2.hasClass('even')).toBeTruthy();
     expect(e2.hasClass('odd')).toBeFalsy();
   }));
+
+  it('should support mixed array/object variable with a mutating object', inject(function($rootScope, $compile) {
+    $rootScope.classVar = ['', {orange: true}];
+    element = $compile('<div class="existing" ng-class="classVar"></div>')($rootScope);
+    $rootScope.$digest();
+
+    $rootScope.classVar[1].orange = false;
+    $rootScope.$digest();
+
+    expect(element.hasClass('orange')).toBeFalsy();
+  }));
+
+  describe('large objects', function() {
+
+    var verylargeobject, getProp;
+    beforeEach(function() {
+      getProp = jasmine.createSpy('getProp');
+      verylargeobject = {};
+      Object.defineProperty(verylargeobject, 'prop', {
+        get: getProp,
+        enumerable: true
+      });
+    });
+
+    it('should not copy large objects via hard map of classes', inject(function($rootScope, $compile) {
+      element = $compile('<div ng-class="{foo: verylargeobject}"></div>')($rootScope);
+      $rootScope.verylargeobject = verylargeobject;
+      $rootScope.$digest();
+
+      expect(getProp).not.toHaveBeenCalled();
+    }));
+
+    it('should not copy large objects via hard map of classes in one-time binding', inject(function($rootScope, $compile) {
+      element = $compile('<div ng-class="::{foo: verylargeobject}"></div>')($rootScope);
+      $rootScope.verylargeobject = verylargeobject;
+      $rootScope.$digest();
+
+      expect(getProp).not.toHaveBeenCalled();
+    }));
+  });
+
 });
 
 describe('ngClass animations', function() {
