@@ -3237,7 +3237,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             onChangesQueue.push(triggerOnChangesHook);
           }
           // If the has been a change on this property already then we need to reuse the previous value
-          if (isDefined(changes[key])) {
+          if (changes[key]) {
             previousValue = changes[key].previousValue;
           }
           // Store this change
