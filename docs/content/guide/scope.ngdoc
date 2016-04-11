@@ -257,7 +257,7 @@ the `$digest` phase. This delay is desirable, since it coalesces multiple model 
 
   2. **Watcher registration**
 
-     During template linking directives register {@link
+     During template linking, directives register {@link
      ng.$rootScope.Scope#$watch watches} on the scope. These watches will be
      used to propagate model values to the DOM.
 
