@@ -140,7 +140,6 @@ __`app/js/app.js`.__
 // ...
 angular.module('phonecatApp', [
   'ngRoute',
-
   'phonecatAnimations',
   'phonecatControllers',
   'phonecatFilters',
