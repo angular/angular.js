@@ -46,8 +46,6 @@ The new dependency `"angular-route": "1.4.x"` tells bower to install a version o
 angular-route component that is compatible with version 1.4.x.  We must tell bower to download
 and install this dependency.
 
-If you have bower installed globally, then you can run `bower install` but for this project, we have
-preconfigured npm to run bower install for us:
 
 ```
 npm install
