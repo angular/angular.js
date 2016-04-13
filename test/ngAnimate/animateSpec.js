@@ -2186,19 +2186,19 @@ describe("animations", function() {
         $rootScope.$digest();
         $animate.flush();
 
-        expect(moveSpy.calls.count()).toBe(1);
-        expect(moveSpy.calls.mostRecent().args[1]).toBe('start');
+        expect(moveSpy.calls.length).toBe(1);
+        expect(moveSpy.mostRecentCall.args[1]).toBe('start');
 
         $animate.leave(element);
         $rootScope.$digest();
         $animate.flush();
 
-        expect(moveSpy.calls.count()).toBe(2);
-        expect(moveSpy.calls.mostRecent().args[1]).toBe('close');
+        expect(moveSpy.calls.length).toBe(2);
+        expect(moveSpy.mostRecentCall.args[1]).toBe('close');
 
-        expect(leaveSpy.calls.count()).toBe(2);
-        expect(leaveSpy.calls.argsFor(0)[1]).toBe('start');
-        expect(leaveSpy.calls.argsFor(1)[1]).toBe('close');
+        expect(leaveSpy.calls.length).toBe(2);
+        expect(leaveSpy.calls[0].args[1]).toBe('start');
+        expect(leaveSpy.calls[1].args[1]).toBe('close');
       }));
 
 
@@ -2221,16 +2221,16 @@ describe("animations", function() {
         expect(enterDone).toHaveBeenCalled();
 
         expect(enterSpy).not.toHaveBeenCalled();
-        expect(leaveSpy.calls.count()).toBe(1);
-        expect(leaveSpy.calls.mostRecent().args[1]).toBe('start');
+        expect(leaveSpy.calls.length).toBe(1);
+        expect(leaveSpy.mostRecentCall.args[1]).toBe('start');
 
-        leaveSpy.calls.reset();
+        leaveSpy.reset();
         runner.end();
         $animate.flush();
 
         expect(enterSpy).not.toHaveBeenCalled();
-        expect(leaveSpy.calls.count()).toBe(1);
-        expect(leaveSpy.calls.mostRecent().args[1]).toBe('close');
+        expect(leaveSpy.calls.length).toBe(1);
+        expect(leaveSpy.mostRecentCall.args[1]).toBe('close');
       }));
 
 
@@ -2292,9 +2292,9 @@ describe("animations", function() {
 
           $animate.flush(); // Flushes the animation frames for the callbacks
 
-          expect(spy.calls.count()).toBe(2);
-          expect(spy.calls.argsFor(0)[1]).toBe('start');
-          expect(spy.calls.argsFor(1)[1]).toBe('close');
+          expect(spy.calls.length).toBe(2);
+          expect(spy.calls[0].args[1]).toBe('start');
+          expect(spy.calls[1].args[1]).toBe('close');
         }));
       });
 
