@@ -26,11 +26,12 @@ ngRouteModule.directive('ngView', ngViewFillContentFactory);
  *
  * The enter and leave animation occur concurrently.
  *
- * @knownIssue If `ngView` is contained in an asynchronously loaded templated (i.e. not directly
- *             inside your main HTML file, then you need to make sure that `$route` is instantiated
- *             in time to capture the initial `$locationChangeStart` event and load the appropriate
- *             view. One way to ensure `$route` will be instantiated in time, it to have it as a
- *             dependency in a `.run` block: `myModule.run(['$route', function() {}]);`
+ * @knownIssue If `ngView` is contained in an asynchronously loaded template (e.g. in another
+ *             directive's templateUrl or in a template loaded using `ngInclude`), then you need to
+ *             make sure that `$route` is instantiated in time to capture the initial
+ *             `$locationChangeStart` event and load the appropriate view. One way to achieve this
+ *             is to have it as a dependency in a `.run` block:
+ *             `myModule.run(['$route', function() {}]);`
  *
  * @scope
  * @priority 400
