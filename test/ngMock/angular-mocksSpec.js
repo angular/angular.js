@@ -2089,6 +2089,27 @@ describe('ngMock', function() {
         }).toThrowError('Too many components found');
       });
     });
+
+    it('should create an isolated child of $rootScope, if no `$scope` local is provided', function() {
+      function TestController($scope) {
+        this.$scope = $scope;
+      }
+      module(function($compileProvider) {
+        $compileProvider.component('test', {
+          controller: TestController
+        });
+      });
+      inject(function($componentController, $rootScope) {
+        var $ctrl = $componentController('test');
+        expect($ctrl.$scope).toBeDefined();
+        expect($ctrl.$scope.$parent).toBe($rootScope);
+        // check it is isolated
+        $rootScope.a = 17;
+        expect($ctrl.$scope.a).toBeUndefined();
+        $ctrl.$scope.a = 42;
+        expect($rootScope.a).toEqual(17);
+      });
+    });
   });
 });
 
