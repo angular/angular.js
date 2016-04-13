@@ -2105,6 +2105,7 @@ describe('ngMock', function() {
         expect($ctrl.$scope.$parent).toBe($rootScope);
         // check it is isolated
         $rootScope.a = 17;
+        expect($ctrl.$scope.a).toBeUndefined();
         $ctrl.$scope.a = 42;
         expect($rootScope.a).toEqual(17);
       });

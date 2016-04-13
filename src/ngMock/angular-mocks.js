@@ -2226,12 +2226,8 @@ angular.mock.$ComponentControllerProvider = ['$compileProvider', function($compi
       // get the info of the component
       var directiveInfo = candidateDirectives[0];
       // create a scope if needed
-      if (!locals) {
-        locals = {};
-      }
-      if (!locals.$scope) {
-        locals.$scope = locals.$scope || $rootScope.$new(true);
-      }
+      locals = locals || {};
+      locals.$scope = locals.$scope || $rootScope.$new(true);
       return $controller(directiveInfo.controller, locals, bindings, ident || directiveInfo.controllerAs);
     };
   }];
