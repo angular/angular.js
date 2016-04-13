@@ -2196,8 +2196,8 @@ angular.mock.$ControllerDecorator = ['$delegate', function($delegate) {
  * A service that can be used to create instances of component controllers.
  * <div class="alert alert-info">
  * Be aware that the controller will be instantiated and attached to the scope as specified in
- * the component definition object. That means that you must always provide a `$scope` object
- * in the `locals` param.
+ * the component definition object. If you do not provide a `$scope` object in the `locals` param
+ * then the helper will create a new isolated scope as a child of `$rootScope`.
  * </div>
  * @param {string} componentName the name of the component whose controller we want to instantiate
  * @param {Object} locals Injection locals for Controller.
@@ -2207,7 +2207,7 @@ angular.mock.$ControllerDecorator = ['$delegate', function($delegate) {
  * @return {Object} Instance of requested controller.
  */
 angular.mock.$ComponentControllerProvider = ['$compileProvider', function($compileProvider) {
-  this.$get = ['$controller','$injector', function($controller,$injector) {
+  this.$get = ['$controller','$injector', '$rootScope', function($controller, $injector, $rootScope) {
     return function $componentController(componentName, locals, bindings, ident) {
       // get all directives associated to the component name
       var directives = $injector.get(componentName + 'Directive');
@@ -2225,6 +2225,9 @@ angular.mock.$ComponentControllerProvider = ['$compileProvider', function($compi
       }
       // get the info of the component
       var directiveInfo = candidateDirectives[0];
+      // create a scope if needed
+      locals = locals || {};
+      locals.$scope = locals.$scope || $rootScope.$new(true);
       return $controller(directiveInfo.controller, locals, bindings, ident || directiveInfo.controllerAs);
     };
   }];
