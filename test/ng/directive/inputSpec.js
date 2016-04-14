@@ -3784,6 +3784,22 @@ describe('input', function() {
       expect(inputElm[0].getAttribute('value')).toBe('something');
     });
 
+    they('should update the $prop "value" property and attribute after the bound expression changes', {
+      input: '<input type="text" ng-value="value">',
+      textarea: '<textarea ng-value="value"></textarea>'
+    }, function(tmpl) {
+      var element = helper.compileInput(tmpl);
+
+      helper.changeInputValueTo('newValue');
+      expect(element[0].value).toBe('newValue');
+      expect(element[0].getAttribute('value')).toBeNull();
+
+      $rootScope.$apply(function() {
+        $rootScope.value = 'anotherValue';
+      });
+      expect(element[0].value).toBe('anotherValue');
+      expect(element[0].getAttribute('value')).toBe('anotherValue');
+    });
 
     it('should evaluate and set constant expressions', function() {
       var inputElm = helper.compileInput('<input type="radio" ng-model="selected" ng-value="true">' +
