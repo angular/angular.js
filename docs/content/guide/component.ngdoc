@@ -484,9 +484,10 @@ describe('component: heroDetail', function() {
   });
 
   it('should call the onDelete binding when a hero is deleted', function() {
+    scope.deleteFn = jasmine.createSpy('deleteSpy');
     component = $componentController('heroDetail',
       {$scope: scope},
-      {hero: hero, onDelete: jasmine.createSpy('deleteSpy')}
+      {hero: hero, onDelete: 'deleteFn(hero)'}
     );
 
     component.onDelete({hero: component.hero});

@@ -2207,7 +2207,7 @@ angular.mock.$ControllerDecorator = ['$delegate', function($delegate) {
  * @return {Object} Instance of requested controller.
  */
 angular.mock.$ComponentControllerProvider = ['$compileProvider', function($compileProvider) {
-  this.$get = ['$controller','$injector', '$rootScope', function($controller, $injector, $rootScope) {
+  this.$get = ['$controller','$injector', '$parse', '$rootScope', function($controller, $injector, $parse, $rootScope) {
     return function $componentController(componentName, locals, bindings, ident) {
       // get all directives associated to the component name
       var directives = $injector.get(componentName + 'Directive');
@@ -2228,6 +2228,18 @@ angular.mock.$ComponentControllerProvider = ['$compileProvider', function($compi
       // create a scope if needed
       locals = locals || {};
       locals.$scope = locals.$scope || $rootScope.$new(true);
+      // parse '&'-bindings which are expressions
+      angular.forEach(directiveInfo.bindToController, function parseBinding(mode, scopeName) {
+        // filter '&'-bindings which are string expressions
+        if (mode.charAt(0) !== '&' || typeof bindings[scopeName] !== 'string') {
+          return;
+        }
+        // parse expression and replace binding
+        var parentGet = $parse(bindings[scopeName]);
+        bindings[scopeName] = function(argMap) {
+          return parentGet(locals.$scope, argMap);
+        };
+      });
       return $controller(directiveInfo.controller, locals, bindings, ident || directiveInfo.controllerAs);
     };
   }];
