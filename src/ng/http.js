@@ -1276,13 +1276,17 @@ function $HttpProvider() {
         if (eventHandlers) {
           var applyHandlers = {};
           forEach(eventHandlers, function(eventHandler, key) {
-            applyHandlers[key] = function() {
+            applyHandlers[key] = function(event) {
               if (useApplyAsync) {
-                $rootScope.$applyAsync(eventHandler);
+                $rootScope.$applyAsync(callEventHandler);
               } else if ($rootScope.$$phase) {
-                eventHandler();
+                callEventHandler();
               } else {
-                $rootScope.$apply(eventHandler);
+                $rootScope.$apply(callEventHandler);
+              }
+
+              function callEventHandler() {
+                eventHandler(event);
               }
             };
           });
