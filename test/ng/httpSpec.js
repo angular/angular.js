@@ -1066,14 +1066,15 @@ describe('$http', function() {
         expect(mockXHR.$$events.progress).toEqual(jasmine.any(Function));
         expect(mockXHR.upload.$$events.progress).toEqual(jasmine.any(Function));
 
+        var eventObj = {};
         spyOn($rootScope, '$digest');
 
-        mockXHR.$$events.progress();
-        expect(progressFn).toHaveBeenCalledOnce();
+        mockXHR.$$events.progress(eventObj);
+        expect(progressFn).toHaveBeenCalledOnceWith(eventObj);
         expect($rootScope.$digest).toHaveBeenCalledTimes(1);
 
-        mockXHR.upload.$$events.progress();
-        expect(uploadProgressFn).toHaveBeenCalledOnce();
+        mockXHR.upload.$$events.progress(eventObj);
+        expect(uploadProgressFn).toHaveBeenCalledOnceWith(eventObj);
         expect($rootScope.$digest).toHaveBeenCalledTimes(2);
       });
     });
