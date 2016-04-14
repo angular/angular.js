@@ -2110,6 +2110,43 @@ describe('ngMock', function() {
         expect($rootScope.a).toEqual(17);
       });
     });
+
+    it('should parse \'&\'-bindings which are expressions', function() {
+      function TestController($scope) {
+        this.$scope = $scope;
+      }
+      module(function($compileProvider) {
+        $compileProvider.component('test', {
+          controller: TestController,
+          bindings: {
+            exprBinding: '&',
+            namedExprBinding: '&somethingElse',
+            fnBinding: '&'
+          }
+        });
+      });
+      inject(function($componentController) {
+        var exprBindingSpy = jasmine.createSpy('exprBindingSpy');
+        var namedExprBindingSpy = jasmine.createSpy('namedExprBindingSpy');
+        var fnBindingSpy = jasmine.createSpy('fnBindingSpy');
+        var $scope = { parentFn: exprBindingSpy, otherParentFn: namedExprBindingSpy };
+        var ctrl = $componentController(
+          'test',
+          { $scope: $scope },
+          {
+            exprBinding: 'parentFn(arg)',
+            namedExprBinding: 'otherParentFn(arg)',
+            fnBinding: fnBindingSpy
+          }
+        );
+        ctrl.fnBinding({ arg: 'test' });
+        expect(fnBindingSpy).toHaveBeenCalledWith({ arg: 'test' });
+        ctrl.exprBinding({ arg: 'test2'});
+        expect(exprBindingSpy).toHaveBeenCalledWith('test2');
+        ctrl.namedExprBinding({ arg: 'test3' });
+        expect(namedExprBindingSpy).toHaveBeenCalledWith('test3');
+      });
+    });
   });
 });
 
