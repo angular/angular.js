@@ -2205,9 +2205,15 @@ angular.mock.$RootElementProvider = function() {
 angular.mock.$ControllerDecorator = ['$delegate', function($delegate) {
   return function(expression, locals, later, ident) {
     if (later && typeof later === 'object') {
-      var create = $delegate(expression, locals, true, ident);
-      angular.extend(create.instance, later);
-      return create();
+      var instantiate = $delegate(expression, locals, true, ident);
+      angular.extend(instantiate.instance, later);
+
+      var instance = instantiate();
+      if (instance !== instantiate.instance) {
+        angular.extend(instance, later);
+      }
+
+      return instance;
     }
     return $delegate(expression, locals, later, ident);
   };

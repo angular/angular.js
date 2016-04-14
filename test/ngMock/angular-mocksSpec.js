@@ -1,5 +1,7 @@
 'use strict';
 
+/* globals support: false */
+
 describe('ngMock', function() {
   var noop = angular.noop;
 
@@ -1919,6 +1921,52 @@ describe('ngMock', function() {
         expect(called).toBe(true);
       });
     });
+
+    it('should support assigning bindings when a value is returned from the constructor',
+      function() {
+        var called = false;
+        var data = [
+          { name: 'derp1', id: 0 },
+          { name: 'testname', id: 1 },
+          { name: 'flurp', id: 2 }
+        ];
+        module(function($controllerProvider) {
+          $controllerProvider.register('testCtrl', function() {
+            called = true;
+            expect(this.data).toBe(data);
+
+            return {};
+          });
+        });
+        inject(function($controller, $rootScope) {
+          var ctrl = $controller('testCtrl', { scope: $rootScope }, { data: data });
+          expect(ctrl.data).toBe(data);
+          expect(called).toBe(true);
+        });
+      }
+    );
+
+    if (/chrome/.test(navigator.userAgent)) {
+      it('should support assigning bindings to class-based controller', function() {
+        var called = false;
+        var data = [
+          { name: 'derp1', id: 0 },
+          { name: 'testname', id: 1 },
+          { name: 'flurp', id: 2 }
+        ];
+        module(function($controllerProvider) {
+          //jshint evil: true
+          var TestCtrl = eval('(class { constructor() { called = true; } })');
+          //jshint evil: false
+          $controllerProvider.register('testCtrl', TestCtrl);
+        });
+        inject(function($controller, $rootScope) {
+          var ctrl = $controller('testCtrl', { scope: $rootScope }, { data: data });
+          expect(ctrl.data).toBe(data);
+          expect(called).toBe(true);
+        });
+      });
+    }
   });
 
 
