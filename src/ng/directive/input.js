@@ -1701,6 +1701,10 @@ var CONSTANT_VALUE_REGEXP = /^(true|false|\d+)$/;
  * so that when the element is selected, the {@link ngModel `ngModel`} of that element is set to
  * the bound value.
  *
+ * It can be used to achieve one-way binding of a given expression to the value of `element`,
+ * so that when the expression change the element is set to the bound value.
+ *
+ *
  * `ngValue` is useful when dynamically generating lists of radio buttons using
  * {@link ngRepeat `ngRepeat`}, as shown below.
  *
@@ -1711,7 +1715,7 @@ var CONSTANT_VALUE_REGEXP = /^(true|false|\d+)$/;
  *
  * @element input
  * @param {string=} ngValue angular expression, whose value will be bound to the `value` attribute
- *   of the `input` element
+ * and `value` property of the element
  *
  * @example
     <example name="ngValue-directive" module="valueExample">
@@ -1750,24 +1754,33 @@ var CONSTANT_VALUE_REGEXP = /^(true|false|\d+)$/;
     </example>
  */
 var ngValueDirective = function() {
+  //helper function
+  var updateElementValue = function(element, attr, value) {
+    /**
+     *  input use 'value attribute' as default value if 'value property has no value'
+     *  but once set the 'value property' it will not read value from 'value attribute'
+     *  so we set both the value attribute and property here to avoid this problem.
+     */
+    attr.$set('value', value);
+    element.prop('value', value);
+  };
+
   return {
     restrict: 'A',
     priority: 100,
     compile: function(tpl, tplAttr) {
       if (CONSTANT_VALUE_REGEXP.test(tplAttr.ngValue)) {
         return function ngValueConstantLink(scope, elm, attr) {
-          attr.$set('value', scope.$eval(attr.ngValue));
+          var value = scope.$eval(attr.ngValue);
+          updateElementValue(elm, attr, value);
         };
       } else {
         return function ngValueLink(scope, elm, attr) {
           scope.$watch(attr.ngValue, function valueWatchAction(value) {
-            attr.$set('value', value);
+            updateElementValue(elm, attr, value);
           });
         };
       }
     }
   };
 };
-
-
-
