@@ -1,0 +1,54 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/error/ng/btstrpd.ngdoc?message=docs(error%2Fbtstrpd)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1>Error: error:btstrpd
+  <div><span class='hint'>App Already Bootstrapped with this Element</span></div>
+</h1>
+
+<div>
+    <pre class="minerr-errmsg" error-display="App Already Bootstrapped with this Element '{0}'">App Already Bootstrapped with this Element '{0}'</pre>
+</div>
+
+<h2>Description</h2>
+<div class="description">
+  <p>Occurs when calling <a href="api/ng/function/angular.bootstrap"><code>angular.bootstrap</code></a> on an element that has already been bootstrapped.</p>
+<p>This usually happens when you accidentally use both <code>ng-app</code> and <code>angular.bootstrap</code> to bootstrap an
+application.</p>
+<pre><code>&lt;html&gt;
+...
+  &lt;body ng-app=&quot;myApp&quot;&gt;
+    &lt;script&gt;
+      angular.bootstrap(document.body, [&#39;myApp&#39;]);
+    &lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<p>Note that for bootstrapping purposes, the <code>&lt;html&gt;</code> element is the same as <code>document</code>, so the following
+will also throw an error.</p>
+<pre><code>&lt;html&gt;
+...
+&lt;script&gt;
+  angular.bootstrap(document, [&#39;myApp&#39;]);
+&lt;/script&gt;
+&lt;/html&gt;
+</code></pre>
+<p>You can also get this error if you accidentally load AngularJS itself more than once.</p>
+<pre><code>&lt;html ng-app&gt;
+  &lt;head&gt;
+    &lt;script src=&quot;angular.js&quot;&gt;&lt;/script&gt;
+
+    ...
+
+  &lt;/head&gt;
+  &lt;body&gt;
+
+    ...
+
+    &lt;script src=&quot;angular.js&quot;&gt;&lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
+</div>
+
+

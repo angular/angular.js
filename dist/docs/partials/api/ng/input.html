@@ -1,0 +1,99 @@
+
+<h1>Input components in <code>ng</code></h1>
+
+
+
+<div class="component-breakdown">
+  <div>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/input/input[text]">input[text]</a></td>
+        <td><p>Standard HTML text input with angular data binding, inherited by most of the <code>input</code> elements.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/input/input[date]">input[date]</a></td>
+        <td><p>Input with date validation and transformation. In browsers that do not yet support
+the HTML5 date input, a text element will be used. In that case, text must be entered in a valid ISO-8601
+date format (yyyy-MM-dd), for example: <code>2009-01-06</code>. Since many
+modern browsers do not yet support this input type, it is important to provide cues to users on the
+expected input format via a placeholder or label.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/input/input[datetime-local]">input[datetime-local]</a></td>
+        <td><p>Input with datetime validation and transformation. In browsers that do not yet support
+the HTML5 date input, a text element will be used. In that case, the text must be entered in a valid ISO-8601
+local datetime format (yyyy-MM-ddTHH:mm:ss), for example: <code>2010-12-28T14:57:00</code>.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/input/input[time]">input[time]</a></td>
+        <td><p>Input with time validation and transformation. In browsers that do not yet support
+the HTML5 date input, a text element will be used. In that case, the text must be entered in a valid ISO-8601
+local time format (HH:mm:ss), for example: <code>14:57:00</code>. Model must be a Date object. This binding will always output a
+Date object to the model of January 1, 1970, or local date <code>new Date(1970, 0, 1, HH, mm, ss)</code>.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/input/input[week]">input[week]</a></td>
+        <td><p>Input with week-of-the-year validation and transformation to Date. In browsers that do not yet support
+the HTML5 week input, a text element will be used. In that case, the text must be entered in a valid ISO-8601
+week format (yyyy-W##), for example: <code>2013-W02</code>.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/input/input[month]">input[month]</a></td>
+        <td><p>Input with month validation and transformation. In browsers that do not yet support
+the HTML5 month input, a text element will be used. In that case, the text must be entered in a valid ISO-8601
+month format (yyyy-MM), for example: <code>2009-01</code>.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/input/input[number]">input[number]</a></td>
+        <td><p>Text input with number validation and transformation. Sets the <code>number</code> validation
+error if not a valid number.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/input/input[url]">input[url]</a></td>
+        <td><p>Text input with URL validation. Sets the <code>url</code> validation error key if the content is not a
+valid URL.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/input/input[email]">input[email]</a></td>
+        <td><p>Text input with email validation. Sets the <code>email</code> validation error key if not a valid email
+address.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/input/input[radio]">input[radio]</a></td>
+        <td><p>HTML radio button.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/input/input[checkbox]">input[checkbox]</a></td>
+        <td><p>HTML checkbox.</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+</div>
+

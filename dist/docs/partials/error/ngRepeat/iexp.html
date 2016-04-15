@@ -1,0 +1,21 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/error/ngRepeat/iexp.ngdoc?message=docs(error%2Fiexp)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1>Error: error:iexp
+  <div><span class='hint'>Invalid Expression</span></div>
+</h1>
+
+<div>
+    <pre class="minerr-errmsg" error-display="Expected expression in form of '_item_ in _collection_[ track by _id_]' but got '{0}'.">Expected expression in form of '_item_ in _collection_[ track by _id_]' but got '{0}'.</pre>
+</div>
+
+<h2>Description</h2>
+<div class="description">
+  <p>Occurs when there is a syntax error in an <a href="api/ng/directive/ngRepeat">ngRepeat</a>&#39;s expression. The expression should be in the form &#39;<em>item</em> in <em>collection</em>[ track by <em>id</em>]&#39;.</p>
+<p>Be aware, the ngRepeat directive parses the expression using a regex before sending <em>collection</em> and optionally <em>id</em> to the AngularJS parser.  This error comes from the regex parsing.</p>
+<p>To resolve, identify and fix errors in the expression, paying special attention to the &#39;in&#39; and &#39;track by&#39; keywords in the expression.</p>
+<p>Please consult the api documentation of <a href="api/ng/directive/ngRepeat">ngRepeat</a> to learn more about valid syntax.</p>
+
+</div>
+
+

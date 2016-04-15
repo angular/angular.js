@@ -1,0 +1,316 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/cacheFactory.js?message=docs($cacheFactory.Cache)%3A%20describe%20your%20change...#L102' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/cacheFactory.js#L102' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">$cacheFactory.Cache</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - type in module <a href="api/ng">ng</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>A cache object used to store and retrieve data, primarily used by
+<a href="api/ng/service/$http">$http</a> and the <a href="api/ng/directive/script">script</a> directive to cache
+templates and other data.</p>
+<pre><code class="lang-js">angular.module(&#39;superCache&#39;)
+  .factory(&#39;superCache&#39;, [&#39;$cacheFactory&#39;, function($cacheFactory) {
+    return $cacheFactory(&#39;super-cache&#39;);
+  }]);
+</code></pre>
+<p>Example test:</p>
+<pre><code class="lang-js">it(&#39;should behave like a cache&#39;, inject(function(superCache) {
+  superCache.put(&#39;key&#39;, &#39;value&#39;);
+  superCache.put(&#39;another key&#39;, &#39;another value&#39;);
+
+  expect(superCache.info()).toEqual({
+    id: &#39;super-cache&#39;,
+    size: 2
+  });
+
+  superCache.remove(&#39;another key&#39;);
+  expect(superCache.get(&#39;another key&#39;)).toBeUndefined();
+
+  superCache.removeAll();
+  expect(superCache.info()).toEqual({
+    id: &#39;super-cache&#39;,
+    size: 0
+  });
+}));
+</code></pre>
+
+</div>
+
+
+
+
+<div>
+  
+
+    
+
+  
+
+  
+<h2>Methods</h2>
+<ul class="methods">
+  <li id="put">
+    <h3><p><code>put(key, value);</code></p>
+
+</h3>
+    <div><p>Inserts a named entry into the <a href="api/ng/type/$cacheFactory.Cache">Cache</a> object to be
+retrieved later, and incrementing the size of the cache if the key was not already
+present in the cache. If behaving like an LRU cache, it will also remove stale
+entries from the set.</p>
+<p>It will not insert undefined values into the cache.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        key
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>the key under which the cached data is stored.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        value
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">*</a>
+      </td>
+      <td>
+        <p>the value to store alongside the key. If it is undefined, the key
+   will not be stored.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-object">*</a></td>
+    <td><p>the value stored.</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="get">
+    <h3><p><code>get(key);</code></p>
+
+</h3>
+    <div><p>Retrieves named data stored in the <a href="api/ng/type/$cacheFactory.Cache">Cache</a> object.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        key
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>the key of the data to be retrieved</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-object">*</a></td>
+    <td><p>the value stored.</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="remove">
+    <h3><p><code>remove(key);</code></p>
+
+</h3>
+    <div><p>Removes an entry from the <a href="api/ng/type/$cacheFactory.Cache">Cache</a> object.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        key
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>the key of the entry to be removed</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+
+  </li>
+  
+  <li id="removeAll">
+    <h3><p><code>removeAll();</code></p>
+
+</h3>
+    <div><p>Clears the cache object of any entries.</p>
+</div>
+
+    
+
+    
+    
+    
+
+  </li>
+  
+  <li id="destroy">
+    <h3><p><code>destroy();</code></p>
+
+</h3>
+    <div><p>Destroys the <a href="api/ng/type/$cacheFactory.Cache">Cache</a> object entirely,
+removing it from the <a href="api/ng/service/$cacheFactory">$cacheFactory</a> set.</p>
+</div>
+
+    
+
+    
+    
+    
+
+  </li>
+  
+  <li id="info">
+    <h3><p><code>info();</code></p>
+
+</h3>
+    <div><p>Retrieve information regarding a particular <a href="api/ng/type/$cacheFactory.Cache">Cache</a>.</p>
+</div>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-object">object</a></td>
+    <td><p>an object with the following properties:
+  <ul>
+    <li><strong>id</strong>: the id of the cache instance</li>
+    <li><strong>size</strong>: the number of entries kept in the cache instance</li>
+    <li><strong>...</strong>: any additional properties from the options object when creating the
+      cache.</li>
+  </ul></p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  </ul>
+  
+  
+
+
+
+  
+</div>
+
+

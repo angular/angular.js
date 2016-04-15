@@ -1,0 +1,100 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/directive/ngTransclude.js?message=docs(ngTransclude)%3A%20describe%20your%20change...#L3' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/directive/ngTransclude.js#L3' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">ngTransclude</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - directive in module <a href="api/ng">ng</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Directive that marks the insertion point for the transcluded DOM of the nearest parent directive that uses transclusion.</p>
+<p>Any existing content of the element that this directive is placed on will be removed before the transcluded content is inserted.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+  
+  <h2>Directive Info</h2>
+  <ul>
+    
+    <li>This directive executes at priority level 0.</li>
+  </ul>
+
+  
+  <h2 id="usage">Usage</h2>
+  <div class="usage">
+  
+    <ul>
+    
+      <li>as element:
+      (This directive can be used as custom element, but be aware of <a href="guide/ie">IE restrictions</a>).
+      <pre><code>&lt;ng-transclude&gt;&#10;...&#10;&lt;/ng-transclude&gt;</code></pre>
+      </li>
+    <li>as attribute:
+        <pre><code>&lt;ANY&gt;&#10;...&#10;&lt;/ANY&gt;</code></pre>
+      </li>
+    <li>as CSS class:
+        <pre><code>&lt;ANY class=&quot;&quot;&gt; ... &lt;/ANY&gt;</code></pre>
+      </li>
+    
+  </div>
+  
+  
+
+
+  
+  <h2 id="example">Example</h2><p>
+
+<div>
+  <a ng-click="openPlunkr('examples/example-example94', $event)" class="btn pull-right">
+    <i class="glyphicon glyphicon-edit">&nbsp;</i>
+    Edit in Plunker</a>
+
+  <div class="runnable-example"
+      path="examples/example-example94"
+      module="transcludeExample">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;script&gt;&#10;  angular.module(&#39;transcludeExample&#39;, [])&#10;   .directive(&#39;pane&#39;, function(){&#10;      return {&#10;        restrict: &#39;E&#39;,&#10;        transclude: true,&#10;        scope: { title:&#39;@&#39; },&#10;        template: &#39;&lt;div style=&quot;border: 1px solid black;&quot;&gt;&#39; +&#10;                    &#39;&lt;div style=&quot;background-color: gray&quot;&gt;{{title}}&lt;/div&gt;&#39; +&#10;                    &#39;&lt;ng-transclude&gt;&lt;/ng-transclude&gt;&#39; +&#10;                  &#39;&lt;/div&gt;&#39;&#10;      };&#10;  })&#10;  .controller(&#39;ExampleController&#39;, [&#39;$scope&#39;, function($scope) {&#10;    $scope.title = &#39;Lorem Ipsum&#39;;&#10;    $scope.text = &#39;Neque porro quisquam est qui dolorem ipsum quia dolor...&#39;;&#10;  }]);&#10;&lt;/script&gt;&#10;&lt;div ng-controller=&quot;ExampleController&quot;&gt;&#10;  &lt;input ng-model=&quot;title&quot;&gt; &lt;br/&gt;&#10;  &lt;textarea ng-model=&quot;text&quot;&gt;&lt;/textarea&gt; &lt;br/&gt;&#10;  &lt;pane title=&quot;{{title}}&quot;&gt;{{text}}&lt;/pane&gt;&#10;&lt;/div&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="protractor.js"
+      type="protractor"
+      language="js">
+      <pre><code>it(&#39;should have transcluded&#39;, function() {&#10;  var titleElement = element(by.model(&#39;title&#39;));&#10;  titleElement.clear();&#10;  titleElement.sendKeys(&#39;TITLE&#39;);&#10;  var textElement = element(by.model(&#39;text&#39;));&#10;  textElement.clear();&#10;  textElement.sendKeys(&#39;TEXT&#39;);&#10;  expect(element(by.binding(&#39;title&#39;)).getText()).toEqual(&#39;TITLE&#39;);&#10;  expect(element(by.binding(&#39;text&#39;)).getText()).toEqual(&#39;TEXT&#39;);&#10;});</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-example94/index.html" name="example-example94"></iframe>
+  </div>
+</div>
+
+
+</p>
+
+</div>
+
+

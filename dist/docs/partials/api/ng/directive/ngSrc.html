@@ -1,0 +1,99 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/directive/attrs.js?message=docs(ngSrc)%3A%20describe%20your%20change...#L102' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/directive/attrs.js#L102' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">ngSrc</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - directive in module <a href="api/ng">ng</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Using Angular markup like <code>{{hash}}</code> in a <code>src</code> attribute doesn&#39;t
+work right: The browser will fetch from the URL with the literal
+text <code>{{hash}}</code> until Angular replaces the expression inside
+<code>{{hash}}</code>. The <code>ngSrc</code> directive solves this problem.</p>
+<p>The buggy way to write it:</p>
+<pre><code class="lang-html">&lt;img src=&quot;http://www.gravatar.com/avatar/{{hash}}&quot;/&gt;
+</code></pre>
+<p>The correct way to write it:</p>
+<pre><code class="lang-html">&lt;img ng-src=&quot;http://www.gravatar.com/avatar/{{hash}}&quot;/&gt;
+</code></pre>
+
+</div>
+
+
+
+
+<div>
+  
+
+  
+  <h2>Directive Info</h2>
+  <ul>
+    
+    <li>This directive executes at priority level 99.</li>
+  </ul>
+
+  
+  <h2 id="usage">Usage</h2>
+  <div class="usage">
+  
+    <ul>
+    <li>as attribute:
+        <pre><code>&lt;IMG&#10;  ng-src=&quot;&quot;&gt;&#10;...&#10;&lt;/IMG&gt;</code></pre>
+      </li>
+    
+  </div>
+  
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        ngSrc
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-template">template</a>
+      </td>
+      <td>
+        <p>any string which can contain <code>{{}}</code> markup.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
+  
+
+
+  
+</div>
+
+

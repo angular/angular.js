@@ -1,0 +1,217 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/directive/ngController.js?message=docs(ngController)%3A%20describe%20your%20change...#L3' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/directive/ngController.js#L3' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">ngController</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - directive in module <a href="api/ng">ng</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>The <code>ngController</code> directive attaches a controller class to the view. This is a key aspect of how angular
+supports the principles behind the Model-View-Controller design pattern.</p>
+<p>MVC components in angular:</p>
+<ul>
+<li>Model — Models are the properties of a scope; scopes are attached to the DOM where scope properties
+are accessed through bindings.</li>
+<li>View — The template (HTML with data bindings) that is rendered into the View.</li>
+<li>Controller — The <code>ngController</code> directive specifies a Controller class; the class contains business
+logic behind the application to decorate the scope with functions and values</li>
+</ul>
+<p>Note that you can also attach controllers to the DOM by declaring it in a route definition
+via the <a href="api/ngRoute/service/$route">$route</a> service. A common mistake is to declare the controller
+again using <code>ng-controller</code> in the template itself.  This will cause the controller to be attached
+and executed twice.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+  
+  <h2>Directive Info</h2>
+  <ul>
+    <li>This directive creates new scope.</li>
+    <li>This directive executes at priority level 500.</li>
+  </ul>
+
+  
+  <h2 id="usage">Usage</h2>
+  <div class="usage">
+  
+    <ul>
+    <li>as attribute:
+        <pre><code>&lt;ANY&#10;  ng-controller=&quot;&quot;&gt;&#10;...&#10;&lt;/ANY&gt;</code></pre>
+      </li>
+    
+  </div>
+  
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        ngController
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-expression">expression</a>
+      </td>
+      <td>
+        <p>Name of a constructor function registered with the current
+<a href="api/ng/provider/$controllerProvider">$controllerProvider</a> or an <a href="guide/expression">expression</a>
+that on the current scope evaluates to a constructor function.</p>
+<p>The controller instance can be published into a scope property by specifying
+<code>ng-controller=&quot;as propertyName&quot;</code>.</p>
+<p>If the current <code>$controllerProvider</code> is configured to use globals (via
+<a href="api/ng/provider/$controllerProvider#allowGlobals"><code>$controllerProvider.allowGlobals()</code></a>), this may
+also be the name of a globally accessible constructor function (not recommended).</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
+  
+
+
+  
+  <h2 id="example">Example</h2><p>Here is a simple form for editing user contact information. Adding, removing, clearing, and
+greeting are methods declared on the controller (see source tab). These methods can
+easily be called from the angular markup. Any changes to the data are automatically reflected
+in the View without the need for a manual update.</p>
+<p>Two different declaration styles are included below:</p>
+<ul>
+<li>one binds methods and properties directly onto the controller using <code>this</code>:
+<code>ng-controller=&quot;SettingsController1 as settings&quot;</code></li>
+<li>one injects <code>$scope</code> into the controller:
+<code>ng-controller=&quot;SettingsController2&quot;</code></li>
+</ul>
+<p>The second option is more common in the Angular community, and is generally used in boilerplates
+and in this guide. However, there are advantages to binding properties directly to the controller
+and avoiding scope.</p>
+<ul>
+<li>Using <code>controller as</code> makes it obvious which controller you are accessing in the template when
+multiple controllers apply to an element.</li>
+<li>If you are writing your controllers as classes you have easier access to the properties and
+methods, which will appear on the scope, from inside the controller code.</li>
+<li>Since there is always a <code>.</code> in the bindings, you don&#39;t have to worry about prototypal
+inheritance masking primitives.</li>
+</ul>
+<p>This example demonstrates the <code>controller as</code> syntax.</p>
+<p>
+
+<div>
+  <a ng-click="openPlunkr('examples/example-ngControllerAs', $event)" class="btn pull-right">
+    <i class="glyphicon glyphicon-edit">&nbsp;</i>
+    Edit in Plunker</a>
+
+  <div class="runnable-example"
+      path="examples/example-ngControllerAs"
+      name="ngControllerAs"
+      module="controllerAsExample">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;div id=&quot;ctrl-as-exmpl&quot; ng-controller=&quot;SettingsController1 as settings&quot;&gt;&#10;  Name: &lt;input type=&quot;text&quot; ng-model=&quot;settings.name&quot;/&gt;&#10;  [ &lt;a href=&quot;&quot; ng-click=&quot;settings.greet()&quot;&gt;greet&lt;/a&gt; ]&lt;br/&gt;&#10;  Contact:&#10;  &lt;ul&gt;&#10;    &lt;li ng-repeat=&quot;contact in settings.contacts&quot;&gt;&#10;      &lt;select ng-model=&quot;contact.type&quot;&gt;&#10;         &lt;option&gt;phone&lt;/option&gt;&#10;         &lt;option&gt;email&lt;/option&gt;&#10;      &lt;/select&gt;&#10;      &lt;input type=&quot;text&quot; ng-model=&quot;contact.value&quot;/&gt;&#10;      [ &lt;a href=&quot;&quot; ng-click=&quot;settings.clearContact(contact)&quot;&gt;clear&lt;/a&gt;&#10;      | &lt;a href=&quot;&quot; ng-click=&quot;settings.removeContact(contact)&quot;&gt;X&lt;/a&gt; ]&#10;    &lt;/li&gt;&#10;    &lt;li&gt;[ &lt;a href=&quot;&quot; ng-click=&quot;settings.addContact()&quot;&gt;add&lt;/a&gt; ]&lt;/li&gt;&#10; &lt;/ul&gt;&#10;&lt;/div&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="app.js"
+      language="js"
+      type="js">
+      <pre><code>angular.module(&#39;controllerAsExample&#39;, [])&#10;  .controller(&#39;SettingsController1&#39;, SettingsController1);&#10;&#10;function SettingsController1() {&#10;  this.name = &quot;John Smith&quot;;&#10;  this.contacts = [&#10;    {type: &#39;phone&#39;, value: &#39;408 555 1212&#39;},&#10;    {type: &#39;email&#39;, value: &#39;john.smith@example.org&#39;} ];&#10;}&#10;&#10;SettingsController1.prototype.greet = function() {&#10;  alert(this.name);&#10;};&#10;&#10;SettingsController1.prototype.addContact = function() {&#10;  this.contacts.push({type: &#39;email&#39;, value: &#39;yourname@example.org&#39;});&#10;};&#10;&#10;SettingsController1.prototype.removeContact = function(contactToRemove) {&#10; var index = this.contacts.indexOf(contactToRemove);&#10;  this.contacts.splice(index, 1);&#10;};&#10;&#10;SettingsController1.prototype.clearContact = function(contact) {&#10;  contact.type = &#39;phone&#39;;&#10;  contact.value = &#39;&#39;;&#10;};</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="protractor.js"
+      type="protractor"
+      language="js">
+      <pre><code>it(&#39;should check controller as&#39;, function() {&#10;  var container = element(by.id(&#39;ctrl-as-exmpl&#39;));&#10;    expect(container.element(by.model(&#39;settings.name&#39;))&#10;      .getAttribute(&#39;value&#39;)).toBe(&#39;John Smith&#39;);&#10;&#10;  var firstRepeat =&#10;      container.element(by.repeater(&#39;contact in settings.contacts&#39;).row(0));&#10;  var secondRepeat =&#10;      container.element(by.repeater(&#39;contact in settings.contacts&#39;).row(1));&#10;&#10;  expect(firstRepeat.element(by.model(&#39;contact.value&#39;)).getAttribute(&#39;value&#39;))&#10;      .toBe(&#39;408 555 1212&#39;);&#10;&#10;  expect(secondRepeat.element(by.model(&#39;contact.value&#39;)).getAttribute(&#39;value&#39;))&#10;      .toBe(&#39;john.smith@example.org&#39;);&#10;&#10;  firstRepeat.element(by.linkText(&#39;clear&#39;)).click();&#10;&#10;  expect(firstRepeat.element(by.model(&#39;contact.value&#39;)).getAttribute(&#39;value&#39;))&#10;      .toBe(&#39;&#39;);&#10;&#10;  container.element(by.linkText(&#39;add&#39;)).click();&#10;&#10;  expect(container.element(by.repeater(&#39;contact in settings.contacts&#39;).row(2))&#10;      .element(by.model(&#39;contact.value&#39;))&#10;      .getAttribute(&#39;value&#39;))&#10;      .toBe(&#39;yourname@example.org&#39;);&#10;});</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-ngControllerAs/index.html" name="example-ngControllerAs"></iframe>
+  </div>
+</div>
+
+
+</p>
+<p>This example demonstrates the &quot;attach to <code>$scope</code>&quot; style of controller.</p>
+<p>
+
+<div>
+  <a ng-click="openPlunkr('examples/example-ngController', $event)" class="btn pull-right">
+    <i class="glyphicon glyphicon-edit">&nbsp;</i>
+    Edit in Plunker</a>
+
+  <div class="runnable-example"
+      path="examples/example-ngController"
+      name="ngController"
+      module="controllerExample">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;div id=&quot;ctrl-exmpl&quot; ng-controller=&quot;SettingsController2&quot;&gt;&#10;  Name: &lt;input type=&quot;text&quot; ng-model=&quot;name&quot;/&gt;&#10;  [ &lt;a href=&quot;&quot; ng-click=&quot;greet()&quot;&gt;greet&lt;/a&gt; ]&lt;br/&gt;&#10;  Contact:&#10;  &lt;ul&gt;&#10;    &lt;li ng-repeat=&quot;contact in contacts&quot;&gt;&#10;      &lt;select ng-model=&quot;contact.type&quot;&gt;&#10;         &lt;option&gt;phone&lt;/option&gt;&#10;         &lt;option&gt;email&lt;/option&gt;&#10;      &lt;/select&gt;&#10;      &lt;input type=&quot;text&quot; ng-model=&quot;contact.value&quot;/&gt;&#10;      [ &lt;a href=&quot;&quot; ng-click=&quot;clearContact(contact)&quot;&gt;clear&lt;/a&gt;&#10;      | &lt;a href=&quot;&quot; ng-click=&quot;removeContact(contact)&quot;&gt;X&lt;/a&gt; ]&#10;    &lt;/li&gt;&#10;    &lt;li&gt;[ &lt;a href=&quot;&quot; ng-click=&quot;addContact()&quot;&gt;add&lt;/a&gt; ]&lt;/li&gt;&#10; &lt;/ul&gt;&#10;&lt;/div&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="app.js"
+      language="js"
+      type="js">
+      <pre><code>angular.module(&#39;controllerExample&#39;, [])&#10;  .controller(&#39;SettingsController2&#39;, [&#39;$scope&#39;, SettingsController2]);&#10;&#10;function SettingsController2($scope) {&#10;  $scope.name = &quot;John Smith&quot;;&#10;  $scope.contacts = [&#10;    {type:&#39;phone&#39;, value:&#39;408 555 1212&#39;},&#10;    {type:&#39;email&#39;, value:&#39;john.smith@example.org&#39;} ];&#10;&#10;  $scope.greet = function() {&#10;    alert($scope.name);&#10;  };&#10;&#10;  $scope.addContact = function() {&#10;    $scope.contacts.push({type:&#39;email&#39;, value:&#39;yourname@example.org&#39;});&#10;  };&#10;&#10;  $scope.removeContact = function(contactToRemove) {&#10;    var index = $scope.contacts.indexOf(contactToRemove);&#10;    $scope.contacts.splice(index, 1);&#10;  };&#10;&#10;  $scope.clearContact = function(contact) {&#10;    contact.type = &#39;phone&#39;;&#10;    contact.value = &#39;&#39;;&#10;  };&#10;}</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="protractor.js"
+      type="protractor"
+      language="js">
+      <pre><code>it(&#39;should check controller&#39;, function() {&#10;  var container = element(by.id(&#39;ctrl-exmpl&#39;));&#10;&#10;  expect(container.element(by.model(&#39;name&#39;))&#10;      .getAttribute(&#39;value&#39;)).toBe(&#39;John Smith&#39;);&#10;&#10;  var firstRepeat =&#10;      container.element(by.repeater(&#39;contact in contacts&#39;).row(0));&#10;  var secondRepeat =&#10;      container.element(by.repeater(&#39;contact in contacts&#39;).row(1));&#10;&#10;  expect(firstRepeat.element(by.model(&#39;contact.value&#39;)).getAttribute(&#39;value&#39;))&#10;      .toBe(&#39;408 555 1212&#39;);&#10;  expect(secondRepeat.element(by.model(&#39;contact.value&#39;)).getAttribute(&#39;value&#39;))&#10;      .toBe(&#39;john.smith@example.org&#39;);&#10;&#10;  firstRepeat.element(by.linkText(&#39;clear&#39;)).click();&#10;&#10;  expect(firstRepeat.element(by.model(&#39;contact.value&#39;)).getAttribute(&#39;value&#39;))&#10;      .toBe(&#39;&#39;);&#10;&#10;  container.element(by.linkText(&#39;add&#39;)).click();&#10;&#10;  expect(container.element(by.repeater(&#39;contact in contacts&#39;).row(2))&#10;      .element(by.model(&#39;contact.value&#39;))&#10;      .getAttribute(&#39;value&#39;))&#10;      .toBe(&#39;yourname@example.org&#39;);&#10;});</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-ngController/index.html" name="example-ngController"></iframe>
+  </div>
+</div>
+
+
+</p>
+
+</div>
+
+

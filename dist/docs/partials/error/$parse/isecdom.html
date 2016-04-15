@@ -1,0 +1,43 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/error/$parse/isecdom.ngdoc?message=docs(error%2Fisecdom)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1>Error: error:isecdom
+  <div><span class='hint'>Referencing a DOM node in Expression</span></div>
+</h1>
+
+<div>
+    <pre class="minerr-errmsg" error-display="Referencing DOM nodes in Angular expressions is disallowed! Expression: {0}">Referencing DOM nodes in Angular expressions is disallowed! Expression: {0}</pre>
+</div>
+
+<h2>Description</h2>
+<div class="description">
+  <p>Occurs when an expression attempts to access a DOM node.</p>
+<p>AngularJS restricts access to DOM nodes from within expressions since it&#39;s a known way to
+execute arbitrary Javascript code.</p>
+<p>This check is only performed on object index and function calls in Angular expressions.  These are
+places that are harder for the developer to guard.  Dotted member access (such as a.b.c) does not
+perform this check - it&#39;s up to the developer to not expose such sensitive and powerful objects
+directly on the scope chain.</p>
+<p>To resolve this error, avoid access to DOM nodes.</p>
+<h1 id="event-handlers-and-return-values">Event Handlers and Return Values</h1>
+<p>The <code>$parse:isecdom</code> error also occurs when an event handler invokes a function that returns a DOM
+node.</p>
+<pre><code class="lang-html">&lt;button ng-click=&quot;iWillReturnDOM()&quot;&gt;click me&lt;/button&gt;
+</code></pre>
+<pre><code class="lang-js">$scope.iWillReturnDOM = function() {
+  return someDomNode;
+}
+</code></pre>
+<p>To fix this issue, avoid returning DOM nodes from event handlers.</p>
+<p><em>Note: This error often means that you are accessing DOM from your controllers, which is usually
+a sign of poor coding style that violates separation of concerns.</em></p>
+<h1 id="implicit-returns-in-coffeescript">Implicit Returns in CoffeeScript</h1>
+<p>This error can occur more frequently when using CoffeeScript, which has a feature called implicit
+returns. This language feature returns the last dereferenced object in the function when the
+function has no explicit return statement.</p>
+<p>The solution in this scenario is to add an explicit return statement. For example <code>return false</code> to
+the function.</p>
+
+</div>
+
+

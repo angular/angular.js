@@ -1,0 +1,36 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/error/$compile/uterdir.ngdoc?message=docs(error%2Futerdir)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1>Error: error:uterdir
+  <div><span class='hint'>Unterminated Directive</span></div>
+</h1>
+
+<div>
+    <pre class="minerr-errmsg" error-display="Unterminated attribute, found '{0}' but no matching '{1}' found.">Unterminated attribute, found '{0}' but no matching '{1}' found.</pre>
+</div>
+
+<h2>Description</h2>
+<div class="description">
+  <p>This error occurs when using multi-element directives and a <code>directive-start</code> attribute fails to form a matching pair with a corresponding <code>directive-end</code> attribute.
+A <code>directive-start</code> should have a matching <code>directive-end</code> on a sibling node in the DOM. For instance,</p>
+<pre><code>&lt;table&gt;
+  &lt;tr ng-repeat-start=&quot;item in list&quot;&gt;I get repeated&lt;/tr&gt;
+  &lt;tr ng-repeat-end&gt;I also get repeated&lt;/tr&gt;
+&lt;/table&gt;
+</code></pre>
+<p>is a valid example.</p>
+<p>This error can occur in several different ways. One is by leaving out the <code>directive-end</code> attribute, like so:</p>
+<pre><code>&lt;div&gt;
+  &lt;span foo-start&gt;&lt;/span&gt;
+&lt;/div&gt;
+</code></pre>
+<p>Another is by nesting a <code>directive-end</code> inside of <code>directive-start</code>, or vice versa:</p>
+<pre><code>&lt;div&gt;
+  &lt;span foo-start&gt;&lt;span foo-end&gt;&lt;/span&gt;&lt;/span&gt;
+&lt;/div&gt;
+</code></pre>
+<p>To avoid this error, make sure each <code>directive-start</code> you use has a matching <code>directive-end</code> on a sibling node in the DOM.</p>
+
+</div>
+
+

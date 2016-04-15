@@ -1,0 +1,53 @@
+
+<h1>Service components in <code>ngMock</code></h1>
+
+
+
+<div class="component-breakdown">
+  <div>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ngMock/service/$exceptionHandler">$exceptionHandler</a></td>
+        <td><p>Mock implementation of <a href="api/ng/service/$exceptionHandler"><code>$exceptionHandler</code></a> that rethrows or logs errors passed
+to it. See <a href="api/ngMock/provider/$exceptionHandlerProvider">$exceptionHandlerProvider</a> for configuration
+information.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ngMock/service/$log">$log</a></td>
+        <td><p>Mock implementation of <a href="api/ng/service/$log"><code>$log</code></a> that gathers all logged messages in arrays
+(one array per logging level). These arrays are exposed as <code>logs</code> property of each of the
+level-specific log function, e.g. for level <code>error</code> the array is exposed as <code>$log.error.logs</code>.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ngMock/service/$interval">$interval</a></td>
+        <td><p>Mock implementation of the $interval service.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ngMock/service/$httpBackend">$httpBackend</a></td>
+        <td><p>Fake HTTP backend implementation suitable for unit testing applications that use the
+<a href="api/ng/service/$http">$http service</a>.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ngMock/service/$timeout">$timeout</a></td>
+        <td><p>This service is just a simple decorator for <a href="api/ng/service/$timeout">$timeout</a> service
+that adds a &quot;flush&quot; and &quot;verifyNoPendingTasks&quot; methods.</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+</div>
+

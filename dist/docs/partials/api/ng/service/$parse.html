@@ -1,0 +1,125 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/parse.js?message=docs($parse)%3A%20describe%20your%20change...#L961' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/parse.js#L961' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">$parse</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+  <li>
+    <a href="api/ng/provider/$parseProvider">- $parseProvider</a>
+  </li>
+
+    <li>
+      - service in module <a href="api/ng">ng</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Converts Angular <a href="guide/expression">expression</a> into a function.</p>
+<pre><code class="lang-js">var getter = $parse(&#39;user.name&#39;);
+var setter = getter.assign;
+var context = {user:{name:&#39;angular&#39;}};
+var locals = {user:{name:&#39;local&#39;}};
+
+expect(getter(context)).toEqual(&#39;angular&#39;);
+setter(context, &#39;newValue&#39;);
+expect(context.user.name).toEqual(&#39;newValue&#39;);
+expect(getter(context, locals)).toEqual(&#39;local&#39;);
+</code></pre>
+
+</div>
+
+
+
+
+<div>
+  
+
+    
+
+  <h2 id="usage">Usage</h2>
+    
+      <p><code>$parse(expression);</code></p>
+
+
+    
+
+    
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        expression
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>String expression to compile.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
+    
+    <h3>Returns</h3>
+<table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-function">function(context, locals)</a></td>
+    <td><p>a function which represents the compiled expression:</p>
+<ul>
+<li><code>context</code> – <code>{object}</code> – an object against which any expressions embedded in the strings
+are evaluated against (typically a scope object).</li>
+<li><p><code>locals</code> – <code>{object=}</code> – local variables context object, useful for overriding values in
+<code>context</code>.</p>
+<p>The returned function also has the following properties:</p>
+<ul>
+<li><code>literal</code> – <code>{boolean}</code> – whether the expression&#39;s top-level node is a JavaScript
+literal.</li>
+<li><code>constant</code> – <code>{boolean}</code> – whether the expression is made entirely of JavaScript
+constant literals.</li>
+<li><code>assign</code> – <code>{?function(context, value)}</code> – if the expression is assignable, this will be
+set to a function to change its value on the given context.</li>
+</ul>
+</li>
+</ul>
+</td>
+  </tr>
+</table>
+
+  
+  
+  
+
+
+
+  
+</div>
+
+

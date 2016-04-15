@@ -1,0 +1,292 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/directive/input.js?message=docs(input[number])%3A%20describe%20your%20change...#L582' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/directive/input.js#L582' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">input[number]</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - input in module <a href="api/ng">ng</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Text input with number validation and transformation. Sets the <code>number</code> validation
+error if not a valid number.</p>
+<p>The model must always be a number, otherwise Angular will throw an error.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+  
+  <h2>Directive Info</h2>
+  <ul>
+    
+    <li>This directive executes at priority level 0.</li>
+  </ul>
+
+  
+  <h2>Usage</h2>
+  <pre><code>&lt;input type=&quot;number&quot;&#10;       ng-model=&quot;&quot;&#10;       [name=&quot;&quot;]&#10;       [min=&quot;&quot;]&#10;       [max=&quot;&quot;]&#10;       [required=&quot;&quot;]&#10;       [ng-required=&quot;&quot;]&#10;       [ng-minlength=&quot;&quot;]&#10;       [ng-maxlength=&quot;&quot;]&#10;       [pattern=&quot;&quot;]&#10;       [ng-pattern=&quot;&quot;]&#10;       [ng-change=&quot;&quot;]&gt;</code></pre>
+
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        ngModel
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Assignable angular expression to data-bind to.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        name
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Property name of the form under which the control is published.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        min
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Sets the <code>min</code> validation error key if the value entered is less than <code>min</code>.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        max
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Sets the <code>max</code> validation error key if the value entered is greater than <code>max</code>.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        required
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Sets <code>required</code> validation error key if the value is not entered.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        ngRequired
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Adds <code>required</code> attribute and <code>required</code> validation constraint to
+   the element when the ngRequired expression evaluates to true. Use <code>ngRequired</code> instead of
+   <code>required</code> when you want to data-bind to the <code>required</code> attribute.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        ngMinlength
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-number">number</a>
+      </td>
+      <td>
+        <p>Sets <code>minlength</code> validation error key if the value is shorter than
+   minlength.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        ngMaxlength
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-number">number</a>
+      </td>
+      <td>
+        <p>Sets <code>maxlength</code> validation error key if the value is longer than
+   maxlength. Setting the attribute to a negative or non-numeric value, allows view values of
+   any length.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        pattern
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Similar to <code>ngPattern</code> except that the attribute value is the actual string
+   that contains the regular expression body that will be converted to a regular expression
+   as in the ngPattern directive.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        ngPattern
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Sets <code>pattern</code> validation error key if the ngModel value does not match
+   a RegExp found by evaluating the Angular expression given in the attribute value.
+   If the expression evaluates to a RegExp object then this is used directly.
+   If the expression is a string then it will be converted to a RegExp after wrapping it in <code>^</code> and <code>$</code>
+   characters. For instance, <code>&quot;abc&quot;</code> will be converted to <code>new RegExp(&#39;^abc$&#39;)</code>.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        ngChange
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Angular expression to be executed when input changes due to user
+   interaction with the input element.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
+  
+
+
+  
+  <h2 id="example">Example</h2><p>
+
+<div>
+  <a ng-click="openPlunkr('examples/example-number-input-directive', $event)" class="btn pull-right">
+    <i class="glyphicon glyphicon-edit">&nbsp;</i>
+    Edit in Plunker</a>
+
+  <div class="runnable-example"
+      path="examples/example-number-input-directive"
+      name="number-input-directive"
+      module="numberExample">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;script&gt;&#10;  angular.module(&#39;numberExample&#39;, [])&#10;    .controller(&#39;ExampleController&#39;, [&#39;$scope&#39;, function($scope) {&#10;      $scope.example = {&#10;        value: 12&#10;      };&#10;    }]);&#10;&lt;/script&gt;&#10;&lt;form name=&quot;myForm&quot; ng-controller=&quot;ExampleController&quot;&gt;&#10;  Number: &lt;input type=&quot;number&quot; name=&quot;input&quot; ng-model=&quot;example.value&quot;&#10;                 min=&quot;0&quot; max=&quot;99&quot; required&gt;&#10;  &lt;span class=&quot;error&quot; ng-show=&quot;myForm.input.$error.required&quot;&gt;&#10;    Required!&lt;/span&gt;&#10;  &lt;span class=&quot;error&quot; ng-show=&quot;myForm.input.$error.number&quot;&gt;&#10;    Not valid number!&lt;/span&gt;&#10;  &lt;tt&gt;value = {{example.value}}&lt;/tt&gt;&lt;br/&gt;&#10;  &lt;tt&gt;myForm.input.$valid = {{myForm.input.$valid}}&lt;/tt&gt;&lt;br/&gt;&#10;  &lt;tt&gt;myForm.input.$error = {{myForm.input.$error}}&lt;/tt&gt;&lt;br/&gt;&#10;  &lt;tt&gt;myForm.$valid = {{myForm.$valid}}&lt;/tt&gt;&lt;br/&gt;&#10;  &lt;tt&gt;myForm.$error.required = {{!!myForm.$error.required}}&lt;/tt&gt;&lt;br/&gt;&#10; &lt;/form&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="protractor.js"
+      type="protractor"
+      language="js">
+      <pre><code>var value = element(by.binding(&#39;example.value&#39;));&#10;var valid = element(by.binding(&#39;myForm.input.$valid&#39;));&#10;var input = element(by.model(&#39;example.value&#39;));&#10;&#10;it(&#39;should initialize to model&#39;, function() {&#10;  expect(value.getText()).toContain(&#39;12&#39;);&#10;  expect(valid.getText()).toContain(&#39;true&#39;);&#10;});&#10;&#10;it(&#39;should be invalid if empty&#39;, function() {&#10;  input.clear();&#10;  input.sendKeys(&#39;&#39;);&#10;  expect(value.getText()).toEqual(&#39;value =&#39;);&#10;  expect(valid.getText()).toContain(&#39;false&#39;);&#10;});&#10;&#10;it(&#39;should be invalid if over max&#39;, function() {&#10;  input.clear();&#10;  input.sendKeys(&#39;123&#39;);&#10;  expect(value.getText()).toEqual(&#39;value =&#39;);&#10;  expect(valid.getText()).toContain(&#39;false&#39;);&#10;});</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-number-input-directive/index.html" name="example-number-input-directive"></iframe>
+  </div>
+</div>
+
+
+</p>
+
+</div>
+
+

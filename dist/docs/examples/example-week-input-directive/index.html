@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Example - example-week-input-directive</title>
+  
+
+  <script src="../../../angular.min.js"></script>
+  
+
+  
+</head>
+<body ng-app="weekExample">
+  <script>
+angular.module('weekExample', [])
+  .controller('DateController', ['$scope', function($scope) {
+    $scope.example = {
+      value: new Date(2013, 0, 3)
+    };
+  }]);
+</script>
+<form name="myForm" ng-controller="DateController as dateCtrl">
+  Pick a date between in 2013:
+  <input id="exampleInput" type="week" name="input" ng-model="example.value"
+      placeholder="YYYY-W##" min="2012-W32" max="2013-W52" required />
+  <span class="error" ng-show="myForm.input.$error.required">
+      Required!</span>
+  <span class="error" ng-show="myForm.input.$error.week">
+      Not a valid date!</span>
+  <tt>value = {{example.value | date: "yyyy-Www"}}</tt><br/>
+  <tt>myForm.input.$valid = {{myForm.input.$valid}}</tt><br/>
+  <tt>myForm.input.$error = {{myForm.input.$error}}</tt><br/>
+  <tt>myForm.$valid = {{myForm.$valid}}</tt><br/>
+  <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br/>
+</form>
+</body>
+</html>

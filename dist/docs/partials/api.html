@@ -1,0 +1,297 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/api/index.ngdoc?message=docs(API Reference)%3A%20describe%20your%20change...#L1' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1 id="angularjs-api-docs">AngularJS API Docs</h1>
+<p>Welcome to the AngularJS API docs page. These pages contain the AngularJS reference materials for version <strong ng-bind="version"></strong>.</p>
+<p>The documentation is organized into <strong><a href="guide/module">modules</a></strong> which contain various components of an AngularJS application.
+These components are <a href="guide/directive">directives</a>, <a href="guide/services">services</a>, <a href="guide/filter">filters</a>, <a href="guide/providers">providers</a>, <a href="guide/templates">templates</a>, global APIs, and testing mocks.</p>
+<div class="alert alert-info">
+<strong>Angular Prefixes <code>$</code> and <code>$$</code></strong>:
+
+To prevent accidental name collisions with your code,
+Angular prefixes names of public objects with <code>$</code> and names of private objects with <code>$$</code>.
+Please do not use the <code>$</code> or <code>$$</code> prefix in your code.
+</div>
+
+<h2 id="angular-modules">Angular Modules</h2>
+<h2 id="-link-ng-ng-core-module-"><a href="api/ng">ng (core module)</a></h2>
+<p>This module is provided by default and contains the core components of AngularJS.</p>
+<table class="definition-table spaced">
+  <tr>
+    <td><a href="api/ng#directive">Directives</a></td>
+    <td>
+      <p>
+        This is the core collection of directives you would use in your template code to build an AngularJS application.
+      </p>
+
+      <p>
+        Some examples include:
+          <a href="api/ng/directive/ngClick">ngClick</a>,
+          <a href="api/ng/directive/ngInclude">ngInclude</a>,
+          <a href="api/ng/directive/ngRepeat">ngRepeat</a>,
+          etc… <br />
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <a href="api/ng#service">Services / Factories</a>
+    </td>
+    <td>
+      <p>
+        This is the core collection of services which are used within the DI of your application.
+      </p>
+      <p>
+        Some examples include:
+          <a href="api/ng/service/$compile">$compile</a>,
+          <a href="api/ng/service/$http">$http</a>,
+          <a href="api/ng/service/$location">$location</a>,
+          etc…
+      <p>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <a href="api/ng#filter">Filters</a>
+    </td>
+    <td>
+      <p>
+        The core filters available in the ng module are used to transform template data before it is rendered within directives and expressions.
+      </p>
+      <p>
+        Some examples include:
+          <a href="api/ng/filter/filter">filter</a>,
+          <a href="api/ng/filter/date">date</a>,
+          <a href="api/ng/filter/currency">currency</a>,
+          <a href="api/ng/filter/lowercase">lowercase</a>,
+          <a href="api/ng/filter/uppercase">uppercase</a>,
+            etc...
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <a href="api/ng#function">Global APIs</a>
+    </td>
+    <td>
+      <p>
+        The core global API functions are attached to the angular object. These core functions are useful for low level JavaScript operations within your application.
+      </p>
+      <p>
+        Some examples include:
+        <a href="api/ng/function/angular.copy">angular.copy()</a>,
+        <a href="api/ng/function/angular.equals">angular.equals()</a>,
+        <a href="api/ng/function/angular.element">angular.element()</a>,
+          etc...
+      </p>
+    </td>
+  </tr>
+</table>
+
+
+<h2 id="-link-ngroute-ngroute-"><a href="api/ngRoute">ngRoute</a></h2>
+<p>Use ngRoute to enable URL routing to your application. The ngRoute module supports URL management via both hashbang and HTML5 pushState.</p>
+<div class="alert alert-info">Include the <strong>angular-route.js</strong> file and set <strong>ngRoute</strong> as a dependency for this to work in your application.</div>
+
+<table class="definition-table spaced">
+  <tr>
+    <td>
+      <a href="api/ngRoute#service">Services / Factories</a>
+    </td>
+    <td>
+      The following services are used for route management:
+      <ul>
+        <li><a href="api/ngRoute/service/$routeParams">$routeParams</a> is used to access the querystring values present in the URL.</li>
+        <li><a href="api/ngRoute/service/$route">$route</a> is used to access the details of the route that is currently being accessed.</li>
+        <li><a href="api/ngRoute/provider/$routeProvider">$routeProvider</a> is used to register routes for the application.</li>
+      </ul>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <a href="api/ngRoute#directive">Directives</a>
+    </td>
+    <td>
+      The <a href="api/ngRoute/directive/ngView">ngView</a> directive will display the template of the current route within the page.
+    </td>
+  </tr>
+</table>
+
+
+<h2 id="-link-nganimate-nganimate-"><a href="api/ngAnimate">ngAnimate</a></h2>
+<p>Use ngAnimate to enable animation features within your application. Various core ng directives will provide
+animation hooks into your application when ngAnimate is included. Animations are defined by using CSS transitions/animations
+or JavaScript callbacks.</p>
+<div class="alert alert-info">Include the <strong>angular-animate.js</strong> file and set <strong>ngAnimate</strong> as a dependency for this to work in your application.</div>
+
+<table class="definition-table spaced">
+  <tr>
+    <td>
+      <a href="api/ngAnimate#service">Services / Factories</a>
+    </td>
+    <td>
+      Use <a href="api/ngAnimate/service/$animate">$animate</a> to trigger animation operations within your directive code.
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <a href="api/ngAnimate">CSS-based animations</a>
+    </td>
+    <td>
+      Follow ngAnimate’s CSS naming structure to reference CSS transitions / keyframe animations in AngularJS. Once defined, the animation can be triggered by referencing the CSS class within the HTML template code.
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <a href="api/ngAnimate">JS-based animations</a>
+    </td>
+    <td>
+      Use <a href="api/ng/type/angular.Module#animation">module.animation()</a> to register a JavaScript animation. Once registered, the animation can be triggered by referencing the CSS class within the HTML template code.
+    </td>
+  </tr>
+</table>
+
+<h2 id="-link-ngaria-ngaria-"><a href="api/ngAria">ngAria</a></h2>
+<p>Use ngAria to inject common accessibility attributes into directives and improve the experience for users with disabilities.</p>
+<div class="alert alert-info">Include the <strong>angular-aria.js</strong> file and set ngAria as a dependency for this to work in your application.</div>
+
+<table class="definition-table spaced">
+  <tr>
+    <td>
+      <a href="api/ngAria#service">Services</a>
+    </td>
+    <td>
+      <p>
+          The <a href="api/ngAria/service/$aria">$aria</a> service contains helper methods for applying ARIA attributes to HTML.
+      <p>
+      <p>
+          <a href="api/ngAria/provider/$ariaProvider">$ariaProvider</a> is used for configuring ARIA attributes.
+      </p>
+    </td>
+  </tr>
+</table>
+
+<h2 id="-link-ngresource-ngresource-"><a href="api/ngResource">ngResource</a></h2>
+<p>Use the ngResource module when querying and posting data to a REST API.</p>
+<div class="alert alert-info">Include the <strong>angular-resource.js</strong> file and set <strong>ngResource</strong> as a dependency for this to work in your application.</div>
+
+<table class="definition-table spaced">
+  <tr>
+    <td>
+      <a href="api/ngResource#service">Services / Factories</a>
+    </td>
+    <td>
+      The <a href="api/ngResource/service/$resource">$resource</a> service is used to define RESTful objects which communicate with a REST API.
+    </td>
+  </tr>
+</table>
+
+<h2 id="-link-ngcookies-ngcookies-"><a href="api/ngCookies">ngCookies</a></h2>
+<p>Use the ngCookies module to handle cookie management within your application.</p>
+<div class="alert alert-info">Include the <strong>angular-cookies.js</strong> file and set <strong>ngCookies</strong> as a dependency for this to work in your application.</div>
+
+<table class="definition-table spaced">
+  <tr>
+    <td>
+      <a href="api/ngCookies#service">Services / Factories</a>
+    </td>
+    <td>
+      The following services are used for cookie management:
+      <ul>
+        <li>The <a href="api/ngCookies/service/$cookies">$cookie</a> service is a convenient wrapper to store simple data within browser cookies.</li>
+        <li><a href="api/ngCookies/service/$cookieStore">$cookieStore</a> is used to store more complex data using serialization.</li>
+      </ul>
+    </td>
+  </tr>
+</table>
+
+<h2 id="-link-ngtouch-ngtouch-"><a href="api/ngTouch">ngTouch</a></h2>
+<p>Use ngTouch when developing for mobile browsers/devices.</p>
+<div class="alert alert-info">Include the <strong>angular-touch.js</strong> file and set <strong>ngTouch</strong> as a dependency for this to work in your application.</div>
+
+<table class="definition-table spaced">
+  <tr>
+    <td>
+      <a href="api/ngTouch#service">Services / Factories</a>
+    </td>
+    <td>
+      The <a href="api/ngTouch/service/$swipe">$swipe</a> service is used to register and manage mobile DOM events.
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <a href="api/ngTouch#directive">Directives</a>
+    </td>
+    <td>
+      Various directives are available in ngTouch to emulate mobile DOM events.
+    </td>
+  </tr>
+</table>
+
+<h2 id="-link-ngsanitize-ngsanitize-"><a href="api/ngSanitize">ngSanitize</a></h2>
+<p>Use ngSanitize to securely parse and manipulate HTML data in your application.</p>
+<div class="alert alert-info">Include the <strong>angular-sanitize.js</strong> file and set <strong>ngSanitize</strong> as a dependency for this to work in your application.</div>
+
+<table class="definition-table spaced">
+  <tr>
+    <td>
+      <a href="api/ngSanitize#service">Services / Factories</a>
+    </td>
+    <td>
+      The <a href="api/ngSanitize/service/$sanitize">$sanitize</a> service is used to clean up dangerous HTML code in a quick and convenient way.
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <a href="api/ngSanitize#filter">Filters</a>
+    </td>
+    <td>
+      The <a href="api/ngSanitize/filter/linky">linky filter</a> is used to turn URLs into HTML links within the provided string.
+    </td>
+  </tr>
+</table>
+
+<h2 id="-link-ngmock-ngmock-"><a href="api/ngMock">ngMock</a></h2>
+<p>Use ngMock to inject and mock modules, factories, services and providers within your unit tests.</p>
+<div class="alert alert-info">Include the <strong>angular-mocks.js</strong> file into your test runner for this to work.</div>
+
+<table class="definition-table spaced">
+  <tr>
+    <td>
+      <a href="api/ngMock#service">Services / Factories</a>
+    </td>
+    <td>
+      <p>
+        ngMock will extend the behavior of various core services to become testing aware and manageable in a synchronous manner.
+      <p>
+
+      <p>
+        Some examples include:
+          <a href="api/ngMock/service/$timeout">$timeout</a>,
+          <a href="api/ngMock/service/$interval">$interval</a>,
+          <a href="api/ngMock/service/$log">$log</a>,
+          <a href="api/ngMock/service/$httpBackend">$httpBackend</a>,
+          etc...
+      <p>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <a href="api/ngMock#function">Global APIs</a>
+    </td>
+    <td>
+      <p>
+        Various helper functions are available to inject and mock modules within unit test code.
+      </p>
+
+      <p>
+        Some examples
+          <a href="api/ngMock/function/angular.mock.inject">inject()</a>,
+          <a href="api/ngMock/function/angular.mock.module">module()</a>,
+          <a href="api/ngMock/function/angular.mock.dump">dump()</a>,
+          etc...
+      <p>
+    </td>
+  </tr>
+</table>
+

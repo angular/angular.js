@@ -1,0 +1,29 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/error/ngRepeat/iidexp.ngdoc?message=docs(error%2Fiidexp)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1>Error: error:iidexp
+  <div><span class='hint'>Invalid Identifier</span></div>
+</h1>
+
+<div>
+    <pre class="minerr-errmsg" error-display="'_item_' in '_item_ in _collection_' should be an identifier or '(_key_, _value_)' expression, but got '{0}'.">'_item_' in '_item_ in _collection_' should be an identifier or '(_key_, _value_)' expression, but got '{0}'.</pre>
+</div>
+
+<h2>Description</h2>
+<div class="description">
+  <p>Occurs when there is an error in the identifier part of <a href="api/ng/directive/ngRepeat">ngRepeat</a>&#39;s expression.</p>
+<p>To resolve, use either a valid identifier or a tuple (<em>key</em>, <em>value</em>) where both <em>key</em> and <em>value</em> are valid identifiers.</p>
+<p>Examples of <em>invalid</em> syntax:</p>
+<pre><code>&lt;div ng-repeat=&quot;33 in users&quot;&gt;&lt;/div&gt;
+&lt;div ng-repeat=&quot;someFn() in users&quot;&gt;&lt;/div&gt;
+&lt;div ng-repeat=&quot;some user in users&quot;&gt;&lt;/div&gt;
+</code></pre>
+<p>Examples of <em>valid</em> syntax:</p>
+<pre><code>&lt;div ng-repeat=&quot;user in users&quot;&gt;&lt;/div&gt;
+&lt;div ng-repeat=&quot;(id, user) in userMap&quot;&gt;&lt;/div&gt;
+</code></pre>
+<p>Please consult the api documentation of <a href="api/ng/directive/ngRepeat">ngRepeat</a> to learn more about valid syntax.</p>
+
+</div>
+
+

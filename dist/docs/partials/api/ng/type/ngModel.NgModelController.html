@@ -1,0 +1,766 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/directive/ngModel.js?message=docs(ngModel.NgModelController)%3A%20describe%20your%20change...#L22' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/directive/ngModel.js#L22' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">ngModel.NgModelController</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - type in module <a href="api/ng">ng</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p><code>NgModelController</code> provides API for the <a href="api/ng/directive/ngModel"><code>ngModel</code></a> directive.
+The controller contains services for data-binding, validation, CSS updates, and value formatting
+and parsing. It purposefully does not contain any logic which deals with DOM rendering or
+listening to DOM events.
+Such DOM related logic should be provided by other directives which make use of
+<code>NgModelController</code> for data-binding to control elements.
+Angular provides this DOM logic for most <a href="api/ng/directive/input"><code>input</code></a> elements.
+At the end of this page you can find a <a href="api/ng/type/ngModel.NgModelController#custom-control-example">custom control example</a> that uses <code>ngModelController</code> to bind to <code>contenteditable</code> elements.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+    
+
+  
+
+  
+<h2>Methods</h2>
+<ul class="methods">
+  <li id="$render">
+    <h3><p><code>$render();</code></p>
+
+</h3>
+    <div><p>Called when the view needs to be updated. It is expected that the user of the ng-model
+directive will implement this method.</p>
+<p>The <code>$render()</code> method is invoked in the following situations:</p>
+<ul>
+<li><code>$rollbackViewValue()</code> is called.  If we are rolling back the view value to the last
+committed value then <code>$render()</code> is called to update the input control.</li>
+<li>The value referenced by <code>ng-model</code> is changed programmatically and both the <code>$modelValue</code> and
+the <code>$viewValue</code> are different from last time.</li>
+</ul>
+<p>Since <code>ng-model</code> does not do a deep watch, <code>$render()</code> is only invoked if the values of
+<code>$modelValue</code> and <code>$viewValue</code> are actually different from their previous value. If <code>$modelValue</code>
+or <code>$viewValue</code> are objects (rather than a string or number) then <code>$render()</code> will not be
+invoked if you only change a property on the objects.</p>
+</div>
+
+    
+
+    
+    
+    
+
+  </li>
+  
+  <li id="$isEmpty">
+    <h3><p><code>$isEmpty(value);</code></p>
+
+</h3>
+    <div><p>This is called when we need to determine if the value of an input is empty.</p>
+<p>For instance, the required directive does this to work out if the input has data or not.</p>
+<p>The default <code>$isEmpty</code> function checks whether the value is <code>undefined</code>, <code>&#39;&#39;</code>, <code>null</code> or <code>NaN</code>.</p>
+<p>You can override this for input directives whose concept of being empty is different from the
+default. The <code>checkboxInputType</code> directive does this because in its case a value of <code>false</code>
+implies empty.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        value
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">*</a>
+      </td>
+      <td>
+        <p>The value of the input to check for emptiness.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-boolean">boolean</a></td>
+    <td><p>True if <code>value</code> is &quot;empty&quot;.</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="$setValidity">
+    <h3><p><code>$setValidity(validationErrorKey, isValid);</code></p>
+
+</h3>
+    <div><p>Change the validity state, and notify the form.</p>
+<p>This method can be called within $parsers/$formatters or a custom validation implementation.
+However, in most cases it should be sufficient to use the <code>ngModel.$validators</code> and
+<code>ngModel.$asyncValidators</code> collections which will call <code>$setValidity</code> automatically.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        validationErrorKey
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Name of the validator. The <code>validationErrorKey</code> will be assigned
+       to either <code>$error[validationErrorKey]</code> or <code>$pending[validationErrorKey]</code>
+       (for unfulfilled <code>$asyncValidators</code>), so that it is available for data-binding.
+       The <code>validationErrorKey</code> should be in camelCase and will get converted into dash-case
+       for class name. Example: <code>myError</code> will result in <code>ng-valid-my-error</code> and <code>ng-invalid-my-error</code>
+       class and can be bound to as  <code>{{someForm.someControl.$error.myError}}</code> .</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        isValid
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-boolean">boolean</a>
+      </td>
+      <td>
+        <p>Whether the current state is valid (true), invalid (false), pending (undefined),
+                         or skipped (null). Pending is used for unfulfilled <code>$asyncValidators</code>.
+                         Skipped is used by Angular when validators do not run because of parse errors and
+                         when <code>$asyncValidators</code> do not run because any of the <code>$validators</code> failed.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+
+  </li>
+  
+  <li id="$setPristine">
+    <h3><p><code>$setPristine();</code></p>
+
+</h3>
+    <div><p>Sets the control to its pristine state.</p>
+<p>This method can be called to remove the <code>ng-dirty</code> class and set the control to its pristine
+state (<code>ng-pristine</code> class). A model is considered to be pristine when the control
+has not been changed from when first compiled.</p>
+</div>
+
+    
+
+    
+    
+    
+
+  </li>
+  
+  <li id="$setDirty">
+    <h3><p><code>$setDirty();</code></p>
+
+</h3>
+    <div><p>Sets the control to its dirty state.</p>
+<p>This method can be called to remove the <code>ng-pristine</code> class and set the control to its dirty
+state (<code>ng-dirty</code> class). A model is considered to be dirty when the control has been changed
+from when first compiled.</p>
+</div>
+
+    
+
+    
+    
+    
+
+  </li>
+  
+  <li id="$setUntouched">
+    <h3><p><code>$setUntouched();</code></p>
+
+</h3>
+    <div><p>Sets the control to its untouched state.</p>
+<p>This method can be called to remove the <code>ng-touched</code> class and set the control to its
+untouched state (<code>ng-untouched</code> class). Upon compilation, a model is set as untouched
+by default, however this function can be used to restore that state if the model has
+already been touched by the user.</p>
+</div>
+
+    
+
+    
+    
+    
+
+  </li>
+  
+  <li id="$setTouched">
+    <h3><p><code>$setTouched();</code></p>
+
+</h3>
+    <div><p>Sets the control to its touched state.</p>
+<p>This method can be called to remove the <code>ng-untouched</code> class and set the control to its
+touched state (<code>ng-touched</code> class). A model is considered to be touched when the user has
+first focused the control element and then shifted focus away from the control (blur event).</p>
+</div>
+
+    
+
+    
+    
+    
+
+  </li>
+  
+  <li id="$rollbackViewValue">
+    <h3><p><code>$rollbackViewValue();</code></p>
+
+</h3>
+    <div><p>Cancel an update and reset the input element&#39;s value to prevent an update to the <code>$modelValue</code>,
+which may be caused by a pending debounced event or because the input is waiting for a some
+future event.</p>
+<p>If you have an input that uses <code>ng-model-options</code> to set up debounced events or events such
+as blur you can have a situation where there is a period when the <code>$viewValue</code>
+is out of synch with the ngModel&#39;s <code>$modelValue</code>.</p>
+<p>In this case, you can run into difficulties if you try to update the ngModel&#39;s <code>$modelValue</code>
+programmatically before these debounced/future events have resolved/occurred, because Angular&#39;s
+dirty checking mechanism is not able to tell whether the model has actually changed or not.</p>
+<p>The <code>$rollbackViewValue()</code> method should be called before programmatically changing the model of an
+input which may have such events pending. This is important in order to make sure that the
+input field will be updated with the new model value and any pending operations are cancelled.</p>
+<p>
+
+<div>
+  <a ng-click="openPlunkr('examples/example-ng-model-cancel-update', $event)" class="btn pull-right">
+    <i class="glyphicon glyphicon-edit">&nbsp;</i>
+    Edit in Plunker</a>
+
+  <div class="runnable-example"
+      path="examples/example-ng-model-cancel-update"
+      name="ng-model-cancel-update"
+      module="cancel-update-example">
+
+  
+    <div class="runnable-example-file" 
+      name="app.js"
+      language="js"
+      type="js">
+      <pre><code>angular.module(&#39;cancel-update-example&#39;, [])&#10;&#10;.controller(&#39;CancelUpdateController&#39;, [&#39;$scope&#39;, function($scope) {&#10;  $scope.resetWithCancel = function(e) {&#10;    if (e.keyCode == 27) {&#10;      $scope.myForm.myInput1.$rollbackViewValue();&#10;      $scope.myValue = &#39;&#39;;&#10;    }&#10;  };&#10;  $scope.resetWithoutCancel = function(e) {&#10;    if (e.keyCode == 27) {&#10;      $scope.myValue = &#39;&#39;;&#10;    }&#10;  };&#10;}]);</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;div ng-controller=&quot;CancelUpdateController&quot;&gt;&#10;  &lt;p&gt;Try typing something in each input.  See that the model only updates when you&#10;     blur off the input.&#10;   &lt;/p&gt;&#10;   &lt;p&gt;Now see what happens if you start typing then press the Escape key&lt;/p&gt;&#10;&#10;  &lt;form name=&quot;myForm&quot; ng-model-options=&quot;{ updateOn: &#39;blur&#39; }&quot;&gt;&#10;    &lt;p&gt;With $rollbackViewValue()&lt;/p&gt;&#10;    &lt;input name=&quot;myInput1&quot; ng-model=&quot;myValue&quot; ng-keydown=&quot;resetWithCancel($event)&quot;&gt;&lt;br/&gt;&#10;    myValue: &quot;{{ myValue }}&quot;&#10;&#10;    &lt;p&gt;Without $rollbackViewValue()&lt;/p&gt;&#10;    &lt;input name=&quot;myInput2&quot; ng-model=&quot;myValue&quot; ng-keydown=&quot;resetWithoutCancel($event)&quot;&gt;&lt;br/&gt;&#10;    myValue: &quot;{{ myValue }}&quot;&#10;  &lt;/form&gt;&#10;&lt;/div&gt;</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-ng-model-cancel-update/index.html" name="example-ng-model-cancel-update"></iframe>
+  </div>
+</div>
+
+
+</p>
+</div>
+
+    
+
+    
+    
+    
+
+  </li>
+  
+  <li id="$validate">
+    <h3><p><code>$validate();</code></p>
+
+</h3>
+    <div><p>Runs each of the registered validators (first synchronous validators and then
+asynchronous validators).
+If the validity changes to invalid, the model will be set to <code>undefined</code>,
+unless <a href="api/ng/directive/ngModelOptions"><code>ngModelOptions.allowInvalid</code></a> is <code>true</code>.
+If the validity changes to valid, it will set the model to the last available valid
+modelValue, i.e. either the last parsed value or the last value set from the scope.</p>
+</div>
+
+    
+
+    
+    
+    
+
+  </li>
+  
+  <li id="$commitViewValue">
+    <h3><p><code>$commitViewValue();</code></p>
+
+</h3>
+    <div><p>Commit a pending update to the <code>$modelValue</code>.</p>
+<p>Updates may be pending by a debounced event or because the input is waiting for a some future
+event defined in <code>ng-model-options</code>. this method is rarely needed as <code>NgModelController</code>
+usually handles calling this in response to input events.</p>
+</div>
+
+    
+
+    
+    
+    
+
+  </li>
+  
+  <li id="$setViewValue">
+    <h3><p><code>$setViewValue(value, trigger);</code></p>
+
+</h3>
+    <div><p>Update the view value.</p>
+<p>This method should be called when an input directive want to change the view value; typically,
+this is done from within a DOM event handler.</p>
+<p>For example <a href="api/ng/directive/input">input</a> calls it when the value of the input changes and
+<a href="api/ng/directive/select">select</a> calls it when an option is selected.</p>
+<p>If the new <code>value</code> is an object (rather than a string or a number), we should make a copy of the
+object before passing it to <code>$setViewValue</code>.  This is because <code>ngModel</code> does not perform a deep
+watch of objects, it only looks for a change of identity. If you only change the property of
+the object then ngModel will not realise that the object has changed and will not invoke the
+<code>$parsers</code> and <code>$validators</code> pipelines.</p>
+<p>For this reason, you should not change properties of the copy once it has been passed to
+<code>$setViewValue</code>. Otherwise you may cause the model value on the scope to change incorrectly.</p>
+<p>When this method is called, the new <code>value</code> will be staged for committing through the <code>$parsers</code>
+and <code>$validators</code> pipelines. If there are no special <a href="api/ng/directive/ngModelOptions"><code>ngModelOptions</code></a> specified then the staged
+value sent directly for processing, finally to be applied to <code>$modelValue</code> and then the
+<strong>expression</strong> specified in the <code>ng-model</code> attribute.</p>
+<p>Lastly, all the registered change listeners, in the <code>$viewChangeListeners</code> list, are called.</p>
+<p>In case the <a href="api/ng/directive/ngModelOptions">ngModelOptions</a> directive is used with <code>updateOn</code>
+and the <code>default</code> trigger is not listed, all those actions will remain pending until one of the
+<code>updateOn</code> events is triggered on the DOM element.
+All these actions will be debounced if the <a href="api/ng/directive/ngModelOptions">ngModelOptions</a>
+directive is used with a custom debounce for this particular event.</p>
+<p>Note that calling this function does not trigger a <code>$digest</code>.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        value
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Value from the view.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        trigger
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Event that triggered the update.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+
+  </li>
+  </ul>
+  
+  
+<h2>Properties</h2>
+<ul class="properties">
+  <li id="$viewValue">
+    <h3><code>$viewValue</code></h3>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-string">string</a></td>
+    <td><p>Actual string value in the view.</p>
+</td>
+  </tr>
+</table>
+  </li>
+  
+  <li id="$modelValue">
+    <h3><code>$modelValue</code></h3>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-object">*</a></td>
+    <td><p>The value in the model that the control is bound to.</p>
+</td>
+  </tr>
+</table>
+  </li>
+  
+  <li id="$parsers">
+    <h3><code>$parsers</code></h3>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-array">Array.&lt;Function&gt;</a></td>
+    <td><p>Array of functions to execute, as a pipeline, whenever
+       the control reads value from the DOM. The functions are called in array order, each passing
+       its return value through to the next. The last return value is forwarded to the
+       <a href="api/ng/type/ngModel.NgModelController#$validators"><code>$validators</code></a> collection.</p>
+<p>Parsers are used to sanitize / convert the <a href="api/ng/type/ngModel.NgModelController#$viewValue"><code>$viewValue</code></a>.</p>
+<p>Returning <code>undefined</code> from a parser means a parse error occurred. In that case,
+no <a href="api/ng/type/ngModel.NgModelController#$validators"><code>$validators</code></a> will run and the <code>ngModel</code>
+will be set to <code>undefined</code> unless <a href="api/ng/directive/ngModelOptions"><code>ngModelOptions.allowInvalid</code></a>
+is set to <code>true</code>. The parse error is stored in <code>ngModel.$error.parse</code>.</p>
+</td>
+  </tr>
+</table>
+  </li>
+  
+  <li id="$formatters">
+    <h3><code>$formatters</code></h3>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-array">Array.&lt;Function&gt;</a></td>
+    <td><p>Array of functions to execute, as a pipeline, whenever
+       the model value changes. The functions are called in reverse array order, each passing the value through to the
+       next. The last return value is used as the actual DOM value.
+       Used to format / convert values for display in the control.</p>
+<pre><code class="lang-js">function formatter(value) {
+  if (value) {
+    return value.toUpperCase();
+  }
+}
+ngModel.$formatters.push(formatter);
+</code></pre>
+</td>
+  </tr>
+</table>
+  </li>
+  
+  <li id="$validators">
+    <h3><code>$validators</code></h3>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-object">Object.&lt;string, function&gt;</a></td>
+    <td><p>A collection of validators that are applied
+     whenever the model value changes. The key value within the object refers to the name of the
+     validator while the function refers to the validation operation. The validation operation is
+     provided with the model value as an argument and must return a true or false value depending
+     on the response of that validation.</p>
+<pre><code class="lang-js">ngModel.$validators.validCharacters = function(modelValue, viewValue) {
+  var value = modelValue || viewValue;
+  return /[0-9]+/.test(value) &amp;&amp;
+         /[a-z]+/.test(value) &amp;&amp;
+         /[A-Z]+/.test(value) &amp;&amp;
+         /\W+/.test(value);
+};
+</code></pre>
+</td>
+  </tr>
+</table>
+  </li>
+  
+  <li id="$asyncValidators">
+    <h3><code>$asyncValidators</code></h3>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-object">Object.&lt;string, function&gt;</a></td>
+    <td><p>A collection of validations that are expected to
+     perform an asynchronous validation (e.g. a HTTP request). The validation function that is provided
+     is expected to return a promise when it is run during the model validation process. Once the promise
+     is delivered then the validation status will be set to true when fulfilled and false when rejected.
+     When the asynchronous validators are triggered, each of the validators will run in parallel and the model
+     value will only be updated once all validators have been fulfilled. As long as an asynchronous validator
+     is unfulfilled, its key will be added to the controllers <code>$pending</code> property. Also, all asynchronous validators
+     will only run once all synchronous validators have passed.</p>
+<p>Please note that if $http is used then it is important that the server returns a success HTTP response code
+in order to fulfill the validation and a status level of <code>4xx</code> in order to reject the validation.</p>
+<pre><code class="lang-js">ngModel.$asyncValidators.uniqueUsername = function(modelValue, viewValue) {
+  var value = modelValue || viewValue;
+
+  // Lookup user by username
+  return $http.get(&#39;/api/users/&#39; + value).
+     then(function resolved() {
+       //username exists, this means validation fails
+       return $q.reject(&#39;exists&#39;);
+     }, function rejected() {
+       //username does not exist, therefore this validation passes
+       return true;
+     });
+};
+</code></pre>
+</td>
+  </tr>
+</table>
+  </li>
+  
+  <li id="$viewChangeListeners">
+    <h3><code>$viewChangeListeners</code></h3>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-array">Array.&lt;Function&gt;</a></td>
+    <td><p>Array of functions to execute whenever the
+    view value has changed. It is called with no arguments, and its return value is ignored.
+    This can be used in place of additional $watches against the model value.</p>
+</td>
+  </tr>
+</table>
+  </li>
+  
+  <li id="$error">
+    <h3><code>$error</code></h3>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-object">Object</a></td>
+    <td><p>An object hash with all failing validator ids as keys.</p>
+</td>
+  </tr>
+</table>
+  </li>
+  
+  <li id="$pending">
+    <h3><code>$pending</code></h3>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-object">Object</a></td>
+    <td><p>An object hash with all pending validator ids as keys.</p>
+</td>
+  </tr>
+</table>
+  </li>
+  
+  <li id="$untouched">
+    <h3><code>$untouched</code></h3>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-boolean">boolean</a></td>
+    <td><p>True if control has not lost focus yet.</p>
+</td>
+  </tr>
+</table>
+  </li>
+  
+  <li id="$touched">
+    <h3><code>$touched</code></h3>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-boolean">boolean</a></td>
+    <td><p>True if control has lost focus.</p>
+</td>
+  </tr>
+</table>
+  </li>
+  
+  <li id="$pristine">
+    <h3><code>$pristine</code></h3>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-boolean">boolean</a></td>
+    <td><p>True if user has not interacted with the control yet.</p>
+</td>
+  </tr>
+</table>
+  </li>
+  
+  <li id="$dirty">
+    <h3><code>$dirty</code></h3>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-boolean">boolean</a></td>
+    <td><p>True if user has already interacted with the control.</p>
+</td>
+  </tr>
+</table>
+  </li>
+  
+  <li id="$valid">
+    <h3><code>$valid</code></h3>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-boolean">boolean</a></td>
+    <td><p>True if there is no error.</p>
+</td>
+  </tr>
+</table>
+  </li>
+  
+  <li id="$invalid">
+    <h3><code>$invalid</code></h3>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-boolean">boolean</a></td>
+    <td><p>True if at least one error on the control.</p>
+</td>
+  </tr>
+</table>
+  </li>
+  
+  <li id="$name">
+    <h3><code>$name</code></h3>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-string">string</a></td>
+    <td><p>The name attribute of the control.</p>
+</td>
+  </tr>
+</table>
+  </li>
+  </ul>
+
+
+
+  
+  <h2 id="example">Example</h2><h3 id="custom-control-example">Custom Control Example</h3>
+<p>This example shows how to use <code>NgModelController</code> with a custom control to achieve
+data-binding. Notice how different directives (<code>contenteditable</code>, <code>ng-model</code>, and <code>required</code>)
+collaborate together to achieve the desired result.</p>
+<p>Note that <code>contenteditable</code> is an HTML5 attribute, which tells the browser to let the element
+contents be edited in place by the user.  This will not work on older browsers.</p>
+<p>We are using the <a href="api/ng/service/$sce">$sce</a> service here and include the <a href="api/ngSanitize">$sanitize</a>
+module to automatically remove &quot;bad&quot; content like inline event listener (e.g. <code>&lt;span onclick=&quot;...&quot;&gt;</code>).
+However, as we are using <code>$sce</code> the model can still decide to provide unsafe content if it marks
+that content using the <code>$sce</code> service.</p>
+<p>
+
+<div>
+  <a ng-click="openPlunkr('examples/example-NgModelController', $event)" class="btn pull-right">
+    <i class="glyphicon glyphicon-edit">&nbsp;</i>
+    Edit in Plunker</a>
+
+  <div class="runnable-example"
+      path="examples/example-NgModelController"
+      name="NgModelController"
+      module="customControl"
+      deps="angular-sanitize.js">
+
+  
+    <div class="runnable-example-file" 
+      name="style.css"
+      language="css"
+      type="css">
+      <pre><code>[contenteditable] {&#10;  border: 1px solid black;&#10;  background-color: white;&#10;  min-height: 20px;&#10;}&#10;&#10;.ng-invalid {&#10;  border: 1px solid red;&#10;}</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="script.js"
+      language="js"
+      type="js">
+      <pre><code>angular.module(&#39;customControl&#39;, [&#39;ngSanitize&#39;]).&#10;directive(&#39;contenteditable&#39;, [&#39;$sce&#39;, function($sce) {&#10;  return {&#10;    restrict: &#39;A&#39;, // only activate on element attribute&#10;    require: &#39;?ngModel&#39;, // get a hold of NgModelController&#10;    link: function(scope, element, attrs, ngModel) {&#10;      if (!ngModel) return; // do nothing if no ng-model&#10;&#10;      // Specify how UI should be updated&#10;      ngModel.$render = function() {&#10;        element.html($sce.getTrustedHtml(ngModel.$viewValue || &#39;&#39;));&#10;      };&#10;&#10;      // Listen for change events to enable binding&#10;      element.on(&#39;blur keyup change&#39;, function() {&#10;        scope.$evalAsync(read);&#10;      });&#10;      read(); // initialize&#10;&#10;      // Write data to the model&#10;      function read() {&#10;        var html = element.html();&#10;        // When we clear the content editable the browser leaves a &lt;br&gt; behind&#10;        // If strip-br attribute is provided then we strip this out&#10;        if ( attrs.stripBr &amp;&amp; html == &#39;&lt;br&gt;&#39; ) {&#10;          html = &#39;&#39;;&#10;        }&#10;        ngModel.$setViewValue(html);&#10;      }&#10;    }&#10;  };&#10;}]);</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;form name=&quot;myForm&quot;&gt;&#10; &lt;div contenteditable&#10;      name=&quot;myWidget&quot; ng-model=&quot;userContent&quot;&#10;      strip-br=&quot;true&quot;&#10;      required&gt;Change me!&lt;/div&gt;&#10;  &lt;span ng-show=&quot;myForm.myWidget.$error.required&quot;&gt;Required!&lt;/span&gt;&#10; &lt;hr&gt;&#10; &lt;textarea ng-model=&quot;userContent&quot;&gt;&lt;/textarea&gt;&#10;&lt;/form&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="protractor.js"
+      type="protractor"
+      language="js">
+      <pre><code>it(&#39;should data-bind and become invalid&#39;, function() {&#10;  if (browser.params.browser == &#39;safari&#39; || browser.params.browser == &#39;firefox&#39;) {&#10;    // SafariDriver can&#39;t handle contenteditable&#10;    // and Firefox driver can&#39;t clear contenteditables very well&#10;    return;&#10;  }&#10;  var contentEditable = element(by.css(&#39;[contenteditable]&#39;));&#10;  var content = &#39;Change me!&#39;;&#10;&#10;  expect(contentEditable.getText()).toEqual(content);&#10;&#10;  contentEditable.clear();&#10;  contentEditable.sendKeys(protractor.Key.BACK_SPACE);&#10;  expect(contentEditable.getText()).toEqual(&#39;&#39;);&#10;  expect(contentEditable.getAttribute(&#39;class&#39;)).toMatch(/ng-invalid-required/);&#10;});</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-NgModelController/index.html" name="example-NgModelController"></iframe>
+  </div>
+</div>
+
+
+</p>
+
+</div>
+
+

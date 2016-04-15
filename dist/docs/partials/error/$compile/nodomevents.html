@@ -1,0 +1,25 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/error/$compile/nodomevents.ngdoc?message=docs(error%2Fnodomevents)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1>Error: error:nodomevents
+  <div><span class='hint'>Interpolated Event Attributes</span></div>
+</h1>
+
+<div>
+    <pre class="minerr-errmsg" error-display="Interpolations for HTML DOM event attributes are disallowed.  Please use the ng- versions (such as ng-click instead of onclick) instead.">Interpolations for HTML DOM event attributes are disallowed.  Please use the ng- versions (such as ng-click instead of onclick) instead.</pre>
+</div>
+
+<h2>Description</h2>
+<div class="description">
+  <p>This error occurs when one tries to create a binding for event handler attributes like <code>onclick</code>, <code>onload</code>, <code>onsubmit</code>, etc.</p>
+<p>There is no practical value in binding to these attributes and doing so only exposes your application to security vulnerabilities like XSS.
+For these reasons binding to event handler attributes (all attributes that start with <code>on</code> and <code>formaction</code> attribute) is not supported.</p>
+<p>An example code that would allow XSS vulnerability by evaluating user input in the window context could look like this:</p>
+<pre><code>&lt;input ng-model=&quot;username&quot;&gt;
+&lt;div onclick=&quot;{{username}}&quot;&gt;click me&lt;/div&gt;
+</code></pre>
+<p>Since the <code>onclick</code> evaluates the value as JavaScript code in the window context, setting the <code>username</code> model to a value like <code>javascript:alert(&#39;PWND&#39;)</code> would result in script injection when the <code>div</code> is clicked.</p>
+
+</div>
+
+

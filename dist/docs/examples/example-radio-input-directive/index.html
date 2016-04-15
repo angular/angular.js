@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Example - example-radio-input-directive</title>
+  
+
+  <script src="../../../angular.min.js"></script>
+  
+
+  
+</head>
+<body ng-app="radioExample">
+  <script>
+  angular.module('radioExample', [])
+    .controller('ExampleController', ['$scope', function($scope) {
+      $scope.color = {
+        name: 'blue'
+      };
+      $scope.specialValue = {
+        "id": "12345",
+        "value": "green"
+      };
+    }]);
+</script>
+<form name="myForm" ng-controller="ExampleController">
+  <input type="radio" ng-model="color.name" value="red">  Red <br/>
+  <input type="radio" ng-model="color.name" ng-value="specialValue"> Green <br/>
+  <input type="radio" ng-model="color.name" value="blue"> Blue <br/>
+  <tt>color = {{color.name | json}}</tt><br/>
+ </form>
+ Note that `ng-value="specialValue"` sets radio item's value to be the value of `$scope.specialValue`.
+</body>
+</html>

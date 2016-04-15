@@ -1,0 +1,247 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/guide/di.ngdoc?message=docs(guide%2FDependency Injection)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1 id="dependency-injection">Dependency Injection</h1>
+<p>Dependency Injection (DI) is a software design pattern that deals with how components get hold of
+their dependencies.</p>
+<p>The Angular injector subsystem is in charge of creating components, resolving their dependencies,
+and providing them to other components as requested.</p>
+<h2 id="using-dependency-injection">Using Dependency Injection</h2>
+<p>DI is pervasive throughout Angular. You can use it when defining components or when providing <code>run</code>
+and <code>config</code> blocks for a module.</p>
+<ul>
+<li><p>Components such as services, directives, filters, and animations are defined by an injectable
+factory method or constructor function. These components can be injected with &quot;service&quot; and &quot;value&quot;
+components as dependencies.</p>
+</li>
+<li><p>Controllers are defined by a constructor function, which can be injected with any of the &quot;service&quot;
+and &quot;value&quot; components as dependencies, but they can also be provided with special dependencies. See
+<a href="guide/di#controllers">Controllers</a> below for a list of these special dependencies.</p>
+</li>
+<li><p>The <code>run</code> method accepts a function, which can be injected with &quot;service&quot;, &quot;value&quot; and &quot;constant&quot;
+components as dependencies. Note that you cannot inject &quot;providers&quot; into <code>run</code> blocks.</p>
+</li>
+<li><p>The <code>config</code> method accepts a function, which can be injected with &quot;provider&quot; and &quot;constant&quot;
+components as dependencies. Note that you cannot inject &quot;service&quot; or &quot;value&quot; components into
+configuration.</p>
+</li>
+</ul>
+<p>See <a href="guide/module#module-loading-dependencies">Modules</a> for more details about <code>run</code> and <code>config</code>
+blocks.</p>
+<h3 id="factory-methods">Factory Methods</h3>
+<p>The way you define a directive, service, or filter is with a factory function.
+The factory methods are registered with modules. The recommended way of declaring factories is:</p>
+<pre><code class="lang-js">angular.module(&#39;myModule&#39;, [])
+.factory(&#39;serviceId&#39;, [&#39;depService&#39;, function(depService) {
+  // ...
+}])
+.directive(&#39;directiveName&#39;, [&#39;depService&#39;, function(depService) {
+  // ...
+}])
+.filter(&#39;filterName&#39;, [&#39;depService&#39;, function(depService) {
+  // ...
+}]);
+</code></pre>
+<h3 id="module-methods">Module Methods</h3>
+<p>We can specify functions to run at configuration and run time for a module by calling the <code>config</code>
+and <code>run</code> methods. These functions are injectable with dependencies just like the factory functions
+above.</p>
+<pre><code class="lang-js">angular.module(&#39;myModule&#39;, [])
+.config([&#39;depProvider&#39;, function(depProvider) {
+  // ...
+}])
+.run([&#39;depService&#39;, function(depService) {
+  // ...
+}]);
+</code></pre>
+<h3 id="controllers">Controllers</h3>
+<p>Controllers are &quot;classes&quot; or &quot;constructor functions&quot; that are responsible for providing the
+application behavior that supports the declarative markup in the template. The recommended way of
+declaring Controllers is using the array notation:</p>
+<pre><code class="lang-js">someModule.controller(&#39;MyController&#39;, [&#39;$scope&#39;, &#39;dep1&#39;, &#39;dep2&#39;, function($scope, dep1, dep2) {
+  ...
+  $scope.aMethod = function() {
+    ...
+  }
+  ...
+}]);
+</code></pre>
+<p>Unlike services, there can be many instances of the same type of controller in an application.</p>
+<p>Moreover, additional dependencies are made available to Controllers:</p>
+<ul>
+<li><a href="guide/scope"><code>$scope</code></a>: Controllers are associated with an element in the DOM and so are
+provided with access to the <a href="guide/scope">scope</a>. Other components (like services) only have
+access to the <a href="api/ng/service/$rootScope"><code>$rootScope</code></a> service.</li>
+<li><a href="api/ngRoute/provider/$routeProvider#when">resolves</a>: If a controller is instantiated as part of a route,
+then any values that are resolved as part of the route are made available for injection into the
+controller.</li>
+</ul>
+<h2 id="dependency-annotation">Dependency Annotation</h2>
+<p>Angular invokes certain functions (like service factories and controllers) via the injector.
+You need to annotate these functions so that the injector knows what services to inject into
+the function. There are three ways of annotating your code with service name information:</p>
+<ul>
+<li>Using the inline array annotation (preferred)</li>
+<li>Using the <code>$inject</code> property annotation</li>
+<li>Implicitly from the function parameter names (has caveats)</li>
+</ul>
+<h3 id="inline-array-annotation">Inline Array Annotation</h3>
+<p>This is the preferred way to annotate application components. This is how the examples in the
+documentation are written.</p>
+<p>For example:</p>
+<pre><code class="lang-js">someModule.controller(&#39;MyController&#39;, [&#39;$scope&#39;, &#39;greeter&#39;, function($scope, greeter) {
+  // ...
+}]);
+</code></pre>
+<p>Here we pass an array whose elements consist of a list of strings (the names of the dependencies)
+followed by the function itself.</p>
+<p>When using this type of annotation, take care to keep the annotation array in sync with the
+parameters in the function declaration.</p>
+<h3 id="-inject-property-annotation"><code>$inject</code> Property Annotation</h3>
+<p>To allow the minifiers to rename the function parameters and still be able to inject the right services,
+the function needs to be annotated with the <code>$inject</code> property. The <code>$inject</code> property is an array
+of service names to inject.</p>
+<pre><code class="lang-js">var MyController = function($scope, greeter) {
+  // ...
+}
+MyController.$inject = [&#39;$scope&#39;, &#39;greeter&#39;];
+someModule.controller(&#39;MyController&#39;, MyController);
+</code></pre>
+<p>In this scenario the ordering of the values in the <code>$inject</code> array must match the ordering of the
+parameters in <code>MyController</code>.</p>
+<p>Just like with the array annotation, you&#39;ll need to take care to keep the <code>$inject</code> in sync with
+the parameters in the function declaration.</p>
+<h3 id="implicit-annotation">Implicit Annotation</h3>
+<div class="alert alert-danger">
+<strong>Careful:</strong> If you plan to <a href="http://en.wikipedia.org/wiki/Minification_(programming&#41;">minify</a>
+your code, your service names will get renamed and break your app.
+</div>
+
+<p>The simplest way to get hold of the dependencies is to assume that the function parameter names
+are the names of the dependencies.</p>
+<pre><code class="lang-js">someModule.controller(&#39;MyController&#39;, function($scope, greeter) {
+  // ...
+});
+</code></pre>
+<p>Given a function the injector can infer the names of the services to inject by examining the
+function declaration and extracting the parameter names. In the above example <code>$scope</code>, and
+<code>greeter</code> are two services which need to be injected into the function.</p>
+<p>One advantage of this approach is that there&#39;s no array of names to keep in sync with the
+function parameters. You can also freely reorder dependencies.</p>
+<p>However this method will not work with JavaScript minifiers/obfuscators because of how they
+rename parameters.</p>
+<p>Tools like <a href="https://github.com/olov/ng-annotate">ng-annotate</a> let you use implicit dependency
+annotations in your app and automatically add inline array annotations prior to minifying.
+If you decide to take this approach, you probably want to use <code>ng-strict-di</code>.</p>
+<p>Because of these caveats, we recommend avoiding this style of annotation.</p>
+<h2 id="using-strict-dependency-injection">Using Strict Dependency Injection</h2>
+<p>You can add an <code>ng-strict-di</code> directive on the same element as <code>ng-app</code> to opt into strict DI mode:</p>
+<pre><code class="lang-html">&lt;!doctype html&gt;
+&lt;html ng-app=&quot;myApp&quot; ng-strict-di&gt;
+&lt;body&gt;
+  I can add: {{ 1 + 2 }}.
+  &lt;script src=&quot;angular.js&quot;&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<p>Strict mode throws an error whenever a service tries to use implicit annotations.</p>
+<p>Consider this module, which includes a <code>willBreak</code> service that uses implicit DI:</p>
+<pre><code class="lang-js">angular.module(&#39;myApp&#39;, [])
+.factory(&#39;willBreak&#39;, function($rootScope) {
+  // $rootScope is implicitly injected
+})
+.run([&#39;willBreak&#39;, function(willBreak) {
+  // Angular will throw when this runs
+}]);
+</code></pre>
+<p>When the <code>willBreak</code> service is instantiated, Angular will throw an error because of strict mode.
+This is useful when using a tool like <a href="https://github.com/olov/ng-annotate">ng-annotate</a> to
+ensure that all of your application components have annotations.</p>
+<p>If you&#39;re using manual bootstrapping, you can also use strict DI by providing <code>strictDi: true</code> in
+the optional config argument:</p>
+<pre><code class="lang-js">angular.bootstrap(document, [&#39;myApp&#39;], {
+  strictDi: true
+});
+</code></pre>
+<h2 id="why-dependency-injection-">Why Dependency Injection?</h2>
+<p>This section motivates and explains Angular&#39;s use of DI. For how to use DI, see above.</p>
+<p>For in-depth discussion about DI, see
+<a href="http://en.wikipedia.org/wiki/Dependency_injection">Dependency Injection</a> at Wikipedia,
+<a href="http://martinfowler.com/articles/injection.html">Inversion of Control</a> by Martin Fowler,
+or read about DI in your favorite software design pattern book.</p>
+<p>There are only three ways a component (object or function) can get a hold of its dependencies:</p>
+<ol>
+<li>The component can create the dependency, typically using the <code>new</code> operator.</li>
+<li>The component can look up the dependency, by referring to a global variable.</li>
+<li>The component can have the dependency passed to it where it is needed.</li>
+</ol>
+<p>The first two options of creating or looking up dependencies are not optimal because they hard
+code the dependency to the component. This makes it difficult, if not impossible, to modify the
+dependencies. This is especially problematic in tests, where it is often desirable to provide mock
+dependencies for test isolation.</p>
+<p>The third option is the most viable, since it removes the responsibility of locating the
+dependency from the component. The dependency is simply handed to the component.</p>
+<pre><code class="lang-js">function SomeClass(greeter) {
+  this.greeter = greeter;
+}
+
+SomeClass.prototype.doSomething = function(name) {
+  this.greeter.greet(name);
+}
+</code></pre>
+<p>In the above example <code>SomeClass</code> is not concerned with creating or locating the <code>greeter</code>
+dependency, it is simply handed the <code>greeter</code> when it is instantiated.</p>
+<p>This is desirable, but it puts the responsibility of getting hold of the dependency on the
+code that constructs <code>SomeClass</code>.</p>
+<p><img class="pull-right" style="padding-left: 3em; padding-bottom: 1em;" src="img/guide/concepts-module-injector.png"></p>
+<p>To manage the responsibility of dependency creation, each Angular application has an <a href="api/ng/function/angular.injector">injector</a>. The injector is a
+<a href="http://en.wikipedia.org/wiki/Service_locator_pattern">service locator</a> that is responsible for
+construction and lookup of dependencies.</p>
+<p>Here is an example of using the injector service:</p>
+<pre><code class="lang-js">// Provide the wiring information in a module
+var myModule = angular.module(&#39;myModule&#39;, []);
+</code></pre>
+<p>Teach the injector how to build a <code>greeter</code> service. Notice that <code>greeter</code> is dependent on the
+<code>$window</code> service. The <code>greeter</code> service is an object that contains a <code>greet</code> method.</p>
+<pre><code class="lang-js">myModule.factory(&#39;greeter&#39;, function($window) {
+  return {
+    greet: function(text) {
+      $window.alert(text);
+    }
+  };
+});
+</code></pre>
+<p>Create a new injector that can provide components defined in our <code>myModule</code> module and request our
+<code>greeter</code> service from the injector. (This is usually done automatically by angular bootstrap).</p>
+<pre><code class="lang-js">var injector = angular.injector([&#39;myModule&#39;, &#39;ng&#39;]);
+var greeter = injector.get(&#39;greeter&#39;);
+</code></pre>
+<p>Asking for dependencies solves the issue of hard coding, but it also means that the injector needs
+to be passed throughout the application. Passing the injector breaks the
+<a href="http://en.wikipedia.org/wiki/Law_of_Demeter">Law of Demeter</a>. To remedy this, we use a declarative
+notation in our HTML templates, to hand the responsibility of creating components over to the
+injector, as in this example:</p>
+<pre><code class="lang-html">&lt;div ng-controller=&quot;MyController&quot;&gt;
+  &lt;button ng-click=&quot;sayHello()&quot;&gt;Hello&lt;/button&gt;
+&lt;/div&gt;
+</code></pre>
+<pre><code class="lang-js">function MyController($scope, greeter) {
+  $scope.sayHello = function() {
+    greeter.greet(&#39;Hello World&#39;);
+  };
+}
+</code></pre>
+<p>When Angular compiles the HTML, it processes the <code>ng-controller</code> directive, which in turn
+asks the injector to create an instance of the controller and its dependencies.</p>
+<pre><code class="lang-js">injector.instantiate(MyController);
+</code></pre>
+<p>This is all done behind the scenes. Notice that by having the <code>ng-controller</code> ask the injector to
+instantiate the class, it can satisfy all of the dependencies of <code>MyController</code> without the
+controller ever knowing about the injector.</p>
+<p>This is the best outcome. The application code simply declares the dependencies it needs, without
+having to deal with the injector. This setup does not break the Law of Demeter.</p>
+<div class="alert alert-info">
+<strong>Note:</strong> Angular uses
+<a href="http://misko.hevery.com/2009/02/19/constructor-injection-vs-setter-injection/"><strong>constructor injection</strong></a>.
+</div>
+

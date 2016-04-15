@@ -1,0 +1,124 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ngMock/angular-mocks.js?message=docs(angular.mock.TzDate)%3A%20describe%20your%20change...#L608' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ngMock/angular-mocks.js#L608' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">angular.mock.TzDate</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - type in module <a href="api/ngMock">ngMock</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p><em>NOTE</em>: this is not an injectable instance, just a globally available mock class of <code>Date</code>.</p>
+<p>Mock of the Date type which has its timezone specified via constructor arg.</p>
+<p>The main purpose is to create Date-like instances with timezone fixed to the specified timezone
+offset, so that we can test code that depends on local timezone settings without dependency on
+the time zone settings of the machine where the code is running.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+    
+
+  <h2 id="usage">Usage</h2>
+    
+      <p><code>angular.mock.TzDate(offset, timestamp);</code></p>
+
+
+    
+
+    
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        offset
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-number">number</a>
+      </td>
+      <td>
+        <p>Offset of the <em>desired</em> timezone in hours (fractions will be honored)</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        timestamp
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-number">number</a><a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Timestamp representing the desired time in <em>UTC</em></p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
+    
+    
+
+  
+  
+  
+
+
+
+  
+  <h2 id="example">Example</h2><p>!!!! WARNING !!!!!
+This is not a complete Date object so only methods that were implemented can be called safely.
+To make matters worse, TzDate instances inherit stuff from Date via a prototype.</p>
+<p>We do our best to intercept calls to &quot;unimplemented&quot; methods, but since the list of methods is
+incomplete we might be missing some non-standard methods. This can result in errors like:
+&quot;Date.prototype.foo called on incompatible Object&quot;.</p>
+<pre><code class="lang-js">var newYearInBratislava = new TzDate(-1, &#39;2009-12-31T23:00:00Z&#39;);
+newYearInBratislava.getTimezoneOffset() =&gt; -60;
+newYearInBratislava.getFullYear() =&gt; 2010;
+newYearInBratislava.getMonth() =&gt; 0;
+newYearInBratislava.getDate() =&gt; 1;
+newYearInBratislava.getHours() =&gt; 0;
+newYearInBratislava.getMinutes() =&gt; 0;
+newYearInBratislava.getSeconds() =&gt; 0;
+</code></pre>
+
+</div>
+
+

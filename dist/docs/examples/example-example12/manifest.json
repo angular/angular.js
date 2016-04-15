@@ -1,0 +1,9 @@
+{
+  "name": "example-example12",
+  "files": [
+    "index-production.html",
+    "script.js",
+    "customer-name.html",
+    "customer-address.html"
+  ]
+}

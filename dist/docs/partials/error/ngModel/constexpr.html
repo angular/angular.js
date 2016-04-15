@@ -1,0 +1,27 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/error/ngModel/constexpr.ngdoc?message=docs(error%2Fconstexpr)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1>Error: error:constexpr
+  <div><span class='hint'>Non-Constant Expression</span></div>
+</h1>
+
+<div>
+    <pre class="minerr-errmsg" error-display="Expected constant expression for `{0}`, but saw `{1}`.">Expected constant expression for `{0}`, but saw `{1}`.</pre>
+</div>
+
+<h2>Description</h2>
+<div class="description">
+  <p>Some attributes used in conjunction with ngModel (such as ngTrueValue or ngFalseValue) will only
+accept constant expressions.</p>
+<p>Examples using constant expressions include:</p>
+<pre><code>&lt;input type=&quot;checkbox&quot; ng-model=&quot;...&quot; ng-true-value=&quot;&#39;truthyValue&#39;&quot;&gt;
+&lt;input type=&quot;checkbox&quot; ng-model=&quot;...&quot; ng-false-value=&quot;0&quot;&gt;
+</code></pre>
+<p>Examples of non-constant expressions include:</p>
+<pre><code>&lt;input type=&quot;checkbox&quot; ng-model=&quot;...&quot; ng-true-value=&quot;someValue&quot;&gt;
+&lt;input type=&quot;checkbox&quot; ng-model=&quot;...&quot; ng-false-value=&quot;{foo: someScopeValue}&quot;&gt;
+</code></pre>
+
+</div>
+
+

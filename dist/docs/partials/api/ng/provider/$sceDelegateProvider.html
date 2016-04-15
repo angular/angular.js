@@ -1,0 +1,211 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/sce.js?message=docs($sceDelegateProvider)%3A%20describe%20your%20change...#L83' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/sce.js#L83' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">$sceDelegateProvider</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+  <li>
+    <a href="api/ng/service/$sceDelegate">- $sceDelegate</a>
+  </li>
+
+    <li>
+      - provider in module <a href="api/ng">ng</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>The <code>$sceDelegateProvider</code> provider allows developers to configure the <a href="api/ng/service/$sceDelegate">$sceDelegate</a> service.  This allows one to get/set the whitelists and blacklists used to ensure
+that the URLs used for sourcing Angular templates are safe.  Refer <a href="api/ng/provider/$sceDelegateProvider#resourceUrlWhitelist">$sceDelegateProvider.resourceUrlWhitelist</a> and
+<a href="api/ng/provider/$sceDelegateProvider#resourceUrlBlacklist">$sceDelegateProvider.resourceUrlBlacklist</a></p>
+<p>For the general details about this service in Angular, read the main page for <a href="api/ng/service/$sce">Strict Contextual Escaping (SCE)</a>.</p>
+<p><strong>Example</strong>:  Consider the following case. <a name="example"></a></p>
+<ul>
+<li>your app is hosted at url <code>http://myapp.example.com/</code></li>
+<li>but some of your templates are hosted on other domains you control such as
+<code>http://srv01.assets.example.com/</code>,  <code>http://srv02.assets.example.com/</code>, etc.</li>
+<li>and you have an open redirect at <code>http://myapp.example.com/clickThru?...</code>.</li>
+</ul>
+<p>Here is what a secure configuration for this scenario might look like:</p>
+<pre><code>angular.module(&#39;myApp&#39;, []).config(function($sceDelegateProvider) {
+  $sceDelegateProvider.resourceUrlWhitelist([
+    // Allow same origin resource loads.
+    &#39;self&#39;,
+    // Allow loading from our assets domain.  Notice the difference between * and **.
+    &#39;http://srv*.assets.example.com/**&#39;
+  ]);
+
+  // The blacklist overrides the whitelist so the open redirect here is blocked.
+  $sceDelegateProvider.resourceUrlBlacklist([
+    &#39;http://myapp.example.com/clickThru**&#39;
+  ]);
+});
+</code></pre>
+
+</div>
+
+
+
+
+<div>
+  
+
+    
+
+  
+
+  
+<h2>Methods</h2>
+<ul class="methods">
+  <li id="resourceUrlWhitelist">
+    <h3><p><code>resourceUrlWhitelist([whitelist]);</code></p>
+
+</h3>
+    <div><p>Sets/Gets the whitelist of trusted resource URLs.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        whitelist
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-array">Array</a>
+      </td>
+      <td>
+        <p>When provided, replaces the resourceUrlWhitelist with the value
+    provided.  This must be an array or null.  A snapshot of this array is used so further
+    changes to the array are ignored.</p>
+<pre><code>Follow <a href="api/ng/service/$sce#resourceUrlPatternItem">this link</a> for a description of the items
+allowed in this array.
+
+Note: **an empty whitelist array will block all URLs**!
+</code></pre>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-array">Array</a></td>
+    <td><p>the currently set whitelist array.</p>
+<p>The <strong>default value</strong> when no whitelist has been explicitly set is <code>[&#39;self&#39;]</code> allowing only
+same origin resource requests.</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="resourceUrlBlacklist">
+    <h3><p><code>resourceUrlBlacklist([blacklist]);</code></p>
+
+</h3>
+    <div><p>Sets/Gets the blacklist of trusted resource URLs.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        blacklist
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-array">Array</a>
+      </td>
+      <td>
+        <p>When provided, replaces the resourceUrlBlacklist with the value
+    provided.  This must be an array or null.  A snapshot of this array is used so further
+    changes to the array are ignored.</p>
+<pre><code>Follow <a href="api/ng/service/$sce#resourceUrlPatternItem">this link</a> for a description of the items
+allowed in this array.
+
+The typical usage for the blacklist is to **block
+[open redirects](http://cwe.mitre.org/data/definitions/601.html)** served by your domain as
+these would otherwise be trusted but actually return content from the redirected domain.
+
+Finally, **the blacklist overrides the whitelist** and has the final say.
+</code></pre>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-array">Array</a></td>
+    <td><p>the currently set blacklist array.</p>
+<p>The <strong>default value</strong> when no whitelist has been explicitly set is the empty array (i.e. there
+is no blacklist.)</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  </ul>
+  
+  
+
+
+
+  
+</div>
+
+

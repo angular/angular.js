@@ -1,0 +1,198 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/interpolate.js?message=docs($interpolateProvider)%3A%20describe%20your%20change...#L5' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/interpolate.js#L5' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">$interpolateProvider</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+  <li>
+    <a href="api/ng/service/$interpolate">- $interpolate</a>
+  </li>
+
+    <li>
+      - provider in module <a href="api/ng">ng</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Used for configuring the interpolation markup. Defaults to <code>{{</code> and <code>}}</code>.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+    
+
+  
+
+  
+<h2>Methods</h2>
+<ul class="methods">
+  <li id="startSymbol">
+    <h3><p><code>startSymbol([value]);</code></p>
+
+</h3>
+    <div><p>Symbol to denote start of expression in the interpolated string. Defaults to <code>{{</code>.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        value
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>new value to set the starting symbol to.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-string">string</a><a href="" class="label type-hint type-hint-self">self</a></td>
+    <td><p>Returns the symbol when used as getter and self if used as setter.</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="endSymbol">
+    <h3><p><code>endSymbol([value]);</code></p>
+
+</h3>
+    <div><p>Symbol to denote the end of expression in the interpolated string. Defaults to <code>}}</code>.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        value
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>new value to set the ending symbol to.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-string">string</a><a href="" class="label type-hint type-hint-self">self</a></td>
+    <td><p>Returns the symbol when used as getter and self if used as setter.</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  </ul>
+  
+  
+
+
+
+  
+  <h2 id="example">Example</h2><p>
+
+<div>
+  <a ng-click="openPlunkr('examples/example-example106', $event)" class="btn pull-right">
+    <i class="glyphicon glyphicon-edit">&nbsp;</i>
+    Edit in Plunker</a>
+
+  <div class="runnable-example"
+      path="examples/example-example106"
+      module="customInterpolationApp">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;script&gt;&#10;  var customInterpolationApp = angular.module(&#39;customInterpolationApp&#39;, []);&#10;&#10;  customInterpolationApp.config(function($interpolateProvider) {&#10;    $interpolateProvider.startSymbol(&#39;//&#39;);&#10;    $interpolateProvider.endSymbol(&#39;//&#39;);&#10;  });&#10;&#10;&#10;  customInterpolationApp.controller(&#39;DemoController&#39;, function() {&#10;      this.label = &quot;This binding is brought you by // interpolation symbols.&quot;;&#10;  });&#10;&lt;/script&gt;&#10;&lt;div ng-app=&quot;App&quot; ng-controller=&quot;DemoController as demo&quot;&gt;&#10;    //demo.label//&#10;&lt;/div&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="protractor.js"
+      type="protractor"
+      language="js">
+      <pre><code>it(&#39;should interpolate binding with custom symbols&#39;, function() {&#10;  expect(element(by.binding(&#39;demo.label&#39;)).getText()).toBe(&#39;This binding is brought you by // interpolation symbols.&#39;);&#10;});</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-example106/index.html" name="example-example106"></iframe>
+  </div>
+</div>
+
+
+</p>
+
+</div>
+
+

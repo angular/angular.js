@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Example - example-example82-debug</title>
+  <link href="animations.css" rel="stylesheet" type="text/css">
+  
+
+  <script src="../../../angular.js"></script>
+  <script src="../../../angular-animate.js"></script>
+  
+
+  
+</head>
+<body ng-app="ngAnimate">
+  Click me: <input type="checkbox" ng-model="checked" ng-init="checked=true" /><br/>
+Show when checked:
+<span ng-if="checked" class="animate-if">
+  This is removed when the checkbox is unchecked.
+</span>
+</body>
+</html>

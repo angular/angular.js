@@ -1,0 +1,35 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/error/$parse/isecfld.ngdoc?message=docs(error%2Fisecfld)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1>Error: error:isecfld
+  <div><span class='hint'>Referencing Disallowed Field in Expression</span></div>
+</h1>
+
+<div>
+    <pre class="minerr-errmsg" error-display="Attempting to access a disallowed field in Angular expressions! Expression: {0}">Attempting to access a disallowed field in Angular expressions! Expression: {0}</pre>
+</div>
+
+<h2>Description</h2>
+<div class="description">
+  <p>Occurs when an expression attempts to access one of the following fields:</p>
+<ul>
+<li><strong>proto</strong></li>
+<li><strong>defineGetter</strong></li>
+<li><strong>defineSetter</strong></li>
+<li><strong>lookupGetter</strong></li>
+<li><strong>lookupSetter</strong></li>
+</ul>
+<p>AngularJS bans access to these fields from within expressions since
+access is a known way to mess with native objects or
+to execute arbitrary Javascript code.</p>
+<p>To resolve this error, avoid using these fields in expressions. As a last resort,
+alias their value and access them through the alias instead.</p>
+<p>Example expressions that would result in this error:</p>
+<pre><code>&lt;div&gt;{{user.__proto__.hasOwnProperty = $emit}}&lt;/div&gt;
+
+&lt;div&gt;{{user.__defineGetter__(&#39;name&#39;, noop)}}&lt;/div&gt;
+</code></pre>
+
+</div>
+
+

@@ -1,0 +1,66 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/error/$injector/unpr.ngdoc?message=docs(error%2Funpr)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1>Error: error:unpr
+  <div><span class='hint'>Unknown Provider</span></div>
+</h1>
+
+<div>
+    <pre class="minerr-errmsg" error-display="Unknown provider: {0}">Unknown provider: {0}</pre>
+</div>
+
+<h2>Description</h2>
+<div class="description">
+  <p>This error results from the <code>$injector</code> being unable to resolve a required
+dependency. To fix this, make sure the dependency is defined and spelled
+correctly. For example:</p>
+<pre><code>angular.module(&#39;myApp&#39;, [])
+.controller(&#39;MyController&#39;, [&#39;myService&#39;, function (myService) {
+  // Do something with myService
+}]);
+</code></pre>
+<p>The above code will fail with <code>$injector:unpr</code> if <code>myService</code> is not defined.</p>
+<p>Making sure each dependency is defined will fix the problem, as noted below.</p>
+<pre><code>angular.module(&#39;myApp&#39;, [])
+.service(&#39;myService&#39;, function () { /* ... */ })
+.controller(&#39;MyController&#39;, [&#39;myService&#39;, function (myService) {
+  // Do something with myService
+}]);
+</code></pre>
+<p>An unknown provider error can also be caused by accidentally redefining a
+module using the <code>angular.module</code> API, as shown in the following example.</p>
+<pre><code>angular.module(&#39;myModule&#39;, [])
+  .service(&#39;myCoolService&#39;, function () { /* ... */ });
+
+angular.module(&#39;myModule&#39;, [])
+  // myModule has already been created! This is not what you want!
+  .directive(&#39;myDirective&#39;, [&#39;myCoolService&#39;, function (myCoolService) {
+    // This directive definition throws unknown provider, because myCoolService
+    // has been destroyed.
+  }]);
+</code></pre>
+<p>To fix this problem, make sure you only define each module with the
+<code>angular.module(name, [requires])</code> syntax once across your entire project.
+Retrieve it for subsequent use with <code>angular.module(name)</code>. The fixed example
+is shown below.</p>
+<pre><code>angular.module(&#39;myModule&#39;, [])
+  .service(&#39;myCoolService&#39;, function () { /* ... */ });
+
+angular.module(&#39;myModule&#39;)
+  .directive(&#39;myDirective&#39;, [&#39;myCoolService&#39;, function (myCoolService) {
+    // This directive definition does not throw unknown provider.
+  }]);
+</code></pre>
+<p>Attempting to inject one controller into another will also throw an <code>Unknown provider</code> error:</p>
+<pre><code>angular.module(&#39;myModule&#39;, [])
+.controller(&#39;MyFirstController&#39;, function() { /* ... */ })
+.controller(&#39;MySecondController&#39;, [&#39;MyFirstController&#39;, function(MyFirstController) {
+  // This controller throws an unknown provider error because
+  // MyFirstController cannot be injected.
+}]);
+</code></pre>
+<p>Use the <code>$controller</code> service if you want to instantiate controllers yourself.</p>
+
+</div>
+
+
