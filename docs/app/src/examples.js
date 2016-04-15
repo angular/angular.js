@@ -153,7 +153,7 @@ angular.module('examples', [])
 
             postData.description = ctrl.example.name;
 
-            formPostData('http://plnkr.co/edit/?p=preview', newWindow, postData);
+            formPostData('https://plnkr.co/edit/?p=preview', newWindow, postData);
           });
 
       };
