@@ -233,7 +233,7 @@ it upwards to the heroList component, which updates the original data.
 </file>
 
 <file name="heroDetail.js">
-  function HeroDetailController($scope, $element, $attrs) {
+  function HeroDetailController() {
     var ctrl = this;
 
     ctrl.update = function(prop, value) {
@@ -455,7 +455,7 @@ The examples use the [Jasmine](http://jasmine.github.io/) testing framework.
 describe('component: heroDetail', function() {
   var component, scope, hero, $componentController;
 
-  beforeEach(module('simpleComponent'));
+  beforeEach(module('heroApp'));
 
   beforeEach(inject(function($rootScope, _$componentController_) {
     scope = $rootScope.$new();
@@ -463,34 +463,24 @@ describe('component: heroDetail', function() {
     hero = {name: 'Wolverine'};
   }));
 
-  it('should set the default values of the hero', function() {
-    // It's necessary to always pass the scope in the locals, so that the controller instance can be bound to it
-    component = $componentController('heroDetail', {$scope: scope});
-
-    expect(component.hero).toEqual({
-      name: undefined,
-      location: 'unknown'
-    });
-  });
-
   it('should assign the name bindings to the hero object', function() {
     // Here we are passing actual bindings to the component
-
     component = $componentController('heroDetail',
-      {$scope: scope},
+      null,
       {hero: hero}
     );
     expect(component.hero.name).toBe('Wolverine');
   });
 
   it('should call the onDelete binding when a hero is deleted', function() {
+    var deleteSpy = jasmine.createSpy('deleteSpy');
     component = $componentController('heroDetail',
-      {$scope: scope},
-      {hero: hero, onDelete: jasmine.createSpy('deleteSpy')}
+      null,
+      {hero: hero, onDelete: deleteSpy}
     );
 
     component.onDelete({hero: component.hero});
-    expect(spy('deleteSpy')).toHaveBeenCalledWith(component.hero);
+    expect(deleteSpy).toHaveBeenCalledWith({hero: component.hero});
   });
 
 });
