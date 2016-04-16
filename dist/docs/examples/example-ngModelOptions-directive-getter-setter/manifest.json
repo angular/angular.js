@@ -1,7 +1,0 @@
-{
-  "name": "example-ngModelOptions-directive-getter-setter",
-  "files": [
-    "index-production.html",
-    "app.js"
-  ]
-}

@@ -1,7 +1,0 @@
-{
-  "name": "example-ngChange-directive",
-  "files": [
-    "index-production.html",
-    "protractor.js"
-  ]
-}
