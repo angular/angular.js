@@ -34,6 +34,15 @@ $provide.value("$locale", {
       "\u12d3\u122d\u1262",
       "\u1240\u12f3\u121d"
     ],
+    "ERANAMES": [
+      "\u12d3/\u12d3",
+      "\u12d3/\u121d"
+    ],
+    "ERAS": [
+      "\u12d3/\u12d3",
+      "\u12d3/\u121d"
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "\u1303\u1295\u12e9\u12c8\u122a",
       "\u134c\u1265\u1229\u12c8\u122a",
@@ -71,6 +80,24 @@ $provide.value("$locale", {
       "\u1296\u126c\u121d",
       "\u12f2\u1234\u121d"
     ],
+    "STANDALONEMONTH": [
+      "\u1303\u1295\u12e9\u12c8\u122a",
+      "\u134c\u1265\u1229\u12c8\u122a",
+      "\u121b\u122d\u127d",
+      "\u12a4\u1355\u1228\u120d",
+      "\u121c\u12ed",
+      "\u1301\u1295",
+      "\u1301\u120b\u12ed",
+      "\u12a6\u1308\u1235\u1275",
+      "\u1234\u1355\u1274\u121d\u1260\u122d",
+      "\u12a6\u12ad\u1270\u12cd\u1260\u122d",
+      "\u1296\u126c\u121d\u1260\u122d",
+      "\u12f2\u1234\u121d\u1260\u122d"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
+    ],
     "fullDate": "EEEE\u1363 dd MMMM \u1218\u12d3\u120d\u1272 y G",
     "longDate": "dd MMMM y",
     "medium": "dd-MMM-y h:mm:ss a",
@@ -102,7 +129,7 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "\u00a4-",
+        "negPre": "-\u00a4",
         "negSuf": "",
         "posPre": "\u00a4",
         "posSuf": ""
@@ -110,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "ti",
+  "localeID": "ti",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

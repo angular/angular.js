@@ -1,8 +1,8 @@
-<a href='https://github.com/angular/angular.js/edit/master/src/ng/directive/input.js?message=docs(input[radio])%3A%20describe%20your%20change...#L851' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/directive/input.js?message=docs(input[radio])%3A%20describe%20your%20change...#L967' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
 
 
 
-<a href='https://github.com/angular/angular.js/tree/master/src/ng/directive/input.js#L851' class='view-source pull-right btn btn-primary'>
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/directive/input.js#L967' class='view-source pull-right btn btn-primary'>
   <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
 </a>
 
@@ -27,6 +27,8 @@
 
 
 
+
+
 <div>
   
 
@@ -35,11 +37,12 @@
   <ul>
     
     <li>This directive executes at priority level 0.</li>
+    
   </ul>
 
   
   <h2>Usage</h2>
-  <pre><code>&lt;input type=&quot;radio&quot;&#10;       ng-model=&quot;&quot;&#10;       value=&quot;&quot;&#10;       [name=&quot;&quot;]&#10;       [ng-change=&quot;&quot;]&#10;       ng-value=&quot;&quot;&gt;</code></pre>
+  <pre><code>&lt;input type=&quot;radio&quot;&#10;       ng-model=&quot;string&quot;&#10;       value=&quot;string&quot;&#10;       [name=&quot;string&quot;]&#10;       [ng-change=&quot;string&quot;]&#10;       ng-value=&quot;string&quot;&gt;</code></pre>
 
 <section class="api-section">
   <h3>Arguments</h3>
@@ -80,7 +83,9 @@
         <a href="" class="label type-hint type-hint-string">string</a>
       </td>
       <td>
-        <p>The value to which the expression should be set when selected.</p>
+        <p>The value to which the <code>ngModel</code> expression should be set when selected.
+   Note that <code>value</code> only supports <code>string</code> values, i.e. the scope model needs to be a string,
+   too. Use <code>ngValue</code> if you need complex models (<code>number</code>, <code>object</code>, ...).</p>
 
         
       </td>
@@ -129,8 +134,9 @@
         <a href="" class="label type-hint type-hint-string">string</a>
       </td>
       <td>
-        <p>Angular expression which sets the value to which the expression should
-   be set when selected.</p>
+        <p>Angular expression to which <code>ngModel</code> will be be set when the radio
+   is selected. Should be used instead of the <code>value</code> attribute if you need
+   a non-string <code>ngModel</code> (<code>boolean</code>, <code>array</code>, ...).</p>
 
         
       </td>
@@ -147,9 +153,7 @@
   <h2 id="example">Example</h2><p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-radio-input-directive', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-radio-input-directive"></plnkr-opener>
 
   <div class="runnable-example"
       path="examples/example-radio-input-directive"
@@ -161,7 +165,7 @@
       name="index.html"
       language="html"
       type="html">
-      <pre><code>&lt;script&gt;&#10;  angular.module(&#39;radioExample&#39;, [])&#10;    .controller(&#39;ExampleController&#39;, [&#39;$scope&#39;, function($scope) {&#10;      $scope.color = {&#10;        name: &#39;blue&#39;&#10;      };&#10;      $scope.specialValue = {&#10;        &quot;id&quot;: &quot;12345&quot;,&#10;        &quot;value&quot;: &quot;green&quot;&#10;      };&#10;    }]);&#10;&lt;/script&gt;&#10;&lt;form name=&quot;myForm&quot; ng-controller=&quot;ExampleController&quot;&gt;&#10;  &lt;input type=&quot;radio&quot; ng-model=&quot;color.name&quot; value=&quot;red&quot;&gt;  Red &lt;br/&gt;&#10;  &lt;input type=&quot;radio&quot; ng-model=&quot;color.name&quot; ng-value=&quot;specialValue&quot;&gt; Green &lt;br/&gt;&#10;  &lt;input type=&quot;radio&quot; ng-model=&quot;color.name&quot; value=&quot;blue&quot;&gt; Blue &lt;br/&gt;&#10;  &lt;tt&gt;color = {{color.name | json}}&lt;/tt&gt;&lt;br/&gt;&#10; &lt;/form&gt;&#10; Note that `ng-value=&quot;specialValue&quot;` sets radio item&#39;s value to be the value of `$scope.specialValue`.</code></pre>
+      <pre><code>&lt;script&gt;&#10;  angular.module(&#39;radioExample&#39;, [])&#10;    .controller(&#39;ExampleController&#39;, [&#39;$scope&#39;, function($scope) {&#10;      $scope.color = {&#10;        name: &#39;blue&#39;&#10;      };&#10;      $scope.specialValue = {&#10;        &quot;id&quot;: &quot;12345&quot;,&#10;        &quot;value&quot;: &quot;green&quot;&#10;      };&#10;    }]);&#10;&lt;/script&gt;&#10;&lt;form name=&quot;myForm&quot; ng-controller=&quot;ExampleController&quot;&gt;&#10;  &lt;label&gt;&#10;    &lt;input type=&quot;radio&quot; ng-model=&quot;color.name&quot; value=&quot;red&quot;&gt;&#10;    Red&#10;  &lt;/label&gt;&lt;br/&gt;&#10;  &lt;label&gt;&#10;    &lt;input type=&quot;radio&quot; ng-model=&quot;color.name&quot; ng-value=&quot;specialValue&quot;&gt;&#10;    Green&#10;  &lt;/label&gt;&lt;br/&gt;&#10;  &lt;label&gt;&#10;    &lt;input type=&quot;radio&quot; ng-model=&quot;color.name&quot; value=&quot;blue&quot;&gt;&#10;    Blue&#10;  &lt;/label&gt;&lt;br/&gt;&#10;  &lt;tt&gt;color = {{color.name | json}}&lt;/tt&gt;&lt;br/&gt;&#10; &lt;/form&gt;&#10; Note that `ng-value=&quot;specialValue&quot;` sets radio item&#39;s value to be the value of `$scope.specialValue`.</code></pre>
     </div>
   
     <div class="runnable-example-file" 

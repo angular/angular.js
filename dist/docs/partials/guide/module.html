@@ -21,12 +21,10 @@ should be bootstrapped. There are several advantages to this approach:</p>
 <p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-example39', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-example41"></plnkr-opener>
 
   <div class="runnable-example"
-      path="examples/example-example39"
+      path="examples/example-example41"
       ng-app-included="true">
 
   
@@ -34,25 +32,25 @@ should be bootstrapped. There are several advantages to this approach:</p>
       name="index.html"
       language="html"
       type="html">
-      <pre><code>&lt;div ng-app=&quot;myApp&quot;&gt;&#10;  &lt;div&gt;&#10;    {{ &#39;World&#39; | greet }}&#10;  &lt;/div&gt;&#10;&lt;/div&gt;</code></pre>
+      <pre><code>&lt;div ng-app=&quot;myApp&quot;&gt;&#13;&#10;  &lt;div&gt;&#13;&#10;    {{ &#39;World&#39; | greet }}&#13;&#10;  &lt;/div&gt;&#13;&#10;&lt;/div&gt;&#13;</code></pre>
     </div>
   
     <div class="runnable-example-file" 
       name="script.js"
       language="js"
       type="js">
-      <pre><code>// declare a module&#10;var myAppModule = angular.module(&#39;myApp&#39;, []);&#10;&#10;// configure the module.&#10;// in this example we will create a greeting filter&#10;myAppModule.filter(&#39;greet&#39;, function() {&#10; return function(name) {&#10;    return &#39;Hello, &#39; + name + &#39;!&#39;;&#10;  };&#10;});</code></pre>
+      <pre><code>// declare a module&#13;&#10;var myAppModule = angular.module(&#39;myApp&#39;, []);&#13;&#10;&#10;// configure the module.&#13;&#10;// in this example we will create a greeting filter&#13;&#10;myAppModule.filter(&#39;greet&#39;, function() {&#13;&#10; return function(name) {&#13;&#10;    return &#39;Hello, &#39; + name + &#39;!&#39;;&#13;&#10;  };&#13;&#10;});&#13;</code></pre>
     </div>
   
     <div class="runnable-example-file" 
       name="protractor.js"
       type="protractor"
       language="js">
-      <pre><code>it(&#39;should add Hello to the name&#39;, function() {&#10;  expect(element(by.binding(&quot;&#39;World&#39; | greet&quot;)).getText()).toEqual(&#39;Hello, World!&#39;);&#10;});</code></pre>
+      <pre><code>it(&#39;should add Hello to the name&#39;, function() {&#13;&#10;  expect(element(by.binding(&quot;&#39;World&#39; | greet&quot;)).getText()).toEqual(&#39;Hello, World!&#39;);&#13;&#10;});&#13;</code></pre>
     </div>
   
 
-    <iframe class="runnable-example-frame" src="examples/example-example39/index.html" name="example-example39"></iframe>
+    <iframe class="runnable-example-frame" src="examples/example-example41/index.html" name="example-example41"></iframe>
   </div>
 </div>
 
@@ -75,19 +73,15 @@ that you break your application to multiple modules like this:</p>
 <li>And an application level module which depends on the above modules and contains any
 initialization code.</li>
 </ul>
-<p>We&#39;ve also
-<a href="http://blog.angularjs.org/2014/02/an-angularjs-style-guide-and-best.html">written a document</a>
-on how we organize large apps at Google.</p>
+<p>You can find a community<br><a href="https://github.com/johnpapa/angular-styleguide">style guide</a> to help yourself when application grows.</p>
 <p>The above is a suggestion. Tailor it to your needs.</p>
 <p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-example40', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-example42"></plnkr-opener>
 
   <div class="runnable-example"
-      path="examples/example-example40"
+      path="examples/example-example42"
       module="xmpl">
 
   
@@ -95,25 +89,25 @@ on how we organize large apps at Google.</p>
       name="index.html"
       language="html"
       type="html">
-      <pre><code>&lt;div ng-controller=&quot;XmplController&quot;&gt;&#10;  {{ greeting }}&#10;&lt;/div&gt;</code></pre>
+      <pre><code>&lt;div ng-controller=&quot;XmplController&quot;&gt;&#13;&#10;  {{ greeting }}&#13;&#10;&lt;/div&gt;&#13;</code></pre>
     </div>
   
     <div class="runnable-example-file" 
       name="script.js"
       language="js"
       type="js">
-      <pre><code>angular.module(&#39;xmpl.service&#39;, [])&#10;&#10;  .value(&#39;greeter&#39;, {&#10;    salutation: &#39;Hello&#39;,&#10;    localize: function(localization) {&#10;      this.salutation = localization.salutation;&#10;    },&#10;    greet: function(name) {&#10;      return this.salutation + &#39; &#39; + name + &#39;!&#39;;&#10;    }&#10;  })&#10;&#10;  .value(&#39;user&#39;, {&#10;    load: function(name) {&#10;      this.name = name;&#10;    }&#10;  });&#10;&#10;angular.module(&#39;xmpl.directive&#39;, []);&#10;&#10;angular.module(&#39;xmpl.filter&#39;, []);&#10;&#10;angular.module(&#39;xmpl&#39;, [&#39;xmpl.service&#39;, &#39;xmpl.directive&#39;, &#39;xmpl.filter&#39;])&#10;&#10;  .run(function(greeter, user) {&#10;    // This is effectively part of the main method initialization code&#10;    greeter.localize({&#10;      salutation: &#39;Bonjour&#39;&#10;    });&#10;    user.load(&#39;World&#39;);&#10;  })&#10;&#10;  .controller(&#39;XmplController&#39;, function($scope, greeter, user){&#10;    $scope.greeting = greeter.greet(user.name);&#10;  });</code></pre>
+      <pre><code>angular.module(&#39;xmpl.service&#39;, [])&#13;&#10;&#10;  .value(&#39;greeter&#39;, {&#13;&#10;    salutation: &#39;Hello&#39;,&#13;&#10;    localize: function(localization) {&#13;&#10;      this.salutation = localization.salutation;&#13;&#10;    },&#13;&#10;    greet: function(name) {&#13;&#10;      return this.salutation + &#39; &#39; + name + &#39;!&#39;;&#13;&#10;    }&#13;&#10;  })&#13;&#10;&#10;  .value(&#39;user&#39;, {&#13;&#10;    load: function(name) {&#13;&#10;      this.name = name;&#13;&#10;    }&#13;&#10;  });&#13;&#10;&#10;angular.module(&#39;xmpl.directive&#39;, []);&#13;&#10;&#10;angular.module(&#39;xmpl.filter&#39;, []);&#13;&#10;&#10;angular.module(&#39;xmpl&#39;, [&#39;xmpl.service&#39;, &#39;xmpl.directive&#39;, &#39;xmpl.filter&#39;])&#13;&#10;&#10;  .run(function(greeter, user) {&#13;&#10;    // This is effectively part of the main method initialization code&#13;&#10;    greeter.localize({&#13;&#10;      salutation: &#39;Bonjour&#39;&#13;&#10;    });&#13;&#10;    user.load(&#39;World&#39;);&#13;&#10;  })&#13;&#10;&#10;  .controller(&#39;XmplController&#39;, function($scope, greeter, user){&#13;&#10;    $scope.greeting = greeter.greet(user.name);&#13;&#10;  });&#13;</code></pre>
     </div>
   
     <div class="runnable-example-file" 
       name="protractor.js"
       type="protractor"
       language="js">
-      <pre><code>it(&#39;should add Hello to the name&#39;, function() {&#10;  expect(element(by.binding(&quot;greeting&quot;)).getText()).toEqual(&#39;Bonjour World!&#39;);&#10;});</code></pre>
+      <pre><code>it(&#39;should add Hello to the name&#39;, function() {&#13;&#10;  expect(element(by.binding(&quot;greeting&quot;)).getText()).toEqual(&#39;Bonjour World!&#39;);&#13;&#10;});&#13;</code></pre>
     </div>
   
 
-    <iframe class="runnable-example-frame" src="examples/example-example40/index.html" name="example-example40"></iframe>
+    <iframe class="runnable-example-frame" src="examples/example-example42/index.html" name="example-example42"></iframe>
   </div>
 </div>
 
@@ -121,7 +115,7 @@ on how we organize large apps at Google.</p>
 </p>
 <h1 id="module-loading-dependencies">Module Loading &amp; Dependencies</h1>
 <p>A module is a collection of configuration and run blocks which get applied to the application
-during the bootstrap process. In its simplest form the module consist of a collection of two kinds
+during the bootstrap process. In its simplest form the module consists of a collection of two kinds
 of blocks:</p>
 <ol>
 <li><strong>Configuration blocks</strong> - get executed during the provider registrations and configuration

@@ -1,8 +1,8 @@
-<a href='https://github.com/angular/angular.js/edit/master/src/ngSanitize/sanitize.js?message=docs($sanitize)%3A%20describe%20your%20change...#L37' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+<a href='https://github.com/angular/angular.js/edit/master/src/ngSanitize/sanitize.js?message=docs($sanitize)%3A%20describe%20your%20change...#L31' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
 
 
 
-<a href='https://github.com/angular/angular.js/tree/master/src/ngSanitize/sanitize.js#L37' class='view-source pull-right btn btn-primary'>
+<a href='https://github.com/angular/angular.js/tree/master/src/ngSanitize/sanitize.js#L31' class='view-source pull-right btn btn-primary'>
   <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
 </a>
 
@@ -11,7 +11,9 @@
   <h1 class="api-profile-header-heading">$sanitize</h1>
   <ol class="api-profile-header-structure naked-list step-list">
     
-  
+  <li>
+    <a href="api/ngSanitize/provider/$sanitizeProvider">- $sanitizeProvider</a>
+  </li>
 
     <li>
       - service in module <a href="api/ngSanitize">ngSanitize</a>
@@ -22,15 +24,17 @@
 
 
 <div class="api-profile-description">
-  <p>The input is sanitized by parsing the HTML into tokens. All safe tokens (from a whitelist) are
+  <p>Sanitizes an html string by stripping all potentially dangerous tokens.</p>
+<p>  The input is sanitized by parsing the HTML into tokens. All safe tokens (from a whitelist) are
   then serialized back to properly escaped html string. This means that no unsafe input can make
-  it into the returned string, however, since our parser is more strict than a typical browser
-  parser, it&#39;s possible that some obscure input, which would be recognized as valid HTML by a
-  browser, won&#39;t make it through the sanitizer. The input may also contain SVG markup.
-  The whitelist is configured using the functions <code>aHrefSanitizationWhitelist</code> and
-  <code>imgSrcSanitizationWhitelist</code> of <a href="api/ng/provider/$compileProvider"><code>$compileProvider</code></a>.</p>
+  it into the returned string.</p>
+<p>  The whitelist for URL sanitization of attribute values is configured using the functions
+  <code>aHrefSanitizationWhitelist</code> and <code>imgSrcSanitizationWhitelist</code> of <a href="api/ng/provider/$compileProvider"><code>$compileProvider</code></a>.</p>
+<p>  The input may also contain SVG markup if this is enabled via <a href="api/ngSanitize/provider/$sanitizeProvider"><code>$sanitizeProvider</code></a>.</p>
 
 </div>
+
+
 
 
 
@@ -101,12 +105,10 @@
   <h2 id="example">Example</h2><p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-example113', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-example114"></plnkr-opener>
 
   <div class="runnable-example"
-      path="examples/example-example113"
+      path="examples/example-example114"
       module="sanitizeExample"
       deps="angular-sanitize.js">
 
@@ -126,7 +128,7 @@
     </div>
   
 
-    <iframe class="runnable-example-frame" src="examples/example-example113/index.html" name="example-example113"></iframe>
+    <iframe class="runnable-example-frame" src="examples/example-example114/index.html" name="example-example114"></iframe>
   </div>
 </div>
 

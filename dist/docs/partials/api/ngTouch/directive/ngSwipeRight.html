@@ -31,6 +31,8 @@ too.</p>
 
 
 
+
+
 <div>
   
 
@@ -39,6 +41,7 @@ too.</p>
   <ul>
     
     <li>This directive executes at priority level 0.</li>
+    
   </ul>
 
   
@@ -47,7 +50,7 @@ too.</p>
   
     <ul>
     <li>as attribute:
-        <pre><code>&lt;ANY&#10;  ng-swipe-right=&quot;&quot;&gt;&#10;...&#10;&lt;/ANY&gt;</code></pre>
+        <pre><code>&lt;ANY&#10;  ng-swipe-right=&quot;expression&quot;&gt;&#10;...&#10;&lt;/ANY&gt;</code></pre>
       </li>
     
   </div>
@@ -93,12 +96,10 @@ upon right swipe. (Event object is available as <code>$event</code>)</p>
   <h2 id="example">Example</h2><p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-example116', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-example117"></plnkr-opener>
 
   <div class="runnable-example"
-      path="examples/example-example116"
+      path="examples/example-example117"
       module="ngSwipeRightExample"
       deps="angular-touch.js">
 
@@ -118,7 +119,7 @@ upon right swipe. (Event object is available as <code>$event</code>)</p>
     </div>
   
 
-    <iframe class="runnable-example-frame" src="examples/example-example116/index.html" name="example-example116"></iframe>
+    <iframe class="runnable-example-frame" src="examples/example-example117/index.html" name="example-example117"></iframe>
   </div>
 </div>
 

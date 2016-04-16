@@ -12,6 +12,14 @@
       </tr>
       
       <tr>
+        <td><a href="api/ng/directive/ngJq">ngJq</a></td>
+        <td><p>Use this directive to force the angular.element library.  This should be
+used to force either jqLite by leaving ng-jq blank or setting the name of
+the jquery variable under window (eg. jQuery).</p>
+</td>
+      </tr>
+      
+      <tr>
         <td><a href="api/ng/directive/ngApp">ngApp</a></td>
         <td><p>Use this directive to <strong>auto-bootstrap</strong> an AngularJS application. The <code>ngApp</code> directive
 designates the <strong>root element</strong> of the application and is typically placed near the root element
@@ -57,59 +65,32 @@ text <code>{{hash}}</code> until Angular replaces the expression inside
       
       <tr>
         <td><a href="api/ng/directive/ngDisabled">ngDisabled</a></td>
-        <td><p>We shouldn&#39;t do this, because it will make the button enabled on Chrome/Firefox but not on IE8 and older IEs:</p>
-<pre><code class="lang-html">&lt;div ng-init=&quot;scope = { isDisabled: false }&quot;&gt;
- &lt;button disabled=&quot;{{scope.isDisabled}}&quot;&gt;Disabled&lt;/button&gt;
-&lt;/div&gt;
-</code></pre>
+        <td><p>This directive sets the <code>disabled</code> attribute on the element if the
+<a href="guide/expression">expression</a> inside <code>ngDisabled</code> evaluates to truthy.</p>
 </td>
       </tr>
       
       <tr>
         <td><a href="api/ng/directive/ngChecked">ngChecked</a></td>
-        <td><p>The HTML specification does not require browsers to preserve the values of boolean attributes
-such as checked. (Their presence means true and their absence means false.)
-If we put an Angular interpolation expression into such an attribute then the
-binding information would be lost when the browser removes the attribute.
-The <code>ngChecked</code> directive solves this problem for the <code>checked</code> attribute.
-This complementary directive is not removed by the browser and so provides
-a permanent reliable place to store the binding information.</p>
+        <td><p>Sets the <code>checked</code> attribute on the element, if the expression inside <code>ngChecked</code> is truthy.</p>
 </td>
       </tr>
       
       <tr>
         <td><a href="api/ng/directive/ngReadonly">ngReadonly</a></td>
-        <td><p>The HTML specification does not require browsers to preserve the values of boolean attributes
-such as readonly. (Their presence means true and their absence means false.)
-If we put an Angular interpolation expression into such an attribute then the
-binding information would be lost when the browser removes the attribute.
-The <code>ngReadonly</code> directive solves this problem for the <code>readonly</code> attribute.
-This complementary directive is not removed by the browser and so provides
-a permanent reliable place to store the binding information.</p>
+        <td><p>Sets the <code>readOnly</code> attribute on the element, if the expression inside <code>ngReadonly</code> is truthy.</p>
 </td>
       </tr>
       
       <tr>
         <td><a href="api/ng/directive/ngSelected">ngSelected</a></td>
-        <td><p>The HTML specification does not require browsers to preserve the values of boolean attributes
-such as selected. (Their presence means true and their absence means false.)
-If we put an Angular interpolation expression into such an attribute then the
-binding information would be lost when the browser removes the attribute.
-The <code>ngSelected</code> directive solves this problem for the <code>selected</code> attribute.
-This complementary directive is not removed by the browser and so provides
-a permanent reliable place to store the binding information.</p>
+        <td><p>Sets the <code>selected</code> attribute on the element, if the expression inside <code>ngSelected</code> is truthy.</p>
 </td>
       </tr>
       
       <tr>
         <td><a href="api/ng/directive/ngOpen">ngOpen</a></td>
-        <td><p>The HTML specification does not require browsers to preserve the values of boolean attributes
-such as open. (Their presence means true and their absence means false.)
-If we put an Angular interpolation expression into such an attribute then the
-binding information would be lost when the browser removes the attribute.
-The <code>ngOpen</code> directive solves this problem for the <code>open</code> attribute.
-This complementary directive is not removed by the browser and so provides
-a permanent reliable place to store the binding information.</p>
+        <td><p>Sets the <code>open</code> attribute on the element, if the expression inside <code>ngOpen</code> is truthy.</p>
 </td>
       </tr>
       
@@ -229,7 +210,8 @@ supports the principles behind the Model-View-Controller design pattern.</p>
       
       <tr>
         <td><a href="api/ng/directive/ngCsp">ngCsp</a></td>
-        <td><p>Enables <a href="https://developer.mozilla.org/en/Security/CSP">CSP (Content Security Policy)</a> support.</p>
+        <td><p>Angular has some features that can break certain
+<a href="https://developer.mozilla.org/en/Security/CSP">CSP (Content Security Policy)</a> rules.</p>
 </td>
       </tr>
       
@@ -471,6 +453,35 @@ assigned through the element&#39;s <code>id</code>, which can then be used as a 
       <tr>
         <td><a href="api/ng/directive/select">select</a></td>
         <td><p>HTML <code>SELECT</code> element with angular data-binding.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/directive/ngRequired">ngRequired</a></td>
+        <td><p>ngRequired adds the required <a href="api/ng/type/ngModel.NgModelController#$validators"><code>validator</code></a> to <a href="api/ng/directive/ngModel"><code>ngModel</code></a>.
+It is most often used for <a href="api/ng/directive/input"><code>input</code></a> and <a href="api/ng/directive/select"><code>select</code></a> controls, but can also be
+applied to custom controls.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/directive/ngPattern">ngPattern</a></td>
+        <td><p>ngPattern adds the pattern <a href="api/ng/type/ngModel.NgModelController#$validators"><code>validator</code></a> to <a href="api/ng/directive/ngModel"><code>ngModel</code></a>.
+It is most often used for text-based <a href="api/ng/directive/input"><code>input</code></a> controls, but can also be applied to custom text-based controls.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/directive/ngMaxlength">ngMaxlength</a></td>
+        <td><p>ngMaxlength adds the maxlength <a href="api/ng/type/ngModel.NgModelController#$validators"><code>validator</code></a> to <a href="api/ng/directive/ngModel"><code>ngModel</code></a>.
+It is most often used for text-based <a href="api/ng/directive/input"><code>input</code></a> controls, but can also be applied to custom text-based controls.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/directive/ngMinlength">ngMinlength</a></td>
+        <td><p>ngMinlength adds the minlength <a href="api/ng/type/ngModel.NgModelController#$validators"><code>validator</code></a> to <a href="api/ng/directive/ngModel"><code>ngModel</code></a>.
+It is most often used for text-based <a href="api/ng/directive/input"><code>input</code></a> controls, but can also be applied to custom text-based controls.</p>
 </td>
       </tr>
       

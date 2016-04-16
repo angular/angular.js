@@ -11,9 +11,10 @@
 
   
 </head>
-<body ng-app="docsTransclusionExample">
+<body ng-app="docsTimeDirective">
   <div ng-controller="Controller">
-  <my-dialog>Check out the contents, {{name}}!</my-dialog>
+  Date format: <input ng-model="format"> <hr/>
+  Current time is: <span my-current-time="format"></span>
 </div>
 </body>
 </html>

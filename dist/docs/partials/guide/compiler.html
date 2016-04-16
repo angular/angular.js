@@ -60,12 +60,10 @@ to write directives.</p>
 <p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-example5', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-example6"></plnkr-opener>
 
   <div class="runnable-example"
-      path="examples/example-example5"
+      path="examples/example-example6"
       module="drag">
 
   
@@ -73,18 +71,18 @@ to write directives.</p>
       name="script.js"
       language="js"
       type="js">
-      <pre><code>angular.module(&#39;drag&#39;, []).&#10;directive(&#39;draggable&#39;, function($document) {&#10;  return function(scope, element, attr) {&#10;    var startX = 0, startY = 0, x = 0, y = 0;&#10;    element.css({&#10;     position: &#39;relative&#39;,&#10;     border: &#39;1px solid red&#39;,&#10;     backgroundColor: &#39;lightgrey&#39;,&#10;     cursor: &#39;pointer&#39;,&#10;     display: &#39;block&#39;,&#10;     width: &#39;65px&#39;&#10;    });&#10;    element.on(&#39;mousedown&#39;, function(event) {&#10;      // Prevent default dragging of selected content&#10;      event.preventDefault();&#10;      startX = event.screenX - x;&#10;      startY = event.screenY - y;&#10;      $document.on(&#39;mousemove&#39;, mousemove);&#10;      $document.on(&#39;mouseup&#39;, mouseup);&#10;    });&#10;&#10;    function mousemove(event) {&#10;      y = event.screenY - startY;&#10;      x = event.screenX - startX;&#10;      element.css({&#10;        top: y + &#39;px&#39;,&#10;        left:  x + &#39;px&#39;&#10;      });&#10;    }&#10;&#10;    function mouseup() {&#10;      $document.off(&#39;mousemove&#39;, mousemove);&#10;      $document.off(&#39;mouseup&#39;, mouseup);&#10;    }&#10;  };&#10;});</code></pre>
+      <pre><code>angular.module(&#39;drag&#39;, []).&#13;&#10;directive(&#39;draggable&#39;, function($document) {&#13;&#10;  return function(scope, element, attr) {&#13;&#10;    var startX = 0, startY = 0, x = 0, y = 0;&#13;&#10;    element.css({&#13;&#10;     position: &#39;relative&#39;,&#13;&#10;     border: &#39;1px solid red&#39;,&#13;&#10;     backgroundColor: &#39;lightgrey&#39;,&#13;&#10;     cursor: &#39;pointer&#39;,&#13;&#10;     display: &#39;block&#39;,&#13;&#10;     width: &#39;65px&#39;&#13;&#10;    });&#13;&#10;    element.on(&#39;mousedown&#39;, function(event) {&#13;&#10;      // Prevent default dragging of selected content&#13;&#10;      event.preventDefault();&#13;&#10;      startX = event.screenX - x;&#13;&#10;      startY = event.screenY - y;&#13;&#10;      $document.on(&#39;mousemove&#39;, mousemove);&#13;&#10;      $document.on(&#39;mouseup&#39;, mouseup);&#13;&#10;    });&#13;&#10;&#10;    function mousemove(event) {&#13;&#10;      y = event.screenY - startY;&#13;&#10;      x = event.screenX - startX;&#13;&#10;      element.css({&#13;&#10;        top: y + &#39;px&#39;,&#13;&#10;        left:  x + &#39;px&#39;&#13;&#10;      });&#13;&#10;    }&#13;&#10;&#10;    function mouseup() {&#13;&#10;      $document.off(&#39;mousemove&#39;, mousemove);&#13;&#10;      $document.off(&#39;mouseup&#39;, mouseup);&#13;&#10;    }&#13;&#10;  };&#13;&#10;});&#13;</code></pre>
     </div>
   
     <div class="runnable-example-file" 
       name="index.html"
       language="html"
       type="html">
-      <pre><code>&lt;span draggable&gt;Drag ME&lt;/span&gt;</code></pre>
+      <pre><code>&lt;span draggable&gt;Drag ME&lt;/span&gt;&#13;</code></pre>
     </div>
   
 
-    <iframe class="runnable-example-frame" src="examples/example-example5/index.html" name="example-example5"></iframe>
+    <iframe class="runnable-example-frame" src="examples/example-example6/index.html" name="example-example6"></iframe>
   </div>
 </div>
 

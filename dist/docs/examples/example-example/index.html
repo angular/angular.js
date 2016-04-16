@@ -6,14 +6,18 @@
   
 
   <script src="../../../angular.min.js"></script>
-  <script src="script.js"></script>
+  <script src="app.js"></script>
   
 
   
 </head>
-<body ng-app="locationExample">
-  <div ng-controller="LocationController">
-  <input type="text" ng-model="locationPath" ng-model-options="{ getterSetter: true }" />
-</div>
+<body ng-app="numfmt-error-module">
+  <table>
+  <tr ng-repeat="x in ['0', '1']">
+    <td>
+      <input type="number" string-to-number ng-model="x" /> {{ x }} : {{ typeOf(x) }}
+    </td>
+  </tr>
+</table>
 </body>
 </html>

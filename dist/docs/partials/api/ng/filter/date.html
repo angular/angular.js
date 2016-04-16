@@ -1,8 +1,8 @@
-<a href='https://github.com/angular/angular.js/edit/master/src/ng/filter/filters.js?message=docs(date)%3A%20describe%20your%20change...#L335' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/filter/filters.js?message=docs(date)%3A%20describe%20your%20change...#L481' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
 
 
 
-<a href='https://github.com/angular/angular.js/tree/master/src/ng/filter/filters.js#L335' class='view-source pull-right btn btn-primary'>
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/filter/filters.js#L481' class='view-source pull-right btn btn-primary'>
   <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
 </a>
 
@@ -30,6 +30,7 @@
 <li><code>&#39;MMM&#39;</code>: Month in year (Jan-Dec)</li>
 <li><code>&#39;MM&#39;</code>: Month in year, padded (01-12)</li>
 <li><code>&#39;M&#39;</code>: Month in year (1-12)</li>
+<li><code>&#39;LLLL&#39;</code>: Stand-alone month in year (January-December)</li>
 <li><code>&#39;dd&#39;</code>: Day in month, padded (01-31)</li>
 <li><code>&#39;d&#39;</code>: Day in month (1-31)</li>
 <li><code>&#39;EEEE&#39;</code>: Day in Week,(Sunday-Saturday)</li>
@@ -46,7 +47,9 @@
 <li><code>&#39;a&#39;</code>: AM/PM marker</li>
 <li><code>&#39;Z&#39;</code>: 4 digit (+sign) representation of the timezone offset (-1200-+1200)</li>
 <li><code>&#39;ww&#39;</code>: Week of year, padded (00-53). Week 01 is the week with the first Thursday of the year</li>
-<li><p><code>&#39;w&#39;</code>: Week of year (0-53). Week 1 is the week with the first Thursday of the year</p>
+<li><code>&#39;w&#39;</code>: Week of year (0-53). Week 1 is the week with the first Thursday of the year</li>
+<li><code>&#39;G&#39;</code>, <code>&#39;GG&#39;</code>, <code>&#39;GGG&#39;</code>: The abbreviated form of the era string (e.g. &#39;AD&#39;)</li>
+<li><p><code>&#39;GGGG&#39;</code>: The long form of the era string (e.g. &#39;Anno Domini&#39;)</p>
 <p><code>format</code> string can also be one of the following predefined
 <a href="guide/i18n">localizable formats</a>:</p>
 </li>
@@ -68,6 +71,8 @@
 </ul>
 
 </div>
+
+
 
 
 
@@ -145,7 +150,9 @@
         <a href="" class="label type-hint type-hint-string">string</a>
       </td>
       <td>
-        <p>Timezone to be used for formatting. Right now, only <code>&#39;UTC&#39;</code> is supported.
+        <p>Timezone to be used for formatting. It understands UTC/GMT and the
+   continental US time zone abbreviations, but for general use, use a time zone offset, for
+   example, <code>&#39;+0430&#39;</code> (4 hours, 30 minutes east of the Greenwich meridian)
    If not specified, the timezone of the browser will be used.</p>
 
         
@@ -171,12 +178,10 @@
   <h2 id="example">Example</h2><p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-example100', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-example101"></plnkr-opener>
 
   <div class="runnable-example"
-      path="examples/example-example100">
+      path="examples/example-example101">
 
   
     <div class="runnable-example-file" 
@@ -194,7 +199,7 @@
     </div>
   
 
-    <iframe class="runnable-example-frame" src="examples/example-example100/index.html" name="example-example100"></iframe>
+    <iframe class="runnable-example-frame" src="examples/example-example101/index.html" name="example-example101"></iframe>
   </div>
 </div>
 

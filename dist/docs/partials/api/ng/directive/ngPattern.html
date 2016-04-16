@@ -1,0 +1,121 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/directive/validators.js?message=docs(ngPattern)%3A%20describe%20your%20change...#L79' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/directive/validators.js#L79' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">ngPattern</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - directive in module <a href="api/ng">ng</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>ngPattern adds the pattern <a href="api/ng/type/ngModel.NgModelController#$validators"><code>validator</code></a> to <a href="api/ng/directive/ngModel"><code>ngModel</code></a>.
+It is most often used for text-based <a href="api/ng/directive/input"><code>input</code></a> controls, but can also be applied to custom text-based controls.</p>
+<p>The validator sets the <code>pattern</code> error key if the <a href="api/ng/type/ngModel.NgModelController#$viewValue"><code>ngModel.$viewValue</code></a>
+does not match a RegExp which is obtained by evaluating the Angular expression given in the
+<code>ngPattern</code> attribute value:</p>
+<ul>
+<li>If the expression evaluates to a RegExp object, then this is used directly.</li>
+<li>If the expression evaluates to a string, then it will be converted to a RegExp after wrapping it
+in <code>^</code> and <code>$</code> characters. For instance, <code>&quot;abc&quot;</code> will be converted to <code>new RegExp(&#39;^abc$&#39;)</code>.</li>
+</ul>
+<div class="alert alert-info">
+<strong>Note:</strong> Avoid using the <code>g</code> flag on the RegExp, as it will cause each successive search to
+start at the index of the last search&#39;s match, thus not taking the whole input value into
+account.
+</div>
+
+<div class="alert alert-info">
+<strong>Note:</strong> This directive is also added when the plain <code>pattern</code> attribute is used, with two
+differences:
+<ol>
+  <li>
+    <code>ngPattern</code> does not set the <code>pattern</code> attribute and therefore HTML5 constraint validation is
+    not available.
+  </li>
+  <li>
+    The <code>ngPattern</code> attribute must be an expression, while the <code>pattern</code> value must be
+    interpolated.
+  </li>
+</ol>
+</div>
+</div>
+
+
+
+
+
+
+<div>
+  
+
+  
+  <h2>Directive Info</h2>
+  <ul>
+    
+    <li>This directive executes at priority level 0.</li>
+    
+  </ul>
+
+  
+  <h2 id="usage">Usage</h2>
+  <div class="usage">
+  
+    <ul>
+    <li>as attribute:
+        <pre><code>&lt;ANY&gt;&#10;...&#10;&lt;/ANY&gt;</code></pre>
+      </li>
+    
+  </div>
+  
+  
+
+
+  
+  <h2 id="example">Example</h2><p>
+
+<div>
+  <plnkr-opener example-path="examples/example-ngPatternDirective"></plnkr-opener>
+
+  <div class="runnable-example"
+      path="examples/example-ngPatternDirective"
+      name="ngPatternDirective"
+      module="ngPatternExample">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;script&gt;&#10;  angular.module(&#39;ngPatternExample&#39;, [])&#10;    .controller(&#39;ExampleController&#39;, [&#39;$scope&#39;, function($scope) {&#10;      $scope.regex = &#39;\\d+&#39;;&#10;    }]);&#10;&lt;/script&gt;&#10;&lt;div ng-controller=&quot;ExampleController&quot;&gt;&#10;  &lt;form name=&quot;form&quot;&gt;&#10;    &lt;label for=&quot;regex&quot;&gt;Set a pattern (regex string): &lt;/label&gt;&#10;    &lt;input type=&quot;text&quot; ng-model=&quot;regex&quot; id=&quot;regex&quot; /&gt;&#10;    &lt;br&gt;&#10;    &lt;label for=&quot;input&quot;&gt;This input is restricted by the current pattern: &lt;/label&gt;&#10;    &lt;input type=&quot;text&quot; ng-model=&quot;model&quot; id=&quot;input&quot; name=&quot;input&quot; ng-pattern=&quot;regex&quot; /&gt;&lt;br&gt;&#10;    &lt;hr&gt;&#10;    input valid? = &lt;code&gt;{{form.input.$valid}}&lt;/code&gt;&lt;br&gt;&#10;    model = &lt;code&gt;{{model}}&lt;/code&gt;&#10;  &lt;/form&gt;&#10;&lt;/div&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="protractor.js"
+      type="protractor"
+      language="js">
+      <pre><code>var model = element(by.binding(&#39;model&#39;));&#10;var input = element(by.id(&#39;input&#39;));&#10;&#10;it(&#39;should validate the input with the default pattern&#39;, function() {&#10;  input.sendKeys(&#39;aaa&#39;);&#10;  expect(model.getText()).not.toContain(&#39;aaa&#39;);&#10;&#10;  input.clear().then(function() {&#10;    input.sendKeys(&#39;123&#39;);&#10;    expect(model.getText()).toContain(&#39;123&#39;);&#10;  });&#10;});</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-ngPatternDirective/index.html" name="example-ngPatternDirective"></iframe>
+  </div>
+</div>
+
+
+</p>
+
+</div>
+
+

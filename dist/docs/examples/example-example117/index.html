@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Example - example-example117</title>
+  
+
+  <script src="../../../angular.min.js"></script>
+  <script src="../../../angular-touch.js"></script>
+  <script src="script.js"></script>
+  
+
+  
+</head>
+<body ng-app="ngSwipeRightExample">
+  <div ng-show="!showActions" ng-swipe-left="showActions = true">
+  Some list content, like an email in the inbox
+</div>
+<div ng-show="showActions" ng-swipe-right="showActions = false">
+  <button ng-click="reply()">Reply</button>
+  <button ng-click="delete()">Delete</button>
+</div>
+</body>
+</html>

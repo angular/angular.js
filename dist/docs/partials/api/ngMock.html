@@ -1,22 +1,16 @@
-<a href='https://github.com/angular/angular.js/edit/master/src/ngMock/angular-mocks.js?message=docs(ngMock)%3A%20describe%20your%20change...#L1805' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+<a href='https://github.com/angular/angular.js/edit/master/src/ngMock/angular-mocks.js?message=docs(ngMock)%3A%20describe%20your%20change...#L2236' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
 
 
 <h1>
   <code>ngMock</code>
 </h1>
 
-<h1 id="ngmock">ngMock</h1>
-<p>The <code>ngMock</code> module provides support to inject and mock Angular services into unit tests.
-In addition, ngMock also extends various core ng services such that they can be
-inspected and controlled in a synchronous manner within test code.</p>
-<div doc-module-components="ngMock"></div>
-
 
   <h2>Installation</h2>
 
   <p>First include <code>angular-mocks.js</code> in your HTML:</p>
 
-  <pre><code>&lt;script src=&quot;angular.js&quot;&gt;&#10;&lt;script src=&quot;angular-mocks.js&quot;&gt;</code></pre>
+  <pre><code>&lt;script src=&quot;angular.js&quot;&gt;&#13;&#10;&lt;script src=&quot;angular-mocks.js&quot;&gt;&#13;</code></pre>
 
   <p>You can download this file from the following places:</p>
   <ul>
@@ -35,9 +29,18 @@ inspected and controlled in a synchronous manner within test code.</p>
   </ul>
   <p>where X.Y.Z is the AngularJS version you are running.</p>
   <p>Then load the module in your application by adding it as a dependent module:</p>
-  <pre><code>angular.module(&#39;app&#39;, [&#39;ngMock&#39;]);</code></pre>
+  <pre><code>angular.module(&#39;app&#39;, [&#39;ngMock&#39;]);&#13;</code></pre>
 
   <p>With that you&apos;re ready to get started!</p>
+
+
+<h1 id="ngmock">ngMock</h1>
+<p>The <code>ngMock</code> module provides support to inject and mock Angular services into unit tests.
+In addition, ngMock also extends various core ng services such that they can be
+inspected and controlled in a synchronous manner within test code.</p>
+<div doc-module-components="ngMock"></div>
+
+
 
 
 <div class="component-breakdown">
@@ -109,6 +112,13 @@ level-specific log function, e.g. for level <code>error</code> the array is expo
       </tr>
       
       <tr>
+        <td><a href="api/ngMock/service/$animate">$animate</a></td>
+        <td><p>Mock implementation of the <a href="api/ng/service/$animate"><code>$animate</code></a> service. Exposes two additional methods
+for testing animations.</p>
+</td>
+      </tr>
+      
+      <tr>
         <td><a href="api/ngMock/service/$httpBackend">$httpBackend</a></td>
         <td><p>Fake HTTP backend implementation suitable for unit testing applications that use the
 <a href="api/ng/service/$http">$http service</a>.</p>
@@ -120,6 +130,23 @@ level-specific log function, e.g. for level <code>error</code> the array is expo
         <td><p>This service is just a simple decorator for <a href="api/ng/service/$timeout">$timeout</a> service
 that adds a &quot;flush&quot; and &quot;verifyNoPendingTasks&quot; methods.</p>
 </td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ngMock/service/$controller">$controller</a></td>
+        <td><p>A decorator for <a href="api/ng/service/$controller"><code>$controller</code></a> with additional <code>bindings</code> parameter, useful when testing
+controllers of directives that use <a href="api/ng/service/$compile#-bindtocontroller-"><code>bindToController</code></a>.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ngMock/service/$componentController">$componentController</a></td>
+        <td><p>A service that can be used to create instances of component controllers.</p>
+<div class="alert alert-info">
+Be aware that the controller will be instantiated and attached to the scope as specified in
+the component definition object. If you do not provide a <code>$scope</code> object in the <code>locals</code> param
+then the helper will create a new isolated scope as a child of <code>$rootScope</code>.
+</div></td>
       </tr>
       
     </table>
@@ -168,6 +195,12 @@ methods are automatically available on any <a href="api/ng/type/$rootScope.Scope
         <td><a href="api/ngMock/function/angular.mock.module">angular.mock.module</a></td>
         <td><p><em>NOTE</em>: This function is also published on window for easy access.<br>
 <em>NOTE</em>: This function is declared ONLY WHEN running tests with jasmine or mocha</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ngMock/function/angular.mock.module.sharedInjector">angular.mock.module.sharedInjector</a></td>
+        <td><p><em>NOTE</em>: This function is declared ONLY WHEN running tests with jasmine or mocha</p>
 </td>
       </tr>
       

@@ -1,0 +1,33 @@
+.container.ng-enter,
+.container.ng-leave {
+  transition: all ease 1.5s;
+}
+
+.container.ng-enter,
+.container.ng-leave-active {
+  opacity: 0;
+}
+
+.container.ng-leave,
+.container.ng-enter-active {
+  opacity: 1;
+}
+
+.item {
+  background: firebrick;
+  color: #FFF;
+  margin-bottom: 10px;
+}
+
+.item.ng-enter,
+.item.ng-leave {
+  transition: transform 1.5s ease;
+}
+
+.item.ng-enter {
+  transform: translateX(50px);
+}
+
+.item.ng-enter-active {
+  transform: translateX(0);
+}

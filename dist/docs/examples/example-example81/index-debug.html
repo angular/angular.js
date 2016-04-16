@@ -11,7 +11,7 @@
   
 </head>
 <body ng-app="">
-  <input ng-paste="paste=true" ng-init="paste=false" placeholder='paste here'>
-pasted: {{paste}}
+  <input ng-copy="copied=true" ng-init="copied=false; value='copy me'" ng-model="value">
+copied: {{copied}}
 </body>
 </html>

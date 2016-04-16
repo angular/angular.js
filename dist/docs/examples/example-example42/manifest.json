@@ -3,6 +3,6 @@
   "files": [
     "index-production.html",
     "script.js",
-    "style.css"
+    "protractor.js"
   ]
 }

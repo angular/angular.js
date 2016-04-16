@@ -34,6 +34,15 @@ $provide.value("$locale", {
       "penktadienis",
       "\u0161e\u0161tadienis"
     ],
+    "ERANAMES": [
+      "prie\u0161 Krist\u0173",
+      "po Kristaus"
+    ],
+    "ERAS": [
+      "pr. Kr.",
+      "po Kr."
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "sausio",
       "vasario",
@@ -70,6 +79,24 @@ $provide.value("$locale", {
       "spal.",
       "lapkr.",
       "gruod."
+    ],
+    "STANDALONEMONTH": [
+      "sausis",
+      "vasaris",
+      "kovas",
+      "balandis",
+      "gegu\u017e\u0117",
+      "bir\u017eelis",
+      "liepa",
+      "rugpj\u016btis",
+      "rugs\u0117jis",
+      "spalis",
+      "lapkritis",
+      "gruodis"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "y 'm'. MMMM d 'd'., EEEE",
     "longDate": "y 'm'. MMMM d 'd'.",
@@ -110,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "lt",
+  "localeID": "lt",
   "pluralCat": function(n, opt_precision) {  var vf = getVF(n, opt_precision);  if (n % 10 == 1 && (n % 100 < 11 || n % 100 > 19)) {    return PLURAL_CATEGORY.ONE;  }  if (n % 10 >= 2 && n % 10 <= 9 && (n % 100 < 11 || n % 100 > 19)) {    return PLURAL_CATEGORY.FEW;  }  if (vf.f != 0) {    return PLURAL_CATEGORY.MANY;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

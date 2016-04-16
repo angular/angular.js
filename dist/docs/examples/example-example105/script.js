@@ -1,29 +1,18 @@
 (function(angular) {
   'use strict';
-angular.module('httpExample', [])
-  .controller('FetchController', ['$scope', '$http', '$templateCache',
-    function($scope, $http, $templateCache) {
-      $scope.method = 'GET';
-      $scope.url = 'http-hello.html';
-
-      $scope.fetch = function() {
-        $scope.code = null;
-        $scope.response = null;
-
-        $http({method: $scope.method, url: $scope.url, cache: $templateCache}).
-          success(function(data, status) {
-            $scope.status = status;
-            $scope.data = data;
-          }).
-          error(function(data, status) {
-            $scope.data = data || "Request failed";
-            $scope.status = status;
-        });
-      };
-
-      $scope.updateModel = function(method, url) {
-        $scope.method = method;
-        $scope.url = url;
-      };
-    }]);
+angular.module('orderByExample', [])
+  .controller('ExampleController', ['$scope', function($scope) {
+    $scope.friends =
+        [{name:'John', phone:'555-1212', age:10},
+         {name:'Mary', phone:'555-9876', age:19},
+         {name:'Mike', phone:'555-4321', age:21},
+         {name:'Adam', phone:'555-5678', age:35},
+         {name:'Julie', phone:'555-8765', age:29}];
+    $scope.predicate = 'age';
+    $scope.reverse = true;
+    $scope.order = function(predicate) {
+      $scope.reverse = ($scope.predicate === predicate) ? !$scope.reverse : false;
+      $scope.predicate = predicate;
+    };
+  }]);
 })(window.angular);

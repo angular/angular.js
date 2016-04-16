@@ -34,6 +34,15 @@ $provide.value("$locale", {
       "A\u014bp\u00e9tuzapta\u014b",
       "Ow\u00e1\u014bgyu\u017ea\u017eapi"
     ],
+    "ERANAMES": [
+      "BCE",
+      "CE"
+    ],
+    "ERAS": [
+      "BCE",
+      "CE"
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "Wi\u00f3the\u021fika W\u00ed",
       "Thiy\u00f3\u021feyu\u014bka W\u00ed",
@@ -71,6 +80,24 @@ $provide.value("$locale", {
       "Wan\u00edyetu W\u00ed",
       "T\u021fah\u00e9kap\u0161u\u014b W\u00ed"
     ],
+    "STANDALONEMONTH": [
+      "Wi\u00f3the\u021fika W\u00ed",
+      "Thiy\u00f3\u021feyu\u014bka W\u00ed",
+      "I\u0161t\u00e1wi\u010dhayaza\u014b W\u00ed",
+      "P\u021fe\u017e\u00edt\u021fo W\u00ed",
+      "\u010cha\u014bw\u00e1pet\u021fo W\u00ed",
+      "W\u00edpazuk\u021fa-wa\u0161t\u00e9 W\u00ed",
+      "\u010cha\u014bp\u021f\u00e1sapa W\u00ed",
+      "Was\u00fat\u021fu\u014b W\u00ed",
+      "\u010cha\u014bw\u00e1pe\u01e7i W\u00ed",
+      "\u010cha\u014bw\u00e1pe-kasn\u00e1 W\u00ed",
+      "Wan\u00edyetu W\u00ed",
+      "T\u021fah\u00e9kap\u0161u\u014b W\u00ed"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
+    ],
     "fullDate": "EEEE, MMMM d, y",
     "longDate": "MMMM d, y",
     "medium": "MMM d, y h:mm:ss a",
@@ -102,7 +129,7 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "\u00a4\u00a0-",
+        "negPre": "-\u00a4\u00a0",
         "negSuf": "",
         "posPre": "\u00a4\u00a0",
         "posSuf": ""
@@ -110,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "lkt-us",
+  "localeID": "lkt_US",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

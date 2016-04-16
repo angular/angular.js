@@ -1,6 +1,6 @@
-it('should remove the template directive and css class', function() {
-  expect($('#template1').getAttribute('ng-cloak')).
-    toBeNull();
-  expect($('#template2').getAttribute('ng-cloak')).
-    toBeNull();
+it('should check ng-class-odd and ng-class-even', function() {
+  expect(element(by.repeater('name in names').row(0).column('name')).getAttribute('class')).
+    toMatch(/odd/);
+  expect(element(by.repeater('name in names').row(1).column('name')).getAttribute('class')).
+    toMatch(/even/);
 });

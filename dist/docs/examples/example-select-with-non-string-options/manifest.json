@@ -1,0 +1,8 @@
+{
+  "name": "example-select-with-non-string-options",
+  "files": [
+    "index-production.html",
+    "app.js",
+    "protractor.js"
+  ]
+}

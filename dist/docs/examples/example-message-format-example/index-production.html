@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Example - example-message-format-example-production</title>
+  
+
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/null/angular.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/null/angular-message-format.js"></script>
+  <script src="app.js"></script>
+  
+
+  
+</head>
+<body ng-app="messageFormatExample">
+  <div ng-controller="ckCtrl">
+  <b>Set number of recipients</b>
+  <button ng-click="setNumRecipients(0)">None</button>
+  <button ng-click="setNumRecipients(1)">One</button>
+  <button ng-click="setNumRecipients(2)">Two</button>
+  <button ng-click="setNumRecipients(3)">Three</button>
+
+
+  <br><br>
+  <b>Sender's</b> name: <input ng-model="sender.name"> &nbsp;&nbsp;
+
+  <br><br><b>Recipients</b><br>
+  <div ng-repeat="recipient in recipients">
+    Name: <input ng-model="recipient.name"> &nbsp;&nbsp;
+    Gender: <button ng-click="setGender(recipient, 'male')">male</button>
+            <button ng-click="setGender(recipient, 'female')">female</button>
+            <button ng-click="setGender(recipient, 'other')">other</button>
+  </div>
+
+  <br><br><b>Message</b><br>
+  {{recipients.length, plural, offset:1
+      =0 {You ({{sender.name}}) gave no gifts}
+      =1 { {{ recipients[0].gender, select,
+                male {You ({{sender.name}}) gave him ({{recipients[0].name}}) a gift.}
+                female {You ({{sender.name}}) gave her ({{recipients[0].name}}) a gift.}
+                other {You ({{sender.name}}) gave them ({{recipients[0].name}}) a gift.}
+            }}
+         }
+      one { {{ recipients[0].gender, select,
+                male {You ({{sender.name}}) gave him ({{recipients[0].name}}) and one other person a gift.}
+                female {You ({{sender.name}}) gave her ({{recipients[0].name}}) and one other person a gift.}
+                other {You ({{sender.name}}) gave them ({{recipients[0].name}}) and one other person a gift.}
+            }}
+         }
+         other {You ({{sender.name}}) gave {{recipients.length}} people gifts. }
+  }}
+
+  <br><br><b>In an attribute</b><br>
+  <div attrib="{{recipients.length, plural, offset:1
+                  =0 {You ({{sender.name}}) gave no gifts}
+                  =1 { {{ recipients[0].gender, select,
+                            male {You ({{sender.name}}) gave him ({{recipients[0].name}}) a gift.}
+                            female {You ({{sender.name}}) gave her ({{recipients[0].name}}) a gift.}
+                            other {You ({{sender.name}}) gave them ({{recipients[0].name}}) a gift.}
+                        }}
+                     }
+                  one { {{ recipients[0].gender, select,
+                            male {You ({{sender.name}}) gave him ({{recipients[0].name}}) and one other person a gift.}
+                            female {You ({{sender.name}}) gave her ({{recipients[0].name}}) and one other person a gift.}
+                            other {You ({{sender.name}}) gave them ({{recipients[0].name}}) and one other person a gift.}
+                        }}
+                     }
+                     other {You ({{sender.name}}) gave {{recipients.length}} people gifts. }
+               }}">
+      This div has an attribute interpolated with messageformat.  Use the DOM inspector to check it out.
+  </div>
+</div>
+</body>
+</html>

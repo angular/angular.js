@@ -1,8 +1,8 @@
-<a href='https://github.com/angular/angular.js/edit/master/src/ngRoute/route.js?message=docs($route)%3A%20describe%20your%20change...#L254' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+<a href='https://github.com/angular/angular.js/edit/master/src/ngRoute/route.js?message=docs($route)%3A%20describe%20your%20change...#L266' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
 
 
 
-<a href='https://github.com/angular/angular.js/tree/master/src/ngRoute/route.js#L254' class='view-source pull-right btn btn-primary'>
+<a href='https://github.com/angular/angular.js/tree/master/src/ngRoute/route.js#L266' class='view-source pull-right btn btn-primary'>
   <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
 </a>
 
@@ -33,6 +33,8 @@ It watches <code>$location.url()</code> and tries to map the path to an existing
 <a href="api/ngRoute/service/$routeParams"><code>$routeParams</code></a> service.</p>
 
 </div>
+
+
 
 
 
@@ -143,12 +145,78 @@ for more details about event object.</p>
       <h4>Target:</h4>
       <div class="target">root scope</div>
     </div>
-    </li>
+    
+    <section class="api-section">
+      <h3>Parameters</h3>
+      
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        angularEvent
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">Object</a>
+      </td>
+      <td>
+        <p>Synthetic event object.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        next
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-route">Route</a>
+      </td>
+      <td>
+        <p>Future route information.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        current
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-route">Route</a>
+      </td>
+      <td>
+        <p>Current route information.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    </section></li>
   
   <li id="$routeChangeSuccess">
     <h3>$routeChangeSuccess</h3>
-    <div><p>Broadcasted after a route dependencies are resolved.
-<a href="api/ngRoute/directive/ngView">ngView</a> listens for the directive
+    <div><p>Broadcasted after a route change has happened successfully.
+The <code>resolve</code> dependencies are now available in the <code>current.locals</code> property.</p>
+<p><a href="api/ngRoute/directive/ngView">ngView</a> listens for the directive
 to instantiate the controller and render the view.</p>
 </div>
     <div class="inline">
@@ -159,7 +227,73 @@ to instantiate the controller and render the view.</p>
       <h4>Target:</h4>
       <div class="target">root scope</div>
     </div>
-    </li>
+    
+    <section class="api-section">
+      <h3>Parameters</h3>
+      
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        angularEvent
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">Object</a>
+      </td>
+      <td>
+        <p>Synthetic event object.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        current
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-route">Route</a>
+      </td>
+      <td>
+        <p>Current route information.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        previous
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-route">Route</a><a href="" class="label type-hint type-hint-undefined">Undefined</a>
+      </td>
+      <td>
+        <p>Previous route information, or undefined if current is
+first route entered.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    </section></li>
   
   <li id="$routeChangeError">
     <h3>$routeChangeError</h3>
@@ -173,7 +307,88 @@ to instantiate the controller and render the view.</p>
       <h4>Target:</h4>
       <div class="target">root scope</div>
     </div>
-    </li>
+    
+    <section class="api-section">
+      <h3>Parameters</h3>
+      
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        angularEvent
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">Object</a>
+      </td>
+      <td>
+        <p>Synthetic event object</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        current
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-route">Route</a>
+      </td>
+      <td>
+        <p>Current route information.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        previous
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-route">Route</a>
+      </td>
+      <td>
+        <p>Previous route information.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        rejection
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-route">Route</a>
+      </td>
+      <td>
+        <p>Rejection of the promise. Usually the error of the failed promise.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    </section></li>
   
   <li id="$routeUpdate">
     <h3>$routeUpdate</h3>
@@ -188,7 +403,56 @@ instance of the Controller.</p>
       <h4>Target:</h4>
       <div class="target">root scope</div>
     </div>
-    </li>
+    
+    <section class="api-section">
+      <h3>Parameters</h3>
+      
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        angularEvent
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">Object</a>
+      </td>
+      <td>
+        <p>Synthetic event object</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        current
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-route">Route</a>
+      </td>
+      <td>
+        <p>Current/previous route information.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    </section></li>
   </ul>
 
   
@@ -202,7 +466,7 @@ instance of the Controller.</p>
     <td><p>Reference to the current route definition.
 The route definition contains:</p>
 <ul>
-<li><code>controller</code>: The controller constructor as define in route definition.</li>
+<li><code>controller</code>: The controller constructor as defined in the route definition.</li>
 <li><p><code>locals</code>: A map of locals which is used by <a href="api/ng/service/$controller">$controller</a> service for
 controller instantiation. The <code>locals</code> contain
 the resolved values of the <code>resolve</code> map. Additionally the <code>locals</code> also contain:</p>
@@ -210,6 +474,9 @@ the resolved values of the <code>resolve</code> map. Additionally the <code>loca
 <li><code>$scope</code> - The current route scope.</li>
 <li><code>$template</code> - The current route template HTML.</li>
 </ul>
+<p>The <code>locals</code> will be assigned to the route scope&#39;s <code>$resolve</code> property. You can override
+the property name, using <code>resolveAs</code> in the route definition. See
+<a href="api/ngRoute/provider/$routeProvider">$routeProvider</a> for more info.</p>
 </li>
 </ul>
 </td>
@@ -237,9 +504,7 @@ URL, and the <code>ngView</code> pulls in the partial.</p>
 <p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-$route-service', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-$route-service"></plnkr-opener>
 
   <div class="runnable-example"
       path="examples/example-$route-service"

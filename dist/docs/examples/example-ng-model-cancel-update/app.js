@@ -3,15 +3,15 @@
 angular.module('cancel-update-example', [])
 
 .controller('CancelUpdateController', ['$scope', function($scope) {
-  $scope.resetWithCancel = function(e) {
+  $scope.model = {};
+
+  $scope.setEmpty = function(e, value, rollback) {
     if (e.keyCode == 27) {
-      $scope.myForm.myInput1.$rollbackViewValue();
-      $scope.myValue = '';
-    }
-  };
-  $scope.resetWithoutCancel = function(e) {
-    if (e.keyCode == 27) {
-      $scope.myValue = '';
+      e.preventDefault();
+      if (rollback) {
+        $scope.myForm[value].$rollbackViewValue();
+      }
+      $scope.model[value] = '';
     }
   };
 }]);

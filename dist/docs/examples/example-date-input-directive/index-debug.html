@@ -20,13 +20,15 @@
      }]);
 </script>
 <form name="myForm" ng-controller="DateController as dateCtrl">
-   Pick a date in 2013:
+   <label for="exampleInput">Pick a date in 2013:</label>
    <input type="date" id="exampleInput" name="input" ng-model="example.value"
        placeholder="yyyy-MM-dd" min="2013-01-01" max="2013-12-31" required />
-   <span class="error" ng-show="myForm.input.$error.required">
-       Required!</span>
-   <span class="error" ng-show="myForm.input.$error.date">
-       Not a valid date!</span>
+   <div role="alert">
+     <span class="error" ng-show="myForm.input.$error.required">
+         Required!</span>
+     <span class="error" ng-show="myForm.input.$error.date">
+         Not a valid date!</span>
+    </div>
     <tt>value = {{example.value | date: "yyyy-MM-dd"}}</tt><br/>
     <tt>myForm.input.$valid = {{myForm.input.$valid}}</tt><br/>
     <tt>myForm.input.$error = {{myForm.input.$error}}</tt><br/>

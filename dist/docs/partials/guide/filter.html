@@ -1,6 +1,7 @@
 <a href='https://github.com/angular/angular.js/edit/master/docs/content/guide/filter.ngdoc?message=docs(guide%2FFilters)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
 
 
+<h1 id="filters">Filters</h1>
 <p>A filter formats the value of an expression for display to the user. They can be used in view templates,
 controllers or services and it is easy to define your own filter.</p>
 <p>The underlying API is the <a href="api/ng/provider/$filterProvider"><code>filterProvider</code></a>.</p>
@@ -20,10 +21,13 @@ the following syntax:</p>
 <p>E.g. the markup <code>{{ 1234 | number:2 }}</code> formats the number 1234 with 2 decimal points using the
 <a href="api/ng/filter/number"><code>number</code></a> filter. The resulting value is <code>1,234.00</code>.</p>
 <h2 id="using-filters-in-controllers-services-and-directives">Using filters in controllers, services, and directives</h2>
-<p>You can also use filters in controllers, services, and directives. For this, inject a dependency
-with the name <code>&lt;filterName&gt;Filter</code> to your controller/service/directive. E.g. using the dependency
-<code>numberFilter</code> will inject the number filter. The injected argument is a function that takes the
-value to format as first argument and filter parameters starting with the second argument.</p>
+<p>You can also use filters in controllers, services, and directives.</p>
+<div class="alert alert-info">
+For this, inject a dependency with the name <code>&lt;filterName&gt;Filter</code> into your controller/service/directive.
+E.g. a filter called <code>number</code> is injected by using the dependency <code>numberFilter</code>. The injected argument
+is a function that takes the value to format as first argument, and filter parameters starting with the second argument.
+</div>
+
 <p>The example below uses the filter called <a href="api/ng/filter/filter"><code>filter</code></a>.
 This filter reduces arrays into sub arrays based on
 conditions. The filter can be applied in the view template with markup like
@@ -36,12 +40,10 @@ or the filter expression is changed).</p>
 <p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-example28', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-example30"></plnkr-opener>
 
   <div class="runnable-example"
-      path="examples/example-example28"
+      path="examples/example-example30"
       module="FilterInControllerModule">
 
   
@@ -49,18 +51,18 @@ or the filter expression is changed).</p>
       name="index.html"
       language="html"
       type="html">
-      <pre><code>&lt;div ng-controller=&quot;FilterController as ctrl&quot;&gt;&#10;  &lt;div&gt;&#10;    All entries:&#10;    &lt;span ng-repeat=&quot;entry in ctrl.array&quot;&gt;{{entry.name}} &lt;/span&gt;&#10;  &lt;/div&gt;&#10;  &lt;div&gt;&#10;    Entries that contain an &quot;a&quot;:&#10;    &lt;span ng-repeat=&quot;entry in ctrl.filteredArray&quot;&gt;{{entry.name}} &lt;/span&gt;&#10;  &lt;/div&gt;&#10;&lt;/div&gt;</code></pre>
+      <pre><code>&lt;div ng-controller=&quot;FilterController as ctrl&quot;&gt;&#13;&#10;  &lt;div&gt;&#13;&#10;    All entries:&#13;&#10;    &lt;span ng-repeat=&quot;entry in ctrl.array&quot;&gt;{{entry.name}} &lt;/span&gt;&#13;&#10;  &lt;/div&gt;&#13;&#10;  &lt;div&gt;&#13;&#10;    Entries that contain an &quot;a&quot;:&#13;&#10;    &lt;span ng-repeat=&quot;entry in ctrl.filteredArray&quot;&gt;{{entry.name}} &lt;/span&gt;&#13;&#10;  &lt;/div&gt;&#13;&#10;&lt;/div&gt;&#13;</code></pre>
     </div>
   
     <div class="runnable-example-file" 
       name="script.js"
       language="js"
       type="js">
-      <pre><code>angular.module(&#39;FilterInControllerModule&#39;, []).&#10;controller(&#39;FilterController&#39;, [&#39;filterFilter&#39;, function(filterFilter) {&#10;  this.array = [&#10;    {name: &#39;Tobias&#39;},&#10;    {name: &#39;Jeff&#39;},&#10;    {name: &#39;Brian&#39;},&#10;    {name: &#39;Igor&#39;},&#10;    {name: &#39;James&#39;},&#10;    {name: &#39;Brad&#39;}&#10;  ];&#10;  this.filteredArray = filterFilter(this.array, &#39;a&#39;);&#10;}]);</code></pre>
+      <pre><code>angular.module(&#39;FilterInControllerModule&#39;, []).&#13;&#10;controller(&#39;FilterController&#39;, [&#39;filterFilter&#39;, function(filterFilter) {&#13;&#10;  this.array = [&#13;&#10;    {name: &#39;Tobias&#39;},&#13;&#10;    {name: &#39;Jeff&#39;},&#13;&#10;    {name: &#39;Brian&#39;},&#13;&#10;    {name: &#39;Igor&#39;},&#13;&#10;    {name: &#39;James&#39;},&#13;&#10;    {name: &#39;Brad&#39;}&#13;&#10;  ];&#13;&#10;  this.filteredArray = filterFilter(this.array, &#39;a&#39;);&#13;&#10;}]);&#13;</code></pre>
     </div>
   
 
-    <iframe class="runnable-example-frame" src="examples/example-example28/index.html" name="example-example28"></iframe>
+    <iframe class="runnable-example-frame" src="examples/example-example30/index.html" name="example-example30"></iframe>
   </div>
 </div>
 
@@ -76,8 +78,10 @@ function.</p>
 means that it should be stateless and idempotent. Angular relies on these properties and executes
 the filter only when the inputs to the function change.</p>
 <div class="alert alert-warning">
-<strong>Note:</strong> filter names must be valid angular expression identifiers, such as <code>uppercase</code> or <code>orderBy</code>.
-Names with special characters, such as hyphens and dots, are not allowed.
+<strong>Note:</strong> Filter names must be valid angular <a href="guide/expression"><code>Expressions</code></a> identifiers, such as <code>uppercase</code> or <code>orderBy</code>.
+Names with special characters, such as hyphens and dots, are not allowed.  If you wish to namespace
+your filters, then you can use capitalization (<code>myappSubsectionFilterx</code>) or underscores
+(<code>myapp_subsection_filterx</code>).
 </div>
 
 <p>The following sample filter reverses a text string. In addition, it conditionally makes the
@@ -85,12 +89,10 @@ text upper-case.</p>
 <p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-example29', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-example31"></plnkr-opener>
 
   <div class="runnable-example"
-      path="examples/example-example29"
+      path="examples/example-example31"
       module="myReverseFilterApp">
 
   
@@ -98,18 +100,18 @@ text upper-case.</p>
       name="index.html"
       language="html"
       type="html">
-      <pre><code>&lt;div ng-controller=&quot;MyController&quot;&gt;&#10;  &lt;input ng-model=&quot;greeting&quot; type=&quot;text&quot;&gt;&lt;br&gt;&#10;  No filter: {{greeting}}&lt;br&gt;&#10;  Reverse: {{greeting|reverse}}&lt;br&gt;&#10;  Reverse + uppercase: {{greeting|reverse:true}}&lt;br&gt;&#10;&lt;/div&gt;</code></pre>
+      <pre><code>&lt;div ng-controller=&quot;MyController&quot;&gt;&#13;&#10;  &lt;input ng-model=&quot;greeting&quot; type=&quot;text&quot;&gt;&lt;br&gt;&#13;&#10;  No filter: {{greeting}}&lt;br&gt;&#13;&#10;  Reverse: {{greeting|reverse}}&lt;br&gt;&#13;&#10;  Reverse + uppercase: {{greeting|reverse:true}}&lt;br&gt;&#13;&#10;  Reverse, filtered in controller: {{filteredGreeting}}&lt;br&gt;&#13;&#10;&lt;/div&gt;&#13;</code></pre>
     </div>
   
     <div class="runnable-example-file" 
       name="script.js"
       language="js"
       type="js">
-      <pre><code>angular.module(&#39;myReverseFilterApp&#39;, [])&#10;.filter(&#39;reverse&#39;, function() {&#10;  return function(input, uppercase) {&#10;    input = input || &#39;&#39;;&#10;    var out = &quot;&quot;;&#10;    for (var i = 0; i &lt; input.length; i++) {&#10;      out = input.charAt(i) + out;&#10;    }&#10;    // conditional based on optional argument&#10;    if (uppercase) {&#10;      out = out.toUpperCase();&#10;    }&#10;    return out;&#10;  };&#10;})&#10;.controller(&#39;MyController&#39;, [&#39;$scope&#39;, function($scope) {&#10;  $scope.greeting = &#39;hello&#39;;&#10;}]);</code></pre>
+      <pre><code>angular.module(&#39;myReverseFilterApp&#39;, [])&#13;&#10;.filter(&#39;reverse&#39;, function() {&#13;&#10;  return function(input, uppercase) {&#13;&#10;    input = input || &#39;&#39;;&#13;&#10;    var out = &quot;&quot;;&#13;&#10;    for (var i = 0; i &lt; input.length; i++) {&#13;&#10;      out = input.charAt(i) + out;&#13;&#10;    }&#13;&#10;    // conditional based on optional argument&#13;&#10;    if (uppercase) {&#13;&#10;      out = out.toUpperCase();&#13;&#10;    }&#13;&#10;    return out;&#13;&#10;  };&#13;&#10;})&#13;&#10;.controller(&#39;MyController&#39;, [&#39;$scope&#39;, &#39;reverseFilter&#39;, function($scope, reverseFilter) {&#13;&#10;  $scope.greeting = &#39;hello&#39;;&#13;&#10;  $scope.filteredGreeting = reverseFilter($scope.greeting);&#13;&#10;}]);&#13;</code></pre>
     </div>
   
 
-    <iframe class="runnable-example-frame" src="examples/example-example29/index.html" name="example-example29"></iframe>
+    <iframe class="runnable-example-frame" src="examples/example-example31/index.html" name="example-example31"></iframe>
   </div>
 </div>
 
@@ -125,12 +127,10 @@ means that it will be executed one or more times during the each <code>$digest</
 <p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-example30', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-example32"></plnkr-opener>
 
   <div class="runnable-example"
-      path="examples/example-example30"
+      path="examples/example-example32"
       module="myStatefulFilterApp">
 
   
@@ -138,18 +138,18 @@ means that it will be executed one or more times during the each <code>$digest</
       name="index.html"
       language="html"
       type="html">
-      <pre><code>&lt;div ng-controller=&quot;MyController&quot;&gt;&#10;  Input: &lt;input ng-model=&quot;greeting&quot; type=&quot;text&quot;&gt;&lt;br&gt;&#10;  Decoration: &lt;input ng-model=&quot;decoration.symbol&quot; type=&quot;text&quot;&gt;&lt;br&gt;&#10;  No filter: {{greeting}}&lt;br&gt;&#10;  Decorated: {{greeting | decorate}}&lt;br&gt;&#10;&lt;/div&gt;</code></pre>
+      <pre><code>&lt;div ng-controller=&quot;MyController&quot;&gt;&#13;&#10;  Input: &lt;input ng-model=&quot;greeting&quot; type=&quot;text&quot;&gt;&lt;br&gt;&#13;&#10;  Decoration: &lt;input ng-model=&quot;decoration.symbol&quot; type=&quot;text&quot;&gt;&lt;br&gt;&#13;&#10;  No filter: {{greeting}}&lt;br&gt;&#13;&#10;  Decorated: {{greeting | decorate}}&lt;br&gt;&#13;&#10;&lt;/div&gt;&#13;</code></pre>
     </div>
   
     <div class="runnable-example-file" 
       name="script.js"
       language="js"
       type="js">
-      <pre><code>angular.module(&#39;myStatefulFilterApp&#39;, [])&#10;.filter(&#39;decorate&#39;, [&#39;decoration&#39;, function(decoration) {&#10;&#10;  function decorateFilter(input) {&#10;    return decoration.symbol + input + decoration.symbol;&#10;  }&#10;  decorateFilter.$stateful = true;&#10;&#10;  return decorateFilter;&#10;}])&#10;.controller(&#39;MyController&#39;, [&#39;$scope&#39;, &#39;decoration&#39;, function($scope, decoration) {&#10;  $scope.greeting = &#39;hello&#39;;&#10;  $scope.decoration = decoration;&#10;}])&#10;.value(&#39;decoration&#39;, {symbol: &#39;*&#39;});</code></pre>
+      <pre><code>angular.module(&#39;myStatefulFilterApp&#39;, [])&#13;&#10;.filter(&#39;decorate&#39;, [&#39;decoration&#39;, function(decoration) {&#13;&#10;&#10;  function decorateFilter(input) {&#13;&#10;    return decoration.symbol + input + decoration.symbol;&#13;&#10;  }&#13;&#10;  decorateFilter.$stateful = true;&#13;&#10;&#10;  return decorateFilter;&#13;&#10;}])&#13;&#10;.controller(&#39;MyController&#39;, [&#39;$scope&#39;, &#39;decoration&#39;, function($scope, decoration) {&#13;&#10;  $scope.greeting = &#39;hello&#39;;&#13;&#10;  $scope.decoration = decoration;&#13;&#10;}])&#13;&#10;.value(&#39;decoration&#39;, {symbol: &#39;*&#39;});&#13;</code></pre>
     </div>
   
 
-    <iframe class="runnable-example-frame" src="examples/example-example30/index.html" name="example-example30"></iframe>
+    <iframe class="runnable-example-frame" src="examples/example-example32/index.html" name="example-example32"></iframe>
   </div>
 </div>
 

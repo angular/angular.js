@@ -5,18 +5,12 @@
   <code>ngRoute</code>
 </h1>
 
-<h1 id="ngroute">ngRoute</h1>
-<p>The <code>ngRoute</code> module provides routing and deeplinking services and directives for angular apps.</p>
-<h2 id="example">Example</h2>
-<p>See <a href="api/ngRoute/service/$route#example">$route</a> for an example of configuring and using <code>ngRoute</code>.</p>
-<div doc-module-components="ngRoute"></div>
-
 
   <h2>Installation</h2>
 
   <p>First include <code>angular-route.js</code> in your HTML:</p>
 
-  <pre><code>&lt;script src=&quot;angular.js&quot;&gt;&#10;&lt;script src=&quot;angular-route.js&quot;&gt;</code></pre>
+  <pre><code>&lt;script src=&quot;angular.js&quot;&gt;&#13;&#10;&lt;script src=&quot;angular-route.js&quot;&gt;&#13;</code></pre>
 
   <p>You can download this file from the following places:</p>
   <ul>
@@ -35,9 +29,37 @@
   </ul>
   <p>where X.Y.Z is the AngularJS version you are running.</p>
   <p>Then load the module in your application by adding it as a dependent module:</p>
-  <pre><code>angular.module(&#39;app&#39;, [&#39;ngRoute&#39;]);</code></pre>
+  <pre><code>angular.module(&#39;app&#39;, [&#39;ngRoute&#39;]);&#13;</code></pre>
 
   <p>With that you&apos;re ready to get started!</p>
+
+
+<h1 id="ngroute">ngRoute</h1>
+<p>The <code>ngRoute</code> module provides routing and deeplinking services and directives for angular apps.</p>
+<h2 id="example">Example</h2>
+<p>See <a href="api/ngRoute/service/$route#example">$route</a> for an example of configuring and using <code>ngRoute</code>.</p>
+<div doc-module-components="ngRoute"></div>
+
+
+<div class="known-issues">
+  <h2 id="known-issues">Known Issues</h2>
+  <table class="definition-table">
+  <tr><th>Name</th><th>Description</th></tr>
+  <tr>
+    <td><a href="api/ngRoute/directive/ngView">ngView</a></td>
+    <td>
+    <p>If <code>ngView</code> is contained in an asynchronously loaded template (e.g. in another
+            directive&#39;s templateUrl or in a template loaded using <code>ngInclude</code>), then you need to
+            make sure that <code>$route</code> is instantiated in time to capture the initial
+            <code>$locationChangeStart</code> event and load the appropriate view. One way to achieve this
+            is to have it as a dependency in a <code>.run</code> block:
+            <code>myModule.run([&#39;$route&#39;, function() {}]);</code></p>
+
+    </td>
+  </tr>
+  </table>
+</div>
+
 
 
 <div class="component-breakdown">

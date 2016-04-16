@@ -20,33 +20,66 @@
 
 
 <div class="api-profile-description">
-  <p>Enables <a href="https://developer.mozilla.org/en/Security/CSP">CSP (Content Security Policy)</a> support.</p>
+  <p>Angular has some features that can break certain
+<a href="https://developer.mozilla.org/en/Security/CSP">CSP (Content Security Policy)</a> rules.</p>
+<p>If you intend to implement these rules then you must tell Angular not to use these features.</p>
 <p>This is necessary when developing things like Google Chrome Extensions or Universal Windows Apps.</p>
-<p>CSP forbids apps to use <code>eval</code> or <code>Function(string)</code> generated functions (among other things).
-For Angular to be CSP compatible there are only two things that we need to do differently:</p>
+<p>The following rules affect Angular:</p>
 <ul>
-<li>don&#39;t use <code>Function</code> constructor to generate optimized value getters</li>
-<li>don&#39;t inject custom stylesheet into the document</li>
+<li><p><code>unsafe-eval</code>: this rule forbids apps to use <code>eval</code> or <code>Function(string)</code> generated functions
+(among other things). Angular makes use of this in the <a href="api/ng/service/$parse"><code>$parse</code></a> service to provide a 30%
+increase in the speed of evaluating Angular expressions.</p>
+</li>
+<li><p><code>unsafe-inline</code>: this rule forbids apps from inject custom styles into the document. Angular
+makes use of this to include some CSS rules (e.g. <a href="api/ng/directive/ngCloak"><code>ngCloak</code></a> and <a href="api/ng/directive/ngHide"><code>ngHide</code></a>).
+To make these directives work when a CSP rule is blocking inline styles, you must link to the
+<code>angular-csp.css</code> in your HTML manually.</p>
+</li>
 </ul>
-<p>AngularJS uses <code>Function(string)</code> generated functions as a speed optimization. Applying the <code>ngCsp</code>
-directive will cause Angular to use CSP compatibility mode. When this mode is on AngularJS will
-evaluate all expressions up to 30% slower than in non-CSP mode, but no security violations will
-be raised.</p>
-<p>CSP forbids JavaScript to inline stylesheet rules. In non CSP mode Angular automatically
-includes some CSS rules (e.g. <a href="api/ng/directive/ngCloak">ngCloak</a>).
-To make those directives work in CSP mode, include the <code>angular-csp.css</code> manually.</p>
-<p>Angular tries to autodetect if CSP is active and automatically turn on the CSP-safe mode. This
-autodetection however triggers a CSP error to be logged in the console:</p>
+<p>If you do not provide <code>ngCsp</code> then Angular tries to autodetect if CSP is blocking unsafe-eval
+and automatically deactivates this feature in the <a href="api/ng/service/$parse"><code>$parse</code></a> service. This autodetection,
+however, triggers a CSP error to be logged in the console:</p>
 <pre><code>Refused to evaluate a string as JavaScript because &#39;unsafe-eval&#39; is not an allowed source of
 script in the following Content Security Policy directive: &quot;default-src &#39;self&#39;&quot;. Note that
 &#39;script-src&#39; was not explicitly set, so &#39;default-src&#39; is used as a fallback.
 </code></pre>
 <p>This error is harmless but annoying. To prevent the error from showing up, put the <code>ngCsp</code>
-directive on the root element of the application or on the <code>angular.js</code> script tag, whichever
-appears first in the html document.</p>
+directive on an element of the HTML document that appears before the <code>&lt;script&gt;</code> tag that loads
+the <code>angular.js</code> file.</p>
 <p><em>Note: This directive is only available in the <code>ng-csp</code> and <code>data-ng-csp</code> attribute form.</em></p>
+<p>You can specify which of the CSP related Angular features should be deactivated by providing
+a value for the <code>ng-csp</code> attribute. The options are as follows:</p>
+<ul>
+<li><p>no-inline-style: this stops Angular from injecting CSS styles into the DOM</p>
+</li>
+<li><p>no-unsafe-eval: this stops Angular from optimizing $parse with unsafe eval of strings</p>
+</li>
+</ul>
+<p>You can use these values in the following combinations:</p>
+<ul>
+<li><p>No declaration means that Angular will assume that you can do inline styles, but it will do
+a runtime check for unsafe-eval. E.g. <code>&lt;body&gt;</code>. This is backwardly compatible with previous versions
+of Angular.</p>
+</li>
+<li><p>A simple <code>ng-csp</code> (or <code>data-ng-csp</code>) attribute will tell Angular to deactivate both inline
+styles and unsafe eval. E.g. <code>&lt;body ng-csp&gt;</code>. This is backwardly compatible with previous versions
+of Angular.</p>
+</li>
+<li><p>Specifying only <code>no-unsafe-eval</code> tells Angular that we must not use eval, but that we can inject
+inline styles. E.g. <code>&lt;body ng-csp=&quot;no-unsafe-eval&quot;&gt;</code>.</p>
+</li>
+<li><p>Specifying only <code>no-inline-style</code> tells Angular that we must not inject styles, but that we can
+run eval - no automatic check for unsafe eval will occur. E.g. <code>&lt;body ng-csp=&quot;no-inline-style&quot;&gt;</code></p>
+</li>
+<li><p>Specifying both <code>no-unsafe-eval</code> and <code>no-inline-style</code> tells Angular that we must not inject
+styles nor use eval, which is the same as an empty: ng-csp.
+E.g.<code>&lt;body ng-csp=&quot;no-inline-style;no-unsafe-eval&quot;&gt;</code></p>
+</li>
+</ul>
 
 </div>
+
+
 
 
 
@@ -59,6 +92,7 @@ appears first in the html document.</p>
   <ul>
     
     <li>This directive executes at priority level 0.</li>
+    
   </ul>
 
   
@@ -88,9 +122,7 @@ appears first in the html document.</p>
       
 
 <div>
-  <a ng-click="openPlunkr('examples/example-example.csp', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-example.csp"></plnkr-opener>
 
   <div class="runnable-example"
       path="examples/example-example.csp"

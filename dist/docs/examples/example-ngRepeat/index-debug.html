@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Example - example-ngRepeat-debug</title>
+  <link href="animations.css" rel="stylesheet" type="text/css">
+  
+
+  <script src="../../../angular.js"></script>
+  <script src="../../../angular-animate.js"></script>
+  <script src="script.js"></script>
+  
+
+  
+</head>
+<body ng-app="ngRepeat">
+  <div ng-controller="repeatController">
+  I have {{friends.length}} friends. They are:
+  <input type="search" ng-model="q" placeholder="filter friends..." aria-label="filter friends" />
+  <ul class="example-animate-container">
+    <li class="animate-repeat" ng-repeat="friend in friends | filter:q as results">
+      [{{$index + 1}}] {{friend.name}} who is {{friend.age}} years old.
+    </li>
+    <li class="animate-repeat" ng-if="results.length == 0">
+      <strong>No results found...</strong>
+    </li>
+  </ul>
+</div>
+</body>
+</html>

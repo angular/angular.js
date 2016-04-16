@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Example - example-example67-jquery</title>
+  <link href="style.css" rel="stylesheet" type="text/css">
   
 
   <script src="../../components/jquery-2.1.1/jquery.js"></script>
@@ -12,11 +13,12 @@
   
 </head>
 <body ng-app="">
-  <button ng-click="count = count + 1" ng-init="count=0">
-  Increment
-</button>
-<span>
-  count: {{count}}
-</span>
+  <ol ng-init="names=['John', 'Mary', 'Cate', 'Suz']">
+  <li ng-repeat="name in names">
+   <span ng-class-odd="'odd'" ng-class-even="'even'">
+     {{name}} &nbsp; &nbsp; &nbsp;
+   </span>
+  </li>
+</ol>
 </body>
 </html>

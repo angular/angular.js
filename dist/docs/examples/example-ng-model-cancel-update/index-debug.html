@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Example - example-ng-model-cancel-update-debug</title>
+  <link href="style.css" rel="stylesheet" type="text/css">
   
 
   <script src="../../../angular.js"></script>
@@ -13,19 +14,36 @@
 </head>
 <body ng-app="cancel-update-example">
   <div ng-controller="CancelUpdateController">
-  <p>Try typing something in each input.  See that the model only updates when you
-     blur off the input.
-   </p>
-   <p>Now see what happens if you start typing then press the Escape key</p>
+   <p>Both of these inputs are only updated if they are blurred. Hitting escape should
+   empty them. Follow these steps and observe the difference:</p>
+  <ol>
+    <li>Type something in the input. You will see that the model is not yet updated</li>
+    <li>Press the Escape key.
+      <ol>
+        <li> In the first example, nothing happens, because the model is already '', and no
+        update is detected. If you blur the input, the model will be set to the current view.
+        </li>
+        <li> In the second example, the pending update is cancelled, and the input is set back
+        to the last committed view value (''). Blurring the input does nothing.
+        </li>
+      </ol>
+    </li>
+  </ol>
 
   <form name="myForm" ng-model-options="{ updateOn: 'blur' }">
-    <p>With $rollbackViewValue()</p>
-    <input name="myInput1" ng-model="myValue" ng-keydown="resetWithCancel($event)"><br/>
-    myValue: "{{ myValue }}"
+    <div>
+   <p id="inputDescription1">Without $rollbackViewValue():</p>
+    <input name="value1" aria-describedby="inputDescription1" ng-model="model.value1"
+           ng-keydown="setEmpty($event, 'value1')">
+    value1: "{{ model.value1 }}"
+    </div>
 
-    <p>Without $rollbackViewValue()</p>
-    <input name="myInput2" ng-model="myValue" ng-keydown="resetWithoutCancel($event)"><br/>
-    myValue: "{{ myValue }}"
+    <div>
+   <p id="inputDescription2">With $rollbackViewValue():</p>
+    <input name="value2" aria-describedby="inputDescription2" ng-model="model.value2"
+           ng-keydown="setEmpty($event, 'value2', true)">
+    value2: "{{ model.value2 }}"
+    </div>
   </form>
 </div>
 </body>

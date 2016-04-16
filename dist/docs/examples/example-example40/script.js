@@ -1,38 +1,22 @@
 (function(angular) {
   'use strict';
-angular.module('xmpl.service', [])
+angular.module('form-example2', []).directive('contenteditable', function() {
+  return {
+    require: 'ngModel',
+    link: function(scope, elm, attrs, ctrl) {
+      // view -> model
+      elm.on('blur', function() {
+        ctrl.$setViewValue(elm.html());
+      });
 
-  .value('greeter', {
-    salutation: 'Hello',
-    localize: function(localization) {
-      this.salutation = localization.salutation;
-    },
-    greet: function(name) {
-      return this.salutation + ' ' + name + '!';
+      // model -> view
+      ctrl.$render = function() {
+        elm.html(ctrl.$viewValue);
+      };
+
+      // load init value from DOM
+      ctrl.$setViewValue(elm.html());
     }
-  })
-
-  .value('user', {
-    load: function(name) {
-      this.name = name;
-    }
-  });
-
-angular.module('xmpl.directive', []);
-
-angular.module('xmpl.filter', []);
-
-angular.module('xmpl', ['xmpl.service', 'xmpl.directive', 'xmpl.filter'])
-
-  .run(function(greeter, user) {
-    // This is effectively part of the main method initialization code
-    greeter.localize({
-      salutation: 'Bonjour'
-    });
-    user.load('World');
-  })
-
-  .controller('XmplController', function($scope, greeter, user){
-    $scope.greeting = greeter.greet(user.name);
-  });
+  };
+});
 })(window.angular);

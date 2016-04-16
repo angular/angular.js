@@ -1,8 +1,8 @@
-<a href='https://github.com/angular/angular.js/edit/master/src/ng/templateRequest.js?message=docs($templateRequest)%3A%20describe%20your%20change...#L5' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/templateRequest.js?message=docs($templateRequest)%3A%20describe%20your%20change...#L39' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
 
 
 
-<a href='https://github.com/angular/angular.js/tree/master/src/ng/templateRequest.js#L5' class='view-source pull-right btn btn-primary'>
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/templateRequest.js#L39' class='view-source pull-right btn btn-primary'>
   <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
 </a>
 
@@ -11,7 +11,9 @@
   <h1 class="api-profile-header-heading">$templateRequest</h1>
   <ol class="api-profile-header-structure naked-list step-list">
     
-  
+  <li>
+    <a href="api/ng/provider/$templateRequestProvider">- $templateRequestProvider</a>
+  </li>
 
     <li>
       - service in module <a href="api/ng">ng</a>
@@ -22,12 +24,18 @@
 
 
 <div class="api-profile-description">
-  <p>The <code>$templateRequest</code> service downloads the provided template using <code>$http</code> and, upon success,
-stores the contents inside of <code>$templateCache</code>. If the HTTP request fails or the response data
-of the HTTP request is empty, a <code>$compile</code> error will be thrown (the exception can be thwarted
-by setting the 2nd parameter of the function to true).</p>
+  <p>The <code>$templateRequest</code> service runs security checks then downloads the provided template using
+<code>$http</code> and, upon success, stores the contents inside of <code>$templateCache</code>. If the HTTP request
+fails or the response data of the HTTP request is empty, a <code>$compile</code> error will be thrown (the
+exception can be thwarted by setting the 2nd parameter of the function to true). Note that the
+contents of <code>$templateCache</code> are trusted, so the call to <code>$sce.getTrustedUrl(tpl)</code> is omitted
+when <code>tpl</code> is of type string and <code>$templateCache</code> has the matching entry.</p>
+<p>If you want to pass custom options to the <code>$http</code> service, such as setting the Accept header you
+can configure this via <a href="api/ng/provider/$templateRequestProvider#httpOptions"><code>$templateRequestProvider</code></a>.</p>
 
 </div>
+
+
 
 
 
@@ -65,7 +73,7 @@ by setting the 2nd parameter of the function to true).</p>
         
       </td>
       <td>
-        <a href="" class="label type-hint type-hint-string">string</a>
+        <a href="" class="label type-hint type-hint-string">string</a><a href="" class="label type-hint type-hint-trustedresourceurl">TrustedResourceUrl</a>
       </td>
       <td>
         <p>The HTTP request template URL</p>

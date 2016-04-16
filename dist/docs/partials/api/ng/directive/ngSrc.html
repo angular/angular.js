@@ -25,13 +25,15 @@ work right: The browser will fetch from the URL with the literal
 text <code>{{hash}}</code> until Angular replaces the expression inside
 <code>{{hash}}</code>. The <code>ngSrc</code> directive solves this problem.</p>
 <p>The buggy way to write it:</p>
-<pre><code class="lang-html">&lt;img src=&quot;http://www.gravatar.com/avatar/{{hash}}&quot;/&gt;
+<pre><code class="lang-html">&lt;img src=&quot;http://www.gravatar.com/avatar/{{hash}}&quot; alt=&quot;Description&quot;/&gt;
 </code></pre>
 <p>The correct way to write it:</p>
-<pre><code class="lang-html">&lt;img ng-src=&quot;http://www.gravatar.com/avatar/{{hash}}&quot;/&gt;
+<pre><code class="lang-html">&lt;img ng-src=&quot;http://www.gravatar.com/avatar/{{hash}}&quot; alt=&quot;Description&quot; /&gt;
 </code></pre>
 
 </div>
+
+
 
 
 
@@ -44,6 +46,7 @@ text <code>{{hash}}</code> until Angular replaces the expression inside
   <ul>
     
     <li>This directive executes at priority level 99.</li>
+    
   </ul>
 
   
@@ -52,7 +55,7 @@ text <code>{{hash}}</code> until Angular replaces the expression inside
   
     <ul>
     <li>as attribute:
-        <pre><code>&lt;IMG&#10;  ng-src=&quot;&quot;&gt;&#10;...&#10;&lt;/IMG&gt;</code></pre>
+        <pre><code>&lt;IMG&#10;  ng-src=&quot;template&quot;&gt;&#10;...&#10;&lt;/IMG&gt;</code></pre>
       </li>
     
   </div>

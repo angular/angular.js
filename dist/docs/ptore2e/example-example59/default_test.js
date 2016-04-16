@@ -5,12 +5,9 @@ describe("", function() {
     browser.get("build/docs/examples/example-example59/index.html");
   });
   
-it('should check ng-bind', function() {
-  var nameInput = element(by.model('name'));
-
-  expect(element(by.binding('name')).getText()).toBe('Whirled');
-  nameInput.clear();
-  nameInput.sendKeys('world');
-  expect(element(by.binding('name')).getText()).toBe('world');
+it('should toggle open', function() {
+  expect(element(by.id('details')).getAttribute('open')).toBeFalsy();
+  element(by.model('open')).click();
+  expect(element(by.id('details')).getAttribute('open')).toBeTruthy();
 });
 });

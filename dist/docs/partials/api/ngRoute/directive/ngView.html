@@ -31,6 +31,19 @@ configuration of the <code>$route</code> service.</p>
 
 
 
+<h2 id="known-issues">Known Issues</h2>
+<div class="known-issue">
+  <p>If <code>ngView</code> is contained in an asynchronously loaded template (e.g. in another
+            directive&#39;s templateUrl or in a template loaded using <code>ngInclude</code>), then you need to
+            make sure that <code>$route</code> is instantiated in time to capture the initial
+            <code>$locationChangeStart</code> event and load the appropriate view. One way to achieve this
+            is to have it as a dependency in a <code>.run</code> block:
+            <code>myModule.run([&#39;$route&#39;, function() {}]);</code></p>
+
+</div>
+
+
+
 
 <div>
   
@@ -40,6 +53,7 @@ configuration of the <code>$route</code> service.</p>
   <ul>
     <li>This directive creates new scope.</li>
     <li>This directive executes at priority level 400.</li>
+    
   </ul>
 
   
@@ -50,20 +64,36 @@ configuration of the <code>$route</code> service.</p>
     
       <li>as element:
       (This directive can be used as custom element, but be aware of <a href="guide/ie">IE restrictions</a>).
-      <pre><code>&lt;ng-view&#10;  [onload=&quot;&quot;]&#10;  [autoscroll=&quot;&quot;]&gt;&#10;...&#10;&lt;/ng-view&gt;</code></pre>
+      <pre><code>&lt;ng-view&#10;  [onload=&quot;string&quot;]&#10;  [autoscroll=&quot;string&quot;]&gt;&#10;...&#10;&lt;/ng-view&gt;</code></pre>
       </li>
     <li>as attribute:
-        <pre><code>&lt;ANY&#10;  [onload=&quot;&quot;]&#10;  [autoscroll=&quot;&quot;]&gt;&#10;...&#10;&lt;/ANY&gt;</code></pre>
+        <pre><code>&lt;ANY&#10;  [onload=&quot;string&quot;]&#10;  [autoscroll=&quot;string&quot;]&gt;&#10;...&#10;&lt;/ANY&gt;</code></pre>
       </li>
     <li>as CSS class:
-        <pre><code>&lt;ANY class=&quot;[onload: ;] [autoscroll: ;]&quot;&gt; ... &lt;/ANY&gt;</code></pre>
+        <pre><code>&lt;ANY class=&quot;[onload: string;] [autoscroll: string;]&quot;&gt; ... &lt;/ANY&gt;</code></pre>
       </li>
     
   </div>
   
   <h2 id="animations">Animations</h2>
-  <p>enter - animation is used to bring new content into the browser.
-leave - animation is used to animate existing content away.</p>
+  <table>
+<thead>
+<tr>
+<th>Animation</th>
+<th>Occurs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="api/ng/service/$animate#enter">enter</a></td>
+<td>when the new element is inserted to the DOM</td>
+</tr>
+<tr>
+<td><a href="api/ng/service/$animate#leave">leave</a></td>
+<td>when the old element is removed from to the DOM</td>
+</tr>
+</tbody>
+</table>
 <p>The enter and leave animation occur concurrently.</p>
 
   <a href="api/ngAnimate/service/$animate">Click here</a> to learn more about the steps involved in the animation.
@@ -145,9 +175,7 @@ leave - animation is used to animate existing content away.</p>
   <h2 id="example">Example</h2><p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-ngView-directive', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-ngView-directive"></plnkr-opener>
 
   <div class="runnable-example"
       path="examples/example-ngView-directive"
@@ -183,7 +211,7 @@ leave - animation is used to animate existing content away.</p>
       name="animations.css"
       language="css"
       type="css">
-      <pre><code>.view-animate-container {&#10;  position:relative;&#10;  height:100px!important;&#10;  background:white;&#10;  border:1px solid black;&#10;  height:40px;&#10;  overflow:hidden;&#10;}&#10;&#10;.view-animate {&#10;  padding:10px;&#10;}&#10;&#10;.view-animate.ng-enter, .view-animate.ng-leave {&#10;  -webkit-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 1.5s;&#10;  transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 1.5s;&#10;&#10;  display:block;&#10;  width:100%;&#10;  border-left:1px solid black;&#10;&#10;  position:absolute;&#10;  top:0;&#10;  left:0;&#10;  right:0;&#10;  bottom:0;&#10;  padding:10px;&#10;}&#10;&#10;.view-animate.ng-enter {&#10;  left:100%;&#10;}&#10;.view-animate.ng-enter.ng-enter-active {&#10;  left:0;&#10;}&#10;.view-animate.ng-leave.ng-leave-active {&#10;  left:-100%;&#10;}</code></pre>
+      <pre><code>.view-animate-container {&#10;  position:relative;&#10;  height:100px!important;&#10;  background:white;&#10;  border:1px solid black;&#10;  height:40px;&#10;  overflow:hidden;&#10;}&#10;&#10;.view-animate {&#10;  padding:10px;&#10;}&#10;&#10;.view-animate.ng-enter, .view-animate.ng-leave {&#10;  transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 1.5s;&#10;&#10;  display:block;&#10;  width:100%;&#10;  border-left:1px solid black;&#10;&#10;  position:absolute;&#10;  top:0;&#10;  left:0;&#10;  right:0;&#10;  bottom:0;&#10;  padding:10px;&#10;}&#10;&#10;.view-animate.ng-enter {&#10;  left:100%;&#10;}&#10;.view-animate.ng-enter.ng-enter-active {&#10;  left:0;&#10;}&#10;.view-animate.ng-leave.ng-leave-active {&#10;  left:-100%;&#10;}</code></pre>
     </div>
   
     <div class="runnable-example-file" 

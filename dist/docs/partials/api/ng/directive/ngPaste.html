@@ -27,6 +27,8 @@
 
 
 
+
+
 <div>
   
 
@@ -35,6 +37,7 @@
   <ul>
     
     <li>This directive executes at priority level 0.</li>
+    
   </ul>
 
   
@@ -43,7 +46,7 @@
   
     <ul>
     <li>as attribute:
-        <pre><code>&lt;window, input, select, textarea, a&#10;  ng-paste=&quot;&quot;&gt;&#10;...&#10;&lt;/window, input, select, textarea, a&gt;</code></pre>
+        <pre><code>&lt;window, input, select, textarea, a&#10;  ng-paste=&quot;expression&quot;&gt;&#10;...&#10;&lt;/window, input, select, textarea, a&gt;</code></pre>
       </li>
     
   </div>
@@ -89,12 +92,10 @@ paste. (<a href="guide/expression#-event-">Event object is available as <code>$e
   <h2 id="example">Example</h2><p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-example81', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-example83"></plnkr-opener>
 
   <div class="runnable-example"
-      path="examples/example-example81">
+      path="examples/example-example83">
 
   
     <div class="runnable-example-file" 
@@ -105,7 +106,7 @@ paste. (<a href="guide/expression#-event-">Event object is available as <code>$e
     </div>
   
 
-    <iframe class="runnable-example-frame" src="examples/example-example81/index.html" name="example-example81"></iframe>
+    <iframe class="runnable-example-frame" src="examples/example-example83/index.html" name="example-example83"></iframe>
   </div>
 </div>
 

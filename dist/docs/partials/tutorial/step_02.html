@@ -52,7 +52,7 @@ by the value of the expressions.</li>
 <p>We have added a new directive, called <code>ng-controller</code>, which attaches a <code>PhoneListCtrl</code>
 <strong>controller</strong> to the &lt;body&gt; tag.  At this point:</p>
 <ul>
-<li>The expressions in curly braces (<code>{{phone.name}}</code> and <code>{{phone.snippet}}</code> denote
+<li>The expressions in curly braces (<code>{{phone.name}}</code> and <code>{{phone.snippet}}</code>) denote
 bindings, which are referring to our application model, which is set up in our <code>PhoneListCtrl</code>
 controller.</li>
 </ul>
@@ -109,6 +109,7 @@ are reflected in the model.</p>
 <p>The &quot;Angular way&quot; of separating controller from the view, makes it easy to test code as it is being
 developed. If our controller is available on the global namespace then we could simply instantiate it
 with a mock <code>scope</code> object:</p>
+<p><strong><code>test/e2e/scenarios.js</code>:</strong></p>
 <pre><code class="lang-js">describe(&#39;PhoneListCtrl&#39;, function(){
 
   it(&#39;should create &quot;phones&quot; model with 3 phones&#39;, function() {
@@ -160,8 +161,18 @@ to ensure that Karma and its necessary plugins are installed. You can do this by
 <code>npm install</code>.</p>
 <p>To run the tests, and then watch the files for changes: <code>npm test</code>.</p>
 <ul>
-<li>Karma will start a new instance of Chrome browser automatically. Just ignore it and let it run in
- the background. Karma will use this browser for test execution.</li>
+<li>Karma will start new instances of Chrome and Firefox browsers automatically. Just ignore them and
+let them run in the background. Karma will use these browsers for test execution.</li>
+<li><p>If you only have one of the browsers installed on your machine (either Chrome or Firefox), make
+sure to update the karma configuration file before running the test. Locate the configuration file
+in <code>test/karma.conf.js</code>, then update the <code>browsers</code> property.</p>
+<p>E.g. if you only have Chrome installed:</p>
+<pre>
+  ...
+  browsers: ['Chrome'],
+  ...
+</pre>
+</li>
 <li><p>You should see the following or similar output in the terminal:</p>
 <pre>
   info: Karma server started at http://localhost:9876/

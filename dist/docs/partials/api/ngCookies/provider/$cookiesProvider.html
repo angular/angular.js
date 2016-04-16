@@ -1,0 +1,79 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ngCookies/cookies.js?message=docs($cookiesProvider)%3A%20describe%20your%20change...#L20' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ngCookies/cookies.js#L20' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">$cookiesProvider</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+  <li>
+    <a href="api/ngCookies/service/$cookies">- $cookies</a>
+  </li>
+
+    <li>
+      - provider in module <a href="api/ngCookies">ngCookies</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Use <code>$cookiesProvider</code> to change the default behavior of the <a href="api/ngCookies/service/$cookies">$cookies</a> service.</p>
+
+</div>
+
+
+
+
+
+
+<div>
+  
+
+    
+
+  
+
+  
+  
+  
+<h2>Properties</h2>
+<ul class="properties">
+  <li id="defaults">
+    <h3><code>defaults</code></h3>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td></td>
+    <td><p>Object containing default options to pass when setting cookies.</p>
+<p>The object may have following properties:</p>
+<ul>
+<li><strong>path</strong> - <code>{string}</code> - The cookie will be available only for this path and its
+sub-paths. By default, this is the URL that appears in your <code>&lt;base&gt;</code> tag.</li>
+<li><strong>domain</strong> - <code>{string}</code> - The cookie will be available only for this domain and
+its sub-domains. For security reasons the user agent will not accept the cookie
+if the current domain is not a sub-domain of this domain or equal to it.</li>
+<li><strong>expires</strong> - <code>{string|Date}</code> - String of the form &quot;Wdy, DD Mon YYYY HH:MM:SS GMT&quot;
+or a Date object indicating the exact date/time this cookie will expire.</li>
+<li><strong>secure</strong> - <code>{boolean}</code> - If <code>true</code>, then the cookie will only be available through a
+secured connection.</li>
+</ul>
+<p>Note: By default, the address that appears in your <code>&lt;base&gt;</code> tag will be used as the path.
+This is important so that cookies will be visible for all routes when html5mode is enabled.</p>
+</td>
+  </tr>
+</table>
+  </li>
+  </ul>
+
+
+
+  
+</div>
+
+

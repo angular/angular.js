@@ -1,8 +1,8 @@
-<a href='https://github.com/angular/angular.js/edit/master/src/ng/filter/filters.js?message=docs(number)%3A%20describe%20your%20change...#L75' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/filter/filters.js?message=docs(number)%3A%20describe%20your%20change...#L79' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
 
 
 
-<a href='https://github.com/angular/angular.js/tree/master/src/ng/filter/filters.js#L75' class='view-source pull-right btn btn-primary'>
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/filter/filters.js#L79' class='view-source pull-right btn btn-primary'>
   <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
 </a>
 
@@ -21,10 +21,13 @@
 
 <div class="api-profile-description">
   <p>Formats a number as text.</p>
-<p>If the input is not a number an empty string is returned.</p>
-<p>If the input is an infinite (Infinity/-Infinity) the Infinity symbol &#39;∞&#39; is returned.</p>
+<p>If the input is null or undefined, it will just be returned.
+If the input is infinite (Infinity or -Infinity), the Infinity symbol &#39;∞&#39; or &#39;-∞&#39; is returned, respectively.
+If the input is not a number an empty string is returned.</p>
 
 </div>
+
+
 
 
 
@@ -99,7 +102,9 @@ formatting pattern. In the case of the default locale, it will be 3.</p>
 <table class="variables-matrix return-arguments">
   <tr>
     <td><a href="" class="label type-hint type-hint-string">string</a></td>
-    <td><p>Number rounded to decimalPlaces and places a “,” after each third digit.</p>
+    <td><p>Number rounded to <code>fractionSize</code> appropriately formatted based on the current
+                  locale (e.g., in the en_US locale it will have &quot;.&quot; as the decimal separator and
+                  include &quot;,&quot; group separators after each third digit).</p>
 </td>
   </tr>
 </table>
@@ -109,12 +114,10 @@ formatting pattern. In the case of the default locale, it will be 3.</p>
   <h2 id="example">Example</h2><p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-example99', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-example100"></plnkr-opener>
 
   <div class="runnable-example"
-      path="examples/example-example99"
+      path="examples/example-example100"
       module="numberFilterExample">
 
   
@@ -122,7 +125,7 @@ formatting pattern. In the case of the default locale, it will be 3.</p>
       name="index.html"
       language="html"
       type="html">
-      <pre><code>&lt;script&gt;&#10;  angular.module(&#39;numberFilterExample&#39;, [])&#10;    .controller(&#39;ExampleController&#39;, [&#39;$scope&#39;, function($scope) {&#10;      $scope.val = 1234.56789;&#10;    }]);&#10;&lt;/script&gt;&#10;&lt;div ng-controller=&quot;ExampleController&quot;&gt;&#10;  Enter number: &lt;input ng-model=&#39;val&#39;&gt;&lt;br&gt;&#10;  Default formatting: &lt;span id=&#39;number-default&#39;&gt;{{val | number}}&lt;/span&gt;&lt;br&gt;&#10;  No fractions: &lt;span&gt;{{val | number:0}}&lt;/span&gt;&lt;br&gt;&#10;  Negative number: &lt;span&gt;{{-val | number:4}}&lt;/span&gt;&#10;&lt;/div&gt;</code></pre>
+      <pre><code>&lt;script&gt;&#10;  angular.module(&#39;numberFilterExample&#39;, [])&#10;    .controller(&#39;ExampleController&#39;, [&#39;$scope&#39;, function($scope) {&#10;      $scope.val = 1234.56789;&#10;    }]);&#10;&lt;/script&gt;&#10;&lt;div ng-controller=&quot;ExampleController&quot;&gt;&#10;  &lt;label&gt;Enter number: &lt;input ng-model=&#39;val&#39;&gt;&lt;/label&gt;&lt;br&gt;&#10;  Default formatting: &lt;span id=&#39;number-default&#39;&gt;{{val | number}}&lt;/span&gt;&lt;br&gt;&#10;  No fractions: &lt;span&gt;{{val | number:0}}&lt;/span&gt;&lt;br&gt;&#10;  Negative number: &lt;span&gt;{{-val | number:4}}&lt;/span&gt;&#10;&lt;/div&gt;</code></pre>
     </div>
   
     <div class="runnable-example-file" 
@@ -133,7 +136,7 @@ formatting pattern. In the case of the default locale, it will be 3.</p>
     </div>
   
 
-    <iframe class="runnable-example-frame" src="examples/example-example99/index.html" name="example-example99"></iframe>
+    <iframe class="runnable-example-frame" src="examples/example-example100/index.html" name="example-example100"></iframe>
   </div>
 </div>
 

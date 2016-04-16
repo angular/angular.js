@@ -30,6 +30,8 @@ converted to a string.</p>
 
 
 
+
+
 <div>
   
 
@@ -37,11 +39,11 @@ converted to a string.</p>
   <h2>Usage</h2>
   <h3>In HTML Template Binding</h3>
   
-    <pre><code>{{ limitTo_expression | limitTo : limit}}</code></pre>
+    <pre><code>{{ limitTo_expression | limitTo : limit : begin}}</code></pre>
   
 
   <h3>In JavaScript</h3>
-  <pre><code>$filter(&#39;limitTo&#39;)(input, limit)</code></pre>
+  <pre><code>$filter(&#39;limitTo&#39;)(input, limit, begin)</code></pre>
 
   
 <section class="api-section">
@@ -93,6 +95,23 @@ converted to a string.</p>
       </td>
     </tr>
     
+    <tr>
+      <td>
+        begin
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a><a href="" class="label type-hint type-hint-number">number</a>
+      </td>
+      <td>
+        <p>Index at which to begin limitation. As a negative index, <code>begin</code>
+    indicates an offset from the end of <code>input</code>. Defaults to <code>0</code>.</p>
+
+        
+      </td>
+    </tr>
+    
   </tbody>
 </table>
 
@@ -113,12 +132,10 @@ converted to a string.</p>
   <h2 id="example">Example</h2><p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-example102', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-example103"></plnkr-opener>
 
   <div class="runnable-example"
-      path="examples/example-example102"
+      path="examples/example-example103"
       module="limitToExample">
 
   
@@ -126,7 +143,7 @@ converted to a string.</p>
       name="index.html"
       language="html"
       type="html">
-      <pre><code>&lt;script&gt;&#10;  angular.module(&#39;limitToExample&#39;, [])&#10;    .controller(&#39;ExampleController&#39;, [&#39;$scope&#39;, function($scope) {&#10;      $scope.numbers = [1,2,3,4,5,6,7,8,9];&#10;      $scope.letters = &quot;abcdefghi&quot;;&#10;      $scope.longNumber = 2345432342;&#10;      $scope.numLimit = 3;&#10;      $scope.letterLimit = 3;&#10;      $scope.longNumberLimit = 3;&#10;    }]);&#10;&lt;/script&gt;&#10;&lt;div ng-controller=&quot;ExampleController&quot;&gt;&#10;  Limit {{numbers}} to: &lt;input type=&quot;number&quot; step=&quot;1&quot; ng-model=&quot;numLimit&quot;&gt;&#10;  &lt;p&gt;Output numbers: {{ numbers | limitTo:numLimit }}&lt;/p&gt;&#10;  Limit {{letters}} to: &lt;input type=&quot;number&quot; step=&quot;1&quot; ng-model=&quot;letterLimit&quot;&gt;&#10;  &lt;p&gt;Output letters: {{ letters | limitTo:letterLimit }}&lt;/p&gt;&#10;  Limit {{longNumber}} to: &lt;input type=&quot;number&quot; step=&quot;1&quot; ng-model=&quot;longNumberLimit&quot;&gt;&#10;  &lt;p&gt;Output long number: {{ longNumber | limitTo:longNumberLimit }}&lt;/p&gt;&#10;&lt;/div&gt;</code></pre>
+      <pre><code>&lt;script&gt;&#10;  angular.module(&#39;limitToExample&#39;, [])&#10;    .controller(&#39;ExampleController&#39;, [&#39;$scope&#39;, function($scope) {&#10;      $scope.numbers = [1,2,3,4,5,6,7,8,9];&#10;      $scope.letters = &quot;abcdefghi&quot;;&#10;      $scope.longNumber = 2345432342;&#10;      $scope.numLimit = 3;&#10;      $scope.letterLimit = 3;&#10;      $scope.longNumberLimit = 3;&#10;    }]);&#10;&lt;/script&gt;&#10;&lt;div ng-controller=&quot;ExampleController&quot;&gt;&#10;  &lt;label&gt;&#10;     Limit {{numbers}} to:&#10;     &lt;input type=&quot;number&quot; step=&quot;1&quot; ng-model=&quot;numLimit&quot;&gt;&#10;  &lt;/label&gt;&#10;  &lt;p&gt;Output numbers: {{ numbers | limitTo:numLimit }}&lt;/p&gt;&#10;  &lt;label&gt;&#10;     Limit {{letters}} to:&#10;     &lt;input type=&quot;number&quot; step=&quot;1&quot; ng-model=&quot;letterLimit&quot;&gt;&#10;  &lt;/label&gt;&#10;  &lt;p&gt;Output letters: {{ letters | limitTo:letterLimit }}&lt;/p&gt;&#10;  &lt;label&gt;&#10;     Limit {{longNumber}} to:&#10;     &lt;input type=&quot;number&quot; step=&quot;1&quot; ng-model=&quot;longNumberLimit&quot;&gt;&#10;  &lt;/label&gt;&#10;  &lt;p&gt;Output long number: {{ longNumber | limitTo:longNumberLimit }}&lt;/p&gt;&#10;&lt;/div&gt;</code></pre>
     </div>
   
     <div class="runnable-example-file" 
@@ -137,7 +154,7 @@ converted to a string.</p>
     </div>
   
 
-    <iframe class="runnable-example-frame" src="examples/example-example102/index.html" name="example-example102"></iframe>
+    <iframe class="runnable-example-frame" src="examples/example-example103/index.html" name="example-example103"></iframe>
   </div>
 </div>
 

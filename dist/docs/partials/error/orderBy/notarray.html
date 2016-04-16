@@ -1,0 +1,57 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/error/orderBy/notarray.ngdoc?message=docs(error%2Fnotarray)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1>Error: orderBy:notarray
+  <div><span class='hint'>Value is not array-like</span></div>
+</h1>
+
+<div>
+    <pre class="minerr-errmsg" error-display="Expected array but received: {0}">Expected array but received: {0}</pre>
+</div>
+
+<h2>Description</h2>
+<div class="description">
+  <p>This error occurs when <a href="api/ng/filter/orderBy">orderBy</a> is not passed an array-like value:</p>
+<pre><code class="lang-html">&lt;div ng-repeat=&quot;(key, value) in myObj | orderBy:someProp&quot;&gt;
+  {{ key }} : {{ value }}
+&lt;/div&gt;
+</code></pre>
+<p><code>orderBy</code> must be used with an array-like value so a subset of items can be returned.
+The array can be initialized asynchronously and therefore <code>null</code> or <code>undefined</code> won&#39;t throw this error.</p>
+<p>To use <code>orderBy</code> to order the properties of an object, you can create your own array based on that object:</p>
+<pre><code class="lang-js">angular.module(&#39;aModule&#39;, [])
+.controller(&#39;aController&#39;, function($scope) {
+  var myObj = {
+    one: {id: 1, name: &#39;Some thing&#39;},
+    two: {id: 2, name: &#39;Another thing&#39;},
+    three: {id: 3, name: &#39;A third thing&#39;}
+  };
+
+  $scope.arrFromMyObj = Object.keys(myObj).map(function(key) {
+    return myObj[key];
+  });
+});
+</code></pre>
+<p>That can be used as:</p>
+<pre><code class="lang-html">&lt;label&gt;
+  Order by:
+  &lt;select ng-model=&quot;orderProp&quot; ng-options=&quot;prop for prop in [&#39;id&#39;, &#39;name&#39;]&quot;&gt;&lt;/select&gt;
+&lt;/label&gt;
+&lt;div ng-repeat=&quot;item in arrFromMyObj | orderBy:orderProp&quot;&gt;
+  [{{ item.id }}] {{ item.name }}
+&lt;/div&gt;
+</code></pre>
+<p>You could as well convert the object to an array using a filter such as
+<a href="https://github.com/petebacondarwin/angular-toArrayFilter">toArrayFilter</a>:</p>
+<pre><code class="lang-html">&lt;label&gt;
+  Order by:
+  &lt;select ng-model=&quot;orderProp&quot; ng-options=&quot;prop for prop in [&#39;id&#39;, &#39;name&#39;]&quot;&gt;&lt;/select&gt;
+&lt;/label&gt;
+&lt;div ng-repeat=&quot;item in myObj | toArray:false | orderBy:orderProp&quot;&gt;
+  [{{ item.id }}] {{ item.name }}
+&lt;/div&gt;
+</code></pre>
+
+</div>
+
+

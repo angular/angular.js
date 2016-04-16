@@ -13,7 +13,15 @@
       
       <tr>
         <td><a href="api/ngTouch/directive/ngClick">ngClick</a></td>
-        <td><p>A more powerful replacement for the default ngClick designed to be used on touchscreen
+        <td><p><div class="alert alert-danger">
+<strong>DEPRECATION NOTICE</strong>: Beginning with Angular 1.5, this directive is deprecated and by default <strong>disabled</strong>.
+The directive will receive no further support and might be removed from future releases.
+If you need the directive, you can enable it with the <a href="api/ngTouch/provider/$touchProvider">$touchProvider#ngClickOverrideEnabled</a>
+function. We also recommend that you migrate to <a href="https://github.com/ftlabs/fastclick">FastClick</a>.
+To learn more about the 300ms delay, this <a href="http://developer.telerik.com/featured/300-ms-click-delay-ios-8/">Telerik article</a>
+gives a good overview.
+</div>
+A more powerful replacement for the default ngClick designed to be used on touchscreen
 devices. Most mobile browsers wait about 300ms after a tap-and-release before sending
 the click event. This version handles them immediately, and then prevents the
 following click event from propagating.</p>

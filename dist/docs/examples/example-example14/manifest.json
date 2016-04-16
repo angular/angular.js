@@ -3,6 +3,7 @@
   "files": [
     "index-production.html",
     "script.js",
-    "my-customer.html"
+    "customer-name.html",
+    "customer-address.html"
   ]
 }

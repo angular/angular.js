@@ -1,5 +1,5 @@
-it('should toggle readonly attr', function() {
-  expect(element(by.css('[type="text"]')).getAttribute('readonly')).toBeFalsy();
+it('should toggle button', function() {
+  expect(element(by.css('button')).getAttribute('disabled')).toBeFalsy();
   element(by.model('checked')).click();
-  expect(element(by.css('[type="text"]')).getAttribute('readonly')).toBeTruthy();
+  expect(element(by.css('button')).getAttribute('disabled')).toBeTruthy();
 });

@@ -1,0 +1,18 @@
+[role=checkbox] {
+  cursor: pointer;
+  display: inline-block;
+}
+[role=checkbox] .icon:before {
+  content: '\2610';
+  display: inline-block;
+  font-size: 2em;
+  line-height: 1;
+  vertical-align: middle;
+  speak: none;
+}
+[role=checkbox].active .icon:before {
+  content: '\2611';
+}
+pre {
+  white-space: pre-wrap;
+}

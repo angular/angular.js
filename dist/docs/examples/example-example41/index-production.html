@@ -5,19 +5,17 @@
   <title>Example - example-example41-production</title>
   
 
-  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/null/angular.min.js"></script>
   <script src="script.js"></script>
   
 
   
 </head>
-<body ng-app="scopeExample">
-  <div ng-controller="MyController">
-  Your name:
-    <input type="text" ng-model="username">
-    <button ng-click='sayHello()'>greet</button>
-  <hr>
-  {{greeting}}
+<body >
+  <div ng-app="myApp">
+  <div>
+    {{ 'World' | greet }}
+  </div>
 </div>
 </body>
 </html>

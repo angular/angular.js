@@ -1,7 +1,7 @@
 <a href='https://github.com/angular/angular.js/edit/master/docs/content/error/$parse/isecwindow.ngdoc?message=docs(error%2Fisecwindow)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
 
 
-<h1>Error: error:isecwindow
+<h1>Error: $parse:isecwindow
   <div><span class='hint'>Referencing Window object in Expression</span></div>
 </h1>
 
@@ -19,6 +19,24 @@ places that are harder for the developer to guard.  Dotted member access (such a
 perform this check - it&#39;s up to the developer to not expose such sensitive and powerful objects
 directly on the scope chain.</p>
 <p>To resolve this error, avoid Window access.</p>
+<h3 id="common-coffeescript-issue">Common CoffeeScript Issue</h3>
+<p>Be aware that if you are using CoffeeScript, it automatically returns the value of the last statement in a
+function. So for instance</p>
+<pre><code class="lang-coffeescript">scope.foo = -&gt;
+  window.open &#39;https://example.com&#39;
+</code></pre>
+<p>compiles to something like</p>
+<pre><code class="lang-js">scope.foo = function() {
+  return window.open(&#39;https://example.com&#39;);
+};
+</code></pre>
+<p>You can see that this function will return the result of calling <code>window.open</code>, which is a <code>Window</code>
+object.</p>
+<p>You can avoid this by explicitly returning something else from the function:</p>
+<pre><code class="lang-coffeescript">scope.foo = -&gt;
+  window.open &#39;https://example.com&#39;
+  return true;
+</code></pre>
 
 </div>
 

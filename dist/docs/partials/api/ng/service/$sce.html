@@ -1,8 +1,8 @@
-<a href='https://github.com/angular/angular.js/edit/master/src/ng/sce.js?message=docs($sce)%3A%20describe%20your%20change...#L386' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/sce.js?message=docs($sce)%3A%20describe%20your%20change...#L404' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
 
 
 
-<a href='https://github.com/angular/angular.js/tree/master/src/ng/sce.js#L386' class='view-source pull-right btn btn-primary'>
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/sce.js#L404' class='view-source pull-right btn btn-primary'>
   <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
 </a>
 
@@ -39,7 +39,7 @@ to the top of your HTML document.</p>
 <p>SCE assists in writing code in way that (a) is secure by default and (b) makes auditing for
 security vulnerabilities such as XSS, clickjacking, etc. a lot easier.</p>
 <p>Here&#39;s an example of a binding in a privileged context:</p>
-<pre><code>&lt;input ng-model=&quot;userHtml&quot;&gt;
+<pre><code>&lt;input ng-model=&quot;userHtml&quot; aria-label=&quot;User input&quot;&gt;
 &lt;div ng-bind-html=&quot;userHtml&quot;&gt;&lt;/div&gt;
 </code></pre>
 <p>Notice that <code>ng-bind-html</code> is bound to <code>userHtml</code> controlled by the user.  With SCE
@@ -81,7 +81,7 @@ simplified):</p>
 <code>templateUrl</code>&#39;s specified by <a href="guide/directive">directives</a>.</p>
 <p>By default, Angular only loads templates from the same domain and protocol as the application
 document.  This is done by calling <a href="api/ng/service/$sce#getTrustedResourceUrl">$sce.getTrustedResourceUrl</a> on the template URL.  To load templates from other domains and/or
-protocols, you may either either <a href="api/ng/provider/$sceDelegateProvider#resourceUrlWhitelist">whitelist
+protocols, you may either <a href="api/ng/provider/$sceDelegateProvider#resourceUrlWhitelist">whitelist
 them</a> or <a href="api/ng/service/$sce#trustAsResourceUrl">wrap it</a> into a trusted value.</p>
 <p><em>Please note</em>:
 The browser&#39;s
@@ -151,10 +151,10 @@ being tested (substring matches are not good enough.)</li>
 <li>There are exactly <strong>two wildcard sequences</strong> - <code>*</code> and <code>**</code>.  All other characters
 match themselves.</li>
 <li><code>*</code>: matches zero or more occurrences of any character other than one of the following 6
-characters: &#39;<code>:</code>&#39;, &#39;<code>/</code>&#39;, &#39;<code>.</code>&#39;, &#39;<code>?</code>&#39;, &#39;<code>&amp;</code>&#39; and &#39;;&#39;.  It&#39;s a useful wildcard for use
+characters: &#39;<code>:</code>&#39;, &#39;<code>/</code>&#39;, &#39;<code>.</code>&#39;, &#39;<code>?</code>&#39;, &#39;<code>&amp;</code>&#39; and &#39;<code>;</code>&#39;.  It&#39;s a useful wildcard for use
 in a whitelist.</li>
 <li><code>**</code>: matches zero or more occurrences of <em>any</em> character.  As such, it&#39;s not
-not appropriate to use in for a scheme, domain, etc. as it would match too much.  (e.g.
+appropriate for use in a scheme, domain, etc. as it would match too much.  (e.g.
 <a href="http://**.example.com/">http://**.example.com/</a> would match <a href="http://evil.com/?ignore=.example.com/">http://evil.com/?ignore=.example.com/</a> and that might
 not have been the intention.)  Its usage at the very end of the path is ok.  (e.g.
 <a href="http://foo.example.com/templates/**">http://foo.example.com/templates/**</a>).</li>
@@ -164,11 +164,11 @@ not have been the intention.)  Its usage at the very end of the path is ok.  (e.
 <li><em>Caveat</em>:  While regular expressions are powerful and offer great flexibility,  their syntax
 (and all the inevitable escaping) makes them <em>harder to maintain</em>.  It&#39;s easy to
 accidentally introduce a bug when one updates a complex expression (imho, all regexes should
-have good test coverage.).  For instance, the use of <code>.</code> in the regex is correct only in a
+have good test coverage).  For instance, the use of <code>.</code> in the regex is correct only in a
 small number of cases.  A <code>.</code> character in the regex used when matching the scheme or a
 subdomain could be matched against a <code>:</code> or literal <code>.</code> that was likely not intended.   It
 is highly recommended to use the string patterns and only fall back to regular expressions
-if they as a last resort.</li>
+as a last resort.</li>
 <li>The regular expression must be an instance of RegExp (i.e. not a string.)  It is
 matched against the <strong>entire</strong> <em>normalized / absolute URL</em> of the resource being tested
 (even when the RegExp did not have the <code>^</code> and <code>$</code> codes.)  In addition, any flags
@@ -178,7 +178,7 @@ recommended, e.g. in issue <a href="https://github.com/angular/angular.js/issues
 remember to escape your regular expression (and be aware that you might need more than
 one level of escaping depending on your templating engine and the way you interpolated
 the value.)  Do make use of your platform&#39;s escaping mechanism as it might be good
-enough before coding your own.  e.g. Ruby has
+enough before coding your own.  E.g. Ruby has
 <a href="http://www.ruby-doc.org/core-2.0.0/Regexp.html#method-c-escape">Regexp.escape(str)</a>
 and Python has <a href="http://docs.python.org/library/re.html#re.escape">re.escape</a>.
 Javascript lacks a similar built in function for escaping.  Take a look at Google
@@ -191,12 +191,10 @@ Closure library&#39;s <a href="http://docs.closure-library.googlecode.com/git/cl
 <p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-example110', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-example111"></plnkr-opener>
 
   <div class="runnable-example"
-      path="examples/example-example110"
+      path="examples/example-example111"
       module="mySceApp"
       deps="angular-sanitize.js">
 
@@ -230,7 +228,7 @@ Closure library&#39;s <a href="http://docs.closure-library.googlecode.com/git/cl
     </div>
   
 
-    <iframe class="runnable-example-frame" src="examples/example-example110/index.html" name="example-example110"></iframe>
+    <iframe class="runnable-example-frame" src="examples/example-example111/index.html" name="example-example111"></iframe>
   </div>
 </div>
 
@@ -251,6 +249,8 @@ you&#39;re migrating them a module at a time.</p>
 </code></pre>
 
 </div>
+
+
 
 
 
@@ -415,7 +415,7 @@ escaping.</p>
       </td>
       <td>
         <p>The kind of context in which this value is safe for use.  e.g. url,
-  resource_url, html, js and css.</p>
+  resourceUrl, html, js and css.</p>
 
         
       </td>

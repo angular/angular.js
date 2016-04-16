@@ -6,22 +6,37 @@
   
 
   <script src="../../../angular.min.js"></script>
+  <script src="../../../angular-animate.js"></script>
   
 
-  
+  <script type="text/javascript">
+    angular.element(document.getElementsByTagName('head')).append(angular.element('<base href="' + window.location.pathname + '" />'));
+  </script>
 </head>
-<body ng-app="bindExample">
+<body ng-app="formExample">
   <script>
-  angular.module('bindExample', [])
-    .controller('ExampleController', ['$scope', function($scope) {
-      $scope.salutation = 'Hello';
-      $scope.name = 'World';
+  angular.module('formExample', [])
+    .controller('FormController', ['$scope', function($scope) {
+      $scope.userType = 'guest';
     }]);
 </script>
-<div ng-controller="ExampleController">
- Salutation: <input type="text" ng-model="salutation"><br>
- Name: <input type="text" ng-model="name"><br>
- <pre ng-bind-template="{{salutation}} {{name}}!"></pre>
-</div>
+<style>
+ .my-form {
+   transition:all linear 0.5s;
+   background: transparent;
+ }
+ .my-form.ng-invalid {
+   background: red;
+ }
+</style>
+<form name="myForm" ng-controller="FormController" class="my-form">
+  userType: <input name="input" ng-model="userType" required>
+  <span class="error" ng-show="myForm.input.$error.required">Required!</span><br>
+  <code>userType = {{userType}}</code><br>
+  <code>myForm.input.$valid = {{myForm.input.$valid}}</code><br>
+  <code>myForm.input.$error = {{myForm.input.$error}}</code><br>
+  <code>myForm.$valid = {{myForm.$valid}}</code><br>
+  <code>myForm.$error.required = {{!!myForm.$error.required}}</code><br>
+ </form>
 </body>
 </html>

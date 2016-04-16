@@ -20,13 +20,15 @@
     }]);
 </script>
 <form name="myForm" ng-controller="DateController as dateCtrl">
-  Pick a date between in 2013:
+  <label for="exampleInput">Pick a date between in 2013:</label>
   <input type="datetime-local" id="exampleInput" name="input" ng-model="example.value"
       placeholder="yyyy-MM-ddTHH:mm:ss" min="2001-01-01T00:00:00" max="2013-12-31T00:00:00" required />
-  <span class="error" ng-show="myForm.input.$error.required">
-      Required!</span>
-  <span class="error" ng-show="myForm.input.$error.datetimelocal">
-      Not a valid date!</span>
+  <div role="alert">
+    <span class="error" ng-show="myForm.input.$error.required">
+        Required!</span>
+    <span class="error" ng-show="myForm.input.$error.datetimelocal">
+        Not a valid date!</span>
+  </div>
   <tt>value = {{example.value | date: "yyyy-MM-ddTHH:mm:ss"}}</tt><br/>
   <tt>myForm.input.$valid = {{myForm.input.$valid}}</tt><br/>
   <tt>myForm.input.$error = {{myForm.input.$error}}</tt><br/>

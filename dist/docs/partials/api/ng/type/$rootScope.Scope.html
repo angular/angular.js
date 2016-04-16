@@ -1,8 +1,8 @@
-<a href='https://github.com/angular/angular.js/edit/master/src/ng/rootScope.js?message=docs($rootScope.Scope)%3A%20describe%20your%20change...#L86' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/rootScope.js?message=docs($rootScope.Scope)%3A%20describe%20your%20change...#L127' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
 
 
 
-<a href='https://github.com/angular/angular.js/tree/master/src/ng/rootScope.js#L86' class='view-source pull-right btn btn-primary'>
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/rootScope.js#L127' class='view-source pull-right btn btn-primary'>
   <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
 </a>
 
@@ -23,10 +23,8 @@
   <p>A root scope can be retrieved using the <a href="api/ng/service/$rootScope">$rootScope</a> key from the
 <a href="api/auto/service/$injector">$injector</a>. Child scopes are created using the
 <a href="api/ng/type/$rootScope.Scope#$new">$new()</a> method. (Most scopes are created automatically when
-compiled HTML template is executed.)</p>
-<p>Here is a simple scope snippet to show how you can interact with the scope.</p>
-<pre><code class="lang-html">&lt;file src=&quot;./test/ng/rootScopeSpec.js&quot; tag=&quot;docs1&quot; /&gt;
-</code></pre>
+compiled HTML template is executed.) See also the <a href="guide/scope">Scopes guide</a> for
+an in-depth introduction and usage examples.</p>
 <h1 id="inheritance">Inheritance</h1>
 <p>A scope can inherit from a parent scope, as in this example:</p>
 <pre><code class="lang-js">var parent = $rootScope;
@@ -44,6 +42,8 @@ instances of <code>Scope</code> type. See <a href="api/ngMock/type/$rootScope.Sc
 details.</p>
 
 </div>
+
+
 
 
 
@@ -175,7 +175,7 @@ thus stop participating in model change detection and listener notification by i
       <td>
         parent
         
-        
+        <div><em>(optional)</em></div>
       </td>
       <td>
         <a href="" class="label type-hint type-hint-scope">Scope</a>
@@ -217,10 +217,10 @@ thus stop participating in model change detection and listener notification by i
 </h3>
     <div><p>Registers a <code>listener</code> callback to be executed whenever the <code>watchExpression</code> changes.</p>
 <ul>
-<li>The <code>watchExpression</code> is called on every call to <a href="api/ng/type/$rootScope.Scope#$digest">$digest()</a> and should return the value that will be watched. (Since
-<a href="api/ng/type/$rootScope.Scope#$digest">$digest()</a> reruns when it detects changes the
-<code>watchExpression</code> can execute multiple times per
-<a href="api/ng/type/$rootScope.Scope#$digest">$digest()</a> and should be idempotent.)</li>
+<li>The <code>watchExpression</code> is called on every call to <a href="api/ng/type/$rootScope.Scope#$digest">$digest()</a> and should return the value that will be watched. (<code>watchExpression</code> should not change
+its value when executed multiple times with the same input because it may be executed multiple
+times by <a href="api/ng/type/$rootScope.Scope#$digest">$digest()</a>. That is, <code>watchExpression</code> should be
+<a href="http://en.wikipedia.org/wiki/Idempotence">idempotent</a>.</li>
 <li>The <code>listener</code> is called only when the value from the current <code>watchExpression</code> and the
 previous call to <code>watchExpression</code> are not equal (with the exception of the initial run,
 see below). Inequality is determined according to reference inequality,
@@ -236,9 +236,9 @@ This is achieved by rerunning the watchers until no changes are detected. The re
 iteration limit is 10 to prevent an infinite loop deadlock.</li>
 </ul>
 <p>If you want to be notified whenever <a href="api/ng/type/$rootScope.Scope#$digest">$digest</a> is called,
-you can register a <code>watchExpression</code> function with no <code>listener</code>. (Since <code>watchExpression</code>
-can execute multiple times per <a href="api/ng/type/$rootScope.Scope#$digest">$digest</a> cycle when a
-change is detected, be prepared for multiple calls to your listener.)</p>
+you can register a <code>watchExpression</code> function with no <code>listener</code>. (Be prepared for
+multiple calls to your <code>watchExpression</code> because it will execute multiple times in a
+single <a href="api/ng/type/$rootScope.Scope#$digest">$digest</a> cycle if a change is detected.)</p>
 <p>After a watcher is registered with the scope, the <code>listener</code> fn is called asynchronously
 (via <a href="api/ng/type/$rootScope.Scope#$evalAsync">$evalAsync</a>) to initialize the
 watcher. In rare cases, this is undesirable because the listener is called when the result
@@ -370,7 +370,7 @@ expect(scope.foodCounter).toEqual(1);
         <p>Compare for object equality using <a href="api/ng/function/angular.equals"><code>angular.equals</code></a> instead of
     comparing for reference equality.</p>
 
-        
+        <p><em>(default: false)</em></p>
       </td>
     </tr>
     

@@ -3,17 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <title>Example - example-example10</title>
+  <link href="app.css" rel="stylesheet" type="text/css">
   
 
   <script src="../../../angular.min.js"></script>
-  <script src="script.js"></script>
+  <script src="app.js"></script>
   
 
   
 </head>
-<body ng-app="docsSimpleDirective">
-  <div ng-controller="Controller">
-  <div my-customer></div>
+<body ng-app="scopeInheritance">
+  <div class="spicy">
+  <div ng-controller="MainController">
+    <p>Good {{timeOfDay}}, {{name}}!</p>
+
+    <div ng-controller="ChildController">
+      <p>Good {{timeOfDay}}, {{name}}!</p>
+
+      <div ng-controller="GrandChildController">
+        <p>Good {{timeOfDay}}, {{name}}!</p>
+      </div>
+    </div>
+  </div>
 </div>
 </body>
 </html>

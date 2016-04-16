@@ -35,6 +35,8 @@ into the browser&#39;s console (if present).</p>
 
 
 
+
+
 <div>
   
   <h2 id="dependencies">Dependencies</h2>
@@ -134,12 +136,10 @@ into the browser&#39;s console (if present).</p>
   <h2 id="example">Example</h2><p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-example109', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-example110"></plnkr-opener>
 
   <div class="runnable-example"
-      path="examples/example-example109"
+      path="examples/example-example110"
       module="logExample">
 
   
@@ -154,11 +154,11 @@ into the browser&#39;s console (if present).</p>
       name="index.html"
       language="html"
       type="html">
-      <pre><code>&lt;div ng-controller=&quot;LogController&quot;&gt;&#10;  &lt;p&gt;Reload this page with open console, enter text and hit the log button...&lt;/p&gt;&#10;  Message:&#10;  &lt;input type=&quot;text&quot; ng-model=&quot;message&quot;/&gt;&#10;  &lt;button ng-click=&quot;$log.log(message)&quot;&gt;log&lt;/button&gt;&#10;  &lt;button ng-click=&quot;$log.warn(message)&quot;&gt;warn&lt;/button&gt;&#10;  &lt;button ng-click=&quot;$log.info(message)&quot;&gt;info&lt;/button&gt;&#10;  &lt;button ng-click=&quot;$log.error(message)&quot;&gt;error&lt;/button&gt;&#10;&lt;/div&gt;</code></pre>
+      <pre><code>&lt;div ng-controller=&quot;LogController&quot;&gt;&#10;  &lt;p&gt;Reload this page with open console, enter text and hit the log button...&lt;/p&gt;&#10;  &lt;label&gt;Message:&#10;  &lt;input type=&quot;text&quot; ng-model=&quot;message&quot; /&gt;&lt;/label&gt;&#10;  &lt;button ng-click=&quot;$log.log(message)&quot;&gt;log&lt;/button&gt;&#10;  &lt;button ng-click=&quot;$log.warn(message)&quot;&gt;warn&lt;/button&gt;&#10;  &lt;button ng-click=&quot;$log.info(message)&quot;&gt;info&lt;/button&gt;&#10;  &lt;button ng-click=&quot;$log.error(message)&quot;&gt;error&lt;/button&gt;&#10;  &lt;button ng-click=&quot;$log.debug(message)&quot;&gt;debug&lt;/button&gt;&#10;&lt;/div&gt;</code></pre>
     </div>
   
 
-    <iframe class="runnable-example-frame" src="examples/example-example109/index.html" name="example-example109"></iframe>
+    <iframe class="runnable-example-frame" src="examples/example-example110/index.html" name="example-example110"></iframe>
   </div>
 </div>
 

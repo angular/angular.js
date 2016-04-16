@@ -24,9 +24,10 @@
 
 
 <div class="api-profile-description">
-  <p>When called, it checks the current value of <a href="api/ng/service/$location#hash">$location.hash()</a> and
-scrolls to the related element, according to the rules specified in the
-<a href="http://dev.w3.org/html5/spec/Overview.html#the-indicated-part-of-the-document">Html5 spec</a>.</p>
+  <p>When called, it scrolls to the element related to the specified <code>hash</code> or (if omitted) to the
+current value of <a href="api/ng/service/$location#hash">$location.hash()</a>, according to the rules specified
+in the
+<a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#the-indicated-part-of-the-document">HTML5 spec</a>.</p>
 <p>It also watches the <a href="api/ng/service/$location#hash">$location.hash()</a> and automatically scrolls to
 match any anchor whenever it changes. This can be disabled by calling
 <a href="api/ng/provider/$anchorScrollProvider#disableAutoScrolling">$anchorScrollProvider.disableAutoScrolling()</a>.</p>
@@ -34,6 +35,8 @@ match any anchor whenever it changes. This can be disabled by calling
 vertical scroll-offset (either fixed or dynamic).</p>
 
 </div>
+
+
 
 
 
@@ -50,12 +53,46 @@ vertical scroll-offset (either fixed or dynamic).</p>
 
   <h2 id="usage">Usage</h2>
     
-      <p><code>$anchorScroll();</code></p>
+      <p><code>$anchorScroll([hash]);</code></p>
 
 
     
 
     
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        hash
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>The hash specifying the element to scroll to. If omitted, the value of
+                      <a href="api/ng/service/$location#hash">$location.hash()</a> will be used.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
     
     
 
@@ -98,12 +135,10 @@ not some child element.
   <h2 id="example">Example</h2><p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-example48', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-example50"></plnkr-opener>
 
   <div class="runnable-example"
-      path="examples/example-example48"
+      path="examples/example-example50"
       module="anchorScrollExample">
 
   
@@ -129,7 +164,7 @@ not some child element.
     </div>
   
 
-    <iframe class="runnable-example-frame" src="examples/example-example48/index.html" name="example-example48"></iframe>
+    <iframe class="runnable-example-frame" src="examples/example-example50/index.html" name="example-example50"></iframe>
   </div>
 </div>
 
@@ -141,12 +176,10 @@ See <a href="api/ng/service/$anchorScroll#yOffset">$anchorScroll.yOffset</a> for
 <p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-example49', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-example51"></plnkr-opener>
 
   <div class="runnable-example"
-      path="examples/example-example49"
+      path="examples/example-example51"
       module="anchorScrollOffsetExample">
 
   
@@ -172,7 +205,7 @@ See <a href="api/ng/service/$anchorScroll#yOffset">$anchorScroll.yOffset</a> for
     </div>
   
 
-    <iframe class="runnable-example-frame" src="examples/example-example49/index.html" name="example-example49"></iframe>
+    <iframe class="runnable-example-frame" src="examples/example-example51/index.html" name="example-example51"></iframe>
   </div>
 </div>
 

@@ -24,9 +24,18 @@
     }]);
 </script>
 <form name="myForm" ng-controller="ExampleController">
-  <input type="radio" ng-model="color.name" value="red">  Red <br/>
-  <input type="radio" ng-model="color.name" ng-value="specialValue"> Green <br/>
-  <input type="radio" ng-model="color.name" value="blue"> Blue <br/>
+  <label>
+    <input type="radio" ng-model="color.name" value="red">
+    Red
+  </label><br/>
+  <label>
+    <input type="radio" ng-model="color.name" ng-value="specialValue">
+    Green
+  </label><br/>
+  <label>
+    <input type="radio" ng-model="color.name" value="blue">
+    Blue
+  </label><br/>
   <tt>color = {{color.name | json}}</tt><br/>
  </form>
  Note that `ng-value="specialValue"` sets radio item's value to be the value of `$scope.specialValue`.

@@ -1,8 +1,8 @@
-<a href='https://github.com/angular/angular.js/edit/master/src/ng/directive/input.js?message=docs(input[time])%3A%20describe%20your%20change...#L302' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/directive/input.js?message=docs(input[time])%3A%20describe%20your%20change...#L347' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
 
 
 
-<a href='https://github.com/angular/angular.js/tree/master/src/ng/directive/input.js#L302' class='view-source pull-right btn btn-primary'>
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/directive/input.js#L347' class='view-source pull-right btn btn-primary'>
   <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
 </a>
 
@@ -21,7 +21,7 @@
 
 <div class="api-profile-description">
   <p>Input with time validation and transformation. In browsers that do not yet support
-the HTML5 date input, a text element will be used. In that case, the text must be entered in a valid ISO-8601
+the HTML5 time input, a text element will be used. In that case, the text must be entered in a valid ISO-8601
 local time format (HH:mm:ss), for example: <code>14:57:00</code>. Model must be a Date object. This binding will always output a
 Date object to the model of January 1, 1970, or local date <code>new Date(1970, 0, 1, HH, mm, ss)</code>.</p>
 <p>The model must always be a Date object, otherwise Angular will throw an error.
@@ -34,6 +34,8 @@ Invalid <code>Date</code> objects (dates whose <code>getTime()</code> is <code>N
 
 
 
+
+
 <div>
   
 
@@ -42,11 +44,12 @@ Invalid <code>Date</code> objects (dates whose <code>getTime()</code> is <code>N
   <ul>
     
     <li>This directive executes at priority level 0.</li>
+    
   </ul>
 
   
   <h2>Usage</h2>
-  <pre><code>&lt;input type=&quot;time&quot;&#10;       ng-model=&quot;&quot;&#10;       [name=&quot;&quot;]&#10;       [min=&quot;&quot;]&#10;       [max=&quot;&quot;]&#10;       [required=&quot;&quot;]&#10;       [ng-required=&quot;&quot;]&#10;       [ng-change=&quot;&quot;]&gt;</code></pre>
+  <pre><code>&lt;input type=&quot;time&quot;&#10;       ng-model=&quot;string&quot;&#10;       [name=&quot;string&quot;]&#10;       [min=&quot;string&quot;]&#10;       [max=&quot;string&quot;]&#10;       [ng-min=&quot;&quot;]&#10;       [ng-max=&quot;&quot;]&#10;       [required=&quot;string&quot;]&#10;       [ng-required=&quot;string&quot;]&#10;       [ng-change=&quot;string&quot;]&gt;</code></pre>
 
 <section class="api-section">
   <h3>Arguments</h3>
@@ -103,8 +106,10 @@ Invalid <code>Date</code> objects (dates whose <code>getTime()</code> is <code>N
         <a href="" class="label type-hint type-hint-string">string</a>
       </td>
       <td>
-        <p>Sets the <code>min</code> validation error key if the value entered is less than <code>min</code>. This must be a
-valid ISO time format (HH:mm:ss).</p>
+        <p>Sets the <code>min</code> validation error key if the value entered is less than <code>min</code>.
+  This must be a valid ISO time format (HH:mm:ss). You can also use interpolation inside this
+  attribute (e.g. <code>min=&quot;{{minTime | date:&#39;HH:mm:ss&#39;}}&quot;</code>). Note that <code>min</code> will also add
+  native HTML5 constraint validation.</p>
 
         
       </td>
@@ -120,8 +125,44 @@ valid ISO time format (HH:mm:ss).</p>
         <a href="" class="label type-hint type-hint-string">string</a>
       </td>
       <td>
-        <p>Sets the <code>max</code> validation error key if the value entered is greater than <code>max</code>. This must be a
-valid ISO time format (HH:mm:ss).</p>
+        <p>Sets the <code>max</code> validation error key if the value entered is greater than <code>max</code>.
+  This must be a valid ISO time format (HH:mm:ss). You can also use interpolation inside this
+  attribute (e.g. <code>max=&quot;{{maxTime | date:&#39;HH:mm:ss&#39;}}&quot;</code>). Note that <code>max</code> will also add
+  native HTML5 constraint validation.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        ngMin
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-date">date</a><a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Sets the <code>min</code> validation constraint to the Date / ISO time string the
+  <code>ngMin</code> expression evaluates to. Note that it does not set the <code>min</code> attribute.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        ngMax
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-date">date</a><a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Sets the <code>max</code> validation constraint to the Date / ISO time string the
+  <code>ngMax</code> expression evaluates to. Note that it does not set the <code>max</code> attribute.</p>
 
         
       </td>
@@ -189,9 +230,7 @@ valid ISO time format (HH:mm:ss).</p>
   <h2 id="example">Example</h2><p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-time-input-directive', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-time-input-directive"></plnkr-opener>
 
   <div class="runnable-example"
       path="examples/example-time-input-directive"
@@ -203,7 +242,7 @@ valid ISO time format (HH:mm:ss).</p>
       name="index.html"
       language="html"
       type="html">
-      <pre><code>&lt;script&gt;&#10; angular.module(&#39;timeExample&#39;, [])&#10;   .controller(&#39;DateController&#39;, [&#39;$scope&#39;, function($scope) {&#10;     $scope.example = {&#10;       value: new Date(1970, 0, 1, 14, 57, 0)&#10;     };&#10;   }]);&#10;&lt;/script&gt;&#10;&lt;form name=&quot;myForm&quot; ng-controller=&quot;DateController as dateCtrl&quot;&gt;&#10;   Pick a between 8am and 5pm:&#10;   &lt;input type=&quot;time&quot; id=&quot;exampleInput&quot; name=&quot;input&quot; ng-model=&quot;example.value&quot;&#10;       placeholder=&quot;HH:mm:ss&quot; min=&quot;08:00:00&quot; max=&quot;17:00:00&quot; required /&gt;&#10;   &lt;span class=&quot;error&quot; ng-show=&quot;myForm.input.$error.required&quot;&gt;&#10;       Required!&lt;/span&gt;&#10;   &lt;span class=&quot;error&quot; ng-show=&quot;myForm.input.$error.time&quot;&gt;&#10;       Not a valid date!&lt;/span&gt;&#10;   &lt;tt&gt;value = {{example.value | date: &quot;HH:mm:ss&quot;}}&lt;/tt&gt;&lt;br/&gt;&#10;   &lt;tt&gt;myForm.input.$valid = {{myForm.input.$valid}}&lt;/tt&gt;&lt;br/&gt;&#10;   &lt;tt&gt;myForm.input.$error = {{myForm.input.$error}}&lt;/tt&gt;&lt;br/&gt;&#10;   &lt;tt&gt;myForm.$valid = {{myForm.$valid}}&lt;/tt&gt;&lt;br/&gt;&#10;   &lt;tt&gt;myForm.$error.required = {{!!myForm.$error.required}}&lt;/tt&gt;&lt;br/&gt;&#10;&lt;/form&gt;</code></pre>
+      <pre><code>&lt;script&gt;&#10; angular.module(&#39;timeExample&#39;, [])&#10;   .controller(&#39;DateController&#39;, [&#39;$scope&#39;, function($scope) {&#10;     $scope.example = {&#10;       value: new Date(1970, 0, 1, 14, 57, 0)&#10;     };&#10;   }]);&#10;&lt;/script&gt;&#10;&lt;form name=&quot;myForm&quot; ng-controller=&quot;DateController as dateCtrl&quot;&gt;&#10;   &lt;label for=&quot;exampleInput&quot;&gt;Pick a time between 8am and 5pm:&lt;/label&gt;&#10;   &lt;input type=&quot;time&quot; id=&quot;exampleInput&quot; name=&quot;input&quot; ng-model=&quot;example.value&quot;&#10;       placeholder=&quot;HH:mm:ss&quot; min=&quot;08:00:00&quot; max=&quot;17:00:00&quot; required /&gt;&#10;   &lt;div role=&quot;alert&quot;&gt;&#10;     &lt;span class=&quot;error&quot; ng-show=&quot;myForm.input.$error.required&quot;&gt;&#10;         Required!&lt;/span&gt;&#10;     &lt;span class=&quot;error&quot; ng-show=&quot;myForm.input.$error.time&quot;&gt;&#10;         Not a valid date!&lt;/span&gt;&#10;   &lt;/div&gt;&#10;   &lt;tt&gt;value = {{example.value | date: &quot;HH:mm:ss&quot;}}&lt;/tt&gt;&lt;br/&gt;&#10;   &lt;tt&gt;myForm.input.$valid = {{myForm.input.$valid}}&lt;/tt&gt;&lt;br/&gt;&#10;   &lt;tt&gt;myForm.input.$error = {{myForm.input.$error}}&lt;/tt&gt;&lt;br/&gt;&#10;   &lt;tt&gt;myForm.$valid = {{myForm.$valid}}&lt;/tt&gt;&lt;br/&gt;&#10;   &lt;tt&gt;myForm.$error.required = {{!!myForm.$error.required}}&lt;/tt&gt;&lt;br/&gt;&#10;&lt;/form&gt;</code></pre>
     </div>
   
     <div class="runnable-example-file" 

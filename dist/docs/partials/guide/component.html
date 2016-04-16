@@ -1,0 +1,486 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/guide/component.ngdoc?message=docs(guide%2FComponents)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1 id="understanding-components">Understanding Components</h1>
+<p>In Angular, a Component is a special kind of <a href="guide/directive">directive</a> that uses a simpler
+configuration which is suitable for a component-based application structure.</p>
+<p>This makes it easier to write an app in a way that&#39;s similar to using Web Components or using Angular
+2&#39;s style of application architecture.</p>
+<p>Advantages of Components:</p>
+<ul>
+<li>simpler configuration than plain directives</li>
+<li>promote sane defaults and best practices</li>
+<li>optimized for component-based architecture</li>
+<li>writing component directives will make it easier to upgrade to Angular 2</li>
+</ul>
+<p>When not to use Components:</p>
+<ul>
+<li>for directives that rely on DOM manipulation, adding event listeners etc, because the compile
+and link functions are unavailable</li>
+<li>when you need advanced directive definition options like priority, terminal, multi-element</li>
+<li>when you want a directive that is triggered by an attribute or CSS class, rather than an element</li>
+</ul>
+<h2 id="creating-and-configuring-a-component">Creating and configuring a Component</h2>
+<p>Components can be registered using the <code>.component()</code> method of an Angular module (returned by <a href="guide/module"><code>angular.module()</code></a>). The method takes two arguments:</p>
+<ul>
+<li>The name of the Component (as string).</li>
+<li>The Component config object. (Note that, unlike the <code>.directive()</code> method, this method does <strong>not</strong> take a factory function.)</li>
+</ul>
+<p>
+
+<div>
+  <plnkr-opener example-path="examples/example-heroComponentSimple"></plnkr-opener>
+
+  <div class="runnable-example"
+      path="examples/example-heroComponentSimple"
+      name="heroComponentSimple"
+      module="heroApp">
+
+  
+    <div class="runnable-example-file" 
+      name="index.js"
+      language="js"
+      type="js">
+      <pre><code>angular.module(&#39;heroApp&#39;, []).controller(&#39;mainCtrl&#39;, function() {&#13;&#10;  this.hero = {&#13;&#10;    name: &#39;Spawn&#39;&#13;&#10;  };&#13;&#10;});&#13;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="heroDetail.js"
+      language="js"
+      type="js">
+      <pre><code>function HeroDetailController() {&#13;&#10;&#10;}&#13;&#10;&#10;angular.module(&#39;heroApp&#39;).component(&#39;heroDetail&#39;, {&#13;&#10;  templateUrl: &#39;heroDetail.html&#39;,&#13;&#10;  controller: HeroDetailController,&#13;&#10;  bindings: {&#13;&#10;    hero: &#39;=&#39;&#13;&#10;  }&#13;&#10;});&#13;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;!-- components match only elements --&gt;&#13;&#10;&lt;div ng-controller=&quot;mainCtrl as ctrl&quot;&gt;&#13;&#10;  &lt;b&gt;Hero&lt;/b&gt;&lt;br&gt;&#13;&#10;  &lt;hero-detail hero=&quot;ctrl.hero&quot;&gt;&lt;/hero-detail&gt;&#13;&#10;&lt;/div&gt;&#13;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="heroDetail.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;span&gt;Name: {{$ctrl.hero.name}}&lt;/span&gt;&#13;</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-heroComponentSimple/index.html" name="example-heroComponentSimple"></iframe>
+  </div>
+</div>
+
+
+</p>
+<p>It&#39;s also possible to add components via <a href="api/ng/provider/$compileProvider#component"><code>$compileProvider</code></a> in a module&#39;s config phase.</p>
+<h3 id="comparison-between-directive-definition-and-component-definition">Comparison between Directive definition and Component definition</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Directive</th>
+<th>Component</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>bindings</td>
+<td>No</td>
+<td>Yes (binds to controller)</td>
+</tr>
+<tr>
+<td>bindToController</td>
+<td>Yes (default: false)</td>
+<td>No (use bindings instead)</td>
+</tr>
+<tr>
+<td>compile function</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<td>controller</td>
+<td>Yes</td>
+<td>Yes (default <code>function() {}</code>)</td>
+</tr>
+<tr>
+<td>controllerAs</td>
+<td>Yes (default: false)</td>
+<td>Yes (default: <code>$ctrl</code>)</td>
+</tr>
+<tr>
+<td>link functions</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<td>multiElement</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<td>priority</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<td>require</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>restrict</td>
+<td>Yes</td>
+<td>No (restricted to elements only)</td>
+</tr>
+<tr>
+<td>scope</td>
+<td>Yes (default: false)</td>
+<td>No (scope is always isolate)</td>
+</tr>
+<tr>
+<td>template</td>
+<td>Yes</td>
+<td>Yes, injectable</td>
+</tr>
+<tr>
+<td>templateNamespace</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<td>templateUrl</td>
+<td>Yes</td>
+<td>Yes, injectable</td>
+</tr>
+<tr>
+<td>terminal</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<td>transclude</td>
+<td>Yes (default: false)</td>
+<td>Yes (default: false)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="component-based-application-architecture">Component-based application architecture</h2>
+<p>As already mentioned, the component helper makes it easier to structure your application with
+a component-based architecture. But what makes a component beyond the options that
+the component helper has?</p>
+<ul>
+<li><p><strong>Components only control their own View and Data:</strong>
+Components should never modify any data or DOM that is out of their own scope. Normally, in Angular
+it is possible to modify data anywhere in the application through scope inheritance and watches. This
+is practical, but can also lead to problems when it is not clear which part of the application is
+responsible for modifying the data. That is why component directives use an isolate scope, so a whole
+class of scope manipulation is not possible.</p>
+</li>
+<li><p><strong>Components have a well-defined public API - Inputs and Outputs:</strong>
+However, scope isolation only goes so far, because Angular uses two-way binding. So if you pass
+an object to a component like this - <code>bindings: {item: &#39;=&#39;}</code>, and modify one of its properties, the
+change will be reflected in the parent component. For components however, only the component that owns
+the data should modify it, to make it easy to reason about what data is changed, and when. For that reason,
+components should follow a few simple conventions:</p>
+<ul>
+<li>Inputs should be using <code>&lt;</code> and <code>@</code> bindings. The <code>&lt;</code> symbol denotes <a href="api/ng/service/$compile#-scope-">one-way bindings</a> which are
+available since 1.5. The difference to <code>=</code> is that the bound properties in the component scope are not watched, which means
+if you assign a new value to the property in the component scope, it will not update the parent scope. Note however, that both parent
+and component scope reference the same object, so if you are changing object properties or array elements in the
+component, the parent will still reflect that change.
+The general rule should therefore be to never change an object or array property in the component scope.
+<code>@</code> bindings can be used when the input is a string, especially when the value of the binding doesn&#39;t change.<pre><code class="lang-js">bindings: {
+  hero: &#39;&lt;&#39;,
+  comment: &#39;@&#39;
+}
+</code></pre>
+</li>
+<li>Outputs are realized with <code>&amp;</code> bindings, which function as callbacks to component events.<pre><code class="lang-js">bindings: {
+  onDelete: &#39;&amp;&#39;,
+  onUpdate: &#39;&amp;&#39;
+}
+</code></pre>
+</li>
+<li>Instead of manipulating Input Data, the component calls the correct Output Event with the changed data.
+For a deletion, that means the component doesn&#39;t delete the <code>hero</code> itself, but sends it back to
+the owner component via the correct event.<pre><code class="lang-html">&lt;!-- note that we use snake case for bindings in the template as usual --&gt;
+&lt;editable-field on-update=&quot;$ctrl.update(&#39;location&#39;, value)&quot;&gt;&lt;/editable-field&gt;&lt;br&gt;
+&lt;button ng-click=&quot;$ctrl.onDelete({hero: $ctrl.hero})&quot;&gt;Delete&lt;/button&gt;
+</code></pre>
+</li>
+<li>That way, the parent component can decide what to do with the event (e.g. delete an item or update the properties)<pre><code class="lang-js">ctrl.deleteHero(hero) {
+  $http.delete(...).then(function() {
+    var idx = ctrl.list.indexOf(hero);
+    if (idx &gt;= 0) {
+      ctrl.list.splice(idx, 1);
+    }
+  });
+}
+</code></pre>
+</li>
+</ul>
+</li>
+<li><p><strong>Components have a well-defined lifecycle</strong>
+Each component can implement &quot;lifecycle hooks&quot;. These are methods that will be called at certain points in the life
+of the component. The following hook methods can be implemented:</p>
+<ul>
+<li><code>$onInit()</code> - Called on each controller after all the controllers on an element have been constructed and
+had their bindings initialized (and before the pre &amp; post linking functions for the directives on
+this element). This is a good place to put initialization code for your controller.</li>
+<li><code>$onChanges(changesObj)</code> - Called whenever one-way bindings are updated. The <code>changesObj</code> is a hash whose keys
+are the names of the bound properties that have changed, and the values are an object of the form
+<code>{ currentValue, previousValue, isFirstChange() }</code>. Use this hook to trigger updates within a component such as
+cloning the bound value to prevent accidental mutation of the outer value.</li>
+<li><code>$onDestroy()</code> - Called on a controller when its containing scope is destroyed. Use this hook for releasing
+external resources, watches and event handlers.</li>
+<li><code>$postLink()</code> - Called after this controller&#39;s element and its children have been linked. Similar to the post-link
+function this hook can be used to set up DOM event handlers and do direct DOM manipulation.
+Note that child elements that contain <code>templateUrl</code> directives will not have been compiled and linked since
+they are waiting for their template to load asynchronously and their own compilation and linking has been
+suspended until that occurs.
+This hook can be considered analogous to the <code>ngAfterViewInit</code> and <code>ngAfterContentInit</code> hooks in Angular 2.
+Since the compilation process is rather different in Angular 1 there is no direct mapping and care should
+be taken when upgrading.</li>
+</ul>
+</li>
+</ul>
+<p>By implementing these methods, your component can hook into its lifecycle.</p>
+<ul>
+<li><strong>An application is a tree of components:</strong>
+Ideally, the whole application should be a tree of components that implement clearly defined inputs
+and outputs, and minimize two-way data binding. That way, it&#39;s easier to predict when data changes and what the state
+of a component is.</li>
+</ul>
+<h2 id="example-of-a-component-tree">Example of a component tree</h2>
+<p>The following example expands on the simple component example and incorporates the concepts we introduced
+above:</p>
+<p>Instead of an ngController, we now have a heroList component that holds the data of
+different heroes, and creates a heroDetail for each of them.</p>
+<p>The heroDetail component now contains new functionality:</p>
+<ul>
+<li>a delete button that calls the bound <code>onDelete</code> function of the heroList component</li>
+<li>an input to change the hero location, in the form of a reusable editableField component. Instead
+of manipulating the hero object itself, it sends a changeset upwards to the heroDetail, which sends
+it upwards to the heroList component, which updates the original data.</li>
+</ul>
+<p>
+
+<div>
+  <plnkr-opener example-path="examples/example-heroComponentTree"></plnkr-opener>
+
+  <div class="runnable-example"
+      path="examples/example-heroComponentTree"
+      name="heroComponentTree"
+      module="heroApp">
+
+  
+    <div class="runnable-example-file" 
+      name="index.js"
+      language="js"
+      type="js">
+      <pre><code>var mode = angular.module(&#39;heroApp&#39;, []);&#13;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="heroList.js"
+      language="js"
+      type="js">
+      <pre><code>function HeroListController($scope, $element, $attrs) {&#13;&#10;  var ctrl = this;&#13;&#10;&#10;  // This would be loaded by $http etc.&#13;&#10;  ctrl.list = [&#13;&#10;    {&#13;&#10;      name: &#39;Superman&#39;,&#13;&#10;      location: &#39;&#39;&#13;&#10;    },&#13;&#10;    {&#13;&#10;      name: &#39;Batman&#39;,&#13;&#10;      location: &#39;Wayne Manor&#39;&#13;&#10;    }&#13;&#10;  ];&#13;&#10;&#10;  ctrl.updateHero = function(hero, prop, value) {&#13;&#10;    hero[prop] = value;&#13;&#10;  };&#13;&#10;&#10;  ctrl.deleteHero = function(hero) {&#13;&#10;    var idx = ctrl.list.indexOf(hero);&#13;&#10;    if (idx &gt;= 0) {&#13;&#10;      ctrl.list.splice(idx, 1);&#13;&#10;    }&#13;&#10;  };&#13;&#10;}&#13;&#10;&#10;angular.module(&#39;heroApp&#39;).component(&#39;heroList&#39;, {&#13;&#10;  templateUrl: &#39;heroList.html&#39;,&#13;&#10;  controller: HeroListController&#13;&#10;});&#13;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="heroDetail.js"
+      language="js"
+      type="js">
+      <pre><code>function HeroDetailController($scope, $element, $attrs) {&#13;&#10;  var ctrl = this;&#13;&#10;&#10;  ctrl.update = function(prop, value) {&#13;&#10;    ctrl.onUpdate({hero: ctrl.hero, prop: prop, value: value});&#13;&#10;  };&#13;&#10;}&#13;&#10;&#10;angular.module(&#39;heroApp&#39;).component(&#39;heroDetail&#39;, {&#13;&#10;  templateUrl: &#39;heroDetail.html&#39;,&#13;&#10;  controller: HeroDetailController,&#13;&#10;  bindings: {&#13;&#10;    hero: &#39;&lt;&#39;,&#13;&#10;    onDelete: &#39;&amp;&#39;,&#13;&#10;    onUpdate: &#39;&amp;&#39;&#13;&#10;  }&#13;&#10;});&#13;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="editableField.js"
+      language="js"
+      type="js">
+      <pre><code>function EditableFieldController($scope, $element, $attrs) {&#13;&#10;  var ctrl = this;&#13;&#10;  ctrl.editMode = false;&#13;&#10;&#10;  ctrl.handleModeChange = function() {&#13;&#10;    if (ctrl.editMode) {&#13;&#10;      ctrl.onUpdate({value: ctrl.fieldValue});&#13;&#10;      ctrl.fieldValueCopy = ctrl.fieldValue;&#13;&#10;    }&#13;&#10;    ctrl.editMode = !ctrl.editMode;&#13;&#10;  };&#13;&#10;&#10;  ctrl.reset = function() {&#13;&#10;    ctrl.fieldValue = ctrl.fieldValueCopy;&#13;&#10;  };&#13;&#10;&#10;  ctrl.$onInit = function() {&#13;&#10;    // Make a copy of the initial value to be able to reset it later&#13;&#10;    ctrl.fieldValueCopy = ctrl.fieldValue;&#13;&#10;&#10;    // Set a default fieldType&#13;&#10;    if (!ctrl.fieldType) {&#13;&#10;      ctrl.fieldType = &#39;text&#39;;&#13;&#10;    }&#13;&#10;  };&#13;&#10;}&#13;&#10;&#10;angular.module(&#39;heroApp&#39;).component(&#39;editableField&#39;, {&#13;&#10;  templateUrl: &#39;editableField.html&#39;,&#13;&#10;  controller: EditableFieldController,&#13;&#10;  bindings: {&#13;&#10;    fieldValue: &#39;&lt;&#39;,&#13;&#10;    fieldType: &#39;@?&#39;,&#13;&#10;    onUpdate: &#39;&amp;&#39;&#13;&#10;  }&#13;&#10;});&#13;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;hero-list&gt;&lt;/hero-list&gt;&#13;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="heroList.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;b&gt;Heroes&lt;/b&gt;&lt;br&gt;&#13;&#10;&lt;hero-detail ng-repeat=&quot;hero in $ctrl.list&quot; hero=&quot;hero&quot; on-delete=&quot;$ctrl.deleteHero(hero)&quot; on-update=&quot;$ctrl.updateHero(hero, prop, value)&quot;&gt;&lt;/hero-detail&gt;&#13;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="heroDetail.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;hr&gt;&#13;&#10;&lt;div&gt;&#13;&#10;  Name: {{$ctrl.hero.name}}&lt;br&gt;&#13;&#10;  Location: &lt;editable-field field-value=&quot;$ctrl.hero.location&quot; field-type=&quot;text&quot; on-update=&quot;$ctrl.update(&#39;location&#39;, value)&quot;&gt;&lt;/editable-field&gt;&lt;br&gt;&#13;&#10;  &lt;button ng-click=&quot;$ctrl.onDelete({hero: $ctrl.hero})&quot;&gt;Delete&lt;/button&gt;&#13;&#10;&lt;/div&gt;&#13;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="editableField.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;span ng-switch=&quot;$ctrl.editMode&quot;&gt;&#13;&#10;  &lt;input ng-switch-when=&quot;true&quot; type=&quot;{{$ctrl.fieldType}}&quot; ng-model=&quot;$ctrl.fieldValue&quot;&gt;&#13;&#10;  &lt;span ng-switch-default&gt;{{$ctrl.fieldValue}}&lt;/span&gt;&#13;&#10;&lt;/span&gt;&#13;&#10;&lt;button ng-click=&quot;$ctrl.handleModeChange()&quot;&gt;{{$ctrl.editMode ? &#39;Save&#39; : &#39;Edit&#39;}}&lt;/button&gt;&#13;&#10;&lt;button ng-if=&quot;$ctrl.editMode&quot; ng-click=&quot;$ctrl.reset()&quot;&gt;Reset&lt;/button&gt;&#13;</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-heroComponentTree/index.html" name="example-heroComponentTree"></iframe>
+  </div>
+</div>
+
+
+</p>
+<h2 id="components-as-route-templates">Components as route templates</h2>
+<p>Components are also useful as route templates (e.g. when using <a href="api/ngRoute">ngRoute</a>). In a component-based
+application, every view is a component:</p>
+<pre><code class="lang-js">var myMod = angular.module(&#39;myMod&#39;, [&#39;ngRoute&#39;]);
+myMod.component(&#39;home&#39;, {
+  template: &#39;&lt;h1&gt;Home&lt;/h1&gt;&lt;p&gt;Hello, {{ $ctrl.user.name }} !&lt;/p&gt;&#39;,
+  controller: function() {
+    this.user = {name: &#39;world&#39;};
+  }
+});
+myMod.config(function($routeProvider) {
+  $routeProvider.when(&#39;/&#39;, {
+    template: &#39;&lt;home&gt;&lt;/home&gt;&#39;
+  });
+});
+</code></pre>
+<p><br />
+When using <a href="api/ngRoute/provider/$routeProvider">$routeProvider</a>, you can often avoid some
+boilerplate, by passing the resolved route dependencies directly to the component. Since 1.5,
+ngRoute automatically assigns the resolves to the route scope property <code>$resolve</code> (you can also
+configure the property name via <code>resolveAs</code>). When using components, you can take advantage of this and pass resolves
+directly into your component without creating an extra route controller:</p>
+<pre><code class="lang-js">var myMod = angular.module(&#39;myMod&#39;, [&#39;ngRoute&#39;]);
+myMod.component(&#39;home&#39;, {
+  template: &#39;&lt;h1&gt;Home&lt;/h1&gt;&lt;p&gt;Hello, {{ $ctrl.user.name }} !&lt;/p&gt;&#39;,
+  bindings: {
+    user: &#39;&lt;&#39;
+  }
+});
+myMod.config(function($routeProvider) {
+  $routeProvider.when(&#39;/&#39;, {
+    template: &#39;&lt;home user=&quot;$resolve.user&quot;&gt;&lt;/home&gt;&#39;,
+    resolve: {
+      user: function($http) { return $http.get(&#39;...&#39;); }
+    }
+  });
+});
+</code></pre>
+<h2 id="intercomponent-communication">Intercomponent Communication</h2>
+<p>Directives can require the controllers of other directives to enable communication
+between each other. This can be achieved in a component by providing an
+object mapping for the <code>require</code> property. The object keys specify the property names under which
+the required controllers (object values) will be bound to the requiring component&#39;s controller.</p>
+<div class="alert alert-warning">
+Note that the required controllers will not be available during the instantiation of the controller,
+but they are guaranteed to be available just before the <code>$onInit</code> method is executed!
+</div>
+
+<p>Here is a tab pane example built from components:</p>
+<p>
+
+<div>
+  <plnkr-opener example-path="examples/example-example7"></plnkr-opener>
+
+  <div class="runnable-example"
+      path="examples/example-example7"
+      module="docsTabsExample">
+
+  
+    <div class="runnable-example-file" 
+      name="script.js"
+      language="js"
+      type="js">
+      <pre><code>angular.module(&#39;docsTabsExample&#39;, [])&#13;&#10;.component(&#39;myTabs&#39;, {&#13;&#10;  transclude: true,&#13;&#10;  controller: function() {&#13;&#10;    var panes = this.panes = [];&#13;&#10;    this.select = function(pane) {&#13;&#10;      angular.forEach(panes, function(pane) {&#13;&#10;        pane.selected = false;&#13;&#10;      });&#13;&#10;      pane.selected = true;&#13;&#10;    };&#13;&#10;    this.addPane = function(pane) {&#13;&#10;      if (panes.length === 0) {&#13;&#10;        this.select(pane);&#13;&#10;      }&#13;&#10;      panes.push(pane);&#13;&#10;    };&#13;&#10;  },&#13;&#10;  templateUrl: &#39;my-tabs.html&#39;&#13;&#10;})&#13;&#10;.component(&#39;myPane&#39;, {&#13;&#10;  transclude: true,&#13;&#10;  require: {&#13;&#10;    tabsCtrl: &#39;^myTabs&#39;&#13;&#10;  },&#13;&#10;  bindings: {&#13;&#10;    title: &#39;@&#39;&#13;&#10;  },&#13;&#10;  controller: function() {&#13;&#10;    this.$onInit = function() {&#13;&#10;      this.tabsCtrl.addPane(this);&#13;&#10;      console.log(this);&#13;&#10;    };&#13;&#10;  },&#13;&#10;  templateUrl: &#39;my-pane.html&#39;&#13;&#10;});&#13;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;my-tabs&gt;&#13;&#10;  &lt;my-pane title=&quot;Hello&quot;&gt;&#13;&#10;    &lt;h4&gt;Hello&lt;/h4&gt;&#13;&#10;    &lt;p&gt;Lorem ipsum dolor sit amet&lt;/p&gt;&#13;&#10;  &lt;/my-pane&gt;&#13;&#10;  &lt;my-pane title=&quot;World&quot;&gt;&#13;&#10;    &lt;h4&gt;World&lt;/h4&gt;&#13;&#10;    &lt;em&gt;Mauris elementum elementum enim at suscipit.&lt;/em&gt;&#13;&#10;    &lt;p&gt;&lt;a href ng-click=&quot;i = i + 1&quot;&gt;counter: {{i || 0}}&lt;/a&gt;&lt;/p&gt;&#13;&#10;  &lt;/my-pane&gt;&#13;&#10;&lt;/my-tabs&gt;&#13;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="my-tabs.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;div class=&quot;tabbable&quot;&gt;&#13;&#10;  &lt;ul class=&quot;nav nav-tabs&quot;&gt;&#13;&#10;    &lt;li ng-repeat=&quot;pane in $ctrl.panes&quot; ng-class=&quot;{active:pane.selected}&quot;&gt;&#13;&#10;      &lt;a href=&quot;&quot; ng-click=&quot;$ctrl.select(pane)&quot;&gt;{{pane.title}}&lt;/a&gt;&#13;&#10;    &lt;/li&gt;&#13;&#10;  &lt;/ul&gt;&#13;&#10;  &lt;div class=&quot;tab-content&quot; ng-transclude&gt;&lt;/div&gt;&#13;&#10;&lt;/div&gt;&#13;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="my-pane.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;div class=&quot;tab-pane&quot; ng-show=&quot;$ctrl.selected&quot; ng-transclude&gt;&lt;/div&gt;&#13;</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-example7/index.html" name="example-example7"></iframe>
+  </div>
+</div>
+
+
+</p>
+<h1 id="unit-testing-component-controllers">Unit-testing Component Controllers</h1>
+<p>The easiest way to unit-test a component controller is by using the <a href="api/ngMock/service/$componentController">$componentController</a>
+that is included in <a href="api/ngMock"><code>ngMock</code></a>. The advantage of this method is that you do not have
+to create any DOM elements. The following example shows how to do this for the <code>heroDetail</code> component
+from above.</p>
+<p>The examples use the <a href="http://jasmine.github.io/">Jasmine</a> testing framework.</p>
+<p><strong>Controller Test:</strong></p>
+<pre><code class="lang-js">describe(&#39;component: heroDetail&#39;, function() {
+  var component, scope, hero, $componentController;
+
+  beforeEach(module(&#39;simpleComponent&#39;));
+
+  beforeEach(inject(function($rootScope, _$componentController_) {
+    scope = $rootScope.$new();
+    $componentController = _$componentController_;
+    hero = {name: &#39;Wolverine&#39;};
+  }));
+
+  it(&#39;should set the default values of the hero&#39;, function() {
+    // It&#39;s necessary to always pass the scope in the locals, so that the controller instance can be bound to it
+    component = $componentController(&#39;heroDetail&#39;, {$scope: scope});
+
+    expect(component.hero).toEqual({
+      name: undefined,
+      location: &#39;unknown&#39;
+    });
+  });
+
+  it(&#39;should assign the name bindings to the hero object&#39;, function() {
+    // Here we are passing actual bindings to the component
+
+    component = $componentController(&#39;heroDetail&#39;,
+      {$scope: scope},
+      {hero: hero}
+    );
+    expect(component.hero.name).toBe(&#39;Wolverine&#39;);
+  });
+
+  it(&#39;should call the onDelete binding when a hero is deleted&#39;, function() {
+    component = $componentController(&#39;heroDetail&#39;,
+      {$scope: scope},
+      {hero: hero, onDelete: jasmine.createSpy(&#39;deleteSpy&#39;)}
+    );
+
+    component.onDelete({hero: component.hero});
+    expect(spy(&#39;deleteSpy&#39;)).toHaveBeenCalledWith(component.hero);
+  });
+
+});
+</code></pre>
+
+

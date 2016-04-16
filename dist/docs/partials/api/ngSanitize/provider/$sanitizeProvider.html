@@ -1,0 +1,127 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ngSanitize/sanitize.js?message=docs($sanitizeProvider)%3A%20describe%20your%20change...#L135' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ngSanitize/sanitize.js#L135' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">$sanitizeProvider</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+  <li>
+    <a href="api/ngSanitize/service/$sanitize">- $sanitize</a>
+  </li>
+
+    <li>
+      - provider in module <a href="api/ngSanitize">ngSanitize</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Creates and configures <a href="api/ngSanitize/service/$sanitize"><code>$sanitize</code></a> instance.</p>
+
+</div>
+
+
+
+
+
+
+<div>
+  
+
+    
+
+  
+
+  
+<h2>Methods</h2>
+<ul class="methods">
+  <li id="enableSvg">
+    <h3><p><code>enableSvg([regexp]);</code></p>
+
+</h3>
+    <div><p>Enables a subset of svg to be supported by the sanitizer.</p>
+<div class="alert alert-warning">
+  <p>By enabling this setting without taking other precautions, you might expose your
+  application to click-hijacking attacks. In these attacks, sanitized svg elements could be positioned
+  outside of the containing element and be rendered over other elements on the page (e.g. a login
+  link). Such behavior can then result in phishing incidents.</p>
+
+  <p>To protect against these, explicitly setup <code>overflow: hidden</code> css rule for all potential svg
+  tags within the sanitized content:</p>
+
+  <br>
+
+  <pre><code>
+  .rootOfTheIncludedContent svg {
+    overflow: hidden !important;
+  }
+  </code></pre>
+</div></div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        regexp
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-boolean">boolean</a>
+      </td>
+      <td>
+        <p>New regexp to whitelist urls with.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-boolean">boolean</a><a href="" class="label type-hint type-hint-ng">ng.$sanitizeProvider</a></td>
+    <td><p>Returns the currently configured value if called
+   without an argument or self for chaining otherwise.</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  </ul>
+  
+  
+
+
+
+  
+</div>
+
+

@@ -5,13 +5,13 @@
   <title>Example - example-example81-production</title>
   
 
-  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/null/angular.min.js"></script>
   
 
   
 </head>
 <body ng-app="">
-  <input ng-paste="paste=true" ng-init="paste=false" placeholder='paste here'>
-pasted: {{paste}}
+  <input ng-copy="copied=true" ng-init="copied=false; value='copy me'" ng-model="value">
+copied: {{copied}}
 </body>
 </html>

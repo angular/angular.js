@@ -11,14 +11,18 @@
 
   
 </head>
-<body ng-app="">
-  <span ng-non-bindable>{{1288323623006 | date:'medium'}}</span>:
-    <span>{{1288323623006 | date:'medium'}}</span><br>
-<span ng-non-bindable>{{1288323623006 | date:'yyyy-MM-dd HH:mm:ss Z'}}</span>:
-   <span>{{1288323623006 | date:'yyyy-MM-dd HH:mm:ss Z'}}</span><br>
-<span ng-non-bindable>{{1288323623006 | date:'MM/dd/yyyy @ h:mma'}}</span>:
-   <span>{{'1288323623006' | date:'MM/dd/yyyy @ h:mma'}}</span><br>
-<span ng-non-bindable>{{1288323623006 | date:"MM/dd/yyyy 'at' h:mma"}}</span>:
-   <span>{{'1288323623006' | date:"MM/dd/yyyy 'at' h:mma"}}</span><br>
+<body ng-app="numberFilterExample">
+  <script>
+  angular.module('numberFilterExample', [])
+    .controller('ExampleController', ['$scope', function($scope) {
+      $scope.val = 1234.56789;
+    }]);
+</script>
+<div ng-controller="ExampleController">
+  <label>Enter number: <input ng-model='val'></label><br>
+  Default formatting: <span id='number-default'>{{val | number}}</span><br>
+  No fractions: <span>{{val | number:0}}</span><br>
+  Negative number: <span>{{-val | number:4}}</span>
+</div>
 </body>
 </html>

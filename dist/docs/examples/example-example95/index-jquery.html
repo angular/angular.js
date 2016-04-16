@@ -11,12 +11,27 @@
 
   
 </head>
-<body ng-app="">
-  <script type="text/ng-template" id="/tpl.html">
-  Content of the template.
+<body ng-app="transcludeFallbackContentExample">
+  <script>
+angular.module('transcludeFallbackContentExample', [])
+.directive('myButton', function(){
+            return {
+              restrict: 'E',
+              transclude: true,
+              scope: true,
+              template: '<button style="cursor: pointer;">' +
+                          '<ng-transclude>' +
+                            '<b style="color: red;">Button1</b>' +
+                          '</ng-transclude>' +
+                        '</button>'
+            };
+        });
 </script>
-
-<a ng-click="currentTpl='/tpl.html'" id="tpl-link">Load inlined template</a>
-<div id="tpl-content" ng-include src="currentTpl"></div>
+<!-- fallback button content -->
+<my-button id="fallback"></my-button>
+<!-- modified button content -->
+<my-button id="modified">
+  <i style="color: green;">Button2</i>
+</my-button>
 </body>
 </html>

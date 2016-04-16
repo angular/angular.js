@@ -30,6 +30,8 @@ of <code>FormController</code>.</p>
 
 
 
+
+
 <div>
   
 
@@ -77,12 +79,53 @@ usually handles calling this in response to input events.</p>
   </li>
   
   <li id="$addControl">
-    <h3><p><code>$addControl();</code></p>
+    <h3><p><code>$addControl(control);</code></p>
 
 </h3>
-    <div><p>Register a control with the form.</p>
-<p>Input elements using ngModelController do this automatically when they are linked.</p>
+    <div><p>Register a control with the form. Input elements using ngModelController do this automatically
+when they are linked.</p>
+<p>Note that the current state of the control will not be reflected on the new parent form. This
+is not an issue with normal use, as freshly compiled and linked controls are in a <code>$pristine</code>
+state.</p>
+<p>However, if the method is used programmatically, for example by adding dynamically created controls,
+or controls that have been previously removed without destroying their corresponding DOM element,
+it&#39;s the developers responsibility to make sure the current state propagates to the parent form.</p>
+<p>For example, if an input control is added that is already <code>$dirty</code> and has <code>$error</code> properties,
+calling <code>$setDirty()</code> and <code>$validate()</code> afterwards will propagate the state to the parent form.</p>
 </div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        control
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>control object, either a <a href="api/ng/type/form.FormController"><code>form.FormController</code></a> or an
+<a href="api/ng/type/ngModel.NgModelController"><code>ngModel.NgModelController</code></a></p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
 
     
 
@@ -93,12 +136,49 @@ usually handles calling this in response to input events.</p>
   </li>
   
   <li id="$removeControl">
-    <h3><p><code>$removeControl();</code></p>
+    <h3><p><code>$removeControl(control);</code></p>
 
 </h3>
     <div><p>Deregister a control from the form.</p>
 <p>Input elements using ngModelController do this automatically when they are destroyed.</p>
+<p>Note that only the removed control&#39;s validation state (<code>$errors</code>etc.) will be removed from the
+form. <code>$dirty</code>, <code>$submitted</code> states will not be changed, because the expected behavior can be
+different from case to case. For example, removing the only <code>$dirty</code> control from a form may or
+may not mean that the form is still <code>$dirty</code>.</p>
 </div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        control
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>control object, either a <a href="api/ng/type/form.FormController"><code>form.FormController</code></a> or an
+<a href="api/ng/type/ngModel.NgModelController"><code>ngModel.NgModelController</code></a></p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
 
     
 
@@ -238,6 +318,17 @@ back to its pristine state.</p>
   <tr>
     <td><a href="" class="label type-hint type-hint-boolean">boolean</a></td>
     <td><p>True if at least one containing control or form is invalid.</p>
+</td>
+  </tr>
+</table>
+  </li>
+  
+  <li id="$pending">
+    <h3><code>$pending</code></h3>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-boolean">boolean</a></td>
+    <td><p>True if at least one containing control or form is pending.</p>
 </td>
   </tr>
 </table>

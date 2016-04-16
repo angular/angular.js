@@ -1,17 +1,33 @@
-it('should init with 1234.56', function() {
-  expect(element(by.id('currency-default')).getText()).toBe('$1,234.56');
-  expect(element(by.id('currency-custom')).getText()).toBe('USD$1,234.56');
-  expect(element(by.id('currency-no-fractions')).getText()).toBe('USD$1,235');
+var expectFriendNames = function(expectedNames, key) {
+  element.all(by.repeater(key + ' in friends').column(key + '.name')).then(function(arr) {
+    arr.forEach(function(wd, i) {
+      expect(wd.getText()).toMatch(expectedNames[i]);
+    });
+  });
+};
+
+it('should search across all fields when filtering with a string', function() {
+  var searchText = element(by.model('searchText'));
+  searchText.clear();
+  searchText.sendKeys('m');
+  expectFriendNames(['Mary', 'Mike', 'Adam'], 'friend');
+
+  searchText.clear();
+  searchText.sendKeys('76');
+  expectFriendNames(['John', 'Julie'], 'friend');
 });
-it('should update', function() {
-  if (browser.params.browser == 'safari') {
-    // Safari does not understand the minus key. See
-    // https://github.com/angular/protractor/issues/481
-    return;
-  }
-  element(by.model('amount')).clear();
-  element(by.model('amount')).sendKeys('-1234');
-  expect(element(by.id('currency-default')).getText()).toBe('($1,234.00)');
-  expect(element(by.id('currency-custom')).getText()).toBe('(USD$1,234.00)');
-  expect(element(by.id('currency-no-fractions')).getText()).toBe('(USD$1,234)');
+
+it('should search in specific fields when filtering with a predicate object', function() {
+  var searchAny = element(by.model('search.$'));
+  searchAny.clear();
+  searchAny.sendKeys('i');
+  expectFriendNames(['Mary', 'Mike', 'Julie', 'Juliette'], 'friendObj');
+});
+it('should use a equal comparison when comparator is true', function() {
+  var searchName = element(by.model('search.name'));
+  var strict = element(by.model('strict'));
+  searchName.clear();
+  searchName.sendKeys('Julie');
+  strict.click();
+  expectFriendNames(['Julie'], 'friendObj');
 });

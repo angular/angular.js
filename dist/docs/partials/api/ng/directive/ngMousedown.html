@@ -27,6 +27,8 @@
 
 
 
+
+
 <div>
   
 
@@ -35,6 +37,7 @@
   <ul>
     
     <li>This directive executes at priority level 0.</li>
+    
   </ul>
 
   
@@ -43,7 +46,7 @@
   
     <ul>
     <li>as attribute:
-        <pre><code>&lt;ANY&#10;  ng-mousedown=&quot;&quot;&gt;&#10;...&#10;&lt;/ANY&gt;</code></pre>
+        <pre><code>&lt;ANY&#10;  ng-mousedown=&quot;expression&quot;&gt;&#10;...&#10;&lt;/ANY&gt;</code></pre>
       </li>
     
   </div>
@@ -89,12 +92,10 @@ mousedown. (<a href="guide/expression#-event-">Event object is available as <cod
   <h2 id="example">Example</h2><p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-example69', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-example71"></plnkr-opener>
 
   <div class="runnable-example"
-      path="examples/example-example69">
+      path="examples/example-example71">
 
   
     <div class="runnable-example-file" 
@@ -105,7 +106,7 @@ mousedown. (<a href="guide/expression#-event-">Event object is available as <cod
     </div>
   
 
-    <iframe class="runnable-example-frame" src="examples/example-example69/index.html" name="example-example69"></iframe>
+    <iframe class="runnable-example-frame" src="examples/example-example71/index.html" name="example-example71"></iframe>
   </div>
 </div>
 

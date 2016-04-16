@@ -3,29 +3,39 @@
 <head>
   <meta charset="UTF-8">
   <title>Example - example-example106</title>
+  <link href="style.css" rel="stylesheet" type="text/css">
   
 
   <script src="../../../angular.min.js"></script>
+  <script src="script.js"></script>
   
 
   
 </head>
-<body ng-app="customInterpolationApp">
-  <script>
-  var customInterpolationApp = angular.module('customInterpolationApp', []);
-
-  customInterpolationApp.config(function($interpolateProvider) {
-    $interpolateProvider.startSymbol('//');
-    $interpolateProvider.endSymbol('//');
-  });
-
-
-  customInterpolationApp.controller('DemoController', function() {
-      this.label = "This binding is brought you by // interpolation symbols.";
-  });
-</script>
-<div ng-app="App" ng-controller="DemoController as demo">
-    //demo.label//
+<body ng-app="orderByExample">
+  <div ng-controller="ExampleController">
+  <pre>Sorting predicate = {{predicate}}; reverse = {{reverse}}</pre>
+  <table class="friend">
+    <tr>
+      <th>
+          <button ng-click="order('name')">Name</button>
+          <span class="sortorder" ng-show="predicate === 'name'" ng-class="{reverse:reverse}"></span>
+      </th>
+      <th>
+          <button ng-click="order('phone')">Phone Number</button>
+          <span class="sortorder" ng-show="predicate === 'phone'" ng-class="{reverse:reverse}"></span>
+      </th>
+      <th>
+          <button ng-click="order('age')">Age</button>
+          <span class="sortorder" ng-show="predicate === 'age'" ng-class="{reverse:reverse}"></span>
+      </th>
+    </tr>
+    <tr ng-repeat="friend in friends">
+      <td>{{friend.name}}</td>
+      <td>{{friend.phone}}</td>
+      <td>{{friend.age}}</td>
+    </tr>
+  </table>
 </div>
 </body>
 </html>

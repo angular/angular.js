@@ -11,17 +11,15 @@
 
   
 </head>
-<body ng-app="expressionExample">
-  <div ng-controller="ExampleController" class="expressions">
-  Expression:
-  <input type='text' ng-model="expr" size="80"/>
-  <button ng-click="addExp(expr)">Evaluate</button>
-  <ul>
-   <li ng-repeat="expr in exprs track by $index">
-     [ <a href="" ng-click="removeExp($index)">X</a> ]
-     <tt>{{expr}}</tt> => <span ng-bind="$parent.$eval(expr)"></span>
-    </li>
-  </ul>
-</div>
+<body ng-app="docsTabsExample">
+  <my-tabs>
+  <my-pane title="Hello">
+    <p>Lorem ipsum dolor sit amet</p>
+  </my-pane>
+  <my-pane title="World">
+    <em>Mauris elementum elementum enim at suscipit.</em>
+    <p><a href ng-click="i = i + 1">counter: {{i || 0}}</a></p>
+  </my-pane>
+</my-tabs>
 </body>
 </html>

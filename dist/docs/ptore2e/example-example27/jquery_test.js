@@ -5,25 +5,20 @@ describe("", function() {
     browser.get("build/docs/examples/example-example27/index-jquery.html");
   });
   
-it('should freeze binding after its value has stabilized', function() {
-  var oneTimeBiding = element(by.id('one-time-binding-example'));
-  var normalBinding = element(by.id('normal-binding-example'));
+it('should calculate expression in binding', function() {
+  if (browser.params.browser == 'safari') {
+    // Safari can't handle dialogs.
+    return;
+  }
+  element(by.css('[ng-click="greet()"]')).click();
 
-  expect(oneTimeBiding.getText()).toEqual('One time binding:');
-  expect(normalBinding.getText()).toEqual('Normal binding:');
-  element(by.buttonText('Click Me')).click();
+  // We need to give the browser time to display the alert
+  browser.wait(protractor.ExpectedConditions.alertIsPresent(), 1000);
 
-  expect(oneTimeBiding.getText()).toEqual('One time binding: Igor');
-  expect(normalBinding.getText()).toEqual('Normal binding: Igor');
-  element(by.buttonText('Click Me')).click();
+  var alertDialog = browser.switchTo().alert();
 
-  expect(oneTimeBiding.getText()).toEqual('One time binding: Igor');
-  expect(normalBinding.getText()).toEqual('Normal binding: Misko');
+  expect(alertDialog.getText()).toEqual('Hello World');
 
-  element(by.buttonText('Click Me')).click();
-  element(by.buttonText('Click Me')).click();
-
-  expect(oneTimeBiding.getText()).toEqual('One time binding: Igor');
-  expect(normalBinding.getText()).toEqual('Normal binding: Lucas');
+  alertDialog.accept();
 });
 });

@@ -12,13 +12,10 @@
 
   
 </head>
-<body ng-app="docsScopeProblemExample">
-  <div ng-controller="NaomiController">
-  <my-customer></my-customer>
-</div>
-<hr>
-<div ng-controller="IgorController">
-  <my-customer></my-customer>
+<body ng-app="docsTemplateUrlDirective">
+  <div ng-controller="Controller">
+  <div my-customer type="name"></div>
+  <div my-customer type="address"></div>
 </div>
 </body>
 </html>

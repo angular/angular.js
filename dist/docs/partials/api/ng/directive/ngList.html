@@ -37,9 +37,7 @@ before it is added to the model.</li>
 <p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-ngList-directive', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-ngList-directive"></plnkr-opener>
 
   <div class="runnable-example"
       path="examples/example-ngList-directive"
@@ -58,7 +56,7 @@ before it is added to the model.</li>
       name="index.html"
       language="html"
       type="html">
-      <pre><code>&lt;form name=&quot;myForm&quot; ng-controller=&quot;ExampleController&quot;&gt;&#10; List: &lt;input name=&quot;namesInput&quot; ng-model=&quot;names&quot; ng-list required&gt;&#10; &lt;span class=&quot;error&quot; ng-show=&quot;myForm.namesInput.$error.required&quot;&gt;&#10;   Required!&lt;/span&gt;&#10; &lt;br&gt;&#10; &lt;tt&gt;names = {{names}}&lt;/tt&gt;&lt;br/&gt;&#10; &lt;tt&gt;myForm.namesInput.$valid = {{myForm.namesInput.$valid}}&lt;/tt&gt;&lt;br/&gt;&#10; &lt;tt&gt;myForm.namesInput.$error = {{myForm.namesInput.$error}}&lt;/tt&gt;&lt;br/&gt;&#10; &lt;tt&gt;myForm.$valid = {{myForm.$valid}}&lt;/tt&gt;&lt;br/&gt;&#10; &lt;tt&gt;myForm.$error.required = {{!!myForm.$error.required}}&lt;/tt&gt;&lt;br/&gt;&#10;&lt;/form&gt;</code></pre>
+      <pre><code>&lt;form name=&quot;myForm&quot; ng-controller=&quot;ExampleController&quot;&gt;&#10; &lt;label&gt;List: &lt;input name=&quot;namesInput&quot; ng-model=&quot;names&quot; ng-list required&gt;&lt;/label&gt;&#10; &lt;span role=&quot;alert&quot;&gt;&#10;   &lt;span class=&quot;error&quot; ng-show=&quot;myForm.namesInput.$error.required&quot;&gt;&#10;   Required!&lt;/span&gt;&#10; &lt;/span&gt;&#10; &lt;br&gt;&#10; &lt;tt&gt;names = {{names}}&lt;/tt&gt;&lt;br/&gt;&#10; &lt;tt&gt;myForm.namesInput.$valid = {{myForm.namesInput.$valid}}&lt;/tt&gt;&lt;br/&gt;&#10; &lt;tt&gt;myForm.namesInput.$error = {{myForm.namesInput.$error}}&lt;/tt&gt;&lt;br/&gt;&#10; &lt;tt&gt;myForm.$valid = {{myForm.$valid}}&lt;/tt&gt;&lt;br/&gt;&#10; &lt;tt&gt;myForm.$error.required = {{!!myForm.$error.required}}&lt;/tt&gt;&lt;br/&gt;&#10;&lt;/form&gt;</code></pre>
     </div>
   
     <div class="runnable-example-file" 
@@ -75,13 +73,11 @@ before it is added to the model.</li>
 
 
 </p>
-<h3 id="example-splitting-on-whitespace">Example - splitting on whitespace</h3>
+<h3 id="example-splitting-on-newline">Example - splitting on newline</h3>
 <p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-ngList-directive-newlines', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-ngList-directive-newlines"></plnkr-opener>
 
   <div class="runnable-example"
       path="examples/example-ngList-directive-newlines"
@@ -115,6 +111,8 @@ before it is added to the model.</li>
 
 
 
+
+
 <div>
   
 
@@ -123,6 +121,7 @@ before it is added to the model.</li>
   <ul>
     
     <li>This directive executes at priority level 0.</li>
+    
   </ul>
 
   
@@ -131,7 +130,7 @@ before it is added to the model.</li>
   
     <ul>
     <li>as attribute:
-        <pre><code>&lt;input&#10;  [ng-list=&quot;&quot;]&gt;&#10;...&#10;&lt;/input&gt;</code></pre>
+        <pre><code>&lt;input&#10;  [ng-list=&quot;string&quot;]&gt;&#10;...&#10;&lt;/input&gt;</code></pre>
       </li>
     
   </div>

@@ -21,11 +21,15 @@
     }]);
 </script>
   <form name="myForm" ng-controller="ExampleController">
-    Email: <input type="email" name="input" ng-model="email.text" required>
-    <span class="error" ng-show="myForm.input.$error.required">
-      Required!</span>
-    <span class="error" ng-show="myForm.input.$error.email">
-      Not valid email!</span>
+    <label>Email:
+      <input type="email" name="input" ng-model="email.text" required>
+    </label>
+    <div role="alert">
+      <span class="error" ng-show="myForm.input.$error.required">
+        Required!</span>
+      <span class="error" ng-show="myForm.input.$error.email">
+        Not valid email!</span>
+    </div>
     <tt>text = {{email.text}}</tt><br/>
     <tt>myForm.input.$valid = {{myForm.input.$valid}}</tt><br/>
     <tt>myForm.input.$error = {{myForm.input.$error}}</tt><br/>

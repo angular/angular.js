@@ -1,0 +1,24 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/error/$sanitize/uinput.ngdoc?message=docs(error%2Fuinput)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1>Error: $sanitize:uinput
+  <div><span class='hint'>Failed to sanitize html because the input is unstable</span></div>
+</h1>
+
+<div>
+    <pre class="minerr-errmsg" error-display="Failed to sanitize html because the input is unstable">Failed to sanitize html because the input is unstable</pre>
+</div>
+
+<h2>Description</h2>
+<div class="description">
+  <p>This error occurs when <code>$sanitize</code> sanitizer tries to check the input for possible mXSS payload and the verification
+errors due to the input mutating indefinitely. This could be a sign that the payload contains code exploiting an mXSS
+vulnerability in the browser.</p>
+<p>mXSS attack exploit browser bugs that cause some browsers parse a certain html strings into DOM, which once serialized
+doesn&#39;t match the original input. These browser bugs can be exploited by attackers to create payload which looks
+harmless to sanitizers, but due to mutations caused by the browser are turned into dangerous code once processed after
+sanitization.</p>
+
+</div>
+
+

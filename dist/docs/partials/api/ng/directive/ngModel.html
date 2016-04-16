@@ -1,8 +1,8 @@
-<a href='https://github.com/angular/angular.js/edit/master/src/ng/directive/ngModel.js?message=docs(ngModel)%3A%20describe%20your%20change...#L838' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/directive/ngModel.js?message=docs(ngModel)%3A%20describe%20your%20change...#L893' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
 
 
 
-<a href='https://github.com/angular/angular.js/tree/master/src/ng/directive/ngModel.js#L838' class='view-source pull-right btn btn-primary'>
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/directive/ngModel.js#L893' class='view-source pull-right btn btn-primary'>
   <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
 </a>
 
@@ -29,7 +29,8 @@ which is created and exposed by this directive.</p>
 require.</li>
 <li>Providing validation behavior (i.e. required, number, email, url).</li>
 <li>Keeping the state of the control (valid/invalid, dirty/pristine, touched/untouched, validation errors).</li>
-<li>Setting related css classes on the element (<code>ng-valid</code>, <code>ng-invalid</code>, <code>ng-dirty</code>, <code>ng-pristine</code>, <code>ng-touched</code>, <code>ng-untouched</code>) including animations.</li>
+<li>Setting related css classes on the element (<code>ng-valid</code>, <code>ng-invalid</code>, <code>ng-dirty</code>, <code>ng-pristine</code>, <code>ng-touched</code>,
+<code>ng-untouched</code>, <code>ng-empty</code>, <code>ng-not-empty</code>) including animations.</li>
 <li>Registering the control with its parent <a href="api/ng/directive/form">form</a>.</li>
 </ul>
 <p>Note: <code>ngModel</code> will try to bind to the property given by evaluating the expression on the
@@ -58,6 +59,19 @@ implicitly and added to the scope.</p>
 <li><a href="api/ng/directive/select">select</a></li>
 <li><a href="api/ng/directive/textarea">textarea</a></li>
 </ul>
+<h1 id="complex-models-objects-or-collections-">Complex Models (objects or collections)</h1>
+<p>By default, <code>ngModel</code> watches the model by reference, not value. This is important to know when
+binding inputs to models that are objects (e.g. <code>Date</code>) or collections (e.g. arrays). If only properties of the
+object or collection change, <code>ngModel</code> will not be notified and so the input will not be  re-rendered.</p>
+<p>The model must be assigned an entirely new object or collection before a re-rendering will occur.</p>
+<p>Some directives have options that will cause them to use a custom <code>$watchCollection</code> on the model expression</p>
+<ul>
+<li>for example, <code>ngOptions</code> will do so when a <code>track by</code> clause is included in the comprehension expression or
+if the select is given the <code>multiple</code> attribute.</li>
+</ul>
+<p>The <code>$watchCollection()</code> method only does a shallow comparison, meaning that changing properties deeper than the
+first level of the object (or only changing the properties of an item in the collection if it&#39;s an array) will still
+not trigger a re-rendering of the model.</p>
 <h1 id="css-classes">CSS classes</h1>
 <p>The following CSS classes are added and removed on the associated input/select/textarea element
 depending on the validity of the model.</p>
@@ -71,11 +85,14 @@ depending on the validity of the model.</p>
 <li><code>ng-touched</code>: the control has been blurred</li>
 <li><code>ng-untouched</code>: the control hasn&#39;t been blurred</li>
 <li><code>ng-pending</code>: any <code>$asyncValidators</code> are unfulfilled</li>
+<li><code>ng-empty</code>: the view does not contain a value or the value is deemed &quot;empty&quot;, as defined
+ by the <a href="api/ng/type/ngModel.NgModelController#$isEmpty"><code>ngModel.NgModelController</code></a> method</li>
+<li><code>ng-not-empty</code>: the view contains a non-empty value</li>
 </ul>
 <p>Keep in mind that ngAnimate can detect each of these classes when added and removed.</p>
 <h2 id="animation-hooks">Animation Hooks</h2>
 <p>Animations within models are triggered when any of the associated CSS classes are added and removed
-on the input element which is attached to the model. These classes are: <code>.ng-pristine</code>, <code>.ng-dirty</code>,
+on the input element which is attached to the model. These classes include: <code>.ng-pristine</code>, <code>.ng-dirty</code>,
 <code>.ng-invalid</code> and <code>.ng-valid</code> as well as any other validations that are performed on the model itself.
 The animations that are triggered within ngModel are similar to how they work in ngClass and
 animations can be hooked into using CSS transitions, keyframes as well as JS animations.</p>
@@ -98,6 +115,8 @@ that has been rendered as invalid after it has been validated:</p>
 
 
 
+
+
 <div>
   
 
@@ -106,6 +125,7 @@ that has been rendered as invalid after it has been validated:</p>
   <ul>
     
     <li>This directive executes at priority level 1.</li>
+    
   </ul>
 
   
@@ -126,12 +146,10 @@ that has been rendered as invalid after it has been validated:</p>
   <h2 id="example">Example</h2><p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-example85', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-example87"></plnkr-opener>
 
   <div class="runnable-example"
-      path="examples/example-example85"
+      path="examples/example-example87"
       deps="angular-animate.js"
       animations="true"
       fixBase="true"
@@ -142,11 +160,11 @@ that has been rendered as invalid after it has been validated:</p>
       name="index.html"
       language="html"
       type="html">
-      <pre><code>&lt;script&gt;&#10; angular.module(&#39;inputExample&#39;, [])&#10;   .controller(&#39;ExampleController&#39;, [&#39;$scope&#39;, function($scope) {&#10;     $scope.val = &#39;1&#39;;&#10;   }]);&#10;&lt;/script&gt;&#10;&lt;style&gt;&#10;  .my-input {&#10;    -webkit-transition:all linear 0.5s;&#10;    transition:all linear 0.5s;&#10;    background: transparent;&#10;  }&#10;  .my-input.ng-invalid {&#10;    color:white;&#10;    background: red;&#10;  }&#10;&lt;/style&gt;&#10;Update input to see transitions when valid/invalid.&#10;Integer is a valid value.&#10;&lt;form name=&quot;testForm&quot; ng-controller=&quot;ExampleController&quot;&gt;&#10;  &lt;input ng-model=&quot;val&quot; ng-pattern=&quot;/^\d+$/&quot; name=&quot;anim&quot; class=&quot;my-input&quot; /&gt;&#10;&lt;/form&gt;</code></pre>
+      <pre><code>&lt;script&gt;&#10; angular.module(&#39;inputExample&#39;, [])&#10;   .controller(&#39;ExampleController&#39;, [&#39;$scope&#39;, function($scope) {&#10;     $scope.val = &#39;1&#39;;&#10;   }]);&#10;&lt;/script&gt;&#10;&lt;style&gt;&#10;  .my-input {&#10;    transition:all linear 0.5s;&#10;    background: transparent;&#10;  }&#10;  .my-input.ng-invalid {&#10;    color:white;&#10;    background: red;&#10;  }&#10;&lt;/style&gt;&#10;&lt;p id=&quot;inputDescription&quot;&gt;&#10; Update input to see transitions when valid/invalid.&#10; Integer is a valid value.&#10;&lt;/p&gt;&#10;&lt;form name=&quot;testForm&quot; ng-controller=&quot;ExampleController&quot;&gt;&#10;  &lt;input ng-model=&quot;val&quot; ng-pattern=&quot;/^\d+$/&quot; name=&quot;anim&quot; class=&quot;my-input&quot;&#10;         aria-describedby=&quot;inputDescription&quot; /&gt;&#10;&lt;/form&gt;</code></pre>
     </div>
   
 
-    <iframe class="runnable-example-frame" src="examples/example-example85/index.html" name="example-example85"></iframe>
+    <iframe class="runnable-example-frame" src="examples/example-example87/index.html" name="example-example87"></iframe>
   </div>
 </div>
 
@@ -171,9 +189,7 @@ a <code>&lt;form&gt;</code>, which will enable this behavior for all <code>&lt;i
 <p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-ngModel-getter-setter', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-ngModel-getter-setter"></plnkr-opener>
 
   <div class="runnable-example"
       path="examples/example-ngModel-getter-setter"
@@ -185,14 +201,14 @@ a <code>&lt;form&gt;</code>, which will enable this behavior for all <code>&lt;i
       name="index.html"
       language="html"
       type="html">
-      <pre><code>&lt;div ng-controller=&quot;ExampleController&quot;&gt;&#10;  &lt;form name=&quot;userForm&quot;&gt;&#10;    Name:&#10;    &lt;input type=&quot;text&quot; name=&quot;userName&quot;&#10;           ng-model=&quot;user.name&quot;&#10;           ng-model-options=&quot;{ getterSetter: true }&quot; /&gt;&#10;  &lt;/form&gt;&#10;  &lt;pre&gt;user.name = &lt;span ng-bind=&quot;user.name()&quot;&gt;&lt;/span&gt;&lt;/pre&gt;&#10;&lt;/div&gt;</code></pre>
+      <pre><code>&lt;div ng-controller=&quot;ExampleController&quot;&gt;&#10;  &lt;form name=&quot;userForm&quot;&gt;&#10;    &lt;label&gt;Name:&#10;      &lt;input type=&quot;text&quot; name=&quot;userName&quot;&#10;             ng-model=&quot;user.name&quot;&#10;             ng-model-options=&quot;{ getterSetter: true }&quot; /&gt;&#10;    &lt;/label&gt;&#10;  &lt;/form&gt;&#10;  &lt;pre&gt;user.name = &lt;span ng-bind=&quot;user.name()&quot;&gt;&lt;/span&gt;&lt;/pre&gt;&#10;&lt;/div&gt;</code></pre>
     </div>
   
     <div class="runnable-example-file" 
       name="app.js"
       language="js"
       type="js">
-      <pre><code>angular.module(&#39;getterSetterExample&#39;, [])&#10;.controller(&#39;ExampleController&#39;, [&#39;$scope&#39;, function($scope) {&#10;  var _name = &#39;Brian&#39;;&#10;  $scope.user = {&#10;    name: function(newName) {&#10;      if (angular.isDefined(newName)) {&#10;        _name = newName;&#10;      }&#10;      return _name;&#10;    }&#10;  };&#10;}]);</code></pre>
+      <pre><code>angular.module(&#39;getterSetterExample&#39;, [])&#10;.controller(&#39;ExampleController&#39;, [&#39;$scope&#39;, function($scope) {&#10;  var _name = &#39;Brian&#39;;&#10;  $scope.user = {&#10;    name: function(newName) {&#10;     // Note that newName can be undefined for two reasons:&#10;     // 1. Because it is called as a getter and thus called with no arguments&#10;     // 2. Because the property should actually be set to undefined. This happens e.g. if the&#10;     //    input is invalid&#10;     return arguments.length ? (_name = newName) : _name;&#10;    }&#10;  };&#10;}]);</code></pre>
     </div>
   
 

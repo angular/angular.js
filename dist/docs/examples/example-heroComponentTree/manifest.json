@@ -1,0 +1,13 @@
+{
+  "name": "example-heroComponentTree",
+  "files": [
+    "index-production.html",
+    "index.js",
+    "heroList.js",
+    "heroDetail.js",
+    "editableField.js",
+    "heroList.html",
+    "heroDetail.html",
+    "editableField.html"
+  ]
+}

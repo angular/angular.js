@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Example - example-ngAnimateSwap-directive-jquery</title>
+  <link href="animations.css" rel="stylesheet" type="text/css">
+  
+
+  <script src="../../components/jquery-2.1.1/jquery.js"></script>
+  <script src="../../../angular.js"></script>
+  <script src="../../../angular-animate.js"></script>
+  <script src="script.js"></script>
+  
+
+  <script type="text/javascript">
+    angular.element(document.getElementsByTagName('head')).append(angular.element('<base href="' + window.location.pathname + '" />'));
+  </script>
+</head>
+<body ng-app="ngAnimateSwapExample">
+  <div class="container" ng-controller="AppCtrl">
+  <div ng-animate-swap="number" class="cell swap-animation" ng-class="colorClass(number)">
+    {{ number }}
+  </div>
+</div>
+</body>
+</html>

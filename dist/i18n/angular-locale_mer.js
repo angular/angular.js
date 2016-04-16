@@ -34,6 +34,15 @@ $provide.value("$locale", {
       "Wetano",
       "Jumamosi"
     ],
+    "ERANAMES": [
+      "Mbere ya Krist\u0169",
+      "Nyuma ya Krist\u0169"
+    ],
+    "ERAS": [
+      "MK",
+      "NK"
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "Januar\u0129",
       "Feburuar\u0129",
@@ -71,6 +80,24 @@ $provide.value("$locale", {
       "NOV",
       "DEC"
     ],
+    "STANDALONEMONTH": [
+      "Januar\u0129",
+      "Feburuar\u0129",
+      "Machi",
+      "\u0128pur\u0169",
+      "M\u0129\u0129",
+      "Njuni",
+      "Njura\u0129",
+      "Agasti",
+      "Septemba",
+      "Okt\u0169ba",
+      "Novemba",
+      "Dicemba"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
+    ],
     "fullDate": "EEEE, d MMMM y",
     "longDate": "d MMMM y",
     "medium": "d MMM y h:mm:ss a",
@@ -102,7 +129,7 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "\u00a4-",
+        "negPre": "-\u00a4",
         "negSuf": "",
         "posPre": "\u00a4",
         "posSuf": ""
@@ -110,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "mer",
+  "localeID": "mer",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

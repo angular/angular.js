@@ -42,6 +42,8 @@ value of the expression <code>$scope.someVal</code>.
 
 
 
+
+
 <div>
   
 
@@ -50,6 +52,7 @@ value of the expression <code>$scope.someVal</code>.
   <ul>
     <li>This directive creates new scope.</li>
     <li>This directive executes at priority level 1200.</li>
+    
   </ul>
 
   
@@ -67,8 +70,24 @@ value of the expression <code>$scope.someVal</code>.
   </div>
   
   <h2 id="animations">Animations</h2>
-  <p>enter - happens after the ngSwitch contents change and the matched child element is placed inside the container
-leave - happens just after the ngSwitch contents change and just before the former contents are removed from the DOM</p>
+  <table>
+<thead>
+<tr>
+<th>Animation</th>
+<th>Occurs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="api/ng/service/$animate#enter">enter</a></td>
+<td>after the ngSwitch contents change and the matched child element is placed inside the container</td>
+</tr>
+<tr>
+<td><a href="api/ng/service/$animate#leave">leave</a></td>
+<td>after the ngSwitch contents change and just before the former contents are removed from the DOM</td>
+</tr>
+</tbody>
+</table>
 
   <a href="api/ngAnimate/service/$animate">Click here</a> to learn more about the steps involved in the animation.
 <section class="api-section">
@@ -94,7 +113,7 @@ leave - happens just after the ngSwitch contents change and just before the form
         <a href="" class="label type-hint type-hint-object">*</a>
       </td>
       <td>
-        <p>expression to match against <tt>ng-switch-when</tt>.
+        <p>expression to match against <code>ng-switch-when</code>.
 On child elements add:</p>
 <ul>
 <li><code>ngSwitchWhen</code>: the case statement to match against. If match then this
@@ -120,12 +139,10 @@ case match.</li>
   <h2 id="example">Example</h2><p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-example93', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-example94"></plnkr-opener>
 
   <div class="runnable-example"
-      path="examples/example-example93"
+      path="examples/example-example94"
       module="switchExample"
       deps="angular-animate.js"
       animations="true">
@@ -135,7 +152,7 @@ case match.</li>
       name="index.html"
       language="html"
       type="html">
-      <pre><code>&lt;div ng-controller=&quot;ExampleController&quot;&gt;&#10;  &lt;select ng-model=&quot;selection&quot; ng-options=&quot;item for item in items&quot;&gt;&#10;  &lt;/select&gt;&#10;  &lt;tt&gt;selection={{selection}}&lt;/tt&gt;&#10;  &lt;hr/&gt;&#10;  &lt;div class=&quot;animate-switch-container&quot;&#10;    ng-switch on=&quot;selection&quot;&gt;&#10;      &lt;div class=&quot;animate-switch&quot; ng-switch-when=&quot;settings&quot;&gt;Settings Div&lt;/div&gt;&#10;      &lt;div class=&quot;animate-switch&quot; ng-switch-when=&quot;home&quot;&gt;Home Span&lt;/div&gt;&#10;      &lt;div class=&quot;animate-switch&quot; ng-switch-default&gt;default&lt;/div&gt;&#10;  &lt;/div&gt;&#10;&lt;/div&gt;</code></pre>
+      <pre><code>&lt;div ng-controller=&quot;ExampleController&quot;&gt;&#10;  &lt;select ng-model=&quot;selection&quot; ng-options=&quot;item for item in items&quot;&gt;&#10;  &lt;/select&gt;&#10;  &lt;code&gt;selection={{selection}}&lt;/code&gt;&#10;  &lt;hr/&gt;&#10;  &lt;div class=&quot;animate-switch-container&quot;&#10;    ng-switch on=&quot;selection&quot;&gt;&#10;      &lt;div class=&quot;animate-switch&quot; ng-switch-when=&quot;settings&quot;&gt;Settings Div&lt;/div&gt;&#10;      &lt;div class=&quot;animate-switch&quot; ng-switch-when=&quot;home&quot;&gt;Home Span&lt;/div&gt;&#10;      &lt;div class=&quot;animate-switch&quot; ng-switch-default&gt;default&lt;/div&gt;&#10;  &lt;/div&gt;&#10;&lt;/div&gt;</code></pre>
     </div>
   
     <div class="runnable-example-file" 
@@ -149,7 +166,7 @@ case match.</li>
       name="animations.css"
       language="css"
       type="css">
-      <pre><code>.animate-switch-container {&#10;  position:relative;&#10;  background:white;&#10;  border:1px solid black;&#10;  height:40px;&#10;  overflow:hidden;&#10;}&#10;&#10;.animate-switch {&#10;  padding:10px;&#10;}&#10;&#10;.animate-switch.ng-animate {&#10;  -webkit-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;&#10;  transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;&#10;&#10;  position:absolute;&#10;  top:0;&#10;  left:0;&#10;  right:0;&#10;  bottom:0;&#10;}&#10;&#10;.animate-switch.ng-leave.ng-leave-active,&#10;.animate-switch.ng-enter {&#10;  top:-50px;&#10;}&#10;.animate-switch.ng-leave,&#10;.animate-switch.ng-enter.ng-enter-active {&#10;  top:0;&#10;}</code></pre>
+      <pre><code>.animate-switch-container {&#10;  position:relative;&#10;  background:white;&#10;  border:1px solid black;&#10;  height:40px;&#10;  overflow:hidden;&#10;}&#10;&#10;.animate-switch {&#10;  padding:10px;&#10;}&#10;&#10;.animate-switch.ng-animate {&#10;  transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;&#10;&#10;  position:absolute;&#10;  top:0;&#10;  left:0;&#10;  right:0;&#10;  bottom:0;&#10;}&#10;&#10;.animate-switch.ng-leave.ng-leave-active,&#10;.animate-switch.ng-enter {&#10;  top:-50px;&#10;}&#10;.animate-switch.ng-leave,&#10;.animate-switch.ng-enter.ng-enter-active {&#10;  top:0;&#10;}</code></pre>
     </div>
   
     <div class="runnable-example-file" 
@@ -160,7 +177,7 @@ case match.</li>
     </div>
   
 
-    <iframe class="runnable-example-frame" src="examples/example-example93/index.html" name="example-example93"></iframe>
+    <iframe class="runnable-example-frame" src="examples/example-example94/index.html" name="example-example94"></iframe>
   </div>
 </div>
 

@@ -34,6 +34,15 @@ $provide.value("$locale", {
       "aijima",
       "si\u0253iti"
     ],
+    "ERANAMES": [
+      "BCE",
+      "CE"
+    ],
+    "ERAS": [
+      "BCE",
+      "CE"
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "luukao kem\u00e3",
       "\u0253anda\u0253u",
@@ -71,6 +80,24 @@ $provide.value("$locale", {
       "kenpkato \u0253olol\u0254",
       "luukao l\u0254ma"
     ],
+    "STANDALONEMONTH": [
+      "luukao kem\u00e3",
+      "\u0253anda\u0253u",
+      "v\u0254\u0254",
+      "fulu",
+      "goo",
+      "6",
+      "7",
+      "k\u0254nde",
+      "saah",
+      "galo",
+      "kenpkato \u0253olol\u0254",
+      "luukao l\u0254ma"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
+    ],
     "fullDate": "EEEE, d MMMM y",
     "longDate": "d MMMM y",
     "medium": "d MMM y h:mm:ss a",
@@ -81,7 +108,7 @@ $provide.value("$locale", {
     "shortTime": "h:mm a"
   },
   "NUMBER_FORMATS": {
-    "CURRENCY_SYM": "\u20ac",
+    "CURRENCY_SYM": "$",
     "DECIMAL_SEP": ".",
     "GROUP_SEP": ",",
     "PATTERNS": [
@@ -102,7 +129,7 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "\u00a4-",
+        "negPre": "-\u00a4",
         "negSuf": "",
         "posPre": "\u00a4",
         "posSuf": ""
@@ -110,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "vai-latn",
+  "localeID": "vai_Latn",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

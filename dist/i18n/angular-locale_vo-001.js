@@ -34,6 +34,15 @@ $provide.value("$locale", {
       "fridel",
       "z\u00e4del"
     ],
+    "ERANAMES": [
+      "b. t. kr.",
+      "p. t. kr."
+    ],
+    "ERAS": [
+      "b. t. kr.",
+      "p. t. kr."
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "janul",
       "febul",
@@ -70,6 +79,10 @@ $provide.value("$locale", {
       "ton",
       "nov",
       "dek"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "y MMMMa 'd'. d'id'",
     "longDate": "y MMMM d",

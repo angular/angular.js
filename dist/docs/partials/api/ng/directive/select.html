@@ -1,8 +1,8 @@
-<a href='https://github.com/angular/angular.js/edit/master/src/ng/directive/select.js?message=docs(select)%3A%20describe%20your%20change...#L109' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/directive/select.js?message=docs(select)%3A%20describe%20your%20change...#L150' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
 
 
 
-<a href='https://github.com/angular/angular.js/tree/master/src/ng/directive/select.js#L109' class='view-source pull-right btn btn-primary'>
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/directive/select.js#L150' class='view-source pull-right btn btn-primary'>
   <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
 </a>
 
@@ -21,25 +21,35 @@
 
 <div class="api-profile-description">
   <p>HTML <code>SELECT</code> element with angular data-binding.</p>
-<p>In many cases, <code>ngRepeat</code> can be used on <code>&lt;option&gt;</code> elements instead of <a href="api/ng/directive/ngOptions">ngOptions</a> to achieve a similar result. However, <code>ngOptions</code> provides some benefits such as reducing
-memory and increasing speed by not creating a new scope for each repeated instance, as well as providing
-more flexibility in how the <code>&lt;select&gt;</code>&#39;s model is assigned via the <code>select</code> <strong><code>as</code></strong> part of the
-comprehension expression. <code>ngOptions</code> should be used when the <code>&lt;select&gt;</code> model needs to be bound
-to a non-string value. This is because an option element can only be bound to string values at
-present.</p>
-<p>When an item in the <code>&lt;select&gt;</code> menu is selected, the array element or object property
-represented by the selected option will be bound to the model identified by the <code>ngModel</code>
-directive.</p>
-<p>If the viewValue contains a value that doesn&#39;t match any of the options then the control
-will automatically add an &quot;unknown&quot; option, which it then removes when this is resolved.</p>
+<p>The <code>select</code> directive is used together with <a href="api/ng/directive/ngModel"><code>ngModel</code></a> to provide data-binding
+between the scope and the <code>&lt;select&gt;</code> control (including setting default values).
+It also handles dynamic <code>&lt;option&gt;</code> elements, which can be added using the <a href="api/ng/directive/ngRepeat"><code>ngRepeat</a></code> or
+<a href="api/ng/directive/ngOptions"><code>ngOptions</code></a> directives.</p>
+<p>When an item in the <code>&lt;select&gt;</code> menu is selected, the value of the selected option will be bound
+to the model identified by the <code>ngModel</code> directive. With static or repeated options, this is
+the content of the <code>value</code> attribute or the textContent of the <code>&lt;option&gt;</code>, if the value attribute is missing.
+If you want dynamic value attributes, you can use interpolation inside the value attribute.</p>
+<div class="alert alert-warning">
+Note that the value of a <code>select</code> directive used without <code>ngOptions</code> is always a string.
+When the model needs to be bound to a non-string value, you must either explicitly convert it
+using a directive (see example below) or use <code>ngOptions</code> to specify the set of options.
+This is because an option element can only be bound to string values at present.
+</div>
+
+<p>If the viewValue of <code>ngModel</code> does not match any of the options, then the control
+will automatically add an &quot;unknown&quot; option, which it then removes when the mismatch is resolved.</p>
 <p>Optionally, a single hard-coded <code>&lt;option&gt;</code> element, with the value set to an empty string, can
 be nested into the <code>&lt;select&gt;</code> element. This element will then represent the <code>null</code> or &quot;not selected&quot;
 option. See example below for demonstration.</p>
-<div class="alert alert-warning">
-<strong>Note:</strong> <code>ngModel</code> compares by reference, not value. This is important when binding to an
-array of objects. See an example <a href="http://jsfiddle.net/qWzTb/">in this jsfiddle</a>.
+<div class="alert alert-info">
+In many cases, <code>ngRepeat</code> can be used on <code>&lt;option&gt;</code> elements instead of <a href="api/ng/directive/ngOptions">ngOptions</a> to achieve a similar result. However, <code>ngOptions</code> provides some benefits, such as
+more flexibility in how the <code>&lt;select&gt;</code>&#39;s model is assigned via the <code>select</code> <strong><code>as</code></strong> part of the
+comprehension expression, and additionally in reducing memory and increasing speed by not creating
+a new scope for each repeated instance.
 </div>
 </div>
+
+
 
 
 
@@ -52,6 +62,7 @@ array of objects. See an example <a href="http://jsfiddle.net/qWzTb/">in this js
   <ul>
     
     <li>This directive executes at priority level 0.</li>
+    
   </ul>
 
   
@@ -62,15 +73,290 @@ array of objects. See an example <a href="http://jsfiddle.net/qWzTb/">in this js
     
       <li>as element:
       
-      <pre><code>&lt;select&gt;&#10;...&#10;&lt;/select&gt;</code></pre>
+      <pre><code>&lt;select&#10;  ng-model=&quot;string&quot;&#10;  [name=&quot;string&quot;]&#10;  [multiple=&quot;string&quot;]&#10;  [required=&quot;string&quot;]&#10;  [ng-required=&quot;string&quot;]&#10;  [ng-change=&quot;string&quot;]&#10;  [ng-options=&quot;string&quot;]&gt;&#10;...&#10;&lt;/select&gt;</code></pre>
       </li>
     
   </div>
   
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        ngModel
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Assignable angular expression to data-bind to.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        name
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Property name of the form under which the control is published.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        multiple
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Allows multiple options to be selected. The selected values will be
+    bound to the model as an array.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        required
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Sets <code>required</code> validation error key if the value is not entered.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        ngRequired
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Adds required attribute and required validation constraint to
+the element when the ngRequired expression evaluates to true. Use ngRequired instead of required
+when you want to data-bind to the required attribute.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        ngChange
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Angular expression to be executed when selected option(s) changes due to user
+   interaction with the select element.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        ngOptions
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>sets the options that the select is populated with and defines what is
+set on the model on selection. See <a href="api/ng/directive/ngOptions"><code>ngOptions</code></a>.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
   
 
 
   
+  <h2 id="example">Example</h2><h3 id="simple-select-elements-with-static-options">Simple <code>select</code> elements with static options</h3>
+<p>
+
+<div>
+  <plnkr-opener example-path="examples/example-static-select"></plnkr-opener>
+
+  <div class="runnable-example"
+      path="examples/example-static-select"
+      name="static-select"
+      module="staticSelect">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;div ng-controller=&quot;ExampleController&quot;&gt;&#10;  &lt;form name=&quot;myForm&quot;&gt;&#10;    &lt;label for=&quot;singleSelect&quot;&gt; Single select: &lt;/label&gt;&lt;br&gt;&#10;    &lt;select name=&quot;singleSelect&quot; ng-model=&quot;data.singleSelect&quot;&gt;&#10;      &lt;option value=&quot;option-1&quot;&gt;Option 1&lt;/option&gt;&#10;      &lt;option value=&quot;option-2&quot;&gt;Option 2&lt;/option&gt;&#10;    &lt;/select&gt;&lt;br&gt;&#10;&#10;    &lt;label for=&quot;singleSelect&quot;&gt; Single select with &quot;not selected&quot; option and dynamic option values: &lt;/label&gt;&lt;br&gt;&#10;    &lt;select name=&quot;singleSelect&quot; id=&quot;singleSelect&quot; ng-model=&quot;data.singleSelect&quot;&gt;&#10;      &lt;option value=&quot;&quot;&gt;---Please select---&lt;/option&gt; &lt;!-- not selected / blank option --&gt;&#10;      &lt;option value=&quot;{{data.option1}}&quot;&gt;Option 1&lt;/option&gt; &lt;!-- interpolation --&gt;&#10;      &lt;option value=&quot;option-2&quot;&gt;Option 2&lt;/option&gt;&#10;    &lt;/select&gt;&lt;br&gt;&#10;    &lt;button ng-click=&quot;forceUnknownOption()&quot;&gt;Force unknown option&lt;/button&gt;&lt;br&gt;&#10;    &lt;tt&gt;singleSelect = {{data.singleSelect}}&lt;/tt&gt;&#10;&#10;    &lt;hr&gt;&#10;    &lt;label for=&quot;multipleSelect&quot;&gt; Multiple select: &lt;/label&gt;&lt;br&gt;&#10;    &lt;select name=&quot;multipleSelect&quot; id=&quot;multipleSelect&quot; ng-model=&quot;data.multipleSelect&quot; multiple&gt;&#10;      &lt;option value=&quot;option-1&quot;&gt;Option 1&lt;/option&gt;&#10;      &lt;option value=&quot;option-2&quot;&gt;Option 2&lt;/option&gt;&#10;      &lt;option value=&quot;option-3&quot;&gt;Option 3&lt;/option&gt;&#10;    &lt;/select&gt;&lt;br&gt;&#10;    &lt;tt&gt;multipleSelect = {{data.multipleSelect}}&lt;/tt&gt;&lt;br/&gt;&#10;  &lt;/form&gt;&#10;&lt;/div&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="app.js"
+      language="js"
+      type="js">
+      <pre><code>angular.module(&#39;staticSelect&#39;, [])&#10; .controller(&#39;ExampleController&#39;, [&#39;$scope&#39;, function($scope) {&#10;   $scope.data = {&#10;    singleSelect: null,&#10;    multipleSelect: [],&#10;    option1: &#39;option-1&#39;,&#10;   };&#10;&#10;   $scope.forceUnknownOption = function() {&#10;     $scope.data.singleSelect = &#39;nonsense&#39;;&#10;   };&#10;}]);</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-static-select/index.html" name="example-static-select"></iframe>
+  </div>
+</div>
+
+
+</p>
+<h3 id="using-ngrepeat-to-generate-select-options">Using <code>ngRepeat</code> to generate <code>select</code> options</h3>
+<p>
+
+<div>
+  <plnkr-opener example-path="examples/example-ngrepeat-select"></plnkr-opener>
+
+  <div class="runnable-example"
+      path="examples/example-ngrepeat-select"
+      name="ngrepeat-select"
+      module="ngrepeatSelect">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;div ng-controller=&quot;ExampleController&quot;&gt;&#10;  &lt;form name=&quot;myForm&quot;&gt;&#10;    &lt;label for=&quot;repeatSelect&quot;&gt; Repeat select: &lt;/label&gt;&#10;    &lt;select name=&quot;repeatSelect&quot; id=&quot;repeatSelect&quot; ng-model=&quot;data.repeatSelect&quot;&gt;&#10;      &lt;option ng-repeat=&quot;option in data.availableOptions&quot; value=&quot;{{option.id}}&quot;&gt;{{option.name}}&lt;/option&gt;&#10;    &lt;/select&gt;&#10;  &lt;/form&gt;&#10;  &lt;hr&gt;&#10;  &lt;tt&gt;repeatSelect = {{data.repeatSelect}}&lt;/tt&gt;&lt;br/&gt;&#10;&lt;/div&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="app.js"
+      language="js"
+      type="js">
+      <pre><code>angular.module(&#39;ngrepeatSelect&#39;, [])&#10; .controller(&#39;ExampleController&#39;, [&#39;$scope&#39;, function($scope) {&#10;   $scope.data = {&#10;    repeatSelect: null,&#10;    availableOptions: [&#10;      {id: &#39;1&#39;, name: &#39;Option A&#39;},&#10;      {id: &#39;2&#39;, name: &#39;Option B&#39;},&#10;      {id: &#39;3&#39;, name: &#39;Option C&#39;}&#10;    ],&#10;   };&#10;}]);</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-ngrepeat-select/index.html" name="example-ngrepeat-select"></iframe>
+  </div>
+</div>
+
+
+</p>
+<h3 id="using-select-with-ngoptions-and-setting-a-default-value">Using <code>select</code> with <code>ngOptions</code> and setting a default value</h3>
+<p>See the <a href="api/ng/directive/ngOptions">ngOptions documentation</a> for more <code>ngOptions</code> usage examples.</p>
+<p>
+
+<div>
+  <plnkr-opener example-path="examples/example-select-with-default-values"></plnkr-opener>
+
+  <div class="runnable-example"
+      path="examples/example-select-with-default-values"
+      name="select-with-default-values"
+      module="defaultValueSelect">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;div ng-controller=&quot;ExampleController&quot;&gt;&#10;  &lt;form name=&quot;myForm&quot;&gt;&#10;    &lt;label for=&quot;mySelect&quot;&gt;Make a choice:&lt;/label&gt;&#10;    &lt;select name=&quot;mySelect&quot; id=&quot;mySelect&quot;&#10;      ng-options=&quot;option.name for option in data.availableOptions track by option.id&quot;&#10;      ng-model=&quot;data.selectedOption&quot;&gt;&lt;/select&gt;&#10;  &lt;/form&gt;&#10;  &lt;hr&gt;&#10;  &lt;tt&gt;option = {{data.selectedOption}}&lt;/tt&gt;&lt;br/&gt;&#10;&lt;/div&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="app.js"
+      language="js"
+      type="js">
+      <pre><code>angular.module(&#39;defaultValueSelect&#39;, [])&#10; .controller(&#39;ExampleController&#39;, [&#39;$scope&#39;, function($scope) {&#10;   $scope.data = {&#10;    availableOptions: [&#10;      {id: &#39;1&#39;, name: &#39;Option A&#39;},&#10;      {id: &#39;2&#39;, name: &#39;Option B&#39;},&#10;      {id: &#39;3&#39;, name: &#39;Option C&#39;}&#10;    ],&#10;    selectedOption: {id: &#39;3&#39;, name: &#39;Option C&#39;} //This sets the default value of the select in the ui&#10;    };&#10;}]);</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-select-with-default-values/index.html" name="example-select-with-default-values"></iframe>
+  </div>
+</div>
+
+
+</p>
+<h3 id="binding-select-to-a-non-string-value-via-ngmodel-parsing-formatting">Binding <code>select</code> to a non-string value via <code>ngModel</code> parsing / formatting</h3>
+<p>
+
+<div>
+  <plnkr-opener example-path="examples/example-select-with-non-string-options"></plnkr-opener>
+
+  <div class="runnable-example"
+      path="examples/example-select-with-non-string-options"
+      name="select-with-non-string-options"
+      module="nonStringSelect">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;select ng-model=&quot;model.id&quot; convert-to-number&gt;&#10;  &lt;option value=&quot;0&quot;&gt;Zero&lt;/option&gt;&#10;  &lt;option value=&quot;1&quot;&gt;One&lt;/option&gt;&#10;  &lt;option value=&quot;2&quot;&gt;Two&lt;/option&gt;&#10;&lt;/select&gt;&#10;{{ model }}</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="app.js"
+      language="js"
+      type="js">
+      <pre><code>angular.module(&#39;nonStringSelect&#39;, [])&#10;.run(function($rootScope) {&#10;  $rootScope.model = { id: 2 };&#10;})&#10;.directive(&#39;convertToNumber&#39;, function() {&#10;  return {&#10;    require: &#39;ngModel&#39;,&#10;    link: function(scope, element, attrs, ngModel) {&#10;      ngModel.$parsers.push(function(val) {&#10;        return parseInt(val, 10);&#10;      });&#10;      ngModel.$formatters.push(function(val) {&#10;        return &#39;&#39; + val;&#10;      });&#10;    }&#10;  };&#10;});</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="protractor.js"
+      type="protractor"
+      language="js">
+      <pre><code>it(&#39;should initialize to model&#39;, function() {&#10;  var select = element(by.css(&#39;select&#39;));&#10;  expect(element(by.model(&#39;model.id&#39;)).$(&#39;option:checked&#39;).getText()).toEqual(&#39;Two&#39;);&#10;});</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-select-with-non-string-options/index.html" name="example-select-with-non-string-options"></iframe>
+  </div>
+</div>
+
+
+</p>
+
 </div>
 
 

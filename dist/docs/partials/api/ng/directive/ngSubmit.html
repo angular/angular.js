@@ -35,6 +35,8 @@ for a detailed discussion of when <code>ngSubmit</code> may be triggered.
 
 
 
+
+
 <div>
   
 
@@ -43,6 +45,7 @@ for a detailed discussion of when <code>ngSubmit</code> may be triggered.
   <ul>
     
     <li>This directive executes at priority level 0.</li>
+    
   </ul>
 
   
@@ -51,7 +54,7 @@ for a detailed discussion of when <code>ngSubmit</code> may be triggered.
   
     <ul>
     <li>as attribute:
-        <pre><code>&lt;form&#10;  ng-submit=&quot;&quot;&gt;&#10;...&#10;&lt;/form&gt;</code></pre>
+        <pre><code>&lt;form&#10;  ng-submit=&quot;expression&quot;&gt;&#10;...&#10;&lt;/form&gt;</code></pre>
       </li>
     
   </div>
@@ -97,12 +100,10 @@ for a detailed discussion of when <code>ngSubmit</code> may be triggered.
   <h2 id="example">Example</h2><p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-example78', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-example80"></plnkr-opener>
 
   <div class="runnable-example"
-      path="examples/example-example78"
+      path="examples/example-example80"
       module="submitExample">
 
   
@@ -121,7 +122,7 @@ for a detailed discussion of when <code>ngSubmit</code> may be triggered.
     </div>
   
 
-    <iframe class="runnable-example-frame" src="examples/example-example78/index.html" name="example-example78"></iframe>
+    <iframe class="runnable-example-frame" src="examples/example-example80/index.html" name="example-example80"></iframe>
   </div>
 </div>
 

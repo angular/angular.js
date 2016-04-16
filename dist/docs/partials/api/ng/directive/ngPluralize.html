@@ -89,6 +89,8 @@ plural categories &quot;one&quot; and &quot;other&quot;.</p>
 
 
 
+
+
 <div>
   
 
@@ -97,6 +99,7 @@ plural categories &quot;one&quot; and &quot;other&quot;.</p>
   <ul>
     
     <li>This directive executes at priority level 0.</li>
+    
   </ul>
 
   
@@ -107,10 +110,10 @@ plural categories &quot;one&quot; and &quot;other&quot;.</p>
     
       <li>as element:
       (This directive can be used as custom element, but be aware of <a href="guide/ie">IE restrictions</a>).
-      <pre><code>&lt;ng-pluralize&#10;  count=&quot;&quot;&#10;  when=&quot;&quot;&#10;  [offset=&quot;&quot;]&gt;&#10;...&#10;&lt;/ng-pluralize&gt;</code></pre>
+      <pre><code>&lt;ng-pluralize&#10;  count=&quot;&quot;&#10;  when=&quot;string&quot;&#10;  [offset=&quot;number&quot;]&gt;&#10;...&#10;&lt;/ng-pluralize&gt;</code></pre>
       </li>
     <li>as attribute:
-        <pre><code>&lt;ANY&#10;  count=&quot;&quot;&#10;  when=&quot;&quot;&#10;  [offset=&quot;&quot;]&gt;&#10;...&#10;&lt;/ANY&gt;</code></pre>
+        <pre><code>&lt;ANY&#10;  count=&quot;&quot;&#10;  when=&quot;string&quot;&#10;  [offset=&quot;number&quot;]&gt;&#10;...&#10;&lt;/ANY&gt;</code></pre>
       </li>
     
   </div>
@@ -187,12 +190,10 @@ plural categories &quot;one&quot; and &quot;other&quot;.</p>
   <h2 id="example">Example</h2><p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-example88', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-example90"></plnkr-opener>
 
   <div class="runnable-example"
-      path="examples/example-example88"
+      path="examples/example-example90"
       module="pluralizeExample">
 
   
@@ -200,7 +201,7 @@ plural categories &quot;one&quot; and &quot;other&quot;.</p>
       name="index.html"
       language="html"
       type="html">
-      <pre><code>&lt;script&gt;&#10;  angular.module(&#39;pluralizeExample&#39;, [])&#10;    .controller(&#39;ExampleController&#39;, [&#39;$scope&#39;, function($scope) {&#10;      $scope.person1 = &#39;Igor&#39;;&#10;      $scope.person2 = &#39;Misko&#39;;&#10;      $scope.personCount = 1;&#10;    }]);&#10;&lt;/script&gt;&#10;&lt;div ng-controller=&quot;ExampleController&quot;&gt;&#10;  Person 1:&lt;input type=&quot;text&quot; ng-model=&quot;person1&quot; value=&quot;Igor&quot; /&gt;&lt;br/&gt;&#10;  Person 2:&lt;input type=&quot;text&quot; ng-model=&quot;person2&quot; value=&quot;Misko&quot; /&gt;&lt;br/&gt;&#10;  Number of People:&lt;input type=&quot;text&quot; ng-model=&quot;personCount&quot; value=&quot;1&quot; /&gt;&lt;br/&gt;&#10;&#10;  &lt;!--- Example with simple pluralization rules for en locale ---&gt;&#10;  Without Offset:&#10;  &lt;ng-pluralize count=&quot;personCount&quot;&#10;                when=&quot;{&#39;0&#39;: &#39;Nobody is viewing.&#39;,&#10;                       &#39;one&#39;: &#39;1 person is viewing.&#39;,&#10;                       &#39;other&#39;: &#39;{} people are viewing.&#39;}&quot;&gt;&#10;  &lt;/ng-pluralize&gt;&lt;br&gt;&#10;&#10;  &lt;!--- Example with offset ---&gt;&#10;  With Offset(2):&#10;  &lt;ng-pluralize count=&quot;personCount&quot; offset=2&#10;                when=&quot;{&#39;0&#39;: &#39;Nobody is viewing.&#39;,&#10;                       &#39;1&#39;: &#39;{{person1}} is viewing.&#39;,&#10;                       &#39;2&#39;: &#39;{{person1}} and {{person2}} are viewing.&#39;,&#10;                       &#39;one&#39;: &#39;{{person1}}, {{person2}} and one other person are viewing.&#39;,&#10;                       &#39;other&#39;: &#39;{{person1}}, {{person2}} and {} other people are viewing.&#39;}&quot;&gt;&#10;  &lt;/ng-pluralize&gt;&#10;&lt;/div&gt;</code></pre>
+      <pre><code>&lt;script&gt;&#10;  angular.module(&#39;pluralizeExample&#39;, [])&#10;    .controller(&#39;ExampleController&#39;, [&#39;$scope&#39;, function($scope) {&#10;      $scope.person1 = &#39;Igor&#39;;&#10;      $scope.person2 = &#39;Misko&#39;;&#10;      $scope.personCount = 1;&#10;    }]);&#10;&lt;/script&gt;&#10;&lt;div ng-controller=&quot;ExampleController&quot;&gt;&#10;  &lt;label&gt;Person 1:&lt;input type=&quot;text&quot; ng-model=&quot;person1&quot; value=&quot;Igor&quot; /&gt;&lt;/label&gt;&lt;br/&gt;&#10;  &lt;label&gt;Person 2:&lt;input type=&quot;text&quot; ng-model=&quot;person2&quot; value=&quot;Misko&quot; /&gt;&lt;/label&gt;&lt;br/&gt;&#10;  &lt;label&gt;Number of People:&lt;input type=&quot;text&quot; ng-model=&quot;personCount&quot; value=&quot;1&quot; /&gt;&lt;/label&gt;&lt;br/&gt;&#10;&#10;  &lt;!--- Example with simple pluralization rules for en locale ---&gt;&#10;  Without Offset:&#10;  &lt;ng-pluralize count=&quot;personCount&quot;&#10;                when=&quot;{&#39;0&#39;: &#39;Nobody is viewing.&#39;,&#10;                       &#39;one&#39;: &#39;1 person is viewing.&#39;,&#10;                       &#39;other&#39;: &#39;{} people are viewing.&#39;}&quot;&gt;&#10;  &lt;/ng-pluralize&gt;&lt;br&gt;&#10;&#10;  &lt;!--- Example with offset ---&gt;&#10;  With Offset(2):&#10;  &lt;ng-pluralize count=&quot;personCount&quot; offset=2&#10;                when=&quot;{&#39;0&#39;: &#39;Nobody is viewing.&#39;,&#10;                       &#39;1&#39;: &#39;{{person1}} is viewing.&#39;,&#10;                       &#39;2&#39;: &#39;{{person1}} and {{person2}} are viewing.&#39;,&#10;                       &#39;one&#39;: &#39;{{person1}}, {{person2}} and one other person are viewing.&#39;,&#10;                       &#39;other&#39;: &#39;{{person1}}, {{person2}} and {} other people are viewing.&#39;}&quot;&gt;&#10;  &lt;/ng-pluralize&gt;&#10;&lt;/div&gt;</code></pre>
     </div>
   
     <div class="runnable-example-file" 
@@ -211,7 +212,7 @@ plural categories &quot;one&quot; and &quot;other&quot;.</p>
     </div>
   
 
-    <iframe class="runnable-example-frame" src="examples/example-example88/index.html" name="example-example88"></iframe>
+    <iframe class="runnable-example-frame" src="examples/example-example90/index.html" name="example-example90"></iframe>
   </div>
 </div>
 

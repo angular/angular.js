@@ -1,0 +1,85 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ngMock/angular-mocks.js?message=docs(angular.mock.module.sharedInjector)%3A%20describe%20your%20change...#L2669' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ngMock/angular-mocks.js#L2669' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">angular.mock.module.sharedInjector</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - function in module <a href="api/ngMock">ngMock</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p><em>NOTE</em>: This function is declared ONLY WHEN running tests with jasmine or mocha</p>
+<p>This function ensures a single injector will be used for all tests in a given describe context.
+This contrasts with the default behaviour where a new injector is created per test case.</p>
+<p>Use sharedInjector when you want to take advantage of Jasmine&#39;s <code>beforeAll()</code>, or mocha&#39;s
+<code>before()</code> methods. Call <code>module.sharedInjector()</code> before you setup any other hooks that
+will create (i.e call <code>module()</code>) or use (i.e call <code>inject()</code>) the injector.</p>
+<p>You cannot call <code>sharedInjector()</code> from within a context already using <code>sharedInjector()</code>.</p>
+<h2 id="example">Example</h2>
+<p>Typically beforeAll is used to make many assertions about a single operation. This can
+cut down test run-time as the test setup doesn&#39;t need to be re-run, and enabling focussed
+tests each with a single assertion.</p>
+<pre><code class="lang-js">describe(&quot;Deep Thought&quot;, function() {
+
+  module.sharedInjector();
+
+  beforeAll(module(&quot;UltimateQuestion&quot;));
+
+  beforeAll(inject(function(DeepThought) {
+    expect(DeepThought.answer).toBeUndefined();
+    DeepThought.generateAnswer();
+  }));
+
+  it(&quot;has calculated the answer correctly&quot;, inject(function(DeepThought) {
+    // Because of sharedInjector, we have access to the instance of the DeepThought service
+    // that was provided to the beforeAll() hook. Therefore we can test the generated answer
+    expect(DeepThought.answer).toBe(42);
+  }));
+
+  it(&quot;has calculated the answer within the expected time&quot;, inject(function(DeepThought) {
+    expect(DeepThought.runTimeMillennia).toBeLessThan(8000);
+  }));
+
+  it(&quot;has double checked the answer&quot;, inject(function(DeepThought) {
+    expect(DeepThought.absolutelySureItIsTheRightAnswer).toBe(true);
+  }));
+
+});
+</code></pre>
+
+</div>
+
+
+
+
+
+
+<div>
+  
+
+    
+
+  
+
+  
+  
+  
+
+
+
+  
+</div>
+
+

@@ -11,15 +11,24 @@
 
   
 </head>
-<body ng-app="form-example2">
-  <div contentEditable="true" ng-model="content" title="Click to edit">Some</div>
-<pre>model = {{content}}</pre>
+<body ng-app="form-example1">
+  <form name="form" class="css-form" novalidate>
+  <div>
+    Size (integer 0 - 10):
+    <input type="number" ng-model="size" name="size"
+           min="0" max="10" integer />{{size}}<br />
+    <span ng-show="form.size.$error.integer">The value is not a valid integer!</span>
+    <span ng-show="form.size.$error.min || form.size.$error.max">
+      The value must be in range 0 to 10!</span>
+  </div>
 
-<style type="text/css">
-  div[contentEditable] {
-    cursor: pointer;
-    background-color: #D0D0D0;
-  }
-</style>
+  <div>
+    Username:
+    <input type="text" ng-model="name" name="name" username />{{name}}<br />
+    <span ng-show="form.name.$pending.username">Checking if this name is available...</span>
+    <span ng-show="form.name.$error.username">This username is already taken!</span>
+  </div>
+
+</form>
 </body>
 </html>

@@ -3,21 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <title>Example - example-example4-production</title>
-  <link href="style.css" rel="stylesheet" type="text/css">
+  <link href="animations.css" rel="stylesheet" type="text/css">
   
 
-  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular.min.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular-animate.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/null/angular.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/null/angular-animate.js"></script>
   
 
   
 </head>
 <body ng-app="ngAnimate">
-  <p>
-  <input type="button" value="set" ng-click="myCssVar='css-class'">
-  <input type="button" value="clear" ng-click="myCssVar=''">
-  <br>
-  <span ng-class="myCssVar">CSS-Animated Text</span>
-</p>
+  <div ng-init="checked=true">
+  <label>
+    <input type="checkbox" ng-model="checked" style="float:left; margin-right:10px;"> Is Visible...
+  </label>
+  <div class="check-element sample-show-hide" ng-show="checked" style="clear:both;">
+    Visible...
+  </div>
+</div>
 </body>
 </html>

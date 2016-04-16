@@ -27,6 +27,13 @@
   <p>Filters are just functions which transform input to an output. However filters need to be
 Dependency Injected. To achieve this a filter definition consists of a factory function which is
 annotated with dependencies and is responsible for creating a filter function.</p>
+<div class="alert alert-warning">
+<strong>Note:</strong> Filter names must be valid angular <a href="guide/expression"><code>Expressions</code></a> identifiers, such as <code>uppercase</code> or <code>orderBy</code>.
+Names with special characters, such as hyphens and dots, are not allowed. If you wish to namespace
+your filters, then you can use capitalization (<code>myappSubsectionFilterx</code>) or underscores
+(<code>myapp_subsection_filterx</code>).
+</div>
+
 <pre><code class="lang-js">// Filter registration
 function MyModule($provide, $filterProvider) {
   // create a service to demonstrate injection (not always needed)
@@ -66,6 +73,8 @@ function MyModule($provide, $filterProvider) {
 
 
 
+
+
 <div>
   
 
@@ -77,7 +86,7 @@ function MyModule($provide, $filterProvider) {
 <h2>Methods</h2>
 <ul class="methods">
   <li id="register">
-    <h3><p><code>register(name);</code></p>
+    <h3><p><code>register(name, factory);</code></p>
 
 </h3>
     <div></div>
@@ -107,6 +116,27 @@ function MyModule($provide, $filterProvider) {
       <td>
         <p>Name of the filter function, or an object map of filters where
    the keys are the filter names and the values are the filter factories.</p>
+   <div class="alert alert-warning">
+   <strong>Note:</strong> Filter names must be valid angular <a href="guide/expression"><code>Expressions</code></a> identifiers, such as <code>uppercase</code> or <code>orderBy</code>.
+   Names with special characters, such as hyphens and dots, are not allowed. If you wish to namespace
+   your filters, then you can use capitalization (<code>myappSubsectionFilterx</code>) or underscores
+   (<code>myapp_subsection_filterx</code>).
+   </div>
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        factory
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-function">Function</a>
+      </td>
+      <td>
+        <p>If the first argument was a string, a factory function for the filter to be registered.</p>
 
         
       </td>

@@ -1,6 +1,16 @@
-.odd {
-  color: red;
+.strike {
+    text-decoration: line-through;
 }
-.even {
-  color: blue;
+.bold {
+    font-weight: bold;
+}
+.red {
+    color: red;
+}
+.has-error {
+    color: red;
+    background-color: yellow;
+}
+.orange {
+    color: orange;
 }

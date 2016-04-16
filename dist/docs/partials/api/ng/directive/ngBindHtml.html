@@ -35,6 +35,8 @@ will have an exception (instead of an exploit.)</p>
 
 
 
+
+
 <div>
   
 
@@ -43,6 +45,7 @@ will have an exception (instead of an exploit.)</p>
   <ul>
     
     <li>This directive executes at priority level 0.</li>
+    
   </ul>
 
   
@@ -51,7 +54,7 @@ will have an exception (instead of an exploit.)</p>
   
     <ul>
     <li>as attribute:
-        <pre><code>&lt;ANY&#10;  ng-bind-html=&quot;&quot;&gt;&#10;...&#10;&lt;/ANY&gt;</code></pre>
+        <pre><code>&lt;ANY&#10;  ng-bind-html=&quot;expression&quot;&gt;&#10;...&#10;&lt;/ANY&gt;</code></pre>
       </li>
     
   </div>
@@ -96,12 +99,10 @@ will have an exception (instead of an exploit.)</p>
   <h2 id="example">Example</h2><p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-example61', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-example63"></plnkr-opener>
 
   <div class="runnable-example"
-      path="examples/example-example61"
+      path="examples/example-example63"
       module="bindHtmlExample"
       deps="angular-sanitize.js">
 
@@ -128,7 +129,7 @@ will have an exception (instead of an exploit.)</p>
     </div>
   
 
-    <iframe class="runnable-example-frame" src="examples/example-example61/index.html" name="example-example61"></iframe>
+    <iframe class="runnable-example-frame" src="examples/example-example63/index.html" name="example-example63"></iframe>
   </div>
 </div>
 

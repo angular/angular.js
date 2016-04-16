@@ -1,8 +1,8 @@
-<a href='https://github.com/angular/angular.js/edit/master/src/ng/directive/ngModel.js?message=docs(ngModel.NgModelController)%3A%20describe%20your%20change...#L22' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/directive/ngModel.js?message=docs(ngModel.NgModelController)%3A%20describe%20your%20change...#L23' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
 
 
 
-<a href='https://github.com/angular/angular.js/tree/master/src/ng/directive/ngModel.js#L22' class='view-source pull-right btn btn-primary'>
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/directive/ngModel.js#L23' class='view-source pull-right btn btn-primary'>
   <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
 </a>
 
@@ -34,6 +34,8 @@ At the end of this page you can find a <a href="api/ng/type/ngModel.NgModelContr
 
 
 
+
+
 <div>
   
 
@@ -58,7 +60,7 @@ committed value then <code>$render()</code> is called to update the input contro
 the <code>$viewValue</code> are different from last time.</li>
 </ul>
 <p>Since <code>ng-model</code> does not do a deep watch, <code>$render()</code> is only invoked if the values of
-<code>$modelValue</code> and <code>$viewValue</code> are actually different from their previous value. If <code>$modelValue</code>
+<code>$modelValue</code> and <code>$viewValue</code> are actually different from their previous values. If <code>$modelValue</code>
 or <code>$viewValue</code> are objects (rather than a string or number) then <code>$render()</code> will not be
 invoked if you only change a property on the objects.</p>
 </div>
@@ -286,10 +288,12 @@ first focused the control element and then shifted focus away from the control (
     <div><p>Cancel an update and reset the input element&#39;s value to prevent an update to the <code>$modelValue</code>,
 which may be caused by a pending debounced event or because the input is waiting for a some
 future event.</p>
-<p>If you have an input that uses <code>ng-model-options</code> to set up debounced events or events such
-as blur you can have a situation where there is a period when the <code>$viewValue</code>
-is out of synch with the ngModel&#39;s <code>$modelValue</code>.</p>
-<p>In this case, you can run into difficulties if you try to update the ngModel&#39;s <code>$modelValue</code>
+<p>If you have an input that uses <code>ng-model-options</code> to set up debounced updates or updates that
+depend on special events such as blur, you can have a situation where there is a period when
+the <code>$viewValue</code> is out of sync with the ngModel&#39;s <code>$modelValue</code>.</p>
+<p>In this case, you can use <code>$rollbackViewValue()</code> to manually cancel the debounced / future update
+and reset the input to the last committed view value.</p>
+<p>It is also possible that you run into difficulties if you try to update the ngModel&#39;s <code>$modelValue</code>
 programmatically before these debounced/future events have resolved/occurred, because Angular&#39;s
 dirty checking mechanism is not able to tell whether the model has actually changed or not.</p>
 <p>The <code>$rollbackViewValue()</code> method should be called before programmatically changing the model of an
@@ -298,9 +302,7 @@ input field will be updated with the new model value and any pending operations 
 <p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-ng-model-cancel-update', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-ng-model-cancel-update"></plnkr-opener>
 
   <div class="runnable-example"
       path="examples/example-ng-model-cancel-update"
@@ -312,14 +314,21 @@ input field will be updated with the new model value and any pending operations 
       name="app.js"
       language="js"
       type="js">
-      <pre><code>angular.module(&#39;cancel-update-example&#39;, [])&#10;&#10;.controller(&#39;CancelUpdateController&#39;, [&#39;$scope&#39;, function($scope) {&#10;  $scope.resetWithCancel = function(e) {&#10;    if (e.keyCode == 27) {&#10;      $scope.myForm.myInput1.$rollbackViewValue();&#10;      $scope.myValue = &#39;&#39;;&#10;    }&#10;  };&#10;  $scope.resetWithoutCancel = function(e) {&#10;    if (e.keyCode == 27) {&#10;      $scope.myValue = &#39;&#39;;&#10;    }&#10;  };&#10;}]);</code></pre>
+      <pre><code>angular.module(&#39;cancel-update-example&#39;, [])&#10;&#10;.controller(&#39;CancelUpdateController&#39;, [&#39;$scope&#39;, function($scope) {&#10;  $scope.model = {};&#10;&#10;  $scope.setEmpty = function(e, value, rollback) {&#10;    if (e.keyCode == 27) {&#10;      e.preventDefault();&#10;      if (rollback) {&#10;        $scope.myForm[value].$rollbackViewValue();&#10;      }&#10;      $scope.model[value] = &#39;&#39;;&#10;    }&#10;  };&#10;}]);</code></pre>
     </div>
   
     <div class="runnable-example-file" 
       name="index.html"
       language="html"
       type="html">
-      <pre><code>&lt;div ng-controller=&quot;CancelUpdateController&quot;&gt;&#10;  &lt;p&gt;Try typing something in each input.  See that the model only updates when you&#10;     blur off the input.&#10;   &lt;/p&gt;&#10;   &lt;p&gt;Now see what happens if you start typing then press the Escape key&lt;/p&gt;&#10;&#10;  &lt;form name=&quot;myForm&quot; ng-model-options=&quot;{ updateOn: &#39;blur&#39; }&quot;&gt;&#10;    &lt;p&gt;With $rollbackViewValue()&lt;/p&gt;&#10;    &lt;input name=&quot;myInput1&quot; ng-model=&quot;myValue&quot; ng-keydown=&quot;resetWithCancel($event)&quot;&gt;&lt;br/&gt;&#10;    myValue: &quot;{{ myValue }}&quot;&#10;&#10;    &lt;p&gt;Without $rollbackViewValue()&lt;/p&gt;&#10;    &lt;input name=&quot;myInput2&quot; ng-model=&quot;myValue&quot; ng-keydown=&quot;resetWithoutCancel($event)&quot;&gt;&lt;br/&gt;&#10;    myValue: &quot;{{ myValue }}&quot;&#10;  &lt;/form&gt;&#10;&lt;/div&gt;</code></pre>
+      <pre><code>&lt;div ng-controller=&quot;CancelUpdateController&quot;&gt;&#10;   &lt;p&gt;Both of these inputs are only updated if they are blurred. Hitting escape should&#10;   empty them. Follow these steps and observe the difference:&lt;/p&gt;&#10;  &lt;ol&gt;&#10;    &lt;li&gt;Type something in the input. You will see that the model is not yet updated&lt;/li&gt;&#10;    &lt;li&gt;Press the Escape key.&#10;      &lt;ol&gt;&#10;        &lt;li&gt; In the first example, nothing happens, because the model is already &#39;&#39;, and no&#10;        update is detected. If you blur the input, the model will be set to the current view.&#10;        &lt;/li&gt;&#10;        &lt;li&gt; In the second example, the pending update is cancelled, and the input is set back&#10;        to the last committed view value (&#39;&#39;). Blurring the input does nothing.&#10;        &lt;/li&gt;&#10;      &lt;/ol&gt;&#10;    &lt;/li&gt;&#10;  &lt;/ol&gt;&#10;&#10;  &lt;form name=&quot;myForm&quot; ng-model-options=&quot;{ updateOn: &#39;blur&#39; }&quot;&gt;&#10;    &lt;div&gt;&#10;   &lt;p id=&quot;inputDescription1&quot;&gt;Without $rollbackViewValue():&lt;/p&gt;&#10;    &lt;input name=&quot;value1&quot; aria-describedby=&quot;inputDescription1&quot; ng-model=&quot;model.value1&quot;&#10;           ng-keydown=&quot;setEmpty($event, &#39;value1&#39;)&quot;&gt;&#10;    value1: &quot;{{ model.value1 }}&quot;&#10;    &lt;/div&gt;&#10;&#10;    &lt;div&gt;&#10;   &lt;p id=&quot;inputDescription2&quot;&gt;With $rollbackViewValue():&lt;/p&gt;&#10;    &lt;input name=&quot;value2&quot; aria-describedby=&quot;inputDescription2&quot; ng-model=&quot;model.value2&quot;&#10;           ng-keydown=&quot;setEmpty($event, &#39;value2&#39;, true)&quot;&gt;&#10;    value2: &quot;{{ model.value2 }}&quot;&#10;    &lt;/div&gt;&#10;  &lt;/form&gt;&#10;&lt;/div&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="style.css"
+      language="css"
+      type="css">
+      <pre><code>div {&#10;  display: table-cell;&#10;}&#10;div:nth-child(1) {&#10;  padding-right: 30px;&#10;}</code></pre>
     </div>
   
 
@@ -348,7 +357,7 @@ asynchronous validators).
 If the validity changes to invalid, the model will be set to <code>undefined</code>,
 unless <a href="api/ng/directive/ngModelOptions"><code>ngModelOptions.allowInvalid</code></a> is <code>true</code>.
 If the validity changes to valid, it will set the model to the last available valid
-modelValue, i.e. either the last parsed value or the last value set from the scope.</p>
+<code>$modelValue</code>, i.e. either the last parsed value or the last value set from the scope.</p>
 </div>
 
     
@@ -382,29 +391,41 @@ usually handles calling this in response to input events.</p>
 
 </h3>
     <div><p>Update the view value.</p>
-<p>This method should be called when an input directive want to change the view value; typically,
-this is done from within a DOM event handler.</p>
-<p>For example <a href="api/ng/directive/input">input</a> calls it when the value of the input changes and
-<a href="api/ng/directive/select">select</a> calls it when an option is selected.</p>
-<p>If the new <code>value</code> is an object (rather than a string or a number), we should make a copy of the
-object before passing it to <code>$setViewValue</code>.  This is because <code>ngModel</code> does not perform a deep
-watch of objects, it only looks for a change of identity. If you only change the property of
-the object then ngModel will not realise that the object has changed and will not invoke the
-<code>$parsers</code> and <code>$validators</code> pipelines.</p>
-<p>For this reason, you should not change properties of the copy once it has been passed to
-<code>$setViewValue</code>. Otherwise you may cause the model value on the scope to change incorrectly.</p>
-<p>When this method is called, the new <code>value</code> will be staged for committing through the <code>$parsers</code>
+<p>This method should be called when a control wants to change the view value; typically,
+this is done from within a DOM event handler. For example, the <a href="api/ng/directive/input">input</a>
+directive calls it when the value of the input changes and <a href="api/ng/directive/select">select</a>
+calls it when an option is selected.</p>
+<p>When <code>$setViewValue</code> is called, the new <code>value</code> will be staged for committing through the <code>$parsers</code>
 and <code>$validators</code> pipelines. If there are no special <a href="api/ng/directive/ngModelOptions"><code>ngModelOptions</code></a> specified then the staged
 value sent directly for processing, finally to be applied to <code>$modelValue</code> and then the
-<strong>expression</strong> specified in the <code>ng-model</code> attribute.</p>
-<p>Lastly, all the registered change listeners, in the <code>$viewChangeListeners</code> list, are called.</p>
+<strong>expression</strong> specified in the <code>ng-model</code> attribute. Lastly, all the registered change listeners,
+in the <code>$viewChangeListeners</code> list, are called.</p>
 <p>In case the <a href="api/ng/directive/ngModelOptions">ngModelOptions</a> directive is used with <code>updateOn</code>
 and the <code>default</code> trigger is not listed, all those actions will remain pending until one of the
 <code>updateOn</code> events is triggered on the DOM element.
 All these actions will be debounced if the <a href="api/ng/directive/ngModelOptions">ngModelOptions</a>
-directive is used with a custom debounce for this particular event.</p>
-<p>Note that calling this function does not trigger a <code>$digest</code>.</p>
-</div>
+directive is used with a custom debounce for this particular event.
+Note that a <code>$digest</code> is only triggered once the <code>updateOn</code> events are fired, or if <code>debounce</code>
+is specified, once the timer runs out.</p>
+<p>When used with standard inputs, the view value will always be a string (which is in some cases
+parsed into another type, such as a <code>Date</code> object for <code>input[date]</code>.)
+However, custom controls might also pass objects to this method. In this case, we should make
+a copy of the object before passing it to <code>$setViewValue</code>. This is because <code>ngModel</code> does not
+perform a deep watch of objects, it only looks for a change of identity. If you only change
+the property of the object then ngModel will not realize that the object has changed and
+will not invoke the <code>$parsers</code> and <code>$validators</code> pipelines. For this reason, you should
+not change properties of the copy once it has been passed to <code>$setViewValue</code>.
+Otherwise you may cause the model value on the scope to change incorrectly.</p>
+<div class="alert alert-info">
+In any case, the value passed to the method should always reflect the current value
+of the control. For example, if you are calling <code>$setViewValue</code> for an input element,
+you should pass the input DOM value. Otherwise, the control and the scope model become
+out of sync. It&#39;s also important to note that <code>$setViewValue</code> does not call <code>$render</code> or change
+the control&#39;s DOM value in any way. If we want to change the control&#39;s DOM value
+programmatically, we should update the <code>ngModel</code> scope expression. Its new value will be
+picked up by the model controller, which will run it through the <code>$formatters</code>, <code>$render</code> it
+to update the DOM, and finally call <code>$validate</code> on it.
+</div></div>
 
     
     <h4>Parameters</h4>
@@ -426,10 +447,10 @@ directive is used with a custom debounce for this particular event.</p>
         
       </td>
       <td>
-        <a href="" class="label type-hint type-hint-string">string</a>
+        <a href="" class="label type-hint type-hint-object">*</a>
       </td>
       <td>
-        <p>Value from the view.</p>
+        <p>value from the view.</p>
 
         
       </td>
@@ -470,8 +491,10 @@ directive is used with a custom debounce for this particular event.</p>
     <h3><code>$viewValue</code></h3>
     <table class="variables-matrix return-arguments">
   <tr>
-    <td><a href="" class="label type-hint type-hint-string">string</a></td>
-    <td><p>Actual string value in the view.</p>
+    <td><a href="" class="label type-hint type-hint-object">*</a></td>
+    <td><p>The actual value from the control&#39;s view. For <code>input</code> elements, this is a
+String. See <a href="api/ng/type/ngModel.NgModelController#$setViewValue"><code>ngModel.NgModelController</code></a> for information about when the $viewValue
+is set.</p>
 </td>
   </tr>
 </table>
@@ -705,8 +728,8 @@ in order to fulfill the validation and a status level of <code>4xx</code> in ord
 <p>This example shows how to use <code>NgModelController</code> with a custom control to achieve
 data-binding. Notice how different directives (<code>contenteditable</code>, <code>ng-model</code>, and <code>required</code>)
 collaborate together to achieve the desired result.</p>
-<p>Note that <code>contenteditable</code> is an HTML5 attribute, which tells the browser to let the element
-contents be edited in place by the user.  This will not work on older browsers.</p>
+<p><code>contenteditable</code> is an HTML5 attribute, which tells the browser to let the element
+contents be edited in place by the user.</p>
 <p>We are using the <a href="api/ng/service/$sce">$sce</a> service here and include the <a href="api/ngSanitize">$sanitize</a>
 module to automatically remove &quot;bad&quot; content like inline event listener (e.g. <code>&lt;span onclick=&quot;...&quot;&gt;</code>).
 However, as we are using <code>$sce</code> the model can still decide to provide unsafe content if it marks
@@ -714,9 +737,7 @@ that content using the <code>$sce</code> service.</p>
 <p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-NgModelController', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-NgModelController"></plnkr-opener>
 
   <div class="runnable-example"
       path="examples/example-NgModelController"
@@ -743,7 +764,7 @@ that content using the <code>$sce</code> service.</p>
       name="index.html"
       language="html"
       type="html">
-      <pre><code>&lt;form name=&quot;myForm&quot;&gt;&#10; &lt;div contenteditable&#10;      name=&quot;myWidget&quot; ng-model=&quot;userContent&quot;&#10;      strip-br=&quot;true&quot;&#10;      required&gt;Change me!&lt;/div&gt;&#10;  &lt;span ng-show=&quot;myForm.myWidget.$error.required&quot;&gt;Required!&lt;/span&gt;&#10; &lt;hr&gt;&#10; &lt;textarea ng-model=&quot;userContent&quot;&gt;&lt;/textarea&gt;&#10;&lt;/form&gt;</code></pre>
+      <pre><code>&lt;form name=&quot;myForm&quot;&gt;&#10; &lt;div contenteditable&#10;      name=&quot;myWidget&quot; ng-model=&quot;userContent&quot;&#10;      strip-br=&quot;true&quot;&#10;      required&gt;Change me!&lt;/div&gt;&#10;  &lt;span ng-show=&quot;myForm.myWidget.$error.required&quot;&gt;Required!&lt;/span&gt;&#10; &lt;hr&gt;&#10; &lt;textarea ng-model=&quot;userContent&quot; aria-label=&quot;Dynamic textarea&quot;&gt;&lt;/textarea&gt;&#10;&lt;/form&gt;</code></pre>
     </div>
   
     <div class="runnable-example-file" 

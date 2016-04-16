@@ -2,6 +2,8 @@
   "name": "example-example7",
   "files": [
     "index-production.html",
-    "app.js"
+    "script.js",
+    "my-tabs.html",
+    "my-pane.html"
   ]
 }

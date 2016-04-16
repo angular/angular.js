@@ -1,0 +1,58 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/error/ngModel/numfmt.ngdoc?message=docs(error%2Fnumfmt)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1>Error: ngModel:numfmt
+  <div><span class='hint'>Model is not of type `number`</span></div>
+</h1>
+
+<div>
+    <pre class="minerr-errmsg" error-display="Expected `{0}` to be a number">Expected `{0}` to be a number</pre>
+</div>
+
+<h2>Description</h2>
+<div class="description">
+  <p>The number input directive <code>&lt;input type=&quot;number&quot;&gt;</code> requires the model to be a <code>number</code>.</p>
+<p>If the model is something else, this error will be thrown.</p>
+<p>Angular does not set validation errors on the <code>&lt;input&gt;</code> in this case
+as this error is caused by incorrect application logic and not by bad input from the user.</p>
+<p>If your model does not contain actual numbers then it is up to the application developer
+to use a directive that will do the conversion in the <code>ngModel</code> <code>$formatters</code> and <code>$parsers</code>
+pipeline.</p>
+<h2 id="example">Example</h2>
+<p>In this example, our model stores the number as a string, so we provide the <code>stringToNumber</code>
+directive to convert it into the format the <code>input[number]</code> directive expects.</p>
+<p>
+
+<div>
+  <plnkr-opener example-path="examples/example-example"></plnkr-opener>
+
+  <div class="runnable-example"
+      path="examples/example-example"
+      module="numfmt-error-module">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;table&gt;&#13;&#10;  &lt;tr ng-repeat=&quot;x in [&#39;0&#39;, &#39;1&#39;]&quot;&gt;&#13;&#10;    &lt;td&gt;&#13;&#10;      &lt;input type=&quot;number&quot; string-to-number ng-model=&quot;x&quot; /&gt; {{ x }} : {{ typeOf(x) }}&#13;&#10;    &lt;/td&gt;&#13;&#10;  &lt;/tr&gt;&#13;&#10;&lt;/table&gt;&#13;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="app.js"
+      language="js"
+      type="js">
+      <pre><code>angular.module(&#39;numfmt-error-module&#39;, [])&#13;&#10;&#10;.run(function($rootScope) {&#13;&#10;  $rootScope.typeOf = function(value) {&#13;&#10;    return typeof value;&#13;&#10;  };&#13;&#10;})&#13;&#10;&#10;.directive(&#39;stringToNumber&#39;, function() {&#13;&#10;  return {&#13;&#10;    require: &#39;ngModel&#39;,&#13;&#10;    link: function(scope, element, attrs, ngModel) {&#13;&#10;      ngModel.$parsers.push(function(value) {&#13;&#10;        return &#39;&#39; + value;&#13;&#10;      });&#13;&#10;      ngModel.$formatters.push(function(value) {&#13;&#10;        return parseFloat(value, 10);&#13;&#10;      });&#13;&#10;    }&#13;&#10;  };&#13;&#10;});&#13;</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-example/index.html" name="example-example"></iframe>
+  </div>
+</div>
+
+
+</p>
+
+</div>
+
+

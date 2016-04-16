@@ -5,18 +5,23 @@ describe("", function() {
     browser.get("build/docs/examples/example-example60/index-jquery.html");
   });
   
-it('should check ng-bind', function() {
-  var salutationElem = element(by.binding('salutation'));
-  var salutationInput = element(by.model('salutation'));
-  var nameInput = element(by.model('name'));
+it('should initialize to model', function() {
+  var userType = element(by.binding('userType'));
+  var valid = element(by.binding('myForm.input.$valid'));
 
-  expect(salutationElem.getText()).toBe('Hello World!');
+  expect(userType.getText()).toContain('guest');
+  expect(valid.getText()).toContain('true');
+});
 
-  salutationInput.clear();
-  salutationInput.sendKeys('Greetings');
-  nameInput.clear();
-  nameInput.sendKeys('user');
+it('should be invalid if empty', function() {
+  var userType = element(by.binding('userType'));
+  var valid = element(by.binding('myForm.input.$valid'));
+  var userInput = element(by.model('userType'));
 
-  expect(salutationElem.getText()).toBe('Greetings user!');
+  userInput.clear();
+  userInput.sendKeys('');
+
+  expect(userType.getText()).toEqual('userType =');
+  expect(valid.getText()).toContain('false');
 });
 });

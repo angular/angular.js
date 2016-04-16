@@ -5,13 +5,15 @@
   <title>Example - example-example75-production</title>
   
 
-  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/null/angular.min.js"></script>
   
 
   
 </head>
 <body ng-app="">
-  <input ng-keydown="count = count + 1" ng-init="count=0">
-key down count: {{count}}
+  <button ng-mouseleave="count = count + 1" ng-init="count=0">
+  Increment (when mouse leaves)
+</button>
+count: {{count}}
 </body>
 </html>

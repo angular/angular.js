@@ -1,8 +1,8 @@
-<a href='https://github.com/angular/angular.js/edit/master/src/ng/http.js?message=docs($httpProvider)%3A%20describe%20your%20change...#L117' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/http.js?message=docs($httpProvider)%3A%20describe%20your%20change...#L246' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
 
 
 
-<a href='https://github.com/angular/angular.js/tree/master/src/ng/http.js#L117' class='view-source pull-right btn btn-primary'>
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/http.js#L246' class='view-source pull-right btn btn-primary'>
   <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
 </a>
 
@@ -31,6 +31,8 @@
 
 
 
+
+
 <div>
   
 
@@ -49,7 +51,7 @@
 the same time via <a href="api/ng/type/$rootScope.Scope#$applyAsync">$rootScope.$applyAsync</a>. This can result in
 significant performance improvement for bigger applications that make many HTTP requests
 concurrently (common during application bootstrap).</p>
-<p>Defaults to false. If no value is specifed, returns the current configured value.</p>
+<p>Defaults to false. If no value is specified, returns the current configured value.</p>
 </div>
 
     
@@ -103,6 +105,65 @@ concurrently (common during application bootstrap).</p>
     
 
   </li>
+  
+  <li id="useLegacyPromiseExtensions">
+    <h3><p><code>useLegacyPromiseExtensions([value]);</code></p>
+
+</h3>
+    <div><p>Configure <code>$http</code> service to return promises without the shorthand methods <code>success</code> and <code>error</code>.
+This should be used to make sure that applications work without these methods.</p>
+<p>Defaults to true. If no value is specified, returns the current configured value.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        value
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-boolean">boolean</a>
+      </td>
+      <td>
+        <p>If true, <code>$http</code> will return a promise with the deprecated legacy <code>success</code> and <code>error</code> methods.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-boolean">boolean</a><a href="" class="label type-hint type-hint-object">Object</a></td>
+    <td><p>If a value is specified, returns the $httpProvider for chaining.
+   otherwise, returns the current configured value.</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
   </ul>
   
   
@@ -115,10 +176,9 @@ concurrently (common during application bootstrap).</p>
     <td></td>
     <td><p>Object containing default values for all <a href="api/ng/service/$http">$http</a> requests.</p>
 <ul>
-<li><p><strong><code>defaults.cache</code></strong> - {Object} - an object built with <a href="api/ng/service/$cacheFactory"><code>$cacheFactory</code></a>
-that will provide the cache for all requests who set their <code>cache</code> property to <code>true</code>.
-If you set the <code>default.cache = false</code> then only requests that specify their own custom
-cache object will be cached. See <a href="api/ng/service/$http#caching">$http Caching</a> for more information.</p>
+<li><p><strong><code>defaults.cache</code></strong> - {boolean|Object} - A boolean value or object created with
+<a href="api/ng/service/$cacheFactory"><code>$cacheFactory</code></a> to enable or disable caching of HTTP responses
+by default. See <a href="api/ng/service/$http#caching">$http Caching</a> for more information.</p>
 </li>
 <li><p><strong><code>defaults.xsrfCookieName</code></strong> - {string} - Name of cookie containing the XSRF token.
 Defaults value is <code>&#39;XSRF-TOKEN&#39;</code>.</p>
@@ -136,6 +196,12 @@ setting default headers.</p>
 <li><strong><code>defaults.headers.patch</code></strong></li>
 </ul>
 </li>
+</ul>
+<ul>
+<li><strong><code>defaults.paramSerializer</code></strong> - <code>{string|function(Object&lt;string,string&gt;):string}</code> - A function
+used to the prepare string representation of request parameters (specified as an object).
+If specified as string, it is interpreted as a function registered with the <a href="api/auto/service/$injector">$injector</a>.
+Defaults to <a href="api/ng/service/$httpParamSerializer">$httpParamSerializer</a>.</li>
 </ul>
 </td>
   </tr>

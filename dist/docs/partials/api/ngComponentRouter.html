@@ -1,0 +1,132 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ngComponentRouter/Router.js?message=docs(ngComponentRouter)%3A%20describe%20your%20change...#L1' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1>
+  <code>ngComponentRouter</code>
+</h1>
+
+
+  <h2 id="installation">Installation</h2>
+<p>Currently, the <strong>Component Router</strong> module must be installed via <code>npm</code>, it is not yet available
+on Bower or the Google CDN.</p>
+<pre><code class="lang-bash">npm install @angular/router --save
+</code></pre>
+<p>Include <code>angular_1_router.js</code> in your HTML:</p>
+<pre><code class="lang-html">&lt;script src=&quot;/node_modules/@angular/router/angular1/angular_1_router.js&quot;&gt;&lt;/script&gt;
+</code></pre>
+<p>You also need to include ES6 shims to support running on Internet Explorer:</p>
+<pre><code class="lang-html">&lt;!-- IE required polyfills, in this exact order --&gt;
+&lt;script src=&quot;https://cdnjs.cloudflare.com/ajax/libs/es6-shim/0.33.3/es6-shim.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;https://cdnjs.cloudflare.com/ajax/libs/systemjs/0.19.20/system-polyfills.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;https://npmcdn.com/angular2/es6/dev/src/testing/shims_for_IE.js&quot;&gt;&lt;/script&gt;
+</code></pre>
+<p>Then load the module in your application by adding it as a dependent module:</p>
+<pre><code class="lang-js">angular.module(&#39;app&#39;, [&#39;ngComponentRouter&#39;]);
+</code></pre>
+
+
+
+
+
+
+
+
+<div class="component-breakdown">
+  <h2>Module Components</h2>
+  
+  <div>
+    <h3 class="component-heading" id="type">Type</h3>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ngComponentRouter/type/Router">Router</a></td>
+        <td><p>A <code>Router</code> is responsible for mapping URLs to components.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ngComponentRouter/type/ChildRouter">ChildRouter</a></td>
+        <td><p>This type extends the <a href="api/ngComponentRouter/type/Router"><code>Router</code></a>.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ngComponentRouter/type/RootRouter">RootRouter</a></td>
+        <td><p>This type extends the <a href="api/ngComponentRouter/type/Router"><code>Router</code></a>.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ngComponentRouter/type/ComponentInstruction">ComponentInstruction</a></td>
+        <td><p>A <code>ComponentInstruction</code> represents the route state for a single component. An <code>Instruction</code> is
+composed of a tree of these <code>ComponentInstruction</code>s.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ngComponentRouter/type/RouteDefinition">RouteDefinition</a></td>
+        <td><p>Each item in the <strong>RouteConfig</strong> for a <strong>Routing Component</strong> is an instance of
+this type. It can have the following properties:</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ngComponentRouter/type/RouteParams">RouteParams</a></td>
+        <td><p>A map of parameters for a given route, passed as part of the <a href="api/ngComponentRouter/type/ComponentInstruction"><code>ComponentInstruction</code></a> to
+the Lifecycle Hooks, such as <code>$routerOnActivate</code> and <code>$routerOnDeactivate</code>.</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+  
+  <div>
+    <h3 class="component-heading" id="directive">Directive</h3>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ngComponentRouter/directive/ngOutlet">ngOutlet</a></td>
+        <td><p>The directive that identifies where the <a href="api/ngComponentRouter/type/Router"><code>Router</code></a> should render its <strong>Components</strong>.</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+  
+  <div>
+    <h3 class="component-heading" id="service">Service</h3>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ngComponentRouter/service/$rootRouter">$rootRouter</a></td>
+        <td><p>The singleton instance of the <a href="api/ngComponentRouter/type/RootRouter"><code>RootRouter</code></a> type, which is associated
+with the top level <a href="api/ngComponentRouter/service/$routerRootComponent"><code>$routerRootComponent</code></a>.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ngComponentRouter/service/$routerRootComponent">$routerRootComponent</a></td>
+        <td><p>The top level <strong>Routing Component</strong> associated with the <a href="api/ngComponentRouter/service/$rootRouter"><code>$rootRouter</code></a>.</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+  
+</div>
+
+
+
+

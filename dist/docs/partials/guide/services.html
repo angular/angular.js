@@ -26,12 +26,10 @@ subsystem takes care of the rest.</p>
 <p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-example44', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-example46"></plnkr-opener>
 
   <div class="runnable-example"
-      path="examples/example-example44"
+      path="examples/example-example46"
       module="myServiceModule">
 
   
@@ -39,25 +37,25 @@ subsystem takes care of the rest.</p>
       name="index.html"
       language="html"
       type="html">
-      <pre><code>&lt;div id=&quot;simple&quot; ng-controller=&quot;MyController&quot;&gt;&#10;  &lt;p&gt;Let&#39;s try this simple notify service, injected into the controller...&lt;/p&gt;&#10;  &lt;input ng-init=&quot;message=&#39;test&#39;&quot; ng-model=&quot;message&quot; &gt;&#10;  &lt;button ng-click=&quot;callNotify(message);&quot;&gt;NOTIFY&lt;/button&gt;&#10;  &lt;p&gt;(you have to click 3 times to see an alert)&lt;/p&gt;&#10;&lt;/div&gt;</code></pre>
+      <pre><code>&lt;div id=&quot;simple&quot; ng-controller=&quot;MyController&quot;&gt;&#13;&#10;  &lt;p&gt;Let&#39;s try this simple notify service, injected into the controller...&lt;/p&gt;&#13;&#10;  &lt;input ng-init=&quot;message=&#39;test&#39;&quot; ng-model=&quot;message&quot; &gt;&#13;&#10;  &lt;button ng-click=&quot;callNotify(message);&quot;&gt;NOTIFY&lt;/button&gt;&#13;&#10;  &lt;p&gt;(you have to click 3 times to see an alert)&lt;/p&gt;&#13;&#10;&lt;/div&gt;&#13;</code></pre>
     </div>
   
     <div class="runnable-example-file" 
       name="script.js"
       language="js"
       type="js">
-      <pre><code>angular.&#10;module(&#39;myServiceModule&#39;, []).&#10; controller(&#39;MyController&#39;, [&#39;$scope&#39;,&#39;notify&#39;, function ($scope, notify) {&#10;   $scope.callNotify = function(msg) {&#10;     notify(msg);&#10;   };&#10; }]).&#10;factory(&#39;notify&#39;, [&#39;$window&#39;, function(win) {&#10;   var msgs = [];&#10;   return function(msg) {&#10;     msgs.push(msg);&#10;     if (msgs.length == 3) {&#10;       win.alert(msgs.join(&quot;\n&quot;));&#10;       msgs = [];&#10;     }&#10;   };&#10; }]);</code></pre>
+      <pre><code>angular.&#13;&#10;module(&#39;myServiceModule&#39;, []).&#13;&#10; controller(&#39;MyController&#39;, [&#39;$scope&#39;, &#39;notify&#39;, function ($scope, notify) {&#13;&#10;   $scope.callNotify = function(msg) {&#13;&#10;     notify(msg);&#13;&#10;   };&#13;&#10; }]).&#13;&#10;factory(&#39;notify&#39;, [&#39;$window&#39;, function(win) {&#13;&#10;   var msgs = [];&#13;&#10;   return function(msg) {&#13;&#10;     msgs.push(msg);&#13;&#10;     if (msgs.length == 3) {&#13;&#10;       win.alert(msgs.join(&quot;\n&quot;));&#13;&#10;       msgs = [];&#13;&#10;     }&#13;&#10;   };&#13;&#10; }]);&#13;</code></pre>
     </div>
   
     <div class="runnable-example-file" 
       name="protractor.js"
       type="protractor"
       language="js">
-      <pre><code>it(&#39;should test service&#39;, function() {&#10;  expect(element(by.id(&#39;simple&#39;)).element(by.model(&#39;message&#39;)).getAttribute(&#39;value&#39;))&#10;      .toEqual(&#39;test&#39;);&#10;});</code></pre>
+      <pre><code>it(&#39;should test service&#39;, function() {&#13;&#10;  expect(element(by.id(&#39;simple&#39;)).element(by.model(&#39;message&#39;)).getAttribute(&#39;value&#39;))&#13;&#10;      .toEqual(&#39;test&#39;);&#13;&#10;});&#13;</code></pre>
     </div>
   
 
-    <iframe class="runnable-example-frame" src="examples/example-example44/index.html" name="example-example44"></iframe>
+    <iframe class="runnable-example-frame" src="examples/example-example46/index.html" name="example-example46"></iframe>
   </div>
 </div>
 
@@ -72,7 +70,7 @@ injected into any component (controller, service, filter or directive) that spec
 on the service.</p>
 <h3 id="registering-services">Registering Services</h3>
 <p>Services are registered to modules via the <a href="api/ng/type/angular.Module">Module API</a>.
-Typically you use the <a href="api/ng/function/angular.module">Module#factory</a> API to register a service:</p>
+Typically you use the <a href="api/ng/type/angular.Module#factory">Module factory</a> API to register a service:</p>
 <pre><code class="lang-js">var myModule = angular.module(&#39;myModule&#39;, []);
 myModule.factory(&#39;serviceId&#39;, function() {
   var shinyNewServiceInstance;
@@ -119,9 +117,13 @@ batchModule.factory(&#39;batchLog&#39;, [&#39;$interval&#39;, &#39;$log&#39;, fu
  */
 batchModule.factory(&#39;routeTemplateMonitor&#39;, [&#39;$route&#39;, &#39;batchLog&#39;, &#39;$rootScope&#39;,
   function($route, batchLog, $rootScope) {
-    $rootScope.$on(&#39;$routeChangeSuccess&#39;, function() {
-      batchLog($route.current ? $route.current.template : null);
-    });
+    return {
+      startMonitoring: function() {
+        $rootScope.$on(&#39;$routeChangeSuccess&#39;, function() {
+          batchLog($route.current ? $route.current.template : null);
+        });
+      }
+    };
   }]);
 </code></pre>
 <p>In the example, note that:</p>
@@ -150,7 +152,7 @@ module&#39;s <code>config</code> function:</p>
 <p>The following is a unit test for the <code>notify</code> service from the <a href="guide/services#creating-services">Creating Angular Services</a> example above. The unit test example uses a Jasmine spy (mock) instead
 of a real browser alert.</p>
 <pre><code class="lang-js">var mock, notify;
-
+beforeEach(module(&#39;myServiceModule&#39;));
 beforeEach(function() {
   mock = {alert: jasmine.createSpy()};
 

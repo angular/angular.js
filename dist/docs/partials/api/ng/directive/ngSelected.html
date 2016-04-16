@@ -1,8 +1,8 @@
-<a href='https://github.com/angular/angular.js/edit/master/src/ng/directive/attrs.js?message=docs(ngSelected)%3A%20describe%20your%20change...#L268' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/directive/attrs.js?message=docs(ngSelected)%3A%20describe%20your%20change...#L259' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
 
 
 
-<a href='https://github.com/angular/angular.js/tree/master/src/ng/directive/attrs.js#L268' class='view-source pull-right btn btn-primary'>
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/directive/attrs.js#L259' class='view-source pull-right btn btn-primary'>
   <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
 </a>
 
@@ -20,15 +20,13 @@
 
 
 <div class="api-profile-description">
-  <p>The HTML specification does not require browsers to preserve the values of boolean attributes
-such as selected. (Their presence means true and their absence means false.)
-If we put an Angular interpolation expression into such an attribute then the
-binding information would be lost when the browser removes the attribute.
-The <code>ngSelected</code> directive solves this problem for the <code>selected</code> attribute.
-This complementary directive is not removed by the browser and so provides
-a permanent reliable place to store the binding information.</p>
+  <p>Sets the <code>selected</code> attribute on the element, if the expression inside <code>ngSelected</code> is truthy.</p>
+<p>A special directive is necessary because we cannot use interpolation inside the <code>selected</code>
+attribute. See the <a href="guide/interpolation">interpolation guide</a> for more info.</p>
 
 </div>
+
+
 
 
 
@@ -41,6 +39,7 @@ a permanent reliable place to store the binding information.</p>
   <ul>
     
     <li>This directive executes at priority level 100.</li>
+    
   </ul>
 
   
@@ -49,7 +48,7 @@ a permanent reliable place to store the binding information.</p>
   
     <ul>
     <li>as attribute:
-        <pre><code>&lt;OPTION&#10;  ng-selected=&quot;&quot;&gt;&#10;...&#10;&lt;/OPTION&gt;</code></pre>
+        <pre><code>&lt;OPTION&#10;  ng-selected=&quot;expression&quot;&gt;&#10;...&#10;&lt;/OPTION&gt;</code></pre>
       </li>
     
   </div>
@@ -95,19 +94,17 @@ a permanent reliable place to store the binding information.</p>
   <h2 id="example">Example</h2><p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-example56', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-example58"></plnkr-opener>
 
   <div class="runnable-example"
-      path="examples/example-example56">
+      path="examples/example-example58">
 
   
     <div class="runnable-example-file" 
       name="index.html"
       language="html"
       type="html">
-      <pre><code>Check me to select: &lt;input type=&quot;checkbox&quot; ng-model=&quot;selected&quot;&gt;&lt;br/&gt;&#10;&lt;select&gt;&#10;  &lt;option&gt;Hello!&lt;/option&gt;&#10;  &lt;option id=&quot;greet&quot; ng-selected=&quot;selected&quot;&gt;Greetings!&lt;/option&gt;&#10;&lt;/select&gt;</code></pre>
+      <pre><code>&lt;label&gt;Check me to select: &lt;input type=&quot;checkbox&quot; ng-model=&quot;selected&quot;&gt;&lt;/label&gt;&lt;br/&gt;&#10;&lt;select aria-label=&quot;ngSelected demo&quot;&gt;&#10;  &lt;option&gt;Hello!&lt;/option&gt;&#10;  &lt;option id=&quot;greet&quot; ng-selected=&quot;selected&quot;&gt;Greetings!&lt;/option&gt;&#10;&lt;/select&gt;</code></pre>
     </div>
   
     <div class="runnable-example-file" 
@@ -118,7 +115,7 @@ a permanent reliable place to store the binding information.</p>
     </div>
   
 
-    <iframe class="runnable-example-frame" src="examples/example-example56/index.html" name="example-example56"></iframe>
+    <iframe class="runnable-example-frame" src="examples/example-example58/index.html" name="example-example58"></iframe>
   </div>
 </div>
 

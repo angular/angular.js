@@ -1,20 +1,11 @@
 (function(angular) {
   'use strict';
-angular.
- module('myServiceModule', []).
-  controller('MyController', ['$scope','notify', function ($scope, notify) {
-    $scope.callNotify = function(msg) {
-      notify(msg);
-    };
-  }]).
- factory('notify', ['$window', function(win) {
-    var msgs = [];
-    return function(msg) {
-      msgs.push(msg);
-      if (msgs.length == 3) {
-        win.alert(msgs.join("\n"));
-        msgs = [];
-      }
-    };
+angular.module('scopeExample', [])
+  .controller('GreetController', ['$scope', '$rootScope', function($scope, $rootScope) {
+    $scope.name = 'World';
+    $rootScope.department = 'Angular';
+  }])
+  .controller('ListController', ['$scope', function($scope) {
+    $scope.names = ['Igor', 'Misko', 'Vojta'];
   }]);
 })(window.angular);

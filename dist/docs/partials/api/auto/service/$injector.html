@@ -1,8 +1,8 @@
-<a href='https://github.com/angular/angular.js/edit/master/src/auto/injector.js?message=docs($injector)%3A%20describe%20your%20change...#L121' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+<a href='https://github.com/angular/angular.js/edit/master/src/auto/injector.js?message=docs($injector)%3A%20describe%20your%20change...#L126' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
 
 
 
-<a href='https://github.com/angular/angular.js/tree/master/src/auto/injector.js#L121' class='view-source pull-right btn btn-primary'>
+<a href='https://github.com/angular/angular.js/tree/master/src/auto/injector.js#L126' class='view-source pull-right btn btn-primary'>
   <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
 </a>
 
@@ -62,6 +62,8 @@ argument names.</p>
 
 
 
+
+
 <div>
   
 
@@ -73,7 +75,7 @@ argument names.</p>
 <h2>Methods</h2>
 <ul class="methods">
   <li id="get">
-    <h3><p><code>get(name, caller);</code></p>
+    <h3><p><code>get(name, [caller]);</code></p>
 
 </h3>
     <div><p>Return an instance of the service.</p>
@@ -112,7 +114,7 @@ argument names.</p>
       <td>
         caller
         
-        
+        <div><em>(optional)</em></div>
       </td>
       <td>
         <a href="" class="label type-hint type-hint-string">string</a>
@@ -171,11 +173,11 @@ argument names.</p>
         
       </td>
       <td>
-        <a href="" class="label type-hint type-hint-object">!Function</a>
+        <a href="" class="label type-hint type-hint-function">function()</a><a href="" class="label type-hint type-hint-array">Array.&lt;(string|function())&gt;</a>
       </td>
       <td>
-        <p>The function to invoke. Function parameters are injected according to the
-  <a href="guide/di">$inject Annotation</a> rules.</p>
+        <p>The injectable function to invoke. Function parameters are
+  injected according to the <a href="guide/di">$inject Annotation</a> rules.</p>
 
         
       </td>

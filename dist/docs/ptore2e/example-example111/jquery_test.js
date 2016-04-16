@@ -5,9 +5,16 @@ describe("", function() {
     browser.get("build/docs/examples/example-example111/index-jquery.html");
   });
   
-it('should display the greeting in the input box', function() {
- element(by.model('greeting')).sendKeys('Hello, E2E Tests');
- // If we click the button it will block the test runner
- // element(':button').click();
+describe('SCE doc demo', function() {
+  it('should sanitize untrusted values', function() {
+    expect(element.all(by.css('.htmlComment')).first().getInnerHtml())
+        .toBe('<span>Is <i>anyone</i> reading this?</span>');
+  });
+
+  it('should NOT sanitize explicitly trusted values', function() {
+    expect(element(by.id('explicitlyTrustedHtml')).getInnerHtml()).toBe(
+        '<span onmouseover="this.textContent=&quot;Explicitly trusted HTML bypasses ' +
+        'sanitization.&quot;">Hover over this text.</span>');
+  });
 });
 });

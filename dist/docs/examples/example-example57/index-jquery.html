@@ -12,9 +12,7 @@
   
 </head>
 <body ng-app="">
-  Check me check multiple: <input type="checkbox" ng-model="open"><br/>
-<details id="details" ng-open="open">
-   <summary>Show/Hide me</summary>
-</details>
+  <label>Check me to make text readonly: <input type="checkbox" ng-model="checked"></label><br/>
+<input type="text" ng-readonly="checked" value="I'm Angular" aria-label="Readonly field" />
 </body>
 </html>

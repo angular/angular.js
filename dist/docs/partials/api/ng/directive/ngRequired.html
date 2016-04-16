@@ -1,0 +1,104 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/directive/validators.js?message=docs(ngRequired)%3A%20describe%20your%20change...#L2' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/directive/validators.js#L2' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">ngRequired</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - directive in module <a href="api/ng">ng</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>ngRequired adds the required <a href="api/ng/type/ngModel.NgModelController#$validators"><code>validator</code></a> to <a href="api/ng/directive/ngModel"><code>ngModel</code></a>.
+It is most often used for <a href="api/ng/directive/input"><code>input</code></a> and <a href="api/ng/directive/select"><code>select</code></a> controls, but can also be
+applied to custom controls.</p>
+<p>The directive sets the <code>required</code> attribute on the element if the Angular expression inside
+<code>ngRequired</code> evaluates to true. A special directive for setting <code>required</code> is necessary because we
+cannot use interpolation inside <code>required</code>. See the <a href="guide/interpolation">interpolation guide</a>
+for more info.</p>
+<p>The validator will set the <code>required</code> error key to true if the <code>required</code> attribute is set and
+calling <a href="api/ng/type/ngModel.NgModelController#$isEmpty"><code>NgModelController.$isEmpty</code></a> with the
+<a href="api/ng/type/ngModel.NgModelController#$viewValue"><code>ngModel.$viewValue</code></a> returns <code>true</code>. For example, the
+<code>$isEmpty()</code> implementation for <code>input[text]</code> checks the length of the <code>$viewValue</code>. When developing
+custom controls, <code>$isEmpty()</code> can be overwritten to account for a $viewValue that is not string-based.</p>
+
+</div>
+
+
+
+
+
+
+<div>
+  
+
+  
+  <h2>Directive Info</h2>
+  <ul>
+    
+    <li>This directive executes at priority level 0.</li>
+    
+  </ul>
+
+  
+  <h2 id="usage">Usage</h2>
+  <div class="usage">
+  
+    <ul>
+    <li>as attribute:
+        <pre><code>&lt;ANY&gt;&#10;...&#10;&lt;/ANY&gt;</code></pre>
+      </li>
+    
+  </div>
+  
+  
+
+
+  
+  <h2 id="example">Example</h2><p>
+
+<div>
+  <plnkr-opener example-path="examples/example-ngRequiredDirective"></plnkr-opener>
+
+  <div class="runnable-example"
+      path="examples/example-ngRequiredDirective"
+      name="ngRequiredDirective"
+      module="ngRequiredExample">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;script&gt;&#10;  angular.module(&#39;ngRequiredExample&#39;, [])&#10;    .controller(&#39;ExampleController&#39;, [&#39;$scope&#39;, function($scope) {&#10;      $scope.required = true;&#10;    }]);&#10;&lt;/script&gt;&#10;&lt;div ng-controller=&quot;ExampleController&quot;&gt;&#10;  &lt;form name=&quot;form&quot;&gt;&#10;    &lt;label for=&quot;required&quot;&gt;Toggle required: &lt;/label&gt;&#10;    &lt;input type=&quot;checkbox&quot; ng-model=&quot;required&quot; id=&quot;required&quot; /&gt;&#10;    &lt;br&gt;&#10;    &lt;label for=&quot;input&quot;&gt;This input must be filled if `required` is true: &lt;/label&gt;&#10;    &lt;input type=&quot;text&quot; ng-model=&quot;model&quot; id=&quot;input&quot; name=&quot;input&quot; ng-required=&quot;required&quot; /&gt;&lt;br&gt;&#10;    &lt;hr&gt;&#10;    required error set? = &lt;code&gt;{{form.input.$error.required}}&lt;/code&gt;&lt;br&gt;&#10;    model = &lt;code&gt;{{model}}&lt;/code&gt;&#10;  &lt;/form&gt;&#10;&lt;/div&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="protractor.js"
+      type="protractor"
+      language="js">
+      <pre><code>var required = element(by.binding(&#39;form.input.$error.required&#39;));&#10;var model = element(by.binding(&#39;model&#39;));&#10;var input = element(by.id(&#39;input&#39;));&#10;&#10;it(&#39;should set the required error&#39;, function() {&#10;  expect(required.getText()).toContain(&#39;true&#39;);&#10;&#10;  input.sendKeys(&#39;123&#39;);&#10;  expect(required.getText()).not.toContain(&#39;true&#39;);&#10;  expect(model.getText()).toContain(&#39;123&#39;);&#10;});</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-ngRequiredDirective/index.html" name="example-ngRequiredDirective"></iframe>
+  </div>
+</div>
+
+
+</p>
+
+</div>
+
+

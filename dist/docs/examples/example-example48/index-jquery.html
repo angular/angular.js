@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <title>Example - example-example48-jquery</title>
-  <link href="style.css" rel="stylesheet" type="text/css">
   
 
   <script src="../../components/jquery-2.1.1/jquery.js"></script>
@@ -13,10 +12,9 @@
 
   
 </head>
-<body ng-app="anchorScrollExample">
-  <div id="scrollArea" ng-controller="ScrollController">
-  <a ng-click="gotoBottom()">Go to bottom</a>
-  <a id="bottom"></a> You're at the bottom!
+<body ng-app="ngAppDemo">
+  <div ng-controller="ngAppDemoController">
+  I can add: {{a}} + {{b}} =  {{ a+b }}
 </div>
 </body>
 </html>

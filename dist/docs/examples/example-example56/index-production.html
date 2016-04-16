@@ -5,16 +5,13 @@
   <title>Example - example-example56-production</title>
   
 
-  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/null/angular.min.js"></script>
   
 
   
 </head>
 <body ng-app="">
-  Check me to select: <input type="checkbox" ng-model="selected"><br/>
-<select>
-  <option>Hello!</option>
-  <option id="greet" ng-selected="selected">Greetings!</option>
-</select>
+  <label>Check me to check both: <input type="checkbox" ng-model="master"></label><br/>
+<input id="checkSlave" type="checkbox" ng-checked="master" aria-label="Slave input">
 </body>
 </html>

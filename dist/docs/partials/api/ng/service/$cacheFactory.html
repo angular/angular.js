@@ -40,6 +40,8 @@ expect(cache.info()).toEqual({id: &#39;cacheId&#39;, size: 2});
 
 
 
+
+
 <div>
   
 
@@ -218,12 +220,10 @@ it.</li>
   <h2 id="example">Example</h2><p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-example50', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-example52"></plnkr-opener>
 
   <div class="runnable-example"
-      path="examples/example-example50"
+      path="examples/example-example52"
       module="cacheExampleApp">
 
   
@@ -238,7 +238,7 @@ it.</li>
       name="script.js"
       language="js"
       type="js">
-      <pre><code>angular.module(&#39;cacheExampleApp&#39;, []).&#10;controller(&#39;CacheController&#39;, [&#39;$scope&#39;, &#39;$cacheFactory&#39;, function($scope, $cacheFactory) {&#10;  $scope.keys = [];&#10;  $scope.cache = $cacheFactory(&#39;cacheId&#39;);&#10;  $scope.put = function(key, value) {&#10;    if ($scope.cache.get(key) === undefined) {&#10;      $scope.keys.push(key);&#10;    }&#10;    $scope.cache.put(key, value === undefined ? null : value);&#10;  };&#10;}]);</code></pre>
+      <pre><code>angular.module(&#39;cacheExampleApp&#39;, []).&#10;controller(&#39;CacheController&#39;, [&#39;$scope&#39;, &#39;$cacheFactory&#39;, function($scope, $cacheFactory) {&#10;  $scope.keys = [];&#10;  $scope.cache = $cacheFactory(&#39;cacheId&#39;);&#10;  $scope.put = function(key, value) {&#10;    if (angular.isUndefined($scope.cache.get(key))) {&#10;      $scope.keys.push(key);&#10;    }&#10;    $scope.cache.put(key, angular.isUndefined(value) ? null : value);&#10;  };&#10;}]);</code></pre>
     </div>
   
     <div class="runnable-example-file" 
@@ -249,7 +249,7 @@ it.</li>
     </div>
   
 
-    <iframe class="runnable-example-frame" src="examples/example-example50/index.html" name="example-example50"></iframe>
+    <iframe class="runnable-example-frame" src="examples/example-example52/index.html" name="example-example52"></iframe>
   </div>
 </div>
 

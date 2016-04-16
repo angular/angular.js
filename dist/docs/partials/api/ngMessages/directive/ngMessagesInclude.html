@@ -1,0 +1,105 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ngMessages/messages.js?message=docs(ngMessagesInclude)%3A%20describe%20your%20change...#L514' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ngMessages/messages.js#L514' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">ngMessagesInclude</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - directive in module <a href="api/ngMessages">ngMessages</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p><code>ngMessagesInclude</code> is a directive with the purpose to import existing ngMessage template
+code from a remote template and place the downloaded template code into the exact spot
+that the ngMessagesInclude directive is placed within the ngMessages container. This allows
+for a series of pre-defined messages to be reused and also allows for the developer to
+determine what messages are overridden due to the placement of the ngMessagesInclude directive.</p>
+
+</div>
+
+
+
+
+
+
+<div>
+  
+
+  
+  <h2>Directive Info</h2>
+  <ul>
+    <li>This directive creates new scope.</li>
+    <li>This directive executes at priority level 0.</li>
+    
+  </ul>
+
+  
+  <h2 id="usage">Usage</h2>
+  <div class="usage">
+  
+    <pre><code class="lang-html">&lt;!-- using attribute directives --&gt;
+&lt;ANY ng-messages=&quot;expression&quot; role=&quot;alert&quot;&gt;
+  &lt;ANY ng-messages-include=&quot;remoteTplString&quot;&gt;...&lt;/ANY&gt;
+&lt;/ANY&gt;
+
+&lt;!-- or by using element directives --&gt;
+&lt;ng-messages for=&quot;expression&quot; role=&quot;alert&quot;&gt;
+  &lt;ng-messages-include src=&quot;expressionValue1&quot;&gt;...&lt;/ng-messages-include&gt;
+&lt;/ng-messages&gt;
+</code></pre>
+<p><a href="api/ngMessages">Click here</a> to learn more about <code>ngMessages</code> and <code>ngMessage</code>.</p>
+
+  
+  </div>
+  
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        ngMessagesInclude
+        | src
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>a string value corresponding to the remote template.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
+  
+
+
+  
+</div>
+
+

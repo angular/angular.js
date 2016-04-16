@@ -1,8 +1,8 @@
-<a href='https://github.com/angular/angular.js/edit/master/src/jqLite.js?message=docs(angular.element)%3A%20describe%20your%20change...#L14' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+<a href='https://github.com/angular/angular.js/edit/master/src/jqLite.js?message=docs(angular.element)%3A%20describe%20your%20change...#L25' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
 
 
 
-<a href='https://github.com/angular/angular.js/tree/master/src/jqLite.js#L14' class='view-source pull-right btn btn-primary'>
+<a href='https://github.com/angular/angular.js/tree/master/src/jqLite.js#L25' class='view-source pull-right btn btn-primary'>
   <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
 </a>
 
@@ -23,14 +23,19 @@
   <p>Wraps a raw DOM element or HTML string as a <a href="http://jquery.com">jQuery</a> element.</p>
 <p>If jQuery is available, <code>angular.element</code> is an alias for the
 <a href="http://api.jquery.com/jQuery/">jQuery</a> function. If jQuery is not available, <code>angular.element</code>
-delegates to Angular&#39;s built-in subset of jQuery, called &quot;jQuery lite&quot; or &quot;jqLite.&quot;</p>
-<div class="alert alert-success">jqLite is a tiny, API-compatible subset of jQuery that allows
-Angular to manipulate the DOM in a cross-browser compatible way. <strong>jqLite</strong> implements only the most
-commonly needed functionality with the goal of having a very small footprint.</div>
+delegates to Angular&#39;s built-in subset of jQuery, called &quot;jQuery lite&quot; or <strong>jqLite</strong>.</p>
+<p>jqLite is a tiny, API-compatible subset of jQuery that allows
+Angular to manipulate the DOM in a cross-browser compatible way. jqLite implements only the most
+commonly needed functionality with the goal of having a very small footprint.</p>
+<p>To use <code>jQuery</code>, simply ensure it is loaded before the <code>angular.js</code> file. You can also use the
+<a href="api/ng/directive/ngJq"><code>ngJq</code></a> directive to specify that jqlite should be used over jQuery, or to use a
+specific version of jQuery if multiple versions exist on the page.</p>
+<div class="alert alert-info"><strong>Note:</strong> All element references in Angular are always wrapped with jQuery or
+jqLite (such as the element argument in a directive&#39;s compile / link function). They are never raw DOM references.</div>
 
-<p>To use jQuery, simply load it before <code>DOMContentLoaded</code> event fired.</p>
-<div class="alert"><strong>Note:</strong> all element references in Angular are always wrapped with jQuery or
-jqLite; they are never raw DOM references.</div>
+<div class="alert alert-warning"><strong>Note:</strong> Keep in mind that this function will not find elements
+by tag name / CSS selector. For lookups by tag name, try instead <code>angular.element(document).find(...)</code>
+or <code>$document.find()</code>, or use the standard DOM APIs, e.g. <code>document.querySelectorAll()</code>.</div>
 
 <h2 id="angular-s-jqlite">Angular&#39;s jqLite</h2>
 <p>jqLite provides only the following jQuery methods:</p>
@@ -43,7 +48,8 @@ jqLite; they are never raw DOM references.</div>
 <li><a href="http://api.jquery.com/children/"><code>children()</code></a> - Does not support selectors</li>
 <li><a href="http://api.jquery.com/clone/"><code>clone()</code></a></li>
 <li><a href="http://api.jquery.com/contents/"><code>contents()</code></a></li>
-<li><a href="http://api.jquery.com/css/"><code>css()</code></a> - Only retrieves inline-styles, does not call <code>getComputedStyle()</code></li>
+<li><a href="http://api.jquery.com/css/"><code>css()</code></a> - Only retrieves inline-styles, does not call <code>getComputedStyle()</code>.
+As a setter, does not convert numbers to strings or append &#39;px&#39;, and also does not have automatic property prefixing.</li>
 <li><a href="http://api.jquery.com/data/"><code>data()</code></a></li>
 <li><a href="http://api.jquery.com/detach/"><code>detach()</code></a></li>
 <li><a href="http://api.jquery.com/empty/"><code>empty()</code></a></li>
@@ -53,7 +59,7 @@ jqLite; they are never raw DOM references.</div>
 <li><a href="http://api.jquery.com/html/"><code>html()</code></a></li>
 <li><a href="http://api.jquery.com/next/"><code>next()</code></a> - Does not support selectors</li>
 <li><a href="http://api.jquery.com/on/"><code>on()</code></a> - Does not support namespaces, selectors or eventData</li>
-<li><a href="http://api.jquery.com/off/"><code>off()</code></a> - Does not support namespaces or selectors</li>
+<li><a href="http://api.jquery.com/off/"><code>off()</code></a> - Does not support namespaces, selectors or event object as parameter</li>
 <li><a href="http://api.jquery.com/one/"><code>one()</code></a> - Does not support namespaces or selectors</li>
 <li><a href="http://api.jquery.com/parent/"><code>parent()</code></a> - Does not support selectors</li>
 <li><a href="http://api.jquery.com/prepend/"><code>prepend()</code></a></li>
@@ -67,7 +73,7 @@ jqLite; they are never raw DOM references.</div>
 <li><a href="http://api.jquery.com/text/"><code>text()</code></a></li>
 <li><a href="http://api.jquery.com/toggleClass/"><code>toggleClass()</code></a></li>
 <li><a href="http://api.jquery.com/triggerHandler/"><code>triggerHandler()</code></a> - Passes a dummy event object to handlers.</li>
-<li><a href="http://api.jquery.com/unbind/"><code>unbind()</code></a> - Does not support namespaces</li>
+<li><a href="http://api.jquery.com/unbind/"><code>unbind()</code></a> - Does not support namespaces or event object as parameter</li>
 <li><a href="http://api.jquery.com/val/"><code>val()</code></a></li>
 <li><a href="http://api.jquery.com/wrap/"><code>wrap()</code></a></li>
 </ul>
@@ -96,6 +102,15 @@ Requires <a href="guide/production#disabling-debug-data">Debug Data</a> to be en
 <li><code>inheritedData()</code> - same as <code>data()</code>, but walks up the DOM until a value is found or the top
 parent element is reached.</li>
 </ul>
+
+</div>
+
+
+
+<h2 id="known-issues">Known Issues</h2>
+<div class="known-issue">
+  <p>You cannot spy on <code>angular.element</code> if you are using Jasmine version 1.x. See
+<a href="https://github.com/angular/angular.js/issues/14251">https://github.com/angular/angular.js/issues/14251</a> for more information.</p>
 
 </div>
 

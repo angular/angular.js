@@ -1,0 +1,116 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/Angular.js?message=docs(ngJq)%3A%20describe%20your%20change...#L1095' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/Angular.js#L1095' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">ngJq</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - directive in module <a href="api/ng">ng</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Use this directive to force the angular.element library.  This should be
+used to force either jqLite by leaving ng-jq blank or setting the name of
+the jquery variable under window (eg. jQuery).</p>
+<p>Since angular looks for this directive when it is loaded (doesn&#39;t wait for the
+DOMContentLoaded event), it must be placed on an element that comes before the script
+which loads angular. Also, only the first instance of <code>ng-jq</code> will be used and all
+others ignored.</p>
+
+</div>
+
+
+
+
+
+
+<div>
+  
+
+  
+  <h2>Directive Info</h2>
+  <ul>
+    
+    <li>This directive executes at priority level 0.</li>
+    
+  </ul>
+
+  
+  <h2 id="usage">Usage</h2>
+  <div class="usage">
+  
+    <ul>
+    <li>as attribute:
+        <pre><code>&lt;ANY&#10;  [ng-jq=&quot;string&quot;]&gt;&#10;...&#10;&lt;/ANY&gt;</code></pre>
+      </li>
+    
+  </div>
+  
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        ngJq
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>the name of the library available under <code>window</code>
+to be used for angular.element</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
+  
+
+
+  
+  <h2 id="example">Example</h2><p>This example shows how to force jqLite using the <code>ngJq</code> directive to the <code>html</code> tag.</p>
+<pre><code class="lang-html">&lt;!doctype html&gt;
+&lt;html ng-app ng-jq&gt;
+...
+...
+&lt;/html&gt;
+</code></pre>
+<p>This example shows how to use a jQuery based library of a different name.
+The library name must be available at the top most &#39;window&#39;.</p>
+<pre><code class="lang-html">&lt;!doctype html&gt;
+&lt;html ng-app ng-jq=&quot;jQueryLib&quot;&gt;
+...
+...
+&lt;/html&gt;
+</code></pre>
+
+</div>
+
+

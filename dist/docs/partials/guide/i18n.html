@@ -11,7 +11,10 @@ application means providing translations and localized formats for the abstracte
 <h2 id="how-does-angular-support-i18n-l10n-">How does Angular support i18n/l10n?</h2>
 <p>Angular supports i18n/l10n for <a href="api/ng/filter/date">date</a>, <a href="api/ng/filter/number">number</a> and
 <a href="api/ng/filter/currency">currency</a> filters.</p>
-<p>Additionally, Angular supports localizable pluralization support through the <a href="api/ng/directive/ngPluralize"><code>ngPluralize</code> directive</a>.</p>
+<p>Localizable pluralization is supported via the <a href="api/ng/directive/ngPluralize"><code>ngPluralize</code>
+directive</a>.  Additionally, you can use <a href="guide/i18n#messageformat-extensions">MessageFormat extensions</a> to
+<code>$interpolate</code> for localizable pluralization and gender support in all interpolations via the
+<code>ngMessageFormat</code> module.</p>
 <p>All localizable Angular components depend on locale-specific rule sets managed by the <a href="api/ng/service/$locale"><code>$locale</code> service</a>.</p>
 <p>There a few examples that showcase how to use Angular filters with various locale rule sets in the
 <a href="https://github.com/angular/angular.js/tree/master/i18n/e2e"><code>i18n/e2e</code> directory</a> of the Angular
@@ -89,5 +92,211 @@ as expected even when their contents vary greatly in content size.</p>
 application will show different time information depending on the time zone settings of the
 computer that the application is running on. Neither JavaScript nor Angular currently supports
 displaying the date with a timezone specified by the developer.</p>
+<p><a name="MessageFormat"></a></p>
+<h2 id="messageformat-extensions">MessageFormat extensions</h2>
+<p>You can write localizable plural and gender based messages in Angular interpolation expressions and
+<code>$interpolate</code> calls.</p>
+<p>This syntax extension is provided by way of the <code>ngMessageFormat</code> module that your application can
+depend upon (shipped separately as <code>angular-message-format.min.js</code> and <code>angular-message-format.js</code>.)
+A current limitation of the <code>ngMessageFormat</code> module, is that it does not support redefining the
+<code>$interpolate</code> start and end symbols. Only the default <code>{{</code> and <code>}}</code> are allowed.</p>
+<p>The syntax extension is based on a subset of the ICU MessageFormat syntax that covers plurals and
+gender selections.  Please refer to the links in the “Further Reading” section at the bottom of this
+section.</p>
+<p>You may find it helpful to play with the following example as you read the explanations below:</p>
+<p>
+
+<div>
+  <plnkr-opener example-path="examples/example-message-format-example"></plnkr-opener>
+
+  <div class="runnable-example"
+      path="examples/example-message-format-example"
+      name="message-format-example"
+      module="messageFormatExample"
+      deps="angular-message-format.js">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;div ng-controller=&quot;ckCtrl&quot;&gt;&#13;&#10;  &lt;b&gt;Set number of recipients&lt;/b&gt;&#13;&#10;  &lt;button ng-click=&quot;setNumRecipients(0)&quot;&gt;None&lt;/button&gt;&#13;&#10;  &lt;button ng-click=&quot;setNumRecipients(1)&quot;&gt;One&lt;/button&gt;&#13;&#10;  &lt;button ng-click=&quot;setNumRecipients(2)&quot;&gt;Two&lt;/button&gt;&#13;&#10;  &lt;button ng-click=&quot;setNumRecipients(3)&quot;&gt;Three&lt;/button&gt;&#13;&#10;&#10;&#10;  &lt;br&gt;&lt;br&gt;&#13;&#10;  &lt;b&gt;Sender&#39;s&lt;/b&gt; name: &lt;input ng-model=&quot;sender.name&quot;&gt; &amp;nbsp;&amp;nbsp;&#13;&#10;&#10;  &lt;br&gt;&lt;br&gt;&lt;b&gt;Recipients&lt;/b&gt;&lt;br&gt;&#13;&#10;  &lt;div ng-repeat=&quot;recipient in recipients&quot;&gt;&#13;&#10;    Name: &lt;input ng-model=&quot;recipient.name&quot;&gt; &amp;nbsp;&amp;nbsp;&#13;&#10;    Gender: &lt;button ng-click=&quot;setGender(recipient, &#39;male&#39;)&quot;&gt;male&lt;/button&gt;&#13;&#10;            &lt;button ng-click=&quot;setGender(recipient, &#39;female&#39;)&quot;&gt;female&lt;/button&gt;&#13;&#10;            &lt;button ng-click=&quot;setGender(recipient, &#39;other&#39;)&quot;&gt;other&lt;/button&gt;&#13;&#10;  &lt;/div&gt;&#13;&#10;&#10;  &lt;br&gt;&lt;br&gt;&lt;b&gt;Message&lt;/b&gt;&lt;br&gt;&#13;&#10;  {{recipients.length, plural, offset:1&#13;&#10;      =0 {You ({{sender.name}}) gave no gifts}&#13;&#10;      =1 { {{ recipients[0].gender, select,&#13;&#10;                male {You ({{sender.name}}) gave him ({{recipients[0].name}}) a gift.}&#13;&#10;                female {You ({{sender.name}}) gave her ({{recipients[0].name}}) a gift.}&#13;&#10;                other {You ({{sender.name}}) gave them ({{recipients[0].name}}) a gift.}&#13;&#10;            }}&#13;&#10;         }&#13;&#10;      one { {{ recipients[0].gender, select,&#13;&#10;                male {You ({{sender.name}}) gave him ({{recipients[0].name}}) and one other person a gift.}&#13;&#10;                female {You ({{sender.name}}) gave her ({{recipients[0].name}}) and one other person a gift.}&#13;&#10;                other {You ({{sender.name}}) gave them ({{recipients[0].name}}) and one other person a gift.}&#13;&#10;            }}&#13;&#10;         }&#13;&#10;         other {You ({{sender.name}}) gave {{recipients.length}} people gifts. }&#13;&#10;  }}&#13;&#10;&#10;  &lt;br&gt;&lt;br&gt;&lt;b&gt;In an attribute&lt;/b&gt;&lt;br&gt;&#13;&#10;  &lt;div attrib=&quot;{{recipients.length, plural, offset:1&#13;&#10;                  =0 {You ({{sender.name}}) gave no gifts}&#13;&#10;                  =1 { {{ recipients[0].gender, select,&#13;&#10;                            male {You ({{sender.name}}) gave him ({{recipients[0].name}}) a gift.}&#13;&#10;                            female {You ({{sender.name}}) gave her ({{recipients[0].name}}) a gift.}&#13;&#10;                            other {You ({{sender.name}}) gave them ({{recipients[0].name}}) a gift.}&#13;&#10;                        }}&#13;&#10;                     }&#13;&#10;                  one { {{ recipients[0].gender, select,&#13;&#10;                            male {You ({{sender.name}}) gave him ({{recipients[0].name}}) and one other person a gift.}&#13;&#10;                            female {You ({{sender.name}}) gave her ({{recipients[0].name}}) and one other person a gift.}&#13;&#10;                            other {You ({{sender.name}}) gave them ({{recipients[0].name}}) and one other person a gift.}&#13;&#10;                        }}&#13;&#10;                     }&#13;&#10;                     other {You ({{sender.name}}) gave {{recipients.length}} people gifts. }&#13;&#10;               }}&quot;&gt;&#13;&#10;      This div has an attribute interpolated with messageformat.  Use the DOM inspector to check it out.&#13;&#10;  &lt;/div&gt;&#13;&#10;&lt;/div&gt;&#13;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="app.js"
+      language="js"
+      type="js">
+      <pre><code>function Person(name, gender) {&#13;&#10;  this.name = name;&#13;&#10;  this.gender = gender;&#13;&#10;}&#13;&#10;&#10;angular.module(&#39;messageFormatExample&#39;, [&#39;ngMessageFormat&#39;])&#13;&#10;  .controller(&#39;ckCtrl&#39;, function ($scope, $injector, $parse) {&#13;&#10;    var people = [ new Person(&quot;Alice&quot;, &quot;female&quot;),&#13;&#10;                   new Person(&quot;Bob&quot;, &quot;male&quot;),&#13;&#10;                   new Person(&quot;Charlie&quot;, &quot;male&quot;) ];&#13;&#10;&#10;    $scope.sender = new Person(&quot;Harry Potter&quot;, &quot;male&quot;);&#13;&#10;    $scope.recipients = people.slice();&#13;&#10;&#10;    $scope.setNumRecipients = function(n) {&#13;&#10;      n = n &gt; people.length ? people.length : n;&#13;&#10;      $scope.recipients = people.slice(0, n);&#13;&#10;    };&#13;&#10;&#10;    $scope.setGender = function(person, gender) {&#13;&#10;      person.gender = gender;&#13;&#10;    };&#13;&#10;  });&#13;</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-message-format-example/index.html" name="example-message-format-example"></iframe>
+  </div>
+</div>
+
+
+</p>
+<h3 id="plural-syntax">Plural Syntax</h3>
+<p>The syntax for plural based message selection looks like the following:</p>
+<pre><code class="lang-text">{{NUMERIC_EXPRESSION, plural,
+    =0 {MESSAGE_WHEN_VALUE_IS_0}
+    =1 {MESSAGE_WHEN_VALUE_IS_1}
+    =2 {MESSAGE_WHEN_VALUE_IS_2}
+    =3 {MESSAGE_WHEN_VALUE_IS_3}
+    ...
+    zero {MESSAGE_WHEN_PLURAL_CATEGORY_IS_ZERO}
+    one {MESSAGE_WHEN_PLURAL_CATEGORY_IS_ONE}
+    two {MESSAGE_WHEN_PLURAL_CATEGORY_IS_TWO}
+    few {MESSAGE_WHEN_PLURAL_CATEGORY_IS_FEW}
+    many {MESSAGE_WHEN_PLURAL_CATEGORY_IS_MANY}
+    other {MESSAGE_WHEN_THERE_IS_NO_MATCH}
+}}
+</code></pre>
+<p>Please note that whitespace (including newline) is generally insignificant except as part of the
+actual message text that occurs in curly braces.  Whitespace is generally used to aid readability.</p>
+<p>Here, <code>NUMERIC_EXPRESSION</code> is an expression that evaluates to a numeric value based on which the
+displayed message should change based on pluralization rules.</p>
+<p>Following the Angular expression, you would denote the plural extension syntax by the <code>, plural,</code>
+syntax element.  The spaces there are optional.</p>
+<p>This is followed by a list of selection keyword and corresponding message pairs.  The &quot;other&quot;
+keyword and corresponding message are <strong>required</strong> but you may have as few or as many of the other
+categories as you need.</p>
+<h4 id="selection-keywords">Selection Keywords</h4>
+<p>The selection keywords can be either exact matches or language dependent <a href="http://unicode.org/repos/cldr-tmp/trunk/diff/supplemental/language_plural_rules.html">plural
+categories</a>.</p>
+<p>Exact matches are written as the equal sign followed by the exact value. <code>=0</code>, <code>=1</code>, <code>=2</code> and
+<code>=123</code> are all examples of exact matches.  Note that there should be no space between the equal sign
+and the numeric value.</p>
+<p>Plural category matches are single words corresponding to the <a href="http://unicode.org/repos/cldr-tmp/trunk/diff/supplemental/language_plural_rules.html">plural
+categories</a> of
+the CLDR plural category spec.  These categories vary by locale.  The &quot;en&quot; (English) locale, for
+example, defines just &quot;one&quot; and &quot;other&quot; while the &quot;ga&quot; (Irish) locale defines &quot;one&quot;, &quot;two&quot;, &quot;few&quot;,
+&quot;many&quot; and &quot;other&quot;.  Typically, you would just write the categories for your language.  During
+translation, the translators will add or remove more categories depending on the target locale.</p>
+<p>Exact matches always win over keyword matches.  Therefore, if you define both <code>=0</code> and <code>zero</code>, when
+the value of the expression is zero, the <code>=0</code> message is the one that will be selected.  (The
+duplicate keyword categories are helpful when used with the optional <code>offset</code> syntax described
+later.)</p>
+<h4 id="messages">Messages</h4>
+<p>Messages immediately follow a selection keyword and are optionally preceded by whitespace.  They are
+written in single curly braces (<code>{}</code>).  They may contain Angular interpolation syntax inside them.
+In addition, the <code>#</code> symbol is a placeholder for the actual numeric value of the expression.</p>
+<h3 id="simple-plural-example">Simple plural example</h3>
+<pre><code class="lang-text">{{numMessages, plural,
+      =0 {You have no new messages}
+      =1 {You have one new message}
+   other {You have # new messages}
+}}
+</code></pre>
+<p>Because these messages can themselves contain Angular expressions, you could also write this as
+follows:</p>
+<pre><code class="lang-text">{{numMessages, plural,
+      =0 {You have no new messages}
+      =1 {You have one new message}
+   other {You have {{numMessages}} new messages}
+}}
+</code></pre>
+<h3 id="plural-syntax-with-optional-offset-">Plural syntax with optional <code>offset</code></h3>
+<p>The plural syntax supports an optional <code>offset</code> syntax that is used in matching.  It&#39;s simpler to
+explain this with an example.</p>
+<pre><code class="lang-text">{{recipients.length, plural, offset:1
+    =0    {You gave no gifts}
+    =1    {You gave {{recipients[0].name}} a gift}
+    one   {You gave {{recipients[0].name}} and one other person a gift}
+    other {You gave {{recipients[0].name}} and # other people a gift}
+}}
+</code></pre>
+<p>When an <code>offset</code> is specified, the matching works as follows.  First, the exact value of the Angular
+expression is matched against the exact matches (i.e. <code>=N</code> selectors) to find a match.  If there is
+one, that message is used.  If there was no match, then the offset value is subtracted from the
+value of the expression and locale specific pluralization rules are applied to this new value to
+obtain its plural category (such as “one”, “few”, “many”, etc.) and a match is attempted against the
+keyword selectors and the matching message is used.  If there was no match, then the “other”
+category (required) is used.  The value of the <code>#</code> character inside a message is the value of
+original expression reduced by the offset value that was specified.</p>
+<h3 id="escaping-quoting">Escaping / Quoting</h3>
+<p>You will need to escape curly braces or the <code>#</code> character inside message texts if you want them to
+be treated literally with no special meaning.  You may quote/escape any character in your message
+text by preceding it with a <code>\</code> (backslash) character.  The backslash character removes any special
+meaning to the character that immediately follows it.  Therefore, you can escape or quote the
+backslash itself by preceding it with another backslash character.</p>
+<h3 id="gender-aka-select-syntax">Gender (aka select) Syntax</h3>
+<p>The gender support is provided by the more generic &quot;select&quot; syntax that is more akin to a switch
+statement.  It is general enough to support use for gender based messages.</p>
+<p>The syntax for gender based message selection looks like the following:</p>
+<pre><code class="lang-text">{{EXPRESSION, select,
+    male {MESSAGE_WHEN_EXPRESSION_IS_MALE}
+    female {MESSAGE_WHEN_EXPRESSION_IS_FEMALE}
+    ...
+    other {MESSAGE_WHEN_THERE_IS_NO_GENDER_MATCH}
+}}
+</code></pre>
+<p>Please note that whitespace (including newline) is generally insignificant except as part of the
+actual message text that occurs in curly braces.  Whitespace is generally used to aid readability.</p>
+<p>Here, <code>EXPRESSION</code> is an Angular expression that evaluates to the gender of the person that
+is used to select the message that should be displayed.</p>
+<p>The Angular expression is followed by <code>, select,</code> where the spaces are optional.</p>
+<p>This is followed by a list of selection keyword and corresponding message pairs.  The &quot;other&quot;
+keyword and corresponding message are <strong>required</strong> but you may have as few or as many of the other
+gender values as you need (i.e. it isn&#39;t restricted to male/female.)  Note however, that the
+matching is <strong>case-sensitive</strong>.</p>
+<h4 id="selection-keywords">Selection Keywords</h4>
+<p>Selection keywords are simple words like &quot;male&quot; and &quot;female&quot;.  The keyword, &quot;other&quot;, and its
+corresponding message are required while others are optional.  It is used when the Angular
+expression does not match (case-insensitively) any of the other keywords specified.</p>
+<h4 id="messages">Messages</h4>
+<p>Messages immediately follow a selection keyword and are optionally preceded by whitespace.  They are
+written in single curly braces (<code>{}</code>).  They may contain Angular interpolation syntax inside them.</p>
+<h3 id="simple-gender-example">Simple gender example</h3>
+<pre><code class="lang-text">{{friendGender, select,
+       male {Invite him}
+     female {Invite her}
+      other {Invite them}
+}}
+</code></pre>
+<h3 id="nesting">Nesting</h3>
+<p>As mentioned in the syntax for plural and select, the embedded messages can contain Angular
+interpolation syntax.  Since you can use MessageFormat extensions in Angular interpolation, this
+allows you to nest plural and gender expressions in any order.</p>
+<p>Please note that if these are intended to reach a translator and be translated, it is recommended
+that the messages appear as a whole and not be split up.</p>
+<h3 id="demonstration-of-nesting">Demonstration of nesting</h3>
+<p>This is taken from the above example.</p>
+<pre><code class="lang-text">{{recipients.length, plural, offset:1
+    =0 {You ({{sender.name}}) gave no gifts}
+    =1 { {{ recipients[0].gender, select,
+              male {You ({{sender.name}}) gave him ({{recipients[0].name}}) a gift.}
+              female {You ({{sender.name}}) gave her ({{recipients[0].name}}) a gift.}
+              other {You ({{sender.name}}) gave them ({{recipients[0].name}}) a gift.}
+          }}
+       }
+    one { {{ recipients[0].gender, select,
+              male {You ({{sender.name}}) gave him ({{recipients[0].name}}) and one other person a gift.}
+              female {You ({{sender.name}}) gave her ({{recipients[0].name}}) and one other person a gift.}
+              other {You ({{sender.name}}) gave them ({{recipients[0].name}}) and one other person a gift.}
+          }}
+       }
+    other {You ({{sender.name}}) gave {{recipients.length}} people gifts. }
+}}
+</code></pre>
+<h3 id="differences-from-the-icu-messageformat-syntax">Differences from the ICU MessageFormat syntax</h3>
+<p>This section is useful to you if you&#39;re already familiar with the ICU MessageFormat syntax.</p>
+<p>This syntax extension, while based on MessageFormat, has been designed to be backwards compatible
+with existing AngularJS interpolation expressions.  The key rule is simply this: <strong>All
+interpolations are done inside double curlies.</strong> The top level comma operator after an expression
+inside the double curlies causes MessageFormat extensions to be recognized.  Such a top level comma
+is otherwise illegal in an Angular expression and is used by MessageFormat to specify the function
+(such as plural/select) and it&#39;s related syntax.</p>
+<p>To understand the extension, take a look at the ICU MessageFormat syntax as specified by the ICU
+documentation.  Anywhere in that MessageFormat that you have regular message text and you want to
+substitute an expression, just put it in double curlies instead of single curlies that MessageFormat
+dictates.  This has a huge advantage.  <strong>You are no longer limited to simple identifiers for
+substitutions</strong>.  Because you are using double curlies, you can stick in any arbitrary interpolation
+syntax there, including nesting more MessageFormat expressions!</p>
+<h3 id="further-reading">Further Reading</h3>
+<p>For more details, please refer to our <a href="https://docs.google.com/a/google.com/document/d/1pbtW2yvtmFBikfRrJd8VAsabiFkKezmYZ_PbgdjQOVU/edit">design doc</a>.
+You can read more about the ICU MessageFormat syntax at
+<a href="http://userguide.icu-project.org/formatparse/messages#TOC-MessageFormat">Formatting Messages | ICU User Guide</a>.</p>
 
 

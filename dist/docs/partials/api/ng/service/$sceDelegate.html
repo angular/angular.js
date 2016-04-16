@@ -1,8 +1,8 @@
-<a href='https://github.com/angular/angular.js/edit/master/src/ng/sce.js?message=docs($sceDelegate)%3A%20describe%20your%20change...#L56' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/sce.js?message=docs($sceDelegate)%3A%20describe%20your%20change...#L67' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
 
 
 
-<a href='https://github.com/angular/angular.js/tree/master/src/ng/sce.js#L56' class='view-source pull-right btn btn-primary'>
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/sce.js#L67' class='view-source pull-right btn btn-primary'>
   <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
 </a>
 
@@ -39,6 +39,8 @@ your own whitelists and blacklists for trusting URLs used for loading AngularJS 
 templates.  Refer <a href="api/ng/provider/$sceDelegateProvider#resourceUrlWhitelist">$sceDelegateProvider.resourceUrlWhitelist</a> and <a href="api/ng/provider/$sceDelegateProvider#resourceUrlBlacklist">$sceDelegateProvider.resourceUrlBlacklist</a></p>
 
 </div>
+
+
 
 
 
@@ -206,7 +208,10 @@ where Angular expects a $sce.trustAs() return value.</p>
     <div><p>Takes the result of a <a href="api/ng/service/$sceDelegate#trustAs"><code>$sceDelegate.trustAs</code></a> call and
 returns the originally supplied value if the queried context type is a supertype of the
 created type.  If this condition isn&#39;t satisfied, throws an exception.</p>
-</div>
+<div class="alert alert-danger">
+Disabling auto-escaping is extremely dangerous, it usually creates a Cross Site Scripting
+(XSS) vulnerability in your application.
+</div></div>
 
     
     <h4>Parameters</h4>

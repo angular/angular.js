@@ -1,0 +1,20 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/error/$sanitize/noinert.ngdoc?message=docs(error%2Fnoinert)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1>Error: $sanitize:noinert
+  <div><span class='hint'>Can't create an inert html document</span></div>
+</h1>
+
+<div>
+    <pre class="minerr-errmsg" error-display="Can't create an inert html document">Can't create an inert html document</pre>
+</div>
+
+<h2>Description</h2>
+<div class="description">
+  <p>This error occurs when <code>$sanitize</code> sanitizer determines that <code>document.implementation.createHTMLDocument</code> api is not supported by the current browser.</p>
+<p>This api is necessary for safe parsing of HTML strings into DOM trees and without it the sanitizer can&#39;t sanitize the input.</p>
+<p>The api is present in all supported browsers including IE 9.0, so the presence of this error usually indicates that Angular&#39;s <code>$sanitize</code> is being used on an unsupported platform.</p>
+
+</div>
+
+

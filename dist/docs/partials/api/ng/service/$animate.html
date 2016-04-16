@@ -1,8 +1,8 @@
-<a href='https://github.com/angular/angular.js/edit/master/src/ng/animate.js?message=docs($animate)%3A%20describe%20your%20change...#L155' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/animate.js?message=docs($animate)%3A%20describe%20your%20change...#L266' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
 
 
 
-<a href='https://github.com/angular/angular.js/tree/master/src/ng/animate.js#L155' class='view-source pull-right btn btn-primary'>
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/animate.js#L266' class='view-source pull-right btn btn-primary'>
   <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
 </a>
 
@@ -24,17 +24,22 @@
 
 
 <div class="api-profile-description">
-  <p>The $animate service provides rudimentary DOM manipulation functions to
-insert, remove and move elements within the DOM, as well as adding and removing classes.
-This service is the core service used by the ngAnimate $animator service which provides
-high-level animation hooks for CSS and JavaScript.</p>
-<p>$animate is available in the AngularJS core, however, the ngAnimate module must be included
-to enable full out animation support. Otherwise, $animate will only perform simple DOM
-manipulation operations.</p>
-<p>To learn more about enabling animation support, click here to visit the <a href="api/ngAnimate">ngAnimate module page</a> as well as the <a href="api/ngAnimate/service/$animate">ngAnimate $animate service
-page</a>.</p>
+  <p>The $animate service exposes a series of DOM utility methods that provide support
+for animation hooks. The default behavior is the application of DOM operations, however,
+when an animation is detected (and animations are enabled), $animate will do the heavy lifting
+to ensure that animation runs with the triggered DOM operation.</p>
+<p>By default $animate doesn&#39;t trigger any animations. This is because the <code>ngAnimate</code> module isn&#39;t
+included and only when it is active then the animation hooks that <code>$animate</code> triggers will be
+functional. Once active then all structural <code>ng-</code> directives will trigger animations as they perform
+their DOM-related operations (enter, leave and move). Other directives such as <code>ngClass</code>,
+<code>ngShow</code>, <code>ngHide</code> and <code>ngMessages</code> also provide support for animations.</p>
+<p>It is recommended that the<code>$animate</code> service is always used when executing DOM-related procedures within directives.</p>
+<p>To learn more about enabling animation support, click here to visit the
+<a href="api/ngAnimate">ngAnimate module page</a>.</p>
 
 </div>
+
+
 
 
 
@@ -49,13 +54,405 @@ page</a>.</p>
   
 <h2>Methods</h2>
 <ul class="methods">
-  <li id="enter">
-    <h3><p><code>enter(element, parent, after, [options]);</code></p>
+  <li id="on">
+    <h3><p><code>on(event, container, callback);</code></p>
 
 </h3>
-    <div><p>Inserts the element into the DOM either after the <code>after</code> element or
-as the first child within the <code>parent</code> element. When the function is called a promise
-is returned that will be resolved at a later time.</p>
+    <div><p>Sets up an event listener to fire whenever the animation event (enter, leave, move, etc...)
+   has fired on the given element or among any of its children. Once the listener is fired, the provided callback
+   is fired with the following params:</p>
+<pre><code class="lang-js">$animate.on(&#39;enter&#39;, container,
+   function callback(element, phase) {
+     // cool we detected an enter animation within the container
+   }
+);
+</code></pre>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        event
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>the animation event that will be captured (e.g. enter, leave, move, addClass, removeClass, etc...)</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        container
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-domelement">DOMElement</a>
+      </td>
+      <td>
+        <p>the container element that will capture each of the animation events that are fired on itself
+    as well as among its children</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        callback
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-function">Function</a>
+      </td>
+      <td>
+        <p>the callback function that will be fired when the listener is triggered</p>
+<p>The arguments present in the callback function are:</p>
+<ul>
+<li><code>element</code> - The captured DOM element that the animation was fired on.</li>
+<li><code>phase</code> - The phase of the animation. The two possible phases are <strong>start</strong> (when the animation starts) and <strong>close</strong> (when it ends).</li>
+</ul>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+
+  </li>
+  
+  <li id="off">
+    <h3><p><code>off(event, [container], [callback]);</code></p>
+
+</h3>
+    <div><p>Deregisters an event listener based on the event which has been associated with the provided element. This method
+can be used in three different ways depending on the arguments:</p>
+<pre><code class="lang-js">// remove all the animation event listeners listening for `enter`
+$animate.off(&#39;enter&#39;);
+
+// remove listeners for all animation events from the container element
+$animate.off(container);
+
+// remove all the animation event listeners listening for `enter` on the given element and its children
+$animate.off(&#39;enter&#39;, container);
+
+// remove the event listener function provided by `callback` that is set
+// to listen for `enter` on the given `container` as well as its children
+$animate.off(&#39;enter&#39;, container, callback);
+</code></pre>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        event
+        | container
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a><a href="" class="label type-hint type-hint-domelement">DOMElement</a>
+      </td>
+      <td>
+        <p>the animation event (e.g. enter, leave, move,
+addClass, removeClass, etc...), or the container element. If it is the element, all other
+arguments are ignored.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        container
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-domelement">DOMElement</a>
+      </td>
+      <td>
+        <p>the container element the event listener was placed on</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        callback
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-function">Function=</a>
+      </td>
+      <td>
+        <p>the callback function that was registered as the listener</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+
+  </li>
+  
+  <li id="pin">
+    <h3><p><code>pin(element, parentElement);</code></p>
+
+</h3>
+    <div><p>Associates the provided element with a host parent element to allow the element to be animated even if it exists
+   outside of the DOM structure of the Angular application. By doing so, any animation triggered via <code>$animate</code> can be issued on the
+   element despite being outside the realm of the application or within another application. Say for example if the application
+   was bootstrapped on an element that is somewhere inside of the <code>&lt;body&gt;</code> tag, but we wanted to allow for an element to be situated
+   as a direct child of <code>document.body</code>, then this can be achieved by pinning the element via <code>$animate.pin(element)</code>. Keep in mind
+   that calling <code>$animate.pin(element, parentElement)</code> will not actually insert into the DOM anywhere; it will just create the association.</p>
+<p>   Note that this feature is only active when the <code>ngAnimate</code> module is used.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        element
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-domelement">DOMElement</a>
+      </td>
+      <td>
+        <p>the external element that will be pinned</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        parentElement
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-domelement">DOMElement</a>
+      </td>
+      <td>
+        <p>the host parent element that will be associated with the external element</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+
+  </li>
+  
+  <li id="enabled">
+    <h3><p><code>enabled([element], [enabled]);</code></p>
+
+</h3>
+    <div><p>Used to get and set whether animations are enabled or not on the entire application or on an element and its children. This
+function can be called in four ways:</p>
+<pre><code class="lang-js">// returns true or false
+$animate.enabled();
+
+// changes the enabled state for all animations
+$animate.enabled(false);
+$animate.enabled(true);
+
+// returns true or false if animations are enabled for an element
+$animate.enabled(element);
+
+// changes the enabled state for an element and its children
+$animate.enabled(element, true);
+$animate.enabled(element, false);
+</code></pre>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        element
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-domelement">DOMElement</a>
+      </td>
+      <td>
+        <p>the element that will be considered for checking/setting the enabled state</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        enabled
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-boolean">boolean</a>
+      </td>
+      <td>
+        <p>whether or not the animations will be enabled for the element</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-boolean">boolean</a></td>
+    <td><p>whether or not animations are enabled</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="cancel">
+    <h3><p><code>cancel(animationPromise);</code></p>
+
+</h3>
+    <div><p>Cancels the provided animation.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        animationPromise
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-promise">Promise</a>
+      </td>
+      <td>
+        <p>The animation promise that is returned when an animation is started.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+
+  </li>
+  
+  <li id="enter">
+    <h3><p><code>enter(element, parent, [after], [options]);</code></p>
+
+</h3>
+    <div><p>Inserts the element into the DOM either after the <code>after</code> element (if provided) or
+  as the first child within the <code>parent</code> element and then triggers an animation.
+  A promise is returned that will be resolved during the next digest once the animation
+  has completed.</p>
 </div>
 
     
@@ -98,7 +495,7 @@ is returned that will be resolved at a later time.</p>
       </td>
       <td>
         <p>the parent element which will append the element as
-  a child (if the after element is not present)</p>
+  a child (so long as the after element is not present)</p>
 
         
       </td>
@@ -108,14 +505,13 @@ is returned that will be resolved at a later time.</p>
       <td>
         after
         
-        
+        <div><em>(optional)</em></div>
       </td>
       <td>
         <a href="" class="label type-hint type-hint-domelement">DOMElement</a>
       </td>
       <td>
-        <p>the sibling element which will append the element
-  after itself</p>
+        <p>the sibling element after which the element will be appended</p>
 
         
       </td>
@@ -131,7 +527,115 @@ is returned that will be resolved at a later time.</p>
         <a href="" class="label type-hint type-hint-object">object</a>
       </td>
       <td>
-        <p>an optional collection of styles that will be applied to the element.</p>
+        <p>an optional collection of options/styles that will be applied to the element</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-promise">Promise</a></td>
+    <td><p>the animation callback promise</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="move">
+    <h3><p><code>move(element, parent, [after], [options]);</code></p>
+
+</h3>
+    <div><p>Inserts (moves) the element into its new position in the DOM either after
+  the <code>after</code> element (if provided) or as the first child within the <code>parent</code> element
+  and then triggers an animation. A promise is returned that will be resolved
+  during the next digest once the animation has completed.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        element
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-domelement">DOMElement</a>
+      </td>
+      <td>
+        <p>the element which will be moved into the new DOM position</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        parent
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-domelement">DOMElement</a>
+      </td>
+      <td>
+        <p>the parent element which will append the element as
+  a child (so long as the after element is not present)</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        after
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-domelement">DOMElement</a>
+      </td>
+      <td>
+        <p>the sibling element after which the element will be appended</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        options
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>an optional collection of options/styles that will be applied to the element</p>
 
         
       </td>
@@ -161,8 +665,9 @@ is returned that will be resolved at a later time.</p>
     <h3><p><code>leave(element, [options]);</code></p>
 
 </h3>
-    <div><p>Removes the element from the DOM. When the function is called a promise
-is returned that will be resolved at a later time.</p>
+    <div><p>Triggers an animation and then removes the element from the DOM.
+When the function is called a promise is returned that will be resolved during the next
+digest once the animation has completed.</p>
 </div>
 
     
@@ -204,116 +709,7 @@ is returned that will be resolved at a later time.</p>
         <a href="" class="label type-hint type-hint-object">object</a>
       </td>
       <td>
-        <p>an optional collection of options that will be applied to the element.</p>
-
-        
-      </td>
-    </tr>
-    
-  </tbody>
-</table>
-
-    
-
-    
-    
-    
-    <h4>Returns</h4>
-    <table class="variables-matrix return-arguments">
-  <tr>
-    <td><a href="" class="label type-hint type-hint-promise">Promise</a></td>
-    <td><p>the animation callback promise</p>
-</td>
-  </tr>
-</table>
-    
-
-  </li>
-  
-  <li id="move">
-    <h3><p><code>move(element, parent, after, [options]);</code></p>
-
-</h3>
-    <div><p>Moves the position of the provided element within the DOM to be placed
-either after the <code>after</code> element or inside of the <code>parent</code> element. When the function
-is called a promise is returned that will be resolved at a later time.</p>
-</div>
-
-    
-    <h4>Parameters</h4>
-    
-<table class="variables-matrix input-arguments">
-  <thead>
-    <tr>
-      <th>Param</th>
-      <th>Type</th>
-      <th>Details</th>
-    </tr>
-  </thead>
-  <tbody>
-    
-    <tr>
-      <td>
-        element
-        
-        
-      </td>
-      <td>
-        <a href="" class="label type-hint type-hint-domelement">DOMElement</a>
-      </td>
-      <td>
-        <p>the element which will be moved around within the
-  DOM</p>
-
-        
-      </td>
-    </tr>
-    
-    <tr>
-      <td>
-        parent
-        
-        
-      </td>
-      <td>
-        <a href="" class="label type-hint type-hint-domelement">DOMElement</a>
-      </td>
-      <td>
-        <p>the parent element where the element will be
-  inserted into (if the after element is not present)</p>
-
-        
-      </td>
-    </tr>
-    
-    <tr>
-      <td>
-        after
-        
-        
-      </td>
-      <td>
-        <a href="" class="label type-hint type-hint-domelement">DOMElement</a>
-      </td>
-      <td>
-        <p>the sibling element where the element will be
-  positioned next to</p>
-
-        
-      </td>
-    </tr>
-    
-    <tr>
-      <td>
-        options
-        
-        <div><em>(optional)</em></div>
-      </td>
-      <td>
-        <a href="" class="label type-hint type-hint-object">object</a>
-      </td>
-      <td>
-        <p>an optional collection of options that will be applied to the element.</p>
+        <p>an optional collection of options/styles that will be applied to the element</p>
 
         
       </td>
@@ -343,8 +739,12 @@ is called a promise is returned that will be resolved at a later time.</p>
     <h3><p><code>addClass(element, className, [options]);</code></p>
 
 </h3>
-    <div><p>Adds the provided className CSS class value to the provided element.
-When the function is called a promise is returned that will be resolved at a later time.</p>
+    <div><p>Triggers an addClass animation surrounding the addition of the provided CSS class(es). Upon
+  execution, the addClass operation will only be handled after the next digest and it will not trigger an
+  animation if element already contains the CSS class or if the class is removed at a later step.
+  Note that class-based animations are treated differently compared to structural animations
+  (like enter, move and leave) since the CSS classes may be added/removed at different points
+  depending if CSS or JavaScript animations are used.</p>
 </div>
 
     
@@ -370,8 +770,7 @@ When the function is called a promise is returned that will be resolved at a lat
         <a href="" class="label type-hint type-hint-domelement">DOMElement</a>
       </td>
       <td>
-        <p>the element which will have the className value
-  added to it</p>
+        <p>the element which the CSS classes will be applied to</p>
 
         
       </td>
@@ -387,7 +786,7 @@ When the function is called a promise is returned that will be resolved at a lat
         <a href="" class="label type-hint type-hint-string">string</a>
       </td>
       <td>
-        <p>the CSS class which will be added to the element</p>
+        <p>the CSS class(es) that will be added (multiple classes are separated via spaces)</p>
 
         
       </td>
@@ -403,7 +802,7 @@ When the function is called a promise is returned that will be resolved at a lat
         <a href="" class="label type-hint type-hint-object">object</a>
       </td>
       <td>
-        <p>an optional collection of options that will be applied to the element.</p>
+        <p>an optional collection of options/styles that will be applied to the element</p>
 
         
       </td>
@@ -433,8 +832,12 @@ When the function is called a promise is returned that will be resolved at a lat
     <h3><p><code>removeClass(element, className, [options]);</code></p>
 
 </h3>
-    <div><p>Removes the provided className CSS class value from the provided element.
-When the function is called a promise is returned that will be resolved at a later time.</p>
+    <div><p>Triggers a removeClass animation surrounding the removal of the provided CSS class(es). Upon
+  execution, the removeClass operation will only be handled after the next digest and it will not trigger an
+  animation if element does not contain the CSS class or if the class is added at a later step.
+  Note that class-based animations are treated differently compared to structural animations
+  (like enter, move and leave) since the CSS classes may be added/removed at different points
+  depending if CSS or JavaScript animations are used.</p>
 </div>
 
     
@@ -460,8 +863,7 @@ When the function is called a promise is returned that will be resolved at a lat
         <a href="" class="label type-hint type-hint-domelement">DOMElement</a>
       </td>
       <td>
-        <p>the element which will have the className value
-  removed from it</p>
+        <p>the element which the CSS classes will be applied to</p>
 
         
       </td>
@@ -477,7 +879,7 @@ When the function is called a promise is returned that will be resolved at a lat
         <a href="" class="label type-hint type-hint-string">string</a>
       </td>
       <td>
-        <p>the CSS class which will be removed from the element</p>
+        <p>the CSS class(es) that will be removed (multiple classes are separated via spaces)</p>
 
         
       </td>
@@ -493,7 +895,7 @@ When the function is called a promise is returned that will be resolved at a lat
         <a href="" class="label type-hint type-hint-object">object</a>
       </td>
       <td>
-        <p>an optional collection of options that will be applied to the element.</p>
+        <p>an optional collection of options/styles that will be applied to the element</p>
 
         
       </td>
@@ -523,8 +925,12 @@ When the function is called a promise is returned that will be resolved at a lat
     <h3><p><code>setClass(element, add, remove, [options]);</code></p>
 
 </h3>
-    <div><p>Adds and/or removes the given CSS classes to and from the element.
-When the function is called a promise is returned that will be resolved at a later time.</p>
+    <div><p>Performs both the addition and removal of a CSS classes on an element and (during the process)
+   triggers an animation surrounding the class addition/removal. Much like <code>$animate.addClass</code> and
+   <code>$animate.removeClass</code>, <code>setClass</code> will only evaluate the classes being added/removed once a digest has
+   passed. Note that class-based animations are treated differently compared to structural animations
+   (like enter, move and leave) since the CSS classes may be added/removed at different points
+   depending if CSS or JavaScript animations are used.</p>
 </div>
 
     
@@ -550,8 +956,7 @@ When the function is called a promise is returned that will be resolved at a lat
         <a href="" class="label type-hint type-hint-domelement">DOMElement</a>
       </td>
       <td>
-        <p>the element which will have its CSS classes changed
-  removed from it</p>
+        <p>the element which the CSS classes will be applied to</p>
 
         
       </td>
@@ -567,7 +972,7 @@ When the function is called a promise is returned that will be resolved at a lat
         <a href="" class="label type-hint type-hint-string">string</a>
       </td>
       <td>
-        <p>the CSS classes which will be added to the element</p>
+        <p>the CSS class(es) that will be added (multiple classes are separated via spaces)</p>
 
         
       </td>
@@ -583,7 +988,7 @@ When the function is called a promise is returned that will be resolved at a lat
         <a href="" class="label type-hint type-hint-string">string</a>
       </td>
       <td>
-        <p>the CSS class which will be removed from the element</p>
+        <p>the CSS class(es) that will be removed (multiple classes are separated via spaces)</p>
 
         
       </td>
@@ -599,7 +1004,144 @@ When the function is called a promise is returned that will be resolved at a lat
         <a href="" class="label type-hint type-hint-object">object</a>
       </td>
       <td>
-        <p>an optional collection of options that will be applied to the element.</p>
+        <p>an optional collection of options/styles that will be applied to the element</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-promise">Promise</a></td>
+    <td><p>the animation callback promise</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="animate">
+    <h3><p><code>animate(element, from, to, [className], [options]);</code></p>
+
+</h3>
+    <div><p>Performs an inline animation on the element which applies the provided to and from CSS styles to the element.
+If any detected CSS transition, keyframe or JavaScript matches the provided className value, then the animation will take
+on the provided styles. For example, if a transition animation is set for the given classNamem, then the provided <code>from</code> and
+<code>to</code> styles will be applied alongside the given transition. If the CSS style provided in <code>from</code> does not have a corresponding
+style in <code>to</code>, the style in <code>from</code> is applied immediately, and no animation is run.
+If a JavaScript animation is detected then the provided styles will be given in as function parameters into the <code>animate</code>
+method (or as part of the <code>options</code> parameter):</p>
+<pre><code class="lang-js">ngModule.animation(&#39;.my-inline-animation&#39;, function() {
+  return {
+    animate : function(element, from, to, done, options) {
+      //animation
+      done();
+    }
+  }
+});
+</code></pre>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        element
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-domelement">DOMElement</a>
+      </td>
+      <td>
+        <p>the element which the CSS styles will be applied to</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        from
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>the from (starting) CSS styles that will be applied to the element and across the animation.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        to
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>the to (destination) CSS styles that will be applied to the element and across the animation.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        className
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>an optional CSS class that will be applied to the element for the duration of the animation. If
+   this value is left as empty then a CSS class of <code>ng-inline-animate</code> will be applied to the element.
+   (Note that if no animation is detected then this value will not be applied to the element.)</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        options
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>an optional collection of options/styles that will be applied to the element</p>
 
         
       </td>

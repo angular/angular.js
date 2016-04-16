@@ -1,0 +1,49 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/error/$http/legacy.ngdoc?message=docs(error%2Flegacy)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1>Error: $http:legacy
+  <div><span class='hint'>The `success` and `error` methods on the promise returned from `$http` have been disabled.</span></div>
+</h1>
+
+<div>
+    <pre class="minerr-errmsg" error-display="The method `{0}` on the promise returned from `$http` has been disabled.">The method `{0}` on the promise returned from `$http` has been disabled.</pre>
+</div>
+
+<h2>Description</h2>
+<div class="description">
+  <p>This error occurs when the legacy promise extensions (<code>success</code> and <code>error</code>)
+<a href="api/ng/provider/$httpProvider#useLegacyPromiseExtensions">legacy <code>$http</code> promise extensions</a> have been disabled.</p>
+<p>To resolve this error, either turn on the legacy extensions by adding
+<code>$httpProvider.useLegacyPromiseExtensions(true);</code> to your application&#39;s configuration; or refactor you
+use of <code>$http</code> to use <code>.then()</code> rather than <code>.success()</code> and <code>.error()</code>.</p>
+<p>For example if you code looked like this:</p>
+<pre><code class="lang-js">// Simple GET request example :
+$http.get(&#39;/someUrl&#39;).
+   success(function(data, status, headers, config) {
+      // This callback will be called asynchronously
+      // when the response is available
+  }).
+  error(function(data, status, headers, config) {
+    // called asynchronously if an error occurs
+    // or server returns response with an error status.
+  });
+</code></pre>
+<p>then you would change it to look like:</p>
+<pre><code class="lang-js">// Simple GET request example :
+$http.get(&#39;/someUrl&#39;).
+  then(function(response) {
+    // (The response object contains the data, status, headers and config properties)
+    // This callback will be called asynchronously
+    // when the response is available.
+  }, function(response) {
+    // called asynchronously if an error occurs
+    // or server returns response with an error status.
+  });
+</code></pre>
+<p>For more information, see the
+<a href="api/ng/provider/$httpProvider#useLegacyPromiseExtensions"><code>$httpProvider.useLegacyPromiseExtensions</code></a>
+documentation.</p>
+
+</div>
+
+

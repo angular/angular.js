@@ -7,20 +7,31 @@
 
   <script src="../../components/jquery-2.1.1/jquery.js"></script>
   <script src="../../../angular.js"></script>
+  <script src="script.js"></script>
   
 
   
 </head>
-<body ng-app="">
-  <div ng-init="username='A user'">
-  <p ng-init="apptitle='Escaping demo'">{{apptitle}}: \{\{ username = "defaced value"; \}\}
-    </p>
-  <p><strong>{{username}}</strong> attempts to inject code which will deface the
-    application, but fails to accomplish their task, because the server has correctly
-    escaped the interpolation start/end markers with REVERSE SOLIDUS U+005C (backslash)
-    characters.</p>
-  <p>Instead, the result of the attempted script injection is visible, and can be removed
-    from the database by an administrator.</p>
+<body ng-app="httpExample">
+  <div ng-controller="FetchController">
+  <select ng-model="method" aria-label="Request method">
+    <option>GET</option>
+    <option>JSONP</option>
+  </select>
+  <input type="text" ng-model="url" size="80" aria-label="URL" />
+  <button id="fetchbtn" ng-click="fetch()">fetch</button><br>
+  <button id="samplegetbtn" ng-click="updateModel('GET', 'http-hello.html')">Sample GET</button>
+  <button id="samplejsonpbtn"
+    ng-click="updateModel('JSONP',
+                  'https://angularjs.org/greet.php?callback=JSON_CALLBACK&name=Super%20Hero')">
+    Sample JSONP
+  </button>
+  <button id="invalidjsonpbtn"
+    ng-click="updateModel('JSONP', 'https://angularjs.org/doesntexist&callback=JSON_CALLBACK')">
+      Invalid JSONP
+    </button>
+  <pre>http status code: {{status}}</pre>
+  <pre>http response data: {{data}}</pre>
 </div>
 </body>
 </html>

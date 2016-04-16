@@ -1,0 +1,7 @@
+{
+  "name": "example-ngMinlengthDirective",
+  "files": [
+    "index-production.html",
+    "protractor.js"
+  ]
+}

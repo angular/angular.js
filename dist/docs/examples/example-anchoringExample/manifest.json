@@ -1,0 +1,10 @@
+{
+  "name": "example-anchoringExample",
+  "files": [
+    "index-production.html",
+    "script.js",
+    "home.html",
+    "profile.html",
+    "animations.css"
+  ]
+}

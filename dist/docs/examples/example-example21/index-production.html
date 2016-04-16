@@ -5,13 +5,15 @@
   <title>Example - example-example21-production</title>
   
 
-  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/null/angular.min.js"></script>
   <script src="script.js"></script>
   
 
   
 </head>
-<body ng-app="dragModule">
-  <span my-draggable>Drag ME</span>
+<body ng-app="docsTransclusionExample">
+  <div ng-controller="Controller">
+  <my-dialog>Check out the contents, {{name}}!</my-dialog>
+</div>
 </body>
 </html>

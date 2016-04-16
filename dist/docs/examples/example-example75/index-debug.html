@@ -11,7 +11,9 @@
   
 </head>
 <body ng-app="">
-  <input ng-keydown="count = count + 1" ng-init="count=0">
-key down count: {{count}}
+  <button ng-mouseleave="count = count + 1" ng-init="count=0">
+  Increment (when mouse leaves)
+</button>
+count: {{count}}
 </body>
 </html>

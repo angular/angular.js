@@ -27,6 +27,8 @@
 
 
 
+
+
 <div>
   
 
@@ -103,9 +105,10 @@ not containing &quot;M&quot;.</p>
 <code>{name: {first: &#39;John&#39;, last: &#39;Doe&#39;}}</code> will <strong>not</strong> be matched by <code>{name: &#39;John&#39;}</code>, but
 <strong>will</strong> be matched by <code>{$: &#39;John&#39;}</code>.</p>
 </li>
-<li><p><code>function(value, index)</code>: A predicate function can be used to write arbitrary filters. The
-function is called for each element of <code>array</code>. The final result is an array of those
-elements that the predicate returned true for.</p>
+<li><p><code>function(value, index, array)</code>: A predicate function can be used to write arbitrary filters.
+The function is called for each element of the array, with the element, its index, and
+the entire array itself as arguments.</p>
+<p>The final result is an array of those elements that the predicate returned true for.</p>
 </li>
 </ul>
 
@@ -137,6 +140,8 @@ This is essentially strict comparison of expected and actual.</p>
 </li>
 <li><p><code>false|undefined</code>: A short hand for a function which will look for a substring match in case
 insensitive way.</p>
+<p>Primitive values are converted to strings. Objects are not compared against primitives,
+unless they have a custom <code>toString</code> method (e.g. <code>Date</code> objects).</p>
 </li>
 </ul>
 
@@ -156,19 +161,17 @@ insensitive way.</p>
   <h2 id="example">Example</h2><p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-example97', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-example98"></plnkr-opener>
 
   <div class="runnable-example"
-      path="examples/example-example97">
+      path="examples/example-example98">
 
   
     <div class="runnable-example-file" 
       name="index.html"
       language="html"
       type="html">
-      <pre><code>&lt;div ng-init=&quot;friends = [{name:&#39;John&#39;, phone:&#39;555-1276&#39;},&#10;                         {name:&#39;Mary&#39;, phone:&#39;800-BIG-MARY&#39;},&#10;                         {name:&#39;Mike&#39;, phone:&#39;555-4321&#39;},&#10;                         {name:&#39;Adam&#39;, phone:&#39;555-5678&#39;},&#10;                         {name:&#39;Julie&#39;, phone:&#39;555-8765&#39;},&#10;                         {name:&#39;Juliette&#39;, phone:&#39;555-5678&#39;}]&quot;&gt;&lt;/div&gt;&#10;&#10;Search: &lt;input ng-model=&quot;searchText&quot;&gt;&#10;&lt;table id=&quot;searchTextResults&quot;&gt;&#10;  &lt;tr&gt;&lt;th&gt;Name&lt;/th&gt;&lt;th&gt;Phone&lt;/th&gt;&lt;/tr&gt;&#10;  &lt;tr ng-repeat=&quot;friend in friends | filter:searchText&quot;&gt;&#10;    &lt;td&gt;{{friend.name}}&lt;/td&gt;&#10;    &lt;td&gt;{{friend.phone}}&lt;/td&gt;&#10;  &lt;/tr&gt;&#10;&lt;/table&gt;&#10;&lt;hr&gt;&#10;Any: &lt;input ng-model=&quot;search.$&quot;&gt; &lt;br&gt;&#10;Name only &lt;input ng-model=&quot;search.name&quot;&gt;&lt;br&gt;&#10;Phone only &lt;input ng-model=&quot;search.phone&quot;&gt;&lt;br&gt;&#10;Equality &lt;input type=&quot;checkbox&quot; ng-model=&quot;strict&quot;&gt;&lt;br&gt;&#10;&lt;table id=&quot;searchObjResults&quot;&gt;&#10;  &lt;tr&gt;&lt;th&gt;Name&lt;/th&gt;&lt;th&gt;Phone&lt;/th&gt;&lt;/tr&gt;&#10;  &lt;tr ng-repeat=&quot;friendObj in friends | filter:search:strict&quot;&gt;&#10;    &lt;td&gt;{{friendObj.name}}&lt;/td&gt;&#10;    &lt;td&gt;{{friendObj.phone}}&lt;/td&gt;&#10;  &lt;/tr&gt;&#10;&lt;/table&gt;</code></pre>
+      <pre><code>&lt;div ng-init=&quot;friends = [{name:&#39;John&#39;, phone:&#39;555-1276&#39;},&#10;                         {name:&#39;Mary&#39;, phone:&#39;800-BIG-MARY&#39;},&#10;                         {name:&#39;Mike&#39;, phone:&#39;555-4321&#39;},&#10;                         {name:&#39;Adam&#39;, phone:&#39;555-5678&#39;},&#10;                         {name:&#39;Julie&#39;, phone:&#39;555-8765&#39;},&#10;                         {name:&#39;Juliette&#39;, phone:&#39;555-5678&#39;}]&quot;&gt;&lt;/div&gt;&#10;&#10;&lt;label&gt;Search: &lt;input ng-model=&quot;searchText&quot;&gt;&lt;/label&gt;&#10;&lt;table id=&quot;searchTextResults&quot;&gt;&#10;  &lt;tr&gt;&lt;th&gt;Name&lt;/th&gt;&lt;th&gt;Phone&lt;/th&gt;&lt;/tr&gt;&#10;  &lt;tr ng-repeat=&quot;friend in friends | filter:searchText&quot;&gt;&#10;    &lt;td&gt;{{friend.name}}&lt;/td&gt;&#10;    &lt;td&gt;{{friend.phone}}&lt;/td&gt;&#10;  &lt;/tr&gt;&#10;&lt;/table&gt;&#10;&lt;hr&gt;&#10;&lt;label&gt;Any: &lt;input ng-model=&quot;search.$&quot;&gt;&lt;/label&gt; &lt;br&gt;&#10;&lt;label&gt;Name only &lt;input ng-model=&quot;search.name&quot;&gt;&lt;/label&gt;&lt;br&gt;&#10;&lt;label&gt;Phone only &lt;input ng-model=&quot;search.phone&quot;&gt;&lt;/label&gt;&lt;br&gt;&#10;&lt;label&gt;Equality &lt;input type=&quot;checkbox&quot; ng-model=&quot;strict&quot;&gt;&lt;/label&gt;&lt;br&gt;&#10;&lt;table id=&quot;searchObjResults&quot;&gt;&#10;  &lt;tr&gt;&lt;th&gt;Name&lt;/th&gt;&lt;th&gt;Phone&lt;/th&gt;&lt;/tr&gt;&#10;  &lt;tr ng-repeat=&quot;friendObj in friends | filter:search:strict&quot;&gt;&#10;    &lt;td&gt;{{friendObj.name}}&lt;/td&gt;&#10;    &lt;td&gt;{{friendObj.phone}}&lt;/td&gt;&#10;  &lt;/tr&gt;&#10;&lt;/table&gt;</code></pre>
     </div>
   
     <div class="runnable-example-file" 
@@ -179,7 +182,7 @@ insensitive way.</p>
     </div>
   
 
-    <iframe class="runnable-example-frame" src="examples/example-example97/index.html" name="example-example97"></iframe>
+    <iframe class="runnable-example-frame" src="examples/example-example98/index.html" name="example-example98"></iframe>
   </div>
 </div>
 

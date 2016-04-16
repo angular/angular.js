@@ -4,10 +4,12 @@
 <ul doc-tutorial-nav="0"></ul>
 
 
-<p>You are now ready to build the AngularJS phonecat app. In this step, you will become familiar
-with the most important source code files, learn how to start the development servers bundled with
+<p>In this step of the tutorial, you will become familiar with the most important source code files of
+the AngularJS phonecat app. You will also learn how to start the development servers bundled with
 angular-seed, and run the application in the browser.</p>
-<p>In <code>angular-phonecat</code> directory, run this command:</p>
+<p>Before you continue, make sure you have set up your development environment and installed all necessary
+dependencies, as described in <a href="tutorial#get-started">Get Started</a>.</p>
+<p>In the <code>angular-phonecat</code> directory, run this command:</p>
 <pre><code>git checkout -f step-0
 </code></pre>
 <p>This resets your workspace to step 0 of the tutorial app.</p>
@@ -18,7 +20,7 @@ the step you are on. This will cause any changes you made within your working di
 </code></pre>
 <p>To see the app running in a browser, open a <em>separate</em> terminal/command line tab or window, then
 run <code>npm start</code> to start the web server. Now, open a browser window for the app and navigate to
-<a href="http://localhost:8000/app/" target="_blank"><code>http://localhost:8000/app/</code></a></p>
+<a href="http://localhost:8000/app/" target="_blank" title="Open app on localhost"><code>http://localhost:8000/app/</code></a></p>
 <p>Note that if you already ran the master branch app prior to checking out step-0, you may see the cached
 master version of the app in your browser window at this point. Just hit refresh to re-load the page.</p>
 <p>You can now see the page in your browser. It&#39;s not very exciting, but that&#39;s OK.</p>
@@ -42,28 +44,25 @@ The code contains some key Angular elements that we will need as we progress.</p
 &lt;/html&gt;
 </code></pre>
 <h2 id="what-is-the-code-doing-">What is the code doing?</h2>
-<ul>
-<li><p><code>ng-app</code> directive:</p>
+<p><strong><code>ng-app</code> directive:</strong></p>
 <pre><code>&lt;html ng-app&gt;
 </code></pre>
-<p>The <code>ng-app</code> attribute represents an Angular directive named <code>ngApp</code> (Angular uses
-<code>spinal-case</code> for its custom attributes and <code>camelCase</code> for the corresponding directives
-which implement them).
-This directive is used to flag the html element that Angular should consider to be the root element
-of our application.
-This gives application developers the freedom to tell Angular if the entire html page or only a
-portion of it should be treated as the Angular application.</p>
-</li>
-<li><p>AngularJS script tag:</p>
+<p>  The <code>ng-app</code> attribute represents an Angular directive named <code>ngApp</code> (Angular uses
+  <code>spinal-case</code> for its custom attributes and <code>camelCase</code> for the corresponding directives
+  which implement them).
+  This directive is used to flag the html element that Angular should consider to be the root element
+  of our application.
+  This gives application developers the freedom to tell Angular if the entire html page or only a
+  portion of it should be treated as the Angular application.</p>
+<p><strong>AngularJS script tag:</strong></p>
 <pre><code>&lt;script src=&quot;bower_components/angular/angular.js&quot;&gt;
 </code></pre>
-<p>This code downloads the <code>angular.js</code> script and registers a callback that will be executed by the
+<p>  This code downloads the <code>angular.js</code> script which registers a callback that will be executed by the
 browser when the containing HTML page is fully downloaded. When the callback is executed, Angular
 looks for the <a href="api/ng/directive/ngApp">ngApp</a> directive. If
 Angular finds the directive, it will bootstrap the application with the root of the application DOM
 being the element on which the <code>ngApp</code> directive was defined.</p>
-</li>
-<li><p>Double-curly binding with an expression:</p>
+<p><strong>Double-curly binding with an expression:</strong></p>
 <pre><code>Nothing here {{&#39;yet&#39; + &#39;!&#39;}}
 </code></pre>
 <p>This line demonstrates two core features of Angular&#39;s templating capabilities:</p>
@@ -80,11 +79,9 @@ evaluated by Angular in the context of the current model scope, rather than with
 the global context (<code>window</code>).</p>
 <p>As expected, once this template is processed by Angular, the html page contains the text:
 &quot;Nothing here yet!&quot;.</p>
-</li>
-</ul>
 <h2 id="bootstrapping-angularjs-apps">Bootstrapping AngularJS apps</h2>
 <p>Bootstrapping AngularJS apps automatically using the <code>ngApp</code> directive is very easy and suitable
-for most cases. In advanced cases, such as when using script loaders, you can use
+for most cases. In advanced cases, such as when using script loaders, you can use the
 <a href="guide/bootstrap">imperative / manual way</a> to bootstrap the app.</p>
 <p>There are 3 important things that happen during the app bootstrap:</p>
 <ol>

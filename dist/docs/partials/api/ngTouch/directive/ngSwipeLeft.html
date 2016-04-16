@@ -33,6 +33,8 @@ the <code>ng-swipe-left</code> or <code>ng-swipe-right</code> DOM Element.</p>
 
 
 
+
+
 <div>
   
 
@@ -41,6 +43,7 @@ the <code>ng-swipe-left</code> or <code>ng-swipe-right</code> DOM Element.</p>
   <ul>
     
     <li>This directive executes at priority level 0.</li>
+    
   </ul>
 
   
@@ -49,7 +52,7 @@ the <code>ng-swipe-left</code> or <code>ng-swipe-right</code> DOM Element.</p>
   
     <ul>
     <li>as attribute:
-        <pre><code>&lt;ANY&#10;  ng-swipe-left=&quot;&quot;&gt;&#10;...&#10;&lt;/ANY&gt;</code></pre>
+        <pre><code>&lt;ANY&#10;  ng-swipe-left=&quot;expression&quot;&gt;&#10;...&#10;&lt;/ANY&gt;</code></pre>
       </li>
     
   </div>
@@ -95,12 +98,10 @@ upon left swipe. (Event object is available as <code>$event</code>)</p>
   <h2 id="example">Example</h2><p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-example115', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-example116"></plnkr-opener>
 
   <div class="runnable-example"
-      path="examples/example-example115"
+      path="examples/example-example116"
       module="ngSwipeLeftExample"
       deps="angular-touch.js">
 
@@ -120,7 +121,7 @@ upon left swipe. (Event object is available as <code>$event</code>)</p>
     </div>
   
 
-    <iframe class="runnable-example-frame" src="examples/example-example115/index.html" name="example-example115"></iframe>
+    <iframe class="runnable-example-frame" src="examples/example-example116/index.html" name="example-example116"></iframe>
   </div>
 </div>
 

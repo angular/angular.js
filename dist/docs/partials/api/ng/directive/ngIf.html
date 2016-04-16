@@ -47,6 +47,8 @@ and <code>leave</code> effects.</p>
 
 
 
+
+
 <div>
   
 
@@ -55,6 +57,7 @@ and <code>leave</code> effects.</p>
   <ul>
     <li>This directive creates new scope.</li>
     <li>This directive executes at priority level 600.</li>
+    <li>This directive can be used as <a href="api/ng/service/$compile#-multielement-">multiElement</a></li>
   </ul>
 
   
@@ -63,14 +66,30 @@ and <code>leave</code> effects.</p>
   
     <ul>
     <li>as attribute:
-        <pre><code>&lt;ANY&#10;  ng-if=&quot;&quot;&gt;&#10;...&#10;&lt;/ANY&gt;</code></pre>
+        <pre><code>&lt;ANY&#10;  ng-if=&quot;expression&quot;&gt;&#10;...&#10;&lt;/ANY&gt;</code></pre>
       </li>
     
   </div>
   
   <h2 id="animations">Animations</h2>
-  <p>enter - happens just after the <code>ngIf</code> contents change and a new DOM element is created and injected into the <code>ngIf</code> container
-leave - happens just before the <code>ngIf</code> contents are removed from the DOM</p>
+  <table>
+<thead>
+<tr>
+<th>Animation</th>
+<th>Occurs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="api/ng/service/$animate#enter">enter</a></td>
+<td>just after the <code>ngIf</code> contents change and a new DOM element is created and injected into the <code>ngIf</code> container</td>
+</tr>
+<tr>
+<td><a href="api/ng/service/$animate#leave">leave</a></td>
+<td>just before the <code>ngIf</code> contents are removed from the DOM</td>
+</tr>
+</tbody>
+</table>
 
   <a href="api/ngAnimate/service/$animate">Click here</a> to learn more about the steps involved in the animation.
 <section class="api-section">
@@ -115,12 +134,10 @@ leave - happens just before the <code>ngIf</code> contents are removed from the 
   <h2 id="example">Example</h2><p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-example82', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-example84"></plnkr-opener>
 
   <div class="runnable-example"
-      path="examples/example-example82"
+      path="examples/example-example84"
       module="ngAnimate"
       deps="angular-animate.js"
       animations="true">
@@ -130,18 +147,18 @@ leave - happens just before the <code>ngIf</code> contents are removed from the 
       name="index.html"
       language="html"
       type="html">
-      <pre><code>Click me: &lt;input type=&quot;checkbox&quot; ng-model=&quot;checked&quot; ng-init=&quot;checked=true&quot; /&gt;&lt;br/&gt;&#10;Show when checked:&#10;&lt;span ng-if=&quot;checked&quot; class=&quot;animate-if&quot;&gt;&#10;  This is removed when the checkbox is unchecked.&#10;&lt;/span&gt;</code></pre>
+      <pre><code>&lt;label&gt;Click me: &lt;input type=&quot;checkbox&quot; ng-model=&quot;checked&quot; ng-init=&quot;checked=true&quot; /&gt;&lt;/label&gt;&lt;br/&gt;&#10;Show when checked:&#10;&lt;span ng-if=&quot;checked&quot; class=&quot;animate-if&quot;&gt;&#10;  This is removed when the checkbox is unchecked.&#10;&lt;/span&gt;</code></pre>
     </div>
   
     <div class="runnable-example-file" 
       name="animations.css"
       language="css"
       type="css">
-      <pre><code>.animate-if {&#10;  background:white;&#10;  border:1px solid black;&#10;  padding:10px;&#10;}&#10;&#10;.animate-if.ng-enter, .animate-if.ng-leave {&#10;  -webkit-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;&#10;  transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;&#10;}&#10;&#10;.animate-if.ng-enter,&#10;.animate-if.ng-leave.ng-leave-active {&#10;  opacity:0;&#10;}&#10;&#10;.animate-if.ng-leave,&#10;.animate-if.ng-enter.ng-enter-active {&#10;  opacity:1;&#10;}</code></pre>
+      <pre><code>.animate-if {&#10;  background:white;&#10;  border:1px solid black;&#10;  padding:10px;&#10;}&#10;&#10;.animate-if.ng-enter, .animate-if.ng-leave {&#10;  transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;&#10;}&#10;&#10;.animate-if.ng-enter,&#10;.animate-if.ng-leave.ng-leave-active {&#10;  opacity:0;&#10;}&#10;&#10;.animate-if.ng-leave,&#10;.animate-if.ng-enter.ng-enter-active {&#10;  opacity:1;&#10;}</code></pre>
     </div>
   
 
-    <iframe class="runnable-example-frame" src="examples/example-example82/index.html" name="example-example82"></iframe>
+    <iframe class="runnable-example-frame" src="examples/example-example84/index.html" name="example-example84"></iframe>
   </div>
 </div>
 

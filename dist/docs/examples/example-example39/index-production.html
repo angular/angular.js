@@ -5,17 +5,20 @@
   <title>Example - example-example39-production</title>
   
 
-  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/null/angular.min.js"></script>
   <script src="script.js"></script>
   
 
   
 </head>
-<body >
-  <div ng-app="myApp">
+<body ng-app="form-example-modify-validators">
+  <form name="form" class="css-form" novalidate>
   <div>
-    {{ 'World' | greet }}
-  </div>
-</div>
+    Overwritten Email:
+    <input type="email" ng-model="myEmail" overwrite-email name="overwrittenEmail" />
+    <span ng-show="form.overwrittenEmail.$error.email">This email format is invalid!</span><br>
+    Model: {{myEmail}}
+    </div>
+</form>
 </body>
 </html>

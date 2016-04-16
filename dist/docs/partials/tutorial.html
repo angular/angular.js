@@ -47,7 +47,7 @@ recommended testing tools.</p>
 You don&#39;t need to know anything about Git to follow the tutorial other than how to install and run
 a few git commands.</p>
 <h3 id="install-git">Install Git</h3>
-<p>You can download and install Git from <a href="http://git-scm.com/download">http://git-scm.com/download</a>. Once installed you should have
+<p>You can download and install Git from <a href="http://git-scm.com/download">http://git-scm.com/download</a>. Once installed, you should have
 access to the <code>git</code> command line tool.  The main commands that you will need to use are:</p>
 <ul>
 <li><code>git clone ...</code> : clone a remote repository onto your local machine</li>
@@ -89,10 +89,11 @@ npm --version
   </a>.
 </div>
 
-<p>Once you have Node.js installed on your machine you can download the tool dependencies by running:</p>
+<p>Once you have Node.js installed on your machine, you can download the tool dependencies by running:</p>
 <pre><code>npm install
 </code></pre>
-<p>This command will download the following tools, into the <code>node_modules</code> directory:</p>
+<p>This command reads angular-phonecat&#39;s <code>package.json</code> file and downloads the following tools
+into the <code>node_modules</code> directory:</p>
 <ul>
 <li><a href="http://bower.io/">Bower</a> - client-side code package manager</li>
 <li><a href="https://github.com/nodeapps/http-server">Http-Server</a> - simple local static web server</li>
@@ -141,8 +142,8 @@ You can now browse to the application at:</p>
 <pre><code>http://localhost:8000/app/index.html
 </code></pre>
 <div class="alert alert-info">
-To serve the web app on a different ip address or port, edit the &quot;start&quot; script within package.json.
-You can <code>-a</code> to set the address and <code>-p</code> to set the port.
+To serve the web app on a different IP address or port, edit the &quot;start&quot; script within package.json.
+You can use <code>-a</code> to set the address and <code>-p</code> to set the port.
 </div>
 
 <h3 id="running-unit-tests">Running Unit Tests</h3>
@@ -175,6 +176,14 @@ the browser. You can install these drivers by running:</p>
 <pre><code>npm run update-webdriver
 </code></pre>
 <p><em>(You should only need to do this once.)</em></p>
+<p>You will need to have Java present on your dev machine to allow the Selenium standalone to be started.
+Check if you already have java installed by opening a terminal/command line window and typing
+&#39;&#39;&#39;
+java -version
+&#39;&#39;&#39;
+If java is already installed and exists in the PATH then you will be shown the version installed,
+if, however you receive a message that &quot;java is not recognized as an internal command or external
+command&quot; you will need to install <a href="https://www.java.com/en/download/help/download_options.xml">java</a>.</p>
 <p>Since Protractor works by interacting with a running application, we need to start our web server:</p>
 <pre><code>npm start
 </code></pre>
@@ -193,6 +202,7 @@ Protractor to:</p>
 <p>It is good to run the end to end tests whenever you make changes to the HTML views or want to check
 that the application as a whole is executing correctly.  It is very common to run End to End tests
 before pushing a new commit of changes to a remote repository.</p>
+<p>Now that you have set up your local machine, let&#39;s get started with the tutorial: <a href="tutorial/step_00">Step 0 - Bootstrapping</a></p>
 
 
 

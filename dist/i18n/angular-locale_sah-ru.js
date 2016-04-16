@@ -34,6 +34,15 @@ $provide.value("$locale", {
       "\u0411\u044d\u044d\u0442\u0438\u04a5\u0441\u044d",
       "\u0421\u0443\u0431\u0443\u043e\u0442\u0430"
     ],
+    "ERANAMES": [
+      "\u0431. \u044d. \u0438.",
+      "\u0431. \u044d"
+    ],
+    "ERAS": [
+      "\u0431. \u044d. \u0438.",
+      "\u0431. \u044d"
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "\u0422\u043e\u0445\u0441\u0443\u043d\u043d\u044c\u0443",
       "\u041e\u043b\u0443\u043d\u043d\u044c\u0443",
@@ -71,6 +80,24 @@ $provide.value("$locale", {
       "\u0421\u044d\u0442",
       "\u0410\u0445\u0441"
     ],
+    "STANDALONEMONTH": [
+      "\u0422\u043e\u0445\u0441\u0443\u043d\u043d\u044c\u0443",
+      "\u041e\u043b\u0443\u043d\u043d\u044c\u0443",
+      "\u041a\u0443\u043b\u0443\u043d \u0442\u0443\u0442\u0430\u0440",
+      "\u041c\u0443\u0443\u0441 \u0443\u0441\u0442\u0430\u0440",
+      "\u042b\u0430\u043c \u044b\u0439\u044b\u043d",
+      "\u0411\u044d\u0441 \u044b\u0439\u044b\u043d",
+      "\u041e\u0442 \u044b\u0439\u044b\u043d",
+      "\u0410\u0442\u044b\u0440\u0434\u044c\u044b\u0445 \u044b\u0439\u044b\u043d",
+      "\u0411\u0430\u043b\u0430\u0495\u0430\u043d \u044b\u0439\u044b\u043d",
+      "\u0410\u043b\u0442\u044b\u043d\u043d\u044c\u044b",
+      "\u0421\u044d\u0442\u0438\u043d\u043d\u044c\u0438",
+      "\u0410\u0445\u0441\u044b\u043d\u043d\u044c\u044b"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
+    ],
     "fullDate": "y '\u0441\u044b\u043b' MMMM d '\u043a\u04af\u043d\u044d', EEEE",
     "longDate": "y, MMMM d",
     "medium": "y, MMM d HH:mm:ss",
@@ -102,7 +129,7 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "\u00a4\u00a0-",
+        "negPre": "-\u00a4\u00a0",
         "negSuf": "",
         "posPre": "\u00a4\u00a0",
         "posSuf": ""
@@ -110,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "sah-ru",
+  "localeID": "sah_RU",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

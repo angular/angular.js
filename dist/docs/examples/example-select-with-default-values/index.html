@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Example - example-select-with-default-values</title>
+  
+
+  <script src="../../../angular.min.js"></script>
+  <script src="app.js"></script>
+  
+
+  
+</head>
+<body ng-app="defaultValueSelect">
+  <div ng-controller="ExampleController">
+  <form name="myForm">
+    <label for="mySelect">Make a choice:</label>
+    <select name="mySelect" id="mySelect"
+      ng-options="option.name for option in data.availableOptions track by option.id"
+      ng-model="data.selectedOption"></select>
+  </form>
+  <hr>
+  <tt>option = {{data.selectedOption}}</tt><br/>
+</div>
+</body>
+</html>

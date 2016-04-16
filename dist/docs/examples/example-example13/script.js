@@ -1,6 +1,6 @@
 (function(angular) {
   'use strict';
-angular.module('docsRestrictDirective', [])
+angular.module('docsTemplateUrlDirective', [])
   .controller('Controller', ['$scope', function($scope) {
     $scope.customer = {
       name: 'Naomi',
@@ -9,7 +9,6 @@ angular.module('docsRestrictDirective', [])
   }])
   .directive('myCustomer', function() {
     return {
-      restrict: 'E',
       templateUrl: 'my-customer.html'
     };
   });

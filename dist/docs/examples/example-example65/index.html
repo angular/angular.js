@@ -7,17 +7,15 @@
   
 
   <script src="../../../angular.min.js"></script>
+  <script src="../../../angular-animate.js"></script>
   
 
   
 </head>
-<body ng-app="">
-  <ol ng-init="names=['John', 'Mary', 'Cate', 'Suz']">
-  <li ng-repeat="name in names">
-   <span ng-class-odd="'odd'" ng-class-even="'even'">
-     {{name}} &nbsp; &nbsp; &nbsp;
-   </span>
-  </li>
-</ol>
+<body ng-app="ngAnimate">
+  <input id="setbtn" type="button" value="set" ng-click="myVar='my-class'">
+<input id="clearbtn" type="button" value="clear" ng-click="myVar=''">
+<br>
+<span class="base-class" ng-class="myVar">Sample Text</span>
 </body>
 </html>

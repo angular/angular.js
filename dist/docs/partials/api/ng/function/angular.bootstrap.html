@@ -1,8 +1,8 @@
-<a href='https://github.com/angular/angular.js/edit/master/src/Angular.js?message=docs(angular.bootstrap)%3A%20describe%20your%20change...#L1308' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+<a href='https://github.com/angular/angular.js/edit/master/src/Angular.js?message=docs(angular.bootstrap)%3A%20describe%20your%20change...#L1587' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
 
 
 
-<a href='https://github.com/angular/angular.js/tree/master/src/Angular.js#L1308' class='view-source pull-right btn btn-primary'>
+<a href='https://github.com/angular/angular.js/tree/master/src/Angular.js#L1587' class='view-source pull-right btn btn-primary'>
   <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
 </a>
 
@@ -21,13 +21,23 @@
 
 <div class="api-profile-description">
   <p>Use this function to manually start up angular application.</p>
-<p>See: <a href="guide/bootstrap">Bootstrap</a></p>
-<p>Note that Protractor based end-to-end tests cannot use this function to bootstrap manually.
-They must use <a href="api/ng/directive/ngApp">ngApp</a>.</p>
+<p>For more information, see the <a href="guide/bootstrap">Bootstrap guide</a>.</p>
 <p>Angular will detect if it has been loaded into the browser more than once and only allow the
 first loaded script to be bootstrapped and will report a warning to the browser console for
 each of the subsequent scripts. This prevents strange results in applications, where otherwise
 multiple instances of Angular try to work on the DOM.</p>
+<div class="alert alert-warning">
+<strong>Note:</strong> Protractor based end-to-end tests cannot use this function to bootstrap manually.
+They must use <a href="api/ng/directive/ngApp">ngApp</a>.
+</div>
+
+<div class="alert alert-warning">
+<strong>Note:</strong> Do not bootstrap the app on an element with a directive that uses <a href="api/ng/service/$compile#transclusion">transclusion</a>,
+such as <a href="api/ng/directive/ngIf"><code>ngIf</code></a>, <a href="api/ng/directive/ngInclude"><code>ngInclude</code></a> and <a href="api/ngRoute/directive/ngView"><code>ngView</code></a>.
+Doing this misplaces the app <a href="api/ng/service/$rootElement"><code>$rootElement</code></a> and the app&#39;s <a href="api/auto/service/$injector">injector</a>,
+causing animations to stop working and making the injector inaccessible from outside the app.
+</div>
+
 <pre><code class="lang-html">&lt;!doctype html&gt;
 &lt;html&gt;
 &lt;body&gt;
@@ -48,6 +58,8 @@ multiple instances of Angular try to work on the DOM.</p>
 </code></pre>
 
 </div>
+
+
 
 
 

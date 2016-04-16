@@ -1,0 +1,283 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ngAnimate/animateCss.js?message=docs($animateCss)%3A%20describe%20your%20change...#L5' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ngAnimate/animateCss.js#L5' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">$animateCss</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+  
+
+    <li>
+      - service in module <a href="api/ngAnimate">ngAnimate</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>The <code>$animateCss</code> service is a useful utility to trigger customized CSS-based transitions/keyframes
+from a JavaScript-based animation or directly from a directive. The purpose of <code>$animateCss</code> is NOT
+to side-step how <code>$animate</code> and ngAnimate work, but the goal is to allow pre-existing animations or
+directives to create more complex animations that can be purely driven using CSS code.</p>
+<p>Note that only browsers that support CSS transitions and/or keyframe animations are capable of
+rendering animations triggered via <code>$animateCss</code> (bad news for IE9 and lower).</p>
+<h2 id="usage">Usage</h2>
+<p>Once again, <code>$animateCss</code> is designed to be used inside of a registered JavaScript animation that
+is powered by ngAnimate. It is possible to use <code>$animateCss</code> directly inside of a directive, however,
+any automatic control over cancelling animations and/or preventing animations from being run on
+child elements will not be handled by Angular. For this to work as expected, please use <code>$animate</code> to
+trigger the animation and then setup a JavaScript animation that injects <code>$animateCss</code> to trigger
+the CSS animation.</p>
+<p>The example below shows how we can create a folding animation on an element using <code>ng-if</code>:</p>
+<pre><code class="lang-html">&lt;!-- notice the `fold-animation` CSS class --&gt;
+&lt;div ng-if=&quot;onOff&quot; class=&quot;fold-animation&quot;&gt;
+  This element will go BOOM
+&lt;/div&gt;
+&lt;button ng-click=&quot;onOff=true&quot;&gt;Fold In&lt;/button&gt;
+</code></pre>
+<p>Now we create the <strong>JavaScript animation</strong> that will trigger the CSS transition:</p>
+<pre><code class="lang-js">ngModule.animation(&#39;.fold-animation&#39;, [&#39;$animateCss&#39;, function($animateCss) {
+  return {
+    enter: function(element, doneFn) {
+      var height = element[0].offsetHeight;
+      return $animateCss(element, {
+        from: { height:&#39;0px&#39; },
+        to: { height:height + &#39;px&#39; },
+        duration: 1 // one second
+      });
+    }
+  }
+}]);
+</code></pre>
+<h2 id="more-advanced-uses">More Advanced Uses</h2>
+<p><code>$animateCss</code> is the underlying code that ngAnimate uses to power <strong>CSS-based animations</strong> behind the scenes. Therefore CSS hooks
+like <code>.ng-EVENT</code>, <code>.ng-EVENT-active</code>, <code>.ng-EVENT-stagger</code> are all features that can be triggered using <code>$animateCss</code> via JavaScript code.</p>
+<p>This also means that just about any combination of adding classes, removing classes, setting styles, dynamically setting a keyframe animation,
+applying a hardcoded duration or delay value, changing the animation easing or applying a stagger animation are all options that work with
+<code>$animateCss</code>. The service itself is smart enough to figure out the combination of options and examine the element styling properties in order
+to provide a working animation that will run in CSS.</p>
+<p>The example below showcases a more advanced version of the <code>.fold-animation</code> from the example above:</p>
+<pre><code class="lang-js">ngModule.animation(&#39;.fold-animation&#39;, [&#39;$animateCss&#39;, function($animateCss) {
+  return {
+    enter: function(element, doneFn) {
+      var height = element[0].offsetHeight;
+      return $animateCss(element, {
+        addClass: &#39;red large-text pulse-twice&#39;,
+        easing: &#39;ease-out&#39;,
+        from: { height:&#39;0px&#39; },
+        to: { height:height + &#39;px&#39; },
+        duration: 1 // one second
+      });
+    }
+  }
+}]);
+</code></pre>
+<p>Since we&#39;re adding/removing CSS classes then the CSS transition will also pick those up:</p>
+<pre><code class="lang-css">/* since a hardcoded duration value of 1 was provided in the JavaScript animation code,
+the CSS classes below will be transitioned despite them being defined as regular CSS classes */
+.red { background:red; }
+.large-text { font-size:20px; }
+
+/* we can also use a keyframe animation and $animateCss will make it work alongside the transition */
+.pulse-twice {
+  animation: 0.5s pulse linear 2;
+  -webkit-animation: 0.5s pulse linear 2;
+}
+
+@keyframes pulse {
+  from { transform: scale(0.5); }
+  to { transform: scale(1.5); }
+}
+
+@-webkit-keyframes pulse {
+  from { -webkit-transform: scale(0.5); }
+  to { -webkit-transform: scale(1.5); }
+}
+</code></pre>
+<p>Given this complex combination of CSS classes, styles and options, <code>$animateCss</code> will figure everything out and make the animation happen.</p>
+<h2 id="how-the-options-are-handled">How the Options are handled</h2>
+<p><code>$animateCss</code> is very versatile and intelligent when it comes to figuring out what configurations to apply to the element to ensure the animation
+works with the options provided. Say for example we were adding a class that contained a keyframe value and we wanted to also animate some inline
+styles using the <code>from</code> and <code>to</code> properties.</p>
+<pre><code class="lang-js">var animator = $animateCss(element, {
+  from: { background:&#39;red&#39; },
+  to: { background:&#39;blue&#39; }
+});
+animator.start();
+</code></pre>
+<pre><code class="lang-css">.rotating-animation {
+  animation:0.5s rotate linear;
+  -webkit-animation:0.5s rotate linear;
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@-webkit-keyframes rotate {
+  from { -webkit-transform: rotate(0deg); }
+  to { -webkit-transform: rotate(360deg); }
+}
+</code></pre>
+<p>The missing pieces here are that we do not have a transition set (within the CSS code nor within the <code>$animateCss</code> options) and the duration of the animation is
+going to be detected from what the keyframe styles on the CSS class are. In this event, <code>$animateCss</code> will automatically create an inline transition
+style matching the duration detected from the keyframe style (which is present in the CSS class that is being added) and then prepare both the transition
+and keyframe animations to run in parallel on the element. Then when the animation is underway the provided <code>from</code> and <code>to</code> CSS styles will be applied
+and spread across the transition and keyframe animation.</p>
+<h2 id="what-is-returned">What is returned</h2>
+<p><code>$animateCss</code> works in two stages: a preparation phase and an animation phase. Therefore when <code>$animateCss</code> is first called it will NOT actually
+start the animation. All that is going on here is that the element is being prepared for the animation (which means that the generated CSS classes are
+added and removed on the element). Once <code>$animateCss</code> is called it will return an object with the following properties:</p>
+<pre><code class="lang-js">var animator = $animateCss(element, { ... });
+</code></pre>
+<p>Now what do the contents of our <code>animator</code> variable look like:</p>
+<pre><code class="lang-js">{
+  // starts the animation
+  start: Function,
+
+  // ends (aborts) the animation
+  end: Function
+}
+</code></pre>
+<p>To actually start the animation we need to run <code>animation.start()</code> which will then return a promise that we can hook into to detect when the animation ends.
+If we choose not to run the animation then we MUST run <code>animation.end()</code> to perform a cleanup on the element (since some CSS classes and styles may have been
+applied to the element during the preparation phase). Note that all other properties such as duration, delay, transitions and keyframes are just properties
+and that changing them will not reconfigure the parameters of the animation.</p>
+<h3 id="runner-done-vs-runner-then-">runner.done() vs runner.then()</h3>
+<p>It is documented that <code>animation.start()</code> will return a promise object and this is true, however, there is also an additional method available on the
+runner called <code>.done(callbackFn)</code>. The done method works the same as <code>.finally(callbackFn)</code>, however, it does <strong>not trigger a digest to occur</strong>.
+Therefore, for performance reasons, it&#39;s always best to use <code>runner.done(callback)</code> instead of <code>runner.then()</code>, <code>runner.catch()</code> or <code>runner.finally()</code>
+unless you really need a digest to kick off afterwards.</p>
+<p>Keep in mind that, to make this easier, ngAnimate has tweaked the JS animations API to recognize when a runner instance is returned from $animateCss
+(so there is no need to call <code>runner.done(doneFn)</code> inside of your JavaScript animation code).
+Check the <a href="api/ngAnimate/service/$animateCss#usage">animation code above</a> to see how this works.</p>
+
+</div>
+
+
+
+
+
+
+<div>
+  
+
+    
+
+  <h2 id="usage">Usage</h2>
+    
+      <p><code>$animateCss(element, options);</code></p>
+
+
+    
+
+    
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        element
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-domelement">DOMElement</a>
+      </td>
+      <td>
+        <p>the element that will be animated</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        options
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>the animation-related options that will be applied during the animation</p>
+<ul>
+<li><code>event</code> - The DOM event (e.g. enter, leave, move). When used, a generated CSS class of <code>ng-EVENT</code> and <code>ng-EVENT-active</code> will be applied
+to the element during the animation. Multiple events can be provided when spaces are used as a separator. (Note that this will not perform any DOM operation.)</li>
+<li><code>structural</code> - Indicates that the <code>ng-</code> prefix will be added to the event class. Setting to <code>false</code> or omitting will turn <code>ng-EVENT</code> and
+<code>ng-EVENT-active</code> in <code>EVENT</code> and <code>EVENT-active</code>. Unused if <code>event</code> is omitted.</li>
+<li><code>easing</code> - The CSS easing value that will be applied to the transition or keyframe animation (or both).</li>
+<li><code>transitionStyle</code> - The raw CSS transition style that will be used (e.g. <code>1s linear all</code>).</li>
+<li><code>keyframeStyle</code> - The raw CSS keyframe animation style that will be used (e.g. <code>1s my_animation linear</code>).</li>
+<li><code>from</code> - The starting CSS styles (a key/value object) that will be applied at the start of the animation.</li>
+<li><code>to</code> - The ending CSS styles (a key/value object) that will be applied across the animation via a CSS transition.</li>
+<li><code>addClass</code> - A space separated list of CSS classes that will be added to the element and spread across the animation.</li>
+<li><code>removeClass</code> - A space separated list of CSS classes that will be removed from the element and spread across the animation.</li>
+<li><code>duration</code> - A number value representing the total duration of the transition and/or keyframe (note that a value of 1 is 1000ms). If a value of <code>0</code>
+is provided then the animation will be skipped entirely.</li>
+<li><code>delay</code> - A number value representing the total delay of the transition and/or keyframe (note that a value of 1 is 1000ms). If a value of <code>true</code> is
+used then whatever delay value is detected from the CSS classes will be mirrored on the elements styles (e.g. by setting delay true then the style value
+of the element will be <code>transition-delay: DETECTED_VALUE</code>). Using <code>true</code> is useful when you want the CSS classes and inline styles to all share the same
+CSS delay value.</li>
+<li><code>stagger</code> - A numeric time value representing the delay between successively animated elements
+(<a href="api/ngAnimate#css-staggering-animations">Click here to learn how CSS-based staggering works in ngAnimate.</a>)</li>
+<li><code>staggerIndex</code> - The numeric index representing the stagger item (e.g. a value of 5 is equal to the sixth item in the stagger; therefore when a
+<code>stagger</code> option value of <code>0.1</code> is used then there will be a stagger delay of <code>600ms</code>)</li>
+<li><code>applyClassesEarly</code> - Whether or not the classes being added or removed will be used when detecting the animation. This is set by <code>$animate</code> when enter/leave/move animations are fired to ensure that the CSS classes are resolved in time. (Note that this will prevent any transitions from occurring on the classes being added and removed.)</li>
+<li><code>cleanupStyles</code> - Whether or not the provided <code>from</code> and <code>to</code> styles will be removed once
+ the animation is closed. This is useful for when the styles are used purely for the sake of
+ the animation and do not have a lasting visual effect on the element (e.g. a collapse and open animation).
+ By default this value is set to <code>false</code>.</li>
+</ul>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
+    
+    <h3>Returns</h3>
+<table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-object">object</a></td>
+    <td><p>an object with start and end methods and details about the animation.</p>
+<ul>
+<li><code>start</code> - The method to start the animation. This will return a <code>Promise</code> when called.</li>
+<li><code>end</code> - This method will cancel the animation and remove all applied CSS classes and styles.</li>
+</ul>
+</td>
+  </tr>
+</table>
+
+  
+  
+  
+
+
+
+  
+</div>
+
+

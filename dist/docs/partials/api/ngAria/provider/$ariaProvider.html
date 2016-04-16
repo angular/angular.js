@@ -1,8 +1,8 @@
-<a href='https://github.com/angular/angular.js/edit/master/src/ngAria/aria.js?message=docs($ariaProvider)%3A%20describe%20your%20change...#L55' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+<a href='https://github.com/angular/angular.js/edit/master/src/ngAria/aria.js?message=docs($ariaProvider)%3A%20describe%20your%20change...#L70' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
 
 
 
-<a href='https://github.com/angular/angular.js/tree/master/src/ngAria/aria.js#L55' class='view-source pull-right btn btn-primary'>
+<a href='https://github.com/angular/angular.js/tree/master/src/ngAria/aria.js#L70' class='view-source pull-right btn btn-primary'>
   <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
 </a>
 
@@ -36,6 +36,8 @@
 <p>Requires the <a href="api/ngAria"><code>ngAria</code></a> module to be installed.</p>
 
 </div>
+
+
 
 
 
@@ -84,13 +86,16 @@
 <ul>
 <li><strong>ariaHidden</strong> – <code>{boolean}</code> – Enables/disables aria-hidden tags</li>
 <li><strong>ariaChecked</strong> – <code>{boolean}</code> – Enables/disables aria-checked tags</li>
+<li><strong>ariaReadonly</strong> – <code>{boolean}</code> – Enables/disables aria-readonly tags</li>
 <li><strong>ariaDisabled</strong> – <code>{boolean}</code> – Enables/disables aria-disabled tags</li>
 <li><strong>ariaRequired</strong> – <code>{boolean}</code> – Enables/disables aria-required tags</li>
 <li><strong>ariaInvalid</strong> – <code>{boolean}</code> – Enables/disables aria-invalid tags</li>
-<li><strong>ariaMultiline</strong> – <code>{boolean}</code> – Enables/disables aria-multiline tags</li>
 <li><strong>ariaValue</strong> – <code>{boolean}</code> – Enables/disables aria-valuemin, aria-valuemax and aria-valuenow tags</li>
 <li><strong>tabindex</strong> – <code>{boolean}</code> – Enables/disables tabindex tags</li>
-<li><strong>bindKeypress</strong> – <code>{boolean}</code> – Enables/disables keypress event binding on ng-click</li>
+<li><strong>bindKeypress</strong> – <code>{boolean}</code> – Enables/disables keypress event binding on <code>div</code> and
+<code>li</code> elements with ng-click</li>
+<li><strong>bindRoleForClick</strong> – <code>{boolean}</code> – Adds role=button to non-interactive elements like <code>div</code>
+using ng-click, making them more accessible to users of assistive technologies</li>
 </ul>
 
         

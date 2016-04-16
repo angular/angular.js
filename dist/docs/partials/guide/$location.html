@@ -263,7 +263,7 @@ and updates the url in a way that never performs a full page reload.</p>
 </code></pre>
 <h3 id="fallback-for-legacy-browsers">Fallback for legacy browsers</h3>
 <p>For browsers that support the HTML5 history API, <code>$location</code> uses the HTML5 history API to write
-path and search. If the history API is not supported by a browser, <code>$location</code> supplies a Hasbang
+path and search. If the history API is not supported by a browser, <code>$location</code> supplies a Hashbang
 URL. This frees you from having to worry about whether the browser viewing your app supports the
 history API  or not; the <code>$location</code> service makes this transparent to you.</p>
 <h3 id="html-link-rewriting">Html link rewriting</h3>
@@ -286,8 +286,8 @@ Example: <code>&lt;a href=&quot;/not-my-base/link&quot;&gt;link&lt;/a&gt;</code>
 </ul>
 <h3 id="relative-links">Relative links</h3>
 <p>Be sure to check all relative links, images, scripts etc. Angular requires you to specify the url
-base in the head of your main html file (<code>&lt;base href=&quot;/my-base&quot;&gt;</code>) unless <code>html5Mode.requireBase</code> is
-set to <code>false</code> in the html5Mode definition object passed to <code>$locationProvider.html5Mode()</code>. With
+base in the head of your main html file (<code>&lt;base href=&quot;/my-base/index.html&quot;&gt;</code>) unless <code>html5Mode.requireBase</code>
+is set to <code>false</code> in the html5Mode definition object passed to <code>$locationProvider.html5Mode()</code>. With
 that, relative urls will always be resolved to this base url, even if the initial url of the
 document was different.</p>
 <p>There is one exception: Links that only contain a hash fragment (e.g. <code>&lt;a href=&quot;#target&quot;&gt;</code>)
@@ -298,6 +298,15 @@ to anchors on the same page without needing to know on which page the user curre
 to entry point of your application (e.g. index.html). Requiring a <code>&lt;base&gt;</code> tag is also important for
 this case, as it allows Angular to differentiate between the part of the url that is the application
 base and the path that should be handled by the application.</p>
+<h3 id="base-href-constraints">Base href constraints</h3>
+<p>The <code>$location</code> service is not able to function properly if the current URL is outside the URL given
+as the base href. This can have subtle confusing consequencies...</p>
+<p>Consider a base href set as follows: <code>&lt;base href=&quot;/base/&quot;&gt;</code> (i.e. the application exists in the &quot;folder&quot;
+called <code>/base</code>). The URL <code>/base</code> is actually outside the application (it refers to the <code>base</code> file found
+in the root <code>/</code> folder).</p>
+<p>If you wish to be able to navigate to the application via a URL such as <code>/base</code> then you should ensure that
+you server is setup to redirect such requests to <code>/base/</code>.</p>
+<p>See <a href="https://github.com/angular/angular.js/issues/14018">https://github.com/angular/angular.js/issues/14018</a> for more information.</p>
 <h3 id="sending-links-among-different-browsers">Sending links among different browsers</h3>
 <p>Because of rewriting capability in HTML5 mode, your users will be able to open regular url links in
 legacy browsers and hashbang links in modern browser:</p>
@@ -306,20 +315,18 @@ legacy browsers and hashbang links in modern browser:</p>
 <li>Older browsers will redirect regular URLs to hashbang URLs.</li>
 </ul>
 <h3 id="example">Example</h3>
-<p>Here you can see two <code>$location</code> instances, both in <strong>Html5 mode</strong>, but on different browsers, so
-that you can see the differences. These <code>$location</code> services are connected to a fake browsers. Each
-input represents the address bar of the browser.</p>
-<p>Note that when you type hashbang url into first browser (or vice versa) it doesn&#39;t rewrite /
+<p>Here you can see two <code>$location</code> instances that show the difference between <strong>Html5 mode</strong> and <strong>Html5 Fallback mode</strong>.
+Note that to simulate different levels of browser support, the <code>$location</code> instances are connected to
+a fakeBrowser service, which you don&#39;t have to set up in actual projects.</p>
+<p>Note that when you type hashbang url into the first browser (or vice versa) it doesn&#39;t rewrite /
 redirect to regular / hashbang url, as this conversion happens only during parsing the initial URL
 = on page reload.</p>
-<p>In these examples we use <code>&lt;base href=&quot;/base/index.html&quot; /&gt;</code></p>
+<p>In these examples we use <code>&lt;base href=&quot;/base/index.html&quot; /&gt;</code>. The inputs represent the address bar of the browser.</p>
 <h4 id="browser-in-html5-mode">Browser in HTML5 mode</h4>
 <p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-location-html5-mode', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-location-html5-mode"></plnkr-opener>
 
   <div class="runnable-example"
       path="examples/example-location-html5-mode"
@@ -331,35 +338,35 @@ redirect to regular / hashbang url, as this conversion happens only during parsi
       name="index.html"
       language="html"
       type="html">
-      <pre><code>&lt;div ng-controller=&quot;LocationController&quot;&gt;&#10;  &lt;div ng-address-bar&gt;&lt;/div&gt;&lt;br&gt;&lt;br&gt;&#10;  &lt;div&gt;&#10;    $location.protocol() = &lt;span ng-bind=&quot;$location.protocol()&quot;&gt;&lt;/span&gt; &lt;br&gt;&#10;    $location.host() = &lt;span ng-bind=&quot;$location.host()&quot;&gt;&lt;/span&gt; &lt;br&gt;&#10;    $location.port() = &lt;span ng-bind=&quot;$location.port()&quot;&gt;&lt;/span&gt; &lt;br&gt;&#10;    $location.path() = &lt;span ng-bind=&quot;$location.path()&quot;&gt;&lt;/span&gt; &lt;br&gt;&#10;    $location.search() = &lt;span ng-bind=&quot;$location.search()&quot;&gt;&lt;/span&gt; &lt;br&gt;&#10;    $location.hash() = &lt;span ng-bind=&quot;$location.hash()&quot;&gt;&lt;/span&gt; &lt;br&gt;&#10;  &lt;/div&gt;&#10;  &lt;div id=&quot;navigation&quot;&gt;&#10;    &lt;a href=&quot;http://www.example.com/base/first?a=b&quot;&gt;/base/first?a=b&lt;/a&gt; |&#10;    &lt;a href=&quot;http://www.example.com/base/sec/ond?flag#hash&quot;&gt;sec/ond?flag#hash&lt;/a&gt; |&#10;    &lt;a href=&quot;/other-base/another?search&quot;&gt;external&lt;/a&gt;&#10;  &lt;/div&gt;&#10;&lt;/div&gt;</code></pre>
+      <pre><code>&lt;div ng-controller=&quot;LocationController&quot;&gt;&#13;&#10;  &lt;div ng-address-bar&gt;&lt;/div&gt;&lt;br&gt;&lt;br&gt;&#13;&#10;  &lt;div&gt;&#13;&#10;    $location.protocol() = &lt;span ng-bind=&quot;$location.protocol()&quot;&gt;&lt;/span&gt; &lt;br&gt;&#13;&#10;    $location.host() = &lt;span ng-bind=&quot;$location.host()&quot;&gt;&lt;/span&gt; &lt;br&gt;&#13;&#10;    $location.port() = &lt;span ng-bind=&quot;$location.port()&quot;&gt;&lt;/span&gt; &lt;br&gt;&#13;&#10;    $location.path() = &lt;span ng-bind=&quot;$location.path()&quot;&gt;&lt;/span&gt; &lt;br&gt;&#13;&#10;    $location.search() = &lt;span ng-bind=&quot;$location.search()&quot;&gt;&lt;/span&gt; &lt;br&gt;&#13;&#10;    $location.hash() = &lt;span ng-bind=&quot;$location.hash()&quot;&gt;&lt;/span&gt; &lt;br&gt;&#13;&#10;  &lt;/div&gt;&#13;&#10;  &lt;div id=&quot;navigation&quot;&gt;&#13;&#10;    &lt;a href=&quot;http://www.example.com/base/first?a=b&quot;&gt;/base/first?a=b&lt;/a&gt; |&#13;&#10;    &lt;a href=&quot;http://www.example.com/base/sec/ond?flag#hash&quot;&gt;sec/ond?flag#hash&lt;/a&gt; |&#13;&#10;    &lt;a href=&quot;/other-base/another?search&quot;&gt;external&lt;/a&gt;&#13;&#10;  &lt;/div&gt;&#13;&#10;&lt;/div&gt;&#13;</code></pre>
     </div>
   
     <div class="runnable-example-file" 
       name="app.js"
       language="js"
       type="js">
-      <pre><code>angular.module(&#39;html5-mode&#39;, [&#39;fake-browser&#39;, &#39;address-bar&#39;])&#10;&#10;.constant(&#39;initUrl&#39;, &#39;http://www.example.com/base/path?a=b#h&#39;)&#10;.constant(&#39;baseHref&#39;, &#39;/base/index.html&#39;)&#10;.value(&#39;$sniffer&#39;, { history: true })&#10;&#10;.controller(&quot;LocationController&quot;, function($scope, $location) {&#10;  $scope.$location = {};&#10;  angular.forEach(&quot;protocol host port path search hash&quot;.split(&quot; &quot;), function(method){&#10;   $scope.$location[method] = function(){&#10;     var result = $location[method].call($location);&#10;     return angular.isObject(result) ? angular.toJson(result) : result;&#10;   };&#10;  });&#10;})&#10;&#10;.config(function($locationProvider) {&#10;  $locationProvider.html5Mode(true).hashPrefix(&#39;!&#39;);&#10;})&#10;&#10;.run(function($rootElement) {&#10;  $rootElement.on(&#39;click&#39;, function(e) { e.stopPropagation(); });&#10;});</code></pre>
+      <pre><code>angular.module(&#39;html5-mode&#39;, [&#39;fake-browser&#39;, &#39;address-bar&#39;])&#13;&#10;&#10;// Configure the fakeBrowser. Do not set these values in actual projects.&#13;&#10;.constant(&#39;initUrl&#39;, &#39;http://www.example.com/base/path?a=b#h&#39;)&#13;&#10;.constant(&#39;baseHref&#39;, &#39;/base/index.html&#39;)&#13;&#10;.value(&#39;$sniffer&#39;, { history: true })&#13;&#10;&#10;.controller(&quot;LocationController&quot;, function($scope, $location) {&#13;&#10;  $scope.$location = {};&#13;&#10;  angular.forEach(&quot;protocol host port path search hash&quot;.split(&quot; &quot;), function(method){&#13;&#10;   $scope.$location[method] = function(){&#13;&#10;     var result = $location[method].call($location);&#13;&#10;     return angular.isObject(result) ? angular.toJson(result) : result;&#13;&#10;   };&#13;&#10;  });&#13;&#10;})&#13;&#10;&#10;.config(function($locationProvider) {&#13;&#10;  $locationProvider.html5Mode(true).hashPrefix(&#39;!&#39;);&#13;&#10;})&#13;&#10;&#10;.run(function($rootElement) {&#13;&#10;  $rootElement.on(&#39;click&#39;, function(e) { e.stopPropagation(); });&#13;&#10;});&#13;</code></pre>
     </div>
   
     <div class="runnable-example-file" 
       name="fakeBrowser.js"
       language="js"
       type="js">
-      <pre><code>angular.module(&#39;fake-browser&#39;, [])&#10;&#10;.config(function($provide) {&#10; $provide.decorator(&#39;$browser&#39;, function($delegate, baseHref, initUrl) {&#10;&#10;  $delegate.onUrlChange = function(fn) {&#10;     this.urlChange = fn;&#10;   };&#10;&#10;  $delegate.url = function() {&#10;     return initUrl;&#10;  };&#10;&#10;  $delegate.defer = function(fn, delay) {&#10;     setTimeout(function() { fn(); }, delay || 0);&#10;   };&#10;&#10;  $delegate.baseHref = function() {&#10;     return baseHref;&#10;   };&#10;&#10;   return $delegate;&#10; });&#10;});</code></pre>
+      <pre><code>angular.module(&#39;fake-browser&#39;, [])&#13;&#10;&#10;.config(function($provide) {&#13;&#10; $provide.decorator(&#39;$browser&#39;, function($delegate, baseHref, initUrl) {&#13;&#10;&#10;  $delegate.onUrlChange = function(fn) {&#13;&#10;     this.urlChange = fn;&#13;&#10;   };&#13;&#10;&#10;  $delegate.url = function() {&#13;&#10;     return initUrl;&#13;&#10;  };&#13;&#10;&#10;  $delegate.defer = function(fn, delay) {&#13;&#10;     setTimeout(function() { fn(); }, delay || 0);&#13;&#10;   };&#13;&#10;&#10;  $delegate.baseHref = function() {&#13;&#10;     return baseHref;&#13;&#10;   };&#13;&#10;&#10;   return $delegate;&#13;&#10; });&#13;&#10;});&#13;</code></pre>
     </div>
   
     <div class="runnable-example-file" 
       name="addressBar.js"
       language="js"
       type="js">
-      <pre><code>angular.module(&#39;address-bar&#39;, [])&#10;.directive(&#39;ngAddressBar&#39;, function($browser, $timeout) {&#10;   return {&#10;     template: &#39;Address: &lt;input id=&quot;addressBar&quot; type=&quot;text&quot; style=&quot;width: 400px&quot; &gt;&#39;,&#10;     link: function(scope, element, attrs){&#10;       var input = element.children(&quot;input&quot;), delay;&#10;&#10;       input.on(&#39;keypress keyup keydown&#39;, function(event) {&#10;               delay = (!delay ? $timeout(fireUrlChange, 250) : null);&#10;               event.stopPropagation();&#10;             })&#10;            .val($browser.url());&#10;&#10;       $browser.url = function(url) {&#10;         return url ? input.val(url) : input.val();&#10;       };&#10;&#10;       function fireUrlChange() {&#10;         delay = null;&#10;         $browser.urlChange(input.val());&#10;       }&#10;     }&#10;   };&#10; });</code></pre>
+      <pre><code>angular.module(&#39;address-bar&#39;, [])&#13;&#10;.directive(&#39;ngAddressBar&#39;, function($browser, $timeout) {&#13;&#10;   return {&#13;&#10;     template: &#39;Address: &lt;input id=&quot;addressBar&quot; type=&quot;text&quot; style=&quot;width: 400px&quot; &gt;&#39;,&#13;&#10;     link: function(scope, element, attrs){&#13;&#10;       var input = element.children(&quot;input&quot;), delay;&#13;&#10;&#10;       input.on(&#39;keypress keyup keydown&#39;, function(event) {&#13;&#10;               delay = (!delay ? $timeout(fireUrlChange, 250) : null);&#13;&#10;               event.stopPropagation();&#13;&#10;             })&#13;&#10;            .val($browser.url());&#13;&#10;&#10;       $browser.url = function(url) {&#13;&#10;         return url ? input.val(url) : input.val();&#13;&#10;       };&#13;&#10;&#10;       function fireUrlChange() {&#13;&#10;         delay = null;&#13;&#10;         $browser.urlChange(input.val());&#13;&#10;       }&#13;&#10;     }&#13;&#10;   };&#13;&#10; });&#13;</code></pre>
     </div>
   
     <div class="runnable-example-file" 
       name="protractor.js"
       type="protractor"
       language="js">
-      <pre><code>var addressBar = element(by.css(&quot;#addressBar&quot;)),&#10;    url = &#39;http://www.example.com/base/path?a=b#h&#39;;&#10;&#10;&#10;it(&quot;should show fake browser info on load&quot;, function(){&#10;  expect(addressBar.getAttribute(&#39;value&#39;)).toBe(url);&#10;&#10;  expect(element(by.binding(&#39;$location.protocol()&#39;)).getText()).toBe(&#39;http&#39;);&#10;  expect(element(by.binding(&#39;$location.host()&#39;)).getText()).toBe(&#39;www.example.com&#39;);&#10;  expect(element(by.binding(&#39;$location.port()&#39;)).getText()).toBe(&#39;80&#39;);&#10;  expect(element(by.binding(&#39;$location.path()&#39;)).getText()).toBe(&#39;/path&#39;);&#10;  expect(element(by.binding(&#39;$location.search()&#39;)).getText()).toBe(&#39;{&quot;a&quot;:&quot;b&quot;}&#39;);&#10;  expect(element(by.binding(&#39;$location.hash()&#39;)).getText()).toBe(&#39;h&#39;);&#10;&#10;});&#10;&#10;it(&quot;should change $location accordingly&quot;, function(){&#10;  var navigation = element.all(by.css(&quot;#navigation a&quot;));&#10;&#10;  navigation.get(0).click();&#10;&#10;  expect(addressBar.getAttribute(&#39;value&#39;)).toBe(&quot;http://www.example.com/base/first?a=b&quot;);&#10;&#10;  expect(element(by.binding(&#39;$location.protocol()&#39;)).getText()).toBe(&#39;http&#39;);&#10;  expect(element(by.binding(&#39;$location.host()&#39;)).getText()).toBe(&#39;www.example.com&#39;);&#10;  expect(element(by.binding(&#39;$location.port()&#39;)).getText()).toBe(&#39;80&#39;);&#10;  expect(element(by.binding(&#39;$location.path()&#39;)).getText()).toBe(&#39;/first&#39;);&#10;  expect(element(by.binding(&#39;$location.search()&#39;)).getText()).toBe(&#39;{&quot;a&quot;:&quot;b&quot;}&#39;);&#10;  expect(element(by.binding(&#39;$location.hash()&#39;)).getText()).toBe(&#39;&#39;);&#10;&#10;&#10;  navigation.get(1).click();&#10;&#10;  expect(addressBar.getAttribute(&#39;value&#39;)).toBe(&quot;http://www.example.com/base/sec/ond?flag#hash&quot;);&#10;&#10;  expect(element(by.binding(&#39;$location.protocol()&#39;)).getText()).toBe(&#39;http&#39;);&#10;  expect(element(by.binding(&#39;$location.host()&#39;)).getText()).toBe(&#39;www.example.com&#39;);&#10;  expect(element(by.binding(&#39;$location.port()&#39;)).getText()).toBe(&#39;80&#39;);&#10;  expect(element(by.binding(&#39;$location.path()&#39;)).getText()).toBe(&#39;/sec/ond&#39;);&#10;  expect(element(by.binding(&#39;$location.search()&#39;)).getText()).toBe(&#39;{&quot;flag&quot;:true}&#39;);&#10;  expect(element(by.binding(&#39;$location.hash()&#39;)).getText()).toBe(&#39;hash&#39;);&#10;});</code></pre>
+      <pre><code>var addressBar = element(by.css(&quot;#addressBar&quot;)),&#13;&#10;    url = &#39;http://www.example.com/base/path?a=b#h&#39;;&#13;&#10;&#10;&#10;it(&quot;should show fake browser info on load&quot;, function(){&#13;&#10;  expect(addressBar.getAttribute(&#39;value&#39;)).toBe(url);&#13;&#10;&#10;  expect(element(by.binding(&#39;$location.protocol()&#39;)).getText()).toBe(&#39;http&#39;);&#13;&#10;  expect(element(by.binding(&#39;$location.host()&#39;)).getText()).toBe(&#39;www.example.com&#39;);&#13;&#10;  expect(element(by.binding(&#39;$location.port()&#39;)).getText()).toBe(&#39;80&#39;);&#13;&#10;  expect(element(by.binding(&#39;$location.path()&#39;)).getText()).toBe(&#39;/path&#39;);&#13;&#10;  expect(element(by.binding(&#39;$location.search()&#39;)).getText()).toBe(&#39;{&quot;a&quot;:&quot;b&quot;}&#39;);&#13;&#10;  expect(element(by.binding(&#39;$location.hash()&#39;)).getText()).toBe(&#39;h&#39;);&#13;&#10;&#10;});&#13;&#10;&#10;it(&quot;should change $location accordingly&quot;, function(){&#13;&#10;  var navigation = element.all(by.css(&quot;#navigation a&quot;));&#13;&#10;&#10;  navigation.get(0).click();&#13;&#10;&#10;  expect(addressBar.getAttribute(&#39;value&#39;)).toBe(&quot;http://www.example.com/base/first?a=b&quot;);&#13;&#10;&#10;  expect(element(by.binding(&#39;$location.protocol()&#39;)).getText()).toBe(&#39;http&#39;);&#13;&#10;  expect(element(by.binding(&#39;$location.host()&#39;)).getText()).toBe(&#39;www.example.com&#39;);&#13;&#10;  expect(element(by.binding(&#39;$location.port()&#39;)).getText()).toBe(&#39;80&#39;);&#13;&#10;  expect(element(by.binding(&#39;$location.path()&#39;)).getText()).toBe(&#39;/first&#39;);&#13;&#10;  expect(element(by.binding(&#39;$location.search()&#39;)).getText()).toBe(&#39;{&quot;a&quot;:&quot;b&quot;}&#39;);&#13;&#10;  expect(element(by.binding(&#39;$location.hash()&#39;)).getText()).toBe(&#39;&#39;);&#13;&#10;&#10;&#10;  navigation.get(1).click();&#13;&#10;&#10;  expect(addressBar.getAttribute(&#39;value&#39;)).toBe(&quot;http://www.example.com/base/sec/ond?flag#hash&quot;);&#13;&#10;&#10;  expect(element(by.binding(&#39;$location.protocol()&#39;)).getText()).toBe(&#39;http&#39;);&#13;&#10;  expect(element(by.binding(&#39;$location.host()&#39;)).getText()).toBe(&#39;www.example.com&#39;);&#13;&#10;  expect(element(by.binding(&#39;$location.port()&#39;)).getText()).toBe(&#39;80&#39;);&#13;&#10;  expect(element(by.binding(&#39;$location.path()&#39;)).getText()).toBe(&#39;/sec/ond&#39;);&#13;&#10;  expect(element(by.binding(&#39;$location.search()&#39;)).getText()).toBe(&#39;{&quot;flag&quot;:true}&#39;);&#13;&#10;  expect(element(by.binding(&#39;$location.hash()&#39;)).getText()).toBe(&#39;hash&#39;);&#13;&#10;});&#13;</code></pre>
     </div>
   
 
@@ -369,13 +376,11 @@ redirect to regular / hashbang url, as this conversion happens only during parsi
 
 
 </p>
-<h4 id="browser-in-html5-fallback-mode-hashbang-mode-">Browser in HTML5 Fallback mode (Hashbang mode)</h4>
-<p>
+<p>####Browser in HTML5 Fallback mode (Hashbang mode)
+
 
 <div>
-  <a ng-click="openPlunkr('examples/example-location-hashbang-mode', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-location-hashbang-mode"></plnkr-opener>
 
   <div class="runnable-example"
       path="examples/example-location-hashbang-mode"
@@ -387,35 +392,35 @@ redirect to regular / hashbang url, as this conversion happens only during parsi
       name="index.html"
       language="html"
       type="html">
-      <pre><code>&lt;div ng-controller=&quot;LocationController&quot;&gt;&#10;  &lt;div ng-address-bar&gt;&lt;/div&gt;&lt;br&gt;&lt;br&gt;&#10;  &lt;div&gt;&#10;    $location.protocol() = &lt;span ng-bind=&quot;$location.protocol()&quot;&gt;&lt;/span&gt; &lt;br&gt;&#10;    $location.host() = &lt;span ng-bind=&quot;$location.host()&quot;&gt;&lt;/span&gt; &lt;br&gt;&#10;    $location.port() = &lt;span ng-bind=&quot;$location.port()&quot;&gt;&lt;/span&gt; &lt;br&gt;&#10;    $location.path() = &lt;span ng-bind=&quot;$location.path()&quot;&gt;&lt;/span&gt; &lt;br&gt;&#10;    $location.search() = &lt;span ng-bind=&quot;$location.search()&quot;&gt;&lt;/span&gt; &lt;br&gt;&#10;    $location.hash() = &lt;span ng-bind=&quot;$location.hash()&quot;&gt;&lt;/span&gt; &lt;br&gt;&#10;  &lt;/div&gt;&#10;  &lt;div id=&quot;navigation&quot;&gt;&#10;    &lt;a href=&quot;http://www.example.com/base/first?a=b&quot;&gt;/base/first?a=b&lt;/a&gt; |&#10;    &lt;a href=&quot;http://www.example.com/base/sec/ond?flag#hash&quot;&gt;sec/ond?flag#hash&lt;/a&gt; |&#10;    &lt;a href=&quot;/other-base/another?search&quot;&gt;external&lt;/a&gt;&#10;  &lt;/div&gt;&#10;&lt;/div&gt;</code></pre>
+      <pre><code>&lt;div ng-controller=&quot;LocationController&quot;&gt;&#13;&#10;  &lt;div ng-address-bar&gt;&lt;/div&gt;&lt;br&gt;&lt;br&gt;&#13;&#10;  &lt;div&gt;&#13;&#10;    $location.protocol() = &lt;span ng-bind=&quot;$location.protocol()&quot;&gt;&lt;/span&gt; &lt;br&gt;&#13;&#10;    $location.host() = &lt;span ng-bind=&quot;$location.host()&quot;&gt;&lt;/span&gt; &lt;br&gt;&#13;&#10;    $location.port() = &lt;span ng-bind=&quot;$location.port()&quot;&gt;&lt;/span&gt; &lt;br&gt;&#13;&#10;    $location.path() = &lt;span ng-bind=&quot;$location.path()&quot;&gt;&lt;/span&gt; &lt;br&gt;&#13;&#10;    $location.search() = &lt;span ng-bind=&quot;$location.search()&quot;&gt;&lt;/span&gt; &lt;br&gt;&#13;&#10;    $location.hash() = &lt;span ng-bind=&quot;$location.hash()&quot;&gt;&lt;/span&gt; &lt;br&gt;&#13;&#10;  &lt;/div&gt;&#13;&#10;  &lt;div id=&quot;navigation&quot;&gt;&#13;&#10;    &lt;a href=&quot;http://www.example.com/base/first?a=b&quot;&gt;/base/first?a=b&lt;/a&gt; |&#13;&#10;    &lt;a href=&quot;http://www.example.com/base/sec/ond?flag#hash&quot;&gt;sec/ond?flag#hash&lt;/a&gt; |&#13;&#10;    &lt;a href=&quot;/other-base/another?search&quot;&gt;external&lt;/a&gt;&#13;&#10;  &lt;/div&gt;&#13;&#10;&lt;/div&gt;&#13;</code></pre>
     </div>
   
     <div class="runnable-example-file" 
       name="app.js"
       language="js"
       type="js">
-      <pre><code>angular.module(&#39;hashbang-mode&#39;, [&#39;fake-browser&#39;, &#39;address-bar&#39;])&#10;&#10;.constant(&#39;initUrl&#39;, &#39;http://www.example.com/base/index.html#!/path?a=b#h&#39;)&#10;.constant(&#39;baseHref&#39;, &#39;/base/index.html&#39;)&#10;.value(&#39;$sniffer&#39;, { history: false })&#10;&#10;.config(function($locationProvider) {&#10;  $locationProvider.html5Mode(true).hashPrefix(&#39;!&#39;);&#10;})&#10;&#10;.controller(&quot;LocationController&quot;, function($scope, $location) {&#10;  $scope.$location = {};&#10;  angular.forEach(&quot;protocol host port path search hash&quot;.split(&quot; &quot;), function(method){&#10;    $scope.$location[method] = function(){&#10;      var result = $location[method].call($location);&#10;      return angular.isObject(result) ? angular.toJson(result) : result;&#10;    };&#10;  });&#10;})&#10;&#10;.run(function($rootElement) {&#10;  $rootElement.on(&#39;click&#39;, function(e) {&#10;    e.stopPropagation();&#10;  });&#10;});</code></pre>
+      <pre><code>angular.module(&#39;hashbang-mode&#39;, [&#39;fake-browser&#39;, &#39;address-bar&#39;])&#13;&#10;&#10;// Configure the fakeBrowser. Do not set these values in actual projects.&#13;&#10;.constant(&#39;initUrl&#39;, &#39;http://www.example.com/base/index.html#!/path?a=b#h&#39;)&#13;&#10;.constant(&#39;baseHref&#39;, &#39;/base/index.html&#39;)&#13;&#10;.value(&#39;$sniffer&#39;, { history: false })&#13;&#10;&#10;.config(function($locationProvider) {&#13;&#10;  $locationProvider.html5Mode(true).hashPrefix(&#39;!&#39;);&#13;&#10;})&#13;&#10;&#10;.controller(&quot;LocationController&quot;, function($scope, $location) {&#13;&#10;  $scope.$location = {};&#13;&#10;  angular.forEach(&quot;protocol host port path search hash&quot;.split(&quot; &quot;), function(method){&#13;&#10;    $scope.$location[method] = function(){&#13;&#10;      var result = $location[method].call($location);&#13;&#10;      return angular.isObject(result) ? angular.toJson(result) : result;&#13;&#10;    };&#13;&#10;  });&#13;&#10;})&#13;&#10;&#10;.run(function($rootElement) {&#13;&#10;  $rootElement.on(&#39;click&#39;, function(e) {&#13;&#10;    e.stopPropagation();&#13;&#10;  });&#13;&#10;});&#13;</code></pre>
     </div>
   
     <div class="runnable-example-file" 
       name="fakeBrowser.js"
       language="js"
       type="js">
-      <pre><code>angular.module(&#39;fake-browser&#39;, [])&#10;&#10;.config(function($provide) {&#10; $provide.decorator(&#39;$browser&#39;, function($delegate, baseHref, initUrl) {&#10;&#10;  $delegate.onUrlChange = function(fn) {&#10;     this.urlChange = fn;&#10;   };&#10;&#10;  $delegate.url = function() {&#10;     return initUrl;&#10;  };&#10;&#10;  $delegate.defer = function(fn, delay) {&#10;     setTimeout(function() { fn(); }, delay || 0);&#10;   };&#10;&#10;  $delegate.baseHref = function() {&#10;     return baseHref;&#10;   };&#10;&#10;   return $delegate;&#10; });&#10;});</code></pre>
+      <pre><code>angular.module(&#39;fake-browser&#39;, [])&#13;&#10;&#10;.config(function($provide) {&#13;&#10; $provide.decorator(&#39;$browser&#39;, function($delegate, baseHref, initUrl) {&#13;&#10;&#10;  $delegate.onUrlChange = function(fn) {&#13;&#10;     this.urlChange = fn;&#13;&#10;   };&#13;&#10;&#10;  $delegate.url = function() {&#13;&#10;     return initUrl;&#13;&#10;  };&#13;&#10;&#10;  $delegate.defer = function(fn, delay) {&#13;&#10;     setTimeout(function() { fn(); }, delay || 0);&#13;&#10;   };&#13;&#10;&#10;  $delegate.baseHref = function() {&#13;&#10;     return baseHref;&#13;&#10;   };&#13;&#10;&#10;   return $delegate;&#13;&#10; });&#13;&#10;});&#13;</code></pre>
     </div>
   
     <div class="runnable-example-file" 
       name="addressBar.js"
       language="js"
       type="js">
-      <pre><code>angular.module(&#39;address-bar&#39;, [])&#10;.directive(&#39;ngAddressBar&#39;, function($browser, $timeout) {&#10;   return {&#10;     template: &#39;Address: &lt;input id=&quot;addressBar&quot; type=&quot;text&quot; style=&quot;width: 400px&quot; &gt;&#39;,&#10;     link: function(scope, element, attrs){&#10;       var input = element.children(&quot;input&quot;), delay;&#10;&#10;       input.on(&#39;keypress keyup keydown&#39;, function(event) {&#10;               delay = (!delay ? $timeout(fireUrlChange, 250) : null);&#10;               event.stopPropagation();&#10;             })&#10;            .val($browser.url());&#10;&#10;       $browser.url = function(url) {&#10;         return url ? input.val(url) : input.val();&#10;       };&#10;&#10;       function fireUrlChange() {&#10;         delay = null;&#10;         $browser.urlChange(input.val());&#10;       }&#10;     }&#10;   };&#10; });</code></pre>
+      <pre><code>angular.module(&#39;address-bar&#39;, [])&#13;&#10;.directive(&#39;ngAddressBar&#39;, function($browser, $timeout) {&#13;&#10;   return {&#13;&#10;     template: &#39;Address: &lt;input id=&quot;addressBar&quot; type=&quot;text&quot; style=&quot;width: 400px&quot; &gt;&#39;,&#13;&#10;     link: function(scope, element, attrs){&#13;&#10;       var input = element.children(&quot;input&quot;), delay;&#13;&#10;&#10;       input.on(&#39;keypress keyup keydown&#39;, function(event) {&#13;&#10;               delay = (!delay ? $timeout(fireUrlChange, 250) : null);&#13;&#10;               event.stopPropagation();&#13;&#10;             })&#13;&#10;            .val($browser.url());&#13;&#10;&#10;       $browser.url = function(url) {&#13;&#10;         return url ? input.val(url) : input.val();&#13;&#10;       };&#13;&#10;&#10;       function fireUrlChange() {&#13;&#10;         delay = null;&#13;&#10;         $browser.urlChange(input.val());&#13;&#10;       }&#13;&#10;     }&#13;&#10;   };&#13;&#10; });&#13;</code></pre>
     </div>
   
     <div class="runnable-example-file" 
       name="protractor.js"
       type="protractor"
       language="js">
-      <pre><code>var addressBar = element(by.css(&quot;#addressBar&quot;)),&#10;     url = &#39;http://www.example.com/base/index.html#!/path?a=b#h&#39;;&#10;&#10;it(&quot;should show fake browser info on load&quot;, function(){&#10;  expect(addressBar.getAttribute(&#39;value&#39;)).toBe(url);&#10;&#10;  expect(element(by.binding(&#39;$location.protocol()&#39;)).getText()).toBe(&#39;http&#39;);&#10;  expect(element(by.binding(&#39;$location.host()&#39;)).getText()).toBe(&#39;www.example.com&#39;);&#10;  expect(element(by.binding(&#39;$location.port()&#39;)).getText()).toBe(&#39;80&#39;);&#10;  expect(element(by.binding(&#39;$location.path()&#39;)).getText()).toBe(&#39;/path&#39;);&#10;  expect(element(by.binding(&#39;$location.search()&#39;)).getText()).toBe(&#39;{&quot;a&quot;:&quot;b&quot;}&#39;);&#10;  expect(element(by.binding(&#39;$location.hash()&#39;)).getText()).toBe(&#39;h&#39;);&#10;&#10;});&#10;&#10;it(&quot;should change $location accordingly&quot;, function(){&#10;  var navigation = element.all(by.css(&quot;#navigation a&quot;));&#10;&#10;  navigation.get(0).click();&#10;&#10;  expect(addressBar.getAttribute(&#39;value&#39;)).toBe(&quot;http://www.example.com/base/index.html#!/first?a=b&quot;);&#10;&#10;  expect(element(by.binding(&#39;$location.protocol()&#39;)).getText()).toBe(&#39;http&#39;);&#10;  expect(element(by.binding(&#39;$location.host()&#39;)).getText()).toBe(&#39;www.example.com&#39;);&#10;  expect(element(by.binding(&#39;$location.port()&#39;)).getText()).toBe(&#39;80&#39;);&#10;  expect(element(by.binding(&#39;$location.path()&#39;)).getText()).toBe(&#39;/first&#39;);&#10;  expect(element(by.binding(&#39;$location.search()&#39;)).getText()).toBe(&#39;{&quot;a&quot;:&quot;b&quot;}&#39;);&#10;  expect(element(by.binding(&#39;$location.hash()&#39;)).getText()).toBe(&#39;&#39;);&#10;&#10;&#10;  navigation.get(1).click();&#10;&#10;  expect(addressBar.getAttribute(&#39;value&#39;)).toBe(&quot;http://www.example.com/base/index.html#!/sec/ond?flag#hash&quot;);&#10;&#10;  expect(element(by.binding(&#39;$location.protocol()&#39;)).getText()).toBe(&#39;http&#39;);&#10;  expect(element(by.binding(&#39;$location.host()&#39;)).getText()).toBe(&#39;www.example.com&#39;);&#10;  expect(element(by.binding(&#39;$location.port()&#39;)).getText()).toBe(&#39;80&#39;);&#10;  expect(element(by.binding(&#39;$location.path()&#39;)).getText()).toBe(&#39;/sec/ond&#39;);&#10;  expect(element(by.binding(&#39;$location.search()&#39;)).getText()).toBe(&#39;{&quot;flag&quot;:true}&#39;);&#10;  expect(element(by.binding(&#39;$location.hash()&#39;)).getText()).toBe(&#39;hash&#39;);&#10;&#10;});</code></pre>
+      <pre><code>var addressBar = element(by.css(&quot;#addressBar&quot;)),&#13;&#10;     url = &#39;http://www.example.com/base/index.html#!/path?a=b#h&#39;;&#13;&#10;&#10;it(&quot;should show fake browser info on load&quot;, function(){&#13;&#10;  expect(addressBar.getAttribute(&#39;value&#39;)).toBe(url);&#13;&#10;&#10;  expect(element(by.binding(&#39;$location.protocol()&#39;)).getText()).toBe(&#39;http&#39;);&#13;&#10;  expect(element(by.binding(&#39;$location.host()&#39;)).getText()).toBe(&#39;www.example.com&#39;);&#13;&#10;  expect(element(by.binding(&#39;$location.port()&#39;)).getText()).toBe(&#39;80&#39;);&#13;&#10;  expect(element(by.binding(&#39;$location.path()&#39;)).getText()).toBe(&#39;/path&#39;);&#13;&#10;  expect(element(by.binding(&#39;$location.search()&#39;)).getText()).toBe(&#39;{&quot;a&quot;:&quot;b&quot;}&#39;);&#13;&#10;  expect(element(by.binding(&#39;$location.hash()&#39;)).getText()).toBe(&#39;h&#39;);&#13;&#10;&#10;});&#13;&#10;&#10;it(&quot;should change $location accordingly&quot;, function(){&#13;&#10;  var navigation = element.all(by.css(&quot;#navigation a&quot;));&#13;&#10;&#10;  navigation.get(0).click();&#13;&#10;&#10;  expect(addressBar.getAttribute(&#39;value&#39;)).toBe(&quot;http://www.example.com/base/index.html#!/first?a=b&quot;);&#13;&#10;&#10;  expect(element(by.binding(&#39;$location.protocol()&#39;)).getText()).toBe(&#39;http&#39;);&#13;&#10;  expect(element(by.binding(&#39;$location.host()&#39;)).getText()).toBe(&#39;www.example.com&#39;);&#13;&#10;  expect(element(by.binding(&#39;$location.port()&#39;)).getText()).toBe(&#39;80&#39;);&#13;&#10;  expect(element(by.binding(&#39;$location.path()&#39;)).getText()).toBe(&#39;/first&#39;);&#13;&#10;  expect(element(by.binding(&#39;$location.search()&#39;)).getText()).toBe(&#39;{&quot;a&quot;:&quot;b&quot;}&#39;);&#13;&#10;  expect(element(by.binding(&#39;$location.hash()&#39;)).getText()).toBe(&#39;&#39;);&#13;&#10;&#10;&#10;  navigation.get(1).click();&#13;&#10;&#10;  expect(addressBar.getAttribute(&#39;value&#39;)).toBe(&quot;http://www.example.com/base/index.html#!/sec/ond?flag#hash&quot;);&#13;&#10;&#10;  expect(element(by.binding(&#39;$location.protocol()&#39;)).getText()).toBe(&#39;http&#39;);&#13;&#10;  expect(element(by.binding(&#39;$location.host()&#39;)).getText()).toBe(&#39;www.example.com&#39;);&#13;&#10;  expect(element(by.binding(&#39;$location.port()&#39;)).getText()).toBe(&#39;80&#39;);&#13;&#10;  expect(element(by.binding(&#39;$location.path()&#39;)).getText()).toBe(&#39;/sec/ond&#39;);&#13;&#10;  expect(element(by.binding(&#39;$location.search()&#39;)).getText()).toBe(&#39;{&quot;flag&quot;:true}&#39;);&#13;&#10;  expect(element(by.binding(&#39;$location.hash()&#39;)).getText()).toBe(&#39;hash&#39;);&#13;&#10;&#10;});&#13;</code></pre>
     </div>
   
 
@@ -444,7 +449,7 @@ during testing) - you must call <code>$apply</code> to propagate the changes.</p
 <p>A path should always begin with forward slash (<code>/</code>); the <code>$location.path()</code> setter will add the
 forward slash if it is missing.</p>
 <p>Note that the <code>!</code> prefix in the hashbang mode is not part of <code>$location.path()</code>; it is actually
-hashPrefix.</p>
+<code>hashPrefix</code>.</p>
 <h2 id="crawling-your-app">Crawling your app</h2>
 <p>To allow indexing of your AJAX application, you have to add special meta tag in the head section of
 your document:</p>
@@ -504,8 +509,8 @@ then uses the information it obtains to compose hashbang URLs (such as
     </tr>
 
     <tr class="head">
-      <td>Navigation outside the app</td>
-      <td>Use lower level API</td>
+      <th>Navigation outside the app</td>
+      <th>Use lower level API</td>
     </tr>
 
     <tr>
@@ -519,8 +524,8 @@ then uses the information it obtains to compose hashbang URLs (such as
     </tr>
 
     <tr class="head">
-      <td>Read access</td>
-      <td>Change to</td>
+      <th>Read access</td>
+      <th>Change to</td>
     </tr>
 
     <tr>
@@ -553,12 +558,10 @@ to bind it to <code>ngModel</code>:</p>
 <p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-example', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-example1"></plnkr-opener>
 
   <div class="runnable-example"
-      path="examples/example-example"
+      path="examples/example-example1"
       module="locationExample">
 
   
@@ -566,18 +569,18 @@ to bind it to <code>ngModel</code>:</p>
       name="index.html"
       language="html"
       type="html">
-      <pre><code>&lt;div ng-controller=&quot;LocationController&quot;&gt;&#10;  &lt;input type=&quot;text&quot; ng-model=&quot;locationPath&quot; ng-model-options=&quot;{ getterSetter: true }&quot; /&gt;&#10;&lt;/div&gt;</code></pre>
+      <pre><code>&lt;div ng-controller=&quot;LocationController&quot;&gt;&#13;&#10;  &lt;input type=&quot;text&quot; ng-model=&quot;locationPath&quot; ng-model-options=&quot;{ getterSetter: true }&quot; /&gt;&#13;&#10;&lt;/div&gt;&#13;</code></pre>
     </div>
   
     <div class="runnable-example-file" 
       name="script.js"
       language="js"
       type="js">
-      <pre><code>angular.module(&#39;locationExample&#39;, [])&#10;.controller(&#39;LocationController&#39;, [&#39;$scope&#39;, &#39;$location&#39;, function($scope, $location) {&#10;  $scope.locationPath = function (newLocation) {&#10;    return $location.path(newLocation);&#10;  };&#10;}]);</code></pre>
+      <pre><code>angular.module(&#39;locationExample&#39;, [])&#13;&#10;.controller(&#39;LocationController&#39;, [&#39;$scope&#39;, &#39;$location&#39;, function($scope, $location) {&#13;&#10;  $scope.locationPath = function (newLocation) {&#13;&#10;    return $location.path(newLocation);&#13;&#10;  };&#13;&#10;}]);&#13;</code></pre>
     </div>
   
 
-    <iframe class="runnable-example-frame" src="examples/example-example/index.html" name="example-example"></iframe>
+    <iframe class="runnable-example-frame" src="examples/example-example1/index.html" name="example-example1"></iframe>
   </div>
 </div>
 

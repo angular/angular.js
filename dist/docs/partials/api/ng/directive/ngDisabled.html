@@ -20,20 +20,14 @@
 
 
 <div class="api-profile-description">
-  <p>We shouldn&#39;t do this, because it will make the button enabled on Chrome/Firefox but not on IE8 and older IEs:</p>
-<pre><code class="lang-html">&lt;div ng-init=&quot;scope = { isDisabled: false }&quot;&gt;
- &lt;button disabled=&quot;{{scope.isDisabled}}&quot;&gt;Disabled&lt;/button&gt;
-&lt;/div&gt;
-</code></pre>
-<p>The HTML specification does not require browsers to preserve the values of boolean attributes
-such as disabled. (Their presence means true and their absence means false.)
-If we put an Angular interpolation expression into such an attribute then the
-binding information would be lost when the browser removes the attribute.
-The <code>ngDisabled</code> directive solves this problem for the <code>disabled</code> attribute.
-This complementary directive is not removed by the browser and so provides
-a permanent reliable place to store the binding information.</p>
+  <p>This directive sets the <code>disabled</code> attribute on the element if the
+<a href="guide/expression">expression</a> inside <code>ngDisabled</code> evaluates to truthy.</p>
+<p>A special directive is necessary because we cannot use interpolation inside the <code>disabled</code>
+attribute. See the <a href="guide/interpolation">interpolation guide</a> for more info.</p>
 
 </div>
+
+
 
 
 
@@ -46,6 +40,7 @@ a permanent reliable place to store the binding information.</p>
   <ul>
     
     <li>This directive executes at priority level 100.</li>
+    
   </ul>
 
   
@@ -54,7 +49,7 @@ a permanent reliable place to store the binding information.</p>
   
     <ul>
     <li>as attribute:
-        <pre><code>&lt;INPUT&#10;  ng-disabled=&quot;&quot;&gt;&#10;...&#10;&lt;/INPUT&gt;</code></pre>
+        <pre><code>&lt;INPUT&#10;  ng-disabled=&quot;expression&quot;&gt;&#10;...&#10;&lt;/INPUT&gt;</code></pre>
       </li>
     
   </div>
@@ -83,7 +78,7 @@ a permanent reliable place to store the binding information.</p>
       </td>
       <td>
         <p>If the <a href="guide/expression">expression</a> is truthy,
-    then special attribute &quot;disabled&quot; will be set on the element</p>
+    then the <code>disabled</code> attribute will be set on the element</p>
 
         
       </td>
@@ -100,19 +95,17 @@ a permanent reliable place to store the binding information.</p>
   <h2 id="example">Example</h2><p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-example53', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-example55"></plnkr-opener>
 
   <div class="runnable-example"
-      path="examples/example-example53">
+      path="examples/example-example55">
 
   
     <div class="runnable-example-file" 
       name="index.html"
       language="html"
       type="html">
-      <pre><code>Click me to toggle: &lt;input type=&quot;checkbox&quot; ng-model=&quot;checked&quot;&gt;&lt;br/&gt;&#10;&lt;button ng-model=&quot;button&quot; ng-disabled=&quot;checked&quot;&gt;Button&lt;/button&gt;</code></pre>
+      <pre><code>&lt;label&gt;Click me to toggle: &lt;input type=&quot;checkbox&quot; ng-model=&quot;checked&quot;&gt;&lt;/label&gt;&lt;br/&gt;&#10;&lt;button ng-model=&quot;button&quot; ng-disabled=&quot;checked&quot;&gt;Button&lt;/button&gt;</code></pre>
     </div>
   
     <div class="runnable-example-file" 
@@ -123,7 +116,7 @@ a permanent reliable place to store the binding information.</p>
     </div>
   
 
-    <iframe class="runnable-example-frame" src="examples/example-example53/index.html" name="example-example53"></iframe>
+    <iframe class="runnable-example-frame" src="examples/example-example55/index.html" name="example-example55"></iframe>
   </div>
 </div>
 

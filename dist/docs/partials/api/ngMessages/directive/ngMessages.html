@@ -1,8 +1,8 @@
-<a href='https://github.com/angular/angular.js/edit/master/src/ngMessages/messages.js?message=docs(ngMessages)%3A%20describe%20your%20change...#L159' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+<a href='https://github.com/angular/angular.js/edit/master/src/ngMessages/messages.js?message=docs(ngMessages)%3A%20describe%20your%20change...#L267' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
 
 
 
-<a href='https://github.com/angular/angular.js/tree/master/src/ngMessages/messages.js#L159' class='view-source pull-right btn btn-primary'>
+<a href='https://github.com/angular/angular.js/tree/master/src/ngMessages/messages.js#L267' class='view-source pull-right btn btn-primary'>
   <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
 </a>
 
@@ -21,18 +21,20 @@
 
 <div class="api-profile-description">
   <p><code>ngMessages</code> is a directive that is designed to show and hide messages based on the state
-of a key/value object that it listens on. The directive itself compliments error message
+of a key/value object that it listens on. The directive itself complements error message
 reporting with the <code>ngModel</code> $error object (which stores a key/value state of validation errors).</p>
 <p><code>ngMessages</code> manages the state of internal messages within its container element. The internal
 messages use the <code>ngMessage</code> directive and will be inserted/removed from the page depending
 on if they&#39;re present within the key/value object. By default, only one message will be displayed
 at a time and this depends on the prioritization of the messages within the template. (This can
-be changed by using the ng-messages-multiple on the directive container.)</p>
+be changed by using the <code>ng-messages-multiple</code> or <code>multiple</code> attribute on the directive container.)</p>
 <p>A remote template can also be used to promote message reusability and messages can also be
 overridden.</p>
 <p><a href="api/ngMessages">Click here</a> to learn more about <code>ngMessages</code> and <code>ngMessage</code>.</p>
 
 </div>
+
+
 
 
 
@@ -45,6 +47,7 @@ overridden.</p>
   <ul>
     
     <li>This directive executes at priority level 0.</li>
+    
   </ul>
 
   
@@ -52,17 +55,17 @@ overridden.</p>
   <div class="usage">
   
     <pre><code class="lang-html">&lt;!-- using attribute directives --&gt;
-&lt;ANY ng-messages=&quot;expression&quot;&gt;
-  &lt;ANY ng-message=&quot;keyValue1&quot;&gt;...&lt;/ANY&gt;
-  &lt;ANY ng-message=&quot;keyValue2&quot;&gt;...&lt;/ANY&gt;
-  &lt;ANY ng-message=&quot;keyValue3&quot;&gt;...&lt;/ANY&gt;
+&lt;ANY ng-messages=&quot;expression&quot; role=&quot;alert&quot;&gt;
+  &lt;ANY ng-message=&quot;stringValue&quot;&gt;...&lt;/ANY&gt;
+  &lt;ANY ng-message=&quot;stringValue1, stringValue2, ...&quot;&gt;...&lt;/ANY&gt;
+  &lt;ANY ng-message-exp=&quot;expressionValue&quot;&gt;...&lt;/ANY&gt;
 &lt;/ANY&gt;
 
 &lt;!-- or by using element directives --&gt;
-&lt;ng-messages for=&quot;expression&quot;&gt;
-  &lt;ng-message when=&quot;keyValue1&quot;&gt;...&lt;/ng-message&gt;
-  &lt;ng-message when=&quot;keyValue2&quot;&gt;...&lt;/ng-message&gt;
-  &lt;ng-message when=&quot;keyValue3&quot;&gt;...&lt;/ng-message&gt;
+&lt;ng-messages for=&quot;expression&quot; role=&quot;alert&quot;&gt;
+  &lt;ng-message when=&quot;stringValue&quot;&gt;...&lt;/ng-message&gt;
+  &lt;ng-message when=&quot;stringValue1, stringValue2, ...&quot;&gt;...&lt;/ng-message&gt;
+  &lt;ng-message when-exp=&quot;expressionValue&quot;&gt;...&lt;/ng-message&gt;
 &lt;/ng-messages&gt;
 </code></pre>
 
@@ -115,22 +118,6 @@ overridden.</p>
       </td>
     </tr>
     
-    <tr>
-      <td>
-        ngMessagesInclude
-        | include
-        <div><em>(optional)</em></div>
-      </td>
-      <td>
-        <a href="" class="label type-hint type-hint-string">string</a>
-      </td>
-      <td>
-        <p>when set, the specified template will be included into the ng-messages container</p>
-
-        
-      </td>
-    </tr>
-    
   </tbody>
 </table>
 
@@ -142,9 +129,7 @@ overridden.</p>
   <h2 id="example">Example</h2><p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-ngMessages-directive', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-ngMessages-directive"></plnkr-opener>
 
   <div class="runnable-example"
       path="examples/example-ngMessages-directive"
@@ -159,7 +144,7 @@ overridden.</p>
       name="index.html"
       language="html"
       type="html">
-      <pre><code>&lt;form name=&quot;myForm&quot;&gt;&#10;  &lt;label&gt;Enter your name:&lt;/label&gt;&#10;  &lt;input type=&quot;text&quot;&#10;         name=&quot;myName&quot;&#10;         ng-model=&quot;name&quot;&#10;         ng-minlength=&quot;5&quot;&#10;         ng-maxlength=&quot;20&quot;&#10;         required /&gt;&#10;&#10;  &lt;pre&gt;myForm.myName.$error = {{ myForm.myName.$error | json }}&lt;/pre&gt;&#10;&#10;  &lt;div ng-messages=&quot;myForm.myName.$error&quot; style=&quot;color:maroon&quot;&gt;&#10;    &lt;div ng-message=&quot;required&quot;&gt;You did not enter a field&lt;/div&gt;&#10;    &lt;div ng-message=&quot;minlength&quot;&gt;Your field is too short&lt;/div&gt;&#10;    &lt;div ng-message=&quot;maxlength&quot;&gt;Your field is too long&lt;/div&gt;&#10;  &lt;/div&gt;&#10;&lt;/form&gt;</code></pre>
+      <pre><code>&lt;form name=&quot;myForm&quot;&gt;&#10;  &lt;label&gt;&#10;    Enter your name:&#10;    &lt;input type=&quot;text&quot;&#10;           name=&quot;myName&quot;&#10;           ng-model=&quot;name&quot;&#10;           ng-minlength=&quot;5&quot;&#10;           ng-maxlength=&quot;20&quot;&#10;           required /&gt;&#10;  &lt;/label&gt;&#10;  &lt;pre&gt;myForm.myName.$error = {{ myForm.myName.$error | json }}&lt;/pre&gt;&#10;&#10;  &lt;div ng-messages=&quot;myForm.myName.$error&quot; style=&quot;color:maroon&quot; role=&quot;alert&quot;&gt;&#10;    &lt;div ng-message=&quot;required&quot;&gt;You did not enter a field&lt;/div&gt;&#10;    &lt;div ng-message=&quot;minlength&quot;&gt;Your field is too short&lt;/div&gt;&#10;    &lt;div ng-message=&quot;maxlength&quot;&gt;Your field is too long&lt;/div&gt;&#10;  &lt;/div&gt;&#10;&lt;/form&gt;</code></pre>
     </div>
   
     <div class="runnable-example-file" 

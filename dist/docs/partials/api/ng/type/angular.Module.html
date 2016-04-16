@@ -27,6 +27,8 @@
 
 
 
+
+
 <div>
   
 
@@ -294,7 +296,7 @@
     <h3><p><code>constant(name, object);</code></p>
 
 </h3>
-    <div><p>Because the constant are fixed, they get applied before other provide methods.
+    <div><p>Because the constants are fixed, they get applied before other provide methods.
 See <a href="api/auto/service/$provide#constant">$provide.constant()</a>.</p>
 </div>
 
@@ -354,13 +356,77 @@ See <a href="api/auto/service/$provide#constant">$provide.constant()</a>.</p>
 
   </li>
   
+  <li id="decorator">
+    <h3><p><code>decorator(name, decorFn);</code></p>
+
+</h3>
+    <div><p>See <a href="api/auto/service/$provide#decorator">$provide.decorator()</a>.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        name
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>The name of the service to decorate.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        decorFn
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-function">Function</a>
+      </td>
+      <td>
+        <p>This function will be invoked when the service needs to be
+                          instantiated and should return the decorated service instance.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+
+  </li>
+  
   <li id="animation">
     <h3><p><code>animation(name, animationFactory);</code></p>
 
 </h3>
     <div><p><strong>NOTE</strong>: animations take effect only if the <strong>ngAnimate</strong> module is loaded.</p>
 <p>Defines an animation hook that can be later used with
-<a href="api/ngAnimate/service/$animate">$animate</a> service and directives that use this service.</p>
+<a href="api/ng/service/$animate">$animate</a> service and directives that use this service.</p>
 <pre><code class="lang-js">module.animation(&#39;.animation-name&#39;, function($inject1, $inject2) {
   return {
     eventName : function(element, done) {
@@ -439,7 +505,12 @@ See <a href="api/auto/service/$provide#constant">$provide.constant()</a>.</p>
 
 </h3>
     <div><p>See <a href="api/ng/provider/$filterProvider#register">$filterProvider.register()</a>.</p>
-</div>
+<div class="alert alert-warning">
+<strong>Note:</strong> Filter names must be valid angular <a href="guide/expression"><code>Expressions</code></a> identifiers, such as <code>uppercase</code> or <code>orderBy</code>.
+Names with special characters, such as hyphens and dots, are not allowed. If you wish to namespace
+your filters, then you can use capitalization (<code>myappSubsectionFilterx</code>) or underscores
+(<code>myapp_subsection_filterx</code>).
+</div></div>
 
     
     <h4>Parameters</h4>
@@ -464,7 +535,7 @@ See <a href="api/auto/service/$provide#constant">$provide.constant()</a>.</p>
         <a href="" class="label type-hint type-hint-string">string</a>
       </td>
       <td>
-        <p>Filter name.</p>
+        <p>Filter name - this must be a valid angular expression identifier</p>
 
         
       </td>
@@ -610,6 +681,70 @@ See <a href="api/auto/service/$provide#constant">$provide.constant()</a>.</p>
       <td>
         <p>Factory function for creating new instance of
 directives.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+
+  </li>
+  
+  <li id="component">
+    <h3><p><code>component(name, options);</code></p>
+
+</h3>
+    <div><p>See <a href="api/ng/provider/$compileProvider#component">$compileProvider.component()</a>.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        name
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Name of the component in camel-case (i.e. myComp which will match as my-comp)</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        options
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">Object</a>
+      </td>
+      <td>
+        <p>Component definition object (a simplified
+   <a href="api/ng/service/$compile#directive-definition-object">directive definition object</a>)</p>
 
         
       </td>

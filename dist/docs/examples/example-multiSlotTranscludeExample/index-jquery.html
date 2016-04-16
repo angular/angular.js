@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Example - example-multiSlotTranscludeExample-jquery</title>
+  
+
+  <script src="../../components/jquery-2.1.1/jquery.js"></script>
+  <script src="../../../angular.js"></script>
+  <script src="app.js"></script>
+  
+
+  
+</head>
+<body ng-app="multiSlotTranscludeExample">
+  <style>
+  .title, .footer {
+    background-color: gray
+  }
+</style>
+<div ng-controller="ExampleController">
+  <input ng-model="title" aria-label="title"> <br/>
+  <textarea ng-model="text" aria-label="text"></textarea> <br/>
+  <pane>
+    <pane-title><a ng-href="{{link}}">{{title}}</a></pane-title>
+    <pane-body><p>{{text}}</p></pane-body>
+  </pane>
+</div>
+</body>
+</html>

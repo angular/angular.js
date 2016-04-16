@@ -15,12 +15,11 @@
   <div ng-controller="ExampleController">
   <table class="friend">
     <tr>
-      <th><a href="" ng-click="reverse=false;order('name', false)">Name</a>
-        (<a href="" ng-click="order('-name',false)">^</a>)</th>
-      <th><a href="" ng-click="reverse=!reverse;order('phone', reverse)">Phone Number</a></th>
-      <th><a href="" ng-click="reverse=!reverse;order('age',reverse)">Age</a></th>
+      <th>Name</th>
+      <th>Phone Number</th>
+      <th>Age</th>
     </tr>
-    <tr ng-repeat="friend in friends">
+    <tr ng-repeat="friend in friends | orderBy:'-age'">
       <td>{{friend.name}}</td>
       <td>{{friend.phone}}</td>
       <td>{{friend.age}}</td>

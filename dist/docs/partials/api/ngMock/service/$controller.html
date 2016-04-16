@@ -1,0 +1,173 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ngMock/angular-mocks.js?message=docs($controller)%3A%20describe%20your%20change...#L2121' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ngMock/angular-mocks.js#L2121' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">$controller</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+  
+
+    <li>
+      - service in module <a href="api/ngMock">ngMock</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>A decorator for <a href="api/ng/service/$controller"><code>$controller</code></a> with additional <code>bindings</code> parameter, useful when testing
+controllers of directives that use <a href="api/ng/service/$compile#-bindtocontroller-"><code>bindToController</code></a>.</p>
+<h2 id="example">Example</h2>
+<pre><code class="lang-js">// Directive definition ...
+
+myMod.directive(&#39;myDirective&#39;, {
+  controller: &#39;MyDirectiveController&#39;,
+  bindToController: {
+    name: &#39;@&#39;
+  }
+});
+
+
+// Controller definition ...
+
+myMod.controller(&#39;MyDirectiveController&#39;, [&#39;$log&#39;, function($log) {
+  $log.info(this.name);
+}]);
+
+
+// In a test ...
+
+describe(&#39;myDirectiveController&#39;, function() {
+  it(&#39;should write the bound name to the log&#39;, inject(function($controller, $log) {
+    var ctrl = $controller(&#39;MyDirectiveController&#39;, { /* no locals */ }, { name: &#39;Clark Kent&#39; });
+    expect(ctrl.name).toEqual(&#39;Clark Kent&#39;);
+    expect($log.info.logs).toEqual([&#39;Clark Kent&#39;]);
+  }));
+});
+</code></pre>
+
+</div>
+
+
+
+
+
+
+<div>
+  
+
+    
+
+  <h2 id="usage">Usage</h2>
+    
+      <p><code>$controller(constructor, locals, [bindings]);</code></p>
+
+
+    
+
+    
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        constructor
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-function">function()</a><a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>If called with a function then it&#39;s considered to be the
+   controller constructor function. Otherwise it&#39;s considered to be a string which is used
+   to retrieve the controller constructor using the following steps:</p>
+<ul>
+<li>check if a controller with given name is registered via <code>$controllerProvider</code></li>
+<li>check if evaluating the string on the current scope returns a constructor</li>
+<li><p>if $controllerProvider#allowGlobals, check <code>window[constructor]</code> on the global
+<code>window</code> object (not recommended)</p>
+<p>The string can use the <code>controller as property</code> syntax, where the controller instance is published
+as the specified property on the <code>scope</code>; the <code>scope</code> must be injected into <code>locals</code> param for this
+to work correctly.</p>
+</li>
+</ul>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        locals
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">Object</a>
+      </td>
+      <td>
+        <p>Injection locals for Controller.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        bindings
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">Object</a>
+      </td>
+      <td>
+        <p>Properties to add to the controller before invoking the constructor. This is used
+                          to simulate the <code>bindToController</code> feature and simplify certain kinds of tests.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
+    
+    <h3>Returns</h3>
+<table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-object">Object</a></td>
+    <td><p>Instance of given controller.</p>
+</td>
+  </tr>
+</table>
+
+  
+  
+  
+
+
+
+  
+</div>
+
+

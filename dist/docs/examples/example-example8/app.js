@@ -1,15 +1,16 @@
 (function(angular) {
   'use strict';
-var myApp = angular.module('scopeInheritance', []);
-myApp.controller('MainController', ['$scope', function($scope) {
-  $scope.timeOfDay = 'morning';
-  $scope.name = 'Nikki';
-}]);
-myApp.controller('ChildController', ['$scope', function($scope) {
-  $scope.name = 'Mattie';
-}]);
-myApp.controller('GrandChildController', ['$scope', function($scope) {
-  $scope.timeOfDay = 'evening';
-  $scope.name = 'Gingerbread Baby';
+var myApp = angular.module('spicyApp1', []);
+
+myApp.controller('SpicyController', ['$scope', function($scope) {
+    $scope.spice = 'very';
+
+    $scope.chiliSpicy = function() {
+        $scope.spice = 'chili';
+    };
+
+    $scope.jalapenoSpicy = function() {
+        $scope.spice = 'jalapeño';
+    };
 }]);
 })(window.angular);

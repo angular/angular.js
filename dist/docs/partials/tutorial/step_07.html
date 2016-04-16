@@ -27,21 +27,34 @@ is distributed separately from the core Angular framework.</p>
   &quot;license&quot;: &quot;MIT&quot;,
   &quot;private&quot;: true,
   &quot;dependencies&quot;: {
-    &quot;angular&quot;: &quot;~1.3.0&quot;,
-    &quot;angular-mocks&quot;: &quot;~1.3.0&quot;,
-    &quot;jquery&quot;: &quot;2.1.1&quot;,
+    &quot;angular&quot;: &quot;1.4.x&quot;,
+    &quot;angular-mocks&quot;: &quot;1.4.x&quot;,
+    &quot;jquery&quot;: &quot;~2.1.1&quot;,
     &quot;bootstrap&quot;: &quot;~3.1.1&quot;,
-    &quot;angular-route&quot;: &quot;~1.3.0&quot;
+    &quot;angular-route&quot;: &quot;1.4.x&quot;
   }
 }
 </code></pre>
-<p>The new dependency <code>&quot;angular-route&quot;: &quot;~1.3.0&quot;</code> tells bower to install a version of the
-angular-route component that is compatible with version 1.3.x.  We must tell bower to download
+<p>The new dependency <code>&quot;angular-route&quot;: &quot;1.4.x&quot;</code> tells bower to install a version of the
+angular-route component that is compatible with version 1.4.x.  We must tell bower to download
 and install this dependency.</p>
 <p>If you have bower installed globally, then you can run <code>bower install</code> but for this project, we have
 preconfigured npm to run bower install for us:</p>
 <pre><code>npm install
 </code></pre>
+<div class="alert alert-warning">
+  <strong>Warning:</strong> If a new version of Angular has been released since you last ran <code>npm install</code>, then you may have a
+  problem with the <code>bower install</code> due to a conflict between the versions of angular.js that need to
+  be installed.  If you get this then simply delete your <code>app/bower_components</code> folder before running
+  <code>npm install</code>.
+</div>
+
+<div class="alert alert-info">
+  <strong>Note:</strong> If you have bower installed globally then you can run <code>bower install</code> but for this project we have
+  preconfigured <code>npm install</code> to run bower for us.
+</div>
+
+
 <h2 id="multiple-views-routing-and-layout-template">Multiple Views, Routing and Layout Template</h2>
 <p>Our app is slowly growing and becoming more complex. Before step 7, the app provided our users with
 a single view (the list of all phones), and all of the template code was located in the
@@ -249,7 +262,7 @@ to various URLs and verify that the correct view was rendered.</p>
    it(&#39;should redirect index.html to index.html#/phones&#39;, function() {
     browser.get(&#39;app/index.html&#39;);
     browser.getLocationAbsUrl().then(function(url) {
-        expect(url.split(&#39;#&#39;)[1]).toBe(&#39;/phones&#39;);
+        expect(url).toEqual(&#39;/phones&#39;);
       });
   });
 

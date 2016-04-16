@@ -1,0 +1,9 @@
+{
+  "name": "example-heroComponentSimple",
+  "files": [
+    "index-production.html",
+    "index.js",
+    "heroDetail.js",
+    "heroDetail.html"
+  ]
+}

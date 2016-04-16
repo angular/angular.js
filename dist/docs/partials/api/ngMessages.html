@@ -1,9 +1,38 @@
-<a href='https://github.com/angular/angular.js/edit/master/src/ngMessages/messages.js?message=docs(ngMessages)%3A%20describe%20your%20change...#L3' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+<a href='https://github.com/angular/angular.js/edit/master/src/ngMessages/messages.js?message=docs(ngMessages)%3A%20describe%20your%20change...#L11' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
 
 
 <h1>
   <code>ngMessages</code>
 </h1>
+
+
+  <h2>Installation</h2>
+
+  <p>First include <code>angular-messages.js</code> in your HTML:</p>
+
+  <pre><code>&lt;script src=&quot;angular.js&quot;&gt;&#13;&#10;&lt;script src=&quot;angular-messages.js&quot;&gt;&#13;</code></pre>
+
+  <p>You can download this file from the following places:</p>
+  <ul>
+    <li>
+      <a href="https://developers.google.com/speed/libraries/devguide#angularjs">Google CDN</a><br>
+      e.g. <code>//ajax.googleapis.com/ajax/libs/angularjs/X.Y.Z/angular-messages.js</code>
+    </li>
+    <li>
+      <a href="http://bower.io">Bower</a><br>
+      e.g. <pre><code>bower install angular-messages@X.Y.Z</code></pre>
+    </li>
+    <li>
+      <a href="http://code.angularjs.org/">code.angularjs.org</a><br>
+      e.g. <pre><code>&quot;//code.angularjs.org/X.Y.Z/angular-messages.js&quot;</code></pre>
+    </li>
+  </ul>
+  <p>where X.Y.Z is the AngularJS version you are running.</p>
+  <p>Then load the module in your application by adding it as a dependent module:</p>
+  <pre><code>angular.module(&#39;app&#39;, [&#39;ngMessages&#39;]);&#13;</code></pre>
+
+  <p>With that you&apos;re ready to get started!</p>
+
 
 <p>The <code>ngMessages</code> module provides enhanced support for displaying messages within templates
 (typically within forms or when rendering message objects that return key/value data).
@@ -11,37 +40,60 @@ Instead of relying on JavaScript code and/or complex ng-if statements within you
 show and hide error messages specific to the state of an input field, the <code>ngMessages</code> and
 <code>ngMessage</code> directives are designed to handle the complexity, inheritance and priority
 sequencing based on the order of how the messages are defined in the template.</p>
-<p>Currently, the ngMessages module only contains the code for the <code>ngMessages</code>
-and <code>ngMessage</code> directives.</p>
+<p>Currently, the ngMessages module only contains the code for the <code>ngMessages</code>, <code>ngMessagesInclude</code>
+<code>ngMessage</code> and <code>ngMessageExp</code> directives.</p>
 <h1 id="usage">Usage</h1>
-<p>The <code>ngMessages</code> directive listens on a key/value collection which is set on the ngMessages attribute.
-Since the <a href="api/ng/directive/ngModel">ngModel</a> directive exposes an <code>$error</code> object, this error object can be
-used with <code>ngMessages</code> to display control error messages in an easier way than with just regular angular
-template directives.</p>
+<p>The <code>ngMessages</code> directive allows keys in a key/value collection to be associated with a child element
+(or &#39;message&#39;) that will show or hide based on the truthiness of that key&#39;s value in the collection. A common use
+case for <code>ngMessages</code> is to display error messages for inputs using the <code>$error</code> object exposed by the
+<a href="api/ng/directive/ngModel">ngModel</a> directive.</p>
+<p>The child elements of the <code>ngMessages</code> directive are matched to the collection keys by a <code>ngMessage</code> or
+<code>ngMessageExp</code> directive. The value of these attributes must match a key in the collection that is provided by
+the <code>ngMessages</code> directive.</p>
+<p>Consider the following example, which illustrates a typical use case of <code>ngMessages</code>. Within the form <code>myForm</code> we
+have a text input named <code>myField</code> which is bound to the scope variable <code>field</code> using the <a href="api/ng/directive/ngModel">ngModel</a>
+directive.</p>
+<p>The <code>myField</code> field is a required input of type <code>email</code> with a maximum length of 15 characters.</p>
 <pre><code class="lang-html">&lt;form name=&quot;myForm&quot;&gt;
-  &lt;input type=&quot;text&quot; ng-model=&quot;field&quot; name=&quot;myField&quot; required minlength=&quot;5&quot; /&gt;
-  &lt;div ng-messages=&quot;myForm.myField.$error&quot;&gt;
-    &lt;div ng-message=&quot;required&quot;&gt;You did not enter a field&lt;/div&gt;
-    &lt;div ng-message=&quot;minlength&quot;&gt;The value entered is too short&lt;/div&gt;
+  &lt;label&gt;
+    Enter text:
+    &lt;input type=&quot;email&quot; ng-model=&quot;field&quot; name=&quot;myField&quot; required maxlength=&quot;15&quot; /&gt;
+  &lt;/label&gt;
+  &lt;div ng-messages=&quot;myForm.myField.$error&quot; role=&quot;alert&quot;&gt;
+    &lt;div ng-message=&quot;required&quot;&gt;Please enter a value for this field.&lt;/div&gt;
+    &lt;div ng-message=&quot;email&quot;&gt;This field must be a valid email address.&lt;/div&gt;
+    &lt;div ng-message=&quot;maxlength&quot;&gt;This field can be at most 15 characters long.&lt;/div&gt;
   &lt;/div&gt;
 &lt;/form&gt;
 </code></pre>
-<p>Now whatever key/value entries are present within the provided object (in this case <code>$error</code>) then
-the ngMessages directive will render the inner first ngMessage directive (depending if the key values
-match the attribute value present on each ngMessage directive). In other words, if your errors
-object contains the following data:</p>
+<p>In order to show error messages corresponding to <code>myField</code> we first create an element with an <code>ngMessages</code> attribute
+set to the <code>$error</code> object owned by the <code>myField</code> input in our <code>myForm</code> form.</p>
+<p>Within this element we then create separate elements for each of the possible errors that <code>myField</code> could have.
+The <code>ngMessage</code> attribute is used to declare which element(s) will appear for which error - for example,
+setting <code>ng-message=&quot;required&quot;</code> specifies that this particular element should be displayed when there
+is no value present for the required field <code>myField</code> (because the key <code>required</code> will be <code>true</code> in the object
+<code>myForm.myField.$error</code>).</p>
+<h3 id="message-order">Message order</h3>
+<p>By default, <code>ngMessages</code> will only display one message for a particular key/value collection at any time. If more
+than one message (or error) key is currently true, then which message is shown is determined by the order of messages
+in the HTML template code (messages declared first are prioritised). This mechanism means the developer does not have
+to prioritise messages using custom JavaScript code.</p>
+<p>Given the following error object for our example (which informs us that the field <code>myField</code> currently has both the
+<code>required</code> and <code>email</code> errors):</p>
 <pre><code class="lang-javascript">&lt;!-- keep in mind that ngModel automatically sets these error flags --&gt;
-myField.$error = { minlength : true, required : false };
+myField.$error = { required : true, email: true, maxlength: false };
 </code></pre>
-<p>Then the <code>required</code> message will be displayed first. When required is false then the <code>minlength</code> message
-will be displayed right after (since these messages are ordered this way in the template HTML code).
-The prioritization of each message is determined by what order they&#39;re present in the DOM.
-Therefore, instead of having custom JavaScript code determine the priority of what errors are
-present before others, the presentation of the errors are handled within the template.</p>
-<p>By default, ngMessages will only display one error at a time. However, if you wish to display all
-messages then the <code>ng-messages-multiple</code> attribute flag can be used on the element containing the
-ngMessages directive to make this happen.</p>
-<pre><code class="lang-html">&lt;div ng-messages=&quot;myForm.myField.$error&quot; ng-messages-multiple&gt;...&lt;/div&gt;
+<p>The <code>required</code> message will be displayed to the user since it appears before the <code>email</code> message in the DOM.
+Once the user types a single character, the <code>required</code> message will disappear (since the field now has a value)
+but the <code>email</code> message will be visible because it is still applicable.</p>
+<h3 id="displaying-multiple-messages-at-the-same-time">Displaying multiple messages at the same time</h3>
+<p>While <code>ngMessages</code> will by default only display one error element at a time, the <code>ng-messages-multiple</code> attribute can
+be applied to the <code>ngMessages</code> container element to cause it to display all applicable error messages at once:</p>
+<pre><code class="lang-html">&lt;!-- attribute-style usage --&gt;
+&lt;div ng-messages=&quot;myForm.myField.$error&quot; ng-messages-multiple&gt;...&lt;/div&gt;
+
+&lt;!-- element-style usage --&gt;
+&lt;ng-messages for=&quot;myForm.myField.$error&quot; multiple&gt;...&lt;/ng-messages&gt;
 </code></pre>
 <h2 id="reusing-and-overriding-messages">Reusing and Overriding Messages</h2>
 <p>In addition to prioritization, ngMessages also allows for including messages from a remote or an inline
@@ -51,7 +103,10 @@ application.</p>
   &lt;div ng-message=&quot;required&quot;&gt;This field is required&lt;/div&gt;
   &lt;div ng-message=&quot;minlength&quot;&gt;This field is too short&lt;/div&gt;
 &lt;/script&gt;
-&lt;div ng-messages=&quot;myForm.myField.$error&quot; ng-messages-include=&quot;error-messages&quot;&gt;&lt;/div&gt;
+
+&lt;div ng-messages=&quot;myForm.myField.$error&quot; role=&quot;alert&quot;&gt;
+  &lt;div ng-messages-include=&quot;error-messages&quot;&gt;&lt;/div&gt;
+&lt;/div&gt;
 </code></pre>
 <p>However, including generic messages may not be useful enough to match all input fields, therefore,
 <code>ngMessages</code> provides the ability to override messages defined in the remote template by redefining
@@ -63,19 +118,26 @@ them within the directive container.</p>
 &lt;/script&gt;
 
 &lt;form name=&quot;myForm&quot;&gt;
-  &lt;input type=&quot;email&quot;
-         id=&quot;email&quot;
-         name=&quot;myEmail&quot;
-         ng-model=&quot;email&quot;
-         minlength=&quot;5&quot;
-         required /&gt;
-
-  &lt;div ng-messages=&quot;myForm.myEmail.$error&quot; ng-messages-include=&quot;my-custom-messages&quot;&gt;
+  &lt;label&gt;
+    Email address
+    &lt;input type=&quot;email&quot;
+           id=&quot;email&quot;
+           name=&quot;myEmail&quot;
+           ng-model=&quot;email&quot;
+           minlength=&quot;5&quot;
+           required /&gt;
+  &lt;/label&gt;
+  &lt;!-- any ng-message elements that appear BEFORE the ng-messages-include will
+       override the messages present in the ng-messages-include template --&gt;
+  &lt;div ng-messages=&quot;myForm.myEmail.$error&quot; role=&quot;alert&quot;&gt;
     &lt;!-- this required message has overridden the template message --&gt;
     &lt;div ng-message=&quot;required&quot;&gt;You did not enter your email address&lt;/div&gt;
 
     &lt;!-- this is a brand new message and will appear last in the prioritization --&gt;
     &lt;div ng-message=&quot;email&quot;&gt;Your email address is invalid&lt;/div&gt;
+
+    &lt;!-- and here are the generic error messages --&gt;
+    &lt;div ng-messages-include=&quot;my-custom-messages&quot;&gt;&lt;/div&gt;
   &lt;/div&gt;
 &lt;/form&gt;
 </code></pre>
@@ -83,16 +145,67 @@ them within the directive container.</p>
 required message defined within the remote template. Therefore, with particular input fields (such
 email addresses, date fields, autocomplete inputs, etc...), specialized error messages can be applied
 while more generic messages can be used to handle other, more general input errors.</p>
+<h2 id="dynamic-messaging">Dynamic Messaging</h2>
+<p>ngMessages also supports using expressions to dynamically change key values. Using arrays and
+repeaters to list messages is also supported. This means that the code below will be able to
+fully adapt itself and display the appropriate message when any of the expression data changes:</p>
+<pre><code class="lang-html">&lt;form name=&quot;myForm&quot;&gt;
+  &lt;label&gt;
+    Email address
+    &lt;input type=&quot;email&quot;
+           name=&quot;myEmail&quot;
+           ng-model=&quot;email&quot;
+           minlength=&quot;5&quot;
+           required /&gt;
+  &lt;/label&gt;
+  &lt;div ng-messages=&quot;myForm.myEmail.$error&quot; role=&quot;alert&quot;&gt;
+    &lt;div ng-message=&quot;required&quot;&gt;You did not enter your email address&lt;/div&gt;
+    &lt;div ng-repeat=&quot;errorMessage in errorMessages&quot;&gt;
+      &lt;!-- use ng-message-exp for a message whose key is given by an expression --&gt;
+      &lt;div ng-message-exp=&quot;errorMessage.type&quot;&gt;{{ errorMessage.text }}&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/form&gt;
+</code></pre>
+<p>The <code>errorMessage.type</code> expression can be a string value or it can be an array so
+that multiple errors can be associated with a single error message:</p>
+<pre><code class="lang-html">&lt;label&gt;
+  Email address
+  &lt;input type=&quot;email&quot;
+         ng-model=&quot;data.email&quot;
+         name=&quot;myEmail&quot;
+         ng-minlength=&quot;5&quot;
+         ng-maxlength=&quot;100&quot;
+         required /&gt;
+&lt;/label&gt;
+&lt;div ng-messages=&quot;myForm.myEmail.$error&quot; role=&quot;alert&quot;&gt;
+  &lt;div ng-message-exp=&quot;&#39;required&#39;&quot;&gt;You did not enter your email address&lt;/div&gt;
+  &lt;div ng-message-exp=&quot;[&#39;minlength&#39;, &#39;maxlength&#39;]&quot;&gt;
+    Your email must be between 5 and 100 characters long
+  &lt;/div&gt;
+&lt;/div&gt;
+</code></pre>
+<p>Feel free to use other structural directives such as ng-if and ng-switch to further control
+what messages are active and when. Be careful, if you place ng-message on the same element
+as these structural directives, Angular may not be able to determine if a message is active
+or not. Therefore it is best to place the ng-message on a child element of the structural
+directive.</p>
+<pre><code class="lang-html">&lt;div ng-messages=&quot;myForm.myEmail.$error&quot; role=&quot;alert&quot;&gt;
+  &lt;div ng-if=&quot;showRequiredError&quot;&gt;
+    &lt;div ng-message=&quot;required&quot;&gt;Please enter something&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</code></pre>
 <h2 id="animations">Animations</h2>
-<p>If the <code>ngAnimate</code> module is active within the application then both the <code>ngMessages</code> and
-<code>ngMessage</code> directives will trigger animations whenever any messages are added and removed
-from the DOM by the <code>ngMessages</code> directive.</p>
+<p>If the <code>ngAnimate</code> module is active within the application then the <code>ngMessages</code>, <code>ngMessage</code> and
+<code>ngMessageExp</code> directives will trigger animations whenever any messages are added and removed from
+the DOM by the <code>ngMessages</code> directive.</p>
 <p>Whenever the <code>ngMessages</code> directive contains one or more visible messages then the <code>.ng-active</code> CSS
 class will be added to the element. The <code>.ng-inactive</code> CSS class will be applied when there are no
 messages present. Therefore, CSS transitions and keyframes as well as JavaScript animations can
 hook into the animations whenever these classes are added/removed.</p>
 <p>Let&#39;s say that our HTML code for our messages container looks like so:</p>
-<pre><code class="lang-html">&lt;div ng-messages=&quot;myMessages&quot; class=&quot;my-messages&quot;&gt;
+<pre><code class="lang-html">&lt;div ng-messages=&quot;myMessages&quot; class=&quot;my-messages&quot; role=&quot;alert&quot;&gt;
   &lt;div ng-message=&quot;alert&quot; class=&quot;some-message&quot;&gt;...&lt;/div&gt;
   &lt;div ng-message=&quot;fail&quot; class=&quot;some-message&quot;&gt;...&lt;/div&gt;
 &lt;/div&gt;
@@ -125,32 +238,6 @@ and leave animation is triggered for each particular element bound to the <code>
 
 
 
-  <h2>Installation</h2>
-
-  <p>First include <code>angular-messages.js</code> in your HTML:</p>
-
-  <pre><code>&lt;script src=&quot;angular.js&quot;&gt;&#10;&lt;script src=&quot;angular-messages.js&quot;&gt;</code></pre>
-
-  <p>You can download this file from the following places:</p>
-  <ul>
-    <li>
-      <a href="https://developers.google.com/speed/libraries/devguide#angularjs">Google CDN</a><br>
-      e.g. <code>//ajax.googleapis.com/ajax/libs/angularjs/X.Y.Z/angular-messages.js</code>
-    </li>
-    <li>
-      <a href="http://bower.io">Bower</a><br>
-      e.g. <pre><code>bower install angular-messages@X.Y.Z</code></pre>
-    </li>
-    <li>
-      <a href="http://code.angularjs.org/">code.angularjs.org</a><br>
-      e.g. <pre><code>&quot;//code.angularjs.org/X.Y.Z/angular-messages.js&quot;</code></pre>
-    </li>
-  </ul>
-  <p>where X.Y.Z is the AngularJS version you are running.</p>
-  <p>Then load the module in your application by adding it as a dependent module:</p>
-  <pre><code>angular.module(&#39;app&#39;, [&#39;ngMessages&#39;]);</code></pre>
-
-  <p>With that you&apos;re ready to get started!</p>
 
 
 <div class="component-breakdown">
@@ -167,8 +254,18 @@ and leave animation is triggered for each particular element bound to the <code>
       <tr>
         <td><a href="api/ngMessages/directive/ngMessages">ngMessages</a></td>
         <td><p><code>ngMessages</code> is a directive that is designed to show and hide messages based on the state
-of a key/value object that it listens on. The directive itself compliments error message
+of a key/value object that it listens on. The directive itself complements error message
 reporting with the <code>ngModel</code> $error object (which stores a key/value state of validation errors).</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ngMessages/directive/ngMessagesInclude">ngMessagesInclude</a></td>
+        <td><p><code>ngMessagesInclude</code> is a directive with the purpose to import existing ngMessage template
+code from a remote template and place the downloaded template code into the exact spot
+that the ngMessagesInclude directive is placed within the ngMessages container. This allows
+for a series of pre-defined messages to be reused and also allows for the developer to
+determine what messages are overridden due to the placement of the ngMessagesInclude directive.</p>
 </td>
       </tr>
       
@@ -176,6 +273,15 @@ reporting with the <code>ngModel</code> $error object (which stores a key/value 
         <td><a href="api/ngMessages/directive/ngMessage">ngMessage</a></td>
         <td><p><code>ngMessage</code> is a directive with the purpose to show and hide a particular message.
 For <code>ngMessage</code> to operate, a parent <code>ngMessages</code> directive on a parent DOM element
+must be situated since it determines which messages are visible based on the state
+of the provided key/value map that <code>ngMessages</code> listens on.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ngMessages/directive/ngMessageExp">ngMessageExp</a></td>
+        <td><p><code>ngMessageExp</code> is a directive with the purpose to show and hide a particular message.
+For <code>ngMessageExp</code> to operate, a parent <code>ngMessages</code> directive on a parent DOM element
 must be situated since it determines which messages are visible based on the state
 of the provided key/value map that <code>ngMessages</code> listens on.</p>
 </td>

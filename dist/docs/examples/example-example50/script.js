@@ -1,14 +1,15 @@
 (function(angular) {
   'use strict';
-angular.module('cacheExampleApp', []).
-  controller('CacheController', ['$scope', '$cacheFactory', function($scope, $cacheFactory) {
-    $scope.keys = [];
-    $scope.cache = $cacheFactory('cacheId');
-    $scope.put = function(key, value) {
-      if ($scope.cache.get(key) === undefined) {
-        $scope.keys.push(key);
-      }
-      $scope.cache.put(key, value === undefined ? null : value);
-    };
-  }]);
+angular.module('anchorScrollExample', [])
+  .controller('ScrollController', ['$scope', '$location', '$anchorScroll',
+    function ($scope, $location, $anchorScroll) {
+      $scope.gotoBottom = function() {
+        // set the location.hash to the id of
+        // the element you wish to scroll to.
+        $location.hash('bottom');
+
+        // call $anchorScroll()
+        $anchorScroll();
+      };
+    }]);
 })(window.angular);

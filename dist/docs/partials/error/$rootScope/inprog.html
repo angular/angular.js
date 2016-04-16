@@ -1,7 +1,7 @@
 <a href='https://github.com/angular/angular.js/edit/master/docs/content/error/$rootScope/inprog.ngdoc?message=docs(error%2Finprog)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
 
 
-<h1>Error: error:inprog
+<h1>Error: $rootScope:inprog
   <div><span class='hint'>Action Already In Progress</span></div>
 </h1>
 
@@ -81,7 +81,7 @@ handler is trying to enter a new <code>$apply</code> block from within one.</p>
 <p>This is not an ideal design choice on the part of the 3rd party library.</p>
 <p>To resolve this type of issue, either fix the api to be always synchronous or asynchronous or force
 your callback handler to always run asynchronously by using the <code>$timeout</code> service.</p>
-<pre><code>function MyController($scope, thirdPartyComponent) {
+<pre><code>function MyController($scope, $timeout, thirdPartyComponent) {
   thirdPartyComponent.getData(function(someData) {
     $timeout(function() {
       $scope.someData = someData;
@@ -131,7 +131,7 @@ work when the element receives focus we will have a problem:</p>
 <p>In this second scenario, we are already inside a <code>$digest</code> when the ngFocus directive makes another
 call to <code>$apply()</code>, causing this error to be thrown.</p>
 <p>It is possible to workaround this problem by moving the call to set the focus outside of the digest,
-by using <code>$timeout(fn, 0, false)</code>, where the <code>false</code> value tells Angular not to wrap this <code>fn</code> in a
+by using <code>$timeout(fn, 0, false)</code>, where the <code>false</code> value tells Angular not to wrap this <code>fn</code> in an
 <code>$apply</code> block:</p>
 <pre><code>myApp.directive(&#39;setFocusIf&#39;, function($timeout) {
   return {
@@ -166,7 +166,7 @@ the top of the call stack.</p>
 <p>Once you have identified this call you work your way up the stack to see what the problem is.</p>
 <ul>
 <li><p>If the second call was made in your application code then you should look at why this code has been
-called from within a <code>$apply</code>/<code>$digest</code>.  It may be a simple oversight or maybe it fits with the
+called from within an <code>$apply</code>/<code>$digest</code>.  It may be a simple oversight or maybe it fits with the
 sync/async scenario described earlier.</p>
 </li>
 <li><p>If the second call was made inside an Angular directive then it is likely that it matches the second
@@ -181,9 +181,7 @@ value of its attribute becomes true.</p>
 <p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-error-$rootScope-inprog', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-error-$rootScope-inprog"></plnkr-opener>
 
   <div class="runnable-example"
       path="examples/example-error-$rootScope-inprog"
@@ -195,14 +193,14 @@ value of its attribute becomes true.</p>
       name="index.html"
       language="html"
       type="html">
-      <pre><code>&lt;button ng-click=&quot;focusInput = true&quot;&gt;Focus&lt;/button&gt;&#10;&lt;input ng-focus=&quot;count = count + 1&quot; set-focus-if=&quot;focusInput&quot; /&gt;</code></pre>
+      <pre><code>&lt;button ng-click=&quot;focusInput = true&quot;&gt;Focus&lt;/button&gt;&#13;&#10;&lt;input ng-focus=&quot;count = count + 1&quot; set-focus-if=&quot;focusInput&quot; /&gt;&#13;</code></pre>
     </div>
   
     <div class="runnable-example-file" 
       name="app.js"
       language="js"
       type="js">
-      <pre><code>angular.module(&#39;app&#39;, []).directive(&#39;setFocusIf&#39;, function() {&#10;  return function link($scope, $element, $attr) {&#10;    $scope.$watch($attr.setFocusIf, function(value) {&#10;      if ( value ) { $element[0].focus(); }&#10;    });&#10;  };&#10;});</code></pre>
+      <pre><code>angular.module(&#39;app&#39;, []).directive(&#39;setFocusIf&#39;, function() {&#13;&#10;  return function link($scope, $element, $attr) {&#13;&#10;    $scope.$watch($attr.setFocusIf, function(value) {&#13;&#10;      if ( value ) { $element[0].focus(); }&#13;&#10;    });&#13;&#10;  };&#13;&#10;});&#13;</code></pre>
     </div>
   
 

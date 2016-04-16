@@ -2,6 +2,6 @@
   "name": "example-example5",
   "files": [
     "index-production.html",
-    "script.js"
+    "style.css"
   ]
 }

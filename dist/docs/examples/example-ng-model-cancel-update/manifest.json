@@ -2,6 +2,7 @@
   "name": "example-ng-model-cancel-update",
   "files": [
     "index-production.html",
-    "app.js"
+    "app.js",
+    "style.css"
   ]
 }

@@ -1,8 +1,8 @@
-<a href='https://github.com/angular/angular.js/edit/master/src/ng/directive/input.js?message=docs(input)%3A%20describe%20your%20change...#L1408' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/directive/input.js?message=docs(input)%3A%20describe%20your%20change...#L1565' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
 
 
 
-<a href='https://github.com/angular/angular.js/tree/master/src/ng/directive/input.js#L1408' class='view-source pull-right btn btn-primary'>
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/directive/input.js#L1565' class='view-source pull-right btn btn-primary'>
   <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
 </a>
 
@@ -32,6 +32,8 @@ Specifically, data binding and event handling via <code>ng-model</code> is unsup
 
 
 
+
+
 <div>
   
 
@@ -40,6 +42,7 @@ Specifically, data binding and event handling via <code>ng-model</code> is unsup
   <ul>
     
     <li>This directive executes at priority level 0.</li>
+    
   </ul>
 
   
@@ -50,7 +53,7 @@ Specifically, data binding and event handling via <code>ng-model</code> is unsup
     
       <li>as element:
       
-      <pre><code>&lt;input&#10;  ng-model=&quot;&quot;&#10;  [name=&quot;&quot;]&#10;  [required=&quot;&quot;]&#10;  [ng-required=&quot;&quot;]&#10;  [ng-minlength=&quot;&quot;]&#10;  [ng-maxlength=&quot;&quot;]&#10;  [ng-pattern=&quot;&quot;]&#10;  [ng-change=&quot;&quot;]&#10;  [ng-trim=&quot;&quot;]&gt;&#10;...&#10;&lt;/input&gt;</code></pre>
+      <pre><code>&lt;input&#10;  ng-model=&quot;string&quot;&#10;  [name=&quot;string&quot;]&#10;  [required=&quot;string&quot;]&#10;  [ng-required=&quot;boolean&quot;]&#10;  [ng-minlength=&quot;number&quot;]&#10;  [ng-maxlength=&quot;number&quot;]&#10;  [ng-pattern=&quot;string&quot;]&#10;  [ng-change=&quot;string&quot;]&#10;  [ng-trim=&quot;boolean&quot;]&gt;&#10;...&#10;&lt;/input&gt;</code></pre>
       </li>
     
   </div>
@@ -177,9 +180,15 @@ Specifically, data binding and event handling via <code>ng-model</code> is unsup
         <a href="" class="label type-hint type-hint-string">string</a>
       </td>
       <td>
-        <p>Sets <code>pattern</code> validation error key if the value does not match the
-   RegExp pattern expression. Expected value is <code>/regexp/</code> for inline patterns or <code>regexp</code> for
-   patterns defined as scope expressions.</p>
+        <p>Sets <code>pattern</code> validation error key if the ngModel <a href="api/ng/type/ngModel.NgModelController#$viewValue">$viewValue</a>
+   value does not match a RegExp found by evaluating the Angular expression given in the attribute value.
+   If the expression evaluates to a RegExp object, then this is used directly.
+   If the expression evaluates to a string, then it will be converted to a RegExp
+   after wrapping it in <code>^</code> and <code>$</code> characters. For instance, <code>&quot;abc&quot;</code> will be converted to
+   <code>new RegExp(&#39;^abc$&#39;)</code>.<br />
+   <strong>Note:</strong> Avoid using the <code>g</code> flag on the RegExp, as it will cause each successive search to
+   start at the index of the last search&#39;s match, thus not taking the whole input value into
+   account.</p>
 
         
       </td>
@@ -231,9 +240,7 @@ Specifically, data binding and event handling via <code>ng-model</code> is unsup
   <h2 id="example">Example</h2><p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-input-directive', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-input-directive"></plnkr-opener>
 
   <div class="runnable-example"
       path="examples/example-input-directive"
@@ -245,7 +252,7 @@ Specifically, data binding and event handling via <code>ng-model</code> is unsup
       name="index.html"
       language="html"
       type="html">
-      <pre><code>&lt;script&gt;&#10;   angular.module(&#39;inputExample&#39;, [])&#10;     .controller(&#39;ExampleController&#39;, [&#39;$scope&#39;, function($scope) {&#10;       $scope.user = {name: &#39;guest&#39;, last: &#39;visitor&#39;};&#10;     }]);&#10;&lt;/script&gt;&#10;&lt;div ng-controller=&quot;ExampleController&quot;&gt;&#10;  &lt;form name=&quot;myForm&quot;&gt;&#10;    User name: &lt;input type=&quot;text&quot; name=&quot;userName&quot; ng-model=&quot;user.name&quot; required&gt;&#10;    &lt;span class=&quot;error&quot; ng-show=&quot;myForm.userName.$error.required&quot;&gt;&#10;      Required!&lt;/span&gt;&lt;br&gt;&#10;    Last name: &lt;input type=&quot;text&quot; name=&quot;lastName&quot; ng-model=&quot;user.last&quot;&#10;      ng-minlength=&quot;3&quot; ng-maxlength=&quot;10&quot;&gt;&#10;    &lt;span class=&quot;error&quot; ng-show=&quot;myForm.lastName.$error.minlength&quot;&gt;&#10;      Too short!&lt;/span&gt;&#10;    &lt;span class=&quot;error&quot; ng-show=&quot;myForm.lastName.$error.maxlength&quot;&gt;&#10;      Too long!&lt;/span&gt;&lt;br&gt;&#10;  &lt;/form&gt;&#10;  &lt;hr&gt;&#10;  &lt;tt&gt;user = {{user}}&lt;/tt&gt;&lt;br/&gt;&#10;  &lt;tt&gt;myForm.userName.$valid = {{myForm.userName.$valid}}&lt;/tt&gt;&lt;br&gt;&#10;  &lt;tt&gt;myForm.userName.$error = {{myForm.userName.$error}}&lt;/tt&gt;&lt;br&gt;&#10;  &lt;tt&gt;myForm.lastName.$valid = {{myForm.lastName.$valid}}&lt;/tt&gt;&lt;br&gt;&#10;  &lt;tt&gt;myForm.lastName.$error = {{myForm.lastName.$error}}&lt;/tt&gt;&lt;br&gt;&#10;  &lt;tt&gt;myForm.$valid = {{myForm.$valid}}&lt;/tt&gt;&lt;br&gt;&#10;  &lt;tt&gt;myForm.$error.required = {{!!myForm.$error.required}}&lt;/tt&gt;&lt;br&gt;&#10;  &lt;tt&gt;myForm.$error.minlength = {{!!myForm.$error.minlength}}&lt;/tt&gt;&lt;br&gt;&#10;  &lt;tt&gt;myForm.$error.maxlength = {{!!myForm.$error.maxlength}}&lt;/tt&gt;&lt;br&gt;&#10;&lt;/div&gt;</code></pre>
+      <pre><code>&lt;script&gt;&#10;   angular.module(&#39;inputExample&#39;, [])&#10;     .controller(&#39;ExampleController&#39;, [&#39;$scope&#39;, function($scope) {&#10;       $scope.user = {name: &#39;guest&#39;, last: &#39;visitor&#39;};&#10;     }]);&#10;&lt;/script&gt;&#10;&lt;div ng-controller=&quot;ExampleController&quot;&gt;&#10;  &lt;form name=&quot;myForm&quot;&gt;&#10;    &lt;label&gt;&#10;       User name:&#10;       &lt;input type=&quot;text&quot; name=&quot;userName&quot; ng-model=&quot;user.name&quot; required&gt;&#10;    &lt;/label&gt;&#10;    &lt;div role=&quot;alert&quot;&gt;&#10;      &lt;span class=&quot;error&quot; ng-show=&quot;myForm.userName.$error.required&quot;&gt;&#10;       Required!&lt;/span&gt;&#10;    &lt;/div&gt;&#10;    &lt;label&gt;&#10;       Last name:&#10;       &lt;input type=&quot;text&quot; name=&quot;lastName&quot; ng-model=&quot;user.last&quot;&#10;       ng-minlength=&quot;3&quot; ng-maxlength=&quot;10&quot;&gt;&#10;    &lt;/label&gt;&#10;    &lt;div role=&quot;alert&quot;&gt;&#10;      &lt;span class=&quot;error&quot; ng-show=&quot;myForm.lastName.$error.minlength&quot;&gt;&#10;        Too short!&lt;/span&gt;&#10;      &lt;span class=&quot;error&quot; ng-show=&quot;myForm.lastName.$error.maxlength&quot;&gt;&#10;        Too long!&lt;/span&gt;&#10;    &lt;/div&gt;&#10;  &lt;/form&gt;&#10;  &lt;hr&gt;&#10;  &lt;tt&gt;user = {{user}}&lt;/tt&gt;&lt;br/&gt;&#10;  &lt;tt&gt;myForm.userName.$valid = {{myForm.userName.$valid}}&lt;/tt&gt;&lt;br/&gt;&#10;  &lt;tt&gt;myForm.userName.$error = {{myForm.userName.$error}}&lt;/tt&gt;&lt;br/&gt;&#10;  &lt;tt&gt;myForm.lastName.$valid = {{myForm.lastName.$valid}}&lt;/tt&gt;&lt;br/&gt;&#10;  &lt;tt&gt;myForm.lastName.$error = {{myForm.lastName.$error}}&lt;/tt&gt;&lt;br/&gt;&#10;  &lt;tt&gt;myForm.$valid = {{myForm.$valid}}&lt;/tt&gt;&lt;br/&gt;&#10;  &lt;tt&gt;myForm.$error.required = {{!!myForm.$error.required}}&lt;/tt&gt;&lt;br/&gt;&#10;  &lt;tt&gt;myForm.$error.minlength = {{!!myForm.$error.minlength}}&lt;/tt&gt;&lt;br/&gt;&#10;  &lt;tt&gt;myForm.$error.maxlength = {{!!myForm.$error.maxlength}}&lt;/tt&gt;&lt;br/&gt;&#10;&lt;/div&gt;</code></pre>
     </div>
   
     <div class="runnable-example-file" 

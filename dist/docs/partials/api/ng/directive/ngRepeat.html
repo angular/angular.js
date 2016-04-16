@@ -65,24 +65,91 @@ and <code>$index</code> is set to the item index or key.</p>
 </tr>
 </tbody>
 </table>
-<p>Creating aliases for these properties is possible with <a href="api/ng/directive/ngInit"><code>ngInit</code></a>.
-This may be useful when, for instance, nesting ngRepeats.</p>
+<div class="alert alert-info">
+  Creating aliases for these properties is possible with <a href="api/ng/directive/ngInit"><code>ngInit</code></a>.
+  This may be useful when, for instance, nesting ngRepeats.
+</div>
+
+
 <h1 id="iterating-over-object-properties">Iterating over object properties</h1>
 <p>It is possible to get <code>ngRepeat</code> to iterate over the properties of an object using the following
 syntax:</p>
 <pre><code class="lang-js">&lt;div ng-repeat=&quot;(key, value) in myObj&quot;&gt; ... &lt;/div&gt;
 </code></pre>
-<p>You need to be aware that the JavaScript specification does not define what order
-it will return the keys for an object. (To mitigate this in Angular 1.3 the <code>ngRepeat</code> directive
-used to sort the keys alphabetically.)</p>
-<p>Version 1.4 removed the alphabetic sorting. We now rely on the order returned by the browser
-when running <code>for key in myObj</code>. It seems that browsers generally follow the strategy of providing
+<p>However, there are a limitations compared to array iteration:</p>
+<ul>
+<li><p>The JavaScript specification does not define the order of keys
+returned for an object, so Angular relies on the order returned by the browser
+when running <code>for key in myObj</code>. Browsers generally follow the strategy of providing
 keys in the order in which they were defined, although there are exceptions when keys are deleted
-and reinstated. See <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/delete#Cross-browser_issues">https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/delete#Cross-browser_issues</a></p>
-<p>If this is not desired, the recommended workaround is to convert your object into an array
-that is sorted into the order that you prefer before providing it to <code>ngRepeat</code>.  You could
+and reinstated. See the
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/delete#Cross-browser_notes">MDN page on <code>delete</code> for more info</a>.</p>
+</li>
+<li><p><code>ngRepeat</code> will silently <em>ignore</em> object keys starting with <code>$</code>, because
+it&#39;s a prefix used by Angular for public (<code>$</code>) and private (<code>$$</code>) properties.</p>
+</li>
+<li><p>The built-in filters <a href="api/ng/filter/orderBy">orderBy</a> and <a href="api/ng/filter/filter">filter</a> do not work with
+objects, and will throw if used with one.</p>
+</li>
+</ul>
+<p>If you are hitting any of these limitations, the recommended workaround is to convert your object into an array
+that is sorted into the order that you prefer before providing it to <code>ngRepeat</code>. You could
 do this with a filter such as <a href="http://ngmodules.org/modules/angular-toArrayFilter">toArrayFilter</a>
 or implement a <code>$watch</code> on the object yourself.</p>
+<h1 id="tracking-and-duplicates">Tracking and Duplicates</h1>
+<p><code>ngRepeat</code> uses <a href="api/ng/type/$rootScope.Scope#$watchCollection">$watchCollection</a> to detect changes in
+the collection. When a change happens, ngRepeat then makes the corresponding changes to the DOM:</p>
+<ul>
+<li>When an item is added, a new instance of the template is added to the DOM.</li>
+<li>When an item is removed, its template instance is removed from the DOM.</li>
+<li>When items are reordered, their respective templates are reordered in the DOM.</li>
+</ul>
+<p>To minimize creation of DOM elements, <code>ngRepeat</code> uses a function
+to &quot;keep track&quot; of all items in the collection and their corresponding DOM elements.
+For example, if an item is added to the collection, ngRepeat will know that all other items
+already have DOM elements, and will not re-render them.</p>
+<p>The default tracking function (which tracks items by their identity) does not allow
+duplicate items in arrays. This is because when there are duplicates, it is not possible
+to maintain a one-to-one mapping between collection items and DOM elements.</p>
+<p>If you do need to repeat duplicate items, you can substitute the default tracking behavior
+with your own using the <code>track by</code> expression.</p>
+<p>For example, you may track items by the index of each item in the collection, using the
+special scope property <code>$index</code>:</p>
+<pre><code class="lang-html">&lt;div ng-repeat=&quot;n in [42, 42, 43, 43] track by $index&quot;&gt;
+  {{n}}
+&lt;/div&gt;
+</code></pre>
+<p>You may also use arbitrary expressions in <code>track by</code>, including references to custom functions
+on the scope:</p>
+<pre><code class="lang-html">&lt;div ng-repeat=&quot;n in [42, 42, 43, 43] track by myTrackingFunction(n)&quot;&gt;
+  {{n}}
+&lt;/div&gt;
+</code></pre>
+<p><div class="alert alert-success">
+If you are working with objects that have an identifier property, you should track
+by the identifier instead of the whole object. Should you reload your data later, <code>ngRepeat</code>
+will not have to rebuild the DOM elements for items it has already rendered, even if the
+JavaScript objects in the collection have been substituted for new ones. For large collections,
+this significantly improves rendering performance. If you don&#39;t have a unique identifier,
+<code>track by $index</code> can also provide a performance boost.
+</div></p>
+<pre><code class="lang-html">&lt;div ng-repeat=&quot;model in collection track by model.id&quot;&gt;
+  {{model.name}}
+&lt;/div&gt;
+</code></pre>
+<p>When no <code>track by</code> expression is provided, it is equivalent to tracking by the built-in
+<code>$id</code> function, which tracks items by their identity:</p>
+<pre><code class="lang-html">&lt;div ng-repeat=&quot;obj in collection track by $id(obj)&quot;&gt;
+  {{obj.prop}}
+&lt;/div&gt;
+</code></pre>
+<p><div class="alert alert-warning">
+<strong>Note:</strong> <code>track by</code> must always be the last expression:
+</div></p>
+<pre><code>&lt;div ng-repeat=&quot;model in collection | orderBy: &#39;id&#39; as filtered_result track by model.id&quot;&gt;
+    {{model.name}}
+&lt;/div&gt;
+</code></pre>
 <h1 id="special-repeat-start-and-end-points">Special repeat start and end points</h1>
 <p>To repeat a series of elements instead of just one parent element, ngRepeat (as well as other ng directives) supports extending
 the range of the repeater by defining explicit start and end points by using <strong>ng-repeat-start</strong> and <strong>ng-repeat-end</strong> respectively.
@@ -127,6 +194,8 @@ as <strong>data-ng-repeat-start</strong>, <strong>x-ng-repeat-start</strong> and
 
 
 
+
+
 <div>
   
 
@@ -135,6 +204,7 @@ as <strong>data-ng-repeat-start</strong>, <strong>x-ng-repeat-start</strong> and
   <ul>
     <li>This directive creates new scope.</li>
     <li>This directive executes at priority level 1000.</li>
+    <li>This directive can be used as <a href="api/ng/service/$compile#-multielement-">multiElement</a></li>
   </ul>
 
   
@@ -143,15 +213,35 @@ as <strong>data-ng-repeat-start</strong>, <strong>x-ng-repeat-start</strong> and
   
     <ul>
     <li>as attribute:
-        <pre><code>&lt;ANY&#10;  ng-repeat=&quot;&quot;&gt;&#10;...&#10;&lt;/ANY&gt;</code></pre>
+        <pre><code>&lt;ANY&#10;  ng-repeat=&quot;repeat_expression&quot;&gt;&#10;...&#10;&lt;/ANY&gt;</code></pre>
       </li>
     
   </div>
   
   <h2 id="animations">Animations</h2>
-  <p><strong>.enter</strong> - when a new item is added to the list or when an item is revealed after a filter</p>
-<p><strong>.leave</strong> - when an item is removed from the list or when an item is filtered out</p>
-<p><strong>.move</strong> - when an adjacent item is filtered out causing a reorder or when the item contents are reordered</p>
+  <table>
+<thead>
+<tr>
+<th>Animation</th>
+<th>Occurs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="api/ng/service/$animate#enter">enter</a></td>
+<td>when a new item is added to the list or when an item is revealed after a filter</td>
+</tr>
+<tr>
+<td><a href="api/ng/service/$animate#leave">leave</a></td>
+<td>when an item is removed from the list or when an item is filtered out</td>
+</tr>
+<tr>
+<td><a href="api/ng/service/$animate#move">move</a></td>
+<td>when an adjacent item is filtered out causing a reorder or when the item contents are reordered</td>
+</tr>
+</tbody>
+</table>
+<p>See the example below for defining CSS animations with ngRepeat.</p>
 
   <a href="api/ngAnimate/service/$animate">Click here</a> to learn more about the steps involved in the animation.
 <section class="api-section">
@@ -188,12 +278,12 @@ is a scope expression giving the collection to enumerate.</p>
 and <code>expression</code> is the scope expression giving the collection to enumerate.</p>
 <p>For example: <code>(name, age) in {&#39;adam&#39;:10, &#39;amalie&#39;:12}</code>.</p>
 </li>
-<li><p><code>variable in expression track by tracking_expression</code> – You can also provide an optional tracking function
-which can be used to associate the objects in the collection with the DOM elements. If no tracking function
-is specified the ng-repeat associates elements by identity in the collection. It is an error to have
-more than one tracking function to resolve to the same key. (This would mean that two distinct objects are
-mapped to the same DOM element, which is not possible.)  Filters should be applied to the expression,
-before specifying a tracking expression.</p>
+<li><p><code>variable in expression track by tracking_expression</code> – You can also provide an optional tracking expression
+which can be used to associate the objects in the collection with the DOM elements. If no tracking expression
+is specified, ng-repeat associates elements by identity. It is an error to have
+more than one tracking expression value resolve to the same key. (This would mean that two distinct objects are
+mapped to the same DOM element, which is not possible.)</p>
+<p>Note that the tracking expression must come last, after any filters, and the alias expression.</p>
 <p>For example: <code>item in items</code> is equivalent to <code>item in items track by $id(item)</code>. This implies that the DOM elements
 will be associated by item identity in the array.</p>
 <p>For example: <code>item in items track by $id(item)</code>. A built in <code>$id()</code> function can be used to assign a unique
@@ -211,6 +301,9 @@ intermediate results of the repeater after the filters have been applied. Typica
 when a filter is active on the repeater, but the filtered result set is empty.</p>
 <p>For example: <code>item in items | filter:x as results</code> will store the fragment of the repeated items as <code>results</code>, but only after
 the items have been processed through the filter.</p>
+<p>Please note that `as [variable name] is not an operator but rather a part of ngRepeat micro-syntax so it can be used only at the end
+(and not as operator, inside an expression).</p>
+<p>For example: <code>item in items | filter : x | orderBy : order | limitTo : limit as results</code> .</p>
 </li>
 </ul>
 
@@ -226,18 +319,17 @@ the items have been processed through the filter.</p>
 
 
   
-  <h2 id="example">Example</h2><p>This example initializes the scope to a list of names and
-then uses <code>ngRepeat</code> to display every person:
+  <h2 id="example">Example</h2><p>This example uses <code>ngRepeat</code> to display a list of people. A filter is used to restrict the displayed
+results by name. New (entering) and removed (leaving) items are animated.
   
 
 <div>
-  <a ng-click="openPlunkr('examples/example-example89', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-ngRepeat"></plnkr-opener>
 
   <div class="runnable-example"
-      path="examples/example-example89"
-      module="ngAnimate"
+      path="examples/example-ngRepeat"
+      module="ngRepeat"
+      name="ngRepeat"
       deps="angular-animate.js"
       animations="true">
 
@@ -246,14 +338,21 @@ then uses <code>ngRepeat</code> to display every person:
       name="index.html"
       language="html"
       type="html">
-      <pre><code>&lt;div ng-init=&quot;friends = [&#10;  {name:&#39;John&#39;, age:25, gender:&#39;boy&#39;},&#10;  {name:&#39;Jessie&#39;, age:30, gender:&#39;girl&#39;},&#10;  {name:&#39;Johanna&#39;, age:28, gender:&#39;girl&#39;},&#10;  {name:&#39;Joy&#39;, age:15, gender:&#39;girl&#39;},&#10;  {name:&#39;Mary&#39;, age:28, gender:&#39;girl&#39;},&#10;  {name:&#39;Peter&#39;, age:95, gender:&#39;boy&#39;},&#10;  {name:&#39;Sebastian&#39;, age:50, gender:&#39;boy&#39;},&#10;  {name:&#39;Erika&#39;, age:27, gender:&#39;girl&#39;},&#10;  {name:&#39;Patrick&#39;, age:40, gender:&#39;boy&#39;},&#10;  {name:&#39;Samantha&#39;, age:60, gender:&#39;girl&#39;}&#10;]&quot;&gt;&#10;  I have {{friends.length}} friends. They are:&#10;  &lt;input type=&quot;search&quot; ng-model=&quot;q&quot; placeholder=&quot;filter friends...&quot; /&gt;&#10;  &lt;ul class=&quot;example-animate-container&quot;&gt;&#10;    &lt;li class=&quot;animate-repeat&quot; ng-repeat=&quot;friend in friends | filter:q as results&quot;&gt;&#10;      [{{$index + 1}}] {{friend.name}} who is {{friend.age}} years old.&#10;    &lt;/li&gt;&#10;    &lt;li class=&quot;animate-repeat&quot; ng-if=&quot;results.length == 0&quot;&gt;&#10;      &lt;strong&gt;No results found...&lt;/strong&gt;&#10;    &lt;/li&gt;&#10;  &lt;/ul&gt;&#10;&lt;/div&gt;</code></pre>
+      <pre><code>&lt;div ng-controller=&quot;repeatController&quot;&gt;&#10;  I have {{friends.length}} friends. They are:&#10;  &lt;input type=&quot;search&quot; ng-model=&quot;q&quot; placeholder=&quot;filter friends...&quot; aria-label=&quot;filter friends&quot; /&gt;&#10;  &lt;ul class=&quot;example-animate-container&quot;&gt;&#10;    &lt;li class=&quot;animate-repeat&quot; ng-repeat=&quot;friend in friends | filter:q as results&quot;&gt;&#10;      [{{$index + 1}}] {{friend.name}} who is {{friend.age}} years old.&#10;    &lt;/li&gt;&#10;    &lt;li class=&quot;animate-repeat&quot; ng-if=&quot;results.length == 0&quot;&gt;&#10;      &lt;strong&gt;No results found...&lt;/strong&gt;&#10;    &lt;/li&gt;&#10;  &lt;/ul&gt;&#10;&lt;/div&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="script.js"
+      language="js"
+      type="js">
+      <pre><code>angular.module(&#39;ngRepeat&#39;, [&#39;ngAnimate&#39;]).controller(&#39;repeatController&#39;, function($scope) {&#10;  $scope.friends = [&#10;    {name:&#39;John&#39;, age:25, gender:&#39;boy&#39;},&#10;    {name:&#39;Jessie&#39;, age:30, gender:&#39;girl&#39;},&#10;    {name:&#39;Johanna&#39;, age:28, gender:&#39;girl&#39;},&#10;    {name:&#39;Joy&#39;, age:15, gender:&#39;girl&#39;},&#10;    {name:&#39;Mary&#39;, age:28, gender:&#39;girl&#39;},&#10;    {name:&#39;Peter&#39;, age:95, gender:&#39;boy&#39;},&#10;    {name:&#39;Sebastian&#39;, age:50, gender:&#39;boy&#39;},&#10;    {name:&#39;Erika&#39;, age:27, gender:&#39;girl&#39;},&#10;    {name:&#39;Patrick&#39;, age:40, gender:&#39;boy&#39;},&#10;    {name:&#39;Samantha&#39;, age:60, gender:&#39;girl&#39;}&#10;  ];&#10;});</code></pre>
     </div>
   
     <div class="runnable-example-file" 
       name="animations.css"
       language="css"
       type="css">
-      <pre><code>.example-animate-container {&#10;  background:white;&#10;  border:1px solid black;&#10;  list-style:none;&#10;  margin:0;&#10;  padding:0 10px;&#10;}&#10;&#10;.animate-repeat {&#10;  line-height:40px;&#10;  list-style:none;&#10;  box-sizing:border-box;&#10;}&#10;&#10;.animate-repeat.ng-move,&#10;.animate-repeat.ng-enter,&#10;.animate-repeat.ng-leave {&#10;  -webkit-transition:all linear 0.5s;&#10;  transition:all linear 0.5s;&#10;}&#10;&#10;.animate-repeat.ng-leave.ng-leave-active,&#10;.animate-repeat.ng-move,&#10;.animate-repeat.ng-enter {&#10;  opacity:0;&#10;  max-height:0;&#10;}&#10;&#10;.animate-repeat.ng-leave,&#10;.animate-repeat.ng-move.ng-move-active,&#10;.animate-repeat.ng-enter.ng-enter-active {&#10;  opacity:1;&#10;  max-height:40px;&#10;}</code></pre>
+      <pre><code>.example-animate-container {&#10;  background:white;&#10;  border:1px solid black;&#10;  list-style:none;&#10;  margin:0;&#10;  padding:0 10px;&#10;}&#10;&#10;.animate-repeat {&#10;  line-height:30px;&#10;  list-style:none;&#10;  box-sizing:border-box;&#10;}&#10;&#10;.animate-repeat.ng-move,&#10;.animate-repeat.ng-enter,&#10;.animate-repeat.ng-leave {&#10;  transition:all linear 0.5s;&#10;}&#10;&#10;.animate-repeat.ng-leave.ng-leave-active,&#10;.animate-repeat.ng-move,&#10;.animate-repeat.ng-enter {&#10;  opacity:0;&#10;  max-height:0;&#10;}&#10;&#10;.animate-repeat.ng-leave,&#10;.animate-repeat.ng-move.ng-move-active,&#10;.animate-repeat.ng-enter.ng-enter-active {&#10;  opacity:1;&#10;  max-height:30px;&#10;}</code></pre>
     </div>
   
     <div class="runnable-example-file" 
@@ -264,7 +363,7 @@ then uses <code>ngRepeat</code> to display every person:
     </div>
   
 
-    <iframe class="runnable-example-frame" src="examples/example-example89/index.html" name="example-example89"></iframe>
+    <iframe class="runnable-example-frame" src="examples/example-ngRepeat/index.html" name="example-ngRepeat"></iframe>
   </div>
 </div>
 

@@ -12,13 +12,10 @@
 
   
 </head>
-<body ng-app="ngSwipeLeftExample">
-  <div ng-show="!showActions" ng-swipe-left="showActions = true">
-  Some list content, like an email in the inbox
-</div>
-<div ng-show="showActions" ng-swipe-right="showActions = false">
-  <button ng-click="reply()">Reply</button>
-  <button ng-click="delete()">Delete</button>
-</div>
+<body ng-app="ngClickExample">
+  <button ng-click="count = count + 1" ng-init="count=0">
+  Increment
+</button>
+count: {{ count }}
 </body>
 </html>

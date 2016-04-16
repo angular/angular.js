@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Example - example-ngRequiredDirective</title>
+  
+
+  <script src="../../../angular.min.js"></script>
+  
+
+  
+</head>
+<body ng-app="ngRequiredExample">
+  <script>
+  angular.module('ngRequiredExample', [])
+    .controller('ExampleController', ['$scope', function($scope) {
+      $scope.required = true;
+    }]);
+</script>
+<div ng-controller="ExampleController">
+  <form name="form">
+    <label for="required">Toggle required: </label>
+    <input type="checkbox" ng-model="required" id="required" />
+    <br>
+    <label for="input">This input must be filled if `required` is true: </label>
+    <input type="text" ng-model="model" id="input" name="input" ng-required="required" /><br>
+    <hr>
+    required error set? = <code>{{form.input.$error.required}}</code><br>
+    model = <code>{{model}}</code>
+  </form>
+</div>
+</body>
+</html>

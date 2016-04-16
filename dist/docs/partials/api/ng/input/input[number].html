@@ -1,8 +1,8 @@
-<a href='https://github.com/angular/angular.js/edit/master/src/ng/directive/input.js?message=docs(input[number])%3A%20describe%20your%20change...#L582' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/directive/input.js?message=docs(input[number])%3A%20describe%20your%20change...#L660' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
 
 
 
-<a href='https://github.com/angular/angular.js/tree/master/src/ng/directive/input.js#L582' class='view-source pull-right btn btn-primary'>
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/directive/input.js#L660' class='view-source pull-right btn btn-primary'>
   <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
 </a>
 
@@ -22,9 +22,23 @@
 <div class="api-profile-description">
   <p>Text input with number validation and transformation. Sets the <code>number</code> validation
 error if not a valid number.</p>
-<p>The model must always be a number, otherwise Angular will throw an error.</p>
+<div class="alert alert-warning">
+The model must always be of type <code>number</code> otherwise Angular will throw an error.
+Be aware that a string containing a number is not enough. See the <a href="error/ngModel/numfmt"><code>numfmt</code></a>
+error docs for more information and an example of how to convert your model if necessary.
+</div>
+
+<h2 id="issues-with-html5-constraint-validation">Issues with HTML5 constraint validation</h2>
+<p>In browsers that follow the
+<a href="https://html.spec.whatwg.org/multipage/forms.html#number-state-%28type=number%29">HTML5 specification</a>,
+<code>input[number]</code> does not work as expected with <a href="api/ng/directive/ngModelOptions"><code>ngModelOptions.allowInvalid</code></a>.
+If a non-number is entered in the input, the browser will report the value as an empty string,
+which means the view / model values in <code>ngModel</code> and subsequently the scope value
+will also be an empty string.</p>
 
 </div>
+
+
 
 
 
@@ -37,11 +51,12 @@ error if not a valid number.</p>
   <ul>
     
     <li>This directive executes at priority level 0.</li>
+    
   </ul>
 
   
   <h2>Usage</h2>
-  <pre><code>&lt;input type=&quot;number&quot;&#10;       ng-model=&quot;&quot;&#10;       [name=&quot;&quot;]&#10;       [min=&quot;&quot;]&#10;       [max=&quot;&quot;]&#10;       [required=&quot;&quot;]&#10;       [ng-required=&quot;&quot;]&#10;       [ng-minlength=&quot;&quot;]&#10;       [ng-maxlength=&quot;&quot;]&#10;       [pattern=&quot;&quot;]&#10;       [ng-pattern=&quot;&quot;]&#10;       [ng-change=&quot;&quot;]&gt;</code></pre>
+  <pre><code>&lt;input type=&quot;number&quot;&#10;       ng-model=&quot;string&quot;&#10;       [name=&quot;string&quot;]&#10;       [min=&quot;string&quot;]&#10;       [max=&quot;string&quot;]&#10;       [required=&quot;string&quot;]&#10;       [ng-required=&quot;string&quot;]&#10;       [ng-minlength=&quot;number&quot;]&#10;       [ng-maxlength=&quot;number&quot;]&#10;       [pattern=&quot;string&quot;]&#10;       [ng-pattern=&quot;string&quot;]&#10;       [ng-change=&quot;string&quot;]&gt;</code></pre>
 
 <section class="api-section">
   <h3>Arguments</h3>
@@ -217,11 +232,15 @@ error if not a valid number.</p>
         <a href="" class="label type-hint type-hint-string">string</a>
       </td>
       <td>
-        <p>Sets <code>pattern</code> validation error key if the ngModel value does not match
-   a RegExp found by evaluating the Angular expression given in the attribute value.
-   If the expression evaluates to a RegExp object then this is used directly.
-   If the expression is a string then it will be converted to a RegExp after wrapping it in <code>^</code> and <code>$</code>
-   characters. For instance, <code>&quot;abc&quot;</code> will be converted to <code>new RegExp(&#39;^abc$&#39;)</code>.</p>
+        <p>Sets <code>pattern</code> validation error key if the ngModel <a href="api/ng/type/ngModel.NgModelController#$viewValue">$viewValue</a>
+   does not match a RegExp found by evaluating the Angular expression given in the attribute value.
+   If the expression evaluates to a RegExp object, then this is used directly.
+   If the expression evaluates to a string, then it will be converted to a RegExp
+   after wrapping it in <code>^</code> and <code>$</code> characters. For instance, <code>&quot;abc&quot;</code> will be converted to
+   <code>new RegExp(&#39;^abc$&#39;)</code>.<br />
+   <strong>Note:</strong> Avoid using the <code>g</code> flag on the RegExp, as it will cause each successive search to
+   start at the index of the last search&#39;s match, thus not taking the whole input value into
+   account.</p>
 
         
       </td>
@@ -255,9 +274,7 @@ error if not a valid number.</p>
   <h2 id="example">Example</h2><p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-number-input-directive', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-number-input-directive"></plnkr-opener>
 
   <div class="runnable-example"
       path="examples/example-number-input-directive"
@@ -269,7 +286,7 @@ error if not a valid number.</p>
       name="index.html"
       language="html"
       type="html">
-      <pre><code>&lt;script&gt;&#10;  angular.module(&#39;numberExample&#39;, [])&#10;    .controller(&#39;ExampleController&#39;, [&#39;$scope&#39;, function($scope) {&#10;      $scope.example = {&#10;        value: 12&#10;      };&#10;    }]);&#10;&lt;/script&gt;&#10;&lt;form name=&quot;myForm&quot; ng-controller=&quot;ExampleController&quot;&gt;&#10;  Number: &lt;input type=&quot;number&quot; name=&quot;input&quot; ng-model=&quot;example.value&quot;&#10;                 min=&quot;0&quot; max=&quot;99&quot; required&gt;&#10;  &lt;span class=&quot;error&quot; ng-show=&quot;myForm.input.$error.required&quot;&gt;&#10;    Required!&lt;/span&gt;&#10;  &lt;span class=&quot;error&quot; ng-show=&quot;myForm.input.$error.number&quot;&gt;&#10;    Not valid number!&lt;/span&gt;&#10;  &lt;tt&gt;value = {{example.value}}&lt;/tt&gt;&lt;br/&gt;&#10;  &lt;tt&gt;myForm.input.$valid = {{myForm.input.$valid}}&lt;/tt&gt;&lt;br/&gt;&#10;  &lt;tt&gt;myForm.input.$error = {{myForm.input.$error}}&lt;/tt&gt;&lt;br/&gt;&#10;  &lt;tt&gt;myForm.$valid = {{myForm.$valid}}&lt;/tt&gt;&lt;br/&gt;&#10;  &lt;tt&gt;myForm.$error.required = {{!!myForm.$error.required}}&lt;/tt&gt;&lt;br/&gt;&#10; &lt;/form&gt;</code></pre>
+      <pre><code>&lt;script&gt;&#10;  angular.module(&#39;numberExample&#39;, [])&#10;    .controller(&#39;ExampleController&#39;, [&#39;$scope&#39;, function($scope) {&#10;      $scope.example = {&#10;        value: 12&#10;      };&#10;    }]);&#10;&lt;/script&gt;&#10;&lt;form name=&quot;myForm&quot; ng-controller=&quot;ExampleController&quot;&gt;&#10;  &lt;label&gt;Number:&#10;    &lt;input type=&quot;number&quot; name=&quot;input&quot; ng-model=&quot;example.value&quot;&#10;           min=&quot;0&quot; max=&quot;99&quot; required&gt;&#10; &lt;/label&gt;&#10;  &lt;div role=&quot;alert&quot;&gt;&#10;    &lt;span class=&quot;error&quot; ng-show=&quot;myForm.input.$error.required&quot;&gt;&#10;      Required!&lt;/span&gt;&#10;    &lt;span class=&quot;error&quot; ng-show=&quot;myForm.input.$error.number&quot;&gt;&#10;      Not valid number!&lt;/span&gt;&#10;  &lt;/div&gt;&#10;  &lt;tt&gt;value = {{example.value}}&lt;/tt&gt;&lt;br/&gt;&#10;  &lt;tt&gt;myForm.input.$valid = {{myForm.input.$valid}}&lt;/tt&gt;&lt;br/&gt;&#10;  &lt;tt&gt;myForm.input.$error = {{myForm.input.$error}}&lt;/tt&gt;&lt;br/&gt;&#10;  &lt;tt&gt;myForm.$valid = {{myForm.$valid}}&lt;/tt&gt;&lt;br/&gt;&#10;  &lt;tt&gt;myForm.$error.required = {{!!myForm.$error.required}}&lt;/tt&gt;&lt;br/&gt;&#10; &lt;/form&gt;</code></pre>
     </div>
   
     <div class="runnable-example-file" 

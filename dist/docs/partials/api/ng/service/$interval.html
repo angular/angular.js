@@ -44,6 +44,8 @@ appropriate moment.  See the example below for more details on how and when to d
 
 
 
+
+
 <div>
   
 
@@ -51,7 +53,7 @@ appropriate moment.  See the example below for more details on how and when to d
 
   <h2 id="usage">Usage</h2>
     
-      <p><code>$interval(fn, delay, [count], [invokeApply]);</code></p>
+      <p><code>$interval(fn, delay, [count], [invokeApply], [Pass]);</code></p>
 
 
     
@@ -136,6 +138,22 @@ appropriate moment.  See the example below for more details on how and when to d
       </td>
     </tr>
     
+    <tr>
+      <td>
+        Pass
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">*</a>
+      </td>
+      <td>
+        <p>additional parameters to the executed function.</p>
+
+        
+      </td>
+    </tr>
+    
   </tbody>
 </table>
 
@@ -154,7 +172,7 @@ appropriate moment.  See the example below for more details on how and when to d
 <h2>Methods</h2>
 <ul class="methods">
   <li id="cancel">
-    <h3><p><code>cancel(promise);</code></p>
+    <h3><p><code>cancel([promise]);</code></p>
 
 </h3>
     <div><p>Cancels a task associated with the <code>promise</code>.</p>
@@ -177,10 +195,10 @@ appropriate moment.  See the example below for more details on how and when to d
       <td>
         promise
         
-        
+        <div><em>(optional)</em></div>
       </td>
       <td>
-        <a href="" class="label type-hint type-hint-promise">promise</a>
+        <a href="" class="label type-hint type-hint-promise">Promise</a>
       </td>
       <td>
         <p>returned by the <code>$interval</code> function.</p>
@@ -218,12 +236,10 @@ appropriate moment.  See the example below for more details on how and when to d
   <h2 id="example">Example</h2><p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-example108', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-example109"></plnkr-opener>
 
   <div class="runnable-example"
-      path="examples/example-example108"
+      path="examples/example-example109"
       module="intervalExample">
 
   
@@ -231,11 +247,11 @@ appropriate moment.  See the example below for more details on how and when to d
       name="index.html"
       language="html"
       type="html">
-      <pre><code>&lt;script&gt;&#10;  angular.module(&#39;intervalExample&#39;, [])&#10;    .controller(&#39;ExampleController&#39;, [&#39;$scope&#39;, &#39;$interval&#39;,&#10;      function($scope, $interval) {&#10;        $scope.format = &#39;M/d/yy h:mm:ss a&#39;;&#10;        $scope.blood_1 = 100;&#10;        $scope.blood_2 = 120;&#10;&#10;        var stop;&#10;        $scope.fight = function() {&#10;          // Don&#39;t start a new fight if we are already fighting&#10;          if ( angular.isDefined(stop) ) return;&#10;&#10;          stop = $interval(function() {&#10;            if ($scope.blood_1 &gt; 0 &amp;&amp; $scope.blood_2 &gt; 0) {&#10;              $scope.blood_1 = $scope.blood_1 - 3;&#10;              $scope.blood_2 = $scope.blood_2 - 4;&#10;            } else {&#10;              $scope.stopFight();&#10;            }&#10;          }, 100);&#10;        };&#10;&#10;        $scope.stopFight = function() {&#10;          if (angular.isDefined(stop)) {&#10;            $interval.cancel(stop);&#10;            stop = undefined;&#10;          }&#10;        };&#10;&#10;        $scope.resetFight = function() {&#10;          $scope.blood_1 = 100;&#10;          $scope.blood_2 = 120;&#10;        };&#10;&#10;        $scope.$on(&#39;$destroy&#39;, function() {&#10;          // Make sure that the interval is destroyed too&#10;          $scope.stopFight();&#10;        });&#10;      }])&#10;    // Register the &#39;myCurrentTime&#39; directive factory method.&#10;    // We inject $interval and dateFilter service since the factory method is DI.&#10;    .directive(&#39;myCurrentTime&#39;, [&#39;$interval&#39;, &#39;dateFilter&#39;,&#10;      function($interval, dateFilter) {&#10;        // return the directive link function. (compile function not needed)&#10;        return function(scope, element, attrs) {&#10;          var format,  // date format&#10;              stopTime; // so that we can cancel the time updates&#10;&#10;          // used to update the UI&#10;          function updateTime() {&#10;            element.text(dateFilter(new Date(), format));&#10;          }&#10;&#10;          // watch the expression, and update the UI on change.&#10;          scope.$watch(attrs.myCurrentTime, function(value) {&#10;            format = value;&#10;            updateTime();&#10;          });&#10;&#10;          stopTime = $interval(updateTime, 1000);&#10;&#10;          // listen on DOM destroy (removal) event, and cancel the next UI update&#10;          // to prevent updating time after the DOM element was removed.&#10;          element.on(&#39;$destroy&#39;, function() {&#10;            $interval.cancel(stopTime);&#10;          });&#10;        }&#10;      }]);&#10;&lt;/script&gt;&#10;&#10;&lt;div&gt;&#10;  &lt;div ng-controller=&quot;ExampleController&quot;&gt;&#10;    Date format: &lt;input ng-model=&quot;format&quot;&gt; &lt;hr/&gt;&#10;    Current time is: &lt;span my-current-time=&quot;format&quot;&gt;&lt;/span&gt;&#10;    &lt;hr/&gt;&#10;    Blood 1 : &lt;font color=&#39;red&#39;&gt;{{blood_1}}&lt;/font&gt;&#10;    Blood 2 : &lt;font color=&#39;red&#39;&gt;{{blood_2}}&lt;/font&gt;&#10;    &lt;button type=&quot;button&quot; data-ng-click=&quot;fight()&quot;&gt;Fight&lt;/button&gt;&#10;    &lt;button type=&quot;button&quot; data-ng-click=&quot;stopFight()&quot;&gt;StopFight&lt;/button&gt;&#10;    &lt;button type=&quot;button&quot; data-ng-click=&quot;resetFight()&quot;&gt;resetFight&lt;/button&gt;&#10;  &lt;/div&gt;&#10;&lt;/div&gt;</code></pre>
+      <pre><code>&lt;script&gt;&#10;  angular.module(&#39;intervalExample&#39;, [])&#10;    .controller(&#39;ExampleController&#39;, [&#39;$scope&#39;, &#39;$interval&#39;,&#10;      function($scope, $interval) {&#10;        $scope.format = &#39;M/d/yy h:mm:ss a&#39;;&#10;        $scope.blood_1 = 100;&#10;        $scope.blood_2 = 120;&#10;&#10;        var stop;&#10;        $scope.fight = function() {&#10;          // Don&#39;t start a new fight if we are already fighting&#10;          if ( angular.isDefined(stop) ) return;&#10;&#10;          stop = $interval(function() {&#10;            if ($scope.blood_1 &gt; 0 &amp;&amp; $scope.blood_2 &gt; 0) {&#10;              $scope.blood_1 = $scope.blood_1 - 3;&#10;              $scope.blood_2 = $scope.blood_2 - 4;&#10;            } else {&#10;              $scope.stopFight();&#10;            }&#10;          }, 100);&#10;        };&#10;&#10;        $scope.stopFight = function() {&#10;          if (angular.isDefined(stop)) {&#10;            $interval.cancel(stop);&#10;            stop = undefined;&#10;          }&#10;        };&#10;&#10;        $scope.resetFight = function() {&#10;          $scope.blood_1 = 100;&#10;          $scope.blood_2 = 120;&#10;        };&#10;&#10;        $scope.$on(&#39;$destroy&#39;, function() {&#10;          // Make sure that the interval is destroyed too&#10;          $scope.stopFight();&#10;        });&#10;      }])&#10;    // Register the &#39;myCurrentTime&#39; directive factory method.&#10;    // We inject $interval and dateFilter service since the factory method is DI.&#10;    .directive(&#39;myCurrentTime&#39;, [&#39;$interval&#39;, &#39;dateFilter&#39;,&#10;      function($interval, dateFilter) {&#10;        // return the directive link function. (compile function not needed)&#10;        return function(scope, element, attrs) {&#10;          var format,  // date format&#10;              stopTime; // so that we can cancel the time updates&#10;&#10;          // used to update the UI&#10;          function updateTime() {&#10;            element.text(dateFilter(new Date(), format));&#10;          }&#10;&#10;          // watch the expression, and update the UI on change.&#10;          scope.$watch(attrs.myCurrentTime, function(value) {&#10;            format = value;&#10;            updateTime();&#10;          });&#10;&#10;          stopTime = $interval(updateTime, 1000);&#10;&#10;          // listen on DOM destroy (removal) event, and cancel the next UI update&#10;          // to prevent updating time after the DOM element was removed.&#10;          element.on(&#39;$destroy&#39;, function() {&#10;            $interval.cancel(stopTime);&#10;          });&#10;        }&#10;      }]);&#10;&lt;/script&gt;&#10;&#10;&lt;div&gt;&#10;  &lt;div ng-controller=&quot;ExampleController&quot;&gt;&#10;    &lt;label&gt;Date format: &lt;input ng-model=&quot;format&quot;&gt;&lt;/label&gt; &lt;hr/&gt;&#10;    Current time is: &lt;span my-current-time=&quot;format&quot;&gt;&lt;/span&gt;&#10;    &lt;hr/&gt;&#10;    Blood 1 : &lt;font color=&#39;red&#39;&gt;{{blood_1}}&lt;/font&gt;&#10;    Blood 2 : &lt;font color=&#39;red&#39;&gt;{{blood_2}}&lt;/font&gt;&#10;    &lt;button type=&quot;button&quot; data-ng-click=&quot;fight()&quot;&gt;Fight&lt;/button&gt;&#10;    &lt;button type=&quot;button&quot; data-ng-click=&quot;stopFight()&quot;&gt;StopFight&lt;/button&gt;&#10;    &lt;button type=&quot;button&quot; data-ng-click=&quot;resetFight()&quot;&gt;resetFight&lt;/button&gt;&#10;  &lt;/div&gt;&#10;&lt;/div&gt;</code></pre>
     </div>
   
 
-    <iframe class="runnable-example-frame" src="examples/example-example108/index.html" name="example-example108"></iframe>
+    <iframe class="runnable-example-frame" src="examples/example-example109/index.html" name="example-example109"></iframe>
   </div>
 </div>
 

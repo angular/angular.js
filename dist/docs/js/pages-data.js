@@ -6,6 +6,11 @@ angular.module('pagesData', [])
     "area": "api",
     "path": "api"
   },
+  "error/$animate/nocb": {
+    "name": "nocb",
+    "area": "error",
+    "path": "error/$animate/nocb"
+  },
   "error/$animate/notcsel": {
     "name": "notcsel",
     "area": "error",
@@ -16,10 +21,20 @@ angular.module('pagesData', [])
     "area": "error",
     "path": "error/$cacheFactory/iid"
   },
+  "error/$compile/baddir": {
+    "name": "baddir",
+    "area": "error",
+    "path": "error/$compile/baddir"
+  },
   "error/$compile/ctreq": {
     "name": "ctreq",
     "area": "error",
     "path": "error/$compile/ctreq"
+  },
+  "error/$compile/infchng": {
+    "name": "infchng",
+    "area": "error",
+    "path": "error/$compile/infchng"
   },
   "error/$compile/iscp": {
     "name": "iscp",
@@ -86,6 +101,11 @@ angular.module('pagesData', [])
     "area": "error",
     "path": "error/$http/badreq"
   },
+  "error/$http/legacy": {
+    "name": "legacy",
+    "area": "error",
+    "path": "error/$http/legacy"
+  },
   "error/$injector/cdep": {
     "name": "cdep",
     "area": "error",
@@ -126,15 +146,85 @@ angular.module('pagesData', [])
     "area": "error",
     "path": "error/$injector/unpr"
   },
+  "error/$interpolate/badexpr": {
+    "name": "badexpr",
+    "area": "error",
+    "path": "error/$interpolate/badexpr"
+  },
+  "error/$interpolate/dupvalue": {
+    "name": "dupvalue",
+    "area": "error",
+    "path": "error/$interpolate/dupvalue"
+  },
   "error/$interpolate/interr": {
     "name": "interr",
     "area": "error",
     "path": "error/$interpolate/interr"
   },
+  "error/$interpolate/logicbug": {
+    "name": "logicbug",
+    "area": "error",
+    "path": "error/$interpolate/logicbug"
+  },
+  "error/$interpolate/nochgmustache": {
+    "name": "nochgmustache",
+    "area": "error",
+    "path": "error/$interpolate/nochgmustache"
+  },
   "error/$interpolate/noconcat": {
     "name": "noconcat",
     "area": "error",
     "path": "error/$interpolate/noconcat"
+  },
+  "error/$interpolate/reqarg": {
+    "name": "reqarg",
+    "area": "error",
+    "path": "error/$interpolate/reqarg"
+  },
+  "error/$interpolate/reqcomma": {
+    "name": "reqcomma",
+    "area": "error",
+    "path": "error/$interpolate/reqcomma"
+  },
+  "error/$interpolate/reqendbrace": {
+    "name": "reqendbrace",
+    "area": "error",
+    "path": "error/$interpolate/reqendbrace"
+  },
+  "error/$interpolate/reqendinterp": {
+    "name": "reqendinterp",
+    "area": "error",
+    "path": "error/$interpolate/reqendinterp"
+  },
+  "error/$interpolate/reqopenbrace": {
+    "name": "reqopenbrace",
+    "area": "error",
+    "path": "error/$interpolate/reqopenbrace"
+  },
+  "error/$interpolate/reqother": {
+    "name": "reqother",
+    "area": "error",
+    "path": "error/$interpolate/reqother"
+  },
+  "error/$interpolate/unknarg": {
+    "name": "unknarg",
+    "area": "error",
+    "path": "error/$interpolate/unknarg"
+  },
+  "error/$interpolate/unsafe": {
+    "name": "unsafe",
+    "area": "error",
+    "path": "error/$interpolate/unsafe"
+  },
+  "error/$interpolate/untermstr": {
+    "name": "untermstr",
+    "area": "error",
+    "path": "error/$interpolate/untermstr"
+  },
+  "error/$interpolate/wantstring": {
+    "name": "wantstring",
+    "area": "error",
+    "path": "error/$interpolate/wantstring"
   },
   "error/$location/ipthprfx": {
     "name": "ipthprfx",
@@ -241,10 +331,15 @@ angular.module('pagesData', [])
     "area": "error",
     "path": "error/$rootScope/inprog"
   },
-  "error/$sanitize/badparse": {
-    "name": "badparse",
+  "error/$sanitize/noinert": {
+    "name": "noinert",
     "area": "error",
-    "path": "error/$sanitize/badparse"
+    "path": "error/$sanitize/noinert"
+  },
+  "error/$sanitize/uinput": {
+    "name": "uinput",
+    "area": "error",
+    "path": "error/$sanitize/uinput"
   },
   "error/$sce/icontext": {
     "name": "icontext",
@@ -306,6 +401,11 @@ angular.module('pagesData', [])
     "area": "error",
     "path": "error/jqLite/onargs"
   },
+  "error/linky/notstring": {
+    "name": "notstring",
+    "area": "error",
+    "path": "error/linky/notstring"
+  },
   "error/ng/areq": {
     "name": "areq",
     "area": "error",
@@ -356,15 +456,20 @@ angular.module('pagesData', [])
     "area": "error",
     "path": "error/ngModel/nonassign"
   },
+  "error/ngModel/nopromise": {
+    "name": "nopromise",
+    "area": "error",
+    "path": "error/ngModel/nopromise"
+  },
+  "error/ngModel/numfmt": {
+    "name": "numfmt",
+    "area": "error",
+    "path": "error/ngModel/numfmt"
+  },
   "error/ngOptions/iexp": {
     "name": "iexp",
     "area": "error",
     "path": "error/ngOptions/iexp"
-  },
-  "error/ngOptions/trkslct": {
-    "name": "trkslct",
-    "area": "error",
-    "path": "error/ngOptions/trkslct"
   },
   "error/ngPattern/noregexp": {
     "name": "noregexp",
@@ -396,6 +501,11 @@ angular.module('pagesData', [])
     "area": "error",
     "path": "error/ngTransclude/orphan"
   },
+  "error/orderBy/notarray": {
+    "name": "notarray",
+    "area": "error",
+    "path": "error/orderBy/notarray"
+  },
   "guide/$location": {
     "name": "Using $location",
     "area": "guide",
@@ -420,6 +530,16 @@ angular.module('pagesData', [])
     "name": "HTML Compiler",
     "area": "guide",
     "path": "guide/compiler"
+  },
+  "guide/component-router": {
+    "name": "Component Router",
+    "area": "guide",
+    "path": "guide/component-router"
+  },
+  "guide/component": {
+    "name": "Components",
+    "area": "guide",
+    "path": "guide/component"
   },
   "guide/concepts": {
     "name": "Conceptual Overview",
@@ -485,6 +605,11 @@ angular.module('pagesData', [])
     "name": "Developer Guide",
     "area": "guide",
     "path": "guide"
+  },
+  "guide/interpolation": {
+    "name": "Interpolation",
+    "area": "guide",
+    "path": "guide/interpolation"
   },
   "guide/introduction": {
     "name": "Introduction",
@@ -641,16 +766,6 @@ angular.module('pagesData', [])
     "area": "api",
     "path": "api/ng"
   },
-  "api/ng/function/angular.lowercase": {
-    "name": "angular.lowercase",
-    "area": "api",
-    "path": "api/ng/function/angular.lowercase"
-  },
-  "api/ng/function/angular.uppercase": {
-    "name": "angular.uppercase",
-    "area": "api",
-    "path": "api/ng/function/angular.uppercase"
-  },
   "api/ng/function/angular.forEach": {
     "name": "angular.forEach",
     "area": "api",
@@ -660,6 +775,11 @@ angular.module('pagesData', [])
     "name": "angular.extend",
     "area": "api",
     "path": "api/ng/function/angular.extend"
+  },
+  "api/ng/function/angular.merge": {
+    "name": "angular.merge",
+    "area": "api",
+    "path": "api/ng/function/angular.merge"
   },
   "api/ng/function/angular.noop": {
     "name": "angular.noop",
@@ -725,6 +845,11 @@ angular.module('pagesData', [])
     "name": "angular.equals",
     "area": "api",
     "path": "api/ng/function/angular.equals"
+  },
+  "api/ng/directive/ngJq": {
+    "name": "ngJq",
+    "area": "api",
+    "path": "api/ng/directive/ngJq"
   },
   "api/ng/function/angular.bind": {
     "name": "angular.bind",
@@ -815,6 +940,11 @@ angular.module('pagesData', [])
     "name": "$animate",
     "area": "api",
     "path": "api/ng/service/$animate"
+  },
+  "api/ng/service/$animateCss": {
+    "name": "$animateCss",
+    "area": "api",
+    "path": "api/ng/service/$animateCss"
   },
   "api/ng/service/$cacheFactory": {
     "name": "$cacheFactory",
@@ -1216,6 +1346,26 @@ angular.module('pagesData', [])
     "area": "api",
     "path": "api/ng/directive/select"
   },
+  "api/ng/directive/ngRequired": {
+    "name": "ngRequired",
+    "area": "api",
+    "path": "api/ng/directive/ngRequired"
+  },
+  "api/ng/directive/ngPattern": {
+    "name": "ngPattern",
+    "area": "api",
+    "path": "api/ng/directive/ngPattern"
+  },
+  "api/ng/directive/ngMaxlength": {
+    "name": "ngMaxlength",
+    "area": "api",
+    "path": "api/ng/directive/ngMaxlength"
+  },
+  "api/ng/directive/ngMinlength": {
+    "name": "ngMinlength",
+    "area": "api",
+    "path": "api/ng/directive/ngMinlength"
+  },
   "api/ng/service/$document": {
     "name": "$document",
     "area": "api",
@@ -1281,6 +1431,16 @@ angular.module('pagesData', [])
     "area": "api",
     "path": "api/ng/filter/orderBy"
   },
+  "api/ng/service/$httpParamSerializer": {
+    "name": "$httpParamSerializer",
+    "area": "api",
+    "path": "api/ng/service/$httpParamSerializer"
+  },
+  "api/ng/service/$httpParamSerializerJQLike": {
+    "name": "$httpParamSerializerJQLike",
+    "area": "api",
+    "path": "api/ng/service/$httpParamSerializerJQLike"
+  },
   "api/ng/provider/$httpProvider": {
     "name": "$httpProvider",
     "area": "api",
@@ -1290,6 +1450,11 @@ angular.module('pagesData', [])
     "name": "$http",
     "area": "api",
     "path": "api/ng/service/$http"
+  },
+  "api/ng/service/$xhrFactory": {
+    "name": "$xhrFactory",
+    "area": "api",
+    "path": "api/ng/service/$xhrFactory"
   },
   "api/ng/service/$httpBackend": {
     "name": "$httpBackend",
@@ -1391,6 +1556,11 @@ angular.module('pagesData', [])
     "area": "api",
     "path": "api/ng/service/$sce"
   },
+  "api/ng/provider/$templateRequestProvider": {
+    "name": "$templateRequestProvider",
+    "area": "api",
+    "path": "api/ng/provider/$templateRequestProvider"
+  },
   "api/ng/service/$templateRequest": {
     "name": "$templateRequest",
     "area": "api",
@@ -1406,20 +1576,30 @@ angular.module('pagesData', [])
     "area": "api",
     "path": "api/ng/service/$window"
   },
+  "api/ngAnimate/directive/ngAnimateChildren": {
+    "name": "ngAnimateChildren",
+    "area": "api",
+    "path": "api/ngAnimate/directive/ngAnimateChildren"
+  },
+  "api/ngAnimate/service/$animateCss": {
+    "name": "$animateCss",
+    "area": "api",
+    "path": "api/ngAnimate/service/$animateCss"
+  },
   "api/ngAnimate": {
     "name": "ngAnimate",
     "area": "api",
     "path": "api/ngAnimate"
   },
-  "api/ngAnimate/provider/$animateProvider": {
-    "name": "$animateProvider",
-    "area": "api",
-    "path": "api/ngAnimate/provider/$animateProvider"
-  },
   "api/ngAnimate/service/$animate": {
     "name": "$animate",
     "area": "api",
     "path": "api/ngAnimate/service/$animate"
+  },
+  "api/ngAnimate/directive/ngAnimateSwap": {
+    "name": "ngAnimateSwap",
+    "area": "api",
+    "path": "api/ngAnimate/directive/ngAnimateSwap"
   },
   "api/ngAria": {
     "name": "ngAria",
@@ -1436,20 +1616,85 @@ angular.module('pagesData', [])
     "area": "api",
     "path": "api/ngAria/service/$aria"
   },
+  "api/ngComponentRouter": {
+    "name": "ngComponentRouter",
+    "area": "api",
+    "path": "api/ngComponentRouter"
+  },
+  "api/ngComponentRouter/type/Router": {
+    "name": "Router",
+    "area": "api",
+    "path": "api/ngComponentRouter/type/Router"
+  },
+  "api/ngComponentRouter/type/ChildRouter": {
+    "name": "ChildRouter",
+    "area": "api",
+    "path": "api/ngComponentRouter/type/ChildRouter"
+  },
+  "api/ngComponentRouter/type/RootRouter": {
+    "name": "RootRouter",
+    "area": "api",
+    "path": "api/ngComponentRouter/type/RootRouter"
+  },
+  "api/ngComponentRouter/type/ComponentInstruction": {
+    "name": "ComponentInstruction",
+    "area": "api",
+    "path": "api/ngComponentRouter/type/ComponentInstruction"
+  },
+  "api/ngComponentRouter/type/RouteDefinition": {
+    "name": "RouteDefinition",
+    "area": "api",
+    "path": "api/ngComponentRouter/type/RouteDefinition"
+  },
+  "api/ngComponentRouter/type/RouteParams": {
+    "name": "RouteParams",
+    "area": "api",
+    "path": "api/ngComponentRouter/type/RouteParams"
+  },
+  "api/ngComponentRouter/directive/ngOutlet": {
+    "name": "ngOutlet",
+    "area": "api",
+    "path": "api/ngComponentRouter/directive/ngOutlet"
+  },
+  "api/ngComponentRouter/service/$rootRouter": {
+    "name": "$rootRouter",
+    "area": "api",
+    "path": "api/ngComponentRouter/service/$rootRouter"
+  },
+  "api/ngComponentRouter/service/$routerRootComponent": {
+    "name": "$routerRootComponent",
+    "area": "api",
+    "path": "api/ngComponentRouter/service/$routerRootComponent"
+  },
+  "api/ngCookies/service/$cookieStore": {
+    "name": "$cookieStore",
+    "area": "api",
+    "path": "api/ngCookies/service/$cookieStore"
+  },
   "api/ngCookies": {
     "name": "ngCookies",
     "area": "api",
     "path": "api/ngCookies"
+  },
+  "api/ngCookies/provider/$cookiesProvider": {
+    "name": "$cookiesProvider",
+    "area": "api",
+    "path": "api/ngCookies/provider/$cookiesProvider"
   },
   "api/ngCookies/service/$cookies": {
     "name": "$cookies",
     "area": "api",
     "path": "api/ngCookies/service/$cookies"
   },
-  "api/ngCookies/service/$cookieStore": {
-    "name": "$cookieStore",
+  "api/ngMessageFormat/service/$$messageFormat": {
+    "name": "$$messageFormat",
     "area": "api",
-    "path": "api/ngCookies/service/$cookieStore"
+    "path": "api/ngMessageFormat/service/$$messageFormat"
+  },
+  "api/ngMessageFormat": {
+    "name": "ngMessageFormat",
+    "area": "api",
+    "path": "api/ngMessageFormat"
   },
   "api/ngMessages": {
     "name": "ngMessages",
@@ -1461,10 +1706,20 @@ angular.module('pagesData', [])
     "area": "api",
     "path": "api/ngMessages/directive/ngMessages"
   },
+  "api/ngMessages/directive/ngMessagesInclude": {
+    "name": "ngMessagesInclude",
+    "area": "api",
+    "path": "api/ngMessages/directive/ngMessagesInclude"
+  },
   "api/ngMessages/directive/ngMessage": {
     "name": "ngMessage",
     "area": "api",
     "path": "api/ngMessages/directive/ngMessage"
+  },
+  "api/ngMessages/directive/ngMessageExp": {
+    "name": "ngMessageExp",
+    "area": "api",
+    "path": "api/ngMessages/directive/ngMessageExp"
   },
   "api/ngMock/object/angular.mock": {
     "name": "angular.mock",
@@ -1496,6 +1751,11 @@ angular.module('pagesData', [])
     "area": "api",
     "path": "api/ngMock/type/angular.mock.TzDate"
   },
+  "api/ngMock/service/$animate": {
+    "name": "$animate",
+    "area": "api",
+    "path": "api/ngMock/service/$animate"
+  },
   "api/ngMock/function/angular.mock.dump": {
     "name": "angular.mock.dump",
     "area": "api",
@@ -1510,6 +1770,16 @@ angular.module('pagesData', [])
     "name": "$timeout",
     "area": "api",
     "path": "api/ngMock/service/$timeout"
+  },
+  "api/ngMock/service/$controller": {
+    "name": "$controller",
+    "area": "api",
+    "path": "api/ngMock/service/$controller"
+  },
+  "api/ngMock/service/$componentController": {
+    "name": "$componentController",
+    "area": "api",
+    "path": "api/ngMock/service/$componentController"
   },
   "api/ngMock": {
     "name": "ngMock",
@@ -1536,10 +1806,20 @@ angular.module('pagesData', [])
     "area": "api",
     "path": "api/ngMock/function/angular.mock.module"
   },
+  "api/ngMock/function/angular.mock.module.sharedInjector": {
+    "name": "angular.mock.module.sharedInjector",
+    "area": "api",
+    "path": "api/ngMock/function/angular.mock.module.sharedInjector"
+  },
   "api/ngMock/function/angular.mock.inject": {
     "name": "angular.mock.inject",
     "area": "api",
     "path": "api/ngMock/function/angular.mock.inject"
+  },
+  "api/ngParseExt": {
+    "name": "ngParseExt",
+    "area": "api",
+    "path": "api/ngParseExt"
   },
   "api/ngResource": {
     "name": "ngResource",
@@ -1591,6 +1871,11 @@ angular.module('pagesData', [])
     "area": "api",
     "path": "api/ngSanitize/service/$sanitize"
   },
+  "api/ngSanitize/provider/$sanitizeProvider": {
+    "name": "$sanitizeProvider",
+    "area": "api",
+    "path": "api/ngSanitize/provider/$sanitizeProvider"
+  },
   "api/ngTouch/directive/ngClick": {
     "name": "ngClick",
     "area": "api",
@@ -1616,6 +1901,16 @@ angular.module('pagesData', [])
     "area": "api",
     "path": "api/ngTouch"
   },
+  "api/ngTouch/provider/$touchProvider": {
+    "name": "$touchProvider",
+    "area": "api",
+    "path": "api/ngTouch/provider/$touchProvider"
+  },
+  "api/ngTouch/service/$touch": {
+    "name": "$touch",
+    "area": "api",
+    "path": "api/ngTouch/service/$touch"
+  },
   "app.js": {
     "path": "app.js"
   },
@@ -1623,6 +1918,9 @@ angular.module('pagesData', [])
     "path": "examples/example-error-$rootScope-inprog"
   },
   "undefined": {},
+  "examples/example-example": {
+    "path": "examples/example-example"
+  },
   "fakeBrowser.js": {
     "path": "fakeBrowser.js"
   },
@@ -1641,29 +1939,83 @@ angular.module('pagesData', [])
   "script.js": {
     "path": "script.js"
   },
-  "examples/example-example": {
-    "path": "examples/example-example"
-  },
   "examples/example-example1": {
     "path": "examples/example-example1"
+  },
+  "style.css": {
+    "path": "style.css"
   },
   "examples/example-example2": {
     "path": "examples/example-example2"
   },
-  "animations.css": {
-    "path": "animations.css"
-  },
   "examples/example-example3": {
     "path": "examples/example-example3"
   },
-  "style.css": {
-    "path": "style.css"
+  "animations.css": {
+    "path": "animations.css"
   },
   "examples/example-example4": {
     "path": "examples/example-example4"
   },
   "examples/example-example5": {
     "path": "examples/example-example5"
+  },
+  "examples/example-example6": {
+    "path": "examples/example-example6"
+  },
+  "heroes.js": {
+    "path": "heroes.js"
+  },
+  "crisis.js": {
+    "path": "crisis.js"
+  },
+  "crisisDetail.html": {
+    "path": "crisisDetail.html"
+  },
+  "dialog.js": {
+    "path": "dialog.js"
+  },
+  "styles.css": {
+    "path": "styles.css"
+  },
+  "examples/example-componentRouter": {
+    "path": "examples/example-componentRouter"
+  },
+  "index.js": {
+    "path": "index.js"
+  },
+  "heroDetail.js": {
+    "path": "heroDetail.js"
+  },
+  "heroDetail.html": {
+    "path": "heroDetail.html"
+  },
+  "examples/example-heroComponentSimple": {
+    "path": "examples/example-heroComponentSimple"
+  },
+  "heroList.js": {
+    "path": "heroList.js"
+  },
+  "editableField.js": {
+    "path": "editableField.js"
+  },
+  "heroList.html": {
+    "path": "heroList.html"
+  },
+  "editableField.html": {
+    "path": "editableField.html"
+  },
+  "examples/example-heroComponentTree": {
+    "path": "examples/example-heroComponentTree"
+  },
+  "my-tabs.html": {
+    "path": "my-tabs.html"
+  },
+  "my-pane.html": {
+    "path": "my-pane.html"
+  },
+  "examples/example-example7": {
+    "path": "examples/example-example7"
   },
   "examples/example-guide-concepts-1": {
     "path": "examples/example-guide-concepts-1"
@@ -1692,29 +2044,29 @@ angular.module('pagesData', [])
   "examples/example-guide-concepts-3": {
     "path": "examples/example-guide-concepts-3"
   },
-  "examples/example-example6": {
-    "path": "examples/example-example6"
-  },
-  "examples/example-example7": {
-    "path": "examples/example-example7"
-  },
-  "app.css": {
-    "path": "app.css"
-  },
   "examples/example-example8": {
     "path": "examples/example-example8"
   },
   "examples/example-example9": {
     "path": "examples/example-example9"
   },
+  "app.css": {
+    "path": "app.css"
+  },
   "examples/example-example10": {
     "path": "examples/example-example10"
+  },
+  "examples/example-example11": {
+    "path": "examples/example-example11"
+  },
+  "examples/example-example12": {
+    "path": "examples/example-example12"
   },
   "my-customer.html": {
     "path": "my-customer.html"
   },
-  "examples/example-example11": {
-    "path": "examples/example-example11"
+  "examples/example-example13": {
+    "path": "examples/example-example13"
   },
   "customer-name.html": {
     "path": "customer-name.html"
@@ -1722,32 +2074,23 @@ angular.module('pagesData', [])
   "customer-address.html": {
     "path": "customer-address.html"
   },
-  "examples/example-example12": {
-    "path": "examples/example-example12"
-  },
-  "examples/example-example13": {
-    "path": "examples/example-example13"
-  },
   "examples/example-example14": {
     "path": "examples/example-example14"
-  },
-  "my-customer-iso.html": {
-    "path": "my-customer-iso.html"
   },
   "examples/example-example15": {
     "path": "examples/example-example15"
   },
-  "my-customer-plus-vojta.html": {
-    "path": "my-customer-plus-vojta.html"
-  },
   "examples/example-example16": {
     "path": "examples/example-example16"
+  },
+  "my-customer-iso.html": {
+    "path": "my-customer-iso.html"
   },
   "examples/example-example17": {
     "path": "examples/example-example17"
   },
-  "my-dialog.html": {
-    "path": "my-dialog.html"
+  "my-customer-plus-vojta.html": {
+    "path": "my-customer-plus-vojta.html"
   },
   "examples/example-example18": {
     "path": "examples/example-example18"
@@ -1755,8 +2098,8 @@ angular.module('pagesData', [])
   "examples/example-example19": {
     "path": "examples/example-example19"
   },
-  "my-dialog-close.html": {
-    "path": "my-dialog-close.html"
+  "my-dialog.html": {
+    "path": "my-dialog.html"
   },
   "examples/example-example20": {
     "path": "examples/example-example20"
@@ -1764,11 +2107,8 @@ angular.module('pagesData', [])
   "examples/example-example21": {
     "path": "examples/example-example21"
   },
-  "my-tabs.html": {
-    "path": "my-tabs.html"
-  },
-  "my-pane.html": {
-    "path": "my-pane.html"
+  "my-dialog-close.html": {
+    "path": "my-dialog-close.html"
   },
   "examples/example-example22": {
     "path": "examples/example-example22"
@@ -1827,6 +2167,9 @@ angular.module('pagesData', [])
   "examples/example-example40": {
     "path": "examples/example-example40"
   },
+  "examples/example-message-format-example": {
+    "path": "examples/example-message-format-example"
+  },
   "examples/example-example41": {
     "path": "examples/example-example41"
   },
@@ -1847,6 +2190,9 @@ angular.module('pagesData', [])
   },
   "examples/example-example47": {
     "path": "examples/example-example47"
+  },
+  "examples/example-equalsExample": {
+    "path": "examples/example-equalsExample"
   },
   "examples/example-example48": {
     "path": "examples/example-example48"
@@ -1880,6 +2226,12 @@ angular.module('pagesData', [])
   },
   "examples/example-example58": {
     "path": "examples/example-example58"
+  },
+  "examples/example-example59": {
+    "path": "examples/example-example59"
+  },
+  "examples/example-example60": {
+    "path": "examples/example-example60"
   },
   "examples/example-text-input-directive": {
     "path": "examples/example-text-input-directive"
@@ -1920,23 +2272,17 @@ angular.module('pagesData', [])
   "examples/example-ngValue-directive": {
     "path": "examples/example-ngValue-directive"
   },
-  "examples/example-example59": {
-    "path": "examples/example-example59"
-  },
-  "examples/example-example60": {
-    "path": "examples/example-example60"
-  },
   "examples/example-example61": {
     "path": "examples/example-example61"
-  },
-  "examples/example-ngChange-directive": {
-    "path": "examples/example-ngChange-directive"
   },
   "examples/example-example62": {
     "path": "examples/example-example62"
   },
   "examples/example-example63": {
     "path": "examples/example-example63"
+  },
+  "examples/example-ngChange-directive": {
+    "path": "examples/example-ngChange-directive"
   },
   "examples/example-example64": {
     "path": "examples/example-example64"
@@ -1947,6 +2293,12 @@ angular.module('pagesData', [])
   "examples/example-example66": {
     "path": "examples/example-example66"
   },
+  "examples/example-example67": {
+    "path": "examples/example-example67"
+  },
+  "examples/example-example68": {
+    "path": "examples/example-example68"
+  },
   "examples/example-ngControllerAs": {
     "path": "examples/example-ngControllerAs"
   },
@@ -1955,12 +2307,6 @@ angular.module('pagesData', [])
   },
   "examples/example-example.csp": {
     "path": "examples/example-example.csp"
-  },
-  "examples/example-example67": {
-    "path": "examples/example-example67"
-  },
-  "examples/example-example68": {
-    "path": "examples/example-example68"
   },
   "examples/example-example69": {
     "path": "examples/example-example69"
@@ -2004,17 +2350,23 @@ angular.module('pagesData', [])
   "examples/example-example82": {
     "path": "examples/example-example82"
   },
+  "examples/example-example83": {
+    "path": "examples/example-example83"
+  },
+  "examples/example-example84": {
+    "path": "examples/example-example84"
+  },
   "template1.html": {
     "path": "template1.html"
   },
   "template2.html": {
     "path": "template2.html"
   },
-  "examples/example-example83": {
-    "path": "examples/example-example83"
+  "examples/example-example85": {
+    "path": "examples/example-example85"
   },
-  "examples/example-example84": {
-    "path": "examples/example-example84"
+  "examples/example-example86": {
+    "path": "examples/example-example86"
   },
   "examples/example-ngList-directive": {
     "path": "examples/example-ngList-directive"
@@ -2028,8 +2380,8 @@ angular.module('pagesData', [])
   "examples/example-ng-model-cancel-update": {
     "path": "examples/example-ng-model-cancel-update"
   },
-  "examples/example-example85": {
-    "path": "examples/example-example85"
+  "examples/example-example87": {
+    "path": "examples/example-example87"
   },
   "examples/example-ngModel-getter-setter": {
     "path": "examples/example-ngModel-getter-setter"
@@ -2043,23 +2395,20 @@ angular.module('pagesData', [])
   "examples/example-ngModelOptions-directive-getter-setter": {
     "path": "examples/example-ngModelOptions-directive-getter-setter"
   },
-  "examples/example-example86": {
-    "path": "examples/example-example86"
-  },
-  "examples/example-example87": {
-    "path": "examples/example-example87"
-  },
   "examples/example-example88": {
     "path": "examples/example-example88"
   },
   "examples/example-example89": {
     "path": "examples/example-example89"
   },
-  "glyphicons.css": {
-    "path": "glyphicons.css"
-  },
   "examples/example-example90": {
     "path": "examples/example-example90"
+  },
+  "examples/example-ngRepeat": {
+    "path": "examples/example-ngRepeat"
+  },
+  "glyphicons.css": {
+    "path": "glyphicons.css"
   },
   "examples/example-example91": {
     "path": "examples/example-example91"
@@ -2073,17 +2422,47 @@ angular.module('pagesData', [])
   "examples/example-example94": {
     "path": "examples/example-example94"
   },
+  "examples/example-simpleTranscludeExample": {
+    "path": "examples/example-simpleTranscludeExample"
+  },
   "examples/example-example95": {
     "path": "examples/example-example95"
+  },
+  "examples/example-multiSlotTranscludeExample": {
+    "path": "examples/example-multiSlotTranscludeExample"
   },
   "examples/example-example96": {
     "path": "examples/example-example96"
   },
-  "examples/example-$filter": {
-    "path": "examples/example-$filter"
+  "examples/example-static-select": {
+    "path": "examples/example-static-select"
+  },
+  "examples/example-ngrepeat-select": {
+    "path": "examples/example-ngrepeat-select"
+  },
+  "examples/example-select-with-default-values": {
+    "path": "examples/example-select-with-default-values"
+  },
+  "examples/example-select-with-non-string-options": {
+    "path": "examples/example-select-with-non-string-options"
+  },
+  "examples/example-ngRequiredDirective": {
+    "path": "examples/example-ngRequiredDirective"
+  },
+  "examples/example-ngPatternDirective": {
+    "path": "examples/example-ngPatternDirective"
+  },
+  "examples/example-ngMaxlengthDirective": {
+    "path": "examples/example-ngMaxlengthDirective"
+  },
+  "examples/example-ngMinlengthDirective": {
+    "path": "examples/example-ngMinlengthDirective"
   },
   "examples/example-example97": {
     "path": "examples/example-example97"
+  },
+  "examples/example-$filter": {
+    "path": "examples/example-$filter"
   },
   "examples/example-example98": {
     "path": "examples/example-example98"
@@ -2106,17 +2485,20 @@ angular.module('pagesData', [])
   "examples/example-example104": {
     "path": "examples/example-example104"
   },
-  "http-hello.html": {
-    "path": "http-hello.html"
-  },
   "examples/example-example105": {
     "path": "examples/example-example105"
   },
   "examples/example-example106": {
     "path": "examples/example-example106"
   },
+  "http-hello.html": {
+    "path": "http-hello.html"
+  },
   "examples/example-example107": {
     "path": "examples/example-example107"
+  },
+  "examples/example-custom-interpolation-markup": {
+    "path": "examples/example-custom-interpolation-markup"
   },
   "examples/example-example108": {
     "path": "examples/example-example108"
@@ -2124,14 +2506,35 @@ angular.module('pagesData', [])
   "examples/example-example109": {
     "path": "examples/example-example109"
   },
-  "test_data.json": {
-    "path": "test_data.json"
-  },
   "examples/example-example110": {
     "path": "examples/example-example110"
   },
+  "test_data.json": {
+    "path": "test_data.json"
+  },
   "examples/example-example111": {
     "path": "examples/example-example111"
+  },
+  "examples/example-example112": {
+    "path": "examples/example-example112"
+  },
+  "examples/example-ngAnimateChildren": {
+    "path": "examples/example-ngAnimateChildren"
+  },
+  "home.html": {
+    "path": "home.html"
+  },
+  "profile.html": {
+    "path": "profile.html"
+  },
+  "examples/example-anchoringExample": {
+    "path": "examples/example-anchoringExample"
+  },
+  "examples/example-ngAnimateSwap-directive": {
+    "path": "examples/example-ngAnimateSwap-directive"
+  },
+  "examples/example-ngMessageFormat-example": {
+    "path": "examples/example-ngMessageFormat-example"
   },
   "examples/example-ngMessages-directive": {
     "path": "examples/example-ngMessages-directive"
@@ -2148,9 +2551,6 @@ angular.module('pagesData', [])
   "examples/example-$route-service": {
     "path": "examples/example-$route-service"
   },
-  "examples/example-example112": {
-    "path": "examples/example-example112"
-  },
   "examples/example-example113": {
     "path": "examples/example-example113"
   },
@@ -2162,6 +2562,9 @@ angular.module('pagesData', [])
   },
   "examples/example-example116": {
     "path": "examples/example-example116"
+  },
+  "examples/example-example117": {
+    "path": "examples/example-example117"
   },
   "error/$animate": {
     "name": "$animate",
@@ -2243,6 +2646,11 @@ angular.module('pagesData', [])
     "area": "error",
     "path": "error/jqLite"
   },
+  "error/linky": {
+    "name": "linky",
+    "area": "error",
+    "path": "error/linky"
+  },
   "error/ng": {
     "name": "ng",
     "area": "error",
@@ -2272,6 +2680,11 @@ angular.module('pagesData', [])
     "name": "ngTransclude",
     "area": "error",
     "path": "error/ngTransclude"
+  },
+  "error/orderBy": {
+    "name": "orderBy",
+    "area": "error",
+    "path": "error/orderBy"
   },
   ".": {
     "name": "production",
@@ -2322,10 +2735,10 @@ angular.module('pagesData', [])
     "area": "api",
     "path": "api/auto/service"
   },
-  "api/ngAnimate/provider": {
-    "name": "provider components in ngAnimate",
+  "api/ngAnimate/directive": {
+    "name": "directive components in ngAnimate",
     "area": "api",
-    "path": "api/ngAnimate/provider"
+    "path": "api/ngAnimate/directive"
   },
   "api/ngAnimate/service": {
     "name": "service components in ngAnimate",
@@ -2342,10 +2755,35 @@ angular.module('pagesData', [])
     "area": "api",
     "path": "api/ngAria/service"
   },
+  "api/ngComponentRouter/type": {
+    "name": "type components in ngComponentRouter",
+    "area": "api",
+    "path": "api/ngComponentRouter/type"
+  },
+  "api/ngComponentRouter/directive": {
+    "name": "directive components in ngComponentRouter",
+    "area": "api",
+    "path": "api/ngComponentRouter/directive"
+  },
+  "api/ngComponentRouter/service": {
+    "name": "service components in ngComponentRouter",
+    "area": "api",
+    "path": "api/ngComponentRouter/service"
+  },
   "api/ngCookies/service": {
     "name": "service components in ngCookies",
     "area": "api",
     "path": "api/ngCookies/service"
+  },
+  "api/ngCookies/provider": {
+    "name": "provider components in ngCookies",
+    "area": "api",
+    "path": "api/ngCookies/provider"
+  },
+  "api/ngMessageFormat/service": {
+    "name": "service components in ngMessageFormat",
+    "area": "api",
+    "path": "api/ngMessageFormat/service"
   },
   "api/ngMessages/directive": {
     "name": "directive components in ngMessages",
@@ -2412,6 +2850,11 @@ angular.module('pagesData', [])
     "area": "api",
     "path": "api/ngSanitize/service"
   },
+  "api/ngSanitize/provider": {
+    "name": "provider components in ngSanitize",
+    "area": "api",
+    "path": "api/ngSanitize/provider"
+  },
   "api/ngTouch/directive": {
     "name": "directive components in ngTouch",
     "area": "api",
@@ -2421,5 +2864,10 @@ angular.module('pagesData', [])
     "name": "service components in ngTouch",
     "area": "api",
     "path": "api/ngTouch/service"
+  },
+  "api/ngTouch/provider": {
+    "name": "provider components in ngTouch",
+    "area": "api",
+    "path": "api/ngTouch/provider"
   }
 });

@@ -4,6 +4,18 @@
 <h1 id="security">Security</h1>
 <p>This document explains some of AngularJS&#39;s security features and best practices that you should
 keep in mind as you build your application.</p>
+<h2 id="reporting-a-security-issue">Reporting a security issue</h2>
+<p>Email us at <a href="mailto:security@angularjs.org">security@angularjs.org</a> to report any potential
+security issues in AngularJS.</p>
+<p>Please keep in mind the points below about Angular&#39;s expression language.</p>
+<h2 id="use-the-latest-angularjs-possible">Use the latest AngularJS possible</h2>
+<p>Like any software library, it is critical to keep AngularJS up to date. Please track the
+<a href="https://github.com/angular/angular.js/blob/master/CHANGELOG.md">CHANGELOG</a> and make sure you are aware
+of upcoming security patches and other updates.</p>
+<p>Be ready to update rapidly when new security-centric patches are available.</p>
+<p>Those that stray from Angular standards (such as modifying Angular&#39;s core) may have difficulty updating,
+so keeping to AngularJS standards is not just a functionality issue, it&#39;s also critical in order to
+facilitate rapid security updates.</p>
 <h2 id="expression-sandboxing">Expression Sandboxing</h2>
 <p>AngularJS&#39;s expressions are sandboxed not for security reasons, but instead to maintain a proper
 separation of application responsibilities. For example, access to <code>window</code> is disallowed
@@ -14,30 +26,56 @@ if an attacker can modify them.</p>
 <p>But if an attacker can change arbitrary HTML templates, there&#39;s nothing stopping them from doing:</p>
 <pre><code class="lang-html">&lt;script&gt;somethingEvil();&lt;/script&gt;
 </code></pre>
-<p>It&#39;s better to design your application in such a way that users cannot change client-side templates.
-For instance:</p>
+<p><strong>It&#39;s better to design your application in such a way that users cannot change client-side templates.</strong></p>
+<p>For instance:</p>
 <ul>
 <li>Do not mix client and server templates</li>
 <li>Do not use user input to generate templates dynamically</li>
 <li>Do not run user input through <code>$scope.$eval</code></li>
 <li>Consider using <a href="api/ng/directive/ngCsp">CSP</a> (but don&#39;t rely only on CSP)</li>
 </ul>
-<h2 id="mixing-client-side-and-server-side-templates">Mixing client-side and server-side templates</h2>
+<h3 id="mixing-client-side-and-server-side-templates">Mixing client-side and server-side templates</h3>
 <p>In general, we recommend against this because it can create unintended XSS vectors.</p>
 <p>However, it&#39;s ok to mix server-side templating in the bootstrap template (<code>index.html</code>) as long
 as user input cannot be used on the server to output html that would then be processed by Angular
-in a way that would cause allow for arbitrary code execution.</p>
-<p>For instance, you can use server-side templating to dynamically generate CSS, URLs, etc, but not
-for generating templates that are bootstrapped/compiled by Angular.</p>
-<h2 id="reporting-a-security-issue">Reporting a security issue</h2>
-<p>Email us at <a href="mailto:security@angularjs.org">security@angularjs.org</a> to report any potential
-security issues in AngularJS.</p>
-<p>Please keep in mind the above points about Angular&#39;s expression language.</p>
+in a way that would allow for arbitrary code execution.</p>
+<p><strong>For instance, you can use server-side templating to dynamically generate CSS, URLs, etc, but not
+for generating templates that are bootstrapped/compiled by Angular.</strong></p>
+<h2 id="http-requests">HTTP Requests</h2>
+<p>Whenever your application makes requests to a server there are potential security issues that need
+to be blocked. Both server and the client must cooperate in order to eliminate these threats.
+Angular comes pre-configured with strategies that address these issues, but for this to work backend
+server cooperation is required.</p>
+<h3 id="cross-site-request-forgery-xsrf-csrf-">Cross Site Request Forgery (XSRF/CSRF)</h3>
+<p>Protection from XSRF is provided by using the double-submit cookie defense pattern.
+For more information please visit <a href="api/ng/service/$http#cross-site-request-forgery-xsrf-protection">XSRF protection</a>.</p>
+<h3 id="json-hijacking-protection">JSON Hijacking Protection</h3>
+<p>Protection from JSON Hijacking is provided if the server prefixes all JSON requests with following string <code>&quot;)]}&#39;,\n&quot;</code>.
+Angular will automatically strip the prefix before processing it as JSON.
+For more information please visit <a href="api/ng/service/$http#json-vulnerability-protection">JSON Hijacking Protection</a>.</p>
+<h2 id="strict-contextual-escaping">Strict Contextual Escaping</h2>
+<p>Strict Contextual Escaping (SCE) is a mode in which AngularJS requires bindings in certain contexts to require
+a value that is marked as safe to use for that context.</p>
+<p>This mode is implemented by the <a href="api/ng/service/$sce"><code>$sce</code></a> service and various core directives.</p>
+<p>One example of such a context is rendering arbitrary content via the <a href="api/ng/directive/ngBindHtml"><code>ngBindHtml</code></a> directive. If the content is
+provided by a user there is a chance of Cross Site Scripting (XSS) attacks. The <a href="api/ng/directive/ngBindHtml"><code>ngBindHtml</code></a> directive will not
+render content that is not marked as safe by <a href="api/ng/service/$sce"><code>$sce</code></a>. The <a href="api/ngSanitize"><code>ngSanitize</code></a> module can be used to clean such
+user provided content and mark the content as safe.</p>
+<p><strong>Be aware that marking untrusted data as safe via calls to <a href="api/ng/service/$sce#trustAsHtml"><code>$sce.trustAsHtml</code></a>, etc is
+dangerous and will lead to Cross Site Scripting exploits.</strong></p>
+<p>For more information please visit <a href="api/ng/service/$sce"><code>$sce</code></a> and <a href="api/ngSanitize/service/$sanitize"><code>$sanitize</code></a>.</p>
+<h2 id="using-local-caches">Using Local Caches</h2>
+<p>There are various places that the browser can store (or cache) data. Within Angular there are objects created by
+the <a href="api/ng/service/$cacheFactory"><code>$cacheFactory</code></a>. These objects, such as <a href="api/ng/service/$templateCache"><code>$templateCache</code></a> are used to store and retrieve data,
+primarily used by <a href="api/ng/service/$http"><code>$http</code></a> and the <a href="api/ng/directive/script"><code>script</code></a> directive to cache templates and other data.</p>
+<p>Similarly the browser itself offers <code>localStorage</code> and <code>sessionStorage</code> objects for caching data.</p>
+<p><strong>Attackers with local access can retrieve sensitive data from this cache even when users are not authenticated.</strong></p>
+<p>For instance in a long running Single Page Application (SPA), one user may &quot;log out&quot;, but then another user
+may access the application without refreshing, in which case all the cached data is still available.</p>
+<p>For more information please visit <a href="https://www.whitehatsec.com/blog/web-storage-security/">Web Storage Security</a>.</p>
 <h2 id="see-also">See also</h2>
 <ul>
 <li><a href="api/ng/directive/ngCsp">Content Security Policy</a></li>
-<li><a href="api/ng/service/$sce">Strict Contextual Escaping</a></li>
-<li><a href="api/ngSanitize/service/$sanitize">$sanitize</a></li>
 </ul>
 
 

@@ -1,8 +1,8 @@
-<a href='https://github.com/angular/angular.js/edit/master/src/ng/location.js?message=docs($location)%3A%20describe%20your%20change...#L653' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/location.js?message=docs($location)%3A%20describe%20your%20change...#L671' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
 
 
 
-<a href='https://github.com/angular/angular.js/tree/master/src/ng/location.js#L653' class='view-source pull-right btn btn-primary'>
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/location.js#L671' class='view-source pull-right btn btn-primary'>
   <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
 </a>
 
@@ -46,6 +46,8 @@ $location service and changes to $location are reflected into the browser addres
 <p>For more information see <a href="guide/$location">Developer Guide: Using $location</a></p>
 
 </div>
+
+
 
 
 
@@ -192,9 +194,16 @@ var protocol = $location.protocol();
 </h3>
     <div><p>This method is getter only.</p>
 <p>Return host of current url.</p>
+<p>Note: compared to the non-angular version <code>location.host</code> which returns <code>hostname:port</code>, this returns the <code>hostname</code> portion only.</p>
 <pre><code class="lang-js">// given url http://example.com/#/some/path?foo=bar&amp;baz=xoxo
 var host = $location.host();
 // =&gt; &quot;example.com&quot;
+
+// given url http://user:password@example.com:8080/#/some/path?foo=bar&amp;baz=xoxo
+host = $location.host();
+// =&gt; &quot;example.com&quot;
+host = location.host;
+// =&gt; &quot;example.com:8080&quot;
 </code></pre>
 </div>
 
@@ -407,8 +416,8 @@ one or more arguments returns <code>$location</code> object itself.</p>
 
 </h3>
     <div><p>This method is getter / setter.</p>
-<p>Return hash fragment when called without any parameter.</p>
-<p>Change hash fragment when called with parameter and return <code>$location</code>.</p>
+<p>Returns the hash fragment when called without any parameters.</p>
+<p>Changes the hash fragment when called with a parameter and returns <code>$location</code>.</p>
 <pre><code class="lang-js">// given url http://example.com/#/some/path?foo=bar&amp;baz=xoxo#hashValue
 var hash = $location.hash();
 // =&gt; &quot;hashValue&quot;
@@ -468,8 +477,8 @@ var hash = $location.hash();
     <h3><p><code>replace();</code></p>
 
 </h3>
-    <div><p>If called, all changes to $location during current <code>$digest</code> will be replacing current history
-record, instead of adding new one.</p>
+    <div><p>If called, all changes to $location during the current <code>$digest</code> will replace the current history
+record, instead of adding a new one.</p>
 </div>
 
     
@@ -563,7 +572,104 @@ the browser supports the HTML5 History API.</p>
       <h4>Target:</h4>
       <div class="target">root scope</div>
     </div>
-    </li>
+    
+    <section class="api-section">
+      <h3>Parameters</h3>
+      
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        angularEvent
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">Object</a>
+      </td>
+      <td>
+        <p>Synthetic event object.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        newUrl
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>New URL</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        oldUrl
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>URL that was before it was changed.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        newState
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>New history state object</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        oldState
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>History state object that was before it was changed.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    </section></li>
   
   <li id="$locationChangeSuccess">
     <h3>$locationChangeSuccess</h3>
@@ -579,7 +685,104 @@ the browser supports the HTML5 History API.</p>
       <h4>Target:</h4>
       <div class="target">root scope</div>
     </div>
-    </li>
+    
+    <section class="api-section">
+      <h3>Parameters</h3>
+      
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        angularEvent
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">Object</a>
+      </td>
+      <td>
+        <p>Synthetic event object.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        newUrl
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>New URL</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        oldUrl
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>URL that was before it was changed.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        newState
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>New history state object</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        oldState
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>History state object that was before it was changed.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    </section></li>
   </ul>
 
   

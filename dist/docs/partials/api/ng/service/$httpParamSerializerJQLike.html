@@ -1,0 +1,78 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/http.js?message=docs($httpParamSerializerJQLike)%3A%20describe%20your%20change...#L64' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/http.js#L64' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">$httpParamSerializerJQLike</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+  
+
+    <li>
+      - service in module <a href="api/ng">ng</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Alternative <a href="api/ng/service/$http"><code>$http</code></a> params serializer that follows
+jQuery&#39;s <a href="http://api.jquery.com/jquery.param/"><code>param()</code></a> method logic.
+The serializer will also sort the params alphabetically.</p>
+<p>To use it for serializing <code>$http</code> request parameters, set it as the <code>paramSerializer</code> property:</p>
+<pre><code class="lang-js">$http({
+  url: myUrl,
+  method: &#39;GET&#39;,
+  params: myParams,
+  paramSerializer: &#39;$httpParamSerializerJQLike&#39;
+});
+</code></pre>
+<p>It is also possible to set it as the default <code>paramSerializer</code> in the
+<a href="api/ng/provider/$httpProvider#defaults"><code>$httpProvider</code></a>.</p>
+<p>Additionally, you can inject the serializer and use it explicitly, for example to serialize
+form data for submission:</p>
+<pre><code class="lang-js">.controller(function($http, $httpParamSerializerJQLike) {
+  //...
+
+  $http({
+    url: myUrl,
+    method: &#39;POST&#39;,
+    data: $httpParamSerializerJQLike(myData),
+    headers: {
+      &#39;Content-Type&#39;: &#39;application/x-www-form-urlencoded&#39;
+    }
+  });
+
+});
+</code></pre>
+
+</div>
+
+
+
+
+
+
+<div>
+  
+
+    
+
+  
+
+  
+  
+  
+
+
+
+  
+</div>
+
+

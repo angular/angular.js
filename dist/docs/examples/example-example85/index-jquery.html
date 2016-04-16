@@ -3,39 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <title>Example - example-example85-jquery</title>
+  <link href="animations.css" rel="stylesheet" type="text/css">
   
 
   <script src="../../components/jquery-2.1.1/jquery.js"></script>
   <script src="../../../angular.js"></script>
   <script src="../../../angular-animate.js"></script>
+  <script src="script.js"></script>
   
 
-  <script type="text/javascript">
-    angular.element(document.getElementsByTagName('head')).append(angular.element('<base href="' + window.location.pathname + '" />'));
-  </script>
+  
 </head>
-<body ng-app="inputExample">
-  <script>
- angular.module('inputExample', [])
-   .controller('ExampleController', ['$scope', function($scope) {
-     $scope.val = '1';
-   }]);
-</script>
-<style>
-  .my-input {
-    -webkit-transition:all linear 0.5s;
-    transition:all linear 0.5s;
-    background: transparent;
-  }
-  .my-input.ng-invalid {
-    color:white;
-    background: red;
-  }
-</style>
-Update input to see transitions when valid/invalid.
-Integer is a valid value.
-<form name="testForm" ng-controller="ExampleController">
-  <input ng-model="val" ng-pattern="/^\d+$/" name="anim" class="my-input" />
-</form>
+<body ng-app="includeExample">
+  <div ng-controller="ExampleController">
+  <select ng-model="template" ng-options="t.name for t in templates">
+   <option value="">(blank)</option>
+  </select>
+  url of the template: <code>{{template.url}}</code>
+  <hr/>
+  <div class="slide-animate-container">
+    <div class="slide-animate" ng-include="template.url"></div>
+  </div>
+</div>
 </body>
 </html>

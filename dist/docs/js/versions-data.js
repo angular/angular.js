@@ -1,35 +1,235 @@
 // Meta data used by the AngularJS docs app
 angular.module('versionsData', [])
   .value('NG_VERSION', {
-  "raw": "v1.4.3",
+  "raw": "v1.5.4",
   "major": 1,
-  "minor": 4,
-  "patch": 4,
+  "minor": 5,
+  "patch": 5,
   "prerelease": [
     "local"
   ],
-  "build": "sha.ef2ad06",
-  "version": "1.4.4-local",
+  "build": "sha.05b6547",
+  "version": "1.5.5-local",
   "codeName": "snapshot",
   "isSnapshot": true,
-  "full": "1.4.4-local+sha.ef2ad06",
-  "branch": "master"
+  "full": "1.5.5-local+sha.05b6547",
+  "branch": "master",
+  "commitSHA": "05b65479a1cb750db2dadf239e658bc8f425b2d9"
 })
   .value('NG_VERSIONS', [
   {
-    "raw": "v1.4.3",
+    "raw": "v1.5.4",
     "major": 1,
-    "minor": 4,
-    "patch": 4,
+    "minor": 5,
+    "patch": 5,
     "prerelease": [
       "local"
     ],
-    "build": "sha.ef2ad06",
-    "version": "1.4.4-local",
+    "build": "sha.05b6547",
+    "version": "1.5.5-local",
     "codeName": "snapshot",
     "isSnapshot": true,
-    "full": "1.4.4-local+sha.ef2ad06",
-    "branch": "master"
+    "full": "1.5.5-local+sha.05b6547",
+    "branch": "master",
+    "commitSHA": "05b65479a1cb750db2dadf239e658bc8f425b2d9"
+  },
+  {
+    "raw": "v1.5.4",
+    "major": 1,
+    "minor": 5,
+    "patch": 4,
+    "prerelease": [],
+    "build": [],
+    "version": "1.5.4",
+    "docsUrl": "http://code.angularjs.org/1.5.4/docs"
+  },
+  {
+    "raw": "v1.5.3",
+    "major": 1,
+    "minor": 5,
+    "patch": 3,
+    "prerelease": [],
+    "build": [],
+    "version": "1.5.3",
+    "docsUrl": "http://code.angularjs.org/1.5.3/docs"
+  },
+  {
+    "raw": "v1.5.2",
+    "major": 1,
+    "minor": 5,
+    "patch": 2,
+    "prerelease": [],
+    "build": [],
+    "version": "1.5.2",
+    "docsUrl": "http://code.angularjs.org/1.5.2/docs"
+  },
+  {
+    "raw": "v1.5.1",
+    "major": 1,
+    "minor": 5,
+    "patch": 1,
+    "prerelease": [],
+    "build": [],
+    "version": "1.5.1",
+    "docsUrl": "http://code.angularjs.org/1.5.1/docs"
+  },
+  {
+    "raw": "v1.5.0",
+    "major": 1,
+    "minor": 5,
+    "patch": 0,
+    "prerelease": [],
+    "build": [],
+    "version": "1.5.0",
+    "docsUrl": "http://code.angularjs.org/1.5.0/docs"
+  },
+  {
+    "raw": "v1.5.0-rc.2",
+    "major": 1,
+    "minor": 5,
+    "patch": 0,
+    "prerelease": [
+      "rc",
+      2
+    ],
+    "build": [],
+    "version": "1.5.0-rc.2",
+    "docsUrl": "http://code.angularjs.org/1.5.0-rc.2/docs"
+  },
+  {
+    "raw": "v1.5.0-rc.1",
+    "major": 1,
+    "minor": 5,
+    "patch": 0,
+    "prerelease": [
+      "rc",
+      1
+    ],
+    "build": [],
+    "version": "1.5.0-rc.1",
+    "docsUrl": "http://code.angularjs.org/1.5.0-rc.1/docs"
+  },
+  {
+    "raw": "v1.5.0-rc.0",
+    "major": 1,
+    "minor": 5,
+    "patch": 0,
+    "prerelease": [
+      "rc",
+      0
+    ],
+    "build": [],
+    "version": "1.5.0-rc.0",
+    "docsUrl": "http://code.angularjs.org/1.5.0-rc.0/docs"
+  },
+  {
+    "raw": "v1.5.0-beta.2",
+    "major": 1,
+    "minor": 5,
+    "patch": 0,
+    "prerelease": [
+      "beta",
+      2
+    ],
+    "build": [],
+    "version": "1.5.0-beta.2",
+    "docsUrl": "http://code.angularjs.org/1.5.0-beta.2/docs"
+  },
+  {
+    "raw": "v1.5.0-beta.1",
+    "major": 1,
+    "minor": 5,
+    "patch": 0,
+    "prerelease": [
+      "beta",
+      1
+    ],
+    "build": [],
+    "version": "1.5.0-beta.1",
+    "docsUrl": "http://code.angularjs.org/1.5.0-beta.1/docs"
+  },
+  {
+    "raw": "v1.5.0-beta.0",
+    "major": 1,
+    "minor": 5,
+    "patch": 0,
+    "prerelease": [
+      "beta",
+      0
+    ],
+    "build": [],
+    "version": "1.5.0-beta.0",
+    "docsUrl": "http://code.angularjs.org/1.5.0-beta.0/docs"
+  },
+  {
+    "raw": "v1.4.10",
+    "major": 1,
+    "minor": 4,
+    "patch": 10,
+    "prerelease": [],
+    "build": [],
+    "version": "1.4.10",
+    "docsUrl": "http://code.angularjs.org/1.4.10/docs"
+  },
+  {
+    "raw": "v1.4.9",
+    "major": 1,
+    "minor": 4,
+    "patch": 9,
+    "prerelease": [],
+    "build": [],
+    "version": "1.4.9",
+    "docsUrl": "http://code.angularjs.org/1.4.9/docs"
+  },
+  {
+    "raw": "v1.4.8",
+    "major": 1,
+    "minor": 4,
+    "patch": 8,
+    "prerelease": [],
+    "build": [],
+    "version": "1.4.8",
+    "docsUrl": "http://code.angularjs.org/1.4.8/docs"
+  },
+  {
+    "raw": "v1.4.7",
+    "major": 1,
+    "minor": 4,
+    "patch": 7,
+    "prerelease": [],
+    "build": [],
+    "version": "1.4.7",
+    "docsUrl": "http://code.angularjs.org/1.4.7/docs"
+  },
+  {
+    "raw": "v1.4.6",
+    "major": 1,
+    "minor": 4,
+    "patch": 6,
+    "prerelease": [],
+    "build": [],
+    "version": "1.4.6",
+    "docsUrl": "http://code.angularjs.org/1.4.6/docs"
+  },
+  {
+    "raw": "v1.4.5",
+    "major": 1,
+    "minor": 4,
+    "patch": 5,
+    "prerelease": [],
+    "build": [],
+    "version": "1.4.5",
+    "docsUrl": "http://code.angularjs.org/1.4.5/docs"
+  },
+  {
+    "raw": "v1.4.4",
+    "major": 1,
+    "minor": 4,
+    "patch": 4,
+    "prerelease": [],
+    "build": [],
+    "version": "1.4.4",
+    "docsUrl": "http://code.angularjs.org/1.4.4/docs"
   },
   {
     "raw": "v1.4.3",
@@ -200,6 +400,36 @@ angular.module('versionsData', [])
     "build": [],
     "version": "1.4.0-beta.0",
     "docsUrl": "http://code.angularjs.org/1.4.0-beta.0/docs"
+  },
+  {
+    "raw": "v1.3.20",
+    "major": 1,
+    "minor": 3,
+    "patch": 20,
+    "prerelease": [],
+    "build": [],
+    "version": "1.3.20",
+    "docsUrl": "http://code.angularjs.org/1.3.20/docs"
+  },
+  {
+    "raw": "v1.3.19",
+    "major": 1,
+    "minor": 3,
+    "patch": 19,
+    "prerelease": [],
+    "build": [],
+    "version": "1.3.19",
+    "docsUrl": "http://code.angularjs.org/1.3.19/docs"
+  },
+  {
+    "raw": "v1.3.18",
+    "major": 1,
+    "minor": 3,
+    "patch": 18,
+    "prerelease": [],
+    "build": [],
+    "version": "1.3.18",
+    "docsUrl": "http://code.angularjs.org/1.3.18/docs"
   },
   {
     "raw": "v1.3.17",
@@ -707,6 +937,16 @@ angular.module('versionsData', [])
     "docsUrl": "http://code.angularjs.org/1.3.0-beta.1/docs"
   },
   {
+    "raw": "v1.2.29",
+    "major": 1,
+    "minor": 2,
+    "patch": 29,
+    "prerelease": [],
+    "build": [],
+    "version": "1.2.29",
+    "docsUrl": "http://code.angularjs.org/1.2.29/docs"
+  },
+  {
     "raw": "v1.2.28",
     "major": 1,
     "minor": 2,
@@ -1160,7 +1400,8 @@ angular.module('versionsData', [])
     "prerelease": [],
     "build": [],
     "version": "1.0.1",
-    "docsUrl": "http://code.angularjs.org/1.0.1/docs"
+    "docsUrl": "http://code.angularjs.org/1.0.1/docs-1.0.1",
+    "isOldDocsUrl": true
   },
   {
     "raw": "v1.0.0",
@@ -1170,10 +1411,11 @@ angular.module('versionsData', [])
     "prerelease": [],
     "build": [],
     "version": "1.0.0",
-    "docsUrl": "http://code.angularjs.org/1.0.0/docs"
+    "docsUrl": "http://code.angularjs.org/1.0.0/docs-1.0.0",
+    "isOldDocsUrl": true
   },
   {
-    "raw": "v1.0.0-rc2",
+    "raw": "v1.0.0rc2",
     "major": 1,
     "minor": 0,
     "patch": 0,
@@ -1181,7 +1423,8 @@ angular.module('versionsData', [])
       "rc2"
     ],
     "build": [],
-    "version": "1.0.0-rc2",
-    "docsUrl": "http://code.angularjs.org/1.0.0-rc2/docs"
+    "version": "1.0.0rc2",
+    "docsUrl": "http://code.angularjs.org/1.0.0rc2/docs-1.0.0rc2",
+    "isOldDocsUrl": true
   }
 ]);

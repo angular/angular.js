@@ -1,12 +1,12 @@
 <a href='https://github.com/angular/angular.js/edit/master/docs/content/error/$compile/nonassign.ngdoc?message=docs(error%2Fnonassign)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
 
 
-<h1>Error: error:nonassign
+<h1>Error: $compile:nonassign
   <div><span class='hint'>Non-Assignable Expression</span></div>
 </h1>
 
 <div>
-    <pre class="minerr-errmsg" error-display="Expression '{0}' used with directive '{1}' is non-assignable!">Expression '{0}' used with directive '{1}' is non-assignable!</pre>
+    <pre class="minerr-errmsg" error-display="Expression '{0}' in attribute '{1}' used with directive '{2}' is non-assignable!">Expression '{0}' in attribute '{1}' used with directive '{2}' is non-assignable!</pre>
 </div>
 
 <h2>Description</h2>
@@ -35,9 +35,25 @@
 &lt;!-- ERROR because attribute bind wasn&#39;t provided --&gt;
 &lt;my-directive&gt;
 </code></pre>
-<p>To resolve this error, always use path expressions with scope properties that are two-way data-bound:</p>
+<p>To resolve this error, do one of the following options:</p>
+<ul>
+<li>use path expressions with scope properties that are two-way data-bound like so:</li>
+</ul>
 <pre><code>&lt;my-directive bind=&quot;some.property&quot;&gt;
 &lt;my-directive bind=&quot;some[3][&#39;property&#39;]&quot;&gt;
+</code></pre>
+<ul>
+<li>Make the binding optional</li>
+</ul>
+<pre><code>myModule.directive(&#39;myDirective&#39;, function factory() {
+  return {
+    ...
+    scope: {
+      localValue: &#39;=?bind&#39; // &lt;-- the &#39;?&#39; makes it optional
+    }
+    ...
+  }
+});
 </code></pre>
 
 </div>

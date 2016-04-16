@@ -1,14 +1,17 @@
 (function(angular) {
   'use strict';
-angular.module('docsTransclusionDirective', [])
+angular.module('docsIsolationExample', [])
   .controller('Controller', ['$scope', function($scope) {
-    $scope.name = 'Tobias';
+    $scope.naomi = { name: 'Naomi', address: '1600 Amphitheatre' };
+    $scope.vojta = { name: 'Vojta', address: '3456 Somewhere Else' };
   }])
-  .directive('myDialog', function() {
+  .directive('myCustomer', function() {
     return {
       restrict: 'E',
-      transclude: true,
-      templateUrl: 'my-dialog.html'
+      scope: {
+        customerInfo: '=info'
+      },
+      templateUrl: 'my-customer-plus-vojta.html'
     };
   });
 })(window.angular);

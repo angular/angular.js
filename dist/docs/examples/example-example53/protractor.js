@@ -1,5 +1,9 @@
-it('should toggle button', function() {
-  expect(element(by.css('button')).getAttribute('disabled')).toBeFalsy();
-  element(by.model('checked')).click();
-  expect(element(by.css('button')).getAttribute('disabled')).toBeTruthy();
+it('should auto compile', function() {
+  var textarea = $('textarea');
+  var output = $('div[compile]');
+  // The initial state reads 'Hello Angular'.
+  expect(output.getText()).toBe('Hello Angular');
+  textarea.clear();
+  textarea.sendKeys('{{name}}!');
+  expect(output.getText()).toBe('Angular!');
 });

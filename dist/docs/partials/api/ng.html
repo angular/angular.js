@@ -1,9 +1,13 @@
-<a href='https://github.com/angular/angular.js/edit/master/src/Angular.js?message=docs(ng)%3A%20describe%20your%20change...#L95' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+<a href='https://github.com/angular/angular.js/edit/master/src/Angular.js?message=docs(ng)%3A%20describe%20your%20change...#L101' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
 
 
 <h1>
   <code>ng</code>
 </h1>
+
+
+  
+
 
 <h1 id="ng-core-module-">ng (core module)</h1>
 <p>The ng module is loaded by default when an AngularJS application is started. The module itself
@@ -11,6 +15,22 @@ contains the essential components for an AngularJS application to function. The 
 lists a high level breakdown of each of the services/factories, filters, directives and testing
 components available within this core module.</p>
 <div doc-module-components="ng"></div>
+
+
+<div class="known-issues">
+  <h2 id="known-issues">Known Issues</h2>
+  <table class="definition-table">
+  <tr><th>Name</th><th>Description</th></tr>
+  <tr>
+    <td><a href="api/ng/function/angular.element">angular.element</a></td>
+    <td>
+    <p>You cannot spy on <code>angular.element</code> if you are using Jasmine version 1.x. See
+<a href="https://github.com/angular/angular.js/issues/14251">https://github.com/angular/angular.js/issues/14251</a> for more information.</p>
+
+    </td>
+  </tr>
+  </table>
+</div>
 
 
 
@@ -26,18 +46,6 @@ components available within this core module.</p>
       </tr>
       
       <tr>
-        <td><a href="api/ng/function/angular.lowercase">angular.lowercase</a></td>
-        <td><p>Converts the specified string to lowercase.</p>
-</td>
-      </tr>
-      
-      <tr>
-        <td><a href="api/ng/function/angular.uppercase">angular.uppercase</a></td>
-        <td><p>Converts the specified string to uppercase.</p>
-</td>
-      </tr>
-      
-      <tr>
         <td><a href="api/ng/function/angular.forEach">angular.forEach</a></td>
         <td><p>Invokes the <code>iterator</code> function once for each item in <code>obj</code> collection, which can be either an
 object or an array. The <code>iterator</code> function is invoked with <code>iterator(value, key, obj)</code>, where <code>value</code>
@@ -50,8 +58,15 @@ array element index and obj is the <code>obj</code> itself. Specifying a <code>c
         <td><a href="api/ng/function/angular.extend">angular.extend</a></td>
         <td><p>Extends the destination object <code>dst</code> by copying own enumerable properties from the <code>src</code> object(s)
 to <code>dst</code>. You can specify multiple <code>src</code> objects. If you want to preserve original objects, you can do so
-by passing an empty object as the target: <code>var object = angular.extend({}, object1, object2)</code>.
-Note: Keep in mind that <code>angular.extend</code> does not support recursive merge (deep copy).</p>
+by passing an empty object as the target: <code>var object = angular.extend({}, object1, object2)</code>.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/function/angular.merge">angular.merge</a></td>
+        <td><p>Deeply extends the destination object <code>dst</code> by copying own enumerable properties from the <code>src</code> object(s)
+to <code>dst</code>. You can specify multiple <code>src</code> objects. If you want to preserve original objects, you can do so
+by passing an empty object as the target: <code>var object = angular.merge({}, object1, object2)</code>.</p>
 </td>
       </tr>
       
@@ -211,6 +226,14 @@ registered using this mechanism.</p>
       </tr>
       
       <tr>
+        <td><a href="api/ng/directive/ngJq">ngJq</a></td>
+        <td><p>Use this directive to force the angular.element library.  This should be
+used to force either jqLite by leaving ng-jq blank or setting the name of
+the jquery variable under window (eg. jQuery).</p>
+</td>
+      </tr>
+      
+      <tr>
         <td><a href="api/ng/directive/ngApp">ngApp</a></td>
         <td><p>Use this directive to <strong>auto-bootstrap</strong> an AngularJS application. The <code>ngApp</code> directive
 designates the <strong>root element</strong> of the application and is typically placed near the root element
@@ -256,59 +279,32 @@ text <code>{{hash}}</code> until Angular replaces the expression inside
       
       <tr>
         <td><a href="api/ng/directive/ngDisabled">ngDisabled</a></td>
-        <td><p>We shouldn&#39;t do this, because it will make the button enabled on Chrome/Firefox but not on IE8 and older IEs:</p>
-<pre><code class="lang-html">&lt;div ng-init=&quot;scope = { isDisabled: false }&quot;&gt;
- &lt;button disabled=&quot;{{scope.isDisabled}}&quot;&gt;Disabled&lt;/button&gt;
-&lt;/div&gt;
-</code></pre>
+        <td><p>This directive sets the <code>disabled</code> attribute on the element if the
+<a href="guide/expression">expression</a> inside <code>ngDisabled</code> evaluates to truthy.</p>
 </td>
       </tr>
       
       <tr>
         <td><a href="api/ng/directive/ngChecked">ngChecked</a></td>
-        <td><p>The HTML specification does not require browsers to preserve the values of boolean attributes
-such as checked. (Their presence means true and their absence means false.)
-If we put an Angular interpolation expression into such an attribute then the
-binding information would be lost when the browser removes the attribute.
-The <code>ngChecked</code> directive solves this problem for the <code>checked</code> attribute.
-This complementary directive is not removed by the browser and so provides
-a permanent reliable place to store the binding information.</p>
+        <td><p>Sets the <code>checked</code> attribute on the element, if the expression inside <code>ngChecked</code> is truthy.</p>
 </td>
       </tr>
       
       <tr>
         <td><a href="api/ng/directive/ngReadonly">ngReadonly</a></td>
-        <td><p>The HTML specification does not require browsers to preserve the values of boolean attributes
-such as readonly. (Their presence means true and their absence means false.)
-If we put an Angular interpolation expression into such an attribute then the
-binding information would be lost when the browser removes the attribute.
-The <code>ngReadonly</code> directive solves this problem for the <code>readonly</code> attribute.
-This complementary directive is not removed by the browser and so provides
-a permanent reliable place to store the binding information.</p>
+        <td><p>Sets the <code>readOnly</code> attribute on the element, if the expression inside <code>ngReadonly</code> is truthy.</p>
 </td>
       </tr>
       
       <tr>
         <td><a href="api/ng/directive/ngSelected">ngSelected</a></td>
-        <td><p>The HTML specification does not require browsers to preserve the values of boolean attributes
-such as selected. (Their presence means true and their absence means false.)
-If we put an Angular interpolation expression into such an attribute then the
-binding information would be lost when the browser removes the attribute.
-The <code>ngSelected</code> directive solves this problem for the <code>selected</code> attribute.
-This complementary directive is not removed by the browser and so provides
-a permanent reliable place to store the binding information.</p>
+        <td><p>Sets the <code>selected</code> attribute on the element, if the expression inside <code>ngSelected</code> is truthy.</p>
 </td>
       </tr>
       
       <tr>
         <td><a href="api/ng/directive/ngOpen">ngOpen</a></td>
-        <td><p>The HTML specification does not require browsers to preserve the values of boolean attributes
-such as open. (Their presence means true and their absence means false.)
-If we put an Angular interpolation expression into such an attribute then the
-binding information would be lost when the browser removes the attribute.
-The <code>ngOpen</code> directive solves this problem for the <code>open</code> attribute.
-This complementary directive is not removed by the browser and so provides
-a permanent reliable place to store the binding information.</p>
+        <td><p>Sets the <code>open</code> attribute on the element, if the expression inside <code>ngOpen</code> is truthy.</p>
 </td>
       </tr>
       
@@ -428,7 +424,8 @@ supports the principles behind the Model-View-Controller design pattern.</p>
       
       <tr>
         <td><a href="api/ng/directive/ngCsp">ngCsp</a></td>
-        <td><p>Enables <a href="https://developer.mozilla.org/en/Security/CSP">CSP (Content Security Policy)</a> support.</p>
+        <td><p>Angular has some features that can break certain
+<a href="https://developer.mozilla.org/en/Security/CSP">CSP (Content Security Policy)</a> rules.</p>
 </td>
       </tr>
       
@@ -673,6 +670,35 @@ assigned through the element&#39;s <code>id</code>, which can then be used as a 
 </td>
       </tr>
       
+      <tr>
+        <td><a href="api/ng/directive/ngRequired">ngRequired</a></td>
+        <td><p>ngRequired adds the required <a href="api/ng/type/ngModel.NgModelController#$validators"><code>validator</code></a> to <a href="api/ng/directive/ngModel"><code>ngModel</code></a>.
+It is most often used for <a href="api/ng/directive/input"><code>input</code></a> and <a href="api/ng/directive/select"><code>select</code></a> controls, but can also be
+applied to custom controls.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/directive/ngPattern">ngPattern</a></td>
+        <td><p>ngPattern adds the pattern <a href="api/ng/type/ngModel.NgModelController#$validators"><code>validator</code></a> to <a href="api/ng/directive/ngModel"><code>ngModel</code></a>.
+It is most often used for text-based <a href="api/ng/directive/input"><code>input</code></a> controls, but can also be applied to custom text-based controls.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/directive/ngMaxlength">ngMaxlength</a></td>
+        <td><p>ngMaxlength adds the maxlength <a href="api/ng/type/ngModel.NgModelController#$validators"><code>validator</code></a> to <a href="api/ng/directive/ngModel"><code>ngModel</code></a>.
+It is most often used for text-based <a href="api/ng/directive/input"><code>input</code></a> controls, but can also be applied to custom text-based controls.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/directive/ngMinlength">ngMinlength</a></td>
+        <td><p>ngMinlength adds the minlength <a href="api/ng/type/ngModel.NgModelController#$validators"><code>validator</code></a> to <a href="api/ng/directive/ngModel"><code>ngModel</code></a>.
+It is most often used for text-based <a href="api/ng/directive/input"><code>input</code></a> controls, but can also be applied to custom text-based controls.</p>
+</td>
+      </tr>
+      
     </table>
   </div>
   
@@ -686,8 +712,7 @@ assigned through the element&#39;s <code>id</code>, which can then be used as a 
       
       <tr>
         <td><a href="api/ng/object/angular.version">angular.version</a></td>
-        <td><p>An object that contains information about the current AngularJS version. This object has the
-following properties:</p>
+        <td><p>An object that contains information about the current AngularJS version.</p>
 </td>
       </tr>
       
@@ -757,7 +782,8 @@ added <code>&lt;option&gt;</code> elements, perhaps by an <code>ngRepeat</code> 
         <td><p>A root scope can be retrieved using the <a href="api/ng/service/$rootScope">$rootScope</a> key from the
 <a href="api/auto/service/$injector">$injector</a>. Child scopes are created using the
 <a href="api/ng/type/$rootScope.Scope#$new">$new()</a> method. (Most scopes are created automatically when
-compiled HTML template is executed.)</p>
+compiled HTML template is executed.) See also the <a href="guide/scope">Scopes guide</a> for
+an in-depth introduction and usage examples.</p>
 </td>
       </tr>
       
@@ -782,8 +808,7 @@ compiled HTML template is executed.)</p>
       <tr>
         <td><a href="api/ng/provider/$animateProvider">$animateProvider</a></td>
         <td><p>Default implementation of $animate that doesn&#39;t perform any animations, instead just
-synchronously performs DOM
-updates and calls done() callbacks.</p>
+synchronously performs DOM updates and resolves the returned runner promise.</p>
 </td>
       </tr>
       
@@ -862,6 +887,12 @@ that the URLs used for sourcing Angular templates are safe.  Refer <a href="api/
 </td>
       </tr>
       
+      <tr>
+        <td><a href="api/ng/provider/$templateRequestProvider">$templateRequestProvider</a></td>
+        <td><p>Used to configure the options passed to the <a href="api/ng/service/$http"><code>$http</code></a> service when making a template request.</p>
+</td>
+      </tr>
+      
     </table>
   </div>
   
@@ -875,18 +906,26 @@ that the URLs used for sourcing Angular templates are safe.  Refer <a href="api/
       
       <tr>
         <td><a href="api/ng/service/$anchorScroll">$anchorScroll</a></td>
-        <td><p>When called, it checks the current value of <a href="api/ng/service/$location#hash">$location.hash()</a> and
-scrolls to the related element, according to the rules specified in the
-<a href="http://dev.w3.org/html5/spec/Overview.html#the-indicated-part-of-the-document">Html5 spec</a>.</p>
+        <td><p>When called, it scrolls to the element related to the specified <code>hash</code> or (if omitted) to the
+current value of <a href="api/ng/service/$location#hash">$location.hash()</a>, according to the rules specified
+in the
+<a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#the-indicated-part-of-the-document">HTML5 spec</a>.</p>
 </td>
       </tr>
       
       <tr>
         <td><a href="api/ng/service/$animate">$animate</a></td>
-        <td><p>The $animate service provides rudimentary DOM manipulation functions to
-insert, remove and move elements within the DOM, as well as adding and removing classes.
-This service is the core service used by the ngAnimate $animator service which provides
-high-level animation hooks for CSS and JavaScript.</p>
+        <td><p>The $animate service exposes a series of DOM utility methods that provide support
+for animation hooks. The default behavior is the application of DOM operations, however,
+when an animation is detected (and animations are enabled), $animate will do the heavy lifting
+to ensure that animation runs with the triggered DOM operation.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/service/$animateCss">$animateCss</a></td>
+        <td><p>This is the core version of <code>$animateCss</code>. By default, only when the <code>ngAnimate</code> is included,
+then the <code>$animateCss</code> service will actually perform animations.</p>
 </td>
       </tr>
       
@@ -939,10 +978,31 @@ the browser console.</p>
       </tr>
       
       <tr>
+        <td><a href="api/ng/service/$httpParamSerializer">$httpParamSerializer</a></td>
+        <td><p>Default <a href="api/ng/service/$http"><code>$http</code></a> params serializer that converts objects to strings
+according to the following rules:</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/service/$httpParamSerializerJQLike">$httpParamSerializerJQLike</a></td>
+        <td><p>Alternative <a href="api/ng/service/$http"><code>$http</code></a> params serializer that follows
+jQuery&#39;s <a href="http://api.jquery.com/jquery.param/"><code>param()</code></a> method logic.
+The serializer will also sort the params alphabetically.</p>
+</td>
+      </tr>
+      
+      <tr>
         <td><a href="api/ng/service/$http">$http</a></td>
         <td><p>The <code>$http</code> service is a core Angular service that facilitates communication with the remote
 HTTP servers via the browser&#39;s <a href="https://developer.mozilla.org/en/xmlhttprequest">XMLHttpRequest</a>
 object or via <a href="http://en.wikipedia.org/wiki/JSONP">JSONP</a>.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/service/$xhrFactory">$xhrFactory</a></td>
+        <td><p>Factory function used to create XMLHttpRequest objects.</p>
 </td>
       </tr>
       
@@ -1019,7 +1079,7 @@ published, and can be retrieved using <code>$rootElement.injector()</code>.</p>
         <td><p>Every application has a single root <a href="api/ng/type/$rootScope.Scope">scope</a>.
 All other scopes are descendant scopes of the root scope. Scopes provide separation
 between the model and the view, via a mechanism for watching the model for changes.
-They also provide an event emission/broadcast and subscription facility. See the
+They also provide event emission/broadcast and subscription facility. See the
 <a href="guide/scope">developer guide on scopes</a>.</p>
 </td>
       </tr>
@@ -1039,10 +1099,12 @@ Contextual Escaping (SCE)</a> services to AngularJS.</p>
       
       <tr>
         <td><a href="api/ng/service/$templateRequest">$templateRequest</a></td>
-        <td><p>The <code>$templateRequest</code> service downloads the provided template using <code>$http</code> and, upon success,
-stores the contents inside of <code>$templateCache</code>. If the HTTP request fails or the response data
-of the HTTP request is empty, a <code>$compile</code> error will be thrown (the exception can be thwarted
-by setting the 2nd parameter of the function to true).</p>
+        <td><p>The <code>$templateRequest</code> service runs security checks then downloads the provided template using
+<code>$http</code> and, upon success, stores the contents inside of <code>$templateCache</code>. If the HTTP request
+fails or the response data of the HTTP request is empty, a <code>$compile</code> error will be thrown (the
+exception can be thwarted by setting the 2nd parameter of the function to true). Note that the
+contents of <code>$templateCache</code> are trusted, so the call to <code>$sce.getTrustedUrl(tpl)</code> is omitted
+when <code>tpl</code> is of type string and <code>$templateCache</code> has the matching entry.</p>
 </td>
       </tr>
       
@@ -1101,7 +1163,7 @@ local datetime format (yyyy-MM-ddTHH:mm:ss), for example: <code>2010-12-28T14:57
       <tr>
         <td><a href="api/ng/input/input[time]">input[time]</a></td>
         <td><p>Input with time validation and transformation. In browsers that do not yet support
-the HTML5 date input, a text element will be used. In that case, the text must be entered in a valid ISO-8601
+the HTML5 time input, a text element will be used. In that case, the text must be entered in a valid ISO-8601
 local time format (HH:mm:ss), for example: <code>14:57:00</code>. Model must be a Date object. This binding will always output a
 Date object to the model of January 1, 1970, or local date <code>new Date(1970, 0, 1, HH, mm, ss)</code>.</p>
 </td>
@@ -1223,7 +1285,8 @@ converted to a string.</p>
         <td><a href="api/ng/filter/orderBy">orderBy</a></td>
         <td><p>Orders a specified <code>array</code> by the <code>expression</code> predicate. It is ordered alphabetically
 for strings and numerically for numbers. Note: if you notice numbers are not being sorted
-correctly, make sure they are actually being saved as numbers and not strings.</p>
+as expected, make sure they are actually being saved as numbers and not strings.
+Array-like values (e.g. NodeLists, jQuery objects, TypedArrays, Strings, etc) are also supported.</p>
 </td>
       </tr>
       

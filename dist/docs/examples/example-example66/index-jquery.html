@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Example - example-example66-jquery</title>
+  <link href="style.css" rel="stylesheet" type="text/css">
   
 
   <script src="../../components/jquery-2.1.1/jquery.js"></script>
@@ -12,7 +13,12 @@
   
 </head>
 <body ng-app="">
-  <div id="template1" ng-cloak>{{ 'hello' }}</div>
-<div id="template2" ng-cloak class="ng-cloak">{{ 'hello IE7' }}</div>
+  <ol ng-init="names=['John', 'Mary', 'Cate', 'Suz']">
+  <li ng-repeat="name in names">
+   <span ng-class-odd="'odd'" ng-class-even="'even'">
+     {{name}}
+   </span>
+  </li>
+</ol>
 </body>
 </html>

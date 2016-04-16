@@ -28,6 +28,8 @@ an element is clicked.</p>
 
 
 
+
+
 <div>
   
 
@@ -36,6 +38,7 @@ an element is clicked.</p>
   <ul>
     
     <li>This directive executes at priority level 0.</li>
+    
   </ul>
 
   
@@ -44,7 +47,7 @@ an element is clicked.</p>
   
     <ul>
     <li>as attribute:
-        <pre><code>&lt;ANY&#10;  ng-click=&quot;&quot;&gt;&#10;...&#10;&lt;/ANY&gt;</code></pre>
+        <pre><code>&lt;ANY&#10;  ng-click=&quot;expression&quot;&gt;&#10;...&#10;&lt;/ANY&gt;</code></pre>
       </li>
     
   </div>
@@ -90,12 +93,10 @@ click. (<a href="guide/expression#-event-">Event object is available as <code>$e
   <h2 id="example">Example</h2><p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-example67', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-example69"></plnkr-opener>
 
   <div class="runnable-example"
-      path="examples/example-example67">
+      path="examples/example-example69">
 
   
     <div class="runnable-example-file" 
@@ -113,7 +114,7 @@ click. (<a href="guide/expression#-event-">Event object is available as <code>$e
     </div>
   
 
-    <iframe class="runnable-example-frame" src="examples/example-example67/index.html" name="example-example67"></iframe>
+    <iframe class="runnable-example-frame" src="examples/example-example69/index.html" name="example-example69"></iframe>
   </div>
 </div>
 

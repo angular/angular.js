@@ -16,9 +16,9 @@ angular.module('finance3', [])
     var refresh = function() {
       var url = YAHOO_FINANCE_URL_PATTERN.
                  replace('PAIRS', 'USD' + currencies.join('","USD'));
-      return $http.jsonp(url).success(function(data) {
+      return $http.jsonp(url).then(function(response) {
         var newUsdToForeignRates = {};
-        angular.forEach(data.query.results.rate, function(rate) {
+        angular.forEach(response.data.query.results.rate, function(rate) {
           var currency = rate.id.substring(3,6);
           newUsdToForeignRates[currency] = window.parseFloat(rate.Rate);
         });
@@ -30,8 +30,7 @@ angular.module('finance3', [])
 
     return {
       currencies: currencies,
-      convert: convert,
-      refresh: refresh
+      convert: convert
     };
   }]);
 })(window.angular);

@@ -1,7 +1,7 @@
 <a href='https://github.com/angular/angular.js/edit/master/docs/content/error/$compile/tplrt.ngdoc?message=docs(error%2Ftplrt)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
 
 
-<h1>Error: error:tplrt
+<h1>Error: $compile:tplrt
   <div><span class='hint'>Invalid Template Root</span></div>
 </h1>
 
@@ -31,14 +31,14 @@ with multiple elements or nodes, which is unsupported and not commonly needed in
 single root element, like the <code>div</code> element in this template:</p>
 <pre><code>&lt;div&gt;&lt;b&gt;Hello&lt;/b&gt; World!&lt;/div&gt;
 </code></pre>
-<p>An an invalid template to be used with this directive is one that defines multiple root nodes or
+<p>An invalid template to be used with this directive is one that defines multiple root nodes or
 elements. For example:</p>
 <pre><code>&lt;b&gt;Hello&lt;/b&gt; World!
 </code></pre>
 <p>Watch out for html comments at the beginning or end of templates, as these can cause this error as
 well.  Consider the following template:</p>
 <pre><code>&lt;div class=&#39;container&#39;&gt;
-  &lt;div class=&#39;wrapper&gt;
+  &lt;div class=&#39;wrapper&#39;&gt;
      ...
   &lt;/div&gt; &lt;!-- wrapper --&gt;
 &lt;/div&gt; &lt;!-- container --&gt;

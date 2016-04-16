@@ -20,13 +20,15 @@
    }]);
 </script>
 <form name="myForm" ng-controller="DateController as dateCtrl">
-   Pick a between 8am and 5pm:
+   <label for="exampleInput">Pick a time between 8am and 5pm:</label>
    <input type="time" id="exampleInput" name="input" ng-model="example.value"
        placeholder="HH:mm:ss" min="08:00:00" max="17:00:00" required />
-   <span class="error" ng-show="myForm.input.$error.required">
-       Required!</span>
-   <span class="error" ng-show="myForm.input.$error.time">
-       Not a valid date!</span>
+   <div role="alert">
+     <span class="error" ng-show="myForm.input.$error.required">
+         Required!</span>
+     <span class="error" ng-show="myForm.input.$error.time">
+         Not a valid date!</span>
+   </div>
    <tt>value = {{example.value | date: "HH:mm:ss"}}</tt><br/>
    <tt>myForm.input.$valid = {{myForm.input.$valid}}</tt><br/>
    <tt>myForm.input.$error = {{myForm.input.$error}}</tt><br/>

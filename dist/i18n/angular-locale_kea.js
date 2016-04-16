@@ -34,6 +34,15 @@ $provide.value("$locale", {
       "sesta-fera",
       "sabadu"
     ],
+    "ERANAMES": [
+      "Antis di Kristu",
+      "Dispos di Kristu"
+    ],
+    "ERAS": [
+      "AK",
+      "DK"
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "Janeru",
       "Febreru",
@@ -70,6 +79,24 @@ $provide.value("$locale", {
       "Otu",
       "Nuv",
       "Diz"
+    ],
+    "STANDALONEMONTH": [
+      "Janeru",
+      "Febreru",
+      "Marsu",
+      "Abril",
+      "Maiu",
+      "Junhu",
+      "Julhu",
+      "Agostu",
+      "Setenbru",
+      "Otubru",
+      "Nuvenbru",
+      "Dizenbru"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE, d 'di' MMMM 'di' y",
     "longDate": "d 'di' MMMM 'di' y",
@@ -110,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "kea",
+  "localeID": "kea",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

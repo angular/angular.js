@@ -20,11 +20,15 @@
     }]);
 </script>
 <form name="myForm" ng-controller="ExampleController">
-  URL: <input type="url" name="input" ng-model="url.text" required>
-  <span class="error" ng-show="myForm.input.$error.required">
-    Required!</span>
-  <span class="error" ng-show="myForm.input.$error.url">
-    Not valid url!</span>
+  <label>URL:
+    <input type="url" name="input" ng-model="url.text" required>
+  <label>
+  <div role="alert">
+    <span class="error" ng-show="myForm.input.$error.required">
+      Required!</span>
+    <span class="error" ng-show="myForm.input.$error.url">
+      Not valid url!</span>
+  </div>
   <tt>text = {{url.text}}</tt><br/>
   <tt>myForm.input.$valid = {{myForm.input.$valid}}</tt><br/>
   <tt>myForm.input.$error = {{myForm.input.$error}}</tt><br/>

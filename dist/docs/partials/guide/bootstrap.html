@@ -44,12 +44,12 @@ to make IE happy. (This is here for historical reasons, and we no longer recomme
 <p><img class="pull-right" style="padding-left: 3em;" src="img/guide/concepts-startup.png"></p>
 <p>Angular initializes automatically upon <code>DOMContentLoaded</code> event or when the <code>angular.js</code> script is
 evaluated if at that time <code>document.readyState</code> is set to <code>&#39;complete&#39;</code>. At this point Angular looks
-for the <a href="api/ng/directive/ngApp"><code>ng-app</code></a> directive which designates your application root.
-If the <a href="api/ng/directive/ngApp"><code>ng-app</code></a> directive is found then Angular will:</p>
+for the <a href="api/ng/directive/ngApp"><code>ngApp</code></a> directive which designates your application root.
+If the <a href="api/ng/directive/ngApp"><code>ngApp</code></a> directive is found then Angular will:</p>
 <ul>
 <li>load the <a href="guide/module">module</a> associated with the directive.</li>
 <li>create the application <a href="api/auto/service/$injector">injector</a></li>
-<li>compile the DOM treating the <a href="api/ng/directive/ngApp"><code>ng-app</code></a> directive as the root of the compilation. This allows you to tell it to treat only a
+<li>compile the DOM treating the <a href="api/ng/directive/ngApp"><code>ngApp</code></a> directive as the root of the compilation. This allows you to tell it to treat only a
 portion of the DOM as an Angular application.</li>
 </ul>
 <pre><code class="lang-html">&lt;!doctype html&gt;
@@ -117,6 +117,17 @@ application, which is typically the root of the document.</p>
 executable, bi-directionally bound application.</p>
 </li>
 </ol>
+<h2 id="things-to-keep-in-mind">Things to keep in mind</h2>
+<p>There a few things to keep in mind regardless of automatic or manual bootstrapping:</p>
+<ul>
+<li>While it&#39;s possible to bootstrap more than one AngularJS application per page, we don&#39;t actively
+test against this scenario. It&#39;s possible that you&#39;ll run into problems, especially with complex apps, so
+caution is advised.</li>
+<li>Do not bootstrap your app on an element with a directive that uses <a href="api/ng/service/$compile#transclusion">transclusion</a>, such as
+<a href="api/ng/directive/ngIf"><code>ngIf</code></a>, <a href="api/ng/directive/ngInclude"><code>ngInclude</code></a> and <a href="api/ngRoute/directive/ngView"><code>ngView</code></a>.
+Doing this misplaces the app <a href="api/ng/service/$rootElement"><code>$rootElement</code></a> and the app&#39;s <a href="api/auto/service/$injector">injector</a>,
+causing animations to stop working and making the injector inaccessible from outside the app.</li>
+</ul>
 <h2 id="deferred-bootstrap">Deferred Bootstrap</h2>
 <p>This feature enables tools like <a href="https://github.com/angular/angularjs-batarang">Batarang</a> and test runners
 to hook into angular&#39;s bootstrap process and sneak in more modules

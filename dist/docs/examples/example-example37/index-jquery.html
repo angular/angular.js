@@ -12,14 +12,13 @@
 
   
 </head>
-<body ng-app="form-example-modify-validators">
-  <form name="form" class="css-form" novalidate>
-  <div>
-    Overwritten Email:
-    <input type="email" ng-model="myEmail" overwrite-email name="overwrittenEmail" />
-    <span ng-show="form.overwrittenEmail.$error.email">This email format is invalid!</span><br>
-    Model: {{myEmail}}
-    </div>
-</form>
+<body ng-app="debounceExample">
+  <div ng-controller="ExampleController">
+  <form>
+    Name:
+    <input type="text" ng-model="user.name" ng-model-options="{ debounce: 250 }" /><br />
+  </form>
+  <pre>username = "{{user.name}}"</pre>
+</div>
 </body>
 </html>

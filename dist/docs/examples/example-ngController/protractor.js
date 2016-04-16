@@ -14,12 +14,12 @@ it('should check controller', function() {
   expect(secondRepeat.element(by.model('contact.value')).getAttribute('value'))
       .toBe('john.smith@example.org');
 
-  firstRepeat.element(by.linkText('clear')).click();
+  firstRepeat.element(by.buttonText('clear')).click();
 
   expect(firstRepeat.element(by.model('contact.value')).getAttribute('value'))
       .toBe('');
 
-  container.element(by.linkText('add')).click();
+  container.element(by.buttonText('add')).click();
 
   expect(container.element(by.repeater('contact in contacts').row(2))
       .element(by.model('contact.value'))

@@ -1,8 +1,8 @@
-<a href='https://github.com/angular/angular.js/edit/master/src/ng/compile.js?message=docs($compileProvider)%3A%20describe%20your%20change...#L696' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/compile.js?message=docs($compileProvider)%3A%20describe%20your%20change...#L852' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
 
 
 
-<a href='https://github.com/angular/angular.js/tree/master/src/ng/compile.js#L696' class='view-source pull-right btn btn-primary'>
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/compile.js#L852' class='view-source pull-right btn btn-primary'>
   <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
 </a>
 
@@ -26,6 +26,8 @@
 <div class="api-profile-description">
   
 </div>
+
+
 
 
 
@@ -88,8 +90,8 @@
         <a href="" class="label type-hint type-hint-function">function()</a><a href="" class="label type-hint type-hint-array">Array</a>
       </td>
       <td>
-        <p>An injectable directive factory function. See
-   <a href="guide/directive">directive</a> for more info.</p>
+        <p>An injectable directive factory function. See the
+   <a href="guide/directive">directive guide</a> and the <a href="api/ng/service/$compile">compile API</a> for more info.</p>
 
         
       </td>
@@ -108,6 +110,147 @@
   <tr>
     <td><a href="" class="label type-hint type-hint-ng">ng.$compileProvider</a></td>
     <td><p>Self for chaining.</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="component">
+    <h3><p><code>component(name, options);</code></p>
+
+</h3>
+    <div><p>Register a <strong>component definition</strong> with the compiler. This is a shorthand for registering a special
+type of directive, which represents a self-contained UI component in your application. Such components
+are always isolated (i.e. <code>scope: {}</code>) and are always restricted to elements (i.e. <code>restrict: &#39;E&#39;</code>).</p>
+<p>Component definitions are very simple and do not require as much configuration as defining general
+directives. Component definitions usually consist only of a template and a controller backing it.</p>
+<p>In order to make the definition easier, components enforce best practices like use of <code>controllerAs</code>,
+<code>bindToController</code>. They always have <strong>isolate scope</strong> and are restricted to elements.</p>
+<p>Here are a few examples of how you would usually define components:</p>
+<pre><code class="lang-js">var myMod = angular.module(...);
+myMod.component(&#39;myComp&#39;, {
+  template: &#39;&lt;div&gt;My name is {{$ctrl.name}}&lt;/div&gt;&#39;,
+  controller: function() {
+    this.name = &#39;shahar&#39;;
+  }
+});
+
+myMod.component(&#39;myComp&#39;, {
+  template: &#39;&lt;div&gt;My name is {{$ctrl.name}}&lt;/div&gt;&#39;,
+  bindings: {name: &#39;@&#39;}
+});
+
+myMod.component(&#39;myComp&#39;, {
+  templateUrl: &#39;views/my-comp.html&#39;,
+  controller: &#39;MyCtrl&#39;,
+  controllerAs: &#39;ctrl&#39;,
+  bindings: {name: &#39;@&#39;}
+});
+</code></pre>
+<p>For more examples, and an in-depth guide, see the <a href="guide/component">component guide</a>.</p>
+<p><br />
+See also <a href="api/ng/provider/$compileProvider#directive">$compileProvider.directive()</a>.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        name
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Name of the component in camelCase (i.e. <code>myComp</code> which will match <code>&lt;my-comp&gt;</code>)</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        options
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">Object</a>
+      </td>
+      <td>
+        <p>Component definition object (a simplified
+   <a href="api/ng/service/$compile#directive-definition-object">directive definition object</a>),
+   with the following properties (all optional):</p>
+<ul>
+<li><code>controller</code> – <code>{(string|function()=}</code> – controller constructor function that should be
+associated with newly created scope or the name of a <a href="api/ng/service/$compile#-controller-">registered controller</a> if passed as a string. An empty <code>noop</code> function by default.</li>
+<li><code>controllerAs</code> – <code>{string=}</code> – identifier name for to reference the controller in the component&#39;s scope.
+If present, the controller will be published to scope under the <code>controllerAs</code> name.
+If not present, this will default to be <code>$ctrl</code>.</li>
+<li><p><code>template</code> – <code>{string=|function()=}</code> – html template as a string or a function that
+returns an html template as a string which should be used as the contents of this component.
+Empty string by default.</p>
+<p>If <code>template</code> is a function, then it is <a href="api/auto/service/$injector#invoke">injected</a> with
+the following locals:</p>
+<ul>
+<li><code>$element</code> - Current element</li>
+<li><code>$attrs</code> - Current attributes object for the element</li>
+</ul>
+</li>
+<li><p><code>templateUrl</code> – <code>{string=|function()=}</code> – path or function that returns a path to an html
+template that should be used  as the contents of this component.</p>
+<p>If <code>templateUrl</code> is a function, then it is <a href="api/auto/service/$injector#invoke">injected</a> with
+the following locals:</p>
+<ul>
+<li><code>$element</code> - Current element</li>
+<li><code>$attrs</code> - Current attributes object for the element</li>
+</ul>
+</li>
+<li><p><code>bindings</code> – <code>{object=}</code> – defines bindings between DOM attributes and component properties.
+Component properties are always bound to the component controller and not to the scope.
+See <a href="api/ng/service/$compile#-bindtocontroller-"><code>bindToController</code></a>.</p>
+</li>
+<li><code>transclude</code> – <code>{boolean=}</code> – whether <a href="api/ng/service/$compile#transclusion">content transclusion</a> is enabled.
+Disabled by default.</li>
+<li><code>require</code> - <code>{Object&lt;string, string&gt;=}</code> - requires the controllers of other directives and binds them to
+this component&#39;s controller. The object keys specify the property names under which the required
+controllers (object values) will be bound. See <a href="api/ng/service/$compile#-require-"><code>require</code></a>.</li>
+<li><code>$...</code> – additional properties to attach to the directive factory function and the controller
+constructor function. (This is used by the component router to annotate)</li>
+</ul>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-ng">ng.$compileProvider</a></td>
+    <td><p>the compile provider itself, for chaining of function calls.</p>
 </td>
   </tr>
 </table>
@@ -300,6 +443,69 @@ current debugInfoEnabled state</p>
   <tr>
     <td><a href="" class="label type-hint type-hint-object">*</a></td>
     <td><p>current value if used as getter or itself (chaining) if used as setter</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="onChangesTtl">
+    <h3><p><code>onChangesTtl(limit);</code></p>
+
+</h3>
+    <div><p>Sets the number of times <code>$onChanges</code> hooks can trigger new changes before giving up and
+assuming that the model is unstable.</p>
+<p>The current default is 10 iterations.</p>
+<p>In complex applications it&#39;s possible that dependencies between <code>$onChanges</code> hooks and bindings will result
+in several iterations of calls to these hooks. However if an application needs more than the default 10
+iterations to stabilize then you should investigate what is causing the model to continuously change during
+the <code>$onChanges</code> hook execution.</p>
+<p>Increasing the TTL could have performance implications, so you should not change it without proper justification.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        limit
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-number">number</a>
+      </td>
+      <td>
+        <p>The number of <code>$onChanges</code> hook iterations.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-number">number</a><a href="" class="label type-hint type-hint-object">object</a></td>
+    <td><p>the current limit (or <code>this</code> if called as a setter for chaining)</p>
 </td>
   </tr>
 </table>

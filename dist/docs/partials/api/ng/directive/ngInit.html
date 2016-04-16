@@ -22,20 +22,24 @@
 <div class="api-profile-description">
   <p>The <code>ngInit</code> directive allows you to evaluate an expression in the
 current scope.</p>
-<div class="alert alert-error">
-The only appropriate use of <code>ngInit</code> is for aliasing special properties of
-<a href="api/ng/directive/ngRepeat"><code>ngRepeat</code></a>, as seen in the demo below. Besides this case, you
-should use <a href="guide/controller">controllers</a> rather than <code>ngInit</code>
-to initialize values on a scope.
+<div class="alert alert-danger">
+This directive can be abused to add unnecessary amounts of logic into your templates.
+There are only a few appropriate uses of <code>ngInit</code>, such as for aliasing special properties of
+<a href="api/ng/directive/ngRepeat"><code>ngRepeat</code></a>, as seen in the demo below; and for injecting data via
+server side scripting. Besides these few cases, you should use <a href="guide/controller">controllers</a>
+rather than <code>ngInit</code> to initialize values on a scope.
 </div>
+
 <div class="alert alert-warning">
-<strong>Note</strong>: If you have assignment in <code>ngInit</code> along with <a href="api/ng/service/$filter"><code>$filter</code></a>, make
-sure you have parenthesis for correct precedence:
+<strong>Note</strong>: If you have assignment in <code>ngInit</code> along with a <a href="api/ng/service/$filter"><code>filter</code></a>, make
+sure you have parentheses to ensure correct operator precedence:
 <pre class="prettyprint">
-<code>&lt;div ng-init=&quot;test1 = (data | orderBy:&#39;name&#39;)&quot;&gt;&lt;/div&gt;</code>
+<code>&lt;div ng-init=&quot;test1 = ($index | toString)&quot;&gt;&lt;/div&gt;</code>
 </pre>
 </div>
 </div>
+
+
 
 
 
@@ -48,6 +52,7 @@ sure you have parenthesis for correct precedence:
   <ul>
     
     <li>This directive executes at priority level 450.</li>
+    
   </ul>
 
   
@@ -56,10 +61,10 @@ sure you have parenthesis for correct precedence:
   
     <ul>
     <li>as attribute:
-        <pre><code>&lt;ANY&#10;  ng-init=&quot;&quot;&gt;&#10;...&#10;&lt;/ANY&gt;</code></pre>
+        <pre><code>&lt;ANY&#10;  ng-init=&quot;expression&quot;&gt;&#10;...&#10;&lt;/ANY&gt;</code></pre>
       </li>
     <li>as CSS class:
-        <pre><code>&lt;ANY class=&quot;ng-init: ;&quot;&gt; ... &lt;/ANY&gt;</code></pre>
+        <pre><code>&lt;ANY class=&quot;ng-init: expression;&quot;&gt; ... &lt;/ANY&gt;</code></pre>
       </li>
     
   </div>
@@ -104,12 +109,10 @@ sure you have parenthesis for correct precedence:
   <h2 id="example">Example</h2><p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-example84', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-example86"></plnkr-opener>
 
   <div class="runnable-example"
-      path="examples/example-example84"
+      path="examples/example-example86"
       module="initExample">
 
   
@@ -128,7 +131,7 @@ sure you have parenthesis for correct precedence:
     </div>
   
 
-    <iframe class="runnable-example-frame" src="examples/example-example84/index.html" name="example-example84"></iframe>
+    <iframe class="runnable-example-frame" src="examples/example-example86/index.html" name="example-example86"></iframe>
   </div>
 </div>
 

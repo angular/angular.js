@@ -11,11 +11,14 @@
 
   
 </head>
-<body >
-  <div ng-app="myApp">
+<body ng-app="form-example-modify-validators">
+  <form name="form" class="css-form" novalidate>
   <div>
-    {{ 'World' | greet }}
-  </div>
-</div>
+    Overwritten Email:
+    <input type="email" ng-model="myEmail" overwrite-email name="overwrittenEmail" />
+    <span ng-show="form.overwrittenEmail.$error.email">This email format is invalid!</span><br>
+    Model: {{myEmail}}
+    </div>
+</form>
 </body>
 </html>

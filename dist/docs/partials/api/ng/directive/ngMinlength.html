@@ -1,0 +1,110 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/directive/validators.js?message=docs(ngMinlength)%3A%20describe%20your%20change...#L271' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/directive/validators.js#L271' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">ngMinlength</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - directive in module <a href="api/ng">ng</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>ngMinlength adds the minlength <a href="api/ng/type/ngModel.NgModelController#$validators"><code>validator</code></a> to <a href="api/ng/directive/ngModel"><code>ngModel</code></a>.
+It is most often used for text-based <a href="api/ng/directive/input"><code>input</code></a> controls, but can also be applied to custom text-based controls.</p>
+<p>The validator sets the <code>minlength</code> error key if the <a href="api/ng/type/ngModel.NgModelController#$viewValue"><code>ngModel.$viewValue</code></a>
+is shorter than the integer obtained by evaluating the Angular expression given in the
+<code>ngMinlength</code> attribute value.</p>
+<div class="alert alert-info">
+<strong>Note:</strong> This directive is also added when the plain <code>minlength</code> attribute is used, with two
+differences:
+<ol>
+  <li>
+    <code>ngMinlength</code> does not set the <code>minlength</code> attribute and therefore HTML5 constraint
+    validation is not available.
+  </li>
+  <li>
+    The <code>ngMinlength</code> value must be an expression, while the <code>minlength</code> value must be
+    interpolated.
+  </li>
+</ol>
+</div>
+</div>
+
+
+
+
+
+
+<div>
+  
+
+  
+  <h2>Directive Info</h2>
+  <ul>
+    
+    <li>This directive executes at priority level 0.</li>
+    
+  </ul>
+
+  
+  <h2 id="usage">Usage</h2>
+  <div class="usage">
+  
+    <ul>
+    <li>as attribute:
+        <pre><code>&lt;ANY&gt;&#10;...&#10;&lt;/ANY&gt;</code></pre>
+      </li>
+    
+  </div>
+  
+  
+
+
+  
+  <h2 id="example">Example</h2><p>
+
+<div>
+  <plnkr-opener example-path="examples/example-ngMinlengthDirective"></plnkr-opener>
+
+  <div class="runnable-example"
+      path="examples/example-ngMinlengthDirective"
+      name="ngMinlengthDirective"
+      module="ngMinlengthExample">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;script&gt;&#10;  angular.module(&#39;ngMinlengthExample&#39;, [])&#10;    .controller(&#39;ExampleController&#39;, [&#39;$scope&#39;, function($scope) {&#10;      $scope.minlength = 3;&#10;    }]);&#10;&lt;/script&gt;&#10;&lt;div ng-controller=&quot;ExampleController&quot;&gt;&#10;  &lt;form name=&quot;form&quot;&gt;&#10;    &lt;label for=&quot;minlength&quot;&gt;Set a minlength: &lt;/label&gt;&#10;    &lt;input type=&quot;number&quot; ng-model=&quot;minlength&quot; id=&quot;minlength&quot; /&gt;&#10;    &lt;br&gt;&#10;    &lt;label for=&quot;input&quot;&gt;This input is restricted by the current minlength: &lt;/label&gt;&#10;    &lt;input type=&quot;text&quot; ng-model=&quot;model&quot; id=&quot;input&quot; name=&quot;input&quot; ng-minlength=&quot;minlength&quot; /&gt;&lt;br&gt;&#10;    &lt;hr&gt;&#10;    input valid? = &lt;code&gt;{{form.input.$valid}}&lt;/code&gt;&lt;br&gt;&#10;    model = &lt;code&gt;{{model}}&lt;/code&gt;&#10;  &lt;/form&gt;&#10;&lt;/div&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="protractor.js"
+      type="protractor"
+      language="js">
+      <pre><code>var model = element(by.binding(&#39;model&#39;));&#10;var input = element(by.id(&#39;input&#39;));&#10;&#10;it(&#39;should validate the input with the default minlength&#39;, function() {&#10;  input.sendKeys(&#39;ab&#39;);&#10;  expect(model.getText()).not.toContain(&#39;ab&#39;);&#10;&#10;  input.sendKeys(&#39;abc&#39;);&#10;  expect(model.getText()).toContain(&#39;abc&#39;);&#10;});</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-ngMinlengthDirective/index.html" name="example-ngMinlengthDirective"></iframe>
+  </div>
+</div>
+
+
+</p>
+
+</div>
+
+

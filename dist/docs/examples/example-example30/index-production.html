@@ -5,18 +5,22 @@
   <title>Example - example-example30-production</title>
   
 
-  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/null/angular.min.js"></script>
   <script src="script.js"></script>
   
 
   
 </head>
-<body ng-app="myStatefulFilterApp">
-  <div ng-controller="MyController">
-  Input: <input ng-model="greeting" type="text"><br>
-  Decoration: <input ng-model="decoration.symbol" type="text"><br>
-  No filter: {{greeting}}<br>
-  Decorated: {{greeting | decorate}}<br>
+<body ng-app="FilterInControllerModule">
+  <div ng-controller="FilterController as ctrl">
+  <div>
+    All entries:
+    <span ng-repeat="entry in ctrl.array">{{entry.name}} </span>
+  </div>
+  <div>
+    Entries that contain an "a":
+    <span ng-repeat="entry in ctrl.filteredArray">{{entry.name}} </span>
+  </div>
 </div>
 </body>
 </html>

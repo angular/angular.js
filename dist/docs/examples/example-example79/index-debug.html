@@ -11,7 +11,7 @@
   
 </head>
 <body ng-app="">
-  <input ng-copy="copied=true" ng-init="copied=false; value='copy me'" ng-model="value">
-copied: {{copied}}
+  <input ng-keypress="count = count + 1" ng-init="count=0">
+key press count: {{count}}
 </body>
 </html>

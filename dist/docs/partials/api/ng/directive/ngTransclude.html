@@ -21,9 +21,16 @@
 
 <div class="api-profile-description">
   <p>Directive that marks the insertion point for the transcluded DOM of the nearest parent directive that uses transclusion.</p>
-<p>Any existing content of the element that this directive is placed on will be removed before the transcluded content is inserted.</p>
+<p>You can specify that you want to insert a named transclusion slot, instead of the default slot, by providing the slot name
+as the value of the <code>ng-transclude</code> or <code>ng-transclude-slot</code> attribute.</p>
+<p>If the transcluded content is not empty (i.e. contains one or more DOM nodes, including whitespace text nodes), any existing
+content of this element will be removed before the transcluded content is inserted.
+If the transcluded content is empty, the existing content is left intact. This lets you provide fallback content in the case
+that no transcluded content is provided.</p>
 
 </div>
+
+
 
 
 
@@ -36,6 +43,7 @@
   <ul>
     
     <li>This directive executes at priority level 0.</li>
+    
   </ul>
 
   
@@ -46,30 +54,65 @@
     
       <li>as element:
       (This directive can be used as custom element, but be aware of <a href="guide/ie">IE restrictions</a>).
-      <pre><code>&lt;ng-transclude&gt;&#10;...&#10;&lt;/ng-transclude&gt;</code></pre>
+      <pre><code>&lt;ng-transclude&#10;  ng-transclude-slot=&quot;string&quot;&gt;&#10;...&#10;&lt;/ng-transclude&gt;</code></pre>
       </li>
     <li>as attribute:
-        <pre><code>&lt;ANY&gt;&#10;...&#10;&lt;/ANY&gt;</code></pre>
+        <pre><code>&lt;ANY&#10;  ng-transclude=&quot;string&quot;&gt;&#10;...&#10;&lt;/ANY&gt;</code></pre>
       </li>
     <li>as CSS class:
-        <pre><code>&lt;ANY class=&quot;&quot;&gt; ... &lt;/ANY&gt;</code></pre>
+        <pre><code>&lt;ANY class=&quot;ng-transclude: string;&quot;&gt; ... &lt;/ANY&gt;</code></pre>
       </li>
     
   </div>
   
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        ngTransclude
+        | ngTranscludeSlot
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>the name of the slot to insert at this point. If this is not provided, is empty
+                                              or its value is the same as the name of the attribute then the default slot is used.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
   
 
 
   
-  <h2 id="example">Example</h2><p>
+  <h2 id="example">Example</h2><h3 id="basic-transclusion">Basic transclusion</h3>
+<p>This example demonstrates basic transclusion of content into a component directive.
+
 
 <div>
-  <a ng-click="openPlunkr('examples/example-example94', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-simpleTranscludeExample"></plnkr-opener>
 
   <div class="runnable-example"
-      path="examples/example-example94"
+      path="examples/example-simpleTranscludeExample"
+      name="simpleTranscludeExample"
       module="transcludeExample">
 
   
@@ -77,7 +120,7 @@
       name="index.html"
       language="html"
       type="html">
-      <pre><code>&lt;script&gt;&#10;  angular.module(&#39;transcludeExample&#39;, [])&#10;   .directive(&#39;pane&#39;, function(){&#10;      return {&#10;        restrict: &#39;E&#39;,&#10;        transclude: true,&#10;        scope: { title:&#39;@&#39; },&#10;        template: &#39;&lt;div style=&quot;border: 1px solid black;&quot;&gt;&#39; +&#10;                    &#39;&lt;div style=&quot;background-color: gray&quot;&gt;{{title}}&lt;/div&gt;&#39; +&#10;                    &#39;&lt;ng-transclude&gt;&lt;/ng-transclude&gt;&#39; +&#10;                  &#39;&lt;/div&gt;&#39;&#10;      };&#10;  })&#10;  .controller(&#39;ExampleController&#39;, [&#39;$scope&#39;, function($scope) {&#10;    $scope.title = &#39;Lorem Ipsum&#39;;&#10;    $scope.text = &#39;Neque porro quisquam est qui dolorem ipsum quia dolor...&#39;;&#10;  }]);&#10;&lt;/script&gt;&#10;&lt;div ng-controller=&quot;ExampleController&quot;&gt;&#10;  &lt;input ng-model=&quot;title&quot;&gt; &lt;br/&gt;&#10;  &lt;textarea ng-model=&quot;text&quot;&gt;&lt;/textarea&gt; &lt;br/&gt;&#10;  &lt;pane title=&quot;{{title}}&quot;&gt;{{text}}&lt;/pane&gt;&#10;&lt;/div&gt;</code></pre>
+      <pre><code>&lt;script&gt;&#10;  angular.module(&#39;transcludeExample&#39;, [])&#10;   .directive(&#39;pane&#39;, function(){&#10;      return {&#10;        restrict: &#39;E&#39;,&#10;        transclude: true,&#10;        scope: { title:&#39;@&#39; },&#10;        template: &#39;&lt;div style=&quot;border: 1px solid black;&quot;&gt;&#39; +&#10;                    &#39;&lt;div style=&quot;background-color: gray&quot;&gt;{{title}}&lt;/div&gt;&#39; +&#10;                    &#39;&lt;ng-transclude&gt;&lt;/ng-transclude&gt;&#39; +&#10;                  &#39;&lt;/div&gt;&#39;&#10;      };&#10;  })&#10;  .controller(&#39;ExampleController&#39;, [&#39;$scope&#39;, function($scope) {&#10;    $scope.title = &#39;Lorem Ipsum&#39;;&#10;    $scope.text = &#39;Neque porro quisquam est qui dolorem ipsum quia dolor...&#39;;&#10;  }]);&#10;&lt;/script&gt;&#10;&lt;div ng-controller=&quot;ExampleController&quot;&gt;&#10;  &lt;input ng-model=&quot;title&quot; aria-label=&quot;title&quot;&gt; &lt;br/&gt;&#10;  &lt;textarea ng-model=&quot;text&quot; aria-label=&quot;text&quot;&gt;&lt;/textarea&gt; &lt;br/&gt;&#10;  &lt;pane title=&quot;{{title}}&quot;&gt;{{text}}&lt;/pane&gt;&#10;&lt;/div&gt;</code></pre>
     </div>
   
     <div class="runnable-example-file" 
@@ -88,7 +131,82 @@
     </div>
   
 
-    <iframe class="runnable-example-frame" src="examples/example-example94/index.html" name="example-example94"></iframe>
+    <iframe class="runnable-example-frame" src="examples/example-simpleTranscludeExample/index.html" name="example-simpleTranscludeExample"></iframe>
+  </div>
+</div>
+
+
+</p>
+<h3 id="transclude-fallback-content">Transclude fallback content</h3>
+<p>This example shows how to use <code>NgTransclude</code> with fallback content, that
+is displayed if no transcluded content is provided.</p>
+<p>
+
+<div>
+  <plnkr-opener example-path="examples/example-example95"></plnkr-opener>
+
+  <div class="runnable-example"
+      path="examples/example-example95"
+      module="transcludeFallbackContentExample">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;script&gt;&#10;angular.module(&#39;transcludeFallbackContentExample&#39;, [])&#10;.directive(&#39;myButton&#39;, function(){&#10;            return {&#10;              restrict: &#39;E&#39;,&#10;              transclude: true,&#10;              scope: true,&#10;              template: &#39;&lt;button style=&quot;cursor: pointer;&quot;&gt;&#39; +&#10;                          &#39;&lt;ng-transclude&gt;&#39; +&#10;                            &#39;&lt;b style=&quot;color: red;&quot;&gt;Button1&lt;/b&gt;&#39; +&#10;                          &#39;&lt;/ng-transclude&gt;&#39; +&#10;                        &#39;&lt;/button&gt;&#39;&#10;            };&#10;        });&#10;&lt;/script&gt;&#10;&lt;!-- fallback button content --&gt;&#10;&lt;my-button id=&quot;fallback&quot;&gt;&lt;/my-button&gt;&#10;&lt;!-- modified button content --&gt;&#10;&lt;my-button id=&quot;modified&quot;&gt;&#10;  &lt;i style=&quot;color: green;&quot;&gt;Button2&lt;/i&gt;&#10;&lt;/my-button&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="protractor.js"
+      type="protractor"
+      language="js">
+      <pre><code>it(&#39;should have different transclude element content&#39;, function() {&#10;  expect(element(by.id(&#39;fallback&#39;)).getText()).toBe(&#39;Button1&#39;);&#10;  expect(element(by.id(&#39;modified&#39;)).getText()).toBe(&#39;Button2&#39;);&#10;});</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-example95/index.html" name="example-example95"></iframe>
+  </div>
+</div>
+
+
+</p>
+<h3 id="multi-slot-transclusion">Multi-slot transclusion</h3>
+<p>This example demonstrates using multi-slot transclusion in a component directive.
+
+
+<div>
+  <plnkr-opener example-path="examples/example-multiSlotTranscludeExample"></plnkr-opener>
+
+  <div class="runnable-example"
+      path="examples/example-multiSlotTranscludeExample"
+      name="multiSlotTranscludeExample"
+      module="multiSlotTranscludeExample">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;style&gt;&#10;  .title, .footer {&#10;    background-color: gray&#10;  }&#10;&lt;/style&gt;&#10;&lt;div ng-controller=&quot;ExampleController&quot;&gt;&#10;  &lt;input ng-model=&quot;title&quot; aria-label=&quot;title&quot;&gt; &lt;br/&gt;&#10;  &lt;textarea ng-model=&quot;text&quot; aria-label=&quot;text&quot;&gt;&lt;/textarea&gt; &lt;br/&gt;&#10;  &lt;pane&gt;&#10;    &lt;pane-title&gt;&lt;a ng-href=&quot;{{link}}&quot;&gt;{{title}}&lt;/a&gt;&lt;/pane-title&gt;&#10;    &lt;pane-body&gt;&lt;p&gt;{{text}}&lt;/p&gt;&lt;/pane-body&gt;&#10;  &lt;/pane&gt;&#10;&lt;/div&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="app.js"
+      language="js"
+      type="js">
+      <pre><code>angular.module(&#39;multiSlotTranscludeExample&#39;, [])&#10; .directive(&#39;pane&#39;, function(){&#10;    return {&#10;      restrict: &#39;E&#39;,&#10;      transclude: {&#10;        &#39;title&#39;: &#39;?paneTitle&#39;,&#10;        &#39;body&#39;: &#39;paneBody&#39;,&#10;        &#39;footer&#39;: &#39;?paneFooter&#39;&#10;      },&#10;      template: &#39;&lt;div style=&quot;border: 1px solid black;&quot;&gt;&#39; +&#10;                  &#39;&lt;div class=&quot;title&quot; ng-transclude=&quot;title&quot;&gt;Fallback Title&lt;/div&gt;&#39; +&#10;                  &#39;&lt;div ng-transclude=&quot;body&quot;&gt;&lt;/div&gt;&#39; +&#10;                  &#39;&lt;div class=&quot;footer&quot; ng-transclude=&quot;footer&quot;&gt;Fallback Footer&lt;/div&gt;&#39; +&#10;                &#39;&lt;/div&gt;&#39;&#10;    };&#10;})&#10;.controller(&#39;ExampleController&#39;, [&#39;$scope&#39;, function($scope) {&#10;  $scope.title = &#39;Lorem Ipsum&#39;;&#10;  $scope.link = &quot;https://google.com&quot;;&#10;  $scope.text = &#39;Neque porro quisquam est qui dolorem ipsum quia dolor...&#39;;&#10;}]);</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="protractor.js"
+      type="protractor"
+      language="js">
+      <pre><code>it(&#39;should have transcluded the title and the body&#39;, function() {&#10;  var titleElement = element(by.model(&#39;title&#39;));&#10;  titleElement.clear();&#10;  titleElement.sendKeys(&#39;TITLE&#39;);&#10;  var textElement = element(by.model(&#39;text&#39;));&#10;  textElement.clear();&#10;  textElement.sendKeys(&#39;TEXT&#39;);&#10;  expect(element(by.css(&#39;.title&#39;)).getText()).toEqual(&#39;TITLE&#39;);&#10;  expect(element(by.binding(&#39;text&#39;)).getText()).toEqual(&#39;TEXT&#39;);&#10;  expect(element(by.css(&#39;.footer&#39;)).getText()).toEqual(&#39;Fallback Footer&#39;);&#10;});</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-multiSlotTranscludeExample/index.html" name="example-multiSlotTranscludeExample"></iframe>
   </div>
 </div>
 

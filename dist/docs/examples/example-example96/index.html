@@ -6,15 +6,16 @@
   
 
   <script src="../../../angular.min.js"></script>
-  <script src="script.js"></script>
   
 
   
 </head>
-<body ng-app="documentExample">
-  <div ng-controller="ExampleController">
-  <p>$document title: <b ng-bind="title"></b></p>
-  <p>window.document title: <b ng-bind="windowTitle"></b></p>
-</div>
+<body ng-app="">
+  <script type="text/ng-template" id="/tpl.html">
+  Content of the template.
+</script>
+
+<a ng-click="currentTpl='/tpl.html'" id="tpl-link">Load inlined template</a>
+<div id="tpl-content" ng-include src="currentTpl"></div>
 </body>
 </html>

@@ -12,7 +12,7 @@
   
 </head>
 <body ng-app="">
-  Check me to make text readonly: <input type="checkbox" ng-model="checked"><br/>
-<input type="text" ng-readonly="checked" value="I'm Angular"/>
+  <label>Click me to toggle: <input type="checkbox" ng-model="checked"></label><br/>
+<button ng-model="button" ng-disabled="checked">Button</button>
 </body>
 </html>

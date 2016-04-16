@@ -21,8 +21,7 @@
       <tr>
         <td><a href="api/ng/provider/$animateProvider">$animateProvider</a></td>
         <td><p>Default implementation of $animate that doesn&#39;t perform any animations, instead just
-synchronously performs DOM
-updates and calls done() callbacks.</p>
+synchronously performs DOM updates and resolves the returned runner promise.</p>
 </td>
       </tr>
       
@@ -98,6 +97,12 @@ that the URLs used for sourcing Angular templates are safe.  Refer <a href="api/
 <li>enable/disable Strict Contextual Escaping (SCE) in a module</li>
 <li>override the default implementation with a custom delegate</li>
 </ul>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/provider/$templateRequestProvider">$templateRequestProvider</a></td>
+        <td><p>Used to configure the options passed to the <a href="api/ng/service/$http"><code>$http</code></a> service when making a template request.</p>
 </td>
       </tr>
       

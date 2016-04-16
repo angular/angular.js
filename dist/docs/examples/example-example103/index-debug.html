@@ -10,36 +10,34 @@
 
   
 </head>
-<body ng-app="orderByExample">
+<body ng-app="limitToExample">
   <script>
-  angular.module('orderByExample', [])
+  angular.module('limitToExample', [])
     .controller('ExampleController', ['$scope', function($scope) {
-      $scope.friends =
-          [{name:'John', phone:'555-1212', age:10},
-           {name:'Mary', phone:'555-9876', age:19},
-           {name:'Mike', phone:'555-4321', age:21},
-           {name:'Adam', phone:'555-5678', age:35},
-           {name:'Julie', phone:'555-8765', age:29}];
-      $scope.predicate = '-age';
+      $scope.numbers = [1,2,3,4,5,6,7,8,9];
+      $scope.letters = "abcdefghi";
+      $scope.longNumber = 2345432342;
+      $scope.numLimit = 3;
+      $scope.letterLimit = 3;
+      $scope.longNumberLimit = 3;
     }]);
 </script>
 <div ng-controller="ExampleController">
-  <pre>Sorting predicate = {{predicate}}; reverse = {{reverse}}</pre>
-  <hr/>
-  [ <a href="" ng-click="predicate=''">unsorted</a> ]
-  <table class="friend">
-    <tr>
-      <th><a href="" ng-click="predicate = 'name'; reverse=false">Name</a>
-          (<a href="" ng-click="predicate = '-name'; reverse=false">^</a>)</th>
-      <th><a href="" ng-click="predicate = 'phone'; reverse=!reverse">Phone Number</a></th>
-      <th><a href="" ng-click="predicate = 'age'; reverse=!reverse">Age</a></th>
-    </tr>
-    <tr ng-repeat="friend in friends | orderBy:predicate:reverse">
-      <td>{{friend.name}}</td>
-      <td>{{friend.phone}}</td>
-      <td>{{friend.age}}</td>
-    </tr>
-  </table>
+  <label>
+     Limit {{numbers}} to:
+     <input type="number" step="1" ng-model="numLimit">
+  </label>
+  <p>Output numbers: {{ numbers | limitTo:numLimit }}</p>
+  <label>
+     Limit {{letters}} to:
+     <input type="number" step="1" ng-model="letterLimit">
+  </label>
+  <p>Output letters: {{ letters | limitTo:letterLimit }}</p>
+  <label>
+     Limit {{longNumber}} to:
+     <input type="number" step="1" ng-model="longNumberLimit">
+  </label>
+  <p>Output long number: {{ longNumber | limitTo:longNumberLimit }}</p>
 </div>
 </body>
 </html>

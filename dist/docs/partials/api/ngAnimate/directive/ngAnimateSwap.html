@@ -1,0 +1,129 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ngAnimate/ngAnimateSwap.js?message=docs(ngAnimateSwap)%3A%20describe%20your%20change...#L3' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ngAnimate/ngAnimateSwap.js#L3' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">ngAnimateSwap</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - directive in module <a href="api/ngAnimate">ngAnimate</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>ngAnimateSwap is a animation-oriented directive that allows for the container to
+be removed and entered in whenever the associated expression changes. A
+common usecase for this directive is a rotating banner or slider component which
+contains one image being present at a time. When the active image changes
+then the old image will perform a <code>leave</code> animation and the new element
+will be inserted via an <code>enter</code> animation.</p>
+
+</div>
+
+
+
+
+
+
+<div>
+  
+
+  
+  <h2>Directive Info</h2>
+  <ul>
+    <li>This directive creates new scope.</li>
+    <li>This directive executes at priority level 0.</li>
+    
+  </ul>
+
+  
+  <h2 id="usage">Usage</h2>
+  <div class="usage">
+  
+    <ul>
+    <li>as attribute:
+        <pre><code>&lt;ANY&gt;&#10;...&#10;&lt;/ANY&gt;</code></pre>
+      </li>
+    
+  </div>
+  
+  <h2 id="animations">Animations</h2>
+  <table>
+<thead>
+<tr>
+<th>Animation</th>
+<th>Occurs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="api/ng/service/$animate#enter">enter</a></td>
+<td>when the new element is inserted to the DOM</td>
+</tr>
+<tr>
+<td><a href="api/ng/service/$animate#leave">leave</a></td>
+<td>when the old element is removed from the DOM</td>
+</tr>
+</tbody>
+</table>
+
+  <a href="api/ngAnimate/service/$animate">Click here</a> to learn more about the steps involved in the animation.
+  
+
+
+  
+  <h2 id="example">Example</h2><p>
+
+<div>
+  <plnkr-opener example-path="examples/example-ngAnimateSwap-directive"></plnkr-opener>
+
+  <div class="runnable-example"
+      path="examples/example-ngAnimateSwap-directive"
+      name="ngAnimateSwap-directive"
+      module="ngAnimateSwapExample"
+      deps="angular-animate.js"
+      animations="true"
+      fixBase="true">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;div class=&quot;container&quot; ng-controller=&quot;AppCtrl&quot;&gt;&#10;  &lt;div ng-animate-swap=&quot;number&quot; class=&quot;cell swap-animation&quot; ng-class=&quot;colorClass(number)&quot;&gt;&#10;    {{ number }}&#10;  &lt;/div&gt;&#10;&lt;/div&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="script.js"
+      language="js"
+      type="js">
+      <pre><code>angular.module(&#39;ngAnimateSwapExample&#39;, [&#39;ngAnimate&#39;])&#10;.controller(&#39;AppCtrl&#39;, [&#39;$scope&#39;, &#39;$interval&#39;, function($scope, $interval) {&#10;  $scope.number = 0;&#10;  $interval(function() {&#10;    $scope.number++;&#10;  }, 1000);&#10;&#10;  var colors = [&#39;red&#39;,&#39;blue&#39;,&#39;green&#39;,&#39;yellow&#39;,&#39;orange&#39;];&#10;  $scope.colorClass = function(number) {&#10;    return colors[number % colors.length];&#10;  };&#10;}]);</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="animations.css"
+      language="css"
+      type="css">
+      <pre><code>.container {&#10;  height:250px;&#10;  width:250px;&#10;  position:relative;&#10;  overflow:hidden;&#10;  border:2px solid black;&#10;}&#10;.container .cell {&#10;  font-size:150px;&#10;  text-align:center;&#10;  line-height:250px;&#10;  position:absolute;&#10;  top:0;&#10;  left:0;&#10;  right:0;&#10;  border-bottom:2px solid black;&#10;}&#10;.swap-animation.ng-enter, .swap-animation.ng-leave {&#10;  transition:0.5s linear all;&#10;}&#10;.swap-animation.ng-enter {&#10;  top:-250px;&#10;}&#10;.swap-animation.ng-enter-active {&#10;  top:0px;&#10;}&#10;.swap-animation.ng-leave {&#10;  top:0px;&#10;}&#10;.swap-animation.ng-leave-active {&#10;  top:250px;&#10;}&#10;.red { background:red; }&#10;.green { background:green; }&#10;.blue { background:blue; }&#10;.yellow { background:yellow; }&#10;.orange { background:orange; }</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-ngAnimateSwap-directive/index.html" name="example-ngAnimateSwap-directive"></iframe>
+  </div>
+</div>
+
+
+</p>
+
+</div>
+
+

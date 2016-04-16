@@ -5,7 +5,7 @@
   <title>Example - example-checkbox-input-directive-production</title>
   
 
-  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/null/angular.min.js"></script>
   
 
   
@@ -21,9 +21,13 @@
     }]);
 </script>
 <form name="myForm" ng-controller="ExampleController">
-  Value1: <input type="checkbox" ng-model="checkboxModel.value1"> <br/>
-  Value2: <input type="checkbox" ng-model="checkboxModel.value2"
-                 ng-true-value="'YES'" ng-false-value="'NO'"> <br/>
+  <label>Value1:
+    <input type="checkbox" ng-model="checkboxModel.value1">
+  </label><br/>
+  <label>Value2:
+    <input type="checkbox" ng-model="checkboxModel.value2"
+           ng-true-value="'YES'" ng-false-value="'NO'">
+   </label><br/>
   <tt>value1 = {{checkboxModel.value1}}</tt><br/>
   <tt>value2 = {{checkboxModel.value2}}</tt><br/>
  </form>

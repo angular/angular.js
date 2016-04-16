@@ -1,0 +1,12 @@
+{
+  "name": "example-componentRouter",
+  "files": [
+    "index-production.html",
+    "app.js",
+    "heroes.js",
+    "crisis.js",
+    "crisisDetail.html",
+    "dialog.js",
+    "styles.css"
+  ]
+}

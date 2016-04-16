@@ -13,18 +13,26 @@
       
       <tr>
         <td><a href="api/ng/service/$anchorScroll">$anchorScroll</a></td>
-        <td><p>When called, it checks the current value of <a href="api/ng/service/$location#hash">$location.hash()</a> and
-scrolls to the related element, according to the rules specified in the
-<a href="http://dev.w3.org/html5/spec/Overview.html#the-indicated-part-of-the-document">Html5 spec</a>.</p>
+        <td><p>When called, it scrolls to the element related to the specified <code>hash</code> or (if omitted) to the
+current value of <a href="api/ng/service/$location#hash">$location.hash()</a>, according to the rules specified
+in the
+<a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#the-indicated-part-of-the-document">HTML5 spec</a>.</p>
 </td>
       </tr>
       
       <tr>
         <td><a href="api/ng/service/$animate">$animate</a></td>
-        <td><p>The $animate service provides rudimentary DOM manipulation functions to
-insert, remove and move elements within the DOM, as well as adding and removing classes.
-This service is the core service used by the ngAnimate $animator service which provides
-high-level animation hooks for CSS and JavaScript.</p>
+        <td><p>The $animate service exposes a series of DOM utility methods that provide support
+for animation hooks. The default behavior is the application of DOM operations, however,
+when an animation is detected (and animations are enabled), $animate will do the heavy lifting
+to ensure that animation runs with the triggered DOM operation.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/service/$animateCss">$animateCss</a></td>
+        <td><p>This is the core version of <code>$animateCss</code>. By default, only when the <code>ngAnimate</code> is included,
+then the <code>$animateCss</code> service will actually perform animations.</p>
 </td>
       </tr>
       
@@ -77,10 +85,31 @@ the browser console.</p>
       </tr>
       
       <tr>
+        <td><a href="api/ng/service/$httpParamSerializer">$httpParamSerializer</a></td>
+        <td><p>Default <a href="api/ng/service/$http"><code>$http</code></a> params serializer that converts objects to strings
+according to the following rules:</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/service/$httpParamSerializerJQLike">$httpParamSerializerJQLike</a></td>
+        <td><p>Alternative <a href="api/ng/service/$http"><code>$http</code></a> params serializer that follows
+jQuery&#39;s <a href="http://api.jquery.com/jquery.param/"><code>param()</code></a> method logic.
+The serializer will also sort the params alphabetically.</p>
+</td>
+      </tr>
+      
+      <tr>
         <td><a href="api/ng/service/$http">$http</a></td>
         <td><p>The <code>$http</code> service is a core Angular service that facilitates communication with the remote
 HTTP servers via the browser&#39;s <a href="https://developer.mozilla.org/en/xmlhttprequest">XMLHttpRequest</a>
 object or via <a href="http://en.wikipedia.org/wiki/JSONP">JSONP</a>.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/service/$xhrFactory">$xhrFactory</a></td>
+        <td><p>Factory function used to create XMLHttpRequest objects.</p>
 </td>
       </tr>
       
@@ -157,7 +186,7 @@ published, and can be retrieved using <code>$rootElement.injector()</code>.</p>
         <td><p>Every application has a single root <a href="api/ng/type/$rootScope.Scope">scope</a>.
 All other scopes are descendant scopes of the root scope. Scopes provide separation
 between the model and the view, via a mechanism for watching the model for changes.
-They also provide an event emission/broadcast and subscription facility. See the
+They also provide event emission/broadcast and subscription facility. See the
 <a href="guide/scope">developer guide on scopes</a>.</p>
 </td>
       </tr>
@@ -177,10 +206,12 @@ Contextual Escaping (SCE)</a> services to AngularJS.</p>
       
       <tr>
         <td><a href="api/ng/service/$templateRequest">$templateRequest</a></td>
-        <td><p>The <code>$templateRequest</code> service downloads the provided template using <code>$http</code> and, upon success,
-stores the contents inside of <code>$templateCache</code>. If the HTTP request fails or the response data
-of the HTTP request is empty, a <code>$compile</code> error will be thrown (the exception can be thwarted
-by setting the 2nd parameter of the function to true).</p>
+        <td><p>The <code>$templateRequest</code> service runs security checks then downloads the provided template using
+<code>$http</code> and, upon success, stores the contents inside of <code>$templateCache</code>. If the HTTP request
+fails or the response data of the HTTP request is empty, a <code>$compile</code> error will be thrown (the
+exception can be thwarted by setting the 2nd parameter of the function to true). Note that the
+contents of <code>$templateCache</code> are trusted, so the call to <code>$sce.getTrustedUrl(tpl)</code> is omitted
+when <code>tpl</code> is of type string and <code>$templateCache</code> has the matching entry.</p>
 </td>
       </tr>
       

@@ -38,6 +38,8 @@ then you can call <code>$timeout</code> without the <code>fn</code> function.</p
 
 
 
+
+
 <div>
   
 
@@ -45,7 +47,7 @@ then you can call <code>$timeout</code> without the <code>fn</code> function.</p
 
   <h2 id="usage">Usage</h2>
     
-      <p><code>$timeout([fn], [delay], [invokeApply]);</code></p>
+      <p><code>$timeout([fn], [delay], [invokeApply], [Pass]);</code></p>
 
 
     
@@ -113,6 +115,22 @@ then you can call <code>$timeout</code> without the <code>fn</code> function.</p
       </td>
     </tr>
     
+    <tr>
+      <td>
+        Pass
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">*</a>
+      </td>
+      <td>
+        <p>additional parameters to the executed function.</p>
+
+        
+      </td>
+    </tr>
+    
   </tbody>
 </table>
 
@@ -122,8 +140,8 @@ then you can call <code>$timeout</code> without the <code>fn</code> function.</p
 <table class="variables-matrix return-arguments">
   <tr>
     <td><a href="" class="label type-hint type-hint-promise">Promise</a></td>
-    <td><p>Promise that will be resolved when the timeout is reached. The value this
-  promise will be resolved with is the return value of the <code>fn</code> function.</p>
+    <td><p>Promise that will be resolved when the timeout is reached. The promise
+  will be resolved with the return value of the <code>fn</code> function.</p>
 </td>
   </tr>
 </table>

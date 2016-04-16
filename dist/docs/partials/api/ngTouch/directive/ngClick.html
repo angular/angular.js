@@ -1,8 +1,8 @@
-<a href='https://github.com/angular/angular.js/edit/master/src/ngTouch/directive/ngClick.js?message=docs(ngClick)%3A%20describe%20your%20change...#L5' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+<a href='https://github.com/angular/angular.js/edit/master/src/ngTouch/directive/ngClick.js?message=docs(ngClick)%3A%20describe%20your%20change...#L7' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
 
 
 
-<a href='https://github.com/angular/angular.js/tree/master/src/ngTouch/directive/ngClick.js#L5' class='view-source pull-right btn btn-primary'>
+<a href='https://github.com/angular/angular.js/tree/master/src/ngTouch/directive/ngClick.js#L7' class='view-source pull-right btn btn-primary'>
   <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
 </a>
 
@@ -20,7 +20,15 @@
 
 
 <div class="api-profile-description">
-  <p>A more powerful replacement for the default ngClick designed to be used on touchscreen
+  <p><div class="alert alert-danger">
+<strong>DEPRECATION NOTICE</strong>: Beginning with Angular 1.5, this directive is deprecated and by default <strong>disabled</strong>.
+The directive will receive no further support and might be removed from future releases.
+If you need the directive, you can enable it with the <a href="api/ngTouch/provider/$touchProvider">$touchProvider#ngClickOverrideEnabled</a>
+function. We also recommend that you migrate to <a href="https://github.com/ftlabs/fastclick">FastClick</a>.
+To learn more about the 300ms delay, this <a href="http://developer.telerik.com/featured/300-ms-click-delay-ios-8/">Telerik article</a>
+gives a good overview.
+</div>
+A more powerful replacement for the default ngClick designed to be used on touchscreen
 devices. Most mobile browsers wait about 300ms after a tap-and-release before sending
 the click event. This version handles them immediately, and then prevents the
 following click event from propagating.</p>
@@ -35,6 +43,8 @@ down (by a mouse click or touch) so you can restyle the depressed element if you
 
 
 
+
+
 <div>
   
 
@@ -43,6 +53,7 @@ down (by a mouse click or touch) so you can restyle the depressed element if you
   <ul>
     
     <li>This directive executes at priority level 0.</li>
+    
   </ul>
 
   
@@ -51,7 +62,7 @@ down (by a mouse click or touch) so you can restyle the depressed element if you
   
     <ul>
     <li>as attribute:
-        <pre><code>&lt;ANY&#10;  ng-click=&quot;&quot;&gt;&#10;...&#10;&lt;/ANY&gt;</code></pre>
+        <pre><code>&lt;ANY&#10;  ng-click=&quot;expression&quot;&gt;&#10;...&#10;&lt;/ANY&gt;</code></pre>
       </li>
     
   </div>
@@ -97,12 +108,10 @@ upon tap. (Event object is available as <code>$event</code>)</p>
   <h2 id="example">Example</h2><p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-example114', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-example115"></plnkr-opener>
 
   <div class="runnable-example"
-      path="examples/example-example114"
+      path="examples/example-example115"
       module="ngClickExample"
       deps="angular-touch.js">
 
@@ -122,7 +131,7 @@ upon tap. (Event object is available as <code>$event</code>)</p>
     </div>
   
 
-    <iframe class="runnable-example-frame" src="examples/example-example114/index.html" name="example-example114"></iframe>
+    <iframe class="runnable-example-frame" src="examples/example-example115/index.html" name="example-example115"></iframe>
   </div>
 </div>
 

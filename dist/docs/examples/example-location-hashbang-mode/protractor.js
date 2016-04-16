@@ -39,4 +39,4 @@ it("should change $location accordingly", function(){
   expect(element(by.binding('$location.search()')).getText()).toBe('{"flag":true}');
   expect(element(by.binding('$location.hash()')).getText()).toBe('hash');
 
-});
+});

@@ -2,7 +2,7 @@
 
 
 <h1 id="what-are-scopes-">What are Scopes?</h1>
-<p><a href="api/ng/type/$rootScope.Scope">scope</a> is an object that refers to the application
+<p><a href="api/ng/type/$rootScope.Scope">Scope</a> is an object that refers to the application
 model. It is an execution context for <a href="guide/expression">expressions</a>. Scopes are
 arranged in hierarchical structure which mimic the DOM structure of the application. Scopes can
 watch <a href="guide/expression">expressions</a> and propagate events.</p>
@@ -38,12 +38,10 @@ the applications.</p>
 <p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-example41', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-example43"></plnkr-opener>
 
   <div class="runnable-example"
-      path="examples/example-example41"
+      path="examples/example-example43"
       module="scopeExample">
 
   
@@ -51,18 +49,18 @@ the applications.</p>
       name="script.js"
       language="js"
       type="js">
-      <pre><code>angular.module(&#39;scopeExample&#39;, [])&#10;.controller(&#39;MyController&#39;, [&#39;$scope&#39;, function($scope) {&#10;  $scope.username = &#39;World&#39;;&#10;&#10;  $scope.sayHello = function() {&#10;    $scope.greeting = &#39;Hello &#39; + $scope.username + &#39;!&#39;;&#10;  };&#10;}]);</code></pre>
+      <pre><code>angular.module(&#39;scopeExample&#39;, [])&#13;&#10;.controller(&#39;MyController&#39;, [&#39;$scope&#39;, function($scope) {&#13;&#10;  $scope.username = &#39;World&#39;;&#13;&#10;&#10;  $scope.sayHello = function() {&#13;&#10;    $scope.greeting = &#39;Hello &#39; + $scope.username + &#39;!&#39;;&#13;&#10;  };&#13;&#10;}]);&#13;</code></pre>
     </div>
   
     <div class="runnable-example-file" 
       name="index.html"
       language="html"
       type="html">
-      <pre><code>&lt;div ng-controller=&quot;MyController&quot;&gt;&#10;  Your name:&#10;    &lt;input type=&quot;text&quot; ng-model=&quot;username&quot;&gt;&#10;    &lt;button ng-click=&#39;sayHello()&#39;&gt;greet&lt;/button&gt;&#10;  &lt;hr&gt;&#10;  {{greeting}}&#10;&lt;/div&gt;</code></pre>
+      <pre><code>&lt;div ng-controller=&quot;MyController&quot;&gt;&#13;&#10;  Your name:&#13;&#10;    &lt;input type=&quot;text&quot; ng-model=&quot;username&quot;&gt;&#13;&#10;    &lt;button ng-click=&#39;sayHello()&#39;&gt;greet&lt;/button&gt;&#13;&#10;  &lt;hr&gt;&#13;&#10;  {{greeting}}&#13;&#10;&lt;/div&gt;&#13;</code></pre>
     </div>
   
 
-    <iframe class="runnable-example-frame" src="examples/example-example41/index.html" name="example-example41"></iframe>
+    <iframe class="runnable-example-frame" src="examples/example-example43/index.html" name="example-example43"></iframe>
   </div>
 </div>
 
@@ -118,12 +116,10 @@ a diagram depicting the scope boundaries.</p>
 <p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-example42', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-example44"></plnkr-opener>
 
   <div class="runnable-example"
-      path="examples/example-example42"
+      path="examples/example-example44"
       module="scopeExample">
 
   
@@ -131,25 +127,25 @@ a diagram depicting the scope boundaries.</p>
       name="index.html"
       language="html"
       type="html">
-      <pre><code>&lt;div class=&quot;show-scope-demo&quot;&gt;&#10;  &lt;div ng-controller=&quot;GreetController&quot;&gt;&#10;    Hello {{name}}!&#10;  &lt;/div&gt;&#10;  &lt;div ng-controller=&quot;ListController&quot;&gt;&#10;    &lt;ol&gt;&#10;      &lt;li ng-repeat=&quot;name in names&quot;&gt;{{name}} from {{department}}&lt;/li&gt;&#10;    &lt;/ol&gt;&#10;  &lt;/div&gt;&#10;&lt;/div&gt;</code></pre>
+      <pre><code>&lt;div class=&quot;show-scope-demo&quot;&gt;&#13;&#10;  &lt;div ng-controller=&quot;GreetController&quot;&gt;&#13;&#10;    Hello {{name}}!&#13;&#10;  &lt;/div&gt;&#13;&#10;  &lt;div ng-controller=&quot;ListController&quot;&gt;&#13;&#10;    &lt;ol&gt;&#13;&#10;      &lt;li ng-repeat=&quot;name in names&quot;&gt;{{name}} from {{department}}&lt;/li&gt;&#13;&#10;    &lt;/ol&gt;&#13;&#10;  &lt;/div&gt;&#13;&#10;&lt;/div&gt;&#13;</code></pre>
     </div>
   
     <div class="runnable-example-file" 
       name="script.js"
       language="js"
       type="js">
-      <pre><code>angular.module(&#39;scopeExample&#39;, [])&#10;.controller(&#39;GreetController&#39;, [&#39;$scope&#39;, &#39;$rootScope&#39;, function($scope, $rootScope) {&#10;  $scope.name = &#39;World&#39;;&#10;  $rootScope.department = &#39;Angular&#39;;&#10;}])&#10;.controller(&#39;ListController&#39;, [&#39;$scope&#39;, function($scope) {&#10;  $scope.names = [&#39;Igor&#39;, &#39;Misko&#39;, &#39;Vojta&#39;];&#10;}]);</code></pre>
+      <pre><code>angular.module(&#39;scopeExample&#39;, [])&#13;&#10;.controller(&#39;GreetController&#39;, [&#39;$scope&#39;, &#39;$rootScope&#39;, function($scope, $rootScope) {&#13;&#10;  $scope.name = &#39;World&#39;;&#13;&#10;  $rootScope.department = &#39;Angular&#39;;&#13;&#10;}])&#13;&#10;.controller(&#39;ListController&#39;, [&#39;$scope&#39;, function($scope) {&#13;&#10;  $scope.names = [&#39;Igor&#39;, &#39;Misko&#39;, &#39;Vojta&#39;];&#13;&#10;}]);&#13;</code></pre>
     </div>
   
     <div class="runnable-example-file" 
       name="style.css"
       language="css"
       type="css">
-      <pre><code>.show-scope-demo.ng-scope,&#10;.show-scope-demo .ng-scope  {&#10;  border: 1px solid red;&#10;  margin: 3px;&#10;}</code></pre>
+      <pre><code>.show-scope-demo.ng-scope,&#13;&#10;.show-scope-demo .ng-scope  {&#13;&#10;  border: 1px solid red;&#13;&#10;  margin: 3px;&#13;&#10;}&#13;</code></pre>
     </div>
   
 
-    <iframe class="runnable-example-frame" src="examples/example-example42/index.html" name="example-example42"></iframe>
+    <iframe class="runnable-example-frame" src="examples/example-example44/index.html" name="example-example44"></iframe>
   </div>
 </div>
 
@@ -185,12 +181,10 @@ variable.</p>
 <p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-example43', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-example45"></plnkr-opener>
 
   <div class="runnable-example"
-      path="examples/example-example43"
+      path="examples/example-example45"
       module="eventExample">
 
   
@@ -198,18 +192,18 @@ variable.</p>
       name="script.js"
       language="js"
       type="js">
-      <pre><code>angular.module(&#39;eventExample&#39;, [])&#10;.controller(&#39;EventController&#39;, [&#39;$scope&#39;, function($scope) {&#10;  $scope.count = 0;&#10;  $scope.$on(&#39;MyEvent&#39;, function() {&#10;    $scope.count++;&#10;  });&#10;}]);</code></pre>
+      <pre><code>angular.module(&#39;eventExample&#39;, [])&#13;&#10;.controller(&#39;EventController&#39;, [&#39;$scope&#39;, function($scope) {&#13;&#10;  $scope.count = 0;&#13;&#10;  $scope.$on(&#39;MyEvent&#39;, function() {&#13;&#10;    $scope.count++;&#13;&#10;  });&#13;&#10;}]);&#13;</code></pre>
     </div>
   
     <div class="runnable-example-file" 
       name="index.html"
       language="html"
       type="html">
-      <pre><code>&lt;div ng-controller=&quot;EventController&quot;&gt;&#10;  Root scope &lt;tt&gt;MyEvent&lt;/tt&gt; count: {{count}}&#10;  &lt;ul&gt;&#10;    &lt;li ng-repeat=&quot;i in [1]&quot; ng-controller=&quot;EventController&quot;&gt;&#10;      &lt;button ng-click=&quot;$emit(&#39;MyEvent&#39;)&quot;&gt;$emit(&#39;MyEvent&#39;)&lt;/button&gt;&#10;      &lt;button ng-click=&quot;$broadcast(&#39;MyEvent&#39;)&quot;&gt;$broadcast(&#39;MyEvent&#39;)&lt;/button&gt;&#10;      &lt;br&gt;&#10;      Middle scope &lt;tt&gt;MyEvent&lt;/tt&gt; count: {{count}}&#10;      &lt;ul&gt;&#10;        &lt;li ng-repeat=&quot;item in [1, 2]&quot; ng-controller=&quot;EventController&quot;&gt;&#10;          Leaf scope &lt;tt&gt;MyEvent&lt;/tt&gt; count: {{count}}&#10;        &lt;/li&gt;&#10;      &lt;/ul&gt;&#10;    &lt;/li&gt;&#10;  &lt;/ul&gt;&#10;&lt;/div&gt;</code></pre>
+      <pre><code>&lt;div ng-controller=&quot;EventController&quot;&gt;&#13;&#10;  Root scope &lt;tt&gt;MyEvent&lt;/tt&gt; count: {{count}}&#13;&#10;  &lt;ul&gt;&#13;&#10;    &lt;li ng-repeat=&quot;i in [1]&quot; ng-controller=&quot;EventController&quot;&gt;&#13;&#10;      &lt;button ng-click=&quot;$emit(&#39;MyEvent&#39;)&quot;&gt;$emit(&#39;MyEvent&#39;)&lt;/button&gt;&#13;&#10;      &lt;button ng-click=&quot;$broadcast(&#39;MyEvent&#39;)&quot;&gt;$broadcast(&#39;MyEvent&#39;)&lt;/button&gt;&#13;&#10;      &lt;br&gt;&#13;&#10;      Middle scope &lt;tt&gt;MyEvent&lt;/tt&gt; count: {{count}}&#13;&#10;      &lt;ul&gt;&#13;&#10;        &lt;li ng-repeat=&quot;item in [1, 2]&quot; ng-controller=&quot;EventController&quot;&gt;&#13;&#10;          Leaf scope &lt;tt&gt;MyEvent&lt;/tt&gt; count: {{count}}&#13;&#10;        &lt;/li&gt;&#13;&#10;      &lt;/ul&gt;&#13;&#10;    &lt;/li&gt;&#13;&#10;  &lt;/ul&gt;&#13;&#10;&lt;/div&gt;&#13;</code></pre>
     </div>
   
 
-    <iframe class="runnable-example-frame" src="examples/example-example43/index.html" name="example-example43"></iframe>
+    <iframe class="runnable-example-frame" src="examples/example-example45/index.html" name="example-example45"></iframe>
   </div>
 </div>
 
@@ -230,7 +224,7 @@ of the <code>$watch</code> expressions and compares them with the previous value
 asynchronously. This means that assignment such as <code>$scope.username=&quot;angular&quot;</code> will not
 immediately cause a <code>$watch</code> to be notified, instead the <code>$watch</code> notification is delayed until
 the <code>$digest</code> phase. This delay is desirable, since it coalesces multiple model updates into one
-<code>$watch</code> notification as well as it guarantees that during the <code>$watch</code> notification no other
+<code>$watch</code> notification as well as guarantees that during the <code>$watch</code> notification no other
 <code>$watch</code>es are running. If a <code>$watch</code> changes the value of the model, it will force additional
 <code>$digest</code> cycle.</p>
 <ol>
@@ -240,11 +234,11 @@ bootstrap by the <a href="api/auto/service/$injector">$injector</a>. During temp
 linking, some directives create new child scopes.</p>
 </li>
 <li><p><strong>Watcher registration</strong></p>
-<p>During template linking directives register <a href="api/ng/type/$rootScope.Scope#$watch">watches</a> on the scope. These watches will be
+<p>During template linking, directives register <a href="api/ng/type/$rootScope.Scope#$watch">watches</a> on the scope. These watches will be
 used to propagate model values to the DOM.</p>
 </li>
 <li><p><strong>Model mutation</strong></p>
-<p>For mutations to be properly observed, you should make them only within the <a href="api/ng/type/$rootScope.Scope#$apply">scope.$apply()</a>. (Angular APIs do this
+<p>For mutations to be properly observed, you should make them only within the <a href="api/ng/type/$rootScope.Scope#$apply">scope.$apply()</a>. Angular APIs do this
 implicitly, so no extra <code>$apply</code> call is needed when doing synchronous work in controllers,
 or asynchronous work with <a href="api/ng/service/$http">$http</a>, <a href="api/ng/service/$timeout">$timeout</a>
 or <a href="api/ng/service/$interval">$interval</a> services.</p>
@@ -340,7 +334,7 @@ each event.</li>
 <li>The <a href="api/ng/type/$rootScope.Scope#$watch">$watch</a> list is a set of expressions
 which may have changed since last iteration. If a change is detected then the <code>$watch</code>
 function is called which typically updates the DOM with the new value.</li>
-<li>Once the Angular <a href="api/ng/type/$rootScope.Scope#$digest">$digest</a> loop finishes
+<li>Once the Angular <a href="api/ng/type/$rootScope.Scope#$digest">$digest</a> loop finishes, 
 the execution leaves the Angular and JavaScript context. This is followed by the browser
 re-rendering the DOM to reflect any changes.</li>
 </ol>
@@ -366,7 +360,7 @@ on the <code>name</code> property and notifies the <a href="api/ng/service/$inte
 which in turn updates the DOM.</li>
 <li>Angular exits the execution context, which in turn exits the <code>keydown</code> event and with it
 the JavaScript execution context.</li>
-<li>The browser re-renders the view with update text.</li>
+<li>The browser re-renders the view with the updated text.</li>
 </ol>
 </li>
 </ol>

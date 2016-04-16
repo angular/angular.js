@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Example - example-example105-debug</title>
+  <link href="style.css" rel="stylesheet" type="text/css">
   
 
   <script src="../../../angular.js"></script>
@@ -11,26 +12,32 @@
 
   
 </head>
-<body ng-app="httpExample">
-  <div ng-controller="FetchController">
-  <select ng-model="method">
-    <option>GET</option>
-    <option>JSONP</option>
-  </select>
-  <input type="text" ng-model="url" size="80"/>
-  <button id="fetchbtn" ng-click="fetch()">fetch</button><br>
-  <button id="samplegetbtn" ng-click="updateModel('GET', 'http-hello.html')">Sample GET</button>
-  <button id="samplejsonpbtn"
-    ng-click="updateModel('JSONP',
-                  'https://angularjs.org/greet.php?callback=JSON_CALLBACK&name=Super%20Hero')">
-    Sample JSONP
-  </button>
-  <button id="invalidjsonpbtn"
-    ng-click="updateModel('JSONP', 'https://angularjs.org/doesntexist&callback=JSON_CALLBACK')">
-      Invalid JSONP
-    </button>
-  <pre>http status code: {{status}}</pre>
-  <pre>http response data: {{data}}</pre>
+<body ng-app="orderByExample">
+  <div ng-controller="ExampleController">
+  <pre>Sorting predicate = {{predicate}}; reverse = {{reverse}}</pre>
+  <hr/>
+  <button ng-click="predicate=''">Set to unsorted</button>
+  <table class="friend">
+    <tr>
+     <th>
+         <button ng-click="order('name')">Name</button>
+         <span class="sortorder" ng-show="predicate === 'name'" ng-class="{reverse:reverse}"></span>
+     </th>
+     <th>
+         <button ng-click="order('phone')">Phone Number</button>
+         <span class="sortorder" ng-show="predicate === 'phone'" ng-class="{reverse:reverse}"></span>
+     </th>
+     <th>
+         <button ng-click="order('age')">Age</button>
+         <span class="sortorder" ng-show="predicate === 'age'" ng-class="{reverse:reverse}"></span>
+     </th>
+    </tr>
+    <tr ng-repeat="friend in friends | orderBy:predicate:reverse">
+      <td>{{friend.name}}</td>
+      <td>{{friend.phone}}</td>
+      <td>{{friend.age}}</td>
+    </tr>
+  </table>
 </div>
 </body>
 </html>

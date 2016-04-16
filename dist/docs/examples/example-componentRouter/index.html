@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Example - example-componentRouter</title>
+  <link href="styles.css" rel="stylesheet" type="text/css">
+  
+
+  <script src="../../../angular.min.js"></script>
+  <script src="app.js"></script>
+  <script src="heroes.js"></script>
+  <script src="crisis.js"></script>
+  <script src="dialog.js"></script>
+  
+
+  <script type="text/javascript">
+    angular.element(document.getElementsByTagName('head')).append(angular.element('<base href="' + window.location.pathname + '" />'));
+  </script>
+</head>
+<body ng-app="app">
+  <h1 class="title">Component Router</h1>
+<app></app>
+
+<!-- Load up the router library - normally you might use npm and host it locally -->
+<script src="https://npmcdn.com/@angular/router@0.2.0/angular1/angular_1_router.js"></script>
+</body>
+</html>

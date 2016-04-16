@@ -35,6 +35,8 @@
 
 
 
+
+
 <div>
   
 
@@ -142,8 +144,17 @@ instantiated.
 If all the promises are resolved successfully, the values of the resolved promises are
 injected and <a href="api/ngRoute/service/$route#$routeChangeSuccess">$routeChangeSuccess</a> event is
 fired. If any of the promises are rejected the
-<a href="api/ngRoute/service/$route#$routeChangeError">$routeChangeError</a> event is fired. The map object
-is:</p>
+<a href="api/ngRoute/service/$route#$routeChangeError">$routeChangeError</a> event is fired.
+For easier access to the resolved dependencies from the template, the <code>resolve</code> map will
+be available on the scope of the route, under <code>$resolve</code> (by default) or a custom name
+specified by the <code>resolveAs</code> property (see below). This can be particularly useful, when
+working with <a href="api/ng/type/angular.Module#component">components</a> as route templates.<br />
+<div class="alert alert-warning">
+  <strong>Note:</strong> If your scope already contains a property with this name, it will be hidden
+  or overwritten. Make sure, you specify an appropriate name for this property, that
+  does not collide with other properties on the scope.
+</div>
+The map object is:</p>
 <ul>
 <li><code>key</code> – <code>{string}</code>: a name of a dependency to be injected into the controller.</li>
 <li><code>factory</code> - <code>{string|function}</code>: If <code>string</code> then it is an alias for a service.
@@ -154,7 +165,10 @@ resolved before its value is injected into the controller. Be aware that
 functions.  Use <code>$route.current.params</code> to access the new route parameters, instead.</li>
 </ul>
 </li>
-<li><p><code>redirectTo</code> – {(string|function())=} – value to update
+<li><p><code>resolveAs</code> - <code>{string=}</code> - The name under which the <code>resolve</code> map will be available on
+the scope of the route. If omitted, defaults to <code>$resolve</code>.</p>
+</li>
+<li><p><code>redirectTo</code> – <code>{(string|function())=}</code> – value to update
 <a href="api/ng/service/$location">$location</a> path with and trigger route redirection.</p>
 <p>If <code>redirectTo</code> is a function, it will be called with the following parameters:</p>
 <ul>
@@ -166,12 +180,12 @@ functions.  Use <code>$route.current.params</code> to access the new route param
 <p>The custom <code>redirectTo</code> function is expected to return a string which will be used
 to update <code>$location.path()</code> and <code>$location.search()</code>.</p>
 </li>
-<li><p><code>[reloadOnSearch=true]</code> - {boolean=} - reload route when only <code>$location.search()</code>
+<li><p><code>[reloadOnSearch=true]</code> - <code>{boolean=}</code> - reload route when only <code>$location.search()</code>
 or <code>$location.hash()</code> changes.</p>
 <p>If the option is set to <code>false</code> and url in the browser changes, then
 <code>$routeUpdate</code> event is broadcasted on the root scope.</p>
 </li>
-<li><p><code>[caseInsensitiveMatch=false]</code> - {boolean=} - match routes without being case sensitive</p>
+<li><p><code>[caseInsensitiveMatch=false]</code> - <code>{boolean=}</code> - match routes without being case sensitive</p>
 <p>If the option is set to <code>true</code>, then the particular route can be matched without being
 case sensitive</p>
 </li>

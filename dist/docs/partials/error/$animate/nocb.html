@@ -1,0 +1,22 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/error/$animate/nocb.ngdoc?message=docs(error%2Fnocb)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1>Error: $animate:nocb
+  <div><span class='hint'>Do not pass a callback to animate methods</span></div>
+</h1>
+
+<div>
+    <pre class="minerr-errmsg" error-display=""></pre>
+</div>
+
+<h2>Description</h2>
+<div class="description">
+  <p>Since Angular 1.3, the methods of <a href="api/ng/service/$animate"><code>$animate</code></a> do not accept a callback as the last parameter.
+Instead, they return a promise to which you can attach <code>then</code> handlers to be run when the animation completes.</p>
+<p>If you are getting this error then you need to update your code to use the promise-based API.</p>
+<p>See <a href="https://github.com/angular/angular.js/commit/bf0f5502b1bbfddc5cdd2f138efd9188b8c652a9">https://github.com/angular/angular.js/commit/bf0f5502b1bbfddc5cdd2f138efd9188b8c652a9</a> for information about
+the change to the animation API and the changes you need to make.</p>
+
+</div>
+
+

@@ -11,18 +11,33 @@
 
   
 </head>
-<body ng-app="currencyExample">
-  <script>
-  angular.module('currencyExample', [])
-    .controller('ExampleController', ['$scope', function($scope) {
-      $scope.amount = 1234.56;
-    }]);
-</script>
-<div ng-controller="ExampleController">
-  <input type="number" ng-model="amount"> <br>
-  default currency symbol ($): <span id="currency-default">{{amount | currency}}</span><br>
-  custom currency identifier (USD$): <span id="currency-custom">{{amount | currency:"USD$"}}</span>
-  no fractions (0): <span id="currency-no-fractions">{{amount | currency:"USD$":0}}</span>
-</div>
+<body ng-app="">
+  <div ng-init="friends = [{name:'John', phone:'555-1276'},
+                         {name:'Mary', phone:'800-BIG-MARY'},
+                         {name:'Mike', phone:'555-4321'},
+                         {name:'Adam', phone:'555-5678'},
+                         {name:'Julie', phone:'555-8765'},
+                         {name:'Juliette', phone:'555-5678'}]"></div>
+
+<label>Search: <input ng-model="searchText"></label>
+<table id="searchTextResults">
+  <tr><th>Name</th><th>Phone</th></tr>
+  <tr ng-repeat="friend in friends | filter:searchText">
+    <td>{{friend.name}}</td>
+    <td>{{friend.phone}}</td>
+  </tr>
+</table>
+<hr>
+<label>Any: <input ng-model="search.$"></label> <br>
+<label>Name only <input ng-model="search.name"></label><br>
+<label>Phone only <input ng-model="search.phone"></label><br>
+<label>Equality <input type="checkbox" ng-model="strict"></label><br>
+<table id="searchObjResults">
+  <tr><th>Name</th><th>Phone</th></tr>
+  <tr ng-repeat="friendObj in friends | filter:search:strict">
+    <td>{{friendObj.name}}</td>
+    <td>{{friendObj.phone}}</td>
+  </tr>
+</table>
 </body>
 </html>

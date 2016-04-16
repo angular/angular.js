@@ -1,5 +1,5 @@
-it('should select Greetings!', function() {
-  expect(element(by.id('greet')).getAttribute('selected')).toBeFalsy();
-  element(by.model('selected')).click();
-  expect(element(by.id('greet')).getAttribute('selected')).toBeTruthy();
+it('should check both checkBoxes', function() {
+  expect(element(by.id('checkSlave')).getAttribute('checked')).toBeFalsy();
+  element(by.model('master')).click();
+  expect(element(by.id('checkSlave')).getAttribute('checked')).toBeTruthy();
 });

@@ -1,0 +1,27 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/error/$interpolate/nochgmustache.ngdoc?message=docs(error%2Fnochgmustache)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1>Error: $interpolate:nochgmustache
+  <div><span class='hint'>Redefinition of start/endSymbol incompatible with MessageFormat extensions</span></div>
+</h1>
+
+<div>
+    <pre class="minerr-errmsg" error-display="angular-message-format.js currently does not allow you to use custom start and end symbols for interpolation.">angular-message-format.js currently does not allow you to use custom start and end symbols for interpolation.</pre>
+</div>
+
+<h2>Description</h2>
+<div class="description">
+  <p>You have redefined <code>$interpolate.startSymbol</code>/<code>$interpolate.endSymbol</code> and also
+loaded the <code>ngMessageFormat</code> module (provided by angular-message-format.min.js)
+while creating your injector.</p>
+<p><code>ngMessageFormat</code> currently does not support redefinition of the
+startSymbol/endSymbol used by <code>$interpolate</code>.  If this is affecting you, please
+file an issue and mention @chirayuk on it.  This is intended to be fixed in a
+future commit and the github issue will help gauge urgency.</p>
+<p>For more information about the MessageFormat syntax in interpolation
+expressions, please refer to MessageFormat extensions section at
+<a href="guide/i18n#MessageFormat">Angular i18n MessageFormat</a></p>
+
+</div>
+
+

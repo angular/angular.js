@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Example - example-ngMessageFormat-example</title>
+  
+
+  <script src="../../../angular.min.js"></script>
+  <script src="../../../angular-message-format.min.js"></script>
+  <script src="script.js"></script>
+  
+
+  
+</head>
+<body ng-app="msgFmtExample">
+  <div ng-controller="AppController">
+  <button ng-click="decreaseRecipients()" id="decreaseRecipients">decreaseRecipients</button><br>
+  <span>{{recipients.length, plural, offset:1
+          =0    {{{sender.name}} gave no gifts (\#=#)}
+          =1    {{{sender.name}} gave one gift to {{recipients[0].name}} (\#=#)}
+          one   {{{sender.name}} gave {{recipients[0].name}} and one other person a gift (\#=#)}
+          other {{{sender.name}} gave {{recipients[0].name}} and # other people a gift (\#=#)}
+        }}</span>
+</div>
+</body>
+</html>

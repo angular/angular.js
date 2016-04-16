@@ -27,6 +27,8 @@
 
 
 
+
+
 <div>
   
 
@@ -35,6 +37,7 @@
   <ul>
     
     <li>This directive executes at priority level 0.</li>
+    
   </ul>
 
   
@@ -43,7 +46,7 @@
   
     <ul>
     <li>as attribute:
-        <pre><code>&lt;ANY&#10;  ng-keyup=&quot;&quot;&gt;&#10;...&#10;&lt;/ANY&gt;</code></pre>
+        <pre><code>&lt;ANY&#10;  ng-keyup=&quot;expression&quot;&gt;&#10;...&#10;&lt;/ANY&gt;</code></pre>
       </li>
     
   </div>
@@ -89,12 +92,10 @@ keyup. (Event object is available as <code>$event</code> and can be interrogated
   <h2 id="example">Example</h2><p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-example76', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-example78"></plnkr-opener>
 
   <div class="runnable-example"
-      path="examples/example-example76">
+      path="examples/example-example78">
 
   
     <div class="runnable-example-file" 
@@ -105,7 +106,7 @@ keyup. (Event object is available as <code>$event</code> and can be interrogated
     </div>
   
 
-    <iframe class="runnable-example-frame" src="examples/example-example76/index.html" name="example-example76"></iframe>
+    <iframe class="runnable-example-frame" src="examples/example-example78/index.html" name="example-example78"></iframe>
   </div>
 </div>
 

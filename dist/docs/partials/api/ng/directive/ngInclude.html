@@ -37,6 +37,8 @@ access on some browsers.</p>
 
 
 
+
+
 <div>
   
 
@@ -45,6 +47,7 @@ access on some browsers.</p>
   <ul>
     <li>This directive creates new scope.</li>
     <li>This directive executes at priority level 400.</li>
+    
   </ul>
 
   
@@ -55,20 +58,36 @@ access on some browsers.</p>
     
       <li>as element:
       (This directive can be used as custom element, but be aware of <a href="guide/ie">IE restrictions</a>).
-      <pre><code>&lt;ng-include&#10;  src=&quot;&quot;&#10;  [onload=&quot;&quot;]&#10;  [autoscroll=&quot;&quot;]&gt;&#10;...&#10;&lt;/ng-include&gt;</code></pre>
+      <pre><code>&lt;ng-include&#10;  src=&quot;string&quot;&#10;  [onload=&quot;string&quot;]&#10;  [autoscroll=&quot;string&quot;]&gt;&#10;...&#10;&lt;/ng-include&gt;</code></pre>
       </li>
     <li>as attribute:
-        <pre><code>&lt;ANY&#10;  ng-include=&quot;&quot;&#10;  [onload=&quot;&quot;]&#10;  [autoscroll=&quot;&quot;]&gt;&#10;...&#10;&lt;/ANY&gt;</code></pre>
+        <pre><code>&lt;ANY&#10;  ng-include=&quot;string&quot;&#10;  [onload=&quot;string&quot;]&#10;  [autoscroll=&quot;string&quot;]&gt;&#10;...&#10;&lt;/ANY&gt;</code></pre>
       </li>
     <li>as CSS class:
-        <pre><code>&lt;ANY class=&quot;ng-include: ; [onload: ;] [autoscroll: ;]&quot;&gt; ... &lt;/ANY&gt;</code></pre>
+        <pre><code>&lt;ANY class=&quot;ng-include: string; [onload: string;] [autoscroll: string;]&quot;&gt; ... &lt;/ANY&gt;</code></pre>
       </li>
     
   </div>
   
   <h2 id="animations">Animations</h2>
-  <p>enter - animation is used to bring new content into the browser.
-leave - animation is used to animate existing content away.</p>
+  <table>
+<thead>
+<tr>
+<th>Animation</th>
+<th>Occurs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="api/ng/service/$animate#enter">enter</a></td>
+<td>when the expression changes, on the new include</td>
+</tr>
+<tr>
+<td><a href="api/ng/service/$animate#leave">leave</a></td>
+<td>when the expression changes, on the old include</td>
+</tr>
+</tbody>
+</table>
 <p>The enter and leave animation occur concurrently.</p>
 
   <a href="api/ngAnimate/service/$animate">Click here</a> to learn more about the steps involved in the animation.
@@ -112,7 +131,13 @@ leave - animation is used to animate existing content away.</p>
         <a href="" class="label type-hint type-hint-string">string</a>
       </td>
       <td>
-        <p>Expression to evaluate when a new partial is loaded.</p>
+        <p>Expression to evaluate when a new partial is loaded.
+                 <div class="alert alert-warning">
+                 <strong>Note:</strong> When using onload on SVG elements in IE11, the browser will try to call
+                 a function with the name on the window element, which will usually throw a
+                 &quot;function is undefined&quot; error. To fix this, you can instead use <code>data-onload</code> or a
+                 different form that <a href="guide/directive#normalization">matches</a> <code>onload</code>.
+                 </div></p>
 
         
       </td>
@@ -157,7 +182,56 @@ leave - animation is used to animate existing content away.</p>
       <h4>Target:</h4>
       <div class="target">the scope ngInclude was declared in</div>
     </div>
-    </li>
+    
+    <section class="api-section">
+      <h3>Parameters</h3>
+      
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        angularEvent
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">Object</a>
+      </td>
+      <td>
+        <p>Synthetic event object.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        src
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">String</a>
+      </td>
+      <td>
+        <p>URL of content to load.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    </section></li>
   
   <li id="$includeContentLoaded">
     <h3>$includeContentLoaded</h3>
@@ -171,7 +245,56 @@ leave - animation is used to animate existing content away.</p>
       <h4>Target:</h4>
       <div class="target">the current ngInclude scope</div>
     </div>
-    </li>
+    
+    <section class="api-section">
+      <h3>Parameters</h3>
+      
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        angularEvent
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">Object</a>
+      </td>
+      <td>
+        <p>Synthetic event object.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        src
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">String</a>
+      </td>
+      <td>
+        <p>URL of content to load.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    </section></li>
   
   <li id="$includeContentError">
     <h3>$includeContentError</h3>
@@ -185,7 +308,56 @@ leave - animation is used to animate existing content away.</p>
       <h4>Target:</h4>
       <div class="target">the scope ngInclude was declared in</div>
     </div>
-    </li>
+    
+    <section class="api-section">
+      <h3>Parameters</h3>
+      
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        angularEvent
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">Object</a>
+      </td>
+      <td>
+        <p>Synthetic event object.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        src
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">String</a>
+      </td>
+      <td>
+        <p>URL of content to load.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    </section></li>
   </ul>
 
 
@@ -194,12 +366,10 @@ leave - animation is used to animate existing content away.</p>
   <h2 id="example">Example</h2><p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-example83', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-example85"></plnkr-opener>
 
   <div class="runnable-example"
-      path="examples/example-example83"
+      path="examples/example-example85"
       module="includeExample"
       deps="angular-animate.js"
       animations="true">
@@ -237,7 +407,7 @@ leave - animation is used to animate existing content away.</p>
       name="animations.css"
       language="css"
       type="css">
-      <pre><code>.slide-animate-container {&#10;  position:relative;&#10;  background:white;&#10;  border:1px solid black;&#10;  height:40px;&#10;  overflow:hidden;&#10;}&#10;&#10;.slide-animate {&#10;  padding:10px;&#10;}&#10;&#10;.slide-animate.ng-enter, .slide-animate.ng-leave {&#10;  -webkit-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;&#10;  transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;&#10;&#10;  position:absolute;&#10;  top:0;&#10;  left:0;&#10;  right:0;&#10;  bottom:0;&#10;  display:block;&#10;  padding:10px;&#10;}&#10;&#10;.slide-animate.ng-enter {&#10;  top:-50px;&#10;}&#10;.slide-animate.ng-enter.ng-enter-active {&#10;  top:0;&#10;}&#10;&#10;.slide-animate.ng-leave {&#10;  top:0;&#10;}&#10;.slide-animate.ng-leave.ng-leave-active {&#10;  top:50px;&#10;}</code></pre>
+      <pre><code>.slide-animate-container {&#10;  position:relative;&#10;  background:white;&#10;  border:1px solid black;&#10;  height:40px;&#10;  overflow:hidden;&#10;}&#10;&#10;.slide-animate {&#10;  padding:10px;&#10;}&#10;&#10;.slide-animate.ng-enter, .slide-animate.ng-leave {&#10;  transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;&#10;&#10;  position:absolute;&#10;  top:0;&#10;  left:0;&#10;  right:0;&#10;  bottom:0;&#10;  display:block;&#10;  padding:10px;&#10;}&#10;&#10;.slide-animate.ng-enter {&#10;  top:-50px;&#10;}&#10;.slide-animate.ng-enter.ng-enter-active {&#10;  top:0;&#10;}&#10;&#10;.slide-animate.ng-leave {&#10;  top:0;&#10;}&#10;.slide-animate.ng-leave.ng-leave-active {&#10;  top:50px;&#10;}</code></pre>
     </div>
   
     <div class="runnable-example-file" 
@@ -248,7 +418,7 @@ leave - animation is used to animate existing content away.</p>
     </div>
   
 
-    <iframe class="runnable-example-frame" src="examples/example-example83/index.html" name="example-example83"></iframe>
+    <iframe class="runnable-example-frame" src="examples/example-example85/index.html" name="example-example85"></iframe>
   </div>
 </div>
 

@@ -5,9 +5,10 @@ describe("", function() {
     browser.get("build/docs/examples/example-example67/index-jquery.html");
   });
   
-it('should check ng-click', function() {
-  expect(element(by.binding('count')).getText()).toMatch('0');
-  element(by.css('button')).click();
-  expect(element(by.binding('count')).getText()).toMatch('1');
+it('should check ng-class-odd and ng-class-even', function() {
+  expect(element(by.repeater('name in names').row(0).column('name')).getAttribute('class')).
+    toMatch(/odd/);
+  expect(element(by.repeater('name in names').row(1).column('name')).getAttribute('class')).
+    toMatch(/even/);
 });
 });

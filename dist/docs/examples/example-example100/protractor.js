@@ -1,10 +1,13 @@
-it('should format date', function() {
-  expect(element(by.binding("1288323623006 | date:'medium'")).getText()).
-     toMatch(/Oct 2\d, 2010 \d{1,2}:\d{2}:\d{2} (AM|PM)/);
-  expect(element(by.binding("1288323623006 | date:'yyyy-MM-dd HH:mm:ss Z'")).getText()).
-     toMatch(/2010\-10\-2\d \d{2}:\d{2}:\d{2} (\-|\+)?\d{4}/);
-  expect(element(by.binding("'1288323623006' | date:'MM/dd/yyyy @ h:mma'")).getText()).
-     toMatch(/10\/2\d\/2010 @ \d{1,2}:\d{2}(AM|PM)/);
-  expect(element(by.binding("'1288323623006' | date:\"MM/dd/yyyy 'at' h:mma\"")).getText()).
-     toMatch(/10\/2\d\/2010 at \d{1,2}:\d{2}(AM|PM)/);
+ it('should format numbers', function() {
+   expect(element(by.id('number-default')).getText()).toBe('1,234.568');
+   expect(element(by.binding('val | number:0')).getText()).toBe('1,235');
+   expect(element(by.binding('-val | number:4')).getText()).toBe('-1,234.5679');
+ });
+
+ it('should update', function() {
+   element(by.model('val')).clear();
+   element(by.model('val')).sendKeys('3374.333');
+   expect(element(by.id('number-default')).getText()).toBe('3,374.333');
+   expect(element(by.binding('val | number:0')).getText()).toBe('3,374');
+   expect(element(by.binding('-val | number:4')).getText()).toBe('-3,374.3330');
 });

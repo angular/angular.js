@@ -12,18 +12,6 @@
       </tr>
       
       <tr>
-        <td><a href="api/ng/function/angular.lowercase">angular.lowercase</a></td>
-        <td><p>Converts the specified string to lowercase.</p>
-</td>
-      </tr>
-      
-      <tr>
-        <td><a href="api/ng/function/angular.uppercase">angular.uppercase</a></td>
-        <td><p>Converts the specified string to uppercase.</p>
-</td>
-      </tr>
-      
-      <tr>
         <td><a href="api/ng/function/angular.forEach">angular.forEach</a></td>
         <td><p>Invokes the <code>iterator</code> function once for each item in <code>obj</code> collection, which can be either an
 object or an array. The <code>iterator</code> function is invoked with <code>iterator(value, key, obj)</code>, where <code>value</code>
@@ -36,8 +24,15 @@ array element index and obj is the <code>obj</code> itself. Specifying a <code>c
         <td><a href="api/ng/function/angular.extend">angular.extend</a></td>
         <td><p>Extends the destination object <code>dst</code> by copying own enumerable properties from the <code>src</code> object(s)
 to <code>dst</code>. You can specify multiple <code>src</code> objects. If you want to preserve original objects, you can do so
-by passing an empty object as the target: <code>var object = angular.extend({}, object1, object2)</code>.
-Note: Keep in mind that <code>angular.extend</code> does not support recursive merge (deep copy).</p>
+by passing an empty object as the target: <code>var object = angular.extend({}, object1, object2)</code>.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/function/angular.merge">angular.merge</a></td>
+        <td><p>Deeply extends the destination object <code>dst</code> by copying own enumerable properties from the <code>src</code> object(s)
+to <code>dst</code>. You can specify multiple <code>src</code> objects. If you want to preserve original objects, you can do so
+by passing an empty object as the target: <code>var object = angular.merge({}, object1, object2)</code>.</p>
 </td>
       </tr>
       

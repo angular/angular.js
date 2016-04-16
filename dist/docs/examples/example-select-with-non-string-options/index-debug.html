@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Example - example-select-with-non-string-options-debug</title>
+  
+
+  <script src="../../../angular.js"></script>
+  <script src="app.js"></script>
+  
+
+  
+</head>
+<body ng-app="nonStringSelect">
+  <select ng-model="model.id" convert-to-number>
+  <option value="0">Zero</option>
+  <option value="1">One</option>
+  <option value="2">Two</option>
+</select>
+{{ model }}
+</body>
+</html>

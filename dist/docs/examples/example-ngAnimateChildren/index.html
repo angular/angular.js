@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Example - example-ngAnimateChildren</title>
+  <link href="animations.css" rel="stylesheet" type="text/css">
+  
+
+  <script src="../../../angular.min.js"></script>
+  <script src="../../../angular-animate.js"></script>
+  <script src="script.js"></script>
+  
+
+  
+</head>
+<body ng-app="ngAnimateChildren">
+  <div ng-controller="mainController as main">
+  <label>Show container? <input type="checkbox" ng-model="main.enterElement" /></label>
+  <label>Animate children? <input type="checkbox" ng-model="main.animateChildren" /></label>
+  <hr>
+  <div ng-animate-children="{{main.animateChildren}}">
+    <div ng-if="main.enterElement" class="container">
+      List of items:
+      <div ng-repeat="item in [0, 1, 2, 3]" class="item">Item {{item}}</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

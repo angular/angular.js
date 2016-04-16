@@ -3,18 +3,18 @@ var input = element(by.model('user.name'));
 var other = element(by.model('user.data'));
 
 it('should allow custom events', function() {
-  input.sendKeys(' hello');
+  input.sendKeys(' Doe');
   input.click();
-  expect(model.getText()).toEqual('say');
+  expect(model.getText()).toEqual('John');
   other.click();
-  expect(model.getText()).toEqual('say hello');
+  expect(model.getText()).toEqual('John Doe');
 });
 
 it('should $rollbackViewValue when model changes', function() {
-  input.sendKeys(' hello');
-  expect(input.getAttribute('value')).toEqual('say hello');
+  input.sendKeys(' Doe');
+  expect(input.getAttribute('value')).toEqual('John Doe');
   input.sendKeys(protractor.Key.ESCAPE);
-  expect(input.getAttribute('value')).toEqual('say');
+  expect(input.getAttribute('value')).toEqual('John');
   other.click();
-  expect(model.getText()).toEqual('say');
+  expect(model.getText()).toEqual('John');
 });

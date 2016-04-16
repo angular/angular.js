@@ -1,7 +1,7 @@
 <a href='https://github.com/angular/angular.js/edit/master/docs/content/error/$injector/unpr.ngdoc?message=docs(error%2Funpr)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
 
 
-<h1>Error: error:unpr
+<h1>Error: $injector:unpr
   <div><span class='hint'>Unknown Provider</span></div>
 </h1>
 
@@ -60,6 +60,17 @@ angular.module(&#39;myModule&#39;)
 }]);
 </code></pre>
 <p>Use the <code>$controller</code> service if you want to instantiate controllers yourself.</p>
+<p>Attempting to inject a scope object into anything that&#39;s not a controller or a directive,
+for example a service, will also throw an <code>Unknown provider: $scopeProvider &lt;- $scope</code> error.
+This might happen if one mistakenly registers a controller as a service, ex.:</p>
+<pre><code>angular.module(&#39;myModule&#39;, [])
+.service(&#39;MyController&#39;, [&#39;$scope&#39;, function($scope) {
+  // This controller throws an unknown provider error because
+  // a scope object cannot be injected into a service.
+}]);
+</code></pre>
+<p>If you encounter this error only with minified code, consider using <code>ngStrictDi</code> (see
+<a href="api/ng/directive/ngApp">ngApp</a>) to provoke the error with the non-minified source.</p>
 
 </div>
 

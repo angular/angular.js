@@ -1,15 +1,11 @@
 (function(angular) {
   'use strict';
-angular.module('oneTimeBidingExampleApp', []).
-  controller('EventController', ['$scope', function($scope) {
-    var counter = 0;
-    var names = ['Igor', 'Misko', 'Chirayu', 'Lucas'];
-    /*
-     * expose the event object to the scope
-     */
-    $scope.clickMe = function(clickEvent) {
-      $scope.name = names[counter % names.length];
-      counter++;
+angular.module('expressionExample', [])
+  .controller('ExampleController', ['$window', '$scope', function($window, $scope) {
+    $scope.name = 'World';
+
+    $scope.greet = function() {
+      $window.alert('Hello ' + $scope.name);
     };
   }]);
 })(window.angular);

@@ -5,8 +5,12 @@ describe("", function() {
     browser.get("build/docs/examples/example-example61/index-jquery.html");
   });
   
-it('should check ng-bind-html', function() {
-  expect(element(by.binding('myHTML')).getText()).toBe(
-      'I am an HTMLstring with links! and other stuff');
+it('should check ng-bind', function() {
+  var nameInput = element(by.model('name'));
+
+  expect(element(by.binding('name')).getText()).toBe('Whirled');
+  nameInput.clear();
+  nameInput.sendKeys('world');
+  expect(element(by.binding('name')).getText()).toBe('world');
 });
 });

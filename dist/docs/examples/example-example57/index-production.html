@@ -5,15 +5,13 @@
   <title>Example - example-example57-production</title>
   
 
-  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/null/angular.min.js"></script>
   
 
   
 </head>
 <body ng-app="">
-  Check me check multiple: <input type="checkbox" ng-model="open"><br/>
-<details id="details" ng-open="open">
-   <summary>Show/Hide me</summary>
-</details>
+  <label>Check me to make text readonly: <input type="checkbox" ng-model="checked"></label><br/>
+<input type="text" ng-readonly="checked" value="I'm Angular" aria-label="Readonly field" />
 </body>
 </html>

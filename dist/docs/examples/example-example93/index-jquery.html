@@ -3,29 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <title>Example - example-example93-jquery</title>
-  <link href="animations.css" rel="stylesheet" type="text/css">
+  <link href="style.css" rel="stylesheet" type="text/css">
   
 
   <script src="../../components/jquery-2.1.1/jquery.js"></script>
   <script src="../../../angular.js"></script>
-  <script src="../../../angular-animate.js"></script>
-  <script src="script.js"></script>
   
 
   
 </head>
-<body ng-app="switchExample">
-  <div ng-controller="ExampleController">
-  <select ng-model="selection" ng-options="item for item in items">
-  </select>
-  <tt>selection={{selection}}</tt>
-  <hr/>
-  <div class="animate-switch-container"
-    ng-switch on="selection">
-      <div class="animate-switch" ng-switch-when="settings">Settings Div</div>
-      <div class="animate-switch" ng-switch-when="home">Home Span</div>
-      <div class="animate-switch" ng-switch-default>default</div>
-  </div>
-</div>
+<body ng-app="">
+  <input type="button" value="set color" ng-click="myStyle={color:'red'}">
+<input type="button" value="set background" ng-click="myStyle={'background-color':'blue'}">
+<input type="button" value="clear" ng-click="myStyle={}">
+<br/>
+<span ng-style="myStyle">Sample Text</span>
+<pre>myStyle={{myStyle}}</pre>
 </body>
 </html>

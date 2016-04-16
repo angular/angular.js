@@ -34,6 +34,13 @@ level-specific log function, e.g. for level <code>error</code> the array is expo
       </tr>
       
       <tr>
+        <td><a href="api/ngMock/service/$animate">$animate</a></td>
+        <td><p>Mock implementation of the <a href="api/ng/service/$animate"><code>$animate</code></a> service. Exposes two additional methods
+for testing animations.</p>
+</td>
+      </tr>
+      
+      <tr>
         <td><a href="api/ngMock/service/$httpBackend">$httpBackend</a></td>
         <td><p>Fake HTTP backend implementation suitable for unit testing applications that use the
 <a href="api/ng/service/$http">$http service</a>.</p>
@@ -45,6 +52,23 @@ level-specific log function, e.g. for level <code>error</code> the array is expo
         <td><p>This service is just a simple decorator for <a href="api/ng/service/$timeout">$timeout</a> service
 that adds a &quot;flush&quot; and &quot;verifyNoPendingTasks&quot; methods.</p>
 </td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ngMock/service/$controller">$controller</a></td>
+        <td><p>A decorator for <a href="api/ng/service/$controller"><code>$controller</code></a> with additional <code>bindings</code> parameter, useful when testing
+controllers of directives that use <a href="api/ng/service/$compile#-bindtocontroller-"><code>bindToController</code></a>.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ngMock/service/$componentController">$componentController</a></td>
+        <td><p>A service that can be used to create instances of component controllers.</p>
+<div class="alert alert-info">
+Be aware that the controller will be instantiated and attached to the scope as specified in
+the component definition object. If you do not provide a <code>$scope</code> object in the <code>locals</code> param
+then the helper will create a new isolated scope as a child of <code>$rootScope</code>.
+</div></td>
       </tr>
       
     </table>

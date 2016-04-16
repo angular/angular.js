@@ -1,0 +1,11 @@
+<div ng-if="$ctrl.crisis">
+  <h3>"{{$ctrl.editName}}"</h3>
+  <div>
+    <label>Id: </label>{{$ctrl.crisis.id}}</div>
+  <div>
+    <label>Name: </label>
+    <input ng-model="$ctrl.editName" placeholder="name"/>
+  </div>
+  <button ng-click="$ctrl.save()">Save</button>
+  <button ng-click="$ctrl.cancel()">Cancel</button>
+</div>

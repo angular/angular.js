@@ -1,8 +1,8 @@
-<a href='https://github.com/angular/angular.js/edit/master/src/ng/interpolate.js?message=docs($interpolate)%3A%20describe%20your%20change...#L113' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/interpolate.js?message=docs($interpolate)%3A%20describe%20your%20change...#L140' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
 
 
 
-<a href='https://github.com/angular/angular.js/tree/master/src/ng/interpolate.js#L113' class='view-source pull-right btn btn-primary'>
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/interpolate.js#L140' class='view-source pull-right btn btn-primary'>
   <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
 </a>
 
@@ -30,7 +30,7 @@ HTML <a href="api/ng/service/$compile">$compile</a> service for data binding. Se
 interpolation markup.</p>
 <pre><code class="lang-js">var $interpolate = ...; // injected
 var exp = $interpolate(&#39;Hello {{name | uppercase}}!&#39;);
-expect(exp({name:&#39;Angular&#39;}).toEqual(&#39;Hello ANGULAR!&#39;);
+expect(exp({name:&#39;Angular&#39;})).toEqual(&#39;Hello ANGULAR!&#39;);
 </code></pre>
 <p><code>$interpolate</code> takes an optional fourth argument, <code>allOrNothing</code>. If <code>allOrNothing</code> is
 <code>true</code>, the interpolation function will return <code>undefined</code> unless all embedded expressions
@@ -49,8 +49,8 @@ context.name = &#39;Angular&#39;;
 expect(exp(context)).toEqual(&#39;Hello Angular!&#39;);
 </code></pre>
 <p><code>allOrNothing</code> is useful for interpolating URLs. <code>ngSrc</code> and <code>ngSrcset</code> use this behavior.</p>
-<h4 id="escaped-interpolation">Escaped Interpolation</h4>
-<p>$interpolate provides a mechanism for escaping interpolation markers. Start and end markers
+<p>####Escaped Interpolation
+$interpolate provides a mechanism for escaping interpolation markers. Start and end markers
 can be escaped by preceding each of their characters with a REVERSE SOLIDUS U+005C (backslash).
 It will be rendered as a regular start/end marker, and will not be interpreted as an expression
 or binding.</p>
@@ -69,12 +69,10 @@ when otherwise untrusted data is used by a directive.</p>
 <p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-example107', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-example108"></plnkr-opener>
 
   <div class="runnable-example"
-      path="examples/example-example107">
+      path="examples/example-example108">
 
   
     <div class="runnable-example-file" 
@@ -85,7 +83,7 @@ when otherwise untrusted data is used by a directive.</p>
     </div>
   
 
-    <iframe class="runnable-example-frame" src="examples/example-example107/index.html" name="example-example107"></iframe>
+    <iframe class="runnable-example-frame" src="examples/example-example108/index.html" name="example-example108"></iframe>
   </div>
 </div>
 
@@ -93,6 +91,8 @@ when otherwise untrusted data is used by a directive.</p>
 </p>
 
 </div>
+
+
 
 
 

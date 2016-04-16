@@ -22,13 +22,16 @@
     }]);
 </script>
 <form name="myForm" ng-controller="ExampleController">
-  Single word: <input type="text" name="input" ng-model="example.text"
-                      ng-pattern="example.word" required ng-trim="false">
-  <span class="error" ng-show="myForm.input.$error.required">
-    Required!</span>
-  <span class="error" ng-show="myForm.input.$error.pattern">
-    Single word only!</span>
-
+  <label>Single word:
+    <input type="text" name="input" ng-model="example.text"
+           ng-pattern="example.word" required ng-trim="false">
+  </label>
+  <div role="alert">
+    <span class="error" ng-show="myForm.input.$error.required">
+      Required!</span>
+    <span class="error" ng-show="myForm.input.$error.pattern">
+      Single word only!</span>
+  </div>
   <tt>text = {{example.text}}</tt><br/>
   <tt>myForm.input.$valid = {{myForm.input.$valid}}</tt><br/>
   <tt>myForm.input.$error = {{myForm.input.$error}}</tt><br/>

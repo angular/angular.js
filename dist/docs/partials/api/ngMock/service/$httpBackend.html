@@ -1,8 +1,8 @@
-<a href='https://github.com/angular/angular.js/edit/master/src/ngMock/angular-mocks.js?message=docs($httpBackend)%3A%20describe%20your%20change...#L898' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+<a href='https://github.com/angular/angular.js/edit/master/src/ngMock/angular-mocks.js?message=docs($httpBackend)%3A%20describe%20your%20change...#L992' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
 
 
 
-<a href='https://github.com/angular/angular.js/tree/master/src/ngMock/angular-mocks.js#L898' class='view-source pull-right btn btn-primary'>
+<a href='https://github.com/angular/angular.js/tree/master/src/ngMock/angular-mocks.js#L992' class='view-source pull-right btn btn-primary'>
   <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
 </a>
 
@@ -44,7 +44,7 @@ backend when the code under test makes http requests:</p>
 <li><code>$httpBackend.expect</code> - specifies a request expectation</li>
 <li><code>$httpBackend.when</code> - specifies a backend definition</li>
 </ul>
-<h1 id="request-expectations-vs-backend-definitions">Request Expectations vs Backend Definitions</h1>
+<h2 id="request-expectations-vs-backend-definitions">Request Expectations vs Backend Definitions</h2>
 <p>Request expectations provide a way to make assertions about requests made by the application and
 to define responses for those requests. The test will fail if the expected requests are not made
 or they are made in the wrong order.</p>
@@ -92,14 +92,14 @@ definitions for an appropriate response.</p>
 <p>If a request didn&#39;t match any expectation or if the expectation doesn&#39;t have the response
 defined, the backend definitions are evaluated in sequential order to see if any of them match
 the request. The response from the first matched definition is returned.</p>
-<h1 id="flushing-http-requests">Flushing HTTP requests</h1>
+<h2 id="flushing-http-requests">Flushing HTTP requests</h2>
 <p>The $httpBackend used in production always responds to requests asynchronously. If we preserved
 this behavior in unit testing, we&#39;d have to create async unit tests, which are hard to write,
 to follow and to maintain. But neither can the testing mock respond synchronously; that would
 change the execution of the code under test. For this reason, the mock $httpBackend has a
 <code>flush()</code> method, which allows the test to explicitly flush pending requests. This preserves
 the async api of the backend, while allowing the test to execute synchronously.</p>
-<h1 id="unit-testing-with-mock-httpbackend">Unit testing with mock $httpBackend</h1>
+<h2 id="unit-testing-with-mock-httpbackend">Unit testing with mock $httpBackend</h2>
 <p>The following code shows how to setup and use the mock backend when unit testing a controller.
 First we create the controller under test:</p>
 <pre><code class="lang-js">// The module code
@@ -111,19 +111,19 @@ angular
 function MyController($scope, $http) {
   var authToken;
 
-  $http.get(&#39;/auth.py&#39;).success(function(data, status, headers) {
-    authToken = headers(&#39;A-Token&#39;);
-    $scope.user = data;
+  $http.get(&#39;/auth.py&#39;).then(function(response) {
+    authToken = response.headers(&#39;A-Token&#39;);
+    $scope.user = response.data;
   });
 
   $scope.saveMessage = function(message) {
     var headers = { &#39;Authorization&#39;: authToken };
     $scope.status = &#39;Saving...&#39;;
 
-    $http.post(&#39;/add-msg.py&#39;, message, { headers: headers } ).success(function(response) {
+    $http.post(&#39;/add-msg.py&#39;, message, { headers: headers } ).then(function(response) {
       $scope.status = &#39;&#39;;
-    }).error(function() {
-      $scope.status = &#39;ERROR!&#39;;
+    }).catch(function() {
+      $scope.status = &#39;Failed...&#39;;
     });
   };
 }
@@ -201,7 +201,7 @@ describe(&#39;MyController&#39;, function() {
      $httpBackend.flush();
 
      $httpBackend.expectPOST(&#39;/add-msg.py&#39;, undefined, function(headers) {
-       // check if the header was send, if it wasn&#39;t the expectation won&#39;t
+       // check if the header was sent, if it wasn&#39;t the expectation won&#39;t
        // match the request and the test will fail
        return headers[&#39;Authorization&#39;] == &#39;xxx&#39;;
      }).respond(201, &#39;&#39;);
@@ -211,8 +211,74 @@ describe(&#39;MyController&#39;, function() {
    });
 });
 </code></pre>
+<h2 id="dynamic-responses">Dynamic responses</h2>
+<p>You define a response to a request by chaining a call to <code>respond()</code> onto a definition or expectation.
+If you provide a <strong>callback</strong> as the first parameter to <code>respond(callback)</code> then you can dynamically generate
+a response based on the properties of the request.</p>
+<p>The <code>callback</code> function should be of the form <code>function(method, url, data, headers, params)</code>.</p>
+<h3 id="query-parameters">Query parameters</h3>
+<p>By default, query parameters on request URLs are parsed into the <code>params</code> object. So a request URL
+of <code>/list?q=searchstr&amp;orderby=-name</code> would set <code>params</code> to be <code>{q: &#39;searchstr&#39;, orderby: &#39;-name&#39;}</code>.</p>
+<h3 id="regex-parameter-matching">Regex parameter matching</h3>
+<p>If an expectation or definition uses a <strong>regex</strong> to match the URL, you can provide an array of <strong>keys</strong> via a
+<code>params</code> argument. The index of each <strong>key</strong> in the array will match the index of a <strong>group</strong> in the
+<strong>regex</strong>.</p>
+<p>The <code>params</code> object in the <strong>callback</strong> will now have properties with these keys, which hold the value of the
+corresponding <strong>group</strong> in the <strong>regex</strong>.</p>
+<p>This also applies to the <code>when</code> and <code>expect</code> shortcut methods.</p>
+<pre><code class="lang-js">$httpBackend.expect(&#39;GET&#39;, /\/user\/(.+)/, undefined, undefined, [&#39;id&#39;])
+  .respond(function(method, url, data, headers, params) {
+    // for requested url of &#39;/user/1234&#39; params is {id: &#39;1234&#39;}
+  });
+
+$httpBackend.whenPATCH(/\/user\/(.+)\/article\/(.+)/, undefined, undefined, [&#39;user&#39;, &#39;article&#39;])
+  .respond(function(method, url, data, headers, params) {
+    // for url of &#39;/user/1234/article/567&#39; params is {user: &#39;1234&#39;, article: &#39;567&#39;}
+  });
+</code></pre>
+<h2 id="matching-route-requests">Matching route requests</h2>
+<p>For extra convenience, <code>whenRoute</code> and <code>expectRoute</code> shortcuts are available. These methods offer colon
+delimited matching of the url path, ignoring the query string. This allows declarations
+similar to how application routes are configured with <code>$routeProvider</code>. Because these methods convert
+the definition url to regex, declaration order is important. Combined with query parameter parsing,
+the following is possible:</p>
+<pre><code class="lang-js">$httpBackend.whenRoute(&#39;GET&#39;, &#39;/users/:id&#39;)
+  .respond(function(method, url, data, headers, params) {
+    return [200, MockUserList[Number(params.id)]];
+  });
+
+$httpBackend.whenRoute(&#39;GET&#39;, &#39;/users&#39;)
+  .respond(function(method, url, data, headers, params) {
+    var userList = angular.copy(MockUserList),
+      defaultSort = &#39;lastName&#39;,
+      count, pages, isPrevious, isNext;
+
+    // paged api response &#39;/v1/users?page=2&#39;
+    params.page = Number(params.page) || 1;
+
+    // query for last names &#39;/v1/users?q=Archer&#39;
+    if (params.q) {
+      userList = $filter(&#39;filter&#39;)({lastName: params.q});
+    }
+
+    pages = Math.ceil(userList.length / pagingLength);
+    isPrevious = params.page &gt; 1;
+    isNext = params.page &lt; pages;
+
+    return [200, {
+      count:    userList.length,
+      previous: isPrevious,
+      next:     isNext,
+      // sort field -&gt; &#39;/v1/users?sortBy=firstName&#39;
+      results:  $filter(&#39;orderBy&#39;)(userList, params.sortBy || defaultSort)
+                  .splice((params.page - 1) * pagingLength, pagingLength)
+    }];
+  });
+</code></pre>
 
 </div>
+
+
 
 
 
@@ -228,7 +294,7 @@ describe(&#39;MyController&#39;, function() {
 <h2>Methods</h2>
 <ul class="methods">
   <li id="when">
-    <h3><p><code>when(method, url, [data], [headers]);</code></p>
+    <h3><p><code>when(method, url, [data], [headers], [keys]);</code></p>
 
 </h3>
     <div><p>Creates a new backend definition.</p>
@@ -314,6 +380,22 @@ describe(&#39;MyController&#39;, function() {
       </td>
     </tr>
     
+    <tr>
+      <td>
+        keys
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-array">Array</a>
+      </td>
+      <td>
+        <p>Array of keys to assign to regex matches in request url described above.</p>
+
+        
+      </td>
+    </tr>
+    
   </tbody>
 </table>
 
@@ -330,13 +412,13 @@ describe(&#39;MyController&#39;, function() {
   request is handled. You can save this object for later use and invoke <code>respond</code> again in
   order to change how a matched request is handled.</p>
 <ul>
-<li>respond –
-  <code>{function([status,] data[, headers, statusText])
-  | function(function(method, url, data, headers)}</code>
+<li>respond –<pre><code class="lang-js">{function([status,] data[, headers, statusText])
+| function(function(method, url, data, headers, params)}
+</code></pre>
 – The respond method takes a set of static data to be returned or a function that can
-return an array containing response status (number), response data (string), response
-headers (Object), and the text for the status (string). The respond method returns the
-<code>requestHandler</code> object for possible overrides.</li>
+return an array containing response status (number), response data (Array|Object|string),
+response headers (Object), and the text for the status (string). The respond method returns
+the <code>requestHandler</code> object for possible overrides.</li>
 </ul>
 </td>
   </tr>
@@ -346,7 +428,7 @@ headers (Object), and the text for the status (string). The respond method retur
   </li>
   
   <li id="whenGET">
-    <h3><p><code>whenGET(url, [headers]);</code></p>
+    <h3><p><code>whenGET(url, [headers], [keys]);</code></p>
 
 </h3>
     <div><p>Creates a new backend definition for GET requests. For more info see <code>when()</code>.</p>
@@ -398,6 +480,22 @@ headers (Object), and the text for the status (string). The respond method retur
       </td>
     </tr>
     
+    <tr>
+      <td>
+        keys
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-array">Array</a>
+      </td>
+      <td>
+        <p>Array of keys to assign to regex matches in request url described above.</p>
+
+        
+      </td>
+    </tr>
+    
   </tbody>
 </table>
 
@@ -421,7 +519,7 @@ order to change how a matched request is handled.</p>
   </li>
   
   <li id="whenHEAD">
-    <h3><p><code>whenHEAD(url, [headers]);</code></p>
+    <h3><p><code>whenHEAD(url, [headers], [keys]);</code></p>
 
 </h3>
     <div><p>Creates a new backend definition for HEAD requests. For more info see <code>when()</code>.</p>
@@ -473,6 +571,22 @@ order to change how a matched request is handled.</p>
       </td>
     </tr>
     
+    <tr>
+      <td>
+        keys
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-array">Array</a>
+      </td>
+      <td>
+        <p>Array of keys to assign to regex matches in request url described above.</p>
+
+        
+      </td>
+    </tr>
+    
   </tbody>
 </table>
 
@@ -496,7 +610,7 @@ order to change how a matched request is handled.</p>
   </li>
   
   <li id="whenDELETE">
-    <h3><p><code>whenDELETE(url, [headers]);</code></p>
+    <h3><p><code>whenDELETE(url, [headers], [keys]);</code></p>
 
 </h3>
     <div><p>Creates a new backend definition for DELETE requests. For more info see <code>when()</code>.</p>
@@ -548,6 +662,22 @@ order to change how a matched request is handled.</p>
       </td>
     </tr>
     
+    <tr>
+      <td>
+        keys
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-array">Array</a>
+      </td>
+      <td>
+        <p>Array of keys to assign to regex matches in request url described above.</p>
+
+        
+      </td>
+    </tr>
+    
   </tbody>
 </table>
 
@@ -571,7 +701,7 @@ order to change how a matched request is handled.</p>
   </li>
   
   <li id="whenPOST">
-    <h3><p><code>whenPOST(url, [data], [headers]);</code></p>
+    <h3><p><code>whenPOST(url, [data], [headers], [keys]);</code></p>
 
 </h3>
     <div><p>Creates a new backend definition for POST requests. For more info see <code>when()</code>.</p>
@@ -640,6 +770,22 @@ order to change how a matched request is handled.</p>
       </td>
     </tr>
     
+    <tr>
+      <td>
+        keys
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-array">Array</a>
+      </td>
+      <td>
+        <p>Array of keys to assign to regex matches in request url described above.</p>
+
+        
+      </td>
+    </tr>
+    
   </tbody>
 </table>
 
@@ -663,7 +809,7 @@ order to change how a matched request is handled.</p>
   </li>
   
   <li id="whenPUT">
-    <h3><p><code>whenPUT(url, [data], [headers]);</code></p>
+    <h3><p><code>whenPUT(url, [data], [headers], [keys]);</code></p>
 
 </h3>
     <div><p>Creates a new backend definition for PUT requests.  For more info see <code>when()</code>.</p>
@@ -732,6 +878,22 @@ order to change how a matched request is handled.</p>
       </td>
     </tr>
     
+    <tr>
+      <td>
+        keys
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-array">Array</a>
+      </td>
+      <td>
+        <p>Array of keys to assign to regex matches in request url described above.</p>
+
+        
+      </td>
+    </tr>
+    
   </tbody>
 </table>
 
@@ -755,7 +917,7 @@ order to change how a matched request is handled.</p>
   </li>
   
   <li id="whenJSONP">
-    <h3><p><code>whenJSONP(url);</code></p>
+    <h3><p><code>whenJSONP(url, [keys]);</code></p>
 
 </h3>
     <div><p>Creates a new backend definition for JSONP requests. For more info see <code>when()</code>.</p>
@@ -791,6 +953,22 @@ order to change how a matched request is handled.</p>
       </td>
     </tr>
     
+    <tr>
+      <td>
+        keys
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-array">Array</a>
+      </td>
+      <td>
+        <p>Array of keys to assign to regex matches in request url described above.</p>
+
+        
+      </td>
+    </tr>
+    
   </tbody>
 </table>
 
@@ -813,8 +991,82 @@ order to change how a matched request is handled.</p>
 
   </li>
   
+  <li id="whenRoute">
+    <h3><p><code>whenRoute(method, url);</code></p>
+
+</h3>
+    <div><p>Creates a new backend definition that compares only with the requested route.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        method
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>HTTP method.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        url
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>HTTP url string that supports colon param matching.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-requesthandler">requestHandler</a></td>
+    <td><p>Returns an object with <code>respond</code> method that controls how a matched
+request is handled. You can save this object for later use and invoke <code>respond</code> again in
+order to change how a matched request is handled. See #when for more info.</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
   <li id="expect">
-    <h3><p><code>expect(method, url, [data], [headers]);</code></p>
+    <h3><p><code>expect(method, url, [data], [headers], [keys]);</code></p>
 
 </h3>
     <div><p>Creates a new request expectation.</p>
@@ -901,6 +1153,22 @@ order to change how a matched request is handled.</p>
       </td>
     </tr>
     
+    <tr>
+      <td>
+        keys
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-array">Array</a>
+      </td>
+      <td>
+        <p>Array of keys to assign to regex matches in request url described above.</p>
+
+        
+      </td>
+    </tr>
+    
   </tbody>
 </table>
 
@@ -917,13 +1185,13 @@ order to change how a matched request is handled.</p>
  request is handled. You can save this object for later use and invoke <code>respond</code> again in
  order to change how a matched request is handled.</p>
 <ul>
-<li>respond –
-<code>{function([status,] data[, headers, statusText])
-| function(function(method, url, data, headers)}</code>
+<li>respond –<pre><code>{ function([status,] data[, headers, statusText])
+| function(function(method, url, data, headers, params)}
+</code></pre>
 – The respond method takes a set of static data to be returned or a function that can
-return an array containing response status (number), response data (string), response
-headers (Object), and the text for the status (string). The respond method returns the
-<code>requestHandler</code> object for possible overrides.</li>
+return an array containing response status (number), response data (Array|Object|string),
+response headers (Object), and the text for the status (string). The respond method returns
+the <code>requestHandler</code> object for possible overrides.</li>
 </ul>
 </td>
   </tr>
@@ -933,7 +1201,7 @@ headers (Object), and the text for the status (string). The respond method retur
   </li>
   
   <li id="expectGET">
-    <h3><p><code>expectGET(url, [headers]);</code></p>
+    <h3><p><code>expectGET(url, [headers], [keys]);</code></p>
 
 </h3>
     <div><p>Creates a new request expectation for GET requests. For more info see <code>expect()</code>.</p>
@@ -985,6 +1253,22 @@ headers (Object), and the text for the status (string). The respond method retur
       </td>
     </tr>
     
+    <tr>
+      <td>
+        keys
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-array">Array</a>
+      </td>
+      <td>
+        <p>Array of keys to assign to regex matches in request url described above.</p>
+
+        
+      </td>
+    </tr>
+    
   </tbody>
 </table>
 
@@ -1008,7 +1292,7 @@ order to change how a matched request is handled. See #expect for more info.</p>
   </li>
   
   <li id="expectHEAD">
-    <h3><p><code>expectHEAD(url, [headers]);</code></p>
+    <h3><p><code>expectHEAD(url, [headers], [keys]);</code></p>
 
 </h3>
     <div><p>Creates a new request expectation for HEAD requests. For more info see <code>expect()</code>.</p>
@@ -1060,6 +1344,22 @@ order to change how a matched request is handled. See #expect for more info.</p>
       </td>
     </tr>
     
+    <tr>
+      <td>
+        keys
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-array">Array</a>
+      </td>
+      <td>
+        <p>Array of keys to assign to regex matches in request url described above.</p>
+
+        
+      </td>
+    </tr>
+    
   </tbody>
 </table>
 
@@ -1083,7 +1383,7 @@ order to change how a matched request is handled. See #expect for more info.</p>
   </li>
   
   <li id="expectDELETE">
-    <h3><p><code>expectDELETE(url, [headers]);</code></p>
+    <h3><p><code>expectDELETE(url, [headers], [keys]);</code></p>
 
 </h3>
     <div><p>Creates a new request expectation for DELETE requests. For more info see <code>expect()</code>.</p>
@@ -1135,6 +1435,22 @@ order to change how a matched request is handled. See #expect for more info.</p>
       </td>
     </tr>
     
+    <tr>
+      <td>
+        keys
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-array">Array</a>
+      </td>
+      <td>
+        <p>Array of keys to assign to regex matches in request url described above.</p>
+
+        
+      </td>
+    </tr>
+    
   </tbody>
 </table>
 
@@ -1158,7 +1474,7 @@ order to change how a matched request is handled. See #expect for more info.</p>
   </li>
   
   <li id="expectPOST">
-    <h3><p><code>expectPOST(url, [data], [headers]);</code></p>
+    <h3><p><code>expectPOST(url, [data], [headers], [keys]);</code></p>
 
 </h3>
     <div><p>Creates a new request expectation for POST requests. For more info see <code>expect()</code>.</p>
@@ -1228,6 +1544,22 @@ order to change how a matched request is handled. See #expect for more info.</p>
       </td>
     </tr>
     
+    <tr>
+      <td>
+        keys
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-array">Array</a>
+      </td>
+      <td>
+        <p>Array of keys to assign to regex matches in request url described above.</p>
+
+        
+      </td>
+    </tr>
+    
   </tbody>
 </table>
 
@@ -1251,7 +1583,7 @@ order to change how a matched request is handled. See #expect for more info.</p>
   </li>
   
   <li id="expectPUT">
-    <h3><p><code>expectPUT(url, [data], [headers]);</code></p>
+    <h3><p><code>expectPUT(url, [data], [headers], [keys]);</code></p>
 
 </h3>
     <div><p>Creates a new request expectation for PUT requests. For more info see <code>expect()</code>.</p>
@@ -1321,6 +1653,22 @@ order to change how a matched request is handled. See #expect for more info.</p>
       </td>
     </tr>
     
+    <tr>
+      <td>
+        keys
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-array">Array</a>
+      </td>
+      <td>
+        <p>Array of keys to assign to regex matches in request url described above.</p>
+
+        
+      </td>
+    </tr>
+    
   </tbody>
 </table>
 
@@ -1344,7 +1692,7 @@ order to change how a matched request is handled. See #expect for more info.</p>
   </li>
   
   <li id="expectPATCH">
-    <h3><p><code>expectPATCH(url, [data], [headers]);</code></p>
+    <h3><p><code>expectPATCH(url, [data], [headers], [keys]);</code></p>
 
 </h3>
     <div><p>Creates a new request expectation for PATCH requests. For more info see <code>expect()</code>.</p>
@@ -1414,6 +1762,22 @@ order to change how a matched request is handled. See #expect for more info.</p>
       </td>
     </tr>
     
+    <tr>
+      <td>
+        keys
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-array">Array</a>
+      </td>
+      <td>
+        <p>Array of keys to assign to regex matches in request url described above.</p>
+
+        
+      </td>
+    </tr>
+    
   </tbody>
 </table>
 
@@ -1437,7 +1801,7 @@ order to change how a matched request is handled. See #expect for more info.</p>
   </li>
   
   <li id="expectJSONP">
-    <h3><p><code>expectJSONP(url);</code></p>
+    <h3><p><code>expectJSONP(url, [keys]);</code></p>
 
 </h3>
     <div><p>Creates a new request expectation for JSONP requests. For more info see <code>expect()</code>.</p>
@@ -1473,6 +1837,22 @@ order to change how a matched request is handled. See #expect for more info.</p>
       </td>
     </tr>
     
+    <tr>
+      <td>
+        keys
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-array">Array</a>
+      </td>
+      <td>
+        <p>Array of keys to assign to regex matches in request url described above.</p>
+
+        
+      </td>
+    </tr>
+    
   </tbody>
 </table>
 
@@ -1488,6 +1868,80 @@ order to change how a matched request is handled. See #expect for more info.</p>
     <td><p>Returns an object with <code>respond</code> method that controls how a matched
   request is handled. You can save this object for later use and invoke <code>respond</code> again in
   order to change how a matched request is handled.</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="expectRoute">
+    <h3><p><code>expectRoute(method, url);</code></p>
+
+</h3>
+    <div><p>Creates a new request expectation that compares only with the requested route.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        method
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>HTTP method.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        url
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>HTTP url string that supports colon param matching.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-requesthandler">requestHandler</a></td>
+    <td><p>Returns an object with <code>respond</code> method that controls how a matched
+request is handled. You can save this object for later use and invoke <code>respond</code> again in
+order to change how a matched request is handled. See #expect for more info.</p>
 </td>
   </tr>
 </table>

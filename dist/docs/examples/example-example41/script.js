@@ -1,11 +1,13 @@
 (function(angular) {
   'use strict';
-angular.module('scopeExample', [])
-  .controller('MyController', ['$scope', function($scope) {
-    $scope.username = 'World';
+// declare a module
+var myAppModule = angular.module('myApp', []);
 
-    $scope.sayHello = function() {
-      $scope.greeting = 'Hello ' + $scope.username + '!';
-    };
-  }]);
+// configure the module.
+// in this example we will create a greeting filter
+myAppModule.filter('greet', function() {
+ return function(name) {
+    return 'Hello, ' + name + '!';
+  };
+});
 })(window.angular);

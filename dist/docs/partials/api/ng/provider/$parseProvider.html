@@ -1,8 +1,8 @@
-<a href='https://github.com/angular/angular.js/edit/master/src/ng/parse.js?message=docs($parseProvider)%3A%20describe%20your%20change...#L1002' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/parse.js?message=docs($parseProvider)%3A%20describe%20your%20change...#L1776' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
 
 
 
-<a href='https://github.com/angular/angular.js/tree/master/src/ng/parse.js#L1002' class='view-source pull-right btn btn-primary'>
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/parse.js#L1776' class='view-source pull-right btn btn-primary'>
   <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
 </a>
 
@@ -32,6 +32,8 @@
 
 
 
+
+
 <div>
   
 
@@ -40,6 +42,146 @@
   
 
   
+<h2>Methods</h2>
+<ul class="methods">
+  <li id="addLiteral">
+    <h3><p><code>addLiteral(literalName, literalValue);</code></p>
+
+</h3>
+    <div><p>Configure $parse service to add literal values that will be present as literal at expressions.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        literalName
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Token for the literal value. The literal name value must be a valid literal name.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        literalValue
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">*</a>
+      </td>
+      <td>
+        <p>Value for this literal. All literal values must be primitives or <code>undefined</code>.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+
+  </li>
+  
+  <li id="setIdentifierFns">
+    <h3><p><code>setIdentifierFns([identifierStart], [identifierContinue]);</code></p>
+
+</h3>
+    <div><p>Allows defining the set of characters that are allowed in Angular expressions. The function
+<code>identifierStart</code> will get called to know if a given character is a valid character to be the
+first character for an identifier. The function <code>identifierContinue</code> will get called to know if
+a given character is a valid character to be a follow-up identifier character. The functions
+<code>identifierStart</code> and <code>identifierContinue</code> will receive as arguments the single character to be
+identifier and the character code point. These arguments will be <code>string</code> and <code>numeric</code>. Keep in
+mind that the <code>string</code> parameter can be two characters long depending on the character
+representation. It is expected for the function to return <code>true</code> or <code>false</code>, whether that
+character is allowed or not.</p>
+<p>Since this function will be called extensivelly, keep the implementation of these functions fast,
+as the performance of these functions have a direct impact on the expressions parsing speed.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        identifierStart
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-function">function=</a>
+      </td>
+      <td>
+        <p>The function that will decide whether the given character is
+  a valid identifier start character.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        identifierContinue
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-function">function=</a>
+      </td>
+      <td>
+        <p>The function that will decide whether the given character is
+  a valid identifier continue character.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+
+  </li>
+  </ul>
   
   
 

@@ -3,20 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <title>Example - example-example44-production</title>
+  <link href="style.css" rel="stylesheet" type="text/css">
   
 
-  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/null/angular.min.js"></script>
   <script src="script.js"></script>
   
 
   
 </head>
-<body ng-app="myServiceModule">
-  <div id="simple" ng-controller="MyController">
-  <p>Let's try this simple notify service, injected into the controller...</p>
-  <input ng-init="message='test'" ng-model="message" >
-  <button ng-click="callNotify(message);">NOTIFY</button>
-  <p>(you have to click 3 times to see an alert)</p>
+<body ng-app="scopeExample">
+  <div class="show-scope-demo">
+  <div ng-controller="GreetController">
+    Hello {{name}}!
+  </div>
+  <div ng-controller="ListController">
+    <ol>
+      <li ng-repeat="name in names">{{name}} from {{department}}</li>
+    </ol>
+  </div>
 </div>
 </body>
 </html>

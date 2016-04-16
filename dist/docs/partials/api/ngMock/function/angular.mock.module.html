@@ -1,8 +1,8 @@
-<a href='https://github.com/angular/angular.js/edit/master/src/ngMock/angular-mocks.js?message=docs(angular.mock.module)%3A%20describe%20your%20change...#L2184' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+<a href='https://github.com/angular/angular.js/edit/master/src/ngMock/angular-mocks.js?message=docs(angular.mock.module)%3A%20describe%20your%20change...#L2611' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
 
 
 
-<a href='https://github.com/angular/angular.js/tree/master/src/ngMock/angular-mocks.js#L2184' class='view-source pull-right btn btn-primary'>
+<a href='https://github.com/angular/angular.js/tree/master/src/ngMock/angular-mocks.js#L2611' class='view-source pull-right btn btn-primary'>
   <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
 </a>
 
@@ -27,6 +27,8 @@ which will be used when the injector is created by <a href="api/ngMock/function/
 <p>See <a href="api/ngMock/function/angular.mock.inject">inject</a> for usage example</p>
 
 </div>
+
+
 
 
 
@@ -70,8 +72,9 @@ which will be used when the injector is created by <a href="api/ngMock/function/
         <p>any number of modules which are represented as string
        aliases or as anonymous module initialization functions. The modules are used to
        configure the injector. The &#39;ng&#39; and &#39;ngMock&#39; modules are automatically loaded. If an
-       object literal is passed they will be registered as values in the module, the key being
-       the module name and the value being what is returned.</p>
+       object literal is passed each key-value pair will be registered on the module via
+       <a href="api/auto/service/$provide">$provide</a>.value, the key being the string name (or token) to associate
+       with the value on the injector.</p>
 
         
       </td>

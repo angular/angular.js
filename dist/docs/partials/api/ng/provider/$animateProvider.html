@@ -1,8 +1,8 @@
-<a href='https://github.com/angular/angular.js/edit/master/src/ng/animate.js?message=docs($animateProvider)%3A%20describe%20your%20change...#L5' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/animate.js?message=docs($animateProvider)%3A%20describe%20your%20change...#L158' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
 
 
 
-<a href='https://github.com/angular/angular.js/tree/master/src/ng/animate.js#L5' class='view-source pull-right btn btn-primary'>
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/animate.js#L158' class='view-source pull-right btn btn-primary'>
   <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
 </a>
 
@@ -25,12 +25,13 @@
 
 <div class="api-profile-description">
   <p>Default implementation of $animate that doesn&#39;t perform any animations, instead just
-synchronously performs DOM
-updates and calls done() callbacks.</p>
-<p>In order to enable animations the ngAnimate module has to be loaded.</p>
-<p>To see the functional implementation check out src/ngAnimate/animate.js</p>
+synchronously performs DOM updates and resolves the returned runner promise.</p>
+<p>In order to enable animations the <code>ngAnimate</code> module has to be loaded.</p>
+<p>To see the functional implementation check out <code>src/ngAnimate/animate.js</code>.</p>
 
 </div>
+
+
 
 
 
@@ -53,16 +54,26 @@ updates and calls done() callbacks.</p>
 animation object which contains callback functions for each event that is expected to be
 animated.</p>
 <ul>
-<li><code>eventFn</code>: <code>function(Element, doneFunction)</code> The element to animate, the <code>doneFunction</code>
-must be called once the element animation is complete. If a function is returned then the
-animation service will use this function to cancel the animation whenever a cancel event is
-triggered.</li>
+<li><p><code>eventFn</code>: <code>function(element, ... , doneFunction, options)</code>
+The element to animate, the <code>doneFunction</code> and the options fed into the animation. Depending
+on the type of animation additional arguments will be injected into the animation function. The
+list below explains the function signatures for the different animation methods:</p>
+</li>
+<li><p>setClass: function(element, addedClasses, removedClasses, doneFunction, options)</p>
+</li>
+<li>addClass: function(element, addedClasses, doneFunction, options)</li>
+<li>removeClass: function(element, removedClasses, doneFunction, options)</li>
+<li>enter, leave, move: function(element, doneFunction, options)</li>
+<li><p>animate: function(element, fromStyles, toStyles, doneFunction, options)</p>
+<p>Make sure to trigger the <code>doneFunction</code> once the animation is fully complete.</p>
+</li>
 </ul>
 <pre><code class="lang-js">return {
-  eventFn : function(element, done) {
+  //enter, leave, move signature
+  eventFn : function(element, done, options) {
     //code to run the animation
     //once complete, then run done()
-    return function cancellationFunction() {
+    return function endFunction(wasCancelled) {
       //code to cancel the animation
     }
   }
@@ -93,7 +104,7 @@ triggered.</li>
         <a href="" class="label type-hint type-hint-string">string</a>
       </td>
       <td>
-        <p>The name of the animation.</p>
+        <p>The name of the animation (this is what the class-based CSS value will be compared to).</p>
 
         
       </td>
@@ -133,8 +144,8 @@ triggered.</li>
 </h3>
     <div><p>Sets and/or returns the CSS class regular expression that is checked when performing
 an animation. Upon bootstrap the classNameFilter value is not set at all and will
-therefore enable $animate to attempt to perform an animation on any element.
-When setting the classNameFilter value, animations will only be performed on elements
+therefore enable $animate to attempt to perform an animation on any element that is triggered.
+When setting the <code>classNameFilter</code> value, animations will only be performed on elements
 that successfully match the filter expression. This in turn can boost performance
 for low-powered devices as well as applications containing a lot of structural operations.</p>
 </div>

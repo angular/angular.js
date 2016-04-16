@@ -10,8 +10,19 @@
 
   
 </head>
-<body ng-app="">
-  <div>Normal: {{1 + 2}}</div>
-<div ng-non-bindable>Ignored: {{1 + 2}}</div>
+<body ng-app="initExample">
+  <script>
+  angular.module('initExample', [])
+    .controller('ExampleController', ['$scope', function($scope) {
+      $scope.list = [['a', 'b'], ['c', 'd']];
+    }]);
+</script>
+<div ng-controller="ExampleController">
+  <div ng-repeat="innerList in list" ng-init="outerIndex = $index">
+    <div ng-repeat="value in innerList" ng-init="innerIndex = $index">
+       <span class="example-init">list[ {{outerIndex}} ][ {{innerIndex}} ] = {{value}};</span>
+    </div>
+  </div>
+</div>
 </body>
 </html>

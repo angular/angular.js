@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Example - example-ngPatternDirective-debug</title>
+  
+
+  <script src="../../../angular.js"></script>
+  
+
+  
+</head>
+<body ng-app="ngPatternExample">
+  <script>
+  angular.module('ngPatternExample', [])
+    .controller('ExampleController', ['$scope', function($scope) {
+      $scope.regex = '\\d+';
+    }]);
+</script>
+<div ng-controller="ExampleController">
+  <form name="form">
+    <label for="regex">Set a pattern (regex string): </label>
+    <input type="text" ng-model="regex" id="regex" />
+    <br>
+    <label for="input">This input is restricted by the current pattern: </label>
+    <input type="text" ng-model="model" id="input" name="input" ng-pattern="regex" /><br>
+    <hr>
+    input valid? = <code>{{form.input.$valid}}</code><br>
+    model = <code>{{model}}</code>
+  </form>
+</div>
+</body>
+</html>

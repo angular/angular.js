@@ -34,6 +34,15 @@ $provide.value("$locale", {
       "fredag",
       "l\u00f6rdag"
     ],
+    "ERANAMES": [
+      "f\u00f6re Kristus",
+      "efter Kristus"
+    ],
+    "ERAS": [
+      "f.Kr.",
+      "e.Kr."
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "januari",
       "februari",
@@ -71,7 +80,25 @@ $provide.value("$locale", {
       "nov.",
       "dec."
     ],
-    "fullDate": "EEEE'en' 'den' d:'e' MMMM y",
+    "STANDALONEMONTH": [
+      "Januari",
+      "Februari",
+      "Mars",
+      "April",
+      "Maj",
+      "Juni",
+      "Juli",
+      "Augusti",
+      "September",
+      "Oktober",
+      "November",
+      "December"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
+    ],
+    "fullDate": "EEEE d MMMM y",
     "longDate": "d MMMM y",
     "medium": "d MMM y HH:mm:ss",
     "mediumDate": "d MMM y",
@@ -110,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "sv-fi",
+  "localeID": "sv_FI",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

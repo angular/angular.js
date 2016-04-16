@@ -1,8 +1,8 @@
-<a href='https://github.com/angular/angular.js/edit/master/src/ng/directive/ngShowHide.js?message=docs(ngHide)%3A%20describe%20your%20change...#L180' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/directive/ngShowHide.js?message=docs(ngHide)%3A%20describe%20your%20change...#L181' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
 
 
 
-<a href='https://github.com/angular/angular.js/tree/master/src/ng/directive/ngShowHide.js#L180' class='view-source pull-right btn btn-primary'>
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/directive/ngShowHide.js#L181' class='view-source pull-right btn btn-primary'>
   <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
 </a>
 
@@ -71,10 +71,12 @@ CSS class is added and removed for you instead of your own CSS class.</p>
 .my-element.ng-hide-remove { ... }
 .my-element.ng-hide-remove.ng-hide-remove-active { ... }
 </code></pre>
-<p>Keep in mind that, as of AngularJS version 1.3.0-beta.11, there is no need to change the display
+<p>Keep in mind that, as of AngularJS version 1.3, there is no need to change the display
 property to block during animation states--ngAnimate will handle the style toggling automatically for you.</p>
 
 </div>
+
+
 
 
 
@@ -87,6 +89,7 @@ property to block during animation states--ngAnimate will handle the style toggl
   <ul>
     
     <li>This directive executes at priority level 0.</li>
+    <li>This directive can be used as <a href="api/ng/service/$compile#-multielement-">multiElement</a></li>
   </ul>
 
   
@@ -95,14 +98,30 @@ property to block during animation states--ngAnimate will handle the style toggl
   
     <ul>
     <li>as attribute:
-        <pre><code>&lt;ANY&#10;  ng-hide=&quot;&quot;&gt;&#10;...&#10;&lt;/ANY&gt;</code></pre>
+        <pre><code>&lt;ANY&#10;  ng-hide=&quot;expression&quot;&gt;&#10;...&#10;&lt;/ANY&gt;</code></pre>
       </li>
     
   </div>
   
   <h2 id="animations">Animations</h2>
-  <p>removeClass: <code>.ng-hide</code> - happens after the <code>ngHide</code> expression evaluates to a truthy value and just before the contents are set to hidden
-addClass: <code>.ng-hide</code> - happens after the <code>ngHide</code> expression evaluates to a non truthy value and just before the contents are set to visible</p>
+  <table>
+<thead>
+<tr>
+<th>Animation</th>
+<th>Occurs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="api/ng/service/$animate#addClass">addClass</a> <code>.ng-hide</code></td>
+<td>after the <code>ngHide</code> expression evaluates to a truthy value and just before the contents are set to hidden</td>
+</tr>
+<tr>
+<td><a href="api/ng/service/$animate#removeClass">removeClass</a>  <code>.ng-hide</code></td>
+<td>after the <code>ngHide</code> expression evaluates to a non truthy value and just before contents are set to visible</td>
+</tr>
+</tbody>
+</table>
 
   <a href="api/ngAnimate/service/$animate">Click here</a> to learn more about the steps involved in the animation.
 <section class="api-section">
@@ -146,12 +165,10 @@ addClass: <code>.ng-hide</code> - happens after the <code>ngHide</code> expressi
   <h2 id="example">Example</h2><p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-example91', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-example92"></plnkr-opener>
 
   <div class="runnable-example"
-      path="examples/example-example91"
+      path="examples/example-example92"
       module="ngAnimate"
       deps="angular-animate.js"
       animations="true">
@@ -161,7 +178,7 @@ addClass: <code>.ng-hide</code> - happens after the <code>ngHide</code> expressi
       name="index.html"
       language="html"
       type="html">
-      <pre><code>Click me: &lt;input type=&quot;checkbox&quot; ng-model=&quot;checked&quot;&gt;&lt;br/&gt;&#10;&lt;div&gt;&#10;  Show:&#10;  &lt;div class=&quot;check-element animate-hide&quot; ng-show=&quot;checked&quot;&gt;&#10;    &lt;span class=&quot;glyphicon glyphicon-thumbs-up&quot;&gt;&lt;/span&gt; I show up when your checkbox is checked.&#10;  &lt;/div&gt;&#10;&lt;/div&gt;&#10;&lt;div&gt;&#10;  Hide:&#10;  &lt;div class=&quot;check-element animate-hide&quot; ng-hide=&quot;checked&quot;&gt;&#10;    &lt;span class=&quot;glyphicon glyphicon-thumbs-down&quot;&gt;&lt;/span&gt; I hide when your checkbox is checked.&#10;  &lt;/div&gt;&#10;&lt;/div&gt;</code></pre>
+      <pre><code>Click me: &lt;input type=&quot;checkbox&quot; ng-model=&quot;checked&quot; aria-label=&quot;Toggle ngShow&quot;&gt;&lt;br/&gt;&#10;&lt;div&gt;&#10;  Show:&#10;  &lt;div class=&quot;check-element animate-hide&quot; ng-show=&quot;checked&quot;&gt;&#10;    &lt;span class=&quot;glyphicon glyphicon-thumbs-up&quot;&gt;&lt;/span&gt; I show up when your checkbox is checked.&#10;  &lt;/div&gt;&#10;&lt;/div&gt;&#10;&lt;div&gt;&#10;  Hide:&#10;  &lt;div class=&quot;check-element animate-hide&quot; ng-hide=&quot;checked&quot;&gt;&#10;    &lt;span class=&quot;glyphicon glyphicon-thumbs-down&quot;&gt;&lt;/span&gt; I hide when your checkbox is checked.&#10;  &lt;/div&gt;&#10;&lt;/div&gt;</code></pre>
     </div>
   
     <div class="runnable-example-file" 
@@ -175,7 +192,7 @@ addClass: <code>.ng-hide</code> - happens after the <code>ngHide</code> expressi
       name="animations.css"
       language="css"
       type="css">
-      <pre><code>.animate-hide {&#10;  -webkit-transition: all linear 0.5s;&#10;  transition: all linear 0.5s;&#10;  line-height: 20px;&#10;  opacity: 1;&#10;  padding: 10px;&#10;  border: 1px solid black;&#10;  background: white;&#10;}&#10;&#10;.animate-hide.ng-hide {&#10;  line-height: 0;&#10;  opacity: 0;&#10;  padding: 0 10px;&#10;}&#10;&#10;.check-element {&#10;  padding: 10px;&#10;  border: 1px solid black;&#10;  background: white;&#10;}</code></pre>
+      <pre><code>.animate-hide {&#10;  transition: all linear 0.5s;&#10;  line-height: 20px;&#10;  opacity: 1;&#10;  padding: 10px;&#10;  border: 1px solid black;&#10;  background: white;&#10;}&#10;&#10;.animate-hide.ng-hide {&#10;  line-height: 0;&#10;  opacity: 0;&#10;  padding: 0 10px;&#10;}&#10;&#10;.check-element {&#10;  padding: 10px;&#10;  border: 1px solid black;&#10;  background: white;&#10;}</code></pre>
     </div>
   
     <div class="runnable-example-file" 
@@ -186,7 +203,7 @@ addClass: <code>.ng-hide</code> - happens after the <code>ngHide</code> expressi
     </div>
   
 
-    <iframe class="runnable-example-frame" src="examples/example-example91/index.html" name="example-example91"></iframe>
+    <iframe class="runnable-example-frame" src="examples/example-example92/index.html" name="example-example92"></iframe>
   </div>
 </div>
 

@@ -1,8 +1,8 @@
-<a href='https://github.com/angular/angular.js/edit/master/src/ng/filter/filters.js?message=docs(currency)%3A%20describe%20your%20change...#L3' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/filter/filters.js?message=docs(currency)%3A%20describe%20your%20change...#L7' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
 
 
 
-<a href='https://github.com/angular/angular.js/tree/master/src/ng/filter/filters.js#L3' class='view-source pull-right btn btn-primary'>
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/filter/filters.js#L7' class='view-source pull-right btn btn-primary'>
   <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
 </a>
 
@@ -24,6 +24,8 @@
 symbol for current locale is used.</p>
 
 </div>
+
+
 
 
 
@@ -122,12 +124,10 @@ symbol for current locale is used.</p>
   <h2 id="example">Example</h2><p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-example98', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-example99"></plnkr-opener>
 
   <div class="runnable-example"
-      path="examples/example-example98"
+      path="examples/example-example99"
       module="currencyExample">
 
   
@@ -135,18 +135,18 @@ symbol for current locale is used.</p>
       name="index.html"
       language="html"
       type="html">
-      <pre><code>&lt;script&gt;&#10;  angular.module(&#39;currencyExample&#39;, [])&#10;    .controller(&#39;ExampleController&#39;, [&#39;$scope&#39;, function($scope) {&#10;      $scope.amount = 1234.56;&#10;    }]);&#10;&lt;/script&gt;&#10;&lt;div ng-controller=&quot;ExampleController&quot;&gt;&#10;  &lt;input type=&quot;number&quot; ng-model=&quot;amount&quot;&gt; &lt;br&gt;&#10;  default currency symbol ($): &lt;span id=&quot;currency-default&quot;&gt;{{amount | currency}}&lt;/span&gt;&lt;br&gt;&#10;  custom currency identifier (USD$): &lt;span id=&quot;currency-custom&quot;&gt;{{amount | currency:&quot;USD$&quot;}}&lt;/span&gt;&#10;  no fractions (0): &lt;span id=&quot;currency-no-fractions&quot;&gt;{{amount | currency:&quot;USD$&quot;:0}}&lt;/span&gt;&#10;&lt;/div&gt;</code></pre>
+      <pre><code>&lt;script&gt;&#10;  angular.module(&#39;currencyExample&#39;, [])&#10;    .controller(&#39;ExampleController&#39;, [&#39;$scope&#39;, function($scope) {&#10;      $scope.amount = 1234.56;&#10;    }]);&#10;&lt;/script&gt;&#10;&lt;div ng-controller=&quot;ExampleController&quot;&gt;&#10;  &lt;input type=&quot;number&quot; ng-model=&quot;amount&quot; aria-label=&quot;amount&quot;&gt; &lt;br&gt;&#10;  default currency symbol ($): &lt;span id=&quot;currency-default&quot;&gt;{{amount | currency}}&lt;/span&gt;&lt;br&gt;&#10;  custom currency identifier (USD$): &lt;span id=&quot;currency-custom&quot;&gt;{{amount | currency:&quot;USD$&quot;}}&lt;/span&gt;&#10;  no fractions (0): &lt;span id=&quot;currency-no-fractions&quot;&gt;{{amount | currency:&quot;USD$&quot;:0}}&lt;/span&gt;&#10;&lt;/div&gt;</code></pre>
     </div>
   
     <div class="runnable-example-file" 
       name="protractor.js"
       type="protractor"
       language="js">
-      <pre><code>it(&#39;should init with 1234.56&#39;, function() {&#10;  expect(element(by.id(&#39;currency-default&#39;)).getText()).toBe(&#39;$1,234.56&#39;);&#10;  expect(element(by.id(&#39;currency-custom&#39;)).getText()).toBe(&#39;USD$1,234.56&#39;);&#10;  expect(element(by.id(&#39;currency-no-fractions&#39;)).getText()).toBe(&#39;USD$1,235&#39;);&#10;});&#10;it(&#39;should update&#39;, function() {&#10;  if (browser.params.browser == &#39;safari&#39;) {&#10;    // Safari does not understand the minus key. See&#10;    // https://github.com/angular/protractor/issues/481&#10;    return;&#10;  }&#10;  element(by.model(&#39;amount&#39;)).clear();&#10;  element(by.model(&#39;amount&#39;)).sendKeys(&#39;-1234&#39;);&#10;  expect(element(by.id(&#39;currency-default&#39;)).getText()).toBe(&#39;($1,234.00)&#39;);&#10;  expect(element(by.id(&#39;currency-custom&#39;)).getText()).toBe(&#39;(USD$1,234.00)&#39;);&#10;  expect(element(by.id(&#39;currency-no-fractions&#39;)).getText()).toBe(&#39;(USD$1,234)&#39;);&#10;});</code></pre>
+      <pre><code>it(&#39;should init with 1234.56&#39;, function() {&#10;  expect(element(by.id(&#39;currency-default&#39;)).getText()).toBe(&#39;$1,234.56&#39;);&#10;  expect(element(by.id(&#39;currency-custom&#39;)).getText()).toBe(&#39;USD$1,234.56&#39;);&#10;  expect(element(by.id(&#39;currency-no-fractions&#39;)).getText()).toBe(&#39;USD$1,235&#39;);&#10;});&#10;it(&#39;should update&#39;, function() {&#10;  if (browser.params.browser == &#39;safari&#39;) {&#10;    // Safari does not understand the minus key. See&#10;    // https://github.com/angular/protractor/issues/481&#10;    return;&#10;  }&#10;  element(by.model(&#39;amount&#39;)).clear();&#10;  element(by.model(&#39;amount&#39;)).sendKeys(&#39;-1234&#39;);&#10;  expect(element(by.id(&#39;currency-default&#39;)).getText()).toBe(&#39;-$1,234.00&#39;);&#10;  expect(element(by.id(&#39;currency-custom&#39;)).getText()).toBe(&#39;-USD$1,234.00&#39;);&#10;  expect(element(by.id(&#39;currency-no-fractions&#39;)).getText()).toBe(&#39;-USD$1,234&#39;);&#10;});</code></pre>
     </div>
   
 
-    <iframe class="runnable-example-frame" src="examples/example-example98/index.html" name="example-example98"></iframe>
+    <iframe class="runnable-example-frame" src="examples/example-example99/index.html" name="example-example99"></iframe>
   </div>
 </div>
 

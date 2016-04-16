@@ -1,8 +1,8 @@
 <a href='https://github.com/angular/angular.js/edit/master/docs/content/error/$location/nobase.ngdoc?message=docs(error%2Fnobase)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
 
 
-<h1>Error: error:nobase
-  <div><span class='hint'>$location in HTML5 mode requires a <base> tag to be present!</span></div>
+<h1>Error: $location:nobase
+  <div><span class='hint'>$location in HTML5 mode requires a &lt;base&gt; tag to be present!</span></div>
 </h1>
 
 <div>
@@ -20,7 +20,7 @@
   requireBase: false
 });
 </code></pre>
-<p>Note that removing the requirement for a <base> tag will have adverse side effects when resolving
+<p>Note that removing the requirement for a <code>&lt;base&gt;</code> tag will have adverse side effects when resolving
 relative paths with <code>$location</code> in IE9.</p>
 <p>The base URL is then used to resolve all relative URLs throughout the application regardless of the
 entry point into the app.</p>

@@ -1,23 +1,16 @@
-<a href='https://github.com/angular/angular.js/edit/master/src/ngTouch/touch.js?message=docs(ngTouch)%3A%20describe%20your%20change...#L3' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+<a href='https://github.com/angular/angular.js/edit/master/src/ngTouch/touch.js?message=docs(ngTouch)%3A%20describe%20your%20change...#L6' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
 
 
 <h1>
   <code>ngTouch</code>
 </h1>
 
-<h1 id="ngtouch">ngTouch</h1>
-<p>The <code>ngTouch</code> module provides touch events and other helpers for touch-enabled devices.
-The implementation is based on jQuery Mobile touch event handling
-(<a href="http://jquerymobile.com/">jquerymobile.com</a>).</p>
-<p>See <a href="api/ngTouch/service/$swipe"><code>$swipe</code></a> for usage.</p>
-<div doc-module-components="ngTouch"></div>
-
 
   <h2>Installation</h2>
 
   <p>First include <code>angular-touch.js</code> in your HTML:</p>
 
-  <pre><code>&lt;script src=&quot;angular.js&quot;&gt;&#10;&lt;script src=&quot;angular-touch.js&quot;&gt;</code></pre>
+  <pre><code>&lt;script src=&quot;angular.js&quot;&gt;&#13;&#10;&lt;script src=&quot;angular-touch.js&quot;&gt;&#13;</code></pre>
 
   <p>You can download this file from the following places:</p>
   <ul>
@@ -36,9 +29,19 @@ The implementation is based on jQuery Mobile touch event handling
   </ul>
   <p>where X.Y.Z is the AngularJS version you are running.</p>
   <p>Then load the module in your application by adding it as a dependent module:</p>
-  <pre><code>angular.module(&#39;app&#39;, [&#39;ngTouch&#39;]);</code></pre>
+  <pre><code>angular.module(&#39;app&#39;, [&#39;ngTouch&#39;]);&#13;</code></pre>
 
   <p>With that you&apos;re ready to get started!</p>
+
+
+<h1 id="ngtouch">ngTouch</h1>
+<p>The <code>ngTouch</code> module provides touch events and other helpers for touch-enabled devices.
+The implementation is based on jQuery Mobile touch event handling
+(<a href="http://jquerymobile.com/">jquerymobile.com</a>).</p>
+<p>See <a href="api/ngTouch/service/$swipe"><code>$swipe</code></a> for usage.</p>
+<div doc-module-components="ngTouch"></div>
+
+
 
 
 <div class="component-breakdown">
@@ -54,7 +57,15 @@ The implementation is based on jQuery Mobile touch event handling
       
       <tr>
         <td><a href="api/ngTouch/directive/ngClick">ngClick</a></td>
-        <td><p>A more powerful replacement for the default ngClick designed to be used on touchscreen
+        <td><p><div class="alert alert-danger">
+<strong>DEPRECATION NOTICE</strong>: Beginning with Angular 1.5, this directive is deprecated and by default <strong>disabled</strong>.
+The directive will receive no further support and might be removed from future releases.
+If you need the directive, you can enable it with the <a href="api/ngTouch/provider/$touchProvider">$touchProvider#ngClickOverrideEnabled</a>
+function. We also recommend that you migrate to <a href="https://github.com/ftlabs/fastclick">FastClick</a>.
+To learn more about the 300ms delay, this <a href="http://developer.telerik.com/featured/300-ms-click-delay-ios-8/">Telerik article</a>
+gives a good overview.
+</div>
+A more powerful replacement for the default ngClick designed to be used on touchscreen
 devices. Most mobile browsers wait about 300ms after a tap-and-release before sending
 the click event. This version handles them immediately, and then prevents the
 following click event from propagating.</p>
@@ -94,6 +105,29 @@ too.</p>
         <td><a href="api/ngTouch/service/$swipe">$swipe</a></td>
         <td><p>The <code>$swipe</code> service is a service that abstracts the messier details of hold-and-drag swipe
 behavior, to make implementing swipe-related directives more convenient.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ngTouch/service/$touch">$touch</a></td>
+        <td><p>Provides the <a href="api/ngTouch/service/$touch#ngClickOverrideEnabled"><code>ngClickOverrideEnabled</code></a> method.</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+  
+  <div>
+    <h3 class="component-heading" id="provider">Provider</h3>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ngTouch/provider/$touchProvider">$touchProvider</a></td>
+        <td><p>The <code>$touchProvider</code> allows enabling / disabling <a href="api/ngTouch/directive/ngClick">ngTouch&#39;s ngClick directive</a>.</p>
 </td>
       </tr>
       

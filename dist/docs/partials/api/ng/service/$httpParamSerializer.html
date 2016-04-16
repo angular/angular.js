@@ -1,0 +1,58 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/http.js?message=docs($httpParamSerializer)%3A%20describe%20your%20change...#L27' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/http.js#L27' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">$httpParamSerializer</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+  
+
+    <li>
+      - service in module <a href="api/ng">ng</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Default <a href="api/ng/service/$http"><code>$http</code></a> params serializer that converts objects to strings
+according to the following rules:</p>
+<ul>
+<li><code>{&#39;foo&#39;: &#39;bar&#39;}</code> results in <code>foo=bar</code></li>
+<li><code>{&#39;foo&#39;: Date.now()}</code> results in <code>foo=2015-04-01T09%3A50%3A49.262Z</code> (<code>toISOString()</code> and encoded representation of a Date object)</li>
+<li><code>{&#39;foo&#39;: [&#39;bar&#39;, &#39;baz&#39;]}</code> results in <code>foo=bar&amp;foo=baz</code> (repeated key for each array element)</li>
+<li><code>{&#39;foo&#39;: {&#39;bar&#39;:&#39;baz&#39;}}</code> results in <code>foo=%7B%22bar%22%3A%22baz%22%7D&quot;</code> (stringified and encoded representation of an object)</li>
+</ul>
+<p>Note that serializer will sort the request parameters alphabetically.</p>
+
+</div>
+
+
+
+
+
+
+<div>
+  
+
+    
+
+  
+
+  
+  
+  
+
+
+
+  
+</div>
+
+

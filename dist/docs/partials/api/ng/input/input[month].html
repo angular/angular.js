@@ -1,8 +1,8 @@
-<a href='https://github.com/angular/angular.js/edit/master/src/ng/directive/input.js?message=docs(input[month])%3A%20describe%20your%20change...#L487' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/directive/input.js?message=docs(input[month])%3A%20describe%20your%20change...#L554' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
 
 
 
-<a href='https://github.com/angular/angular.js/tree/master/src/ng/directive/input.js#L487' class='view-source pull-right btn btn-primary'>
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/directive/input.js#L554' class='view-source pull-right btn btn-primary'>
   <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
 </a>
 
@@ -35,6 +35,8 @@ to the first of the month.</p>
 
 
 
+
+
 <div>
   
 
@@ -43,11 +45,12 @@ to the first of the month.</p>
   <ul>
     
     <li>This directive executes at priority level 0.</li>
+    
   </ul>
 
   
   <h2>Usage</h2>
-  <pre><code>&lt;input type=&quot;month&quot;&#10;       ng-model=&quot;&quot;&#10;       [name=&quot;&quot;]&#10;       [min=&quot;&quot;]&#10;       [max=&quot;&quot;]&#10;       [required=&quot;&quot;]&#10;       [ng-required=&quot;&quot;]&#10;       [ng-change=&quot;&quot;]&gt;</code></pre>
+  <pre><code>&lt;input type=&quot;month&quot;&#10;       ng-model=&quot;string&quot;&#10;       [name=&quot;string&quot;]&#10;       [min=&quot;string&quot;]&#10;       [max=&quot;string&quot;]&#10;       [ng-min=&quot;&quot;]&#10;       [ng-max=&quot;&quot;]&#10;       [required=&quot;string&quot;]&#10;       [ng-required=&quot;string&quot;]&#10;       [ng-change=&quot;string&quot;]&gt;</code></pre>
 
 <section class="api-section">
   <h3>Arguments</h3>
@@ -104,8 +107,10 @@ to the first of the month.</p>
         <a href="" class="label type-hint type-hint-string">string</a>
       </td>
       <td>
-        <p>Sets the <code>min</code> validation error key if the value entered is less than <code>min</code>. This must be
-a valid ISO month format (yyyy-MM).</p>
+        <p>Sets the <code>min</code> validation error key if the value entered is less than <code>min</code>.
+  This must be a valid ISO month format (yyyy-MM). You can also use interpolation inside this
+  attribute (e.g. <code>min=&quot;{{minMonth | date:&#39;yyyy-MM&#39;}}&quot;</code>). Note that <code>min</code> will also add
+  native HTML5 constraint validation.</p>
 
         
       </td>
@@ -121,8 +126,44 @@ a valid ISO month format (yyyy-MM).</p>
         <a href="" class="label type-hint type-hint-string">string</a>
       </td>
       <td>
-        <p>Sets the <code>max</code> validation error key if the value entered is greater than <code>max</code>. This must
-be a valid ISO month format (yyyy-MM).</p>
+        <p>Sets the <code>max</code> validation error key if the value entered is greater than <code>max</code>.
+  This must be a valid ISO month format (yyyy-MM). You can also use interpolation inside this
+  attribute (e.g. <code>max=&quot;{{maxMonth | date:&#39;yyyy-MM&#39;}}&quot;</code>). Note that <code>max</code> will also add
+  native HTML5 constraint validation.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        ngMin
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-date">date</a><a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Sets the <code>min</code> validation constraint to the Date / ISO week string
+  the <code>ngMin</code> expression evaluates to. Note that it does not set the <code>min</code> attribute.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        ngMax
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-date">date</a><a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Sets the <code>max</code> validation constraint to the Date / ISO week string
+  the <code>ngMax</code> expression evaluates to. Note that it does not set the <code>max</code> attribute.</p>
 
         
       </td>
@@ -190,9 +231,7 @@ be a valid ISO month format (yyyy-MM).</p>
   <h2 id="example">Example</h2><p>
 
 <div>
-  <a ng-click="openPlunkr('examples/example-month-input-directive', $event)" class="btn pull-right">
-    <i class="glyphicon glyphicon-edit">&nbsp;</i>
-    Edit in Plunker</a>
+  <plnkr-opener example-path="examples/example-month-input-directive"></plnkr-opener>
 
   <div class="runnable-example"
       path="examples/example-month-input-directive"
@@ -204,7 +243,7 @@ be a valid ISO month format (yyyy-MM).</p>
       name="index.html"
       language="html"
       type="html">
-      <pre><code>&lt;script&gt;&#10; angular.module(&#39;monthExample&#39;, [])&#10;   .controller(&#39;DateController&#39;, [&#39;$scope&#39;, function($scope) {&#10;     $scope.example = {&#10;       value: new Date(2013, 9, 1)&#10;     };&#10;   }]);&#10;&lt;/script&gt;&#10;&lt;form name=&quot;myForm&quot; ng-controller=&quot;DateController as dateCtrl&quot;&gt;&#10;  Pick a month in 2013:&#10;  &lt;input id=&quot;exampleInput&quot; type=&quot;month&quot; name=&quot;input&quot; ng-model=&quot;example.value&quot;&#10;     placeholder=&quot;yyyy-MM&quot; min=&quot;2013-01&quot; max=&quot;2013-12&quot; required /&gt;&#10;  &lt;span class=&quot;error&quot; ng-show=&quot;myForm.input.$error.required&quot;&gt;&#10;     Required!&lt;/span&gt;&#10;  &lt;span class=&quot;error&quot; ng-show=&quot;myForm.input.$error.month&quot;&gt;&#10;     Not a valid month!&lt;/span&gt;&#10;  &lt;tt&gt;value = {{example.value | date: &quot;yyyy-MM&quot;}}&lt;/tt&gt;&lt;br/&gt;&#10;  &lt;tt&gt;myForm.input.$valid = {{myForm.input.$valid}}&lt;/tt&gt;&lt;br/&gt;&#10;  &lt;tt&gt;myForm.input.$error = {{myForm.input.$error}}&lt;/tt&gt;&lt;br/&gt;&#10;  &lt;tt&gt;myForm.$valid = {{myForm.$valid}}&lt;/tt&gt;&lt;br/&gt;&#10;  &lt;tt&gt;myForm.$error.required = {{!!myForm.$error.required}}&lt;/tt&gt;&lt;br/&gt;&#10;&lt;/form&gt;</code></pre>
+      <pre><code>&lt;script&gt;&#10; angular.module(&#39;monthExample&#39;, [])&#10;   .controller(&#39;DateController&#39;, [&#39;$scope&#39;, function($scope) {&#10;     $scope.example = {&#10;       value: new Date(2013, 9, 1)&#10;     };&#10;   }]);&#10;&lt;/script&gt;&#10;&lt;form name=&quot;myForm&quot; ng-controller=&quot;DateController as dateCtrl&quot;&gt;&#10;  &lt;label for=&quot;exampleInput&quot;&gt;Pick a month in 2013:&lt;/label&gt;&#10;  &lt;input id=&quot;exampleInput&quot; type=&quot;month&quot; name=&quot;input&quot; ng-model=&quot;example.value&quot;&#10;     placeholder=&quot;yyyy-MM&quot; min=&quot;2013-01&quot; max=&quot;2013-12&quot; required /&gt;&#10;  &lt;div role=&quot;alert&quot;&gt;&#10;    &lt;span class=&quot;error&quot; ng-show=&quot;myForm.input.$error.required&quot;&gt;&#10;       Required!&lt;/span&gt;&#10;    &lt;span class=&quot;error&quot; ng-show=&quot;myForm.input.$error.month&quot;&gt;&#10;       Not a valid month!&lt;/span&gt;&#10;  &lt;/div&gt;&#10;  &lt;tt&gt;value = {{example.value | date: &quot;yyyy-MM&quot;}}&lt;/tt&gt;&lt;br/&gt;&#10;  &lt;tt&gt;myForm.input.$valid = {{myForm.input.$valid}}&lt;/tt&gt;&lt;br/&gt;&#10;  &lt;tt&gt;myForm.input.$error = {{myForm.input.$error}}&lt;/tt&gt;&lt;br/&gt;&#10;  &lt;tt&gt;myForm.$valid = {{myForm.$valid}}&lt;/tt&gt;&lt;br/&gt;&#10;  &lt;tt&gt;myForm.$error.required = {{!!myForm.$error.required}}&lt;/tt&gt;&lt;br/&gt;&#10;&lt;/form&gt;</code></pre>
     </div>
   
     <div class="runnable-example-file" 

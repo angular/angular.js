@@ -32,7 +32,7 @@ URLs point to the <code>app/img/phones/</code> directory.</p>
 <pre><code class="lang-html">...
         &lt;ul class=&quot;phones&quot;&gt;
           &lt;li ng-repeat=&quot;phone in phones | filter:query | orderBy:orderProp&quot; class=&quot;thumbnail&quot;&gt;
-            &lt;a href=&quot;#/phones/{{phone.id}}&quot; class=&quot;thumb&quot;&gt;&lt;img ng-src=&quot;{{phone.imageUrl}}&quot;&gt;&lt;/a&gt;
+            &lt;a href=&quot;#/phones/{{phone.id}}&quot; class=&quot;thumb&quot;&gt;&lt;img ng-src=&quot;{{phone.imageUrl}}&quot; alt=&quot;{{phone.name}}&quot;&gt;&lt;/a&gt;
             &lt;a href=&quot;#/phones/{{phone.id}}&quot;&gt;{{phone.name}}&lt;/a&gt;
             &lt;p&gt;{{phone.snippet}}&lt;/p&gt;
           &lt;/li&gt;
@@ -45,8 +45,8 @@ now-familiar double-curly brace binding in the <code>href</code> attribute value
 the element attribute.</p>
 <p>We also added phone images next to each record using an image tag with the <a href="api/ng/directive/ngSrc">ngSrc</a> directive. That directive prevents the
 browser from treating the Angular <code>{{ expression }}</code> markup literally, and initiating a request to
-invalid URL <code>http://localhost:8000/app/{{phone.imageUrl}}</code>, which it would have done if we had only
-specified an attribute binding in a regular <code>src</code> attribute (<code>&lt;img src=&quot;{{phone.imageUrl}}&quot;&gt;</code>).
+an invalid URL <code>http://localhost:8000/app/{{phone.imageUrl}}</code>, which it would have done if we had
+only specified an attribute binding in a regular <code>src</code> attribute (<code>&lt;img src=&quot;{{phone.imageUrl}}&quot;&gt;</code>).
 Using the <code>ngSrc</code> directive prevents the browser from making an http request to an invalid location.</p>
 <h2 id="test">Test</h2>
 <p><strong><code>test/e2e/scenarios.js</code></strong>:</p>
@@ -56,7 +56,7 @@ Using the <code>ngSrc</code> directive prevents the browser from making an http 
       query.sendKeys(&#39;nexus&#39;);
       element.all(by.css(&#39;.phones li a&#39;)).first().click();
       browser.getLocationAbsUrl().then(function(url) {
-        expect(url.split(&#39;#&#39;)[1]).toBe(&#39;/phones/nexus-s&#39;);
+        expect(url).toBe(&#39;/phones/nexus-s&#39;);
       });
     });
 ...

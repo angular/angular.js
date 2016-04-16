@@ -12,9 +12,14 @@
 
   
 </head>
-<body ng-app="docsTemplateUrlDirective">
+<body ng-app="docsBindExample">
   <div ng-controller="Controller">
-  <div my-customer></div>
+  Hello <input ng-model='name'> <hr/>
+  <span ng-bind="name"></span> <br/>
+  <span ng:bind="name"></span> <br/>
+  <span ng_bind="name"></span> <br/>
+  <span data-ng-bind="name"></span> <br/>
+  <span x-ng-bind="name"></span> <br/>
 </div>
 </body>
 </html>

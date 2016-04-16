@@ -13,14 +13,36 @@
 
   
 </head>
-<body ng-app="anchorScrollOffsetExample">
-  <div class="fixed-header" ng-controller="headerCtrl">
-  <a href="" ng-click="gotoAnchor(x)" ng-repeat="x in [1,2,3,4,5]">
-    Go to anchor {{x}}
-  </a>
-</div>
-<div id="anchor{{x}}" class="anchor" ng-repeat="x in [1,2,3,4,5]">
-  Anchor {{x}} of 5
+<body >
+  <div ng-app="ngAppStrictDemo" ng-strict-di>
+    <div ng-controller="GoodController1">
+        I can add: {{a}} + {{b}} =  {{ a+b }}
+
+        <p>This renders because the controller does not fail to
+           instantiate, by using explicit annotation style (see
+           script.js for details)
+        </p>
+    </div>
+
+    <div ng-controller="GoodController2">
+        Name: <input ng-model="name"><br />
+        Hello, {{name}}!
+
+        <p>This renders because the controller does not fail to
+           instantiate, by using explicit annotation style
+           (see script.js for details)
+        </p>
+    </div>
+
+    <div ng-controller="BadController">
+        I can add: {{a}} + {{b}} =  {{ a+b }}
+
+        <p>The controller could not be instantiated, due to relying
+           on automatic function annotations (which are disabled in
+           strict mode). As such, the content of this section is not
+           interpolated, and there should be an error in your web console.
+        </p>
+    </div>
 </div>
 </body>
 </html>

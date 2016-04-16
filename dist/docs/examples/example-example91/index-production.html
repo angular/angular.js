@@ -7,23 +7,23 @@
   <link href="animations.css" rel="stylesheet" type="text/css">
   
 
-  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular.min.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular-animate.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/null/angular.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/null/angular-animate.js"></script>
   
 
   
 </head>
 <body ng-app="ngAnimate">
-  Click me: <input type="checkbox" ng-model="checked"><br/>
+  Click me: <input type="checkbox" ng-model="checked" aria-label="Toggle ngHide"><br/>
 <div>
   Show:
-  <div class="check-element animate-hide" ng-show="checked">
+  <div class="check-element animate-show" ng-show="checked">
     <span class="glyphicon glyphicon-thumbs-up"></span> I show up when your checkbox is checked.
   </div>
 </div>
 <div>
   Hide:
-  <div class="check-element animate-hide" ng-hide="checked">
+  <div class="check-element animate-show" ng-hide="checked">
     <span class="glyphicon glyphicon-thumbs-down"></span> I hide when your checkbox is checked.
   </div>
 </div>

@@ -3,39 +3,70 @@
 <head>
   <meta charset="UTF-8">
   <title>Example - example-example89-jquery</title>
-  <link href="animations.css" rel="stylesheet" type="text/css">
   
 
   <script src="../../components/jquery-2.1.1/jquery.js"></script>
   <script src="../../../angular.js"></script>
-  <script src="../../../angular-animate.js"></script>
   
 
   
 </head>
-<body ng-app="ngAnimate">
-  <div ng-init="friends = [
-  {name:'John', age:25, gender:'boy'},
-  {name:'Jessie', age:30, gender:'girl'},
-  {name:'Johanna', age:28, gender:'girl'},
-  {name:'Joy', age:15, gender:'girl'},
-  {name:'Mary', age:28, gender:'girl'},
-  {name:'Peter', age:95, gender:'boy'},
-  {name:'Sebastian', age:50, gender:'boy'},
-  {name:'Erika', age:27, gender:'girl'},
-  {name:'Patrick', age:40, gender:'boy'},
-  {name:'Samantha', age:60, gender:'girl'}
-]">
-  I have {{friends.length}} friends. They are:
-  <input type="search" ng-model="q" placeholder="filter friends..." />
-  <ul class="example-animate-container">
-    <li class="animate-repeat" ng-repeat="friend in friends | filter:q as results">
-      [{{$index + 1}}] {{friend.name}} who is {{friend.age}} years old.
+<body ng-app="selectExample">
+  <script>
+angular.module('selectExample', [])
+  .controller('ExampleController', ['$scope', function($scope) {
+    $scope.colors = [
+      {name:'black', shade:'dark'},
+      {name:'white', shade:'light', notAnOption: true},
+      {name:'red', shade:'dark'},
+      {name:'blue', shade:'dark', notAnOption: true},
+      {name:'yellow', shade:'light', notAnOption: false}
+    ];
+    $scope.myColor = $scope.colors[2]; // red
+  }]);
+</script>
+<div ng-controller="ExampleController">
+  <ul>
+    <li ng-repeat="color in colors">
+      <label>Name: <input ng-model="color.name"></label>
+      <label><input type="checkbox" ng-model="color.notAnOption"> Disabled?</label>
+      <button ng-click="colors.splice($index, 1)" aria-label="Remove">X</button>
     </li>
-    <li class="animate-repeat" ng-if="results.length == 0">
-      <strong>No results found...</strong>
+    <li>
+      <button ng-click="colors.push({})">add</button>
     </li>
   </ul>
+  <hr/>
+  <label>Color (null not allowed):
+    <select ng-model="myColor" ng-options="color.name for color in colors"></select>
+  </label><br/>
+  <label>Color (null allowed):
+  <span  class="nullable">
+    <select ng-model="myColor" ng-options="color.name for color in colors">
+      <option value="">-- choose color --</option>
+    </select>
+  </span></label><br/>
+
+  <label>Color grouped by shade:
+    <select ng-model="myColor" ng-options="color.name group by color.shade for color in colors">
+    </select>
+  </label><br/>
+
+  <label>Color grouped by shade, with some disabled:
+    <select ng-model="myColor"
+          ng-options="color.name group by color.shade disable when color.notAnOption for color in colors">
+    </select>
+  </label><br/>
+
+
+
+  Select <button ng-click="myColor = { name:'not in list', shade: 'other' }">bogus</button>.
+  <br/>
+  <hr/>
+  Currently selected: {{ {selected_color:myColor} }}
+  <div style="border:solid 1px black; height:20px"
+       ng-style="{'background-color':myColor.name}">
+  </div>
 </div>
 </body>
 </html>

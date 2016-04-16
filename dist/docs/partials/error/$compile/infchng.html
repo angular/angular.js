@@ -1,0 +1,38 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/error/$compile/infchng.ngdoc?message=docs(error%2Finfchng)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1>Error: $compile:infchng
+  <div><span class='hint'>Unstable `$onChanges` hooks</span></div>
+</h1>
+
+<div>
+    <pre class="minerr-errmsg" error-display="{0} $onChanges() iterations reached. Aborting!
+">{0} $onChanges() iterations reached. Aborting!
+</pre>
+</div>
+
+<h2>Description</h2>
+<div class="description">
+  <p>This error occurs when the application&#39;s model becomes unstable because some <code>$onChanges</code> hooks are causing updates which then trigger
+further calls to <code>$onChanges</code> that can never complete.
+Angular detects this situation and prevents an infinite loop from causing the browser to become unresponsive.</p>
+<p>For example, the situation can occur by setting up a <code>$onChanges()</code> hook which triggers an event on the component, which subsequently
+triggers the component&#39;s bound inputs to be updated:</p>
+<pre><code class="lang-html">&lt;c1 prop=&quot;a&quot; on-change=&quot;a = -a&quot;&gt;&lt;/c1&gt;
+</code></pre>
+<pre><code class="lang-js">function Controller1() {}
+Controller1.$onChanges = function() {
+  this.onChange();
+};
+
+mod.component(&#39;c1&#39;, {
+  controller: Controller1,
+  bindings: {&#39;prop&#39;: &#39;&lt;&#39;, onChange: &#39;&amp;&#39;}
+}
+</code></pre>
+<p>The maximum number of allowed iterations of the <code>$onChanges</code> hooks is controlled via TTL setting which can be configured via
+<a href="api/ng/provider/$compileProvider#onChangesTtl"><code>$compileProvider.onChangesTtl</code></a>.</p>
+
+</div>
+
+

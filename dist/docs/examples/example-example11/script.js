@@ -1,15 +1,7 @@
 (function(angular) {
   'use strict';
-angular.module('docsTemplateUrlDirective', [])
+angular.module('docsBindExample', [])
   .controller('Controller', ['$scope', function($scope) {
-    $scope.customer = {
-      name: 'Naomi',
-      address: '1600 Amphitheatre'
-    };
-  }])
-  .directive('myCustomer', function() {
-    return {
-      templateUrl: 'my-customer.html'
-    };
-  });
+    $scope.name = 'Max Karl Ernst Ludwig Planck (April 23, 1858 – October 4, 1947)';
+  }]);
 })(window.angular);

@@ -13,7 +13,6 @@ angular.module('docsApp', [
   'search',
   'tutorials',
   'versions',
-  'bootstrap',
   'ui.bootstrap.dropdown'
 ])
 
@@ -57,17 +56,26 @@ angular.module('directives', [])
   return function(scope, element) {
     $anchorScroll.yOffset = element;
   };
-}]);
+}])
+
+.directive('table', function() {
+  return {
+    restrict: 'E',
+    link: function(scope, element, attrs) {
+      if (!attrs['class']) {
+        element.addClass('table table-bordered table-striped code-table');
+      }
+    }
+  };
+});
 
 angular.module('DocsController', [])
 
 .controller('DocsController', [
-          '$scope', '$rootScope', '$location', '$window', '$cookies', 'openPlunkr',
+          '$scope', '$rootScope', '$location', '$window', '$cookies',
               'NG_PAGES', 'NG_NAVIGATION', 'NG_VERSION',
-  function($scope, $rootScope, $location, $window, $cookies, openPlunkr,
+  function($scope, $rootScope, $location, $window, $cookies,
               NG_PAGES, NG_NAVIGATION, NG_VERSION) {
-
-  $scope.openPlunkr = openPlunkr;
 
   $scope.docsVersion = NG_VERSION.isSnapshot ? 'snapshot' : NG_VERSION.version;
 
@@ -141,9 +149,9 @@ angular.module('errors', ['ngSanitize'])
   };
 
   return function (text, target) {
-    var targetHtml = target ? ' target="' + target + '"' : '';
-
     if (!text) return text;
+
+    var targetHtml = target ? ' target="' + target + '"' : '';
 
     return $sanitize(text.replace(LINKY_URL_REGEXP, function (url) {
       if (STACK_TRACE_REGEXP.test(url)) {
@@ -162,6 +170,10 @@ angular.module('errors', ['ngSanitize'])
 
 
 .directive('errorDisplay', ['$location', 'errorLinkFilter', function ($location, errorLinkFilter) {
+  var encodeAngleBrackets = function (text) {
+    return text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  };
+
   var interpolate = function (formatString) {
     var formatArgs = arguments;
     return formatString.replace(/\{\d+\}/g, function (match) {
@@ -179,17 +191,70 @@ angular.module('errors', ['ngSanitize'])
     link: function (scope, element, attrs) {
       var search = $location.search(),
         formatArgs = [attrs.errorDisplay],
+        formattedText,
         i;
 
       for (i = 0; angular.isDefined(search['p'+i]); i++) {
         formatArgs.push(search['p'+i]);
       }
-      element.html(errorLinkFilter(interpolate.apply(null, formatArgs), '_blank'));
+
+      formattedText = encodeAngleBrackets(interpolate.apply(null, formatArgs));
+      element.html(errorLinkFilter(formattedText, '_blank'));
     }
   };
 }]);
 
 angular.module('examples', [])
+
+.directive('runnableExample', ['$templateCache', '$document', function($templateCache, $document) {
+  var exampleClassNameSelector = '.runnable-example-file';
+  var doc = $document[0];
+  var tpl =
+    '<nav class="runnable-example-tabs" ng-if="tabs">' +
+    '  <a ng-class="{active:$index==activeTabIndex}"' +
+         'ng-repeat="tab in tabs track by $index" ' +
+         'href="" ' +
+         'class="btn"' +
+         'ng-click="setTab($index)">' +
+    '    {{ tab }}' +
+    '  </a>' +
+    '</nav>';
+
+  return {
+    restrict: 'C',
+    scope : true,
+    controller : ['$scope', function($scope) {
+      $scope.setTab = function(index) {
+        var tab = $scope.tabs[index];
+        $scope.activeTabIndex = index;
+        $scope.$broadcast('tabChange', index, tab);
+      };
+    }],
+    compile : function(element) {
+      element.html(tpl + element.html());
+      return function(scope, element) {
+        var node = element[0];
+        var examples = node.querySelectorAll(exampleClassNameSelector);
+        var tabs = [], now = Date.now();
+        angular.forEach(examples, function(child, index) {
+          tabs.push(child.getAttribute('name'));
+        });
+
+        if(tabs.length > 0) {
+          scope.tabs = tabs;
+          scope.$on('tabChange', function(e, index, title) {
+            angular.forEach(examples, function(child) {
+              child.style.display = 'none';
+            });
+            var selected = examples[index];
+            selected.style.display = 'block';
+          });
+          scope.setTab(0);
+        }
+      };
+    }
+  };
+}])
 
 .factory('formPostData', ['$document', function($document) {
   return function(url, newWindow, fields) {
@@ -213,28 +278,109 @@ angular.module('examples', [])
   };
 }])
 
+.factory('createCopyrightNotice', function() {
+    var COPYRIGHT = 'Copyright ' + (new Date()).getFullYear() + ' Google Inc. All Rights Reserved.\n'
+     + 'Use of this source code is governed by an MIT-style license that\n'
+     + 'can be found in the LICENSE file at http://angular.io/license';
+    var COPYRIGHT_JS_CSS = '\n\n/*\n' + COPYRIGHT + '\n*/';
+    var COPYRIGHT_HTML = '\n\n<!-- \n' + COPYRIGHT + '\n-->';
 
-.factory('openPlunkr', ['formPostData', '$http', '$q', function(formPostData, $http, $q) {
-  return function(exampleFolder, clickEvent) {
+    return function getCopyright(filename) {
+      switch (filename.substr(filename.lastIndexOf('.'))) {
+        case '.html':
+          return COPYRIGHT_HTML;
+        case '.js':
+        case '.css':
+          return COPYRIGHT_JS_CSS;
+        case '.md':
+          return COPYRIGHT;
+      }
+      return '';
+    };
+})
 
-    var exampleName = 'AngularJS Example';
-    var newWindow = clickEvent.ctrlKey || clickEvent.metaKey;
+.directive('plnkrOpener', ['$q', 'getExampleData', 'formPostData', 'createCopyrightNotice', function($q, getExampleData, formPostData, createCopyrightNotice) {
+  return {
+    scope: {},
+    bindToController: {
+      'examplePath': '@'
+    },
+    controllerAs: 'plnkr',
+    template: '<button ng-click="plnkr.open($event)" class="btn pull-right"> <i class="glyphicon glyphicon-edit">&nbsp;</i> Edit in Plunker</button> ',
+    controller: [function() {
+      var ctrl = this;
 
+      ctrl.example = {
+        path: ctrl.examplePath,
+        manifest: undefined,
+        files: undefined,
+        name: 'AngularJS Example'
+      };
+
+      ctrl.prepareExampleData = function() {
+        if (ctrl.example.manifest) {
+          return $q.when(ctrl.example);
+        }
+
+        return getExampleData(ctrl.examplePath).then(function(data) {
+          ctrl.example.files = data.files;
+          ctrl.example.manifest = data.manifest;
+
+          // Build a pretty title for the Plunkr
+          var exampleNameParts = data.manifest.name.split('-');
+          exampleNameParts.unshift('AngularJS');
+          angular.forEach(exampleNameParts, function(part, index) {
+            exampleNameParts[index] = part.charAt(0).toUpperCase() + part.substr(1);
+          });
+          ctrl.example.name = exampleNameParts.join(' - ');
+
+          return ctrl.example;
+        });
+      };
+
+      ctrl.open = function(clickEvent) {
+
+        var newWindow = clickEvent.ctrlKey || clickEvent.metaKey;
+
+        var postData = {
+          'tags[0]': "angularjs",
+          'tags[1]': "example",
+          'private': true
+        };
+
+        // Make sure the example data is available.
+        // If an XHR must be made, this might break some pop-up blockers when
+        // new window is requested
+        ctrl.prepareExampleData()
+          .then(function() {
+            angular.forEach(ctrl.example.files, function(file) {
+              postData['files[' + file.name + ']'] = file.content + createCopyrightNotice(file.name);
+            });
+
+            postData.description = ctrl.example.name;
+
+            formPostData('http://plnkr.co/edit/?p=preview', newWindow, postData);
+          });
+
+      };
+
+      // Initialize the example data, so it's ready when clicking the open button.
+      // Otherwise pop-up blockers will prevent a new window from opening
+      ctrl.prepareExampleData(ctrl.example.path);
+
+    }]
+  };
+}])
+
+.factory('getExampleData', ['$http', '$q', function($http, $q) {
+  return function(exampleFolder){
     // Load the manifest for the example
-    $http.get(exampleFolder + '/manifest.json')
+    return $http.get(exampleFolder + '/manifest.json')
       .then(function(response) {
         return response.data;
       })
       .then(function(manifest) {
         var filePromises = [];
-
-        // Build a pretty title for the Plunkr
-        var exampleNameParts = manifest.name.split('-');
-        exampleNameParts.unshift('AngularJS');
-        angular.forEach(exampleNameParts, function(part, index) {
-          exampleNameParts[index] = part.charAt(0).toUpperCase() + part.substr(1);
-        });
-        exampleName = exampleNameParts.join(' - ');
 
         angular.forEach(manifest.files, function(filename) {
           filePromises.push($http.get(exampleFolder + '/' + filename, { transformResponse: [] })
@@ -243,7 +389,7 @@ angular.module('examples', [])
               // The manifests provide the production index file but Plunkr wants
               // a straight index.html
               if (filename === "index-production.html") {
-                filename = "index.html"
+                filename = "index.html";
               }
 
               return {
@@ -252,25 +398,14 @@ angular.module('examples', [])
               };
             }));
         });
-        return $q.all(filePromises);
-      })
-      .then(function(files) {
-        var postData = {};
 
-        angular.forEach(files, function(file) {
-          postData['files[' + file.name + ']'] = file.content;
+        return $q.all({
+          manifest: manifest,
+          files: $q.all(filePromises)
         });
-
-        postData['tags[0]'] = "angularjs";
-        postData['tags[1]'] = "example";
-        postData.private = true;
-        postData.description = exampleName;
-
-        formPostData('http://plnkr.co/edit/?p=preview', newWindow, postData);
       });
   };
 }]);
-
 angular.module('search', [])
 
 .controller('DocsSearchCtrl', ['$scope', '$location', 'docsSearch', function($scope, $location, docsSearch) {
@@ -284,7 +419,15 @@ angular.module('search', [])
     var MIN_SEARCH_LENGTH = 2;
     if(q.length >= MIN_SEARCH_LENGTH) {
       docsSearch(q).then(function(hits) {
-        var results = {};
+        // Make sure the areas are always in the same order
+        var results = {
+          api: [],
+          guide: [],
+          tutorial: [],
+          error: [],
+          misc: []
+        };
+
         angular.forEach(hits, function(hit) {
           var area = hit.area;
 
@@ -527,7 +670,7 @@ angular.module('tutorials', [])
       'step': '@docTutorialReset'
     },
     template:
-      '<p><a href="" ng-click="show=!show;$event.stopPropagation()">Workspace Reset Instructions  ➤</a></p>\n' +
+      '<p><button class="btn" ng-click="show=!show">Workspace Reset Instructions  ➤</button></p>\n' +
       '<div class="alert alert-info" ng-show="show">\n' +
       '  <p>Reset the workspace to step {{step}}.</p>' +
       '  <p><pre>git checkout -f step-{{step}}</pre></p>\n' +
@@ -535,7 +678,7 @@ angular.module('tutorials', [])
           '<a href="http://angular.github.io/angular-phonecat/step-{{step}}/app">Step {{step}} Live Demo</a>.</p>\n' +
       '</div>\n' +
       '<p>The most important changes are listed below. You can see the full diff on ' +
-        '<a ng-href="https://github.com/angular/angular-phonecat/compare/step-{{step ? (step - 1): \'0~1\'}}...step-{{step}}">GitHub</a>\n' +
+        '<a ng-href="https://github.com/angular/angular-phonecat/compare/step-{{step ? (step - 1): \'0~1\'}}...step-{{step}}" title="See diff on Github">GitHub</a>\n' +
       '</p>'
   };
 });
@@ -562,11 +705,13 @@ angular.module('versions', [])
   };
 
   $scope.jumpToDocsVersion = function(version) {
-    var currentPagePath = $location.path().replace(/\/$/, '');
-
-    // TODO: We need to do some munging of the path for different versions of the API...
-
-
-    $window.location = version.docsUrl + currentPagePath;
+    var currentPagePath = $location.path().replace(/\/$/, ''),
+        url = '';
+    if (version.isOldDocsUrl) {
+      url = version.docsUrl;
+    }else{
+      url = version.docsUrl + currentPagePath;
+    }
+    $window.location = url;
   };
 }]);
