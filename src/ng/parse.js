@@ -1516,7 +1516,7 @@ ASTInterpreter.prototype = {
       if (isDefined(arg)) {
         arg = -arg;
       } else {
-        arg = 0;
+        arg = -0;
       }
       return context ? {value: arg} : arg;
     };
