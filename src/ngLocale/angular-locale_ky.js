@@ -5,7 +5,7 @@ $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": [
       "\u0442\u0430\u04a3\u043a\u044b",
-      "\u0442\u04af\u0448\u0442\u04e9\u043d \u043a\u0438\u0439\u0438\u043d"
+      "\u0442\u04af\u0448\u0442\u04e9\u043d \u043a\u0438\u0439\u0438\u043d\u043a\u0438"
     ],
     "DAY": [
       "\u0436\u0435\u043a\u0448\u0435\u043c\u0431\u0438",

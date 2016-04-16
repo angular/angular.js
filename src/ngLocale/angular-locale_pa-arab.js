@@ -21,8 +21,8 @@ $provide.value("$locale", {
       "\u0633\u06ba"
     ],
     "ERAS": [
-      "BCE",
-      "CE"
+      "\u0627\u064a\u0633\u0627\u067e\u0648\u0631\u0648",
+      "\u0633\u06ba"
     ],
     "FIRSTDAYOFWEEK": 0,
     "MONTH": [

@@ -4,8 +4,8 @@ var PLURAL_CATEGORY = {ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "
 $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": [
-      "AM",
-      "PM"
+      "a.m.",
+      "p.m."
     ],
     "DAY": [
       "dimanche",
@@ -49,12 +49,12 @@ $provide.value("$locale", {
       "sam."
     ],
     "SHORTMONTH": [
-      "janv.",
-      "f\u00e9vr.",
-      "mars",
+      "jan.",
+      "f\u00e9v.",
+      "mar.",
       "avr.",
       "mai",
-      "juin",
+      "jui.",
       "juil.",
       "ao\u00fbt",
       "sept.",
@@ -63,18 +63,18 @@ $provide.value("$locale", {
       "d\u00e9c."
     ],
     "STANDALONEMONTH": [
-      "Janvier",
-      "F\u00e9vrier",
-      "Mars",
-      "Avril",
-      "Mai",
-      "Juin",
-      "Juillet",
-      "Ao\u00fbt",
-      "Septembre",
-      "Octobre",
-      "Novembre",
-      "D\u00e9cembre"
+      "janvier",
+      "f\u00e9vrier",
+      "mars",
+      "avril",
+      "mai",
+      "juin",
+      "juillet",
+      "ao\u00fbt",
+      "septembre",
+      "octobre",
+      "novembre",
+      "d\u00e9cembre"
     ],
     "WEEKENDRANGE": [
       4,
@@ -92,7 +92,7 @@ $provide.value("$locale", {
   "NUMBER_FORMATS": {
     "CURRENCY_SYM": "dh",
     "DECIMAL_SEP": ",",
-    "GROUP_SEP": "\u00a0",
+    "GROUP_SEP": ".",
     "PATTERNS": [
       {
         "gSize": 3,

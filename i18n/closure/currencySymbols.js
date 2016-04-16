@@ -114,7 +114,7 @@ goog.i18n.currency.getGlobalCurrencyPattern = function(currencyCode) {
 goog.i18n.currency.getGlobalCurrencySign = function(currencyCode) {
   var info = goog.i18n.currency.CurrencyInfo[currencyCode];
   return (currencyCode == info[1]) ? currencyCode :
-      currencyCode + ' ' + info[1];
+                                     currencyCode + ' ' + info[1];
 };
 
 
@@ -210,13 +210,13 @@ goog.i18n.currency.getCurrencyPattern_ = function(patternNum, sign) {
     }
   }
   if ((patternNum & goog.i18n.currency.POSITION_FLAG_) == 0) {
-    strParts.unshift((patternNum & goog.i18n.currency.SPACE_FLAG_) ?
-                     "' " : "'");
+    strParts.unshift(
+        (patternNum & goog.i18n.currency.SPACE_FLAG_) ? "' " : "'");
     strParts.unshift(sign);
     strParts.unshift("'");
   } else {
-    strParts.push((patternNum & goog.i18n.currency.SPACE_FLAG_) ? " '" : "'",
-                  sign, "'");
+    strParts.push(
+        (patternNum & goog.i18n.currency.SPACE_FLAG_) ? " '" : "'", sign, "'");
   }
   return strParts.join('');
 };
@@ -281,20 +281,20 @@ goog.i18n.currency.CurrencyInfo = {
   'CHF': [2, 'CHF', 'CHF'],
   'CLP': [0, '$', 'CL$'],
   'CNY': [2, '¥', 'RMB¥'],
-  'COP': [0, '$', 'COL$'],
+  'COP': [32, '$', 'COL$'],
   'CRC': [0, '\u20a1', 'CR\u20a1'],
   'CZK': [50, 'K\u010d', 'K\u010d'],
-  'DKK': [18, 'kr', 'kr'],
-  'DOP': [2, '$', 'RD$'],
+  'DKK': [50, 'kr.', 'kr.'],
+  'DOP': [2, 'RD$', 'RD$'],
   'EGP': [2, '£', 'LE'],
   'ETB': [2, 'Birr', 'Birr'],
   'EUR': [2, '€', '€'],
   'GBP': [2, '£', 'GB£'],
   'HKD': [2, '$', 'HK$'],
   'HRK': [2, 'kn', 'kn'],
-  'HUF': [0, 'Ft', 'Ft'],
+  'HUF': [34, 'Ft', 'Ft'],
   'IDR': [0, 'Rp', 'Rp'],
-  'ILS': [2, '\u20AA', 'IL\u20AA'],
+  'ILS': [34, '\u20AA', 'IL\u20AA'],
   'INR': [2, '\u20B9', 'Rs'],
   'IRR': [0, 'Rial', 'IRR'],
   'ISK': [0, 'kr', 'kr'],
@@ -315,18 +315,18 @@ goog.i18n.currency.CurrencyInfo = {
   'PLN': [50, 'z\u0142', 'z\u0142'],
   'RON': [2, 'RON', 'RON'],
   'RSD': [0, 'din', 'RSD'],
-  'RUB': [50, 'руб.', 'руб.'],
+  'RUB': [50, '\u20bd', 'RUB'],
   'SAR': [2, 'Rial', 'Rial'],
-  'SEK': [2, 'kr', 'kr'],
+  'SEK': [50, 'kr', 'kr'],
   'SGD': [2, '$', 'S$'],
   'THB': [2, '\u0e3f', 'THB'],
   'TRY': [2, 'TL', 'YTL'],
   'TWD': [2, 'NT$', 'NT$'],
   'TZS': [0, 'TSh', 'TSh'],
-  'UAH': [2, '\u20B4', 'UAH'],
+  'UAH': [2, 'грн.', 'UAH'],
   'USD': [2, '$', 'US$'],
   'UYU': [2, '$', '$U'],
-  'VND': [0, '\u20AB', 'VN\u20AB'],
+  'VND': [48, '\u20AB', 'VN\u20AB'],
   'YER': [0, 'Rial', 'Rial'],
   'ZAR': [2, 'R', 'ZAR']
 };
@@ -338,12 +338,12 @@ goog.i18n.currency.CurrencyInfo = {
  */
 goog.i18n.currency.CurrencyInfoTier2 = {
   'AFN': [48, 'Af.', 'AFN'],
-  'AMD': [0, 'Dram', 'dram'],
+  'AMD': [32, 'Dram', 'dram'],
   'ANG': [2, 'NAf.', 'ANG'],
   'AOA': [2, 'Kz', 'Kz'],
-  'ARS': [2, '$', 'AR$'],
+  'ARS': [34, '$', 'AR$'],
   'AWG': [2, 'Afl.', 'Afl.'],
-  'AZN': [2, 'man.', 'man.'],
+  'AZN': [34, '\u20bc', 'AZN'],
   'BAM': [2, 'KM', 'KM'],
   'BBD': [2, '$', 'Bds$'],
   'BHD': [3, 'din', 'din'],
@@ -354,7 +354,7 @@ goog.i18n.currency.CurrencyInfoTier2 = {
   'BSD': [2, '$', 'BS$'],
   'BTN': [2, 'Nu.', 'Nu.'],
   'BWP': [2, 'P', 'pula'],
-  'BYR': [0, 'BYR', 'BYR'],
+  'BYR': [48, 'p.', 'BYR'],
   'BZD': [2, '$', 'BZ$'],
   'CUC': [1, '$', 'CUC$'],
   'CUP': [2, '$', 'CU$'],
@@ -405,7 +405,7 @@ goog.i18n.currency.CurrencyInfoTier2 = {
   'NZD': [2, '$', 'NZ$'],
   'OMR': [3, 'Rial', 'OMR'],
   'PGK': [2, 'PGK', 'PGK'],
-  'PYG': [0, 'Gs', 'PYG'],
+  'PYG': [16, 'Gs.', 'PYG'],
   'QAR': [2, 'Rial', 'QR'],
   'RWF': [0, 'RF', 'RF'],
   'SBD': [2, '$', 'SI$'],

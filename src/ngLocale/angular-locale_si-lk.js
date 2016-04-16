@@ -35,8 +35,8 @@ $provide.value("$locale", {
       "\u0dc3\u0dd9\u0db1\u0dc3\u0dd4\u0dbb\u0dcf\u0daf\u0dcf"
     ],
     "ERANAMES": [
-      "\u0d9a\u0dca\u200d\u0dbb\u0dd2\u0dc3\u0dca\u0dad\u0dd4 \u0db4\u0dd6\u0dbb\u0dca\u200d\u0dc0",
-      "\u0d9a\u0dca\u200d\u0dbb\u0dd2\u0dc3\u0dca\u0dad\u0dd4 \u0dc0\u0dbb\u0dca\u200d\u0dc2"
+      "\u0d9a\u0dca\u200d\u0dbb\u0dd2\u0dc3\u0dca\u0dad\u0dd4 \u0db4\u0dd6\u0dbb\u0dca\u0dc0",
+      "\u0d9a\u0dca\u200d\u0dbb\u0dd2\u0dc3\u0dca\u0dad\u0dd4 \u0dc0\u0dbb\u0dca\u0dc2"
     ],
     "ERAS": [
       "\u0d9a\u0dca\u200d\u0dbb\u0dd2.\u0db4\u0dd6.",
@@ -100,12 +100,12 @@ $provide.value("$locale", {
     ],
     "fullDate": "y MMMM d, EEEE",
     "longDate": "y MMMM d",
-    "medium": "y MMM d a h.mm.ss",
+    "medium": "y MMM d HH.mm.ss",
     "mediumDate": "y MMM d",
-    "mediumTime": "a h.mm.ss",
-    "short": "y-MM-dd a h.mm",
+    "mediumTime": "HH.mm.ss",
+    "short": "y-MM-dd HH.mm",
     "shortDate": "y-MM-dd",
-    "shortTime": "a h.mm"
+    "shortTime": "HH.mm"
   },
   "NUMBER_FORMATS": {
     "CURRENCY_SYM": "Rs",

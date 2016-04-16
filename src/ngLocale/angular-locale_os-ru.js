@@ -71,7 +71,7 @@ $provide.value("$locale", {
       "\u0444\u0435\u0432.",
       "\u043c\u0430\u0440.",
       "\u0430\u043f\u0440.",
-      "\u043c\u0430\u044f",
+      "\u043c\u0430\u0439\u044b",
       "\u0438\u044e\u043d\u044b",
       "\u0438\u044e\u043b\u044b",
       "\u0430\u0432\u0433.",
@@ -108,7 +108,7 @@ $provide.value("$locale", {
     "shortTime": "HH:mm"
   },
   "NUMBER_FORMATS": {
-    "CURRENCY_SYM": "\u0440\u0443\u0431.",
+    "CURRENCY_SYM": "\u20bd",
     "DECIMAL_SEP": ",",
     "GROUP_SEP": "\u00a0",
     "PATTERNS": [

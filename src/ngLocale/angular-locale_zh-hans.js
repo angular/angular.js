@@ -85,8 +85,8 @@ $provide.value("$locale", {
     "medium": "y\u5e74M\u6708d\u65e5 ah:mm:ss",
     "mediumDate": "y\u5e74M\u6708d\u65e5",
     "mediumTime": "ah:mm:ss",
-    "short": "yy/M/d ah:mm",
-    "shortDate": "yy/M/d",
+    "short": "y/M/d ah:mm",
+    "shortDate": "y/M/d",
     "shortTime": "ah:mm"
   },
   "NUMBER_FORMATS": {
@@ -111,9 +111,9 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "-\u00a4\u00a0",
+        "negPre": "-\u00a4",
         "negSuf": "",
-        "posPre": "\u00a4\u00a0",
+        "posPre": "\u00a4",
         "posSuf": ""
       }
     ]

@@ -35,12 +35,12 @@ $provide.value("$locale", {
       "laup\u00e4ev"
     ],
     "ERANAMES": [
-      "enne meie aega",
-      "meie aja j\u00e4rgi"
+      "enne Kristust",
+      "p\u00e4rast Kristust"
     ],
     "ERAS": [
-      "e.m.a.",
-      "m.a.j."
+      "eKr",
+      "pKr"
     ],
     "FIRSTDAYOFWEEK": 0,
     "MONTH": [

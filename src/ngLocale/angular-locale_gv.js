@@ -77,8 +77,8 @@ $provide.value("$locale", {
       "Luanistyn",
       "M-fouyir",
       "J-fouyir",
-      "M.Houney",
-      "M.Nollick"
+      "M-Houney",
+      "M-Nollick"
     ],
     "STANDALONEMONTH": [
       "Jerrey-geuree",
