@@ -4,8 +4,8 @@ var PLURAL_CATEGORY = {ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "
 $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": [
-      "a. m.",
-      "p. m."
+      "a.m.",
+      "p.m."
     ],
     "DAY": [
       "domingo",
@@ -57,24 +57,24 @@ $provide.value("$locale", {
       "jun.",
       "jul.",
       "ago.",
-      "sept.",
+      "sep.",
       "oct.",
       "nov.",
       "dic."
     ],
     "STANDALONEMONTH": [
-      "Enero",
-      "Febrero",
-      "Marzo",
-      "Abril",
-      "Mayo",
-      "Junio",
-      "Julio",
-      "Agosto",
-      "Septiembre",
-      "Octubre",
-      "Noviembre",
-      "Diciembre"
+      "enero",
+      "febrero",
+      "marzo",
+      "abril",
+      "mayo",
+      "junio",
+      "julio",
+      "agosto",
+      "septiembre",
+      "octubre",
+      "noviembre",
+      "diciembre"
     ],
     "WEEKENDRANGE": [
       5,
@@ -82,12 +82,12 @@ $provide.value("$locale", {
     ],
     "fullDate": "EEEE, d 'de' MMMM 'de' y",
     "longDate": "d 'de' MMMM 'de' y",
-    "medium": "d/MM/y h:mm:ss a",
+    "medium": "d/MM/y HH:mm:ss",
     "mediumDate": "d/MM/y",
-    "mediumTime": "h:mm:ss a",
-    "short": "d/MM/yy h:mm a",
+    "mediumTime": "HH:mm:ss",
+    "short": "d/MM/yy HH:mm",
     "shortDate": "d/MM/yy",
-    "shortTime": "h:mm a"
+    "shortTime": "HH:mm"
   },
   "NUMBER_FORMATS": {
     "CURRENCY_SYM": "Q",

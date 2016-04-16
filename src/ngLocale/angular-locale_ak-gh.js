@@ -100,12 +100,12 @@ $provide.value("$locale", {
     ],
     "fullDate": "EEEE, y MMMM dd",
     "longDate": "y MMMM d",
-    "medium": "y MMM d HH:mm:ss",
+    "medium": "y MMM d h:mm:ss a",
     "mediumDate": "y MMM d",
-    "mediumTime": "HH:mm:ss",
-    "short": "yy/MM/dd HH:mm",
+    "mediumTime": "h:mm:ss a",
+    "short": "yy/MM/dd h:mm a",
     "shortDate": "yy/MM/dd",
-    "shortTime": "HH:mm"
+    "shortTime": "h:mm a"
   },
   "NUMBER_FORMATS": {
     "CURRENCY_SYM": "GHS",

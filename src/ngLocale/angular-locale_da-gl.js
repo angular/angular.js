@@ -113,15 +113,15 @@ $provide.value("$locale", {
     ],
     "fullDate": "EEEE 'den' d. MMMM y",
     "longDate": "d. MMMM y",
-    "medium": "d. MMM y HH.mm.ss",
+    "medium": "d. MMM y h.mm.ss a",
     "mediumDate": "d. MMM y",
-    "mediumTime": "HH.mm.ss",
-    "short": "dd/MM/y HH.mm",
+    "mediumTime": "h.mm.ss a",
+    "short": "dd/MM/y h.mm a",
     "shortDate": "dd/MM/y",
-    "shortTime": "HH.mm"
+    "shortTime": "h.mm a"
   },
   "NUMBER_FORMATS": {
-    "CURRENCY_SYM": "kr",
+    "CURRENCY_SYM": "kr.",
     "DECIMAL_SEP": ",",
     "GROUP_SEP": ".",
     "PATTERNS": [

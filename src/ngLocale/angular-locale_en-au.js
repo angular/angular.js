@@ -22,8 +22,8 @@ function getVF(n, opt_precision) {
 $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": [
-      "AM",
-      "PM"
+      "am",
+      "pm"
     ],
     "DAY": [
       "Sunday",
@@ -58,27 +58,27 @@ $provide.value("$locale", {
       "December"
     ],
     "SHORTDAY": [
-      "Sun",
-      "Mon",
-      "Tue",
-      "Wed",
-      "Thu",
-      "Fri",
-      "Sat"
+      "Sun.",
+      "Mon.",
+      "Tue.",
+      "Wed.",
+      "Thu.",
+      "Fri.",
+      "Sat."
     ],
     "SHORTMONTH": [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
+      "Jan.",
+      "Feb.",
+      "Mar.",
+      "Apr.",
       "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec"
+      "Jun.",
+      "Jul.",
+      "Aug.",
+      "Sep.",
+      "Oct.",
+      "Nov.",
+      "Dec."
     ],
     "STANDALONEMONTH": [
       "January",
@@ -103,8 +103,8 @@ $provide.value("$locale", {
     "medium": "d MMM y h:mm:ss a",
     "mediumDate": "d MMM y",
     "mediumTime": "h:mm:ss a",
-    "short": "d/MM/y h:mm a",
-    "shortDate": "d/MM/y",
+    "short": "d/M/yy h:mm a",
+    "shortDate": "d/M/yy",
     "shortTime": "h:mm a"
   },
   "NUMBER_FORMATS": {

@@ -58,13 +58,13 @@ $provide.value("$locale", {
       "decembrie"
     ],
     "SHORTDAY": [
-      "Dum",
-      "Lun",
-      "Mar",
-      "Mie",
-      "Joi",
-      "Vin",
-      "S\u00e2m"
+      "dum.",
+      "lun.",
+      "mar.",
+      "mie.",
+      "joi",
+      "vin.",
+      "s\u00e2m."
     ],
     "SHORTMONTH": [
       "ian.",
@@ -81,18 +81,18 @@ $provide.value("$locale", {
       "dec."
     ],
     "STANDALONEMONTH": [
-      "Ianuarie",
-      "Februarie",
-      "Martie",
-      "Aprilie",
-      "Mai",
-      "Iunie",
-      "Iulie",
-      "August",
-      "Septembrie",
-      "Octombrie",
-      "Noiembrie",
-      "Decembrie"
+      "ianuarie",
+      "februarie",
+      "martie",
+      "aprilie",
+      "mai",
+      "iunie",
+      "iulie",
+      "august",
+      "septembrie",
+      "octombrie",
+      "noiembrie",
+      "decembrie"
     ],
     "WEEKENDRANGE": [
       5,

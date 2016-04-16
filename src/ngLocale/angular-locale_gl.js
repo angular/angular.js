@@ -59,7 +59,7 @@ $provide.value("$locale", {
     ],
     "SHORTDAY": [
       "dom",
-      "lun",
+      "luns",
       "mar",
       "m\u00e9r",
       "xov",
@@ -129,10 +129,10 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "-\u00a4",
-        "negSuf": "",
-        "posPre": "\u00a4",
-        "posSuf": ""
+        "negPre": "-",
+        "negSuf": "\u00a0\u00a4",
+        "posPre": "",
+        "posSuf": "\u00a0\u00a4"
       }
     ]
   },

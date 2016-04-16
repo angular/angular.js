@@ -4,8 +4,8 @@ var PLURAL_CATEGORY = {ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "
 $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": [
-      "\u0442\u0430\u04a3\u0435\u0440\u0442\u0435\u04a3\u0433\u0456",
-      "\u0442\u04af\u0441\u0442\u0435\u043d \u043a\u0435\u0439\u0456\u043d\u0433\u0456"
+      "\u0442\u0430\u04a3\u0493\u044b",
+      "\u0442\u04af\u0441\u043a\u0456/\u043a\u0435\u0448\u043a\u0456"
     ],
     "DAY": [
       "\u0436\u0435\u043a\u0441\u0435\u043d\u0431\u0456",
@@ -40,13 +40,13 @@ $provide.value("$locale", {
       "\u0436\u0435\u043b\u0442\u043e\u049b\u0441\u0430\u043d"
     ],
     "SHORTDAY": [
-      "\u0436\u0435\u043a",
-      "\u0434\u04af\u0439",
-      "\u0441\u0435\u0439",
-      "\u0441\u04d9\u0440",
-      "\u0431\u0435\u0439",
-      "\u0436\u04b1\u043c\u0430",
-      "\u0441\u0435\u043d"
+      "\u0416\u0441",
+      "\u0414\u0441",
+      "\u0421\u0441",
+      "\u0421\u0440",
+      "\u0411\u0441",
+      "\u0416\u043c",
+      "\u0421\u0431"
     ],
     "SHORTMONTH": [
       "\u049b\u0430\u04a3.",
@@ -60,33 +60,33 @@ $provide.value("$locale", {
       "\u049b\u044b\u0440.",
       "\u049b\u0430\u0437.",
       "\u049b\u0430\u0440.",
-      "\u0436\u0435\u043b\u0442."
+      "\u0436\u0435\u043b."
     ],
     "STANDALONEMONTH": [
-      "\u049b\u0430\u04a3\u0442\u0430\u0440",
-      "\u0430\u049b\u043f\u0430\u043d",
-      "\u043d\u0430\u0443\u0440\u044b\u0437",
-      "\u0441\u04d9\u0443\u0456\u0440",
-      "\u043c\u0430\u043c\u044b\u0440",
-      "\u043c\u0430\u0443\u0441\u044b\u043c",
-      "\u0448\u0456\u043b\u0434\u0435",
-      "\u0442\u0430\u043c\u044b\u0437",
-      "\u049b\u044b\u0440\u043a\u04af\u0439\u0435\u043a",
-      "\u049b\u0430\u0437\u0430\u043d",
-      "\u049b\u0430\u0440\u0430\u0448\u0430",
-      "\u0436\u0435\u043b\u0442\u043e\u049b\u0441\u0430\u043d"
+      "\u049a\u0430\u04a3\u0442\u0430\u0440",
+      "\u0410\u049b\u043f\u0430\u043d",
+      "\u041d\u0430\u0443\u0440\u044b\u0437",
+      "\u0421\u04d9\u0443\u0456\u0440",
+      "\u041c\u0430\u043c\u044b\u0440",
+      "\u041c\u0430\u0443\u0441\u044b\u043c",
+      "\u0428\u0456\u043b\u0434\u0435",
+      "\u0422\u0430\u043c\u044b\u0437",
+      "\u049a\u044b\u0440\u043a\u04af\u0439\u0435\u043a",
+      "\u049a\u0430\u0437\u0430\u043d",
+      "\u049a\u0430\u0440\u0430\u0448\u0430",
+      "\u0416\u0435\u043b\u0442\u043e\u049b\u0441\u0430\u043d"
     ],
     "WEEKENDRANGE": [
       5,
       6
     ],
-    "fullDate": "EEEE, d MMMM y",
-    "longDate": "d MMMM y",
-    "medium": "y, dd-MMM HH:mm:ss",
-    "mediumDate": "y, dd-MMM",
+    "fullDate": "y '\u0436'. d MMMM, EEEE",
+    "longDate": "y '\u0436'. d MMMM",
+    "medium": "y '\u0436'. dd MMM HH:mm:ss",
+    "mediumDate": "y '\u0436'. dd MMM",
     "mediumTime": "HH:mm:ss",
-    "short": "dd/MM/yy HH:mm",
-    "shortDate": "dd/MM/yy",
+    "short": "dd.MM.yy HH:mm",
+    "shortDate": "dd.MM.yy",
     "shortTime": "HH:mm"
   },
   "NUMBER_FORMATS": {

@@ -22,8 +22,8 @@ function getVF(n, opt_precision) {
 $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": [
-      "posz.",
-      "b\u00fcz."
+      "AM",
+      "PM"
     ],
     "DAY": [
       "sudel",
@@ -44,9 +44,9 @@ $provide.value("$locale", {
     ],
     "FIRSTDAYOFWEEK": 0,
     "MONTH": [
-      "janul",
+      "yanul",
       "febul",
-      "m\u00e4zil",
+      "m\u00e4zul",
       "prilul",
       "mayul",
       "yunul",
@@ -67,7 +67,7 @@ $provide.value("$locale", {
       "z\u00e4."
     ],
     "SHORTMONTH": [
-      "jan",
+      "yan",
       "feb",
       "m\u00e4z",
       "prl",
@@ -80,11 +80,25 @@ $provide.value("$locale", {
       "nov",
       "dek"
     ],
+    "STANDALONEMONTH": [
+      "yanul",
+      "febul",
+      "m\u00e4zul",
+      "prilul",
+      "mayul",
+      "yunul",
+      "yulul",
+      "gustul",
+      "setul",
+      "tobul",
+      "novul",
+      "dekul"
+    ],
     "WEEKENDRANGE": [
       5,
       6
     ],
-    "fullDate": "y MMMMa 'd'. d'id'",
+    "fullDate": "y MMMM'a' 'd'. d'id'",
     "longDate": "y MMMM d",
     "medium": "y MMM. d HH:mm:ss",
     "mediumDate": "y MMM. d",
@@ -115,7 +129,7 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "\u00a4\u00a0-",
+        "negPre": "-\u00a4\u00a0",
         "negSuf": "",
         "posPre": "\u00a4\u00a0",
         "posSuf": ""
@@ -123,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "vo",
+  "localeID": "vo",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

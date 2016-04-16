@@ -63,18 +63,18 @@ $provide.value("$locale", {
       "d\u00e9c."
     ],
     "STANDALONEMONTH": [
-      "Janvier",
-      "F\u00e9vrier",
-      "Mars",
-      "Avril",
-      "Mai",
-      "Juin",
-      "Juillet",
-      "Ao\u00fbt",
-      "Septembre",
-      "Octobre",
-      "Novembre",
-      "D\u00e9cembre"
+      "janvier",
+      "f\u00e9vrier",
+      "mars",
+      "avril",
+      "mai",
+      "juin",
+      "juillet",
+      "ao\u00fbt",
+      "septembre",
+      "octobre",
+      "novembre",
+      "d\u00e9cembre"
     ],
     "WEEKENDRANGE": [
       4,
@@ -82,12 +82,12 @@ $provide.value("$locale", {
     ],
     "fullDate": "EEEE d MMMM y",
     "longDate": "d MMMM y",
-    "medium": "d MMM y HH:mm:ss",
+    "medium": "d MMM y h:mm:ss a",
     "mediumDate": "d MMM y",
-    "mediumTime": "HH:mm:ss",
-    "short": "dd/MM/y HH:mm",
+    "mediumTime": "h:mm:ss a",
+    "short": "dd/MM/y h:mm a",
     "shortDate": "dd/MM/y",
-    "shortTime": "HH:mm"
+    "shortTime": "h:mm a"
   },
   "NUMBER_FORMATS": {
     "CURRENCY_SYM": "\u00a3",
