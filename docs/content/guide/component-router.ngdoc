@@ -467,7 +467,7 @@ AngularJS itself via npm:
 
 ```bash
 npm init
-npm install@1.5.x angular --save
+npm install angular@1.5.x --save
 npm install @angular/router --save
 ```
 
