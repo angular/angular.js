@@ -2,7 +2,6 @@
  * @ngdoc module
  * @name ngComponentRouter
  * @installation
- * ## Installation
  *
  * Currently, the **Component Router** module must be installed via `npm`, it is not yet available
  * on Bower or the Google CDN.

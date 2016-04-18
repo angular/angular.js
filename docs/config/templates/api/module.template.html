@@ -5,35 +5,41 @@
   {% if doc.title %}{$ doc.title | marked $}{% else %}{$ doc.name | code $}{% endif %}
 </h1>
 
+<h2>Installation</h2>
 {% if doc.installation or doc.installation == '' %}
   {$ doc.installation | marked $}
 {% else %}
-  <h2>Installation</h2>
 
-  <p>First include {$ doc.packageFile | code $} in your HTML:</p>
-
-  {% code %}
-      <script src="angular.js">
-      <script src="{$ doc.packageFile $}">
-  {% endcode %}
-
-  <p>You can download this file from the following places:</p>
+  <p>First, get the file:</p>
   <ul>
     <li>
-      <a href="https://developers.google.com/speed/libraries/devguide#angularjs">Google CDN</a><br>
-      e.g. {$ ("//ajax.googleapis.com/ajax/libs/angularjs/X.Y.Z/" + doc.packageFile) | code $}
+      <a href="https://developers.google.com/speed/libraries/devguide#angularjs">Google CDN</a> e.g.
+      {% code %}"//ajax.googleapis.com/ajax/libs/angularjs/X.Y.Z/{$ doc.packageFile $}"{% endcode %}
     </li>
     <li>
-      <a href="http://bower.io">Bower</a><br>
-      e.g. {% code %}bower install {$ doc.packageName $}@X.Y.Z{% endcode %}
+      <a href="https://www.npmjs.com/">NPM</a> e.g.
+      {% code %}npm install {$ doc.packageName $}@X.Y.Z{% endcode %}
     </li>
     <li>
-      <a href="http://code.angularjs.org/">code.angularjs.org</a><br>
-      e.g. {% code %}"//code.angularjs.org/X.Y.Z/{$ doc.packageFile $}"{% endcode %}
+      <a href="http://bower.io">Bower</a> e.g.
+      {% code %}bower install {$ doc.packageName $}@X.Y.Z{% endcode %}
+    </li>
+    <li>
+      <a href="https://code.angularjs.org/">code.angularjs.org</a>
+      (discouraged for production use) e.g.
+      {% code %}"//code.angularjs.org/X.Y.Z/{$ doc.packageFile $}"{% endcode %}
     </li>
   </ul>
   <p>where X.Y.Z is the AngularJS version you are running.</p>
-  <p>Then load the module in your application by adding it as a dependent module:</p>
+
+  <p>Then, include {$ doc.packageFile | code $} in your HTML:</p>
+
+  {% code %}
+      <script src="path/to/angular.js"></script>
+      <script src="path/to/{$ doc.packageFile $}"></script>
+  {% endcode %}
+
+  <p>Finally, load the module in your application by adding it as a dependent module:</p>
   {% code %}
     angular.module('app', ['{$ doc.name $}']);
   {% endcode %}
