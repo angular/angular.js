@@ -1,3 +1,104 @@
+<a name="1.5.5"></a>
+# 1.5.4 material-conspiration (2016-04-18)
+
+
+## Reverts
+
+- **$compile:** move setting of controller data to single location
+  Reverted commit [21d148ae](https://github.com/angular/angular.js/commit/21d148aedc29c7efba4131ff2ef6383b4700868c)
+  since it caused the Angular Material tabs directive to fail.
+
+- **ngRoute:** allow `ngView` to be included in an asynchronously loaded template
+  Eagerly loading `$route`, could break tests, because it might request the root or default route
+  template (something `$httpBackend` would know nothing about).
+
+  It will be re-applied for `v1.6.x`, with a breaking change notice and possibly a way to disable
+  the feature in tests.
+
+  ([8237482d](https://github.com/angular/angular.js/commit/8237482d49e76e2c4994fe6207e3c9799ef04163),
+   [#1213](https://github.com/angular/angular.js/issues/1213), [#6812](https://github.com/angular/angular.js/issues/6812),
+   [#14088](https://github.com/angular/angular.js/issues/14088))
+
+
+## Bug Fixes
+
+- **$compile:**
+  - do not use `noop()` as controller for multiple components
+  ([4c8aeefb](https://github.com/angular/angular.js/commit/4c8aeefb624de7436ad95f3cd525405e0c3f493e),
+   [#14391](https://github.com/angular/angular.js/issues/14391), [#14402](https://github.com/angular/angular.js/issues/14402))
+  - still trigger `$onChanges` even if the inner value already matches the new value
+  ([d9448dcb](https://github.com/angular/angular.js/commit/d9448dcb9f901ceb04deda1d5f3d5aac8442a718),
+   [#14406](https://github.com/angular/angular.js/issues/14406))
+  - handle boolean attributes in `@` bindings
+  ([499e1b2a](https://github.com/angular/angular.js/commit/499e1b2adf27f32d671123f8dceadb3df2ad84a9),
+   [#14070](https://github.com/angular/angular.js/issues/14070))
+  - don't throw if controller is named
+  ([e72990dc](https://github.com/angular/angular.js/commit/e72990dc3714c8b847185ddb64fd5fd00e5cceab))
+  - ensure that `$onChanges` hook is called correctly
+  ([0ad2b708](https://github.com/angular/angular.js/commit/0ad2b70862d49ecc4355a16d767c0ca9358ecc3e),
+   [#14355](https://github.com/angular/angular.js/issues/14355), [#14359](https://github.com/angular/angular.js/issues/14359))
+- **$injector:** ensure functions with overridden `toString()` are annotated properly
+  ([d384834f](https://github.com/angular/angular.js/commit/d384834fdee140a716298bd065f304f8fba4725e),
+   [#14361](https://github.com/angular/angular.js/issues/14361))
+- **ngAnimate:**
+  - remove event listeners only after all listeners have been called
+  ([79604f46](https://github.com/angular/angular.js/commit/79604f462899c118a99d610995083ff82d38aa35),
+   [#14321](https://github.com/angular/angular.js/issues/14321))
+  - fire callbacks when document is hidden
+  ([c7a92d2a](https://github.com/angular/angular.js/commit/c7a92d2a9a436dddd65de721c9837a93e915d939),
+   [#14120](https://github.com/angular/angular.js/issues/14120))
+  - fire callbacks in the correct order for certain skipped animations
+  ([90da3059](https://github.com/angular/angular.js/commit/90da3059cecfefaecf136b01cd87aee6775a8778))
+- **ngClass:** fix watching of an array expression containing an object
+  ([f975d8d4](https://github.com/angular/angular.js/commit/f975d8d4481e0b8cdba553f0e5ad9ec1688adae8),
+   [#14405](https://github.com/angular/angular.js/issues/14405))
+- **ngMock:** fix collecting stack trace in `inject()` on IE10+, PhantomJS
+  ([e9c718a4](https://github.com/angular/angular.js/commit/e9c718a465d28b9f2691e3acab944f7c31aa9fb6),
+   [#13591](https://github.com/angular/angular.js/issues/13591), [#13592](https://github.com/angular/angular.js/issues/13592), [#13593](https://github.com/angular/angular.js/issues/13593))
+- **ngOptions:** set select value when model matches disabled option
+  ([832eba5f](https://github.com/angular/angular.js/commit/832eba5fc952312e6b99127123e6e75bdf729006),
+   [#12756](https://github.com/angular/angular.js/issues/12756))
+- **$http:** pass event object to `eventHandlers`/`uploadEventHandlers`
+  ([25d4e5cc](https://github.com/angular/angular.js/commit/25d4e5cca4fa615e49d65976223c6deb5b485b4c),
+   [#14436](https://github.com/angular/angular.js/issues/14436))
+
+
+## Features
+
+- **$compile:**
+  - put custom annotations on DDO
+  ([f338e96c](https://github.com/angular/angular.js/commit/f338e96ccc739efc4b24022eae406c3d5451d422),
+   [#14369](https://github.com/angular/angular.js/issues/14369), [#14279](https://github.com/angular/angular.js/issues/14279), [#14284](https://github.com/angular/angular.js/issues/14284))
+  - add `isFirstChange()` method to onChanges object
+  ([8d43d8b8](https://github.com/angular/angular.js/commit/8d43d8b8e7aacf97ddb9aa48bff25db57249cdd5),
+   [#14318](https://github.com/angular/angular.js/issues/14318), [#14323](https://github.com/angular/angular.js/issues/14323))
+- **$componentController:** provide isolated scope if none is passed (#14425)
+  ([33f817b9](https://github.com/angular/angular.js/commit/33f817b99cb20e566b381e7202235fe99b4a742a),
+   [#14425](https://github.com/angular/angular.js/issues/14425))
+- **$http:**
+  - support handling additional XHR events
+  ([01b18450](https://github.com/angular/angular.js/commit/01b18450882da9bb9c903d43c0daddbc03c2c35d) and
+  [56c861c9](https://github.com/angular/angular.js/commit/56c861c9e114c45790865e5635eaae8d32eb649a),
+   [#14367](https://github.com/angular/angular.js/issues/14367), [#11547](https://github.com/angular/angular.js/issues/11547), [#1934](https://github.com/angular/angular.js/issues/1934))
+- **$parse:** add the ability to define the identifier characters
+  ([3e7fa191](https://github.com/angular/angular.js/commit/3e7fa19197c54a764225ad27c0c0bf72263daa8d))
+- **ngAnimate:** let $animate.off() remove all listeners for an element
+  ([bf6cb8ab](https://github.com/angular/angular.js/commit/bf6cb8ab0d157083a1ed55743e3fffe728daa6f3))
+- **ngAria:** add support for aria-readonly based on ngReadonly
+  ([ec0baadc](https://github.com/angular/angular.js/commit/ec0baadcb68a4fa8da27d76b7e6a4e0840acd7fa),
+   [#14140](https://github.com/angular/angular.js/issues/14140), [#14077](https://github.com/angular/angular.js/issues/14077))
+- **ngParseExt:** new ngParseExt module
+  ([d08f5c69](https://github.com/angular/angular.js/commit/d08f5c698624f6243685b16f2d458cb9a980ebde))
+
+
+## Performance Improvements
+
+- **$compile:** use createMap() for directive bindings to allow fast `forEach`
+  ([c115b37c](https://github.com/angular/angular.js/commit/c115b37c336f3a5936187279057b29c76078caf2),
+   [#12529](https://github.com/angular/angular.js/issues/12529))
+- **ngOptions:** use `documentFragment` to populate `select` options
+  ([6a4124d0](https://github.com/angular/angular.js/commit/6a4124d0fb17cd7fc0e8bf5a1ca4d785a1d11c1c),
+   [#13607](https://github.com/angular/angular.js/issues/13607), [#13239](https://github.com/angular/angular.js/issues/13239), [#12076](https://github.com/angular/angular.js/issues/12076))
 
 
 <a name="1.5.4"></a>
