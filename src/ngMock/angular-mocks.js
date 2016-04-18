@@ -997,8 +997,10 @@ angular.mock.dump = function(object) {
  * Fake HTTP backend implementation suitable for unit testing applications that use the
  * {@link ng.$http $http service}.
  *
- * *Note*: For fake HTTP backend implementation suitable for end-to-end testing or backend-less
+ * <div class="alert alert-info">
+ * **Note**: For fake HTTP backend implementation suitable for end-to-end testing or backend-less
  * development please see {@link ngMockE2E.$httpBackend e2e $httpBackend mock}.
+ * </div>
  *
  * During unit testing, we want our unit tests to run quickly and have no external dependencies so
  * we don’t want to send [XHR](https://developer.mozilla.org/en/xmlhttprequest) or
@@ -2288,8 +2290,10 @@ angular.module('ngMockE2E', ['ng']).config(['$provide', function($provide) {
  * Fake HTTP backend implementation suitable for end-to-end testing or backend-less development of
  * applications that use the {@link ng.$http $http service}.
  *
- * *Note*: For fake http backend implementation suitable for unit testing please see
+ * <div class="alert alert-info">
+ * **Note**: For fake http backend implementation suitable for unit testing please see
  * {@link ngMock.$httpBackend unit-testing $httpBackend mock}.
+ * </div>
  *
  * This implementation can be used to respond with static or dynamic responses via the `when` api
  * and its shortcuts (`whenGET`, `whenPOST`, etc) and optionally pass through requests to the
@@ -2310,9 +2314,9 @@ angular.module('ngMockE2E', ['ng']).config(['$provide', function($provide) {
  * on the `ngMockE2E` and your application modules and defines the fake backend:
  *
  * ```js
- *   myAppDev = angular.module('myAppDev', ['myApp', 'ngMockE2E']);
+ *   var myAppDev = angular.module('myAppDev', ['myApp', 'ngMockE2E']);
  *   myAppDev.run(function($httpBackend) {
- *     phones = [{name: 'phone1'}, {name: 'phone2'}];
+ *     var phones = [{name: 'phone1'}, {name: 'phone2'}];
  *
  *     // returns the current list of phones
  *     $httpBackend.whenGET('/phones').respond(phones);
@@ -2323,12 +2327,74 @@ angular.module('ngMockE2E', ['ng']).config(['$provide', function($provide) {
  *       phones.push(phone);
  *       return [200, phone, {}];
  *     });
- *     $httpBackend.whenGET(/^\/templates\//).passThrough();
+ *     $httpBackend.whenGET(/^\/templates\//).passThrough(); // Requests for templare are handled by the real server
  *     //...
  *   });
  * ```
  *
  * Afterwards, bootstrap your app with this new module.
+ *
+ * ## Example
+ * <example name="httpbackend-e2e-testing" module="myAppE2E" deps="angular-mocks.js">
+ * <file name="app.js">
+ *   var myApp = angular.module('myApp', []);
+ *
+ *   myApp.controller('main', function($http) {
+ *     var ctrl = this;
+ *
+ *     ctrl.phones = [];
+ *     ctrl.newPhone = {
+ *       name: ''
+ *     };
+ *
+ *     ctrl.getPhones = function() {
+ *       $http.get('/phones').then(function(response) {
+ *         ctrl.phones = response.data;
+ *       });
+ *     };
+ *
+ *     ctrl.addPhone = function(phone) {
+ *       $http.post('/phones', phone).then(function() {
+ *         ctrl.newPhone = {name: ''};
+ *         return ctrl.getPhones();
+ *       });
+ *     };
+ *
+ *     ctrl.getPhones();
+ *   });
+ * </file>
+ * <file name="e2e.js">
+ *   var myAppDev = angular.module('myAppE2E', ['myApp', 'ngMockE2E']);
+ *
+ *   myAppDev.run(function($httpBackend) {
+ *     var phones = [{name: 'phone1'}, {name: 'phone2'}];
+ *
+ *     // returns the current list of phones
+ *     $httpBackend.whenGET('/phones').respond(phones);
+ *
+ *     // adds a new phone to the phones array
+ *     $httpBackend.whenPOST('/phones').respond(function(method, url, data) {
+ *       var phone = angular.fromJson(data);
+ *       phones.push(phone);
+ *       return [200, phone, {}];
+ *     });
+ *   });
+ * </file>
+ * <file name="index.html">
+ *   <div ng-controller="main as $ctrl">
+ *   <form name="newPhoneForm" ng-submit="$ctrl.addPhone($ctrl.newPhone)">
+ *     <input type="text" ng-model="$ctrl.newPhone.name">
+ *     <input type="submit" value="Add Phone">
+ *   </form>
+ *   <h1>Phones</h1>
+ *   <ul>
+ *     <li ng-repeat="phone in $ctrl.phones">{{phone.name}}</li>
+ *   </ul>
+ *   </div>
+ * </file>
+ * </example>
+ *
+ *
  */
 
 /**
