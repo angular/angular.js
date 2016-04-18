@@ -6,6 +6,7 @@
  * @description
  *
  * Namespace from 'angular-mocks.js' which contains testing related code.
+ *
  */
 angular.mock = {};
 
@@ -17,7 +18,7 @@ angular.mock = {};
  * @description
  * This service is a mock implementation of {@link ng.$browser}. It provides fake
  * implementation for commonly used browser apis that are hard to test, e.g. setTimeout, xhr,
- * cookies, etc...
+ * cookies, etc.
  *
  * The api of this service is the same as that of the real {@link ng.$browser $browser}, except
  * that there are several helper methods available which can be used in tests.
@@ -2250,6 +2251,48 @@ angular.mock.$ComponentControllerProvider = ['$compileProvider', function($compi
  *
  *
  * <div doc-module-components="ngMock"></div>
+ *
+ * @installation
+ *
+ *  <p>First, download the file:</p>
+ *  <ul>
+      <li>
+        <a href="https://developers.google.com/speed/libraries/devguide#angularjs">Google CDN</a> e.g.
+        {% code %}"//ajax.googleapis.com/ajax/libs/angularjs/X.Y.Z/"{% endcode %}
+      </li>
+      <li>
+        <a href="https://www.npmjs.com/">NPM</a> e.g.
+        {% code %}npm install {$ doc.packageName $}@X.Y.Z{% endcode %}
+      </li>
+      <li>
+        <a href="http://bower.io">Bower</a><br> e.g.
+        {% code %}bower install {$ doc.packageName $}@X.Y.Z{% endcode %}
+      </li>
+      <li>
+        <a href="https://code.angularjs.org/">code.angularjs.org</a> (discouraged for
+        production use)  e.g.
+        {% code %}"//code.angularjs.org/X.Y.Z/{$ doc.packageFile $}"{% endcode %}
+      </li>
+    </ul>
+    <p>where X.Y.Z is the AngularJS version you are running.</p>
+
+    <p>Then, configure your test runner to load `angular-mocks.js` after `angular.js`.
+    This example uses <a href="http://karma-runner.github.io/">Karma</a>:</p>
+
+    {% code %}
+        config.set({
+          files: [
+            'build/angular.js', // and other module files you need
+            'build/angular-mocks.js',
+            '<path/to/application/files>',
+            '<path/to/spec/files>'
+          ]
+        });
+    {% endcode %}
+
+    <p>Including the `angular-mocks.js` file automatically adds the `ngMock` module, so your tests
+    are ready to go!</p>
+ *
  *
  */
 angular.module('ngMock', ['ng']).provider({
