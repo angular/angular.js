@@ -3651,6 +3651,46 @@ describe('$compile', function() {
           expect(Controller2.prototype.$onInit).toHaveBeenCalledOnce();
         });
       });
+
+      it('should continue to trigger other `$onInit` hooks if one throws an error', function() {
+        function ThrowingController() {
+          this.$onInit = function() {
+            throw new Error('bad hook');
+          };
+        }
+        function LoggingController($log) {
+          this.$onInit = function() {
+            $log.info('onInit');
+          };
+        }
+
+        angular.module('my', [])
+          .component('c1', {
+            controller: ThrowingController,
+            bindings: {'prop': '<'}
+          })
+          .component('c2', {
+            controller: LoggingController,
+            bindings: {'prop': '<'}
+          })
+          .config(function($exceptionHandlerProvider) {
+            // We need to test with the exceptionHandler not rethrowing...
+            $exceptionHandlerProvider.mode('log');
+          });
+
+        module('my');
+        inject(function($compile, $rootScope, $exceptionHandler, $log) {
+
+          // Setup the directive with bindings that will keep updating the bound value forever
+          element = $compile('<div><c1 prop="a"></c1><c2 prop="a"></c2>')($rootScope);
+
+          // The first component's error should be logged
+          expect($exceptionHandler.errors.pop()).toEqual(new Error('bad hook'));
+
+          // The second component's hook should still be called
+          expect($log.info.logs.pop()).toEqual(['onInit']);
+        });
+      });
     });
 
 
@@ -4120,6 +4160,93 @@ describe('$compile', function() {
           $rootScope.$apply('a = 42');
           expect($exceptionHandler.errors.length).toEqual(1);
           expect($exceptionHandler.errors[0].toString()).toContain('[$compile:infchng] 10 $onChanges() iterations reached.');
+        });
+      });
+
+
+      it('should continue to trigger other `$onChanges` hooks if one throws an error', function() {
+        function ThrowingController() {
+          this.$onChanges = function(change) {
+            throw new Error('bad hook');
+          };
+        }
+        function LoggingController($log) {
+          this.$onChanges = function(change) {
+            $log.info('onChange');
+          };
+        }
+
+        angular.module('my', [])
+          .component('c1', {
+            controller: ThrowingController,
+            bindings: {'prop': '<'}
+          })
+          .component('c2', {
+            controller: LoggingController,
+            bindings: {'prop': '<'}
+          })
+          .config(function($exceptionHandlerProvider) {
+            // We need to test with the exceptionHandler not rethrowing...
+            $exceptionHandlerProvider.mode('log');
+          });
+
+        module('my');
+        inject(function($compile, $rootScope, $exceptionHandler, $log) {
+
+          // Setup the directive with bindings that will keep updating the bound value forever
+          element = $compile('<div><c1 prop="a"></c1><c2 prop="a"></c2>')($rootScope);
+
+          // The first component's error should be logged
+          expect($exceptionHandler.errors.pop()).toEqual(new Error('bad hook'));
+
+          // The second component's changes should still be called
+          expect($log.info.logs.pop()).toEqual(['onChange']);
+
+          $rootScope.$apply('a = 42');
+
+          // The first component's error should be logged
+          var errors = $exceptionHandler.errors.pop();
+          expect(errors[0]).toEqual(new Error('bad hook'));
+
+          // The second component's changes should still be called
+          expect($log.info.logs.pop()).toEqual(['onChange']);
+        });
+      });
+
+
+      it('should collect up all `$onChanges` errors into one throw', function() {
+        function ThrowingController() {
+          this.$onChanges = function(change) {
+            throw new Error('bad hook: ' + this.prop);
+          };
+        }
+
+        angular.module('my', [])
+          .component('c1', {
+            controller: ThrowingController,
+            bindings: {'prop': '<'}
+          })
+          .config(function($exceptionHandlerProvider) {
+            // We need to test with the exceptionHandler not rethrowing...
+            $exceptionHandlerProvider.mode('log');
+          });
+
+        module('my');
+        inject(function($compile, $rootScope, $exceptionHandler, $log) {
+
+          // Setup the directive with bindings that will keep updating the bound value forever
+          element = $compile('<div><c1 prop="a"></c1><c1 prop="a * 2"></c1>')($rootScope);
+
+          // Both component's errors should be logged
+          expect($exceptionHandler.errors.pop()).toEqual(new Error('bad hook: NaN'));
+          expect($exceptionHandler.errors.pop()).toEqual(new Error('bad hook: undefined'));
+
+          $rootScope.$apply('a = 42');
+
+          // Both component's error should be logged
+          var errors = $exceptionHandler.errors.pop();
+          expect(errors.pop()).toEqual(new Error('bad hook: 84'));
+          expect(errors.pop()).toEqual(new Error('bad hook: 42'));
         });
       });
     });
