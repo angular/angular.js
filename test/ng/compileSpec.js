@@ -4115,7 +4115,8 @@ describe('$compile', function() {
           $rootScope.$apply('a = 42');
 
           // The first component's error should be logged
-          expect($exceptionHandler.errors.pop()).toEqual([new Error('bad hook')]);
+          var errors = $exceptionHandler.errors.pop();
+          expect(errors[0]).toEqual(new Error('bad hook'));
 
           // The second component's changes should still be called
           expect($log.info.logs.pop()).toEqual(['onChange']);
