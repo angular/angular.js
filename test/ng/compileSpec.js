@@ -1,6 +1,6 @@
 'use strict';
 
-fdescribe('$compile', function() {
+describe('$compile', function() {
   function isUnknownElement(el) {
     return !!el.toString().match(/Unknown/);
   }
@@ -3563,6 +3563,46 @@ fdescribe('$compile', function() {
           expect(Controller2.prototype.$onInit).toHaveBeenCalledOnce();
         });
       });
+
+      it('should continue to trigger other `$onInit` hooks if one throws an error', function() {
+        function ThrowingController() {
+          this.$onInit = function() {
+            throw new Error('bad hook');
+          };
+        }
+        function LoggingController($log) {
+          this.$onInit = function() {
+            $log.info('onInit');
+          };
+        }
+
+        angular.module('my', [])
+          .component('c1', {
+            controller: ThrowingController,
+            bindings: {'prop': '<'}
+          })
+          .component('c2', {
+            controller: LoggingController,
+            bindings: {'prop': '<'}
+          })
+          .config(function($exceptionHandlerProvider) {
+            // We need to test with the exceptionHandler not rethrowing...
+            $exceptionHandlerProvider.mode('log');
+          });
+
+        module('my');
+        inject(function($compile, $rootScope, $exceptionHandler, $log) {
+
+          // Setup the directive with bindings that will keep updating the bound value forever
+          element = $compile('<div><c1 prop="a"></c1><c2 prop="a"></c2>')($rootScope);
+
+          // The first component's error should be logged
+          expect($exceptionHandler.errors.pop()).toEqual(new Error('bad hook'));
+
+          // The second component's hook should still be called
+          expect($log.info.logs.pop()).toEqual(['onInit']);
+        });
+      });
     });
 
 
@@ -4113,7 +4153,9 @@ fdescribe('$compile', function() {
           $rootScope.$apply('a = 42');
 
           // Both component's error should be logged
-          expect($exceptionHandler.errors[0]).toEqual([new Error('bad hook: 42'), new Error('bad hook: 84')]);
+          var errors = $exceptionHandler.errors.pop();
+          expect(errors.pop()).toEqual(new Error('bad hook: 84'));
+          expect(errors.pop()).toEqual(new Error('bad hook: 42'));
         });
       });
     });

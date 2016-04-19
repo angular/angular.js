@@ -1300,7 +1300,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           for (var i = 0, ii = onChangesQueue.length; i < ii; ++i) {
             try {
               onChangesQueue[i]();
-            } catch(e) {
+            } catch (e) {
               errors.push(e);
             }
           }
@@ -2471,12 +2471,16 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           if (isFunction(controllerInstance.$onChanges)) {
             try {
               controllerInstance.$onChanges(controller.bindingInfo.initialChanges);
-            } catch(e) {
+            } catch (e) {
               $exceptionHandler(e);
             }
           }
           if (isFunction(controllerInstance.$onInit)) {
-            controllerInstance.$onInit();
+            try {
+              controllerInstance.$onInit();
+            } catch (e) {
+              $exceptionHandler(e);
+            }
           }
           if (isFunction(controllerInstance.$onDestroy)) {
             controllerScope.$on('$destroy', function callOnDestroyHook() {
