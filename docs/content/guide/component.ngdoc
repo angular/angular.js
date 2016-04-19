@@ -133,7 +133,7 @@ components should follow a few simple conventions:
     For a deletion, that means the component doesn't delete the `hero` itself, but sends it back to
     the owner component via the correct event.
     ```html
-        <!-- note that we use snake case for bindings in the template as usual -->
+        <!-- note that we use kebab-case for bindings in the template as usual -->
         <editable-field on-update="$ctrl.update('location', value)"></editable-field><br>
         <button ng-click="$ctrl.onDelete({hero: $ctrl.hero})">Delete</button>
     ```
