@@ -70,7 +70,7 @@ function urlResolve(url, base) {
 	/* REV EDIT:
 	 * Fix pathname parsing...
 	 */
-	if( href.match(/^https?:\/\/(?:[^:@\/]+(?::[^@\/]+)?@)?([\w|\-|\.]+)(?::\d+)?(?:\/.*)?$/) !== null ) {
+	if( typeof href === "string" && href.match(/^https?:\/\/(?:[^:@\/]+(?::[^@\/]+)?@)?([\w|\-|\.]+)(?::\d+)?(?:\/.*)?$/) !== null ) {
 		var parts = href.match(/^https?:\/\/(?:[^:@\/]+(?::[^@\/]+)?@)?([\w|\-|\.]+)(?::\d+)?(\/.*)?$/);
 		urlParsingNode.host = parts[1];
 		urlParsingNode.pathname = parts[2];
