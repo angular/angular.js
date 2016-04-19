@@ -67,15 +67,11 @@ function urlResolve(url, base) {
 
 	urlParsingNode.setAttribute('href', href);
 	
-	/* REV EDIT:
-	 * Fix pathname parsing...
-	 */
 	if( typeof href === "string" && href.match(/^https?:\/\/(?:[^:@\/]+(?::[^@\/]+)?@)?([\w|\-|\.]+)(?::\d+)?(?:\/.*)?$/) !== null ) {
 		var parts = href.match(/^https?:\/\/(?:[^:@\/]+(?::[^@\/]+)?@)?([\w|\-|\.]+)(?::\d+)?(\/.*)?$/);
 		urlParsingNode.host = parts[1];
 		urlParsingNode.pathname = parts[2];
 	}
-	/* END EDIT */
 
 	// urlParsingNode provides the UrlUtils interface - http://url.spec.whatwg.org/#urlutils
 	return {
