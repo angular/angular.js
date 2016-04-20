@@ -38,7 +38,7 @@
  * Find out more information about each directive by reading the
  * {@link guide/accessibility ngAria Developer Guide}.
  *
- * ##Example
+ * ## Example
  * Using ngDisabled with ngAria:
  * ```html
  * <md-checkbox ng-disabled="disabled">
@@ -48,7 +48,7 @@
  * <md-checkbox ng-disabled="disabled" aria-disabled="true">
  * ```
  *
- * ##Disabling Attributes
+ * ## Disabling Attributes
  * It's possible to disable individual attributes added by ngAria with the
  * {@link ngAria.$ariaProvider#config config} method. For more details, see the
  * {@link guide/accessibility Developer Guide}.
