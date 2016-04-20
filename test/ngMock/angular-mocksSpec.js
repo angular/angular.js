@@ -2133,11 +2133,14 @@ describe('ngMockE2E', function() {
 
     describe('passThrough()', function() {
       it('should delegate requests to the real backend when passThrough is invoked', function() {
+        var eventHandlers = {progress: angular.noop};
+        var uploadEventHandlers = {progress: angular.noop};
+
         hb.when('GET', /\/passThrough\/.*/).passThrough();
-        hb('GET', '/passThrough/23', null, callback, {}, null, true, 'blob');
+        hb('GET', '/passThrough/23', null, callback, {}, null, true, 'blob', eventHandlers, uploadEventHandlers);
 
         expect(realHttpBackend).toHaveBeenCalledOnceWith(
-            'GET', '/passThrough/23', null, callback, {}, null, true, 'blob');
+            'GET', '/passThrough/23', null, callback, {}, null, true, 'blob', eventHandlers, uploadEventHandlers);
       });
 
       it('should be able to override a respond definition with passThrough', function() {
@@ -2146,7 +2149,7 @@ describe('ngMockE2E', function() {
         hb('GET', '/passThrough/23', null, callback, {}, null, true);
 
         expect(realHttpBackend).toHaveBeenCalledOnceWith(
-            'GET', '/passThrough/23', null, callback, {}, null, true, undefined);
+            'GET', '/passThrough/23', null, callback, {}, null, true, undefined, undefined, undefined);
       });
 
       it('should be able to override a respond definition with passThrough', inject(function($browser) {
