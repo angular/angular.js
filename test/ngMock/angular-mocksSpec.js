@@ -2137,7 +2137,7 @@ describe('ngMockE2E', function() {
         hb('GET', '/passThrough/23', null, callback, {}, null, true, 'blob');
 
         expect(realHttpBackend).toHaveBeenCalledOnceWith(
-            'GET', '/passThrough/23', null, callback, {}, null, true, 'blob');
+            'GET', '/passThrough/23', null, callback, {}, null, true, 'blob', undefined, undefined);
       });
 
       it('should be able to override a respond definition with passThrough', function() {
@@ -2146,7 +2146,7 @@ describe('ngMockE2E', function() {
         hb('GET', '/passThrough/23', null, callback, {}, null, true);
 
         expect(realHttpBackend).toHaveBeenCalledOnceWith(
-            'GET', '/passThrough/23', null, callback, {}, null, true, undefined);
+            'GET', '/passThrough/23', null, callback, {}, null, true, undefined, undefined, undefined);
       });
 
       it('should be able to override a respond definition with passThrough', inject(function($browser) {
