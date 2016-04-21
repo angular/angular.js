@@ -2559,6 +2559,18 @@ describe('$location', function() {
     it('should throw on url(urlString, stateObject)', function() {
       expectThrowOnStateChange(locationUrl);
     });
+
+    it('should not throw when base path is another domain', function() {
+      initService({html5Mode: true, hashPrefix: '!', supportHistory: true});
+      inject(
+        initBrowser({url: 'http://domain.com/base/', basePath: 'http://otherdomain.com/base/'}),
+        function($location) {
+          expect(function() {
+            $location.absUrl();
+          }).not.toThrow();
+        }
+      );
+    });
   });
 
 
