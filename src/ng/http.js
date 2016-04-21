@@ -451,9 +451,11 @@ function $HttpProvider() {
      *   - **statusText** – `{string}` – HTTP status text of the response.
      *
      * A response status code between 200 and 299 is considered a success status and
-     * will result in the success callback being called. Note that if the response is a redirect,
-     * XMLHttpRequest will transparently follow it, meaning that the error callback will not be
-     * called for such responses.
+     * will result in the success callback being called. Response status code other than
+     * the mentioned ones is considered as error status. The error callback is called in such case.
+     * Also, any negative status code is normalized to zero. Other codes are returned as such.
+     * Note that if the response is a redirect, XMLHttpRequest will transparently follow it, meaning
+     * that the error callback will not be called for such responses.
      *
      *
      * ## Shortcut methods
