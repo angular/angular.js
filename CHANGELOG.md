@@ -1008,9 +1008,6 @@ is  `$locals`.
    [#13236](https://github.com/angular/angular.js/issues/13236))
 
 
-## Breaking Changes
-
-
 <a name="1.5.0-beta.2"></a>
 # 1.5.0-beta.2 effective-delegation (2015-11-17)
 
@@ -1330,9 +1327,6 @@ requirement more strict and alerts the developer explicitly.
    [#2318](https://github.com/angular/angular.js/issues/2318), [#9319](https://github.com/angular/angular.js/issues/9319), [#12159](https://github.com/angular/angular.js/issues/12159))
 
 
-## Breaking Changes
-
-
 <a name="1.3.20"></a>
 # 1.3.20 shallow-translucence (2015-09-29)
 
@@ -1341,9 +1335,6 @@ requirement more strict and alerts the developer explicitly.
 
 - **$parse:** do not convert to string computed properties multiple times
   ([d434f3db](https://github.com/angular/angular.js/commit/d434f3db53d6209eb140b904e83bbde401686c16))
-
-
-## Breaking Changes
 
 
 <a name="1.2.29"></a>
@@ -1370,9 +1361,6 @@ requirement more strict and alerts the developer explicitly.
 - **ngAnimate:** ensure that minified repaint code isn't removed
   ([b041b664](https://github.com/angular/angular.js/commit/b041b664752e34a42bbc65e02bf0009f0836c50c),
    [#9936](https://github.com/angular/angular.js/issues/9936))
-
-
-## Breaking Changes
 
 
 <a name="1.4.6"></a>
@@ -2203,9 +2191,7 @@ describe('$q.when', function() {
 
 ## Breaking Changes
 
-### ngAnimate
-
-- **$animateCss:** due to [d5683d21](https://github.com/angular/angular.js/commit/d5683d21165e725bc5a850e795f681b0a8a008f5),
+- **ngAnimate** - $animateCss: due to [d5683d21](https://github.com/angular/angular.js/commit/d5683d21165e725bc5a850e795f681b0a8a008f5),
   The $animateCss service will now always return an
 object even if the animation is not set to run. If your code is using
 $animateCss then please consider the following code change:
@@ -2289,9 +2275,7 @@ $animateProvider.classNameFilter(/ng-animate-special/);
 ```
 
 
-### ngOptions
-
-- ** due to [dfa722a8](https://github.com/angular/angular.js/commit/dfa722a8a6864793fd9580d8ae704a06d10b5509),
+- **ngOptions**: due to [dfa722a8](https://github.com/angular/angular.js/commit/dfa722a8a6864793fd9580d8ae704a06d10b5509),
 
 
 Although it is unlikely that anyone is using it in this way, this change does change the
