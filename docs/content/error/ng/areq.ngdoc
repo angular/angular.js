@@ -11,3 +11,5 @@ This usually happens when you forget to pass in both arguments to a .controller 
 Remember to pass both the name of the component as a string and then the second argument as the functionality with all  
 dependencies injected using either the inline style or the '.$inject=' style.
 
+Another possible fix is to make sure you have included all of the files in your HTML using '<script>' tags.
+
