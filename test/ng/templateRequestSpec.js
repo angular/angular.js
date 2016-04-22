@@ -174,19 +174,21 @@ describe('$templateRequest', function() {
       $templateRequest('tpl.html');
       $rootScope.$digest();
     }).toThrow();
+    $templateCache.removeAll();
 
     $templateCache.put('tpl.html', null); // makes no sense, but it's been added, so trust it.
     expect(function() {
       $templateRequest('tpl.html');
       $rootScope.$digest();
     }).not.toThrow();
+    $templateCache.removeAll();
 
     $templateCache.put('tpl.html', ''); // should work (empty template)
     expect(function() {
       $templateRequest('tpl.html');
       $rootScope.$digest();
     }).not.toThrow();
-
+    $templateCache.removeAll();
   }));
 
   it('should keep track of how many requests are going on',

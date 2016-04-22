@@ -68,14 +68,8 @@ function $TemplateRequestProvider() {
       // are included in there. This also makes Angular accept any script
       // directive, no matter its name. However, we still need to unwrap trusted
       // types.
-      if (!isString(tpl)) { // Safe types need unwrapping.
+      if (!isString(tpl) || isUndefined($templateCache.get(tpl))) {
         tpl = $sce.getTrustedResourceUrl(tpl);
-      } else { // Strings can be tested against the cache.
-        var cacheAnswer = $templateCache.get(tpl);
-        if (typeof cacheAnswer === 'undefined') {
-          // It is not in the cache, hence we don't trust it and it has to go through the $sce.
-          tpl = $sce.getTrustedResourceUrl(tpl);
-        } // Anything else means the cache has a record of it, so no need to check.
       }
 
       var transformResponse = $http.defaults && $http.defaults.transformResponse;
