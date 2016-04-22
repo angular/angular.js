@@ -6,3 +6,8 @@
 AngularJS often asserts that certain values will be present and truthy using a
 helper function. If the assertion fails, this error is thrown. To fix this problem,
 make sure that the value the assertion expects is defined and truthy.
+
+This usually happens when you forget to pass in both arguments to a .controller function or .service function for example.  
+Remember to pass both the name of the component as a string and then the second argument as the functionality with all  
+dependencies injected using either the inline style or the '.$inject=' style.
+
