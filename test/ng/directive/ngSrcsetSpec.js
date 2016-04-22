@@ -28,5 +28,10 @@ describe('ngSrcset', function() {
     $rootScope.$digest();
     expect(element.attr('srcset')).toBe('http://example.com/image1.png 1x,unsafe:javascript:doEvilStuff() 2x');
   }));
+
+  it('should not throw an error if undefined', inject(function($rootScope, $compile) {
+    element = $compile('<img ng-attr-srcset="{{undefined}}">')($rootScope);
+    $rootScope.$digest();
+  }));
 });
 
