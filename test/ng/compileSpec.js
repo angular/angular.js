@@ -9394,6 +9394,27 @@ describe('$compile', function() {
 
   describe('img[srcset] sanitization', function() {
 
+    it('should not error if undefined', function() {
+      var linked = false;
+      module(function() {
+        directive('setter', valueFn(function(scope, elem, attrs) {
+          attrs.$set('srcset', 'http://example.com/');
+          expect(attrs.srcset).toBe('http://example.com/');
+
+          attrs.$set('srcset', undefined);
+          expect(attrs.srcset).toBeUndefined();
+
+          linked = true;
+        }));
+      });
+      inject(function($compile, $rootScope) {
+        element = $compile('<img setter></img>')($rootScope);
+
+        expect(linked).toBe(true);
+        expect(element.attr('srcset')).toBeUndefined();
+      });
+    });
+
     it('should NOT require trusted values for img srcset', inject(function($rootScope, $compile, $sce) {
       element = $compile('<img srcset="{{testUrl}}"></img>')($rootScope);
       $rootScope.testUrl = 'http://example.com/image.png';
