@@ -440,7 +440,7 @@ There is also an example of testing promises in the {@link ng.$q#testing `$q` se
 
 ## Using `beforeAll()`
 
-Jasmine's `beforeAll()` and mocha's `before()` hooks are often useful for sharing test setup - either to reduce test run-time or simply to make for more focussed test cases.
+Jasmine's `beforeAll()` and mocha's `before()` hooks are often useful for sharing test setup - either to reduce test run-time or simply to make for more focused test cases.
 
 By default, ngMock will create an injector per test case to ensure your tests do not affect each other. However, if we want to use `beforeAll()`, ngMock will have to create the injector before any test cases are run, and share that injector through all the cases for that `describe`. That is where {@link angular.mock.module.sharedInjector module.sharedInjector()} comes in. When it's called within a `describe` block, a single injector is shared between all hooks and test cases run in that block.
 
