@@ -85,7 +85,7 @@ describe('$templateRequest', function() {
     inject(function($rootScope, $templateRequest, $templateCache, $sce) {
 
     // Will throw on any template not in cache.
-    spyOn($sce, 'getTrustedResourceUrl').and.returnValue(false);
+    spyOn($sce, 'getTrustedResourceUrl').andReturn(false);
 
     expect(function() {
       $templateRequest('tpl.html'); // should go through $sce
