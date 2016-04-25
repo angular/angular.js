@@ -6268,6 +6268,51 @@ describe('$compile', function() {
       });
     });
 
+    it('should use the key if the name of a required controller is omitted', function() {
+      var parentController, siblingController;
+
+      function ParentController() { this.name = 'Parent'; }
+      function SiblingController() { this.name = 'Sibling'; }
+      function MeController() { this.name = 'Me'; }
+      MeController.prototype.$onInit = function() {
+        parentController = this.parent;
+        siblingController = this.sibling;
+      };
+      spyOn(MeController.prototype, '$onInit').and.callThrough();
+
+      angular.module('my', [])
+        .directive('me', function() {
+          return {
+            restrict: 'E',
+            scope: {},
+            require: { parent: '^', sibling: '' },
+            bindToController: true,
+            controller: MeController,
+            controllerAs: '$ctrl'
+          };
+        })
+        .directive('parent', function() {
+          return {
+            restrict: 'E',
+            scope: {},
+            controller: ParentController
+          };
+        })
+        .directive('sibling', function() {
+          return {
+            controller: SiblingController
+          };
+        });
+
+      module('my');
+      inject(function($compile, $rootScope, meDirective) {
+        element = $compile('<parent><me sibling></me></parent>')($rootScope);
+        expect(MeController.prototype.$onInit).toHaveBeenCalled();
+        expect(parentController).toEqual(jasmine.any(ParentController));
+        expect(siblingController).toEqual(jasmine.any(SiblingController));
+      });
+    });
+
 
     it('should not bind required controllers if bindToController is falsy', function() {
       var parentController, siblingController;
@@ -6796,6 +6841,31 @@ describe('$compile', function() {
         expect(log).toEqual('dep:c1-c2');
       });
     });
+
+    it('should support omitting the name of the required controller if it is the same as the key',
+      function() {
+        module(function() {
+          directive('myC1', valueFn({
+            controller: function() { this.name = 'c1'; }
+          }));
+          directive('myC2', valueFn({
+            controller: function() { this.name = 'c2'; }
+          }));
+          directive('dep', function(log) {
+            return {
+              require: { myC1: '^', myC2: '^' },
+              link: function(scope, element, attrs, controllers) {
+                log('dep:' + controllers.myC1.name + '-' + controllers.myC2.name);
+              }
+            };
+          });
+        });
+        inject(function(log, $compile, $rootScope) {
+          element = $compile('<div my-c1 my-c2><div dep></div></div>')($rootScope);
+          expect(log).toEqual('dep:c1-c2');
+        });
+      }
+    );
 
     it('should instantiate the controller just once when template/templateUrl', function() {
       var syncCtrlSpy = jasmine.createSpy('sync controller'),
