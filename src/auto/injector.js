@@ -710,7 +710,7 @@ function createInjector(modulesToLoad, strictDi) {
 
   function factory(name, factoryFn, enforce) {
     return provider(name, {
-      $get: enforce !== false ? enforceReturnValue(name, factoryFn) : factoryFn
+      $get: enforce ? enforceReturnValue(name, factoryFn) : factoryFn
     });
   }
 
