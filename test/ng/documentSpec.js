@@ -36,7 +36,8 @@ describe('$$isDocumentHidden', function() {
     var spy = spyOn(document, 'addEventListener').and.callThrough();
 
     inject(function($$isDocumentHidden, $document) {
-      expect(spy).toHaveBeenCalledWith('visibilitychange', jasmine.any(Function));
+      expect(spy.calls.mostRecent().args[0]).toBe('visibilitychange');
+      expect(spy.calls.mostRecent().args[1]).toEqual(jasmine.any(Function));
       expect($$isDocumentHidden()).toBeFalsy(); // undefined in browsers that don't support visibility
     });
 
@@ -47,7 +48,8 @@ describe('$$isDocumentHidden', function() {
 
     inject(function($$isDocumentHidden, $rootScope) {
       $rootScope.$destroy();
-      expect(spy).toHaveBeenCalledWith('visibilitychange', jasmine.any(Function));
+      expect(spy.calls.mostRecent().args[0]).toBe('visibilitychange');
+      expect(spy.calls.mostRecent().args[1]).toEqual(jasmine.any(Function));
     });
   });
 });
