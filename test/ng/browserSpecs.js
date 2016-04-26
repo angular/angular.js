@@ -452,7 +452,7 @@ describe('browser', function() {
 
     sniffer.history = true;
     var originalReplace = fakeWindow.location.replace;
-    fakeWindow.location.replace = function (url) {
+    fakeWindow.location.replace = function(url) {
       url = url.replace('&not', '¬');
       // I really don't know why IE 11 (sometimes) does this, but I am not the only one to notice:
       // https://connect.microsoft.com/IE/feedback/details/1040980/bug-in-ie-which-interprets-document-location-href-as-html
