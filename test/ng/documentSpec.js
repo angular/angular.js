@@ -27,3 +27,27 @@ describe('$document', function() {
     });
   });
 });
+
+
+describe('$$isDocumentHidden', function() {
+  it('should listen on the visibilitychange event', function() {
+    var doc;
+
+    var spy = spyOn(document, 'addEventListener').and.callThrough();
+
+    inject(function($$isDocumentHidden, $document) {
+      expect(spy).toHaveBeenCalledWith('visibilitychange', jasmine.any(Function));
+      expect($$isDocumentHidden()).toBe(false);
+    });
+
+  });
+
+  it('should remove the listener when the $rootScope is destroyed', function() {
+    var spy = spyOn(document, 'removeEventListener').and.callThrough();
+
+    inject(function($$isDocumentHidden, $rootScope) {
+      $rootScope.$destroy();
+      expect(spy).toHaveBeenCalledWith('visibilitychange', jasmine.any(Function));
+    });
+  });
+});

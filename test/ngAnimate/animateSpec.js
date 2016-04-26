@@ -2501,18 +2501,19 @@ describe("animations", function() {
 
 
       describe('because the document is hidden', function() {
-        beforeEach(module(function($provide) {
-          var doc = jqLite({
-            body: document.body,
-            hidden: true
+        var hidden = true;
+
+        beforeEach(function() {
+          module(function($provide) {
+            $provide.value('$$isDocumentHidden', function() {
+              return hidden;
+            });
           });
-          $provide.value('$document', doc);
-        }));
+        });
 
         it('should trigger callbacks for an enter animation',
           inject(function($animate, $rootScope, $rootElement, $document) {
 
-          var callbackTriggered = false;
           var spy = jasmine.createSpy();
           $animate.on('enter', jqLite($document[0].body), spy);
 
