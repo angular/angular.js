@@ -457,7 +457,7 @@ describe('browser', function() {
       // I really don't know why IE 11 (sometimes) does this, but I am not the only one to notice:
       // https://connect.microsoft.com/IE/feedback/details/1040980/bug-in-ie-which-interprets-document-location-href-as-html
       originalReplace.call(this, url);
-    }
+    };
 
     // the initial URL contains a lengthy oauth token in the hash
     var initialUrl = 'http://test.com/oauthcallback#state=xxx%3D&not-before-policy=0';
