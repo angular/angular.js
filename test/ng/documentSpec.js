@@ -37,7 +37,7 @@ describe('$$isDocumentHidden', function() {
 
     inject(function($$isDocumentHidden, $document) {
       expect(spy).toHaveBeenCalledWith('visibilitychange', jasmine.any(Function));
-      expect($$isDocumentHidden()).toBe(false);
+      expect($$isDocumentHidden()).toBeFalsy(); // undefined in browsers that don't support visibility
     });
 
   });
