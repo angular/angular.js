@@ -27,7 +27,7 @@
  * | {@link ng.directive:ngDisabled ngDisabled}  | aria-disabled                                                                          |
  * | {@link ng.directive:ngRequired ngRequired}  | aria-required
  * | {@link ng.directive:ngChecked ngChecked}    | aria-checked
- * | {@link ng.directive:ngReadonly ngReadonly}  | aria-readonly                                                                          ||
+ * | {@link ng.directive:ngReadonly ngReadonly}  | aria-readonly                                                                          |
  * | {@link ng.directive:ngValue ngValue}        | aria-checked                                                                           |
  * | {@link ng.directive:ngShow ngShow}          | aria-hidden                                                                            |
  * | {@link ng.directive:ngHide ngHide}          | aria-hidden                                                                            |
