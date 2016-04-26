@@ -30,7 +30,7 @@ describe('ngSrcset', function() {
   }));
 
   it('should not throw an error if undefined', inject(function($rootScope, $compile) {
-    element = $compile('<img data-ng-attr-srcset="{{undefined}}">')($rootScope);
+    element = $compile('<img ng-attr-srcset="{{undefined}}">')($rootScope);
     $rootScope.$digest();
   }));
 });
