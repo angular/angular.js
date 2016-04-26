@@ -7213,22 +7213,22 @@ describe('$compile', function() {
         });
 
         inject(function($compile, $rootScope) {
-          expect(jqLiteCacheSize()).toEqual(0);
+          var cacheSize = jqLiteCacheSize();
 
           element = $compile('<div><div ng-repeat="x in xs" ng-if="x==1">{{x}}</div></div>')($rootScope);
-          expect(jqLiteCacheSize()).toEqual(1);
+          expect(jqLiteCacheSize()).toEqual(cacheSize + 1);
 
           $rootScope.$apply('xs = [0,1]');
-          expect(jqLiteCacheSize()).toEqual(2);
+          expect(jqLiteCacheSize()).toEqual(cacheSize + 2);
 
           $rootScope.$apply('xs = [0]');
-          expect(jqLiteCacheSize()).toEqual(1);
+          expect(jqLiteCacheSize()).toEqual(cacheSize + 1);
 
           $rootScope.$apply('xs = []');
-          expect(jqLiteCacheSize()).toEqual(1);
+          expect(jqLiteCacheSize()).toEqual(cacheSize + 1);
 
           element.remove();
-          expect(jqLiteCacheSize()).toEqual(0);
+          expect(jqLiteCacheSize()).toEqual(cacheSize + 0);
         });
       });
 
@@ -7245,22 +7245,22 @@ describe('$compile', function() {
         });
 
         inject(function($compile, $rootScope) {
-          expect(jqLiteCacheSize()).toEqual(0);
+          var cacheSize = jqLiteCacheSize();
 
           element = $compile('<div><div ng-repeat="x in xs" ng-if="x==1">{{x}}</div></div>')($rootScope);
-          expect(jqLiteCacheSize()).toEqual(0);
+          expect(jqLiteCacheSize()).toEqual(cacheSize);
 
           $rootScope.$apply('xs = [0,1]');
-          expect(jqLiteCacheSize()).toEqual(0);
+          expect(jqLiteCacheSize()).toEqual(cacheSize);
 
           $rootScope.$apply('xs = [0]');
-          expect(jqLiteCacheSize()).toEqual(0);
+          expect(jqLiteCacheSize()).toEqual(cacheSize);
 
           $rootScope.$apply('xs = []');
-          expect(jqLiteCacheSize()).toEqual(0);
+          expect(jqLiteCacheSize()).toEqual(cacheSize);
 
           element.remove();
-          expect(jqLiteCacheSize()).toEqual(0);
+          expect(jqLiteCacheSize()).toEqual(cacheSize);
         });
       });
 
@@ -7276,26 +7276,26 @@ describe('$compile', function() {
         });
 
         inject(function($compile, $rootScope) {
-          expect(jqLiteCacheSize()).toEqual(0);
+          var cacheSize = jqLiteCacheSize();
           element = $compile('<div><div ng-repeat="x in xs" ng-if="val">{{x}}</div></div>')($rootScope);
 
           $rootScope.$apply('xs = [0,1]');
           // At this point we have a bunch of comment placeholders but no real transcluded elements
           // So the cache only contains the root element's data
-          expect(jqLiteCacheSize()).toEqual(1);
+          expect(jqLiteCacheSize()).toEqual(cacheSize + 1);
 
           $rootScope.$apply('val = true');
           // Now we have two concrete transcluded elements plus some comments so two more cache items
-          expect(jqLiteCacheSize()).toEqual(3);
+          expect(jqLiteCacheSize()).toEqual(cacheSize + 3);
 
           $rootScope.$apply('val = false');
           // Once again we only have comments so no transcluded elements and the cache is back to just
           // the root element
-          expect(jqLiteCacheSize()).toEqual(1);
+          expect(jqLiteCacheSize()).toEqual(cacheSize + 1);
 
           element.remove();
           // Now we've even removed the root element along with its cache
-          expect(jqLiteCacheSize()).toEqual(0);
+          expect(jqLiteCacheSize()).toEqual(cacheSize + 0);
         });
       });
 
@@ -7332,6 +7332,7 @@ describe('$compile', function() {
         });
 
         inject(function($compile, $rootScope, $httpBackend, $timeout, $templateCache) {
+          var cacheSize = jqLiteCacheSize();
           $httpBackend.whenGET('red.html').respond('<p>red.html</p>');
           var template = $compile(
             '<div ng-controller="Leak">' +
@@ -7346,7 +7347,7 @@ describe('$compile', function() {
           $timeout.flush();
           $httpBackend.flush();
           expect(linkFn).not.toHaveBeenCalled();
-          expect(jqLiteCacheSize()).toEqual(2);
+          expect(jqLiteCacheSize()).toEqual(cacheSize + 2);
 
           $templateCache.removeAll();
           var destroyedScope = $rootScope.$new();
@@ -8129,9 +8130,7 @@ describe('$compile', function() {
 
         it('should not leak memory with nested transclusion', function() {
           inject(function($compile, $rootScope) {
-            var size;
-
-            expect(jqLiteCacheSize()).toEqual(0);
+            var size, initialSize = jqLiteCacheSize();
 
             element = jqLite('<div><ul><li ng-repeat="n in nums">{{n}} => <i ng-if="0 === n%2">Even</i><i ng-if="1 === n%2">Odd</i></li></ul></div>');
             $compile(element)($rootScope.$new());
@@ -8145,7 +8144,7 @@ describe('$compile', function() {
             expect(jqLiteCacheSize()).toEqual(size);
 
             element.remove();
-            expect(jqLiteCacheSize()).toEqual(0);
+            expect(jqLiteCacheSize()).toEqual(initialSize);
           });
         });
       });
