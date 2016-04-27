@@ -174,10 +174,7 @@ into our application:
 Note that we removed the `<phone-list></phone-list>` line from the `index.html` template and
 replaced it with a `<div>` with the `ng-view` attribute.
 
-<div style="display:none">
-  <!-- TODO -->
-  <img class="diagram" src="img/tutorial/tutorial_09_final.png">
-</div>
+<img class="diagram" src="img/tutorial/tutorial_09.png">
 
 
 ## Configuring a Module

@@ -184,6 +184,8 @@ Voilà! The resulting output should look the same, but let's see what we have ga
   inside our component, stays inside our component.
 * It's easier to test our component in isolation.
 
+<img class="diagram" src="img/tutorial/tutorial_03.png">
+
 <div class="alert alert-info">
   **A note on file naming:**
   <br />

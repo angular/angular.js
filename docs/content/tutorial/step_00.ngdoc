@@ -48,7 +48,7 @@ The code contains some key Angular elements that we will need as we progress.
 
 ```html
 <!doctype html>
-<html lang="en" ng-app="phonecatApp">
+<html lang="en" ng-app>
   <head>
     <meta charset="utf-8">
     <title>My HTML File</title>

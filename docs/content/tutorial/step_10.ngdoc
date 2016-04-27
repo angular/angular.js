@@ -111,7 +111,7 @@ including lists and bindings that comprise the phone details. Note how we use th
       <dd ng-repeat="availability in $ctrl.phone.availability">{{availability}}</dd>
     </dl>
   </li>
-    ...
+  ...
   <li>
     <span>Additional Features</span>
     <dd>{{$ctrl.phone.additionalFeatures}}</dd>
@@ -119,10 +119,7 @@ including lists and bindings that comprise the phone details. Note how we use th
 </ul>
 ```
 
-<div style="display: none">
-  <!-- TODO -->
-  <img class="diagram" src="img/tutorial/tutorial_10_final.png">
-</div>
+<img class="diagram" src="img/tutorial/tutorial_10.png">
 
 
 # Testing

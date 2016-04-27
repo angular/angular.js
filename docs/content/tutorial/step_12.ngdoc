@@ -70,10 +70,7 @@ user clicks on one of the thumbnail images, the handler will use the `$ctrl.setI
 callback to change the value of the `$ctrl.mainImageUrl` property to the URL of the clicked
 thumbnail image.
 
-<div style="display: none">
-  <!-- TODO -->
-  <img class="diagram" src="img/tutorial/tutorial_12_final.png">
-</div>
+<img class="diagram" src="img/tutorial/tutorial_12.png">
 
 
 # Testing
