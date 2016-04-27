@@ -146,7 +146,7 @@ describe('phoneDetail', function() {
 
       $routeParams.phoneId = 'xyz';
 
-      ctrl = $componentController('phoneDetail', {$scope: {}});
+      ctrl = $componentController('phoneDetail');
     }));
 
     it('should fetch the phone details', function() {

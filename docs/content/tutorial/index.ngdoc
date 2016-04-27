@@ -96,6 +96,19 @@ cd angular-phonecat
 The tutorial instructions, from now on, assume you are running all commands from within the
 `angular-phonecat` directory.
 
+<div class="alert alert-warning">
+  <p>
+    `git` and other tools (for example `bower` - see below), often use the `git:` protocol for
+    accessing files in remote repositories. Some firewall configurations are blocking `git://` URLs,
+    which leads to errors when trying to clone repositories or download dependencies. (For example
+    corporate firewalls are "notorious" for blocking `git:`.)
+  </p>
+  <p>
+    If you run into this issue, you can force the use of `https:` instead, by running the following
+    command: `git config --global url."https://".insteadOf git://`
+  </p>
+</div>
+
 
 ### Install Node.js
 
@@ -257,7 +270,7 @@ npm run update-webdriver
   the [Java Development Kit (JDK)][jdk] to be installed on your local machine. Check this
   by running `java -version` from the command line.
 
-  If JDK is not already install, you can download it [here][jdk-download].
+  If JDK is not already installed, you can download it [here][jdk-download].
 </div>
 
 Since Protractor works by interacting with a running application, we need to start our web server:

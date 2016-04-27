@@ -53,7 +53,7 @@ We will keep this in mind though, as we add more features.
 
 So, now that we learned we should put everything in its own file, our `app/` directory will soon be
 full with dozens of files and specs (remember we keep our unit test files next to the corresponding
-source code files). What's more important, logically related files will not be groupped together; it
+source code files). What's more important, logically related files will not be grouped together; it
 will be really difficult of locate all files related to a specific section of the application and
 make a change or fix a bug.
 
@@ -66,8 +66,8 @@ parts of the application. We will put those inside `app/core/`.
 
 <div class="alert alert-info">
   <p>
-    Other typical names for our `core` directory are `common` and `components`. The latter is kind
-    of misleading though, as it will contain other things than components as well.
+    Other typical names for our `core` directory are `shared`, `common` and `components`. The last
+    one is kind of misleading though, as it will contain other things than components as well.
   </p>
   <p>
     (This is mostly a relic of the past, when "components" just meant the generic building blocks of
@@ -90,7 +90,7 @@ Based on what we have discussed so far, here is our directory/file layout for th
 ## Using Modules
 
 As previously mentioned, one of the benefits of having a modular architecture is code reuse &mdash;
-not only inside the same application, but across application too. There is one final step in making
+not only inside the same application, but across applications too. There is one final step in making
 this code reuse frictionless:
 
 * Each feature/section should declare its own module and all related entities should register
@@ -175,9 +175,14 @@ will make all entities registered on `phoneList` available on `phonecatApp` as w
     we have created. This might seem tedious, but is totally worth it.
   </p>
   <p>
-    In a production-ready application, you are better off concatenating and minifying all your
-    JavaScript files anyway (for performance reasons), so this won't be an issue any more.
+    In a production-ready application, you would concatenate and minify all your JavaScript files
+    anyway (for performance reasons), so this won't be an issue any more.
   </p>
+</div>
+
+<div class="alert alert-warning">
+  Note that files defining a module (i.e. `.module.js`) need to be included before other files that
+  add features (e.g. components, controllers, services, filters) to that module. 
 </div>
 
 
@@ -193,7 +198,7 @@ IDE/editor has to offer (e.g. HTML-specific color-highlighting and auto-completi
 our component definitions cleaner.
 
 So, while it's perfectly fine to keep our component templates inline (using the `template` property
-of the CDO), we decided to use an external template for our `phoneList` component. In order to
+of the CDO), we are going to use an external template for our `phoneList` component. In order to
 denote that we are using an external template, we use the `templateUrl` property and specify the URL
 that our template will be loaded from. Since we want to keep our template close to where the
 component is defined, we place it inside `app/phone-list/`.
@@ -242,7 +247,7 @@ HTTP request to get the template from `app/phone-list/phone-list.template.html`.
 
 ## Final Directory/File Layout
 
-After all the refactorings that took place, this is how our application looks like from the outside:
+After all the refactorings that took place, this is how our application looks from the outside:
 
 <br />
 **`/`:**
@@ -289,10 +294,10 @@ If not already done so, run the tests (using the `npm test` command) and verify 
 pass.
 
 <div class="alert alert-success">
-  One of the great things about tests is the confidence the provide, when refactoring your
+  One of the great things about tests is the confidence they provide, when refactoring your
   application. It's easy to break something as you start moving files around and re-arranging
-  modules. Having a good test coverage is the quickest, easiest and most reliable way of knowing
-  that your application will continue to work as expected.
+  modules. Having good test coverage is the quickest, easiest and most reliable way of knowing that
+  your application will continue to work as expected.
 </div>
 
 

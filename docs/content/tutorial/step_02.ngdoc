@@ -50,8 +50,8 @@ The view is constructed by Angular from this template.
 </html>
 ```
 
-We replaced the hard-coded phone list with the {@link ng.directive:ngRepeat ngRepeat} directive and
-two {@link guide/expression Angular expressions}:
+We replaced the hard-coded phone list with the {@link ngRepeat ngRepeat} directive and two
+{@link guide/expression Angular expressions}:
 
 * The `ng-repeat="phone in phones"` attribute on the `<li>` tag is an Angular repeater directive.
   The repeater tells Angular to create a `<li>` element for each phone in the list, using the `<li>`
@@ -59,8 +59,8 @@ two {@link guide/expression Angular expressions}:
 * The expressions wrapped in curly braces (`{{phone.name}}` and `{{phone.snippet}}`) will be
   replaced by the values of the expressions.
 
-We have also added a new directive, called {@link ng.directive:ngController ngController}, which
-attaches a `PhoneListController` **controller** to the `<body>` tag. At this point:
+We have also added a new directive, called {@link ngController ngController}, which attaches a
+`PhoneListController` **controller** to the `<body>` tag. At this point:
 
 * `PhoneListController` is in charge of the DOM sub-tree under (and including) the `<body>` element.
 * The expressions in curly braces (`{{phone.name}}` and `{{phone.snippet}}`) denote bindings, which
@@ -112,9 +112,8 @@ Although the controller is not yet doing very much, it plays a crucial role. By 
 for our data model, the controller allows us to establish data-binding between the model and the
 view. We connected the dots between the presentation, data, and logic components as follows:
 
-* The {@link ng.directive:ngController ngController} directive, located on the `<body>` tag,
-  references the name of our controller, `PhoneListController` (located in the JavaScript file
-  `app.js`).
+* The {@link ngController ngController} directive, located on the `<body>` tag, references the name
+  of our controller, `PhoneListController` (located in the JavaScript file `app.js`).
 
 * The `PhoneListController` controller attaches the phone data to the `$scope` that was injected
   into our controller function. This _scope_ is a prototypal descendant of the _root scope_ that was

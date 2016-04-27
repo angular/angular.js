@@ -64,8 +64,9 @@ application or vice versa.
   </p>
 </div>
 
-To create a component, we use the `.component()` method of an {@link module Angular module}. We must
-provide the name of the component and the Component Definition Object (CDO for short).
+To create a component, we use the {@link angular.Module#component .component()} method of an
+{@link module Angular module}. We must provide the name of the component and the Component
+Definition Object (CDO for short).
 
 Remember that (since components are also directives) the name of the component is in `camelCase`,
 but we will use `kebab-case`, when referring to it in our HTML.
@@ -100,8 +101,7 @@ inside the controller constructor), instead of directly to the scope.
 
 From the template, we can refer to our controller instance using an alias. This way, the context of
 evaluation for our expressions is even more clear. By default, components use `$ctrl` as the
-controller alias, but we can override it, should the need arise. (It is a very uncommon need though,
-so we will be sticking with `$ctrl` most of the time.)
+controller alias, but we can override it, should the need arise.
 
 There are more options available, so make sure you check out the
 {@link ng.$compileProvider#component API Reference}, before using `.component()` in your own
@@ -223,7 +223,7 @@ describe('phoneList', function() {
   describe('PhoneListController', function() {
 
     it('should create a `phones` model with 3 phones', inject(function($componentController) {
-      var ctrl = $componentController('phoneList', {$scope: {}});
+      var ctrl = $componentController('phoneList');
 
       expect(ctrl.phones.length).toBe(3);
     }));

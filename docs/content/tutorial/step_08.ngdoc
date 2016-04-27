@@ -62,12 +62,12 @@ now-familiar double-curly brace binding in the `href` attribute values. In step 
 `{{phone.name}}` binding as the element content. In this step the `{{phone.id}}` binding is used in
 the element attribute.
 
-We also added phone images next to each record using an image tag with the
-{@link ng.directive:ngSrc ngSrc} directive. That directive prevents the browser from treating the
-Angular `{{ expression }}` markup literally, and initiating a request to an invalid URL
-(`http://localhost:8000/{{phone.imageUrl}}`), which it would have done if we had only specified an
-attribute binding in a regular `src` attribute (`<img src="{{phone.imageUrl}}">`). Using the `ngSrc`
-directive, prevents the browser from making an HTTP request to an invalid location.
+We also added phone images next to each record using an image tag with the {@link ngSrc ngSrc}
+directive. That directive prevents the browser from treating the Angular `{{ expression }}` markup
+literally, and initiating a request to an invalid URL (`http://localhost:8000/{{phone.imageUrl}}`),
+which it would have done if we had only specified an attribute binding in a regular `src` attribute
+(`<img src="{{phone.imageUrl}}">`). Using the `ngSrc` directive, prevents the browser from making an
+HTTP request to an invalid location.
 
 
 # Testing
@@ -83,9 +83,7 @@ directive, prevents the browser from making an HTTP request to an invalid locati
       query.sendKeys('nexus');
 
       element.all(by.css('.phones li a')).first().click();
-      browser.getLocationAbsUrl().then(function(url) {
-        expect(url).toBe('/phones/nexus-s');
-      });
+      expect(browser.getLocationAbsUrl()).toBe('/phones/nexus-s');
     });
 
     ...

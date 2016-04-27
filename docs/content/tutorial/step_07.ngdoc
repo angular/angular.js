@@ -77,10 +77,10 @@ in this tutorial.)
 
 The `$http` service returns a {@link ng.$q promise object}, which has a `then()` method. We call
 this method to handle the asynchronous response and assign the phone data to the controller, as a
-model called `phones`. Notice that Angular detected the JSON response and parsed it for us into the
-`data` property of the `response` object passed to our callback!
+property called `phones`. Notice that Angular detected the JSON response and parsed it for us into 
+the `data` property of the `response` object passed to our callback!
 
-Since we are making the assignment of the `phones` model in a callback function, where the `this`
+Since we are making the assignment of the `phones` property in a callback function, where the `this`
 value is not defined, we also introduce a local variable called `self` that points back to the
 controller instance.
 
@@ -207,7 +207,7 @@ describe('phoneList', function() {
       $httpBackend.expectGET('phones/phones.json')
                   .respond([{name: 'Nexus S'}, {name: 'Motorola DROID'}]);
 
-      ctrl = $componentController('phoneList', {$scope: {}});
+      ctrl = $componentController('phoneList');
     }));
 
     ...
@@ -242,17 +242,18 @@ request from the controller. To do this we:
   {@link ngMock.$httpBackend mock version} of the service that in a production environment
   facilitates all XHR and JSONP requests. The mock version of this service allows us to write tests
   without having to deal with native APIs and the global state associated with them — both of which
-  make testing a nightmare.
+  make testing a nightmare. It also overcomes the asynchronous nature of these calls, which would
+  slow down unit tests.
 
 * Use the `$httpBackend.expectGET()` method to train the `$httpBackend` service to expect an
   incoming HTTP request and tell it what to respond with. Note that the responses are not returned
   until we call the `$httpBackend.flush()` method.
 
-Now we will make assertions to verify that the `phones` model doesn't exist on the controller before
-the response is received:
+Now we will make assertions to verify that the `phones` property doesn't exist on the controller 
+before the response is received:
 
 ```js
-    it('should create a `phones` model with 2 phones fetched with `$http`', function() {
+    it('should create a `phones` property with 2 phones fetched with `$http`', function() {
       expect(ctrl.phones).toBeUndefined();
 
       $httpBackend.flush();
@@ -265,12 +266,12 @@ the response is received:
   {@link ngMock.$httpBackend#flushing-http-requests Flushing HTTP requests} in the mock
   `$httpBackend` documentation for a full explanation of why this is necessary.
 
-* We make the assertions, verifying that the `phones` model now exists on the controller.
+* We make the assertions, verifying that the `phones` property now exists on the controller.
 
 Finally, we verify that the default value of `orderProp` is set correctly:
 
 ```js
-    it('should set a default value for the `orderProp` model', function() {
+    it('should set a default value for the `orderProp` property', function() {
       expect(ctrl.orderProp).toBe('age');
     });
 ```

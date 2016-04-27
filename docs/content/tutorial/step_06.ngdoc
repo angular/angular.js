@@ -64,9 +64,9 @@ We made the following changes to the `phone-list.template.html` template:
 
   <img class="diagram" src="img/tutorial/tutorial_06.png">
 
-* We then chained the `filter` filter with the {@link ng.filter:orderBy orderBy} filter to further
-  process the input for the repeater. `orderBy` is a filter that takes an input array, copies it and
-  reorders the copy which is then returned.
+* We then chained the `filter` filter with the {@link orderBy orderBy} filter to further process the
+  input for the repeater. `orderBy` is a filter that takes an input array, copies it and reorders
+  the copy which is then returned.
 
   Angular creates a two way data-binding between the select element and the `$ctrl.orderProp` model.
   `$ctrl.orderProp` is then used as the input for the `orderBy` filter.
@@ -143,7 +143,7 @@ describe('phoneList', function() {
     var ctrl;
 
     beforeEach(inject(function($componentController) {
-      ctrl = $componentController('phoneList', {$scope: {}});
+      ctrl = $componentController('phoneList');
     }));
 
     it('should create a `phones` model with 3 phones', function() {
@@ -183,8 +183,10 @@ Let's turn our attention to the E2E tests.
       ...
 
       it('should be possible to control phone order via the drop-down menu', function() {
+        var queryField = element(by.model('$ctrl.query'));
+        var orderSelect = element(by.model('$ctrl.orderProp'));
+        var nameOption = orderSelect.element(by.css('option[value="name"]'));
         var phoneNameColumn = element.all(by.repeater('phone in $ctrl.phones').column('phone.name'));
-        var query = element(by.model('$ctrl.query'));
 
         function getNames() {
           return phoneNameColumn.map(function(elem) {
@@ -192,14 +194,14 @@ Let's turn our attention to the E2E tests.
           });
         }
 
-        query.sendKeys('tablet'); // Let's narrow the dataset to make the test assertions shorter
+        queryField.sendKeys('tablet');   // Let's narrow the dataset to make the assertions shorter
 
         expect(getNames()).toEqual([
           'Motorola XOOM\u2122 with Wi-Fi',
           'MOTOROLA XOOM\u2122'
         ]);
 
-        element(by.model('$ctrl.orderProp')).element(by.css('option[value="name"]')).click();
+        nameOption.click();
 
         expect(getNames()).toEqual([
           'MOTOROLA XOOM\u2122',

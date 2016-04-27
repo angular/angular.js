@@ -12,9 +12,8 @@ the template code we created earlier.
 * We now use the {@link ngAnimate ngAnimate} module to enable animations throughout the application.
 * We also rely on built-in directives to automatically trigger hooks for animations to tap into.
 * When an animation is found, it will run along with the actual DOM operation that is being issued
-  on the element at the given time (e.g. inserting/removing nodes on
-  {@link ng.directive:ngRepeat ngRepeat} or adding/removing classes on
-  {@link ng.directive:ngClass ngClass}).
+  on the element at the given time (e.g. inserting/removing nodes on {@link ngRepeat ngRepeat} or
+  adding/removing classes on {@link ngClass ngClass}).
 
 
 <div doc-tutorial-reset="14"></div>
@@ -367,7 +366,7 @@ Just like with the thumbnails, we are using a repeater to display **all** the pr
 list, however we're not animating any repeat-related transitions. Instead, we will be keeping our
 eye on each element's classes and especially the `selected` class, since its presence or absence
 will determine if the element is visible or hidden. The addition/removal of the `selected` class is
-managed by the {@link ng.directive:ngClass ngClass} directive, based on the specified condition
+managed by the {@link ngClass ngClass} directive, based on the specified condition
 (`img === $ctrl.mainImageUrl`).
 In our case, there is always exactly one element that has the `selected` class, and therefore there
 will be exactly one phone profile image visible on the screen at all times.

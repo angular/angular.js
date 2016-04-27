@@ -114,8 +114,8 @@ The injector only carries out the following steps:
 
 * Load the module definition(s) that you specify in your application.
 * Register all Providers defined in these module definition(s).
-* When asked to do so, inject a specified function and any necessary dependencies (services), that
-  it lazily instantiates via their Providers.
+* When asked to do so, lazily instantiate services and their dependencies, via their Providers, as 
+  parameters to an injectable function.
 
 Providers are objects that provide (create) instances of services and expose configuration APIs,
 that can be used to control the creation and runtime behavior of a service. In case of the `$route`
@@ -126,9 +126,9 @@ service, the `$routeProvider` exposes APIs that allow you to define routes for y
   `$routeProvider` into `PhoneListController` at runtime.
 </div>
 
-Angular modules solve the problem of removing global state from the application and provide a way
-of configuring the injector. As opposed to AMD or require.js modules, Angular modules don't try to
-solve the problem of script load ordering or lazy script fetching. These goals are totally
+Angular modules solve the problem of removing global variables from the application and provide a
+way of configuring the injector. As opposed to AMD or require.js modules, Angular modules don't try 
+to solve the problem of script load ordering or lazy script fetching. These goals are totally
 independent and both module systems can live side-by-side and fulfill their goals.
 
 To deepen your understanding on Angular's DI, see [Understanding Dependency Injection][wiki-di].
@@ -330,7 +330,7 @@ any modification.
 ```js
     files: [
       'bower_components/angular/angular.js',
-      'bower_components/angular-resource/angular-resource.js',
+      'bower_components/angular-route/angular-route.js',
       ...
     ],
 ```
@@ -347,9 +347,7 @@ various URLs and verifying that the correct view was rendered.
 
   it('should redirect `index.html` to `index.html#/phones', function() {
     browser.get('index.html');
-    browser.getLocationAbsUrl().then(function(url) {
-      expect(url).toBe('/phones');
-    });
+    expect(browser.getLocationAbsUrl()).toBe('/phones');
   });
 
   ...

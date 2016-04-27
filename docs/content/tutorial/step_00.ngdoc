@@ -79,7 +79,7 @@ directive is used to flag the HTML element that Angular should consider to be th
 our application. This gives application developers the freedom to tell Angular if the entire HTML
 page or only a portion of it should be treated as the AngularJS application.
 
-For more info on `ngApp`, check out the {@link ng.directive:ngApp API Reference}.
+For more info on `ngApp`, check out the {@link ngApp API Reference}.
 
 <br />
 **`angular.js` script tag:**
@@ -90,9 +90,9 @@ For more info on `ngApp`, check out the {@link ng.directive:ngApp API Reference}
 
 This code downloads the `angular.js` script which registers a callback that will be executed by the
 browser when the containing HTML page is fully downloaded. When the callback is executed, Angular
-looks for the {@link ng.directive:ngApp ngApp} directive. If Angular finds the directive, it will
-bootstrap the application with the root of the application DOM being the element on which the
-`ngApp` directive was defined.
+looks for the {@link ngApp ngApp} directive. If Angular finds the directive, it will bootstrap the
+application with the root of the application DOM being the element on which the `ngApp` directive
+was defined.
 
 For more info on bootstrapping your app, checkout the [Bootstrap](guide/bootstrap) section of the
 Developer Guide.

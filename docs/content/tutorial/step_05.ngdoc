@@ -52,13 +52,12 @@ We made no changes to the component's controller.
   </div>
 ```
 
-We added a standard HTML `<input>` tag and used Angular's
-{@link ng.filter:filter filter} function to process the input for the
-{@link ng.directive:ngRepeat ngRepeat} directive.
+We added a standard HTML `<input>` tag and used Angular's {@link ng.filter:filter filter} function
+to process the input for the {@link ngRepeat ngRepeat} directive.
 
-By virtue of the {@link ng.directive:ngModel ngModel} directive, this lets a user enter search
-criteria and immediately see the effects of their search on the phone list. This new code
-demonstrates the following:
+By virtue of the {@link ngModel ngModel} directive, this lets a user enter search criteria and
+immediately see the effects of their search on the phone list. This new code demonstrates the
+following:
 
 * Data-binding: This is one of the core features in Angular. When the page loads, Angular binds the
   value of the input box to the data model variable specified with `ngModel` and keeps the two in
@@ -83,8 +82,8 @@ demonstrates the following:
 
 In previous steps, we learned how to write and run unit tests. Unit tests are perfect for testing
 controllers and other parts of our application written in JavaScript, but they can't easily
-test DOM manipulation or the wiring of our application. For these, an end-to-end (E2E) test is a
-much better choice.
+test templates, DOM manipulation or interoperability of components and services. For these, an
+end-to-end (E2E) test is a much better choice.
 
 The search feature was fully implemented via templates and data-binding, so we'll write our first
 E2E test, to verify that the feature works.
@@ -132,13 +131,14 @@ Jasmine, the E2E test uses APIs of [Protractor][protractor]. Read about the Prot
 [Protractor API Docs][protractor-docs].
 
 Much like Karma is the test runner for unit tests, we use Protractor to run E2E tests. Try it with
-`npm run protractor`. E2E tests are slow, so unlike with unit tests, Protractor will exit after the
+`npm run protractor`. E2E tests take time, so unlike with unit tests, Protractor will exit after the
 tests run and will not automatically rerun the test suite on every file change.
 To rerun the test suite, execute `npm run protractor` again.
 
 <div class="alert alert-info">
-  **Note:** You must ensure your application is being served via a web server to test with
-  protractor. You can do this by using `npm start`.
+  **Note:** In order for protractor to access and run tests against your application, it must be
+  served via a web server. In a different terminal/command line window, run `npm start` to fire up
+  the web server.
 </div>
 
 
