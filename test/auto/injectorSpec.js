@@ -283,6 +283,14 @@ describe('injector', function() {
         it('should take args before first arrow', function() {
           expect(annotate(eval('a => b => b'))).toEqual(['a']);
         });
+
+        // Support: Chrome 50-51 only
+        // TODO (gkalpak): Remove when Chrome v52 is relased.
+        // it('should be able to inject fat-arrow function', function() {
+        //   inject(($injector) => {
+        //     expect($injector).toBeDefined();
+        //   });
+        // });
       }
 
       if (support.classes) {
@@ -293,6 +301,19 @@ describe('injector', function() {
           expect(instance).toEqual(new Clazz('a-value'));
           expect(instance.aVal()).toEqual('a-value');
         });
+
+        // Support: Chrome 50-51 only
+        // TODO (gkalpak): Remove when Chrome v52 is relased.
+        // it('should be able to invoke classes', function() {
+        //   class Test {
+        //     constructor($injector) {
+        //       this.$injector = $injector;
+        //     }
+        //   }
+        //   var instance = injector.invoke(Test, null, null, 'Test');
+
+        //   expect(instance.$injector).toBe(injector);
+        // });
       }
       /*jshint +W061 */
     });

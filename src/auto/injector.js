@@ -70,12 +70,16 @@ var FN_ARG = /^\s*(_?)(\S+?)\1\s*$/;
 var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
 var $injectorMinErr = minErr('$injector');
 
-function extractArgs(fn) {
+function stringifyFn(fn) {
   // Support: Chrome 50-51 only
   // Creating a new string by adding `' '` at the end, to hack around some bug in Chrome v50/51
   // (See https://github.com/angular/angular.js/issues/14487.)
   // TODO (gkalpak): Remove workaround when Chrome v52 is released
-  var fnText = Function.prototype.toString.call(fn).replace(STRIP_COMMENTS, '') + ' ',
+  return Function.prototype.toString.call(fn) + ' ';
+}
+
+function extractArgs(fn) {
+  var fnText = stringifyFn(fn).replace(STRIP_COMMENTS, ''),
       args = fnText.match(ARROW_ARG) || fnText.match(FN_ARGS);
   return args;
 }
@@ -848,7 +852,7 @@ function createInjector(modulesToLoad, strictDi) {
       // Workaround for MS Edge.
       // Check https://connect.microsoft.com/IE/Feedback/Details/2211653
       return typeof func === 'function'
-        && /^(?:class\s|constructor\()/.test(Function.prototype.toString.call(func));
+        && /^(?:class\s|constructor\()/.test(stringifyFn(func));
     }
 
     function invoke(fn, self, locals, serviceName) {
