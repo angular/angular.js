@@ -92,7 +92,7 @@
  * Each item in the **RouteConfig** for a **Routing Component** is an instance of
  * this type. It can have the following properties:
  *
- * * `path` or (`regex` and `serializer) - defines how to recognize and generate this route
+ * * `path` or (`regex` and `serializer`) - defines how to recognize and generate this route
  * * `component`, `loader`, `redirectTo` (requires exactly one of these)
  * * `name` - the name used to identify the **Route Definition** when generating links
  * * `data` (optional)

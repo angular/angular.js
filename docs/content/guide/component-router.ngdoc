@@ -658,7 +658,7 @@ because the `HeroList` and `HeroDetail` will not contain any child routes.
 
 The `component` property in a **Route Definition** defines the **Component** directive that will be rendered
 into the DOM via the **Outlet**. For example the `heroDetail` **Component** will be rendered into the page
-where the `<ng-outlet></ng-outlet>` lives as `<hero-detail></hero-detail>.
+where the `<ng-outlet></ng-outlet>` lives as `<hero-detail></hero-detail>`.
 
 The `name` property is used to reference the **Route Definition** when generating URLs or navigating to
 **Routes**. For example this link will `<a ng-link="['Heroes']">Heroes</a>` navigate the **Route Definition**
