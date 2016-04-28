@@ -449,6 +449,14 @@ noop.$inject = [];
        return (transformationFn || angular.identity)(value);
      };
    ```
+   ```js
+      var getResult = function (fn, val) {
+          return (fn || angular.identity)(val);
+      };
+      var result = getResult(function (n) { return n * 2; }, 3); //  result = 6
+      var null_result = getResult(null, 3);//  null_result = 3
+      var undefined_result = getResult(undefined, 3);// undefined _result = 3
+    ```
   * @param {*} value to be returned.
   * @returns {*} the value passed in.
  */
