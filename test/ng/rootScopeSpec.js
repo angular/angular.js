@@ -1320,46 +1320,6 @@ describe('Scope', function() {
       expect(externalWatchCount).toEqual(0);
     }));
 
-    it('should run a $$postDigest call on all child scopes when a parent scope is digested', inject(function($rootScope) {
-      var parent = $rootScope.$new(),
-          child = parent.$new(),
-          count = 0;
-
-      $rootScope.$$postDigest(function() {
-        count++;
-      });
-
-      parent.$$postDigest(function() {
-        count++;
-      });
-
-      child.$$postDigest(function() {
-        count++;
-      });
-
-      expect(count).toBe(0);
-      $rootScope.$digest();
-      expect(count).toBe(3);
-    }));
-
-    it('should run a $$postDigest call even if the child scope is isolated', inject(function($rootScope) {
-      var parent = $rootScope.$new(),
-          child = parent.$new(true),
-          signature = '';
-
-      parent.$$postDigest(function() {
-        signature += 'A';
-      });
-
-      child.$$postDigest(function() {
-        signature += 'B';
-      });
-
-      expect(signature).toBe('');
-      $rootScope.$digest();
-      expect(signature).toBe('AB');
-    }));
-
     it('should cause a $digest rerun', inject(function($rootScope) {
       $rootScope.log = '';
       $rootScope.value = 0;
@@ -1705,6 +1665,92 @@ describe('Scope', function() {
     }));
   });
 
+  describe('$$postDigest', function() {
+    it('should process callbacks as a queue (FIFO) when the scope is digested', inject(function($rootScope) {
+      var signature = '';
+
+      $rootScope.$$postDigest(function() {
+        signature += 'A';
+        $rootScope.$$postDigest(function() {
+          signature += 'D';
+        });
+      });
+
+      $rootScope.$$postDigest(function() {
+        signature += 'B';
+      });
+
+      $rootScope.$$postDigest(function() {
+        signature += 'C';
+      });
+
+      expect(signature).toBe('');
+      $rootScope.$digest();
+      expect(signature).toBe('ABCD');
+    }));
+
+    it('should support $apply calls nested in $$postDigest callbacks', inject(function($rootScope) {
+      var signature = '';
+
+      $rootScope.$$postDigest(function() {
+        signature += 'A';
+      });
+
+      $rootScope.$$postDigest(function() {
+        signature += 'B';
+        $rootScope.$apply();
+        signature += 'D';
+      });
+
+      $rootScope.$$postDigest(function() {
+        signature += 'C';
+      });
+
+      expect(signature).toBe('');
+      $rootScope.$digest();
+      expect(signature).toBe('ABCD');
+    }));
+
+    it('should run a $$postDigest call on all child scopes when a parent scope is digested', inject(function($rootScope) {
+      var parent = $rootScope.$new(),
+          child = parent.$new(),
+          count = 0;
+
+      $rootScope.$$postDigest(function() {
+        count++;
+      });
+
+      parent.$$postDigest(function() {
+        count++;
+      });
+
+      child.$$postDigest(function() {
+        count++;
+      });
+
+      expect(count).toBe(0);
+      $rootScope.$digest();
+      expect(count).toBe(3);
+    }));
+
+    it('should run a $$postDigest call even if the child scope is isolated', inject(function($rootScope) {
+      var parent = $rootScope.$new(),
+          child = parent.$new(true),
+          signature = '';
+
+      parent.$$postDigest(function() {
+        signature += 'A';
+      });
+
+      child.$$postDigest(function() {
+        signature += 'B';
+      });
+
+      expect(signature).toBe('');
+      $rootScope.$digest();
+      expect(signature).toBe('AB');
+    }));
+  });
 
   describe('events', function() {
 
