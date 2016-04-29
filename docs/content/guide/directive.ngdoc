@@ -44,7 +44,7 @@ Before we can write a directive, we need to know how Angular's {@link guide/comp
 determines when to use a given directive.
 
 Similar to the terminology used when an [element **matches** a selector](https://developer.mozilla.org/en-US/docs/Web/API/Element.matches), we say an element **matches** a
-directive when the directive is part of its declaration.
+directive when the directive is part of its d最好分割成单独的html文件eclaration.
 
 In the following example, we say that the `<input>` element **matches** the `ngModel` directive
 
@@ -330,7 +330,7 @@ Let's change our directive to use `restrict: 'E'`:
 
   <file name="index.html">
     <div ng-controller="Controller">
-      <my-customer></my-customer>
+      <div my-customer></div>
     </div>
   </file>
 
