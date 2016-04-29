@@ -2,7 +2,6 @@
 /**
  * @ngdoc directive
  * @name ngRequired
- *
  * @restrict A
  * 
  * @description
