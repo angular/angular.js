@@ -195,11 +195,11 @@ var inputType = {
             <span class="error" ng-show="myForm.input.$error.date">
                 Not a valid date!</span>
            </div>
-           <tt>value = {{example.value | date: "yyyy-MM-dd"}}</tt><br/>
-           <tt>myForm.input.$valid = {{myForm.input.$valid}}</tt><br/>
-           <tt>myForm.input.$error = {{myForm.input.$error}}</tt><br/>
-           <tt>myForm.$valid = {{myForm.$valid}}</tt><br/>
-           <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br/>
+           <code>value = {{example.value | date: "yyyy-MM-dd"}}</code><br/>
+           <code>myForm.input.$valid = {{myForm.input.$valid}}</code><br/>
+           <code>myForm.input.$error = {{myForm.input.$error}}</code><br/>
+           <code>myForm.$valid = {{myForm.$valid}}</code><br/>
+           <code>myForm.$error.required = {{!!myForm.$error.required}}</code><br/>
        </form>
      </file>
      <file name="protractor.js" type="protractor">
