@@ -1621,7 +1621,11 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
     compile.$$createComment = function(directiveName, comment) {
       var content = '';
       if (debugInfoEnabled) {
-        content = ' ' + (directiveName || '') + ': ' + (comment || '') + ' ';
+        content = ' ';
+        content += (directiveName || '');
+        content += ':';
+        content += comment ? ' ' + comment : '';
+        content += ' ';
       }
       return window.document.createComment(content);
     };
