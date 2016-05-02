@@ -8438,7 +8438,7 @@ describe('$compile', function() {
           expect(function() {
             $compile('<div first second></div>');
           }).toThrowMinErr('$compile', 'multidir', 'Multiple directives [first, second] asking for transclusion on: ' +
-                  '<!-- first:  -->');
+                  '<!-- first: -->');
         });
       });
 
