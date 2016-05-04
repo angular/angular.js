@@ -414,6 +414,19 @@ describe("animations", function() {
       expect(capturedAnimation).toBeFalsy();
     }));
 
+    it('should not attempt to perform an animation on an empty jqLite collection',
+      inject(function($rootScope, $animate) {
+
+        element.html('');
+        var emptyNode = jqLite(element[0].firstChild);
+
+        $animate.addClass(emptyNode, 'some-class');
+        $rootScope.$digest();
+
+        expect(capturedAnimation).toBeFalsy();
+      })
+    );
+
     it('should perform the leave domOperation if a text node is used',
       inject(function($rootScope, $animate) {
 
