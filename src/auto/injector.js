@@ -359,8 +359,8 @@ function annotate(fn, strictDi, name) {
  * * {@link auto.$provide#service service(class)} - registers a **constructor function**, `class`
  *     that will be wrapped in a **service provider** object, whose `$get` property will instantiate
  *      a new object using the given constructor function.
- * * {@link auto.$provide#decorator decorator(name)} - registers a **service decorator** with the 
- *     {@link auto.$injector $injector}, `name` the name of the service to decorate.
+ * * {@link auto.$provide#decorator decorator(name)} - registers a **service decorator** with the
+ *      {@link auto.$injector $injector}, `name` the name of the service to decorate.
  *
  * See the individual methods for more information and examples.
  */
