@@ -3,7 +3,7 @@
  * @ngdoc directive
  * @name ngRequired
  * @restrict A
- * 
+ *
  * @description
  *
  * ngRequired adds the required {@link ngModel.NgModelController#$validators `validator`} to {@link ngModel `ngModel`}.
