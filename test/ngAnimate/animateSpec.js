@@ -179,7 +179,7 @@ describe("animations", function() {
       });
     });
 
-    it('should animate only the specified CSS className matched within $animateProvider.classNameFilter', function() {
+    it('should animate only the specified CSS className matched within $animateProvider.classNameFilter for div', function() {
       module(function($animateProvider) {
         $animateProvider.classNameFilter(/only-allow-this-animation/);
       });
@@ -193,6 +193,26 @@ describe("animations", function() {
         element.addClass('only-allow-this-animation');
 
         $animate.leave(element, parent);
+        $rootScope.$digest();
+        expect(capturedAnimation).toBeTruthy();
+      });
+    });
+
+    it('should animate only the specified CSS className matched within $animateProvider.classNameFilter for svg', function() {
+      module(function($animateProvider) {
+        $animateProvider.classNameFilter(/only-allow-this-animation-svg/);
+      });
+      inject(function($animate, $rootScope, $compile) {
+        var svgElement = $compile('<svg class="element"></svg>')($rootScope);
+        expect(svgElement).not.toHaveClass('only-allow-this-animation-svg');
+
+        $animate.enter(svgElement, parent);
+        $rootScope.$digest();
+        expect(capturedAnimation).toBeFalsy();
+
+        svgElement.attr('class', 'element only-allow-this-animation-svg');
+
+        $animate.leave(svgElement, parent);
         $rootScope.$digest();
         expect(capturedAnimation).toBeTruthy();
       });
