@@ -150,7 +150,8 @@ function $LogProvider() {
           forEach(arguments, function(arg) {
             args.push(formatError(arg));
           });
-          return logFn.apply(console, args);
+          // Using logFn here prevents custom console methods overriding
+          return console[type].apply(console, args);
         };
       }
 
