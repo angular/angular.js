@@ -7,6 +7,7 @@
    $$rAFSchedulerFactory,
    $$AnimateChildrenDirective,
    $$AnimateQueueProvider,
+   $$AnimateCacheProvider,
    $$AnimationProvider,
    $AnimateCssProvider,
    $$AnimateCssDriverProvider,
@@ -747,6 +748,7 @@ angular.module('ngAnimate', [])
   .factory('$$rAFScheduler', $$rAFSchedulerFactory)
 
   .provider('$$animateQueue', $$AnimateQueueProvider)
+  .provider('$$animateCache', $$AnimateCacheProvider)
   .provider('$$animation', $$AnimationProvider)
 
   .provider('$animateCss', $AnimateCssProvider)

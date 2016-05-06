@@ -447,7 +447,7 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
             if (existingAnimation.state === RUNNING_STATE) {
               normalizeAnimationDetails(element, newAnimation);
             } else {
-              applyGeneratedPreparationClasses(element, isStructural ? event : null, options);
+              applyGeneratedPreparationClasses($$jqLite, element, isStructural ? event : null, options);
 
               event = newAnimation.event = existingAnimation.event;
               options = mergeAnimationDetails(element, existingAnimation, newAnimation);
