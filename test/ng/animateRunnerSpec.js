@@ -163,13 +163,14 @@ describe("$$AnimateRunner", function() {
   }));
 
   it("should use timeouts to trigger async operations when the document is hidden", function() {
-    var hidden = true;
+    var doc;
 
     module(function($provide) {
-
-      $provide.value('$$isDocumentHidden', function() {
-        return hidden;
+      doc = jqLite({
+        body: document.body,
+        hidden: true
       });
+      $provide.value('$document', doc);
     });
 
     inject(function($$AnimateRunner, $rootScope, $$rAF, $timeout) {
@@ -183,7 +184,7 @@ describe("$$AnimateRunner", function() {
       $timeout.flush();
       expect(spy).toHaveBeenCalled();
 
-      hidden = false;
+      doc[0].hidden = false;
 
       spy = jasmine.createSpy();
       runner = new $$AnimateRunner();
