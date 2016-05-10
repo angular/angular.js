@@ -2370,7 +2370,7 @@ angular.module('ngMockE2E', ['ng']).config(['$provide', function($provide) {
  *       phones.push(phone);
  *       return [200, phone, {}];
  *     });
- *     $httpBackend.whenGET(/^\/templates\//).passThrough(); // Requests for templare are handled by the real server
+ *     $httpBackend.whenGET(/^\/templates\//).passThrough(); // Requests for templates are handled by the real server
  *     //...
  *   });
  * ```
