@@ -3822,6 +3822,7 @@ describe('$compile', function() {
 
           $rootScope.$apply('a = 7');
           element = $compile('<c1 prop="a" attr="{{a}}"></c1>')($rootScope);
+
           expect(log).toEqual([
             {
               prop: jasmine.objectContaining({currentValue: 7}),
@@ -3861,6 +3862,7 @@ describe('$compile', function() {
         inject(function($compile, $rootScope) {
           $rootScope.$apply('a = 7');
           element = $compile('<c1 prop="a" attr="{{a}}"></c1>')($rootScope);
+
           expect(log).toEqual([
             {
               prop: jasmine.objectContaining({currentValue: 7}),
@@ -4743,6 +4745,7 @@ describe('$compile', function() {
     describe('one-way binding', function() {
       it('should update isolate when the identity of origin changes', inject(function() {
         compile('<div><span my-component ow-ref="obj">');
+
         expect(componentScope.owRef).toBeUndefined();
         expect(componentScope.owRefAlias).toBe(componentScope.owRef);
 
@@ -4779,6 +4782,7 @@ describe('$compile', function() {
 
       it('should update isolate when both change', inject(function() {
         compile('<div><span my-component ow-ref="name">');
+
         $rootScope.name = {mark:123};
         componentScope.owRef = 'misko';
 
@@ -4795,6 +4799,101 @@ describe('$compile', function() {
         expect(componentScope.owRefAlias).toBe($rootScope.name);
       }));
 
+      describe('initialization', function() {
+        var component, log;
+
+        beforeEach(function() {
+          log = [];
+          angular.module('owComponentTest', [])
+            .component('owComponent', {
+              bindings: { input: '<' },
+              controller: function() {
+                component = this;
+                this.input = 'constructor';
+                log.push('constructor');
+
+                this.$onInit = function() {
+                  this.input = '$onInit';
+                  log.push('$onInit');
+                };
+
+                this.$onChanges = function(changes) {
+                  if (changes.input) {
+                    log.push(['$onChanges', changes.input]);
+                  }
+                };
+              }
+            });
+        });
+
+        it('should not update isolate again after $onInit if outer has not changed', function() {
+          module('owComponentTest');
+          inject(function() {
+            $rootScope.name = 'outer';
+            compile('<ow-component input="name"></ow-component>');
+
+            expect($rootScope.name).toEqual('outer');
+            expect(component.input).toEqual('$onInit');
+
+            $rootScope.$apply();
+
+            expect($rootScope.name).toEqual('outer');
+            expect(component.input).toEqual('$onInit');
+
+            expect(log).toEqual([
+              'constructor',
+              ['$onChanges', jasmine.objectContaining({ currentValue: 'outer' })],
+              '$onInit'
+            ]);
+          });
+        });
+
+        it('should update isolate again after $onInit if outer has changed (before initial watchAction call)', function() {
+          module('owComponentTest');
+          inject(function() {
+            $rootScope.name = 'outer1';
+            compile('<ow-component input="name"></ow-component>');
+
+            expect(component.input).toEqual('$onInit');
+            $rootScope.$apply('name = "outer2"');
+
+            expect($rootScope.name).toEqual('outer2');
+            expect(component.input).toEqual('outer2');
+            expect(log).toEqual([
+              'constructor',
+              ['$onChanges', jasmine.objectContaining({ currentValue: 'outer1' })],
+              '$onInit',
+              ['$onChanges', jasmine.objectContaining({ currentValue: 'outer2', previousValue: 'outer1' })]
+            ]);
+          });
+        });
+
+        it('should update isolate again after $onInit if outer has changed (before initial watchAction call)', function() {
+          angular.module('owComponentTest')
+            .directive('changeInput', function() {
+              return function(scope, elem, attrs) {
+                scope.name = 'outer2';
+              };
+            });
+          module('owComponentTest');
+          inject(function() {
+            $rootScope.name = 'outer1';
+            compile('<ow-component input="name" change-input></ow-component>');
+
+            expect(component.input).toEqual('$onInit');
+            $rootScope.$digest();
+
+            expect($rootScope.name).toEqual('outer2');
+            expect(component.input).toEqual('outer2');
+            expect(log).toEqual([
+              'constructor',
+              ['$onChanges', jasmine.objectContaining({ currentValue: 'outer1' })],
+              '$onInit',
+              ['$onChanges', jasmine.objectContaining({ currentValue: 'outer2', previousValue: 'outer1' })]
+            ]);
+          });
+        });
+      });
 
       it('should not break when isolate and origin both change to the same value', inject(function() {
         $rootScope.name = 'aaa';
@@ -4818,7 +4917,6 @@ describe('$compile', function() {
         $rootScope.name = {mark:123};
         compile('<div><span my-component ow-ref="name">');
 
-        $rootScope.$apply();
         expect($rootScope.name).toEqual({mark:123});
         expect(componentScope.owRef).toBe($rootScope.name);
         expect(componentScope.owRefAlias).toBe($rootScope.name);
@@ -4835,7 +4933,6 @@ describe('$compile', function() {
         $rootScope.obj = {mark:123};
         compile('<div><span my-component ow-ref="obj">');
 
-        $rootScope.$apply();
         expect($rootScope.obj).toEqual({mark:123});
         expect(componentScope.owRef).toBe($rootScope.obj);
 
@@ -4848,6 +4945,7 @@ describe('$compile', function() {
 
       it('should not throw on non assignable expressions in the parent', inject(function() {
         compile('<div><span my-component ow-ref="\'hello \' + name">');
+
         $rootScope.name = 'world';
         $rootScope.$apply();
         expect(componentScope.owRef).toBe('hello world');
@@ -4864,7 +4962,7 @@ describe('$compile', function() {
 
       it('should not throw when assigning to undefined', inject(function() {
         compile('<div><span my-component>');
-        $rootScope.$apply();
+
         expect(componentScope.owRef).toBeUndefined();
 
         componentScope.owRef = 'ignore me';
@@ -4878,6 +4976,7 @@ describe('$compile', function() {
       it('should update isolate scope when "<"-bound NaN changes', inject(function() {
         $rootScope.num = NaN;
         compile('<div my-component ow-ref="num"></div>');
+
         var isolateScope = element.isolateScope();
         expect(isolateScope.owRef).toBeNaN();
 
@@ -4916,7 +5015,7 @@ describe('$compile', function() {
           $rootScope.name = 'georgios';
           $rootScope.obj = {name: 'pete'};
           compile('<div><span my-component ow-ref="[{name: name}, obj]">');
-          $rootScope.$apply();
+
           expect(componentScope.owRef).toEqual([{name: 'georgios'}, {name: 'pete'}]);
 
           $rootScope.name = 'lucas';
@@ -4930,7 +5029,7 @@ describe('$compile', function() {
           $rootScope.name = 'georgios';
           $rootScope.obj = {name: 'pete'};
           compile('<div><span my-component ow-ref="{name: name, item: obj}">');
-          $rootScope.$apply();
+
           expect(componentScope.owRef).toEqual({name: 'georgios', item: {name: 'pete'}});
 
           $rootScope.name = 'lucas';
@@ -4966,7 +5065,6 @@ describe('$compile', function() {
           function test(literalString, literalValue) {
             compile('<div><span my-component ow-ref="' + literalString + '">');
 
-            $rootScope.$apply();
             expect(componentScope.owRef).toBe(literalValue);
             dealoc(element);
           }
@@ -4975,6 +5073,7 @@ describe('$compile', function() {
         describe('optional one-way binding', function() {
           it('should update local when origin changes', inject(function() {
             compile('<div><span my-component ow-optref="name">');
+
             expect(componentScope.owOptref).toBeUndefined();
             expect(componentScope.owOptrefAlias).toBe(componentScope.owOptref);
 
