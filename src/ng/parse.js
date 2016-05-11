@@ -2050,14 +2050,20 @@ function $ParseProvider() {
       }, listener, objectEquality, prettyPrintExpression);
     }
 
-    function oneTimeWatchDelegate(scope, listener, objectEquality, parsedExpression) {
+    function oneTimeWatchDelegate(scope, listener, objectEquality, parsedExpression, prettyPrintExpression) {
       var unwatch, lastValue;
-      return unwatch = scope.$watch(function oneTimeWatch(scope) {
+      if (parsedExpression.inputs) {
+        return unwatch = inputsWatchDelegate(scope, oneTimeListener, objectEquality, parsedExpression, prettyPrintExpression);
+      } else {
+        return unwatch = scope.$watch(oneTimeWatch, oneTimeListener, objectEquality);
+      }
+      function oneTimeWatch(scope) {
         return parsedExpression(scope);
-      }, function oneTimeListener(value, old, scope) {
+      }
+      function oneTimeListener(value, old, scope) {
         lastValue = value;
         if (isFunction(listener)) {
-          listener.apply(this, arguments);
+          listener(value, old, scope);
         }
         if (isDefined(value)) {
           scope.$$postDigest(function() {
@@ -2066,7 +2072,7 @@ function $ParseProvider() {
             }
           });
         }
-      }, objectEquality);
+      }
     }
 
     function oneTimeLiteralWatchDelegate(scope, listener, objectEquality, parsedExpression) {
@@ -2076,7 +2082,7 @@ function $ParseProvider() {
       }, function oneTimeListener(value, old, scope) {
         lastValue = value;
         if (isFunction(listener)) {
-          listener.call(this, value, old, scope);
+          listener(value, old, scope);
         }
         if (isAllDefined(value)) {
           scope.$$postDigest(function() {
@@ -2123,14 +2129,15 @@ function $ParseProvider() {
       };
 
       // Propagate $$watchDelegates other then inputsWatchDelegate
+      useInputs = !parsedExpression.inputs;
       if (parsedExpression.$$watchDelegate &&
           parsedExpression.$$watchDelegate !== inputsWatchDelegate) {
         fn.$$watchDelegate = parsedExpression.$$watchDelegate;
+        fn.inputs = parsedExpression.inputs;
       } else if (!interceptorFn.$stateful) {
         // If there is an interceptor, but no watchDelegate then treat the interceptor like
         // we treat filters - it is assumed to be a pure function unless flagged with $stateful
         fn.$$watchDelegate = inputsWatchDelegate;
-        useInputs = !parsedExpression.inputs;
         fn.inputs = parsedExpression.inputs ? parsedExpression.inputs : [parsedExpression];
       }
 

@@ -3232,6 +3232,18 @@ describe('parser', function() {
           expect(fn()).toEqual(undefined);
         }));
 
+        it('should invoke a stateless filter once when the parsed expression has an interceptor',
+           inject(function($parse, $rootScope) {
+          var countFilter = jasmine.createSpy();
+          var interceptor = jasmine.createSpy();
+          countFilter.and.returnValue(1);
+          $filterProvider.register('count', valueFn(countFilter));
+          $rootScope.foo = function() { return 1; };
+          $rootScope.$watch($parse(':: foo() | count', interceptor));
+          $rootScope.$digest();
+          expect(countFilter.calls.count()).toBe(1);
+        }));
+
         describe('literal expressions', function() {
           it('should mark an empty expressions as literal', inject(function($parse) {
             expect($parse('').literal).toBe(true);
