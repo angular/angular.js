@@ -649,7 +649,7 @@ describe("basic usage", function() {
           }
         });
 
-      $httpBackend.expect('GET', '/Person/students/fedor').respond({id: 'fedor', email: 'f@f.com'});
+      $httpBackend.expect('GET', '/Person/school/students/fedor').respond({id: 'fedor', email: 'f@f.com'});
 
       var fedor = Person.fetch({id: 'fedor'});
       $httpBackend.flush();
