@@ -623,34 +623,40 @@ describe("basic usage", function() {
 
 
   it('should support dynamic default parameters (global)', function() {
-    var currentGroup = 'students',
-        Person = $resource('/Person/:group/:id', { group: function() { return currentGroup; }});
-
-
-    $httpBackend.expect('GET', '/Person/students/fedor').respond({id: 'fedor', email: 'f@f.com'});
-
-    var fedor = Person.get({id: 'fedor'});
-    $httpBackend.flush();
-
-    expect(fedor).toEqualData({id: 'fedor', email: 'f@f.com'});
+    inject(function($q) {
+      var currentGroup = 'students',
+          Person = $resource('/Person/:place/:group/:id', { place: $q.when('school'),
+                                                            group: function() { return currentGroup; }});
+  
+  
+      $httpBackend.expect('GET', '/Person/school/students/fedor').respond({id: 'fedor', email: 'f@f.com'});
+  
+      var fedor = Person.get({id: 'fedor'});
+      $httpBackend.flush();
+  
+      expect(fedor).toEqualData({id: 'fedor', email: 'f@f.com'});
+    });
   });
 
 
   it('should support dynamic default parameters (action specific)', function() {
-    var currentGroup = 'students',
-      Person = $resource('/Person/:group/:id', {}, {
-        fetch: {
-          method: 'GET',
-          params: {group: function() { return currentGroup; }}
-        }
-      });
-
-    $httpBackend.expect('GET', '/Person/students/fedor').respond({id: 'fedor', email: 'f@f.com'});
-
-    var fedor = Person.fetch({id: 'fedor'});
-    $httpBackend.flush();
-
-    expect(fedor).toEqualData({id: 'fedor', email: 'f@f.com'});
+    inject(function($q) {
+      var currentGroup = 'students',
+        Person = $resource('/Person/:place/:group/:id', {}, {
+          fetch: {
+            method: 'GET',
+            params: {place: $q.when('school'),
+                     group: function() { return currentGroup; }}
+          }
+        });
+  
+      $httpBackend.expect('GET', '/Person/students/fedor').respond({id: 'fedor', email: 'f@f.com'});
+  
+      var fedor = Person.fetch({id: 'fedor'});
+      $httpBackend.flush();
+  
+      expect(fedor).toEqualData({id: 'fedor', email: 'f@f.com'});
+    });
   });
 
 
