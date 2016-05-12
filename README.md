@@ -19,7 +19,7 @@ piece of cake. Best of all? It makes development fun!
 * Contribution guidelines: [CONTRIBUTING.md](https://github.com/angular/angular.js/blob/master/CONTRIBUTING.md)
 * Dashboard: https://dashboard.angularjs.org
 
-##### Looking for Angular 2 (beta)? Go here: https://github.com/angular/angular
+##### Looking for Angular 2? Go here: https://github.com/angular/angular
 
 Building AngularJS
 ---------
