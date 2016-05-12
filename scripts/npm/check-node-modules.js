@@ -45,6 +45,7 @@ function checkNodeModules(purgeIfStale) {
 }
 
 function compareMarkerFiles(markerFilePath, cachedMarkerFilePath) {
+  if (!fs.existsSync(markerFilePath)) return false;
   if (!fs.existsSync(cachedMarkerFilePath)) return false;
 
   var opts = {encoding: 'utf-8'};
