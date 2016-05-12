@@ -627,13 +627,12 @@ describe("basic usage", function() {
       var currentGroup = 'students',
           Person = $resource('/Person/:place/:group/:id', { place: $q.when('school'),
                                                             group: function() { return currentGroup; }});
-  
-  
+
       $httpBackend.expect('GET', '/Person/school/students/fedor').respond({id: 'fedor', email: 'f@f.com'});
-  
+
       var fedor = Person.get({id: 'fedor'});
       $httpBackend.flush();
-  
+
       expect(fedor).toEqualData({id: 'fedor', email: 'f@f.com'});
     });
   });
@@ -649,12 +648,12 @@ describe("basic usage", function() {
                      group: function() { return currentGroup; }}
           }
         });
-  
+
       $httpBackend.expect('GET', '/Person/students/fedor').respond({id: 'fedor', email: 'f@f.com'});
-  
+
       var fedor = Person.fetch({id: 'fedor'});
       $httpBackend.flush();
-  
+
       expect(fedor).toEqualData({id: 'fedor', email: 'f@f.com'});
     });
   });
