@@ -350,7 +350,7 @@ base and the path that should be handled by the application.
 ### Base href constraints
 
 The `$location` service is not able to function properly if the current URL is outside the URL given
-as the base href. This can have subtle confusing consequencies...
+as the base href. This can have subtle confusing consequences...
 
 Consider a base href set as follows: `<base href="/base/">` (i.e. the application exists in the "folder"
 called `/base`). The URL `/base` is actually outside the application (it refers to the `base` file found
