@@ -1285,6 +1285,29 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
     return TTL;
   };
 
+
+  function escapeRegExp(str) {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  }
+  function createGlobalRegexMatcher(str) {
+    return new RegExp(escapeRegExp(str), 'g');
+  }
+  var moduleSymbolMap = createMap();
+  var defaultSymbols = {
+    startSymbol: '{{',
+    startRegex: /\{\{/g,
+    endSymbol: '}}',
+    endRegex: /\}\}/g
+  };
+  this.moduleSymbols = function(moduleName, startSymbol, endSymbol) {
+    moduleSymbolMap[moduleName] = {
+      startSymbol: startSymbol,
+      startRegex: createGlobalRegexMatcher(startSymbol),
+      endSymbol: endSymbol,
+      endRegex: createGlobalRegexMatcher(endSymbol)
+    };
+  };
+
   this.$get = [
             '$injector', '$interpolate', '$exceptionHandler', '$templateRequest', '$parse',
             '$controller', '$rootScope', '$sce', '$animate', '$$sanitizeUri',
@@ -1585,10 +1608,15 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
     var startSymbol = $interpolate.startSymbol(),
         endSymbol = $interpolate.endSymbol(),
-        denormalizeTemplate = (startSymbol === '{{' && endSymbol  === '}}')
-            ? identity
-            : function denormalizeTemplate(template) {
-              return template.replace(/\{\{/g, startSymbol).replace(/}}/g, endSymbol);
+        denormalizeTemplate = function(moduleName, template) {
+          var moduleSymbols = moduleSymbolMap[moduleName] || defaultSymbols;
+          if (moduleSymbols.startSymbol !== startSymbol) {
+            template = template.replace(moduleSymbols.startRegex, startSymbol);
+          }
+          if (moduleSymbols.endSymbol !== endSymbol) {
+            template = template.replace(moduleSymbols.endRegex, endSymbol);
+          }
+          return template;
         },
         NG_ATTR_BINDING = /^ngAttr[A-Z]/;
     var MULTI_ELEMENT_DIR_RE = /^(.+)Start$/;
@@ -2274,7 +2302,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
               ? directive.template($compileNode, templateAttrs)
               : directive.template;
 
-          directiveValue = denormalizeTemplate(directiveValue);
+          directiveValue = denormalizeTemplate(directive.$$moduleName, directiveValue);
 
           if (directive.replace) {
             replaceDirective = directive;
@@ -2782,7 +2810,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         .then(function(content) {
           var compileNode, tempTemplateAttrs, $template, childBoundTranscludeFn;
 
-          content = denormalizeTemplate(content);
+          content = denormalizeTemplate(origAsyncDirective.$$moduleName, content);
 
           if (origAsyncDirective.replace) {
             if (jqLiteIsTextNode(content)) {

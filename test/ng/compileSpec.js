@@ -3155,6 +3155,26 @@ describe('$compile', function() {
       });
     });
 
+    it('should allow modules to specify what interpolation symbol is used in templates', function() {
+      angular.module('symbol-test', [])
+        .directive('myDirective', function() {
+          return {
+            template: '<span foo=\'{"ctx":{"id":3}}\'></span>'
+          };
+        });
+
+      module('symbol-test', function($interpolateProvider, $compileProvider) {
+        $interpolateProvider.startSymbol('##');
+        $interpolateProvider.endSymbol(']]');
+        $compileProvider.moduleSymbols('symbol-test', '##', ']]');
+      });
+
+      inject(function($compile) {
+        element = $compile('<div><div my-directive></div></div>')($rootScope);
+        expect(element.children('div').children('span').attr('foo')).toBe('{"ctx":{"id":3}}');
+      });
+    });
+
 
     it('should support custom start interpolation symbol, even when `endSymbol` doesn\'t change',
       function() {
