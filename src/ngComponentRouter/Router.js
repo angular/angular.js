@@ -7,7 +7,7 @@
  * on Bower or the Google CDN.
  *
  * ```bash
- * npm install @angular/router --save
+ * npm install @angular/router@0.2.0 --save
  * ```
  *
  * Include `angular_1_router.js` in your HTML:
