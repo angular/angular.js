@@ -104,8 +104,11 @@ angular.mock.$Browser = function() {
    * Flushes all pending requests and executes the defer callbacks.
    *
    * @param {number=} number of milliseconds to flush. See {@link #defer.now}
+   * @param {boolean=} [atomic=false] If set to `true` — will handle only tasks
+   * available at the moment of execution, otherwise will process tasks that was
+   * added during execution as well.
    */
-  self.defer.flush = function(delay) {
+  self.defer.flush = function(delay, atomic) {
     if (angular.isDefined(delay)) {
       self.defer.now += delay;
     } else {
@@ -116,8 +119,25 @@ angular.mock.$Browser = function() {
       }
     }
 
-    while (self.deferredFns.length && self.deferredFns[0].time <= self.defer.now) {
-      self.deferredFns.shift().fn();
+    function shiftExecutableFns(handler) {
+      while (self.deferredFns.length && self.deferredFns[0].time <= self.defer.now) {
+        handler(self.deferredFns.shift());
+      }
+    }
+
+    if (atomic) {
+      var fnsToRun = [];
+      shiftExecutableFns(function(task) {
+        fnsToRun.push(task);
+      });
+
+      angular.forEach(fnsToRun, function(item) {
+        item.fn();
+      });
+    } else {
+      shiftExecutableFns(function(task) {
+        task.fn();
+      });
     }
   };
 
@@ -2052,9 +2072,11 @@ angular.mock.$TimeoutDecorator = ['$delegate', '$browser', function($delegate, $
    * Flushes the queue of pending tasks.
    *
    * @param {number=} delay maximum timeout amount to flush up until
+   * @param {boolean=} [atomic=false] If set to `true` — will not run the tasks
+   * added during execution of flash even if they added with `0` timeout.
    */
-  $delegate.flush = function(delay) {
-    $browser.defer.flush(delay);
+  $delegate.flush = function(delay, atomic) {
+    $browser.defer.flush(delay, atomic);
   };
 
   /**
