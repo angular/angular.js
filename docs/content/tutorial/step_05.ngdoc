@@ -1,4 +1,4 @@
-@ngdoc tutorial
+﻿@ngdoc tutorial
 @name 5 - XHRs & Dependency Injection
 @step 5
 @description
@@ -54,7 +54,7 @@ __`app/js/controllers.js:`__
 var phonecatApp = angular.module('phonecatApp', []);
 
 phonecatApp.controller('PhoneListCtrl', function ($scope, $http) {
-  $http.get('phones/phones.json').success(function(data) {
+  $http.get('phones/phones.json').then(function(data) {
     $scope.phones = data;
   });
 
@@ -68,7 +68,7 @@ relative to our `index.html` file). The server responds by providing the data in
 browser and our app, they both look the same. For the sake of simplicity, we used a json file in this
 tutorial.)
 
-The `$http` service returns a {@link ng.$q promise object} with a `success`
+The `$http` service returns a {@link ng.$q promise object} with a `then`
 method. We call this method to handle the asynchronous response and assign the phone data to the
 scope controlled by this controller, as a model called `phones`. Notice that Angular detected the
 json response and parsed it for us!
@@ -150,7 +150,7 @@ var phonecatApp = angular.module('phonecatApp', []);
 
 phonecatApp.controller('PhoneListCtrl', ['$scope', '$http',
   function ($scope, $http) {
-    $http.get('phones/phones.json').success(function(data) {
+    $http.get('phones/phones.json').then(function(data) {
       $scope.phones = data;
     });
 
