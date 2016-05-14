@@ -15,6 +15,10 @@ lower-level {@link ng.$http $http} API, HTTP methods and URLs.
 
 <div doc-tutorial-reset="11"></div>
 
+With this step are some changes to the test dependencies. If you have `npm test` running in a window,
+you will notice that the test has failed after switching to branch step-11. Stop the test and
+re-issue the `npm test` command, to see the Karma window re-open and the test status to return to 'SUCCESS'.
+
 ## Dependencies
 
 The RESTful functionality is provided by Angular in the `ngResource` module, which is distributed
