@@ -6,7 +6,7 @@
 <ul doc-tutorial-nav="11"></ul>
 
 
-In this step, you will change the way our app fetches data.
+In this step, we will change the way our app fetches data.
 
 * We define a custom service that represents a [RESTful][restful] client. Using this client we
 can make requests to the server for data in an easier way, without having to deal with the
