@@ -138,7 +138,7 @@ __`test/unit/controllersSpec.js`:__
 
       $routeParams.phoneId = 'xyz';
       scope = $rootScope.$new();
-      ctrl = $controller('PhoneDetailCtrl', {$scope: scope});
+      ctrl = $controller('PhoneDetailCtrl', {$scope: scope, $routeParams: $routeParams});
     }));
 
 
