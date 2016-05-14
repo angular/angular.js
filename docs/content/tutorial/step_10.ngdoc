@@ -152,7 +152,7 @@ Your unit tests should now be passing.
 
           $scope.hello = function(name) {
               alert('Hello ' + (name || 'world') + '!');
-          }
+          };
 
   and add:
 
