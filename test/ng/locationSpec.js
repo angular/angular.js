@@ -1184,6 +1184,19 @@ describe('$location', function() {
         expect($window.location.$$setHref).toHaveBeenCalledWith('http://new.com/a/outside.html');
       });
     });
+
+    it('should force a page reload if navigating outside of the application base href', function() {
+      initService({html5Mode:true, supportHistory: true});
+      mockUpBrowser({initialUrl:'http://new.com/a/b/', baseHref:'/a/b/'});
+
+      inject(function($window, $browser, $location) {
+        $window.location.href = 'http://new.com/a/outside.html';
+        spyOn($window.location, '$$setHref');
+        expect($window.location.$$setHref).not.toHaveBeenCalled();
+        $browser.$$checkUrlChange();
+        expect($window.location.$$setHref).toHaveBeenCalledWith('http://new.com/a/outside.html');
+      });
+    });
   });
 
 
