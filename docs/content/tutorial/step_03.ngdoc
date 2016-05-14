@@ -210,7 +210,7 @@ solution would be to use the {@link ng.directive:ngBind ngBind} or
 {@link ng.directive:ngBindTemplate ngBindTemplate} directives, which are invisible to the user
 while the page is loading:
 
-        <title ng-bind-template="Google Phone Gallery: {{query}}">Google Phone Gallery</title>
+        <title ng-bind-template="Google Phone Gallery{{query ? (': '+query) : ''}}">Google Phone Gallery</title>
 
 
 # Summary
