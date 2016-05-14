@@ -3155,23 +3155,52 @@ describe('$compile', function() {
       });
     });
 
-    it('should allow modules to specify what interpolation symbol is used in templates', function() {
+    it('should denormalise interpolation symbols in templates correctly, if different to the current symbols', function() {
       angular.module('symbol-test', [])
         .directive('myDirective', function() {
           return {
-            template: '<span foo=\'{"ctx":{"id":3}}\'></span>'
+            template: '<span foo=\'{"ctx":{"id":3}}\'>[[1 + 2]]</span>'
           };
+        })
+        .config(function($compileProvider) {
+          $compileProvider.moduleSymbols('symbol-test', '[[', ']]');
         });
 
-      module('symbol-test', function($interpolateProvider, $compileProvider) {
-        $interpolateProvider.startSymbol('##');
-        $interpolateProvider.endSymbol(']]');
-        $compileProvider.moduleSymbols('symbol-test', '##', ']]');
+      module('symbol-test');
+
+      inject(function($compile) {
+        element = $compile('<div><div my-directive></div></div>')($rootScope);
+        expect(element.children('div').children('span').attr('foo')).toBe('{"ctx":{"id":3\\}\\}');
+        expect(element.text()).toEqual('{{1 + 2}}');
+        $rootScope.$apply();
+        expect(element.text()).toEqual('3');
+      });
+    });
+
+
+    it('should escape the current interpolation symbols in templates, before denormalising, if the template module symbols are different', function() {
+      angular.module('symbol-test', [])
+        .directive('myDirective', function() {
+          return {
+            template: '<span>{[1 + 2]}[[3 + 4]]</span>'
+          };
+        })
+        .config(function($compileProvider) {
+          // Specify that the templates in this module use `[[` and `]]` interpolation symbols
+          $compileProvider.moduleSymbols('symbol-test', '[[', ']]');
+        });
+
+      module('symbol-test', function($interpolateProvider) {
+        // Specify that this app uses `{[` and `]}` as interpolation symbols
+        $interpolateProvider.startSymbol('{[');
+        $interpolateProvider.endSymbol(']}');
       });
 
       inject(function($compile) {
         element = $compile('<div><div my-directive></div></div>')($rootScope);
-        expect(element.children('div').children('span').attr('foo')).toBe('{"ctx":{"id":3}}');
+        expect(element.text()).toEqual('\\{\\[1 + 2\\]\\}{[3 + 4]}');
+        $rootScope.$apply();
+        expect(element.text()).toEqual('{[1 + 2]}7');
       });
     });
 

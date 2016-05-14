@@ -1292,6 +1292,9 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
   function createGlobalRegexMatcher(str) {
     return new RegExp(escapeRegExp(str), 'g');
   }
+  function escapeSymbol(str) {
+    return str.replace(/./g, '\\$&');
+  }
   var moduleSymbolMap = createMap();
   var defaultSymbols = {
     startSymbol: '{{',
@@ -1607,13 +1610,17 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
 
     var startSymbol = $interpolate.startSymbol(),
+        startSymbolRegex = createGlobalRegexMatcher(startSymbol),
         endSymbol = $interpolate.endSymbol(),
+        endSymbolRegex = createGlobalRegexMatcher(endSymbol),
         denormalizeTemplate = function(moduleName, template) {
           var moduleSymbols = moduleSymbolMap[moduleName] || defaultSymbols;
           if (moduleSymbols.startSymbol !== startSymbol) {
+            template = template.replace(startSymbolRegex, escapeSymbol);
             template = template.replace(moduleSymbols.startRegex, startSymbol);
           }
           if (moduleSymbols.endSymbol !== endSymbol) {
+            template = template.replace(endSymbolRegex, escapeSymbol);
             template = template.replace(moduleSymbols.endRegex, endSymbol);
           }
           return template;
