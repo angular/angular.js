@@ -32,7 +32,7 @@ __`app/index.html`:__
 
   <ul class="phones">
     <li ng-repeat="phone in phones | filter:query | orderBy:orderProp">
-      <span>{{phone.name}}</span>
+      <span class="name">{{phone.name}}</span>
       <p>{{phone.snippet}}</p>
     </li>
   </ul>
@@ -150,7 +150,7 @@ __`test/e2e/scenarios.js`:__
 ...
     it('should be possible to control phone order via the drop down select box', function() {
 
-      var phoneNameColumn = element.all(by.repeater('phone in phones').column('phone.name'));
+      var phoneNameColumn = element.all(by.css('.name'));
       var query = element(by.model('query'));
 
       function getNames() {
