@@ -8,13 +8,13 @@
  * Interface for configuring angular {@link angular.module modules}.
  */
 
-function setupModuleLoader(window) {
+function setupModuleLoader(windowObj) {
 
   function ensure(obj, name, factory) {
     return obj[name] || (obj[name] = factory());
   }
 
-  return ensure(ensure(window, 'angular', Object), 'module', function() {
+  return ensure(ensure(windowObj, 'angular', Object), 'module', function() {
     /** @type {Object.<string, angular.Module>} */
     var modules = {};
 
