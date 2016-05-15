@@ -645,6 +645,15 @@ function $RouteProvider() {
       }
     }
 
+    /**
+     * @returns the current active controller by route
+     */
+    function compilerControllerByRouteVerification(controller, params){
+      if ( isDefined(controller) && isFunction(controller) && params.autoRoute === true ) {
+          controller = controller(params);
+      }
+      return controller;
+    }
 
     /**
      * @returns {Object} the current active route, by matching it against the URL
@@ -657,6 +666,9 @@ function $RouteProvider() {
           match = inherit(route, {
             params: angular.extend({}, $location.search(), params),
             pathParams: params});
+
+          route.controller = compilerControllerByRouteVerification(route.controller, params);
+
           match.$$route = route;
         }
       });
