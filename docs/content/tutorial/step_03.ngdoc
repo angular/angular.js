@@ -108,6 +108,7 @@ describe('PhoneCat App', function() {
       query.clear();
       query.sendKeys('motorola');
       expect(phoneList.count()).toBe(2);
+      query.clear(); // clear the query to not mess with next test
     });
   });
 });
