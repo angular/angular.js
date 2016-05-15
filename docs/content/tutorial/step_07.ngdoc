@@ -120,6 +120,10 @@ both module systems can live side by side and fulfill their goals.
 To deepen your understanding of DI on Angular, see
 [Understanding Dependency Injection](https://github.com/angular/angular.js/wiki/Understanding-Dependency-Injection).
 
+For deepen your understanding of DI on Angular, see
+[how Angular's dependency injection system works](git://github.com/angular/angular.js.wiki.git),
+by  Brandon Tilley.
+
 ## Template
 
 The `$route` service is usually used in conjunction with the {@link ngRoute.directive:ngView
