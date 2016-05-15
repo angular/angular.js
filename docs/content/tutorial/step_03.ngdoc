@@ -27,6 +27,7 @@ We made no changes to the controller.
 __`app/index.html`:__
 
 ```html
+
   <div class="container-fluid">
     <div class="row">
       <div class="col-md-2">
@@ -48,6 +49,7 @@ __`app/index.html`:__
       </div>
     </div>
   </div>
+
 ```
 
 We added a standard HTML `<input>` tag and used Angular's
