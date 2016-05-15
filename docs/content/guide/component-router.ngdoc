@@ -855,7 +855,7 @@ function HeroDetailComponent(heroService) {
   ...
   this.gotoHeroes = function() {
     var heroId = this.hero && this.hero.id;
-    this.$router.navigate(['HeroList']);
+    this.$router.navigate(['HeroList', {id: heroId}]);
   };
 ```
 
