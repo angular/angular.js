@@ -110,6 +110,20 @@ function $RouteProvider(){
     return this;
   };
 
+  /**
+   * @ngdoc method
+   * @name ng.$routeProvider#clear
+   * @methodOf ng.$routeProvider
+   *
+   * @returns {Object} self
+   *
+   * @description
+   * Clears all route definitions already added to `$route` service.
+   */
+  this.clear = function () {
+    routes = {};
+    return this;
+  };
 
   this.$get = ['$rootScope', '$location', '$routeParams', '$q', '$injector', '$http', '$templateCache',
       function( $rootScope,   $location,   $routeParams,   $q,   $injector,   $http,   $templateCache) {
