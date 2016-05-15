@@ -854,7 +854,6 @@ Router itself, which was made available by the binding in the **Component Defini
 function HeroDetailComponent(heroService) {
   ...
   this.gotoHeroes = function() {
-    var heroId = this.hero && this.hero.id;
     this.$router.navigate(['HeroList']);
   };
 ```
