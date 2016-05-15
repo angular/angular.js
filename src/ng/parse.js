@@ -56,7 +56,15 @@ function lex(text, csp){
          (token=tokens[tokens.length-1])) {
         token.json = token.text.indexOf('.') == -1;
       }
-    } else if (is('(){}[].,;:')) {
+    } else if (ch == '.' && peek() == '@') {
+      // '.@' property accessor definition.
+      tokens.push({
+        index:index,
+        text:'.@',
+        json:false,
+      });
+      index += 2;
+    } else if (is('(){}[].,;:@')) {
       tokens.push({
         index:index,
         text:ch,
@@ -158,7 +166,7 @@ function lex(text, csp){
 
     while (index < text.length) {
       ch = text.charAt(index);
-      if (ch == '.' || isIdent(ch) || isNumber(ch)) {
+      if ((ch == '.' && peek() != '@') || isIdent(ch) || isNumber(ch)) {
         if (ch == '.') lastDot = index;
         ident += ch;
       } else {
@@ -275,6 +283,7 @@ function parser(text, json, $filter, csp){
       tokens = lex(text, csp),
       assignment = _assignment,
       functionCall = _functionCall,
+      propertyAccessor = _propertyAccessor,
       fieldAccess = _fieldAccess,
       objectIndex = _objectIndex,
       filterChain = _filterChain;
@@ -284,6 +293,7 @@ function parser(text, json, $filter, csp){
     // we prevent any accidental execution in JSON.
     assignment = logicalOR;
     functionCall =
+      propertyAccessor =
       fieldAccess =
       objectIndex =
       filterChain =
@@ -512,6 +522,9 @@ function parser(text, json, $filter, csp){
       primary = arrayDeclaration();
     } else if (expect('{')) {
       primary = object();
+    } else if (expect('@')) {
+      // Property accessor directly on the scope.
+      primary = propertyAccessor(identity);
     } else {
       var token = expect();
       primary = token.fn;
@@ -521,7 +534,7 @@ function parser(text, json, $filter, csp){
     }
 
     var next, context;
-    while ((next = expect('(', '[', '.'))) {
+    while ((next = expect('(', '[', '.', '.@'))) {
       if (next.text === '(') {
         primary = functionCall(primary, context);
         context = null;
@@ -531,6 +544,9 @@ function parser(text, json, $filter, csp){
       } else if (next.text === '.') {
         context = primary;
         primary = fieldAccess(primary);
+      } else if (next.text === '.@') {
+        primary = propertyAccessor(primary, context);
+        context = null;
       } else {
         throwError("IMPOSSIBLE");
       }
@@ -601,6 +617,24 @@ function parser(text, json, $filter, csp){
           ? fnPtr.apply(context, args)
           : fnPtr(args[0], args[1], args[2], args[3], args[4]);
     };
+  }
+
+  function _propertyAccessor(obj) {
+    var token = expect();
+    var identifier = token.text;
+    if (identifier.indexOf('.') != -1) {
+      throw new Error("Property accessor must be last")
+    }
+    var upperCase = identifier[0].toUpperCase() + identifier.substring(1);
+    var getter = 'get' + upperCase;
+    var setter = 'set' + upperCase;
+    return extend(function(self, locals) {
+      return obj(self, locals)[getter]();
+    }, {
+      assign: function(self, value, locals) {
+        return obj(self, locals)[setter](value);
+      }
+    });
   }
 
   // This is used with json array declaration
