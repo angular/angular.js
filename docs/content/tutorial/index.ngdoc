@@ -196,6 +196,7 @@ You can now browse to the application at:
 ```
 http://localhost:8000/app/index.html
 ```
+To serve on a different ip address or port, edit the "start" script within package.json.
 
 <div class="alert alert-info">
 To serve the web app on a different IP address or port, edit the "start" script within package.json.
