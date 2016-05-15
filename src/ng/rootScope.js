@@ -609,7 +609,7 @@ function $RootScopeProvider(){
         } finally {
           clearPhase();
           try {
-            $rootScope.$digest();
+            this.$root.$digest();
           } catch (e) {
             $exceptionHandler(e);
             throw e;

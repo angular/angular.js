@@ -2009,7 +2009,7 @@ describe('$compile', function() {
         expect(componentScope.ref).toBe('hello world');
 
         componentScope.ref = 'ignore me';
-        expect($rootScope.$apply).
+        expect(function() {$rootScope.$apply()}).
             toThrow("Non-assignable model expression: 'hello ' + name (directive: myComponent)");
         expect(componentScope.ref).toBe('hello world');
         // reset since the exception was rethrown which prevented phase clearing
