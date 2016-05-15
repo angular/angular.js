@@ -359,8 +359,8 @@ function annotate(fn, strictDi, name) {
  * * {@link auto.$provide#service service(class)} - registers a **constructor function**, `class`
  *     that will be wrapped in a **service provider** object, whose `$get` property will instantiate
  *      a new object using the given constructor function.
- * * {@link auto.$provide#decorator decorator(name)} - registers a **service decorator** with the
- *      {@link auto.$injector $injector}, `name` the name of the service to decorate.
+ * * {@link auto.$provide#decorator decorator(name, decorFn)} - registers a **decorator function**,
+ *      `decorFn`, with the {@link auto.$injector $injector}, `name` the name of the provider to decorate.
  *
  * See the individual methods for more information and examples.
  */
@@ -617,18 +617,18 @@ function annotate(fn, strictDi, name) {
  * @name $provide#decorator
  * @description
  *
- * Register a **service decorator** with the {@link auto.$injector $injector}. A service decorator
- * intercepts the creation of a service, allowing it to override or modify the behavior of the
- * service. The object returned by the decorator may be the original service, or a new service
- * object which replaces or wraps and delegates to the original service.
+ * Register a **decorator function** with the {@link auto.$injector $injector}. A decorator function
+ * intercepts the creation of a provider, allowing it to override or modify the behavior of the
+ * provider. The object returned by the decorator may be the original provider, or a new provider
+ * object which replaces or wraps and delegates to the original provider.
  *
- * @param {string} name The name of the service to decorate.
- * @param {Function|Array.<string|Function>} decorator This function will be invoked when the service needs to be
- *    instantiated and should return the decorated service instance. The function is called using
+ * @param {string} name The name of the provider to decorate.
+ * @param {Function|Array.<string|Function>} decorator This function will be invoked when the provider needs to be
+ *    instantiated and should return the decorated provider instance. The function is called using
  *    the {@link auto.$injector#invoke injector.invoke} method and is therefore fully injectable.
  *    Local injection arguments:
  *
- *    * `$delegate` - The original service instance, which can be monkey patched, configured,
+ *    * `$delegate` - The original provider instance, which can be monkey patched, configured,
  *      decorated or delegated to.
  *
  * @example
