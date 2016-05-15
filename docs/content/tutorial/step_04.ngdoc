@@ -58,7 +58,6 @@ data-binding will cause the view to automatically update. No bloated DOM manipul
 necessary!
 
 
-
 ## Controller
 
 __`app/js/controllers.js`:__
