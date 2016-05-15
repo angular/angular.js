@@ -1441,6 +1441,11 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             value.push(getControllers(directiveName, require, $element, elementControllers));
           });
         }
+         else if (isObject(require)) {
+            value = {};
+            forEach(require, function(requireVal, requireKey) {
+                value[requireKey] = getControllers(requireVal, $element);
+            });
         return value;
       }
 
