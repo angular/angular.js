@@ -35,6 +35,9 @@ Following is a sample of the file:
 ]
 ```
 
+<div class="alert alert-info">
+  **Note:** Validating your JSON data with a JSON validator will ensure that it can be parsed correctly.
+</div>
 
 ## Controller
 
