@@ -310,7 +310,7 @@ forEach(['src', 'href'], function(attrName) {
       priority: 99, // it needs to run after the attributes are interpolated
       link: function(scope, element, attr) {
         attr.$observe(normalized, function(value) {
-          if (!value)
+          if (!value && value !== "")
              return;
 
           attr.$set(attrName, value);
