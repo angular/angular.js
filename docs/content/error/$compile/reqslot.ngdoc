@@ -1,0 +1,8 @@
+@ngdoc error
+@name $compile:reqslot
+@fullName Required transclusion slot
+@description
+
+This error occurs when a directive or component try to transclude a slot that is not provided.
+
+Transcluded elements must contain something. This error could happen when you try to transclude a self closing tag element.
