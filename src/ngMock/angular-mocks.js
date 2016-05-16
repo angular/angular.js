@@ -2254,46 +2254,32 @@ angular.mock.$ComponentControllerProvider = ['$compileProvider', function($compi
  *
  * @installation
  *
- *  <p>First, download the file:</p>
- *  <ul>
-      <li>
-        <a href="https://developers.google.com/speed/libraries/devguide#angularjs">Google CDN</a> e.g.
-        {% code %}"//ajax.googleapis.com/ajax/libs/angularjs/X.Y.Z/"{% endcode %}
-      </li>
-      <li>
-        <a href="https://www.npmjs.com/">NPM</a> e.g.
-        {% code %}npm install {$ doc.packageName $}@X.Y.Z{% endcode %}
-      </li>
-      <li>
-        <a href="http://bower.io">Bower</a><br> e.g.
-        {% code %}bower install {$ doc.packageName $}@X.Y.Z{% endcode %}
-      </li>
-      <li>
-        <a href="https://code.angularjs.org/">code.angularjs.org</a> (discouraged for
-        production use)  e.g.
-        {% code %}"//code.angularjs.org/X.Y.Z/{$ doc.packageFile $}"{% endcode %}
-      </li>
-    </ul>
-    <p>where X.Y.Z is the AngularJS version you are running.</p>
-
-    <p>Then, configure your test runner to load `angular-mocks.js` after `angular.js`.
-    This example uses <a href="http://karma-runner.github.io/">Karma</a>:</p>
-
-    {% code %}
-        config.set({
-          files: [
-            'build/angular.js', // and other module files you need
-            'build/angular-mocks.js',
-            '<path/to/application/files>',
-            '<path/to/spec/files>'
-          ]
-        });
-    {% endcode %}
-
-    <p>Including the `angular-mocks.js` file automatically adds the `ngMock` module, so your tests
-    are ready to go!</p>
+ *  First, download the file:
+ *  * [Google CDN](https://developers.google.com/speed/libraries/devguide#angularjs) e.g.
+ *    `"//ajax.googleapis.com/ajax/libs/angularjs/X.Y.Z/"`
+ *  * [NPM](https://www.npmjs.com/) e.g. `npm install {$ doc.packageName $}@X.Y.Z`
+ *  * [Bower](http://bower.io) e.g. `bower install {$ doc.packageName $}@X.Y.Z`
+ *  * [code.angularjs.org](https://code.angularjs.org/) (discouraged for production use)  e.g.
+ *    `"//code.angularjs.org/X.Y.Z/{$ doc.packageFile $}"`
  *
+ * where X.Y.Z is the AngularJS version you are running.
  *
+ * Then, configure your test runner to load `angular-mocks.js` after `angular.js`.
+ * This example uses <a href="http://karma-runner.github.io/">Karma</a>:
+ *
+ * ```
+ * config.set({
+ *   files: [
+ *     'build/angular.js', // and other module files you need
+ *     'build/angular-mocks.js',
+ *     '<path/to/application/files>',
+ *     '<path/to/spec/files>'
+ *   ]
+ * });
+ * ```
+ *
+ * Including the `angular-mocks.js` file automatically adds the `ngMock` module, so your tests
+ *  are ready to go!
  */
 angular.module('ngMock', ['ng']).provider({
   $browser: angular.mock.$BrowserProvider,
