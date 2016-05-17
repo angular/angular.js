@@ -231,12 +231,12 @@ describe('$compile', function() {
         directive('ff', function(log) {
           var declaration = {
             restrict: 'E',
-            template: function(){
+            template: function() {
               log('ff template: ' + (this === declaration));
             },
-            compile: function(){
+            compile: function() {
               log('ff compile: ' + (this === declaration));
-              return function(){
+              return function() {
                 log('ff post: ' + (this === declaration));
               };
             }
@@ -248,10 +248,10 @@ describe('$compile', function() {
           var declaration = {
             restrict: 'E',
             link: {
-              pre: function(){
+              pre: function() {
                 log('fff pre: ' + (this === declaration));
               },
-              post: function(){
+              post: function() {
                 log('fff post: ' + (this === declaration));
               }
             }
@@ -262,12 +262,12 @@ describe('$compile', function() {
         directive('ffff', function(log) {
           var declaration = {
             restrict: 'E',
-            compile: function(){
+            compile: function() {
               return {
-                pre: function(){
+                pre: function() {
                   log('ffff pre: ' + (this === declaration));
                 },
-                post: function(){
+                post: function() {
                   log('ffff post: ' + (this === declaration));
                 }
               };
@@ -279,39 +279,37 @@ describe('$compile', function() {
         directive('fffff', function(log) {
           var declaration = {
             restrict: 'E',
-            templateUrl: function(){
-              log('fffff: ' + (this === declaration));
-            }
-          };
-          return declaration;
-        });
-
-        directive('ffffff', function(log) {
-          var declaration = {
-            restrict: 'E',
-            link: function(){
-              log('ffffff: ' + (this === declaration));
+            templateUrl: function() {
+              log('fffff templateUrl: ' + (this === declaration));
+              return 'fffff.html';
+            },
+            link: function() {
+              log('fffff post: ' + (this === declaration));
             }
           };
           return declaration;
         });
       });
-      inject(function($compile, $rootScope, log) {
+
+      inject(function($compile, $rootScope, $templateCache, log) {
+        $templateCache.put('fffff.html', '');
+
         $compile('<ff></ff>')($rootScope);
         $compile('<fff></fff>')($rootScope);
         $compile('<ffff></ffff>')($rootScope);
         $compile('<fffff></fffff>')($rootScope);
-        $compile('<ffffff></ffffff>')($rootScope);
+        $rootScope.$digest();
+
         expect(log).toEqual(
-          'ff template: true; '+
-          'ff compile: true; '+
-          'ff post: true; '+
-          'fff pre: true; '+
-          'fff post: true; '+
-          'ffff pre: true; '+
-          'ffff post: true; '+
-          'fffff: true; '+
-          'ffffff: true'
+          'ff template: true; ' +
+          'ff compile: true; ' +
+          'ff post: true; ' +
+          'fff pre: true; ' +
+          'fff post: true; ' +
+          'ffff pre: true; ' +
+          'ffff post: true; ' +
+          'fffff templateUrl: true; ' +
+          'fffff post: true'
         );
       });
     });
