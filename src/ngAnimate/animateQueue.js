@@ -331,7 +331,7 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
 
       var isStructural = ['enter', 'move', 'leave'].indexOf(event) >= 0;
 
-      var documentHidden = $document[0].hidden;
+      var documentHidden = animationsEnabled && $document[0].hidden;
 
       // this is a hard disable of all animations for the application or on
       // the element itself, therefore  there is no need to continue further
