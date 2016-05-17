@@ -84,7 +84,6 @@ describe('$aria', function() {
     });
   });
 
-
   describe('aria-hidden when disabled', function() {
     beforeEach(configAriaProvider({
       ariaHidden: false
@@ -115,13 +114,37 @@ describe('$aria', function() {
     });
 
     it('should attach itself to custom checkbox', function() {
-      compileElement('<div role="checkbox" ng-model="val">');
+      compileElement('<div role="checkbox" ng-model="val"></div>');
+
+      scope.$apply('val = "checked"');
+      expect(element.attr('aria-checked')).toBe('true');
+
+      scope.$apply('val = null');
+      expect(element.attr('aria-checked')).toBe('false');
+    });
+
+    it('should rely on the `$isEmpty()` method', function() {
+      compileElement('<div role="checkbox" ng-model="val"></div>');
+      var ctrl = element.controller('ngModel');
+      ctrl.$isEmpty = function(value) {
+        return value === 'not-checked';
+      };
 
       scope.$apply('val = true');
+      expect(ctrl.$modelValue).toBe(true);
       expect(element.attr('aria-checked')).toBe('true');
 
       scope.$apply('val = false');
+      expect(ctrl.$modelValue).toBe(false);
+      expect(element.attr('aria-checked')).toBe('true');
+
+      scope.$apply('val = "not-checked"');
+      expect(ctrl.$modelValue).toBe('not-checked');
       expect(element.attr('aria-checked')).toBe('false');
+
+      scope.$apply('val = "checked"');
+      expect(ctrl.$modelValue).toBe('checked');
+      expect(element.attr('aria-checked')).toBe('true');
     });
 
     it('should not handle native checkbox with ngChecked', function() {
@@ -210,11 +233,12 @@ describe('$aria', function() {
     });
 
     it('should attach itself to role="menuitemcheckbox"', function() {
-      scope.val = true;
       compileElement('<div role="menuitemcheckbox" ng-model="val"></div>');
+
+      scope.$apply('val = "checked"');
       expect(element.attr('aria-checked')).toBe('true');
 
-      scope.$apply('val = false');
+      scope.$apply('val = null');
       expect(element.attr('aria-checked')).toBe('false');
     });
 
@@ -830,6 +854,28 @@ describe('$aria', function() {
 
       compileElement('<div ng-dblclick="someAction()"></div>');
       expect(element.attr('tabindex')).toBeUndefined();
+    });
+  });
+
+  describe('ngModel', function() {
+    it('should not break when manually compiling', function() {
+      module(function($compileProvider) {
+        $compileProvider.directive('foo', function() {
+          return {
+            priority: 10,
+            terminal: true,
+            link: function(scope, elem) {
+              $compile(elem, null, 10)(scope);
+            }
+          };
+        });
+      });
+
+      injectScopeAndCompiler();
+      compileElement('<div role="checkbox" ng-model="value" foo />');
+
+      // Just check an arbitrary feature to make sure it worked
+      expect(element.attr('tabindex')).toBe('0');
     });
   });
 });
