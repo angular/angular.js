@@ -2670,7 +2670,9 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
      */
     function addDirective(tDirectives, name, location, maxPriority, ignoreDirective, startAttrName,
                           endAttrName) {
-      if (name === ignoreDirective) return null;
+      if (typeof ignoreDirective === 'string' && name === ignoreDirective) return null;
+      if (typeof ignoreDirective === 'function' && !ignoreDirective.call(null, name)) return null;
+
       var match = null;
       if (hasDirectives.hasOwnProperty(name)) {
         for (var directive, directives = $injector.get(name + Suffix),
