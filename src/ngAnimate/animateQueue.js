@@ -103,6 +103,9 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
     var activeAnimationsLookup = new $$HashMap();
     var disabledElementsLookup = new $$HashMap();
     var animationsEnabled = null;
+    // $document might be mocked and won't include a real document.
+    // Providing an empty object will prevent property read errors
+    var rawDocument = $document[0] || {};
 
     function postDigestTaskFactory() {
       var postDigestCalled = false;
@@ -331,7 +334,7 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
 
       var isStructural = ['enter', 'move', 'leave'].indexOf(event) >= 0;
 
-      var documentHidden = animationsEnabled && $document[0].hidden;
+      var documentHidden = rawDocument.hidden;
 
       // this is a hard disable of all animations for the application or on
       // the element itself, therefore  there is no need to continue further
@@ -583,7 +586,7 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
      * d) the element is not a child of the $rootElement
      */
     function areAnimationsAllowed(element, parentElement, event) {
-      var bodyElement = jqLite($document[0].body);
+      var bodyElement = jqLite(rawDocument.body);
       var bodyElementDetected = isMatchingElement(element, bodyElement) || element[0].nodeName === 'HTML';
       var rootElementDetected = isMatchingElement(element, $rootElement);
       var parentAnimationDetected = false;
