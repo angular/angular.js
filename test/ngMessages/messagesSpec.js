@@ -842,6 +842,33 @@ describe('ngMessages', function() {
       })
     );
 
+    it('should not compile template if scope is destroyed', function() {
+      module(function($provide) {
+        $provide.decorator('$compile', ['$delegate', function($delegate) {
+          var result = jasmine.createSpy('$compile').and.callFake($delegate);
+          result.$$createComment = $delegate.$$createComment;
+          return result;
+        }]);
+      });
+      inject(function($rootScope, $httpBackend, $compile) {
+        $httpBackend.expectGET('messages.html').respond('<div ng-message="a">A</div>');
+        $rootScope.show = true;
+        var html =
+            '<div ng-if="show">' +
+              '<div ng-messages="items">' +
+                '<div ng-messages-include="messages.html"></div>' +
+              '</div>' +
+            '</div>';
+
+        element = $compile(html)($rootScope);
+        $rootScope.$digest();
+        $rootScope.show = false;
+        $rootScope.$digest();
+        $compile.calls.reset();
+        $httpBackend.flush();
+        expect($compile).not.toHaveBeenCalled();
+      });
+    });
   });
 
   describe('when multiple', function() {
