@@ -97,6 +97,7 @@ The tutorial instructions, from now on, assume you are running all commands from
 `angular-phonecat` directory.
 
 <div class="alert alert-warning">
+  <p>**Firewall/Proxy Issues?**</p>
   <p>
     `git` and other tools (for example `bower` - see below), often use the `git:` protocol for
     accessing files in remote repositories. Some firewall configurations are blocking `git://` URLs,
@@ -266,11 +267,25 @@ npm run update-webdriver
 </div>
 
 <div class="alert alert-warning">
-  Under the hood, Protractor uses the [Selenium Stadalone Server][selenium], which in turn requires
-  the [Java Development Kit (JDK)][jdk] to be installed on your local machine. Check this
-  by running `java -version` from the command line.
+  <p>
+    Running `update-webdriver` for the first time may take from several seconds up to a few minutes
+    (depending on your hardware and network connection). If you cancel the operation (e.g. using
+    `Ctrl+C`), you might get errors, when trying to run Protractor later.
+  </p>
+  <p>
+    In that case, you can delete the `node_modules/` directory and run `npm install` again.
+  </p>
+</div>
 
-  If JDK is not already installed, you can download it [here][jdk-download].
+<div class="alert alert-warning">
+  <p>
+    Under the hood, Protractor uses the [Selenium Stadalone Server][selenium], which in turn 
+    requires the [Java Development Kit (JDK)][jdk] to be installed on your local machine. Check this
+    by running `java -version` from the command line.
+  </p>
+  <p>
+    If JDK is not already installed, you can download it [here][jdk-download].
+  </p>
 </div>
 
 Since Protractor works by interacting with a running application, we need to start our web server:

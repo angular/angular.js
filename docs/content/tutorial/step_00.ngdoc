@@ -85,7 +85,7 @@ For more info on `ngApp`, check out the {@link ngApp API Reference}.
 **`angular.js` script tag:**
 
 ```html
-<script src="bower_components/angular/angular.js">
+<script src="bower_components/angular/angular.js"></script>
 ```
 
 This code downloads the `angular.js` script which registers a callback that will be executed by the

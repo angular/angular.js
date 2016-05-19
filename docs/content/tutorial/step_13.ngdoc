@@ -138,7 +138,7 @@ need to load the `angular-resource.js` file, which contains the `ngResource` mod
 ```
 
 
-## Controller
+## Component Controllers
 
 We can now simplify our component controllers (`PhoneListController` and `PhoneDetailController`) by
 factoring out the lower-level `$http` service, replacing it with the new `Phone` service. Angular's

@@ -17,7 +17,7 @@ the repeater, and letting the data binding magic do the rest of the work.
 <div doc-tutorial-reset="6"></div>
 
 
-## Template
+## Component Template
 
 <br />
 **`app/phone-list/phone-list.template.html`:**
@@ -77,7 +77,7 @@ menu), Angular's data-binding will cause the view to automatically update. No bl
 manipulation code is necessary!
 
 
-## Controller
+## Component Controller
 
 <br />
 **`app/phone-list/phone-list.components.js`:**

@@ -206,7 +206,7 @@ describe('PhoneListController', function() {
 * With this instance, we verify that the phones array property on the scope contains three records.
 
 <div class="alert alert-info">
-  **A note on file naming:**
+  <p>**A note on file naming:**</p>
   <p>
     As already mentioned in the [introduction](tutorial/#running-unit-tests), the unit test files
     (specs) are kept side-by-side with the application code. We name our specs after the file

@@ -52,7 +52,7 @@ Each of these files describes various properties of the phone using the same dat
 show this data in the phone details view.
 
 
-## Controller
+## Component Controller
 
 We will expand the `phoneDetail` component's controller by using the `$http` service to fetch the
 appropriate JSON files. This works the same way as the `phoneList` component's controller.
@@ -81,7 +81,7 @@ To construct the URL for the HTTP request, we use `$routeParams.phoneId`, which 
 the current route by the `$route` service.
 
 
-## Template
+## Component Template
 
 The inline, TBD placeholder template has been replaced with a full blown external template,
 including lists and bindings that comprise the phone details. Note how we use the Angular

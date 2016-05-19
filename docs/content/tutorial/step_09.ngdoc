@@ -358,6 +358,10 @@ various URLs and verifying that the correct view was rendered.
       browser.get('index.html#/phones');
     });
 
+    ...
+
+  });
+
   ...
 
   describe('View: Phone details', function() {

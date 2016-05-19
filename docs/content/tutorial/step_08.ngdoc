@@ -38,7 +38,7 @@ URLs point to the `app/img/phones/` directory.
 ```
 
 
-## Template
+## Component Template
 
 <br />
 **`app/phone-list/phone-list.template.html`:**

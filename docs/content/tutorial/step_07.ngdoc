@@ -38,7 +38,7 @@ Following is a sample of the file:
 ```
 
 
-## Controller
+## Component Controller
 
 We will use Angular's {@link ng.$http $http} service in our controller for making an HTTP request to
 our web server to fetch the data in the `app/phones/phones.json` file. `$http` is just one of
@@ -55,7 +55,7 @@ themselves, but by the DI subsystem). As a result, applications are easier to te
 
 ```js
   angular.
-    module('phoneList).
+    module('phoneList').
     component('phoneList', {
       templateUrl: 'phone-list/phone-list.template.html',
       controller: function PhoneListController($http) {

@@ -141,6 +141,12 @@ To rerun the test suite, execute `npm run protractor` again.
   the web server.
 </div>
 
+<div class="alert alert-warning">
+  The web server is configured to use port 8000. If the port is already in use (for example by
+  another instance of a running web server) you will get an `EADDRINUSE` error. Make sure the port 
+  is available before running `npm start`.
+</div>
+
 
 # Experiments
 

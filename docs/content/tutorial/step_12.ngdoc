@@ -16,7 +16,7 @@ In this step, you will add a clickable phone image swapper to the phone details 
 <div doc-tutorial-reset="12"></div>
 
 
-## Controller
+## Component Controller
 
 <br />
 **`app/phone-detail/phone-detail.component.js`:**
@@ -47,7 +47,7 @@ We also created a `setImage()` method (to be used as event handler), that will c
 `mainImageUrl`.
 
 
-## Template
+## Component Template
 
 <br />
 **`app/phone-detail/phone-detail.template.html`:**
