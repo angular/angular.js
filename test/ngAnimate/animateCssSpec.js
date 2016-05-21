@@ -1880,6 +1880,24 @@ describe("ngAnimate $animateCss", function() {
         expect(element).not.toHaveClass('ng-leave-active');
         expect(element).not.toHaveClass('ng-move-active');
       }));
+
+      it('should not break when running anchored animations without duration',
+        inject(function($animate, $document, $rootElement) {
+          var element1 = jqLite('<div class="item" ng-animate-ref="test">Item 1</div>');
+          var element2 = jqLite('<div class="item" ng-animate-ref="test">Item 2</div>');
+
+          jqLite($document[0].body).append($rootElement);
+          $rootElement.append(element1);
+
+          expect($rootElement.text()).toBe('Item 1');
+
+          $animate.leave(element1);
+          $animate.enter(element2, $rootElement);
+          $animate.flush();
+
+          expect($rootElement.text()).toBe('Item 2');
+        })
+      );
     });
 
     describe("class-based animations", function() {
