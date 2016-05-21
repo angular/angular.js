@@ -96,20 +96,6 @@ cd angular-phonecat
 The tutorial instructions, from now on, assume you are running all commands from within the
 `angular-phonecat` directory.
 
-<div class="alert alert-warning">
-  <p>**Firewall/Proxy Issues?**</p>
-  <p>
-    `git` and other tools (for example `bower` - see below), often use the `git:` protocol for
-    accessing files in remote repositories. Some firewall configurations are blocking `git://` URLs,
-    which leads to errors when trying to clone repositories or download dependencies. (For example
-    corporate firewalls are "notorious" for blocking `git:`.)
-  </p>
-  <p>
-    If you run into this issue, you can force the use of `https:` instead, by running the following
-    command: `git config --global url."https://".insteadOf git://`
-  </p>
-</div>
-
 
 ### Install Node.js
 
@@ -213,7 +199,8 @@ You can now browse to the application at http://localhost:8000/index.html.
 
 <div class="alert alert-info">
   To serve the web app on a different IP address or port, edit the "start" script within
-  `package.json`. You can use `-a` to set the address and `-p` to set the port.
+  `package.json`. You can use `-a` to set the address and `-p` to set the port. You also need to 
+  update the `baseUrl` configuration property in `e2e-test/protractor.conf.js`.
 </div>
 
 
@@ -235,8 +222,8 @@ npm test
 This will start the Karma unit test runner. Karma will read the configuration file `karma.conf.js`,
 located at the root of the project directory. This configuration file tells Karma to:
 
-* Open up a Chrome browser and connect it to Karma.
-* Execute all the unit tests in this browser.
+* Open up instances of the Chrome and Firefox browsers and connect them to Karma.
+* Execute all the unit tests in these browsers.
 * Report the results of these tests in the terminal/command line window.
 * Watch all the project's JavaScript files and re-run the tests whenever any of these change.
 
@@ -266,28 +253,6 @@ npm run update-webdriver
   automatically executed as part of the command that runs the E2E tests.
 </div>
 
-<div class="alert alert-warning">
-  <p>
-    Running `update-webdriver` for the first time may take from several seconds up to a few minutes
-    (depending on your hardware and network connection). If you cancel the operation (e.g. using
-    `Ctrl+C`), you might get errors, when trying to run Protractor later.
-  </p>
-  <p>
-    In that case, you can delete the `node_modules/` directory and run `npm install` again.
-  </p>
-</div>
-
-<div class="alert alert-warning">
-  <p>
-    Under the hood, Protractor uses the [Selenium Stadalone Server][selenium], which in turn 
-    requires the [Java Development Kit (JDK)][jdk] to be installed on your local machine. Check this
-    by running `java -version` from the command line.
-  </p>
-  <p>
-    If JDK is not already installed, you can download it [here][jdk-download].
-  </p>
-</div>
-
 Since Protractor works by interacting with a running application, we need to start our web server:
 
 ```
@@ -301,7 +266,7 @@ the application by running:
 npm run protractor
 ```
 
-Protractor will read the configuration file at `e2e-tests/protractor-conf.js`. This configuration
+Protractor will read the configuration file at `e2e-tests/protractor.conf.js`. This configuration
 file tells Protractor to:
 
 * Open up a Chrome browser and connect it to the application.
@@ -313,6 +278,46 @@ It is good to run the E2E tests whenever you make changes to the HTML views or w
 the application as a whole is executing correctly. It is very common to run E2E tests before pushing
 a new commit of changes to a remote repository.
 
+
+### Common Issues
+
+<br />
+**Firewall / Proxy issues**
+
+Git and other tools, often use the `git:` protocol for accessing files in remote repositories. 
+Some firewall configurations are blocking `git://` URLs, which leads to errors when trying to clone 
+repositories or download dependencies. (For example corporate firewalls are "notorious" for blocking 
+`git:`.)
+
+If you run into this issue, you can force the use of `https:` instead, by running the following
+command: `git config --global url."https://".insteadOf git://`
+
+<br />
+**Updating WebDriver takes too long**
+
+Running `update-webdriver` for the first time may take from several seconds up to a few minutes
+(depending on your hardware and network connection). If you cancel the operation (e.g. using
+`Ctrl+C`), you might get errors, when trying to run Protractor later.
+
+In that case, you can delete the `node_modules/` directory and run `npm install` again.
+
+<br />
+**Protractor dependencies**
+
+Under the hood, Protractor uses the [Selenium Stadalone Server][selenium], which in turn requires 
+the [Java Development Kit (JDK)][jdk] to be installed on your local machine. Check this by running 
+`java -version` from the command line.
+
+If JDK is not already installed, you can download it [here][jdk-download].
+
+<br />
+**Error running the web server**
+
+The web server is configured to use port 8000. If the port is already in use (for example by another 
+instance of a running web server) you will get an `EADDRINUSE` error. Make sure the port is 
+available, before running `npm start`.
+
+<hr />
 
 Now that you have set up your local machine, let's get started with the tutorial:
 {@link step_00 Step 0 - Bootstrapping}
