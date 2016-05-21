@@ -13,7 +13,7 @@ describe("animations", function() {
     };
   }));
 
-  afterEach(inject(function($$jqLite) {
+  afterEach(inject(function() {
     dealoc(element);
   }));
 
