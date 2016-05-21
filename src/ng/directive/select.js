@@ -20,6 +20,7 @@ var SelectController =
 
   // If the ngModel doesn't get provided then provide a dummy noop version to prevent errors
   self.ngModelCtrl = noopNgModelController;
+  self.multiple = false;
 
   // The "unknown" option is one that is prepended to the list if the viewValue
   // does not match any of the options. When it is rendered the value of the unknown
@@ -91,7 +92,9 @@ var SelectController =
     }
     var count = optionsMap.get(value) || 0;
     optionsMap.put(value, count + 1);
-    self.ngModelCtrl.$render();
+    // Only render at the end of a digest. This improves render performance when many options
+    // are added during a digest and ensures all relevant options are correctly marked as selected
+    scheduleRender();
   };
 
   // Tell the select control that an option, with the given value, has been removed
@@ -115,6 +118,15 @@ var SelectController =
   };
 
 
+  var renderScheduled = false;
+  function scheduleRender() {
+    if (renderScheduled) return;
+    renderScheduled = true;
+    $scope.$$postDigest(function() {
+      renderScheduled = false;
+      self.ngModelCtrl.$render();
+    });
+  }
 
   var updateScheduled = false;
   function scheduleViewValueUpdate(renderAfter) {
@@ -163,29 +175,74 @@ var SelectController =
     } else if (interpolateValueFn) {
       // The value attribute is interpolated
       optionAttrs.$observe('value', function valueAttributeObserveAction(newVal) {
+        var currentVal = self.readValue();
+        var removal;
+        var previouslySelected = optionElement.prop('selected');
+        var removedVal;
+
         if (isDefined(oldVal)) {
           self.removeOption(oldVal);
+          removal = true;
+          removedVal = oldVal;
         }
         oldVal = newVal;
         self.addOption(newVal, optionElement);
+
+        if (removal && previouslySelected) {
+          scheduleViewValueUpdate();
+        }
       });
     } else if (interpolateTextFn) {
       // The text content is interpolated
       optionScope.$watch(interpolateTextFn, function interpolateWatchAction(newVal, oldVal) {
         optionAttrs.$set('value', newVal);
+        var previouslySelected = optionElement.prop('selected');
         if (oldVal !== newVal) {
           self.removeOption(oldVal);
         }
         self.addOption(newVal, optionElement);
+
+        if (oldVal && previouslySelected) {
+          scheduleViewValueUpdate();
+        }
       });
     } else {
       // The value attribute is static
       self.addOption(optionAttrs.value, optionElement);
     }
 
+
+    var oldDisabled;
+    optionAttrs.$observe('disabled', function(newVal) {
+
+      // Since model updates will also select disabled options (like ngOptions),
+      // we only have to handle options becoming disabled, not enabled
+
+      if (newVal === 'true' || newVal && optionElement.prop('selected')) {
+        if (self.multiple) {
+          scheduleViewValueUpdate(true);
+        } else {
+          self.ngModelCtrl.$setViewValue(null);
+          self.ngModelCtrl.$render();
+        }
+        oldDisabled = newVal;
+      }
+    });
+
     optionElement.on('$destroy', function() {
-      self.removeOption(optionAttrs.value);
+      var currentValue = self.readValue();
+      var removeValue = optionAttrs.value;
+
+      self.removeOption(removeValue);
       self.ngModelCtrl.$render();
+
+      if (self.multiple && currentValue && currentValue.indexOf(removeValue) !== -1 ||
+          currentValue === removeValue
+      ) {
+        // When multiple (selected) options are destroyed at the same time, we don't want
+        // to run a model update for each of them. Instead, run a single update in the $$postDigest
+        scheduleViewValueUpdate(true);
+      }
     });
   };
 }];
@@ -477,12 +534,13 @@ var selectDirective = function() {
       // we have to add an extra watch since ngModel doesn't work well with arrays - it
       // doesn't trigger rendering if only an item in the array changes.
       if (attr.multiple) {
+        selectCtrl.multiple = true;
 
         // Read value now needs to check each option to see if it is selected
         selectCtrl.readValue = function readMultipleValue() {
           var array = [];
           forEach(element.find('option'), function(option) {
-            if (option.selected) {
+            if (option.selected && !option.disabled) {
               var val = option.value;
               array.push(val in selectCtrl.selectValueMap ? selectCtrl.selectValueMap[val] : val);
             }
