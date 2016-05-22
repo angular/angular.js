@@ -842,14 +842,7 @@ describe('ngMessages', function() {
       })
     );
 
-    it('should not compile template if scope is destroyed', function() {
-      module(function($provide) {
-        $provide.decorator('$compile', ['$delegate', function($delegate) {
-          var result = jasmine.createSpy('$compile').and.callFake($delegate);
-          result.$$createComment = $delegate.$$createComment;
-          return result;
-        }]);
-      });
+    it('should not throw if scope has been destroyed when template request is ready',
       inject(function($rootScope, $httpBackend, $compile) {
         $httpBackend.expectGET('messages.html').respond('<div ng-message="a">A</div>');
         $rootScope.show = true;
@@ -864,11 +857,10 @@ describe('ngMessages', function() {
         $rootScope.$digest();
         $rootScope.show = false;
         $rootScope.$digest();
-        $compile.calls.reset();
-        $httpBackend.flush();
-        expect($compile).not.toHaveBeenCalled();
-      });
-    });
+        expect(function() {
+          $httpBackend.flush();
+        }).not.toThrow();
+    }));
   });
 
   describe('when multiple', function() {
