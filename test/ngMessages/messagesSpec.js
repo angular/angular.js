@@ -842,6 +842,25 @@ describe('ngMessages', function() {
       })
     );
 
+    it('should not throw if scope has been destroyed when template request is ready',
+      inject(function($rootScope, $httpBackend, $compile) {
+        $httpBackend.expectGET('messages.html').respond('<div ng-message="a">A</div>');
+        $rootScope.show = true;
+        var html =
+            '<div ng-if="show">' +
+              '<div ng-messages="items">' +
+                '<div ng-messages-include="messages.html"></div>' +
+              '</div>' +
+            '</div>';
+
+        element = $compile(html)($rootScope);
+        $rootScope.$digest();
+        $rootScope.show = false;
+        $rootScope.$digest();
+        expect(function() {
+          $httpBackend.flush();
+        }).not.toThrow();
+    }));
   });
 
   describe('when multiple', function() {
