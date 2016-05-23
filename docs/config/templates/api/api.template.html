@@ -2,13 +2,17 @@
 
 {% block content %}
 
+<a href='https://github.com/{$ git.info.owner $}/{$ git.info.repo $}/tree/{$ git.version.isSnapshot and 'master' or git.version.raw $}/{$ doc.fileInfo.projectRelativePath $}#L{$ doc.startingLine $}' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
 {% block header %}
 <header class="api-profile-header">
   <h1 class="api-profile-header-heading">{$ doc.name $}</h1>
   <ol class="api-profile-header-structure naked-list step-list">
     {% block related_components %}{% endblock %}
     <li>
-      - {$ doc.docType $} in module {$ doc.moduleDoc.id | link(doc.moduleDoc.name, doc.moduleDoc) $}
+      - {$ doc.docType $} in module <a href="{$ doc.moduleDoc.path $}">{$ doc.moduleDoc.name $}</a>
     </li>
   </ol>
 </header>
@@ -24,7 +28,7 @@
 <h2 id="known-issues">Known Issues</h2>
 {% for issue in doc.knownIssues -%}
 <div class="known-issue">
-  {$ issue | marked $} {% if not loop.last %}<hr>{% endif %}
+  {$ issue | marked $}
 </div>
 {% endfor -%}
 {% endif %}
