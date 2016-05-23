@@ -103,9 +103,9 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
     var activeAnimationsLookup = new $$HashMap();
     var disabledElementsLookup = new $$HashMap();
     var animationsEnabled = null;
-    // $document might be mocked and won't include a real document.
-    // Providing an empty object will prevent property read errors
-    var rawDocument = $document[0] || {};
+    // $document might be mocked out in tests and won't include a real document.
+    // Providing an empty object with hidden = true will prevent animations from running
+    var rawDocument = $document[0] || {hidden: true};
 
     function postDigestTaskFactory() {
       var postDigestCalled = false;

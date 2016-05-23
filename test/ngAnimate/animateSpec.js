@@ -1404,6 +1404,36 @@ describe("animations", function() {
     });
   });
 
+
+  it('should not run animations if the document is unavailable', function() {
+    var capturedAnimation;
+
+    module(function($provide) {
+      $provide.value('$document', {});
+
+      $provide.factory('$$animation', function($$AnimateRunner) {
+        return function(element, method, options) {
+          capturedAnimation = arguments;
+          return new $$AnimateRunner();
+        };
+      });
+    });
+
+    inject(function($animate, $rootScope, $rootElement, $document) {
+      $animate.enabled(true);
+
+      var spy = jasmine.createSpy();
+
+      element = jqLite('<div></div>');
+      var runner = $animate.enter(element, $rootElement);
+      $rootScope.$digest();
+
+      $animate.flush();
+
+      expect(capturedAnimation).toBeUndefined();
+    });
+  });
+
   describe('[ng-animate-children]', function() {
     var parent, element, child, capturedAnimation, captureLog;
     beforeEach(module(function($provide) {
