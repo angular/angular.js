@@ -59,7 +59,7 @@
     <td>{$ issueDoc.id | link(issueDoc.name, issueDoc) $}</td>
     <td>
     {% for issue in issueDoc.knownIssues -%}
-      {$ issue | marked $}
+      {$ issue | marked $} {% if not loop.last %}<hr>{% endif %}
     {% endfor -%}
     </td>
   </tr>
