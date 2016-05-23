@@ -9,7 +9,7 @@
 In this step, you will learn how to create a layout template and how to build an application that
 has multiple views by adding routing, using an Angular module called {@link ngRoute ngRoute}.
 
-* When you now navigate to `/index.html`, you are redirected to `/index.html#/phones` and the phone
+* When you now navigate to `/index.html`, you are redirected to `/index.html#!/phones` and the phone
   list appears in the browser.
 * When you click on a phone link, the URL changes to that specific phone and the stub of a phone
   detail page is displayed.
@@ -193,9 +193,9 @@ angular.module('phonecatApp', [
 ]);
 ```
 
-Now we can configure the `$route` service (using it's provider) for our application. In order to be
-able to quickly locate the configuration code, we put it into a separate file and used the `.config`
-suffix.
+Now, in addition to the core services and directives, we can also configure the `$route` service
+(using it's provider) for our application. In order to be able to quickly locate the configuration
+code, we put it into a separate file and used the `.config` suffix.
 
 <br />
 **`app/app.config.js`:**
@@ -203,8 +203,10 @@ suffix.
 ```js
   angular.
     module('phonecatApp').
-    config(['$routeProvider',
-      function config($routeProvider) {
+    config(['$locationProvider', '$routeProvider',
+      function config($locationProvider, $routeProvider) {
+        $locationProvider.hashPrefix('!');
+
         $routeProvider.
           when('/phones', {
             template: '<phone-list></phone-list>'
@@ -217,10 +219,24 @@ suffix.
     ]);
 ```
 
-Using the `.config()` method, we request the `$routeProvider` to be injected into our configuration
-function and use the {@link ngRoute.$routeProvider#when $routeProvider.when()} and
+Using the `.config()` method, we request the necessary providers (for example the `$routeProvider`)
+to be injected into our configuration function and then use their methods to specify the behavior of
+the corresponding services. Here, we use the
+{@link ngRoute.$routeProvider#when $routeProvider.when()} and
 {@link ngRoute.$routeProvider#otherwise $routeProvider.otherwise()} methods to define our
 application routes.
+
+<div class="alert alert-success">
+  <p>
+    We also used {@ink $locationProvider#hashPrefix $locationProvider.hashPrefix()} to set the
+    hash-prefix to `!`. This prefix will appear in the links to our client-side routes, right after
+    the hash (`#`) symbol and before the actual path (e.g. `index.html#!/some/path`).
+  </p>
+  <p>
+    Setting a prefix is not necessary, but it is considered a good practice (for reasons that are
+    outside the scope of this tutorial). `!` is the most commonly used prefix. 
+  </p>
+</div>
 
 Our routes are defined as follows:
 
@@ -345,7 +361,7 @@ various URLs and verifying that the correct view was rendered.
 ```js
   ...
 
-  it('should redirect `index.html` to `index.html#/phones', function() {
+  it('should redirect `index.html` to `index.html#!/phones', function() {
     browser.get('index.html');
     expect(browser.getLocationAbsUrl()).toBe('/phones');
   });
@@ -355,7 +371,7 @@ various URLs and verifying that the correct view was rendered.
   describe('View: Phone list', function() {
 
     beforeEach(function() {
-      browser.get('index.html#/phones');
+      browser.get('index.html#!/phones');
     });
 
     ...
@@ -367,7 +383,7 @@ various URLs and verifying that the correct view was rendered.
   describe('View: Phone details', function() {
 
     beforeEach(function() {
-      browser.get('index.html#/phones/nexus-s');
+      browser.get('index.html#!/phones/nexus-s');
     });
 
     it('should display placeholder page with `phoneId`', function() {

@@ -179,7 +179,7 @@ heading on the page is "Nexus S".
   describe('View: Phone detail', function() {
 
     beforeEach(function() {
-      browser.get('index.html#/phones/nexus-s');
+      browser.get('index.html#!/phones/nexus-s');
     });
 
     it('should display the `nexus-s` page', function() {
