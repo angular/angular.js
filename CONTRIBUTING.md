@@ -283,7 +283,7 @@ You can find out more detailed information about contributing in the
 [groups]: https://groups.google.com/forum/?fromgroups#!forum/angular
 [individual-cla]: http://code.google.com/legal/individual-cla-v1.0.html
 [irc]: http://webchat.freenode.net/?channels=angularjs&uio=d4
-[js-style-guide]: http://google-styleguide.googlecode.com/svn/trunk/javascriptguide.xml
+[js-style-guide]: https://google.github.io/styleguide/javascriptguide.xml
 [jsfiddle]: http://jsfiddle.net/
 [list]: https://groups.google.com/forum/?fromgroups#!forum/angular
 [ngDocs]: https://github.com/angular/angular.js/wiki/Writing-AngularJS-Documentation
