@@ -136,6 +136,12 @@ function $RouteProvider() {
    *      The custom `redirectTo` function is expected to return a string which will be used
    *      to update `$location.path()` and `$location.search()`.
    *
+   *      Routes that specify `redirectTo` will not have their controllers, template functions
+   *      or resolves called, the `$location` will be changed to the redirect url and route
+   *      processing will stop. The exception to this is if the `redirectTo` is a function that
+   *      returns `undefined`. In this case the route transition occurs as though their was no
+   *      redirection.
+   *
    *    - `[reloadOnSearch=true]` - `{boolean=}` - reload route when only `$location.search()`
    *      or `$location.hash()` changes.
    *
@@ -588,46 +594,25 @@ function $RouteProvider() {
         $route.current = nextRoute;
         if (nextRoute) {
           if (nextRoute.redirectTo) {
+            var url = $location.url();
+            var newUrl;
             if (angular.isString(nextRoute.redirectTo)) {
-              $location.path(interpolate(nextRoute.redirectTo, nextRoute.params)).search(nextRoute.params)
+              $location.path(interpolate(nextRoute.redirectTo, nextRoute.params))
+                       .search(nextRoute.params)
                        .replace();
+              newUrl = $location.url();
             } else {
-              $location.url(nextRoute.redirectTo(nextRoute.pathParams, $location.path(), $location.search()))
-                       .replace();
+              newUrl = nextRoute.redirectTo(nextRoute.pathParams, $location.path(), $location.search());
+              $location.url(newUrl).replace();
+            }
+            if (angular.isDefined(newUrl) && url !== newUrl) {
+              return; //exit out and don't process current next value, wait for next location change from redirect
             }
           }
         }
 
         $q.when(nextRoute).
-          then(function() {
-            if (nextRoute) {
-              var locals = angular.extend({}, nextRoute.resolve),
-                  template, templateUrl;
-
-              angular.forEach(locals, function(value, key) {
-                locals[key] = angular.isString(value) ?
-                    $injector.get(value) : $injector.invoke(value, null, null, key);
-              });
-
-              if (angular.isDefined(template = nextRoute.template)) {
-                if (angular.isFunction(template)) {
-                  template = template(nextRoute.params);
-                }
-              } else if (angular.isDefined(templateUrl = nextRoute.templateUrl)) {
-                if (angular.isFunction(templateUrl)) {
-                  templateUrl = templateUrl(nextRoute.params);
-                }
-                if (angular.isDefined(templateUrl)) {
-                  nextRoute.loadedTemplateUrl = $sce.valueOf(templateUrl);
-                  template = $templateRequest(templateUrl);
-                }
-              }
-              if (angular.isDefined(template)) {
-                locals['$template'] = template;
-              }
-              return $q.all(locals);
-            }
-          }).
+          then(resolveLocals).
           then(function(locals) {
             // after route change
             if (nextRoute === $route.current) {
@@ -643,6 +628,41 @@ function $RouteProvider() {
             }
           });
       }
+    }
+
+    function resolveLocals(route) {
+      if (route) {
+        var locals = angular.extend({}, route.resolve);
+        angular.forEach(locals, function(value, key) {
+          locals[key] = angular.isString(value) ?
+              $injector.get(value) :
+              $injector.invoke(value, null, null, key);
+        });
+        var template = getTemplateFor(route);
+        if (angular.isDefined(template)) {
+          locals['$template'] = template;
+        }
+        return $q.all(locals);
+      }
+    }
+
+
+    function getTemplateFor(route) {
+      var template, templateUrl;
+      if (angular.isDefined(template = route.template)) {
+        if (angular.isFunction(template)) {
+          template = template(route.params);
+        }
+      } else if (angular.isDefined(templateUrl = route.templateUrl)) {
+        if (angular.isFunction(templateUrl)) {
+          templateUrl = templateUrl(route.params);
+        }
+        if (angular.isDefined(templateUrl)) {
+          route.loadedTemplateUrl = $sce.valueOf(templateUrl);
+          template = $templateRequest(templateUrl);
+        }
+      }
+      return template;
     }
 
 
