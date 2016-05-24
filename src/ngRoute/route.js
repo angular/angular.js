@@ -588,12 +588,19 @@ function $RouteProvider() {
         $route.current = nextRoute;
         if (nextRoute) {
           if (nextRoute.redirectTo) {
+            var url = $location.url();
+            var newUrl;
             if (angular.isString(nextRoute.redirectTo)) {
-              $location.path(interpolate(nextRoute.redirectTo, nextRoute.params)).search(nextRoute.params)
+              $location.path(interpolate(nextRoute.redirectTo, nextRoute.params))
+                       .search(nextRoute.params)
                        .replace();
+              newUrl = $location.url();
             } else {
-              $location.url(nextRoute.redirectTo(nextRoute.pathParams, $location.path(), $location.search()))
-                       .replace();
+              newUrl = nextRoute.redirectTo(nextRoute.pathParams, $location.path(), $location.search());
+              $location.url(newUrl).replace();
+            }
+            if (isDefined(newUrl) && url !== newUrl) {
+              return; //exit out and don't process current next value, wait for next location change from redirect
             }
           }
         }
