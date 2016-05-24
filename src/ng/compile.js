@@ -300,6 +300,12 @@
  *   `changesObj` is a hash whose keys are the names of the bound properties that have changed, and the values are an
  *   object of the form `{ currentValue, previousValue, isFirstChange() }`. Use this hook to trigger updates within a
  *   component such as cloning the bound value to prevent accidental mutation of the outer value.
+ * * `$doCheck()` - Called on each turn of the digest cycle. Provides an opportunity to detect and act on
+ *   changes. Any actions that you wish to take in response to the changes that you detect must be
+ *   invoked from this hook; implementing this has no effect on when `$onChanges` is called. For example, this hook
+ *   could be useful if you wish to perform a deep equality check, or to check a Date object, changes to which would not
+ *   be detected by Angular's change detector and thus not trigger `$onChanges`. This hook is invoked with no arguments;
+ *   if detecting changes, you must store the previous value(s) for comparison to the current values.
  * * `$onDestroy()` - Called on a controller when its containing scope is destroyed. Use this hook for releasing
  *   external resources, watches and event handlers. Note that components have their `$onDestroy()` hooks called in
  *   the same order as the `$scope.$broadcast` events are triggered, which is top down. This means that parent
@@ -2499,6 +2505,12 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
               $exceptionHandler(e);
             }
           }
+          if (isFunction(controllerInstance.$doCheck)) {
+            controllerInstance.$doCheck();
+          }
+          if (isFunction(controllerInstance.$doCheck)) {
+            controllerInstance.$doCheck();
+          }
           if (isFunction(controllerInstance.$onDestroy)) {
             controllerScope.$on('$destroy', function callOnDestroyHook() {
               controllerInstance.$onDestroy();
@@ -3151,7 +3163,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       forEach(bindings, function initializeBinding(definition, scopeName) {
         var attrName = definition.attrName,
         optional = definition.optional,
-        mode = definition.mode, // @, =, or &
+        mode = definition.mode, // @, =, <, or &
         lastValue,
         parentGet, parentSet, compare, removeWatch;
 
@@ -3263,6 +3275,11 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         }
       });
 
+      if (isFunction(destination.$doCheck)) {
+        var doCheckWatch = scope.$watch(triggerDoCheckHook);
+        removeWatchCollection.push(doCheckWatch);
+      }
+
       function recordChanges(key, currentValue, previousValue) {
         if (isFunction(destination.$onChanges) && currentValue !== previousValue) {
           // If we have not already scheduled the top level onChangesQueue handler then do so now
@@ -3288,6 +3305,10 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         destination.$onChanges(changes);
         // Now clear the changes so that we schedule onChanges when more changes arrive
         changes = undefined;
+      }
+
+      function triggerDoCheckHook() {
+        destination.$doCheck();
       }
 
       return {
