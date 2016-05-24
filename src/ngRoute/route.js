@@ -136,6 +136,12 @@ function $RouteProvider() {
    *      The custom `redirectTo` function is expected to return a string which will be used
    *      to update `$location.path()` and `$location.search()`.
    *
+   *      Routes that specify `redirectTo` will not have their controllers, template functions
+   *      or resolves called, the `$location` will be changed to the redirect url and route
+   *      processing will stop. The exception to this is if the `redirectTo` is a function that
+   *      returns `undefined`. In this case the route transition occurs as though their was no
+   *      redirection.
+   *
    *    - `[reloadOnSearch=true]` - `{boolean=}` - reload route when only `$location.search()`
    *      or `$location.hash()` changes.
    *
@@ -599,7 +605,7 @@ function $RouteProvider() {
               newUrl = nextRoute.redirectTo(nextRoute.pathParams, $location.path(), $location.search());
               $location.url(newUrl).replace();
             }
-            if (isDefined(newUrl) && url !== newUrl) {
+            if (angular.isDefined(newUrl) && url !== newUrl) {
               return; //exit out and don't process current next value, wait for next location change from redirect
             }
           }

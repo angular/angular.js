@@ -1,6 +1,6 @@
 'use strict';
 
-fdescribe('$route', function() {
+describe('$route', function() {
   var $httpBackend,
       element;
 
@@ -1062,19 +1062,23 @@ fdescribe('$route', function() {
       });
     });
 
-    it('should not instantiate controller or process template for a redirected route', function() {
+    it('should not process route bits', function() {
       var firstController = jasmine.createSpy('first controller spy');
       var firstTemplate = jasmine.createSpy('first template spy').and.returnValue('redirected view');
+      var firstResolve = jasmine.createSpy('first resolve spy');
       var secondController = jasmine.createSpy('second controller spy');
       var secondTemplate = jasmine.createSpy('second template spy').and.returnValue('redirected view');
+      var secondResolve = jasmine.createSpy('second resolve spy');
       module(function($routeProvider) {
         $routeProvider.when('/redirect', {
           template: firstTemplate,
           redirectTo: '/redirected',
+          resolve: { value: firstResolve },
           controller: firstController
         });
         $routeProvider.when('/redirected', {
           template: secondTemplate,
+          resolve: { value: secondResolve },
           controller: secondController
         });
       });
@@ -1082,10 +1086,15 @@ fdescribe('$route', function() {
         var element = $compile('<div><ng-view></ng-view></div>')($rootScope);
         $location.path('/redirect');
         $rootScope.$digest();
+
         expect(firstController).not.toHaveBeenCalled();
         expect(firstTemplate).not.toHaveBeenCalled();
+        expect(firstResolve).not.toHaveBeenCalled();
+
         expect(secondController).toHaveBeenCalled();
         expect(secondTemplate).toHaveBeenCalled();
+        expect(secondResolve).toHaveBeenCalled();
+
         dealoc(element);
       });
     });
