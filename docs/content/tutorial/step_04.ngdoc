@@ -115,7 +115,7 @@ Well, not so fast. The new project doesn't know anything about a `phonecatApp` m
 have to replace all references to `phonecatApp` with the name of this project's main module. As you
 can imagine this is both laborious and error-prone.
 
-Yeah, you guessed it: There is a better way !
+Yeah, you guessed it: There is a better way!
 
 Each feature/section, will declare its own module and have all related entities registered there.
 The main module (`phonecatApp`) will declare a dependency on each feature/section module. Now,
