@@ -77,6 +77,58 @@ describe('module loader', function() {
   });
 
 
+  it("should run decorators in order of declaration, even when mixed with provider.decorator", function() {
+    var log = '';
+
+    angular.module('theModule', [])
+      .factory('theProvider', function() {
+        return {api: 'provider'};
+      })
+      .decorator('theProvider', function($delegate) {
+        $delegate.api = $delegate.api + '-first';
+        return $delegate;
+      })
+      .config(function($provide) {
+        $provide.decorator('theProvider', function($delegate) {
+          $delegate.api = $delegate.api + '-second';
+          return $delegate;
+        });
+      })
+      .decorator('theProvider', function($delegate) {
+        $delegate.api = $delegate.api + '-third';
+        return $delegate;
+      })
+      .run(function(theProvider) {
+        log = theProvider.api;
+      })
+
+      createInjector(['theModule']);
+      expect(log).toBe('provider-first-second-third');
+  });
+
+
+  it("should decorate the last declared provider if multiple have been declared", function() {
+    var log = '';
+
+    angular.module('theModule', []).
+      factory('theProvider', function() { return {
+        api: 'firstProvider'
+      }; }).
+      decorator('theProvider', function($delegate) {
+        $delegate.api = $delegate.api + '-decorator';
+        return $delegate; }).
+      factory('theProvider', function() { return {
+        api: 'secondProvider'
+      }; }).
+      run(function(theProvider) {
+        log = theProvider.api;
+      });
+
+    createInjector(['theModule']);
+    expect(log).toBe('secondProvider-decorator')
+  });
+
+
   it('should allow module redefinition', function() {
     expect(window.angular.module('a', [])).not.toBe(window.angular.module('a', []));
   });
