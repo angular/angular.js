@@ -100,7 +100,7 @@ describe('module loader', function() {
       })
       .run(function(theProvider) {
         log = theProvider.api;
-      })
+      });
 
       createInjector(['theModule']);
       expect(log).toBe('provider-first-second-third');
@@ -125,7 +125,7 @@ describe('module loader', function() {
       });
 
     createInjector(['theModule']);
-    expect(log).toBe('secondProvider-decorator')
+    expect(log).toBe('secondProvider-decorator');
   });
 
 
