@@ -15,8 +15,8 @@ HTML page into a dynamic view. This is a very common pattern in Single-Page Appl
   state, usually as a result of user interaction (we'll see an example shortly in
   {@link step_05 step 5}).
 
-The **template** (the part of the view containing the bindings and presentation logic) acts as a
-a blueprint for how our data should be organized and presented to the user.
+The **template** (the part of the view containing the bindings and presentation logic) acts as a 
+blueprint for how our data should be organized and presented to the user.
 The **controller** provides the context in which the bindings are evaluated and applies behavior
 and logic to our template.
 
