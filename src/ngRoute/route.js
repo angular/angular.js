@@ -601,15 +601,8 @@ function $RouteProvider() {
         $q.when(nextRoute).
           then(function() {
             if (nextRoute) {
-              var locals = angular.extend({}, nextRoute.resolve),
-                  template, templateUrl;
-
-              angular.forEach(locals, function(value, key) {
-                locals[key] = angular.isString(value) ?
-                    $injector.get(value) : $injector.invoke(value, null, null, key);
-              });
-
-              template = getTemplateFor(nextRoute);
+              var locals = resolveLocalsFor(nextRoute);
+              var template = getTemplateFor(nextRoute);
               if (angular.isDefined(template)) {
                 locals['$template'] = template;
               }
@@ -631,6 +624,16 @@ function $RouteProvider() {
             }
           });
       }
+    }
+
+    function resolveLocalsFor(route) {
+      var locals = angular.extend({}, route.resolve);
+      angular.forEach(locals, function(value, key) {
+        locals[key] = angular.isString(value) ?
+            $injector.get(value) :
+            $injector.invoke(value, null, null, key);
+      });
+      return locals;
     }
 
 
