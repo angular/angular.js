@@ -109,7 +109,7 @@ Similarly, the accompanying spec file loads the `phonecatApp` module before each
 that's where our component is registered). Now, imagine that we need a list of phones on another
 project that we are working on. Thanks to our modular architecture, we don't have to reinvent the
 wheel; we simply copy the `phone-list/` directory on our other project and add the necessary script
-tags in our `index.html` file and we are done, right ?
+tags in our `index.html` file and we are done, right?
 
 Well, not so fast. The new project doesn't know anything about a `phonecatApp` module. So, we would
 have to replace all references to `phonecatApp` with the name of this project's main module. As you
