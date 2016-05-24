@@ -148,7 +148,7 @@ phonecatControllers.controller('PhoneDetailCtrl', ['$scope', '$routeParams', 'Ph
 
 Notice how in `PhoneListCtrl` we replaced:
 
-    $http.get('phones/phones.json').success(function(data) {
+    $http.get('phones/phones.json').then(function(data) {
       $scope.phones = data;
     });
 
