@@ -159,19 +159,37 @@ the end of the name. The `$delegate` provided is dictated by the type of service
 ### module.decorator
 
 This {@link api/ng/type/angular.Module#decorator function} is the same as the `$provide.decorator` function except it is
-exposed through the module API. This allows you to separate your decorator patterns from your module config blocks. The
-main caveat here is that you will need to take note the order in which you create your decorators.
+exposed through the module API. This allows you to separate your decorator patterns from your module config blocks.
 
-Unlike in the module config block (which allows configuration of services prior to their creation), the service must be
-registered prior to the decorator (see {@link guide/providers#provider-recipe Provider Recipe}). For example, the
-following would not work because you are attempting to decorate outside of the configuration phase and the service
-hasn't been created yet:
+Like with `$provide.decorator`, the `module.decorator` function runs during the config phase of the app. That means
+you can define a `module.decorator` before the decorated service is defined.
+
+Since you can apply multiple decorators, it is noteworthy that decorator application always follows order
+of declaration:
+
+- If a service is decorated by both `$provide.decorator` and `module.decorator`, the decorators are applied in order:
 
 ```js
-// will cause an error since 'someService' hasn't been registered
-angular.module('myApp').decorator('someService', ...);
+angular
+  .module('theApp', [])
+  .factory('theFactory', theFactoryFn)
+  .config(function($provide) {
+    $provide.decorator('theFactory', provideDecoratorFn); // runs first
+  })
+  .decorator('theFactory', moduleDecoratorFn); // runs seconds
+```
 
-angular.module('myApp').factory('someService', ...);
+- If the service has been declared multiple times, a decorator will decorate the service that has been declared
+last:
+
+```js
+angular
+  .module('theApp', [])
+  .factory('theFactory', theFactoryFn)
+  .decorator('theFactory', moduleDecoratorFn)
+  .factory('theFactory', theOtherFactoryFn);
+
+// `theOtherFactoryFn` is selected as 'theFactory' provider and it is decorated via `moduleDecoratorFn`.
 ```
 
 ## Example Applications
