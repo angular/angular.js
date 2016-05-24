@@ -3828,6 +3828,51 @@ describe('$compile', function() {
       });
     });
 
+    describe('$doCheck', function() {
+      it('should call `$doCheck`, if provided, for each digest cycle, after $onChanges and $onInit', function() {
+        var log = [];
+
+        function TestController() { }
+        TestController.prototype.$doCheck = function() { log.push('$doCheck'); };
+        TestController.prototype.$onChanges = function() { log.push('$onChanges'); };
+        TestController.prototype.$onInit = function() { log.push('$onInit'); };
+
+        angular.module('my', [])
+          .component('dcc', {
+            controller: TestController,
+            bindings: { 'prop1': '<' }
+          });
+
+        module('my');
+        inject(function($compile, $rootScope) {
+          element = $compile('<dcc prop1="val"></dcc>')($rootScope);
+          expect(log).toEqual([
+            '$onChanges',
+            '$onInit',
+            '$doCheck'
+          ]);
+
+          // Clear log
+          log = [];
+
+          $rootScope.$apply();
+          expect(log).toEqual([
+            '$doCheck',
+            '$doCheck'
+          ]);
+
+          // Clear log
+          log = [];
+
+          $rootScope.$apply('val = 2');
+          expect(log).toEqual([
+            '$doCheck',
+            '$onChanges',
+            '$doCheck'
+          ]);
+        });
+      });
+    });
 
     describe('$onChanges', function() {
 
