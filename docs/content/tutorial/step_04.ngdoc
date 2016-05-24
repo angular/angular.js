@@ -171,7 +171,7 @@ will make all entities registered on `phoneList` available on `phonecatApp` as w
 
 <div class="alert alert-info">
   <p>
-    Don't forget to also update your `index.html` adding a `<script>` tag for each JacaScript file
+    Don't forget to also update your `index.html` adding a `<script>` tag for each JavaScript file
     we have created. This might seem tedious, but is totally worth it.
   </p>
   <p>
