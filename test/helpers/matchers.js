@@ -240,7 +240,7 @@ beforeEach(function() {
           };
           var classes = clazz.trim().split(/\s+/);
           for (var i = 0; i < classes.length; ++i) {
-            if (!angular.element(actual[0]).hasClass(classes[i])) {
+            if (!actual.hasClass(classes[i])) {
               return { pass: isNot };
             }
           }
