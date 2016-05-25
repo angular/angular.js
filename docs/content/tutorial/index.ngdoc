@@ -104,7 +104,7 @@ If you want to run the preconfigured local web server and the test tools then yo
 
 You can download a Node.js installer for your operating system from https://nodejs.org/en/download/.
 
-Check the version of Node.js that you have installed by running the following command:
+Check the version of Node.js that you have installed by running the following command (may require restarting of console window if freshly installed):
 
 ```
 node --version
