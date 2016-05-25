@@ -114,7 +114,7 @@ The injector only carries out the following steps:
 
 * Load the module definition(s) that you specify in your application.
 * Register all Providers defined in these module definition(s).
-* When asked to do so, lazily instantiate services and their dependencies, via their Providers, as 
+* When asked to do so, lazily instantiate services and their dependencies, via their Providers, as
   parameters to an injectable function.
 
 Providers are objects that provide (create) instances of services and expose configuration APIs,
@@ -127,7 +127,7 @@ service, the `$routeProvider` exposes APIs that allow you to define routes for y
 </div>
 
 Angular modules solve the problem of removing global variables from the application and provide a
-way of configuring the injector. As opposed to AMD or require.js modules, Angular modules don't try 
+way of configuring the injector. As opposed to AMD or require.js modules, Angular modules don't try
 to solve the problem of script load ordering or lazy script fetching. These goals are totally
 independent and both module systems can live side-by-side and fulfill their goals.
 
@@ -228,13 +228,13 @@ application routes.
 
 <div class="alert alert-success">
   <p>
-    We also used {@ink $locationProvider#hashPrefix $locationProvider.hashPrefix()} to set the
+    We also used {@link $locationProvider#hashPrefix $locationProvider.hashPrefix()} to set the
     hash-prefix to `!`. This prefix will appear in the links to our client-side routes, right after
     the hash (`#`) symbol and before the actual path (e.g. `index.html#!/some/path`).
   </p>
   <p>
     Setting a prefix is not necessary, but it is considered a good practice (for reasons that are
-    outside the scope of this tutorial). `!` is the most commonly used prefix. 
+    outside the scope of this tutorial). `!` is the most commonly used prefix.
   </p>
 </div>
 
