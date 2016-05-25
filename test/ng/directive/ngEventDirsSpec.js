@@ -150,4 +150,44 @@ describe('event directives', function() {
     }));
 
   });
+
+
+  it('should call the listener synchronously if the event is triggered inside of a digest',
+      inject(function($rootScope, $compile) {
+    var watchedVal;
+
+    element = $compile('<button type="button" ng-click="click()">Button</button>')($rootScope);
+    $rootScope.$watch('value', function(newValue) {
+      watchedVal = newValue;
+    });
+    $rootScope.click = jasmine.createSpy('click').and.callFake(function() {
+      $rootScope.value = 'newValue';
+    });
+
+    $rootScope.$apply(function() {
+      element.triggerHandler('click');
+    });
+
+    expect($rootScope.click).toHaveBeenCalledOnce();
+    expect(watchedVal).toEqual('newValue');
+  }));
+
+
+  it('should call the listener synchronously if the event is triggered outside of a digest',
+      inject(function($rootScope, $compile) {
+    var watchedVal;
+
+    element = $compile('<button type="button" ng-click="click()">Button</button>')($rootScope);
+    $rootScope.$watch('value', function(newValue) {
+      watchedVal = newValue;
+    });
+    $rootScope.click = jasmine.createSpy('click').and.callFake(function() {
+      $rootScope.value = 'newValue';
+    });
+
+    element.triggerHandler('click');
+
+    expect($rootScope.click).toHaveBeenCalledOnce();
+    expect(watchedVal).toEqual('newValue');
+  }));
 });
