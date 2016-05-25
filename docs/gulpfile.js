@@ -56,6 +56,7 @@ var copyComponent = function(component, pattern, sourceFolder, packageFile) {
     .pipe(gulp.dest(outputFolder + '/components/' + component + '-' + version));
 };
 
+
 gulp.task('bower', function() {
   var bowerTask = bower.commands.install();
   bowerTask.on('log', function (result) {
@@ -66,6 +67,7 @@ gulp.task('bower', function() {
   });
   return bowerTask;
 });
+
 
 gulp.task('build-app', function() {
   var file = 'docs.js';
@@ -81,6 +83,7 @@ gulp.task('build-app', function() {
     .pipe(sourcemaps.write('.'))
     .pipe(gulp.dest(folder));
 });
+
 
 gulp.task('assets', ['bower'], function() {
   var JS_EXT = /\.js$/;
@@ -115,6 +118,7 @@ gulp.task('doc-gen', ['bower'], function() {
     process.exit(1);
   });
 });
+
 
 // JSHint the example and protractor test files
 gulp.task('jshint', ['doc-gen'], function() {
