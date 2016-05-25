@@ -5,6 +5,22 @@
 
 # PhoneCat Tutorial App
 
+<div class="alert alert-danger">
+  <p>
+    This version of the tutorial is deprecated and no longer maintained. You can find the most
+    recent version of the tutorial at https://docs.angularjs.org/tutorial/.
+  </p>
+  <p>
+    It is recommended to use the latest tutorial version for the following reasons:
+    <ul>
+      <li>It showcases features introduced in AngularJS v1.5+</li>
+      <li>It follows modern best practices in terms of architecture and code organization</li>
+      <li>It has more up-to-date dependencies and tools</li>
+      <li>It is actively maintained</li>
+    </ul>
+  </p>
+</div>
+
 A great way to get introduced to AngularJS is to work through this tutorial, which walks you through
 the construction of an AngularJS web app. The app you will build is a catalog that displays a list
 of Android devices, lets you filter the list to see only devices that interest you, and then view
@@ -73,13 +89,18 @@ Clone the [angular-phonecat repository][angular-phonecat] located at GitHub by r
 command:
 
 ```
-git clone --depth=14 https://github.com/angular/angular-phonecat.git
+git clone --depth=14 --branch=pre-v1.5.0-snapshot https://github.com/angular/angular-phonecat.git
 ```
 
 This command creates the `angular-phonecat` directory in your current directory.
 
 <div class="alert alert-info">The `--depth=14` option just tells Git to pull down only the last 14 commits.  This makes the
 download much smaller and faster.
+</div>
+
+<div class="alert alert-info">
+  The `--branch=pre-v1.5.0-snapshot` option tells Git to pull down the `pre-v1.5.0-snapshot` branch.
+  The code for this older version of the tutorial is on that branch.
 </div>
 
 Change your current directory to `angular-phonecat`.
