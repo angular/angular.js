@@ -1442,7 +1442,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         // That works even dynamically, but it's not bypassable through the $sce.
         // Instead, if you want several unsafe URLs as-is, you should probably
         // use trustAsHtml on the whole tag.
-        if (nodeName === 'img' && key === 'srcset') {
+        if (nodeName === 'img' && key === 'srcset' && value) {
 
           // sanitize img[srcset] values
           var result = "";
@@ -2945,11 +2945,11 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           (tag !== "img" && (attrNormalizedName === "src" ||
                             attrNormalizedName === "ngSrc"))) {
         return $sce.RESOURCE_URL;
-      } else if (tag == "img" && (attrNormalizedName == "src" ||
-                                  attrNormalizedName == "ngSrc") ||
-          tag == "a" && (attrNormalizedName == "href" ||
-                         attrNormalizedName == "xlinkHref" ||
-                         attrNormalizedName == "ngHref")) {
+      } else if (tag === "img" && (attrNormalizedName === "src" ||
+                                  attrNormalizedName === "ngSrc") ||
+          tag === "a" && (attrNormalizedName === "href" ||
+                         attrNormalizedName === "xlinkHref" ||
+                         attrNormalizedName === "ngHref")) {
         return $sce.URL;
       }
     }

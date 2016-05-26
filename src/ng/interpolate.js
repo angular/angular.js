@@ -138,7 +138,7 @@ function $InterpolateProvider() {
     }
 
     function isConcatenationAllowed(context) {
-        return context == $sce.URL;
+        return context === $sce.URL;
     }
 
     /**
@@ -307,7 +307,7 @@ function $InterpolateProvider() {
         }
       }
 
-      if (concat.length == 1 && expressionPositions.length == 1) {
+      if (concat.length === 1 && expressionPositions.length === 1) {
         singleExpression = true;
       }
 
