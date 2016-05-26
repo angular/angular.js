@@ -12,13 +12,14 @@
  * The `collection` can be an Array or array-like object (e.g. NodeList, jQuery object, TypedArray,
  * String, etc).
  *
- * The `expression` can be a signle predicate or a list of predicates, each serving as a tie-breaker
+ * The `expression` can be a single predicate, or a list of predicates each serving as a tie-breaker
  * for the preceeding one. The `expression` is evaluated against each item and the output is used
  * for comparing with other items.
  *
  * The comparison is done using the `comparator` function. If none is specified, a default, built-in
- * comparator is used (see below for details). Passing `true` as the comparator has a special
- * meaning: It will use the built-in comparator, but sort in reverse order.
+ * comparator is used (see below for details - in a nutshell, it compares numbers numerically and
+ * strings alphabetically). Passing `true` as the comparator has a special meaning: It will use the
+ * built-in comparator, but sort in reverse order.
  *
  * ### Under the hood
  *
@@ -45,7 +46,7 @@
  * In order to ensure that the sorting will be deterministic across platforms, if none of the
  * specified predicates can distinguish between two items, `orderBy` will automatically introduce a
  * dummy predicate that returns the item's index as `value`.
- * (If you are using a custom comparator, make sure it can handle this case as well.)
+ * (If you are using a custom comparator, make sure it can handle this predicate as well.)
  *
  * Finally, in an attempt to simplify things, if a predicate returns an object as the extracted
  * value for an item, `orderBy` will try to convert that object to a primitive value, before passing
@@ -53,19 +54,19 @@
  *
  * 1. If the object has a `valueOf()` method that returns a primitive, its return value will be
  *    used instead.<br />
- *    (If the object does have a `valueOf()` method, but it returns another object, then the
- *    returned object will be used in subsequent steps.)
+ *    (If the object has a `valueOf()` method that returns another object, then the returned object
+ *     will be used in subsequent steps.)
  * 2. If the object has a custom `toString()` method (i.e. not the one inherited from `Object`) that
  *    returns a primitive, its return value will be used instead.<br />
- *    (If the object does have a `toString()` method, but it returns another object, then the
- *    returned object will be used in subsequent steps.)
+ *    (If the object has a `toString()` method that returns another object, then the returned object
+ *     will be used in subsequent steps.)
  * 3. No conversion; the object itself is used.
  *
  * ### The default comparator
  *
  * The default, built-in comparator should be sufficient for most usecases. In short, it compares
  * numbers numerically, strings alphabetically (and case-insensitively), for objects falls back to
- * using their index in the original colection, and sorts values of different types by type.
+ * using their index in the original collection, and sorts values of different types by type.
  *
  * More specifically, it follows these steps to determine the relative order of items:
  *
@@ -87,7 +88,7 @@
  *
  *    Can be one of:
  *
- *    - `Function`: A getter function. Ths function will be called with each item as argument and
+ *    - `Function`: A getter function. This function will be called with each item as argument and
  *      the return value will be used for sorting.
  *    - `string`: An Angular expression. This expression will be evaluated against each item and the
  *      result will be used for sorting. For example, use `name` to sort by a property called `name`
@@ -114,7 +115,7 @@
  * order (expression is set to `'-age'`). The `comparator` is not set, which means it defaults to
  * the built-in comparator.
  *
-   <example module="orderByExample1">
+   <example name="orderBy-static" module="orderByExample1">
      <file name="index.html">
        <div ng-controller="ExampleController">
          <table class="friends">
@@ -179,7 +180,7 @@
  * properties, as shown in the next example. (Remember that `comparator` can be set to `true` for
  * reverse ordering.)
  *
-   <example module="orderByExample2">
+   <example name="orderBy-dynamic" module="orderByExample2">
      <file name="index.html">
        <div ng-controller="ExampleController">
          <pre>Sort by = {{propertyName}}; reverse = {{reverse}}</pre>
@@ -311,7 +312,7 @@
  *
  * Example:
  *
-   <example module="orderByExample3">
+   <example name="orderBy-call-manually" module="orderByExample3">
      <file name="index.html">
        <div ng-controller="ExampleController">
          <pre>Sort by = {{propertyName}}; reverse = {{reverse}}</pre>
@@ -440,10 +441,10 @@
  *
  * @example
  * If you have very specific requirements about the way items are sorted, you can pass your own
- * comparator function. For example, you might need to compare some strings is a locale-sensitive
+ * comparator function. For example, you might need to compare some strings in a locale-sensitive
  * way:
  *
-   <example module="orderByExample4">
+   <example name="orderBy-custom-comparator" module="orderByExample4">
      <file name="index.html">
        <div ng-controller="ExampleController">
          <div class="friends-container custom-comparator">
