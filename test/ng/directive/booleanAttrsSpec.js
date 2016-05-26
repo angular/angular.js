@@ -191,34 +191,32 @@ describe('ngSrc', function() {
   }));
 
 
-  if (msie) {
-    it('should update the element property as well as the attribute', inject(
-        function($compile, $rootScope, $sce) {
-          // on IE, if "ng:src" directive declaration is used and "src" attribute doesn't exist
-          // then calling element.setAttribute('src', 'foo') doesn't do anything, so we need
-          // to set the property as well to achieve the desired effect
+  it('should update the element property as well as the attribute', inject(
+      function($compile, $rootScope, $sce) {
+        // on IE, if "ng:src" directive declaration is used and "src" attribute doesn't exist
+        // then calling element.setAttribute('src', 'foo') doesn't do anything, so we need
+        // to set the property as well to achieve the desired effect
 
-          var element = $compile('<img ng-src="{{id}}"></img>')($rootScope);
+        var element = $compile('<img ng-src="{{id}}"></img>')($rootScope);
 
-          $rootScope.$digest();
-          expect(element.prop('src')).toBeUndefined();
-          dealoc(element);
+        $rootScope.$digest();
+        expect(element.prop('src')).toBe('');
+        dealoc(element);
 
-          element = $compile('<img ng-src="some/"></img>')($rootScope);
+        element = $compile('<img ng-src="some/"></img>')($rootScope);
 
-          $rootScope.$digest();
-          expect(element.prop('src')).toEqual('some/');
-          dealoc(element);
+        $rootScope.$digest();
+        expect(element.prop('src')).toContain('some/');
+        dealoc(element);
 
-          element = $compile('<img ng-src="{{id}}"></img>')($rootScope);
-          $rootScope.$apply(function() {
-            $rootScope.id = $sce.trustAsResourceUrl('http://somewhere');
-          });
-          expect(element.prop('src')).toEqual('http://somewhere');
+        element = $compile('<img ng-src="{{id}}"></img>')($rootScope);
+        $rootScope.$apply(function() {
+          $rootScope.id = $sce.trustAsResourceUrl('http://somewhere');
+        });
+        expect(element.prop('src')).toEqual('http://somewhere/');
 
-          dealoc(element);
-        }));
-  }
+        dealoc(element);
+      }));
 });
 
 

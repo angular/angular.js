@@ -1437,7 +1437,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
         nodeName = nodeName_(this.$$element);
 
-
         // img[srcset] is a bit too weird of a beast to handle through $sce.
         // Instead, for now at least, sanitize each of the URIs individually.
         // That works even dynamically, but it's not bypassable through the $sce.

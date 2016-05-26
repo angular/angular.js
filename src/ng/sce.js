@@ -527,9 +527,6 @@ function $SceDelegateProvider() {
  * call `$sce.trustAs` on them (remember to include the `ngSanitize` module) (e.g.
  * `<div ng-bind-html="'<b>implicitly trusted</b>'"></div>`) just works.
  *
- * Additionally, `a[href]` and `img[src]` automatically sanitize their URLs and do not pass them
- * through {@link ng.$sce#getTrusted $sce.getTrusted}.  SCE doesn't play a role here.
- *
  * The included {@link ng.$sceDelegate $sceDelegate} comes with sane defaults to allow you to load
  * templates in `ng-include` from your application's domain without having to even know about SCE.
  * It blocks loading templates from other domains or loading templates over http from an https

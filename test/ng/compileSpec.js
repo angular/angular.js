@@ -9849,12 +9849,14 @@ describe('$compile', function() {
       inject(function($compile, $rootScope, $sce) {
 
         element = $compile('<img src="{{testUrl}}"></img>')($rootScope);
-        $rootScope.testUrl = $sce.trustAsUrl('javascript:foo();');
+        // Assigning javascript:foo to src makes at least IE9-11 complain, so use another
+        // protocol name.
+        $rootScope.testUrl = $sce.trustAsUrl('someUnsafeThing:foo();');
 
         $$sanitizeUri.and.throwError('Should not have been called');
         $rootScope.$apply();
 
-        expect(element.attr('src')).toEqual('javascript:foo();');
+        expect(element.attr('src')).toEqual('someUnsafeThing:foo();');
       });
     });
   });
