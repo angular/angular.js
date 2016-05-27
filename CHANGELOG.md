@@ -4,7 +4,7 @@
 
 ## Bug Fixes
 
-- **$brower:** set the url even if the browser transforms it
+- **$browser:** set the url even if the browser transforms it
   ([743b33ab](https://github.com/angular/angular.js/commit/743b33ab9d8cdb8aa6ff28028a54ac0023f4dc15),
    [#14427](https://github.com/angular/angular.js/issues/14427), [#14499](https://github.com/angular/angular.js/issues/14499))
 - **$compile:**
