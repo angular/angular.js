@@ -760,6 +760,8 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
         $exceptionHandler(e);
       }
     });
+
+    this.$ngChangeLocals = undefined;
   };
 
   /**
@@ -812,8 +814,10 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    * @param {*} value value from the view.
    * @param {string} trigger Event that triggered the update.
    */
-  this.$setViewValue = function(value, trigger) {
+  this.$setViewValue = function(value, trigger, locals) {
     ctrl.$viewValue = value;
+    ctrl.$ngChangeLocals = locals;
+
     if (!ctrl.$options || ctrl.$options.updateOnDefault) {
       ctrl.$$debounceViewValueCommit(trigger);
     }
