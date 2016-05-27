@@ -3974,7 +3974,7 @@ describe('input', function() {
 
   describe('radio', function() {
 
-    it('should update the model', function() {
+    they('should update the model on $prop event', ['click', 'change'], function(event) {
       var inputElm = helper.compileInput(
           '<input type="radio" ng-model="color" value="white" />' +
           '<input type="radio" ng-model="color" value="red" />' +
@@ -3990,7 +3990,8 @@ describe('input', function() {
       expect(inputElm[1].checked).toBe(true);
       expect(inputElm[2].checked).toBe(false);
 
-      browserTrigger(inputElm[2], 'click');
+      if (event === 'change') inputElm[2].checked = true;
+      browserTrigger(inputElm[2], event);
       expect($rootScope.color).toBe('blue');
     });
 
@@ -4089,6 +4090,23 @@ describe('input', function() {
       expect(inputElm.hasClass('ng-invalid')).toBe(false);
       expect(inputElm.hasClass('ng-pristine')).toBe(false);
       expect(inputElm.hasClass('ng-dirty')).toBe(false);
+    });
+
+
+    they('should update the model on $prop event', ['click', 'change'], function(event) {
+      var inputElm = helper.compileInput('<input type="checkbox" ng-model="checkbox" />');
+
+      expect(inputElm[0].checked).toBe(false);
+
+      $rootScope.$apply('checkbox = true');
+      expect(inputElm[0].checked).toBe(true);
+
+      $rootScope.$apply('checkbox = false');
+      expect(inputElm[0].checked).toBe(false);
+
+      if (event === 'change') inputElm[0].checked = true;
+      browserTrigger(inputElm[0], event);
+      expect($rootScope.checkbox).toBe(true);
     });
 
 

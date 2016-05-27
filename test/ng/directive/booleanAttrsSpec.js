@@ -42,10 +42,15 @@ describe('boolean attr directives', function() {
   }));
 
 
-  it('should not bind checked when ngModel is present', inject(function($rootScope, $compile) {
+  it('should not bind checked when ngModel is present', inject(function($rootScope, $compile, $document, $rootElement) {
     // test for https://github.com/angular/angular.js/issues/10662
     element = $compile('<input type="checkbox" ng-model="value" ng-false-value="\'false\'" ' +
       'ng-true-value="\'true\'" ng-checked="value" />')($rootScope);
+
+    // Append the app to the document so that "click" triggers "change"
+    // Support: Chrome, Safari 8, 9
+    jqLite($document[0].body).append($rootElement.append(element));
+
     $rootScope.value = 'true';
     $rootScope.$digest();
     expect(element[0].checked).toBe(true);
