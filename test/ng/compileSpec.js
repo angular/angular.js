@@ -10171,6 +10171,7 @@ describe('$compile', function() {
           "loading resource from url not allowed by $sceDelegate policy.  URL: javascript:doTrustedStuff()");
     }));
 
+
     it('should pass through $sce.trustAs() values in action attribute', inject(function($compile, $rootScope, $sce) {
       /* jshint scripturl:true */
       element = $compile('<form action="{{testUrl}}"></form>')($rootScope);
@@ -10178,6 +10179,36 @@ describe('$compile', function() {
       $rootScope.$apply();
 
       expect(element.attr('action')).toEqual('javascript:doTrustedStuff()');
+    }));
+  });
+
+  describe('link[href]', function() {
+    it('should reject invalid RESOURCE_URLs', inject(function($compile, $rootScope) {
+      element = $compile('<link href="{{testUrl}}" rel="stylesheet" />')($rootScope);
+      $rootScope.testUrl = "https://evil.example.org/css.css";
+      expect(function() { $rootScope.$apply(); }).toThrowMinErr(
+          "$interpolate", "interr", "Can't interpolate: {{testUrl}}\nError: [$sce:insecurl] Blocked " +
+          "loading resource from url not allowed by $sceDelegate policy.  URL: " +
+          "https://evil.example.org/css.css");
+    }));
+
+    it('should accept valid RESOURCE_URLs', inject(function($compile, $rootScope, $sce) {
+      element = $compile('<link href="{{testUrl}}" rel="stylesheet" />')($rootScope);
+
+      $rootScope.testUrl = "./css1.css";
+      $rootScope.$apply();
+      expect(element.attr('href')).toContain('css1.css');
+
+      $rootScope.testUrl = $sce.trustAsResourceUrl('https://elsewhere.example.org/css2.css');
+      $rootScope.$apply();
+      expect(element.attr('href')).toContain('https://elsewhere.example.org/css2.css');
+    }));
+
+    it('should accept valid constants', inject(function($compile, $rootScope) {
+      element = $compile('<link href="https://elsewhere.example.org/css2.css" rel="stylesheet" />')($rootScope);
+
+      $rootScope.$apply();
+      expect(element.attr('href')).toContain('https://elsewhere.example.org/css2.css');
     }));
   });
 

@@ -2971,6 +2971,8 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       // maction[xlink:href] can source SVG.  It's not limited to <maction>.
       if (attrNormalizedName === "xlinkHref" ||
           (tag === "form" && attrNormalizedName === "action") ||
+          // links can be stylesheets or imports, which can run script in the current origin
+          (tag === "link" && attrNormalizedName === "href") ||
           (tag !== "img" && (attrNormalizedName === "src" ||
                             attrNormalizedName === "ngSrc"))) {
         return $sce.RESOURCE_URL;
