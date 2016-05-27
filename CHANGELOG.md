@@ -1,3 +1,53 @@
+<a name="1.4.11"></a>
+# 1.4.11 relentless-syncomania (2016-05-27)
+
+
+## Bug Fixes
+
+- **$compile:** properly handle setting `srcset` to undefined
+  ([85a53ea9](https://github.com/angular/angular.js/commit/85a53ea9cd08476496ef680d20f64ae6a7ae7499),
+   [#14470](https://github.com/angular/angular.js/issues/14470), [#14493](https://github.com/angular/angular.js/issues/14493))
+- **$templateRequest:** trust empty templates in `$templateCache` as well
+  ([ad21f8fe](https://github.com/angular/angular.js/commit/ad21f8feaf8659158e8f2092c90eb42c4f13c141),
+   [#14479](https://github.com/angular/angular.js/issues/14479), [#14496](https://github.com/angular/angular.js/issues/14496))
+- **filters:** always call `splice()` with 2 arguments or more
+  ([4e735e53](https://github.com/angular/angular.js/commit/4e735e53638a1c831f5c0455cd123a4127a11505),
+   [#14467](https://github.com/angular/angular.js/issues/14467), [#14489](https://github.com/angular/angular.js/issues/14489))
+- **formatNumber:** handle small numbers correctly when `gSize` !== `lgSize`
+  ([a1188721](https://github.com/angular/angular.js/commit/a1188721e1ac24e1c34e61b4f622f397416ccc7c),
+   [#14289](https://github.com/angular/angular.js/issues/14289), [#14290](https://github.com/angular/angular.js/issues/14290))
+- **ng-bind-html:** watch the unwrapped value using `$sce.valueOf()` (instead of `toString()`)
+  ([f31586db](https://github.com/angular/angular.js/commit/f31586db4115baabaa854c095278f367850a11c5),
+   [#14526](https://github.com/angular/angular.js/issues/14526), [#14527](https://github.com/angular/angular.js/issues/14527))
+- **ngAnimate:**
+  - safe-guard against missing document
+  ([0d764b58](https://github.com/angular/angular.js/commit/0d764b581d8b494190fa280f8870eee8fd039933))
+  - properly handle empty jqLite collections
+  ([fdaf4d5e](https://github.com/angular/angular.js/commit/fdaf4d5e27a2ddebf2999db4d35bef7915d32c86),
+   [#14558](https://github.com/angular/angular.js/issues/14558), [#14559](https://github.com/angular/angular.js/issues/14559))
+  - fire callbacks when document is hidden
+  ([c4bff290](https://github.com/angular/angular.js/commit/c4bff290e5009e8ae5aa93839ad80a677a9e878f),
+   [#14120](https://github.com/angular/angular.js/issues/14120))
+  - fire callbacks in the correct order for certain skipped animations
+  ([23550b5e](https://github.com/angular/angular.js/commit/23550b5e278b4fb3cf1300f1399d8ad6d6771725))
+- **ngClass:** fix watching of an array expression containing an object
+  ([b5086700](https://github.com/angular/angular.js/commit/b50867001bf71998a2f7e381095cb9001166e806),
+   [#14405](https://github.com/angular/angular.js/issues/14405))
+- **ngMessages:** don't crash when nested messages are removed
+  ([71dca7c4](https://github.com/angular/angular.js/commit/71dca7c4c23df95c6c0e5974f0758a3ca34ce819),
+   [#14183](https://github.com/angular/angular.js/issues/14183), [#14242](https://github.com/angular/angular.js/issues/14242))
+- **ngMock:** fix collecting stack trace in `inject()` on IE10+, PhantomJS
+  ([56dae6fa](https://github.com/angular/angular.js/commit/56dae6fa1bee88eaffae766a6cdcb8b6c4b89958),
+   [#13591](https://github.com/angular/angular.js/issues/13591), [#13592](https://github.com/angular/angular.js/issues/13592), [#13593](https://github.com/angular/angular.js/issues/13593))
+
+
+## Performance Improvements
+
+- **$compile:** use createMap() for directive bindings to allow fast forEach
+  ([832b383c](https://github.com/angular/angular.js/commit/832b383cbc63c157e62df523d574a75171a8c11c),
+   [#12529](https://github.com/angular/angular.js/issues/12529))
+
+
 <a name="1.5.5"></a>
 # 1.5.5 material-conspiration (2016-04-18)
 
