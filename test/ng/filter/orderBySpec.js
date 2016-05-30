@@ -221,7 +221,23 @@ describe('Filter: orderBy', function() {
 
 
     describe('(reversing order)', function() {
-      it('should reverse collection if `comparator` param is truthy (but not a function)',
+      it('should not reverse collection if `comparator` param is falsy',
+        function() {
+          var items = [{a: 2}, {a: 15}];
+          var expr = 'a';
+          var sorted = [{a: 2}, {a: 15}];
+
+          expect(orderBy(items, expr, false)).toEqual(sorted);
+          expect(orderBy(items, expr, 0)).toEqual(sorted);
+          expect(orderBy(items, expr, '')).toEqual(sorted);
+          expect(orderBy(items, expr, NaN)).toEqual(sorted);
+          expect(orderBy(items, expr, null)).toEqual(sorted);
+          expect(orderBy(items, expr, undefined)).toEqual(sorted);
+        }
+      );
+
+
+      it('should reverse collection if `comparator` param is truthy',
         function() {
           var items = [{a: 2}, {a: 15}];
           var expr = 'a';
@@ -230,6 +246,9 @@ describe('Filter: orderBy', function() {
           expect(orderBy(items, expr, true)).toEqual(sorted);
           expect(orderBy(items, expr, 1)).toEqual(sorted);
           expect(orderBy(items, expr, 'reverse')).toEqual(sorted);
+          expect(orderBy(items, expr, {})).toEqual(sorted);
+          expect(orderBy(items, expr, [])).toEqual(sorted);
+          expect(orderBy(items, expr, noop)).toEqual(sorted);
         }
       );
 
@@ -242,6 +261,7 @@ describe('Filter: orderBy', function() {
         }
       );
     });
+
 
     describe('(built-in comparator)', function() {
       it('should compare numbers numarically', function() {
@@ -293,29 +313,56 @@ describe('Filter: orderBy', function() {
       it('should support a custom comparator', function() {
         var items = [4, 42, 2];
         var expr = null;
+        var reverse = null;
         var sorted = [42, 2, 4];
 
         var comparator = function(o1, o2) {
           var v1 = o1.value;
           var v2 = o2.value;
 
+          // 42 always comes first
           if (v1 === v2) return 0;
           if (v1 === 42) return -1;
           if (v2 === 42) return 1;
 
+          // Default comparison for other values
           return (v1 < v2) ? -1 : 1;
         };
 
-        expect(orderBy(items, expr, comparator)).toEqual(sorted);
+        expect(orderBy(items, expr, reverse, comparator)).toEqual(sorted);
+      });
+
+
+      it('should support `reverseOrder` with a custom comparator', function() {
+        var items = [4, 42, 2];
+        var expr = null;
+        var reverse = true;
+        var sorted = [4, 2, 42];
+
+        var comparator = function(o1, o2) {
+          var v1 = o1.value;
+          var v2 = o2.value;
+
+          // 42 always comes first
+          if (v1 === v2) return 0;
+          if (v1 === 42) return -1;
+          if (v2 === 42) return 1;
+
+          // Default comparison for other values
+          return (v1 < v2) ? -1 : 1;
+        };
+
+        expect(orderBy(items, expr, reverse, comparator)).toEqual(sorted);
       });
 
 
       it('should pass `{value, type, index}` objects to comparators', function() {
         var items = [false, noop, 999, {}, '', undefined];
         var expr = null;
+        var reverse = null;
         var comparator = jasmine.createSpy('comparator').and.returnValue(-1);
 
-        orderBy(items, expr, comparator);
+        orderBy(items, expr, reverse, comparator);
         var allArgsFlat = Array.prototype.concat.apply([], comparator.calls.allArgs());
 
         expect(allArgsFlat).toContain({index: 0, type: 'boolean',   value: false    });
@@ -330,9 +377,10 @@ describe('Filter: orderBy', function() {
       it('should treat a value of `null` as `"null"`', function() {
         var items = [null, null];
         var expr = null;
+        var reverse = null;
         var comparator = jasmine.createSpy('comparator').and.returnValue(-1);
 
-        orderBy(items, expr, comparator);
+        orderBy(items, expr, reverse, comparator);
         var arg = comparator.calls.argsFor(0)[0];
 
         expect(arg).toEqual(jasmine.objectContaining({
@@ -345,13 +393,14 @@ describe('Filter: orderBy', function() {
       it('should not convert strings to lower-case', function() {
         var items = ['c', 'B', 'a'];
         var expr = null;
+        var reverse = null;
         var sorted = ['B', 'a', 'c'];
 
         var comparator = function(o1, o2) {
           return (o1.value < o2.value) ? -1 : 1;
         };
 
-        expect(orderBy(items, expr, comparator)).toEqual(sorted);
+        expect(orderBy(items, expr, reverse, comparator)).toEqual(sorted);
       });
 
 
@@ -359,9 +408,10 @@ describe('Filter: orderBy', function() {
         function() {
           var items = ['foo', 'bar'];
           var expr = null;
+          var reverse = null;
           var comparator = jasmine.createSpy('comparator').and.returnValue(0);
 
-          orderBy(items, expr, comparator);
+          orderBy(items, expr, reverse, comparator);
 
           expect(comparator).toHaveBeenCalledTimes(2);
           var lastArgs = comparator.calls.mostRecent().args;
@@ -372,107 +422,6 @@ describe('Filter: orderBy', function() {
       );
 
 
-      describe('(object as `value`)', function() {
-        it('should use the return value of `valueOf()` (if primitive)', function() {
-          var o1 = {k: 1, valueOf: function() { return 2; }};
-          var o2 = {k: 2, valueOf: function() { return 1; }};
-
-          var items = [o1, o2];
-          var expr = null;
-          var sorted = [o2, o1];
-
-          expect(orderBy(items, expr)).toEqual(sorted);
-        });
-
-
-        it('should use the return value of `toString()` (if primitive)', function() {
-          var o1 = {k: 1, toString: function() { return 2; }};
-          var o2 = {k: 2, toString: function() { return 1; }};
-
-          var items = [o1, o2];
-          var expr = null;
-          var sorted = [o2, o1];
-
-          expect(orderBy(items, expr)).toEqual(sorted);
-        });
-
-
-        it('should ignore the `toString()` inherited from `Object`', function() {
-          /* globals toString: true */
-
-          // The global `toString` variable (in 'src/Angular.js')
-          // has already captured `Object.prototype.toString`
-          var originalToString = toString;
-          toString = jasmine.createSpy('toString').and.callFake(originalToString);
-
-          var o1 = Object.create({toString: toString});
-          var o2 = Object.create({toString: toString});
-
-          var items = [o1, o2];
-          var expr = null;
-
-          orderBy(items, expr);
-
-          expect(o1.toString).not.toHaveBeenCalled();
-          expect(o2.toString).not.toHaveBeenCalled();
-
-          toString = originalToString;
-        });
-
-
-        it('should use the return value of `valueOf()` for subsequent steps (if non-primitive)',
-          function() {
-            var o1 = {k: 1, valueOf: function() { return o3; }};
-            var o2 = {k: 2, valueOf: function() { return o4; }};
-            var o3 = {k: 3, toString: function() { return 4; }};
-            var o4 = {k: 4, toString: function() { return 3; }};
-
-            var items = [o1, o2];
-            var expr = null;
-            var sorted = [o2, o1];
-
-            expect(orderBy(items, expr)).toEqual(sorted);
-          }
-        );
-
-
-        it('should use the return value of `toString()` for subsequent steps (if non-primitive)',
-          function() {
-            var o1 = {k: 1, toString: function() { return o3; }};
-            var o2 = {k: 2, toString: function() { return o4; }};
-            var o3 = {k: 3};
-            var o4 = {k: 4};
-
-            var items = [o1, o2];
-            var expr = null;
-            var comparator = jasmine.createSpy('comparator').and.returnValue(-1);
-
-            orderBy(items, expr, comparator);
-            var args = comparator.calls.argsFor(0);
-
-            expect(args).toContain(jasmine.objectContaining({value: o3, type: 'object'}));
-            expect(args).toContain(jasmine.objectContaining({value: o4, type: 'object'}));
-          }
-        );
-
-
-        it('should use the object itself as `value` if no conversion took place', function() {
-          var o1 = {k: 1};
-          var o2 = {k: 2};
-
-          var items = [o1, o2];
-          var expr = null;
-          var comparator = jasmine.createSpy('comparator').and.returnValue(-1);
-
-          orderBy(items, expr, comparator);
-          var args = comparator.calls.argsFor(0);
-
-          expect(args).toContain(jasmine.objectContaining({value: o1, type: 'object'}));
-          expect(args).toContain(jasmine.objectContaining({value: o2, type: 'object'}));
-        });
-      });
-
-
       it('should support multiple predicates and per-predicate sorting direction', function() {
         var items = [
           {owner: 'ownerA', type: 'typeA'},
@@ -481,6 +430,7 @@ describe('Filter: orderBy', function() {
           {owner: 'ownerD', type: 'typeB'}
         ];
         var expr = ['type', '-owner'];
+        var reverse = null;
         var sorted = [
           {owner: 'ownerA', type: 'typeA'},
           {owner: 'ownerC', type: 'typeB'},
@@ -503,7 +453,109 @@ describe('Filter: orderBy', function() {
           return (v1 === v2) ? 0 : (v1 < v2) ? -1 : 1;
         };
 
-        expect(orderBy(items, expr, comparator)).toEqual(sorted);
+        expect(orderBy(items, expr, reverse, comparator)).toEqual(sorted);
+      });
+    });
+
+    describe('(object as `value`)', function() {
+      it('should use the return value of `valueOf()` (if primitive)', function() {
+        var o1 = {k: 1, valueOf: function() { return 2; }};
+        var o2 = {k: 2, valueOf: function() { return 1; }};
+
+        var items = [o1, o2];
+        var expr = null;
+        var sorted = [o2, o1];
+
+        expect(orderBy(items, expr)).toEqual(sorted);
+      });
+
+
+      it('should use the return value of `toString()` (if primitive)', function() {
+        var o1 = {k: 1, toString: function() { return 2; }};
+        var o2 = {k: 2, toString: function() { return 1; }};
+
+        var items = [o1, o2];
+        var expr = null;
+        var sorted = [o2, o1];
+
+        expect(orderBy(items, expr)).toEqual(sorted);
+      });
+
+
+      it('should ignore the `toString()` inherited from `Object`', function() {
+        /* globals toString: true */
+
+        // The global `toString` variable (in 'src/Angular.js')
+        // has already captured `Object.prototype.toString`
+        var originalToString = toString;
+        toString = jasmine.createSpy('toString').and.callFake(originalToString);
+
+        var o1 = Object.create({toString: toString});
+        var o2 = Object.create({toString: toString});
+
+        var items = [o1, o2];
+        var expr = null;
+
+        orderBy(items, expr);
+
+        expect(o1.toString).not.toHaveBeenCalled();
+        expect(o2.toString).not.toHaveBeenCalled();
+
+        toString = originalToString;
+      });
+
+
+      it('should use the return value of `valueOf()` for subsequent steps (if non-primitive)',
+        function() {
+          var o1 = {k: 1, valueOf: function() { return o3; }};
+          var o2 = {k: 2, valueOf: function() { return o4; }};
+          var o3 = {k: 3, toString: function() { return 4; }};
+          var o4 = {k: 4, toString: function() { return 3; }};
+
+          var items = [o1, o2];
+          var expr = null;
+          var sorted = [o2, o1];
+
+          expect(orderBy(items, expr)).toEqual(sorted);
+        }
+      );
+
+
+      it('should use the return value of `toString()` for subsequent steps (if non-primitive)',
+        function() {
+          var o1 = {k: 1, toString: function() { return o3; }};
+          var o2 = {k: 2, toString: function() { return o4; }};
+          var o3 = {k: 3};
+          var o4 = {k: 4};
+
+          var items = [o1, o2];
+          var expr = null;
+          var reverse = null;
+          var comparator = jasmine.createSpy('comparator').and.returnValue(-1);
+
+          orderBy(items, expr, reverse, comparator);
+          var args = comparator.calls.argsFor(0);
+
+          expect(args).toContain(jasmine.objectContaining({value: o3, type: 'object'}));
+          expect(args).toContain(jasmine.objectContaining({value: o4, type: 'object'}));
+        }
+      );
+
+
+      it('should use the object itself as `value` if no conversion took place', function() {
+        var o1 = {k: 1};
+        var o2 = {k: 2};
+
+        var items = [o1, o2];
+        var expr = null;
+        var reverse = null;
+        var comparator = jasmine.createSpy('comparator').and.returnValue(-1);
+
+        orderBy(items, expr, reverse, comparator);
+        var args = comparator.calls.argsFor(0);
+
+        expect(args).toContain(jasmine.objectContaining({value: o1, type: 'object'}));
+        expect(args).toContain(jasmine.objectContaining({value: o2, type: 'object'}));
       });
     });
   });

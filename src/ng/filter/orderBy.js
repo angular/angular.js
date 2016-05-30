@@ -16,10 +16,12 @@
  * for the preceeding one. The `expression` is evaluated against each item and the output is used
  * for comparing with other items.
  *
+ * You can change the sorting order by setting `reverse` to `true`. By default, items are sorted in
+ * ascending order.
+ *
  * The comparison is done using the `comparator` function. If none is specified, a default, built-in
  * comparator is used (see below for details - in a nutshell, it compares numbers numerically and
- * strings alphabetically). Passing `true` as the comparator has a special meaning: It will use the
- * built-in comparator, but sort in reverse order.
+ * strings alphabetically).
  *
  * ### Under the hood
  *
@@ -35,7 +37,7 @@
  *      index: ...
  *    }
  *    ```
- * 2. The comparator function is used to sort the items, besed on the derived values, types and
+ * 2. The comparator function is used to sort the items, based on the derived values, types and
  *    indices.
  *
  * If you use a custom comparator, it will be called with pairs of objects of the form
@@ -55,11 +57,11 @@
  * 1. If the object has a `valueOf()` method that returns a primitive, its return value will be
  *    used instead.<br />
  *    (If the object has a `valueOf()` method that returns another object, then the returned object
- *     will be used in subsequent steps.)
+ *    will be used in subsequent steps.)
  * 2. If the object has a custom `toString()` method (i.e. not the one inherited from `Object`) that
  *    returns a primitive, its return value will be used instead.<br />
  *    (If the object has a `toString()` method that returns another object, then the returned object
- *     will be used in subsequent steps.)
+ *    will be used in subsequent steps.)
  * 3. No conversion; the object itself is used.
  *
  * ### The default comparator
@@ -103,17 +105,17 @@
  *
  * **Note:** If the predicate is missing or empty then it defaults to `'+'`.
  *
- * @param {(boolean|Function)=} comparator - The comparator function used to determine the relative
- *    order of value pairs. If omitted, a built-in comparator will be used. Passing `true` will use
- *    the built-in comparator, but reverse the order.
+ * @param {boolean=} reverse - If `true`, reverse the sorting order.
+ * @param {(Function)=} comparator - The comparator function used to determine the relative order of
+ *    value pairs. If omitted, a built-in comparator will be used.
  *
  * @returns {Array} - The sorted array.
  *
  *
  * @example
- * The example below demonstrates a simple ngRepeat, where the data is sorted by age in descending
- * order (expression is set to `'-age'`). The `comparator` is not set, which means it defaults to
- * the built-in comparator.
+ * The example below demonstrates a simple {@link ngRepeat ngRepeat}, where the data is sorted by
+ * age in descending order (expression is set to `'-age'`). The `comparator` is not set, which means
+ * it defaults to the built-in comparator.
  *
    <example name="orderBy-static" module="orderByExample1">
      <file name="index.html">
@@ -164,7 +166,7 @@
        // Element locators
        var names = element.all(by.repeater('friends').column('friend.name'));
 
-       it('should initially sort friends by age in reverse order', function() {
+       it('should sort friends by age in reverse order', function() {
          expect(names.get(0).getText()).toBe('Adam');
          expect(names.get(1).getText()).toBe('Julie');
          expect(names.get(2).getText()).toBe('Mike');
@@ -176,9 +178,8 @@
  * <hr />
  *
  * @example
- * The `expression` and `comparator` parameters can be controlled dynamically through scope
- * properties, as shown in the next example. (Remember that `comparator` can be set to `true` for
- * reverse ordering.)
+ * The `expression` and `reverse` parameters can be controlled dynamically through scope properties,
+ * as shown in the next example.
  *
    <example name="orderBy-dynamic" module="orderByExample2">
      <file name="index.html">
@@ -442,7 +443,8 @@
  * @example
  * If you have very specific requirements about the way items are sorted, you can pass your own
  * comparator function. For example, you might need to compare some strings in a locale-sensitive
- * way:
+ * way. (When specifying a custom comparator, you also need to pass a value for the `reverse`
+ * argument - passing `false` retains the default sorting order, i.e. ascending.)
  *
    <example name="orderBy-custom-comparator" module="orderByExample4">
      <file name="index.html">
@@ -454,7 +456,7 @@
                <th>Name</th>
                <th>Favorite Letter</th>
              </tr>
-             <tr ng-repeat="friend in friends | orderBy:'favoriteLetter':localeSensitiveComparator">
+             <tr ng-repeat="friend in friends | orderBy:'favoriteLetter':false:localeSensitiveComparator">
                <td>{{friend.name}}</td>
                <td>{{friend.favoriteLetter}}</td>
              </tr>
@@ -536,7 +538,7 @@
  */
 orderByFilter.$inject = ['$parse'];
 function orderByFilter($parse) {
-  return function(array, sortPredicate, compareFn) {
+  return function(array, sortPredicate, reverseOrder, compareFn) {
 
     if (array == null) return array;
     if (!isArrayLike(array)) {
@@ -548,11 +550,10 @@ function orderByFilter($parse) {
 
     var predicates = processPredicates(sortPredicate);
 
+    var descending = reverseOrder ? -1 : 1;
+
     // Define the `compare()` function. Use a default comparator if none is specified.
-    // A value of `true` means: Use the default comparator, but reverse the order.
-    var compare = isFunction(compareFn) ? compareFn :
-                  compareFn             ? reverseDefaultCompare :
-                                          defaultCompare;
+    var compare = isFunction(compareFn) ? compareFn : defaultCompare;
 
     // The next three lines are a version of a Swartzian Transform idiom from Perl
     // (sometimes called the Decorate-Sort-Undecorate idiom)
@@ -565,7 +566,7 @@ function orderByFilter($parse) {
 
     function getComparisonObject(value, index) {
       // NOTE: We are adding an extra `tieBreaker` value based on the element's index.
-      // This will be used to keep the sort stable when all the input predicates cannot
+      // This will be used to keep the sort stable when none of the input predicates can
       // distinguish between two elements.
       return {
         value: value,
@@ -577,17 +578,19 @@ function orderByFilter($parse) {
     }
 
     function doComparison(v1, v2) {
-      for (var index=0, length = predicates.length; index < length; ++index) {
-        var result = compare(v1.predicateValues[index], v2.predicateValues[index]) * predicates[index].descending;
-        if (result) return result;
+      for (var i = 0, ii = predicates.length; i < ii; i++) {
+        var result = compare(v1.predicateValues[i], v2.predicateValues[i]);
+        if (result) {
+          return result * predicates[i].descending * descending;
+        }
       }
 
-      return compare(v1.tieBreaker, v2.tieBreaker);
+      return compare(v1.tieBreaker, v2.tieBreaker) * descending;
     }
   };
 
-  function processPredicates(sortPredicate) {
-    return sortPredicate.map(function(predicate) {
+  function processPredicates(sortPredicates) {
+    return sortPredicates.map(function(predicate) {
       var descending = 1, get = identity;
 
       if (isFunction(predicate)) {
@@ -605,7 +608,7 @@ function orderByFilter($parse) {
           }
         }
       }
-      return { get: get, descending: descending };
+      return {get: get, descending: descending};
     });
   }
 
@@ -643,7 +646,7 @@ function orderByFilter($parse) {
     } else if (type === 'object') {
       value = objectValue(value);
     }
-    return { value: value, type: type, index: index };
+    return {value: value, type: type, index: index};
   }
 
   function defaultCompare(v1, v2) {
@@ -674,9 +677,5 @@ function orderByFilter($parse) {
     }
 
     return result;
-  }
-
-  function reverseDefaultCompare(v1, v2) {
-    return -1 * defaultCompare(v1, v2);
   }
 }
