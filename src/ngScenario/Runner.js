@@ -11,18 +11,14 @@ angular.scenario.Runner = function($window) {
   this.$window = $window;
   this.rootDescribe = new angular.scenario.Describe();
   this.currentDescribe = this.rootDescribe;
-  this.api = {
-    it: this.it,
-    iit: this.iit,
-    xit: angular.noop,
-    describe: this.describe,
-    ddescribe: this.ddescribe,
-    xdescribe: angular.noop,
-    beforeEach: this.beforeEach,
-    afterEach: this.afterEach
-  };
-  angular.forEach(this.api, angular.bind(this, function(fn, key) {
-    this.$window[key] = angular.bind(this, fn);
+
+  this.api = {};
+  var methods = [];
+  methods = methods.concat(angular.scenario.Describe.traversalMethods);
+  methods = methods.concat(angular.scenario.Describe.nonTraversalMethods);
+  angular.forEach(methods, angular.bind(this, function(key) {
+    this.api[key] = this[key];
+    this.$window[key] = angular.bind(this, this[key]);
   }));
 };
 
@@ -56,95 +52,26 @@ angular.scenario.Runner.prototype.on = function(eventName, listener) {
   this.listeners[eventName].push(listener);
 };
 
-/**
- * Defines a describe block of a spec.
- *
- * @see Describe.js
- *
- * @param {string} name Name of the block
- * @param {function()} body Body of the block
- */
-angular.scenario.Runner.prototype.describe = function(name, body) {
-  var self = this;
-  this.currentDescribe.describe(name, function() {
-    var parentDescribe = self.currentDescribe;
-    self.currentDescribe = this;
-    try {
-      body.call(this);
-    } finally {
-      self.currentDescribe = parentDescribe;
-    }
-  });
-};
+forEach(angular.scenario.Describe.traversalMethods, function(method) {
+  angular.scenario.Runner.prototype[method] = function(name, body) {
+    var self = this;
+    this.currentDescribe[method](name, function() {
+      var parentDescribe = self.currentDescribe;
+      self.currentDescribe = this;
+      try {
+        body.call(this);
+      } finally {
+        self.currentDescribe = parentDescribe;
+      }
+    });
+  };
+});
 
-/**
- * Same as describe, but makes ddescribe the only blocks to run.
- *
- * @see Describe.js
- *
- * @param {string} name Name of the block
- * @param {function()} body Body of the block
- */
-angular.scenario.Runner.prototype.ddescribe = function(name, body) {
-  var self = this;
-  this.currentDescribe.ddescribe(name, function() {
-    var parentDescribe = self.currentDescribe;
-    self.currentDescribe = this;
-    try {
-      body.call(this);
-    } finally {
-      self.currentDescribe = parentDescribe;
-    }
-  });
-};
-
-/**
- * Defines a test in a describe block of a spec.
- *
- * @see Describe.js
- *
- * @param {string} name Name of the block
- * @param {function()} body Body of the block
- */
-angular.scenario.Runner.prototype.it = function(name, body) {
-  this.currentDescribe.it(name, body);
-};
-
-/**
- * Same as it, but makes iit tests the only tests to run.
- *
- * @see Describe.js
- *
- * @param {string} name Name of the block
- * @param {function()} body Body of the block
- */
-angular.scenario.Runner.prototype.iit = function(name, body) {
-  this.currentDescribe.iit(name, body);
-};
-
-/**
- * Defines a function to be called before each it block in the describe
- * (and before all nested describes).
- *
- * @see Describe.js
- *
- * @param {function()} Callback to execute
- */
-angular.scenario.Runner.prototype.beforeEach = function(body) {
-  this.currentDescribe.beforeEach(body);
-};
-
-/**
- * Defines a function to be called after each it block in the describe
- * (and before all nested describes).
- *
- * @see Describe.js
- *
- * @param {function()} Callback to execute
- */
-angular.scenario.Runner.prototype.afterEach = function(body) {
-  this.currentDescribe.afterEach(body);
-};
+forEach(angular.scenario.Describe.nonTraversalMethods, function(method) {
+  angular.scenario.Runner.prototype[method] = function() {
+    this.currentDescribe[method].apply(this.currentDescribe, arguments);
+  };
+});
 
 /**
  * Creates a new spec runner.

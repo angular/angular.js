@@ -42,6 +42,12 @@ angular.scenario.Describe.id = 0;
 // Shared Unique ID generator for every it (spec)
 angular.scenario.Describe.specId = 0;
 
+// Methods that lead to a new describe
+angular.scenario.Describe.traversalMethods = [];
+
+// Methods that run on the current describe
+angular.scenario.Describe.nonTraversalMethods = [];
+
 /**
  * Defines a block to execute before each it or nested describe.
  *
@@ -50,6 +56,7 @@ angular.scenario.Describe.specId = 0;
 angular.scenario.Describe.prototype.beforeEach = function(body) {
   this.beforeEachFns.push(body);
 };
+angular.scenario.Describe.nonTraversalMethods.push('beforeEach');
 
 /**
  * Defines a block to execute after each it or nested describe.
@@ -59,6 +66,7 @@ angular.scenario.Describe.prototype.beforeEach = function(body) {
 angular.scenario.Describe.prototype.afterEach = function(body) {
   this.afterEachFns.push(body);
 };
+angular.scenario.Describe.nonTraversalMethods.push('afterEach');
 
 /**
  * Creates a new describe block that's a child of this one.
@@ -71,6 +79,7 @@ angular.scenario.Describe.prototype.describe = function(name, body) {
   this.children.push(child);
   body.call(child);
 };
+angular.scenario.Describe.traversalMethods.push('describe');
 
 /**
  * Same as describe() but makes ddescribe blocks the only to run.
@@ -84,11 +93,13 @@ angular.scenario.Describe.prototype.ddescribe = function(name, body) {
   this.children.push(child);
   body.call(child);
 };
+angular.scenario.Describe.traversalMethods.push('ddescribe');
 
 /**
  * Use to disable a describe block.
  */
-angular.scenario.Describe.prototype.xdescribe = angular.noop;
+angular.scenario.Describe.prototype.xdescribe = noop;
+angular.scenario.Describe.traversalMethods.push('xdescribe');
 
 /**
  * Defines a test.
@@ -107,6 +118,7 @@ angular.scenario.Describe.prototype.it = function(name, body) {
     after: this.setupAfter
   });
 };
+angular.scenario.Describe.nonTraversalMethods.push('it');
 
 /**
  * Same as it() but makes iit tests the only test to run.
@@ -118,11 +130,13 @@ angular.scenario.Describe.prototype.iit = function(name, body) {
   this.it.apply(this, arguments);
   this.its[this.its.length - 1].only = true;
 };
+angular.scenario.Describe.nonTraversalMethods.push('iit');
 
 /**
  * Use to disable a test block.
  */
-angular.scenario.Describe.prototype.xit = angular.noop;
+angular.scenario.Describe.prototype.xit = noop;
+angular.scenario.Describe.nonTraversalMethods.push('xit');
 
 /**
  * Gets an array of functions representing all the tests (recursively).
