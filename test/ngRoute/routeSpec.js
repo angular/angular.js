@@ -1314,7 +1314,7 @@ describe('$route', function() {
         $routeProvider.when('/foo',
             {
               template: canaryTemplate,
-              myObject: canaryObject,
+              myObject: canaryObject
             });
       });
 
