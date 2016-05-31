@@ -16,7 +16,7 @@ dependencies, as described in {@link index#get-started Get Started}.
 In the `angular-phonecat` directory, run this command:
 
 ```
-git checkout -f old-step-0
+git checkout -f 1.4-step-0
 ```
 
 

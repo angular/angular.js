@@ -89,7 +89,7 @@ Clone the [angular-phonecat repository][angular-phonecat] located at GitHub by r
 command:
 
 ```
-git clone --depth=14 --branch=pre-v1.5.0-snapshot https://github.com/angular/angular-phonecat.git
+git clone --depth=14 --branch=1.4-snapshot https://github.com/angular/angular-phonecat.git
 ```
 
 This command creates the `angular-phonecat` directory in your current directory.
@@ -99,7 +99,7 @@ download much smaller and faster.
 </div>
 
 <div class="alert alert-info">
-  The `--branch=pre-v1.5.0-snapshot` option tells Git to pull down the `pre-v1.5.0-snapshot` branch.
+  The `--branch=1.4-snapshot` option tells Git to pull down the `1.4-snapshot` branch.
   The code for this older version of the tutorial is on that branch.
 </div>
 

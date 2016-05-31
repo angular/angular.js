@@ -11,7 +11,7 @@ angular.module('tutorials', [])
     scope: {},
     template:
       '<a ng-href="tutorial/{{prev}}"><li class="btn btn-primary"><i class="glyphicon glyphicon-step-backward"></i> Previous</li></a>\n' +
-      '<a ng-href="https://github.com/angular/angular-phonecat/compare/old-step-{{diffLo}}...old-step-{{diffHi}}"><li class="btn btn-primary"><i class="glyphicon glyphicon-search"></i> Code Diff</li></a>\n' +
+      '<a ng-href="https://github.com/angular/angular-phonecat/compare/1.4-step-{{diffLo}}...1.4-step-{{diffHi}}"><li class="btn btn-primary"><i class="glyphicon glyphicon-search"></i> Code Diff</li></a>\n' +
       '<a ng-href="tutorial/{{next}}"><li class="btn btn-primary">Next <i class="glyphicon glyphicon-step-forward"></i></li></a>',
     link: function(scope, element, attrs) {
       var seq = 1 * attrs.docTutorialNav;
@@ -37,11 +37,11 @@ angular.module('tutorials', [])
       '<p><button class="btn" ng-click="show=!show">Workspace Reset Instructions  ➤</button></p>\n' +
       '<div class="alert alert-info" ng-show="show">\n' +
       '  <p>Reset the workspace to step {{step}}.</p>' +
-      '  <p><pre>git checkout -f old-step-{{step}}</pre></p>\n' +
+      '  <p><pre>git checkout -f 1.4-step-{{step}}</pre></p>\n' +
       '  <p>Refresh your browser to see the changes.</p>\n' +
       '</div>\n' +
       '<p>The most important changes are listed below. You can see the full diff on ' +
-        '<a ng-href="https://github.com/angular/angular-phonecat/compare/old-step-{{step ? (step - 1) : \'0~1\'}}...old-step-{{step}}" title="See diff on Github">GitHub</a>\n' +
+        '<a ng-href="https://github.com/angular/angular-phonecat/compare/1.4-step-{{step ? (step - 1) : \'0~1\'}}...1.4-step-{{step}}" title="See diff on Github">GitHub</a>\n' +
       '</p>'
   };
 });
