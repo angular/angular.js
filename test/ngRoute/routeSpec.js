@@ -1208,9 +1208,9 @@ describe('$route', function() {
         $location.path('/foo');
         $rootScope.$digest();
         expect(routeChange).toHaveBeenCalled();
-        expect(routeChange.callCount).toBe(1);
+        expect(routeChange).toHaveBeenCalledTimes(1);
         expect(routeUpdate).not.toHaveBeenCalled();
-        routeChange.reset();
+        routeChange.calls.reset();
 
         // don't trigger reload and routeUpdate
         $location.search({foo: 'bar'});

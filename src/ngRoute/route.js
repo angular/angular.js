@@ -581,25 +581,14 @@ function $RouteProvider() {
       }
     }
 
-    function buildResolvePromises(resolve) {
-      var resolvePromises = angular.extend({}, resolve);
-      angular.forEach(resolvePromises, function(value, key) {
-        resolvePromises[key] = angular.isString(value) ?
-            $injector.get(value) : $injector.invoke(value, null, null, key);
-      });
-
-      return resolvePromises;
-    }
-
     function commitRoute() {
       var lastRoute = $route.current;
       var nextRoute = preparedRoute;
-      var resolvePromises;
 
       if (preparedRouteIsUpdateOnly) {
-        resolvePromises = buildResolvePromises(nextRoute.$$route.resolve);
-
-        $q.all(resolvePromises).then(function() {
+        $q.when(nextRoute).
+        then(resolveLocals).
+        then(function() {
           lastRoute.params = nextRoute.params;
           angular.copy(lastRoute.params, $routeParams);
           $rootScope.$broadcast('$routeUpdate', lastRoute);
