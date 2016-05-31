@@ -28,7 +28,8 @@ ngTouch.factory('$swipe', [function() {
     'mouse': {
       start: 'mousedown',
       move: 'mousemove',
-      end: 'mouseup'
+      end: 'mouseup',
+      cancel: 'mouseleave'
     },
     'touch': {
       start: 'touchstart',
@@ -116,8 +117,10 @@ ngTouch.factory('$swipe', [function() {
       var events = getEvents(pointerTypes, 'cancel');
       if (events) {
         element.on(events, function(event) {
-          active = false;
-          eventHandlers['cancel'] && eventHandlers['cancel'](event);
+          if (active === true) {
+            active = false;
+            eventHandlers['cancel'] && eventHandlers['cancel'](event);
+          }
         });
       }
 
