@@ -1297,6 +1297,39 @@ describe('$route', function() {
       });
     });
 
+
+    it('should not deep-copy or alter route fields', function() {
+      // Object.seal is used to block future modifications of the object: we do not want
+      // to alter the objects passed as parameters.
+      var canaryObject = Object.seal({});
+
+       // No point faking a full template, use the syntax from above
+      var canaryTemplate = function() {
+        return "<p>hi</p>";
+      };
+      canaryTemplate.someField = canaryObject;
+      Object.seal(canaryTemplate);  // sealed as well, just in case
+
+      module(function($routeProvider) {
+        $routeProvider.when('/foo',
+            {
+              template: canaryTemplate,
+              myObject: canaryObject,
+            });
+      });
+
+      inject(function($route, $location, $rootScope) {
+        $location.path('/foo');
+        $rootScope.$digest();
+
+        // Copies of the canaries won't be their originals.
+        expect($route.current.myObject).toBe(canaryObject);
+        expect($route.current.template).toBe(canaryTemplate);
+        expect($route.current.template.someField).toBe(canaryObject);
+      });
+    });
+
+
     describe('reload', function() {
       var $location;
       var $log;
