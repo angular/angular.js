@@ -36,6 +36,12 @@ var SelectController =
     $element.val(unknownVal);
   };
 
+  self.updateUnknownOption = function(val) {
+    var unknownVal = '? ' + hashKey(val) + ' ?';
+    self.unknownOption.val(unknownVal);
+    $element.val(unknownVal);
+  };
+
   $scope.$on('$destroy', function() {
     // disable unknown option so that we don't do work when the whole select is being destroyed
     self.renderUnknownOption = noop;
@@ -74,6 +80,8 @@ var SelectController =
       if (value == null && self.emptyOption) {
         self.removeUnknownOption();
         $element.val('');
+      } else if (self.unknownOption.parent().length) {
+        self.updateUnknownOption(value);
       } else {
         self.renderUnknownOption(value);
       }
