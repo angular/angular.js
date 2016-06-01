@@ -212,6 +212,23 @@ describe('ngIf and transcludes', function() {
     });
   });
 
+  it('should allow using ngIf on the target element and on the root element of the directive template when used in a replace mode', function() {
+    module(function($compileProvider) {
+      var directive = $compileProvider.directive;
+      directive('example', valueFn({
+        template: '<div ng-if="innerCondition">guacamole</div>',
+        replace: true
+      }));
+    });
+    inject(function($compile, $rootScope) {
+      $rootScope.innerCondition = true;
+      $rootScope.outerCondition = true;
+      var element = $compile('<div><example ng-if="outerCondition"></example></div>')($rootScope);
+      $rootScope.$apply();
+      expect(element.text()).toBe('guacamole');
+      dealoc(element);
+    });
+  });
 
   it('should use the correct transcluded scope', function() {
     module(function($compileProvider) {
