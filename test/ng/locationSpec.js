@@ -133,6 +133,14 @@ describe('$location', function() {
       expect(locationUrl.path()).toBe('/');
     });
 
+    it('path() should respect an overridden base href', function() {
+      var locationUrl = createLocationHtml5Url();
+      locationUrl.setBaseHref('/new-base/');
+      locationUrl.path('/foo');
+      expect(locationUrl.absUrl()).toBe('http://www.domain.com:9877/new-base/foo?search=a&b=c&d#hash');
+    });
+
+
     it('search() should accept string', function() {
       var locationUrl = createLocationHtml5Url();
       locationUrl.search('x=y&c');
@@ -229,6 +237,13 @@ describe('$location', function() {
       }).toThrowMinErr('$location', 'isrcharg', 'The first argument of the `$location#search()` call must be a string or an object.');
     });
 
+    it('search() should respect an overridden base href', function() {
+      var locationUrl = createLocationHtml5Url();
+      locationUrl.setBaseHref('/new-base/');
+      locationUrl.search({fizz: 'buzz'});
+      expect(locationUrl.absUrl()).toBe('http://www.domain.com:9877/new-base/path/b?fizz=buzz#hash');
+    });
+
 
     it('hash() should change hash fragment', function() {
       var locationUrl = createLocationHtml5Url();
@@ -257,6 +272,13 @@ describe('$location', function() {
       locationUrl.hash(null);
       expect(locationUrl.hash()).toBe('');
       expect(locationUrl.absUrl()).toBe('http://www.domain.com:9877/path/b?search=a&b=c&d');
+    });
+
+    it('hash() should respect an overridden base href', function() {
+      var locationUrl = createLocationHtml5Url();
+      locationUrl.setBaseHref('/new-base/');
+      locationUrl.hash('new-hash');
+      expect(locationUrl.absUrl()).toBe('http://www.domain.com:9877/new-base/path/b?search=a&b=c&d#new-hash');
     });
 
 
@@ -307,6 +329,13 @@ describe('$location', function() {
       expect(locationUrl.path()).toBe('/');
       expect(locationUrl.search()).toEqual({});
       expect(locationUrl.hash()).toBe('');
+    });
+
+    it('url() should respect an overridden base href', function() {
+      var locationUrl = createLocationHtml5Url();
+      locationUrl.setBaseHref('/new-base/');
+      locationUrl.url('/some/path?a=b&c=d#hhh');
+      expect(locationUrl.absUrl()).toBe('http://www.domain.com:9877/new-base/some/path?a=b&c=d#hhh');
     });
 
 
@@ -2529,6 +2558,11 @@ describe('$location', function() {
       expect(locationUrl.url()).toBe('');
       expect(locationUrl.absUrl()).toBe('http://server/next/index.html');
     });
+
+    it('should throw on setBaseHref(newBaseHref)', function() {
+      locationUrl = new LocationHashbangUrl('http://server/pre/index.html', 'http://server/pre/', '#');
+      expectThrowOnSetBaseHref(locationUrl);
+    });
   });
 
 
@@ -2558,6 +2592,10 @@ describe('$location', function() {
 
     it('should throw on url(urlString, stateObject)', function() {
       expectThrowOnStateChange(locationUrl);
+    });
+
+    it('should throw on setBaseHref(newBaseHref)', function() {
+      expectThrowOnSetBaseHref(locationUrl);
     });
   });
 
@@ -2643,6 +2681,12 @@ describe('$location', function() {
     );
   }
 
+  function expectThrowOnSetBaseHref(location) {
+    expect(function() {
+      location.setBaseHref('/new-base/');
+    }).toThrowMinErr('$location', 'nobasehref', 'Setting the app base href is available only ' +
+      'in HTML5 mode and only in browsers supporting HTML5 History API');
+  }
 
   function parseLinkAndReturn(location, url, relHref) {
     if (location.$$parseLinkUrl(url, relHref)) {
