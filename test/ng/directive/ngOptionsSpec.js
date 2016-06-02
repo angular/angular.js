@@ -2683,6 +2683,23 @@ describe('ngOptions', function() {
     });
   });
 
+  describe('required and empty option', function() {
+
+    it('should select the empty option after compilation', function() {
+      createSelect({
+        'name': 'select',
+        'ng-model': 'value',
+        'ng-options': 'item for item in [\'first\', \'second\', \'third\']',
+        'required': 'required'
+      }, true);
+
+      expect(element.val()).toBe('');
+      var emptyOption = element.find('option').eq(0);
+      expect(emptyOption.prop('selected')).toBe(true);
+      expect(emptyOption.val()).toBe('');
+    });
+  });
+
   describe('ngModelCtrl', function() {
     it('should prefix the model value with the word "the" using $parsers', function() {
       createSelect({
