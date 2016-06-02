@@ -2,6 +2,40 @@
 
 /* global ngTouch: false */
 
+// The pointer event matching map
+var POINTER_EVENTS = {
+  'mouse': {
+    start: 'mousedown',
+    move: 'mousemove',
+    end: 'mouseup'
+  },
+  'touch': {
+    start: 'touchstart',
+    move: 'touchmove',
+    end: 'touchend',
+    cancel: 'touchcancel'
+  }
+};
+
+/**
+ *
+ * @param {string} eventType The event type
+ * @param {Array} [pointerTypes] The pointer type restrictions. By default mouse and touch pointers.
+ * @returns {string} The event names
+ */
+function getPointerEventNames(eventType, pointerTypes) {
+  pointerTypes = pointerTypes || Object.keys(POINTER_EVENTS);
+  var res = [];
+  angular.forEach(pointerTypes, function (pointerType) {
+    var eventName = POINTER_EVENTS[pointerType][eventType];
+    if (eventName) {
+      res.push(eventName);
+    }
+  });
+  return res.join(' ');
+}
+
+
     /**
      * @ngdoc service
      * @name $swipe
@@ -24,20 +58,6 @@ ngTouch.factory('$swipe', [function() {
   // The total distance in any direction before we make the call on swipe vs. scroll.
   var MOVE_BUFFER_RADIUS = 10;
 
-  var POINTER_EVENTS = {
-    'mouse': {
-      start: 'mousedown',
-      move: 'mousemove',
-      end: 'mouseup'
-    },
-    'touch': {
-      start: 'touchstart',
-      move: 'touchmove',
-      end: 'touchend',
-      cancel: 'touchcancel'
-    }
-  };
-
   function getCoordinates(event) {
     var originalEvent = event.originalEvent || event;
     var touches = originalEvent.touches && originalEvent.touches.length ? originalEvent.touches : [originalEvent];
@@ -47,17 +67,6 @@ ngTouch.factory('$swipe', [function() {
       x: e.clientX,
       y: e.clientY
     };
-  }
-
-  function getEvents(pointerTypes, eventType) {
-    var res = [];
-    angular.forEach(pointerTypes, function(pointerType) {
-      var eventName = POINTER_EVENTS[pointerType][eventType];
-      if (eventName) {
-        res.push(eventName);
-      }
-    });
-    return res.join(' ');
   }
 
   return {
@@ -104,8 +113,7 @@ ngTouch.factory('$swipe', [function() {
       // Whether a swipe is active.
       var active = false;
 
-      pointerTypes = pointerTypes || ['mouse', 'touch'];
-      element.on(getEvents(pointerTypes, 'start'), function(event) {
+      element.on(getPointerEventNames('start', pointerTypes), function(event) {
         startCoords = getCoordinates(event);
         active = true;
         totalX = 0;
@@ -113,7 +121,7 @@ ngTouch.factory('$swipe', [function() {
         lastPos = startCoords;
         eventHandlers['start'] && eventHandlers['start'](startCoords, event);
       });
-      var events = getEvents(pointerTypes, 'cancel');
+      var events = getPointerEventNames('cancel', pointerTypes);
       if (events) {
         element.on(events, function(event) {
           active = false;
@@ -121,7 +129,7 @@ ngTouch.factory('$swipe', [function() {
         });
       }
 
-      element.on(getEvents(pointerTypes, 'move'), function(event) {
+      element.on(getPointerEventNames('move', pointerTypes), function(event) {
         if (!active) return;
 
         // Android will send a touchcancel if it thinks we're starting to scroll.
@@ -155,7 +163,7 @@ ngTouch.factory('$swipe', [function() {
         }
       });
 
-      element.on(getEvents(pointerTypes, 'end'), function(event) {
+      element.on(getPointerEventNames('end', pointerTypes), function(event) {
         if (!active) return;
         active = false;
         eventHandlers['end'] && eventHandlers['end'](getCoordinates(event), event);
