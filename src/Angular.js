@@ -934,7 +934,8 @@ function copy(source, destination) {
 }
 
 /**
- * Creates a shallow copy of an object, an array or a primitive.
+ * Creates a shallow copy of an object or an array, primitives
+ * will return src.  Do not use with primitive wrappers.
  *
  * Assumes that there are no proto properties for objects.
  */
@@ -953,6 +954,8 @@ function shallowCopy(src, dst) {
         dst[key] = src[key];
       }
     }
+  } else {
+    dst = src;
   }
 
   return dst || src;
