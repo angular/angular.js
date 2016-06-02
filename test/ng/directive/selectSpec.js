@@ -1224,5 +1224,19 @@ describe('select', function() {
       }).toThrowMinErr('ng','badname', 'hasOwnProperty is not a valid "option value" name');
     });
 
+    it('should set providedEmptyOption.selected to false', function() {
+      scope.options = ['a'];
+      scope.model = '';
+      compile(
+          '<select ng-model="model" ng-options="opt for opt in options">' +
+            '<option id="empty_option" value="">Empty Option</option>' +
+          '</select>');
+      var opt = element.find("option")[0];
+      expect(!opt.getAttribute("selected")).toBe(false);
+      scope.model = 'a';
+      scope.$digest();
+      expect(!opt.getAttribute("selected")).toBe(true);
+    });
+
   });
 });
