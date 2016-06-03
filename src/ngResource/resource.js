@@ -56,9 +56,7 @@ function shallowClearAndCopy(src, dst) {
  *
  * <div doc-module-components="ngResource"></div>
  *
- * See {@link ngResource.$resource `$resource`} for usage.
- *
- * See {@link ngResource.$resourceProvider `$resourceProvider`} for usage.
+ * See {@link ngResource.$resourceProvider} and {@link ngResource.$resource} for usage.
  */
 
 /**
@@ -67,13 +65,11 @@ function shallowClearAndCopy(src, dst) {
  *
  * @description
  *
- * Use for configuring {@link ngResource.$resource `$resource`} in module configuration phase.
- *
- * ## Example
- * See {@link ngResource.$resourceProvider#defaults `Properties`} for configuring `ngResource`.
+ * Use `$resourceProvider` to change the default behavior of the {@link ngResource.$resource}
+ * service.
  *
  * ## Dependencies
- * Requires {@link ngResource `ngResource`} module to be installed.
+ * Requires the {@link ngResource } module to be installed.
  *
  */
 
@@ -424,45 +420,64 @@ angular.module('ngResource', ['ng']).
      * @ngdoc property
      * @name $resourceProvider#defaults
      * @description
-     * A configuration object for `$resource` instances.
+     * Object containing default options used when creating `$resource` instances.
      *
-     * Properties of this object are initialized with a set of values that satisfies a wide range of use cases.
-     * User can also choose to override these properties in application configuration phase.
+     * The default values satisfy a wide range of usecases, but you may choose to overwrite any of
+     * them to further customize your instances. The available properties are:
      *
-     * Property `stripTrailingSlashes`, default to true, strips trailing slashes from
-     * calculated URLs.
+     * - **stripTrailingSlashes** – `{boolean}` – If true, then the trailing slashes from any
+     *   calculated URL will be stripped.<br />
+     *   (Defaults to true.)
+     * - **cancellable** – `{boolean}` – If true, the request made by a "non-instance" call will be
+     *   cancelled (if not already completed) by calling `$cancelRequest()` on the call's return
+     *   value. For more details, see {@link ngResource.$resource}. This can be overwritten per
+     *   resource class or action.<br />
+     *   (Defaults to false.)
+     * - **actions** - `{Object.<Object>}` - A hash with default actions declarations. Actions are
+     *   high-level methods corresponding to RESTful actions/methods on resources. An action may
+     *   specify what HTTP method to use, what URL to hit, if the return value will be a single
+     *   object or a collection (array) of objects etc. For more details, see
+     *   {@link ngResource.$resource}. The actions can also be enhanced or overwritten per resource
+     *   class.<br />
+     *   The default actions are:
+     *   ```js
+     *   {
+     *     get: {method: 'GET'},
+     *     save: {method: 'POST'},
+     *     query: {method: 'GET', isArray: true},
+     *     remove: {method: 'DELETE'},
+     *     delete: {method: 'DELETE'}
+     *   }
+     *   ```
      *
-     * Property `actions` is an object that sets up high level methods/aliases on `$resource` object
-     * based on standard HTTP methods. Users can supply an "actions" object with method aliases that
-     * comply with alternative conventions.
+     * #### Example
      *
-     * To add your own set of configurations, set it up like so:
+     * For example, you can specify a new `update` action that uses the `PUT` HTTP verb:
+     *
+     * ```js
+     *   angular.
+     *     module('myApp').
+     *     config(['resourceProvider', function ($resourceProvider) {
+     *       $resourceProvider.defaults.actions.update = {
+     *         method: 'PUT'
+     *       };
+     *     });
      * ```
-     * angular.module('myApp').config(['resourceProvider', function ($resourceProvider){
      *
-     *    // Provide your own set of actions on $resource factory.
-     *    // The following comments are Angular's default actions, which are being
-     *    // replaced by an object that includes a PUT method as shown.
-     *    //  { 'get':    {method:'GET'},
-     *    //	'save':   {method:'POST'},
-     *    //	'query':  {method:'GET', isArray:true},
-     *    //	'remove': {method:'DELETE'},
-     *    //	'delete': {method:'DELETE'} };
+     * Or you can even overwrite the whole `actions` list and specify your own:
      *
-     *    $resourceProvider.defaults.actions = {
-     *        create:{method: 'POST'},
-     *        save:	 {method: 'POST'},
-     *        update:{method: 'PUT'},
-     *        get:	 {method: 'GET'},
-     *        query:    {method: 'GET', isArray:true},
-     *        remove:   {method: 'DELETE'},
-     *        delete:   {method: 'DELETE'}
-     *    };
-     *
-     *    // Don't strip trailing slashes from calculated URLs.
-     *    // Consult your application server's configuration to work in concert with this setting.
-     *    $resourceProvider.defaults.stripTrailingSlashes = false;
-     * }]);
+     * ```js
+     *   angular.
+     *     module('myApp').
+     *     config(['resourceProvider', function ($resourceProvider) {
+     *       $resourceProvider.defaults.actions = {
+     *         create: {method: 'POST'}
+     *         get:    {method: 'GET'},
+     *         getAll: {method: 'GET', isArray:true},
+     *         update: {method: 'PUT'},
+     *         delete: {method: 'DELETE'}
+     *       };
+     *     });
      * ```
      *
      */
