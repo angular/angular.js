@@ -485,6 +485,9 @@ angular.module('ngResource', ['ng']).
       // Strip slashes by default
       stripTrailingSlashes: true,
 
+      // Make non-instance requests cancellable (via `$cancelRequest()`)
+      cancellable: false,
+
       // Default actions configuration
       actions: {
         'get': {method: 'GET'},
