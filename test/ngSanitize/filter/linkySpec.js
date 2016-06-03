@@ -119,6 +119,13 @@ describe('linky', function() {
     });
 
 
+    it('should call the attribute function for all links in the input', function() {
+      var attributeFn = jasmine.createSpy('attributeFn').and.returnValue({});
+      linky("http://example.com and http://google.com", "_self", attributeFn);
+      expect(attributeFn.calls.allArgs()).toEqual([['http://example.com'], ['http://google.com']]);
+    });
+
+
     it('should strip unsafe attributes', function() {
       expect(linky("http://example.com", "_self", {"class": "blue", "onclick": "alert('Hi')"})).
         toBeOneOf('<a class="blue" target="_self" href="http://example.com">http://example.com</a>',
