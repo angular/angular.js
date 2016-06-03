@@ -2,15 +2,6 @@
 
 var noopNgModelController = { $setViewValue: noop, $render: noop };
 
-function chromeHack(optionElement) {
-  // Workaround for https://code.google.com/p/chromium/issues/detail?id=381459
-  // Adding an <option selected="selected"> element to a <select required="required"> should
-  // automatically select the new element
-  if (optionElement[0].hasAttribute('selected')) {
-    optionElement[0].selected = true;
-  }
-}
-
 /**
  * @ngdoc type
  * @name  select.SelectController
@@ -90,7 +81,6 @@ var SelectController =
     var count = optionsMap.get(value) || 0;
     optionsMap.put(value, count + 1);
     self.ngModelCtrl.$render();
-    chromeHack(element);
   };
 
   // Tell the select control that an option, with the given value, has been removed
