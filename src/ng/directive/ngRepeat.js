@@ -448,7 +448,7 @@ var ngRepeatDirective = ['$parse', '$animate', '$compile', function($parse, $ani
             collectionKeys = collection;
             trackByIdFn = trackByIdExpFn || trackByIdArrayFn;
           } else {
-            trackByIdFn = trackByIdExpFn || trackByIdObjFn;
+            trackByIdFn = trackByIdObjFn;
             // if object, extract keys, in enumeration order, unsorted
             collectionKeys = [];
             for (var itemKey in collection) {
