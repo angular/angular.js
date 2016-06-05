@@ -46,6 +46,43 @@ describe('ngBind*', function() {
       expect(element.text()).toEqual('-0false');
     }));
 
+    they('should jsonify $prop', [[{a: 1}, '{"a":1}'], [true, 'true'], [false, 'false']], function(prop) {
+      inject(function($rootScope, $compile) {
+        $rootScope.value = prop[0];
+        element = $compile('<div ng-bind="value"></div>')($rootScope);
+        $rootScope.$digest();
+        expect(element.text()).toEqual(prop[1]);
+      });
+    });
+
+    it('should use custom toString when present', inject(function($rootScope, $compile) {
+      $rootScope.value = {
+        toString: function() {
+          return 'foo';
+        }
+      };
+      element = $compile('<div ng-bind="value"></div>')($rootScope);
+      $rootScope.$digest();
+      expect(element.text()).toEqual('foo');
+    }));
+
+    it('should NOT use toString on array objects', inject(function($rootScope, $compile) {
+      $rootScope.value = [];
+      element = $compile('<div ng-bind="value"></div>')($rootScope);
+      $rootScope.$digest();
+      expect(element.text()).toEqual('[]');
+    }));
+
+
+    it('should NOT use toString on Date objects', inject(function($rootScope, $compile) {
+      $rootScope.value = new Date(2014, 10, 10, 0, 0, 0);
+      element = $compile('<div ng-bind="value"></div>')($rootScope);
+      $rootScope.$digest();
+      expect(element.text()).toBe(JSON.stringify($rootScope.value));
+      expect(element.text()).not.toEqual($rootScope.value.toString());
+    }));
+
+
     it('should one-time bind if the expression starts with two colons', inject(function($rootScope, $compile) {
       element = $compile('<div ng-bind="::a"></div>')($rootScope);
       $rootScope.a = 'lucas';
