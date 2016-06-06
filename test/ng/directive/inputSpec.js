@@ -2784,14 +2784,103 @@ describe('input', function() {
     describe('EMAIL_REGEXP', function() {
       /* global EMAIL_REGEXP: false */
       it('should validate email', function() {
+        /* basic functionality */
         expect(EMAIL_REGEXP.test('a@b.com')).toBe(true);
         expect(EMAIL_REGEXP.test('a@b.museum')).toBe(true);
         expect(EMAIL_REGEXP.test('a@B.c')).toBe(true);
+        /* domain label separation, hyphen-minus, syntax */
+        expect(EMAIL_REGEXP.test('a@b.c.')).toBe(false);
         expect(EMAIL_REGEXP.test('a@.b.c')).toBe(false);
         expect(EMAIL_REGEXP.test('a@-b.c')).toBe(false);
         expect(EMAIL_REGEXP.test('a@b-.c')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@b-c')).toBe(true);
+        expect(EMAIL_REGEXP.test('a@-')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@.')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@host_name')).toBe(false);
+        /* leading or sole digit */
         expect(EMAIL_REGEXP.test('a@3b.c')).toBe(true);
+        expect(EMAIL_REGEXP.test('a@3')).toBe(true);
+        /* TLD eMail address */
         expect(EMAIL_REGEXP.test('a@b')).toBe(true);
+        /* domain valid characters */
+        expect(EMAIL_REGEXP.test('a@abcdefghijklmnopqrstuvwxyz-ABCDEFGHIJKLMNOPQRSTUVWXYZ.0123456789')).toBe(true);
+        /* domain invalid characters */
+        expect(EMAIL_REGEXP.test('a@')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@ ')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@!')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@"')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@#')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@$')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@%')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@&')).toBe(false);
+        expect(EMAIL_REGEXP.test("a@'")).toBe(false);
+        expect(EMAIL_REGEXP.test('a@(')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@)')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@*')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@+')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@,')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@/')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@:')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@;')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@<')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@=')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@>')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@?')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@@')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@[')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@\\')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@]')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@^')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@_')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@`')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@{')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@|')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@}')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@~')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@İ')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@ı')).toBe(false);
+        /* domain length, label and total */
+        expect(EMAIL_REGEXP.test('a@xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')).toBe(true);
+        expect(EMAIL_REGEXP.test('a@xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')).toBe(false);
+        /* jshint maxlen:320 */
+        expect(EMAIL_REGEXP.test('a@xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')).toBe(true);
+        expect(EMAIL_REGEXP.test('a@xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.x')).toBe(true);
+        expect(EMAIL_REGEXP.test('a@xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xx')).toBe(false);
+        expect(EMAIL_REGEXP.test('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xx')).toBe(true);
+        expect(EMAIL_REGEXP.test('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xxx')).toBe(false);
+        /* jshint maxlen:200 */
+        /* local-part valid characters and dot-atom syntax */
+        expect(EMAIL_REGEXP.test("'@x")).toBe(true);
+        expect(EMAIL_REGEXP.test('-!#$%&*+/0123456789=?ABCDEFGHIJKLMNOPQRSTUVWXYZ@x')).toBe(true);
+        expect(EMAIL_REGEXP.test('^_`abcdefghijklmnopqrstuvwxyz{|}~@x')).toBe(true);
+        expect(EMAIL_REGEXP.test(".@x")).toBe(false);
+        expect(EMAIL_REGEXP.test("'.@x")).toBe(false);
+        expect(EMAIL_REGEXP.test(".'@x")).toBe(false);
+        expect(EMAIL_REGEXP.test("'.'@x")).toBe(true);
+        /* local-part invalid characters */
+        expect(EMAIL_REGEXP.test('@x')).toBe(false);
+        expect(EMAIL_REGEXP.test(' @x')).toBe(false);
+        expect(EMAIL_REGEXP.test('"@x')).toBe(false);
+        expect(EMAIL_REGEXP.test('(@x')).toBe(false);
+        expect(EMAIL_REGEXP.test(')@x')).toBe(false);
+        expect(EMAIL_REGEXP.test(',@x')).toBe(false);
+        expect(EMAIL_REGEXP.test(':@x')).toBe(false);
+        expect(EMAIL_REGEXP.test(';@x')).toBe(false);
+        expect(EMAIL_REGEXP.test('<@x')).toBe(false);
+        expect(EMAIL_REGEXP.test('>@x')).toBe(false);
+        expect(EMAIL_REGEXP.test('@@x')).toBe(false);
+        expect(EMAIL_REGEXP.test('[@x')).toBe(false);
+        expect(EMAIL_REGEXP.test('\\@x')).toBe(false);
+        expect(EMAIL_REGEXP.test(']@x')).toBe(false);
+        expect(EMAIL_REGEXP.test('İ@x')).toBe(false);
+        expect(EMAIL_REGEXP.test('ı@x')).toBe(false);
+        /* local-part size limit */
+        expect(EMAIL_REGEXP.test('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx@x')).toBe(true);
+        expect(EMAIL_REGEXP.test('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx@x')).toBe(false);
+        /* content (local-part + ‘@’ + domain) is required */
+        expect(EMAIL_REGEXP.test('')).toBe(false);
+        expect(EMAIL_REGEXP.test('a')).toBe(false);
+        expect(EMAIL_REGEXP.test('aa')).toBe(false);
       });
     });
   });
