@@ -119,7 +119,12 @@
       return originalPreventDefault.apply(evnt, arguments);
     };
 
-    element.dispatchEvent(evnt);
+    if (!eventData.bubbles || supportsEventBubblingInDetachedTree() || isAttachedToDocument(element)) {
+      element.dispatchEvent(evnt);
+    } else {
+      triggerForPath(element, evnt);
+    }
+
     finalProcessDefault = !(angular['ff-684208-preventDefault'] || !fakeProcessDefault);
 
     delete angular['ff-684208-preventDefault'];
@@ -156,5 +161,53 @@
     evnt.touches = touches;
 
     return evnt;
+  }
+
+  function supportsEventBubblingInDetachedTree() {
+    if ('_cached' in supportsEventBubblingInDetachedTree) {
+      return supportsEventBubblingInDetachedTree._cached;
+    }
+    supportsEventBubblingInDetachedTree._cached = false;
+    var doc = window.document;
+    if (doc) {
+      var parent = doc.createElement('div'),
+          child = parent.cloneNode();
+      parent.appendChild(child);
+      parent.addEventListener('e', function() {
+        supportsEventBubblingInDetachedTree._cached = true;
+      });
+      var evnt = window.document.createEvent('Events');
+      evnt.initEvent('e', true, true);
+      child.dispatchEvent(evnt);
+    }
+    return supportsEventBubblingInDetachedTree._cached;
+  }
+
+  function triggerForPath(element, evnt) {
+    var stop = false;
+
+    var _stopPropagation = evnt.stopPropagation;
+    evnt.stopPropagation = function() {
+      stop = true;
+      _stopPropagation.apply(evnt, arguments);
+    };
+    patchEventTargetForBubbling(evnt, element);
+    do {
+      element.dispatchEvent(evnt);
+    } while (!stop && (element = element.parentNode));
+  }
+
+  function patchEventTargetForBubbling(event, target) {
+    event._target = target;
+    Object.defineProperty(event, "target", {get: function() { return this._target;}});
+  }
+
+  function isAttachedToDocument(element) {
+    while (element = element.parentNode) {
+        if (element === window) {
+            return true;
+        }
+    }
+    return false;
   }
 }());
