@@ -152,6 +152,23 @@ describe("basic usage", function() {
   });
 
 
+  it('should not throw if response.data is the resource object', function() {
+    var data = {id:{key:123}, number:'9876'};
+    $httpBackend.expect('GET', '/CreditCard/123').respond(data);
+
+    var cc = CreditCard.get({id:123});
+    $httpBackend.flush();
+    expect(cc instanceof CreditCard).toBe(true);
+
+    $httpBackend.expect('POST', '/CreditCard/123', angular.toJson(data)).respond(cc);
+
+    cc.$save();
+    $httpBackend.flush();
+    expect(cc.id).toEqual({key:123});
+    expect(cc.number).toEqual('9876');
+  });
+
+
   it('should default to empty parameters', function() {
     $httpBackend.expect('GET', 'URL').respond({});
     $resource('URL').query();
