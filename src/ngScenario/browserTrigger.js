@@ -82,7 +82,7 @@
       evnt = createTouchEvent(element, eventType, x, y);
     } else if (/key/.test(eventType)) {
       evnt = window.document.createEvent('Events');
-      evnt.initEvent(eventType, eventData.bubbles, eventData.canceable);
+      evnt.initEvent(eventType, eventData.bubbles, eventData.cancelable);
       evnt.view = window;
       evnt.ctrlKey = pressed('ctrl');
       evnt.altKey = pressed('alt');
