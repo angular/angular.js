@@ -331,9 +331,9 @@ function qFactory(nextTick, exceptionHandler, errorOnUnhandledRejections) {
 
     'finally': function(callback, progressBack) {
       return this.then(function(value) {
-        return handleCallback(value, true, callback);
+        return handleCallback(value, resolve, callback);
       }, function(error) {
-        return handleCallback(error, false, callback);
+        return handleCallback(error, reject, callback);
       }, progressBack);
     }
   });
@@ -532,31 +532,21 @@ function qFactory(nextTick, exceptionHandler, errorOnUnhandledRejections) {
     return result.promise;
   };
 
-  var makePromise = function makePromise(value, resolved) {
-    var result = new Deferred();
-    if (resolved) {
-      result.resolve(value);
-    } else {
-      result.reject(value);
-    }
-    return result.promise;
-  };
-
-  var handleCallback = function handleCallback(value, isResolved, callback) {
+  var handleCallback = function handleCallback(value, resolver, callback) {
     var callbackOutput = null;
     try {
       if (isFunction(callback)) callbackOutput = callback();
     } catch (e) {
-      return makePromise(e, false);
+      return reject(e);
     }
     if (isPromiseLike(callbackOutput)) {
       return callbackOutput.then(function() {
-        return makePromise(value, isResolved);
+        return resolver(value);
       }, function(error) {
-        return makePromise(error, false);
+        return reject(error);
       });
     } else {
-      return makePromise(value, isResolved);
+      return resolver(value);
     }
   };
 
