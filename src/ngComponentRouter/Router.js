@@ -3,6 +3,11 @@
  * @name ngComponentRouter
  * @installation
  *
+ * <div class="alert alert-danger">
+ * **Deprecation Notice:** This implementation of the Component Router has been deprecated and will not receive further updates.
+ * Alternatively, use the {@link ngRoute} module or community developed projects (e.g. [ui-router](https://github.com/angular-ui/ui-router)).
+ * </div>
+
  * Currently, the **Component Router** module must be installed via `npm`, it is not yet available
  * on Bower or the Google CDN.
  *
@@ -15,7 +20,8 @@
  * <script src="/node_modules/@angular/router/angular1/angular_1_router.js"></script>
  *```
  *
- * You also need to include ES6 shims to support running on Internet Explorer:
+ * You also need to include ES6 shims for browsers that do not support ES6 code (Internet Explorer,
+ iOs < 8, Android < 5.0, Windows Mobile < 10):
  *  ```html
  *  <!-- IE required polyfills, in this exact order -->
  *  <script src="https://cdnjs.cloudflare.com/ajax/libs/es6-shim/0.33.3/es6-shim.min.js"></script>
@@ -36,6 +42,7 @@
  * @ngdoc type
  * @name Router
  * @description
+ * @deprecated This implementation of the Component Router has been deprecated and should not be used anymore.
  * A `Router` is responsible for mapping URLs to components.
  *
  * * Routers and "Routing Component" instances have a 1:1 correspondence.
@@ -51,6 +58,7 @@
  * @ngdoc type
  * @name ChildRouter
  * @description
+ * @deprecated This implementation of the Component Router has been deprecated and should not be used anymore.
  *
  * This type extends the {@link Router}.
  *
@@ -63,6 +71,7 @@
  * @ngdoc type
  * @name RootRouter
  * @description
+ * @deprecated This implementation of the Component Router has been deprecated and should not be used anymore.
  *
  * This type extends the {@link Router}.
  *
@@ -75,6 +84,8 @@
  * @ngdoc type
  * @name ComponentInstruction
  * @description
+ * @deprecated This implementation of the Component Router has been deprecated and should not be used anymore.
+ *
  * A `ComponentInstruction` represents the route state for a single component. An `Instruction` is
  * composed of a tree of these `ComponentInstruction`s.
  *
@@ -88,6 +99,7 @@
  * @ngdoc type
  * @name  RouteDefinition
  * @description
+ * @deprecated This implementation of the Component Router has been deprecated and should not be used anymore.
  *
  * Each item in the **RouteConfig** for a **Routing Component** is an instance of
  * this type. It can have the following properties:
@@ -102,6 +114,8 @@
  * @ngdoc type
  * @name  RouteParams
  * @description
+ * @deprecated This implementation of the Component Router has been deprecated and should not be used anymore.
+ *
  * A map of parameters for a given route, passed as part of the {@link ComponentInstruction} to
  * the Lifecycle Hooks, such as `$routerOnActivate` and `$routerOnDeactivate`.
  */
@@ -112,6 +126,7 @@
  * @priority 400
  * restrict: AE
  * @description
+ * @deprecated This implementation of the Component Router has been deprecated and should not be used anymore.
  *
  * The directive that identifies where the {@link Router} should render its **Components**.
  */
@@ -119,6 +134,7 @@
 /**
  * @name ngLink
  * @description
+ * @deprecated This implementation of the Component Router has been deprecated and should not be used anymore.
  *
  * Lets you create links to different views, automatically generating the `href`.
  *
@@ -135,6 +151,8 @@
  * @ngdoc service
  * @name  $rootRouter
  * @description
+ * @deprecated This implementation of the Component Router has been deprecated and should not be used anymore.
+ *
  * The singleton instance of the {@link RootRouter} type, which is associated
  * with the top level {@link $routerRootComponent}.
  */
@@ -144,6 +162,7 @@
  * @ngdoc service
  * @name  $routerRootComponent
  * @description
+ * @deprecated This implementation of the Component Router has been deprecated and should not be used anymore.
  *
  * The top level **Routing Component** associated with the {@link $rootRouter}.
  */
