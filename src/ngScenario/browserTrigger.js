@@ -80,6 +80,17 @@
       }
     } else if (/touch/.test(eventType) && supportsTouchEvents()) {
       evnt = createTouchEvent(element, eventType, x, y);
+    } else if (/key/.test(eventType)) {
+      evnt = window.document.createEvent('Events');
+      evnt.initEvent(eventType, eventData.bubbles, eventData.canceable);
+      evnt.view = window;
+      evnt.ctrlKey = pressed('ctrl');
+      evnt.altKey = pressed('alt');
+      evnt.shiftKey = pressed('shift');
+      evnt.metaKey = pressed('meta');
+      evnt.keyCode = eventData.keyCode;
+      evnt.charCode = eventData.charCode;
+      evnt.which = eventData.which;
     } else {
       evnt = window.document.createEvent('MouseEvents');
       x = x || 0;
