@@ -221,7 +221,7 @@ describe('Filter: orderBy', function() {
 
 
     describe('(reversing order)', function() {
-      it('should not reverse collection if `comparator` param is falsy',
+      it('should not reverse collection if `reverse` param is falsy',
         function() {
           var items = [{a: 2}, {a: 15}];
           var expr = 'a';
@@ -237,7 +237,7 @@ describe('Filter: orderBy', function() {
       );
 
 
-      it('should reverse collection if `comparator` param is truthy',
+      it('should reverse collection if `reverse` param is truthy',
         function() {
           var items = [{a: 2}, {a: 15}];
           var expr = 'a';
@@ -253,7 +253,7 @@ describe('Filter: orderBy', function() {
       );
 
 
-      it('should reverse collection if `comparator` param is `true`, even without an `expression`',
+      it('should reverse collection if `reverse` param is `true`, even without an `expression`',
         function() {
           var originalItems = [{id: 2}, {id: 1}, {id: 4}, {id: 3}];
           var reversedItems = [{id: 3}, {id: 4}, {id: 1}, {id: 2}];

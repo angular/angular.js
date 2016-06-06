@@ -9,6 +9,9 @@
  * Returns an array containing the items from the specified `collection`, ordered by a `comparator`
  * function based on the values computed using the `expression` predicate.
  *
+ * For example, `[{id: 'foo'}, {id: 'bar'}] | orderBy:'id'` would result in
+ * `[{id: 'bar'}, {id: 'foo'}]`.
+ *
  * The `collection` can be an Array or array-like object (e.g. NodeList, jQuery object, TypedArray,
  * String, etc).
  *
@@ -28,8 +31,8 @@
  * Ordering the specified `collection` happens in two phases:
  *
  * 1. All items are passed through the predicate (or predicates), and the returned values are saved
- *    along with their type (`string`, `number` etc). For example, an item `{name: 'foo'}`, passed
- *    through a predicate that extracts the value of the `name` property, would be transformed to:
+ *    along with their type (`string`, `number` etc). For example, an item `{label: 'foo'}`, passed
+ *    through a predicate that extracts the value of the `label` property, would be transformed to:
  *    ```
  *    {
  *      value: 'foo',
@@ -93,13 +96,15 @@
  *    - `Function`: A getter function. This function will be called with each item as argument and
  *      the return value will be used for sorting.
  *    - `string`: An Angular expression. This expression will be evaluated against each item and the
- *      result will be used for sorting. For example, use `name` to sort by a property called `name`
- *      or `name.substring(0, 3)` to sort by the first 3 characters of the `name` property.<br />
+ *      result will be used for sorting. For example, use `'label'` to sort by a property called
+ *      `label` or `'label.substring(0, 3)'` to sort by the first 3 characters of the `label`
+ *      property.<br />
  *      (The result of a constant expression is interpreted as a property name to be used for
- *      comparison. For example, use `"special name"` to sort by a property called `special name`.)<br />
+ *      comparison. For example, use `'"special name"'` (note the extra pair of quotes) to sort by a
+ *      property called `special name`.)<br />
  *      An expression can be optionally prefixed with `+` or `-` to control the sorting direction,
- *      ascending or descending. For example, `+name` or `-name`. If no property is provided, (e.g.
- *      `'+'` or `'-'`), the collection element itself is used in comparisons.
+ *      ascending or descending. For example, `'+label'` or `'-label'`. If no property is provided,
+ *      (e.g. `'+'` or `'-'`), the collection element itself is used in comparisons.
  *    - `Array`: An array of function and/or string predicates. If a predicate cannot determine the
  *      relative order of two items, the next predicate is used as a tie-breaker.
  *
@@ -107,12 +112,14 @@
  *
  * @param {boolean=} reverse - If `true`, reverse the sorting order.
  * @param {(Function)=} comparator - The comparator function used to determine the relative order of
- *    value pairs. If omitted, a built-in comparator will be used.
+ *    value pairs. If omitted, the built-in comparator will be used.
  *
  * @returns {Array} - The sorted array.
  *
  *
  * @example
+ * ### Ordering a table with `ngRepeat`
+ *
  * The example below demonstrates a simple {@link ngRepeat ngRepeat}, where the data is sorted by
  * age in descending order (expression is set to `'-age'`). The `comparator` is not set, which means
  * it defaults to the built-in comparator.
@@ -178,8 +185,10 @@
  * <hr />
  *
  * @example
- * The `expression` and `reverse` parameters can be controlled dynamically through scope properties,
- * as shown in the next example.
+ * ### Changing parameters dynamically
+ *
+ * All parameters can be changed dynamically. The next example shows how you can make the columns of
+ * a table sortable, by binding the `expression` and `reverse` parameters to scope properties.
  *
    <example name="orderBy-dynamic" module="orderByExample2">
      <file name="index.html">
@@ -307,11 +316,11 @@
  * <hr />
  *
  * @example
- * It's also possible to call the `orderBy` filter manually, by injecting `orderByFilter`, and
+ * ### Using `orderBy` inside a controller
+ *
+ * It is also possible to call the `orderBy` filter manually, by injecting `orderByFilter`, and
  * calling it with the desired parameters. (Alternatively, you could inject the `$filter` factory
  * and retrieve the `orderBy` filter with `$filter('orderBy')`.)
- *
- * Example:
  *
    <example name="orderBy-call-manually" module="orderByExample3">
      <file name="index.html">
@@ -441,6 +450,8 @@
  * <hr />
  *
  * @example
+ * ### Using a custom comparator
+ *
  * If you have very specific requirements about the way items are sorted, you can pass your own
  * comparator function. For example, you might need to compare some strings in a locale-sensitive
  * way. (When specifying a custom comparator, you also need to pass a value for the `reverse`
