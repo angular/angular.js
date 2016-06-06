@@ -372,7 +372,7 @@ function qFactory(nextTick, exceptionHandler, errorOnUnhandledRejections) {
     } finally {
       --queueSize;
       if (errorOnUnhandledRejections && queueSize === 0) {
-        nextTick(processChecksFn());
+        nextTick(processChecks);
       }
     }
   }
@@ -389,25 +389,17 @@ function qFactory(nextTick, exceptionHandler, errorOnUnhandledRejections) {
     }
   }
 
-  function processChecksFn() {
-    return function() { processChecks(); };
-  }
-
-  function processQueueFn(state) {
-    return function() { processQueue(state); };
-  }
-
   function scheduleProcessQueue(state) {
     if (errorOnUnhandledRejections && !state.pending && state.status === 2 && !state.pur) {
       if (queueSize === 0 && checkQueue.length === 0) {
-        nextTick(processChecksFn());
+        nextTick(processChecks);
       }
       checkQueue.push(state);
     }
     if (state.processScheduled || !state.pending) return;
     state.processScheduled = true;
     ++queueSize;
-    nextTick(processQueueFn(state));
+    nextTick(function() { processQueue(state); });
   }
 
   function Deferred() {
@@ -542,9 +534,7 @@ function qFactory(nextTick, exceptionHandler, errorOnUnhandledRejections) {
     if (isPromiseLike(callbackOutput)) {
       return callbackOutput.then(function() {
         return resolver(value);
-      }, function(error) {
-        return reject(error);
-      });
+      }, reject);
     } else {
       return resolver(value);
     }
