@@ -13,10 +13,6 @@
     "_jQuery": false,
     "angularInit": false,
     "formatException": false,
-    "AnimationEvent": false,
-    "TransitionEvent": false,
-    "WebKitAnimationEvent": false,
-    "WebKitTransitionEvent": false,
     "$runner": false,
     "callerFile": false
   }

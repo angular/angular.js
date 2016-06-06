@@ -5,6 +5,11 @@
 
     "angular": false,
     "expect": false,
-    "jQuery": false
+    "jQuery": false,
+
+    "AnimationEvent": false,
+    "TransitionEvent": false,
+    "WebKitAnimationEvent": false,
+    "WebKitTransitionEvent": false
   }
 }
