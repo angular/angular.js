@@ -87,7 +87,7 @@ feature, we can implement [deep linking][deep-linking], which lets us utilize th
 
 <div class="alert alert-success">
   <p>
-    `ngRoute` allows as to associate a controller and a template with a specific URL (or URL
+    `ngRoute` lets us associate a controller and a template with a specific URL (or URL
     pattern). This is pretty close to what we did with `ngController` and `index.html` back in
     {@link step_02 step 2}.
   </p>
