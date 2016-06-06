@@ -298,14 +298,14 @@ function qFactory(nextTick, exceptionHandler, errorOnUnhandledRejections) {
    *
    * @returns {Deferred} Returns a new instance of deferred.
    */
-  var defer = function() {
+  function defer() {
     var d = new Deferred();
     //Necessary to support unbound execution :/
     d.resolve = simpleBind(d, d.resolve);
     d.reject = simpleBind(d, d.reject);
     d.notify = simpleBind(d, d.notify);
     return d;
-  };
+  }
 
   function Promise() {
     this.$$state = { status: 0 };
@@ -331,9 +331,9 @@ function qFactory(nextTick, exceptionHandler, errorOnUnhandledRejections) {
 
     'finally': function(callback, progressBack) {
       return this.then(function(value) {
-        return handleCallback(value, true, callback);
+        return handleCallback(value, resolve, callback);
       }, function(error) {
-        return handleCallback(error, false, callback);
+        return handleCallback(error, reject, callback);
       }, progressBack);
     }
   });
@@ -372,7 +372,7 @@ function qFactory(nextTick, exceptionHandler, errorOnUnhandledRejections) {
     } finally {
       --queueSize;
       if (errorOnUnhandledRejections && queueSize === 0) {
-        nextTick(processChecksFn());
+        nextTick(processChecks);
       }
     }
   }
@@ -389,25 +389,17 @@ function qFactory(nextTick, exceptionHandler, errorOnUnhandledRejections) {
     }
   }
 
-  function processChecksFn() {
-    return function() { processChecks(); };
-  }
-
-  function processQueueFn(state) {
-    return function() { processQueue(state); };
-  }
-
   function scheduleProcessQueue(state) {
     if (errorOnUnhandledRejections && !state.pending && state.status === 2 && !state.pur) {
       if (queueSize === 0 && checkQueue.length === 0) {
-        nextTick(processChecksFn());
+        nextTick(processChecks);
       }
       checkQueue.push(state);
     }
     if (state.processScheduled || !state.pending) return;
     state.processScheduled = true;
     ++queueSize;
-    nextTick(processQueueFn(state));
+    nextTick(function() { processQueue(state); });
   }
 
   function Deferred() {
@@ -526,39 +518,27 @@ function qFactory(nextTick, exceptionHandler, errorOnUnhandledRejections) {
    * @param {*} reason Constant, message, exception or an object representing the rejection reason.
    * @returns {Promise} Returns a promise that was already resolved as rejected with the `reason`.
    */
-  var reject = function(reason) {
+  function reject(reason) {
     var result = new Deferred();
     result.reject(reason);
     return result.promise;
-  };
+  }
 
-  var makePromise = function makePromise(value, resolved) {
-    var result = new Deferred();
-    if (resolved) {
-      result.resolve(value);
-    } else {
-      result.reject(value);
-    }
-    return result.promise;
-  };
-
-  var handleCallback = function handleCallback(value, isResolved, callback) {
+  function handleCallback(value, resolver, callback) {
     var callbackOutput = null;
     try {
       if (isFunction(callback)) callbackOutput = callback();
     } catch (e) {
-      return makePromise(e, false);
+      return reject(e);
     }
     if (isPromiseLike(callbackOutput)) {
       return callbackOutput.then(function() {
-        return makePromise(value, isResolved);
-      }, function(error) {
-        return makePromise(error, false);
-      });
+        return resolver(value);
+      }, reject);
     } else {
-      return makePromise(value, isResolved);
+      return resolver(value);
     }
-  };
+  }
 
   /**
    * @ngdoc method
@@ -578,11 +558,11 @@ function qFactory(nextTick, exceptionHandler, errorOnUnhandledRejections) {
    */
 
 
-  var when = function(value, callback, errback, progressBack) {
+  function when(value, callback, errback, progressBack) {
     var result = new Deferred();
     result.resolve(value);
     return result.promise.then(callback, errback, progressBack);
-  };
+  }
 
   /**
    * @ngdoc method
@@ -624,11 +604,9 @@ function qFactory(nextTick, exceptionHandler, errorOnUnhandledRejections) {
     forEach(promises, function(promise, key) {
       counter++;
       when(promise).then(function(value) {
-        if (results.hasOwnProperty(key)) return;
         results[key] = value;
         if (!(--counter)) deferred.resolve(results);
       }, function(reason) {
-        if (results.hasOwnProperty(key)) return;
         deferred.reject(reason);
       });
     });
@@ -664,7 +642,7 @@ function qFactory(nextTick, exceptionHandler, errorOnUnhandledRejections) {
     return deferred.promise;
   }
 
-  var $Q = function Q(resolver) {
+  function $Q(resolver) {
     if (!isFunction(resolver)) {
       throw $qMinErr('norslvr', 'Expected resolverFn, got \'{0}\'', resolver);
     }
@@ -682,7 +660,7 @@ function qFactory(nextTick, exceptionHandler, errorOnUnhandledRejections) {
     resolver(resolveFn, rejectFn);
 
     return deferred.promise;
-  };
+  }
 
   // Let's make the instanceof operator work for promises, so that
   // `new $q(fn) instanceof $q` would evaluate to true.
