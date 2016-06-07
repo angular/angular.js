@@ -552,22 +552,32 @@ angular.module('ngMessages', [])
         $templateRequest(src).then(function(html) {
           if ($scope.$$destroyed) return;
 
-          $compile(html)($scope, function(contents) {
-            element.after(contents);
-
-            // the anchor is placed for debugging purposes
-            var comment = $compile.$$createComment ?
-                $compile.$$createComment('ngMessagesInclude', src) :
-                $document[0].createComment(' ngMessagesInclude: ' + src + ' ');
-            var anchor = jqLite(comment);
-            element.after(anchor);
-
-            // we don't want to pollute the DOM anymore by keeping an empty directive element
-            element.remove();
-          });
+          if (isString(html) && !html.trim()) {
+            // Empty template - nothing to compile
+            replaceElementWithMarker(element, src);
+          } else {
+            // Non-empty template - compile and link
+            $compile(html)($scope, function(contents) {
+              element.after(contents);
+              replaceElementWithMarker(element, src);
+            });
+          }
         });
       }
     };
+
+    // Helpers
+    function replaceElementWithMarker(element, src) {
+      // A comment marker is placed for debugging purposes
+      var comment = $compile.$$createComment ?
+          $compile.$$createComment('ngMessagesInclude', src) :
+          $document[0].createComment(' ngMessagesInclude: ' + src + ' ');
+      var marker = jqLite(comment);
+      element.after(marker);
+
+      // Don't pollute the DOM anymore by keeping an empty directive element
+      element.remove();
+    }
   }])
 
   /**
