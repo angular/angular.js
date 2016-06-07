@@ -2054,6 +2054,34 @@ describe('ngOptions', function() {
       expect(element.find('option').eq(0).prop('selected')).toBeTruthy();
     });
 
+    it('should remove the unknown option when select is inside ngRepeat', function() {
+      var html =
+        $compile(
+          '<div>' +
+            '<div ng-repeat="item in [0]">' +
+              '<select ng-model="model.selected" ng-options="value.name for value in values"></select>' +
+            '</div>'+
+          '</div>')(scope);
+
+      scope.$apply(function() {
+        scope.values = [{name: 'A'}, {name: 'B'}];
+        scope.model = {selected: {}};
+      });
+
+      element = html.find('select');
+
+      expect(element.find('option').length).toEqual(3);
+      expect(element.val()).toEqualUnknownValue();
+      expect(element.find('option').eq(0)).toEqualUnknownOption();
+
+      browserTrigger(element.find('option').eq(1));
+      expect(element.find('option').length).toEqual(2);
+      expect(element).toEqualSelectValue(scope.model.selected);
+      expect(element.find('option').eq(0).prop('selected')).toBeTruthy();
+
+      dealoc(html);
+    });
+
 
     it('should use exact same values as values in scope with one-time bindings', function() {
       scope.values = [{name: 'A'}, {name: 'B'}];
