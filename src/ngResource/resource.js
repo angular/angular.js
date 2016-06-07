@@ -265,6 +265,14 @@ function shallowClearAndCopy(src, dst) {
  *   - `$cancelRequest`: If there is a cancellable, pending request related to the instance or
  *      collection, calling this method will abort the request.
  *
+ *   The Resource instances have these additional methods:
+ *
+ *   - `toJSON`: It returns a simple object without any of the extra properties added as part of
+ *     the Resource API. This object can be serialized through {@link angular.toJson} safely
+ *     without attaching Angular-specific fields. Notice that `JSON.stringify` (and
+ *     `angular.toJson`) automatically use this method when serializing a Resource instance
+ *     (see [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#toJSON()_behavior)).
+ *
  * @example
  *
  * # Credit card resource
