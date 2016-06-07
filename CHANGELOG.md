@@ -2043,6 +2043,44 @@ describe('$q.when', function() {
    [#11580](https://github.com/angular/angular.js/issues/11580), [#12234](https://github.com/angular/angular.js/issues/12234))
 
 
+## Breaking Changes
+
+- **ngInclude:** due to [3c6e8ce044446735eb2e70d0061db8c6db050289](https://github.com/angular/angular.js/commit/3c6e8ce044446735eb2e70d0061db8c6db050289), the `src` attribute of ngInclude no longer accepts an
+expression that returns the result of `$sce.trustAsResourceUrl`. This will now cause an infinite digest:
+
+Before:
+```html
+<div ng-include="findTemplate('https://example.com/myTemplate.html')"></div>
+```
+
+```js
+$scope.findTemplate = function(templateName) {
+  return $sce.trustAsResourceUrl(templateName);
+};
+```
+
+To migrate, either cache the result of `trustAsResourceUrl()`, or put the template url in the resource
+whitelist in the `config()` function:
+
+After:
+
+```js
+var templateCache = {};
+$scope.findTemplate = function(templateName) {
+  if (!templateCache[templateName]) {
+    templateCache[templateName] = $sce.trustAsResourceUrl(templateName);
+  }
+
+  return  templateCache[templateName];
+};
+
+// Alternatively, use `$sceDelegateProvider.resourceUrlWhitelist()`:
+
+angular.module('myApp', []).config(function($sceDelegateProvider) {
+  $sceDelegateProvider.resourceUrlWhitelist(['self', 'https://example.com/**'])
+});
+```
+
 
 <a name="1.3.17"></a>
 # 1.3.17 tsktskskly-euouae (2015-07-06)
