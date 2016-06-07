@@ -815,7 +815,6 @@ describe('ngMessages', function() {
       expect(trim(element.text())).toEqual("C");
     }));
 
-
     it('should properly detect a previous message, even if it was registered later',
       inject(function($compile, $rootScope, $templateCache) {
         $templateCache.put('include.html', '<div ng-message="a">A</div>');
@@ -865,6 +864,25 @@ describe('ngMessages', function() {
           $httpBackend.flush();
         }).not.toThrow();
     }));
+
+    it('should not throw if the template is empty',
+      inject(function($compile, $rootScope, $templateCache) {
+        var html =
+            '<div ng-messages="items">' +
+              '<div ng-messages-include="messages1.html"></div>' +
+              '<div ng-messages-include="messages2.html"></div>' +
+            '</div>';
+
+        $templateCache.put('messages1.html', '');
+        $templateCache.put('messages2.html', '   ');
+        element = $compile(html)($rootScope);
+        $rootScope.$digest();
+
+        expect(element.text()).toBe('');
+        expect(element.children().length).toBe(0);
+        expect(element.contents().length).toBe(2);
+      })
+    );
   });
 
   describe('when multiple', function() {
