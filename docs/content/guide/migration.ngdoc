@@ -514,7 +514,7 @@ angular.module('myApp').directive('form', function() {
 });
 ```
 
-### Templating (`ngRepeat`, `$compile`)
+### Templating (`ngRepeat`, `$compile`, `ngInclude`)
 
 #### ngRepeat
 
@@ -544,6 +544,44 @@ is marked as optional and the attribute is not specified, no function will be ad
 Due to [62d514b](https://github.com/angular/angular.js/commit/62d514b06937cc7dd86e973ea11165c88343b42d),
 returning an object from a controller constructor function will now override the scope. Views that use the
 controllerAs method will no longer get the this reference, but the returned object.
+
+#### ngInclude
+Due to [3c6e8ce044446735eb2e70d0061db8c6db050289](https://github.com/angular/angular.js/commit/3c6e8ce044446735eb2e70d0061db8c6db050289), the `src` attribute of ngInclude no longer accepts an
+expression that returns the result of `$sce.trustAsResourceUrl`. This will now cause an infinite digest:
+
+Before:
+```html
+<div ng-include="findTemplate('https://example.com/templates/myTemplate.html')"></div>
+```
+
+```js
+$scope.findTemplate = function(templateName) {
+  return $sce.trustAsResourceUrl(templateName);
+};
+```
+
+To migrate, either cache the result of `trustAsResourceUrl()`, or put the template url in the resource
+whitelist in the `config()` function:
+
+After:
+
+```js
+var templateCache = {};
+$scope.findTemplate = function(templateName) {
+  if (!templateCache[templateName]) {
+    templateCache[templateName] = $sce.trustAsResourceUrl(templateName);
+  }
+
+  return templateCache[templateName];
+};
+
+// Alternatively, use `$sceDelegateProvider.resourceUrlWhitelist()`, which means you don't
+// have to use `$sce.trustAsResourceUrl()` at all:
+
+angular.module('myApp', []).config(function($sceDelegateProvider) {
+  $sceDelegateProvider.resourceUrlWhitelist(['self', 'https://example.com/templates/**'])
+});
+```
 
 
 ### Cookies (`ngCookies`)
@@ -583,8 +621,6 @@ has been moved to `$cookies`, to which `$cookieStore` now simply
 delegates calls.
 
 
-
-
 ### Server Requests (`$http`)
 
 Due to [5da1256](https://github.com/angular/angular.js/commit/5da1256fc2812d5b28fb0af0de81256054856369),
@@ -616,8 +652,6 @@ $http.get(url, {
 ```
 
 
-
-
 ### Filters (`filter`, `limitTo`)
 
 #### `filter` filter
@@ -632,7 +666,6 @@ using a filter such as https://github.com/petebacondarwin/angular-toArrayFilter.
 Due to [a3c3bf33](https://github.com/angular/angular.js/commit/a3c3bf3332e5685dc319c46faef882cb6ac246e1),
 the limitTo filter has changed behavior when the provided limit value is invalid.
 Now, instead of returning empty object/array, it returns unchanged input.
-
 
 
 
