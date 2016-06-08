@@ -135,7 +135,7 @@ describe('ngList', function() {
       helper.compileInput('<textarea type="text" ng-model="list" ng-trim="false" ng-list=" "></textarea>');
       helper.changeInputValueTo('a b');
       expect($rootScope.list).toEqual(['a','b']);
-    })
+    });
   });
 });
 
