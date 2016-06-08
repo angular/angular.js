@@ -980,6 +980,17 @@ describe('$compile', function() {
         }));
 
 
+        it('should not add white-space when merging an attribute that is "" in the replaced element',
+          inject(function($compile, $rootScope) {
+            element = $compile(
+              '<div><div replace class=""></div><div>')($rootScope);
+            var div = element.find('div');
+            expect(div.hasClass('log')).toBe(true);
+            expect(div.attr('class')).toBe('log');
+          })
+        );
+
+
         it('should not set merged attributes twice in $attrs', function() {
           var attrs;
 
