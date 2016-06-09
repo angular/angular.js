@@ -980,6 +980,29 @@ describe('$compile', function() {
         }));
 
 
+        it('should not set merged attributes twice in $attrs', function() {
+          var attrs;
+
+          module(function() {
+            directive('logAttrs', function() {
+              return {
+                link: function($scope, $element, $attrs) {
+                  attrs = $attrs;
+                }
+              };
+            });
+          });
+
+          inject(function($compile, $rootScope) {
+            element = $compile(
+              '<div><div log-attrs replace class="myLog"></div><div>')($rootScope);
+            var div = element.find('div');
+            expect(div.attr('class')).toBe('myLog log');
+            expect(attrs.class).toBe('myLog log');
+          });
+        });
+
+
         it('should prevent multiple templates per element', inject(function($compile) {
           try {
             $compile('<div><span replace class="replace"></span></div>');
