@@ -2766,7 +2766,11 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         // You will get an "InvalidCharacterError: DOM Exception 5" error if you
         // have an attribute like "has-own-property" or "data-has-own-property", etc.
         if (!dst.hasOwnProperty(key) && key.charAt(0) !== '$') {
-          dst.$set(key, value, true, srcAttr[key]);
+          dst[key] = value;
+
+          if (key !== 'class' && key !== 'style') {
+            dstAttr[key] = srcAttr[key];
+          }
         }
       });
     }
