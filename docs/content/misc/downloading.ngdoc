@@ -15,7 +15,7 @@ development.
 production.
 
 To point your code to an angular script on the Google CDN server, use the following template.  This
-example points to the minified version 1.4.5:
+example points to the minified version 1.5.6:
 
 ```
   <!doctype html>
