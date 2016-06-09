@@ -1,6 +1,6 @@
 'use strict';
 
-/* global: toDebugString: true */
+/* global toDebugString: true */
 
 function serializeObject(obj) {
   var seen = [];

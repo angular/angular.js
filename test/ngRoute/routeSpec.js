@@ -900,6 +900,87 @@ describe('$route', function() {
   });
 
 
+  it('should not get affected by modifying the route definition object after route registration',
+    function() {
+      module(function($routeProvider) {
+        var rdo = {};
+
+        rdo.templateUrl = 'foo.html';
+        $routeProvider.when('/foo', rdo);
+
+        rdo.templateUrl = 'bar.html';
+        $routeProvider.when('/bar', rdo);
+      });
+
+      inject(function($location, $rootScope, $route) {
+        $location.path('/bar');
+        $rootScope.$digest();
+        expect($location.path()).toBe('/bar');
+        expect($route.current.templateUrl).toBe('bar.html');
+
+        $location.path('/foo');
+        $rootScope.$digest();
+        expect($location.path()).toBe('/foo');
+        expect($route.current.templateUrl).toBe('foo.html');
+      });
+    }
+  );
+
+
+  it('should use the property values of the passed in route definition object directly',
+    function() {
+      var $routeProvider;
+
+      module(function(_$routeProvider_) {
+        $routeProvider = _$routeProvider_;
+      });
+
+      inject(function($location, $rootScope, $route, $sce) {
+        var sceWrappedUrl = $sce.trustAsResourceUrl('foo.html');
+        $routeProvider.when('/foo', {templateUrl: sceWrappedUrl});
+
+        $location.path('/foo');
+        $rootScope.$digest();
+        expect($location.path()).toBe('/foo');
+        expect($route.current.templateUrl).toBe(sceWrappedUrl);
+      });
+    }
+  );
+
+
+  it('should support custom `$sce` implementations', function() {
+    function MySafeResourceUrl(val) {
+      var self = this;
+      this._val = val;
+      this.getVal = function() {
+        return (this !== self) ? null : this._val;
+      };
+    }
+
+    var $routeProvider;
+
+    module(function($provide, _$routeProvider_) {
+      $routeProvider = _$routeProvider_;
+
+      $provide.decorator('$sce', function($delegate) {
+        $delegate.trustAsResourceUrl = function(url) { return new MySafeResourceUrl(url); };
+        $delegate.getTrustedResourceUrl = function(v) { return v.getVal(); };
+        $delegate.valueOf = function(v) { return v.getVal(); };
+        return $delegate;
+      });
+    });
+
+    inject(function($location, $rootScope, $route, $sce) {
+      $routeProvider.when('/foo', {templateUrl: $sce.trustAsResourceUrl('foo.html')});
+
+      $location.path('/foo');
+      $rootScope.$digest();
+      expect($location.path()).toBe('/foo');
+      expect($sce.valueOf($route.current.templateUrl)).toBe('foo.html');
+    });
+  });
+
+
   describe('redirection', function() {
     it('should support redirection via redirectTo property by updating $location', function() {
       module(function($routeProvider) {

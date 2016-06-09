@@ -5,6 +5,7 @@ var angularFiles = {
     'src/minErr.js',
     'src/Angular.js',
     'src/loader.js',
+    'src/shallowCopy.js',
     'src/stringify.js',
     'src/AngularPublic.js',
     'src/jqLite.js',
@@ -128,6 +129,7 @@ var angularFiles = {
       'src/ngResource/resource.js'
     ],
     'ngRoute': [
+      'src/shallowCopy.js',
       'src/ngRoute/route.js',
       'src/ngRoute/routeParams.js',
       'src/ngRoute/directive/ngView.js'
