@@ -1,6 +1,6 @@
 'use strict';
 
-fdescribe('$route', function() {
+describe('$route', function() {
   var $httpBackend,
       element;
 
