@@ -2765,18 +2765,8 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         // `dst` will never contain hasOwnProperty as DOM parser won't let it.
         // You will get an "InvalidCharacterError: DOM Exception 5" error if you
         // have an attribute like "has-own-property" or "data-has-own-property", etc.
-        if (!dst.hasOwnProperty(key)) {
-
-          if (key === 'class') {
-            safeAddClass($element, value);
-            dst['class'] = value;
-          } else if (key === 'style') {
-            $element.attr('style', $element.attr('style') + ';' + value);
-            dst['style'] = value;
-          } else if (key.charAt(0) !== '$') {
-            dst[key] = value;
-            dstAttr[key] = srcAttr[key];
-          }
+        if (!dst.hasOwnProperty(key) && key.charAt(0) !== '$') {
+          dst.$set(key, value, true, srcAttr[key]);
         }
       });
     }
