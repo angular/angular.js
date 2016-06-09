@@ -2761,19 +2761,19 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
       // copy the new attributes on the old attrs object
       forEach(src, function(value, key) {
-        // Check if we already set this attribute in the loop above
-        if (!dst[key]) {
+        // Check if we already set this attribute in the loop above.
+        // `dst` will never contain hasOwnProperty as DOM parser won't let it.
+        // You will get an "InvalidCharacterError: DOM Exception 5" error if you
+        // have an attribute like "has-own-property" or "data-has-own-property", etc.
+        if (!dst.hasOwnProperty(key)) {
 
           if (key === 'class') {
             safeAddClass($element, value);
-            dst['class'] = (dst['class']   ? dst['class'] + ' ' : '') + value;
+            dst['class'] = value;
           } else if (key === 'style') {
             $element.attr('style', $element.attr('style') + ';' + value);
-            dst['style'] = (dst['style'] ? dst['style'] + ';' : '') + value;
-            // `dst` will never contain hasOwnProperty as DOM parser won't let it.
-            // You will get an "InvalidCharacterError: DOM Exception 5" error if you
-            // have an attribute like "has-own-property" or "data-has-own-property", etc.
-          } else if (key.charAt(0) !== '$' && !dst.hasOwnProperty(key)) {
+            dst['style'] = value;
+          } else if (key.charAt(0) !== '$') {
             dst[key] = value;
             dstAttr[key] = srcAttr[key];
           }

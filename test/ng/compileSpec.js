@@ -989,8 +989,8 @@ describe('$compile', function() {
                 link: function($scope, $element, $attrs) {
                   attrs = $attrs;
                 }
-              }
-            })
+              };
+            });
           });
 
           inject(function($compile, $rootScope) {
