@@ -1,5 +1,7 @@
 'use strict';
 
+/* global shallowCopy: false */
+
 // There are necessary for `shallowCopy()` (included via `src/shallowCopy.js`)
 var isArray = angular.isArray;
 var isObject = angular.isObject;
