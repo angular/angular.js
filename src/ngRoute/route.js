@@ -1,5 +1,9 @@
 'use strict';
 
+// There are necessary for `shallowCopy()` (included via `src/shallowCopy.js`)
+var isArray = angular.isArray;
+var isObject = angular.isObject;
+
 /**
  * @ngdoc module
  * @name ngRoute
@@ -37,17 +41,6 @@ var ngRouteModule = angular.module('ngRoute', ['ng']).
 function $RouteProvider() {
   function inherit(parent, extra) {
     return angular.extend(Object.create(parent), extra);
-  }
-
-  function createShallowCopy(src) {
-    if (!angular.isObject(src)) return src;
-
-    var dst = {};
-    for (var key in src) {
-      dst[key] = src[key];
-    }
-
-    return dst;
   }
 
   var routes = {};
@@ -171,7 +164,7 @@ function $RouteProvider() {
    */
   this.when = function(path, route) {
     //copy original route object to preserve params inherited from proto chain
-    var routeCopy = createShallowCopy(route);
+    var routeCopy = shallowCopy(route);
     if (angular.isUndefined(routeCopy.reloadOnSearch)) {
       routeCopy.reloadOnSearch = true;
     }
