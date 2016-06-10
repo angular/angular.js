@@ -1045,7 +1045,7 @@ describe('$route', function() {
       });
 
 
-      it('should broadcast allow custom redirectTo function to be used', function() {
+      it('should broadcast `$routeChangeError` when redirectTo throws', function() {
         var error = new Error('Test');
 
         module(function($exceptionHandlerProvider, $routeProvider) {
@@ -1224,6 +1224,23 @@ describe('$route', function() {
       });
 
 
+      it('should support returning a promise', function() {
+        module(function($routeProvider) {
+          $routeProvider.
+            when('/foo', {resolveRedirectTo: function($q) { return $q.resolve('/bar'); }}).
+            when('/bar', {template: 'Bar'});
+        });
+
+        inject(function() {
+          $location.path('/foo');
+          $rootScope.$digest();
+
+          expect($location.path()).toBe('/bar');
+          expect($route.current.template).toBe('Bar');
+        });
+      });
+
+
       it('should support dependency injection', function() {
         module(function($provide, $routeProvider) {
           $provide.value('nextRoute', '/bar');
@@ -1265,23 +1282,6 @@ describe('$route', function() {
           $rootScope.$digest();
 
           expect($location.path()).toBe('/passed');
-        });
-      });
-
-
-      it('should support returning a promise', function() {
-        module(function($routeProvider) {
-          $routeProvider.
-            when('/foo', {resolveRedirectTo: function($q) { return $q.resolve('/bar'); }}).
-            when('/bar', {template: 'Bar'});
-        });
-
-        inject(function() {
-          $location.path('/foo');
-          $rootScope.$digest();
-
-          expect($location.path()).toBe('/bar');
-          expect($route.current.template).toBe('Bar');
         });
       });
 
@@ -1427,7 +1427,7 @@ describe('$route', function() {
       });
 
 
-      it('should ignore previous redirection if newer tansition happened', function() {
+      it('should ignore previous redirection if newer transition happened', function() {
         var spies = createSpies();
         var called = false;
         var deferred;
