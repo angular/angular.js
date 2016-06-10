@@ -160,7 +160,7 @@ function $RouteProvider() {
    */
   this.when = function(path, route) {
     //copy original route object to preserve params inherited from proto chain
-    var routeCopy = angular.copy(route);
+    var routeCopy = route;
     if (angular.isUndefined(routeCopy.reloadOnSearch)) {
       routeCopy.reloadOnSearch = true;
     }
