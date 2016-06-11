@@ -90,6 +90,7 @@ This is a short list of libraries with specific support and documentation for wo
 
 ### Server-Specific
 
+* **Java EE:** [Generate AngularJS services from Java with Ocelotds](http://ocelotds.org)
 * **Django:** [Tutorial](http://blog.mourafiq.com/post/55034504632/end-to-end-web-app-with-django-rest-framework), [Integrating AngularJS with Django](http://django-angular.readthedocs.org/en/latest/integration.html), [Getting Started with Django Rest Framework and AngularJS](http://blog.kevinastone.com/getting-started-with-django-rest-framework-and-angularjs.html)
 * **FireBase:** [AngularFire](http://angularfire.com/), [Firebase Foundations for AngularJS](http://blog.watchandcode.com/firebase-foundations/), [Realtime Apps with AngularJS and FireBase (video)](http://www.youtube.com/watch?v=C7ZI7z7qnHU)
 * **Google Cloud Platform: **[with Cloud Endpoints](https://cloud.google.com/developers/articles/angularjs-cloud-endpoints-recipe-for-building-modern-web-applications/), [with Go](https://github.com/GoogleCloudPlatform/appengine-angular-gotodos)
