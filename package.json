@@ -52,7 +52,6 @@
     "gulp-sourcemaps": "^1.2.2",
     "gulp-uglify": "^1.0.1",
     "gulp-util": "^3.0.1",
-    "is-online": "^5.1.1",
     "jasmine-core": "^2.4.0",
     "jasmine-node": "^2.0.0",
     "jasmine-reporters": "~1.0.1",
