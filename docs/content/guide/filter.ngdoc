@@ -31,6 +31,16 @@ Filters may have arguments. The syntax for this is
 E.g. the markup `{{ 1234 | number:2 }}` formats the number 1234 with 2 decimal points using the
 {@link ng.filter:number `number`} filter. The resulting value is `1,234.00`.
 
+### When filters are executed
+
+In templates, filters are only executed when their inputs have changed. This is more performant than executing
+a filter on each {@link ng.$rootScope.Scope#$digest `$digest`} as is the case with {@link guide/expression expressions}.
+However, this is only true for filters that take [primitive values](https://developer.mozilla.org/docs/Glossary/Primitive)
+as inputs. Filters that receive [Objects](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Objects)
+as input are executed on each `$digest`, as it would be too costly to track if they have changed.
+
+This means custom filters should only rely on their inputs and not on external state (e.g. other Angular services).
+See {@link guide/filter#creating-custom-filters Creating custom filters} below for more information.
 
 ## Using filters in controllers, services, and directives
 
@@ -141,7 +151,7 @@ text upper-case.
 </example>
 
 
-## Stateful filters
+### Stateful filters
 
 It is strongly discouraged to write filters that are stateful, because the execution of those can't
 be optimized by Angular, which often leads to performance issues. Many stateful filters can be
