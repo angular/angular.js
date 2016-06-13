@@ -104,7 +104,7 @@ can be used with `ngAttr` instead. The following is a list of known problematic 
 - **size** in `<select>` elements (see [issue 1619](https://github.com/angular/angular.js/issues/1619))
 - **placeholder** in `<textarea>` in Internet Explorer 10/11 (see [issue 5025](https://github.com/angular/angular.js/issues/5025))
 - **type** in `<button>` in Internet Explorer 11 (see [issue 14117](https://github.com/angular/angular.js/issues/5025))
-
+- **value** in `<progress>` in Internet Explorer = 11 (see [issue 7218](https://github.com/angular/angular.js/issues/7218))
 
 ### Embedding interpolation markup inside expressions
 
