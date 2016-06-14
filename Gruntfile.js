@@ -17,6 +17,10 @@ module.exports = function(grunt) {
   NG_VERSION.cdn = versionInfo.cdnVersion;
   var dist = 'angular-'+ NG_VERSION.full;
 
+  if (versionInfo.cdnVersion == null) {
+    throw new Error('Unable to read CDN version, are you offline or has the CDN not been properly pushed?');
+  }
+
   //config
   grunt.initConfig({
     NG_VERSION: NG_VERSION,
