@@ -76,9 +76,10 @@
  * <example name="ngMessageFormat-example-plural" module="msgFmtExample" deps="angular-message-format.js">
  * <file name="index.html">
  *   <div ng-controller="AppController">
-      Select recipients:<br>
-      <select multiple size=5 ng-model="recipients" ng-options="person as person.name for person in people">
-      </select><br>
+ *    <button ng-click="recipients.pop()" id="decreaseRecipients">decreaseRecipients</button><br>
+ *    Select recipients:<br>
+ *    <select multiple size=5 ng-model="recipients" ng-options="person as person.name for person in people">
+ *    </select><br>
  *     <p>{{recipients.length, plural, offset:1
  *             =0    {{{sender.name}} gave no gifts (\#=#)}
  *             =1    {{{sender.name}} gave a gift to {{recipients[0].name}} (\#=#)}
@@ -110,27 +111,17 @@
  *
  * <file name="protractor.js" type="protractor">
  *   describe('MessageFormat plural', function() {
- *     function clickOptionCtrl(select, index) {
- *      element.all(by.css('select option')).then(function(arr) {
-           browser.actions()
-              .mouseMove(arr[index])
-              .keyDown(protractor.Key.CONTROL)
-              .click()
-              .keyUp(protractor.Key.CONTROL)
-              .perform();
-        });
- *     }
  *
  *     it('should pluralize initial values', function() {
  *       var messageElem = element(by.binding('recipients.length')),
- *         select = element(by.css('select'));
+ *           decreaseRecipientsBtn = element(by.id('decreaseRecipients'));
  *
  *       expect(messageElem.getText()).toEqual('Harry Potter gave Alice and 2 other people a gift (#=2)');
-         clickOptionCtrl(select, 2);
+ *       decreaseRecipientsBtn.click();
  *       expect(messageElem.getText()).toEqual('Harry Potter gave Alice and one other person a gift (#=1)');
-         clickOptionCtrl(select, 1);
+ *       decreaseRecipientsBtn.click();
  *       expect(messageElem.getText()).toEqual('Harry Potter gave a gift to Alice (#=0)');
-         clickOptionCtrl(select, 0);
+ *       decreaseRecipientsBtn.click();
  *       expect(messageElem.getText()).toEqual('Harry Potter gave no gifts (#=-1)');
  *     });
  *   });
