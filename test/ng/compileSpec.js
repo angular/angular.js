@@ -7941,7 +7941,7 @@ describe('$compile', function() {
           directive('trans', function() {
             return {
               transclude: true,
-              template: '<div ng-transclude>old stuff! </div>'
+              template: '<div ng-transclude>old stuff!</div>'
             };
           });
         });
@@ -7958,17 +7958,75 @@ describe('$compile', function() {
           directive('trans', function() {
             return {
               transclude: true,
-              template: '<div ng-transclude>old stuff! </div>'
+              template: '<div ng-transclude>old stuff!</div>'
             };
           });
         });
         inject(function(log, $rootScope, $compile) {
           element = $compile('<div trans></div>')($rootScope);
           $rootScope.$apply();
-          expect(sortedHtml(element.html())).toEqual('<div ng-transclude="">old stuff! </div>');
+          expect(sortedHtml(element.html())).toEqual('<div ng-transclude="">old stuff!</div>');
         });
       });
 
+
+      it('should not compile the fallback content if transcluded content is provided', function() {
+        var contentsDidLink = false;
+
+        module(function() {
+          directive('inner', function() {
+            return {
+              restrict: 'E',
+              template: 'old stuff! ',
+              link: function() {
+                contentsDidLink = true;
+              }
+            };
+          });
+
+          directive('trans', function() {
+            return {
+              transclude: true,
+              template: '<div ng-transclude><inner></inner></div>'
+            };
+          });
+        });
+        inject(function($rootScope, $compile) {
+          element = $compile('<div trans>unicorn!</div>')($rootScope);
+          $rootScope.$apply();
+          expect(sortedHtml(element.html())).toEqual('<div ng-transclude="">unicorn!</div>');
+          expect(contentsDidLink).toBe(false);
+        });
+      });
+
+      it('should compile and link the fallback content if no transcluded content is provided', function() {
+        var contentsDidLink = false;
+
+        module(function() {
+          directive('inner', function() {
+            return {
+              restrict: 'E',
+              template: 'old stuff! ',
+              link: function() {
+                contentsDidLink = true;
+              }
+            };
+          });
+
+          directive('trans', function() {
+            return {
+              transclude: true,
+              template: '<div ng-transclude><inner></inner></div>'
+            };
+          });
+        });
+        inject(function(log, $rootScope, $compile) {
+          element = $compile('<div trans></div>')($rootScope);
+          $rootScope.$apply();
+          expect(sortedHtml(element.html())).toEqual('<div ng-transclude=""><inner>old stuff! </inner></div>');
+          expect(contentsDidLink).toBe(true);
+        });
+      });
 
       it('should throw on an ng-transclude element inside no transclusion directive', function() {
         inject(function($rootScope, $compile) {
