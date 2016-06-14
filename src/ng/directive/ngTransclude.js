@@ -159,35 +159,45 @@
  * </example>
  */
 var ngTranscludeMinErr = minErr('ngTransclude');
-var ngTranscludeDirective = ngDirective({
-  restrict: 'EAC',
-  link: function($scope, $element, $attrs, controller, $transclude) {
-
-    if ($attrs.ngTransclude === $attrs.$attr.ngTransclude) {
-      // If the attribute is of the form: `ng-transclude="ng-transclude"`
-      // then treat it like the default
-      $attrs.ngTransclude = '';
-    }
-
-    function ngTranscludeCloneAttachFn(clone) {
-      if (clone.length) {
-        $element.empty();
-        $element.append(clone);
+var ngTranscludeDirective = ['$compile', function($compile) {
+  return {
+    restrict: 'EAC',
+    terminal: true,
+    link: function($scope, $element, $attrs, controller, $transclude) {
+      if ($attrs.ngTransclude === $attrs.$attr.ngTransclude) {
+        // If the attribute is of the form: `ng-transclude="ng-transclude"`
+        // then treat it like the default
+        $attrs.ngTransclude = '';
       }
+
+      function ngTranscludeCloneAttachFn(clone, transcludedScope) {
+        if (clone.length) {
+          $element.empty();
+          $element.append(clone);
+        } else {
+          // Since this is the fallback content rather than the transcluded content,
+          // we compile against the scope we were linked against rather than the transcluded
+          // scope since this is the directive's own content
+          $compile($element.contents())($scope);
+
+          // There is nothing linked against the transcluded scope since no content was available,
+          // so it should be safe to clean up the generated scope.
+          transcludedScope.$destroy();
+        }
+      }
+
+      if (!$transclude) {
+        throw ngTranscludeMinErr('orphan',
+        'Illegal use of ngTransclude directive in the template! ' +
+        'No parent directive that requires a transclusion found. ' +
+        'Element: {0}',
+        startingTag($element));
+      }
+
+      // If there is no slot name defined or the slot name is not optional
+      // then transclude the slot
+      var slotName = $attrs.ngTransclude || $attrs.ngTranscludeSlot;
+      $transclude(ngTranscludeCloneAttachFn, null, slotName);
     }
-
-    if (!$transclude) {
-      throw ngTranscludeMinErr('orphan',
-       'Illegal use of ngTransclude directive in the template! ' +
-       'No parent directive that requires a transclusion found. ' +
-       'Element: {0}',
-       startingTag($element));
-    }
-
-    // If there is no slot name defined or the slot name is not optional
-    // then transclude the slot
-    var slotName = $attrs.ngTransclude || $attrs.ngTranscludeSlot;
-    $transclude(ngTranscludeCloneAttachFn, null, slotName);
-  }
-});
-
+  };
+}];
