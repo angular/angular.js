@@ -13,13 +13,10 @@ module.exports = function(grunt) {
   grunt.loadTasks('lib/grunt');
   grunt.loadNpmTasks('angular-benchpress');
 
-  var NG_VERSION = versionInfo.currentVersion;
-  NG_VERSION.cdn = versionInfo.cdnVersion;
-  var dist = 'angular-'+ NG_VERSION.full;
-
   //config
   grunt.initConfig({
-    NG_VERSION: NG_VERSION,
+    NG_VERSION: undefined,
+    DIST_NAME: undefined,
     bp_build: {
       options: {
         buildPath: 'build/benchmarks',
@@ -309,12 +306,12 @@ module.exports = function(grunt) {
 
     compress: {
       build: {
-        options: {archive: 'build/' + dist +'.zip', mode: 'zip'},
+        options: {archive: 'build/' + grunt.config('DIST_NAME') +'.zip', mode: 'zip'},
         src: ['**'],
         cwd: 'build',
         expand: true,
         dot: true,
-        dest: dist + '/'
+        dest: grunt.config('DIST_NAME') + '/'
       }
     },
 
@@ -335,8 +332,12 @@ module.exports = function(grunt) {
 
 
     write: {
-      versionTXT: {file: 'build/version.txt', val: NG_VERSION.full},
-      versionJSON: {file: 'build/version.json', val: JSON.stringify(NG_VERSION)}
+      versionTXT: {file: 'build/version.txt', val: function() {
+        return grunt.config.get('NG_VERSION').full;
+      }},
+      versionJSON: {file: 'build/version.json', val: function() {
+        return JSON.stringify(grunt.config.get('NG_VERSION'));
+      }}
     },
 
     bump: {
@@ -353,7 +354,6 @@ module.exports = function(grunt) {
   if (!process.env.TRAVIS) {
     grunt.task.run('shell:npm-install');
   }
-
 
 
   //alias tasks
