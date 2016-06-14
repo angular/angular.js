@@ -1126,7 +1126,11 @@ function baseInputType(scope, element, attr, ctrl, $sniffer, $browser) {
     });
   }
 
-  var timeout;
+  var timeout, oldVal;
+  var viewValueUpdated = false, msieInput = msie >= 10 && msie <= 11;
+  if (msieInput) {
+    oldVal = element.val();
+  }
 
   var listener = function(ev) {
     if (timeout) {
@@ -1152,10 +1156,18 @@ function baseInputType(scope, element, attr, ctrl, $sniffer, $browser) {
     }
   };
 
+  function ieListener(ev) {
+    var val = element.val();
+    if (val === oldVal && !viewValueUpdated) return;
+    oldVal = val;
+    viewValueUpdated = false;
+    listener(ev);
+  }
+
   // if the browser does support "input" event, we are fine - except on IE9 which doesn't fire the
   // input event on backspace, delete or cut
   if ($sniffer.hasEvent('input')) {
-    element.on('input', listener);
+    element.on('input', msie ? ieListener : listener);
   } else {
     var deferListener = function(ev, input, origValue) {
       if (!timeout) {
@@ -1212,6 +1224,10 @@ function baseInputType(scope, element, attr, ctrl, $sniffer, $browser) {
     // Workaround for Firefox validation #12102.
     var value = ctrl.$isEmpty(ctrl.$viewValue) ? '' : ctrl.$viewValue;
     if (element.val() !== value) {
+      // Workaround for IE 10 & 11 input updates #11193
+      if (msieInput) {
+        viewValueUpdated = true;
+      }
       element.val(value);
     }
   };

@@ -135,7 +135,7 @@ describe('$sniffer', function() {
       // IE10+ implementation is fubared when mixed with placeholders
       mockDivElement = {oninput: noop};
 
-      expect($sniffer.hasEvent('input')).toBe(!(msie && msie <= 11));
+      expect($sniffer.hasEvent('input')).toBe(!(msie && msie <= 9));
     });
   });
 
