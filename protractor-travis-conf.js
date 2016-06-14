@@ -38,7 +38,7 @@ if (process.env.BROWSER_PROVIDER === 'browserstack') {
     }),
     capabilitiesForSauceLabs({
       browserName: 'firefox',
-      version: '28'
+      version: '46'
     }),
     capabilitiesForSauceLabs({
       browserName: 'safari',

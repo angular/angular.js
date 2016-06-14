@@ -111,9 +111,11 @@
  * <file name="protractor.js" type="protractor">
  *   describe('MessageFormat plural', function() {
  *     function clickOptionCtrl(select, index) {
- *      element.all(by.css('select option')).then(function(arr) {
+ *      element.all(by.css('select option')).then(function(options) {
+           // This doesn't actually click the option, but it focuses it for the next actions
+ *         options[index].click();
+ *
            browser.actions()
-              .mouseMove(arr[index])
               .keyDown(protractor.Key.CONTROL)
               .click()
               .keyUp(protractor.Key.CONTROL)
