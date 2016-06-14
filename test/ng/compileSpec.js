@@ -7937,11 +7937,23 @@ describe('$compile', function() {
 
       it('should clear contents of the ng-translude element before appending transcluded content' +
         ' if transcluded content exists', function() {
+        var contentsDidLink = false;
+
         module(function() {
+          directive('inner', function() {
+            return {
+              restrict: 'E',
+              template: 'old stuff! ',
+              link: function() {
+                contentsDidLink = true;
+              }
+            };
+          });
+
           directive('trans', function() {
             return {
               transclude: true,
-              template: '<div ng-transclude>old stuff! </div>'
+              template: '<div ng-transclude><inner></inner></div>'
             };
           });
         });
@@ -7949,23 +7961,37 @@ describe('$compile', function() {
           element = $compile('<div trans>unicorn!</div>')($rootScope);
           $rootScope.$apply();
           expect(sortedHtml(element.html())).toEqual('<div ng-transclude="">unicorn!</div>');
+          expect(contentsDidLink).toBe(false);
         });
       });
 
       it('should NOT clear contents of the ng-translude element before appending transcluded content' +
         ' if transcluded content does NOT exist', function() {
+        var contentsDidLink = false;
+
         module(function() {
+          directive('inner', function() {
+            return {
+              restrict: 'E',
+              template: 'old stuff! ',
+              link: function() {
+                contentsDidLink = true;
+              }
+            };
+          });
+
           directive('trans', function() {
             return {
               transclude: true,
-              template: '<div ng-transclude>old stuff! </div>'
+              template: '<div ng-transclude><inner></inner></div>'
             };
           });
         });
         inject(function(log, $rootScope, $compile) {
           element = $compile('<div trans></div>')($rootScope);
           $rootScope.$apply();
-          expect(sortedHtml(element.html())).toEqual('<div ng-transclude="">old stuff! </div>');
+          expect(sortedHtml(element.html())).toEqual('<div ng-transclude=""><inner>old stuff! </inner></div>');
+          expect(contentsDidLink).toBe(true);
         });
       });
 
