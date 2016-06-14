@@ -32,8 +32,8 @@ if (process.env.BROWSER_PROVIDER === 'browserstack') {
       version: '51'
     }),
     capabilitiesForSauceLabs({
-      browserName: 'chrome_win',
-      platform: 'Windows10',
+      browserName: 'chrome',
+      platform: 'Windows 10',
       version: '51'
     }),
     capabilitiesForSauceLabs({
