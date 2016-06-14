@@ -10,20 +10,30 @@
 /* global stringify: false */
 
 /**
- * @ngdoc service
- * @name $$messageFormat
+ * @ngdoc module
+ * @name ngMessageFormat
+ * @packageName angular-message-format
  *
  * @description
- * Angular internal service to recognize MessageFormat extensions in interpolation expressions.
- * For more information, see:
- * https://docs.google.com/a/google.com/document/d/1pbtW2yvtmFBikfRrJd8VAsabiFkKezmYZ_PbgdjQOVU/edit
  *
- * @example
- * ## Gender
+ * ## What is  ngMessageFormat?
+ *
+ * The ngMessageFormat module extends the Angular {@link ng.$interpolate `$interpolate`} service
+ * with a syntax for handling pluralization and gender specific messages, which is based on the
+ * [ICU MessageFormat syntax][ICU].
+ *
+ * See [the design doc][ngMessageFormat doc] for more information.
+ *
+ * [ICU]: http://userguide.icu-project.org/formatparse/messages#TOC-MessageFormat
+ * [ngMessageFormat doc]: https://docs.google.com/a/google.com/document/d/1pbtW2yvtmFBikfRrJd8VAsabiFkKezmYZ_PbgdjQOVU/edit
+ *
+ * ## Examples
+ *
+ * ### Gender
  *
  * This example uses the "select" keyword to specify the message based on gender.
  *
- * <example name="ngMessageFormat-example-gender" module="msgFmtExample" deps="angular-message-format.min.js">
+ * <example name="ngMessageFormat-example-gender" module="msgFmtExample" deps="angular-message-format.js">
  * <file name="index.html">
  *  <div ng-controller="AppController">
  *    Select Recipient:<br>
@@ -54,8 +64,7 @@
  * </file>
  * </example>
  *
- * @example
- * ## Plural
+ * ### Plural
  *
  * This example shows how the "plural" keyword is used to account for a variable number of entities.
  * The "#" variable holds the current number and can be embedded in the message.
@@ -64,7 +73,7 @@
  *
  * The example also shows the "offset" keyword, which allows you to offset the value of the "#" variable.
  *
- * <example name="ngMessageFormat-example-plural" module="msgFmtExample" deps="angular-message-format.min.js">
+ * <example name="ngMessageFormat-example-plural" module="msgFmtExample" deps="angular-message-format.js">
  * <file name="index.html">
  *   <div ng-controller="AppController">
       Select recipients:<br>
@@ -128,12 +137,11 @@
  * </file>
  * </example>
  *
- * @example
- * ## Plural and Gender
+ * ### Plural and Gender together
  *
  * This example shows how you can specify gender rules for specific plural matches - in this case,
  * =1 is special cased for gender.
- * <example name="ngMessageFormat-example-plural-gender" module="msgFmtExample" deps="angular-message-format.min.js">
+ * <example name="ngMessageFormat-example-plural-gender" module="msgFmtExample" deps="angular-message-format.js">
  *   <file name="index.html">
  *     <div ng-controller="AppController">
        Select recipients:<br>
@@ -170,6 +178,7 @@
  *    </file>
     </example>
  */
+
 var $$MessageFormatFactory = ['$parse', '$locale', '$sce', '$exceptionHandler', function $$messageFormat(
                    $parse,   $locale,   $sce,   $exceptionHandler) {
 
@@ -207,13 +216,6 @@ var $$interpolateDecorator = ['$$messageFormat', '$delegate', function $$interpo
   return interpolate;
 }];
 
-
-/**
- * @ngdoc module
- * @name ngMessageFormat
- * @packageName angular-message-format
- * @description
- */
 var module = window['angular']['module']('ngMessageFormat', ['ng']);
 module['factory']('$$messageFormat', $$MessageFormatFactory);
 module['config'](['$provide', function($provide) {
