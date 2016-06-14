@@ -18,18 +18,64 @@
  * For more information, see:
  * https://docs.google.com/a/google.com/document/d/1pbtW2yvtmFBikfRrJd8VAsabiFkKezmYZ_PbgdjQOVU/edit
  *
- * ## Example
+ * @example
+ * ## Gender
  *
- * <example name="ngMessageFormat-example" module="msgFmtExample" deps="angular-message-format.min.js">
+ * This example uses the "select" keyword to specify the message based on gender.
+ *
+ * <example name="ngMessageFormat-example-gender" module="msgFmtExample" deps="angular-message-format.min.js">
+ * <file name="index.html">
+ *  <div ng-controller="AppController">
+ *    Select Recipient:<br>
+      <select ng-model="recipient" ng-options="person as person.name for person in recipients">
+      </select>
+      <p>{{recipient.gender, select,
+                male {{{recipient.name}} unwrapped his gift. }
+                female {{{recipient.name}} unwrapped her gift. }
+                other {{{recipient.name}} unwrapped their gift. }
+      }}</p>
+ *  </div>
+ * </file>
+ * <file name="script.js">
+ *   function Person(name, gender) {
+ *     this.name = name;
+ *     this.gender = gender;
+ *   }
+ *
+ *   var alice   = new Person("Alice", "female"),
+ *       bob     = new Person("Bob", "male"),
+ *       ashley = new Person("Ashley", "");
+ *
+ *   angular.module('msgFmtExample', ['ngMessageFormat'])
+ *     .controller('AppController', ['$scope', function($scope) {
+ *         $scope.recipients = [alice, bob, ashley];
+ *         $scope.recipient = $scope.recipients[0];
+ *       }]);
+ * </file>
+ * </example>
+ *
+ * @example
+ * ## Plural
+ *
+ * This example shows how the "plural" keyword is used to account for a variable number of entities.
+ * The "#" variable holds the current number and can be embedded in the message.
+ *
+ * Note that "=1" takes precedence over "one".
+ *
+ * The example also shows the "offset" keyword, which allows you to offset the value of the "#" variable.
+ *
+ * <example name="ngMessageFormat-example-plural" module="msgFmtExample" deps="angular-message-format.min.js">
  * <file name="index.html">
  *   <div ng-controller="AppController">
- *     <button ng-click="decreaseRecipients()" id="decreaseRecipients">decreaseRecipients</button><br>
- *     <span>{{recipients.length, plural, offset:1
+      Select recipients:<br>
+      <select multiple size=5 ng-model="recipients" ng-options="person as person.name for person in people">
+      </select><br>
+ *     <p>{{recipients.length, plural, offset:1
  *             =0    {{{sender.name}} gave no gifts (\#=#)}
- *             =1    {{{sender.name}} gave one gift to {{recipients[0].name}} (\#=#)}
+ *             =1    {{{sender.name}} gave a gift to {{recipients[0].name}} (\#=#)}
  *             one   {{{sender.name}} gave {{recipients[0].name}} and one other person a gift (\#=#)}
  *             other {{{sender.name}} gave {{recipients[0].name}} and # other people a gift (\#=#)}
- *           }}</span>
+ *           }}</p>
  *   </div>
  * </file>
  *
@@ -41,34 +87,88 @@
  *
  *   var alice   = new Person("Alice", "female"),
  *       bob     = new Person("Bob", "male"),
- *       charlie = new Person("Charlie", "male"),
- *       harry   = new Person("Harry Potter", "male");
+ *       sarah     = new Person("Sarah", "female"),
+ *       harry   = new Person("Harry Potter", "male"),
+ *       ashley   = new Person("Ashley", "");
  *
  *   angular.module('msgFmtExample', ['ngMessageFormat'])
  *     .controller('AppController', ['$scope', function($scope) {
- *         $scope.recipients = [alice, bob, charlie];
+ *         $scope.people = [alice, bob, sarah, ashley];
+ *         $scope.recipients = [alice, bob, sarah];
  *         $scope.sender = harry;
- *         $scope.decreaseRecipients = function() {
- *           --$scope.recipients.length;
- *         };
  *       }]);
  * </file>
  *
  * <file name="protractor.js" type="protractor">
  *   describe('MessageFormat plural', function() {
+ *     function clickOptionCtrl(select, index) {
+ *      element.all(by.css('select option')).then(function(arr) {
+           browser.actions()
+              .mouseMove(arr[index])
+              .keyDown(protractor.Key.CONTROL)
+              .click()
+              .keyUp(protractor.Key.CONTROL)
+              .perform();
+        });
+ *     }
+ *
  *     it('should pluralize initial values', function() {
- *       var messageElem = element(by.binding('recipients.length')), decreaseRecipientsBtn = element(by.id('decreaseRecipients'));
+ *       var messageElem = element(by.binding('recipients.length')),
+ *         select = element(by.css('select'));
+ *
  *       expect(messageElem.getText()).toEqual('Harry Potter gave Alice and 2 other people a gift (#=2)');
- *       decreaseRecipientsBtn.click();
+         clickOptionCtrl(select, 2);
  *       expect(messageElem.getText()).toEqual('Harry Potter gave Alice and one other person a gift (#=1)');
- *       decreaseRecipientsBtn.click();
- *       expect(messageElem.getText()).toEqual('Harry Potter gave one gift to Alice (#=0)');
- *       decreaseRecipientsBtn.click();
+         clickOptionCtrl(select, 1);
+ *       expect(messageElem.getText()).toEqual('Harry Potter gave a gift to Alice (#=0)');
+         clickOptionCtrl(select, 0);
  *       expect(messageElem.getText()).toEqual('Harry Potter gave no gifts (#=-1)');
  *     });
  *   });
  * </file>
  * </example>
+ *
+ * @example
+ * ## Plural and Gender
+ *
+ * This example shows how you can specify gender rules for specific plural matches - in this case,
+ * =1 is special cased for gender.
+ * <example name="ngMessageFormat-example-plural-gender" module="msgFmtExample" deps="angular-message-format.min.js">
+ *   <file name="index.html">
+ *     <div ng-controller="AppController">
+       Select recipients:<br>
+       <select multiple size=5 ng-model="recipients" ng-options="person as person.name for person in people">
+       </select><br>
+        <p>{{recipients.length, plural,
+          =0 {{{sender.name}} has not given any gifts to anyone.}
+          =1 {  {{recipients[0].gender, select,
+                 female { {{sender.name}} gave {{recipients[0].name}} her gift.}
+                 male { {{sender.name}} gave {{recipients[0].name}} his gift.}
+                 other { {{sender.name}} gave {{recipients[0].name}} their gift.}
+                }}
+              }
+          other {{{sender.name}} gave {{recipients.length}} people gifts.}
+          }}</p>
+      </file>
+ *    <file name="script.js">
+ *      function Person(name, gender) {
+ *        this.name = name;
+ *        this.gender = gender;
+ *      }
+ *
+ *      var alice   = new Person("Alice", "female"),
+ *          bob     = new Person("Bob", "male"),
+ *          harry   = new Person("Harry Potter", "male"),
+ *          ashley   = new Person("Ashley", "");
+ *
+ *      angular.module('msgFmtExample', ['ngMessageFormat'])
+ *        .controller('AppController', ['$scope', function($scope) {
+ *            $scope.people = [alice, bob, ashley];
+ *            $scope.recipients = [alice];
+ *            $scope.sender = harry;
+ *          }]);
+ *    </file>
+    </example>
  */
 var $$MessageFormatFactory = ['$parse', '$locale', '$sce', '$exceptionHandler', function $$messageFormat(
                    $parse,   $locale,   $sce,   $exceptionHandler) {
