@@ -1,12 +1,9 @@
 'use strict';
 
-/* jshint ignore:start */
-// this code is in the core, but not in angular-messages.js
-var isArray = angular.isArray;
-var forEach = angular.forEach;
-var isString = angular.isString;
-var jqLite = angular.element;
-/* jshint ignore:end */
+var forEach;
+var isArray;
+var isString;
+var jqLite;
 
 /**
  * @ngdoc module
@@ -262,7 +259,14 @@ var jqLite = angular.element;
  *
  * {@link ngAnimate Click here} to learn how to use JavaScript animations or to learn more about ngAnimate.
  */
-angular.module('ngMessages', [])
+angular.module('ngMessages', [], function initAngularHelpers() {
+  // Access helpers from angular core.
+  // Do it inside a `config` block to ensure `window.angular` is available.
+  forEach = angular.forEach;
+  isArray = angular.isArray;
+  isString = angular.isString;
+  jqLite = angular.element;
+})
 
   /**
    * @ngdoc directive

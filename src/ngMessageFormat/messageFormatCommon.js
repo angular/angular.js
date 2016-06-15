@@ -5,11 +5,9 @@
 // This file is compiled with Closure compiler's ADVANCED_OPTIMIZATIONS flag! Be wary of using
 // constructs incompatible with that mode.
 
-var $interpolateMinErr = window['angular']['$interpolateMinErr'];
-
-var noop = window['angular']['noop'],
-    isFunction = window['angular']['isFunction'],
-    toJson = window['angular']['toJson'];
+/* global isFunction: false */
+/* global noop: false */
+/* global toJson: false */
 
 function stringify(value) {
   if (value == null /* null/undefined */) { return ''; }
