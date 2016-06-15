@@ -210,7 +210,7 @@ function shallowClearAndCopy(src, dst) {
  *   as  methods with the `$` prefix. This allows you to easily perform CRUD operations (create,
  *   read, update, delete) on server-side data like this:
  *   ```js
- *   var User = $resource('/user/:userId', {userId:'@id'});
+ *   var User = $resource('/user/:userId', {userId:'@userId'});
  *   var user = User.get({userId:123}, function() {
  *     user.abc = true;
  *     user.$save();
@@ -327,7 +327,7 @@ function shallowClearAndCopy(src, dst) {
  * operations (create, read, update, delete) on server-side data.
 
    ```js
-     var User = $resource('/user/:userId', {userId:'@id'});
+     var User = $resource('/user/:userId', {userId:'@userId'});
      User.get({userId:123}, function(user) {
        user.abc = true;
        user.$save();
@@ -339,7 +339,7 @@ function shallowClearAndCopy(src, dst) {
  * could rewrite the above example and get access to http headers as:
  *
    ```js
-     var User = $resource('/user/:userId', {userId:'@id'});
+     var User = $resource('/user/:userId', {userId:'@userId'});
      User.get({userId:123}, function(user, getResponseHeaders){
        user.abc = true;
        user.$save(function(user, putResponseHeaders) {
@@ -352,7 +352,7 @@ function shallowClearAndCopy(src, dst) {
  * You can also access the raw `$http` promise via the `$promise` property on the object returned
  *
    ```
-     var User = $resource('/user/:userId', {userId:'@id'});
+     var User = $resource('/user/:userId', {userId:'@userId'});
      User.get({userId:123})
          .$promise.then(function(user) {
            $scope.user = user;
