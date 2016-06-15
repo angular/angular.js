@@ -549,8 +549,8 @@ if the animation was canceled or not. Use this function to do any necessary clea
 Our application is now much more pleasant to use, thanks to the smooth transitions between pages
 and UI states.
 
-There you have it! We have created a web application in a relatively short amount of time. In the
-{@link the_end closing notes} we will cover where to go from here.
+We are ready for
+{@link step_15 step 15} to learn how to fix the accessibility (_a11y_) issues of the application.
 
 
 <ul doc-tutorial-nav="14"></ul>
