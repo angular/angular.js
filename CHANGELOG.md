@@ -1493,6 +1493,17 @@ requirement more strict and alerts the developer explicitly.
    [#9936](https://github.com/angular/angular.js/issues/9936))
 
 
+<a name="1.5.0-beta.0"></a>
+
+# 1.5.0-beta.0 intialization-processation (2015-09-17)
+
+## Bug Fixes
+
+- **jqLite:**: properly handle dash-delimited node names in `jqLiteBuildFragment`
+  ([cdd1227a3](https://github.com/angular/angular.js/commit/cdd1227a308edd34d31b67f338083b6e0c4c0db9),
+  [#10617](https://github.com/angular/angular.js/issues/10617))
+
+
 <a name="1.4.6"></a>
 # 1.4.6 multiplicative-elevation (2015-09-17)
 
