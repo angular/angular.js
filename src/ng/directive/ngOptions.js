@@ -587,8 +587,14 @@ var ngOptionsDirective = ['$compile', '$document', '$parse', function($compile, 
       selectElement.empty();
 
       // We need to do this here to ensure that the options object is defined
-      // when we first hit it in writeNgOptionsValue
-      updateOptions();
+      // when we first hit it in writeNgOptionsValue updateOptions();
+      // The watchCollection will then initalize the actual options and render them
+      options = {
+        getViewValueFromOption: noop,
+        getOptionFromViewValue: noop,
+        selectValueMap: {},
+        items: []
+      };
 
       // We will re-render the option elements if the option values or labels change
       scope.$watchCollection(ngOptions.getWatchables, updateOptions);
