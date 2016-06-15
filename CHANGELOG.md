@@ -23,6 +23,9 @@
 - **ngMessages:** create new scope for ngMessage, clean it up correctly
   ([56f33af8](https://github.com/angular/angular.js/commit/56f33af89045e2ec18d144d9d1ef73affbe51959),
    [#14307](https://github.com/angular/angular.js/issues/14307))
+- **ngMessagesInclude:** don't break on empty (or whitespace-only) templates
+  ([01b8772c](https://github.com/angular/angular.js/commit/01b8772cca55916376355a2ae58d3ab7832a4bc2),
+   [#12941](https://github.com/angular/angular.js/issues/12941), [#14726](https://github.com/angular/angular.js/issues/14726))
 - **ngMock#$controller:** properly assign bindings to all types of controllers (e.g. class-based)
   ([db58801a](https://github.com/angular/angular.js/commit/db58801a55c91df755414387dc00fee5902bb5f3),
    [#14437](https://github.com/angular/angular.js/issues/14437), [#14439](https://github.com/angular/angular.js/issues/14439))
@@ -39,9 +42,6 @@
 - **limitTo:** add support for array-like objects
   ([b03957f0](https://github.com/angular/angular.js/commit/b03957f0047fcfe996abc8efe97f9e2be2c2e13a),
    [#14657](https://github.com/angular/angular.js/issues/14657), [#14694](https://github.com/angular/angular.js/issues/14694))
-- **ngMessagesInclude:** don't break on empty (or whitespace-only) templates
-  ([01b8772c](https://github.com/angular/angular.js/commit/01b8772cca55916376355a2ae58d3ab7832a4bc2),
-   [#12941](https://github.com/angular/angular.js/issues/12941), [#14726](https://github.com/angular/angular.js/issues/14726))
 - **orderBy:** add support for custom comparators
   ([2e33d170](https://github.com/angular/angular.js/commit/2e33d170be7eb72f40fd57a8f66631583572fbf2),
    [#13238](https://github.com/angular/angular.js/issues/13238), [#14455](https://github.com/angular/angular.js/issues/14455), [#5123](https://github.com/angular/angular.js/issues/5123), [#8112](https://github.com/angular/angular.js/issues/8112), [#10368](https://github.com/angular/angular.js/issues/10368), [#14468](https://github.com/angular/angular.js/issues/14468))
