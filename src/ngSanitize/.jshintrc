@@ -4,6 +4,6 @@
     "window": false,
 
     "angular": false,
-    "htmlSanitizeWriter": false
+    "sanitizeText": false
   }
 }
