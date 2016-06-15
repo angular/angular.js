@@ -1,3 +1,16 @@
+<a name="1.4.12"></a>
+# 1.4.12 cultural-conservation (2016-06-15)
+
+_This release contains only documentation updates. Specifically, it restores the old (deprecated)
+version of the tutorial on the 1.4.x branch. If someone needs a version of the tutorial that is
+compatible with v1.4, they can find it at https://code.angularjs.org/1.4.12/docs/tutorial/._
+
+_As always, the latest and greatest version of the tutorial can be found on the master branch
+(at https://docs.angularjs.org/tutorial/). We strongly recommend using this version as it is kept
+up-to-date, showcases several new features introduced in v1.5 or later and follows modern best
+practices._
+
+
 <a name="1.5.6"></a>
 # 1.5.6 arrow-stringification (2016-05-27)
 
