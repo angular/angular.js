@@ -110,29 +110,16 @@
  *
  * <file name="protractor.js" type="protractor">
  *   describe('MessageFormat plural', function() {
- *     function clickOptionCtrl(select, index) {
- *      element.all(by.css('select option')).then(function(options) {
-           // This doesn't actually click the option, but it focuses it for the next actions
- *         options[index].click();
- *
-           browser.actions()
-              .keyDown(protractor.Key.CONTROL)
-              .click()
-              .keyUp(protractor.Key.CONTROL)
-              .perform();
-        });
- *     }
  *
  *     it('should pluralize initial values', function() {
  *       var messageElem = element(by.binding('recipients.length')),
- *         select = element(by.css('select'));
  *
  *       expect(messageElem.getText()).toEqual('Harry Potter gave Alice and 2 other people a gift (#=2)');
-         clickOptionCtrl(select, 2);
+ *       element(by.cssContainingText('option', 'Sarah')).click();
  *       expect(messageElem.getText()).toEqual('Harry Potter gave Alice and one other person a gift (#=1)');
-         clickOptionCtrl(select, 1);
+ *       element(by.cssContainingText('option', 'Bob')).click();
  *       expect(messageElem.getText()).toEqual('Harry Potter gave a gift to Alice (#=0)');
-         clickOptionCtrl(select, 0);
+ *       element(by.cssContainingText('option', 'Alice')).click();
  *       expect(messageElem.getText()).toEqual('Harry Potter gave no gifts (#=-1)');
  *     });
  *   });
