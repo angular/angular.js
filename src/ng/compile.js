@@ -509,7 +509,7 @@
  *
  *   * `transcludeFn` - A transclude linking function pre-bound to the correct transclusion scope.
  *     This is the same as the `$transclude`
- *     parameter of directive controllers, see there for details.
+ *     parameter of directive controllers, see {@link #-controller- here} for details.
  *     `function([scope], cloneLinkingFn, futureParentElement)`.
  *
  * #### Pre-linking function
