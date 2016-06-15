@@ -112,7 +112,7 @@
  *   describe('MessageFormat plural', function() {
  *
  *     it('should pluralize initial values', function() {
- *       var messageElem = element(by.binding('recipients.length')),
+ *       var messageElem = element(by.binding('recipients.length'));
  *
  *       expect(messageElem.getText()).toEqual('Harry Potter gave Alice and 2 other people a gift (#=2)');
  *       element(by.cssContainingText('option', 'Sarah')).click();
