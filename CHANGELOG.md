@@ -1,3 +1,52 @@
+<a name="1.5.7"></a>
+# 1.5.7 hexagonal-circumvolution (2016-06-15)
+
+
+## Bug Fixes
+
+- **$compile:**
+  - don't add merged attributes twice to $attrs
+  ([ebbaa4ac](https://github.com/angular/angular.js/commit/ebbaa4ac5e3559df9267203438a0bb18c2d3b7d8),
+   [#8159](https://github.com/angular/angular.js/issues/8159), [#14737](https://github.com/angular/angular.js/issues/14737))
+  - cope with `$onChanges` hooks throwing
+  ([3749c858](https://github.com/angular/angular.js/commit/3749c85829406ca57cc5729e80696c7f34134068),
+   [#14444](https://github.com/angular/angular.js/issues/14444), [#14463](https://github.com/angular/angular.js/issues/14463))
+- **$parse:** allow arguments to contain filter chains
+  ([cc6dcb4b](https://github.com/angular/angular.js/commit/cc6dcb4bc28aadff4f62d76d6451b0f80b928e69),
+   [#4175](https://github.com/angular/angular.js/issues/4175), [#4168](https://github.com/angular/angular.js/issues/4168), [#14720](https://github.com/angular/angular.js/issues/14720))
+- **$routeProvider:** do not deep-copy route definition objects
+  ([6d0dcca6](https://github.com/angular/angular.js/commit/6d0dcca6f18a353a12c356dc96e05475d351b795),
+   [#14478](https://github.com/angular/angular.js/issues/14478), [#14699](https://github.com/angular/angular.js/issues/14699), [#14750](https://github.com/angular/angular.js/issues/14750))
+- **input[email]:** improve email address validation
+  ([f423dc6b](https://github.com/angular/angular.js/commit/f423dc6b51a9b4a09728a287a2cabda7d45f192e),
+   [#14719](https://github.com/angular/angular.js/issues/14719))
+- **ngMessages:** create new scope for ngMessage, clean it up correctly
+  ([56f33af8](https://github.com/angular/angular.js/commit/56f33af89045e2ec18d144d9d1ef73affbe51959),
+   [#14307](https://github.com/angular/angular.js/issues/14307))
+- **ngMock#$controller:** properly assign bindings to all types of controllers (e.g. class-based)
+  ([db58801a](https://github.com/angular/angular.js/commit/db58801a55c91df755414387dc00fee5902bb5f3),
+   [#14437](https://github.com/angular/angular.js/issues/14437), [#14439](https://github.com/angular/angular.js/issues/14439))
+- **ngMockE2E:** allow $httpBackend.passThrough() to work when ngMock is loaded
+  ([6685043a](https://github.com/angular/angular.js/commit/6685043ad40acc50d7088f87e2a71f76d2265306),
+   [#1434](https://github.com/angular/angular.js/issues/1434), [#13124](https://github.com/angular/angular.js/issues/13124))
+- **ngSanitize:** call attribute setter in linky for all links
+  ([c4fad6ad](https://github.com/angular/angular.js/commit/c4fad6ad617af025984ca401054f7b402aa28f1d),
+   [#14707](https://github.com/angular/angular.js/issues/14707))
+
+
+## Features
+
+- **limitTo:** add support for array-like objects
+  ([b03957f0](https://github.com/angular/angular.js/commit/b03957f0047fcfe996abc8efe97f9e2be2c2e13a),
+   [#14657](https://github.com/angular/angular.js/issues/14657), [#14694](https://github.com/angular/angular.js/issues/14694))
+- **ngMessagesInclude:** don't break on empty (or whitespace-only) templates
+  ([01b8772c](https://github.com/angular/angular.js/commit/01b8772cca55916376355a2ae58d3ab7832a4bc2),
+   [#12941](https://github.com/angular/angular.js/issues/12941), [#14726](https://github.com/angular/angular.js/issues/14726))
+- **orderBy:** add support for custom comparators
+  ([2e33d170](https://github.com/angular/angular.js/commit/2e33d170be7eb72f40fd57a8f66631583572fbf2),
+   [#13238](https://github.com/angular/angular.js/issues/13238), [#14455](https://github.com/angular/angular.js/issues/14455), [#5123](https://github.com/angular/angular.js/issues/5123), [#8112](https://github.com/angular/angular.js/issues/8112), [#10368](https://github.com/angular/angular.js/issues/10368), [#14468](https://github.com/angular/angular.js/issues/14468))
+
+
 <a name="1.4.12"></a>
 # 1.4.12 cultural-conservation (2016-06-15)
 
