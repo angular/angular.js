@@ -31,6 +31,21 @@ Filters may have arguments. The syntax for this is
 E.g. the markup `{{ 1234 | number:2 }}` formats the number 1234 with 2 decimal points using the
 {@link ng.filter:number `number`} filter. The resulting value is `1,234.00`.
 
+### When filters are executed
+
+In templates, filters are only executed when their inputs have changed. This is more performant than executing
+a filter on each {@link ng.$rootScope.Scope#$digest `$digest`} as is the case with {@link guide/expression expressions}.
+
+There are two exceptions to this rule:
+
+1. In general, this applies only to filters that take [primitive values](https://developer.mozilla.org/docs/Glossary/Primitive)
+as inputs. Filters that receive [Objects](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Objects)
+as input are executed on each `$digest`, as it would be too costly to track if the inputs have changed.
+
+2. Filters that are marked as `$stateful` are also executed on each $digest.
+See {@link guide/filter#stateful-filters Stateful filters} for more information. Note that no Angular
+core filters are $stateful.
+
 
 ## Using filters in controllers, services, and directives
 
@@ -93,8 +108,9 @@ as the first argument. Any filter arguments are passed in as additional argument
 function.
 
 The filter function should be a [pure function](http://en.wikipedia.org/wiki/Pure_function), which
-means that it should be stateless and idempotent. Angular relies on these properties and executes
-the filter only when the inputs to the function change.
+means that it should be stateless and idempotent, and not rely for example on other Angular services.
+Angular relies on this contract and will by default execute a filter only when the inputs to the function change.
+{@link guide/filter#stateful-filters Stateful filters} are possible, but less performant.
 
 <div class="alert alert-warning">
 **Note:** Filter names must be valid angular {@link expression} identifiers, such as `uppercase` or `orderBy`.
@@ -141,7 +157,7 @@ text upper-case.
 </example>
 
 
-## Stateful filters
+### Stateful filters
 
 It is strongly discouraged to write filters that are stateful, because the execution of those can't
 be optimized by Angular, which often leads to performance issues. Many stateful filters can be
