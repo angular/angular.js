@@ -3,7 +3,6 @@
   "globals": {
     "window": false,
 
-    "angular": false,
-    "sanitizeText": false
+    "angular": false
   }
 }

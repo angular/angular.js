@@ -5,7 +5,10 @@
 // This file is compiled with Closure compiler's ADVANCED_OPTIMIZATIONS flag! Be wary of using
 // constructs incompatible with that mode.
 
-/* global $interpolateMinErr: false */
+/* global $interpolateMinErr: true */
+/* global isFunction: true */
+/* global noop: true */
+/* global toJson: true */
 /* global MessageFormatParser: false */
 /* global stringify: false */
 
@@ -207,8 +210,18 @@ var $$interpolateDecorator = ['$$messageFormat', '$delegate', function $$interpo
   return interpolate;
 }];
 
+var $interpolateMinErr;
+var isFunction;
+var noop;
+var toJson;
+
 var module = window['angular']['module']('ngMessageFormat', ['ng']);
 module['factory']('$$messageFormat', $$MessageFormatFactory);
 module['config'](['$provide', function($provide) {
+  $interpolateMinErr = window['angular']['$interpolateMinErr'];
+  isFunction = window['angular']['isFunction'];
+  noop = window['angular']['noop'];
+  toJson = window['angular']['toJson'];
+
   $provide['decorator']('$interpolate', $$interpolateDecorator);
 }]);
