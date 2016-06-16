@@ -938,13 +938,10 @@ angular.mock.animate = angular.module('ngAnimateMock', ['ng'])
  * @name angular.mock.dump
  * @description
  *
- * *NOTE*: this is not an injectable instance, just a globally available function.
+ * *NOTE*: This is not an injectable instance, just a globally available function.
  *
- * Method for serializing common angular objects (scope, elements, etc..) into strings, useful for
- * debugging.
- *
- * This method is also available on window, where it can be used to display objects on debug
- * console.
+ * Method for serializing common angular objects (scope, elements, etc..) into strings.
+ * It is useful for logging objects to the console when debugging.
  *
  * @param {*} object - any object to turn into string.
  * @return {string} a serialized string of the argument
