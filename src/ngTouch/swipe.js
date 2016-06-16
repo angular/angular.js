@@ -78,7 +78,8 @@ ngTouch.factory('$swipe', [function() {
      *
      * `start` is called on either `mousedown` or `touchstart`. After this event, `$swipe` is
      * watching for `touchmove` or `mousemove` events. These events are ignored until the total
-     * distance moved in either dimension exceeds a small threshold.
+     * distance moved in either dimension exceeds a small threshold. If the `start` listener
+     * returns `false` then the other swipe events will not be triggered until the next swipe.
      *
      * Once this threshold is exceeded, either the horizontal or vertical delta is greater.
      * - If the horizontal distance is greater, this is a swipe and `move` and `end` events follow.
@@ -107,11 +108,10 @@ ngTouch.factory('$swipe', [function() {
       pointerTypes = pointerTypes || ['mouse', 'touch'];
       element.on(getEvents(pointerTypes, 'start'), function(event) {
         startCoords = getCoordinates(event);
-        active = true;
         totalX = 0;
         totalY = 0;
         lastPos = startCoords;
-        eventHandlers['start'] && eventHandlers['start'](startCoords, event);
+        active = !eventHandlers['start'] || eventHandlers['start'](startCoords, event) !== false;
       });
       var events = getEvents(pointerTypes, 'cancel');
       if (events) {
