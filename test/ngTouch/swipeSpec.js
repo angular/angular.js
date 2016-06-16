@@ -25,7 +25,8 @@ describe('$swipe', function() {
     var usedEvents;
     var MOUSE_EVENTS = ['mousedown','mousemove','mouseup'].sort();
     var TOUCH_EVENTS = ['touchcancel','touchend','touchmove','touchstart'].sort();
-    var ALL_EVENTS = MOUSE_EVENTS.concat(TOUCH_EVENTS).sort();
+    var POINTER_EVENTS = ['pointerdown', 'pointermove', 'pointerup', 'pointercancel'].sort();
+    var ALL_EVENTS = MOUSE_EVENTS.concat(TOUCH_EVENTS, POINTER_EVENTS).sort();
 
     beforeEach(function() {
       usedEvents = [];
@@ -36,7 +37,7 @@ describe('$swipe', function() {
       });
     });
 
-    it('should use mouse and touch by default', inject(function($swipe) {
+    it('should use mouse, touch and pointer by default', inject(function($swipe) {
       $swipe.bind(element, events);
       expect(usedEvents.sort()).toEqual(ALL_EVENTS);
     }));
@@ -51,14 +52,35 @@ describe('$swipe', function() {
       expect(usedEvents.sort()).toEqual(TOUCH_EVENTS);
     }));
 
+    it('should only use pointer events for pointerType "pointer"', inject(function($swipe) {
+      $swipe.bind(element, events, ['pointer']);
+      expect(usedEvents.sort()).toEqual(POINTER_EVENTS);
+    }));
+
     it('should use mouse and touch if both are specified', inject(function($swipe) {
       $swipe.bind(element, events, ['touch', 'mouse']);
+      expect(usedEvents.sort()).toEqual(MOUSE_EVENTS.concat(TOUCH_EVENTS).sort());
+    }));
+
+    it('should use mouse and pointer if both are specified', inject(function($swipe) {
+      $swipe.bind(element, events, ['mouse', 'pointer']);
+      expect(usedEvents.sort()).toEqual(MOUSE_EVENTS.concat(POINTER_EVENTS).sort());
+    }));
+
+    it('should use touch and pointer if both are specified', inject(function($swipe) {
+      $swipe.bind(element, events, ['touch', 'pointer']);
+      expect(usedEvents.sort()).toEqual(TOUCH_EVENTS.concat(POINTER_EVENTS).sort());
+    }));
+
+    it('should use mouse, touch and pointer if they are specified', inject(function($swipe) {
+      $swipe.bind(element, events, ['mouse', 'touch', 'pointer']);
       expect(usedEvents.sort()).toEqual(ALL_EVENTS);
     }));
 
   });
 
   swipeTests('touch', /* restrictBrowers */ true, 'touchstart', 'touchmove', 'touchend');
+  swipeTests('pointer', /* restrictBrowers */ true, 'pointerdown', 'pointermove', 'pointerup');
   swipeTests('mouse', /* restrictBrowers */ false, 'mousedown',  'mousemove', 'mouseup');
 
   // Wrapper to abstract over using touch events or mouse events.
