@@ -1986,6 +1986,78 @@ describe('q', function() {
     });
   });
 
+  describe('race (array)', function() {
+    it('should do nothing if given an empty array', function() {
+      q.race([]).then(success(), error());
+      expect(mockNextTick.queue.length).toBe(0);
+      expect(logStr()).toBe('');
+    });
+
+    it('should resolve as soon as the first promise is settled by resolution', function() {
+      var deferred1 = defer(),
+          deferred2 = defer();
+
+      q.race([promise, deferred1.promise, deferred2.promise]).then(success(), error());
+      expect(logStr()).toBe('');
+      syncResolve(deferred1, 'hi');
+      expect(logStr()).toBe('success(hi)->hi');
+      syncResolve(deferred2, 'cau');
+      expect(logStr()).toBe('success(hi)->hi');
+      syncReject(deferred, 'hola');
+      expect(logStr()).toBe('success(hi)->hi');
+    });
+
+    it('should reject as soon as the first promise is settled by rejection', function() {
+      var deferred1 = defer(),
+          deferred2 = defer();
+
+      q.race([promise, deferred1.promise, deferred2.promise]).then(success(), error());
+      expect(logStr()).toBe('');
+      syncReject(deferred1, 'hi');
+      expect(logStr()).toBe('error(hi)->reject(hi)');
+      syncResolve(deferred2, 'cau');
+      expect(logStr()).toBe('error(hi)->reject(hi)');
+      syncReject(deferred, 'hola');
+      expect(logStr()).toBe('error(hi)->reject(hi)');
+    });
+  });
+
+  describe('race (hash)', function() {
+    it('should do nothing if given an empty array', function() {
+      q.race({}).then(success(), error());
+      expect(mockNextTick.queue.length).toBe(0);
+      expect(logStr()).toBe('');
+    });
+
+    it('should resolve as soon as the first promise is settled by resolution', function() {
+      var deferred1 = defer(),
+          deferred2 = defer();
+
+      q.race({a: promise, b: deferred1.promise, c: deferred2.promise}).then(success(), error());
+      expect(logStr()).toBe('');
+      syncResolve(deferred1, 'hi');
+      expect(logStr()).toBe('success(hi)->hi');
+      syncResolve(deferred2, 'cau');
+      expect(logStr()).toBe('success(hi)->hi');
+      syncReject(deferred, 'hola');
+      expect(logStr()).toBe('success(hi)->hi');
+    });
+
+    it('should reject as soon as the first promise is settled by rejection', function() {
+      var deferred1 = defer(),
+          deferred2 = defer();
+
+      q.race({a: promise, b: deferred1.promise, c: deferred2.promise}).then(success(), error());
+      expect(logStr()).toBe('');
+      syncReject(deferred1, 'hi');
+      expect(logStr()).toBe('error(hi)->reject(hi)');
+      syncResolve(deferred2, 'cau');
+      expect(logStr()).toBe('error(hi)->reject(hi)');
+      syncReject(deferred, 'hola');
+      expect(logStr()).toBe('error(hi)->reject(hi)');
+    });
+  });
+
   describe('exception logging', function() {
     var mockExceptionLogger = {
       log: [],
