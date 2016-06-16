@@ -651,14 +651,10 @@ function qFactory(nextTick, exceptionHandler, errorOnUnhandledRejections) {
    */
 
   function race(promises) {
-    var deferred = new Deferred();
+    var deferred = defer();
 
     forEach(promises, function(promise) {
-      when(promise).then(function(value) {
-        deferred.resolve(value);
-      }, function(reason) {
-        deferred.reject(reason);
-      });
+      when(promise).then(deferred.resolve, deferred.reject);
     });
 
     return deferred.promise;
