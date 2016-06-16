@@ -7970,17 +7970,52 @@ describe('$compile', function() {
       });
 
 
-      it('should not compile the fallback content if transcluded content is provided', function() {
-        var contentsDidLink = false;
+      it('should clear the fallback content from the element during compile and before linking', function() {
+        module(function() {
+          directive('trans', function() {
+            return {
+              transclude: true,
+              template: '<div ng-transclude>fallback content</div>'
+            };
+          });
+        });
+        inject(function(log, $rootScope, $compile) {
+          element = jqLite('<div trans></div>');
+          var linkfn = $compile(element);
+          expect(element.html()).toEqual('<div ng-transclude=""></div>');
+          linkfn($rootScope);
+          $rootScope.$apply();
+          expect(sortedHtml(element.html())).toEqual('<div ng-transclude="">fallback content</div>');
+        });
+      });
+
+
+      it('should allow cloning of the fallback via ngRepeat', function() {
+        module(function() {
+          directive('trans', function() {
+            return {
+              transclude: true,
+              template: '<div ng-repeat="i in [0,1,2]"><div ng-transclude>{{i}}</div></div>'
+            };
+          });
+        });
+        inject(function(log, $rootScope, $compile) {
+          element = $compile('<div trans></div>')($rootScope);
+          $rootScope.$apply();
+          expect(element.text()).toEqual('012');
+        });
+      });
+
+
+      it('should not link the fallback content if transcluded content is provided', function() {
+        var linkSpy = jasmine.createSpy('postlink');
 
         module(function() {
           directive('inner', function() {
             return {
               restrict: 'E',
               template: 'old stuff! ',
-              link: function() {
-                contentsDidLink = true;
-              }
+              link: linkSpy
             };
           });
 
@@ -7995,21 +8030,19 @@ describe('$compile', function() {
           element = $compile('<div trans>unicorn!</div>')($rootScope);
           $rootScope.$apply();
           expect(sortedHtml(element.html())).toEqual('<div ng-transclude="">unicorn!</div>');
-          expect(contentsDidLink).toBe(false);
+          expect(linkSpy).not.toHaveBeenCalled();
         });
       });
 
       it('should compile and link the fallback content if no transcluded content is provided', function() {
-        var contentsDidLink = false;
+        var linkSpy = jasmine.createSpy('postlink');
 
         module(function() {
           directive('inner', function() {
             return {
               restrict: 'E',
               template: 'old stuff! ',
-              link: function() {
-                contentsDidLink = true;
-              }
+              link: linkSpy
             };
           });
 
@@ -8024,7 +8057,50 @@ describe('$compile', function() {
           element = $compile('<div trans></div>')($rootScope);
           $rootScope.$apply();
           expect(sortedHtml(element.html())).toEqual('<div ng-transclude=""><inner>old stuff! </inner></div>');
-          expect(contentsDidLink).toBe(true);
+          expect(linkSpy).toHaveBeenCalled();
+        });
+      });
+
+      it('should compile and link the fallback content if an optional transclusion slot is not provided', function() {
+        var linkSpy = jasmine.createSpy('postlink');
+
+        module(function() {
+          directive('inner', function() {
+            return {
+              restrict: 'E',
+              template: 'old stuff! ',
+              link: linkSpy
+            };
+          });
+
+          directive('trans', function() {
+            return {
+              transclude: { optionalSlot: '?optional'},
+              template: '<div ng-transclude="optionalSlot"><inner></inner></div>'
+            };
+          });
+        });
+        inject(function(log, $rootScope, $compile) {
+          element = $compile('<div trans></div>')($rootScope);
+          $rootScope.$apply();
+          expect(sortedHtml(element.html())).toEqual('<div ng-transclude="optionalSlot"><inner>old stuff! </inner></div>');
+          expect(linkSpy).toHaveBeenCalled();
+        });
+      });
+
+      it('should cope if there is neither transcluded content nor fallback content', function() {
+        module(function() {
+          directive('trans', function() {
+            return {
+              transclude: true,
+              template: '<div ng-transclude></div>'
+            };
+          });
+        });
+        inject(function($rootScope, $compile) {
+          element = $compile('<div trans></div>')($rootScope);
+          $rootScope.$apply();
+          expect(sortedHtml(element.html())).toEqual('<div ng-transclude=""></div>');
         });
       });
 
@@ -9791,37 +9867,6 @@ describe('$compile', function() {
 
         expect(hasMinions).toBe(true);
         expect(hasBosses).toBe(false);
-      });
-    });
-
-    it('should not overwrite the contents of an `ng-transclude` element, if the matching optional slot is not filled', function() {
-      module(function() {
-        directive('minionComponent', function() {
-          return {
-            restrict: 'E',
-            scope: {},
-            transclude: {
-              minionSlot: 'minion',
-              bossSlot: '?boss'
-            },
-            template:
-              '<div class="boss" ng-transclude="bossSlot">default boss content</div>' +
-              '<div class="minion" ng-transclude="minionSlot">default minion content</div>' +
-              '<div class="other" ng-transclude>default content</div>'
-          };
-        });
-      });
-      inject(function($rootScope, $compile) {
-        element = $compile(
-          '<minion-component>' +
-            '<minion>stuart</minion>' +
-            '<span>dorothy</span>' +
-            '<minion>kevin</minion>' +
-          '</minion-component>')($rootScope);
-        $rootScope.$apply();
-        expect(element.children().eq(0).text()).toEqual('default boss content');
-        expect(element.children().eq(1).text()).toEqual('stuartkevin');
-        expect(element.children().eq(2).text()).toEqual('dorothy');
       });
     });
 
