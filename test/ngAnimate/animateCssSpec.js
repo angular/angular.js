@@ -29,6 +29,10 @@ describe("ngAnimate $animateCss", function() {
       { timeStamp: Date.now() + ((delay || 1) * 1000), elapsedTime: duration });
   }
 
+  function isPromiseLike(p) {
+    return !!(p && p.then);
+  }
+
   var fakeStyle = {
     color: 'blue'
   };
