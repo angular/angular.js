@@ -29,11 +29,16 @@ if (process.env.BROWSER_PROVIDER === 'browserstack') {
     capabilitiesForSauceLabs({
       browserName: 'chrome',
       platform: 'OS X 10.11',
-      version: '48'
+      version: '51'
+    }),
+    capabilitiesForSauceLabs({
+      browserName: 'chrome',
+      platform: 'Windows 10',
+      version: '51'
     }),
     capabilitiesForSauceLabs({
       browserName: 'firefox',
-      version: '28'
+      version: '46'
     }),
     capabilitiesForSauceLabs({
       browserName: 'safari',

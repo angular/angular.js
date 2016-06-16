@@ -76,10 +76,9 @@
  * <example name="ngMessageFormat-example-plural" module="msgFmtExample" deps="angular-message-format.js">
  * <file name="index.html">
  *   <div ng-controller="AppController">
- *    <button ng-click="recipients.pop()" id="decreaseRecipients">decreaseRecipients</button><br>
- *    Select recipients:<br>
- *    <select multiple size=5 ng-model="recipients" ng-options="person as person.name for person in people">
- *    </select><br>
+      Select recipients:<br>
+      <select multiple size=5 ng-model="recipients" ng-options="person as person.name for person in people">
+      </select><br>
  *     <p>{{recipients.length, plural, offset:1
  *             =0    {{{sender.name}} gave no gifts (\#=#)}
  *             =1    {{{sender.name}} gave a gift to {{recipients[0].name}} (\#=#)}
@@ -113,15 +112,14 @@
  *   describe('MessageFormat plural', function() {
  *
  *     it('should pluralize initial values', function() {
- *       var messageElem = element(by.binding('recipients.length')),
- *           decreaseRecipientsBtn = element(by.id('decreaseRecipients'));
+ *       var messageElem = element(by.binding('recipients.length'));
  *
  *       expect(messageElem.getText()).toEqual('Harry Potter gave Alice and 2 other people a gift (#=2)');
- *       decreaseRecipientsBtn.click();
+ *       element(by.cssContainingText('option', 'Sarah')).click();
  *       expect(messageElem.getText()).toEqual('Harry Potter gave Alice and one other person a gift (#=1)');
- *       decreaseRecipientsBtn.click();
+ *       element(by.cssContainingText('option', 'Bob')).click();
  *       expect(messageElem.getText()).toEqual('Harry Potter gave a gift to Alice (#=0)');
- *       decreaseRecipientsBtn.click();
+ *       element(by.cssContainingText('option', 'Alice')).click();
  *       expect(messageElem.getText()).toEqual('Harry Potter gave no gifts (#=-1)');
  *     });
  *   });
