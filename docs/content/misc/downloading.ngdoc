@@ -100,7 +100,8 @@ The set of files included in each version directory are:
       assistive technologies. ({@link module:ngAria API docs})
   * __`angular-cookies.js`__ — A convenient wrapper for reading and writing browser cookies.
       ({@link module:ngCookies API docs})
-  <!-- * __`angular-message-format.js`__ — ({@link module:ngMessageFormat API docs}) -->
+  * __`angular-message-format.js`__ — Enhanced support for pluralization and gender specific
+      messages in interpolated text. ({@link module:ngMessageFormat API docs})
   * __`angular-messages.js`__ — Enhanced support for displaying validation messages.
       ({@link module:ngMessages API docs})
   * __`angular-parse-ext.js`__ — Allow Unicode characters in identifiers inside Angular expressions.
