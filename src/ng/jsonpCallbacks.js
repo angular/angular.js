@@ -3,6 +3,7 @@
 /**
  * @ngdoc service
  * @name $jsonpCallbacks
+ * @requires $window
  * @description
  * This service handles the lifecycle of callbacks to handle JSONP requests.
  * Override this service if you wish to customise where the callbacks are stored and
@@ -14,7 +15,7 @@ var $jsonpCallbacksProvider = function() {
     $window.angular.callbacks = {};
     var callbackMap = {};
 
-    function createCalback(callbackId) {
+    function createCallback(callbackId) {
       var callback = function(data) {
         callback.data = data;
         callback.called = true;
@@ -36,7 +37,7 @@ var $jsonpCallbacksProvider = function() {
       createCallback: function(url) {
         var callbackId = '_' + (counter++).toString(36);
         var callbackPath = 'angular.callbacks.' + callbackId;
-        var callback = createCalback(callbackId);
+        var callback = createCallback(callbackId);
         callbackMap[callbackPath] = $window.angular.callbacks[callbackId] = callback;
         return callbackPath;
       },
@@ -62,8 +63,7 @@ var $jsonpCallbacksProvider = function() {
        * in the JSONP response.
        */
       getResponse: function(callbackPath) {
-        var callback = callbackMap[callbackPath];
-        return callback.data;
+        return callbackMap[callbackPath].data;
       },
       /**
        * @ngdoc method

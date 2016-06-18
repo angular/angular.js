@@ -1,7 +1,7 @@
 'use strict';
 
 describe('$jsonpCallbacks', function() {
-  var $mockWindow;
+
   beforeEach(module(function($provide) {
     // mock out the $window object
     $provide.value('$window', { angular: {} });
