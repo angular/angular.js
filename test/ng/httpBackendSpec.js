@@ -338,7 +338,6 @@ describe('$httpBackend', function() {
 
 
     it('should clean up the callback and remove the script', function() {
-      spyOn($jsonpCallbacks, 'wasCalled').and.callThrough();
       spyOn($jsonpCallbacks, 'removeCallback').and.callThrough();
 
       $backend('JSONP', 'http://example.org/path?cb=JSON_CALLBACK', null, callback);
