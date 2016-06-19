@@ -1840,6 +1840,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         if (!transcludedScope) {
           transcludedScope = scope.$new(false, containingScope);
           transcludedScope.$$transcluded = true;
+          transcludedScope.$container = containingScope && containingScope.$ctrl;
         }
 
         return transcludeFn(transcludedScope, cloneFn, {

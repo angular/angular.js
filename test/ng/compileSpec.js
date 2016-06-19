@@ -7915,6 +7915,24 @@ describe('$compile', function() {
       }
 
 
+      it('should add a $container property onto the transcluded scope, referencing the containing controller', function() {
+        module(function($compileProvider) {
+          $compileProvider.component('myComp', {
+            transclude: true,
+            controller: function() {
+              this.val = 'xxx';
+            },
+            template: '<div><span>I:{{$ctrl.val}}</span><span ng-transclude></span></div>'
+          });
+        });
+        inject(function($rootScope, $compile) {
+          element = $compile('<div><my-comp>T:{{$container.val}}</my-comp></div>')($rootScope);
+          $rootScope.$apply();
+          expect(jqLite(element.find('span')[0]).text()).toEqual('I:xxx');
+          expect(jqLite(element.find('span')[1]).text()).toEqual('T:xxx');
+        });
+      });
+
       it('should add a $$transcluded property onto the transcluded scope', function() {
         module(function() {
           directive('trans', function() {
