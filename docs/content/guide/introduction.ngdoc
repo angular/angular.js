@@ -6,18 +6,14 @@
 
 # What Is Angular?
 
-AngularJS is a structural framework for dynamic web apps. It lets you use HTML as your template
-language and lets you extend HTML's syntax to express your application's components clearly and
-succinctly. Angular's data binding and dependency injection eliminate much of the code you
-would otherwise have to write. And it all happens within the browser, making it
-an ideal partner with any server technology.
+AngularJS is a structural framework for dynamic web apps. That is, it helps you build sophisticated 
+web applications by providing an additional layer of abstraction in the web development process. It 
+abstracts away many of the repetitive and time-consuming details of web application code, freeing you 
+to focus on what you’re trying to build. 
 
-Angular is what HTML would have been, had it been designed for applications. HTML is a great
-declarative language for static documents. It does not contain much in the way of creating
-applications, and as a result building web applications is an exercise in *what do I have to do
-to trick the browser into doing what I want?*
-
-The impedance mismatch between dynamic applications and static documents is often solved with:
+Angular is better suited to the requirements of modern web design than just HTML by itself. HTML was 
+intended to serve the static websites of yore, and is not well suited for the complex and dynamic needs 
+of modern web applications. Often this dilemma is solved by using:
 
   * **a library** - a collection of functions which are useful when writing web apps. Your code is
     in charge and it calls into the library when it sees fit. E.g., `jQuery`.
@@ -26,9 +22,9 @@ The impedance mismatch between dynamic applications and static documents is ofte
     app specific. E.g., `durandal`, `ember`, etc.
 
 
-Angular takes another approach. It attempts to minimize the impedance mismatch between document
-centric HTML and what an application needs by creating new HTML constructs. Angular teaches the
-browser new syntax through a construct we call *directives*. Examples include:
+Angular takes another approach. It strives to bridge the gap between HTML and modern web design by
+creating new HTML constructs. Angular teaches the browser new syntax through a construct we call *directives*. 
+Examples include:
 
   * Data binding, as in `{{}}`.
   * DOM control structures for repeating, showing and hiding DOM fragments.
@@ -66,44 +62,28 @@ In these cases it may be better to use a library with a lower level of abstracti
 
 # The Zen of Angular
 
-Angular is built around the belief that declarative code is better than imperative when it comes
-to building UIs and wiring software components together, while imperative code is excellent for
-expressing business logic.
+Angular was designed in accordance with a set of principles and best practices. 
 
+Principles:
 
-  * It is a very good idea to decouple DOM manipulation from app logic. This dramatically improves
-    the testability of the code.
-  * It is a really, _really_ good idea to regard app testing as equal in importance to app
-    writing. Testing difficulty is dramatically affected by the way the code is structured.
-  * It is an excellent idea to decouple the client side of an app from the server side. This
-    allows development work to progress in parallel, and allows for reuse of both sides.
-  * It is very helpful indeed if the framework guides developers through the entire journey of
-    building an app: From designing the UI, through writing the business logic, to testing.
-  * It is always good to make common tasks trivial and difficult tasks possible.
+  * Testing is just as important as development, and as such it is good to write code that 
+    is easier to test.
+  * Declarative code is well suited to UI development and connecting software components. 
+    Imperative code is well suited for expressing business logic.
+  * Angular seeks to encompass the entire app development process, including UI design, 
+    business logic, and testing.
+  
 
-
-
-Angular frees you from the following pains:
-
-  * **Registering callbacks:** Registering callbacks clutters your code, making it hard to see the
-    forest for the trees. Removing common boilerplate code such as callbacks is a good thing. It
-    vastly reduces the amount of JavaScript coding _you_ have to do, and it makes it easier to see
-    what your application does.
-  * **Manipulating HTML DOM programmatically:** Manipulating HTML DOM is a cornerstone of AJAX
-    applications, but it's cumbersome and error-prone. By declaratively describing how the UI
-    should change as your application state changes, you are freed from low-level DOM manipulation
-    tasks. Most applications written with Angular never have to programmatically manipulate the
-    DOM, although you can if you want to.
-  * **Marshaling data to and from the UI:** CRUD operations make up the majority of AJAX
-    applications' tasks. The flow of marshaling data from the server to an internal object to an HTML
-    form, allowing users to modify the form, validating the form, displaying validation errors,
-    returning to an internal model, and then back to the server, creates a lot of boilerplate
-    code. Angular eliminates almost all of this boilerplate, leaving code that describes the
-    overall flow of the application rather than all of the implementation details.
-  * **Writing tons of initialization code just to get started:** Typically you need to write a lot
-    of plumbing just to get a basic "Hello World" AJAX app working. With Angular you can bootstrap
-    your app easily using services, which are auto-injected into your application in a
-    [Guice](https://github.com/google/guice)-like dependency-injection style. This allows you
-    to get started developing features quickly. As a bonus, you get full control over the
-    initialization process in automated tests.
+Best Practices:
+  * **Decouple DOM manipulation from app logic**, and avoid manipulating the DOM programmatically. 
+    Angular lets you declaratively describe how the UI should change as your application state 
+    changes, freeing you from low-level DOM manipulation tasks.
+  * **Decouple the client side and server side of an application.** This makes it easier 
+    to develop both side in parallel, and allows for reuse.
+  * **Reduce and eliminate boilerplate code.** Angular frees you from having to register 
+    callbacks and marshal data to and from the UI. 
+  * **Reduce the amount of initialization code necessary.** Even a basic ‘hello world’ app 
+    often involves a time-consuming setup process. Angular aims to reduce the overhead 
+    involved in web app development, so that you can get started developing features 
+    for your app quickly. 
 
