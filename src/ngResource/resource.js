@@ -116,6 +116,7 @@ function shallowClearAndCopy(src, dst) {
  * @param {Object=} paramDefaults Default values for `url` parameters. These can be overridden in
  *   `actions` methods. If a parameter value is a function, it will be executed every time
  *   when a param value needs to be obtained for a request (unless the param was overridden).
+ *   If a parameter value is a promise, the request will execute when the promise is resolved.
  *
  *   Each key value in the parameter object is first bound to url template if present and then any
  *   excess keys are appended to the url search query after the `?`.
@@ -645,8 +646,9 @@ angular.module('ngResource', ['ng']).
           actionParams = extend({}, paramDefaults, actionParams);
           forEach(actionParams, function(value, key) {
             if (isFunction(value)) { value = value(); }
-            ids[key] = value && value.charAt && value.charAt(0) === '@' ?
-              lookupDottedPath(data, value.substr(1)) : value;
+            ids[key] = $q.when(
+              value && value.charAt && value.charAt(0) === '@' ?
+                lookupDottedPath(data, value.substr(1)) : value);
           });
           return ids;
         }
@@ -756,11 +758,13 @@ angular.module('ngResource', ['ng']).
             }
 
             if (hasBody) httpConfig.data = data;
-            route.setUrlParams(httpConfig,
-              extend({}, extractParams(data, action.params || {}), params),
-              action.url);
-
-            var promise = $http(httpConfig).then(function(response) {
+            var promise = $q.all(extractParams(data, action.params || {})).then(function(ids) {
+              route.setUrlParams(httpConfig,
+                extend({}, ids, params),
+                action.url);
+              return $http(httpConfig);
+            });
+            promise = promise.then(function(response) {
               var data = response.data;
 
               if (data) {
