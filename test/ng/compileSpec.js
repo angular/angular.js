@@ -3872,6 +3872,51 @@ describe('$compile', function() {
           ]);
         });
       });
+
+      it('should work if $doCheck is provided in the constructor', function() {
+        var log = [];
+
+        function TestController() {
+          this.$doCheck = function() { log.push('$doCheck'); };
+          this.$onChanges = function() { log.push('$onChanges'); };
+          this.$onInit = function() { log.push('$onInit'); };
+        }
+
+        angular.module('my', [])
+          .component('dcc', {
+            controller: TestController,
+            bindings: { 'prop1': '<' }
+          });
+
+        module('my');
+        inject(function($compile, $rootScope) {
+          element = $compile('<dcc prop1="val"></dcc>')($rootScope);
+          expect(log).toEqual([
+            '$onChanges',
+            '$onInit',
+            '$doCheck'
+          ]);
+
+          // Clear log
+          log = [];
+
+          $rootScope.$apply();
+          expect(log).toEqual([
+            '$doCheck',
+            '$doCheck'
+          ]);
+
+          // Clear log
+          log = [];
+
+          $rootScope.$apply('val = 2');
+          expect(log).toEqual([
+            '$doCheck',
+            '$onChanges',
+            '$doCheck'
+          ]);
+        });
+      });
     });
 
     describe('$onChanges', function() {
