@@ -316,6 +316,39 @@
  *   they are waiting for their template to load asynchronously and their own compilation and linking has been
  *   suspended until that occurs.
  *
+ * ** $doCheck example **
+ *
+ * This example show how you might use `$doCheck` to customise the equality check of component inputs.
+ *
+ * <example name="doCheckExample" module="do-check-module">
+ *   <file name="index.html">
+ *     <div ng-init="items = []">
+ *       <button ng-click="items.push(items.length)">Add Item</button>
+ *       <button ng-click="items = []">Reset Items</button>
+ *       <pre>{{ items }}</pre>
+ *       <test items="items"></test>
+ *     </div>
+ *   </file>
+ *   <file name="app.js">
+ *      angular.module('do-check-module', [])
+ *        .component('test', {
+ *          bindings: { items: '<' },
+ *          template:
+ *            '<pre>{{ $ctrl.log | json }}</pre>',
+ *          controller: function() {
+ *            this.log = [];
+ *
+ *            this.$doCheck = function() {
+ *              if (this.items_ref !== this.items) { this.log.push('doCheck: items changed'); }
+ *              if (!angular.equals(this.items_clone, this.items)) { this.log.push('doCheck: items mutated'); }
+ *
+ *              this.items_clone = angular.copy(this.items);
+ *              this.items_ref = this.items;
+ *            };
+ *          }
+ *        });
+ *   </file>
+ * </example>
  *
  * #### `require`
  * Require another directive and inject its controller as the fourth argument to the linking function. The
@@ -2506,9 +2539,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             }
           }
           if (isFunction(controllerInstance.$doCheck)) {
-            controllerInstance.$doCheck();
-          }
-          if (isFunction(controllerInstance.$doCheck)) {
+            controllerScope.$watch(function() { controllerInstance.$doCheck(); });
             controllerInstance.$doCheck();
           }
           if (isFunction(controllerInstance.$onDestroy)) {
@@ -3275,11 +3306,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         }
       });
 
-      if (isFunction(destination.$doCheck)) {
-        var doCheckWatch = scope.$watch(triggerDoCheckHook);
-        removeWatchCollection.push(doCheckWatch);
-      }
-
       function recordChanges(key, currentValue, previousValue) {
         if (isFunction(destination.$onChanges) && currentValue !== previousValue) {
           // If we have not already scheduled the top level onChangesQueue handler then do so now
@@ -3305,10 +3331,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         destination.$onChanges(changes);
         // Now clear the changes so that we schedule onChanges when more changes arrive
         changes = undefined;
-      }
-
-      function triggerDoCheckHook() {
-        destination.$doCheck();
       }
 
       return {
