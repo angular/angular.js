@@ -316,11 +316,54 @@
  *   they are waiting for their template to load asynchronously and their own compilation and linking has been
  *   suspended until that occurs.
  *
- * ** $doCheck example **
+ * ** $doCheck examples **
  *
- * This example show how you might use `$doCheck` to customise the equality check of component inputs.
+ * This example shows how you can check for mutations to a Date object even though the identity of the object
+ * has not changed.
  *
- * <example name="doCheckExample" module="do-check-module">
+ * <example name="doCheckDateExample" module="do-check-module">
+ *   <file name="app.js">
+ *     angular.module('do-check-module', [])
+ *       .component('app', {
+ *         template:
+ *           'Month: <input ng-model="$ctrl.month" ng-change="$ctrl.updateDate()">' +
+ *           'Date: {{ $ctrl.date }}' +
+ *           '<test date="$ctrl.date"></test>',
+ *         controller: function() {
+ *           this.date = new Date();
+ *           this.month = this.date.getMonth();
+ *           this.updateDate = function() {
+ *             this.date.setMonth(this.month);
+ *           };
+ *         }
+ *       })
+ *       .component('test', {
+ *         bindings: { date: '<' },
+ *         template:
+ *           '<pre>{{ $ctrl.log | json }}</pre>',
+ *         controller: function() {
+ *           var previousValue;
+ *           this.log = [];
+ *           this.$doCheck = function() {
+ *             var currentValue = this.date && this.date.valueOf();
+ *             if (previousValue !== currentValue) {
+ *               this.log.push('doCheck: date mutated: ' + this.date);
+ *               previousValue = currentValue;
+ *             }
+ *           };
+ *         }
+ *       });
+ *   </file>
+ *   <file name="index.html">
+ *     <app></app>
+ *   </file>
+ * </example>
+ *
+ * This example show how you might use `$doCheck` to trigger changes in your component's inputs even if the
+ * actual identity of the component doesn't change. (Be aware that cloning and deep equality checks on large
+ * arrays or objects can have a negative impact on your application performance)
+ *
+ * <example name="doCheckArrayExample" module="do-check-module">
  *   <file name="index.html">
  *     <div ng-init="items = []">
  *       <button ng-click="items.push(items.length)">Add Item</button>
@@ -339,11 +382,14 @@
  *            this.log = [];
  *
  *            this.$doCheck = function() {
- *              if (this.items_ref !== this.items) { this.log.push('doCheck: items changed'); }
- *              if (!angular.equals(this.items_clone, this.items)) { this.log.push('doCheck: items mutated'); }
- *
- *              this.items_clone = angular.copy(this.items);
- *              this.items_ref = this.items;
+ *              if (this.items_ref !== this.items) {
+ *                this.log.push('doCheck: items changed');
+ *                this.items_ref = this.items;
+ *              }
+ *              if (!angular.equals(this.items_clone, this.items)) {
+ *                this.log.push('doCheck: items mutated');
+ *                this.items_clone = angular.copy(this.items);
+ *              }
  *            };
  *          }
  *        });
