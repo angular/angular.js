@@ -7,19 +7,30 @@
 
 In this step, we will learn how to fix the accessibility issues in our application.
 
-* We will use the {@link ngAria ngAria} module to enable WAI-ARIA.
 * We will fix some issues in the templates.
 * We will use the [protractor-accessibility-plugin](protractor-a11y-plugin) to review the accessibility of our application when we run our e2e tests.
+* We will explain how to add the {@link ngAria ngAria} module to use WAI-ARIA easily if you need it in your project.
 
 <div doc-tutorial-reset="15"></div>
 
 ## Why accessibility matters
 
+A website or application accessible allows the users with different preferences and abilitities, to consume the content in a way that suits their needs.
+
 * [Creating an accessible web - Access iQ](https://www.youtube.com/watch?v=47n0wEcm6JU)
 * [Web Accessibility](https://www.youtube.com/watch?v=bEM9Fn9aOG8)
 * [Google Accessibility course](https://webaccessibility.withgoogle.com/course)
 * [Accessibility in AngularJS and Beyond](http://marcysutton.com/slides/fluent2015/)
+* [Introduction to Web Accessibility](https://www.w3.org/WAI/intro/accessibility.php)
 * [Apps For All: Coding Accessible Web Applications](https://shop.smashingmagazine.com/products/apps-for-all)
+
+## WAI-ARIA
+
+WAI-ARIA (_the Accessible Rich Internet Applications Suite_) gives you the ability to reclassify and otherwise augment the perceived meaning (or semantics) of your HTML.
+
+ Currently certain functionality used in Web sites is not available to some users with disabilities, especially people who rely on screen readers and people who cannot use a mouse. WAI-ARIA addresses these accessibility challenges, for example, by defining new ways for functionality to be provided to assistive technology. With WAI-ARIA, developers can make advanced Web applications accessible and usable to people with disabilities.
+
+AngularJS has a module called {@link ngAria ngAria} to help developers to add some WAI-ARIA attributes easily in your application.
 
 ## Main accessibility issues in the application
 
@@ -32,119 +43,7 @@ If you make a review of the accessibility of the application you will find some 
 
 In the next sections we are going to show you, how to fix some of these issues to make the application accessible.
 
-To help us, we will use the {@link ngAria ngAria} module, and we will install the [protractor-a11y-plugin] plugin too.
-
-## Dependencies
-
-The `ngAria` module, is distributed separately from the core Angular framework. 
-
-Since we are using [Bower][bower] to install client-side dependencies, this step updates the
-`bower.json` configuration file to include the new dependencies:
-
-<br />
-**`bower.json`:**
-
-```
-{
-  "name": "angular-phonecat",
-  "description": "A starter project for AngularJS",
-  "version": "0.0.0",
-  "homepage": "https://github.com/angular/angular-phonecat",
-  "license": "MIT",
-  "private": true,
-  "dependencies": {
-    "angular": "1.5.x",
-    "angular-animate": "1.5.x",
-    "angular-aria": "1.5.x",
-    "angular-mocks": "1.5.x",
-    "angular-resource": "1.5.x",
-    "angular-route": "1.5.x",
-    "bootstrap": "3.3.x",
-    "jquery": "2.2.x"
-  }
-}
-```
-
-* `"angular-aria": "1.5.x"` tells bower to install a version of the angular-aria module that
-  is compatible with version 1.5.x of Angular.
-  
-To install the [protractor-a11y-plugin], we can add the plugin into the `devDependencies` section in the `package.json` file,
-
-<br />
-**`package.json`:**
-
-```
-{
-  "devDependencies": {
-    "bower": "^1.7.7",
-    "http-server": "^0.9.0",
-    "jasmine-core": "^2.4.1",
-    "karma": "^0.13.22",
-    "karma-chrome-launcher": "^0.2.3",
-    "karma-firefox-launcher": "^0.1.7",
-    "karma-jasmine": "^0.3.8",
-    "protractor": "^3.2.2",
-    "protractor-accessibility-plugin": "^0.1.1",
-    "shelljs": "^0.6.0"
-   }
-}
-```
-
-Now, we must tell bower to download and install these dependencies.
-
-```
-npm install
-```
-
-<div class="alert alert-info">
-  **Note:** If you have bower installed globally, you can run `bower install`, but for this project
-  we have preconfigured `npm install` to run bower for us.
-</div>
-
-<div class="alert alert-warning">
-  **Warning:** If a new version of Angular has been released since you last ran `npm install`, then
-  you may have a problem with the `bower install` due to a conflict between the versions of
-  angular.js that need to be installed. If you run into this issue, simply delete your
-  `app/bower_components` directory and then run `npm install`.
-</div>
-
-
-## How to use the `ngAria` module
-
-The `ngAria` module provides support for common ARIA attributes that convey state or semantic information about the application for users of assistive technologies, such as screen readers.
-
-### Template
-
-In order to enable the module, we need to update `index.html`, loading the necessary dependencies
-(**angular-aria.js**) that contain JavaScript code. 
-
-The WAI-ARIA module, {@link ngAria ngAria}, contains the code necessary to help you to add WAI-ARIA attributes in your application.
-
-<br />
-**`app/index.html`:**
-
-```html
-  ...
-  <!-- Adds WAI-ARIA module in AngularJS -->
-  <script src="bower_components/angular-aria/angular-aria.js"></script>
-  ...
-```
-
-### Dependencies
-
-We need to add a dependency on `ngAria` to our main module first:
-
-<br />
-**`app/app.module.js`:**
-
-```js
-  angular.
-    module('phonecatApp', [
-      ...
-      'ngAria',
-      ...
-    ]);
-```
+To help us, we will install the [protractor-a11y-plugin] plugin to check potential issues in the application.
 
 ## How to inform the user that _something_ is happening
 
@@ -162,7 +61,7 @@ To fix this, we add two directives to inform the user how many items are know in
 ```html
   <div>
     <label for="search">Search:</label> 
-    <input id="search" ng-model="$ctrl.query" ng-model-options="{ debounce: 900 }">
+    <input id="search" ng-model="$ctrl.query" ng-model-options="{ debounce: 300 }">
   </div>
 
   <div class="aria-status" aria-live="assertive" aria-atomic="true"></div>
@@ -292,11 +191,123 @@ _Tip_: Try to navigate over the application using only the _TAB_ key. You will d
   ...
 ```
 
+To fix this issue, we add a `button` element, wrapping the image to allow the user to access the content via keyboard.
+
+Why we are using a `button` element instead of an `a` element? It is more correct to use buttons elements to call actions like show content, hidden content or similar.
+
+
+## How to use the `ngAria` module
+
+The `ngAria` module provides support for common WAI-ARIA attributes that convey state or semantic information about the application for users of assistive technologies, such as screen readers.
+
+### Dependencies
+
+The `ngAria` module, is distributed separately from the core Angular framework. 
+
+Since we are using [Bower][bower] to install client-side dependencies, this step updates the
+`bower.json` configuration file to include the new dependencies:
+
+<br />
+**`bower.json`:**
+
+```
+{
+  "name": "angular-phonecat",
+  "description": "A starter project for AngularJS",
+  "version": "0.0.0",
+  "homepage": "https://github.com/angular/angular-phonecat",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "angular": "1.5.x",
+    "angular-animate": "1.5.x",
+    "angular-aria": "1.5.x",
+    "angular-mocks": "1.5.x",
+    "angular-resource": "1.5.x",
+    "angular-route": "1.5.x",
+    "bootstrap": "3.3.x",
+    "jquery": "2.2.x"
+  }
+}
+```
+
+* `"angular-aria": "1.5.x"` tells bower to install a version of the angular-aria module that
+  is compatible with version 1.5.x of Angular.
+
+We need to add a dependency on `ngAria` to our main module first:
+
+<br />
+**`app/app.module.js`:**
+
+```js
+  angular.
+    module('phonecatApp', [
+      ...
+      'ngAria',
+      ...
+    ]);
+```
+
+In order to enable the module, we need to update `index.html`, loading the necessary dependencies
+(**angular-aria.js**) that contain JavaScript code. 
+
+The WAI-ARIA module, {@link ngAria ngAria}, contains the code necessary to help you to add WAI-ARIA attributes in your application.
+
+<br />
+**`app/index.html`:**
+
+```html
+  ...
+  <!-- Adds WAI-ARIA module in AngularJS -->
+  <script src="bower_components/angular-aria/angular-aria.js"></script>
+  ...
+```
+
 ## How to run the e2e tests using the Protractor accessibility plugin
+
+### Dependencies
+
+To install the [protractor-a11y-plugin], we can add the plugin into the `devDependencies` section in the `package.json` file,
+
+**`package.json`:**
+
+```
+{
+  "devDependencies": {
+    "bower": "^1.7.7",
+    "http-server": "^0.9.0",
+    "jasmine-core": "^2.4.1",
+    "karma": "^0.13.22",
+    "karma-chrome-launcher": "^0.2.3",
+    "karma-firefox-launcher": "^0.1.7",
+    "karma-jasmine": "^0.3.8",
+    "protractor": "^3.2.2",
+    "protractor-accessibility-plugin": "^0.1.1",
+    "shelljs": "^0.6.0"
+   }
+}
+```
+
+Now, we must tell bower to download and install these dependencies.
+
+```
+npm install
+```
+
+<div class="alert alert-info">
+  **Note:** If you have bower installed globally, you can run `bower install`, but for this project
+  we have preconfigured `npm install` to run bower for us.
+</div>
+
+<div class="alert alert-warning">
+  **Warning:** If a new version of Angular has been released since you last ran `npm install`, then
+  you may have a problem with the `bower install` due to a conflict between the versions of
+  angular.js that need to be installed. If you run into this issue, simply delete your
+  `app/bower_components` directory and then run `npm install`.
+</div>
 
 Once the plugin is installed, we have to modify the `protractor.conf.js` file to inform Protractor to use this plugin too.
 
-<br />
 **`protractor.conf.js`:**
 
 ```
@@ -309,7 +320,6 @@ Once the plugin is installed, we have to modify the `protractor.conf.js` file to
 ```
 
 After that, every time we run the e2e tests, Protractor will review the accessibility of your application using the [Accessibility Developer Tools](https://github.com/GoogleChrome/accessibility-developer-tools).
-
 
 
 # Summary
