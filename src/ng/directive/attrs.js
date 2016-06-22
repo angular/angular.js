@@ -232,6 +232,9 @@
  *
  * Sets the `readOnly` attribute on the element, if the expression inside `ngReadonly` is truthy.
  *
+ * Note that `ngReadonly` does not work with input `type="radio"` and `type="checkbox"`,
+ * text based inputs works fine.
+ *
  * A special directive is necessary because we cannot use interpolation inside the `readOnly`
  * attribute. See the {@link guide/interpolation interpolation guide} for more info.
  *
