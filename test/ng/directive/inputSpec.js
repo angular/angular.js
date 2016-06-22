@@ -1858,6 +1858,16 @@ describe('input', function() {
         var inputElm = helper.compileInput('<input name="myControl" type="date" min="{{ min }}" ng-model="value">');
 
         $rootScope.value = new Date(2010, 1, 1, 0, 0, 0);
+        $rootScope.min = new Date(2014, 10, 10, 0, 0, 0).toISOString();
+        $rootScope.$digest();
+
+        expect($rootScope.form.myControl.$error.min).toBeTruthy();
+      });
+
+      it('should parse interpolated Date objects as a valid min date value', function() {
+        var inputElm = helper.compileInput('<input name="myControl" type="date" min="{{ min }}" ng-model="value">');
+
+        $rootScope.value = new Date(2010, 1, 1, 0, 0, 0);
         $rootScope.min = new Date(2014, 10, 10, 0, 0, 0);
         $rootScope.$digest();
 
@@ -1894,6 +1904,16 @@ describe('input', function() {
       });
 
       it('should parse ISO-based date strings as a valid max date value', function() {
+        var inputElm = helper.compileInput('<input name="myControl" type="date" max="{{ max }}" ng-model="value">');
+
+        $rootScope.value = new Date(2020, 1, 1, 0, 0, 0);
+        $rootScope.max = new Date(2014, 10, 10, 0, 0, 0).toISOString();
+        $rootScope.$digest();
+
+        expect($rootScope.form.myControl.$error.max).toBeTruthy();
+      });
+
+      it('should parse interpolated Date objects as a valid max date value', function() {
         var inputElm = helper.compileInput('<input name="myControl" type="date" max="{{ max }}" ng-model="value">');
 
         $rootScope.value = new Date(2020, 1, 1, 0, 0, 0);
@@ -1985,6 +2005,44 @@ describe('input', function() {
       expect(inputElm).toBeInvalid();
 
       $rootScope.min = '2009-01-01';
+      $rootScope.$digest();
+
+      expect(inputElm).toBeValid();
+    });
+
+
+    it('should allow Date objects as valid ng-max values', function() {
+      $rootScope.max = new Date(2012, 1, 1, 1, 2, 0);
+      var inputElm = helper.compileInput('<input type="datetime-local" ng-model="value" name="alias" ng-max="max" />');
+
+      helper.changeInputValueTo('2014-01-01T12:34:00');
+      expect(inputElm).toBeInvalid();
+
+      $rootScope.max = new Date(2013, 1, 1, 1, 2, 0);
+      $rootScope.$digest();
+
+      expect(inputElm).toBeInvalid();
+
+      $rootScope.max = new Date(2014, 1, 1, 1, 2, 0);
+      $rootScope.$digest();
+
+      expect(inputElm).toBeValid();
+    });
+
+
+    it('should allow Date objects as valid ng-min values', function() {
+      $rootScope.min = new Date(2013, 1, 1, 1, 2, 0);
+      var inputElm = helper.compileInput('<input type="datetime-local" ng-model="value" name="alias" ng-min="min" />');
+
+      helper.changeInputValueTo('2010-01-01T12:34:00');
+      expect(inputElm).toBeInvalid();
+
+      $rootScope.min = new Date(2014, 1, 1, 1, 2, 0);
+      $rootScope.$digest();
+
+      expect(inputElm).toBeInvalid();
+
+      $rootScope.min = new Date(2009, 1, 1, 1, 2, 0);
       $rootScope.$digest();
 
       expect(inputElm).toBeValid();
