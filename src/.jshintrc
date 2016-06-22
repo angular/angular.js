@@ -96,6 +96,7 @@
     "createMap": false,
     "VALIDITY_STATE_PROPERTY": false,
     "reloadWithDebugInfo": false,
+    "stringify": false,
 
     "NODE_TYPE_ELEMENT": false,
     "NODE_TYPE_ATTRIBUTE": false,

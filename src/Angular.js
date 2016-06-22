@@ -86,6 +86,7 @@
   getBlockNodes: true,
   hasOwnProperty: true,
   createMap: true,
+  stringify: true,
 
   NODE_TYPE_ELEMENT: true,
   NODE_TYPE_ATTRIBUTE: true,
@@ -1901,6 +1902,27 @@ function getBlockNodes(nodes) {
  */
 function createMap() {
   return Object.create(null);
+}
+
+function stringify(value) {
+  if (value == null) { // null || undefined
+    return '';
+  }
+  switch (typeof value) {
+    case 'string':
+      break;
+    case 'number':
+      value = '' + value;
+      break;
+    default:
+      if (hasCustomToString(value) && !isArray(value) && !isDate(value)) {
+        value = value.toString();
+      } else {
+        value = toJson(value);
+      }
+  }
+
+  return value;
 }
 
 var NODE_TYPE_ELEMENT = 1;

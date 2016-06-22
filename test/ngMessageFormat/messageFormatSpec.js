@@ -311,6 +311,30 @@ describe('$$ngMessageFormat', function() {
     }));
 
 
+    it('should use custom toString when present', inject(function($interpolate, $rootScope) {
+       var context = {
+        a: {
+          toString: function() {
+            return 'foo';
+          }
+        }
+      };
+
+      expect($interpolate('{{ a }}')(context)).toEqual('foo');
+    }));
+
+    it('should NOT use toString on array objects', inject(function($interpolate) {
+      expect($interpolate('{{a}}')({ a: [] })).toEqual('[]');
+    }));
+
+
+    it('should NOT use toString on Date objects', inject(function($interpolate) {
+      var date = new Date(2014, 10, 10);
+      expect($interpolate('{{a}}')({ a: date })).toBe(JSON.stringify(date));
+      expect($interpolate('{{a}}')({ a: date })).not.toEqual(date.toString());
+    }));
+
+
     it('should return interpolation function', inject(function($interpolate, $rootScope) {
       var interpolateFn = $interpolate('Hello {{name}}!');
 

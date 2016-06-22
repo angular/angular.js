@@ -8,15 +8,7 @@
 /* global isFunction: false */
 /* global noop: false */
 /* global toJson: false */
-
-function stringify(value) {
-  if (value == null /* null/undefined */) { return ''; }
-  switch (typeof value) {
-    case 'string':     return value;
-    case 'number':     return '' + value;
-    default:           return toJson(value);
-  }
-}
+/* global $$stringify: false */
 
 // Convert an index into the string into line/column for use in error messages
 // As such, this doesn't have to be efficient.

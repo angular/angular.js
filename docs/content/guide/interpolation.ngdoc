@@ -26,6 +26,15 @@ normal {@link ng.$rootScope.Scope#$digest digest} cycle.
 
 Note that the interpolateDirective has a priority of 100 and sets up the watch in the preLink function.
 
+### How the string representation is computed
+
+If the interpolated value is not a `String`, it is computed as follows:
+- `undefined` and `null` are converted to `''`
+- if the value is an object that is not a `Number`, `Date` or `Array`, $interpolate looks for
+a custom `toString()` function on the object, and uses that. Custom means that
+`myObject.toString !== `Object.prototype.toString`.
+- if the above doesn't apply, `JSON.stringify` is used.
+
 ### Binding to boolean attributes
 
 Attributes such as `disabled` are called `boolean` attributes, because their presence means `true` and
