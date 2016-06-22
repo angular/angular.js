@@ -22,13 +22,12 @@ A website or application accessible allows the users with different preferences 
 * [Google Accessibility course](https://webaccessibility.withgoogle.com/course)
 * [Accessibility in AngularJS and Beyond](http://marcysutton.com/slides/fluent2015/)
 * [Introduction to Web Accessibility](https://www.w3.org/WAI/intro/accessibility.php)
+* [Notes On Client-Rendered Accessibility](https://www.smashingmagazine.com/2015/05/client-rendered-accessibility/)
 * [Apps For All: Coding Accessible Web Applications](https://shop.smashingmagazine.com/products/apps-for-all)
 
 ## WAI-ARIA
 
-WAI-ARIA (_the Accessible Rich Internet Applications Suite_) gives you the ability to reclassify and otherwise augment the perceived meaning (or semantics) of your HTML.
-
- Currently certain functionality used in Web sites is not available to some users with disabilities, especially people who rely on screen readers and people who cannot use a mouse. WAI-ARIA addresses these accessibility challenges, for example, by defining new ways for functionality to be provided to assistive technology. With WAI-ARIA, developers can make advanced Web applications accessible and usable to people with disabilities.
+WAI-ARIA (_the Accessible Rich Internet Applications Suite_) is a standard set of attributes used to fill accessibility support gaps in custom HTML elements and SVG.
 
 AngularJS has a module called {@link ngAria ngAria} to help developers to add some WAI-ARIA attributes easily in your application.
 
@@ -72,7 +71,7 @@ To fix this, we add two directives to inform the user how many items are know in
   
 ```
 
-The new element is a _region live_. It means that every time this region is updated, it will inform the user about its content.
+The new element is a _live region_. It means that every time this region is updated, it will inform the user about its content.
 
 In order to update the information correctly, it is neccesary to add a _`debounce`_ option to the model.
 
@@ -193,7 +192,7 @@ _Tip_: Try to navigate over the application using only the _TAB_ key. You will d
 
 To fix this issue, we add a `button` element, wrapping the image to allow the user to access the content via keyboard.
 
-Why we are using a `button` element instead of an `a` element? It is more correct to use buttons elements to call actions like show content, hidden content or similar.
+Why we are using a `button` element instead of an `a` element? Because it does not navigate to a new page or resource.
 
 
 ## How to use the `ngAria` module
