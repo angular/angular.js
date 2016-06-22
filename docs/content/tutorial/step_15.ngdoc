@@ -42,7 +42,9 @@ If you make a review of the accessibility of the application you will find some 
 
 In the next sections we are going to show you, how to fix some of these issues to make the application accessible.
 
-To help us, we will install the [protractor-a11y-plugin] plugin to check potential issues in the application.
+To help us, we can use the [protractor-a11y-plugin] plugin to check potential issues in the application.
+
+This plugin [runs an audit](https://github.com/GoogleChrome/accessibility-developer-tools/wiki/Audit-Rules) locally by injecting the Dev Tools script into WebDriver pages, and it can diagnose issues including missing labels, incorrect ARIA attributes and color contrast. This is a great starting point if you can't send source code over the wire through an API.
 
 ## How to inform the user that _something_ is happening
 
