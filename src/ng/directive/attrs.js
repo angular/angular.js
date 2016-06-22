@@ -234,6 +234,8 @@
  *
  * A special directive is necessary because we cannot use interpolation inside the `readOnly`
  * attribute. See the {@link guide/interpolation interpolation guide} for more info.
+ * 
+ * Please note that `ngReadonly` does not work with input `type="radio"` and `type="checkbox"`, text based inputs works fine.
  *
  * @example
     <example>
