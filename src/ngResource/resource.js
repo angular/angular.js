@@ -116,7 +116,7 @@ function shallowClearAndCopy(src, dst) {
  * @param {Object=} paramDefaults Default values for `url` parameters. These can be overridden in
  *   `actions` methods. If a parameter value is a function, it will be called every time
  *   a param value needs to be obtained for a request (unless the param was overridden). The function
- *   will be passed the current data value as a argument.
+ *   will be passed the current data value as an argument.
  *
  *   Each key value in the parameter object is first bound to url template if present and then any
  *   excess keys are appended to the url search query after the `?`.
@@ -149,7 +149,7 @@ function shallowClearAndCopy(src, dst) {
  *   - **`params`** – {Object=} – Optional set of pre-bound parameters for this action. If any of
  *     the parameter value is a function, it will be called every time when a param value needs to
  *     be obtained for a request (unless the param was overridden). The function will be passed the
- *     current data value as a argument.
+ *     current data value as an argument.
  *   - **`url`** – {string} – action specific `url` override. The url templating is supported just
  *     like for the resource-level urls.
  *   - **`isArray`** – {boolean=} – If true then the returned object for this action is an array,

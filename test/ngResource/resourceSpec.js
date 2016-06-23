@@ -667,11 +667,14 @@ describe("basic usage", function() {
 
     expect(fedor).toEqualData({id: 'fedor', email: 'f@f.com', count: 1});
 
-    $httpBackend.expect('POST', '/Person/fedor').respond(
-        {id: 'fedor', email: 'f@f.com', count: 2});
+    $httpBackend.expect('POST', '/Person/fedor2').respond(
+        {id: 'fedor2', email: 'f2@f.com', count: 2});
+
+    fedor.id = 'fedor2';
     fedor.$save();
     $httpBackend.flush();
-    expect(fedor).toEqualData({id: 'fedor', email: 'f@f.com', count: 2});
+
+    expect(fedor).toEqualData({id: 'fedor2', email: 'f2@f.com', count: 2});
   });
 
 
