@@ -11,8 +11,7 @@
  */
 var $jsonpCallbacksProvider = function() {
   this.$get = ['$window', function($window) {
-    var counter = 0;
-    $window.angular.callbacks = {};
+    var callbacks = $window.angular.callbacks;
     var callbackMap = {};
 
     function createCallback(callbackId) {
@@ -35,10 +34,10 @@ var $jsonpCallbacksProvider = function() {
        * to pass to the server, which will be used to call the callback with its payload in the JSONP response.
        */
       createCallback: function(url) {
-        var callbackId = '_' + (counter++).toString(36);
+        var callbackId = '_' + (callbacks.$$counter++).toString(36);
         var callbackPath = 'angular.callbacks.' + callbackId;
         var callback = createCallback(callbackId);
-        callbackMap[callbackPath] = $window.angular.callbacks[callbackId] = callback;
+        callbackMap[callbackPath] = callbacks[callbackId] = callback;
         return callbackPath;
       },
       /**
@@ -75,7 +74,7 @@ var $jsonpCallbacksProvider = function() {
        */
       removeCallback: function(callbackPath) {
         var callback = callbackMap[callbackPath];
-        delete $window.angular.callbacks[callback.id];
+        delete callbacks[callback.id];
         delete callbackMap[callbackPath];
       }
     };
