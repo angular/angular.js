@@ -37,7 +37,7 @@ would be lost, because the browser ignores the attribute value.
 In the following example, the interpolation information would be ignored and the browser would simply
 interpret the attribute as present, meaning that the button would always be disabled.
 
- ```html
+```html
   Disabled: <input type="checkbox" ng-model="isDisabled" />
   <button disabled="{{isDisabled}}">Disabled</button>
 ```
@@ -49,7 +49,7 @@ For this reason, Angular provides special `ng`-prefixed directives for the follo
 These directives take an expression inside the attribute, and set the corresponding boolean attribute
 to true when the expression evaluates to truthy.
 
- ```html
+```html
   Disabled: <input type="checkbox" ng-model="isDisabled" />
   <button ng-disabled="isDisabled">Disabled</button>
 ```
@@ -144,3 +144,14 @@ interpolation markup and not data.
 - It impacts performance, as interpolation adds another watcher to the scope.
 - Since this is not recommended usage, we do not test for this, and changes to
 Angular core may break your code.
+
+## Known Issues
+
+You should avoid dynamically changing the content of an interpolated string (e.g. attribute value
+or text node). Your changes are likely to be overwriten, when the original string gets evaluated.
+This restriction applies to both directly changing the content via JavaScript or indirectly using a
+directive.
+
+For example, you should not use interpolation in the value of the `style` attribute (e.g.
+`style="color: {{ 'orange' }}; font-weight: {{ 'bold' }};"`) **and** at the same time use a
+directive that changes the content of that attributte, such as `ngStyle`.
