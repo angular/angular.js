@@ -2930,7 +2930,7 @@ angular.mock.$RootScopeDecorator = ['$delegate', function($delegate) {
     angular.forEach(angular.callbacks, function(val, key) {
       delete angular.callbacks[key];
     });
-    angular.callbacks.counter = 0;
+    angular.callbacks.$$counter = 0;
   };
 
   (window.beforeEach || window.setup)(module.$$beforeEach);
