@@ -36,6 +36,19 @@ describe('$jsonpCallbacks', function() {
       $jsonpCallbacks.createCallback('http://some.dummy.com/jsonp/request');
       expect($window.angular.callbacks._3).toEqual(jasmine.any(Function));
     }));
+
+    it('should produce unique callback paths across multiple instances', function() {
+      var $jsonpCallbacks1 = angular.injector(['ng', 'ngMock']).get('$jsonpCallbacks');
+      var $jsonpCallbacks2 = angular.injector(['ng', 'ngMock']).get('$jsonpCallbacks');
+
+      var path1 = $jsonpCallbacks1.createCallback('http://some.dummy.com/jsonp/request');
+      var path2 = $jsonpCallbacks2.createCallback('http://some.dummy.com/jsonp/request');
+
+      expect(path1).toBe('angular.callbacks._0');
+      expect(path2).toBe('angular.callbacks._1');
+      expect(angular.callbacks._0).toBeDefined();
+      expect(angular.callbacks._1).toBeDefined();
+    });
   });
 
 
