@@ -1989,6 +1989,17 @@ describe("animations", function() {
       expect(count).toBe(5);
     }));
 
+    it('should not get affected by custom, enumerable properties on `Object.prototype`',
+      inject(function($animate) {
+        Object.prototype.foo = 'ENUMARABLE_AND_NOT_AN_ARRAY';
+
+        element = jqLite('<div></div>');
+        expect(function() { $animate.off(element); }).not.toThrow();
+
+        delete Object.prototype.foo;
+      })
+    );
+
     it('should fire a `start` callback when the animation starts with the matching element',
       inject(function($animate, $rootScope, $rootElement, $document) {
 
