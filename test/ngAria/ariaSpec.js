@@ -9,18 +9,6 @@ describe('$aria', function() {
     dealoc(element);
   });
 
-  function injectScopeAndCompiler() {
-    return inject(function(_$compile_, _$rootScope_) {
-      $compile = _$compile_;
-      scope = _$rootScope_;
-    });
-  }
-
-  function compileElement(inputHtml) {
-    element = $compile(inputHtml)(scope);
-    scope.$digest();
-  }
-
   describe('aria-hidden', function() {
     beforeEach(injectScopeAndCompiler);
 
@@ -895,19 +883,31 @@ describe('$aria', function() {
       expect(element.attr('tabindex')).toBe('0');
     });
   });
-});
 
-function expectAriaAttrOnEachElement(elem, ariaAttr, expected) {
-  angular.forEach(elem, function(val) {
-    expect(angular.element(val).attr(ariaAttr)).toBe(expected);
-  });
-}
+  // Helpers
+  function compileElement(inputHtml) {
+    element = $compile(inputHtml)(scope);
+    scope.$digest();
+  }
 
-function configAriaProvider(config) {
-  return function() {
-    angular.module('ariaTest', ['ngAria']).config(function($ariaProvider) {
-      $ariaProvider.config(config);
+  function configAriaProvider(config) {
+    return function() {
+      module(function($ariaProvider) {
+        $ariaProvider.config(config);
+      });
+    };
+  }
+
+  function expectAriaAttrOnEachElement(elem, ariaAttr, expected) {
+    angular.forEach(elem, function(val) {
+      expect(angular.element(val).attr(ariaAttr)).toBe(expected);
     });
-    module('ariaTest');
-  };
-}
+  }
+
+  function injectScopeAndCompiler() {
+    return inject(function(_$compile_, _$rootScope_) {
+      $compile = _$compile_;
+      scope = _$rootScope_;
+    });
+  }
+});
