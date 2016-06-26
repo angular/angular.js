@@ -10,7 +10,9 @@ controllers or services and it is easy to define your own filter.
 
 The underlying API is the {@link ng.$filterProvider `filterProvider`}.
 
-## Using filters in view templates
+A list of {@link ng.filter `built in filters`} in Angular.
+
+## Using filters in view templatesa
 
 Filters can be applied to expressions in view templates using the following syntax:
 
