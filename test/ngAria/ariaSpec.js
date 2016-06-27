@@ -9,6 +9,237 @@ describe('$aria', function() {
     dealoc(element);
   });
 
+  describe('with `ngAriaDisable`', function() {
+    beforeEach(injectScopeAndCompiler);
+    beforeEach(function() {
+      jasmine.addMatchers({
+        toHaveAttribute: function toHaveAttributeMatcher() {
+          return {
+            compare: function toHaveAttributeCompare(element, attr) {
+              var node = element[0];
+              var pass = node.hasAttribute(attr);
+              var message = 'Expected `' + node.outerHTML + '` ' + (pass ? 'not ' : '') +
+                            'to have attribute `' + attr + '`.';
+
+              return {
+                pass: pass,
+                message: message
+              };
+            }
+          };
+        }
+      });
+    });
+
+    // ariaChecked
+    it('should not attach aria-checked to custom checkbox', function() {
+      compileElement('<div role="checkbox" ng-model="val" ng-aria-disable></div>');
+
+      scope.$apply('val = false');
+      expect(element).not.toHaveAttribute('aria-checked');
+
+      scope.$apply('val = true');
+      expect(element).not.toHaveAttribute('aria-checked');
+    });
+
+    it('should not attach aria-checked to custom radio controls', function() {
+      compileElement(
+          '<div role="radio" ng-model="val" value="one" ng-aria-disable></div>' +
+          '<div role="radio" ng-model="val" value="two" ng-aria-disable></div>');
+
+      var radio1 = element.eq(0);
+      var radio2 = element.eq(1);
+
+      scope.$apply('val = "one"');
+      expect(radio1).not.toHaveAttribute('aria-checked');
+      expect(radio2).not.toHaveAttribute('aria-checked');
+
+      scope.$apply('val = "two"');
+      expect(radio1).not.toHaveAttribute('aria-checked');
+      expect(radio2).not.toHaveAttribute('aria-checked');
+    });
+
+    // ariaDisabled
+    it('should not attach aria-disabled to custom controls', function() {
+      compileElement('<div ng-disabled="val" ng-aria-disable></div>');
+
+      scope.$apply('val = false');
+      expect(element).not.toHaveAttribute('aria-disabled');
+
+      scope.$apply('val = true');
+      expect(element).not.toHaveAttribute('aria-disabled');
+    });
+
+    // ariaHidden
+    it('should not attach aria-hidden to `ngShow`', function() {
+      compileElement('<div ng-show="val" ng-aria-disable></div>');
+
+      scope.$apply('val = false');
+      expect(element).not.toHaveAttribute('aria-hidden');
+
+      scope.$apply('val = true');
+      expect(element).not.toHaveAttribute('aria-hidden');
+    });
+
+    it('should not attach aria-hidden to `ngHide`', function() {
+      compileElement('<div ng-hide="val" ng-aria-disable></div>');
+
+      scope.$apply('val = false');
+      expect(element).not.toHaveAttribute('aria-hidden');
+
+      scope.$apply('val = true');
+      expect(element).not.toHaveAttribute('aria-hidden');
+    });
+
+    // ariaInvalid
+    it('should not attach aria-invalid to input', function() {
+      compileElement('<input ng-model="val" ng-minlength="10" ng-aria-disable />');
+
+      scope.$apply('val = "lt 10"');
+      expect(element).not.toHaveAttribute('aria-invalid');
+
+      scope.$apply('val = "gt 10 characters"');
+      expect(element).not.toHaveAttribute('aria-invalid');
+    });
+
+    it('should not attach aria-invalid to custom controls', function() {
+      compileElement('<div role="textbox" ng-model="val" ng-minlength="10" ng-aria-disable></div>');
+
+      scope.$apply('val = "lt 10"');
+      expect(element).not.toHaveAttribute('aria-invalid');
+
+      scope.$apply('val = "gt 10 characters"');
+      expect(element).not.toHaveAttribute('aria-invalid');
+    });
+
+    // ariaLive
+    it('should not attach aria-live to `ngMessages`', function() {
+      compileElement('<div ng-messages="val" ng-aria-disable>');
+      expect(element).not.toHaveAttribute('aria-live');
+    });
+
+    // ariaReadonly
+    it('should not attach aria-readonly to custom controls', function() {
+      compileElement('<div ng-readonly="val" ng-aria-disable></div>');
+
+      scope.$apply('val = false');
+      expect(element).not.toHaveAttribute('aria-readonly');
+
+      scope.$apply('val = true');
+      expect(element).not.toHaveAttribute('aria-readonly');
+    });
+
+    // ariaRequired
+    it('should not attach aria-required to custom controls with `required`', function() {
+      compileElement('<div ng-model="val" required ng-aria-disable></div>');
+      expect(element).not.toHaveAttribute('aria-required');
+    });
+
+    it('should not attach aria-required to custom controls with `ngRequired`', function() {
+      compileElement('<div ng-model="val" ng-required="val" ng-aria-disable></div>');
+
+      scope.$apply('val = false');
+      expect(element).not.toHaveAttribute('aria-required');
+
+      scope.$apply('val = true');
+      expect(element).not.toHaveAttribute('aria-required');
+    });
+
+    // ariaValue
+    it('should not attach aria-value* to input[range]', function() {
+      compileElement('<input type="range" ng-model="val" min="0" max="100" ng-aria-disable />');
+
+      expect(element).not.toHaveAttribute('aria-valuemax');
+      expect(element).not.toHaveAttribute('aria-valuemin');
+      expect(element).not.toHaveAttribute('aria-valuenow');
+
+      scope.$apply('val = 50');
+      expect(element).not.toHaveAttribute('aria-valuemax');
+      expect(element).not.toHaveAttribute('aria-valuemin');
+      expect(element).not.toHaveAttribute('aria-valuenow');
+
+      scope.$apply('val = 150');
+      expect(element).not.toHaveAttribute('aria-valuemax');
+      expect(element).not.toHaveAttribute('aria-valuemin');
+      expect(element).not.toHaveAttribute('aria-valuenow');
+    });
+
+    it('should not attach aria-value* to custom controls', function() {
+      compileElement(
+          '<div role="progressbar" ng-model="val" min="0" max="100" ng-aria-disable></div>' +
+          '<div role="slider" ng-model="val" min="0" max="100" ng-aria-disable></div>');
+
+      var progressbar = element.eq(0);
+      var slider = element.eq(1);
+
+      ['aria-valuemax', 'aria-valuemin', 'aria-valuenow'].forEach(function(attr) {
+        expect(progressbar).not.toHaveAttribute(attr);
+        expect(slider).not.toHaveAttribute(attr);
+      });
+
+      scope.$apply('val = 50');
+      ['aria-valuemax', 'aria-valuemin', 'aria-valuenow'].forEach(function(attr) {
+        expect(progressbar).not.toHaveAttribute(attr);
+        expect(slider).not.toHaveAttribute(attr);
+      });
+
+      scope.$apply('val = 150');
+      ['aria-valuemax', 'aria-valuemin', 'aria-valuenow'].forEach(function(attr) {
+        expect(progressbar).not.toHaveAttribute(attr);
+        expect(slider).not.toHaveAttribute(attr);
+      });
+    });
+
+    // bindKeypress
+    it('should not bind keypress to `ngClick`', function() {
+      scope.onClick = jasmine.createSpy('onClick');
+      compileElement(
+          '<div ng-click="onClick()" tabindex="0" ng-aria-disable></div>' +
+          '<ul><li ng-click="onClick()" tabindex="0" ng-aria-disable></li></ul>');
+
+      var div = element.find('div');
+      var li = element.find('li');
+
+      div.triggerHandler({type: 'keypress', keyCode: 32});
+      li.triggerHandler({type: 'keypress', keyCode: 32});
+
+      expect(scope.onClick).not.toHaveBeenCalled();
+    });
+
+    // bindRoleForClick
+    it('should not attach role to custom controls', function() {
+      compileElement(
+          '<div ng-click="onClick()" ng-aria-disable></div>' +
+          '<div type="checkbox" ng-model="val" ng-aria-disable></div>' +
+          '<div type="radio" ng-model="val" ng-aria-disable></div>' +
+          '<div type="range" ng-model="val" ng-aria-disable></div>');
+
+      expect(element.eq(0)).not.toHaveAttribute('role');
+      expect(element.eq(1)).not.toHaveAttribute('role');
+      expect(element.eq(2)).not.toHaveAttribute('role');
+      expect(element.eq(3)).not.toHaveAttribute('role');
+    });
+
+    // tabindex
+    it('should not attach tabindex to custom controls', function() {
+      compileElement(
+          '<div role="checkbox" ng-model="val" ng-aria-disable></div>' +
+          '<div role="slider" ng-model="val" ng-aria-disable></div>');
+
+      expect(element.eq(0)).not.toHaveAttribute('tabindex');
+      expect(element.eq(1)).not.toHaveAttribute('tabindex');
+    });
+
+    it('should not attach tabindex to `ngClick` or `ngDblclick`', function() {
+      compileElement(
+          '<div ng-click="onClick()" ng-aria-disable></div>' +
+          '<div ng-dblclick="onDblclick()" ng-aria-disable></div>');
+
+      expect(element.eq(0)).not.toHaveAttribute('tabindex');
+      expect(element.eq(1)).not.toHaveAttribute('tabindex');
+    });
+  });
+
   describe('aria-hidden', function() {
     beforeEach(injectScopeAndCompiler);
 
