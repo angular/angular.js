@@ -9,13 +9,15 @@ In this step, we will learn how to fix the accessibility issues in our applicati
 
 * We will fix some issues in the templates.
 * We will use the [protractor-accessibility-plugin](protractor-a11y-plugin) to review the accessibility of our application when we run our e2e tests.
-* We will explain how to add the {@link ngAria ngAria} module to use WAI-ARIA easily if you need it in your project.
+* We will explain how to add the {@link ngAria ngAria} module to use WAI-ARIA easily 
+if you need it in your project.
 
 <div doc-tutorial-reset="15"></div>
 
 ## Why accessibility matters
 
-A website or application accessible allows the users with different preferences and abilitities, to consume the content in a way that suits their needs.
+A website or application accessible allows the users with different preferences and abilitities, 
+to consume the content in a way that suits their needs.
 
 * [Creating an accessible web - Access iQ](https://www.youtube.com/watch?v=47n0wEcm6JU)
 * [Web Accessibility](https://www.youtube.com/watch?v=bEM9Fn9aOG8)
@@ -27,7 +29,8 @@ A website or application accessible allows the users with different preferences 
 
 ## WAI-ARIA
 
-WAI-ARIA (_the Accessible Rich Internet Applications Suite_) is a standard set of attributes used to fill accessibility support gaps in custom HTML elements and SVG.
+WAI-ARIA (_the Accessible Rich Internet Applications Suite_) is a standard set of attributes used
+to fill accessibility support gaps in custom HTML elements and SVG.
 
 AngularJS has a module called {@link ngAria ngAria} to help developers to add some WAI-ARIA attributes easily in your application.
 
@@ -40,21 +43,27 @@ If you make a review of the accessibility of the application you will find some 
 * Lack of headers elements to help the user to navigate throw the content of the page.
 * In the Phone detail, the user can't access via keyboard over the thumbnails images.
 
-In the next sections we are going to show you, how to fix some of these issues to make the application accessible.
+In the next sections we are going to show you, how to fix some of these issues 
+to make the application accessible.
 
-To help us, we can use the [protractor-a11y-plugin] plugin to check potential issues in the application.
+To help us, we can use the [protractor-a11y-plugin] plugin to check 
+potential issues in the application.
 
 This plugin [runs an audit](https://github.com/GoogleChrome/accessibility-developer-tools/wiki/Audit-Rules) locally by injecting the Dev Tools script into WebDriver pages, and it can diagnose issues including missing labels, incorrect ARIA attributes and color contrast. This is a great starting point if you can't send source code over the wire through an API.
 
 ## How to inform the user that _something_ is happening
 
-Today, is very common to find applications or webpages where the user make some interaction with an element and obtains and inmediate reply to the action.
+Today, is very common to find applications or webpages where the user make some interaction 
+with an element and obtains and inmediate reply to the action.
 
 The problem is that in most of the cases this action is only reported in a way that you need to see it in your screen but if a user is navigating with a screenreader like [JAWS](http://www.freedomscientific.com/Products/Blindness/JAWS), [NVDA](http://www.nvaccess.org/) or [ChromeVox](http://www.chromevox.com/), this information never won't be accessible.
 
-When the user is searching or filtering mobiles in the application, the list updates automatically. It is mandatory that user knows, in some way, the result after the search or order action.
+When the user is searching or filtering mobiles in the application, the list updates automatically.
+It is mandatory that user knows, in some way, the result after the search or order action.
 
-To fix this, we add two directives to inform the user how many items are know in the list after search or order them. This directive will fill an element in our page to tell the user how many elements are after the action.
+To fix this, we add two directives to inform the user how many items are now in the list 
+after search or order them. This directive will fill an element in our page 
+to tell the user how many elements are after the action.
 
 <br />
 **`app/phone-list/phone-list-template.html`:**
@@ -73,9 +82,11 @@ To fix this, we add two directives to inform the user how many items are know in
   
 ```
 
-The new element is a _live region_. It means that every time this region is updated, it will inform the user about its content.
+The new element is a _live region_. It means that every time this region is updated, 
+it will inform the user about its content.
 
-In order to update the information correctly, it is neccesary to add a _`debounce`_ option to the model.
+In order to update the information correctly, it is neccesary to add a _`debounce`_ option
+to the model.
 
 Please note that now the inputs are associated with theirs labels using `label` elements.
 
@@ -175,9 +186,12 @@ angular.
 
 ## Using the keyboard
 
-The current detail of a phone prevents a user to use a keyboard to navigate for over each thumbnail image. It is very important due to accessibility that all the actions and information are available via keyboard too. For example, lightboxes, carousels, slides, etc.
+The current detail of a phone prevents a user to use a keyboard to navigate for over each thumbnail
+image. It is very important due to accessibility that all the actions and information 
+are available via keyboard too. For example, lightboxes, carousels, slides, etc.
 
-_Tip_: Try to navigate over the application using only the _TAB_ key. You will discover that some actions can't be accessed nor the focus on some elements. 
+_Tip_: Try to navigate over the application using only the _TAB_ key. 
+You will discover that some actions can't be accessed nor the focus on some elements. 
 
 <br />
 **`app/phone-detail/phone-detail.template.html`:**
@@ -192,21 +206,25 @@ _Tip_: Try to navigate over the application using only the _TAB_ key. You will d
   ...
 ```
 
-To fix this issue, we add a `button` element, wrapping the image to allow the user to access the content via keyboard.
+To fix this issue, we add a `button` element, wrapping the image to allow 
+the user to access the content via keyboard.
 
-Why we are using a `button` element instead of an `a` element? Because it does not navigate to a new page or resource.
+Why we are using a `button` element instead of an `a` element? 
+Because it does not navigate to a new page or resource.
 
 
 ## How to use the `ngAria` module
 
-The `ngAria` module provides support for common WAI-ARIA attributes that convey state or semantic information about the application for users of assistive technologies, such as screen readers.
+The `ngAria` module provides support for common WAI-ARIA attributes that convey state 
+or semantic information about the application for users of assistive technologies, 
+such as screen readers.
 
 ### Dependencies
 
 The `ngAria` module, is distributed separately from the core Angular framework. 
 
-Since we are using [Bower][bower] to install client-side dependencies, this step updates the
-`bower.json` configuration file to include the new dependencies:
+Since we are using [Bower][bower] to install client-side dependencies, 
+this step updates the `bower.json` configuration file to include the new dependencies:
 
 <br />
 **`bower.json`:**
@@ -232,8 +250,8 @@ Since we are using [Bower][bower] to install client-side dependencies, this step
 }
 ```
 
-* `"angular-aria": "1.5.x"` tells bower to install a version of the angular-aria module that
-  is compatible with version 1.5.x of Angular.
+* `"angular-aria": "1.5.x"` tells bower to install a version of the angular-aria module
+ that is compatible with version 1.5.x of Angular.
 
 We need to add a dependency on `ngAria` to our main module first:
 
@@ -252,7 +270,8 @@ We need to add a dependency on `ngAria` to our main module first:
 In order to enable the module, we need to update `index.html`, loading the necessary dependencies
 (**angular-aria.js**) that contain JavaScript code. 
 
-The WAI-ARIA module, {@link ngAria ngAria}, contains the code necessary to help you to add WAI-ARIA attributes in your application.
+The WAI-ARIA module, {@link ngAria ngAria}, contains the code necessary to help you 
+to add WAI-ARIA attributes in your application.
 
 <br />
 **`app/index.html`:**
@@ -266,9 +285,14 @@ The WAI-ARIA module, {@link ngAria ngAria}, contains the code necessary to help 
 
 ## How to run the e2e tests using the Protractor accessibility plugin
 
+
+Once we install the plugin, every time we run the e2e tests, 
+Protractor will review the accessibility of your application.
+
 ### Dependencies
 
-To install the [protractor-a11y-plugin], we can add the plugin into the `devDependencies` section in the `package.json` file,
+To install the [protractor-a11y-plugin], we can add the plugin into the `devDependencies` section
+in the `package.json` file,
 
 **`package.json`:**
 
@@ -307,7 +331,8 @@ npm install
   `app/bower_components` directory and then run `npm install`.
 </div>
 
-Once the plugin is installed, we have to modify the `protractor.conf.js` file to inform Protractor to use this plugin too.
+Once the plugin is installed, we have to modify the `protractor.conf.js` file to inform Protractor
+to use this plugin too.
 
 **`protractor.conf.js`:**
 
@@ -319,9 +344,6 @@ Once the plugin is installed, we have to modify the `protractor.conf.js` file to
     package: 'protractor-accessibility-plugin'
   }]
 ```
-
-After that, every time we run the e2e tests, Protractor will review the accessibility of your application using the [Accessibility Developer Tools](https://github.com/GoogleChrome/accessibility-developer-tools).
-
 
 # Summary
 
