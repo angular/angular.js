@@ -199,16 +199,16 @@ Voilà! The resulting output should look the same, but let's see what we have ga
 # Testing
 
 Although we have combined our controller with a template into a component, we still can (and should)
-unit test the controller separately, since this is where are application logic and data reside.
+unit test the controller separately, since this is where our application logic and data reside.
 
 In order to retrieve and instantiate a component's controller, Angular provides the
 {@link ngMock.$componentController $componentController} service.
 
 <div class="alert alert-info">
-  The `$controller` service that we used in the previous step, can only instantiate controllers that
-  where registered by name, using the `.controller()` method. We could have registered our component
-  controller this way too, if we wanted to. Instead, we chose to define it inline &mdash; inside the
-  CDO &mdash; to keep things localized, but either way works equally well.
+  The `$controller` service that we used in the previous step can only instantiate controllers that
+  were registered by name, using the `.controller()` method. We could have registered our component
+  controller this way, too, if we wanted to. Instead, we chose to define it inline &mdash; inside
+  the CDO &mdash; to keep things localized, but either way works equally well.
 </div>
 
 <br />
@@ -268,7 +268,7 @@ Same as before, execute `npm test` to run the tests and then watch the files for
 
 # Summary
 
-You have learned how to organize your application and presentation logic into isolated reusable
+You have learned how to organize your application and presentation logic into isolated, reusable
 components. Let's go to {@link step_04 step 4} to learn how to organize our code in directories and
 files, so it remains easy to locate as our application grows.
 
