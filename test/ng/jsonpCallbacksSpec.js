@@ -2,11 +2,6 @@
 
 describe('$jsonpCallbacks', function() {
 
-  beforeEach(module(function($provide) {
-    // mock out the $window object
-    $provide.value('$window', { angular: {} });
-  }));
-
   describe('createCallback(url)', function() {
 
     it('should return a new unique path to a callback function on each call', inject(function($jsonpCallbacks) {
@@ -74,6 +69,7 @@ describe('$jsonpCallbacks', function() {
       expect(result).toBe(response);
     }));
   });
+
 
   describe('removeCallback(calbackPath)', function() {
 

@@ -11,9 +11,8 @@
  */
 var $jsonpCallbacksProvider = function() {
   this.$get = ['$window', function($window) {
+    var callbacks = $window.angular.callbacks;
     var callbackMap = {};
-    var callbacks = $window.angular.callbacks = $window.angular.callbacks || {};
-    callbacks.$$counter = callbacks.$$counter || 0;
 
     function createCallback(callbackId) {
       var callback = function(data) {
