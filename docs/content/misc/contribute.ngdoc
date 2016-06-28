@@ -53,7 +53,7 @@ minified AngularJS files:
 
 ```shell
 # Clone your Github repository:
-git clone "git@github.com:<github username>/angular.js.git"
+git clone https://github.com/<github username>/angular.js.git
 
 # Go to the AngularJS directory:
 cd angular.js
