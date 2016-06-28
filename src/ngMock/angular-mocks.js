@@ -3106,8 +3106,6 @@ angular.mock.$RootScopeDecorator = ['$delegate', function($delegate) {
             throw new ErrorAddingDeclarationLocationStack(e, errorForStack);
           }
           throw e;
-        } finally {
-          errorForStack = null;
         }
       }
     }
