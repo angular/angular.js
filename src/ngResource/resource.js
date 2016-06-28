@@ -695,6 +695,8 @@ angular.module('ngResource', ['ng']).
               defaultResponseInterceptor;
             var responseErrorInterceptor = action.interceptor && action.interceptor.responseError ||
               undefined;
+            var hasError = !!error;
+            var hasResponseErrorInterceptor = !!responseErrorInterceptor;
             var timeoutDeferred;
             var numericTimeoutPromise;
 
@@ -776,13 +778,19 @@ angular.module('ngResource', ['ng']).
                 (success || noop)(value, response.headers);
                 return value;
               },
-              responseErrorInterceptor || error ?
+              (hasError || hasResponseErrorInterceptor) ?
               function(response) {
-                (error || noop)(response);
-                (responseErrorInterceptor || noop)(response);
-                return response;
-              }
-              : undefined);
+                if (hasError) error(response);
+                return hasResponseErrorInterceptor ?
+                    responseErrorInterceptor(response) :
+                    $q.reject(response);
+              } :
+              undefined);
+            if (hasError && !hasResponseErrorInterceptor) {
+              // Avoid `Possibly Unhandled Rejection` error,
+              // but still fulfill the returned promise with a rejection
+              promise.catch(noop);
+            }
 
             if (!isInstanceCall) {
               // we are creating instance / collection

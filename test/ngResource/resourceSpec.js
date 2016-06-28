@@ -1500,12 +1500,17 @@ describe('errors', function() {
 });
 
 describe('handling rejections', function() {
+  var $exceptionHandler;
   var $httpBackend;
   var $resource;
 
   beforeEach(module('ngResource'));
+  beforeEach(module(function($exceptionHandlerProvider) {
+    $exceptionHandlerProvider.mode('log');
+  }));
 
-  beforeEach(inject(function(_$httpBackend_, _$resource_) {
+  beforeEach(inject(function(_$exceptionHandler_, _$httpBackend_, _$resource_) {
+    $exceptionHandler = _$exceptionHandler_;
     $httpBackend = _$httpBackend_;
     $resource = _$resource_;
 
@@ -1524,6 +1529,70 @@ describe('handling rejections', function() {
     expect(errorCb1).toHaveBeenCalledOnce();
     expect(errorCb2).toHaveBeenCalledOnce();
   });
+
+
+  it('should report a PUR when no error callback or responseError interceptor is provided',
+    function() {
+      var CreditCard = $resource('/CreditCard');
+
+      CreditCard.get();
+      $httpBackend.flush();
+
+      expect($exceptionHandler.errors.length).toBe(1);
+      expect($exceptionHandler.errors[0]).toMatch(/^Possibly unhandled rejection/);
+    }
+  );
+
+
+  it('should not report a PUR when an error callback or responseError interceptor is provided',
+    function() {
+      var CreditCard = $resource('/CreditCard', {}, {
+        test1: {
+          method: 'GET'
+        },
+        test2: {
+          method: 'GET',
+          interceptor: {responseError: function() { return {}; }}
+        }
+      });
+
+      // With error callback
+      CreditCard.test1(noop, noop);
+      $httpBackend.flush();
+
+      expect($exceptionHandler.errors.length).toBe(0);
+
+      // With responseError interceptor
+      CreditCard.test2();
+      $httpBackend.flush();
+
+      expect($exceptionHandler.errors.length).toBe(0);
+
+      // With error callback and responseError interceptor
+      CreditCard.test2(noop, noop);
+      $httpBackend.flush();
+
+      expect($exceptionHandler.errors.length).toBe(0);
+    }
+  );
+
+
+  it('should report a PUR when the responseError interceptor returns a rejected promise',
+    inject(function($q) {
+      var CreditCard = $resource('/CreditCard', {}, {
+        test: {
+          method: 'GET',
+          interceptor: {responseError: function() { return $q.reject({}); }}
+        }
+      });
+
+      CreditCard.test();
+      $httpBackend.flush();
+
+      expect($exceptionHandler.errors.length).toBe(1);
+      expect($exceptionHandler.errors[0]).toMatch(/^Possibly unhandled rejection/);
+    })
+  );
 });
 
 describe('cancelling requests', function() {
