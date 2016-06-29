@@ -3057,7 +3057,7 @@ angular.mock.$RootScopeDecorator = ['$delegate', function($delegate) {
       this.stack = e.stack + '\n' + errorForStack.stack;
     if (e.stackArray) this.stackArray = e.stackArray;
   };
-  ErrorAddingDeclarationLocationStack.prototype.toString = Error.prototype.toString;
+  ErrorAddingDeclarationLocationStack.prototype = Error.prototype;
 
   window.inject = angular.mock.inject = function() {
     var blockFns = Array.prototype.slice.call(arguments, 0);

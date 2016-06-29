@@ -631,7 +631,6 @@ describe('ngMock', function() {
 
       inject(); // Trigger the tests in `module`
     });
-
   });
 
 
@@ -984,6 +983,27 @@ describe('ngMock', function() {
             });
           });
         }
+      });
+
+      it('Errors should be caught by jasmine\'s toThrowError', function() {
+        //create function that causes an error
+        function causeNgMocksError() {
+          module(function($provide) {
+            //cause $provide.factory to include an error
+            $provide.factory('causeError', function() {
+              //Say for example, some mock module caused an error when instantiated
+              throw new Error("Error!");
+            });
+          });
+
+          //call the injector on 'causeError' to make sure the provider is called
+          var causeError;
+          inject(function(_causeError_) {
+            causeError = _causeError_;
+          });
+        }
+
+        expect(causeNgMocksError).toThrowError(/Error/g);
       });
     });
   });
