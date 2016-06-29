@@ -25,7 +25,7 @@ describe("DocsController", function() {
 
     it("should update the Google Analytics with $location.path if currentPage is missing", inject(function($window, $location) {
       $window._gaq = [];
-      spyOn($location, 'path').andReturn('x/y/z');
+      spyOn($location, 'path').and.returnValue('x/y/z');
       $scope.$broadcast('$includeContentLoaded');
       expect($window._gaq.pop()).toEqual(['_trackPageview', 'x/y/z']);
     }));

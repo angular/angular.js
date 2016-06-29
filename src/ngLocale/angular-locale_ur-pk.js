@@ -36,11 +36,11 @@ $provide.value("$locale", {
     ],
     "ERANAMES": [
       "\u0642\u0628\u0644 \u0645\u0633\u06cc\u062d",
-      "\u0639\u06cc\u0633\u0648\u06cc \u0633\u0646"
+      "\u0639\u06cc\u0633\u0648\u06cc"
     ],
     "ERAS": [
-      "\u0642 \u0645",
-      "\u0639\u06cc\u0633\u0648\u06cc \u0633\u0646"
+      "\u0642\u0628\u0644 \u0645\u0633\u06cc\u062d",
+      "\u0639\u06cc\u0633\u0648\u06cc"
     ],
     "FIRSTDAYOFWEEK": 6,
     "MONTH": [

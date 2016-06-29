@@ -54,7 +54,7 @@ describe('$$rAF', function() {
       expect(message).toBeUndefined();
       expect(timeoutSpy).toHaveBeenCalled();
 
-      timeoutSpy.mostRecentCall.args[0]();
+      timeoutSpy.calls.mostRecent().args[0]();
 
       expect(message).toBe('on');
     });

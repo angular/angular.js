@@ -21,8 +21,8 @@ $provide.value("$locale", {
       "\u0a87\u0ab8\u0ab5\u0ac0\u0ab8\u0aa8"
     ],
     "ERAS": [
-      "\u0a88\u0ab8\u0ac1\u0aa8\u0abe \u0a9c\u0aa8\u0acd\u0aae \u0aaa\u0ab9\u0ac7\u0ab2\u0abe",
-      "\u0a87\u0ab8\u0ab5\u0ac0\u0ab8\u0aa8"
+      "\u0a88.\u0ab8.\u0aaa\u0ac2\u0ab0\u0acd\u0ab5\u0ac7",
+      "\u0a88.\u0ab8."
     ],
     "FIRSTDAYOFWEEK": 6,
     "MONTH": [
@@ -56,7 +56,7 @@ $provide.value("$locale", {
       "\u0aae\u0ac7",
       "\u0a9c\u0ac2\u0aa8",
       "\u0a9c\u0ac1\u0ab2\u0abe\u0a88",
-      "\u0a91\u0a97",
+      "\u0a91\u0a97\u0ab8\u0acd\u0a9f",
       "\u0ab8\u0aaa\u0acd\u0a9f\u0ac7",
       "\u0a91\u0a95\u0acd\u0a9f\u0acb",
       "\u0aa8\u0ab5\u0ac7",

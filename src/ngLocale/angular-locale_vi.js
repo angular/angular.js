@@ -82,8 +82,8 @@ $provide.value("$locale", {
     ],
     "fullDate": "EEEE, 'ng\u00e0y' dd MMMM 'n\u0103m' y",
     "longDate": "'Ng\u00e0y' dd 'th\u00e1ng' MM 'n\u0103m' y",
-    "medium": "dd-MM-y HH:mm:ss",
-    "mediumDate": "dd-MM-y",
+    "medium": "d MMM, y HH:mm:ss",
+    "mediumDate": "d MMM, y",
     "mediumTime": "HH:mm:ss",
     "short": "dd/MM/y HH:mm",
     "shortDate": "dd/MM/y",
@@ -111,10 +111,10 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "-",
-        "negSuf": "\u00a0\u00a4",
-        "posPre": "",
-        "posSuf": "\u00a0\u00a4"
+        "negPre": "-\u00a4\u00a0",
+        "negSuf": "",
+        "posPre": "\u00a4\u00a0",
+        "posSuf": ""
       }
     ]
   },

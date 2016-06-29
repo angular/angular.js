@@ -35,8 +35,8 @@ $provide.value("$locale", {
       "subota"
     ],
     "ERANAMES": [
-      "Prije Krista",
-      "Poslije Krista"
+      "prije Krista",
+      "poslije Krista"
     ],
     "ERAS": [
       "pr. Kr.",

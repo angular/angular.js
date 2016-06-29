@@ -1,8 +1,9 @@
 {
   "extends": "../../.jshintrc-base",
-  "browser": true,
   "globals": {
+    "window": false,
+
     "angular": false,
-    "htmlSanitizeWriter": false
+    "sanitizeText": false
   }
 }

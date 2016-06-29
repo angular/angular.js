@@ -1,0 +1,25 @@
+{
+  "extends": "../../../.jshintrc-base",
+  "browser": true,
+  "globals": {
+    // AngularJS
+    "angular": false,
+
+    // ngMocks
+    "module": false,
+    "inject": true,
+
+    // Jasmine
+    "jasmine": false,
+    "describe": false,
+    "ddescribe": false,
+    "xdescribe": false,
+    "it": false,
+    "iit": false,
+    "xit": false,
+    "beforeEach": false,
+    "afterEach": false,
+    "spyOn": false,
+    "expect": false
+  }
+}

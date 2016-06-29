@@ -29,7 +29,7 @@ and link functions are unavailable
 Components can be registered using the `.component()` method of an Angular module (returned by {@link module `angular.module()`}). The method takes two arguments:
 
   * The name of the Component (as string).
-  * The Component config object (note that, unlike the `.directive()` method, this method does **not** take a factory function.
+  * The Component config object. (Note that, unlike the `.directive()` method, this method does **not** take a factory function.)
 
 <example name="heroComponentSimple" module="heroApp">
 <file name="index.js">
@@ -133,7 +133,9 @@ components should follow a few simple conventions:
     For a deletion, that means the component doesn't delete the `hero` itself, but sends it back to
     the owner component via the correct event.
     ```html
-        <button ng-click="$ctrl.onDelete({hero: hero})">Delete</button>
+        <!-- note that we use kebab-case for bindings in the template as usual -->
+        <editable-field on-update="$ctrl.update('location', value)"></editable-field><br>
+        <button ng-click="$ctrl.onDelete({hero: $ctrl.hero})">Delete</button>
     ```
   - That way, the parent component can decide what to do with the event (e.g. delete an item or update the properties)
     ```js
@@ -146,6 +148,30 @@ components should follow a few simple conventions:
         });
       }
     ```
+
+- **Components have a well-defined lifecycle**
+Each component can implement "lifecycle hooks". These are methods that will be called at certain points in the life
+of the component. The following hook methods can be implemented:
+
+  * `$onInit()` - Called on each controller after all the controllers on an element have been constructed and
+    had their bindings initialized (and before the pre &amp; post linking functions for the directives on
+    this element). This is a good place to put initialization code for your controller.
+  * `$onChanges(changesObj)` - Called whenever one-way bindings are updated. The `changesObj` is a hash whose keys
+    are the names of the bound properties that have changed, and the values are an object of the form
+    `{ currentValue, previousValue, isFirstChange() }`. Use this hook to trigger updates within a component such as
+    cloning the bound value to prevent accidental mutation of the outer value.
+  * `$onDestroy()` - Called on a controller when its containing scope is destroyed. Use this hook for releasing
+    external resources, watches and event handlers.
+  * `$postLink()` - Called after this controller's element and its children have been linked. Similar to the post-link
+    function this hook can be used to set up DOM event handlers and do direct DOM manipulation.
+    Note that child elements that contain `templateUrl` directives will not have been compiled and linked since
+    they are waiting for their template to load asynchronously and their own compilation and linking has been
+    suspended until that occurs.
+    This hook can be considered analogous to the `ngAfterViewInit` and `ngAfterContentInit` hooks in Angular 2.
+    Since the compilation process is rather different in Angular 1 there is no direct mapping and care should
+    be taken when upgrading.
+
+By implementing these methods, your component can hook into its lifecycle.
 
 - **An application is a tree of components:**
 Ideally, the whole application should be a tree of components that implement clearly defined inputs
@@ -207,7 +233,7 @@ it upwards to the heroList component, which updates the original data.
 </file>
 
 <file name="heroDetail.js">
-  function HeroDetailController($scope, $element, $attrs) {
+  function HeroDetailController() {
     var ctrl = this;
 
     ctrl.update = function(prop, value) {
@@ -230,9 +256,9 @@ it upwards to the heroList component, which updates the original data.
 
   function EditableFieldController($scope, $element, $attrs) {
     var ctrl = this;
-    this.editMode = false;
+    ctrl.editMode = false;
 
-    this.handleModeChange = function() {
+    ctrl.handleModeChange = function() {
       if (ctrl.editMode) {
         ctrl.onUpdate({value: ctrl.fieldValue});
         ctrl.fieldValueCopy = ctrl.fieldValue;
@@ -240,17 +266,17 @@ it upwards to the heroList component, which updates the original data.
       ctrl.editMode = !ctrl.editMode;
     };
 
-    this.reset = function() {
+    ctrl.reset = function() {
       ctrl.fieldValue = ctrl.fieldValueCopy;
     };
 
-    this.$onInit = function() {
+    ctrl.$onInit = function() {
       // Make a copy of the initial value to be able to reset it later
-      this.fieldValueCopy = this.fieldValue;
+      ctrl.fieldValueCopy = ctrl.fieldValue;
 
       // Set a default fieldType
-      if (!this.fieldType) {
-        this.fieldType = 'text';
+      if (!ctrl.fieldType) {
+        ctrl.fieldType = 'text';
       }
     };
   }
@@ -429,7 +455,7 @@ The examples use the [Jasmine](http://jasmine.github.io/) testing framework.
 describe('component: heroDetail', function() {
   var component, scope, hero, $componentController;
 
-  beforeEach(module('simpleComponent'));
+  beforeEach(module('heroApp'));
 
   beforeEach(inject(function($rootScope, _$componentController_) {
     scope = $rootScope.$new();
@@ -437,34 +463,24 @@ describe('component: heroDetail', function() {
     hero = {name: 'Wolverine'};
   }));
 
-  it('should set the default values of the hero', function() {
-    // It's necessary to always pass the scope in the locals, so that the controller instance can be bound to it
-    component = $componentController('heroDetail', {$scope: scope});
-
-    expect(component.hero).toEqual({
-      name: undefined,
-      location: 'unknown'
-    });
-  });
-
   it('should assign the name bindings to the hero object', function() {
     // Here we are passing actual bindings to the component
-
     component = $componentController('heroDetail',
-      {$scope: scope},
+      null,
       {hero: hero}
     );
     expect(component.hero.name).toBe('Wolverine');
   });
 
   it('should call the onDelete binding when a hero is deleted', function() {
+    var deleteSpy = jasmine.createSpy('deleteSpy');
     component = $componentController('heroDetail',
-      {$scope: scope},
-      {hero: hero, onDelete: jasmine.createSpy('deleteSpy')}
+      null,
+      {hero: hero, onDelete: deleteSpy}
     );
 
     component.onDelete({hero: component.hero});
-    expect(spy('deleteSpy')).toHaveBeenCalledWith(component.hero);
+    expect(deleteSpy).toHaveBeenCalledWith({hero: component.hero});
   });
 
 });

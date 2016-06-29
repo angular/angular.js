@@ -33,7 +33,7 @@ $provide.value("$locale", {
       "\u0d2e\u0d47\u0d2f\u0d4d",
       "\u0d1c\u0d42\u0d7a",
       "\u0d1c\u0d42\u0d32\u0d48",
-      "\u0d06\u0d17\u0d38\u0d4d\u0d31\u0d4d\u0d31\u0d4d",
+      "\u0d13\u0d17\u0d38\u0d4d\u0d31\u0d4d\u0d31\u0d4d",
       "\u0d38\u0d46\u0d2a\u0d4d\u0d31\u0d4d\u0d31\u0d02\u0d2c\u0d7c",
       "\u0d12\u0d15\u0d4d\u200c\u0d1f\u0d4b\u0d2c\u0d7c",
       "\u0d28\u0d35\u0d02\u0d2c\u0d7c",
@@ -70,7 +70,7 @@ $provide.value("$locale", {
       "\u0d2e\u0d47\u0d2f\u0d4d",
       "\u0d1c\u0d42\u0d7a",
       "\u0d1c\u0d42\u0d32\u0d48",
-      "\u0d06\u0d17\u0d38\u0d4d\u0d31\u0d4d\u0d31\u0d4d",
+      "\u0d13\u0d17\u0d38\u0d4d\u0d31\u0d4d\u0d31\u0d4d",
       "\u0d38\u0d46\u0d2a\u0d4d\u0d31\u0d4d\u0d31\u0d02\u0d2c\u0d7c",
       "\u0d12\u0d15\u0d4d\u200c\u0d1f\u0d4b\u0d2c\u0d7c",
       "\u0d28\u0d35\u0d02\u0d2c\u0d7c",
@@ -85,8 +85,8 @@ $provide.value("$locale", {
     "medium": "y, MMM d h:mm:ss a",
     "mediumDate": "y, MMM d",
     "mediumTime": "h:mm:ss a",
-    "short": "dd/MM/yy h:mm a",
-    "shortDate": "dd/MM/yy",
+    "short": "d/M/yy h:mm a",
+    "shortDate": "d/M/yy",
     "shortTime": "h:mm a"
   },
   "NUMBER_FORMATS": {

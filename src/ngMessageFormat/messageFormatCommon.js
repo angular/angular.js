@@ -5,20 +5,10 @@
 // This file is compiled with Closure compiler's ADVANCED_OPTIMIZATIONS flag! Be wary of using
 // constructs incompatible with that mode.
 
-var $interpolateMinErr = window['angular']['$interpolateMinErr'];
-
-var noop = window['angular']['noop'],
-    isFunction = window['angular']['isFunction'],
-    toJson = window['angular']['toJson'];
-
-function stringify(value) {
-  if (value == null /* null/undefined */) { return ''; }
-  switch (typeof value) {
-    case 'string':     return value;
-    case 'number':     return '' + value;
-    default:           return toJson(value);
-  }
-}
+/* global isFunction: false */
+/* global noop: false */
+/* global toJson: false */
+/* global $$stringify: false */
 
 // Convert an index into the string into line/column for use in error messages
 // As such, this doesn't have to be efficient.

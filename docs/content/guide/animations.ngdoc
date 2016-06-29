@@ -12,6 +12,13 @@ triggered, will attempt to perform a CSS Transition, CSS Keyframe Animation or a
 placed on the given directive). Animations can be placed using vanilla CSS by following the naming conventions set in place by AngularJS
 or with JavaScript code when it's defined as a factory.
 
+<div class="alert alert-info">
+  Note that we have used non-prefixed CSS transition properties in our examples as the major browsers now support non-prefixed
+  properties. If you intend to support older browsers or certain mobile browsers then you will need to include prefixed
+  versions of the transition properties.  Take a look at http://caniuse.com/#feat=css-transitions for what browsers require prefixes,
+  and https://github.com/postcss/autoprefixer for a tool that can automatically generate the prefixes for you.
+</div>
+
 Animations are not available unless you include the {@link ngAnimate `ngAnimate` module} as a dependency within your application.
 
 Below is a quick example of animations being enabled for `ngShow` and `ngHide`:
@@ -29,18 +36,17 @@ Below is a quick example of animations being enabled for `ngShow` and `ngHide`:
   </file>
   <file name="animations.css">
     .sample-show-hide {
-      padding:10px;
-      border:1px solid black;
-      background:white;
+      padding: 10px;
+      border: 1px solid black;
+      background: white;
     }
 
     .sample-show-hide {
-      -webkit-transition:all linear 0.5s;
-      transition:all linear 0.5s;
+      transition: all linear 0.5s;
     }
 
     .sample-show-hide.ng-hide {
-      opacity:0;
+      opacity: 0;
     }
   </file>
 </example>
@@ -80,11 +86,8 @@ occur when ngRepeat triggers them:
   class
 */
 .repeated-item.ng-enter, .repeated-item.ng-move {
-  -webkit-transition:0.5s linear all;
-  -moz-transition:0.5s linear all;
-  -o-transition:0.5s linear all;
-  transition:0.5s linear all;
-  opacity:0;
+  transition: all 0.5s linear;
+  opacity: 0;
 }
 
 /*
@@ -95,7 +98,7 @@ occur when ngRepeat triggers them:
 */
 .repeated-item.ng-enter.ng-enter-active,
 .repeated-item.ng-move.ng-move-active {
-  opacity:1;
+  opacity: 1;
 }
 
 /*
@@ -104,10 +107,7 @@ occur when ngRepeat triggers them:
   that has the .repeated-item class
 */
 .repeated-item.ng-leave {
-  -webkit-animation:0.5s my_animation;
-  -moz-animation:0.5s my_animation;
-  -o-animation:0.5s my_animation;
-  animation:0.5s my_animation;
+  animation: 0.5s my_animation;
 }
 
 @keyframes my_animation {
@@ -115,24 +115,6 @@ occur when ngRepeat triggers them:
   to { opacity:0; }
 }
 
-/*
-  Unfortunately each browser vendor requires
-  its own definition of keyframe animation code...
-*/
-@-webkit-keyframes my_animation {
-  from { opacity:1; }
-  to { opacity:0; }
-}
-
-@-moz-keyframes my_animation {
-  from { opacity:1; }
-  to { opacity:0; }
-}
-
-@-o-keyframes my_animation {
-  from { opacity:1; }
-  to { opacity:0; }
-}
 ```
 
 The same approach to animation can be used using JavaScript code (**jQuery is used within to perform animations**):
@@ -217,10 +199,7 @@ The example below shows how to perform animations during class changes:
  </file>
  <file name="style.css">
    .css-class-add, .css-class-remove {
-     -webkit-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
-     -moz-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
-     -o-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
-     transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+     transition: all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
    }
 
    .css-class,
@@ -231,7 +210,7 @@ The example below shows how to perform animations during class changes:
 
    .css-class-remove.css-class-remove-active {
      font-size:1.0em;
-     color:black;
+     color: black;
    }
  </file>
 </example>
@@ -317,8 +296,8 @@ app.config(function($animateProvider) {
 ```css
 /&#42; prefixed with animate- &#42;/
 .animate-fade-add.animate-fade-add-active {
-  transition:1s linear all;
-  opacity:0;
+  transition: all 1s linear;
+  opacity: 0;
 }
 ```
 

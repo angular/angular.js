@@ -1,19 +1,24 @@
 {
   "bitwise": true,
+  "esversion": 6,
   "immed": true,
   "newcap": true,
   "noarg": true,
   "noempty": true,
   "nonew": true,
-  "trailing": true,
   "maxlen": 200,
   "boss": true,
   "eqnull": true,
   "expr": true,
-  "globalstrict": true,
   "laxbreak": true,
   "loopfunc": true,
+  "strict": "global",
   "sub": true,
   "undef": true,
-  "indent": 2
+  "indent": 2,
+
+  "globals": {
+    "ArrayBuffer": false,
+    "Uint8Array": false
+  }
 }

@@ -477,16 +477,16 @@ describe('$$animation', function() {
       it('should remove the $destroy event listener when the animation is closed',
         inject(function($$animation, $rootScope) {
 
-        var addListen = spyOn(element, 'on').andCallThrough();
-        var removeListen = spyOn(element, 'off').andCallThrough();
+        var addListen = spyOn(element, 'on').and.callThrough();
+        var removeListen = spyOn(element, 'off').and.callThrough();
         var runner = $$animation(element, 'someEvent');
 
-        var args = addListen.mostRecentCall.args[0];
+        var args = addListen.calls.mostRecent().args[0];
         expect(args).toBe('$destroy');
 
         runner.end();
 
-        args = removeListen.mostRecentCall.args[0];
+        args = removeListen.calls.mostRecent().args[0];
         expect(args).toBe('$destroy');
       }));
 

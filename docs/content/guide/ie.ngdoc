@@ -29,3 +29,13 @@ To ensure your Angular application works on IE please consider:
 
 1. Use `ng-style` tags instead of `style="{{ someCss }}"`. The latter works in Chrome and Firefox
    but does not work in Internet Explorer <= 11 (the most recent version at time of writing).
+2. For the `type` attribute of buttons, use `ng-attr-type` tags instead of
+   `type="{{ someExpression }}"`. If using the latter, Internet Explorer overwrites the expression
+   with `type="submit"` before Angular has a chance to interpolate it.
+3. For the `value` attribute of progress, use `ng-attr-value` tags instead of
+   `value="{{ someExpression}}"`. If using the latter, Internet Explorer overwrites the expression
+   with `value="0"` before Angular has a chance to interpolate it.
+4. For the `placeholder` attribute of textarea, use `ng-attr-placeholder` tags instead
+   of `placeholder="{{ someExpression }}"`. If using the latter, Internet Explorer will error
+   on accessing the `nodeValue` on a parentless `TextNode` in Internet Explorer 10 & 11
+   (see [issue 5025](https://github.com/angular/angular.js/issues/5025)).

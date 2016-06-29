@@ -13,9 +13,9 @@ angular.module('errors', ['ngSanitize'])
   };
 
   return function (text, target) {
-    var targetHtml = target ? ' target="' + target + '"' : '';
-
     if (!text) return text;
+
+    var targetHtml = target ? ' target="' + target + '"' : '';
 
     return $sanitize(text.replace(LINKY_URL_REGEXP, function (url) {
       if (STACK_TRACE_REGEXP.test(url)) {
@@ -34,6 +34,10 @@ angular.module('errors', ['ngSanitize'])
 
 
 .directive('errorDisplay', ['$location', 'errorLinkFilter', function ($location, errorLinkFilter) {
+  var encodeAngleBrackets = function (text) {
+    return text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  };
+
   var interpolate = function (formatString) {
     var formatArgs = arguments;
     return formatString.replace(/\{\d+\}/g, function (match) {
@@ -51,12 +55,15 @@ angular.module('errors', ['ngSanitize'])
     link: function (scope, element, attrs) {
       var search = $location.search(),
         formatArgs = [attrs.errorDisplay],
+        formattedText,
         i;
 
       for (i = 0; angular.isDefined(search['p'+i]); i++) {
         formatArgs.push(search['p'+i]);
       }
-      element.html(errorLinkFilter(interpolate.apply(null, formatArgs), '_blank'));
+
+      formattedText = encodeAngleBrackets(interpolate.apply(null, formatArgs));
+      element.html(errorLinkFilter(formattedText, '_blank'));
     }
   };
 }]);

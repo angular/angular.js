@@ -71,7 +71,7 @@ $provide.value("$locale", {
       "feb.",
       "mrt.",
       "apr.",
-      "mai",
+      "mai.",
       "jun.",
       "jul.",
       "aug.",

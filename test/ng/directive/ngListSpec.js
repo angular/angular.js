@@ -1,19 +1,12 @@
 'use strict';
 
-/* globals getInputCompileHelper: false */
+/* globals generateInputCompilerHelper: false */
 
 describe('ngList', function() {
 
-  var helper, $rootScope;
+  var helper = {}, $rootScope;
 
-  beforeEach(function() {
-    helper = getInputCompileHelper(this);
-  });
-
-  afterEach(function() {
-    helper.dealoc();
-  });
-
+  generateInputCompilerHelper(helper);
 
   beforeEach(inject(function(_$rootScope_) {
     $rootScope = _$rootScope_;
@@ -135,6 +128,12 @@ describe('ngList', function() {
     it("should support splitting on newlines", function() {
       helper.compileInput('<textarea type="text" ng-model="list" ng-trim="false" ng-list="&#10;"></textarea>');
       helper.changeInputValueTo('a\nb');
+      expect($rootScope.list).toEqual(['a','b']);
+    });
+
+    it('should support splitting on whitespace', function() {
+      helper.compileInput('<textarea type="text" ng-model="list" ng-trim="false" ng-list=" "></textarea>');
+      helper.changeInputValueTo('a b');
       expect($rootScope.list).toEqual(['a','b']);
     });
   });

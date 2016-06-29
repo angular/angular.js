@@ -6,7 +6,7 @@ describe('$cookies', function() {
   beforeEach(function() {
     mockedCookies = {};
     module('ngCookies', {
-      $$cookieWriter: jasmine.createSpy('$$cookieWriter').andCallFake(function(name, value) {
+      $$cookieWriter: jasmine.createSpy('$$cookieWriter').and.callFake(function(name, value) {
         mockedCookies[name] = value;
       }),
       $$cookieReader: function() {

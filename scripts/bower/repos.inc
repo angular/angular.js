@@ -11,6 +11,7 @@ REPOS=(
   angular-message-format
   angular-messages
   angular-mocks
+  angular-parse-ext
   angular-resource
   angular-route
   angular-sanitize

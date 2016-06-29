@@ -11,16 +11,16 @@ describe('api', function() {
       map.put(key, value1);
       map.put(key, value2);
       expect(map.get(key)).toBe(value2);
-      expect(map.get({})).toBe(undefined);
+      expect(map.get({})).toBeUndefined();
       expect(map.remove(key)).toBe(value2);
-      expect(map.get(key)).toBe(undefined);
+      expect(map.get(key)).toBeUndefined();
     });
 
     it('should init from an array', function() {
       var map = new HashMap(['a','b']);
       expect(map.get('a')).toBe(0);
       expect(map.get('b')).toBe(1);
-      expect(map.get('c')).toBe(undefined);
+      expect(map.get('c')).toBeUndefined();
     });
 
     it('should maintain hashKey for object keys', function() {

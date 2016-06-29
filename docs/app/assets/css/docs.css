@@ -647,6 +647,11 @@ ul.events > li {
   padding-top: 50px;
 }
 
+.diagram {
+  margin-bottom: 10px;
+  margin-top: 30px;
+}
+
 @media only screen and (min-width: 769px) and (max-width: 991px) {
   .main-body-grid {
     margin-top: 160px;

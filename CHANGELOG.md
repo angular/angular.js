@@ -1,3 +1,511 @@
+<a name="1.5.7"></a>
+# 1.5.7 hexagonal-circumvolution (2016-06-15)
+
+
+## Bug Fixes
+
+- **$compile:**
+  - don't add merged attributes twice to $attrs
+  ([ebbaa4ac](https://github.com/angular/angular.js/commit/ebbaa4ac5e3559df9267203438a0bb18c2d3b7d8),
+   [#8159](https://github.com/angular/angular.js/issues/8159), [#14737](https://github.com/angular/angular.js/issues/14737))
+  - cope with `$onChanges` hooks throwing
+  ([3749c858](https://github.com/angular/angular.js/commit/3749c85829406ca57cc5729e80696c7f34134068),
+   [#14444](https://github.com/angular/angular.js/issues/14444), [#14463](https://github.com/angular/angular.js/issues/14463))
+- **$parse:** allow arguments to contain filter chains
+  ([cc6dcb4b](https://github.com/angular/angular.js/commit/cc6dcb4bc28aadff4f62d76d6451b0f80b928e69),
+   [#4175](https://github.com/angular/angular.js/issues/4175), [#4168](https://github.com/angular/angular.js/issues/4168), [#14720](https://github.com/angular/angular.js/issues/14720))
+- **$routeProvider:** do not deep-copy route definition objects
+  ([6d0dcca6](https://github.com/angular/angular.js/commit/6d0dcca6f18a353a12c356dc96e05475d351b795),
+   [#14478](https://github.com/angular/angular.js/issues/14478), [#14699](https://github.com/angular/angular.js/issues/14699), [#14750](https://github.com/angular/angular.js/issues/14750))
+- **input[email]:** improve email address validation
+  ([f423dc6b](https://github.com/angular/angular.js/commit/f423dc6b51a9b4a09728a287a2cabda7d45f192e),
+   [#14719](https://github.com/angular/angular.js/issues/14719))
+- **ngMessages:** create new scope for ngMessage, clean it up correctly
+  ([56f33af8](https://github.com/angular/angular.js/commit/56f33af89045e2ec18d144d9d1ef73affbe51959),
+   [#14307](https://github.com/angular/angular.js/issues/14307))
+- **ngMessagesInclude:** don't break on empty (or whitespace-only) templates
+  ([01b8772c](https://github.com/angular/angular.js/commit/01b8772cca55916376355a2ae58d3ab7832a4bc2),
+   [#12941](https://github.com/angular/angular.js/issues/12941), [#14726](https://github.com/angular/angular.js/issues/14726))
+- **ngMock#$controller:** properly assign bindings to all types of controllers (e.g. class-based)
+  ([db58801a](https://github.com/angular/angular.js/commit/db58801a55c91df755414387dc00fee5902bb5f3),
+   [#14437](https://github.com/angular/angular.js/issues/14437), [#14439](https://github.com/angular/angular.js/issues/14439))
+- **ngMockE2E:** allow $httpBackend.passThrough() to work when ngMock is loaded
+  ([6685043a](https://github.com/angular/angular.js/commit/6685043ad40acc50d7088f87e2a71f76d2265306),
+   [#1434](https://github.com/angular/angular.js/issues/1434), [#13124](https://github.com/angular/angular.js/issues/13124))
+- **ngSanitize:** call attribute setter in linky for all links
+  ([c4fad6ad](https://github.com/angular/angular.js/commit/c4fad6ad617af025984ca401054f7b402aa28f1d),
+   [#14707](https://github.com/angular/angular.js/issues/14707))
+
+
+## Features
+
+- **limitTo:** add support for array-like objects
+  ([b03957f0](https://github.com/angular/angular.js/commit/b03957f0047fcfe996abc8efe97f9e2be2c2e13a),
+   [#14657](https://github.com/angular/angular.js/issues/14657), [#14694](https://github.com/angular/angular.js/issues/14694))
+- **orderBy:** add support for custom comparators
+  ([2e33d170](https://github.com/angular/angular.js/commit/2e33d170be7eb72f40fd57a8f66631583572fbf2),
+   [#13238](https://github.com/angular/angular.js/issues/13238), [#14455](https://github.com/angular/angular.js/issues/14455), [#5123](https://github.com/angular/angular.js/issues/5123), [#8112](https://github.com/angular/angular.js/issues/8112), [#10368](https://github.com/angular/angular.js/issues/10368), [#14468](https://github.com/angular/angular.js/issues/14468))
+
+
+<a name="1.4.12"></a>
+# 1.4.12 cultural-conservation (2016-06-15)
+
+_This release contains only documentation updates. Specifically, it restores the old (deprecated)
+version of the tutorial on the 1.4.x branch. If someone needs a version of the tutorial that is
+compatible with v1.4, they can find it at https://code.angularjs.org/1.4.12/docs/tutorial/._
+
+_As always, the latest and greatest version of the tutorial can be found on the master branch
+(at https://docs.angularjs.org/tutorial/). We strongly recommend using this version as it is kept
+up-to-date, showcases several new features introduced in v1.5 or later and follows modern best
+practices._
+
+
+<a name="1.5.6"></a>
+# 1.5.6 arrow-stringification (2016-05-27)
+
+
+## Bug Fixes
+
+- **$browser:** set the url even if the browser transforms it
+  ([743b33ab](https://github.com/angular/angular.js/commit/743b33ab9d8cdb8aa6ff28028a54ac0023f4dc15),
+   [#14427](https://github.com/angular/angular.js/issues/14427), [#14499](https://github.com/angular/angular.js/issues/14499))
+- **$compile:**
+  - properly bind context to linking functions for directives with `templateUrl`
+  ([5ae72dc7](https://github.com/angular/angular.js/commit/5ae72dc7affb252774b7c4cbf278269c5e178f38))
+  - always use the DDO as `this` in pre-/post-linking functions
+  ([47bc98a1](https://github.com/angular/angular.js/commit/47bc98a1eafd7853babc1a7dc54f13363a3f4a43),
+   [#9306](https://github.com/angular/angular.js/issues/9306))
+  - don't run unnecessary update to one-way bindings
+  ([30479647](https://github.com/angular/angular.js/commit/304796471292f9805b9cf77e51aacc9cfbb09921),
+   [#14546](https://github.com/angular/angular.js/issues/14546), [#14580](https://github.com/angular/angular.js/issues/14580))
+  - removing unnecessary white space in element-transclusion comments
+  ([1116a96d](https://github.com/angular/angular.js/commit/1116a96df662c95aa83ab527c479b644a14532b6),
+   [#14549](https://github.com/angular/angular.js/issues/14549), [#14550](https://github.com/angular/angular.js/issues/14550))
+  - properly handle setting `srcset` to undefined
+  ([308f22ba](https://github.com/angular/angular.js/commit/308f22ba9a803967ce84c995d810990c80478f6f),
+   [#14470](https://github.com/angular/angular.js/issues/14470), [#14493](https://github.com/angular/angular.js/issues/14493))
+- **$injector:**
+  - add workaround for class stringification in Chrome v50/51
+  ([7550b7bd](https://github.com/angular/angular.js/commit/7550b7bda8d992cc6ed3c65b1f9f7e323a09cae4),
+   [#14531](https://github.com/angular/angular.js/issues/14531))
+  - add workaround for fat-arrow stringification in Chrome v50/51
+  ([bb730704](https://github.com/angular/angular.js/commit/bb730704f2f3dea4620e7b40083dcd65f208e2b2),
+   [#14487](https://github.com/angular/angular.js/issues/14487), [#14495](https://github.com/angular/angular.js/issues/14495))
+- **$templateRequest:** trust empty templates in `$templateCache` as well
+  ([10955969](https://github.com/angular/angular.js/commit/10955969620248bd31a0bd37bc9fd7cc3b1f5e88),
+   [#14479](https://github.com/angular/angular.js/issues/14479), [#14496](https://github.com/angular/angular.js/issues/14496))
+- **filters:** always call `splice()` with 2 arguments or more
+  ([6f1fae8a](https://github.com/angular/angular.js/commit/6f1fae8a916cc6f26725f64869f86fcd4991e819),
+   [#14467](https://github.com/angular/angular.js/issues/14467), [#14489](https://github.com/angular/angular.js/issues/14489))
+- **ng-bind-html:** watch the unwrapped value using `$sce.valueOf()` (instead of `toString()`)
+  ([1c1c9b27](https://github.com/angular/angular.js/commit/1c1c9b27cbb57b3219d4c9765eeea8a11553d297),
+   [#14526](https://github.com/angular/angular.js/issues/14526), [#14527](https://github.com/angular/angular.js/issues/14527))
+- **ngAnimate:**
+  - don't break on anchored animations without duration
+  ([21b76aed](https://github.com/angular/angular.js/commit/21b76aed06d9cc04bd25a99c23ba852af782b357),
+   [#14641](https://github.com/angular/angular.js/issues/14641), [#14645](https://github.com/angular/angular.js/issues/14645))
+  - properly handle empty jqLite collections
+  ([9f480257](https://github.com/angular/angular.js/commit/9f4802573348401ee24090f815f3138fa17c161d),
+   [#14558](https://github.com/angular/angular.js/issues/14558), [#14559](https://github.com/angular/angular.js/issues/14559))
+- **ngMessages:** do not compile ngMessagesInclude template if scope is destroyed
+  ([69d9072d](https://github.com/angular/angular.js/commit/69d9072d5b5aba988ac8a9717c92ce1fac465cbe),
+   [#12695](https://github.com/angular/angular.js/issues/12695), [#14640](https://github.com/angular/angular.js/issues/14640))
+- **ngMock:**
+  - match HTTP request regardless of the order of query params
+  ([363fb16c](https://github.com/angular/angular.js/commit/363fb16c1076a806bb31006daaf583ab5c82e467),
+   [#12762](https://github.com/angular/angular.js/issues/12762))
+  - pass eventHandlers to $httpBackend if passThrough is active
+  ([147650b3](https://github.com/angular/angular.js/commit/147650b3beae7ad8b556a930129887d187a0f5d3),
+   [#14471](https://github.com/angular/angular.js/issues/14471))
+
+
+## Features
+
+- **$compile:** support omitting required controller name if same as the local name
+  ([8965d57a](https://github.com/angular/angular.js/commit/8965d57aa0788c96859cf3cfa0f78b46d2cebedb),
+   [#14513](https://github.com/angular/angular.js/issues/14513))
+- **$parse:** Add support for ES6 object initializers
+  ([1c9b9e24](https://github.com/angular/angular.js/commit/1c9b9e24ede7efc10ce4d53c6ab5528cc77e79d7))
+
+
+## Performance Improvements
+
+- **$rootScope:** make queues more efficient
+  ([51b78f61](https://github.com/angular/angular.js/commit/51b78f61f954d94dc937f57190c9f881df9ab3ad),
+   [#14545](https://github.com/angular/angular.js/issues/14545))
+- **ngAnimate:** listen for document visibility changes
+  ([b377d6b0](https://github.com/angular/angular.js/commit/b377d6b043db9c8da4e68493892f75a0f9759464),
+   [#14568](https://github.com/angular/angular.js/issues/14568))
+- **ngClass:** improve even-odd checking
+  ([cf1b1755](https://github.com/angular/angular.js/commit/cf1b175508a72d4b7e3d64b8506903096c6ec25f))
+
+
+<a name="1.4.11"></a>
+# 1.4.11 relentless-syncomania (2016-05-27)
+
+
+## Bug Fixes
+
+- **$compile:** properly handle setting `srcset` to undefined
+  ([85a53ea9](https://github.com/angular/angular.js/commit/85a53ea9cd08476496ef680d20f64ae6a7ae7499),
+   [#14470](https://github.com/angular/angular.js/issues/14470), [#14493](https://github.com/angular/angular.js/issues/14493))
+- **$templateRequest:** trust empty templates in `$templateCache` as well
+  ([ad21f8fe](https://github.com/angular/angular.js/commit/ad21f8feaf8659158e8f2092c90eb42c4f13c141),
+   [#14479](https://github.com/angular/angular.js/issues/14479), [#14496](https://github.com/angular/angular.js/issues/14496))
+- **filters:** always call `splice()` with 2 arguments or more
+  ([4e735e53](https://github.com/angular/angular.js/commit/4e735e53638a1c831f5c0455cd123a4127a11505),
+   [#14467](https://github.com/angular/angular.js/issues/14467), [#14489](https://github.com/angular/angular.js/issues/14489))
+- **formatNumber:** handle small numbers correctly when `gSize` !== `lgSize`
+  ([a1188721](https://github.com/angular/angular.js/commit/a1188721e1ac24e1c34e61b4f622f397416ccc7c),
+   [#14289](https://github.com/angular/angular.js/issues/14289), [#14290](https://github.com/angular/angular.js/issues/14290))
+- **ng-bind-html:** watch the unwrapped value using `$sce.valueOf()` (instead of `toString()`)
+  ([f31586db](https://github.com/angular/angular.js/commit/f31586db4115baabaa854c095278f367850a11c5),
+   [#14526](https://github.com/angular/angular.js/issues/14526), [#14527](https://github.com/angular/angular.js/issues/14527))
+- **ngAnimate:**
+  - safe-guard against missing document
+  ([0d764b58](https://github.com/angular/angular.js/commit/0d764b581d8b494190fa280f8870eee8fd039933))
+  - properly handle empty jqLite collections
+  ([fdaf4d5e](https://github.com/angular/angular.js/commit/fdaf4d5e27a2ddebf2999db4d35bef7915d32c86),
+   [#14558](https://github.com/angular/angular.js/issues/14558), [#14559](https://github.com/angular/angular.js/issues/14559))
+  - fire callbacks when document is hidden
+  ([c4bff290](https://github.com/angular/angular.js/commit/c4bff290e5009e8ae5aa93839ad80a677a9e878f),
+   [#14120](https://github.com/angular/angular.js/issues/14120))
+  - fire callbacks in the correct order for certain skipped animations
+  ([23550b5e](https://github.com/angular/angular.js/commit/23550b5e278b4fb3cf1300f1399d8ad6d6771725))
+- **ngClass:** fix watching of an array expression containing an object
+  ([b5086700](https://github.com/angular/angular.js/commit/b50867001bf71998a2f7e381095cb9001166e806),
+   [#14405](https://github.com/angular/angular.js/issues/14405))
+- **ngMessages:** don't crash when nested messages are removed
+  ([71dca7c4](https://github.com/angular/angular.js/commit/71dca7c4c23df95c6c0e5974f0758a3ca34ce819),
+   [#14183](https://github.com/angular/angular.js/issues/14183), [#14242](https://github.com/angular/angular.js/issues/14242))
+- **ngMock:** fix collecting stack trace in `inject()` on IE10+, PhantomJS
+  ([56dae6fa](https://github.com/angular/angular.js/commit/56dae6fa1bee88eaffae766a6cdcb8b6c4b89958),
+   [#13591](https://github.com/angular/angular.js/issues/13591), [#13592](https://github.com/angular/angular.js/issues/13592), [#13593](https://github.com/angular/angular.js/issues/13593))
+
+
+## Performance Improvements
+
+- **$compile:** use createMap() for directive bindings to allow fast forEach
+  ([832b383c](https://github.com/angular/angular.js/commit/832b383cbc63c157e62df523d574a75171a8c11c),
+   [#12529](https://github.com/angular/angular.js/issues/12529))
+
+
+<a name="1.5.5"></a>
+# 1.5.5 material-conspiration (2016-04-18)
+
+
+## Reverts
+
+- **$compile:** move setting of controller data to single location
+  Reverted commit [21d148ae](https://github.com/angular/angular.js/commit/21d148aedc29c7efba4131ff2ef6383b4700868c)
+  since it caused the Angular Material tabs directive to fail.
+
+- **ngRoute:** allow `ngView` to be included in an asynchronously loaded template
+  Eagerly loading `$route`, could break tests, because it might request the root or default route
+  template (something `$httpBackend` would know nothing about).
+
+  It will be re-applied for `v1.6.x`, with a breaking change notice and possibly a way to disable
+  the feature in tests.
+
+  ([8237482d](https://github.com/angular/angular.js/commit/8237482d49e76e2c4994fe6207e3c9799ef04163),
+   [#1213](https://github.com/angular/angular.js/issues/1213), [#6812](https://github.com/angular/angular.js/issues/6812),
+   [#14088](https://github.com/angular/angular.js/issues/14088))
+
+
+## Bug Fixes
+
+- **$compile:**
+  - do not use `noop()` as controller for multiple components
+  ([4c8aeefb](https://github.com/angular/angular.js/commit/4c8aeefb624de7436ad95f3cd525405e0c3f493e),
+   [#14391](https://github.com/angular/angular.js/issues/14391), [#14402](https://github.com/angular/angular.js/issues/14402))
+  - still trigger `$onChanges` even if the inner value already matches the new value
+  ([d9448dcb](https://github.com/angular/angular.js/commit/d9448dcb9f901ceb04deda1d5f3d5aac8442a718),
+   [#14406](https://github.com/angular/angular.js/issues/14406))
+  - handle boolean attributes in `@` bindings
+  ([499e1b2a](https://github.com/angular/angular.js/commit/499e1b2adf27f32d671123f8dceadb3df2ad84a9),
+   [#14070](https://github.com/angular/angular.js/issues/14070))
+  - don't throw if controller is named
+  ([e72990dc](https://github.com/angular/angular.js/commit/e72990dc3714c8b847185ddb64fd5fd00e5cceab))
+  - ensure that `$onChanges` hook is called correctly
+  ([0ad2b708](https://github.com/angular/angular.js/commit/0ad2b70862d49ecc4355a16d767c0ca9358ecc3e),
+   [#14355](https://github.com/angular/angular.js/issues/14355), [#14359](https://github.com/angular/angular.js/issues/14359))
+- **$injector:** ensure functions with overridden `toString()` are annotated properly
+  ([d384834f](https://github.com/angular/angular.js/commit/d384834fdee140a716298bd065f304f8fba4725e),
+   [#14361](https://github.com/angular/angular.js/issues/14361))
+- **ngAnimate:**
+  - remove event listeners only after all listeners have been called
+  ([79604f46](https://github.com/angular/angular.js/commit/79604f462899c118a99d610995083ff82d38aa35),
+   [#14321](https://github.com/angular/angular.js/issues/14321))
+  - fire callbacks when document is hidden
+  ([c7a92d2a](https://github.com/angular/angular.js/commit/c7a92d2a9a436dddd65de721c9837a93e915d939),
+   [#14120](https://github.com/angular/angular.js/issues/14120))
+  - fire callbacks in the correct order for certain skipped animations
+  ([90da3059](https://github.com/angular/angular.js/commit/90da3059cecfefaecf136b01cd87aee6775a8778))
+- **ngClass:** fix watching of an array expression containing an object
+  ([f975d8d4](https://github.com/angular/angular.js/commit/f975d8d4481e0b8cdba553f0e5ad9ec1688adae8),
+   [#14405](https://github.com/angular/angular.js/issues/14405))
+- **ngMock:** fix collecting stack trace in `inject()` on IE10+, PhantomJS
+  ([e9c718a4](https://github.com/angular/angular.js/commit/e9c718a465d28b9f2691e3acab944f7c31aa9fb6),
+   [#13591](https://github.com/angular/angular.js/issues/13591), [#13592](https://github.com/angular/angular.js/issues/13592), [#13593](https://github.com/angular/angular.js/issues/13593))
+- **ngOptions:** set select value when model matches disabled option
+  ([832eba5f](https://github.com/angular/angular.js/commit/832eba5fc952312e6b99127123e6e75bdf729006),
+   [#12756](https://github.com/angular/angular.js/issues/12756))
+- **$http:** pass event object to `eventHandlers`/`uploadEventHandlers`
+  ([25d4e5cc](https://github.com/angular/angular.js/commit/25d4e5cca4fa615e49d65976223c6deb5b485b4c),
+   [#14436](https://github.com/angular/angular.js/issues/14436))
+
+
+## Features
+
+- **$compile:**
+  - put custom annotations on DDO
+  ([f338e96c](https://github.com/angular/angular.js/commit/f338e96ccc739efc4b24022eae406c3d5451d422),
+   [#14369](https://github.com/angular/angular.js/issues/14369), [#14279](https://github.com/angular/angular.js/issues/14279), [#14284](https://github.com/angular/angular.js/issues/14284))
+  - add `isFirstChange()` method to onChanges object
+  ([8d43d8b8](https://github.com/angular/angular.js/commit/8d43d8b8e7aacf97ddb9aa48bff25db57249cdd5),
+   [#14318](https://github.com/angular/angular.js/issues/14318), [#14323](https://github.com/angular/angular.js/issues/14323))
+- **$componentController:** provide isolated scope if none is passed (#14425)
+  ([33f817b9](https://github.com/angular/angular.js/commit/33f817b99cb20e566b381e7202235fe99b4a742a),
+   [#14425](https://github.com/angular/angular.js/issues/14425))
+- **$http:**
+  - support handling additional XHR events
+  ([01b18450](https://github.com/angular/angular.js/commit/01b18450882da9bb9c903d43c0daddbc03c2c35d) and
+  [56c861c9](https://github.com/angular/angular.js/commit/56c861c9e114c45790865e5635eaae8d32eb649a),
+   [#14367](https://github.com/angular/angular.js/issues/14367), [#11547](https://github.com/angular/angular.js/issues/11547), [#1934](https://github.com/angular/angular.js/issues/1934))
+- **$parse:** add the ability to define the identifier characters
+  ([3e7fa191](https://github.com/angular/angular.js/commit/3e7fa19197c54a764225ad27c0c0bf72263daa8d))
+- **ngAnimate:** let $animate.off() remove all listeners for an element
+  ([bf6cb8ab](https://github.com/angular/angular.js/commit/bf6cb8ab0d157083a1ed55743e3fffe728daa6f3))
+- **ngAria:** add support for aria-readonly based on ngReadonly
+  ([ec0baadc](https://github.com/angular/angular.js/commit/ec0baadcb68a4fa8da27d76b7e6a4e0840acd7fa),
+   [#14140](https://github.com/angular/angular.js/issues/14140), [#14077](https://github.com/angular/angular.js/issues/14077))
+- **ngParseExt:** new ngParseExt module
+  ([d08f5c69](https://github.com/angular/angular.js/commit/d08f5c698624f6243685b16f2d458cb9a980ebde))
+
+
+## Performance Improvements
+
+- **$compile:** use createMap() for directive bindings to allow fast `forEach`
+  ([c115b37c](https://github.com/angular/angular.js/commit/c115b37c336f3a5936187279057b29c76078caf2),
+   [#12529](https://github.com/angular/angular.js/issues/12529))
+- **ngOptions:** use `documentFragment` to populate `select` options
+  ([6a4124d0](https://github.com/angular/angular.js/commit/6a4124d0fb17cd7fc0e8bf5a1ca4d785a1d11c1c),
+   [#13607](https://github.com/angular/angular.js/issues/13607), [#13239](https://github.com/angular/angular.js/issues/13239), [#12076](https://github.com/angular/angular.js/issues/12076))
+
+
+<a name="1.5.4"></a>
+# 1.5.4 graduated-sophistry (2016-04-14)
+
+This was a partially published release that you should ignore.
+
+<a name="1.5.3"></a>
+# 1.5.3 diplohaplontic-meiosis (2016-03-25)
+
+## Bug Fixes
+
+- **$compile:** workaround a GC bug in Chrome < 50
+  ([513199ee](https://github.com/angular/angular.js/commit/513199ee9f1c8eef1240983d6e52c824404adb98),
+   [#14041](https://github.com/angular/angular.js/issues/14041), [#14286](https://github.com/angular/angular.js/issues/14286))
+- **$sniffer:** fix history sniffing in Chrome Packaged Apps
+  ([457fd21a](https://github.com/angular/angular.js/commit/457fd21a1a0c10c66245c32a73602f3a09038bda),
+   [#11932](https://github.com/angular/angular.js/issues/11932), [#13945](https://github.com/angular/angular.js/issues/13945))
+- **formatNumber:** handle small numbers correctly when `gSize` !== `lgSize`
+  ([3277b885](https://github.com/angular/angular.js/commit/3277b885c4dec3edd51b8e8c3d1776057d6d4d1d),
+   [#14289](https://github.com/angular/angular.js/issues/14289), [#14290](https://github.com/angular/angular.js/issues/14290))
+- **ngAnimate:** run structural animations with cancelled out class changes
+  ([c7813e9e](https://github.com/angular/angular.js/commit/c7813e9ebf793fe89380dcad54e8e002fafdd985),
+   [#14249](https://github.com/angular/angular.js/issues/14249))
+- **ngMessages:** don't crash when nested messages are removed
+  ([ef91b04c](https://github.com/angular/angular.js/commit/ef91b04cdd794f308617bca7ebd0b1b747e4f7de),
+   [#14183](https://github.com/angular/angular.js/issues/14183), [#14242](https://github.com/angular/angular.js/issues/14242))
+
+
+## Features
+
+- **$compile:** add more lifecycle hooks to directive controllers
+  ([9cd9956d](https://github.com/angular/angular.js/commit/9cd9956dcbc8382e8e8757a805398bd251bbc67e),
+   [#14127](https://github.com/angular/angular.js/issues/14127), [#14030](https://github.com/angular/angular.js/issues/14030), [#14020](https://github.com/angular/angular.js/issues/14020), [#13991](https://github.com/angular/angular.js/issues/13991), [#14302](https://github.com/angular/angular.js/issues/14302))
+
+
+
+<a name="1.5.2"></a>
+# 1.5.2 differential-recovery (2016-03-18)
+
+This release reverts a breaking change that accidentally made it into the 1.5.1 release. See
+[fee7bac3](https://github.com/angular/angular.js/commit/fee7bac392db24b6006d6a57ba71526f3afa102c)
+for more info.
+
+
+## Bug Fixes
+
+- **ngAnimate.$animate:** remove animation callbacks when the element is removed
+  ([ce7f4000](https://github.com/angular/angular.js/commit/ce7f400011e1e2e1b9316f18ce87b87b79d878b4))
+
+
+<a name="1.5.1"></a>
+# 1.5.1 equivocal-sophistication (2016-03-16)
+
+
+## Bug Fixes
+
+- **core:** only call `console.log` when `window.console` exists
+  ([ce138f3c](https://github.com/angular/angular.js/commit/ce138f3c552f8bf741721ab8d10994ed35a4b2f5),
+   [#14006](https://github.com/angular/angular.js/issues/14006), [#14007](https://github.com/angular/angular.js/issues/14007), [#14047](https://github.com/angular/angular.js/issues/14047))
+- **$compile:** allow directives to have decorators
+  ([0728cc2f](https://github.com/angular/angular.js/commit/0728cc2f2bb04d5dbdfca41f3afacea16c75ee07))
+- **$resource:** fix parse errors on older Android WebViews
+  ([df8db7b4](https://github.com/angular/angular.js/commit/df8db7b446b5bae83afef457d706d2805e597f29),
+   [#13989](https://github.com/angular/angular.js/issues/13989))
+- **$routeProvider:** properly handle optional eager path named groups
+  ([c0797c68](https://github.com/angular/angular.js/commit/c0797c68866c9ef8ff3c2f6985e6eb9374346151),
+   [#14011](https://github.com/angular/angular.js/issues/14011))
+- **copy:** add support for copying `Blob` objects
+  ([e9d579b6](https://github.com/angular/angular.js/commit/e9d579b608c2be8fdcf0326d0679a76bb9ae5b6e),
+   [#9669](https://github.com/angular/angular.js/issues/9669), [#14064](https://github.com/angular/angular.js/issues/14064))
+- **dateFilter:** correctly format BC years
+  ([e36205f5](https://github.com/angular/angular.js/commit/e36205f5af82b69362def7d2b6eeeb038f592311))
+- **formatNumber:** allow negative fraction size
+  ([e046c170](https://github.com/angular/angular.js/commit/e046c170bcf677f26e61af6470cb5fd2f751c969),
+   [#13913](https://github.com/angular/angular.js/issues/13913))
+- **input:** re-validate when partially editing date-family inputs
+  ([e383804c](https://github.com/angular/angular.js/commit/e383804c4ab62278fbaf4fdfaa03caeacff77fc4),
+   [#12207](https://github.com/angular/angular.js/issues/12207), [#13886](https://github.com/angular/angular.js/issues/13886))
+- **input\[date\]:** support years with more than 4 digits
+  ([d76951f1](https://github.com/angular/angular.js/commit/d76951f1747abd2da6e320d4ff9019f170d9793f),
+   [#13735](https://github.com/angular/angular.js/issues/13735), [#13905](https://github.com/angular/angular.js/issues/13905))
+- **ngOptions:** always set the 'selected' attribute for selected options
+  ([9f5a1722](https://github.com/angular/angular.js/commit/9f5a172291ff6926dcd246f0972288916a4c9bf6),
+   [#14115](https://github.com/angular/angular.js/issues/14115))
+- **ngRoute:** allow `ngView` to be included in an asynchronously loaded template
+  ([8237482d](https://github.com/angular/angular.js/commit/8237482d49e76e2c4994fe6207e3c9799ef04163),
+   [#1213](https://github.com/angular/angular.js/issues/1213), [#6812](https://github.com/angular/angular.js/issues/6812), [#14088](https://github.com/angular/angular.js/issues/14088))
+- **ngMock:**
+  - attach `$injector` to `$rootElement` and prevent memory leak due to attached data
+  ([75373dd4](https://github.com/angular/angular.js/commit/75373dd4bdae6c6035272942c69444c386f824cd),
+   [#14022](https://github.com/angular/angular.js/issues/14022), [#14094](https://github.com/angular/angular.js/issues/14094), [#14098](https://github.com/angular/angular.js/issues/14098))
+  - don't break if `$rootScope.$destroy()` is not a function
+  ([50ed8712](https://github.com/angular/angular.js/commit/50ed8712566d601c9fb76b71f7b534b5bc803a36),
+   [#14106](https://github.com/angular/angular.js/issues/14106), [#14107](https://github.com/angular/angular.js/issues/14107))
+- **ngMockE2E:** pass `responseType` to `$delegate` when using `passThrough`
+  ([d16faf9f](https://github.com/angular/angular.js/commit/d16faf9f2b9bd2b85d95e71d902cec0269282f2c),
+   [#5415](https://github.com/angular/angular.js/issues/5415), [#5783](https://github.com/angular/angular.js/issues/5783))
+
+
+## Features
+
+- **$compile:** add custom annotations to the controller
+  ([0c800930](https://github.com/angular/angular.js/commit/0c8009300b819c39c5e4892856724a731a8dcda6),
+   [#14114](https://github.com/angular/angular.js/issues/14114))
+- **$controllerProvider:** add a `has()` method for checking the existence of a controller
+  ([bb9575db](https://github.com/angular/angular.js/commit/bb9575dbd3428176216355df7b2933d2a72783cd),
+   [#13951](https://github.com/angular/angular.js/issues/13951), [#14109](https://github.com/angular/angular.js/issues/14109))
+- **dateFilter:** add support for STANDALONEMONTH in format (`LLLL`)
+  ([3e5b25b3](https://github.com/angular/angular.js/commit/3e5b25b33f278376def432698c704b1807fdb8c0),
+   [#13999](https://github.com/angular/angular.js/issues/13999), [#14013](https://github.com/angular/angular.js/issues/14013))
+- **ngMock:** add `sharedInjector()` to `angular.mock.module`
+  ([a46ab60f](https://github.com/angular/angular.js/commit/a46ab60fd5bf94896f0761e858ef38b998eb0f80),
+   [#14093](https://github.com/angular/angular.js/issues/14093), [#10238](https://github.com/angular/angular.js/issues/10238))
+
+
+## Performance Improvements
+
+- **ngRepeat:** avoid duplicate jqLite wrappers
+  ([632e15a3](https://github.com/angular/angular.js/commit/632e15a3afdcd30168700cec1367bd81966400d4))
+- **ngAnimate:**
+  - avoid jqLite/jQuery for upward DOM traversal
+  ([35251bd4](https://github.com/angular/angular.js/commit/35251bd4ce23251b5e9a2860cf414726c194721e))
+  - avoid `$.fn.data` overhead with jQuery
+  ([15915e60](https://github.com/angular/angular.js/commit/15915e606fdf5114592db1a0a5e3f12e639d7cdb))
+
+
+<a name="1.4.10"></a>
+# 1.4.10 benignant-oscillation (2016-03-16)
+
+
+## Bug Fixes
+
+- **core:** only call `console.log` when `window.console` exists
+  ([beb00e44](https://github.com/angular/angular.js/commit/beb00e44de947981dbe35d5cf7a116e10ea8dc67),
+   [#14006](https://github.com/angular/angular.js/issues/14006), [#14007](https://github.com/angular/angular.js/issues/14007), [#14047](https://github.com/angular/angular.js/issues/14047))
+- **$animateCss:** cancel fallback timeout when animation ends normally
+  ([a60bbc12](https://github.com/angular/angular.js/commit/a60bbc12e8c5170e70d95f1b2c3e309b3b95cb84),
+   [#13787](https://github.com/angular/angular.js/issues/13787))
+- **$compile:**
+  - allow directives to have decorators
+  ([77cdc37c](https://github.com/angular/angular.js/commit/77cdc37c65491b551fcf01a18ab848a693c293d7))
+  - properly denormalize templates when only one of the start/end symbols is different
+  ([2d44a681](https://github.com/angular/angular.js/commit/2d44a681eb912a81a8bc8e16a278c45dae91fa24),
+   [#13848](https://github.com/angular/angular.js/issues/13848))
+  - handle boolean attributes in `@` bindings
+  ([2ffbfb0a](https://github.com/angular/angular.js/commit/2ffbfb0ad0647d103ff339ee4b772b62d4823bf3),
+   [#13767](https://github.com/angular/angular.js/issues/13767), [#13769](https://github.com/angular/angular.js/issues/13769))
+- **$parse:**
+  - prevent assignment on constructor properties
+  ([f47e2180](https://github.com/angular/angular.js/commit/f47e218006029f39b4785d820b430de3a0eebcb0),
+   [#13417](https://github.com/angular/angular.js/issues/13417))
+  - preserve expensive checks when runnning `$eval` inside an expression
+  ([96d62cc0](https://github.com/angular/angular.js/commit/96d62cc0fc77248d7e3ec4aa458bac0d3e072629))
+  - copy `inputs` for expressions with expensive checks
+  ([0b7fff30](https://github.com/angular/angular.js/commit/0b7fff303f46202bbae1ff3ca9d0e5fa76e0fc9a))
+- **$rootScope:** set no context when calling helper functions for `$watch`
+  ([ab5c7698](https://github.com/angular/angular.js/commit/ab5c7698bb106669ca31b5f79a95afa54d65c5f1))
+- **$route:** allow preventing a route reload
+  ([4bc30314](https://github.com/angular/angular.js/commit/4bc3031497447ad527356f12bd0ceee1d7d09db5),
+   [#9824](https://github.com/angular/angular.js/issues/9824), [#13894](https://github.com/angular/angular.js/issues/13894))
+- **$routeProvider:** properly handle optional eager path named groups
+  ([6a4403a1](https://github.com/angular/angular.js/commit/6a4403a11845173d6a96232f77d73aa544b182af),
+   [#14011](https://github.com/angular/angular.js/issues/14011))
+- **copy:** add support for copying `Blob` objects
+  ([863a4232](https://github.com/angular/angular.js/commit/863a4232a6faa92428df45cd54d5a519be2434de),
+   [#9669](https://github.com/angular/angular.js/issues/9669), [#14064](https://github.com/angular/angular.js/issues/14064))
+- **dateFilter:** follow the CLDR on pattern escape sequences
+  ([f476060d](https://github.com/angular/angular.js/commit/f476060de6cc016380c0343490a184543f853652),
+   [#12839](https://github.com/angular/angular.js/issues/12839))
+- **dateFilter, input:** fix Date parsing in IE/Edge when timezone offset contains `:`
+  ([571afd65](https://github.com/angular/angular.js/commit/571afd6558786d7b99e2aebd307b4a94c9f2bb87),
+   [#13880](https://github.com/angular/angular.js/issues/13880), [#13887](https://github.com/angular/angular.js/issues/13887))
+- **input:** re-validate when partially editing date-family inputs
+  ([02929f82](https://github.com/angular/angular.js/commit/02929f82f30449301ff18fea84a6396a017683b1),
+   [#12207](https://github.com/angular/angular.js/issues/12207), [#13886](https://github.com/angular/angular.js/issues/13886))
+- **select:** handle corner case of adding options via a custom directive
+  ([df6e7315](https://github.com/angular/angular.js/commit/df6e731506831a3dc7f44c9a90abe17515450b3e),
+   [#13874](https://github.com/angular/angular.js/issues/13874), [#13878](https://github.com/angular/angular.js/issues/13878))
+- **ngOptions:** always set the 'selected' attribute for selected options
+  ([f87e8288](https://github.com/angular/angular.js/commit/f87e8288fb69526fd240a66a046f5de52ed204de),
+   [#14115](https://github.com/angular/angular.js/issues/14115))
+- **ngAnimate:** properly cancel previously running class-based animations
+  ([3b27dd37](https://github.com/angular/angular.js/commit/3b27dd37a2cc8a52992784ece6b371023dadf792),
+   [#10156](https://github.com/angular/angular.js/issues/10156), [#13822](https://github.com/angular/angular.js/issues/13822))
+- **ngAnimateChildren:** make it compatible with `ngIf`
+  ([dc158e7e](https://github.com/angular/angular.js/commit/dc158e7e40624ef94c66560386522ef7e991a9ce),
+   [#13865](https://github.com/angular/angular.js/issues/13865), [#13876](https://github.com/angular/angular.js/issues/13876))
+- **ngMockE2E:** pass `responseType` to `$delegate` when using `passThrough`
+  ([947cb4d1](https://github.com/angular/angular.js/commit/947cb4d1451afa4f5090a693df5b1968dd0df70c),
+   [#5415](https://github.com/angular/angular.js/issues/5415), [#5783](https://github.com/angular/angular.js/issues/5783))
+
+
+## Features
+
+- **$locale:** Include original locale ID in $locale
+  ([e69f3550](https://github.com/angular/angular.js/commit/e69f35507e10c994708ce4f1efba7573951d1acd),
+   [#13390](https://github.com/angular/angular.js/issues/13390))
+- **ngAnimate:** provide ng-[event]-prepare class for structural animations
+  ([796f7ab4](https://github.com/angular/angular.js/commit/796f7ab41487e124b5b0c02dbf0a03bd581bf073))
+
+
+## Performance Improvements
+
+- **$compile:** avoid needless overhead when wrapping text nodes
+  ([946d9ae9](https://github.com/angular/angular.js/commit/946d9ae90bb31fe911ebbe1b80cd4c8af5a665c6))
+- **ngRepeat:** avoid duplicate jqLite wrappers
+  ([d04c38c4](https://github.com/angular/angular.js/commit/d04c38c48968db777c3ea6a177ce2ff0116df7b4))
+- **ngAnimate:**
+  - avoid jqLite/jQuery for upward DOM traversal
+  ([ab95ba65](https://github.com/angular/angular.js/commit/ab95ba65c08b38cace83de6717b7681079182b45))
+  - avoid `$.fn.data` overhead with jQuery
+  ([86416bcb](https://github.com/angular/angular.js/commit/86416bcbee2192fa31c017163c5d856763182ade))
+
+
 <a name="1.5.0"></a>
 # 1.5.0 ennoblement-facilitation (2016-02-05)
 
@@ -32,6 +540,9 @@
 
 
 ## Breaking Changes
+
+### Upgrade to 1.5.1
+This version of AngularJS is problematic due to a issue during its release. Please upgrade to version [1.5.2](#1.5.2).
 
 - **ngAria:** due to [d06431e5](https://github.com/angular/angular.js/commit/d06431e5309bb0125588877451dc79b935808134),
   Where appropriate, ngAria now applies ARIA to custom controls only, not native inputs. Because of this, support for `aria-multiline` on textareas has been removed.
@@ -689,9 +1200,6 @@ is  `$locals`.
    [#13236](https://github.com/angular/angular.js/issues/13236))
 
 
-## Breaking Changes
-
-
 <a name="1.5.0-beta.2"></a>
 # 1.5.0-beta.2 effective-delegation (2015-11-17)
 
@@ -1011,9 +1519,6 @@ requirement more strict and alerts the developer explicitly.
    [#2318](https://github.com/angular/angular.js/issues/2318), [#9319](https://github.com/angular/angular.js/issues/9319), [#12159](https://github.com/angular/angular.js/issues/12159))
 
 
-## Breaking Changes
-
-
 <a name="1.3.20"></a>
 # 1.3.20 shallow-translucence (2015-09-29)
 
@@ -1022,9 +1527,6 @@ requirement more strict and alerts the developer explicitly.
 
 - **$parse:** do not convert to string computed properties multiple times
   ([d434f3db](https://github.com/angular/angular.js/commit/d434f3db53d6209eb140b904e83bbde401686c16))
-
-
-## Breaking Changes
 
 
 <a name="1.2.29"></a>
@@ -1053,7 +1555,15 @@ requirement more strict and alerts the developer explicitly.
    [#9936](https://github.com/angular/angular.js/issues/9936))
 
 
-## Breaking Changes
+<a name="1.5.0-beta.0"></a>
+
+# 1.5.0-beta.0 intialization-processation (2015-09-17)
+
+## Bug Fixes
+
+- **jqLite:**: properly handle dash-delimited node names in `jqLiteBuildFragment`
+  ([cdd1227a3](https://github.com/angular/angular.js/commit/cdd1227a308edd34d31b67f338083b6e0c4c0db9),
+  [#10617](https://github.com/angular/angular.js/issues/10617))
 
 
 <a name="1.4.6"></a>
@@ -1519,6 +2029,43 @@ describe('$q.when', function() {
 });
 ```
 
+- **form:** Due to [94533e57](https://github.com/angular/angular.js/commit/94533e570673e6b2eb92073955541fa289aabe02),
+  the `name` attribute of `form` elements can now only contain characters that can be evaluated as part
+  of an Angular expression. This is because Angular uses the value of `name` as an assignable expression
+  to set the form on the `$scope`. For example, `name="myForm"` assigns the form to `$scope.myForm` and
+  `name="myObj.myForm"` assigns it to `$scope.myObj.myForm`.
+
+  Previously, it was possible to also use names such `name="my:name"`, because Angular used a special setter
+  function for the form name. Now the general, more robust `$parse` setter is used.
+
+  The easiest way to migrate your code is therefore to remove all special characters from the `name` attribute.
+
+  If you need to keep the special characters, you can use the following directive, which will replace
+  the `name` with a value that can be evaluated as an expression in the compile function, and then
+  re-set the original name in the postLink function. This ensures that (1), the form is published on
+  the scope, and (2), the form has the original name, which might be important if you are doing server-side
+  form submission.
+
+  ```js
+  angular.module('myApp').directive('form', function() {
+    return {
+      restrict: 'E',
+      priority: 1000,
+      compile: function(element, attrs) {
+        var unsupportedCharacter = ':'; // change accordingly
+        var originalName = attrs.name;
+        if (attrs.name && attrs.name.indexOf(unsupportedCharacter) > 0) {
+          attrs.$set('name', 'this["' + originalName + '"]');
+        }
+
+        return postLinkFunction(scope, element) {
+          // Don't trigger $observers
+          element.setAttribute('name', originalName);
+        }
+      }
+    };
+  });
+  ```
 
 <a name="1.4.3"></a>
 # 1.4.3 foam-acceleration (2015-07-15)
@@ -1568,6 +2115,44 @@ describe('$q.when', function() {
   ([1f5e42e8](https://github.com/angular/angular.js/commit/1f5e42e8821217026ef36a46d36f84d7cd32830a),
    [#11580](https://github.com/angular/angular.js/issues/11580), [#12234](https://github.com/angular/angular.js/issues/12234))
 
+
+## Breaking Changes
+
+- **ngInclude:** due to [3c6e8ce044446735eb2e70d0061db8c6db050289](https://github.com/angular/angular.js/commit/3c6e8ce044446735eb2e70d0061db8c6db050289), the `src` attribute of ngInclude no longer accepts an
+expression that returns the result of `$sce.trustAsResourceUrl`. This will now cause an infinite digest:
+
+Before:
+```html
+<div ng-include="findTemplate('https://example.com/myTemplate.html')"></div>
+```
+
+```js
+$scope.findTemplate = function(templateName) {
+  return $sce.trustAsResourceUrl(templateName);
+};
+```
+
+To migrate, either cache the result of `trustAsResourceUrl()`, or put the template url in the resource
+whitelist in the `config()` function:
+
+After:
+
+```js
+var templateCache = {};
+$scope.findTemplate = function(templateName) {
+  if (!templateCache[templateName]) {
+    templateCache[templateName] = $sce.trustAsResourceUrl(templateName);
+  }
+
+  return  templateCache[templateName];
+};
+
+// Alternatively, use `$sceDelegateProvider.resourceUrlWhitelist()`:
+
+angular.module('myApp', []).config(function($sceDelegateProvider) {
+  $sceDelegateProvider.resourceUrlWhitelist(['self', 'https://example.com/**'])
+});
+```
 
 
 <a name="1.3.17"></a>
@@ -1847,9 +2432,7 @@ describe('$q.when', function() {
 
 ## Breaking Changes
 
-### ngAnimate
-
-- **$animateCss:** due to [d5683d21](https://github.com/angular/angular.js/commit/d5683d21165e725bc5a850e795f681b0a8a008f5),
+- **ngAnimate** - $animateCss: due to [d5683d21](https://github.com/angular/angular.js/commit/d5683d21165e725bc5a850e795f681b0a8a008f5),
   The $animateCss service will now always return an
 object even if the animation is not set to run. If your code is using
 $animateCss then please consider the following code change:
@@ -1933,9 +2516,7 @@ $animateProvider.classNameFilter(/ng-animate-special/);
 ```
 
 
-### ngOptions
-
-- ** due to [dfa722a8](https://github.com/angular/angular.js/commit/dfa722a8a6864793fd9580d8ae704a06d10b5509),
+- **ngOptions**: due to [dfa722a8](https://github.com/angular/angular.js/commit/dfa722a8a6864793fd9580d8ae704a06d10b5509),
 
 
 Although it is unlikely that anyone is using it in this way, this change does change the

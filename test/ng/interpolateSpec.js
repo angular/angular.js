@@ -35,6 +35,29 @@ describe('$interpolate', function() {
     expect($interpolate('{{ false }}')({})).toEqual('false');
   }));
 
+  it('should use custom toString when present', inject(function($interpolate, $rootScope) {
+    var context = {
+      a: {
+        toString: function() {
+          return 'foo';
+        }
+      }
+    };
+
+    expect($interpolate('{{ a }}')(context)).toEqual('foo');
+  }));
+
+  it('should NOT use toString on array objects', inject(function($interpolate) {
+    expect($interpolate('{{a}}')({ a: [] })).toEqual('[]');
+  }));
+
+
+  it('should NOT use toString on Date objects', inject(function($interpolate) {
+    var date = new Date(2014, 10, 10);
+    expect($interpolate('{{a}}')({ a: date })).toBe(JSON.stringify(date));
+    expect($interpolate('{{a}}')({ a: date })).not.toEqual(date.toString());
+  }));
+
 
   it('should return interpolation function', inject(function($interpolate, $rootScope) {
     var interpolateFn = $interpolate('Hello {{name}}!');
@@ -133,7 +156,7 @@ describe('$interpolate', function() {
         $rootScope.$digest();
         expect($rootScope.$countWatchers()).toBe(0);
         expect(spy).toHaveBeenCalledWith('foo', 'foo', $rootScope);
-        expect(spy.calls.length).toBe(1);
+        expect(spy).toHaveBeenCalledTimes(1);
       })
     );
 
@@ -144,7 +167,7 @@ describe('$interpolate', function() {
         $rootScope.$digest();
         expect($rootScope.$countWatchers()).toBe(0);
         expect(spy).toHaveBeenCalledWith('foo 42', 'foo 42', $rootScope);
-        expect(spy.calls.length).toBe(1);
+        expect(spy).toHaveBeenCalledTimes(1);
       })
     );
   });

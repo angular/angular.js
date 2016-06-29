@@ -21,8 +21,8 @@ $provide.value("$locale", {
       "\u516c\u5143"
     ],
     "ERAS": [
-      "BC",
-      "AD"
+      "\u516c\u5143\u524d",
+      "\u516c\u5143"
     ],
     "FIRSTDAYOFWEEK": 6,
     "MONTH": [
@@ -85,8 +85,8 @@ $provide.value("$locale", {
     "medium": "y\u5e74M\u6708d\u65e5 ah:mm:ss",
     "mediumDate": "y\u5e74M\u6708d\u65e5",
     "mediumTime": "ah:mm:ss",
-    "short": "d/M/yy ah:mm",
-    "shortDate": "d/M/yy",
+    "short": "d/M/y ah:mm",
+    "shortDate": "d/M/y",
     "shortTime": "ah:mm"
   },
   "NUMBER_FORMATS": {

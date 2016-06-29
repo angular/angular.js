@@ -199,7 +199,7 @@ angular.scenario.dsl('binding', function() {
  */
 angular.scenario.dsl('input', function() {
   var chain = {};
-  var supportInputEvent = 'oninput' in document.createElement('div') && !(msie && msie <= 11);
+  var supportInputEvent = 'oninput' in window.document.createElement('div') && !msie;
 
   chain.enter = function(value, event) {
     return this.addFutureAction("input '" + this.name + "' enter '" + value + "'",
@@ -442,7 +442,7 @@ angular.scenario.dsl('element', function() {
   angular.forEach(KEY_VALUE_METHODS, function(methodName) {
     chain[methodName] = function(name, value) {
       var args = arguments,
-          futureName = (args.length == 1)
+          futureName = (args.length === 1)
               ? "element '" + this.label + "' get " + methodName + " '" + name + "'"
               : "element '" + this.label + "' set " + methodName + " '" + name + "' to " + "'" +
                 value + "'";

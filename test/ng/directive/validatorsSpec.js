@@ -1,19 +1,12 @@
 'use strict';
 
-/* globals getInputCompileHelper: false */
+/* globals generateInputCompilerHelper: false */
 
 describe('validators', function() {
 
-  var helper, $rootScope;
+  var helper = {}, $rootScope;
 
-  beforeEach(function() {
-    helper = getInputCompileHelper(this);
-  });
-
-  afterEach(function() {
-    helper.dealoc();
-  });
-
+  generateInputCompilerHelper(helper);
 
   beforeEach(inject(function(_$rootScope_) {
     $rootScope = _$rootScope_;
@@ -143,7 +136,7 @@ describe('validators', function() {
       expect(function() {
         var inputElm = helper.compileInput('<input type="text" ng-model="foo" ng-pattern="fooRegexp" />');
         $rootScope.$apply("foo = 'bar'");
-      }).not.toThrowMatching(/^\[ngPattern:noregexp\] Expected fooRegexp to be a RegExp but was/);
+      }).not.toThrowError(/^\[ngPattern:noregexp\] Expected fooRegexp to be a RegExp but was/);
     });
 
 
@@ -154,7 +147,7 @@ describe('validators', function() {
           $rootScope.fooRegexp = {};
           $rootScope.foo = 'bar';
         });
-      }).toThrowMatching(/^\[ngPattern:noregexp\] Expected fooRegexp to be a RegExp but was/);
+      }).toThrowError(/^\[ngPattern:noregexp\] Expected fooRegexp to be a RegExp but was/);
     });
 
 
@@ -292,7 +285,7 @@ describe('validators', function() {
       var inputElm = helper.compileInput('<input type="text" name="input" ng-model="value" minlength="3" />');
 
       var ctrl = inputElm.controller('ngModel');
-      spyOn(ctrl, '$isEmpty').andCallThrough();
+      spyOn(ctrl, '$isEmpty').and.callThrough();
 
       ctrl.$parsers.push(function(value) {
         return value + '678';
@@ -480,7 +473,7 @@ describe('validators', function() {
       var inputElm = helper.compileInput('<input type="text" name="input" ng-model="value" maxlength="10" />');
 
       var ctrl = inputElm.controller('ngModel');
-      spyOn(ctrl, '$isEmpty').andCallThrough();
+      spyOn(ctrl, '$isEmpty').and.callThrough();
 
       ctrl.$parsers.push(function(value) {
         return value + '678';
@@ -606,7 +599,7 @@ describe('validators', function() {
       var inputElm = helper.compileInput('<input type="text" name="input" ng-model="value" required />');
 
       var ctrl = inputElm.controller('ngModel');
-      spyOn(ctrl, '$isEmpty').andCallThrough();
+      spyOn(ctrl, '$isEmpty').and.callThrough();
 
       ctrl.$parsers.push(function(value) {
         return value + '678';

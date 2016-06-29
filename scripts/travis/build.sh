@@ -20,12 +20,12 @@ elif [ $JOB = "unit" ]; then
 elif [ $JOB = "docs-e2e" ]; then
   grunt test:travis-protractor --specs "docs/app/e2e/**/*.scenario.js"
 elif [ $JOB = "e2e" ]; then
-  if [ $TEST_TARGET = "jquery" ]; then
+  if [[ $TEST_TARGET == jquery* ]]; then
     export USE_JQUERY=1
   fi
 
   export TARGET_SPECS="build/docs/ptore2e/**/default_test.js"
-  if [ $TEST_TARGET = "jquery" ]; then
+  if [[ $TEST_TARGET == jquery* ]]; then
     TARGET_SPECS="build/docs/ptore2e/**/jquery_test.js"
   fi
 

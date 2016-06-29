@@ -1,7 +1,8 @@
 {
   "extends": "../../.jshintrc-base",
-  "browser": true,
   "globals": {
+    "window": false,
+
     "angular": false,
     "includes": false,
     "asyncForEach": false,
@@ -12,10 +13,6 @@
     "_jQuery": false,
     "angularInit": false,
     "formatException": false,
-    "AnimationEvent": false,
-    "TransitionEvent": false,
-    "WebKitAnimationEvent": false,
-    "WebKitTransitionEvent": false,
     "$runner": false,
     "callerFile": false
   }

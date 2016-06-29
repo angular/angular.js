@@ -72,7 +72,7 @@ describe('$routeParams', function() {
 
       $location.path('/qux//bazValue');
       $rootScope.$digest();
-      expect($routeParams).toEqual({baz: 'bazValue', bar: undefined});
+      expect($routeParams).toEqual({baz: 'bazValue'});
 
     });
   });

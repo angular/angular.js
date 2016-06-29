@@ -18,7 +18,7 @@ $provide.value("$locale", {
     ],
     "ERANAMES": [
       "\u0b95\u0bbf\u0bb1\u0bbf\u0bb8\u0bcd\u0ba4\u0bc1\u0bb5\u0bc1\u0b95\u0bcd\u0b95\u0bc1 \u0bae\u0bc1\u0ba9\u0bcd",
-      "\u0b85\u0ba9\u0bcb \u0b9f\u0bcb\u0bae\u0bbf\u0ba9\u0bbf"
+      "\u0b85\u0ba9\u0bcd\u0ba9\u0bcb \u0b9f\u0bcb\u0bae\u0bbf\u0ba9\u0bbf"
     ],
     "ERAS": [
       "\u0b95\u0bbf.\u0bae\u0bc1.",
@@ -40,13 +40,13 @@ $provide.value("$locale", {
       "\u0b9f\u0bbf\u0b9a\u0bae\u0bcd\u0baa\u0bb0\u0bcd"
     ],
     "SHORTDAY": [
-      "\u0b9e\u0bbe",
-      "\u0ba4\u0bbf",
-      "\u0b9a\u0bc6",
-      "\u0baa\u0bc1",
-      "\u0bb5\u0bbf",
-      "\u0bb5\u0bc6",
-      "\u0b9a"
+      "\u0b9e\u0bbe\u0baf\u0bbf.",
+      "\u0ba4\u0bbf\u0b99\u0bcd.",
+      "\u0b9a\u0bc6\u0bb5\u0bcd.",
+      "\u0baa\u0bc1\u0ba4.",
+      "\u0bb5\u0bbf\u0baf\u0bbe.",
+      "\u0bb5\u0bc6\u0bb3\u0bcd.",
+      "\u0b9a\u0ba9\u0bbf"
     ],
     "SHORTMONTH": [
       "\u0b9c\u0ba9.",
@@ -82,12 +82,12 @@ $provide.value("$locale", {
     ],
     "fullDate": "EEEE, d MMMM, y",
     "longDate": "d MMMM, y",
-    "medium": "d MMM, y h:mm:ss a",
+    "medium": "d MMM, y a h:mm:ss",
     "mediumDate": "d MMM, y",
-    "mediumTime": "h:mm:ss a",
-    "short": "d-M-yy h:mm a",
-    "shortDate": "d-M-yy",
-    "shortTime": "h:mm a"
+    "mediumTime": "a h:mm:ss",
+    "short": "d/M/yy a h:mm",
+    "shortDate": "d/M/yy",
+    "shortTime": "a h:mm"
   },
   "NUMBER_FORMATS": {
     "CURRENCY_SYM": "\u20b9",

@@ -43,7 +43,7 @@ well.  Consider the following template:
 
 ```
 <div class='container'>
-  <div class='wrapper>
+  <div class='wrapper'>
      ...
   </div> <!-- wrapper -->
 </div> <!-- container -->

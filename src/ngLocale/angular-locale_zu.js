@@ -4,17 +4,17 @@ var PLURAL_CATEGORY = {ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "
 $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": [
-      "Ekuseni",
-      "Ntambama"
+      "AM",
+      "PM"
     ],
     "DAY": [
-      "Sonto",
-      "Msombuluko",
-      "Lwesibili",
-      "Lwesithathu",
-      "Lwesine",
-      "Lwesihlanu",
-      "Mgqibelo"
+      "ISonto",
+      "UMsombuluko",
+      "ULwesibili",
+      "ULwesithathu",
+      "ULwesine",
+      "ULwesihlanu",
+      "UMgqibelo"
     ],
     "ERANAMES": [
       "BC",
@@ -29,7 +29,7 @@ $provide.value("$locale", {
       "Januwari",
       "Februwari",
       "Mashi",
-      "Apreli",
+      "Ephreli",
       "Meyi",
       "Juni",
       "Julayi",
@@ -52,7 +52,7 @@ $provide.value("$locale", {
       "Jan",
       "Feb",
       "Mas",
-      "Apr",
+      "Eph",
       "Mey",
       "Jun",
       "Jul",
@@ -66,7 +66,7 @@ $provide.value("$locale", {
       "Januwari",
       "Februwari",
       "Mashi",
-      "Apreli",
+      "Ephreli",
       "Meyi",
       "Juni",
       "Julayi",

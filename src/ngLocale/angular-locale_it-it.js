@@ -39,8 +39,8 @@ $provide.value("$locale", {
       "d.C."
     ],
     "ERAS": [
-      "aC",
-      "dC"
+      "a.C.",
+      "d.C."
     ],
     "FIRSTDAYOFWEEK": 0,
     "MONTH": [

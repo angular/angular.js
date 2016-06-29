@@ -21,7 +21,7 @@ describe('linky', function() {
   });
 
   it('should return `undefined`/`null`/`""` values unchanged', function() {
-    expect(linky(undefined)).toBe(undefined);
+    expect(linky(undefined)).toBeUndefined();
     expect(linky(null)).toBe(null);
     expect(linky('')).toBe('');
   });
@@ -113,9 +113,16 @@ describe('linky', function() {
 
 
     it('should pass url as parameter to custom attribute function', function() {
-      var linkParameters = jasmine.createSpy('linkParameters').andReturn({"class": "blue"});
+      var linkParameters = jasmine.createSpy('linkParameters').and.returnValue({"class": "blue"});
       linky("http://example.com", "_self", linkParameters);
       expect(linkParameters).toHaveBeenCalledWith('http://example.com');
+    });
+
+
+    it('should call the attribute function for all links in the input', function() {
+      var attributeFn = jasmine.createSpy('attributeFn').and.returnValue({});
+      linky("http://example.com and http://google.com", "_self", attributeFn);
+      expect(attributeFn.calls.allArgs()).toEqual([['http://example.com'], ['http://google.com']]);
     });
 
 

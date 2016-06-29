@@ -39,7 +39,7 @@ $provide.value("$locale", {
       "\u0632\u0627\u06cc\u06cc\u0646\u06cc"
     ],
     "ERAS": [
-      "\u067e\u06ce\u0634 \u0632\u0627\u06cc\u06cc\u06cc\u0646",
+      "\u067e.\u0646",
       "\u0632"
     ],
     "FIRSTDAYOFWEEK": 5,
@@ -96,7 +96,7 @@ $provide.value("$locale", {
     ],
     "WEEKENDRANGE": [
       4,
-      5
+      4
     ],
     "fullDate": "y MMMM d, EEEE",
     "longDate": "d\u06cc MMMM\u06cc y",

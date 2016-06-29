@@ -17,50 +17,50 @@ $provide.value("$locale", {
       "shanba"
     ],
     "ERANAMES": [
-      "M.A.",
-      "E"
+      "miloddan avvalgi",
+      "milodiy"
     ],
     "ERAS": [
-      "M.A.",
-      "E"
+      "m.a.",
+      "milodiy"
     ],
     "FIRSTDAYOFWEEK": 0,
     "MONTH": [
-      "Yanvar",
-      "Fevral",
-      "Mart",
-      "Aprel",
-      "May",
-      "Iyun",
-      "Iyul",
-      "Avgust",
+      "yanvar",
+      "fevral",
+      "mart",
+      "aprel",
+      "may",
+      "iyun",
+      "iyul",
+      "avgust",
       "Sentabr",
       "Oktabr",
-      "Noyabr",
-      "Dekabr"
+      "noyabr",
+      "dekabr"
     ],
     "SHORTDAY": [
-      "Yaksh",
-      "Dush",
-      "Sesh",
-      "Chor",
-      "Pay",
-      "Jum",
-      "Shan"
+      "Ya",
+      "Du",
+      "Se",
+      "Ch",
+      "Pa",
+      "Ju",
+      "Sh"
     ],
     "SHORTMONTH": [
-      "Yanv",
-      "Fev",
-      "Mar",
-      "Apr",
-      "May",
-      "Iyun",
-      "Iyul",
-      "Avg",
-      "Sen",
-      "Okt",
-      "Noya",
-      "Dek"
+      "yan",
+      "fev",
+      "mar",
+      "apr",
+      "may",
+      "iyn",
+      "iyl",
+      "avg",
+      "sen",
+      "okt",
+      "noy",
+      "dek"
     ],
     "STANDALONEMONTH": [
       "Yanvar",
@@ -81,12 +81,12 @@ $provide.value("$locale", {
       6
     ],
     "fullDate": "EEEE, y MMMM dd",
-    "longDate": "y MMMM d",
-    "medium": "y MMM d HH:mm:ss",
-    "mediumDate": "y MMM d",
+    "longDate": "d-MMMM, y",
+    "medium": "d-MMM, y HH:mm:ss",
+    "mediumDate": "d-MMM, y",
     "mediumTime": "HH:mm:ss",
-    "short": "yy/MM/dd HH:mm",
-    "shortDate": "yy/MM/dd",
+    "short": "dd/MM/yy HH:mm",
+    "shortDate": "dd/MM/yy",
     "shortTime": "HH:mm"
   },
   "NUMBER_FORMATS": {

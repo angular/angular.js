@@ -26,9 +26,9 @@ machine:
 * [Git](http://git-scm.com/): The [Github Guide to
 Installing Git](https://help.github.com/articles/set-up-git) is a good source of information.
 
-* [Node.js](http://nodejs.org): We use Node to generate the documentation, run a
+* [Node.js v4.x](http://nodejs.org): We use Node to generate the documentation, run a
 development web server, run tests, and generate distributable files. Depending on your system, you can install Node either from source or as a
-pre-packaged bundle.
+pre-packaged bundle. (Currently our build does not work properly on Node v5 or greater - please use v4.x.)
 
 * [Java](http://www.java.com): We minify JavaScript using our
 [Closure Tools](https://developers.google.com/closure/) jar. Make sure you have Java (version 7 or higher) installed
@@ -39,15 +39,6 @@ and included in your [PATH](http://docs.oracle.com/javase/tutorial/essential/env
   ```shell
   npm install -g grunt-cli
   ```
-
-* [Bower](http://bower.io/): We use Bower to manage client-side packages for the docs. Install the `bower` command-line tool globally with:
-
-  ```shell
-  npm install -g bower
-  ```
-
-**Note:** You may need to use sudo (for OSX, *nix, BSD etc) or run your command shell as Administrator (for Windows) to install Grunt &amp;
-Bower globally.
 
 ## Forking Angular on Github
 

@@ -14,7 +14,7 @@ describe('ngSrc', function() {
       element = $compile('<img ng-src="{{image.url}}">')($rootScope);
       $rootScope.$digest();
       expect(element.attr('src')).not.toBe('');
-      expect(element.attr('src')).toBe(undefined);
+      expect(element.attr('src')).toBeUndefined();
     }));
 
     it('should sanitize url', inject(function($rootScope, $compile) {

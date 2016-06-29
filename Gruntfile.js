@@ -17,6 +17,10 @@ module.exports = function(grunt) {
   NG_VERSION.cdn = versionInfo.cdnVersion;
   var dist = 'angular-'+ NG_VERSION.full;
 
+  if (versionInfo.cdnVersion == null) {
+    throw new Error('Unable to read CDN version, are you offline or has the CDN not been properly pushed?');
+  }
+
   //config
   grunt.initConfig({
     NG_VERSION: NG_VERSION,
@@ -79,6 +83,7 @@ module.exports = function(grunt) {
     tests: {
       jqlite: 'karma-jqlite.conf.js',
       jquery: 'karma-jquery.conf.js',
+      'jquery-2.1': 'karma-jquery-2.1.conf.js',
       docs: 'karma-docs.conf.js',
       modules: 'karma-modules.conf.js'
     },
@@ -87,6 +92,7 @@ module.exports = function(grunt) {
     autotest: {
       jqlite: 'karma-jqlite.conf.js',
       jquery: 'karma-jquery.conf.js',
+      'jquery-2.1': 'karma-jquery-2.1.conf.js',
       modules: 'karma-modules.conf.js',
       docs: 'karma-docs.conf.js'
     },
@@ -134,6 +140,9 @@ module.exports = function(grunt) {
       },
       ngMock: {
         files: { src: 'src/ngMock/**/*.js' },
+      },
+      ngParseExt: {
+        files: { src: 'src/ngParseExt/**/*.js' },
       },
       ngResource: {
         files: { src: 'src/ngResource/**/*.js' },
@@ -231,7 +240,11 @@ module.exports = function(grunt) {
         dest: 'build/angular-aria.js',
         src: util.wrap(files['angularModules']['ngAria'], 'module')
       },
-      'promises-aplus-adapter': {
+      parseext: {
+        dest: 'build/angular-parse-ext.js',
+        src: util.wrap(files['angularModules']['ngParseExt'], 'module')
+      },
+      "promises-aplus-adapter": {
         dest:'tmp/promises-aplus-adapter++.js',
         src:['src/ng/q.js', 'lib/promises-aplus/promises-aplus-test-adapter.js']
       }
@@ -249,7 +262,8 @@ module.exports = function(grunt) {
       resource: 'build/angular-resource.js',
       route: 'build/angular-route.js',
       sanitize: 'build/angular-sanitize.js',
-      aria: 'build/angular-aria.js'
+      aria: 'build/angular-aria.js',
+      parseext: 'build/angular-parse-ext.js'
     },
 
 
@@ -264,12 +278,17 @@ module.exports = function(grunt) {
       ],
       options: {
         disallowed: [
+          'fit',
           'iit',
           'xit',
+          'fthey',
           'tthey',
           'xthey',
+          'fdescribe',
           'ddescribe',
-          'xdescribe'
+          'xdescribe',
+          'it.only',
+          'describe.only'
         ]
       }
     },
@@ -344,10 +363,11 @@ module.exports = function(grunt) {
   //alias tasks
   grunt.registerTask('test', 'Run unit, docs and e2e tests with Karma', ['jshint', 'jscs', 'package', 'test:unit', 'test:promises-aplus', 'tests:docs', 'test:protractor']);
   grunt.registerTask('test:jqlite', 'Run the unit tests with Karma' , ['tests:jqlite']);
-  grunt.registerTask('test:jquery', 'Run the jQuery unit tests with Karma', ['tests:jquery']);
+  grunt.registerTask('test:jquery', 'Run the jQuery (latest) unit tests with Karma', ['tests:jquery']);
+  grunt.registerTask('test:jquery-2.1', 'Run the jQuery 2.1 unit tests with Karma', ['tests:jquery-2.1']);
   grunt.registerTask('test:modules', 'Run the Karma module tests with Karma', ['build', 'tests:modules']);
   grunt.registerTask('test:docs', 'Run the doc-page tests with Karma', ['package', 'tests:docs']);
-  grunt.registerTask('test:unit', 'Run unit, jQuery and Karma module tests with Karma', ['test:jqlite', 'test:jquery', 'test:modules']);
+  grunt.registerTask('test:unit', 'Run unit, jQuery and Karma module tests with Karma', ['test:jqlite', 'test:jquery', 'test:jquery-2.1', 'test:modules']);
   grunt.registerTask('test:protractor', 'Run the end to end tests with Protractor and keep a test server running in the background', ['webdriver', 'connect:testserver', 'protractor:normal']);
   grunt.registerTask('test:travis-protractor', 'Run the end to end tests with Protractor for Travis CI builds', ['connect:testserver', 'protractor:travis']);
   grunt.registerTask('test:ci-protractor', 'Run the end to end tests with Protractor for Jenkins CI builds', ['webdriver', 'connect:testserver', 'protractor:jenkins']);

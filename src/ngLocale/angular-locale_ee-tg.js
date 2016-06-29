@@ -100,12 +100,12 @@ $provide.value("$locale", {
     ],
     "fullDate": "EEEE, MMMM d 'lia' y",
     "longDate": "MMMM d 'lia' y",
-    "medium": "MMM d 'lia', y a 'ga' h:mm:ss",
+    "medium": "MMM d 'lia', y HH:mm:ss",
     "mediumDate": "MMM d 'lia', y",
-    "mediumTime": "a 'ga' h:mm:ss",
-    "short": "M/d/yy a 'ga' h:mm",
+    "mediumTime": "HH:mm:ss",
+    "short": "M/d/yy HH:mm",
     "shortDate": "M/d/yy",
-    "shortTime": "a 'ga' h:mm"
+    "shortTime": "HH:mm"
   },
   "NUMBER_FORMATS": {
     "CURRENCY_SYM": "CFA",

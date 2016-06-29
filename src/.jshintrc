@@ -1,7 +1,10 @@
 {
   "extends": "../.jshintrc-base",
-  "browser": true,
+  "eqeqeq": true,
+  "eqnull": true,
   "globals": {
+    "window": false,
+
     /* auto/injector.js */
     "createInjector": false,
 
@@ -93,11 +96,11 @@
     "createMap": false,
     "VALIDITY_STATE_PROPERTY": false,
     "reloadWithDebugInfo": false,
+    "stringify": false,
 
     "NODE_TYPE_ELEMENT": false,
     "NODE_TYPE_ATTRIBUTE": false,
     "NODE_TYPE_TEXT": false,
-    "NODE_TYPE_COMMENT": false,
     "NODE_TYPE_COMMENT": false,
     "NODE_TYPE_DOCUMENT": false,
     "NODE_TYPE_DOCUMENT_FRAGMENT": false,
@@ -143,8 +146,6 @@
     "getAliasedAttrName": false,
     "createEventHandler": false,
     "JQLitePrototype": false,
-    "addEventListenerFn": false,
-    "removeEventListenerFn": false,
     "jqLiteIsTextNode": false,
     "jqLiteDocumentLoaded": false,
 

@@ -12,11 +12,11 @@ dynamically display the same result with any set of data.
 
 In this step you will add some basic information about two cell phones to an HTML page.
 
-- The page now contains a list with information about two phones.
+* The page now contains a list with information about two phones.
 
 <div doc-tutorial-reset="1"></div>
 
-
+<br />
 **`app/index.html`:**
 
 ```html
@@ -39,15 +39,19 @@ In this step you will add some basic information about two cell phones to an HTM
 
 # Experiments
 
+<div></div>
+
 * Try adding more static HTML to `index.html`. For example:
 
-          <p>Total number of phones: 2</p>
+  ```html
+  <p>Total number of phones: 2</p>
+  ```
 
 
 # Summary
 
-This addition to your app uses static HTML to display the list. Now, let's go to {@link step_02
-step 2} to learn how to use AngularJS to dynamically generate the same list.
+This addition to your app uses static HTML to display the list. Now, let's go to
+{@link step_02 step 2} to learn how to use Angular to dynamically generate the same list.
 
 
 <ul doc-tutorial-nav="1"></ul>
