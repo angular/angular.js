@@ -3373,6 +3373,76 @@ describe('$compile', function() {
     });
   });
 
+  angular.forEach([
+    { commentEnabled: true, cssEnabled: true },
+    { commentEnabled: true, cssEnabled:false },
+    { commentEnabled:false, cssEnabled: true },
+    { commentEnabled:false, cssEnabled:false }
+  ], function(config) {
+    describe('commentDirectivesEnabled(' + config.commentEnabled + ')', function() {
+      describe('cssDirectivesEnabled(' + config.cssEnabled + ')', function() {
+
+        var collected;
+        beforeEach(module(function($compileProvider) {
+          collected = false;
+          $compileProvider.directive('testCollect', function() {
+            return {
+              restrict: 'EACM',
+              link: function() {
+                collected = true;
+              }
+            };
+          });
+        }));
+
+        beforeEach(module(function($compileProvider) {
+          $compileProvider.commentDirectivesEnabled(config.commentEnabled);
+          $compileProvider.cssDirectivesEnabled(config.cssEnabled);
+        }));
+
+        var $compile, $rootScope;
+        beforeEach(inject(function(_$compile_,_$rootScope_) {
+          $compile = _$compile_;
+          $rootScope = _$rootScope_;
+        }));
+
+        it('should handle comment directives appropriately', function() {
+          var html = '<!-- directive: test-collect -->';
+          element = $compile('<div>' + html + '</div>')($rootScope);
+          expect(collected).toBe(config.commentEnabled);
+        });
+
+        it('should handle css directives appropriately', function() {
+          element = $compile('<div class="test-collect"></div>')($rootScope);
+          expect(collected).toBe(config.cssEnabled);
+        });
+
+        it('should not prevent to compile entity directives', function() {
+          element = $compile('<test-collect></test-collect>')($rootScope);
+          expect(collected).toBe(true);
+        });
+
+        it('should not prevent to compile attribute directives', function() {
+          element = $compile('<span test-collect></span>')($rootScope);
+          expect(collected).toBe(true);
+        });
+
+        it('should not prevent to compile interpolated expressions', function() {
+          element = $compile('<span>{{"text "+"interpolated"}}</span>')($rootScope);
+          $rootScope.$apply();
+          expect(element.text()).toBe('text interpolated');
+        });
+
+        it('should interpolate expressions inside class attribute', function() {
+          $rootScope.interpolateMe = 'interpolated';
+          var html = '<div class="{{interpolateMe}}"></div>';
+          element = $compile(html)($rootScope);
+          $rootScope.$apply();
+          expect(element).toHaveClass('interpolated');
+        });
+      });
+    });
+  });
 
   describe('link phase', function() {
 

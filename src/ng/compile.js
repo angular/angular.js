@@ -1386,6 +1386,61 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
     return TTL;
   };
 
+  var ignoreMDirectives = false;
+  /**
+   * @ngdoc method
+   * @name $compileProvider#commentDirectivesEnabled
+   * @description
+   *
+   * It indicates to the compiler if the current project
+   * does require to use comment directives.
+   *
+   * If comment directives are disabled
+   * it allows to the compiler to make optimizations
+   * and skip comments parsing.
+   *
+   * Default value is ‘true’
+   *
+   * Example:
+   *
+   * ```
+   * $compileProvider.commentDirectivesEnabled(false);
+   * ```
+   *
+   * @param {boolean} false if the compiler may ignore comment directives
+   */
+  this.commentDirectivesEnabled = function(value) {
+    ignoreMDirectives = !value;
+  };
+
+
+  var ignoreCDirectives = false;
+  /**
+   * @ngdoc method
+   * @name $compileProvider#commentDirectivesEnabled
+   * @description
+   *
+   * It indicates to the compiler if the current project
+   * does require to use css directives.
+   *
+   * If css directives are disabled
+   * it allows to the compiler to make optimizations
+   * and skip css class parsing.
+   *
+   * Default value is ‘true’
+   *
+   * Example:
+   *
+   * ```
+   * $compileProvider.cssDirectivesEnabled(false);
+   * ```
+   *
+   * @param {boolean} false if the compiler may ignore comment directives
+   */
+  this.cssDirectivesEnabled = function(value) {
+    ignoreCDirectives = !value;
+  };
+
   this.$get = [
             '$injector', '$interpolate', '$exceptionHandler', '$templateRequest', '$parse',
             '$controller', '$rootScope', '$sce', '$animate', '$$sanitizeUri',
@@ -2026,6 +2081,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           }
 
           // use class as directive
+          if (ignoreCDirectives) break;
           className = node.className;
           if (isObject(className)) {
               // Maybe SVGAnimatedString
@@ -2052,6 +2108,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           addTextInterpolateDirective(directives, node.nodeValue);
           break;
         case NODE_TYPE_COMMENT: /* Comment */
+          if (ignoreMDirectives) break;
           collectCommentDirectives(node, directives, attrs, maxPriority, ignoreDirective);
           break;
       }
