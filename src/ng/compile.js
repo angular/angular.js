@@ -1386,6 +1386,75 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
     return TTL;
   };
 
+  var COMMENT_DIRECTIVES_ENABLED = true;
+  /**
+   * @ngdoc method
+   * @name $compileProvider#commentDirectivesEnabled
+   * @description
+   *
+   * It indicates to the compiler
+   * whether or not directives on comments should be compiled.
+   * Defaults to `true`.
+   *
+   * Calling this function with false disables the compilation of directives
+   * on comments for the whole application.
+   * This results in a compilation performance gain,
+   * as the compiler doesn't have to check comments when looking for directives.
+   * This should however only be used if you are sure that no comment directives are used in the application
+   * (including any 3rd party directives).
+   *
+   * Example:
+   *
+   * ```
+   * $compileProvider.commentDirectivesEnabled(false);
+   * ```
+   *
+   * @param {boolean} false if the compiler may ignore directives on comments
+   * @returns {number|object} the current value (or `this` if called as a setter for chaining)
+   */
+  this.commentDirectivesEnabled = function(value) {
+    if (arguments.length) {
+      COMMENT_DIRECTIVES_ENABLED = value;
+      return this;
+    }
+    return COMMENT_DIRECTIVES_ENABLED;
+  };
+
+
+  var CSS_CLASS_DIRECTIVES_ENABLED = true;
+  /**
+   * @ngdoc method
+   * @name $compileProvider#cssClassDirectivesEnabled
+   * @description
+   *
+   * It indicates to the compiler
+   * whether or not directives on element classes should be compiled.
+   * Defaults to `true`.
+   *
+   * Calling this function with false disables the compilation of directives
+   * on element classes for the whole application.
+   * This results in a compilation performance gain,
+   * as the compiler doesn't have to check element classes when looking for directives.
+   * This should however only be used if you are sure that no class directives are used in the application
+   * (including any 3rd party directives).
+   *
+   * Example:
+   *
+   * ```
+   * $compileProvider.cssClassDirectivesEnabled(false);
+   * ```
+   *
+   * @param {boolean} false if the compiler may ignore directives on element classes
+   * @returns {number|object} the current value (or `this` if called as a setter for chaining)
+   */
+  this.cssClassDirectivesEnabled = function(value) {
+    if (arguments.length) {
+      CSS_CLASS_DIRECTIVES_ENABLED = value;
+      return this;
+    }
+    return CSS_CLASS_DIRECTIVES_ENABLED;
+  };
+
   this.$get = [
             '$injector', '$interpolate', '$exceptionHandler', '$templateRequest', '$parse',
             '$controller', '$rootScope', '$sce', '$animate', '$$sanitizeUri',
@@ -1395,6 +1464,9 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
     var SIMPLE_ATTR_NAME = /^\w/;
     var specialAttrHolder = window.document.createElement('div');
 
+
+    var commentDirectivesEnabled = COMMENT_DIRECTIVES_ENABLED;
+    var cssClassDirectivesEnabled = CSS_CLASS_DIRECTIVES_ENABLED;
 
 
     var onChangesTtl = TTL;
@@ -2026,6 +2098,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           }
 
           // use class as directive
+          if (!cssClassDirectivesEnabled) break;
           className = node.className;
           if (isObject(className)) {
               // Maybe SVGAnimatedString
@@ -2052,6 +2125,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           addTextInterpolateDirective(directives, node.nodeValue);
           break;
         case NODE_TYPE_COMMENT: /* Comment */
+          if (!commentDirectivesEnabled) break;
           collectCommentDirectives(node, directives, attrs, maxPriority, ignoreDirective);
           break;
       }
