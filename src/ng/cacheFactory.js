@@ -382,7 +382,7 @@ function $CacheFactoryProvider() {
  *   $templateCache.put('templateId.html', 'This is the content of the template');
  * });
  * ```
- *  To retrieve the template via Javascript:
+ *  To retrieve the template later via Javascript:
  * ```js
  * $templateCache.get('templateId.html')
  * ```
