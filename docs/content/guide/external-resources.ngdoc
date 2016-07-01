@@ -1,7 +1,9 @@
 @ngdoc overview
 @name External Resources
-@sortOrder 560
+@sortOrder 205
 @description
+
+# External Angular 1 Resources
 
 This is a collection of external, 3rd party resources for learning and developing Angular.
 
@@ -19,15 +21,14 @@ This is a collection of external, 3rd party resources for learning and developin
 
 #### Application Structure & Style Guides
 
+* [Angular Styleguide](https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md)
 * [Architecture, file structure, components, one-way dataflow and best practices](https://github.com/toddmotto/angular-styleguide)
-* [Angular Styleguide](https://github.com/johnpapa/angular-styleguide)
 * [When to use directives, controllers or services](http://kirkbushell.me/when-to-use-directives-controllers-or-services-in-angular/)
 * [Service vs Factory](http://blog.thoughtram.io/angular/2015/07/07/service-vs-factory-once-and-for-all.html)
 
 #### Testing
 
-* **Unit testing:** [Karma](http://karma-runner.github.io), [Using Karma (video)](http://www.youtube.com/watch?v=YG5DEzaQBIc), {@link guide/unit-testing Unit testing}, {@link guide/services#unit-testing Testing services}, [Karma in Webstorm](http://blog.jetbrains.com/webstorm/2013/10/running-javascript-tests-with-karma-in-webstorm-7/)
-* **End-to-End Testing:** [Protractor](https://github.com/angular/protractor)
+* **Unit testing:** [Using Karma (video)](http://www.youtube.com/watch?v=YG5DEzaQBIc), [Karma in Webstorm](http://blog.jetbrains.com/webstorm/2013/10/running-javascript-tests-with-karma-in-webstorm-7/)
 
 #### Mobile
 
@@ -79,7 +80,7 @@ This is a collection of external, 3rd party resources for learning and developin
 ## Complementary Libraries
 
 This is a list of libraries that enhance Angular, add common UI components or integrate with other libraries.
-You can find a full list of Angular external libraries at [ngmodules.org](http://ngmodules.org/).
+You can find a larger list of Angular external libraries at [ngmodules.org](http://ngmodules.org/).
 
 * **Advanced Routing:** [UI-Router](https://github.com/angular-ui/ui-router)
 * **Authentication:** [Http Auth Interceptor](https://github.com/witoldsz/angular-http-auth)
@@ -98,6 +99,12 @@ You can find a full list of Angular external libraries at [ngmodules.org](http:/
 * **Fileupload:**
   - [ng-file-upload](https://github.com/danialfarid/ng-file-upload)
   - [blueimp-fileupload for Angular](https://blueimp.github.io/jQuery-File-Upload/angularjs.html)
+* **General UI Libraries:**
+  - [Angular Material](https://material.angularjs.org/latest/)
+  - [Angular UI Bootstrap](http://angular-ui.github.io/)
+  - [AngularStrap for Bootstrap 3](http://mgcrea.github.io/angular-strap/)
+  - [KendoUI](http://kendo-labs.github.io/angular-kendo/#/)
+  - [Wijmo](http://wijmo.com/tag/angularjs-2/)
 * **Specific UI Elements:**
   - [ngInfiniteScroll](https://sroze.github.io/ngInfiniteScroll/)
   - [ngTable](https://github.com/esvit/ng-table)
@@ -106,12 +113,6 @@ You can find a full list of Angular external libraries at [ngmodules.org](http:/
   - [textAngular Rich Text Editor / contenteditable](http://textangular.com/) (Rich Text Editor /
     binding to contenteditable)
   - [Angular UI Map (Google Maps)](https://github.com/angular-ui/ui-map)
-* **General UI Libraries:**
-  - [AngularStrap for Bootstrap 3](http://mgcrea.github.io/angular-strap/)
-  - [Angular Material](https://material.angularjs.org/latest/)
-  - [Angular UI Bootstrap](http://angular-ui.github.io/)
-  - [KendoUI](http://kendo-labs.github.io/angular-kendo/#/)
-  - [Wijmo](http://wijmo.com/tag/angularjs-2/)
 
 ## General Learning Resources
 
