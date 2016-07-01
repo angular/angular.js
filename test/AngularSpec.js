@@ -659,7 +659,7 @@ describe('angular', function() {
     });
   });
 
-  fdescribe("extendWith", function() {
+  describe("extendWith", function() {
 
     it('should extend with the customized reducer', function() {
       var reducer = function(dstValue, srcValue) {
