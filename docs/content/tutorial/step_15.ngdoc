@@ -5,12 +5,10 @@
 
 <ul doc-tutorial-nav="15"></ul>
 
-In this step, we will learn how to fix the accessibility issues in our application.
+In this step, we will learn how to fix the accessibility issues in the application.
 
 * We will fix some issues in the templates.
 * We will use the [protractor-accessibility-plugin](protractor-a11y-plugin) to review the accessibility of our application when we run our e2e tests.
-* We will explain how to add the {@link ngAria ngAria} module to use WAI-ARIA easily 
-if you need it in your project.
 
 <div doc-tutorial-reset="15"></div>
 
@@ -27,7 +25,7 @@ to consume the content in a way that suits their needs.
 * [Notes On Client-Rendered Accessibility](https://www.smashingmagazine.com/2015/05/client-rendered-accessibility/)
 * [Apps For All: Coding Accessible Web Applications](https://shop.smashingmagazine.com/products/apps-for-all)
 
-## WAI-ARIA
+## About WAI-ARIA
 
 WAI-ARIA (_the Accessible Rich Internet Applications Suite_) is a standard set of attributes used
 to fill accessibility support gaps in custom HTML elements and SVG.
@@ -85,104 +83,15 @@ to tell the user how many elements are after the action.
 The new element is a _live region_. It means that every time this region is updated, 
 it will inform the user about its content.
 
-In order to update the information correctly, it is neccesary to add a _`debounce`_ option
+In order to update the information correctly, it is neccesary to add a [_`debounce`_](https://docs.angularjs.org/api/ng/directive/ngModelOptions) option
 to the model.
 
 Please note that now the inputs are associated with theirs labels using `label` elements.
 
 The directives are based on an idea of [Marcy Sutton](http://marcysutton.com/slides/fluent2015/) about how to add accessibility in the AngularJS applications.
 
+[You can learn more about directives, following the AngularJS guide](https://docs.angularjs.org/guide/directive).
 
-### How to use the directives
-
-<br />
-**`app/phone-list/phone-list-template.html`:**
-
-```html
-
-  ...
-  
-  <div>
-    <label for="order">Sort by:</label>
-    <select inform-order id="order" ng-model="$ctrl.orderProp">
-      <option value="name">Alphabetical</option>
-      <option value="age">Newest</option>
-    </select>
-  </div>
-
-  ...
-
-  <ul result-list class="phones">
-    <li ng-repeat="phone in filtered = ($ctrl.phones | filter:$ctrl.query | orderBy:$ctrl.orderProp)"
-        class="thumbnail phone-list-item">
-      <a href="#!/phones/{{phone.id}}" class="thumb">
-        <img ng-src="{{phone.imageUrl}}" alt="{{phone.name}}" />
-      </a>
-      <a href="#!/phones/{{phone.id}}">{{phone.name}}</a>
-      <p>{{phone.snippet}}</p>
-    </li>
-  </ul>
-
-```
-
-<br />
-**`app/index.html`:**
-
-```html
-  ...
-  <script src="phone-list/phone-list.directive.js"></script>
-  ...
-```
-
-
-<br />
-**`app/phone-list/phone-list.directive.js`:**
-
-```js
-
-'use strict';
-
-/* Directives */
-
-angular.
-  module('phoneList').
-  directive('resultList', [function () {
-    var ariaStatus = document.querySelector('.aria-status');
-    return {
-      restrict: 'A',
-      link: function ($scope) {
-        $scope.$watch('filtered.length', function (length) {
-          if(length === 1) {
-            ariaStatus.innerHTML = length + ' item found';
-          } else if(length > 1) {
-            ariaStatus.innerHTML = length + ' items found';
-          } else {
-            ariaStatus.innerHTML = 'No items found';
-          }
-        });
-      }
-    }
-}
-]).
-  directive('informOrder', [function () {
-      var ariaStatusSort = document.querySelector('.aria-status-sort');
-      return {
-        restrict: 'A',
-        link: function ($scope) {
-          $scope.$watch('$ctrl.orderProp', function (order) {
-            if(order === 'age') {
-              ariaStatusSort.innerHTML = 'Items filter by newest'
-            } else {
-              ariaStatusSort.innerHTML = 'Items filter by alphabetical order'
-            }
-            
-          });
-        }
-      }
-  }
-]);
-
-```
 
 ## Using the keyboard
 
@@ -212,79 +121,7 @@ the user to access the content via keyboard.
 Why we are using a `button` element instead of an `a` element? 
 Because it does not navigate to a new page or resource.
 
-
-## How to use the `ngAria` module
-
-The `ngAria` module provides support for common WAI-ARIA attributes that convey state 
-or semantic information about the application for users of assistive technologies, 
-such as screen readers.
-
-### Dependencies
-
-The `ngAria` module, is distributed separately from the core Angular framework. 
-
-Since we are using [Bower][bower] to install client-side dependencies, 
-this step updates the `bower.json` configuration file to include the new dependencies:
-
-<br />
-**`bower.json`:**
-
-```
-{
-  "name": "angular-phonecat",
-  "description": "A starter project for AngularJS",
-  "version": "0.0.0",
-  "homepage": "https://github.com/angular/angular-phonecat",
-  "license": "MIT",
-  "private": true,
-  "dependencies": {
-    "angular": "1.5.x",
-    "angular-animate": "1.5.x",
-    "angular-aria": "1.5.x",
-    "angular-mocks": "1.5.x",
-    "angular-resource": "1.5.x",
-    "angular-route": "1.5.x",
-    "bootstrap": "3.3.x",
-    "jquery": "2.2.x"
-  }
-}
-```
-
-* `"angular-aria": "1.5.x"` tells bower to install a version of the angular-aria module
- that is compatible with version 1.5.x of Angular.
-
-We need to add a dependency on `ngAria` to our main module first:
-
-<br />
-**`app/app.module.js`:**
-
-```js
-  angular.
-    module('phonecatApp', [
-      ...
-      'ngAria',
-      ...
-    ]);
-```
-
-In order to enable the module, we need to update `index.html`, loading the necessary dependencies
-(**angular-aria.js**) that contain JavaScript code. 
-
-The WAI-ARIA module, {@link ngAria ngAria}, contains the code necessary to help you 
-to add WAI-ARIA attributes in your application.
-
-<br />
-**`app/index.html`:**
-
-```html
-  ...
-  <!-- Adds WAI-ARIA module in AngularJS -->
-  <script src="bower_components/angular-aria/angular-aria.js"></script>
-  ...
-```
-
 ## How to run the e2e tests using the Protractor accessibility plugin
-
 
 Once we install the plugin, every time we run the e2e tests, 
 Protractor will review the accessibility of your application.
