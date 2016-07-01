@@ -27,6 +27,7 @@
   nextUid: true,
   setHashKey: true,
   extend: true,
+  extendWith: true,
   toInt: true,
   inherit: true,
   merge: true,
