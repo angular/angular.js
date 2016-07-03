@@ -36,11 +36,18 @@ describe('$compile', function() {
     return children;
   }
 
-  var element, directive, $compile, $rootScope;
+  var element, directive, $compile, $rootScope, enableCommentDirectives, enableCssDirectives;
 
   beforeEach(module(provideLog, function($provide, $compileProvider) {
     element = null;
     directive = $compileProvider.directive;
+
+    enableCommentDirectives = function() {
+      $compileProvider.commentDirectivesEnabled(true);
+    };
+    enableCssDirectives = function() {
+      $compileProvider.cssDirectivesEnabled(true);
+    };
 
     directive('log', function(log) {
       return {
@@ -562,6 +569,7 @@ describe('$compile', function() {
 
 
       it('should allow directives in classes', inject(function($compile, $rootScope, log) {
+        enableCssDirectives(); // testing css directives
         element = $compile('<div class="greet: angular; log:123;"></div>')($rootScope);
         expect(element.html()).toEqual('Hello angular');
         expect(log).toEqual('123');
@@ -569,6 +577,7 @@ describe('$compile', function() {
 
 
       it('should allow directives in SVG element classes', inject(function($compile, $rootScope, log) {
+        enableCssDirectives(); // testing css directives
         if (!window.SVGElement) return;
         element = $compile('<svg><text class="greet: angular; log:123;"></text></svg>')($rootScope);
         var text = element.children().eq(0);
@@ -592,6 +601,7 @@ describe('$compile', function() {
       it('should receive scope, element, and attributes', function() {
         var injector;
         module(function() {
+          enableCssDirectives(); // test log as css directive
           directive('log', function($injector, $rootScope) {
             injector = $injector;
             return {
@@ -751,6 +761,7 @@ describe('$compile', function() {
           inject(function($rootScope, $compile, log) {
             // class is processed after attrs, so putting log in class will put it after
             // the stop in the current level. This proves that the log runs after stop
+            enableCssDirectives(); // tests medium-log as css directive
             element = $compile(
               '<div high-log medium-stop log class="medium-log"><a set="FAIL">OK</a></div>')($rootScope);
             expect(element.text()).toEqual('OK');
@@ -764,6 +775,8 @@ describe('$compile', function() {
 
         it('should allow restriction of availability', function() {
           module(function() {
+            enableCssDirectives();      // tests all kinds of directives
+            enableCommentDirectives();  // css and comment
             forEach({div: 'E', attr: 'A', clazz: 'C', comment: 'M', all: 'EACM'},
                 function(restrict, name) {
               directive(name, function(log) {
@@ -777,7 +790,7 @@ describe('$compile', function() {
             });
           });
           inject(function($rootScope, $compile, log) {
-            dealoc($compile('<span div class="div"></span>')($rootScope));
+              dealoc($compile('<span div class="div"></span>')($rootScope));
             expect(log).toEqual('');
             log.reset();
 
@@ -933,6 +946,7 @@ describe('$compile', function() {
 
 
         it('should compile template when replacing', inject(function($compile, $rootScope, log) {
+          enableCssDirectives(); // replace uses css directives that logs
           element = $compile('<div><div replace medium-log>ignore</div><div>')($rootScope);
           $rootScope.$digest();
           expect(element.text()).toEqual('Replace!');
@@ -941,6 +955,7 @@ describe('$compile', function() {
 
 
         it('should compile template when appending', inject(function($compile, $rootScope, log) {
+          enableCssDirectives(); // append uses css directives that logs
           element = $compile('<div><div append medium-log>ignore</div><div>')($rootScope);
           $rootScope.$digest();
           expect(element.text()).toEqual('Append!');
@@ -1015,6 +1030,7 @@ describe('$compile', function() {
 
 
         it('should prevent multiple templates per element', inject(function($compile) {
+          enableCssDirectives(); // replace is used as css directive
           try {
             $compile('<div><span replace class="replace"></span></div>');
             this.fail(new Error('should have thrown Multiple directives error'));
@@ -1451,6 +1467,7 @@ describe('$compile', function() {
 
         it('should not load cross domain templates by default', inject(
           function($compile, $rootScope) {
+            enableCssDirectives(); // crossDomainTemplate is used as css directive
             expect(function() {
               $compile('<div class="crossDomainTemplate"></div>')($rootScope);
             }).toThrowMinErr('$sce', 'insecurl', 'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: http://example.com/should-not-load.html');
@@ -1459,6 +1476,7 @@ describe('$compile', function() {
 
         it('should trust what is already in the template cache', inject(
           function($compile, $httpBackend, $rootScope, $templateCache) {
+            enableCssDirectives(); // crossDomainTemplate is used as css directive
             $httpBackend.expect('GET', 'http://example.com/should-not-load.html').respond('<span>example.com/remote-version</span>');
             $templateCache.put('http://example.com/should-not-load.html', '<span>example.com/cached-version</span>');
             element = $compile('<div class="crossDomainTemplate"></div>')($rootScope);
@@ -1470,6 +1488,7 @@ describe('$compile', function() {
 
         it('should load cross domain templates when trusted', inject(
           function($compile, $httpBackend, $rootScope, $sce) {
+            enableCssDirectives(); // trustedTemplate is used as css directive
             $httpBackend.expect('GET', 'http://example.com/trusted-template.html').respond('<span>example.com/trusted_template_contents</span>');
             element = $compile('<div class="trustedTemplate"></div>')($rootScope);
             expect(sortedHtml(element)).
@@ -1482,6 +1501,7 @@ describe('$compile', function() {
 
         it('should append template via $http and cache it in $templateCache', inject(
             function($compile, $httpBackend, $templateCache, $rootScope, $browser) {
+              enableCssDirectives(); // cau is used as css directive
               $httpBackend.expect('GET', 'hello.html').respond('<span>Hello!</span> World!');
               $templateCache.put('cau.html', '<span>Cau!</span>');
               element = $compile('<div><b class="hello">ignore</b><b class="cau">ignore</b></div>')($rootScope);
@@ -1506,6 +1526,7 @@ describe('$compile', function() {
 
         it('should inline template via $http and cache it in $templateCache', inject(
             function($compile, $httpBackend, $templateCache, $rootScope) {
+              enableCssDirectives(); // i-cau is used as css directive
               $httpBackend.expect('GET', 'hello.html').respond('<span>Hello!</span>');
               $templateCache.put('cau.html', '<span>Cau!</span>');
               element = $compile('<div><b class=i-hello>ignore</b><b class=i-cau>ignore</b></div>')($rootScope);
@@ -1525,6 +1546,7 @@ describe('$compile', function() {
 
         it('should compile, link and flush the template append', inject(
             function($compile, $templateCache, $rootScope, $browser) {
+              enableCssDirectives(); // hello is used as css directive
               $templateCache.put('hello.html', '<span>Hello, {{name}}!</span>');
               $rootScope.name = 'Elvis';
               element = $compile('<div><b class="hello"></b></div>')($rootScope);
@@ -1539,6 +1561,7 @@ describe('$compile', function() {
 
         it('should compile, link and flush the template inline', inject(
             function($compile, $templateCache, $rootScope) {
+              enableCssDirectives(); // i-hello is used as css directive
               $templateCache.put('hello.html', '<span>Hello, {{name}}!</span>');
               $rootScope.name = 'Elvis';
               element = $compile('<div><b class=i-hello></b></div>')($rootScope);
@@ -1552,6 +1575,7 @@ describe('$compile', function() {
 
         it('should compile, flush and link the template append', inject(
             function($compile, $templateCache, $rootScope) {
+              enableCssDirectives(); // hello is used as css directive
               $templateCache.put('hello.html', '<span>Hello, {{name}}!</span>');
               $rootScope.name = 'Elvis';
               var template = $compile('<div><b class="hello"></b></div>');
@@ -1567,6 +1591,7 @@ describe('$compile', function() {
 
         it('should compile, flush and link the template inline', inject(
             function($compile, $templateCache, $rootScope) {
+              enableCssDirectives(); // iHello is used as css directive
               $templateCache.put('hello.html', '<span>Hello, {{name}}!</span>');
               $rootScope.name = 'Elvis';
               var template = $compile('<div><b class=i-hello></b></div>');
@@ -1581,6 +1606,7 @@ describe('$compile', function() {
 
         it('should compile template when replacing element in another template',
             inject(function($compile, $templateCache, $rootScope) {
+          enableCssDirectives(); // hello is used as css directive
           $templateCache.put('hello.html', '<div replace></div>');
           $rootScope.name = 'Elvis';
           element = $compile('<div><b class="hello"></b></div>')($rootScope);
@@ -1607,6 +1633,7 @@ describe('$compile', function() {
         it('should resolve widgets after cloning in append mode', function() {
           module(function($exceptionHandlerProvider) {
             $exceptionHandlerProvider.mode('log');
+            enableCssDirectives(); // hello,cau,cError,lError are used as css directive
           });
           inject(function($compile, $templateCache, $rootScope, $httpBackend, $browser,
                    $exceptionHandler) {
@@ -1647,6 +1674,7 @@ describe('$compile', function() {
         it('should resolve widgets after cloning in append mode without $templateCache', function() {
           module(function($exceptionHandlerProvider) {
             $exceptionHandlerProvider.mode('log');
+            enableCssDirectives(); // cau is used as css directive
           });
           inject(function($compile, $templateCache, $rootScope, $httpBackend, $browser,
                           $exceptionHandler) {
@@ -1674,6 +1702,7 @@ describe('$compile', function() {
         it('should resolve widgets after cloning in inline mode', function() {
           module(function($exceptionHandlerProvider) {
             $exceptionHandlerProvider.mode('log');
+            enableCssDirectives(); // iHello,iCau,iCError,iLError as css directive
           });
           inject(function($compile, $templateCache, $rootScope, $httpBackend, $browser,
                    $exceptionHandler) {
@@ -1717,6 +1746,7 @@ describe('$compile', function() {
           });
           inject(function($compile, $templateCache, $rootScope, $httpBackend, $browser,
                           $exceptionHandler) {
+            enableCssDirectives(); // iCau is used as css directive
             $httpBackend.expect('GET', 'cau.html').respond('<span>{{name}}</span>');
             $rootScope.name = 'Elvis';
             var template = $compile('<div class="i-cau"></div>');
@@ -1741,6 +1771,7 @@ describe('$compile', function() {
 
         it('should be implicitly terminal and not compile placeholder content in append', inject(
             function($compile, $templateCache, $rootScope, log) {
+              enableCssDirectives(); // hello is used as css directive
               // we can't compile the contents because that would result in a memory leak
 
               $templateCache.put('hello.html', 'Hello!');
@@ -1753,6 +1784,7 @@ describe('$compile', function() {
 
         it('should be implicitly terminal and not compile placeholder content in inline', inject(
             function($compile, $templateCache, $rootScope, log) {
+              enableCssDirectives(); // iHello is used as css directive
               // we can't compile the contents because that would result in a memory leak
 
               $templateCache.put('hello.html', 'Hello!');
@@ -1765,6 +1797,7 @@ describe('$compile', function() {
 
         it('should throw an error and clear element content if the template fails to load', inject(
             function($compile, $httpBackend, $rootScope) {
+              enableCssDirectives(); // hello is used as css directive
               $httpBackend.expect('GET', 'hello.html').respond(404, 'Not Found!');
               element = $compile('<div><b class="hello">content</b></div>')($rootScope);
 
@@ -1778,6 +1811,7 @@ describe('$compile', function() {
 
         it('should prevent multiple templates per element', function() {
           module(function() {
+            enableCssDirectives(); // sync and async are css directives // trustedTemplate is used as css directive
             directive('sync', valueFn({
               restrict: 'C',
               template: '<span></span>'
@@ -1961,6 +1995,7 @@ describe('$compile', function() {
 
         it('should work when directive is on the root element', inject(
           function($compile, $httpBackend, $rootScope) {
+            enableCssDirectives(); // hello is used as css directive
             $httpBackend.expect('GET', 'hello.html').
                 respond('<span>3==<span ng-transclude></span></span>');
             element = jqLite('<b class="hello">{{1+2}}</b>');
@@ -1974,6 +2009,7 @@ describe('$compile', function() {
 
         it('should work when directive is in a repeater', inject(
           function($compile, $httpBackend, $rootScope) {
+            enableCssDirectives(); // hello is used as css directive
             $httpBackend.expect('GET', 'hello.html').
                 respond('<span>i=<span ng-transclude></span>;</span>');
             element = jqLite('<div><b class=hello ng-repeat="i in [1,2]">{{i}}</b></div>');
@@ -2510,6 +2546,7 @@ describe('$compile', function() {
 
         it('should correctly create the scope hierachy', inject(
           function($rootScope, $compile, log) {
+            enableCssDirectives(); // log,scope as css directive
             element = $compile(
                 '<div>' + //1
                   '<b class=scope>' + //2
@@ -2529,6 +2566,7 @@ describe('$compile', function() {
         it('should allow more than one new scope directives per element, but directives should share' +
             'the scope', inject(
           function($rootScope, $compile, log) {
+            enableCssDirectives(); // scopeA,scopeB as css directive
             element = $compile('<div class="scope-a; scope-b"></div>')($rootScope);
             expect(log).toEqual('2; 2');
           })
@@ -2536,6 +2574,7 @@ describe('$compile', function() {
 
         it('should not allow more than one isolate scope creation per element', inject(
           function($rootScope, $compile) {
+            enableCssDirectives(); // scopeA,scopeB as css directive
             expect(function() {
               $compile('<div class="iscope-a; scope-b"></div>');
             }).toThrowMinErr('$compile', 'multidir', 'Multiple directives [iscopeA, scopeB] asking for new/isolated scope on: ' +
@@ -2545,6 +2584,7 @@ describe('$compile', function() {
 
         it('should not allow more than one isolate/new scope creation per element regardless of `templateUrl`',
           inject(function($httpBackend) {
+            enableCssDirectives(); // tiscopeA,tiscopeB as css directive
             $httpBackend.expect('GET', 'tiscope.html').respond('<div>Hello, world !</div>');
 
             expect(function() {
@@ -2557,6 +2597,7 @@ describe('$compile', function() {
 
         it('should not allow more than one isolate scope creation per element regardless of directive priority', function() {
           module(function($compileProvider) {
+            enableCssDirectives(); // highPriorityScope is a css directive
             $compileProvider.directive('highPriorityScope', function() {
               return {
                 restrict: 'C',
@@ -2941,6 +2982,7 @@ describe('$compile', function() {
 
           it('should add module name to multidir isolated scope message if directive defined through module', inject(
               function($rootScope, $compile) {
+                enableCssDirectives(); // fakeScope,fakeIScope as css directives
                 expect(function() {
                   $compile('<div class="fake-scope; fake-i-scope"></div>');
                 }).toThrowMinErr('$compile', 'multidir',
@@ -2951,6 +2993,7 @@ describe('$compile', function() {
 
           it('sholdn\'t add module name to multidir isolated scope message if directive is defined directly with $compileProvider', inject(
             function($rootScope, $compile) {
+              enableCssDirectives(); // anonymModuleScopeDirective,fakeIScope as css directives
               expect(function() {
                 $compile('<div class="anonym-module-scope-directive; fake-i-scope"></div>');
               }).toThrowMinErr('$compile', 'multidir',
@@ -3373,6 +3416,76 @@ describe('$compile', function() {
     });
   });
 
+  angular.forEach([
+    { commentEnabled: true, cssEnabled: true },
+    { commentEnabled: true, cssEnabled:false },
+    { commentEnabled:false, cssEnabled: true },
+    { commentEnabled:false, cssEnabled:false }
+  ], function(config) {
+    describe('commentDirectivesEnabled(' + config.commentEnabled + ')', function() {
+      describe('cssDirectivesEnabled(' + config.cssEnabled + ')', function() {
+
+        var collected;
+        beforeEach(module(function($compileProvider) {
+          collected = false;
+          $compileProvider.directive('testCollect', function() {
+            return {
+              restrict: 'EACM',
+              link: function() {
+                collected = true;
+              }
+            };
+          });
+        }));
+
+        beforeEach(module(function($compileProvider) {
+          $compileProvider.commentDirectivesEnabled(config.commentEnabled);
+          $compileProvider.cssDirectivesEnabled(config.cssEnabled);
+        }));
+
+        var $compile, $rootScope;
+        beforeEach(inject(function(_$compile_,_$rootScope_) {
+          $compile = _$compile_;
+          $rootScope = _$rootScope_;
+        }));
+
+        it('should handle comment directives appropriately', function() {
+          var html = '<!-- directive: test-collect -->';
+          element = $compile('<div>' + html + '</div>')($rootScope);
+          expect(collected).toBe(config.commentEnabled);
+        });
+
+        it('should handle css directives appropriately', function() {
+          element = $compile('<div class="test-collect"></div>')($rootScope);
+          expect(collected).toBe(config.cssEnabled);
+        });
+
+        it('should not prevent to compile entity directives', function() {
+          element = $compile('<test-collect></test-collect>')($rootScope);
+          expect(collected).toBe(true);
+        });
+
+        it('should not prevent to compile attribute directives', function() {
+          element = $compile('<span test-collect></span>')($rootScope);
+          expect(collected).toBe(true);
+        });
+
+        it('should not prevent to compile interpolated expressions', function() {
+          element = $compile('<span>{{"text "+"interpolated"}}</span>')($rootScope);
+          $rootScope.$apply();
+          expect(element.text()).toBe('text interpolated');
+        });
+
+        it('should interpolate expressions inside class attribute', function() {
+          $rootScope.interpolateMe = 'interpolated';
+          var html = '<div class="{{interpolateMe}}"></div>';
+          element = $compile(html)($rootScope);
+          $rootScope.$apply();
+          expect(element).toHaveClass('interpolated');
+        });
+      });
+    });
+  });
 
   describe('link phase', function() {
 

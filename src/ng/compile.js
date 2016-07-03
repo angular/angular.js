@@ -1386,6 +1386,61 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
     return TTL;
   };
 
+  var ignoreMDirectives = true;
+  /**
+   * @ngdoc method
+   * @name $compileProvider#commentDirectivesEnabled
+   * @description
+   *
+   * It indicates to the compiler if the current project
+   * does require to use comment directives.
+   *
+   * By default comment directives are disabled,
+   * it allows to the compiler to make optimizations
+   * and skip comments parsing.
+   *
+   * Default value is false
+   *
+   * Example:
+   *
+   * ```
+   * $compileProvider.commentDirectivesEnabled(true);
+   * ```
+   *
+   * @param {boolean} false if the compiler may ignore comment directives
+   */
+  this.commentDirectivesEnabled = function(value) {
+    ignoreMDirectives = !value;
+  };
+
+
+  var ignoreCDirectives = true;
+  /**
+   * @ngdoc method
+   * @name $compileProvider#commentDirectivesEnabled
+   * @description
+   *
+   * It indicates to the compiler if the current project
+   * does require to use css directives.
+   *
+   * By default css directives are disabled,
+   * it allows to the compiler to make optimizations
+   * and skip css class parsing.
+   *
+   * Default value is ‘false’
+   *
+   * Example:
+   *
+   * ```
+   * $compileProvider.cssDirectivesEnabled(true);
+   * ```
+   *
+   * @param {boolean} false if the compiler may ignore comment directives
+   */
+  this.cssDirectivesEnabled = function(value) {
+    ignoreCDirectives = !value;
+  };
+
   this.$get = [
             '$injector', '$interpolate', '$exceptionHandler', '$templateRequest', '$parse',
             '$controller', '$rootScope', '$sce', '$animate', '$$sanitizeUri',
@@ -2026,6 +2081,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           }
 
           // use class as directive
+          if (ignoreCDirectives) break;
           className = node.className;
           if (isObject(className)) {
               // Maybe SVGAnimatedString
@@ -2052,24 +2108,31 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           addTextInterpolateDirective(directives, node.nodeValue);
           break;
         case NODE_TYPE_COMMENT: /* Comment */
-          try {
-            match = COMMENT_DIRECTIVE_REGEXP.exec(node.nodeValue);
-            if (match) {
-              nName = directiveNormalize(match[1]);
-              if (addDirective(directives, nName, 'M', maxPriority, ignoreDirective)) {
-                attrs[nName] = trim(match[2]);
-              }
-            }
-          } catch (e) {
-            // turns out that under some circumstances IE9 throws errors when one attempts to read
-            // comment's node value.
-            // Just ignore it and continue. (Can't seem to reproduce in test case.)
-          }
+          if (ignoreMDirectives) break;
+          collectCommentDirectives(node, directives, attrs, maxPriority, ignoreDirective);
           break;
       }
 
       directives.sort(byPriority);
       return directives;
+    }
+
+    function collectCommentDirectives(node, directives, attrs, maxPriority, ignoreDirective) {
+      // function created because of performance, try/catch disables
+      // the optimization of the whole function #14848
+      try {
+        var match = COMMENT_DIRECTIVE_REGEXP.exec(node.nodeValue);
+        if (match) {
+          var nName = directiveNormalize(match[1]);
+          if (addDirective(directives, nName, 'M', maxPriority, ignoreDirective)) {
+            attrs[nName] = trim(match[2]);
+          }
+        }
+      } catch (e) {
+        // turns out that under some circumstances IE9 throws errors when one attempts to read
+        // comment's node value.
+        // Just ignore it and continue. (Can't seem to reproduce in test case.)
+      }
     }
 
     /**
