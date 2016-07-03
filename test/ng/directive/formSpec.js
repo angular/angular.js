@@ -2,9 +2,13 @@
 'use strict';
 
 describe('form', function() {
-  var doc, control, scope, $compile, changeInputValue;
+  var doc, control, scope, $compile, changeInputValue, enableCssDirectives;
 
   beforeEach(module(function($compileProvider) {
+    enableCssDirectives = function() {
+      $compileProvider.cssDirectivesEnabled(true);
+    };
+
     $compileProvider.directive('storeModelCtrl', function() {
       return {
         require: 'ngModel',
@@ -529,6 +533,7 @@ describe('form', function() {
 
 
     it('should deregister a child form when its DOM is removed', function() {
+      enableCssDirectives(); // test ng-form as css directive
       doc = jqLite(
         '<form name="parent">' +
           '<div class="ng-form" name="child">' +
@@ -553,6 +558,7 @@ describe('form', function() {
 
 
     it('should deregister a child form whose name is an expression when its DOM is removed', function() {
+      enableCssDirectives(); // test ng-form as css directive
       doc = jqLite(
         '<form name="parent">' +
           '<div class="ng-form" name="child.form">' +
@@ -577,6 +583,7 @@ describe('form', function() {
 
 
     it('should deregister a input when it is removed from DOM', function() {
+      enableCssDirectives(); // test ng-form as css directive
       doc = jqLite(
         '<form name="parent">' +
           '<div class="ng-form" name="child">' +
@@ -630,6 +637,7 @@ describe('form', function() {
     });
 
     it('should deregister a input that is $pending when it is removed from DOM', function() {
+      enableCssDirectives(); // test ng-form as css directive
       doc = jqLite(
         '<form name="parent">' +
           '<div class="ng-form" name="child">' +
@@ -666,6 +674,7 @@ describe('form', function() {
 
 
     it('should leave the parent form invalid when deregister a removed input', function() {
+      enableCssDirectives(); // test ng-form as css directive
       doc = jqLite(
         '<form name="parent">' +
           '<div class="ng-form" name="child">' +
@@ -1065,6 +1074,7 @@ describe('form', function() {
     });
 
     it('should trigger setUntouched on form controls with nested forms', function() {
+      enableCssDirectives(); // test ng-form as css directive
       var form = $compile(
           '<form name="myForm">' +
             '<div class="ng-form" name="childForm">' +

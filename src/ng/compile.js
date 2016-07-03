@@ -1386,7 +1386,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
     return TTL;
   };
 
-  var ignoreMDirectives = false;
+  var ignoreMDirectives = true;
   /**
    * @ngdoc method
    * @name $compileProvider#commentDirectivesEnabled
@@ -1395,16 +1395,16 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
    * It indicates to the compiler if the current project
    * does require to use comment directives.
    *
-   * If comment directives are disabled
+   * By default comment directives are disabled,
    * it allows to the compiler to make optimizations
    * and skip comments parsing.
    *
-   * Default value is ‘true’
+   * Default value is false
    *
    * Example:
    *
    * ```
-   * $compileProvider.commentDirectivesEnabled(false);
+   * $compileProvider.commentDirectivesEnabled(true);
    * ```
    *
    * @param {boolean} false if the compiler may ignore comment directives
@@ -1414,7 +1414,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
   };
 
 
-  var ignoreCDirectives = false;
+  var ignoreCDirectives = true;
   /**
    * @ngdoc method
    * @name $compileProvider#commentDirectivesEnabled
@@ -1423,16 +1423,16 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
    * It indicates to the compiler if the current project
    * does require to use css directives.
    *
-   * If css directives are disabled
+   * By default css directives are disabled,
    * it allows to the compiler to make optimizations
    * and skip css class parsing.
    *
-   * Default value is ‘true’
+   * Default value is ‘false’
    *
    * Example:
    *
    * ```
-   * $compileProvider.cssDirectivesEnabled(false);
+   * $compileProvider.cssDirectivesEnabled(true);
    * ```
    *
    * @param {boolean} false if the compiler may ignore comment directives
