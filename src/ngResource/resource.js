@@ -591,7 +591,7 @@ angular.module('ngResource', ['ng']).
 
           // set params - delegate param encoding to $http
           forEach(params, function(value, key) {
-            if (!self.urlParams[key]) {
+            if (!self.urlParams.hasOwnProperty(key)) {
               config.params = config.params || {};
               config.params[key] = value;
             }
