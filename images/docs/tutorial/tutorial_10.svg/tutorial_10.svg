@@ -27,17 +27,17 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="1458"
+     inkscape:window-width="1460"
      inkscape:window-height="841"
      id="namedview3683"
      showgrid="false"
      inkscape:zoom="0.9721519"
      inkscape:cx="318.71745"
      inkscape:cy="345.625"
-     inkscape:window-x="70"
+     inkscape:window-x="68"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
-     inkscape:current-layer="g3434"
+     inkscape:current-layer="g3440"
      inkscape:snap-bbox="false"
      inkscape:bbox-nodes="false">
     <inkscape:grid
@@ -52,7 +52,7 @@
     <dc:format>image/svg+xml</dc:format>
     <dc:type
        rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-    <dc:title></dc:title>
+    <dc:title />
   </cc:Work>
 </rdf:RDF>
 </metadata>
@@ -873,10 +873,10 @@
         <image
            sodipodi:absref="C:\Datafiles\Dev\AngularJS\angular.js\images\docs\tutorial\tutorial_10.svg\image10.png"
            xlink:href="image10.png"
-           id="image3650"
-           height="250"
+           transform="translate(520,28)"
            width="217"
-           transform="translate(520,28)" />
+           height="250"
+           id="image3650" />
       </g>
       <use
          id="use3646"
@@ -1197,13 +1197,13 @@
            sodipodi:linespacing="125%"
            id="text4962"
            y="24.633343"
-           x="162.71861"
+           x="159.5186"
            style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:12px;line-height:125%;font-family:'Courier New';-inkscape-font-specification:'Courier New, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
            xml:space="preserve"><tspan
-             y="24.633343"
-             x="162.71861"
-             id="tspan4964"
-             sodipodi:role="line">phoneList component</tspan></text>
+             sodipodi:role="line"
+             id="tspan3919"
+             x="159.5186"
+             y="24.633343">phoneDetail component</tspan></text>
       </g>
       <g
          id="g5196"
@@ -1354,7 +1354,7 @@
              sodipodi:role="line"
              id="tspan8160"
              x="384.30206"
-             y="-28.56875"></tspan></text>
+             y="-28.56875" /></text>
       </g>
       <g
          id="g7990"
