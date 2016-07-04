@@ -240,13 +240,13 @@ describe('angular', function() {
       }
     });
 
-    it("should handle Uint8Array subarray", function() {
-      if (typeof Uint8Array !== 'undefined') {
-        var arr = new Uint8Array(4);
+    it("should handle Uint16Array subarray", function() {
+      if (typeof Uint16Array !== 'undefined') {
+        var arr = new Uint16Array(4);
         arr[1] = 1;
         var src = arr.subarray(1, 2);
         var dst = copy(src);
-        expect(dst instanceof Uint8Array).toBeTruthy();
+        expect(dst instanceof Uint16Array).toBeTruthy();
         expect(dst.length).toEqual(1);
         expect(dst[0]).toEqual(1);
         expect(dst).not.toBe(src);
