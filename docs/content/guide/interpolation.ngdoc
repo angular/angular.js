@@ -106,6 +106,19 @@ can be used with `ngAttr` instead. The following is a list of known problematic 
 - **type** in `<button>` in Internet Explorer 11 (see [issue 14117](https://github.com/angular/angular.js/issues/5025))
 - **value** in `<progress>` in Internet Explorer = 11 (see [issue 7218](https://github.com/angular/angular.js/issues/7218))
 
+## Known Issues
+
+### Dynamically changing an interpolated value
+
+You should avoid dynamically changing the content of an interpolated string (e.g. attribute value
+or text node). Your changes are likely to be overwriten, when the original string gets evaluated.
+This restriction applies to both directly changing the content via JavaScript or indirectly using a
+directive.
+
+For example, you should not use interpolation in the value of the `style` attribute (e.g.
+`style="color: {{ 'orange' }}; font-weight: {{ 'bold' }};"`) **and** at the same time use a
+directive that changes the content of that attributte, such as `ngStyle`.
+
 ### Embedding interpolation markup inside expressions
 
 <div class="alert alert-danger">
@@ -144,14 +157,3 @@ interpolation markup and not data.
 - It impacts performance, as interpolation adds another watcher to the scope.
 - Since this is not recommended usage, we do not test for this, and changes to
 Angular core may break your code.
-
-## Known Issues
-
-You should avoid dynamically changing the content of an interpolated string (e.g. attribute value
-or text node). Your changes are likely to be overwriten, when the original string gets evaluated.
-This restriction applies to both directly changing the content via JavaScript or indirectly using a
-directive.
-
-For example, you should not use interpolation in the value of the `style` attribute (e.g.
-`style="color: {{ 'orange' }}; font-weight: {{ 'bold' }};"`) **and** at the same time use a
-directive that changes the content of that attributte, such as `ngStyle`.
