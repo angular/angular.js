@@ -119,8 +119,8 @@ Yeah, you guessed it: There is a better way!
 
 Each feature/section, will declare its own module and have all related entities registered there.
 The main module (`phonecatApp`) will declare a dependency on each feature/section module. Now,
-all it takes to reuse the same code on new project is copying the feature directory over and adding
-the feature module as a dependency in the new project's main module.
+all it takes to reuse the same code on a new project is copying the feature directory over and
+adding the feature module as a dependency in the new project's main module.
 
 Here is what our `phoneList` feature will look like after this change:
 
