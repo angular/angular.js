@@ -136,6 +136,30 @@ describe('select', function() {
 
   });
 
+  it('should not add options to the select if ngModel is not present', inject(function($rootScope) {
+    var scope = $rootScope;
+    scope.d = 'd';
+    scope.e = 'e';
+    scope.f = 'f';
+
+    compile('<select>' +
+      '<option ng-value="\'a\'">alabel</option>' +
+      '<option value="b">blabel</option>' +
+      '<option >c</option>' +
+      '<option ng-value="d">dlabel</option>' +
+      '<option value="{{e}}">elabel</option>' +
+      '<option>{{f}}</option>' +
+    '</select>');
+
+    var selectCtrl = element.controller('select');
+
+    expect(selectCtrl.hasOption('a')).toBe(false);
+    expect(selectCtrl.hasOption('b')).toBe(false);
+    expect(selectCtrl.hasOption('c')).toBe(false);
+    expect(selectCtrl.hasOption('d')).toBe(false);
+    expect(selectCtrl.hasOption('e')).toBe(false);
+    expect(selectCtrl.hasOption('f')).toBe(false);
+  }));
 
   describe('select-one', function() {
 
