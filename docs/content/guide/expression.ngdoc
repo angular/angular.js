@@ -42,7 +42,7 @@ Angular expressions are like JavaScript expressions with the following differenc
   * **No Object Creation With New Operator:** You cannot use `new` operator in an Angular expression.
 
   * **No Bitwise, Comma, And Void Operators:** You cannot use
-  [Bitwise](https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Operators/Bitwise_Operators),
+  [Bitwise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Bitwise_Operators),
   `,` or `void` operators in an Angular expression.
 
 
