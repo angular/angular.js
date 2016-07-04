@@ -491,6 +491,18 @@ describe("basic usage", function() {
   });
 
 
+  it('should deep-merge custom actions with default actions', function() {
+    $httpBackend.when('GET', '/foo').respond({invokedMethod: 'get'});
+    $httpBackend.when('POST', '/foo').respond({invokedMethod: 'post'});
+
+    var Resource = $resource('/foo', {}, {save: {timeout: 10000}});
+    var response = Resource.save();
+
+    $httpBackend.flush();
+    expect(response.invokedMethod).toEqual('post');
+  });
+
+
   it("should read partial resource", function() {
     $httpBackend.expect('GET', '/CreditCard').respond([{id:{key:123}}]);
     var ccs = CreditCard.query();

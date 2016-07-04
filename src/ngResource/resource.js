@@ -132,7 +132,7 @@ function shallowClearAndCopy(src, dst) {
  *   Note that the parameter will be ignored, when calling a "GET" action method (i.e. an action
  *   method that does not accept a request body)
  *
- * @param {Object.<Object>=} actions Hash with declaration of custom actions that should extend
+ * @param {Object.<Object>=} actions Hash with declaration of custom actions that should be merged with
  *   the default set of resource actions. The declaration should be created in the format of {@link
  *   ng.$http#usage $http.config}:
  *
@@ -516,6 +516,7 @@ angular.module('ngResource', ['ng']).
       var noop = angular.noop,
           forEach = angular.forEach,
           extend = angular.extend,
+          merge = angular.merge,
           copy = angular.copy,
           isFunction = angular.isFunction,
           encodeUriQuery = angular.$$encodeUriQuery,
@@ -603,7 +604,7 @@ angular.module('ngResource', ['ng']).
       function resourceFactory(url, paramDefaults, actions, options) {
         var route = new Route(url, options);
 
-        actions = extend({}, provider.defaults.actions, actions);
+        actions = merge({}, provider.defaults.actions, actions);
 
         function extractParams(data, actionParams) {
           var ids = {};
