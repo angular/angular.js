@@ -535,7 +535,7 @@ angular.module('ngResource', ['ng']).
             encodedVal,
             protocolAndDomain = '';
 
-          var urlParams = self.urlParams = {};
+          var urlParams = self.urlParams = Object.create(null);
           forEach(url.split(/\W/), function(param) {
             if (param === 'hasOwnProperty') {
               throw $resourceMinErr('badname', "hasOwnProperty is not a valid parameter name.");

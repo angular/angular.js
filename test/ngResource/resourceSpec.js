@@ -1363,6 +1363,49 @@ describe("basic usage", function() {
   });
 });
 
+describe('extra params', function() {
+  var $http;
+  var $httpBackend;
+  var $resource;
+
+  beforeEach(module('ngResource'));
+
+  beforeEach(module(function($provide) {
+    $provide.decorator('$http', function($delegate) {
+      return jasmine.createSpy('$http').and.callFake($delegate);
+    });
+  }));
+
+  beforeEach(inject(function(_$http_, _$httpBackend_, _$resource_) {
+    $http = _$http_;
+    $httpBackend = _$httpBackend_;
+    $resource = _$resource_;
+  }));
+
+  afterEach(function() {
+    $httpBackend.verifyNoOutstandingExpectation();
+  });
+
+
+  it('should pass extra params to `$http` as `config.params`', function() {
+    $httpBackend.expectGET('/bar?baz=qux').respond('{}');
+
+    var R = $resource('/:foo');
+    R.get({foo: 'bar', baz: 'qux'});
+
+    expect($http).toHaveBeenCalledWith(jasmine.objectContaining({params: {baz: 'qux'}}));
+  });
+
+  it('should pass extra params even if `Object.prototype` has properties with the same name',
+    function() {
+      $httpBackend.expectGET('/foo?toString=bar').respond('{}');
+
+      var R = $resource('/foo');
+      R.get({toString: 'bar'});
+    }
+  );
+});
+
 describe('errors', function() {
   var $httpBackend, $resource, $q;
 
