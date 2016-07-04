@@ -15,7 +15,7 @@
    id="svg3336"
    inkscape:version="0.91 r13725"
    sodipodi:docname="tutorial_12.svg"
-   inkscape:export-filename="C:\Datafiles\Dev\AngularJS\angular.js\docs\img\tutorial\tutorial_03.png"
+   inkscape:export-filename="C:\Datafiles\Dev\AngularJS\angular.js\docs\img\tutorial\tutorial_12_2.png"
    inkscape:export-xdpi="65"
    inkscape:export-ydpi="65">
   <sodipodi:namedview
@@ -27,14 +27,14 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="1458"
+     inkscape:window-width="1460"
      inkscape:window-height="841"
      id="namedview3683"
      showgrid="false"
      inkscape:zoom="0.9721519"
      inkscape:cx="327.82637"
      inkscape:cy="345.625"
-     inkscape:window-x="70"
+     inkscape:window-x="68"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
      inkscape:current-layer="g3434"
@@ -52,7 +52,7 @@
     <dc:format>image/svg+xml</dc:format>
     <dc:type
        rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-    <dc:title></dc:title>
+    <dc:title />
   </cc:Work>
 </rdf:RDF>
 </metadata>
@@ -942,7 +942,7 @@
        x="0"
        y="0"
        style="fill:#ffffff"
-       inkscape:export-filename="C:\Datafiles\Dev\AngularJS\angular.js\docs\img\tutorial\tutorial_12.png"
+       inkscape:export-filename="C:\Datafiles\Dev\AngularJS\angular.js\docs\img\tutorial\tutorial_12_2.png"
        inkscape:export-xdpi="66"
        inkscape:export-ydpi="66" />
     <text
@@ -1319,13 +1319,13 @@
            sodipodi:linespacing="125%"
            id="text4962"
            y="24.633343"
-           x="162.71861"
+           x="159.5186"
            style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:12px;line-height:125%;font-family:'Courier New';-inkscape-font-specification:'Courier New, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
            xml:space="preserve"><tspan
-             y="24.633343"
-             x="162.71861"
-             id="tspan4964"
-             sodipodi:role="line">phoneList component</tspan></text>
+             sodipodi:role="line"
+             id="tspan3638"
+             x="159.5186"
+             y="24.633343">phoneDetail component</tspan></text>
       </g>
       <g
          id="g5196"
@@ -1480,7 +1480,7 @@
            y="37.03125"
            x="384.30206"
            id="tspan8160"
-           sodipodi:role="line"></tspan></text>
+           sodipodi:role="line" /></text>
       <g
          id="g7990"
          transform="translate(0,316.8)">
