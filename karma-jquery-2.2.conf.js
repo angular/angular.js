@@ -2,4 +2,4 @@
 
 var karmaConfigFactory = require('./karma-jquery.conf-factory');
 
-module.exports = karmaConfigFactory();
+module.exports = karmaConfigFactory('2.2');
