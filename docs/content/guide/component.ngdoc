@@ -236,6 +236,10 @@ it upwards to the heroList component, which updates the original data.
   function HeroDetailController() {
     var ctrl = this;
 
+    ctrl.delete = function() {
+      ctrl.onDelete({hero: ctrl.hero});
+    };
+
     ctrl.update = function(prop, value) {
       ctrl.onUpdate({hero: ctrl.hero, prop: prop, value: value});
     };
@@ -303,7 +307,7 @@ it upwards to the heroList component, which updates the original data.
   <div>
     Name: {{$ctrl.hero.name}}<br>
     Location: <editable-field field-value="$ctrl.hero.location" field-type="text" on-update="$ctrl.update('location', value)"></editable-field><br>
-    <button ng-click="$ctrl.onDelete({hero: $ctrl.hero})">Delete</button>
+    <button ng-click="$ctrl.delete()">Delete</button>
   </div>
 </file>
 <file name="editableField.html">
@@ -443,44 +447,52 @@ angular.module('docsTabsExample', [])
 
 # Unit-testing Component Controllers
 
-The easiest way to unit-test a component controller is by using the {@link ngMock.$componentController $componentController}
-that is included in {@link ngMock}. The advantage of this method is that you do not have
-to create any DOM elements. The following example shows how to do this for the `heroDetail` component
-from above.
+The easiest way to unit-test a component controller is by using the
+{@link ngMock.$componentController $componentController} that is included in {@link ngMock}. The
+advantage of this method is that you do not have to create any DOM elements. The following example
+shows how to do this for the `heroDetail` component from above.
 
 The examples use the [Jasmine](http://jasmine.github.io/) testing framework.
 
 **Controller Test:**
 ```js
 describe('component: heroDetail', function() {
-  var component, scope, hero, $componentController;
+  var $componentController;
 
   beforeEach(module('heroApp'));
-
-  beforeEach(inject(function($rootScope, _$componentController_) {
-    scope = $rootScope.$new();
+  beforeEach(inject(function(_$componentController_) {
     $componentController = _$componentController_;
-    hero = {name: 'Wolverine'};
   }));
 
-  it('should assign the name bindings to the hero object', function() {
+  it('should expose a `hero` object', function() {
     // Here we are passing actual bindings to the component
-    component = $componentController('heroDetail',
-      null,
-      {hero: hero}
-    );
-    expect(component.hero.name).toBe('Wolverine');
+    var bindings = {hero: {name: 'Wolverine'}};
+    var ctrl = $componentController('heroDetail', null, bindings);
+
+    expect(ctrl.hero).toBeDefined();
+    expect(ctrl.hero.name).toBe('Wolverine');
   });
 
-  it('should call the onDelete binding when a hero is deleted', function() {
-    var deleteSpy = jasmine.createSpy('deleteSpy');
-    component = $componentController('heroDetail',
-      null,
-      {hero: hero, onDelete: deleteSpy}
-    );
+  it('should call the `onDelete` binding, when deleting the hero', function() {
+    var onDeleteSpy = jasmine.createSpy('onDelete');
+    var bindings = {hero: {}, onDelete: onDeleteSpy};
+    var ctrl = $componentController('heroDetail', null, bindings);
 
-    component.onDelete({hero: component.hero});
-    expect(deleteSpy).toHaveBeenCalledWith({hero: component.hero});
+    ctrl.delete();
+    expect(onDeleteSpy).toHaveBeenCalledWith({hero: ctrl.hero});
+  });
+
+  it('should call the `onUpdate` binding, when updating a property', function() {
+    var onUpdateSpy = jasmine.createSpy('onUpdate');
+    var bindings = {hero: {}, onUpdate: onUpdateSpy};
+    var ctrl = $componentController('heroDetail', null, bindings);
+
+    ctrl.update('foo', 'bar');
+    expect(onUpdateSpy).toHaveBeenCalledWith({
+      hero: ctrl.hero,
+      prop: 'foo',
+      value: 'bar'
+    });
   });
 
 });
