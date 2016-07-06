@@ -1912,7 +1912,14 @@ describe('select', function() {
             optionElements = element.find('option');
             expect(optionElements.length).toEqual(1);
             expect(scope.obj.value).toEqual([]);
-            expect(element.val()).toBe(null);
+
+            // Cover both jQuery 3.x ([]) and 2.x (null) behavior.
+            var val = element.val();
+            if (val === null) {
+              val = [];
+            }
+            expect(val).toEqual([]);
+
             expect(ngModelCtrlSpy).toHaveBeenCalledTimes(1);
         });
 
@@ -1970,7 +1977,14 @@ describe('select', function() {
             optionElements = element.find('option');
             expect(optionElements.length).toEqual(3);
             expect(scope.obj.value).toEqual([]);
-            expect(element.val()).toBe(null);
+
+            // Cover both jQuery 3.x ([]) and 2.x (null) behavior.
+            var val = element.val();
+            if (val === null) {
+              val = [];
+            }
+            expect(val).toEqual([]);
+
             expect(ngModelCtrlSpy).toHaveBeenCalledTimes(1);
 
         });
