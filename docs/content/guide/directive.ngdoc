@@ -162,10 +162,6 @@ initialization work here. The function is invoked using
 {@link auto.$injector#invoke $injector.invoke} which makes it injectable just like a
 controller.
 
-<div class="alert alert-success">
-**Best Practice:** Prefer using the definition object over returning a function.
-</div>
-
 
 We'll go over a few common examples of directives, then dive deep into the different options
 and compilation process.
