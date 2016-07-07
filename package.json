@@ -27,6 +27,7 @@
     "canonical-path": "0.0.2",
     "cheerio": "^0.17.0",
     "commitizen": "^2.3.0",
+    "commitplease": "^2.6.0",
     "cz-conventional-changelog": "1.1.4",
     "dgeni": "^0.4.0",
     "dgeni-packages": "^0.14.0",
@@ -87,5 +88,8 @@
     "commitizen": {
       "path": "node_modules/cz-conventional-changelog"
     }
+  },
+  "commitplease": {
+    "style": "angular"
   }
 }
