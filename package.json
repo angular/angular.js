@@ -54,7 +54,7 @@
     "gulp-util": "^3.0.1",
     "jasmine-core": "^2.4.0",
     "jasmine-node": "^2.0.0",
-    "jasmine-reporters": "~1.0.1",
+    "jasmine-reporters": "^2.2.0",
     "jshint": "^2.9.1",
     "jshint-stylish": "^2.1.0",
     "karma": "^0.13.19",
