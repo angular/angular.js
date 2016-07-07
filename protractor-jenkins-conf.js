@@ -15,7 +15,7 @@ exports.config = {
 
   baseUrl: 'http://localhost:8000/',
 
-  framework: 'jasmine',
+  framework: 'jasmine2',
 
   onPrepare: function() {
     /* global angular: false, browser: false, jasmine: false */
