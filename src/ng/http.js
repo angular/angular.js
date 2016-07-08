@@ -629,7 +629,7 @@ function $HttpProvider() {
      *   * cache a specific response - set config.cache value to TRUE or to a cache object
      *
      * If caching is enabled, but neither the default cache nor config.cache are set to a cache object,
-     * then the default `$cacheFactory($http)` object is used.
+     * then the default `$cacheFactory("$http")` object is used.
      *
      * The default cache value can be set by updating the
      * {@link ng.$http#defaults `$http.defaults.cache`} property or the
