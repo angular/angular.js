@@ -152,6 +152,7 @@
     /* urlUtils.js */
     "urlResolve": false,
     "urlIsSameOrigin": false,
+    "urlIsAllowedOriginFactory": false,
 
     /* karma */
     "dump": false,

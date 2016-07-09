@@ -160,6 +160,7 @@
     /* urlUtils.js */
     "urlResolve": false,
     "urlIsSameOrigin": false,
+    "urlIsAllowedOriginFactory": false,
 
     /* ng/controller.js */
     "identifierForController": false,
