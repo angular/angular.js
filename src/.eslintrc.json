@@ -161,6 +161,7 @@
     "urlResolve": false,
     "urlIsSameOrigin": false,
     "urlIsSameOriginAsBaseUrl": false,
+    "urlIsAllowedOriginFactory": false,
 
     /* ng/controller.js */
     "identifierForController": false,

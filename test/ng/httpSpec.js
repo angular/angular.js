@@ -11,21 +11,16 @@ describe('$http', function() {
     return Object.keys(params).join('_');
   };
 
-  beforeEach(function() {
-    callback = jasmine.createSpy('done');
-    mockedCookies = {};
-    module({
-      $$cookieReader: function() {
-        return mockedCookies;
-      }
-    });
-  });
-
-  beforeEach(module({
-    customParamSerializer: customParamSerializer
-  }));
   beforeEach(module(function($exceptionHandlerProvider) {
     $exceptionHandlerProvider.mode('log');
+
+    callback = jasmine.createSpy('done');
+    mockedCookies = {};
+  }));
+
+  beforeEach(module({
+    $$cookieReader: function() { return mockedCookies; },
+    customParamSerializer: customParamSerializer
   }));
 
   afterEach(inject(function($exceptionHandler, $httpBackend, $rootScope) {
@@ -37,7 +32,6 @@ describe('$http', function() {
       throw 'Unhandled exceptions trapped in $exceptionHandler!';
     }
 
-    $rootScope.$digest();
     $httpBackend.verifyNoOutstandingExpectation();
   }));
 
@@ -723,18 +717,6 @@ describe('$http', function() {
         $httpBackend.flush();
       });
 
-      it('should not set XSRF cookie for cross-domain requests', inject(function($browser) {
-        mockedCookies['XSRF-TOKEN'] =  'secret';
-        $browser.url('http://host.com/base');
-        $httpBackend.expect('GET', 'http://www.test.com/url', undefined, function(headers) {
-          return isUndefined(headers['X-XSRF-TOKEN']);
-        }).respond('');
-
-        $http({url: 'http://www.test.com/url', method: 'GET', headers: {}});
-        $httpBackend.flush();
-      }));
-
-
       it('should not send Content-Type header if request data/body is undefined', function() {
         $httpBackend.expect('POST', '/url', undefined, function(headers) {
           return !headers.hasOwnProperty('Content-Type');
@@ -765,32 +747,6 @@ describe('$http', function() {
 
         $httpBackend.flush();
       });
-
-      it('should set the XSRF cookie into a XSRF header', inject(function() {
-        function checkXSRF(secret, header) {
-          return function(headers) {
-            return headers[header || 'X-XSRF-TOKEN'] === secret;
-          };
-        }
-
-        mockedCookies['XSRF-TOKEN'] =  'secret';
-        mockedCookies['aCookie'] = 'secret2';
-        $httpBackend.expect('GET', '/url', undefined, checkXSRF('secret')).respond('');
-        $httpBackend.expect('POST', '/url', undefined, checkXSRF('secret')).respond('');
-        $httpBackend.expect('PUT', '/url', undefined, checkXSRF('secret')).respond('');
-        $httpBackend.expect('DELETE', '/url', undefined, checkXSRF('secret')).respond('');
-        $httpBackend.expect('GET', '/url', undefined, checkXSRF('secret', 'aHeader')).respond('');
-        $httpBackend.expect('GET', '/url', undefined, checkXSRF('secret2')).respond('');
-
-        $http({url: '/url', method: 'GET'});
-        $http({url: '/url', method: 'POST', headers: {'S-ome': 'Header'}});
-        $http({url: '/url', method: 'PUT', headers: {'Another': 'Header'}});
-        $http({url: '/url', method: 'DELETE', headers: {}});
-        $http({url: '/url', method: 'GET', xsrfHeaderName: 'aHeader'});
-        $http({url: '/url', method: 'GET', xsrfCookieName: 'aCookie'});
-
-        $httpBackend.flush();
-      }));
 
       it('should send execute result if header value is function', function() {
         var headerConfig = {'Accept': function() { return 'Rewritten'; }};
@@ -841,20 +797,6 @@ describe('$http', function() {
 
         expect(config.foo).toBeUndefined();
       });
-
-      it('should check the cache before checking the XSRF cookie', inject(function($cacheFactory) {
-        var testCache = $cacheFactory('testCache');
-
-        spyOn(testCache, 'get').and.callFake(function() {
-          mockedCookies['XSRF-TOKEN'] = 'foo';
-        });
-
-        $httpBackend.expect('GET', '/url', undefined, function(headers) {
-          return headers['X-XSRF-TOKEN'] === 'foo';
-        }).respond('');
-        $http({url: '/url', method: 'GET', cache: testCache});
-        $httpBackend.flush();
-      }));
     });
 
 
@@ -2266,6 +2208,148 @@ describe('$http', function() {
   });
 
 
+  describe('XSRF', function() {
+    var $http;
+    var $httpBackend;
+
+    beforeEach(module(function($httpProvider) {
+      $httpProvider.xsrfWhitelistedOrigins.push(
+          'https://whitelisted.example.com',
+          'https://whitelisted2.example.com:1337/ignored/path');
+    }));
+
+    beforeEach(inject(function(_$http_, _$httpBackend_) {
+      $http = _$http_;
+      $httpBackend = _$httpBackend_;
+    }));
+
+
+    it('should set the XSRF cookie into an XSRF header', function() {
+      function checkXsrf(secret, header) {
+        return function checkHeaders(headers) {
+          return headers[header || 'X-XSRF-TOKEN'] === secret;
+        };
+      }
+
+      mockedCookies['XSRF-TOKEN'] = 'secret';
+      mockedCookies['aCookie'] = 'secret2';
+      $httpBackend.expect('GET',    '/url', null, checkXsrf('secret')).respond(null);
+      $httpBackend.expect('POST',   '/url', null, checkXsrf('secret')).respond(null);
+      $httpBackend.expect('PUT',    '/url', null, checkXsrf('secret')).respond(null);
+      $httpBackend.expect('DELETE', '/url', null, checkXsrf('secret')).respond(null);
+      $httpBackend.expect('GET',    '/url', null, checkXsrf('secret', 'aHeader')).respond(null);
+      $httpBackend.expect('GET',    '/url', null, checkXsrf('secret2')).respond(null);
+
+      $http({method: 'GET',    url: '/url'});
+      $http({method: 'POST',   url: '/url', headers: {'S-ome': 'Header'}});
+      $http({method: 'PUT',    url: '/url', headers: {'Another': 'Header'}});
+      $http({method: 'DELETE', url: '/url', headers: {}});
+      $http({method: 'GET',    url: '/url', xsrfHeaderName: 'aHeader'});
+      $http({method: 'GET',    url: '/url', xsrfCookieName: 'aCookie'});
+
+      $httpBackend.flush();
+    });
+
+
+    it('should support setting a default XSRF cookie/header name', function() {
+      $http.defaults.xsrfCookieName = 'aCookie';
+      $http.defaults.xsrfHeaderName = 'aHeader';
+
+      function checkHeaders(headers) {
+        return headers.aHeader === 'secret';
+      }
+
+      mockedCookies.aCookie = 'secret';
+      $httpBackend.expect('GET', '/url', null, checkHeaders).respond(null);
+
+      $http.get('/url');
+
+      $httpBackend.flush();
+    });
+
+
+    it('should support overriding the default XSRF cookie/header name per request', function() {
+      $http.defaults.xsrfCookieName = 'aCookie';
+      $http.defaults.xsrfHeaderName = 'aHeader';
+
+      function checkHeaders(headers) {
+        return headers.anotherHeader === 'anotherSecret';
+      }
+
+      mockedCookies.anotherCookie = 'anotherSecret';
+      $httpBackend.expect('GET', '/url', null, checkHeaders).respond(null);
+
+      $http.get('/url', {
+        xsrfCookieName: 'anotherCookie',
+        xsrfHeaderName: 'anotherHeader'
+      });
+
+      $httpBackend.flush();
+    });
+
+
+    it('should check the cache before checking the XSRF cookie', inject(function($cacheFactory) {
+      function checkHeaders(headers) {
+        return headers['X-XSRF-TOKEN'] === 'foo';
+      }
+      function setCookie() {
+        mockedCookies['XSRF-TOKEN'] = 'foo';
+      }
+
+      var testCache = $cacheFactory('testCache');
+      spyOn(testCache, 'get').and.callFake(setCookie);
+
+      $httpBackend.expect('GET', '/url', null, checkHeaders).respond(null);
+      $http.get('/url', {cache: testCache});
+
+      $httpBackend.flush();
+    }));
+
+
+    it('should not set an XSRF header for cross-domain requests', function() {
+      function checkHeaders(headers) {
+        return isUndefined(headers['X-XSRF-TOKEN']);
+      }
+      var requestUrls = [
+        'https://api.example.com/path',
+        'http://whitelisted.example.com',
+        'https://whitelisted2.example.com:1338'
+      ];
+
+      mockedCookies['XSRF-TOKEN'] = 'secret';
+
+      requestUrls.forEach(function(url) {
+        $httpBackend.expect('GET', url, null, checkHeaders).respond(null);
+        $http.get(url);
+        $httpBackend.flush();
+      });
+    });
+
+
+    it('should set an XSRF header for cross-domain requests to whitelisted origins',
+      inject(function($browser) {
+        function checkHeaders(headers) {
+          return headers['X-XSRF-TOKEN'] === 'secret';
+        }
+        var currentUrl = 'https://example.com/path';
+        var requestUrls = [
+          'https://whitelisted.example.com/path',
+          'https://whitelisted2.example.com:1337/path'
+        ];
+
+        $browser.url(currentUrl);
+        mockedCookies['XSRF-TOKEN'] = 'secret';
+
+        requestUrls.forEach(function(url) {
+          $httpBackend.expect('GET', url, null, checkHeaders).respond(null);
+          $http.get(url);
+          $httpBackend.flush();
+        });
+      })
+    );
+  });
+
+
   it('should pass timeout, withCredentials and responseType', function() {
     var $httpBackend = jasmine.createSpy('$httpBackend');
 
@@ -2483,7 +2567,6 @@ describe('$http param serializers', function() {
          'a%5B%5D=b&a%5B%5D=c&d%5B0%5D%5Be%5D=f&d%5B0%5D%5Bg%5D=h&d%5B%5D=i&d%5B2%5D%5Bj%5D=k');
          //a[]=b&a[]=c&d[0][e]=f&d[0][g]=h&d[]=i&d[2][j]=k
     });
-
     it('should serialize `null` and `undefined` elements as empty', function() {
       expect(jqrSer({items:['foo', 'bar', null, undefined, 'baz'], x: null, y: undefined})).toEqual(
          'items%5B%5D=foo&items%5B%5D=bar&items%5B%5D=&items%5B%5D=&items%5B%5D=baz&x=&y=');
