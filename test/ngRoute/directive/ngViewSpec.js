@@ -1029,4 +1029,35 @@ describe('ngView', function() {
       ));
     });
   });
+
+  describe('in async template', function() {
+    beforeEach(module('ngRoute'));
+    beforeEach(module(function($compileProvider, $provide, $routeProvider) {
+      $compileProvider.directive('asyncView', function() {
+        return {templateUrl: 'async-view.html'};
+      });
+
+      $provide.decorator('$templateRequest', function($timeout) {
+        return function() {
+          return $timeout(angular.identity, 500, false, '<ng-view></ng-view>');
+        };
+      });
+
+      $routeProvider.when('/', {template: 'Hello, world!'});
+    }));
+
+
+    it('should work correctly upon initial page load',
+      // Injecting `$location` here is necessary, so that it gets instantiated early
+      inject(function($compile, $location, $rootScope, $timeout) {
+        var elem = $compile('<async-view></async-view>')($rootScope);
+        $rootScope.$digest();
+        $timeout.flush(500);
+
+        expect(elem.text()).toBe('Hello, world!');
+
+        dealoc(elem);
+      })
+    );
+  });
 });

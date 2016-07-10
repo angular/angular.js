@@ -1,5 +1,58 @@
 'use strict';
 
+describe('$routeProvider', function() {
+  var $routeProvider;
+
+  beforeEach(module('ngRoute'));
+  beforeEach(module(function(_$routeProvider_) {
+    $routeProvider = _$routeProvider_;
+    $routeProvider.when('/foo', {template: 'Hello, world!'});
+  }));
+
+
+  it('should support enabling/disabling automatic instantiation upon initial load',
+    inject(function() {
+      expect($routeProvider.eagerInstantiationEnabled(true)).toBe($routeProvider);
+      expect($routeProvider.eagerInstantiationEnabled()).toBe(true);
+
+      expect($routeProvider.eagerInstantiationEnabled(false)).toBe($routeProvider);
+      expect($routeProvider.eagerInstantiationEnabled()).toBe(false);
+
+      expect($routeProvider.eagerInstantiationEnabled(true)).toBe($routeProvider);
+      expect($routeProvider.eagerInstantiationEnabled()).toBe(true);
+    })
+  );
+
+
+  it('should automatically instantiate `$route` upon initial load', function() {
+    inject(function($location, $rootScope) {
+      $location.path('/foo');
+      $rootScope.$digest();
+    });
+
+    inject(function($route) {
+      expect($route.current).toBeDefined();
+    });
+  });
+
+
+  it('should not automatically instantiate `$route` if disabled', function() {
+    module(function($routeProvider) {
+      $routeProvider.eagerInstantiationEnabled(false);
+    });
+
+    inject(function($location, $rootScope) {
+      $location.path('/foo');
+      $rootScope.$digest();
+    });
+
+    inject(function($route) {
+      expect($route.current).toBeUndefined();
+    });
+  });
+});
+
+
 describe('$route', function() {
   var $httpBackend,
       element;
