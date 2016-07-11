@@ -50,9 +50,9 @@ function $HttpParamSerializerProvider() {
           forEach(value, function(v) {
             parts.push(encodeUriQuery(key)  + '=' + encodeUriQuery(serializeValue(v)));
           });
-        } else {
-          parts.push(encodeUriQuery(key) + '=' + encodeUriQuery(serializeValue(value)));
+          return;
         }
+        parts.push(encodeUriQuery(key) + '=' + encodeUriQuery(serializeValue(value)));
       });
 
       return parts.join('&');
@@ -117,16 +117,18 @@ function $HttpParamSerializerJQLikeProvider() {
           forEach(toSerialize, function(value, index) {
             serialize(value, prefix + '[' + (isObject(value) ? index : '') + ']');
           });
-        } else if (isObject(toSerialize) && !isDate(toSerialize)) {
+          return;
+        }
+        if (isObject(toSerialize) && !isDate(toSerialize)) {
           forEachSorted(toSerialize, function(value, key) {
             serialize(value, prefix +
                 (topLevel ? '' : '[') +
                 key +
                 (topLevel ? '' : ']'));
           });
-        } else {
-          parts.push(encodeUriQuery(prefix) + '=' + encodeUriQuery(serializeValue(toSerialize)));
+          return;
         }
+        parts.push(encodeUriQuery(prefix) + '=' + encodeUriQuery(serializeValue(toSerialize)));
       }
     };
   };
@@ -173,7 +175,9 @@ function parseHeaders(headers) {
       i = line.indexOf(':');
       fillInParsed(lowercase(trim(line.substr(0, i))), trim(line.substr(i + 1)));
     });
-  } else if (isObject(headers)) {
+    return;
+  }
+  if (isObject(headers)) {
     forEach(headers, function(headerVal, headerKey) {
       fillInParsed(lowercase(headerKey), trim(headerVal));
     });
