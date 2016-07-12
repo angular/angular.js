@@ -314,7 +314,7 @@ With a single `boolean` argument, it enables / disables animations globally: `$a
 disables all animations in your app.
 
 When the second argument is a native DOM or jQuery element, the function enables / disables
-animations on this element *and all its children*: `$animate.enabled(false, myElement)`. This is the
+animations on this element *and all its children*: `$animate.enabled(myElement, false)`. This is the
 most flexible way to change the animation state. For example, even if you have used it to disable
 animations on a parent element, you can still re-enable it for a child element. And compared to the
 `classNameFilter`, you can change the animation status at runtime instead of during the config phase.
