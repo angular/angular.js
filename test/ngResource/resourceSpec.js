@@ -321,11 +321,51 @@ describe('basic usage', function() {
   });
 
   it('should support IPv6 URLs', function() {
-    var R = $resource('http://[2620:0:861:ed1a::1]/:ed1a/', {}, {}, {stripTrailingSlashes: false});
-    $httpBackend.expect('GET', 'http://[2620:0:861:ed1a::1]/foo/').respond({});
-    $httpBackend.expect('GET', 'http://[2620:0:861:ed1a::1]/').respond({});
-    R.get({ed1a: 'foo'});
-    R.get({});
+    var keepSlashes = {stripTrailingSlashes: false};
+
+    var R1 = $resource('http://[2620:0:861:ed1a::1]', null, null, keepSlashes);
+    var R2 = $resource('http://[2620:0:861:ed1a::1]/', null, null, keepSlashes);
+    var R3 = $resource('http://[2620:0:861:ed1a::1]/:ed1a', null, null, keepSlashes);
+    var R4 = $resource('http://[2620:0:861:ed1a::1]/:ed1a/', null, null, keepSlashes);
+
+    $httpBackend.expect('GET', 'http://[2620:0:861:ed1a::1]').respond(null);        // R1
+    $httpBackend.expect('GET', 'http://[2620:0:861:ed1a::1]/').respond(null);       // R2
+    $httpBackend.expect('GET', 'http://[2620:0:861:ed1a::1]/foo').respond(null);    // R3
+    $httpBackend.expect('GET', 'http://[2620:0:861:ed1a::1]/').respond(null);       // R3
+    $httpBackend.expect('GET', 'http://[2620:0:861:ed1a::1]/foo/').respond(null);   // R4
+    $httpBackend.expect('GET', 'http://[2620:0:861:ed1a::1]/').respond(null);       // R4
+
+    R1.get({ed1a: 'foo'});
+    R2.get({ed1a: 'foo'});
+    R3.get({ed1a: 'foo'});
+    R3.get({});
+    R4.get({ed1a: 'foo'});
+    R4.get({});
+  });
+
+  it('should support params in the `hostname` part of the URL', function() {
+    var keepSlashes = {stripTrailingSlashes: false};
+
+    var R1 = $resource('http://:hostname', null, null, keepSlashes);
+    var R2 = $resource('http://:hostname/', null, null, keepSlashes);
+    var R3 = $resource('http://:l2Domain.:l1Domain', null, null, keepSlashes);
+    var R4 = $resource('http://:l2Domain.:l1Domain/', null, null, keepSlashes);
+    var R5 = $resource('http://127.0.0.:octet', null, null, keepSlashes);
+    var R6 = $resource('http://127.0.0.:octet/', null, null, keepSlashes);
+
+    $httpBackend.expect('GET', 'http://foo.com').respond(null);       // R1
+    $httpBackend.expect('GET', 'http://foo.com/').respond(null);      // R2
+    $httpBackend.expect('GET', 'http://bar.com').respond(null);       // R3
+    $httpBackend.expect('GET', 'http://bar.com/').respond(null);      // R4
+    $httpBackend.expect('GET', 'http://127.0.0.42').respond(null);    // R5
+    $httpBackend.expect('GET', 'http://127.0.0.42/').respond(null);   // R6
+
+    R1.get({hostname: 'foo.com'});
+    R2.get({hostname: 'foo.com'});
+    R3.get({l1Domain: 'com', l2Domain: 'bar'});
+    R4.get({l1Domain: 'com', l2Domain: 'bar'});
+    R5.get({octet: 42});
+    R6.get({octet: 42});
   });
 
   it('should support overriding provider default trailing-slash stripping configuration', function() {
