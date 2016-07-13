@@ -321,11 +321,35 @@ describe('basic usage', function() {
   });
 
   it('should support IPv6 URLs', function() {
-    var R = $resource('http://[2620:0:861:ed1a::1]/:ed1a/', {}, {}, {stripTrailingSlashes: false});
-    $httpBackend.expect('GET', 'http://[2620:0:861:ed1a::1]/foo/').respond({});
-    $httpBackend.expect('GET', 'http://[2620:0:861:ed1a::1]/').respond({});
-    R.get({ed1a: 'foo'});
-    R.get({});
+    test('http://[2620:0:861:ed1a::1]',        {ed1a: 'foo'}, 'http://[2620:0:861:ed1a::1]');
+    test('http://[2620:0:861:ed1a::1]/',       {ed1a: 'foo'}, 'http://[2620:0:861:ed1a::1]/');
+    test('http://[2620:0:861:ed1a::1]/:ed1a',  {ed1a: 'foo'}, 'http://[2620:0:861:ed1a::1]/foo');
+    test('http://[2620:0:861:ed1a::1]/:ed1a',  {},            'http://[2620:0:861:ed1a::1]/');
+    test('http://[2620:0:861:ed1a::1]/:ed1a/', {ed1a: 'foo'}, 'http://[2620:0:861:ed1a::1]/foo/');
+    test('http://[2620:0:861:ed1a::1]/:ed1a/', {},            'http://[2620:0:861:ed1a::1]/');
+
+    // Helpers
+    function test(templateUrl, params, actualUrl) {
+      var R = $resource(templateUrl, null, null, {stripTrailingSlashes: false});
+      $httpBackend.expect('GET', actualUrl).respond(null);
+      R.get(params);
+    }
+  });
+
+  it('should support params in the `hostname` part of the URL', function() {
+    test('http://:hostname',            {hostname: 'foo.com'},              'http://foo.com');
+    test('http://:hostname/',           {hostname: 'foo.com'},              'http://foo.com/');
+    test('http://:l2Domain.:l1Domain',  {l1Domain: 'com', l2Domain: 'bar'}, 'http://bar.com');
+    test('http://:l2Domain.:l1Domain/', {l1Domain: 'com', l2Domain: 'bar'}, 'http://bar.com/');
+    test('http://127.0.0.:octet',       {octet: 42},                        'http://127.0.0.42');
+    test('http://127.0.0.:octet/',      {octet: 42},                        'http://127.0.0.42/');
+
+    // Helpers
+    function test(templateUrl, params, actualUrl) {
+      var R = $resource(templateUrl, null, null, {stripTrailingSlashes: false});
+      $httpBackend.expect('GET', actualUrl).respond(null);
+      R.get(params);
+    }
   });
 
   it('should support overriding provider default trailing-slash stripping configuration', function() {
