@@ -20,8 +20,8 @@ config.multiCapabilities = [{
   'version': '28'
 }, {
   browserName: 'safari',
-  'platform': 'OS X 10.9',
-  'version': '7',
+  'platform': 'OS X 10.10',
+  'version': '8',
   'name': 'Angular E2E',
   'tunnel-identifier': process.env.TRAVIS_JOB_NUMBER,
   'build': process.env.TRAVIS_BUILD_NUMBER
