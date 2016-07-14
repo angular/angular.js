@@ -23,9 +23,39 @@ var isObject;
  * <div doc-module-components="ngRoute"></div>
  */
  /* global -ngRouteModule */
-var ngRouteModule = angular.module('ngRoute', ['ng']).
-                        provider('$route', $RouteProvider),
+var ngRouteModule = angular.module('ngRoute', ['ng'])
+                        .provider('$route', $RouteProvider)
+                        .factory('$$trackLocationChanges', ['$rootScope', $$trackLocationChanges])
+                        .run(['$$trackLocationChanges', function($$trackLocationChanges) {
+                          $$trackLocationChanges.start();
+                        }]),
+
     $routeMinErr = angular.$$minErr('ngRoute');
+
+function $$trackLocationChanges($rootScope) {
+  var removeStartHandler, removeSuccessHandler;
+  var service = {
+    start: function() {
+      removeStartHandler = $rootScope.$on('$locationChangeStart', storeStartEvent);
+      removeSuccessHandler = $rootScope.$on('$locationChangeSuccess', storeSuccessEvent);
+    },
+    stop: function() {
+      removeStartHandler();
+      removeSuccessHandler();
+    }
+  };
+
+  return service;
+
+  function storeStartEvent(e) {
+    service.startEvent = e;
+    delete service.successEvent;
+  }
+
+  function storeSuccessEvent(e) {
+    service.successEvent = e;
+  }
+}
 
 /**
  * @ngdoc provider
@@ -295,7 +325,9 @@ function $RouteProvider() {
                '$injector',
                '$templateRequest',
                '$sce',
-      function($rootScope, $location, $routeParams, $q, $injector, $templateRequest, $sce) {
+               '$$trackLocationChanges',
+      function($rootScope, $location, $routeParams, $q, $injector, $templateRequest, $sce, $$trackLocationChanges) {
+
 
     /**
      * @ngdoc service
@@ -555,6 +587,12 @@ function $RouteProvider() {
           }
         };
 
+    if ($$trackLocationChanges.successEvent) {
+      prepareRoute($$trackLocationChanges.startEvent);
+      commitRoute($$trackLocationChanges.successEvent);
+    }
+    $$trackLocationChanges.stop();
+
     $rootScope.$on('$locationChangeStart', prepareRoute);
     $rootScope.$on('$locationChangeSuccess', commitRoute);
 
@@ -612,6 +650,7 @@ function $RouteProvider() {
     }
 
     function commitRoute() {
+      $route.initialized = true;
       var lastRoute = $route.current;
       var nextRoute = preparedRoute;
 
