@@ -978,7 +978,7 @@ function $HttpProvider() {
       promise = chainInterceptors(promise, requestInterceptors);
       promise = promise.then(serverRequest);
       promise = chainInterceptors(promise, responseInterceptors);
-      promise.finally(completeOutstandingRequest);
+      promise = promise.finally(completeOutstandingRequest);
 
       if (useLegacyPromise) {
         promise.success = function(fn) {
