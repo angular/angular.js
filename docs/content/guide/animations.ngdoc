@@ -347,6 +347,7 @@ By setting `transition: 0s`, ngAnimate will ignore the existing transition style
 animations will still execute, though). This can be used to prevent {@link guide/animations#preventing-collisions-with-existing-animations-and-third-party-libraries
 issues with existing animations interfering with ngAnimate}.
 
+
 ## Preventing flicker before an animation starts
 
 When nesting elements with structural animations such as `ngIf` into elements that have class-based
@@ -418,6 +419,23 @@ If you do have CSS transitions / animations defined for the animation events, ma
 than any styles that are independent from ngAnimate.
 
 You can also use one of the two other {@link guide/animations#how-to-selectively-enable-disable-and-skip-animations strategies to disable animations}.
+
+
+### Enable animations for elements outside of the Angular application DOM tree: {@link ng.$animate#pin $animate.pin()}
+
+Before animating, `ngAnimate` checks to see if the element being animated is inside the application DOM tree,
+and if it is not, no animation is run. Usually, this is not a problem as most apps use the `ngApp`
+attribute / bootstrap the app on the `html` or `body` element.
+
+Problems arise when the application is bootstrapped on a different element, and animations are
+attempted on elements that are outside the application tree, e.g. when libraries append popup and modal
+elements as the last child in the body tag.
+
+You can use {@link ng.$animate#pin `$animate.pin(elementToAnimate, parentHost)`} to specify that an
+element belongs to your application. Simply call it before the element is added to the DOM / before
+the animation starts, with the element you want to animate, and the element which should be its
+assumed parent.
+
 
 ## More about animations
 
