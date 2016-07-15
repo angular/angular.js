@@ -255,29 +255,27 @@ describe('animations', function() {
       });
     });
 
-    it('should throw a minErr if a regex value is used which partially contains or fully matches the `ng-animate` CSS class', function() {
+    it('should throw a minErr if a regex value is used which partially contains or fully matches the `ng-animate` CSS class',
       module(function($animateProvider) {
-        assertError(/ng-animate/, true);
-        assertError(/first ng-animate last/, true);
-        assertError(/ng-animate-special/, false);
-        assertError(/first ng-animate-special last/, false);
-        assertError(/first ng-animate ng-animate-special last/, true);
+        expect(setFilter(/ng-animate/)).toThrowMinErr('$animate', 'nongcls');
+        expect(setFilter(/first ng-animate last/)).toThrowMinErr('$animate', 'nongcls');
+        expect(setFilter(/first ng-animate ng-animate-special last/)).toThrowMinErr('$animate', 'nongcls');
+        expect(setFilter(/(ng-animate)/)).toThrowMinErr('$animate', 'nongcls');
+        expect(setFilter(/(foo|ng-animate|bar)/)).toThrowMinErr('$animate', 'nongcls');
+        expect(setFilter(/(foo|)ng-animate(|bar)/)).toThrowMinErr('$animate', 'nongcls');
 
-        function assertError(regex, bool) {
-          var expectation = expect(function() {
+        expect(setFilter(/ng-animater/)).not.toThrow();
+        expect(setFilter(/my-ng-animate/)).not.toThrow();
+        expect(setFilter(/first ng-animater last/)).not.toThrow();
+        expect(setFilter(/first my-ng-animate last/)).not.toThrow();
+
+        function setFilter(regex) {
+          return function() {
             $animateProvider.classNameFilter(regex);
-          });
-
-          var message = '$animateProvider.classNameFilter(regex) prohibits accepting a regex value which matches/contains the "ng-animate" CSS class.';
-
-          if (bool) {
-            expectation.toThrowMinErr('$animate', 'nongcls', message);
-          } else {
-            expectation.not.toThrowMinErr('$animate', 'nongcls', message);
-          }
+          };
         }
-      });
-    });
+      })
+    );
 
     it('should complete the leave DOM operation in case the classNameFilter fails', function() {
       module(function($animateProvider) {
