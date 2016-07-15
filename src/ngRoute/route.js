@@ -23,9 +23,39 @@ var isObject;
  * <div doc-module-components="ngRoute"></div>
  */
  /* global -ngRouteModule */
-var ngRouteModule = angular.module('ngRoute', ['ng']).
-                        provider('$route', $RouteProvider),
+var ngRouteModule = angular.module('ngRoute', ['ng'])
+                        .provider('$route', $RouteProvider)
+                        .factory('$$trackLocationChanges', ['$rootScope', '$location', $$trackLocationChanges])
+                        .run(['$$trackLocationChanges', function($$trackLocationChanges) {
+                          $$trackLocationChanges.start();
+                        }]),
+
     $routeMinErr = angular.$$minErr('ngRoute');
+
+function $$trackLocationChanges($rootScope, $location) {
+  var removeStartHandler, removeSuccessHandler;
+  var service = {
+    events: [],
+    start: function() {
+      removeStartHandler = $rootScope.$on('$locationChangeStart', storeStartEvent);
+      removeSuccessHandler = $rootScope.$on('$locationChangeSuccess', storeSuccessEvent);
+    },
+    stop: function() {
+      removeStartHandler();
+      removeSuccessHandler();
+    }
+  };
+
+  return service;
+
+  function storeStartEvent(e, url) {
+    service.events.push({ startEvent: e, locationPath: $location.path(), locationSearch: $location.search() });
+  }
+
+  function storeSuccessEvent(e) {
+    service.events[service.events.length-1].successEvent = e;
+  }
+}
 
 /**
  * @ngdoc provider
@@ -295,7 +325,9 @@ function $RouteProvider() {
                '$injector',
                '$templateRequest',
                '$sce',
-      function($rootScope, $location, $routeParams, $q, $injector, $templateRequest, $sce) {
+               '$$trackLocationChanges',
+      function($rootScope, $location, $routeParams, $q, $injector, $templateRequest, $sce, $$trackLocationChanges) {
+
 
     /**
      * @ngdoc service
@@ -525,7 +557,7 @@ function $RouteProvider() {
             };
 
             $rootScope.$evalAsync(function() {
-              prepareRoute(fakeLocationEvent);
+              prepareRoute(fakeLocationEvent, $location.path(), $location.search());
               if (!fakeLocationEvent.defaultPrevented) commitRoute();
             });
           },
@@ -555,7 +587,22 @@ function $RouteProvider() {
           }
         };
 
-    $rootScope.$on('$locationChangeStart', prepareRoute);
+    var eventPair;
+    while(eventPair = $$trackLocationChanges.events.pop()) {
+      // find the most recent success event
+      if (eventPair.successEvent) {
+        prepareRoute(eventPair.startEvent, eventPair.locationPath, eventPair.locationSearch);
+        // if the start event is not prevented then commit the change and escape
+        // otherwise try the previous location change
+        if (!eventPair.startEvent.defaultPrevented) {
+          commitRoute(eventPair.successEvent);
+          break;
+        }
+      }
+    }
+    $$trackLocationChanges.stop();
+
+    $rootScope.$on('$locationChangeStart', function(e) { return prepareRoute(e, $location.path(), $location.search()); });
     $rootScope.$on('$locationChangeSuccess', commitRoute);
 
     return $route;
@@ -594,10 +641,10 @@ function $RouteProvider() {
       return params;
     }
 
-    function prepareRoute($locationEvent) {
+    function prepareRoute($locationEvent, locationPath, locationSearch) {
       var lastRoute = $route.current;
 
-      preparedRoute = parseRoute();
+      preparedRoute = parseRoute(locationPath, locationSearch);
       preparedRouteIsUpdateOnly = preparedRoute && lastRoute && preparedRoute.$$route === lastRoute.$$route
           && angular.equals(preparedRoute.pathParams, lastRoute.pathParams)
           && !preparedRoute.reloadOnSearch && !forceReload;
@@ -612,6 +659,7 @@ function $RouteProvider() {
     }
 
     function commitRoute() {
+      $route.initialized = true;
       var lastRoute = $route.current;
       var nextRoute = preparedRoute;
 
@@ -756,13 +804,13 @@ function $RouteProvider() {
     /**
      * @returns {Object} the current active route, by matching it against the URL
      */
-    function parseRoute() {
+    function parseRoute(locationPath, locationSearch) {
       // Match a route
       var params, match;
       angular.forEach(routes, function(route, path) {
-        if (!match && (params = switchRouteMatcher($location.path(), route))) {
+        if (!match && (params = switchRouteMatcher(locationPath, route))) {
           match = inherit(route, {
-            params: angular.extend({}, $location.search(), params),
+            params: angular.extend({}, locationSearch, params),
             pathParams: params});
           match.$$route = route;
         }

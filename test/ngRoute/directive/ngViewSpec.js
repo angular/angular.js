@@ -695,6 +695,122 @@ describe('ngView', function() {
     });
   });
 
+  describe('ngView in async template', function() {
+
+    beforeEach(module('ngRoute'));
+    beforeEach(module(function($compileProvider, $provide, $routeProvider) {
+      $compileProvider.directive('asyncView', function() {
+        return {templateUrl: 'async-view.html'};
+      });
+
+      $provide.decorator('$templateRequest', function($timeout) {
+        return function() {
+          return $timeout(angular.identity, 500, false, '<ng-view></ng-view>');
+        };
+      });
+
+      $routeProvider.when('/', {template: 'Hello, world!'});
+      $routeProvider.when('/one', {template: 'One'});
+      $routeProvider.when('/two', {template: 'Two'});
+    }));
+
+
+    it('should work correctly upon initial page load',
+      // Injecting `$location` here is necessary, so that it gets instantiated early
+      inject(function($compile, $location, $rootScope, $timeout) {
+        var elem = $compile('<async-view></async-view>')($rootScope);
+
+        $rootScope.$digest();
+        expect(elem.text()).toBe('');
+
+        $timeout.flush(500);
+        expect(elem.text()).toBe('Hello, world!');
+
+        dealoc(elem);
+      })
+    );
+
+    it('should cope with multiple location changes before the template arrives', function() {
+      inject(function($compile, $location, $rootScope, $timeout) {
+        var elem = $compile('<async-view></async-view>')($rootScope);
+
+        $rootScope.$digest();
+        expect(elem.text()).toBe('');
+
+        $location.path('one');
+        $rootScope.$digest();
+        expect(elem.text()).toBe('');
+
+        $location.path('two');
+        $rootScope.$digest();
+        expect(elem.text()).toBe('');
+
+        $timeout.flush(500);
+        expect(elem.text()).toBe('Two');
+
+        dealoc(elem);
+      });
+    });
+
+    it('should use the previous location change if the latest is prevented via $location event', function() {
+      inject(function($compile, $location, $rootScope, $timeout) {
+        var preventDefault;
+
+        $rootScope.$on('$locationChangeStart', function(e) {
+          if (preventDefault) e.preventDefault();
+        });
+
+        var elem = $compile('<async-view></async-view>')($rootScope);
+
+        $rootScope.$digest();
+        expect(elem.text()).toBe('');
+
+        preventDefault = false;
+        $location.path('one');
+        $rootScope.$digest();
+        expect(elem.text()).toBe('');
+
+
+        preventDefault = true;
+        $location.path('two');
+        $rootScope.$digest();
+        expect(elem.text()).toBe('');
+
+        $timeout.flush(500);
+        expect(elem.text()).toBe('One');
+
+        dealoc(elem);
+      });
+    });
+
+    it('should use the previous location change if the latest is prevented via $route event', function() {
+      inject(function($compile, $location, $rootScope, $timeout) {
+
+        $rootScope.$on('$routeChangeStart', function(e, next, current) {
+  	      if (next.$$route.originalPath == '/two') e.preventDefault();
+        });
+
+        var elem = $compile('<async-view></async-view>')($rootScope);
+
+        $rootScope.$digest();
+        expect(elem.text()).toBe('');
+
+        $location.path('one');
+        $rootScope.$digest();
+        expect(elem.text()).toBe('');
+
+
+        $location.path('two');
+        $rootScope.$digest();
+        expect(elem.text()).toBe('');
+
+        $timeout.flush(500);
+        expect(elem.text()).toBe('One');
+
+        dealoc(elem);
+      });
+    });  });
+
   describe('animations', function() {
     var body, element, $rootElement;
 
