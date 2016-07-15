@@ -12,4 +12,6 @@ config.capabilities = {
   browserName: 'chrome'
 };
 
+config.directConnect = true;
+
 exports.config = config;
