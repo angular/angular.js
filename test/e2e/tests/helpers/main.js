@@ -1,7 +1,4 @@
 var helper = {
-  andWaitForAngular: function() {
-    browser.waitForAngular();
-  },
   loadFixture: function(fixture) {
     var i = 0;
     while (fixture[i] === '/') ++i;
