@@ -200,4 +200,4 @@ means that it will be executed one or more times during the each `$digest` cycle
 
 ## Testing custom filters
 
-See the [phonecat tutorial](http://docs.angularjs.org/tutorial/step_09#test) for an example.
+See the [phonecat tutorial](http://docs.angularjs.org/tutorial/step_11#testing) for an example.

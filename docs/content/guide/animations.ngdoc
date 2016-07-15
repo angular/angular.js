@@ -443,4 +443,4 @@ assumed parent.
 
 For a full breakdown of each method available on `$animate`, see the {@link ng.$animate API documentation}.
 
-To see a complete demo, see the {@link tutorial/step_12 animation step within the AngularJS phonecat tutorial}.
+To see a complete demo, see the {@link tutorial/step_14 animation step within the AngularJS phonecat tutorial}.
