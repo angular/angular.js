@@ -255,29 +255,33 @@ describe('animations', function() {
       });
     });
 
-    it('should throw a minErr if a regex value is used which partially contains or fully matches the `ng-animate` CSS class', function() {
+    it('should throw a minErr if a regex value is used which partially contains or fully matches the `ng-animate` CSS class',
       module(function($animateProvider) {
+        var errorMessage = '$animateProvider.classNameFilter(regex) prohibits accepting a regex ' +
+                           'value which matches/contains the "ng-animate" CSS class.';
+
         assertError(/ng-animate/, true);
         assertError(/first ng-animate last/, true);
         assertError(/ng-animate-special/, false);
         assertError(/first ng-animate-special last/, false);
         assertError(/first ng-animate ng-animate-special last/, true);
+        assertError(/(ng-animate)/, true);
+        assertError(/(foo|ng-animate|bar)/, true);
+        assertError(/(foo|)ng-animate(|bar)/, true);
 
         function assertError(regex, bool) {
           var expectation = expect(function() {
             $animateProvider.classNameFilter(regex);
           });
 
-          var message = '$animateProvider.classNameFilter(regex) prohibits accepting a regex value which matches/contains the "ng-animate" CSS class.';
-
           if (bool) {
-            expectation.toThrowMinErr('$animate', 'nongcls', message);
+            expectation.toThrowMinErr('$animate', 'nongcls', errorMessage);
           } else {
-            expectation.not.toThrowMinErr('$animate', 'nongcls', message);
+            expectation.not.toThrow();
           }
         }
-      });
-    });
+      })
+    );
 
     it('should complete the leave DOM operation in case the classNameFilter fails', function() {
       module(function($animateProvider) {
