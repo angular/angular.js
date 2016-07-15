@@ -283,6 +283,19 @@ describe('animations', function() {
       })
     );
 
+    it('should clear the `classNameFilter` if a disallowed RegExp is passed',
+      module(function($animateProvider) {
+        var validRegex = /no-ng-animate/;
+        var invalidRegex = /no ng-animate/;
+
+        $animateProvider.classNameFilter(validRegex);
+        expect($animateProvider.classNameFilter()).toEqual(validRegex);
+
+        try { $animateProvider.classNameFilter(invalidRegex); } catch (err) {}
+        expect($animateProvider.classNameFilter()).toBeNull();
+      })
+    );
+
     it('should complete the leave DOM operation in case the classNameFilter fails', function() {
       module(function($animateProvider) {
         $animateProvider.classNameFilter(/memorable-animation/);
