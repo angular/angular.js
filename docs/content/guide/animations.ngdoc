@@ -282,14 +282,46 @@ myModule.run(function($animate) {
 
 ## How to (selectively) enable, disable and skip animations
 
-There are three different ways to disable animations, both globally and for specific animations.
+There are several different ways to disable animations, both globally and for specific animations.
 Disabling specific animations can help to speed up the render performance, for example for large
 `ngRepeat` lists that don't actually have animations. Because `ngAnimate` checks at runtime if
 animations are present, performance will take a hit even if an element has no animation.
 
-### During the config: {@link $animateProvider#classNameFilter $animateProvider.classNameFilter()}
+### During the config: {@link $animateProvider#customFilter $animateProvider.customFilter()}
 
 This function can be called during the {@link angular.Module#config config} phase of an app. It
+takes a filter function as the only argument, which will then be used to "filter" animations (based
+on the animated element, the event type, and the animation options). Only when the filter function
+returns `true`, will the animation be performed. This allows great flexibility - you can easily
+create complex rules, such as allowing specific events only or enabling animations on specific
+subtrees of the DOM, and dynamically modify them, for example disabling animations at certain points
+in time or under certain circumstances.
+
+```js
+app.config(function($animateProvider) {
+  $animateProvider.customFilter(function(node, event, options) {
+    // Example: Only animate `enter` and `leave` operations.
+    return event === 'enter' || event === 'leave';
+  });
+});
+```
+
+The `customFilter` approach generally gives a big speed boost compared to other strategies, because
+the matching is done before other animation disabling strategies are checked.
+
+<div class="alert alert-success">
+  **Best Practice:**
+  Keep the filtering function as lean as possible, because it will be called for each DOM
+  action (e.g. insertion, removal, class change) performed by "animation-aware" directives.
+  See {@link guide/animations#which-directives-support-animations- here} for a list of built-in
+  directives that support animations.
+  Performing computationally expensive or time-consuming operations on each call of the
+  filtering function can make your animations sluggish.
+</div>
+
+### During the config: {@link $animateProvider#classNameFilter $animateProvider.classNameFilter()}
+
+This function too can be called during the {@link angular.Module#config config} phase of an app. It
 takes a regex as the only argument, which will then be matched against the classes of any element
 that is about to be animated. The regex allows a lot of flexibility - you can either allow
 animations for specific classes only (useful when you are working with 3rd party animations), or
@@ -309,10 +341,11 @@ app.config(function($animateProvider) {
 }
 ```
 
-The `classNameFilter` approach generally gives the biggest speed boost, because the matching is done
-before any other animation disabling strategies are checked. However, that also means it is not
-possible to override class name matching with the two following strategies. It's of course still
-possible to enable / disable animations by changing an element's class name at runtime.
+The `classNameFilter` approach generally gives a big speed boost compared to other strategies,
+because the matching is done before other animation disabling strategies are checked. However, that
+also means it is not possible to override class name matching with the two following strategies.
+It's of course still possible to enable / disable animations by changing an element's class name at
+runtime.
 
 ### At runtime: {@link ng.$animate#enabled $animate.enabled()}
 
