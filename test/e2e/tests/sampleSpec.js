@@ -1,7 +1,7 @@
 // Sample E2E test:
 describe('Sample', function() {
   beforeEach(function() {
-    loadFixture('sample').andWaitForAngular();
+    loadFixture('sample');
   });
 
   it('should have the interpolated text', function() {
