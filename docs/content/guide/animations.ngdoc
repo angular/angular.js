@@ -347,6 +347,16 @@ By setting `transition: 0s`, ngAnimate will ignore the existing transition style
 animations will still execute, though). This can be used to prevent {@link guide/animations#preventing-collisions-with-existing-animations-and-third-party-libraries
 issues with existing animations interfering with ngAnimate}.
 
+### Enable animations for elements outside of the Angular application DOM tree: {@link ng.$animate#pin $animate.pin()}
+
+It is recommended that the `ngApp` directive is placed on the body tag but there are often times
+when an application needs to place it on a different wrapper tag. `ngAnimate` checks to see
+if the element being animated is a child of the application and disables animation if it is not.
+
+To avoid unintended clipping most libraries will append popup and modal elements as the last
+child in the body tag. You can use `$animate.pin()` to specify a host parent element to allow
+the element to be animated even if it exists outside of the DOM structure of the Angular application.
+
 ## Preventing flicker before an animation starts
 
 When nesting elements with structural animations such as `ngIf` into elements that have class-based
