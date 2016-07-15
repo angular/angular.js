@@ -252,6 +252,7 @@ var $AnimateProvider = ['$provide', /** @this */ function($provide) {
       if (classNameFilter) {
         var reservedRegex = new RegExp('[(\\s|\\/)]' + NG_ANIMATE_CLASSNAME + '[(\\s|\\/)]');
         if (reservedRegex.test(classNameFilter.toString())) {
+          classNameFilter = null;
           throw $animateMinErr('nongcls', '$animateProvider.classNameFilter(regex) prohibits accepting a regex value which matches/contains the "{0}" CSS class.', NG_ANIMATE_CLASSNAME);
         }
       }
