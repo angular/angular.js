@@ -1134,9 +1134,6 @@ var ngModelDirective = ['$rootScope', function($rootScope) {
 }];
 
 
-
-'use strict';
-
 var DEFAULT_REGEXP = /(\s+|^)default(\s+|$)/;
 
 /**
