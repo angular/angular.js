@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html ng-app="test">
+  <body>
+    <div class="fixed-header" ng-controller="TestController">
+      <button ng-click="scrollTo('anchor-' + x)" ng-repeat="x in [1, 2, 3, 4, 5]">
+        Scroll to anchor-{{x}}
+      </button>
+    </div>
+    <div class="anchor" id="anchor-{{y}}" ng-repeat="y in [1, 2, 3, 4, 5]">
+      Anchor {{y}} of 5
+    </div>
+
+    <style type="text/css">
+      body {
+        height: 100%;
+        margin: 0;
+        padding-top: 50px;
+      }
+      .anchor {
+        border: 2px dashed darkorchid;
+        padding: 10px 10px 390px 10px;
+      }
+      .fixed-header {
+        background-color: rgba(0, 0, 0, 0.2);
+        height: 50px;
+        position: fixed;
+        top: 0; left: 0; right: 0;
+      }
+      .fixed-header > button {
+        display: inline-block;
+        margin: 5px 15px;
+      }
+    </style>
+
+    <script src="angular.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
