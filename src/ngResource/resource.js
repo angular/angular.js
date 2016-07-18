@@ -787,7 +787,8 @@ angular.module('ngResource', ['ng']).
               } :
               undefined);
             if (hasError && !hasResponseErrorInterceptor) {
-              // Avoid PUR, but still reject the returned promise
+              // Avoid `Possibly Unhandled Rejection` error,
+              // but still fulfill the returned promise with a rejection
               promise.catch(noop);
             }
 
