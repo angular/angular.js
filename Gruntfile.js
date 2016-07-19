@@ -1,5 +1,8 @@
 'use strict';
 
+var serveFavicon = require('serve-favicon');
+var serveStatic = require('serve-static');
+var serveIndex = require('serve-index');
 var files = require('./angularFiles').files;
 var util = require('./lib/grunt/utils.js');
 var versionInfo = require('./lib/versions/version-info');
@@ -44,9 +47,9 @@ module.exports = function(grunt) {
               util.conditionalCsp(),
               util.rewrite(),
               e2e.middleware(),
-              connect.favicon('images/favicon.ico'),
-              connect.static(base),
-              connect.directory(base)
+              serveFavicon('images/favicon.ico'),
+              serveStatic(base),
+              serveIndex(base)
             ];
           }
         }
@@ -71,8 +74,8 @@ module.exports = function(grunt) {
               },
               util.conditionalCsp(),
               e2e.middleware(),
-              connect.favicon('images/favicon.ico'),
-              connect.static(base)
+              serveFavicon('images/favicon.ico'),
+              serveStatic(base)
             ];
           }
         }
