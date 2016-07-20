@@ -765,7 +765,8 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           }
         }
 
-        nodeName = nodeName_(this.$$element);
+        // SVG elements' `nodeName` can be lowercase
+        nodeName = nodeName_(this.$$element).toUpperCase();
 
         // sanitize a[href] and img[src] values
         if ((nodeName === 'A' && (key === 'href' || key === 'xlinkHref')) ||

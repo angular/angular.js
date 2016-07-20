@@ -4804,6 +4804,8 @@ describe('$compile', function() {
     });
 
     it('should use $$sanitizeUri when working with svg and xlink:href', function() {
+      if (!window.SVGElement) return;
+
       var $$sanitizeUri = jasmine.createSpy('$$sanitizeUri');
       module(function($provide) {
         $provide.value('$$sanitizeUri', $$sanitizeUri);
