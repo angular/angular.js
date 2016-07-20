@@ -13,7 +13,7 @@ if (process.env.BROWSER_PROVIDER === 'browserstack') {
     }),
     capabilitiesForBrowserStack({
       browserName: 'firefox',
-      version: '28'
+      version: '47'
     }),
     capabilitiesForBrowserStack({
       browserName: 'safari',
@@ -33,7 +33,7 @@ if (process.env.BROWSER_PROVIDER === 'browserstack') {
     }),
     capabilitiesForSauceLabs({
       browserName: 'firefox',
-      version: '28'
+      version: '47'
     }),
     capabilitiesForSauceLabs({
       browserName: 'safari',
@@ -54,7 +54,7 @@ function capabilitiesForBrowserStack(capabilities) {
   return {
     'browserstack.user': process.env.BROWSER_STACK_USERNAME,
     'browserstack.key': process.env.BROWSER_STACK_ACCESS_KEY,
-    'browserstack.local' : 'true',
+    'browserstack.local': 'true',
     'browserstack.debug': 'true',
     'browserstack.tunnelIdentifier': process.env.TRAVIS_JOB_NUMBER,
     'tunnelIdentifier': process.env.TRAVIS_JOB_NUMBER,
@@ -64,7 +64,8 @@ function capabilitiesForBrowserStack(capabilities) {
 
     'browserName': capabilities.browserName,
     'platform': capabilities.platform,
-    'version': capabilities.version
+    'version': capabilities.version,
+    'elementScrollBehavior': 1
   };
 }
 
@@ -77,6 +78,7 @@ function capabilitiesForSauceLabs(capabilities) {
 
     'browserName': capabilities.browserName,
     'platform': capabilities.platform,
-    'version': capabilities.version
+    'version': capabilities.version,
+    'elementScrollBehavior': 1
   };
 }
