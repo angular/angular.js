@@ -21,7 +21,7 @@ describe('$templateRequest', function() {
 
           expect($http.get).toHaveBeenCalledOnceWith('tpl.html', {
             cache: $templateCache,
-            transformResponse: [  ]
+            transformResponse: []
           });
         });
 
@@ -135,7 +135,7 @@ describe('$templateRequest', function() {
       $httpBackend.expectGET('tpl.html').respond(404);
 
       var err;
-      $templateRequest('tpl.html', true).catch(function(reason) { err = reason; });
+      $templateRequest('tpl.html', true)['catch'](function(reason) { err = reason; });
 
       $rootScope.$digest();
       $httpBackend.flush();
@@ -214,7 +214,7 @@ describe('$templateRequest', function() {
 
     try {
       $httpBackend.flush();
-    } catch (e) {}
+    } catch (e) { /* empty */ }
 
     expect($templateRequest.totalPendingRequests).toBe(0);
   }));

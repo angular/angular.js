@@ -14,7 +14,7 @@ describe('$httpBackend', function() {
       $$scripts: [],
       createElement: jasmine.createSpy('createElement').and.callFake(function() {
         // Return a proper script element...
-        return document.createElement(arguments[0]);
+        return window.document.createElement(arguments[0]);
       }),
       body: {
         appendChild: jasmine.createSpy('body.appendChild').and.callFake(function(script) {
@@ -22,7 +22,7 @@ describe('$httpBackend', function() {
         }),
         removeChild: jasmine.createSpy('body.removeChild').and.callFake(function(script) {
           var index = fakeDocument.$$scripts.indexOf(script);
-          if (index != -1) {
+          if (index !== -1) {
             fakeDocument.$$scripts.splice(index, 1);
           }
         })

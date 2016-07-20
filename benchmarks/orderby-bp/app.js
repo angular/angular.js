@@ -1,6 +1,8 @@
+'use strict';
+
 var app = angular.module('orderByBenchmark', []);
 
-app.controller('DataController', function($rootScope, $scope) {
+app.controller('DataController', function DataController($rootScope, $scope) {
   this.ngRepeatCount = 5000;
   this.rows = [];
   var self = this;
@@ -37,7 +39,7 @@ app.controller('DataController', function($rootScope, $scope) {
         }
       }
     }
-  })
+  });
 
   benchmarkSteps.push({
     name: '$apply',

@@ -463,7 +463,8 @@ describe("ngAnimate $$animateCssDriver", function() {
                 $$willAnimate: addClass === expectedClass,
                 start: function() {
                   animationStarted = addClass;
-                  return runner = new $$AnimateRunner();
+                  runner = new $$AnimateRunner();
+                  return runner;
                 }
               };
             };

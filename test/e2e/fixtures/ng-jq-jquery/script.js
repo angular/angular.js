@@ -1,3 +1,5 @@
+'use strict';
+
 angular.
   module('test', []).
   run(function($rootScope) {

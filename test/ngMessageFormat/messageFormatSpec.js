@@ -129,13 +129,13 @@ describe('$$ngMessageFormat', function() {
           expect(parsedFn.expressions.length).toBe(1);
           expect(parsedFn.expressions[0]).toEqual("recipients.length");
 
-          $rootScope.recipients.length=2;
+          $rootScope.recipients.length = 2;
           expect(parsedFn($rootScope)).toEqual("You gave some people gifts");
 
-          $rootScope.recipients.length=1;
+          $rootScope.recipients.length = 1;
           expect(parsedFn($rootScope)).toEqual("You gave one person a gift");
 
-          $rootScope.recipients.length=0;
+          $rootScope.recipients.length = 0;
           expect(parsedFn($rootScope)).toEqual("You gave no gifts");
         });
 
@@ -152,13 +152,13 @@ describe('$$ngMessageFormat', function() {
           expect(parsedFn.expressions.length).toBe(1);
           expect(parsedFn.expressions[0]).toEqual("recipients.length");
 
-          $rootScope.recipients.length=2;
+          $rootScope.recipients.length = 2;
           expect(parsedFn($rootScope)).toEqual("Harry Potter gave them a gift");
 
-          $rootScope.recipients.length=1;
+          $rootScope.recipients.length = 1;
           expect(parsedFn($rootScope)).toEqual("Harry Potter gave one gift to Alice");
 
-          $rootScope.recipients.length=0;
+          $rootScope.recipients.length = 0;
           expect(parsedFn($rootScope)).toEqual("Harry Potter gave no gifts");
         });
 
@@ -175,17 +175,17 @@ describe('$$ngMessageFormat', function() {
           expect(parsedFn.expressions.length).toBe(1);
           expect(parsedFn.expressions[0]).toEqual("recipients.length");
 
-          $rootScope.recipients.length=3;
+          $rootScope.recipients.length = 3;
           // "#" should get replaced with the value of "recipients.length - offset"
           expect(parsedFn($rootScope)).toEqual("Harry Potter gave Alice and 2 other people a gift (#=2)");
 
-          $rootScope.recipients.length=2;
+          $rootScope.recipients.length = 2;
           expect(parsedFn($rootScope)).toEqual("Harry Potter gave Alice and one other person a gift (#=1)");
 
-          $rootScope.recipients.length=1;
+          $rootScope.recipients.length = 1;
           expect(parsedFn($rootScope)).toEqual("Harry Potter gave one gift to Alice (#=0)");
 
-          $rootScope.recipients.length=0;
+          $rootScope.recipients.length = 0;
           expect(parsedFn($rootScope)).toEqual("Harry Potter gave no gifts (#=-1)");
         });
       });

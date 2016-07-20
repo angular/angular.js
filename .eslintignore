@@ -1,0 +1,11 @@
+bower_components/**
+build/**
+docs/bower_components/**
+docs/app/assets/js/angular-bootstrap/**
+docs/config/templates/**
+node_modules/**
+lib/htmlparser/**
+src/angular.bind.js
+src/ngParseExt/ucd.js
+i18n/closure/**
+tmp/**

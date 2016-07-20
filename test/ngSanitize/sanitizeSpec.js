@@ -313,7 +313,7 @@ describe('HTML', function() {
     beforeEach(function() {
       html = '';
       uriValidator = jasmine.createSpy('uriValidator');
-      writer = htmlSanitizeWriter({push:function(text) {html+=text;}}, uriValidator);
+      writer = htmlSanitizeWriter({push:function(text) {html += text;}}, uriValidator);
     });
 
     it('should write basic HTML', function() {
@@ -479,13 +479,13 @@ describe('HTML', function() {
     });
 
     it('should not be URI', function() {
-      /* jshint scripturl: true */
+      // eslint-disable-next-line no-script-url
       expect('javascript:alert').not.toBeValidUrl();
     });
 
     describe('javascript URLs', function() {
       it('should ignore javascript:', function() {
-        /* jshint scripturl: true */
+        // eslint-disable-next-line no-script-url
         expect('JavaScript:abc').not.toBeValidUrl();
         expect(' \n Java\n Script:abc').not.toBeValidUrl();
         expect('http://JavaScript/my.js').toBeValidUrl();

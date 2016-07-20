@@ -1,0 +1,9 @@
+{
+  "root": true,
+  "extends": "../../../.eslintrc-node.json",
+
+  "env": {
+    "jasmine": true,
+    "protractor": true
+  }
+}

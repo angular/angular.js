@@ -1,3 +1,5 @@
+'use strict';
+
 describe('Customizing the jqLite / jQuery version', function() {
   it('should be able to force jqLite', function() {
     loadFixture('ng-jq');

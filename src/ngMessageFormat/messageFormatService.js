@@ -174,13 +174,13 @@
  */
 
 var $$MessageFormatFactory = ['$parse', '$locale', '$sce', '$exceptionHandler', function $$messageFormat(
-                   $parse,   $locale,   $sce,   $exceptionHandler) {
+                               $parse,   $locale,   $sce,   $exceptionHandler) {
 
   function getStringifier(trustedContext, allOrNothing, text) {
     return function stringifier(value) {
       try {
         value = trustedContext ? $sce['getTrusted'](trustedContext, value) : $sce['valueOf'](value);
-        return allOrNothing && (value === void 0) ? value : stringify(value);
+        return allOrNothing && (value === undefined) ? value : stringify(value);
       } catch (err) {
         $exceptionHandler($interpolateMinErr['interr'](text, err));
       }
@@ -201,7 +201,7 @@ var $$MessageFormatFactory = ['$parse', '$locale', '$sce', '$exceptionHandler', 
 }];
 
 var $$interpolateDecorator = ['$$messageFormat', '$delegate', function $$interpolateDecorator($$messageFormat, $interpolate) {
-  if ($interpolate['startSymbol']() != "{{" || $interpolate['endSymbol']() != "}}") {
+  if ($interpolate['startSymbol']() !== "{{" || $interpolate['endSymbol']() !== "}}") {
     throw $interpolateMinErr('nochgmustache', 'angular-message-format.js currently does not allow you to use custom start and end symbols for interpolation.');
   }
   var interpolate = $$messageFormat['interpolate'];

@@ -227,18 +227,18 @@ it('should show example', inject(
   },
   function($location) {
     // open http://example.com/base/index.html#!/a
-    $location.absUrl() == 'http://example.com/base/index.html#!/a'
-    $location.path() == '/a'
+    $location.absUrl() === 'http://example.com/base/index.html#!/a'
+    $location.path() === '/a'
 
     $location.path('/foo')
-    $location.absUrl() == 'http://example.com/base/index.html#!/foo'
+    $location.absUrl() === 'http://example.com/base/index.html#!/foo'
 
-    $location.search() == {}
+    $location.search() === {}
     $location.search({a: 'b', c: true});
-    $location.absUrl() == 'http://example.com/base/index.html#!/foo?a=b&c'
+    $location.absUrl() === 'http://example.com/base/index.html#!/foo?a=b&c'
 
     $location.path('/new').search('x=y');
-    $location.absUrl() == 'http://example.com/base/index.html#!/new?x=y'
+    $location.absUrl() === 'http://example.com/base/index.html#!/new?x=y'
   }
 ));
 ```
@@ -271,29 +271,29 @@ it('should show example', inject(
     // in browser with HTML5 history support:
     // open http://example.com/#!/a -> rewrite to http://example.com/a
     // (replacing the http://example.com/#!/a history record)
-    $location.path() == '/a'
+    $location.path() === '/a'
 
     $location.path('/foo');
-    $location.absUrl() == 'http://example.com/foo'
+    $location.absUrl() === 'http://example.com/foo'
 
-    $location.search() == {}
+    $location.search() === {}
     $location.search({a: 'b', c: true});
-    $location.absUrl() == 'http://example.com/foo?a=b&c'
+    $location.absUrl() === 'http://example.com/foo?a=b&c'
 
     $location.path('/new').search('x=y');
-    $location.url() == 'new?x=y'
-    $location.absUrl() == 'http://example.com/new?x=y'
+    $location.url() === 'new?x=y'
+    $location.absUrl() === 'http://example.com/new?x=y'
 
     // in browser without html5 history support:
     // open http://example.com/new?x=y -> redirect to http://example.com/#!/new?x=y
     // (again replacing the http://example.com/new?x=y history item)
-    $location.path() == '/new'
-    $location.search() == {x: 'y'}
+    $location.path() === '/new'
+    $location.search() === {x: 'y'}
 
     $location.path('/foo/bar');
-    $location.path() == '/foo/bar'
-    $location.url() == '/foo/bar?x=y'
-    $location.absUrl() == 'http://example.com/#!/foo/bar?x=y'
+    $location.path() === '/foo/bar'
+    $location.url() === '/foo/bar?x=y'
+    $location.absUrl() === 'http://example.com/#!/foo/bar?x=y'
   }
 ));
 ```
@@ -411,9 +411,9 @@ In these examples we use `<base href="/base/index.html" />`. The inputs represen
 
    .controller("LocationController", function($scope, $location) {
      $scope.$location = {};
-     angular.forEach("protocol host port path search hash".split(" "), function(method){
-      $scope.$location[method] = function(){
-        var result = $location[method].call($location);
+     angular.forEach("protocol host port path search hash".split(" "), function(method) {
+      $scope.$location[method] = function() {
+        var result = $location[method]();
         return angular.isObject(result) ? angular.toJson(result) : result;
       };
      });
@@ -460,7 +460,7 @@ In these examples we use `<base href="/base/index.html" />`. The inputs represen
    .directive('ngAddressBar', function($browser, $timeout) {
       return {
         template: 'Address: <input id="addressBar" type="text" style="width: 400px" >',
-        link: function(scope, element, attrs){
+        link: function(scope, element, attrs) {
           var input = element.children("input"), delay;
 
           input.on('keypress keyup keydown', function(event) {
@@ -488,7 +488,7 @@ In these examples we use `<base href="/base/index.html" />`. The inputs represen
         url = 'http://www.example.com/base/path?a=b#h';
 
 
-    it("should show fake browser info on load", function(){
+    it("should show fake browser info on load", function() {
       expect(addressBar.getAttribute('value')).toBe(url);
 
       expect(element(by.binding('$location.protocol()')).getText()).toBe('http');
@@ -500,7 +500,7 @@ In these examples we use `<base href="/base/index.html" />`. The inputs represen
 
     });
 
-    it("should change $location accordingly", function(){
+    it("should change $location accordingly", function() {
       var navigation = element.all(by.css("#navigation a"));
 
       navigation.get(0).click();
@@ -565,9 +565,9 @@ In these examples we use `<base href="/base/index.html" />`. The inputs represen
 
     .controller("LocationController", function($scope, $location) {
       $scope.$location = {};
-      angular.forEach("protocol host port path search hash".split(" "), function(method){
-        $scope.$location[method] = function(){
-          var result = $location[method].call($location);
+      angular.forEach("protocol host port path search hash".split(" "), function(method) {
+        $scope.$location[method] = function() {
+          var result = $location[method]();
           return angular.isObject(result) ? angular.toJson(result) : result;
         };
       });
@@ -614,7 +614,7 @@ In these examples we use `<base href="/base/index.html" />`. The inputs represen
    .directive('ngAddressBar', function($browser, $timeout) {
       return {
         template: 'Address: <input id="addressBar" type="text" style="width: 400px" >',
-        link: function(scope, element, attrs){
+        link: function(scope, element, attrs) {
           var input = element.children("input"), delay;
 
           input.on('keypress keyup keydown', function(event) {
@@ -641,7 +641,7 @@ In these examples we use `<base href="/base/index.html" />`. The inputs represen
     var addressBar = element(by.css("#addressBar")),
          url = 'http://www.example.com/base/index.html#!/path?a=b#h';
 
-    it("should show fake browser info on load", function(){
+    it("should show fake browser info on load", function() {
       expect(addressBar.getAttribute('value')).toBe(url);
 
       expect(element(by.binding('$location.protocol()')).getText()).toBe('http');
@@ -653,7 +653,7 @@ In these examples we use `<base href="/base/index.html" />`. The inputs represen
 
     });
 
-    it("should change $location accordingly", function(){
+    it("should change $location accordingly", function() {
       var navigation = element.all(by.css("#navigation a"));
 
       navigation.get(0).click();
@@ -735,7 +735,7 @@ ng.$rootScope.Scope scope} life-cycle. This means it's your responsibility to ca
 ```js
 describe('serviceUnderTest', function() {
   beforeEach(module(function($provide) {
-    $provide.factory('serviceUnderTest', function($location){
+    $provide.factory('serviceUnderTest', function($location) {
       // whatever it does...
     });
   });
@@ -843,7 +843,7 @@ to bind it to `ngModel`:
 <file name="script.js">
 angular.module('locationExample', [])
   .controller('LocationController', ['$scope', '$location', function($scope, $location) {
-    $scope.locationPath = function (newLocation) {
+    $scope.locationPath = function(newLocation) {
       return $location.path(newLocation);
     };
   }]);

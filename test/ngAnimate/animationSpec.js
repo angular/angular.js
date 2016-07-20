@@ -208,7 +208,11 @@ describe('$$animation', function() {
         // the animation is started
         $rootScope.$digest();
 
-        event === 'resolve' ? runner.end() : runner.cancel();
+        if (event === 'resolve') {
+          runner.end();
+        } else {
+          runner.cancel();
+        }
 
         // the resolve/rejection digest
         $animate.flush();
@@ -748,7 +752,7 @@ describe('$$animation', function() {
 
           expect(runnerLog).toEqual([]);
 
-          ('from' ? fromElement : toElement).remove();
+          (event === 'from' ? fromElement : toElement).remove();
           expect(runnerLog).toEqual(['end']);
         });
       });
@@ -862,7 +866,8 @@ describe('$$animation', function() {
         mockedDriverFn = function(element, method, options, domOperation) {
           return {
             start: function() {
-              return runner = new $$AnimateRunner();
+              runner = new $$AnimateRunner();
+              return runner;
             }
           };
         };

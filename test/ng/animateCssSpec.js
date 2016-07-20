@@ -126,7 +126,7 @@ describe("$animateCss", function() {
       var cancelSpy = jasmine.createSpy();
       var runner = $animateCss(element, { addClass: 'cool' }).start();
 
-      runner.catch(cancelSpy);
+      runner['catch'](cancelSpy);
       runner.cancel();
       expect(cancelSpy).not.toHaveBeenCalled();
 

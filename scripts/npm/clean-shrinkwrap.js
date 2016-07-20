@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+'use strict';
+
 /**
  * this script is just a temporary solution to deal with the issue of npm outputting the npm
  * shrinkwrap file in an unstable manner.

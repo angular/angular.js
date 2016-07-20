@@ -1,7 +1,14 @@
 'use strict';
 
+// Lots of typed array globals are used in this file and ESLint is
+// not smart enough to understand the `typeof !== 'undefined'` guards.
+/* globals Blob, Uint8ClampedArray, Uint16Array, Uint32Array, Int8Array, Int16Array, Int32Array,
+Float32Array, Float64Array,  */
+
 describe('angular', function() {
   var element;
+
+  var document = window.document;
 
   afterEach(function() {
     dealoc(element);
@@ -559,9 +566,8 @@ describe('angular', function() {
     });
 
     it('should copy String() objects', function() {
-      /*jshint -W053 */
+      // eslint-disable-next-line no-new-wrappers
       var obj = new String('foo');
-      /*jshint +W053 */
       var dest = copy(obj);
       expect(dest).not.toBe(obj);
       expect(isObject(dest)).toBe(true);
@@ -569,9 +575,8 @@ describe('angular', function() {
     });
 
     it('should copy Boolean() objects', function() {
-      /*jshint -W053 */
+      // eslint-disable-next-line no-new-wrappers
       var obj = new Boolean(true);
-      /*jshint +W053 */
       var dest = copy(obj);
       expect(dest).not.toBe(obj);
       expect(isObject(dest)).toBe(true);
@@ -579,9 +584,8 @@ describe('angular', function() {
     });
 
     it('should copy Number() objects', function() {
-      /*jshint -W053 */
+      // eslint-disable-next-line no-new-wrappers
       var obj = new Number(42);
-      /*jshint +W053 */
       var dest = copy(obj);
       expect(dest).not.toBe(obj);
       expect(isObject(dest)).toBe(true);
@@ -589,12 +593,12 @@ describe('angular', function() {
     });
 
     it('should copy falsy String/Boolean/Number objects', function() {
-      /*jshint -W053 */
+      /* eslint-disable no-new-wrappers */
       expect(copy(new String('')).valueOf()).toBe('');
       expect(copy(new Boolean(false)).valueOf()).toBe(false);
       expect(copy(new Number(0)).valueOf()).toBe(0);
       expect(copy(new Number(NaN)).valueOf()).toBeNaN();
-      /*jshint +W053 */
+      /* eslint-enable */
     });
   });
 
@@ -929,7 +933,6 @@ describe('angular', function() {
     });
 
     it('should correctly test for keys that are present on Object.prototype', function() {
-      /* jshint -W001 */
       expect(equals({}, {hasOwnProperty: 1})).toBe(false);
       expect(equals({}, {toString: null})).toBe(false);
     });
@@ -974,7 +977,6 @@ describe('angular', function() {
 
 
     it('should safely compare objects which shadow Object.prototype.hasOwnProperty', function() {
-      /* jshint -W001 */
       var o1 = {
         hasOwnProperty: true,
         a: 1,
@@ -998,7 +1000,7 @@ describe('angular', function() {
 
     function mockCspElement(cspAttrName, cspAttrValue) {
       return spyOn(document, 'querySelector').and.callFake(function(selector) {
-        if (selector == '[' + cspAttrName + ']') {
+        if (selector === '[' + cspAttrName + ']') {
           var html = '<div ' + cspAttrName + (cspAttrValue ? ('="' + cspAttrValue + '" ') : '') + '></div>';
           return jqLite(html)[0];
         }
@@ -1298,7 +1300,6 @@ describe('angular', function() {
 
 
     it('should not break if obj is an array we override hasOwnProperty', function() {
-      /* jshint -W001 */
       var obj = [];
       obj[0] = 1;
       obj[1] = 2;
@@ -1370,7 +1371,7 @@ describe('angular', function() {
       var args,
           log = [];
 
-      (function() { args = arguments; }('a', 'b', 'c'));
+      (function() { args = arguments; })('a', 'b', 'c');
 
       forEach(args, function(value, key) { log.push(key + ':' + value); });
       expect(log).toEqual(['0:a', '1:b', '2:c']);
@@ -1439,7 +1440,6 @@ describe('angular', function() {
 
 
     it('should safely iterate through objects which shadow Object.prototype.hasOwnProperty', function() {
-      /* jshint -W001 */
       var obj = {
         hasOwnProperty: true,
         a: 1,
@@ -1482,7 +1482,7 @@ describe('angular', function() {
 
 
       it('should follow the ES spec when called with arguments', function() {
-        testForEachSpec(2, (function() { return arguments; }(1,2)));
+        testForEachSpec(2, (function() { return arguments; })(1,2));
       });
 
 

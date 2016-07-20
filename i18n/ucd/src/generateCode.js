@@ -1,3 +1,4 @@
+'use strict';
 
 exports.generateCode = generateCode;
 exports.generateFunction = generateFunction;

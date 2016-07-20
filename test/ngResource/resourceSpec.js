@@ -463,7 +463,7 @@ describe("basic usage", function() {
 
   it('should send correct headers', function() {
     $httpBackend.expectPUT('/CreditCard/123', undefined, function(headers) {
-      return headers['If-None-Match'] == "*";
+      return headers['If-None-Match'] === "*";
     }).respond({id:123});
 
     CreditCard.conditionalPut({id: {key:123}});
@@ -1454,7 +1454,7 @@ describe('handling rejections', function() {
     var errorCb2 = jasmine.createSpy('errorCb2');
     var CreditCard = $resource('/CreditCard');
 
-    CreditCard.get(noop, errorCb1).$promise.catch(errorCb2);
+    CreditCard.get(noop, errorCb1).$promise['catch'](errorCb2);
     $httpBackend.flush();
 
     expect(errorCb1).toHaveBeenCalledOnce();

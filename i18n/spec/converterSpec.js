@@ -1,3 +1,5 @@
+'use strict';
+
 var converter = require('../src/converter.js');
 
 describe("convertNumberData", function() {

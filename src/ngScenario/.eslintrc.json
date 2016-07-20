@@ -1,9 +1,5 @@
 {
-  "extends": "../../.jshintrc-base",
   "globals": {
-    "window": false,
-
-    "angular": false,
     "includes": false,
     "asyncForEach": false,
     "msie": false,

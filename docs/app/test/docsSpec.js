@@ -1,3 +1,5 @@
+'use strict';
+
 describe("DocsController", function() {
   var $scope;
 
