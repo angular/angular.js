@@ -1,12 +1,10 @@
 {
-  "extends": "../../.jshintrc-base",
-  "maxlen": false, /* ngAnimate docs contain wide tables */
-  "newcap": false,
+  "rules": {
+    "maxlen": "off", /* ngAnimate docs contain wide tables */
+    "new-cap": "off"
+  },
+
   "globals": {
-    "window": false,
-
-    "angular": false,
-
     /* ng helpers */
     "copy": true,
     "extend": true,

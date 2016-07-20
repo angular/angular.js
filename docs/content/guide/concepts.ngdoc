@@ -103,7 +103,7 @@ different currencies and also pay the invoice.
 <example name="guide-concepts-2" ng-app-included="true" >
   <file name="invoice1.js">
     angular.module('invoice1', [])
-      .controller('InvoiceController', function() {
+      .controller('InvoiceController', function InvoiceController() {
         this.qty = 1;
         this.cost = 2;
         this.inCurr = 'EUR';
@@ -199,7 +199,7 @@ Let's refactor our example and move the currency conversion into a service in an
           EUR: 0.74,
           CNY: 6.09
         };
-        var convert = function (amount, inCurr, outCurr) {
+        var convert = function(amount, inCurr, outCurr) {
           return amount * usdToForeignRates[outCurr] / usdToForeignRates[inCurr];
         };
 
@@ -211,7 +211,7 @@ Let's refactor our example and move the currency conversion into a service in an
   </file>
   <file name="invoice2.js">
     angular.module('invoice2', ['finance2'])
-      .controller('InvoiceController', ['currencyConverter', function(currencyConverter) {
+      .controller('InvoiceController', ['currencyConverter', function InvoiceController(currencyConverter) {
         this.qty = 1;
         this.cost = 2;
         this.inCurr = 'EUR';
@@ -277,7 +277,7 @@ Now that Angular knows of all the parts of the application, it needs to create t
 In the previous section we saw that controllers are created using a factory function.
 For services there are multiple ways to define their factory
 (see the {@link services service guide}).
-In the example above, we are using an anonymous function as the factory function for `currencyConverter` service. 
+In the example above, we are using an anonymous function as the factory function for `currencyConverter` service.
 This function should return the `currencyConverter` service instance.
 
 Back to the initial question: How does the `InvoiceController` get a reference to the `currencyConverter` function?
@@ -303,7 +303,7 @@ The following example shows how this is done with Angular:
 <example name="guide-concepts-3" ng-app-included="true">
   <file name="invoice3.js">
     angular.module('invoice3', ['finance3'])
-      .controller('InvoiceController', ['currencyConverter', function(currencyConverter) {
+      .controller('InvoiceController', ['currencyConverter', function InvoiceController(currencyConverter) {
         this.qty = 1;
         this.cost = 2;
         this.inCurr = 'EUR';
@@ -321,13 +321,13 @@ The following example shows how this is done with Angular:
     angular.module('finance3', [])
       .factory('currencyConverter', ['$http', function($http) {
         var YAHOO_FINANCE_URL_PATTERN =
-              '//query.yahooapis.com/v1/public/yql?q=select * from '+
-              'yahoo.finance.xchange where pair in ("PAIRS")&format=json&'+
+              '//query.yahooapis.com/v1/public/yql?q=select * from ' +
+              'yahoo.finance.xchange where pair in ("PAIRS")&format=json&' +
               'env=store://datatables.org/alltableswithkeys&callback=JSON_CALLBACK';
         var currencies = ['USD', 'EUR', 'CNY'];
         var usdToForeignRates = {};
 
-        var convert = function (amount, inCurr, outCurr) {
+        var convert = function(amount, inCurr, outCurr) {
           return amount * usdToForeignRates[outCurr] / usdToForeignRates[inCurr];
         };
 

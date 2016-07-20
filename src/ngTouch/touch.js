@@ -1,7 +1,6 @@
 'use strict';
 
-/* global ngTouchClickDirectiveFactory: false,
- */
+/* global ngTouchClickDirectiveFactory: false */
 
 /**
  * @ngdoc module
@@ -61,6 +60,7 @@ function $TouchProvider($provide, $compileProvider) {
    */
   var ngClickOverrideEnabled = false;
   var ngClickDirectiveAdded = false;
+  // eslint-disable-next-line no-invalid-this
   this.ngClickOverrideEnabled = function(enabled) {
     if (angular.isDefined(enabled)) {
 
@@ -108,6 +108,7 @@ function $TouchProvider($provide, $compileProvider) {
   * Provides the {@link ngTouch.$touch#ngClickOverrideEnabled `ngClickOverrideEnabled`} method.
   *
   */
+  // eslint-disable-next-line no-invalid-this
   this.$get = function() {
     return {
       /**

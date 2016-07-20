@@ -27,7 +27,7 @@ describe('$$rAF', function() {
 
     try {
       $$rAF.flush();
-    } catch (e) {}
+    } catch (e) { /* empty */ }
     expect(present).toBe(true);
   }));
 
@@ -94,7 +94,7 @@ describe('$$rAF', function() {
 
       try {
         cancel();
-      } catch (e) {}
+      } catch (e) { /* empty */ }
 
       expect($window.webkitCancelRequestAnimationFrame).toHaveBeenCalled();
     });

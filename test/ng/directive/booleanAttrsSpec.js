@@ -36,7 +36,7 @@ describe('boolean attr directives', function() {
     $rootScope.isChecked = false;
     $rootScope.$digest();
     expect(element.attr('checked')).toBeFalsy();
-    $rootScope.isChecked=true;
+    $rootScope.isChecked = true;
     $rootScope.$digest();
     expect(element.attr('checked')).toBeTruthy();
   }));
@@ -60,11 +60,11 @@ describe('boolean attr directives', function() {
 
   it('should bind selected', inject(function($rootScope, $compile) {
     element = $compile('<select><option value=""></option><option ng-selected="isSelected">Greetings!</option></select>')($rootScope);
-    jqLite(document.body).append(element);
-    $rootScope.isSelected=false;
+    jqLite(window.document.body).append(element);
+    $rootScope.isSelected = false;
     $rootScope.$digest();
     expect(element.children()[1].selected).toBeFalsy();
-    $rootScope.isSelected=true;
+    $rootScope.isSelected = true;
     $rootScope.$digest();
     expect(element.children()[1].selected).toBeTruthy();
   }));
@@ -72,10 +72,10 @@ describe('boolean attr directives', function() {
 
   it('should bind readonly', inject(function($rootScope, $compile) {
     element = $compile('<input type="text" ng-readonly="isReadonly" />')($rootScope);
-    $rootScope.isReadonly=false;
+    $rootScope.isReadonly = false;
     $rootScope.$digest();
     expect(element.attr('readOnly')).toBeFalsy();
-    $rootScope.isReadonly=true;
+    $rootScope.isReadonly = true;
     $rootScope.$digest();
     expect(element.attr('readOnly')).toBeTruthy();
   }));
@@ -83,10 +83,10 @@ describe('boolean attr directives', function() {
 
   it('should bind open', inject(function($rootScope, $compile) {
     element = $compile('<details ng-open="isOpen"></details>')($rootScope);
-    $rootScope.isOpen=false;
+    $rootScope.isOpen = false;
     $rootScope.$digest();
     expect(element.attr('open')).toBeFalsy();
-    $rootScope.isOpen=true;
+    $rootScope.isOpen = true;
     $rootScope.$digest();
     expect(element.attr('open')).toBeTruthy();
   }));
@@ -95,10 +95,10 @@ describe('boolean attr directives', function() {
   describe('multiple', function() {
     it('should NOT bind to multiple via ngMultiple', inject(function($rootScope, $compile) {
       element = $compile('<select ng-multiple="isMultiple"></select>')($rootScope);
-      $rootScope.isMultiple=false;
+      $rootScope.isMultiple = false;
       $rootScope.$digest();
       expect(element.attr('multiple')).toBeFalsy();
-      $rootScope.isMultiple='multiple';
+      $rootScope.isMultiple = 'multiple';
       $rootScope.$digest();
       expect(element.attr('multiple')).toBeFalsy(); // ignore
     }));

@@ -1,10 +1,9 @@
-"use strict";
+'use strict';
 
 var fs = require('fs');
 var zlib = require('zlib');
 var extractValues = require('./extractValues').extractValues;
 var generateCode = require('./generateCode').generateCode;
-var generateextractValues = require('./extractValues').extractValues;
 // ID_Start and ID_Continue
 var propertiesToExtract = {'IDS': 'Y', 'IDC': 'Y'};
 
@@ -17,7 +16,7 @@ function main() {
   function writeFile(validRanges) {
     var code = generateCode(validRanges);
     try {
-      var stats = fs.lstatSync('../src/ngParseExt');
+      fs.lstatSync('../src/ngParseExt');
     } catch (e) {
       fs.mkdirSync('../src/ngParseExt');
     }

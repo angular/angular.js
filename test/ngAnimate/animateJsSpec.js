@@ -554,7 +554,8 @@ describe("ngAnimate $$animateJs", function() {
           return {
             start: function() {
               log.push('start ' + event);
-              return runner = new $$AnimateRunner();
+              runner = new $$AnimateRunner();
+              return runner;
             }
           };
         };
@@ -584,7 +585,8 @@ describe("ngAnimate $$animateJs", function() {
         var runner;
         animations[event] = function(element, a, b, c) {
           log.push('start ' + event);
-          return runner = new $$AnimateRunner();
+          runner = new $$AnimateRunner();
+          return runner;
         };
 
         runAnimation(event, function() {

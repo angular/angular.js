@@ -8,8 +8,11 @@ describe("ngAnimate $animateCss", function() {
   function assertAnimationRunning(element, not) {
     var className = element.attr('class');
     var regex = /\b\w+-active\b/;
-    not ? expect(className).toMatch(regex)
-        : expect(className).not.toMatch(regex);
+    if (not) {
+      expect(className).toMatch(regex);
+    } else {
+      expect(className).not.toMatch(regex);
+    }
   }
 
   function getPossiblyPrefixedStyleValue(element, styleProp) {
@@ -456,7 +459,7 @@ describe("ngAnimate $animateCss", function() {
             var runner = animator.start();
 
             if (method === 'catch') {
-              runner.catch(function() {
+              runner['catch'](function() {
                 cancelled = true;
               });
             } else {
@@ -1969,7 +1972,7 @@ describe("ngAnimate $animateCss", function() {
 
           var element = angular.element('<div></div>');
 
-          if (event == 'add') {
+          if (event === 'add') {
             ss.addRule('.natural-class', 'transition:1s linear all;');
           } else {
             ss.addRule('.natural-class', 'transition:0s linear none;');

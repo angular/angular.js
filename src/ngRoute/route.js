@@ -30,6 +30,7 @@ var ngRouteModule = angular.module('ngRoute', ['ng']).
 /**
  * @ngdoc provider
  * @name $routeProvider
+ * @this
  *
  * @description
  *
@@ -178,7 +179,7 @@ function $RouteProvider() {
 
     // create redirection for trailing slashes
     if (path) {
-      var redirectPath = (path[path.length - 1] == '/')
+      var redirectPath = (path[path.length - 1] === '/')
             ? path.substr(0, path.length - 1)
             : path + '/';
 
@@ -394,15 +395,15 @@ function $RouteProvider() {
      *     it('should load and compile correct template', function() {
      *       element(by.linkText('Moby: Ch1')).click();
      *       var content = element(by.css('[ng-view]')).getText();
-     *       expect(content).toMatch(/controller\: ChapterController/);
-     *       expect(content).toMatch(/Book Id\: Moby/);
-     *       expect(content).toMatch(/Chapter Id\: 1/);
+     *       expect(content).toMatch(/controller: ChapterController/);
+     *       expect(content).toMatch(/Book Id: Moby/);
+     *       expect(content).toMatch(/Chapter Id: 1/);
      *
      *       element(by.partialLinkText('Scarlet')).click();
      *
      *       content = element(by.css('[ng-view]')).getText();
-     *       expect(content).toMatch(/controller\: BookController/);
-     *       expect(content).toMatch(/Book Id\: Scarlet/);
+     *       expect(content).toMatch(/controller: BookController/);
+     *       expect(content).toMatch(/Book Id: Scarlet/);
      *     });
      *   </file>
      * </example>
@@ -612,7 +613,7 @@ function $RouteProvider() {
           then(resolveLocals).
           then(function(locals) {
             // after route change
-            if (nextRoute == $route.current) {
+            if (nextRoute === $route.current) {
               if (nextRoute) {
                 nextRoute.locals = locals;
                 angular.copy(nextRoute.params, $routeParams);
@@ -620,7 +621,7 @@ function $RouteProvider() {
               $rootScope.$broadcast('$routeChangeSuccess', nextRoute, lastRoute);
             }
           }, function(error) {
-            if (nextRoute == $route.current) {
+            if (nextRoute === $route.current) {
               $rootScope.$broadcast('$routeChangeError', nextRoute, lastRoute, error);
             }
           });

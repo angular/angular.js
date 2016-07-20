@@ -67,7 +67,7 @@ describe('changelog.js', function() {
         module2: [{subject: 'breaking change 2'}]
       };
       var expectedOutput =
-          '\n' + '## test\n\n' +
+          '\n## test\n\n' +
           '- **module1:** breaking change 1\n' +
           '- **module2:** breaking change 2\n' +
           '\n';
@@ -92,7 +92,7 @@ describe('changelog.js', function() {
         ]
       };
       var expectedOutput =
-          '\n' + '## test\n\n' +
+          '\n## test\n\n' +
           '- **module1:**\n' +
           '  - breaking change 1.1\n' +
           '  - breaking change 1.2\n' +

@@ -54,26 +54,24 @@
     var evnt;
     if (/transitionend/.test(eventType)) {
       if (window.WebKitTransitionEvent) {
-        evnt = new WebKitTransitionEvent(eventType, eventData);
+        evnt = new window.WebKitTransitionEvent(eventType, eventData);
         evnt.initEvent(eventType, false, true);
       } else {
         try {
-          evnt = new TransitionEvent(eventType, eventData);
-        }
-        catch (e) {
+          evnt = new window.TransitionEvent(eventType, eventData);
+        } catch (e) {
           evnt = window.document.createEvent('TransitionEvent');
           evnt.initTransitionEvent(eventType, null, null, null, eventData.elapsedTime || 0);
         }
       }
     } else if (/animationend/.test(eventType)) {
       if (window.WebKitAnimationEvent) {
-        evnt = new WebKitAnimationEvent(eventType, eventData);
+        evnt = new window.WebKitAnimationEvent(eventType, eventData);
         evnt.initEvent(eventType, false, true);
       } else {
         try {
-          evnt = new AnimationEvent(eventType, eventData);
-        }
-        catch (e) {
+          evnt = new window.AnimationEvent(eventType, eventData);
+        } catch (e) {
           evnt = window.document.createEvent('AnimationEvent');
           evnt.initAnimationEvent(eventType, null, null, null, eventData.elapsedTime || 0);
         }
@@ -194,6 +192,7 @@
     patchEventTargetForBubbling(evnt, element);
     do {
       element.dispatchEvent(evnt);
+      // eslint-disable-next-line no-unmodified-loop-condition
     } while (!stop && (element = element.parentNode));
   }
 
@@ -203,11 +202,11 @@
   }
 
   function isAttachedToDocument(element) {
-    while (element = element.parentNode) {
+    while ((element = element.parentNode)) {
         if (element === window) {
             return true;
         }
     }
     return false;
   }
-}());
+})();

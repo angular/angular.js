@@ -77,7 +77,7 @@ angular.scenario.ObjectModel = function(runner) {
     var it = self.getSpec(spec.id);
     var step = it.getLastStep();
     if (step.name !== step.name) {
-      throw 'Events fired in the wrong order. Step names don\'t match.';
+      throw new Error('Events fired in the wrong order. Step names don\'t match.');
     }
     complete(step);
 
@@ -221,7 +221,7 @@ angular.scenario.ObjectModel.Spec.prototype.getLastStep = function() {
  * @param {angular.scenario.ObjectModel.Step} step
  */
 angular.scenario.ObjectModel.Spec.prototype.setStatusFromStep = function(step) {
-  if (!this.status || step.status == 'error') {
+  if (!this.status || step.status === 'error') {
     this.status = step.status;
     this.error = step.error;
     this.line = step.line;

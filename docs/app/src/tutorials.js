@@ -1,3 +1,5 @@
+'use strict';
+
 angular.module('tutorials', [])
 
 .directive('docTutorialNav', function() {
@@ -20,7 +22,7 @@ angular.module('tutorials', [])
       scope.seq = seq;
       scope.prev = pages[seq];
       scope.next = pages[2 + seq];
-      scope.diffLo = seq ? (seq - 1): '0~1';
+      scope.diffLo = seq ? (seq - 1) : '0~1';
       scope.diffHi = seq;
 
       element.addClass('btn-group');
@@ -40,7 +42,7 @@ angular.module('tutorials', [])
       '<div class="alert alert-info" ng-show="show">\n' +
       '  <p>Reset the workspace to step {{step}}.</p>' +
       '  <p><pre>git checkout -f step-{{step}}</pre></p>\n' +
-      '  <p>Refresh your browser or check out this step online: '+
+      '  <p>Refresh your browser or check out this step online: ' +
           '<a href="http://angular.github.io/angular-phonecat/step-{{step}}/app">Step {{step}} Live Demo</a>.</p>\n' +
       '</div>\n' +
       '<p>The most important changes are listed below. You can see the full diff on ' +

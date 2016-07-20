@@ -135,7 +135,7 @@ describe('errors', function() {
     }));
 
 
-    it('should set the element\s HTML', function() {
+    it('should set the element\'s HTML', function() {
       var elem = $compile('<span error-display="bar">foo</span>')($rootScope);
       expect(elem.html()).toBe('bar');
     });
@@ -152,7 +152,7 @@ describe('errors', function() {
     it('should pass the interpolated text through `errorLinkFilter`', function() {
       $location.search = jasmine.createSpy('search').and.returnValue({p0: 'foo'});
 
-      var elem = $compile('<span error-display="foo = {0}"></span>')($rootScope);
+      $compile('<span error-display="foo = {0}"></span>')($rootScope);
       expect(errorLinkFilter).toHaveBeenCalledTimes(1);
       expect(errorLinkFilter).toHaveBeenCalledWith('foo = foo', '_blank');
     });

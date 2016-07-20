@@ -1,7 +1,5 @@
 'use strict';
 
-/* jshint newcap: false */
-
 describe('$$animateAsyncRun', function() {
   it('should fire the callback only when one or more RAFs have passed',
     inject(function($$animateAsyncRun, $$rAF) {
@@ -104,7 +102,7 @@ describe("$$AnimateRunner", function() {
 
       runner1[method]();
 
-      var expectedStatus = method === 'end' ? true : false;
+      var expectedStatus = method === 'end';
       expect(status1).toBe(expectedStatus);
       expect(status2).toBe(expectedStatus);
       expect(signature).toBe('21');
@@ -154,7 +152,7 @@ describe("$$AnimateRunner", function() {
 
     var runner = new $$AnimateRunner();
     var animationFailed = false;
-    runner.catch(function() {
+    runner['catch'](function() {
       animationFailed = true;
     });
     runner.cancel();
@@ -167,7 +165,7 @@ describe("$$AnimateRunner", function() {
 
     module(function($provide) {
       doc = jqLite({
-        body: document.body,
+        body: window.document.body,
         hidden: true
       });
       $provide.value('$document', doc);
@@ -204,7 +202,7 @@ describe("$$AnimateRunner", function() {
     inject(function($$AnimateRunner, $rootScope) {
         var runner = new $$AnimateRunner();
         var animationComplete = false;
-        runner.finally(function() {
+        runner['finally'](function() {
           animationComplete = true;
         });
         runner[method]();
@@ -245,7 +243,7 @@ describe("$$AnimateRunner", function() {
         var runner2 = new $$AnimateRunner();
         var runner3 = new $$AnimateRunner();
 
-        var expectedStatus = method === 'end' ? true : false;
+        var expectedStatus = method === 'end';
 
         var status;
         $$AnimateRunner.all([runner1, runner2, runner3], function(response) {

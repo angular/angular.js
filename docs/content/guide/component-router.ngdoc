@@ -230,8 +230,8 @@ You can see the complete application running below.
 
       this.getHero = function(id) {
         return heroesPromise.then(function(heroes) {
-          for(var i=0; i<heroes.length; i++) {
-            if ( heroes[i].id == id) return heroes[i];
+          for (var i = 0; i < heroes.length; i++) {
+            if (heroes[i].id === id) return heroes[i];
           }
         });
       };
@@ -250,7 +250,7 @@ You can see the complete application running below.
       };
 
       this.isSelected = function(hero) {
-        return (hero.id == selectedId);
+        return (hero.id === selectedId);
       };
     }
 
@@ -321,8 +321,8 @@ You can see the complete application running below.
 
       this.getCrisis = function(id) {
         return crisesPromise.then(function(crises) {
-          for(var i=0; i<crises.length; i++) {
-            if ( crises[i].id == id) return crises[i];
+          for (var i = 0; i < crises.length; i++) {
+            if (crises[i].id === id) return crises[i];
           }
         });
       };
@@ -342,7 +342,7 @@ You can see the complete application running below.
       };
 
       this.isSelected = function(crisis) {
-        return (crisis.id == selectedId);
+        return (crisis.id === selectedId);
       };
 
       this.onSelect = function(crisis) {
@@ -725,8 +725,8 @@ function HeroService($q) {
 
   this.getHero = function(id) {
     return heroesPromise.then(function(heroes) {
-      for(var i=0; i<heroes.length; i++) {
-        if ( heroes[i].id == id) return heroes[i];
+      for (var i = 0; i < heroes.length; i++) {
+        if (heroes[i].id === id) return heroes[i];
       }
     });
   };
@@ -924,7 +924,7 @@ function HeroListComponent(heroService) {
   };
 
   this.isSelected = function(hero) {
-    return (hero.id == selectedId);
+    return (hero.id === selectedId);
   };
 }
 ```

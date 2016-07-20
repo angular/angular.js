@@ -34,7 +34,6 @@ describe('ngClass', function() {
 
 
   it('should add new and remove old classes with same names as Object.prototype properties dynamically', inject(function($rootScope, $compile) {
-    /* jshint -W001 */
     element = $compile('<div class="existing" ng-class="dynClass"></div>')($rootScope);
     $rootScope.dynClass = { watch: true, hasOwnProperty: true, isPrototypeOf: true };
     $rootScope.$digest();
@@ -438,7 +437,7 @@ describe('ngClass animations', function() {
     module('ngAnimateMock');
     inject(function($compile, $rootScope, $animate, $timeout) {
       element = angular.element('<div ng-class="val"></div>');
-      var body = jqLite(document.body);
+      var body = jqLite(window.document.body);
       body.append(element);
       $compile(element)($rootScope);
 

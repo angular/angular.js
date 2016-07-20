@@ -13,14 +13,13 @@ var support = {};
 
 for (var prop in supportTests) {
   if (supportTests.hasOwnProperty(prop)) {
-    /*jshint -W061 */
     try {
+      // eslint-disable-next-line no-eval
       eval(supportTests[prop]);
       support[prop] = true;
     } catch (e) {
       support[prop] = false;
     }
-    /*jshint +W061 */
   }
 }
 
@@ -49,7 +48,7 @@ beforeEach(function() {
     jqCache = jqLite.cache = {};
   }
 
-  angular.element(document.body).empty().removeData();
+  angular.element(window.document.body).empty().removeData();
 });
 
 afterEach(function() {
@@ -57,15 +56,15 @@ afterEach(function() {
 
   // both of these nodes are persisted across tests
   // and therefore the hashCode may be cached
-  var node = document.querySelector('html');
+  var node = window.document.querySelector('html');
   if (node) {
     node.$$hashKey = null;
   }
-  var bod = document.body;
+  var bod = window.document.body;
   if (bod) {
     bod.$$hashKey = null;
   }
-  document.$$hashKey = null;
+  window.document.$$hashKey = null;
 
   if (this.$injector) {
     var $rootScope = this.$injector.get('$rootScope');
@@ -76,7 +75,9 @@ afterEach(function() {
     dealoc($rootElement);
 
     // check $log mock
-    $log.assertEmpty && $log.assertEmpty();
+    if ($log.assertEmpty) {
+      $log.assertEmpty();
+    }
   }
 
   if (!window.jQuery) {
@@ -123,7 +124,7 @@ function dealoc(obj) {
       // jQuery 2.x doesn't expose the cache storage.
       for (var key in jqCache) {
         var value = jqCache[key];
-        if (value.data && value.data.$scope == obj) {
+        if (value.data && value.data.$scope === obj) {
           delete jqCache[key];
         }
       }
@@ -158,12 +159,12 @@ function sortedHtml(element, showNgClass) {
   var html = "";
   forEach(jqLite(element), function toString(node) {
 
-    if (node.nodeName == "#text") {
+    if (node.nodeName === "#text") {
       html += node.nodeValue.
         replace(/&(\w+[&;\W])?/g, function(match, entity) {return entity ? match : '&amp;';}).
         replace(/</g, '&lt;').
         replace(/>/g, '&gt;');
-    } else if (node.nodeName == "#comment") {
+    } else if (node.nodeName === "#comment") {
       html += '<!--' + node.nodeValue + '-->';
     } else {
       html += '<' + (node.nodeName || '?NOT_A_NODE?').toLowerCase();
@@ -178,37 +179,37 @@ function sortedHtml(element, showNgClass) {
         attrs.push(' class="' + className + '"');
       }
       for (var i = 0; i < attributes.length; i++) {
-        if (i > 0 && attributes[i] == attributes[i - 1]) {
-          continue; //IE9 creates dupes. Ignore them!
+        if (i > 0 && attributes[i] === attributes[i - 1]) {
+          continue; // IE9 creates dupes. Ignore them!
         }
 
         var attr = attributes[i];
-        if (attr.name.match(/^ng[\:\-]/) ||
+        if (attr.name.match(/^ng[:\-]/) ||
             (attr.value || attr.value === '') &&
-            attr.value != 'null' &&
-            attr.value != 'auto' &&
-            attr.value != 'false' &&
-            attr.value != 'inherit' &&
-            (attr.value != '0' || attr.name == 'value') &&
-            attr.name != 'loop' &&
-            attr.name != 'complete' &&
-            attr.name != 'maxLength' &&
-            attr.name != 'size' &&
-            attr.name != 'class' &&
-            attr.name != 'start' &&
-            attr.name != 'tabIndex' &&
-            attr.name != 'style' &&
-            attr.name.substr(0, 6) != 'jQuery') {
+            attr.value !== 'null' &&
+            attr.value !== 'auto' &&
+            attr.value !== 'false' &&
+            attr.value !== 'inherit' &&
+            (attr.value !== '0' || attr.name === 'value') &&
+            attr.name !== 'loop' &&
+            attr.name !== 'complete' &&
+            attr.name !== 'maxLength' &&
+            attr.name !== 'size' &&
+            attr.name !== 'class' &&
+            attr.name !== 'start' &&
+            attr.name !== 'tabIndex' &&
+            attr.name !== 'style' &&
+            attr.name.substr(0, 6) !== 'jQuery') {
           // in IE we need to check for all of these.
           if (/ng\d+/.exec(attr.name) ||
-              attr.name == 'getElementById' ||
+              attr.name === 'getElementById' ||
               // IE7 has `selected` in attributes
-              attr.name == 'selected' ||
+              attr.name === 'selected' ||
               // IE7 adds `value` attribute to all LI tags
-              (node.nodeName == 'LI' && attr.name == 'value') ||
+              (node.nodeName === 'LI' && attr.name === 'value') ||
               // IE8 adds bogus rowspan=1 and colspan=1 to TD elements
-              (node.nodeName == 'TD' && attr.name == 'rowSpan' && attr.value == '1') ||
-              (node.nodeName == 'TD' && attr.name == 'colSpan' && attr.value == '1')) {
+              (node.nodeName === 'TD' && attr.name === 'rowSpan' && attr.value === '1') ||
+              (node.nodeName === 'TD' && attr.name === 'colSpan' && attr.value === '1')) {
             continue;
           }
 
@@ -229,9 +230,9 @@ function sortedHtml(element, showNgClass) {
         }
         for (var css in node.style) {
           var value = node.style[css];
-          if (isString(value) && isString(css) && css != 'cssText' && value && (1 * css != css)) {
+          if (isString(value) && isString(css) && css !== 'cssText' && value && isNaN(Number(css))) {
             var text = lowercase(css + ': ' + value);
-            if (value != 'false' && style.indexOf(text) == -1) {
+            if (value !== 'false' && style.indexOf(text) === -1) {
               style.push(text);
             }
           }
@@ -278,7 +279,7 @@ function childrenTagsOf(element) {
  */
 function isCssVisible(node) {
   var display = node.css('display');
-  return !node.hasClass('ng-hide') && display != 'none';
+  return !node.hasClass('ng-hide') && display !== 'none';
 }
 
 function assertHidden(node) {

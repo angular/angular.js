@@ -1,3 +1,5 @@
+'use strict';
+
 var helper = {
   loadFixture: function(fixture) {
     var i = 0;

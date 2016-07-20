@@ -16,8 +16,8 @@ var util = require('util');
 
 
 var MAX_LENGTH = 100;
-var PATTERN = /^(?:fixup!\s*)?(\w*)(\(([\w\$\.\*/-]*)\))?\: (.*)$/;
-var IGNORED = /^WIP\:/;
+var PATTERN = /^(?:fixup!\s*)?(\w*)(\(([\w\$\.\*/-]*)\))?: (.*)$/;
+var IGNORED = /^WIP:/;
 var TYPES = {
   feat: true,
   fix: true,
@@ -60,8 +60,6 @@ var validateMessage = function(message) {
   }
 
   var type = match[1];
-  var scope = match[3];
-  var subject = match[4];
 
   if (!TYPES.hasOwnProperty(type)) {
     error('"%s" is not allowed type !', type);
@@ -96,6 +94,10 @@ if (process.argv.join('').indexOf('jasmine-node') === -1) {
   var incorrectLogFile = commitMsgFile.replace('COMMIT_EDITMSG', 'logs/incorrect-commit-msgs');
 
   fs.readFile(commitMsgFile, function(err, buffer) {
+    if (err) {
+      console.error(err);
+      process.exit(1);
+    }
     var msg = firstLineFromBuffer(buffer);
 
     if (!validateMessage(msg)) {

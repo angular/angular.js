@@ -437,7 +437,7 @@ describe('SCE', function() {
           runTest({whiteList: ['http://***']}, null)();
         }).toThrowMinErr('$injector', 'modulerr', new RegExp(
              /Failed to instantiate module function ?\(\$sceDelegateProvider\) due to:\n/.source +
-             /[^[]*\[\$sce:iwcard\] Illegal sequence \*\*\* in string matcher\.  String: http:\/\/\*\*\*/.source));
+             /[^[]*\[\$sce:iwcard\] Illegal sequence \*\*\* in string matcher\. {2}String: http:\/\/\*\*\*/.source));
       });
     });
 

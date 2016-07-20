@@ -65,7 +65,7 @@ InterpolationParts.prototype.getExpressionValues = function getExpressionValues(
 InterpolationParts.prototype.getResult = function getResult(expressionValues) {
   for (var i = 0; i < this.expressionIndices.length; i++) {
     var expressionValue = expressionValues[i];
-    if (this.allOrNothing && expressionValue === void 0) return;
+    if (this.allOrNothing && expressionValue === undefined) return;
     this.textParts[this.expressionIndices[i]] = expressionValue;
   }
   return this.textParts.join('');
@@ -76,7 +76,7 @@ InterpolationParts.prototype.toParsedFn = function toParsedFn(mustHaveExpression
   var self = this;
   this.flushPartialText();
   if (mustHaveExpression && this.expressionFns.length === 0) {
-    return void 0;
+    return undefined;
   }
   if (this.textParts.length === 0) {
     return parseTextLiteral('');
@@ -85,7 +85,7 @@ InterpolationParts.prototype.toParsedFn = function toParsedFn(mustHaveExpression
     $interpolateMinErr['throwNoconcat'](originalText);
   }
   if (this.expressionFns.length === 0) {
-    if (this.textParts.length != 1) { this.errorInParseLogic(); }
+    if (this.textParts.length !== 1) { this.errorInParseLogic(); }
     return parseTextLiteral(this.textParts[0]);
   }
   var parsedFn = function(context) {
@@ -112,7 +112,7 @@ InterpolationParts.prototype.watchDelegate = function watchDelegate(scope, liste
 function InterpolationPartsWatcher(interpolationParts, scope, listener, objectEquality) {
   this.interpolationParts = interpolationParts;
   this.scope = scope;
-  this.previousResult = (void 0);
+  this.previousResult = (undefined);
   this.listener = listener;
   var self = this;
   this.expressionFnsWatcher = scope['$watchGroup'](interpolationParts.expressionFns, function(newExpressionValues, oldExpressionValues) {

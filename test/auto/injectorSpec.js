@@ -139,22 +139,21 @@ describe('injector', function() {
     });
 
 
-    function fn(a, b, c, d) {
-      /* jshint -W040 */
+    function Fn(a, b, c, d) {
       args = [this, a, b, c, d];
       return a + b + c + d;
     }
 
 
     it('should call function', function() {
-      fn.$inject = ['a', 'b', 'c', 'd'];
-      injector.invoke(fn, {name:"this"},  {c:3, d:4});
+      Fn.$inject = ['a', 'b', 'c', 'd'];
+      injector.invoke(Fn, {name:"this"},  {c:3, d:4});
       expect(args).toEqual([{name:'this'}, 1, 2, 3, 4]);
     });
 
 
     it('should treat array as annotations', function() {
-      injector.invoke(['a', 'b', 'c', 'd', fn], {name:"this"}, {c:3, d:4});
+      injector.invoke(['a', 'b', 'c', 'd', Fn], {name:"this"}, {c:3, d:4});
       expect(args).toEqual([{name:'this'}, 1, 2, 3, 4]);
     });
 
@@ -162,7 +161,7 @@ describe('injector', function() {
     it('should invoke the passed-in fn with all of the dependencies as arguments', function() {
       providers('c', function() {return 3;});
       providers('d', function() {return 4;});
-      expect(injector.invoke(['a', 'b', 'c', 'd', fn])).toEqual(10);
+      expect(injector.invoke(['a', 'b', 'c', 'd', Fn])).toEqual(10);
     });
 
 
@@ -185,16 +184,16 @@ describe('injector', function() {
       expect(annotate(fn)).toBe(fn.$inject);
       expect(annotate(function() {})).toEqual([]);
       expect(annotate(function() {})).toEqual([]);
-      // jscs:disable disallowSpacesInAnonymousFunctionExpression
+      /* eslint-disable space-before-function-paren, no-multi-spaces */
       expect(annotate(function  () {})).toEqual([]);
       expect(annotate(function /* */ () {})).toEqual([]);
-      // jscs:enable disallowSpacesInAnonymousFunctionExpression
+      /* eslint-enable */
     });
 
 
     it('should create $inject', function() {
       var extraParans = angular.noop;
-      // jscs:disable disallowSpacesInFunctionDeclaration
+      /* eslint-disable space-before-function-paren */
       // keep the multi-line to make sure we can handle it
       function $f_n0 /*
           */(
@@ -204,8 +203,8 @@ describe('injector', function() {
                  function(a, b) {}
                  */
           _c,
-          /* {some type} */ d) { extraParans();}
-      // jscs:enable disallowSpacesInFunctionDeclaration
+          /* {some type} */ d) { extraParans(); }
+      /* eslint-enable */
       expect(annotate($f_n0)).toEqual(['$a', 'b_', '_c',  'd']);
       expect($f_n0.$inject).toEqual(['$a', 'b_', '_c',  'd']);
     });
@@ -256,10 +255,10 @@ describe('injector', function() {
 
 
     describe('es6', function() {
-      /*jshint -W061 */
       if (support.ES6Function) {
         // The functions are generated using `eval` as just having the ES6 syntax can break some browsers.
         it('should be possible to annotate functions that are declared using ES6 syntax', function() {
+          // eslint-disable-next-line no-eval
           expect(annotate(eval('({ fn(x) { return; } })').fn)).toEqual(['x']);
         });
       }
@@ -267,6 +266,7 @@ describe('injector', function() {
 
       if (support.fatArrow) {
         it('should create $inject for arrow functions', function() {
+          // eslint-disable-next-line no-eval
           expect(annotate(eval('(a, b) => a'))).toEqual(['a', 'b']);
         });
       }
@@ -274,6 +274,7 @@ describe('injector', function() {
 
       if (support.fatArrow) {
         it('should create $inject for arrow functions with no parenthesis', function() {
+          // eslint-disable-next-line no-eval
           expect(annotate(eval('a => a'))).toEqual(['a']);
         });
       }
@@ -281,11 +282,12 @@ describe('injector', function() {
 
       if (support.fatArrow) {
         it('should take args before first arrow', function() {
+          // eslint-disable-next-line no-eval
           expect(annotate(eval('a => b => b'))).toEqual(['a']);
         });
 
         // Support: Chrome 50-51 only
-        // TODO (gkalpak): Remove when Chrome v52 is relased.
+        // TODO (gkalpak): Remove when Chrome v52 is released.
         // it('should be able to inject fat-arrow function', function() {
         //   inject(($injector) => {
         //     expect($injector).toBeDefined();
@@ -296,13 +298,14 @@ describe('injector', function() {
       if (support.classes) {
         it('should be possible to instantiate ES6 classes', function() {
           providers('a', function() { return 'a-value'; });
+          // eslint-disable-next-line no-eval
           var Clazz = eval('(class { constructor(a) { this.a = a; } aVal() { return this.a; } })');
           var instance = injector.instantiate(Clazz);
           expect(instance).toEqual(new Clazz('a-value'));
           expect(instance.aVal()).toEqual('a-value');
         });
 
-        if (/chrome/.test(navigator.userAgent)) {
+        if (/chrome/.test(window.navigator.userAgent)) {
           they('should detect ES6 classes regardless of whitespace/comments ($prop)', [
             'class Test {}',
             'class Test{}',
@@ -315,6 +318,7 @@ describe('injector', function() {
             'class/* Test */{}',
             'class /* Test */ {}'
           ], function(classDefinition) {
+            // eslint-disable-next-line no-eval
             var Clazz = eval('(' + classDefinition + ')');
             var instance = injector.invoke(Clazz);
 
@@ -323,7 +327,7 @@ describe('injector', function() {
         }
 
         // Support: Chrome 50-51 only
-        // TODO (gkalpak): Remove when Chrome v52 is relased.
+        // TODO (gkalpak): Remove when Chrome v52 is released.
         // it('should be able to invoke classes', function() {
         //   class Test {
         //     constructor($injector) {
@@ -335,7 +339,6 @@ describe('injector', function() {
         //   expect(instance.$injector).toBe(injector);
         // });
       }
-      /*jshint +W061 */
     });
 
 
@@ -360,7 +363,7 @@ describe('injector', function() {
     var injector = createInjector([function($provide) {
       $provide.value('value', 'value;');
       $provide.factory('fn', valueFn('function;'));
-      $provide.provider('service', function() {
+      $provide.provider('service', function Provider() {
         this.$get = valueFn('service;');
       });
     }, function(valueProvider, fnProvider, serviceProvider) {
@@ -469,7 +472,7 @@ describe('injector', function() {
       .config(function($aProvider) {
         log += 'aConfig;';
       })
-      .provider('$a', function() {
+      .provider('$a', function Provider$a() {
         log += '$aProvider;';
         this.$get = function() {};
       });
@@ -477,7 +480,7 @@ describe('injector', function() {
       .config(function($bProvider) {
         log += 'bConfig;';
       })
-      .provider('$b', function() {
+      .provider('$b', function Provider$b() {
         log += '$bProvider;';
         this.$get = function() {};
       });
@@ -562,9 +565,9 @@ describe('injector', function() {
 
       describe('service', function() {
         it('should register a class', function() {
-          var Type = function(value) {
+          function Type(value) {
             this.value = value;
-          };
+          }
 
           var instance = createInjector([function($provide) {
             $provide.value('value', 123);
@@ -786,7 +789,7 @@ describe('injector', function() {
       it('should handle exceptions', function() {
         expect(function() {
           createInjector([function() {
-            throw 'MyError';
+            throw new Error('MyError');
           }], {});
         }).toThrowMinErr('$injector', 'modulerr', /Failed to instantiate module .+ due to:\n.*MyError/);
       });
@@ -848,7 +851,7 @@ describe('injector', function() {
 
   describe('retrieval', function() {
     var instance = {name:'angular'};
-    var Instance = function() { this.name = 'angular'; };
+    function Instance() { this.name = 'angular'; }
 
     function createInjectorWithValue(instanceName, instance) {
       return createInjector([['$provide', function(provide) {
@@ -1142,12 +1145,11 @@ describe('strict-di injector', function() {
 
   it('should always use provider as `this` when invoking a factory', function() {
     var called = false;
+
     function factoryFn() {
       called = true;
-      // jshint -W040
       expect(typeof this.$get).toBe('function');
       return this;
-      // jshint +W040
     }
     module(function($provide) {
       $provide.factory('$test', factoryFn);

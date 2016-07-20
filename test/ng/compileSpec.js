@@ -1,6 +1,10 @@
 'use strict';
 
+/* eslint-disable no-script-url */
+
 describe('$compile', function() {
+  var document = window.document;
+
   function isUnknownElement(el) {
     return !!el.toString().match(/Unknown/);
   }
@@ -521,10 +525,8 @@ describe('$compile', function() {
 
       try {
         element[0].childNodes[1] = {nodeType: 3, nodeName: 'OBJECT', textContent: 'fake node'};
-      } catch (e) {
-      } finally {
-        if (!element[0].childNodes[1]) return; //browser doesn't support this kind of mocking
-      }
+      } catch (e) { /* empty */ }
+      if (!element[0].childNodes[1]) return; // browser doesn't support this kind of mocking
 
       expect(element[0].childNodes[1].textContent).toBe('fake node');
 
@@ -661,7 +663,7 @@ describe('$compile', function() {
               if (value.substring(0,2) !== 'ng') {
                 value = value.replace('=""', '');
                 var match = value.match(/=(.*)/);
-                if (match && match[1].charAt(0) != '"') {
+                if (match && match[1].charAt(0) !== '"') {
                   value = value.replace(/=(.*)/, '="$1"');
                 }
                 list.push(value);
@@ -3651,7 +3653,6 @@ describe('$compile', function() {
       it('should call `$onInit`, if provided, after all the controllers on the element have been initialized', function() {
 
         function check() {
-          /*jshint validthis:true */
           expect(this.element.controller('d1').id).toEqual(1);
           expect(this.element.controller('d2').id).toEqual(2);
         }
@@ -5522,9 +5523,9 @@ describe('$compile', function() {
 
 
     it('should eventually expose isolate scope variables on ES6 class controller with controllerAs when bindToController is true', function() {
-      if (!/chrome/i.test(navigator.userAgent)) return;
-      /*jshint -W061 */
+      if (!/chrome/i.test(window.navigator.userAgent)) return;
       var controllerCalled = false;
+      // eslint-disable-next-line no-eval
       var Controller = eval(
         "class Foo {\n" +
         "  constructor($scope) {}\n" +
@@ -5572,7 +5573,6 @@ describe('$compile', function() {
         expect(Controller.prototype.$onInit).toHaveBeenCalled();
         expect(controllerCalled).toBe(true);
       });
-      /*jshint +W061 */
     });
 
 
@@ -6376,7 +6376,8 @@ describe('$compile', function() {
           return {
             controller: function($scope) {
               this.foo = 'baz'; // value should not be used.
-              return expectedController = {foo: 'bar'};
+              expectedController = {foo: 'bar'};
+              return expectedController;
             },
             link: function(scope, element, attrs, controller) {
               expect(expectedController).toBeDefined();
@@ -6454,7 +6455,8 @@ describe('$compile', function() {
           transclude: true,
           controller: function($transclude) {
             this.foo = 'baz';
-            return expectedController = {transclude:$transclude, foo: 'bar'};
+            expectedController = {transclude:$transclude, foo: 'bar'};
+            return expectedController;
           },
           link: function(scope, el, attr, ctrl) {
             ctrl.transclude(cloneAttach);
@@ -6513,9 +6515,10 @@ describe('$compile', function() {
           return {
             scope: true,
             controller: function($scope) {
-              return directiveController = {
+              directiveController = {
                 foo: 'bar'
               };
+              return directiveController;
             }
           };
         });
@@ -6523,9 +6526,10 @@ describe('$compile', function() {
         directive('myOtherDirective', function(log) {
           return {
             controller: function($scope) {
-              return otherDirectiveController = {
+              otherDirectiveController = {
                 baz: 'luh'
               };
+              return otherDirectiveController;
             }
           };
         });
@@ -6883,10 +6887,12 @@ describe('$compile', function() {
         };
       }
       function ParentController() {
-        return parentController = { name: 'Parent' };
+        parentController = { name: 'Parent' };
+        return parentController;
       }
       function SiblingController() {
-        return siblingController = { name: 'Sibling' };
+        siblingController = { name: 'Sibling' };
+        return siblingController;
       }
 
       angular.module('my', [])
@@ -7612,7 +7618,7 @@ describe('$compile', function() {
               replace: true,
               scope: {},
               link: function(scope) {
-                scope.x='iso';
+                scope.x = 'iso';
               },
               template: '<ul><li>W:{{x}}-{{$parent.$id}}-{{$id}};</li><li ng-transclude></li></ul>'
             };
@@ -9394,7 +9400,7 @@ describe('$compile', function() {
           directive('inner', valueFn({
             template: '<span>FooBar</span>',
             compile: function() {
-              innerCompilationCount +=1;
+              innerCompilationCount += 1;
             }
           }));
         });
@@ -9423,7 +9429,7 @@ describe('$compile', function() {
           directive('inner', valueFn({
             template: '<span>FooBar</span>',
             compile: function() {
-              innerCompilationCount +=1;
+              innerCompilationCount += 1;
             }
           }));
         });
@@ -9452,7 +9458,7 @@ describe('$compile', function() {
           directive('inner', valueFn({
             template: '<span>FooBar</span>',
             compile: function() {
-              innerCompilationCount +=1;
+              innerCompilationCount += 1;
             }
           }));
         });
@@ -9483,7 +9489,7 @@ describe('$compile', function() {
           directive('inner', valueFn({
             template: '<span>FooBar</span>',
             compile: function() {
-              innerCompilationCount +=1;
+              innerCompilationCount += 1;
             }
           }));
         });
@@ -9514,7 +9520,7 @@ describe('$compile', function() {
           directive('inner', valueFn({
             template: '<span>FooBar</span>',
             compile: function() {
-              innerCompilationCount +=1;
+              innerCompilationCount += 1;
             }
           }));
         });
@@ -9552,7 +9558,7 @@ describe('$compile', function() {
 
           directive('inner', valueFn({
             compile: function() {
-              innerCompilationCount +=1;
+              innerCompilationCount += 1;
             }
           }));
         });
@@ -9957,7 +9963,6 @@ describe('$compile', function() {
     }));
 
     it('should not sanitize attributes other than src', inject(function($compile, $rootScope) {
-      /* jshint scripturl:true */
       element = $compile('<img title="{{testUrl}}"></img>')($rootScope);
       $rootScope.testUrl = "javascript:doEvilStuff()";
       $rootScope.$apply();
@@ -10049,7 +10054,6 @@ describe('$compile', function() {
     });
 
     it('should sanitize all uris in srcset', inject(function($rootScope, $compile) {
-      /*jshint scripturl:true*/
       element = $compile('<img srcset="{{testUrl}}"></img>')($rootScope);
       var testSet = {
         'http://example.com/image.png':'http://example.com/image.png',
@@ -10091,7 +10095,6 @@ describe('$compile', function() {
   describe('a[href] sanitization', function() {
 
     it('should not sanitize href on elements other than anchor', inject(function($compile, $rootScope) {
-      /* jshint scripturl:true */
       element = $compile('<div href="{{testUrl}}"></div>')($rootScope);
       $rootScope.testUrl = "javascript:doEvilStuff()";
       $rootScope.$apply();
@@ -10100,7 +10103,6 @@ describe('$compile', function() {
     }));
 
     it('should not sanitize attributes other than href', inject(function($compile, $rootScope) {
-      /* jshint scripturl:true */
       element = $compile('<a title="{{testUrl}}"></a>')($rootScope);
       $rootScope.testUrl = "javascript:doEvilStuff()";
       $rootScope.$apply();
@@ -10212,7 +10214,6 @@ describe('$compile', function() {
     }));
 
     it('should pass through arbitrary values on onXYZ event attributes that contain a hyphen', inject(function($compile, $rootScope) {
-      /* jshint scripturl:true */
       element = $compile('<button on-click="{{onClickJs}}"></script>')($rootScope);
       $rootScope.onClickJs = 'javascript:doSomething()';
       $rootScope.$apply();
@@ -10250,7 +10251,6 @@ describe('$compile', function() {
     }));
 
     it('should clear out JS src attributes', inject(function($compile, $rootScope, $sce) {
-      /* jshint scripturl:true */
       element = $compile('<iframe src="{{testUrl}}"></iframe>')($rootScope);
       $rootScope.testUrl = "javascript:alert(1);";
       expect(function() { $rootScope.$apply(); }).toThrowMinErr(
@@ -10260,7 +10260,6 @@ describe('$compile', function() {
     }));
 
     it('should clear out non-resource_url src attributes', inject(function($compile, $rootScope, $sce) {
-      /* jshint scripturl:true */
       element = $compile('<iframe src="{{testUrl}}"></iframe>')($rootScope);
       $rootScope.testUrl = $sce.trustAsUrl("javascript:doTrustedStuff()");
       expect($rootScope.$apply).toThrowMinErr(
@@ -10269,7 +10268,6 @@ describe('$compile', function() {
     }));
 
     it('should pass through $sce.trustAs() values in src attributes', inject(function($compile, $rootScope, $sce) {
-      /* jshint scripturl:true */
       element = $compile('<iframe src="{{testUrl}}"></iframe>')($rootScope);
       $rootScope.testUrl = $sce.trustAsResourceUrl("javascript:doTrustedStuff()");
       $rootScope.$apply();
@@ -10296,7 +10294,6 @@ describe('$compile', function() {
     }));
 
     it('should clear out JS action attribute', inject(function($compile, $rootScope, $sce) {
-      /* jshint scripturl:true */
       element = $compile('<form action="{{testUrl}}"></form>')($rootScope);
       $rootScope.testUrl = "javascript:alert(1);";
       expect(function() { $rootScope.$apply(); }).toThrowMinErr(
@@ -10306,7 +10303,6 @@ describe('$compile', function() {
     }));
 
     it('should clear out non-resource_url action attribute', inject(function($compile, $rootScope, $sce) {
-      /* jshint scripturl:true */
       element = $compile('<form action="{{testUrl}}"></form>')($rootScope);
       $rootScope.testUrl = $sce.trustAsUrl("javascript:doTrustedStuff()");
       expect($rootScope.$apply).toThrowMinErr(
@@ -10315,7 +10311,6 @@ describe('$compile', function() {
     }));
 
     it('should pass through $sce.trustAs() values in action attribute', inject(function($compile, $rootScope, $sce) {
-      /* jshint scripturl:true */
       element = $compile('<form action="{{testUrl}}"></form>')($rootScope);
       $rootScope.testUrl = $sce.trustAsResourceUrl("javascript:doTrustedStuff()");
       $rootScope.$apply();
@@ -10338,7 +10333,7 @@ describe('$compile', function() {
         element = $compile('<iframe srcdoc="{{html}}"></iframe>')($rootScope);
         $rootScope.html = $sce.trustAsCss('<div onclick="">hello</div>');
         expect(function() { $rootScope.$digest(); }).toThrowMinErr('$interpolate', 'interr', new RegExp(
-            /Can't interpolate: {{html}}\n/.source +
+            /Can't interpolate: \{\{html}}\n/.source +
             /[^[]*\[\$sce:unsafe\] Attempting to use an unsafe value in a safe context./.source));
       }));
 

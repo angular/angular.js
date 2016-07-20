@@ -106,6 +106,7 @@
    </example>
   */
 $FilterProvider.$inject = ['$provide'];
+/* @this */
 function $FilterProvider($provide) {
   var suffix = 'Filter';
 
@@ -155,7 +156,7 @@ function $FilterProvider($provide) {
     lowercaseFilter: false,
     numberFilter: false,
     orderByFilter: false,
-    uppercaseFilter: false,
+    uppercaseFilter: false
   */
 
   register('currency', currencyFilter);
