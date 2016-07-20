@@ -5,7 +5,7 @@ module.exports = function defaultDeployment(getVersion) {
     name: 'default',
     examples: {
       commonFiles: {
-        scripts: [ '../../../angular.min.js' ]
+        scripts: ['../../../angular.min.js']
       },
       dependencyPath: '../../../'
     },

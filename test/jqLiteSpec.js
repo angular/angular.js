@@ -1,7 +1,7 @@
 'use strict';
 
 describe('jqLite', function() {
-  var scope, a, b, c;
+  var scope, a, b, c, document;
 
 
   beforeEach(module(provideLog));
@@ -14,6 +14,7 @@ describe('jqLite', function() {
 
 
   beforeEach(inject(function($rootScope) {
+    document = window.document;
     scope = $rootScope;
     jasmine.addMatchers({
       toJqEqual: function() {
@@ -22,7 +23,7 @@ describe('jqLite', function() {
             var msg = "Unequal length";
             var message = function() {return msg;};
 
-            var value = _actual_ && expected && _actual_.length == expected.length;
+            var value = _actual_ && expected && _actual_.length === expected.length;
             for (var i = 0; value && i < expected.length; i++) {
               var actual = jqLite(_actual_[i])[0];
               var expect = jqLite(expected[i])[0];
@@ -463,7 +464,7 @@ describe('jqLite', function() {
     it('should emit $destroy event if element removed via remove()', function() {
       var log = '';
       var element = jqLite(a);
-      element.on('$destroy', function() {log+= 'destroy;';});
+      element.on('$destroy', function() {log += 'destroy;';});
       element.remove();
       expect(log).toEqual('destroy;');
     });
@@ -984,7 +985,7 @@ describe('jqLite', function() {
       expect(element[0].innerHTML).toEqual('ab');
       expect(element[1].innerHTML).toEqual('c');
       expect(element.text()).toEqual('abc');
-      expect(element.text('xyz') == element).toBeTruthy();
+      expect(element.text('xyz') === element).toBeTruthy();
       expect(element.text()).toEqual('xyzxyz');
     });
 
@@ -1051,7 +1052,7 @@ describe('jqLite', function() {
       expect(element.length).toEqual(1);
       expect(element[0].innerHTML).toEqual('abc');
       expect(element.html()).toEqual('abc');
-      expect(element.html('xyz') == element).toBeTruthy();
+      expect(element.html('xyz') === element).toBeTruthy();
       expect(element.html()).toEqual('xyz');
     });
   });
@@ -1061,7 +1062,7 @@ describe('jqLite', function() {
     it('should write a value', function() {
       var element = jqLite('<div>abc</div>');
       expect(element.length).toEqual(1);
-      expect(element.empty() == element).toBeTruthy();
+      expect(element.empty() === element).toBeTruthy();
       expect(element.html()).toEqual('');
     });
   });
@@ -1815,7 +1816,7 @@ describe('jqLite', function() {
       iframe_.onload = iframe_.onreadystatechange = function() {
         if (iframe_.contentDocument) test();
       };
-      /* jshint scripturl:true */
+      // eslint-disable-next-line no-script-url
       iframe_.src = 'javascript:false';
       jqLite(document).find('body').append(iframe);
 

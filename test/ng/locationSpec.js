@@ -9,7 +9,7 @@ describe('$location', function() {
   afterEach(function() {
     // link rewriting used in html5 mode on legacy browsers binds to document.onClick, so we need
     // to clean this up after each test.
-    jqLite(document).off('click');
+    jqLite(window.document).off('click');
   });
 
 
@@ -332,7 +332,7 @@ describe('$location', function() {
 
 
     it('should prefix path with forward-slash', function() {
-      var locationUrl = new LocationHtml5Url('http://server/', 'http://server/') ;
+      var locationUrl = new LocationHtml5Url('http://server/', 'http://server/');
       locationUrl.path('b');
 
       expect(locationUrl.path()).toBe('/b');
@@ -341,7 +341,7 @@ describe('$location', function() {
 
 
     it('should set path to forward-slash when empty', function() {
-      var locationUrl = new LocationHtml5Url('http://server/', 'http://server/') ;
+      var locationUrl = new LocationHtml5Url('http://server/', 'http://server/');
       locationUrl.$$parse('http://server/');
       expect(locationUrl.path()).toBe('/');
       expect(locationUrl.absUrl()).toBe('http://server/');
@@ -378,7 +378,7 @@ describe('$location', function() {
     });
 
     it('should prepend path with basePath', function() {
-      var locationUrl = new LocationHtml5Url('http://server/base/', 'http://server/base/') ;
+      var locationUrl = new LocationHtml5Url('http://server/base/', 'http://server/base/');
       locationUrl.$$parse('http://server/base/abc?a');
       expect(locationUrl.path()).toBe('/abc');
       expect(locationUrl.search()).toEqual({a: true});
@@ -637,21 +637,21 @@ describe('$location', function() {
       });
 
       it('should return an array for duplicate params', function() {
-        var locationUrl = new LocationHtml5Url('http://host.com', 'http://host.com') ;
+        var locationUrl = new LocationHtml5Url('http://host.com', 'http://host.com');
         locationUrl.$$parse('http://host.com');
         locationUrl.search('q', ['1/2 3','4/5 6']);
         expect(locationUrl.search()).toEqual({'q': ['1/2 3','4/5 6']});
       });
 
       it('should encode an array correctly from search and add to url', function() {
-        var locationUrl = new LocationHtml5Url('http://host.com', 'http://host.com') ;
+        var locationUrl = new LocationHtml5Url('http://host.com', 'http://host.com');
         locationUrl.$$parse('http://host.com');
         locationUrl.search({'q': ['1/2 3','4/5 6']});
         expect(locationUrl.absUrl()).toEqual('http://host.com?q=1%2F2%203&q=4%2F5%206');
       });
 
       it('should rewrite params when specifing a single param in search', function() {
-        var locationUrl = new LocationHtml5Url('http://host.com', 'http://host.com') ;
+        var locationUrl = new LocationHtml5Url('http://host.com', 'http://host.com');
         locationUrl.$$parse('http://host.com');
         locationUrl.search({'q': '1/2 3'});
         expect(locationUrl.absUrl()).toEqual('http://host.com?q=1%2F2%203');
@@ -891,7 +891,7 @@ describe('$location', function() {
             NEW_URL = 'http://new.com/a/b#!/new';
 
         $rootScope.$apply(function() {
-          $window.location.href= NEW_URL;
+          $window.location.href = NEW_URL;
           $browser.$$checkUrlChange(); // simulate firing event from browser
           expect($location.absUrl()).toBe(OLD_URL); // should be async
         });
@@ -1349,7 +1349,7 @@ describe('$location', function() {
       attrs = attrs ? ' ' + attrs + ' ' : '';
 
       if (typeof linkHref === 'string' && !relLink) {
-        if (linkHref[0] == '/') {
+        if (linkHref[0] === '/') {
           linkHref = 'http://host.com' + linkHref;
         } else if (!linkHref.match(/:\/\//)) {
           // fake the behavior of <base> tag
@@ -1397,7 +1397,7 @@ describe('$location', function() {
 
     afterEach(function() {
       dealoc(root);
-      dealoc(document.body);
+      dealoc(window.document.body);
     });
 
 
@@ -1788,14 +1788,14 @@ describe('$location', function() {
         setupRewriteChecks(),
         function($browser) {
           var rightClick;
-          if (document.createEvent) {
-            rightClick = document.createEvent('MouseEvents');
+          if (window.document.createEvent) {
+            rightClick = window.document.createEvent('MouseEvents');
             rightClick.initMouseEvent('click', true, true, window, 1, 10, 10, 10,  10, false,
                                       false, false, false, 2, null);
 
             link.dispatchEvent(rightClick);
-          } else if (document.createEventObject) { // for IE
-            rightClick = document.createEventObject();
+          } else if (window.document.createEventObject) { // for IE
+            rightClick = window.document.createEventObject();
             rightClick.type = 'click';
             rightClick.cancelBubble = true;
             rightClick.detail = 1;
@@ -2254,7 +2254,7 @@ describe('$location', function() {
         return function($rootElement, $compile, $rootScope) {
           $rootElement.html('<a href="http://server/#!/somePath">link</a>');
           $compile($rootElement)($rootScope);
-          jqLite(document.body).append($rootElement);
+          jqLite(window.document.body).append($rootElement);
         };
       });
 
@@ -2287,7 +2287,7 @@ describe('$location', function() {
         return function($rootElement, $compile, $rootScope) {
           $rootElement.html('<a href="http://server/somePath">link</a>');
           $compile($rootElement)($rootScope);
-          jqLite(document.body).append($rootElement);
+          jqLite(window.document.body).append($rootElement);
         };
       });
 
@@ -2474,12 +2474,12 @@ describe('$location', function() {
     var locationUrl;
 
     it('should rewrite URL', function() {
-      /* jshint scripturl: true */
       locationUrl = new LocationHashbangUrl('http://server/pre/', 'http://server/pre/', '#');
 
       expect(parseLinkAndReturn(locationUrl, 'http://other')).toEqual(undefined);
       expect(parseLinkAndReturn(locationUrl, 'http://server/pre/')).toEqual('http://server/pre/');
       expect(parseLinkAndReturn(locationUrl, 'http://server/pre/#otherPath')).toEqual('http://server/pre/#/otherPath');
+      // eslint-disable-next-line no-script-url
       expect(parseLinkAndReturn(locationUrl, 'javascript:void(0)')).toEqual(undefined);
     });
 

@@ -270,8 +270,11 @@ describe("animations", function() {
 
           var message = '$animateProvider.classNameFilter(regex) prohibits accepting a regex value which matches/contains the "ng-animate" CSS class.';
 
-          bool ? expectation.toThrowMinErr('$animate', 'nongcls', message)
-               : expectation.not.toThrowMinErr('$animate', 'nongcls', message);
+          if (bool) {
+            expectation.toThrowMinErr('$animate', 'nongcls', message);
+          } else {
+            expectation.not.toThrowMinErr('$animate', 'nongcls', message);
+          }
         }
       });
     });
@@ -1741,7 +1744,8 @@ describe("animations", function() {
       $provide.factory('$$animation', function($$AnimateRunner) {
         return function() {
           captureLog.push(capturedAnimation = arguments);
-          return runner = new $$AnimateRunner();
+          runner = new $$AnimateRunner();
+          return runner;
         };
       });
 
@@ -1991,6 +1995,7 @@ describe("animations", function() {
 
     it('should not get affected by custom, enumerable properties on `Object.prototype`',
       inject(function($animate) {
+        // eslint-disable-next-line no-extend-native
         Object.prototype.foo = 'ENUMARABLE_AND_NOT_AN_ARRAY';
 
         element = jqLite('<div></div>');

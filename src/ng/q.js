@@ -220,6 +220,7 @@
 /**
  * @ngdoc provider
  * @name $qProvider
+ * @this
  *
  * @description
  */
@@ -253,6 +254,7 @@ function $QProvider() {
   };
 }
 
+/* @this */
 function $$QProvider() {
   var errorOnUnhandledRejections = true;
   this.$get = ['$browser', '$exceptionHandler', function($browser, $exceptionHandler) {
@@ -376,6 +378,7 @@ function qFactory(nextTick, exceptionHandler, errorOnUnhandledRejections) {
   }
 
   function processChecks() {
+    // eslint-disable-next-line no-unmodified-loop-condition
     while (!queueSize && checkQueue.length) {
       var toCheck = checkQueue.shift();
       if (!toCheck.pur) {

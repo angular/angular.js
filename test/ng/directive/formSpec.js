@@ -402,7 +402,7 @@ describe('form', function() {
       browserTrigger(doc.find('input'));
 
       // let the browser process all events (and potentially reload the page)
-      setTimeout(function() { nextTurn = true;});
+      window.setTimeout(function() { nextTurn = true;});
       job.waitsFor(function() { return nextTurn; })
       .runs(function() {
         expect(reloadPrevented).toBe(true);
@@ -453,7 +453,7 @@ describe('form', function() {
         browserTrigger(doc.find('button'), 'click');
 
         // let the browser process all events (and potentially reload the page)
-        setTimeout(function() { nextTurn = true;}, 100);
+        window.setTimeout(function() { nextTurn = true;}, 100);
 
         var job = createAsync(done);
         job.waitsFor(function() { return nextTurn; })
@@ -1092,7 +1092,7 @@ describe('form', function() {
           '<div ng-form name="nested{{idB}}"' +
           '</div>' +
         '</div>' +
-      '</form'
+      '</form>'
     )(scope);
 
     scope.$digest();

@@ -269,8 +269,8 @@ function, since the template is requested before the scope is initialized.
       }])
       .directive('myCustomer', function() {
         return {
-          templateUrl: function(elem, attr){
-            return 'customer-'+attr.type+'.html';
+          templateUrl: function(elem, attr) {
+            return 'customer-' + attr.type + '.html';
           }
         };
       });
@@ -676,7 +676,7 @@ that redefines `name` as `Jeff`. What do you think the `{{name}}` binding will r
           transclude: true,
           scope: {},
           templateUrl: 'my-dialog.html',
-          link: function (scope) {
+          link: function(scope) {
             scope.name = 'Jeff';
           }
         };
@@ -720,10 +720,10 @@ own behavior to it.
       .controller('Controller', ['$scope', '$timeout', function($scope, $timeout) {
         $scope.name = 'Tobias';
         $scope.message = '';
-        $scope.hideDialog = function (message) {
+        $scope.hideDialog = function(message) {
           $scope.message = message;
           $scope.dialogIsHidden = true;
-          $timeout(function () {
+          $timeout(function() {
             $scope.message = '';
             $scope.dialogIsHidden = false;
           }, 2000);
@@ -856,7 +856,7 @@ to which tab is active.
           restrict: 'E',
           transclude: true,
           scope: {},
-          controller: ['$scope', function($scope) {
+          controller: ['$scope', function MyTabsController($scope) {
             var panes = $scope.panes = [];
 
             $scope.select = function(pane) {

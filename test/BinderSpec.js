@@ -224,7 +224,7 @@ describe('Binder', function() {
   }));
 
   it('HideBindingExpression', inject(function($rootScope, $compile) {
-    element = $compile('<div ng-hide="hidden == 3"/>')($rootScope);
+    element = $compile('<div ng-hide="hidden === 3"/>')($rootScope);
 
     $rootScope.hidden = 3;
     $rootScope.$apply();
@@ -426,15 +426,15 @@ describe('Binder', function() {
   it('ItShouldRepeatOnHashes', inject(function($rootScope, $compile) {
     element = $compile(
       '<ul>' +
-        '<li ng-repeat="(k,v) in {a:0,b:1}" ng-bind=\"k + v\"></li>' +
+        '<li ng-repeat="(k,v) in {a:0,b:1}" ng-bind="k + v"></li>' +
       '</ul>')($rootScope);
     $rootScope.$apply();
     expect(sortedHtml(element)).toBe(
         '<ul>' +
           '<!-- ngRepeat: (k,v) in {a:0,b:1} -->' +
-          '<li ng-bind=\"k + v\" ng-repeat="(k,v) in {a:0,b:1}">a0</li>' +
+          '<li ng-bind="k + v" ng-repeat="(k,v) in {a:0,b:1}">a0</li>' +
           '<!-- end ngRepeat: (k,v) in {a:0,b:1} -->' +
-          '<li ng-bind=\"k + v\" ng-repeat="(k,v) in {a:0,b:1}">b1</li>' +
+          '<li ng-bind="k + v" ng-repeat="(k,v) in {a:0,b:1}">b1</li>' +
           '<!-- end ngRepeat: (k,v) in {a:0,b:1} -->' +
         '</ul>');
   }));

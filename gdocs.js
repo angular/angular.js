@@ -17,16 +17,16 @@ var collections = {
 console.log('Google Docs...');
 
 var flag = process && process.argv[2];
-if (flag == '--login') {
+if (flag === '--login') {
   var username = process.argv[3];
   if (username) {
-    askPassword(function(password){
+    askPassword(function(password) {
       login(username, password);
     });
   } else {
     console.log('Missing username!');
   }
-} else if (flag == '--fetch') {
+} else if (flag === '--fetch') {
   var collection = process.argv[3];
   if (collection) {
     fetch(collection, collections[collection]);
@@ -46,7 +46,7 @@ function help() {
 }
 
 
-function fetch(collection, url){
+function fetch(collection, url) {
   console.log('fetching a list of docs in collection ' + collection + '...');
   request('GET', url, {
       headers: {
@@ -54,10 +54,10 @@ function fetch(collection, url){
         'Authorization': 'GoogleLogin auth=' + getAuthToken()
       }
     },
-    function(chunk){
+    function(chunk) {
       var entries = chunk.split('<entry');
       entries.shift();
-      entries.forEach(function(entry){
+      entries.forEach(function(entry) {
         var title = entry.match(/<title>(.*?)<\/title>/)[1];
         if (title.match(/\.ngdoc$/)) {
           var exportUrl = entry.match(/<content type='text\/html' src='(.*?)'\/>/)[1];
@@ -77,7 +77,7 @@ function download(collection, name, url) {
         'Authorization': 'GoogleLogin auth=' + getAuthToken()
       }
     },
-    function(data){
+    function(data) {
       data = data.replace('\ufeff', '');
       data = data.replace(/\r\n/mg, '\n');
 
@@ -111,7 +111,7 @@ function download(collection, name, url) {
  *    -d service=writely
  *    -d Gdata-version=3.0 | cut -d "=" -f 2)
  */
-function login(username, password){
+function login(username, password) {
   request('POST', 'https://www.google.com/accounts/ClientLogin',
     {
       data: {
@@ -125,11 +125,11 @@ function login(username, password){
         'Content-type': 'application/x-www-form-urlencoded'
       }
     },
-    function(chunk){
+    function(chunk) {
       var token;
-      chunk.split('\n').forEach(function(line){
+      chunk.split('\n').forEach(function(line) {
         var parts = line.split('=');
-        if (parts[0] == 'Auth') {
+        if (parts[0] === 'Auth') {
           token = parts[1];
         }
       });
@@ -161,16 +161,16 @@ function request(method, url, options, response) {
     port: (url[1] ? 443 : 80),
     path: url[3],
     method: method
-  }, function(res){
+  }, function(res) {
     var data;
     switch (res.statusCode) {
       case 200:
         data = [];
         res.setEncoding('utf8');
-        res.on('end', function () { response(data.join('')); });
-        res.on('close', function () { response(data.join('')); });  // https
-        res.on('data', function (chunk) { data.push(chunk); });
-        res.on('error', function (e) { console.log(e); });
+        res.on('end', function() { response(data.join('')); });
+        res.on('close', function() { response(data.join('')); });  // https
+        res.on('data', function(chunk) { data.push(chunk); });
+        res.on('error', function(e) { console.log(e); });
         break;
       case 401:
         console.log('Error: Login credentials expired! Please login.');
@@ -182,13 +182,13 @@ function request(method, url, options, response) {
         console.log('REQUEST POST: ', options.data);
         console.log('REQUEST HEADERS: ', options.headers);
         console.log('RESPONSE HEADERS: ', res.headers);
-        res.on('end', function (){ console.log('BODY: ', data.join('')); });
-        res.on('close', function (){ console.log('BODY: ', data.join('')); }); // https
-        res.on('data', function (chunk) { data.push(chunk); });
-        res.on('error', function (e){ console.log(e); });
+        res.on('end', function() { console.log('BODY: ', data.join('')); });
+        res.on('close', function() { console.log('BODY: ', data.join('')); }); // https
+        res.on('data', function(chunk) { data.push(chunk); });
+        res.on('error', function(e) { console.log(e); });
     }
   });
-  for(var header in options.headers) {
+  for (var header in options.headers) {
     req.setHeader(header, options.headers[header]);
   }
   if (options.data)
@@ -201,7 +201,7 @@ function request(method, url, options, response) {
 
 function encodeData(obj) {
   var pairs = [];
-  for(var key in obj) {
+  for (var key in obj) {
     pairs.push(key + '=' + obj[key]);
   }
   return pairs.join('&') + '\n';
@@ -247,7 +247,7 @@ function reflow(text, margin) {
       reflowLine = '';
       col = 0;
     }
-    line.replace(/\s*\S*\s*/g, function(chunk){
+    line.replace(/\s*\S*\s*/g, function(chunk) {
       if (col + chunk.length > margin) flush();
       reflowLine += chunk;
       col += chunk.length;

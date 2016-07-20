@@ -302,7 +302,7 @@ describe('select', function() {
           '<optgroup label="first">' +
             '<option value="A">A</option>' +
         '</optgroup>' +
-        '<optgroup label="second">' + '\n' +
+        '<optgroup label="second">\n' +
             '<option value="B">B</option>' +
         '</optgroup>      ' +
       '</select>');
@@ -324,7 +324,7 @@ describe('select', function() {
           '<optgroup label="first">' +
             '<option value="A">A</option>' +
         '</optgroup>' +
-        '<optgroup label="second">' + '\n' +
+        '<optgroup label="second">\n' +
             '<option value="B">B</option>' +
         '</optgroup>      ' +
       '</select>');

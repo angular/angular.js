@@ -130,7 +130,7 @@ MessageFormatParser.prototype.errorInParseLogic = function errorInParseLogic() {
 };
 
 MessageFormatParser.prototype.assertRuleOrNull = function assertRuleOrNull(rule) {
-  if (rule === void 0) {
+  if (rule === undefined) {
     this.errorInParseLogic();
   }
 };
@@ -230,7 +230,7 @@ MessageFormatParser.prototype.rulePluralOffset = function rulePluralOffset() {
 };
 
 MessageFormatParser.prototype.assertChoiceKeyIsNew = function assertChoiceKeyIsNew(choiceKey, index) {
-  if (this.choices[choiceKey] !== void 0) {
+  if (this.choices[choiceKey] !== undefined) {
     var position = indexToLineAndColumn(this.text, index);
     throw $interpolateMinErr('dupvalue',
         'The choice “{0}” is specified more than once. Duplicate key is at line {1}, column {2} in text “{3}”',
@@ -268,7 +268,7 @@ MessageFormatParser.prototype.rulePluralValueOrKeyword = function rulePluralValu
   this.rule = this.ruleMessageText;
 };
 
-var BRACE_OPEN_RE = /\s*{/g;
+var BRACE_OPEN_RE = /\s*\{/g;
 var BRACE_CLOSE_RE = /}/g;
 MessageFormatParser.prototype.ruleMessageText = function ruleMessageText() {
   if (!this.consumeRe(BRACE_OPEN_RE)) {
@@ -288,7 +288,7 @@ var INTERP_OR_END_MESSAGE_RE = /\\.|{{|}/g;
 var INTERP_OR_PLURALVALUE_OR_END_MESSAGE_RE = /\\.|{{|#|}/g;
 var ESCAPE_OR_MUSTACHE_BEGIN_RE = /\\.|{{/g;
 MessageFormatParser.prototype.advanceInInterpolationOrMessageText = function advanceInInterpolationOrMessageText() {
-  var currentIndex = this.index, match, re;
+  var currentIndex = this.index, match;
   if (this.ruleChoiceKeyword == null) { // interpolation
     match = this.searchRe(ESCAPE_OR_MUSTACHE_BEGIN_RE);
     if (match == null) { // End of interpolation text.  Nothing more to process.
@@ -446,7 +446,6 @@ function getBeginOperator(opEnd) {
 // should support any other type of start/end interpolation symbol.
 var INTERESTING_OPERATORS_RE = /[[\]{}()'",]/g;
 MessageFormatParser.prototype.ruleInAngularExpression = function ruleInAngularExpression() {
-  var startIndex = this.index;
   var match = this.searchRe(INTERESTING_OPERATORS_RE);
   var position;
   if (match == null) {

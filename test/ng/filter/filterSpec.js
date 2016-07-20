@@ -400,6 +400,7 @@ describe('Filter: filter', function() {
 
 
   it('should not be affected by `Object.prototype` when using a string expression', function() {
+    // eslint-disable-next-line no-extend-native
     Object.prototype.someProp = 'oo';
 
     var items = [

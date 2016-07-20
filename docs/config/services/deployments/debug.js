@@ -5,7 +5,7 @@ module.exports = function debugDeployment(getVersion) {
     name: 'debug',
     examples: {
       commonFiles: {
-        scripts: [ '../../../angular.js' ]
+        scripts: ['../../../angular.js']
       },
       dependencyPath: '../../../'
     },

@@ -53,6 +53,7 @@ describe('widgets', function() {
      * Custom value parser for futures.
      */
     function checkboxParser(value) {
+      // eslint-disable-next-line no-undef
       return angular.fromJson(value.substring(value.indexOf('=') + 1));
     }
 

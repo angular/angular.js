@@ -1,11 +1,11 @@
 'use strict';
 
 describe('$$cookieReader', function() {
-  var $$cookieReader;
+  var $$cookieReader, document;
 
   function deleteAllCookies() {
     var cookies = document.cookie.split(";");
-    var path = location.pathname;
+    var path = window.location.pathname;
 
     for (var i = 0; i < cookies.length; i++) {
       var cookie = cookies[i];
@@ -20,6 +20,7 @@ describe('$$cookieReader', function() {
   }
 
   beforeEach(function() {
+    document = window.document;
     deleteAllCookies();
     expect(document.cookie).toEqual('');
 

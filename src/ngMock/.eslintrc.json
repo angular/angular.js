@@ -1,0 +1,6 @@
+{
+  "globals": {
+    "expect": false,
+    "jQuery": false
+  }
+}

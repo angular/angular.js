@@ -1,0 +1,11 @@
+{
+  "root": true,
+  "extends": "../.eslintrc-browser.json",
+
+  "globals": {
+    "benchmarkSteps": false,
+
+    // Benchmarks are not run in IE 9 so we're fine.
+    "console": false
+  }
+}

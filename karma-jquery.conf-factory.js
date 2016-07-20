@@ -3,7 +3,7 @@
 var angularFiles = require('./angularFiles');
 var sharedConfig = require('./karma-shared.conf');
 
-module.exports = function (version) {
+module.exports = function(version) {
   version = version || '';
 
   return function(config) {

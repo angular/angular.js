@@ -74,7 +74,7 @@ HashMap.prototype = {
   }
 };
 
-var $$HashMapProvider = [function() {
+var $$HashMapProvider = [/* @this */function() {
   this.$get = [function() {
     return HashMap;
   }];

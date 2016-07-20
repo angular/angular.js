@@ -1,3 +1,5 @@
+'use strict';
+
 /**
 * A simple parser to parse a number format into a pattern object
 */
@@ -27,20 +29,20 @@ function parsePattern(pattern) {
             lgSize: 0
           };
 
-  var parts = pattern.split(PATTERN_SEP),
-      positive = parts[0],
-      negative = parts[1];
+  var patternParts = pattern.split(PATTERN_SEP),
+      positive = patternParts[0],
+      negative = patternParts[1];
 
-  var parts = positive.split(DECIMAL_SEP),
-      integer = parts[0],
-      fraction = parts[1];
+  var positiveParts = positive.split(DECIMAL_SEP),
+      integer = positiveParts[0],
+      fraction = positiveParts[1];
 
   p.posPre = integer.substr(0, integer.indexOf(DIGIT));
 
   for (var i = 0; i < fraction.length; i++) {
     var ch = fraction.charAt(i);
-    if (ch == ZERO) p.minFrac = p.maxFrac = i + 1;
-    else if (ch == DIGIT) p.maxFrac = i + 1;
+    if (ch === ZERO) p.minFrac = p.maxFrac = i + 1;
+    else if (ch === DIGIT) p.maxFrac = i + 1;
     else p.posSuf += ch;
   }
 
@@ -52,8 +54,8 @@ function parsePattern(pattern) {
     var trunkLen = positive.length - p.posPre.length - p.posSuf.length,
         pos = negative.indexOf(DIGIT);
 
-    p.negPre = negative.substr(0, pos).replace(/\'/g, '');
-    p.negSuf = negative.substr(pos + trunkLen).replace(/\'/g, '');
+    p.negPre = negative.substr(0, pos).replace(/'/g, '');
+    p.negSuf = negative.substr(pos + trunkLen).replace(/'/g, '');
   } else {
     // hardcoded '-' sign is fine as all locale use '-' as MINUS_SIGN. (\u2212 is the same as '-')
     p.negPre = '-' + p.posPre;

@@ -14,10 +14,12 @@ describe('validate-commit-msg.js', function() {
     logs.length = 0;
 
     spyOn(console, 'error').andCallFake(function(msg) {
+      // eslint-disable-next-line no-control-regex
       errors.push(msg.replace(/\x1B\[\d+m/g, '')); // uncolor
     });
 
     spyOn(console, 'log').andCallFake(function(msg) {
+      // eslint-disable-next-line no-control-regex
       logs.push(msg.replace(/\x1B\[\d+m/g, '')); // uncolor
     });
   });

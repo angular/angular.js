@@ -1,5 +1,6 @@
-/* jshint scripturl: true */
 'use strict';
+
+/* eslint-disable no-script-url */
 
 describe('sanitizeUri', function() {
   var sanitizeHref, sanitizeImg, sanitizeUriProvider, testUrl;
@@ -18,7 +19,7 @@ describe('sanitizeUri', function() {
   });
 
   function isEvilInCurrentBrowser(uri) {
-    var a = document.createElement('a');
+    var a = window.document.createElement('a');
     a.setAttribute('href', uri);
     return a.href.substring(0, 4) !== 'http';
   }

@@ -1,3 +1,5 @@
+'use strict';
+
 angular.module('DocsController', [])
 
 .controller('DocsController', [
@@ -27,9 +29,9 @@ angular.module('DocsController', [])
 
     path = path.replace(/^\/?(.+?)(\/index)?\/?$/, '$1');
 
-    currentPage = $scope.currentPage = NG_PAGES[path];
+    var currentPage = $scope.currentPage = NG_PAGES[path];
 
-    if ( currentPage ) {
+    if (currentPage) {
       $scope.partialPath = 'partials/' + path + '.html';
       $scope.currentArea = NG_NAVIGATION[currentPage.area];
       var pathParts = currentPage.path.split('/');
@@ -37,7 +39,7 @@ angular.module('DocsController', [])
       var breadcrumbPath = '';
       angular.forEach(pathParts, function(part) {
         breadcrumbPath += part;
-        breadcrumb.push({ name: (NG_PAGES[breadcrumbPath]&&NG_PAGES[breadcrumbPath].name) || part, url: breadcrumbPath });
+        breadcrumb.push({ name: (NG_PAGES[breadcrumbPath] && NG_PAGES[breadcrumbPath].name) || part, url: breadcrumbPath });
         breadcrumbPath += '/';
       });
     } else {

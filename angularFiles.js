@@ -244,10 +244,10 @@ var angularFiles = {
   ]
 };
 
-['2.1', '2.2'].forEach(function (jQueryVersion) {
+['2.1', '2.2'].forEach(function(jQueryVersion) {
   angularFiles['karmaJquery' + jQueryVersion] = []
     .concat(angularFiles.karmaJquery)
-    .map(function (path) {
+    .map(function(path) {
       if (path.startsWith('bower_components/jquery')) {
         return path.replace(/^bower_components\/jquery/, 'bower_components/jquery-' + jQueryVersion);
       }
@@ -276,7 +276,7 @@ if (exports) {
     Array.prototype.slice.call(arguments, 0).forEach(function(filegroup) {
       angularFiles[filegroup].forEach(function(file) {
         // replace @ref
-        var match = file.match(/^\@(.*)/);
+        var match = file.match(/^@(.*)/);
         if (match) {
           files = files.concat(angularFiles[match[1]]);
         } else {

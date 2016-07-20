@@ -38,7 +38,7 @@ describe('input', function() {
             };
 
             return {
-              pass: !actualValue || actualValue == 'false',
+              pass: !actualValue || actualValue === 'false',
               message: message
             };
           }
@@ -145,22 +145,30 @@ describe('input', function() {
 
     it('should not dirty the model on an input event in response to a placeholder change', function() {
       var inputElm = helper.compileInput('<input type="text" placeholder="Test" attr-capture ng-model="unsetValue" name="name" />');
-      msie && browserTrigger(inputElm, 'input');
+      if (msie) {
+        browserTrigger(inputElm, 'input');
+      }
       expect(inputElm.attr('placeholder')).toBe('Test');
       expect(inputElm).toBePristine();
 
       helper.attrs.$set('placeholder', '');
-      msie && browserTrigger(inputElm, 'input');
+      if (msie) {
+        browserTrigger(inputElm, 'input');
+      }
       expect(inputElm.attr('placeholder')).toBe('');
       expect(inputElm).toBePristine();
 
       helper.attrs.$set('placeholder', 'Test Again');
-      msie && browserTrigger(inputElm, 'input');
+      if (msie) {
+        browserTrigger(inputElm, 'input');
+      }
       expect(inputElm.attr('placeholder')).toBe('Test Again');
       expect(inputElm).toBePristine();
 
       helper.attrs.$set('placeholder', undefined);
-      msie && browserTrigger(inputElm, 'input');
+      if (msie) {
+        browserTrigger(inputElm, 'input');
+      }
       expect(inputElm.attr('placeholder')).toBeUndefined();
       expect(inputElm).toBePristine();
 
@@ -171,17 +179,23 @@ describe('input', function() {
 
     it('should not dirty the model on an input event in response to a interpolated placeholder change', function() {
       var inputElm = helper.compileInput('<input type="text" placeholder="{{ph}}" ng-model="unsetValue" name="name" />');
-      msie && browserTrigger(inputElm, 'input');
+      if (msie) {
+        browserTrigger(inputElm, 'input');
+      }
       expect(inputElm).toBePristine();
 
       $rootScope.ph = 1;
       $rootScope.$digest();
-      msie && browserTrigger(inputElm, 'input');
+      if (msie) {
+        browserTrigger(inputElm, 'input');
+      }
       expect(inputElm).toBePristine();
 
       $rootScope.ph = "";
       $rootScope.$digest();
-      msie && browserTrigger(inputElm, 'input');
+      if (msie) {
+        browserTrigger(inputElm, 'input');
+      }
       expect(inputElm).toBePristine();
 
       helper.changeInputValueTo('foo');
@@ -196,7 +210,9 @@ describe('input', function() {
 
       browserTrigger(inputElm, 'focusin');
       browserTrigger(inputElm, 'focus');
-      msie && browserTrigger(inputElm, 'input');
+      if (msie) {
+        browserTrigger(inputElm, 'input');
+      }
       expect(inputElm.attr('placeholder')).toBe('Test');
       expect(inputElm).toBePristine();
 
@@ -215,12 +231,16 @@ describe('input', function() {
 
       $rootScope.ph = 1;
       $rootScope.$digest();
-      msie && browserTrigger(inputElm, 'input');
+      if (msie) {
+        browserTrigger(inputElm, 'input');
+      }
       expect(inputElm).toBePristine();
 
       $rootScope.ph = "";
       $rootScope.$digest();
-      msie && browserTrigger(inputElm, 'input');
+      if (msie) {
+        browserTrigger(inputElm, 'input');
+      }
       expect(inputElm).toBePristine();
 
       helper.changeInputValueTo('foo');
@@ -230,13 +250,17 @@ describe('input', function() {
 
     it('should not dirty the model on an input event in response to a focus', function() {
       var inputElm = helper.compileInput('<input type="text" placeholder="Test" ng-model="unsetValue" name="name" />');
-      msie && browserTrigger(inputElm, 'input');
+      if (msie) {
+        browserTrigger(inputElm, 'input');
+      }
       expect(inputElm.attr('placeholder')).toBe('Test');
       expect(inputElm).toBePristine();
 
       browserTrigger(inputElm, 'focusin');
       browserTrigger(inputElm, 'focus');
-      msie && browserTrigger(inputElm, 'input');
+      if (msie) {
+        browserTrigger(inputElm, 'input');
+      }
       expect(inputElm.attr('placeholder')).toBe('Test');
       expect(inputElm).toBePristine();
 
@@ -247,17 +271,23 @@ describe('input', function() {
 
     it('should not dirty the model on an input event in response to a blur', function() {
       var inputElm = helper.compileInput('<input type="text" placeholder="Test" ng-model="unsetValue" name="name" />');
-      msie && browserTrigger(inputElm, 'input');
+      if (msie) {
+        browserTrigger(inputElm, 'input');
+      }
       expect(inputElm.attr('placeholder')).toBe('Test');
       expect(inputElm).toBePristine();
 
       browserTrigger(inputElm, 'focusin');
       browserTrigger(inputElm, 'focus');
-      msie && browserTrigger(inputElm, 'input');
+      if (msie) {
+        browserTrigger(inputElm, 'input');
+      }
       expect(inputElm).toBePristine();
 
       browserTrigger(inputElm, 'focusout');
-      msie && browserTrigger(inputElm, 'input');
+      if (msie) {
+        browserTrigger(inputElm, 'input');
+      }
       browserTrigger(inputElm, 'blur');
       expect(inputElm).toBePristine();
 
@@ -3324,13 +3354,13 @@ describe('input', function() {
         /* domain length, label and total */
         expect(EMAIL_REGEXP.test('a@xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')).toBe(true);
         expect(EMAIL_REGEXP.test('a@xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')).toBe(false);
-        /* jshint maxlen:320 */
+        /* eslint-disable max-len */
         expect(EMAIL_REGEXP.test('a@xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')).toBe(true);
         expect(EMAIL_REGEXP.test('a@xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.x')).toBe(true);
         expect(EMAIL_REGEXP.test('a@xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xx')).toBe(false);
         expect(EMAIL_REGEXP.test('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xx')).toBe(true);
         expect(EMAIL_REGEXP.test('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xxx')).toBe(false);
-        /* jshint maxlen:200 */
+        /* eslint-enable */
         /* local-part valid characters and dot-atom syntax */
         expect(EMAIL_REGEXP.test("'@x")).toBe(true);
         expect(EMAIL_REGEXP.test('-!#$%&*+/0123456789=?ABCDEFGHIJKLMNOPQRSTUVWXYZ@x')).toBe(true);

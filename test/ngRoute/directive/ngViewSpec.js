@@ -83,11 +83,12 @@ describe('ngView', function() {
 
 
     it('should instantiate controller with an alias', function() {
-      var log = [], controllerScope,
-          Ctrl = function($scope) {
-            this.name = 'alias';
-            controllerScope = $scope;
-          };
+      var log = [], controllerScope;
+
+      function Ctrl($scope) {
+        this.name = 'alias';
+        controllerScope = $scope;
+      }
 
       module(function($compileProvider, $routeProvider) {
         $routeProvider.when('/some', {templateUrl: '/tpl.html', controller: Ctrl, controllerAs: 'ctrl'});
@@ -570,10 +571,10 @@ describe('ngView', function() {
         $rootScope.$digest();
 
         angular.forEach(element.contents(), function(node) {
-          if (node.nodeType == 3 /* text node */) {
+          if (node.nodeType === 3 /* text node */) {
             expect(angular.element(node).scope()).not.toBe($route.current.scope);
             expect(angular.element(node).controller()).not.toBeDefined();
-          } else if (node.nodeType == 8 /* comment node */) {
+          } else if (node.nodeType === 8 /* comment node */) {
             expect(angular.element(node).scope()).toBe(element.scope());
             expect(angular.element(node).controller()).toBe(element.controller());
           } else {
@@ -711,7 +712,7 @@ describe('ngView', function() {
       // we need to run animation on attached elements;
       return function(_$rootElement_) {
         $rootElement = _$rootElement_;
-        body = angular.element(document.body);
+        body = angular.element(window.document.body);
       };
     }));
 
