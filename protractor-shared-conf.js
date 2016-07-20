@@ -7,6 +7,11 @@ exports.config = {
 
   framework: 'jasmine2',
 
+  capabilities: {
+    // Fix element scrolling behavior in Firefox for fixed header elements (like angularjs.org has)
+    'elementScrollBehavior': 1
+  },
+
   onPrepare: function() {
     /* global angular: false, browser: false, jasmine: false */
 
