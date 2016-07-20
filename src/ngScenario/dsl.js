@@ -1,5 +1,7 @@
 'use strict';
 
+/* eslint-disable no-invalid-this */
+
 /**
  * Shared DSL statements that are useful to all scenarios.
  */
@@ -444,7 +446,7 @@ angular.scenario.dsl('element', function() {
       var args = arguments,
           futureName = (args.length === 1)
               ? "element '" + this.label + "' get " + methodName + " '" + name + "'"
-              : "element '" + this.label + "' set " + methodName + " '" + name + "' to " + "'" +
+              : "element '" + this.label + "' set " + methodName + " '" + name + "' to '" +
                 value + "'";
 
       return this.addFutureAction(futureName, function($window, $document, done) {

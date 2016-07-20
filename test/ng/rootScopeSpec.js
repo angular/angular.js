@@ -13,8 +13,8 @@ describe('Scope', function() {
 
 
     it('should expose the constructor', inject(function($rootScope) {
-      /* jshint -W103 */
       if (msie < 11) return;
+      // eslint-disable-next-line no-proto
       expect($rootScope.__proto__).toBe($rootScope.constructor.prototype);
     }));
 
@@ -333,9 +333,9 @@ describe('Scope', function() {
 
     it('should repeat watch cycle while model changes are identified', inject(function($rootScope) {
       var log = '';
-      $rootScope.$watch('c', function(v) {$rootScope.d = v; log+='c'; });
-      $rootScope.$watch('b', function(v) {$rootScope.c = v; log+='b'; });
-      $rootScope.$watch('a', function(v) {$rootScope.b = v; log+='a'; });
+      $rootScope.$watch('c', function(v) {$rootScope.d = v; log += 'c'; });
+      $rootScope.$watch('b', function(v) {$rootScope.c = v; log += 'b'; });
+      $rootScope.$watch('a', function(v) {$rootScope.b = v; log += 'a'; });
       $rootScope.$digest();
       log = '';
       $rootScope.a = 1;
@@ -438,11 +438,11 @@ describe('Scope', function() {
       $rootScope.a = [];
       $rootScope.b = {};
       $rootScope.$watch('a', function(value) {
-        log +='.';
+        log += '.';
         expect(value).toBe($rootScope.a);
       }, true);
       $rootScope.$watch('b', function(value) {
-        log +='!';
+        log += '!';
         expect(value).toBe($rootScope.b);
       }, true);
       $rootScope.$digest();
@@ -755,12 +755,12 @@ describe('Scope', function() {
               arrayLikelog.push(element.name);
             });
           });
-          document.body.innerHTML = "<p>" +
-                                      "<a name='x'>a</a>" +
-                                      "<a name='y'>b</a>" +
-                                    "</p>";
+          window.document.body.innerHTML = "<p>" +
+                                             "<a name='x'>a</a>" +
+                                             "<a name='y'>b</a>" +
+                                           "</p>";
 
-          $rootScope.arrayLikeObject =  document.getElementsByTagName('a');
+          $rootScope.arrayLikeObject = window.document.getElementsByTagName('a');
           $rootScope.$digest();
           expect(arrayLikelog).toEqual(['x', 'y']);
         });
@@ -811,7 +811,7 @@ describe('Scope', function() {
           $rootScope.$digest();
           expect(log.empty()).toEqual([{newVal: {}, oldVal: {}, identical: true}]);
 
-          $rootScope.obj.a= 'A';
+          $rootScope.obj.a = 'A';
           $rootScope.$digest();
           expect(log.empty()).toEqual([{newVal: {a: 'A'}, oldVal: {}}]);
 
@@ -1263,7 +1263,7 @@ describe('Scope', function() {
       expect($rootScope.$eval('a=1')).toEqual(1);
       expect($rootScope.a).toEqual(1);
 
-      $rootScope.$eval(function(self) {self.b=2;});
+      $rootScope.$eval(function(self) {self.b = 2;});
       expect($rootScope.b).toEqual(2);
     }));
 

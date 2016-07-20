@@ -1,1 +1,1 @@
-//Override me with ?jquery=/bower_components/jquery/dist/jquery.js
+// Override me with ?jquery=/bower_components/jquery/dist/jquery.js

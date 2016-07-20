@@ -1,6 +1,7 @@
 'use strict';
 
 /**
+ * @this
  * @description
  * Private service to sanitize uris for links and images. Used by $compile and $sanitize.
  */

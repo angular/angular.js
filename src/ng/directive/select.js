@@ -1,5 +1,7 @@
 'use strict';
 
+/* exported selectDirective, optionDirective */
+
 var noopNgModelController = { $setViewValue: noop, $render: noop };
 
 /**
@@ -11,7 +13,7 @@ var noopNgModelController = { $setViewValue: noop, $render: noop };
  * added `<option>` elements, perhaps by an `ngRepeat` directive.
  */
 var SelectController =
-        ['$element', '$scope', function($element, $scope) {
+        ['$element', '$scope', /* @this */ function($element, $scope) {
 
   var self = this,
       optionsMap = new HashMap();
@@ -183,15 +185,15 @@ var SelectController =
     } else if (interpolateValueFn) {
       // The value attribute is interpolated
       optionAttrs.$observe('value', function valueAttributeObserveAction(newVal) {
-        var currentVal = self.readValue();
+        // This method is overwritten in ngOptions and has side-effects!
+        self.readValue();
+
         var removal;
         var previouslySelected = optionElement.prop('selected');
-        var removedVal;
 
         if (isDefined(oldVal)) {
           self.removeOption(oldVal);
           removal = true;
-          removedVal = oldVal;
         }
         oldVal = newVal;
         self.addOption(newVal, optionElement);
@@ -220,7 +222,6 @@ var SelectController =
     }
 
 
-    var oldDisabled;
     optionAttrs.$observe('disabled', function(newVal) {
 
       // Since model updates will also select disabled options (like ngOptions),
@@ -233,7 +234,6 @@ var SelectController =
           self.ngModelCtrl.$setViewValue(null);
           self.ngModelCtrl.$render();
         }
-        oldDisabled = newVal;
       }
     });
 
@@ -362,7 +362,7 @@ var SelectController =
  *      $scope.data = {
  *       singleSelect: null,
  *       multipleSelect: [],
- *       option1: 'option-1',
+ *       option1: 'option-1'
  *      };
  *
  *      $scope.forceUnknownOption = function() {
@@ -395,7 +395,7 @@ var SelectController =
  *         {id: '1', name: 'Option A'},
  *         {id: '2', name: 'Option B'},
  *         {id: '3', name: 'Option C'}
- *       ],
+ *       ]
  *      };
  *   }]);
  * </file>
@@ -497,7 +497,6 @@ var SelectController =
  *   </file>
  *   <file name="protractor.js" type="protractor">
  *     it('should initialize to model', function() {
- *       var select = element(by.css('select'));
  *       expect(element(by.model('model.id')).$('option:checked').getText()).toEqual('Two');
  *     });
  *   </file>
@@ -619,7 +618,6 @@ var optionDirective = ['$interpolate', function($interpolate) {
       var interpolateValueFn, interpolateTextFn;
 
       if (isDefined(attr.ngValue)) {
-        // jshint noempty: false
         // Will be handled by registerOption
       } else if (isDefined(attr.value)) {
         // If the value attribute is defined, check if it contains an interpolation

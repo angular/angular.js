@@ -33,7 +33,7 @@ Components can be registered using the `.component()` method of an Angular modul
 
 <example name="heroComponentSimple" module="heroApp">
 <file name="index.js">
-  angular.module('heroApp', []).controller('mainCtrl', function() {
+  angular.module('heroApp', []).controller('MainCtrl', function MainCtrl() {
     this.hero = {
       name: 'Spawn'
     };
@@ -55,7 +55,7 @@ Components can be registered using the `.component()` method of an Angular modul
 </file>
 <file name="index.html">
   <!-- components match only elements -->
-  <div ng-controller="mainCtrl as ctrl">
+  <div ng-controller="MainCtrl as ctrl">
     <b>Hero</b><br>
     <hero-detail hero="ctrl.hero"></hero-detail>
   </div>
@@ -200,7 +200,7 @@ it upwards to the heroList component, which updates the original data.
 
 <example name="heroComponentTree" module="heroApp">
 <file name="index.js">
-  var mode = angular.module('heroApp', []);
+  angular.module('heroApp', []);
 </file>
 
 <file name="heroList.js">
@@ -388,7 +388,7 @@ Here is a tab pane example built from components:
 angular.module('docsTabsExample', [])
   .component('myTabs', {
     transclude: true,
-    controller: function() {
+    controller: function MyTabsController() {
       var panes = this.panes = [];
       this.select = function(pane) {
         angular.forEach(panes, function(pane) {

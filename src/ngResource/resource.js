@@ -428,8 +428,9 @@ function shallowClearAndCopy(src, dst) {
  *
  */
 angular.module('ngResource', ['ng']).
-  provider('$resource', function() {
+  provider('$resource', function ResourceProvider() {
     var PROTOCOL_AND_DOMAIN_REGEX = /^https?:\/\/[^\/]*/;
+
     var provider = this;
 
     /**
@@ -569,7 +570,7 @@ angular.module('ngResource', ['ng']).
                 return encodedVal + p1;
               });
             } else {
-              url = url.replace(new RegExp("(\/?):" + urlParam + "(\\W|$)", "g"), function(match,
+              url = url.replace(new RegExp("(/?):" + urlParam + "(\\W|$)", "g"), function(match,
                   leadingSlashes, tail) {
                 if (tail.charAt(0) === '/') {
                   return tail;
@@ -654,12 +655,11 @@ angular.module('ngResource', ['ng']).
           Resource[name] = function(a1, a2, a3, a4) {
             var params = {}, data, success, error;
 
-            /* jshint -W086 */ /* (purposefully fall through case statements) */
             switch (arguments.length) {
               case 4:
                 error = a4;
                 success = a3;
-              //fallthrough
+                // falls through
               case 3:
               case 2:
                 if (isFunction(a2)) {
@@ -671,13 +671,14 @@ angular.module('ngResource', ['ng']).
 
                   success = a2;
                   error = a3;
-                  //fallthrough
+                  // falls through
                 } else {
                   params = a1;
                   data = a2;
                   success = a3;
                   break;
                 }
+                // falls through
               case 1:
                 if (isFunction(a1)) success = a1;
                 else if (hasBody) data = a1;
@@ -689,7 +690,6 @@ angular.module('ngResource', ['ng']).
                   "Expected up to 4 arguments [params, data, success, error], got {0} arguments",
                   arguments.length);
             }
-            /* jshint +W086 */ /* (purposefully fall through case statements) */
 
             var isInstanceCall = this instanceof Resource;
             var value = isInstanceCall ? data : (action.isArray ? [] : new Resource(data));
@@ -735,14 +735,12 @@ angular.module('ngResource', ['ng']).
 
               if (data) {
                 // Need to convert action.isArray to boolean in case it is undefined
-                // jshint -W018
                 if (angular.isArray(data) !== (!!action.isArray)) {
                   throw $resourceMinErr('badcfg',
                       'Error in resource configuration for action `{0}`. Expected response to ' +
                       'contain an {1} but got an {2} (Request: {3} {4})', name, action.isArray ? 'array' : 'object',
                     angular.isArray(data) ? 'array' : 'object', httpConfig.method, httpConfig.url);
                 }
-                // jshint +W018
                 if (action.isArray) {
                   value.length = 0;
                   forEach(data, function(item) {

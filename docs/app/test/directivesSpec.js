@@ -1,3 +1,5 @@
+'use strict';
+
 describe("code", function() {
   var prettyPrintOne, oldPP;
   var compile, scope;

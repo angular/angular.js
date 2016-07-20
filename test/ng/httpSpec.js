@@ -682,7 +682,7 @@ describe('$http', function() {
 
       it('should send custom headers', function() {
         $httpBackend.expect('GET', '/url', undefined, function(headers) {
-          return headers['Custom'] == 'header';
+          return headers['Custom'] === 'header';
         }).respond('');
 
         $http({url: '/url', method: 'GET', headers: {
@@ -695,7 +695,7 @@ describe('$http', function() {
 
       it('should set default headers for GET request', function() {
         $httpBackend.expect('GET', '/url', undefined, function(headers) {
-          return headers['Accept'] == 'application/json, text/plain, */*';
+          return headers['Accept'] === 'application/json, text/plain, */*';
         }).respond('');
 
         $http({url: '/url', method: 'GET', headers: {}});
@@ -705,8 +705,8 @@ describe('$http', function() {
 
       it('should set default headers for POST request', function() {
         $httpBackend.expect('POST', '/url', 'messageBody', function(headers) {
-          return headers['Accept'] == 'application/json, text/plain, */*' &&
-                 headers['Content-Type'] == 'application/json;charset=utf-8';
+          return headers['Accept'] === 'application/json, text/plain, */*' &&
+                 headers['Content-Type'] === 'application/json;charset=utf-8';
         }).respond('');
 
         $http({url: '/url', method: 'POST', headers: {}, data: 'messageBody'});
@@ -716,8 +716,8 @@ describe('$http', function() {
 
       it('should set default headers for PUT request', function() {
         $httpBackend.expect('PUT', '/url', 'messageBody', function(headers) {
-          return headers['Accept'] == 'application/json, text/plain, */*' &&
-                 headers['Content-Type'] == 'application/json;charset=utf-8';
+          return headers['Accept'] === 'application/json, text/plain, */*' &&
+                 headers['Content-Type'] === 'application/json;charset=utf-8';
         }).respond('');
 
         $http({url: '/url', method: 'PUT', headers: {}, data: 'messageBody'});
@@ -726,8 +726,8 @@ describe('$http', function() {
 
       it('should set default headers for PATCH request', function() {
         $httpBackend.expect('PATCH', '/url', 'messageBody', function(headers) {
-          return headers['Accept'] == 'application/json, text/plain, */*' &&
-                 headers['Content-Type'] == 'application/json;charset=utf-8';
+          return headers['Accept'] === 'application/json, text/plain, */*' &&
+                 headers['Content-Type'] === 'application/json;charset=utf-8';
         }).respond('');
 
         $http({url: '/url', method: 'PATCH', headers: {}, data: 'messageBody'});
@@ -736,7 +736,7 @@ describe('$http', function() {
 
       it('should set default headers for custom HTTP method', function() {
         $httpBackend.expect('FOO', '/url', undefined, function(headers) {
-          return headers['Accept'] == 'application/json, text/plain, */*';
+          return headers['Accept'] === 'application/json, text/plain, */*';
         }).respond('');
 
         $http({url: '/url', method: 'FOO', headers: {}});
@@ -746,8 +746,8 @@ describe('$http', function() {
 
       it('should override default headers with custom', function() {
         $httpBackend.expect('POST', '/url', 'messageBody', function(headers) {
-          return headers['Accept'] == 'Rewritten' &&
-                 headers['Content-Type'] == 'Rewritten';
+          return headers['Accept'] === 'Rewritten' &&
+                 headers['Content-Type'] === 'Rewritten';
         }).respond('');
 
         $http({url: '/url', method: 'POST', data: 'messageBody', headers: {
@@ -771,8 +771,8 @@ describe('$http', function() {
 
       it('should override default headers with custom in a case insensitive manner', function() {
         $httpBackend.expect('POST', '/url', 'messageBody', function(headers) {
-          return headers['accept'] == 'Rewritten' &&
-                 headers['content-type'] == 'Content-Type Rewritten' &&
+          return headers['accept'] === 'Rewritten' &&
+                 headers['content-type'] === 'Content-Type Rewritten' &&
                  isUndefined(headers['Accept']) &&
                  isUndefined(headers['Content-Type']);
         }).respond('');
@@ -812,7 +812,7 @@ describe('$http', function() {
 
       it('should NOT delete Content-Type header if request data/body is set by request transform', function() {
         $httpBackend.expect('POST', '/url', {'one': 'two'}, function(headers) {
-          return headers['Content-Type'] == 'application/json;charset=utf-8';
+          return headers['Content-Type'] === 'application/json;charset=utf-8';
         }).respond('');
 
         $http({
@@ -830,7 +830,7 @@ describe('$http', function() {
       it('should set the XSRF cookie into a XSRF header', inject(function() {
         function checkXSRF(secret, header) {
           return function(headers) {
-            return headers[header || 'X-XSRF-TOKEN'] == secret;
+            return headers[header || 'X-XSRF-TOKEN'] === secret;
           };
         }
 
@@ -857,7 +857,7 @@ describe('$http', function() {
         var headerConfig = {'Accept': function() { return 'Rewritten'; }};
 
         function checkHeaders(headers) {
-          return headers['Accept'] == 'Rewritten';
+          return headers['Accept'] === 'Rewritten';
         }
 
         $httpBackend.expect('GET', '/url', undefined, checkHeaders).respond('');
@@ -923,7 +923,7 @@ describe('$http', function() {
 
       function checkHeader(name, value) {
         return function(headers) {
-          return headers[name] == value;
+          return headers[name] === value;
         };
       }
 
@@ -1127,6 +1127,7 @@ describe('$http', function() {
         it('should ignore Blob objects', function() {
           if (!window.Blob) return;
 
+          // eslint-disable-next-line no-undef
           var blob = new Blob(['blob!'], { type: 'text/plain' });
 
           $httpBackend.expect('POST', '/url', '[object Blob]').respond('');
@@ -1136,6 +1137,7 @@ describe('$http', function() {
         it('should ignore FormData objects', function() {
           if (!window.FormData) return;
 
+          // eslint-disable-next-line no-undef
           var formData = new FormData();
           formData.append('angular', 'is great');
 
@@ -1187,7 +1189,7 @@ describe('$http', function() {
         });
 
         it('should pipeline more functions', function() {
-          function first(d, h) {return d + '-first' + ':' + h('h1');}
+          function first(d, h) {return d + '-first:' + h('h1');}
           function second(d) {return uppercase(d);}
 
           $httpBackend.expect('POST', '/url', 'REQ-FIRST:V1').respond(200);
@@ -1418,7 +1420,7 @@ describe('$http', function() {
 
 
         it('should pipeline more functions', function() {
-          function first(d, h) {return d + '-first' + ':' + h('h1');}
+          function first(d, h) {return d + '-first:' + h('h1');}
           function second(d) {return uppercase(d);}
 
           $httpBackend.expect('POST', '/url').respond(200, 'resp', {h1: 'v1'});
@@ -1878,7 +1880,7 @@ describe('$http', function() {
 
         $http.defaults.headers.common.foo = 'bar';
         $httpBackend.expect('GET', '/url', undefined, function(headers) {
-          return headers['foo'] == 'bar';
+          return headers['foo'] === 'bar';
         }).respond('');
 
         $http.get('/url');

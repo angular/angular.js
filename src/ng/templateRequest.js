@@ -5,6 +5,8 @@ var $templateRequestMinErr = minErr('$compile');
 /**
  * @ngdoc provider
  * @name $templateRequestProvider
+ * @this
+ *
  * @description
  * Used to configure the options passed to the {@link $http} service when making a template request.
  *
@@ -86,7 +88,7 @@ function $TemplateRequestProvider() {
           cache: $templateCache,
           transformResponse: transformResponse
         }, httpOptions))
-        ['finally'](function() {
+        .finally(function() {
           handleRequestFn.totalPendingRequests--;
         })
         .then(function(response) {

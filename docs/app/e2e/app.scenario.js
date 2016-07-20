@@ -2,7 +2,7 @@
 
 var webdriver = require('protractor/node_modules/selenium-webdriver');
 
-describe('docs.angularjs.org', function () {
+describe('docs.angularjs.org', function() {
 
   beforeEach(function() {
     // read and clear logs from previous tests
@@ -24,7 +24,7 @@ describe('docs.angularjs.org', function () {
   });
 
 
-  describe('App', function () {
+  describe('App', function() {
     // it('should filter the module list when searching', function () {
     //   browser.get();
     //   browser.waitForAngular();
@@ -38,7 +38,7 @@ describe('docs.angularjs.org', function () {
     // });
 
 
-    it('should change the page content when clicking a link to a service', function () {
+    it('should change the page content when clicking a link to a service', function() {
       browser.get('build/docs/index-production.html');
 
       var ngBindLink = element(by.css('.definition-table td a[href="api/ng/directive/ngClick"]'));

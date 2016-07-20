@@ -8,7 +8,7 @@ module.exports = function productionDeployment(getVersion) {
     name: 'production',
     examples: {
       commonFiles: {
-        scripts: [ cdnUrl + '/angular.min.js' ]
+        scripts: [cdnUrl + '/angular.min.js']
       },
       dependencyPath: cdnUrl + '/'
     },

@@ -1,6 +1,7 @@
 {
-  "extends": "../.jshintrc-base",
-  "browser": true,
+  "root": true,
+  "extends": "../.eslintrc-browser.json",
+
   "globals": {
     /* auto/injector.js */
     "createInjector": false,
@@ -11,6 +12,7 @@
     "jqLite": false,
     "jQuery": false,
     "slice": false,
+    "splice": false,
     "push": false,
     "toString": false,
     "ngMinErr": false,
@@ -20,19 +22,21 @@
     "uid": false,
     "toDebugString": false,
 
+    "REGEX_STRING_REGEXP" : false,
     "lowercase": false,
     "uppercase": false,
     "manualLowercase": false,
     "manualUppercase": false,
     "isArrayLike": false,
     "forEach": false,
+    "forEachSorted": false,
     "reverseParams": false,
     "nextUid": false,
     "setHashKey": false,
     "extend": false,
-    "merge": false,
     "toInt": false,
     "inherit": false,
+    "merge": false,
     "noop": false,
     "identity": false,
     "valueFn": false,
@@ -48,26 +52,29 @@
     "isWindow": false,
     "isScope": false,
     "isFile": false,
+    "isFormData": false,
     "isBlob": false,
     "isBoolean": false,
-    "trim": false,
-    "isElement": false,
     "isPromiseLike": false,
+    "hasCustomToString": false,
+    "trim": false,
+    "escapeForRegexp": false,
+    "isElement": false,
     "makeMap": false,
-    "map": false,
     "includes": false,
     "arrayRemove": false,
     "copy": false,
     "shallowCopy": false,
     "equals": false,
     "csp": false,
-    "jq": false,
     "concat": false,
     "sliceArgs": false,
     "bind": false,
     "toJsonReplacer": false,
     "toJson": false,
     "fromJson": false,
+    "convertTimezoneToLocal": false,
+    "timezoneToOffset": false,
     "startingTag": false,
     "tryDecodeURIComponent": false,
     "parseKeyValue": false,
@@ -76,6 +83,7 @@
     "encodeUriQuery": false,
     "angularInit": false,
     "bootstrap": false,
+    "getTestability": false,
     "snake_case": false,
     "bindJQuery": false,
     "assertArg": false,
@@ -84,13 +92,27 @@
     "getter": false,
     "getBlockNodes": false,
     "createMap": false,
-    "VALIDITY_STATE_PROPERTY": true,
+    "VALIDITY_STATE_PROPERTY": false,
+    "reloadWithDebugInfo": false,
+    "stringify": false,
+
+    "NODE_TYPE_ELEMENT": false,
+    "NODE_TYPE_ATTRIBUTE": false,
+    "NODE_TYPE_TEXT": false,
+    "NODE_TYPE_COMMENT": false,
+    "NODE_TYPE_DOCUMENT": false,
+    "NODE_TYPE_DOCUMENT_FRAGMENT": false,
+
+    "defaultHttpResponseTransform": false,
+
+    /* filters.js */
+    "getFirstThursdayOfYear": false,
 
     /* AngularPublic.js */
     "version": false,
     "publishExternalAPI": false,
 
-    /* minerr.js */
+    /* minErr.js */
     "minErr": false,
 
     /* loader.js */
@@ -98,6 +120,7 @@
 
     /* jqLite.js */
     "BOOLEAN_ATTR": false,
+    "ALIASED_ATTR": false,
     "jqNextId": false,
     "camelCase": false,
     "jqLitePatchJQueryRemove": false,
@@ -114,9 +137,14 @@
     "jqLiteAddNodes": false,
     "jqLiteController": false,
     "jqLiteInheritedData": false,
+    "jqLiteBuildFragment": false,
+    "jqLiteParseHTML": false,
+    "jqLiteWrapNode": false,
     "getBooleanAttrName": false,
+    "getAliasedAttrName": false,
     "createEventHandler": false,
     "JQLitePrototype": false,
+    "jqLiteIsTextNode": false,
     "jqLiteDocumentLoaded": false,
 
     /* apis.js */
@@ -127,46 +155,23 @@
     "urlResolve": false,
     "urlIsSameOrigin": false,
 
-    /* jasmine / karma */
-    "it": false,
-    "fit": false,
-    "describe": false,
-    "fdescribe": false,
-    "beforeEach": false,
-    "afterEach": false,
-    "expect": false,
-    "jasmine": false,
-    "spyOn": false,
-    "waits": false,
-    "waitsFor": false,
-    "runs": false,
-    "dump": false,
-    "they": false,
-    "fthey": false,
-    "xthey": false,
-    "assertCompareNodes": false,
+    /* ng/controller.js */
+    "identifierForController": false,
 
-    /* e2e */
-    "browser": false,
-    "element": false,
-    "by": false,
+    /* ng/compile.js */
+    "directiveNormalize": false,
 
-    /* testabilityPatch / matchers */
-    "inject": false,
-    "module": false,
-    "dealoc": false,
-    "_jQuery": false,
-    "_jqLiteMode": false,
-    "sortedHtml": false,
-    "childrenTagsOf": false,
-    "assertHidden": false,
-    "assertVisible": false,
-    "provideLog": false,
-    "spyOnlyCallsWithArgs": false,
-    "createMockStyleSheet": false,
-    "browserSupportsCssAnimations": false,
-    "browserTrigger": false,
-    "jqLiteCacheSize": false,
-    "createAsync": false
+    /* ng/directive/directives.js */
+    "ngDirective": false,
+
+    /* ng/directive/input.js */
+    "VALID_CLASS": false,
+    "INVALID_CLASS": false,
+    "PRISTINE_CLASS": false,
+    "DIRTY_CLASS": false,
+
+    /* ng/directive/form.js */
+    "nullFormCtrl": false
+
   }
 }

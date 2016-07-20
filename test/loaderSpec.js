@@ -111,15 +111,20 @@ describe('module loader', function() {
     var log = '';
 
     angular.module('theModule', []).
-      factory('theProvider', function() { return {
-        api: 'firstProvider'
-      }; }).
+      factory('theProvider', function() {
+        return {
+          api: 'firstProvider'
+        };
+      }).
       decorator('theProvider', function($delegate) {
         $delegate.api = $delegate.api + '-decorator';
-        return $delegate; }).
-      factory('theProvider', function() { return {
-        api: 'secondProvider'
-      }; }).
+        return $delegate;
+      }).
+      factory('theProvider', function() {
+        return {
+          api: 'secondProvider'
+        };
+      }).
       run(function(theProvider) {
         log = theProvider.api;
       });

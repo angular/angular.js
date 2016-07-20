@@ -21,7 +21,7 @@ describe('$templateRequest', function() {
 
           expect($http.get).toHaveBeenCalledOnceWith('tpl.html', {
             cache: $templateCache,
-            transformResponse: [  ]
+            transformResponse: []
           });
         });
 
@@ -214,7 +214,7 @@ describe('$templateRequest', function() {
 
     try {
       $httpBackend.flush();
-    } catch (e) {}
+    } catch (e) { /* empty */ }
 
     expect($templateRequest.totalPendingRequests).toBe(0);
   }));

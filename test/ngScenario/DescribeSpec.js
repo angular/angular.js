@@ -82,6 +82,7 @@ describe('angular.scenario.Describe', function() {
     expect(specs.length).toEqual(0);
   });
 
+
   it('should only return iit and ddescribe if present', function() {
     root.describe('A', function() {
       this.it('1', angular.noop);

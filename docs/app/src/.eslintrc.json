@@ -1,0 +1,12 @@
+{
+  "root": true,
+  "extends": "../../../.eslintrc-browser.json",
+
+  "globals": {
+    // ngMocks
+    "module": false,
+    "inject": true,
+
+    "lunr": false
+  }
+}

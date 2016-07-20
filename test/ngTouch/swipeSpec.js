@@ -90,7 +90,7 @@ describe('$swipe', function() {
         // TODO(braden): Once we have other touch-friendly browsers on CI, allow them here.
         // Currently Firefox and IE refuse to fire touch events.
         // Enable iPhone for manual testing.
-        if (!/chrome|iphone/i.test(navigator.userAgent)) {
+        if (!/chrome|iphone/i.test(window.navigator.userAgent)) {
           return;
         }
       }

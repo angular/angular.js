@@ -192,8 +192,8 @@ describe('q', function() {
 
 
   beforeEach(function() {
-    q = qFactory(mockNextTick.nextTick, exceptionHandler, true),
-    q_no_error = qFactory(mockNextTick.nextTick, exceptionHandler, false),
+    q = qFactory(mockNextTick.nextTick, exceptionHandler, true);
+    q_no_error = qFactory(mockNextTick.nextTick, exceptionHandler, false);
     defer = q.defer;
     deferred =  defer();
     promise = deferred.promise;
@@ -234,12 +234,11 @@ describe('q', function() {
     });
 
     it('should support the instanceof operator', function() {
-      /*jshint newcap: false */
+      // eslint-disable-next-line new-cap
       var promise = new q(noop);
       expect(promise instanceof q).toBe(true);
       promise = q(noop);
       expect(promise instanceof q).toBe(true);
-      /*jshint newcap: true */
     });
 
 
@@ -846,7 +845,7 @@ describe('q', function() {
         expect(resolveSpy).not.toHaveBeenCalled();
         expect(rejectSpy).toHaveBeenCalled();
         expect(rejectSpy.calls.argsFor(0)[0].message).
-            toMatch(/\[\$q\:qcycle\] Expected promise to be resolved with value other than itself/);
+            toMatch(/\[\$q:qcycle\] Expected promise to be resolved with value other than itself/);
       });
 
 
@@ -2068,7 +2067,7 @@ describe('q', function() {
 
 
     beforeEach(function() {
-      q = qFactory(mockNextTick.nextTick, mockExceptionLogger.logger),
+      q = qFactory(mockNextTick.nextTick, mockExceptionLogger.logger);
       defer = q.defer;
       deferred =  defer();
       promise = deferred.promise;
@@ -2238,7 +2237,7 @@ describe('q', function() {
 
 
     it('should still reject the promise, when exception is thrown in success handler, even if exceptionHandler rethrows', function() {
-      deferred.promise.then(function() { throw 'reject'; }).then(null, errorSpy);
+      deferred.promise.then(function() { throw new Error('reject'); }).then(null, errorSpy);
       deferred.resolve('resolve');
       mockNextTick.flush();
       expect(exceptionExceptionSpy).toHaveBeenCalled();
@@ -2247,7 +2246,7 @@ describe('q', function() {
 
 
     it('should still reject the promise, when exception is thrown in error handler, even if exceptionHandler rethrows', function() {
-      deferred.promise.then(null, function() { throw 'reject again'; }).then(null, errorSpy);
+      deferred.promise.then(null, function() { throw new Error('reject again'); }).then(null, errorSpy);
       deferred.reject('reject');
       mockNextTick.flush();
       expect(exceptionExceptionSpy).toHaveBeenCalled();

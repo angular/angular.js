@@ -1,3 +1,5 @@
+'use strict';
+
 angular.
   module('test', []).
   config(function($httpProvider) {
@@ -5,12 +7,12 @@ angular.
       return {
         request: function(config) {
           return $q(function(resolve) {
-            setTimeout(resolve, 100, config);
+            window.setTimeout(resolve, 100, config);
           });
         },
         response: function(response) {
           return $q(function(resolve) {
-            setTimeout(resolve, 100, response);
+            window.setTimeout(resolve, 100, response);
           });
         }
       };

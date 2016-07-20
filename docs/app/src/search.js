@@ -1,3 +1,5 @@
+'use strict';
+
 angular.module('search', [])
 
 .controller('DocsSearchCtrl', ['$scope', '$location', 'docsSearch', function($scope, $location, docsSearch) {
@@ -9,7 +11,7 @@ angular.module('search', [])
 
   $scope.search = function(q) {
     var MIN_SEARCH_LENGTH = 2;
-    if(q.length >= MIN_SEARCH_LENGTH) {
+    if (q.length >= MIN_SEARCH_LENGTH) {
       docsSearch(q).then(function(hits) {
         // Make sure the areas are always in the same order
         var results = {
@@ -23,28 +25,24 @@ angular.module('search', [])
         angular.forEach(hits, function(hit) {
           var area = hit.area;
 
-          var limit = (area == 'api') ? 40 : 14;
+          var limit = (area === 'api') ? 40 : 14;
           results[area] = results[area] || [];
-          if(results[area].length < limit) {
+          if (results[area].length < limit) {
             results[area].push(hit);
           }
         });
 
-        var totalAreas = 0;
-        for(var i in results) {
-          ++totalAreas;
-        }
-        if(totalAreas > 0) {
+        var totalAreas = Object.keys(results).length;
+        if (totalAreas > 0) {
           $scope.colClassName = 'cols-' + totalAreas;
         }
         $scope.hasResults = totalAreas > 0;
         $scope.results = results;
       });
-    }
-    else {
+    } else {
       clearResults();
     }
-    if(!$scope.$$phase) $scope.$apply();
+    if (!$scope.$$phase) $scope.$apply();
   };
 
   $scope.submit = function() {
@@ -52,14 +50,14 @@ angular.module('search', [])
     if ($scope.results.api) {
       result = $scope.results.api[0];
     } else {
-      for(var i in $scope.results) {
+      for (var i in $scope.results) {
         result = $scope.results[i][0];
-        if(result) {
+        if (result) {
           break;
         }
       }
     }
-    if(result) {
+    if (result) {
       $location.path(result.path);
       $scope.hideResults();
     }
@@ -92,10 +90,12 @@ angular.module('search', [])
   // It should only be used where the browser does not support WebWorkers
   function localSearchFactory($http, $timeout, NG_PAGES) {
 
-    console.log('Using Local Search Index');
+    if (window.console && window.console.log) {
+      window.console.log('Using Local Search Index');
+    }
 
     // Create the lunr index
-    var index = lunr(function() {
+    var index = lunr(/* @this */ function() {
       this.ref('path');
       this.field('titleWords', {boost: 50});
       this.field('members', { boost: 40});
@@ -136,12 +136,14 @@ angular.module('search', [])
   // It should only be used where the browser does support WebWorkers
   function webWorkerSearchFactory($q, $rootScope, NG_PAGES) {
 
-    console.log('Using WebWorker Search Index')
+    if (window.console && window.console.log) {
+      window.console.log('Using WebWorker Search Index');
+    }
 
     var searchIndex = $q.defer();
     var results;
 
-    var worker = new Worker('js/search-worker.js');
+    var worker = new window.Worker('js/search-worker.js');
 
     // The worker will send us a message in two situations:
     // - when the index has been built, ready to run a query
@@ -149,7 +151,7 @@ angular.module('search', [])
     worker.onmessage = function(oEvent) {
       $rootScope.$apply(function() {
 
-        switch(oEvent.data.e) {
+        switch (oEvent.data.e) {
           case 'index-ready':
             searchIndex.resolve();
             break;
@@ -206,7 +208,7 @@ angular.module('search', [])
         FORWARD_SLASH_KEYCODE = 191;
     angular.element($document[0].body).on('keydown', function(event) {
       var input = element[0];
-      if(event.keyCode == FORWARD_SLASH_KEYCODE && document.activeElement != input) {
+      if (event.keyCode === FORWARD_SLASH_KEYCODE && window.document.activeElement !== input) {
         event.stopPropagation();
         event.preventDefault();
         input.focus();
@@ -214,7 +216,7 @@ angular.module('search', [])
     });
 
     element.on('keydown', function(event) {
-      if(event.keyCode == ESCAPE_KEY_KEYCODE) {
+      if (event.keyCode === ESCAPE_KEY_KEYCODE) {
         event.stopPropagation();
         event.preventDefault();
         scope.$apply(function() {

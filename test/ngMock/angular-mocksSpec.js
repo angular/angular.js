@@ -428,7 +428,7 @@ describe('ngMock', function() {
 
       it('should delegate exception to the $exceptionHandler service', inject(
           function($interval, $exceptionHandler) {
-        $interval(function() { throw "Test Error"; }, 1000);
+        $interval(function() { throw 'Test Error'; }, 1000);
         expect($exceptionHandler.errors).toEqual([]);
 
         $interval.flush(1000);
@@ -443,7 +443,7 @@ describe('ngMock', function() {
           function($interval, $rootScope) {
         var applySpy = spyOn($rootScope, '$apply').and.callThrough();
 
-        $interval(function() { throw "Test Error"; }, 1000);
+        $interval(function() { throw new Error('Test Error'); }, 1000);
         expect(applySpy).not.toHaveBeenCalled();
 
         $interval.flush(1000);
@@ -454,7 +454,7 @@ describe('ngMock', function() {
       it('should still update the interval promise when an exception is thrown',
           inject(function($interval) {
         var log = [],
-            promise = $interval(function() { throw "Some Error"; }, 1000);
+            promise = $interval(function() { throw new Error('Some Error'); }, 1000);
 
         promise.then(function(value) { log.push('promise success: ' + value); },
                    function(err) { log.push('promise error: ' + err); },
@@ -745,7 +745,6 @@ describe('ngMock', function() {
     }));
 
     it('should serialize scope that has overridden "hasOwnProperty"', inject(function($rootScope, $sniffer) {
-      /* jshint -W001 */
       $rootScope.hasOwnProperty = 'X';
       expect(d($rootScope)).toMatch(/Scope\(.*\): \{/);
       expect(d($rootScope)).toMatch(/hasOwnProperty: "X"/);
@@ -949,7 +948,7 @@ describe('ngMock', function() {
           if (!error.stack) {
             try {
               throw error;
-            } catch (e) {}
+            } catch (e) { /* empty */}
           }
 
           return !!error.stack;
@@ -1083,6 +1082,7 @@ describe('ngMock', function() {
 
     it('should be able to handle Blobs as mock data', function() {
       if (typeof Blob !== 'undefined') {
+        // eslint-disable-next-line no-undef
         var mockBlob = new Blob(['{"foo":"bar"}'], {type: 'application/json'});
 
         hb.when('GET', '/url1').respond(200, mockBlob, {});
@@ -1834,7 +1834,7 @@ describe('ngMock', function() {
 
       it('should accept headers as function', function() {
         var exp = new MockHttpExpectation('GET', '/url', undefined, function(h) {
-          return h['Content-Type'] == 'application/json';
+          return h['Content-Type'] === 'application/json';
         });
 
         expect(exp.matchHeaders({})).toBe(false);
@@ -2067,7 +2067,7 @@ describe('ngMock', function() {
       }
     );
 
-    if (/chrome/.test(navigator.userAgent)) {
+    if (/chrome/.test(window.navigator.userAgent)) {
       it('should support assigning bindings to class-based controller', function() {
         var called = false;
         var data = [
@@ -2076,9 +2076,8 @@ describe('ngMock', function() {
           { name: 'flurp', id: 2 }
         ];
         module(function($controllerProvider) {
-          //jshint evil: true
+          // eslint-disable-next-line no-eval
           var TestCtrl = eval('(class { constructor() { called = true; } })');
-          //jshint evil: false
           $controllerProvider.register('testCtrl', TestCtrl);
         });
         inject(function($controller, $rootScope) {

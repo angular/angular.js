@@ -1,5 +1,9 @@
 'use strict';
 
+// This file has many tests which read nicely if constant conditions
+// are used.
+/* eslint-disable no-constant-condition */
+
 describe('parser', function() {
 
   describe('lexer', function() {
@@ -25,7 +29,7 @@ describe('parser', function() {
     });
 
     it('should tokenize a string', function() {
-      var tokens = lex("a.bc[22]+1.3|f:'a\\\'c':\"d\\\"e\"");
+      var tokens = lex("a.bc[22]+1.3|f:'a\\'c':\"d\\\"e\"");
       var i = 0;
       expect(tokens[i].index).toEqual(0);
       expect(tokens[i].text).toEqual('a');
@@ -1848,7 +1852,6 @@ describe('parser', function() {
       }));
 
       it('should parse expressions', function() {
-        /*jshint -W006, -W007 */
         expect(scope.$eval("-1")).toEqual(-1);
         expect(scope.$eval("1 + 2.5")).toEqual(3.5);
         expect(scope.$eval("1 + -2.5")).toEqual(-1.5);
@@ -1874,7 +1877,7 @@ describe('parser', function() {
       });
 
       it('should parse comparison', function() {
-        /* jshint -W041 */
+        /* eslint-disable eqeqeq, no-self-compare */
         expect(scope.$eval("false")).toBeFalsy();
         expect(scope.$eval("!true")).toBeFalsy();
         expect(scope.$eval("1==1")).toBeTruthy();
@@ -1897,6 +1900,7 @@ describe('parser', function() {
         expect(scope.$eval("true===3===3")).toEqual(true === 3 === 3);
         expect(scope.$eval("3===3===true")).toEqual(3 === 3 === true);
         expect(scope.$eval("3 >= 3 > 2")).toEqual(3 >= 3 > 2);
+        /* eslint-enable */
       });
 
       it('should parse logical', function() {
@@ -2244,9 +2248,9 @@ describe('parser', function() {
       });
 
       it('should evaluate object methods in correct context (this)', function() {
-        var C = function() {
+        function C() {
           this.a = 123;
-        };
+        }
         C.prototype.getA = function() {
           return this.a;
         };
@@ -2257,9 +2261,9 @@ describe('parser', function() {
       });
 
       it('should evaluate methods in correct context (this) in argument', function() {
-        var C = function() {
+        function C() {
           this.a = 123;
-        };
+        }
         C.prototype.sum = function(value) {
           return this.a + value;
         };
@@ -2327,8 +2331,8 @@ describe('parser', function() {
       });
 
       it('should evaluate negation', function() {
-        /* jshint -W018 */
         expect(scope.$eval("!false || true")).toEqual(!false || true);
+        // eslint-disable-next-line eqeqeq
         expect(scope.$eval("!11 == 10")).toEqual(!11 == 10);
         expect(scope.$eval("12/6/2")).toEqual(12 / 6 / 2);
       });
@@ -2356,7 +2360,7 @@ describe('parser', function() {
 
       it('should short-circuit AND operator', function() {
         scope.run = function() {
-          throw "IT SHOULD NOT HAVE RUN";
+          throw new Error("IT SHOULD NOT HAVE RUN");
         };
         expect(scope.$eval('false && run()')).toBe(false);
         expect(scope.$eval('false && true && run()')).toBe(false);
@@ -2364,7 +2368,7 @@ describe('parser', function() {
 
       it('should short-circuit OR operator', function() {
         scope.run = function() {
-          throw "IT SHOULD NOT HAVE RUN";
+          throw new Error("IT SHOULD NOT HAVE RUN");
         };
         expect(scope.$eval('true || run()')).toBe(true);
         expect(scope.$eval('true || false || run()')).toBe(true);
@@ -2943,12 +2947,13 @@ describe('parser', function() {
         });
 
         it('should prevent the exploit', function() {
-           expect(function() {
-             scope.$eval('(1)[{0: "__proto__", 1: "__proto__", 2: "__proto__", 3: "safe", length: 4, toString: [].pop}].foo = 1');
-           }).toThrow();
-           if (!msie || msie > 10) {
-             expect((1)['__proto__'].foo).toBeUndefined();
-           }
+          expect(function() {
+            scope.$eval('(1)[{0: "__proto__", 1: "__proto__", 2: "__proto__", 3: "safe", length: 4, toString: [].pop}].foo = 1');
+          }).toThrow();
+          if (!msie || msie > 10) {
+            // eslint-disable-next-line no-proto
+            expect((1)['__proto__'].foo).toBeUndefined();
+          }
         });
 
         it('should prevent the exploit', function() {
@@ -3185,7 +3190,7 @@ describe('parser', function() {
         var n = 0;
         scope.fn = function() {
           var c = n++;
-          return { c: c, anotherFn: function() { return this.c == c; } };
+          return { c: c, anotherFn: function() { return this.c === c; } };
         };
         expect(scope.$eval('fn().anotherFn()')).toBe(true);
       });

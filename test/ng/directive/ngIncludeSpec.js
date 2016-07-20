@@ -40,7 +40,7 @@ describe('ngInclude', function() {
   it('should include an external file', inject(putIntoCache('myUrl', '{{name}}'),
       function($rootScope, $compile) {
     element = jqLite('<div><ng:include src="url"></ng:include></div>');
-    var body = jqLite(document.body);
+    var body = jqLite(window.document.body);
     body.append(element);
     element = $compile(element)($rootScope);
     $rootScope.name = 'misko';
@@ -54,41 +54,41 @@ describe('ngInclude', function() {
   it('should support ng-include="src" syntax', inject(putIntoCache('myUrl', '{{name}}'),
       function($rootScope, $compile) {
     element = jqLite('<div><div ng-include="url"></div></div>');
-    jqLite(document.body).append(element);
+    jqLite(window.document.body).append(element);
     element = $compile(element)($rootScope);
     $rootScope.name = 'Alibaba';
     $rootScope.url = 'myUrl';
     $rootScope.$digest();
     expect(element.text()).toEqual('Alibaba');
-    jqLite(document.body).empty();
+    jqLite(window.document.body).empty();
   }));
 
 
   it('should NOT use untrusted URL expressions ', inject(putIntoCache('myUrl', '{{name}} text'),
       function($rootScope, $compile, $sce) {
     element = jqLite('<ng:include src="url"></ng:include>');
-    jqLite(document.body).append(element);
+    jqLite(window.document.body).append(element);
     element = $compile(element)($rootScope);
     $rootScope.name = 'chirayu';
     $rootScope.url = 'http://example.com/myUrl';
     expect(function() { $rootScope.$digest(); }).toThrowMinErr(
         '$sce', 'insecurl',
-        /Blocked loading resource from url not allowed by \$sceDelegate policy.  URL: http:\/\/example.com\/myUrl.*/);
-    jqLite(document.body).empty();
+        /Blocked loading resource from url not allowed by \$sceDelegate policy. {2}URL: http:\/\/example.com\/myUrl.*/);
+    jqLite(window.document.body).empty();
   }));
 
 
   it('should NOT use mistyped expressions ', inject(putIntoCache('myUrl', '{{name}} text'),
       function($rootScope, $compile, $sce) {
     element = jqLite('<ng:include src="url"></ng:include>');
-    jqLite(document.body).append(element);
+    jqLite(window.document.body).append(element);
     element = $compile(element)($rootScope);
     $rootScope.name = 'chirayu';
     $rootScope.url = $sce.trustAsUrl('http://example.com/myUrl');
     expect(function() { $rootScope.$digest(); }).toThrowMinErr(
         '$sce', 'insecurl',
-        /Blocked loading resource from url not allowed by \$sceDelegate policy.  URL: http:\/\/example.com\/myUrl.*/);
-    jqLite(document.body).empty();
+        /Blocked loading resource from url not allowed by \$sceDelegate policy. {2}URL: http:\/\/example.com\/myUrl.*/);
+    jqLite(window.document.body).empty();
   }));
 
 
@@ -345,7 +345,7 @@ describe('ngInclude', function() {
     element = $compile('<div><span ng-include="includeUrl"></span></div>')($rootScope);
 
     // the element needs to be appended for the script to run
-    element.appendTo(document.body);
+    element.appendTo(window.document.body);
     window._ngIncludeCausesScriptToRun = false;
     $httpBackend.expect('GET', 'url1').respond('<script>window._ngIncludeCausesScriptToRun = true;</script>');
     $rootScope.includeUrl = 'url1';
@@ -374,6 +374,7 @@ describe('ngInclude', function() {
       $httpBackend.flush();
       var child = element.find('rect');
       expect(child.length).toBe(2);
+      // eslint-disable-next-line no-undef
       expect(child[0] instanceof SVGRectElement).toBe(true);
     });
   });
@@ -665,7 +666,7 @@ describe('ngInclude animations', function() {
     // we need to run animation on attached elements;
     return function(_$rootElement_) {
       $rootElement = _$rootElement_;
-      body = jqLite(document.body);
+      body = jqLite(window.document.body);
       body.append($rootElement);
     };
   }));

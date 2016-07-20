@@ -1,3 +1,5 @@
+'use strict';
+
 describe("localized filters", function() {
   describe("es locale", function() {
     beforeEach(function() {
@@ -90,7 +92,7 @@ describe("localized filters", function() {
         input('person2').enter('Vojta');
         expect(element('ng-pluralize:last').html()).toBe('Igor and Vojta are viewing!');
       });
-    })
+    });
   });
 
   describe("sk locale", function() {
@@ -129,7 +131,7 @@ describe("localized filters", function() {
 
       it('should show pluralized strings with correct data-binding', function() {
       });
-    })
+    });
   });
 
   describe("zh locale", function() {
@@ -180,6 +182,6 @@ describe("localized filters", function() {
         input('person2').enter('一哥');
         expect(element('ng-pluralize:last').html()).toBe('彭迪 和 一哥 在浏览该文件!');
       });
-    })
+    });
   });
 });

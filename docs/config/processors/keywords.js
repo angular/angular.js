@@ -37,7 +37,7 @@ module.exports = function generateKeywordsProcessor(log, readFilesProcessor) {
       var KEYWORD_REGEX = /^((ng:|[\$_a-z])[\w\-_]+)/;
 
       // Load up the keywords to ignore, if specified in the config
-      if ( this.ignoreWordsFile ) {
+      if (this.ignoreWordsFile) {
 
         var ignoreWordsPath = path.resolve(readFilesProcessor.basePath, this.ignoreWordsFile);
         wordsToIgnore = fs.readFileSync(ignoreWordsPath, 'utf8').toString().split(/[,\s\n\r]+/gm);
@@ -59,7 +59,7 @@ module.exports = function generateKeywordsProcessor(log, readFilesProcessor) {
       // without the ng to the title text, e.g. "controller".
       function extractTitleWords(title) {
         var match = /ng([A-Z]\w*)/.exec(title);
-        if ( match ) {
+        if (match) {
           title = title + ' ' + match[1].toLowerCase();
         }
         return title;
@@ -68,11 +68,11 @@ module.exports = function generateKeywordsProcessor(log, readFilesProcessor) {
     function extractWords(text, words, keywordMap) {
 
       var tokens = text.toLowerCase().split(/[\.\s,`'"#]+/mg);
-      _.forEach(tokens, function(token){
+      _.forEach(tokens, function(token) {
         var match = token.match(KEYWORD_REGEX);
-        if (match){
+        if (match) {
           var key = match[1];
-          if ( !keywordMap[key]) {
+          if (!keywordMap[key]) {
             keywordMap[key] = true;
             words.push(key);
           }
@@ -96,11 +96,11 @@ module.exports = function generateKeywordsProcessor(log, readFilesProcessor) {
         // Search each top level property of the document for search terms
         _.forEach(doc, function(value, key) {
 
-          if ( _.isString(value) && !propertiesToIgnore[key] ) {
+          if (_.isString(value) && !propertiesToIgnore[key]) {
             extractWords(value, words, keywordMap);
           }
 
-          if ( key === 'methods' || key === 'properties' || key === 'events' ) {
+          if (key === 'methods' || key === 'properties' || key === 'events') {
             _.forEach(value, function(member) {
               extractWords(member.name, members, membersMap);
             });

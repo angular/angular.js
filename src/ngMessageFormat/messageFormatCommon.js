@@ -14,8 +14,8 @@
 // As such, this doesn't have to be efficient.
 function indexToLineAndColumn(text, index) {
   var lines = text.split(/\n/g);
-  for (var i=0; i < lines.length; i++) {
-    var line=lines[i];
+  for (var i = 0; i < lines.length; i++) {
+    var line = lines[i];
     if (index >= line.length) {
       index -= line.length;
     } else {
@@ -34,7 +34,7 @@ function parseTextLiteral(text) {
   parsedFn['$$watchDelegate'] = function watchDelegate(scope, listener, objectEquality) {
     var unwatch = scope['$watch'](noop,
         function textLiteralWatcher() {
-          if (isFunction(listener)) { listener.call(null, text, text, scope); }
+          if (isFunction(listener)) { listener(text, text, scope); }
           unwatch();
         },
         objectEquality);
@@ -51,14 +51,14 @@ function subtractOffset(expressionFn, offset) {
     return expressionFn;
   }
   function minusOffset(value) {
-    return (value == void 0) ? value : value - offset;
+    return (value == null) ? value : value - offset;
   }
   function parsedFn(context) { return minusOffset(expressionFn(context)); }
   var unwatch;
   parsedFn['$$watchDelegate'] = function watchDelegate(scope, listener, objectEquality) {
     unwatch = scope['$watch'](expressionFn,
         function pluralExpressionWatchListener(newValue, oldValue) {
-          if (isFunction(listener)) { listener.call(null, minusOffset(newValue), minusOffset(oldValue), scope); }
+          if (isFunction(listener)) { listener(minusOffset(newValue), minusOffset(oldValue), scope); }
         },
         objectEquality);
     return unwatch;

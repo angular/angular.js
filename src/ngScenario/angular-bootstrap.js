@@ -1,7 +1,5 @@
 'use strict';
 
-/* jshint -W060 */ /* we really do want to write to the document here */
-
 (function(previousOnLoad) {
   var prefix = (function() {
     var filename = /(.*\/)angular-bootstrap.js(#(.*))?/;
@@ -26,7 +24,7 @@
   window.onload = function() {
     try {
       if (previousOnLoad) previousOnLoad();
-    } catch (e) {}
+    } catch (e) { /* empty */ }
     angular.scenario.setUpAndRun({});
   };
 
