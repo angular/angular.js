@@ -1,3 +1,56 @@
+<a name="1.2.30"></a>
+# 1.2.30 patronal-resurrection (2016-07-21)
+
+
+_**Note:** This release contains some security fixes that required breaking changes. Since the
+legacy 1.2.x branch is the only version branch that supports IE8, it was necessary to introduce a
+couple of low-impact breaking changes in a patch release - something we generally avoid - in order
+to make the fixes available to people that still need IE8 support._
+
+## Bug Fixes
+
+- **$compile:**
+  - secure `link[href]` as a `RESOURCE_URL`s in `$sce`
+  ([f35f334b](https://github.com/angular/angular.js/commit/f35f334bd3197585bdf034f4b6d9ffa3122dac62),
+   [#14687](https://github.com/angular/angular.js/issues/14687))
+  - properly sanitize `xlink:href` attribute interoplation
+  ([f2fa1ed8](https://github.com/angular/angular.js/commit/f2fa1ed83d18d4e79a36f8c0db1c2524d762e513),
+   [2687c261](https://github.com/angular/angular.js/commit/2687c26140585d9e3716f9f559390f5d8d598fdf))
+- **ngSanitize:** blacklist the attribute `usemap` as it can be used as a security exploit
+  ([ac0d5286](https://github.com/angular/angular.js/commit/ac0d5286b8931633d774080d6396fb4825d8be33),
+   [#14903](https://github.com/angular/angular.js/issues/14903))
+- **ngAnimate:** do not use event.timeStamp anymore for time tracking
+  ([8d83b563](https://github.com/angular/angular.js/commit/8d83b5633471c847d58f337426fe069797dd49d9),
+   [#13494](https://github.com/angular/angular.js/issues/13494), [#13495](https://github.com/angular/angular.js/issues/13495))
+
+
+## Breaking Changes
+
+- **$compile:** due to [f35f334b](https://github.com/angular/angular.js/commit/f35f334bd3197585bdf034f4b6d9ffa3122dac62),
+
+`link[href]` attributes are now protected via `$sce`, which prevents interpolated values that fail
+the `RESOURCE_URL` context tests from being used in interpolation. For example if the application is
+running at `https://mydomain.org/` then the following will fail:
+
+```html
+<link rel="stylesheet" href="{{ 'https://otherdomain.org/unsafe.css' }}" />
+```
+
+By default, `RESOURCE_URL` safe URLs are only allowed from the same domain and protocol as the
+application document. To use URLs from other domains and/or protocols, you may either whitelist them
+using `$sceDelegateProvider.resourceUrlWhitelist(...)` or wrap them into a trusted value by calling
+`$sce.trustAsResourceUrl(url)`.
+
+- **ngSanitize:** due to [234053fc](https://github.com/angular/angular.js/commit/234053fc9ad90e0d05be7e8359c6af66be94c094),
+
+The `$sanitize` service will now remove instances of the `usemap` attribute from any elements passed
+to it.
+
+This attribute is used to reference another element by `name` or `id`. Since the `name` and `id`
+attributes are already blacklisted, a sanitized `usemap` attribute could only reference unsanitized
+content, which is a security risk.
+
+
 <a name="1.5.7"></a>
 # 1.5.7 hexagonal-circumvolution (2016-06-15)
 
@@ -624,7 +677,8 @@ changes section for more information
 
 - **ngSanitize:** due to [234053fc](https://github.com/angular/angular.js/commit/234053fc9ad90e0d05be7e8359c6af66be94c094),
 
-The `$sanitize` service will now remove instances of the `usemap` attribute from any elements passed to it.
+The `$sanitize` service will now remove instances of the `usemap` attribute from any elements passed
+to it.
 
 This attribute is used to reference another element by `name` or `id`. Since the `name` and `id`
 attributes are already blacklisted, a sanitized `usemap` attribute could only reference unsanitized
