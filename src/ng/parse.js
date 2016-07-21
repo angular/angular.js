@@ -398,8 +398,7 @@ AST.prototype = {
 
   filterChain: function() {
     var left = this.expression();
-    var token;
-    while ((token = this.expect('|'))) {
+    while (this.expect('|')) {
       left = this.filter(left);
     }
     return left;
@@ -695,6 +694,7 @@ function isStateless($filter, filterName) {
 function findConstantAndWatchExpressions(ast, $filter) {
   var allConstants;
   var argsToWatch;
+  var isStatelessFilter;
   switch (ast.type) {
   case AST.Program:
     allConstants = true;
@@ -745,7 +745,8 @@ function findConstantAndWatchExpressions(ast, $filter) {
     ast.toWatch = [ast];
     break;
   case AST.CallExpression:
-    allConstants = ast.filter ? isStateless($filter, ast.callee.name) : false;
+    isStatelessFilter = ast.filter ? isStateless($filter, ast.callee.name) : false;
+    allConstants = isStatelessFilter;
     argsToWatch = [];
     forEach(ast.arguments, function(expr) {
       findConstantAndWatchExpressions(expr, $filter);
@@ -755,7 +756,7 @@ function findConstantAndWatchExpressions(ast, $filter) {
       }
     });
     ast.constant = allConstants;
-    ast.toWatch = ast.filter && isStateless($filter, ast.callee.name) ? argsToWatch : [ast];
+    ast.toWatch = isStatelessFilter ? argsToWatch : [ast];
     break;
   case AST.AssignmentExpression:
     findConstantAndWatchExpressions(ast.left, $filter);
