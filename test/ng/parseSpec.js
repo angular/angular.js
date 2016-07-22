@@ -3897,4 +3897,92 @@ describe('parser', function() {
       });
     });
   });
+
+  forEach([true, false], function(cspEnabled) {
+    describe('custom identifiers (csp: ' + cspEnabled + ')', function() {
+      var isIdentifierStartRe = /[#a-z]/;
+      var isIdentifierContinueRe = /[\-a-z]/;
+      var isIdentifierStartFn;
+      var isIdentifierContinueFn;
+      var scope;
+
+      beforeEach(module(function($parseProvider) {
+        isIdentifierStartFn = jasmine.
+          createSpy('isIdentifierStart').
+          and.callFake(function(ch, cp) { return isIdentifierStartRe.test(ch); });
+        isIdentifierContinueFn = jasmine.
+          createSpy('isIdentifierContinue').
+          and.callFake(function(ch, cp) { return isIdentifierContinueRe.test(ch); });
+
+        $parseProvider.setIdentifierFns(isIdentifierStartFn, isIdentifierContinueFn);
+        csp().noUnsafeEval = cspEnabled;
+      }));
+
+      beforeEach(inject(function($rootScope) {
+        scope = $rootScope;
+      }));
+
+
+      it('should allow specifying a custom `isIdentifierStart/Continue` functions', function() {
+        scope.x = {};
+
+        scope['#foo'] = 'foo';
+        scope.x['#foo'] = 'foo';
+        expect(scope.$eval('#foo')).toBe('foo');
+        expect(scope.$eval('x.#foo')).toBe('foo');
+
+        scope['bar--'] = 42;
+        scope.x['bar--'] = 42;
+        expect(scope.$eval('bar--')).toBe(42);
+        expect(scope.$eval('x.bar--')).toBe(42);
+        expect(scope['bar--']).toBe(42);
+        expect(scope.x['bar--']).toBe(42);
+
+        scope['#-'] = 'baz';
+        scope.x['#-'] = 'baz';
+        expect(scope.$eval('#-')).toBe('baz');
+        expect(scope.$eval('x.#-')).toBe('baz');
+
+        expect(function() { scope.$eval('##'); }).toThrow();
+        expect(function() { scope.$eval('x.##'); }).toThrow();
+
+        expect(function() { scope.$eval('--'); }).toThrow();
+        expect(function() { scope.$eval('x.--'); }).toThrow();
+      });
+
+
+      it('should pass the character and codepoint to the custom functions', function() {
+        scope.$eval('#-');
+        expect(isIdentifierStartFn).toHaveBeenCalledOnceWith('#', '#'.charCodeAt(0));
+        expect(isIdentifierContinueFn).toHaveBeenCalledOnceWith('-', '-'.charCodeAt(0));
+
+        isIdentifierStartFn.calls.reset();
+        isIdentifierContinueFn.calls.reset();
+
+        scope.$eval('#.foo.#-.bar-');
+        expect(isIdentifierStartFn).toHaveBeenCalledTimes(7);
+        expect(isIdentifierStartFn.calls.allArgs()).toEqual([
+          ['#', '#'.charCodeAt(0)],
+          ['.', '.'.charCodeAt(0)],
+          ['f', 'f'.charCodeAt(0)],
+          ['.', '.'.charCodeAt(0)],
+          ['#', '#'.charCodeAt(0)],
+          ['.', '.'.charCodeAt(0)],
+          ['b', 'b'.charCodeAt(0)]
+        ]);
+        expect(isIdentifierContinueFn).toHaveBeenCalledTimes(9);
+        expect(isIdentifierContinueFn.calls.allArgs()).toEqual([
+          ['.', '.'.charCodeAt(0)],
+          ['o', 'o'.charCodeAt(0)],
+          ['o', 'o'.charCodeAt(0)],
+          ['.', '.'.charCodeAt(0)],
+          ['-', '-'.charCodeAt(0)],
+          ['.', '.'.charCodeAt(0)],
+          ['a', 'a'.charCodeAt(0)],
+          ['r', 'r'.charCodeAt(0)],
+          ['-', '-'.charCodeAt(0)]
+        ]);
+      });
+    });
+  });
 });
