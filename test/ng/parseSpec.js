@@ -868,7 +868,6 @@ describe('parser', function() {
     });
 
 
-
     it('should understand logical operators', function() {
       forEach(['||', '&&'], function(operator) {
         expect(createAst('foo' + operator + 'bar')).toEqual(
@@ -916,7 +915,6 @@ describe('parser', function() {
         );
       });
     });
-
 
 
     it('should understand ternary operators', function() {
@@ -1081,7 +1079,6 @@ describe('parser', function() {
         }
       );
     });
-
 
 
     it('should give higher precedence to the logical `or` than to the conditional operator', function() {
@@ -1355,6 +1352,7 @@ describe('parser', function() {
       );
     });
 
+
     it('should understand ES6 object initializer', function() {
       // Shorthand properties definitions.
       expect(createAst('{x, y, z}')).toEqual(
@@ -1446,6 +1444,7 @@ describe('parser', function() {
         }
       );
     });
+
 
     it('should understand multiple expressions', function() {
       expect(createAst('foo = bar; man = shell')).toEqual(
@@ -1551,6 +1550,7 @@ describe('parser', function() {
       );
     });
 
+
     it('should give higher precedence to assignments over filters', function() {
       expect(createAst('foo=bar | man')).toEqual(
         {
@@ -1576,6 +1576,7 @@ describe('parser', function() {
         }
       );
     });
+
 
     it('should accept expression as filters parameters', function() {
       expect(createAst('foo | bar:baz=man')).toEqual(
@@ -1604,6 +1605,7 @@ describe('parser', function() {
       );
     });
 
+
     it('should accept expression as computer members', function() {
       expect(createAst('foo[a = 1]')).toEqual(
         {
@@ -1627,6 +1629,7 @@ describe('parser', function() {
         }
       );
     });
+
 
     it('should accept expression in function arguments', function() {
       expect(createAst('foo(a = 1)')).toEqual(
@@ -1652,6 +1655,7 @@ describe('parser', function() {
         }
       );
     });
+
 
     it('should accept expression as part of ternary operators', function() {
       expect(createAst('foo || bar ? man = 1 : shell = 1')).toEqual(
@@ -1687,6 +1691,7 @@ describe('parser', function() {
       );
     });
 
+
     it('should accept expression as part of array literals', function() {
       expect(createAst('[foo = 1]')).toEqual(
         {
@@ -1710,6 +1715,7 @@ describe('parser', function() {
         }
       );
     });
+
 
     it('should accept expression as part of object literals', function() {
       expect(createAst('{foo: bar = 1}')).toEqual(
@@ -1741,6 +1747,7 @@ describe('parser', function() {
       );
     });
 
+
     it('should be possible to use parenthesis to indicate precedence', function() {
       expect(createAst('(foo + bar).man')).toEqual(
         {
@@ -1764,6 +1771,7 @@ describe('parser', function() {
         }
       );
     });
+
 
     it('should skip empty expressions', function() {
       expect(createAst('foo;;;;bar')).toEqual(
@@ -1813,9 +1821,10 @@ describe('parser', function() {
   }]));
 
   forEach([true, false], function(cspEnabled) {
-    beforeEach(module(['$parseProvider', function(parseProvider) {
-      parseProvider.addLiteral('Infinity', Infinity);
-    }]));
+    beforeEach(module(function($parseProvider) {
+      $parseProvider.addLiteral('Infinity', Infinity);
+      csp().noUnsafeEval = cspEnabled;
+    }));
 
     it('should allow extending literals with csp ' + cspEnabled, inject(function($rootScope) {
       expect($rootScope.$eval("Infinity")).toEqual(Infinity);
@@ -2116,16 +2125,16 @@ describe('parser', function() {
         expect(scope.b).toEqual(234);
       });
 
-        it('should evaluate assignments in ternary operator', function() {
-          scope.$eval('a = 1 ? 2 : 3');
-          expect(scope.a).toBe(2);
+      it('should evaluate assignments in ternary operator', function() {
+        scope.$eval('a = 1 ? 2 : 3');
+        expect(scope.a).toBe(2);
 
-          scope.$eval('0 ? a = 2 : a = 3');
-          expect(scope.a).toBe(3);
+        scope.$eval('0 ? a = 2 : a = 3');
+        expect(scope.a).toBe(3);
 
-          scope.$eval('1 ? a = 2 : a = 3');
-          expect(scope.a).toBe(2);
-        });
+        scope.$eval('1 ? a = 2 : a = 3');
+        expect(scope.a).toBe(2);
+      });
 
       it('should evaluate function call without arguments', function() {
         scope['const'] =  function(a, b) {return 123;};
@@ -2417,7 +2426,6 @@ describe('parser', function() {
             }).toThrowMinErr(
                     '$parse', 'isecfn', 'Referencing Function in Angular expressions is disallowed! ' +
                     'Expression: {}.toString.constructor');
-
           });
 
           it('should not allow access to the Function prototype in the getter', function() {
@@ -2426,7 +2434,6 @@ describe('parser', function() {
             }).toThrowMinErr(
                     '$parse', 'isecfn', 'Referencing Function in Angular expressions is disallowed! ' +
                     'Expression: toString.constructor.prototype');
-
           });
 
           it('should NOT allow access to Function constructor in getter', function() {
@@ -2435,7 +2442,6 @@ describe('parser', function() {
             }).toThrowMinErr(
                     '$parse', 'isecfn', 'Referencing Function in Angular expressions is disallowed! ' +
                     'Expression: {}.toString.constructor("alert(1)")');
-
           });
 
           it('should NOT allow access to Function constructor in setter', function() {
@@ -2936,14 +2942,14 @@ describe('parser', function() {
           });
         });
 
-       it('should prevent the exploit', function() {
-          expect(function() {
-            scope.$eval('(1)[{0: "__proto__", 1: "__proto__", 2: "__proto__", 3: "safe", length: 4, toString: [].pop}].foo = 1');
-          }).toThrow();
-          if (!msie || msie > 10) {
-            expect((1)['__proto__'].foo).toBeUndefined();
-          }
-       });
+        it('should prevent the exploit', function() {
+           expect(function() {
+             scope.$eval('(1)[{0: "__proto__", 1: "__proto__", 2: "__proto__", 3: "safe", length: 4, toString: [].pop}].foo = 1');
+           }).toThrow();
+           if (!msie || msie > 10) {
+             expect((1)['__proto__'].foo).toBeUndefined();
+           }
+        });
 
         it('should prevent the exploit', function() {
           expect(function() {
@@ -3337,7 +3343,6 @@ describe('parser', function() {
             expect($rootScope.$$watchers.length).toBe(1);
             expect(log).toEqual([]);
           }));
-
         });
       });
 
