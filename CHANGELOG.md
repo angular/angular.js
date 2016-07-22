@@ -1,3 +1,76 @@
+<a name="1.5.8"></a>
+# 1.5.8 arbitrary-fallbacks (2016-07-22)
+
+
+## Bug Fixes
+
+- **$animate:** do not get affected by custom, enumerable properties on `Object.prototype`
+  ([181e4401](https://github.com/angular/angular.js/commit/181e44019e850e5253378e29415cddf8d768bbef),
+   [#14804](https://github.com/angular/angular.js/issues/14804), [#14830](https://github.com/angular/angular.js/issues/14830))
+- **$compile:** ensure `$doCheck` hooks can be defined in the controller constructor
+  ([3010ed4e](https://github.com/angular/angular.js/commit/3010ed4ee5c2c18b9848b5664639971b9fdc8919),
+   [#14811](https://github.com/angular/angular.js/issues/14811))
+- **$injector:** fix class detection RegExp
+  ([4724d56c](https://github.com/angular/angular.js/commit/4724d56c939d02675433e7fe554608dff97ecf81),
+   [#14533](https://github.com/angular/angular.js/issues/14533))
+- **$jsonpCallbacks:** do not overwrite callbacks added by other apps
+  ([1778d347](https://github.com/angular/angular.js/commit/1778d347cd3c91335e3840eaa49f1e387db8602f),
+   [#14824](https://github.com/angular/angular.js/issues/14824))
+- **$timeout:** make $flush handle new $timeouts added in $timeout callbacks
+  ([1a387ba5](https://github.com/angular/angular.js/commit/1a387ba5dd1a8a831486fce23f6795bd1eef3d8b),
+   [#5420](https://github.com/angular/angular.js/issues/5420), [#14686](https://github.com/angular/angular.js/issues/14686))
+- **copy:** fix handling of typed subarrays
+  ([1645924d](https://github.com/angular/angular.js/commit/1645924d49a7905ce55cced4c4276654970bb226),
+   [#14842](https://github.com/angular/angular.js/issues/14842), [#14845](https://github.com/angular/angular.js/issues/14845))
+- **modules:** allow modules to be loaded in any order when using `angular-loader`
+  ([98e4a220](https://github.com/angular/angular.js/commit/98e4a220fe8301cec35498ae592adc0266f12437),
+   [#9140](https://github.com/angular/angular.js/issues/9140), [#14794](https://github.com/angular/angular.js/issues/14794))
+- **ngAnimate:** allow removal of class that is scheduled to be added with requestAnimationFrame
+  ([7ccfe92b](https://github.com/angular/angular.js/commit/7ccfe92bed7361832f1b8d25b1a8411eb24d3fb5),
+   [#14582](https://github.com/angular/angular.js/issues/14582))
+- **ngMocks:** allow `ErrorAddingDeclarationLocationStack` to be recognized as an `Error`
+  ([c6074dc3](https://github.com/angular/angular.js/commit/c6074dc34c31a07269bf7f628b971ef6dc805f17),
+   [#13821](https://github.com/angular/angular.js/issues/13821), [#14344](https://github.com/angular/angular.js/issues/14344))
+- **ngOptions:** don't duplicate groups with falsy values
+  ([c3bfd7f5](https://github.com/angular/angular.js/commit/c3bfd7f59d0ecbf4ba3253fb407e683c7bb0766c))
+- **ngTransclude:**
+  - ensure that fallback content is compiled and linked correctly
+  ([c405f88b](https://github.com/angular/angular.js/commit/c405f88bbc743f41591f6f3cfc022eea3c6c34ad),
+   [#14787](https://github.com/angular/angular.js/issues/14787))
+  - only compile fallback content if necessary
+  ([159a68ec](https://github.com/angular/angular.js/commit/159a68ec7ba77e9128b0d0516b813ed3d223b6e3),
+   [#14768](https://github.com/angular/angular.js/issues/14768), [#14765](https://github.com/angular/angular.js/issues/14765), [#14775](https://github.com/angular/angular.js/issues/14775))
+
+
+## Features
+
+- **$compile:** backport $doCheck
+  ([de59ca71](https://github.com/angular/angular.js/commit/de59ca71072eac95ee68de308f92bc5f921dd07b),
+   [#14656](https://github.com/angular/angular.js/issues/14656))
+- **$jsonpCallbacks:** new service to abstract how JSONP callbacks are handled
+  ([a8cacfe9](https://github.com/angular/angular.js/commit/a8cacfe938287c54ce7099125cb735ad53f4c7c2),
+   [#14795](https://github.com/angular/angular.js/issues/14795))
+- **$q:** implement $q.race
+  ([b9a56d58](https://github.com/angular/angular.js/commit/b9a56d588f8b597b1dff30d8e184b7c37d94cdcf),
+   [#12929](https://github.com/angular/angular.js/issues/12929), [#14757](https://github.com/angular/angular.js/issues/14757))
+- **$resource:** pass the resource to a dynamic param functions
+  ([a126fcfe](https://github.com/angular/angular.js/commit/a126fcfee3bd8b02869bd2542c73e1eb21afe927),
+   [#4899](https://github.com/angular/angular.js/issues/4899))
+- **$swipe:** add pointer support
+  ([f797f83c](https://github.com/angular/angular.js/commit/f797f83cd66f1fd11b3c9399e7894217ffa06c38),
+   [#14061](https://github.com/angular/angular.js/issues/14061), [#14791](https://github.com/angular/angular.js/issues/14791))
+- **filterFilter:** allow overwriting the special `$` property name
+  ([33514ec3](https://github.com/angular/angular.js/commit/33514ec384d676d84b2a445bc15bae38c8c3ac8d),
+   [#13313](https://github.com/angular/angular.js/issues/13313))
+
+
+## Performance Improvements
+
+- **$compile:** wrap try/catch of collect comment directives into a function to avoid V8 deopt
+  ([acd45518](https://github.com/angular/angular.js/commit/acd455181de1cfa6b34d75f8d71a6c0b6995a777),
+   [#14848](https://github.com/angular/angular.js/issues/14848))
+
+
 <a name="1.2.30"></a>
 # 1.2.30 patronal-resurrection (2016-07-21)
 
