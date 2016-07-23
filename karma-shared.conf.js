@@ -37,12 +37,12 @@ module.exports = function(config, specificOptions) {
       'SL_Chrome': {
         base: 'SauceLabs',
         browserName: 'chrome',
-        version: '47'
+        version: '51'
       },
       'SL_Firefox': {
         base: 'SauceLabs',
         browserName: 'firefox',
-        version: '43'
+        version: '47'
       },
       'SL_Safari_8': {
         base: 'SauceLabs',
