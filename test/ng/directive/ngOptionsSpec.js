@@ -120,6 +120,47 @@ describe('ngOptions', function() {
             return { pass: errors.length === 0, message: message };
           }
         };
+      },
+      toBeMarkedAsSelected: function() {
+        // Selected is special because the element property and attribute reflect each other's state.
+        // IE9 will wrongly report hasAttribute('selected') === true when the property is
+        // undefined or null, and the dev tools show that no attribute is set
+        return {
+          compare: function(actual) {
+            var errors = [];
+            if (actual.selected === null || typeof actual.selected === 'undefined' || actual.selected === false) {
+              errors.push('Expected option property "selected" to be truthy');
+            }
+
+            if (msie !== 9 && actual.hasAttribute('selected') === false) {
+              errors.push('Expected option to have attribute "selected"');
+            }
+
+            var result = {
+              pass: errors.length === 0,
+              message: errors.join('\n')
+            };
+
+            return result;
+          },
+          negativeCompare: function(actual) {
+            var errors = [];
+            if (actual.selected) {
+              errors.push('Expected option property "selected" to be falsy');
+            }
+
+            if (msie !== 9 && actual.hasAttribute('selected')) {
+              errors.push('Expected option not to have attribute "selected"');
+            }
+
+            var result = {
+              pass: errors.length === 0,
+              message: errors.join('\n')
+            };
+
+            return result;
+          }
+        };
       }
     });
   });
@@ -743,6 +784,41 @@ describe('ngOptions', function() {
     expect(options.eq(3)).toEqualOption('c');
   });
 
+
+  it('should remove the "selected" attribute from the previous option when the model changes', function() {
+    scope.values = [{id: 10, label: 'ten'}, {id:20, label: 'twenty'}];
+
+    createSelect({
+      'ng-model': 'selected',
+      'ng-options': 'item.label for item in values'
+    }, true);
+
+    var options = element.find('option');
+    expect(options[0]).toBeMarkedAsSelected();
+    expect(options[1]).not.toBeMarkedAsSelected();
+    expect(options[2]).not.toBeMarkedAsSelected();
+
+    scope.selected = scope.values[0];
+    scope.$digest();
+
+    expect(options[0]).not.toBeMarkedAsSelected();
+    expect(options[1]).toBeMarkedAsSelected();
+    expect(options[2]).not.toBeMarkedAsSelected();
+
+    scope.selected = scope.values[1];
+    scope.$digest();
+
+    expect(options[0]).not.toBeMarkedAsSelected();
+    expect(options[1]).not.toBeMarkedAsSelected();
+    expect(options[2]).toBeMarkedAsSelected();
+
+    scope.selected = 'no match';
+    scope.$digest();
+
+    expect(options[0]).toBeMarkedAsSelected();
+    expect(options[1]).not.toBeMarkedAsSelected();
+    expect(options[2]).not.toBeMarkedAsSelected();
+  });
 
   describe('disableWhen expression', function() {
 
@@ -1395,6 +1471,26 @@ describe('ngOptions', function() {
         });
       }).not.toThrow();
     });
+
+    it('should remove the "selected" attribute when the model changes', function() {
+      createSelect({
+        'ng-model': 'selected',
+        'ng-options': 'item.label for item in arr track by item.id'
+      });
+
+      var options = element.find('option');
+      browserTrigger(options[2], 'click');
+
+      expect(scope.selected).toEqual(scope.arr[1]);
+
+      scope.selected = {};
+      scope.$digest();
+
+      expect(options[0]).toBeMarkedAsSelected();
+      expect(options[2]).not.toBeMarkedAsSelected();
+      expect(options[2]).not.toBeMarkedAsSelected();
+    });
+
   });
 
 
