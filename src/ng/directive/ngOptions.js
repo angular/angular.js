@@ -448,9 +448,10 @@ var ngOptionsDirective = ['$compile', '$document', '$parse', function($compile, 
       var removeEmptyOption = function() {
         if (!providedEmptyOption) {
           emptyOption.remove();
+        } else {
+          emptyOption.removeAttr('selected');
         }
       };
-
 
       var renderUnknownOption = function() {
         selectElement.prepend(unknownOption);
@@ -467,7 +468,12 @@ var ngOptionsDirective = ['$compile', '$document', '$parse', function($compile, 
       if (!multiple) {
 
         selectCtrl.writeValue = function writeNgOptionsValue(value) {
+          var selectedOption = options.selectValueMap[selectElement.val()];
           var option = options.getOptionFromViewValue(value);
+
+          // Make sure to remove the selected attribute from the previously selected option
+          // Otherwise, screen readers might get confused
+          if (selectedOption) selectedOption.element.removeAttribute('selected');
 
           if (option) {
             // Don't update the option when it is already selected.
@@ -509,6 +515,7 @@ var ngOptionsDirective = ['$compile', '$document', '$parse', function($compile, 
 
         // If we are using `track by` then we must watch the tracked value on the model
         // since ngModel only watches for object identity change
+        // FIXME: When a user selects an option, this watch will fire needlessly
         if (ngOptions.trackBy) {
           scope.$watch(
             function() { return ngOptions.getTrackByValue(ngModelCtrl.$viewValue); },
