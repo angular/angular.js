@@ -3909,10 +3909,10 @@ describe('parser', function() {
       beforeEach(module(function($parseProvider) {
         isIdentifierStartFn = jasmine.
           createSpy('isIdentifierStart').
-          and.callFake(function (ch, cp) { return isIdentifierStartRe.test(ch); });
+          and.callFake(function(ch, cp) { return isIdentifierStartRe.test(ch); });
         isIdentifierContinueFn = jasmine.
           createSpy('isIdentifierContinue').
-          and.callFake(function (ch, cp) { return isIdentifierContinueRe.test(ch); });
+          and.callFake(function(ch, cp) { return isIdentifierContinueRe.test(ch); });
 
         $parseProvider.setIdentifierFns(isIdentifierStartFn, isIdentifierContinueFn);
         csp().noUnsafeEval = cspEnabled;
