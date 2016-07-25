@@ -113,10 +113,28 @@ function ensureSafeFunction(obj, fullExpression) {
 
 function ensureSafeAssignContext(obj, fullExpression) {
   if (obj) {
-    if (obj === (0).constructor || obj === (false).constructor || obj === ''.constructor ||
-        obj === {}.constructor || obj === [].constructor || obj === Function.constructor) {
+    var booleanConstructor = (false).constructor;
+    var numberConstructor = (0).constructor;
+    var stringConstructor = ''.constructor;
+    var objectConstructor = {}.constructor;
+    var arrayConstructor = [].constructor;
+    var functionConstructor = Function.constructor;
+
+    if (obj === booleanConstructor ||
+        obj === numberConstructor ||
+        obj === stringConstructor ||
+        obj === objectConstructor ||
+        obj === arrayConstructor ||
+        obj === functionConstructor ||
+        obj === booleanConstructor.prototype ||
+        obj === numberConstructor.prototype ||
+        obj === stringConstructor.prototype ||
+        obj === objectConstructor.prototype ||
+        obj === arrayConstructor.prototype ||
+        obj === functionConstructor.prototype) {
       throw $parseMinErr('isecaf',
-        'Assigning to a constructor is disallowed! Expression: {0}', fullExpression);
+        'Assigning to a constructor or its prototype is disallowed! Expression: {0}',
+        fullExpression);
     }
   }
 }
