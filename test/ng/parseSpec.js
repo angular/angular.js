@@ -2963,39 +2963,221 @@ describe('parser', function() {
           }).toThrow();
         });
 
-        it('should prevent assigning in the context of a constructor', function() {
+        they('should prevent assigning in the context of the $prop constructor', {
+          Array: [[], '[]'],
+          Boolean: [true, '(true)'],
+          Number: [1, '(1)'],
+          String: ['string', '"string"']
+        }, function(values) {
+          var thing = values[0];
+          var expr = values[1];
+          var constructorExpr = expr + '.constructor';
+
           expect(function() {
-            scope.$eval("''.constructor.join");
+            scope.$eval(constructorExpr + '.join');
           }).not.toThrow();
           expect(function() {
-            scope.$eval("''.constructor.join = ''.constructor.join");
+            delete scope.foo;
+            scope.$eval('foo = ' + constructorExpr + '.join');
+          }).not.toThrow();
+          expect(function() {
+            scope.$eval(constructorExpr + '.join = ""');
+          }).toThrowMinErr('$parse', 'isecaf');
+          expect(function() {
+            scope.$eval(constructorExpr + '[0] = ""');
+          }).toThrowMinErr('$parse', 'isecaf');
+          expect(function() {
+            delete scope.foo;
+            scope.$eval('foo = ' + constructorExpr + '; foo.join = ""');
+          }).toThrowMinErr('$parse', 'isecaf');
+
+          expect(function() {
+            scope.foo = thing;
+            scope.$eval('foo.constructor[0] = ""');
+          }).toThrowMinErr('$parse', 'isecaf');
+          expect(function() {
+            delete scope.foo;
+            scope.$eval('foo.constructor[0] = ""', {foo: thing});
+          }).toThrowMinErr('$parse', 'isecaf');
+          expect(function() {
+            scope.foo = thing.constructor;
+            scope.$eval('foo[0] = ""');
+          }).toThrowMinErr('$parse', 'isecaf');
+          expect(function() {
+            delete scope.foo;
+            scope.$eval('foo[0] = ""', {foo: thing.constructor});
+          }).toThrowMinErr('$parse', 'isecaf');
+        });
+
+        they('should prevent assigning in the context of the $prop constructor', {
+          // These might throw different error (e.g. isecobj, isecfn),
+          // but still having them here for good measure
+          Function: [noop, '$eval'],
+          Object: [{}, '{}']
+        }, function(values) {
+          var thing = values[0];
+          var expr = values[1];
+          var constructorExpr = expr + '.constructor';
+
+          expect(function() {
+            scope.$eval(constructorExpr + '.join');
+          }).not.toThrowMinErr('$parse', 'isecaf');
+          expect(function() {
+            delete scope.foo;
+            scope.$eval('foo = ' + constructorExpr + '.join');
+          }).not.toThrowMinErr('$parse', 'isecaf');
+          expect(function() {
+            scope.$eval(constructorExpr + '.join = ""');
           }).toThrow();
           expect(function() {
-            scope.$eval("''.constructor[0] = ''");
+            scope.$eval(constructorExpr + '[0] = ""');
           }).toThrow();
           expect(function() {
-            scope.$eval("(0).constructor[0] = ''");
+            delete scope.foo;
+            scope.$eval('foo = ' + constructorExpr + '; foo.join = ""');
+          }).toThrow();
+
+          expect(function() {
+            scope.foo = thing;
+            scope.$eval('foo.constructor[0] = ""');
           }).toThrow();
           expect(function() {
-            scope.$eval("{}.constructor[0] = ''");
+            delete scope.foo;
+            scope.$eval('foo.constructor[0] = ""', {foo: thing});
           }).toThrow();
-          // foo.constructor is the object constructor.
           expect(function() {
-            scope.$eval("foo.constructor[0] = ''", {foo: {}});
-          }).toThrow();
+            scope.foo = thing.constructor;
+            scope.$eval('foo[0] = ""');
+          }).toThrowMinErr('$parse', 'isecaf');
+          expect(function() {
+            delete scope.foo;
+            scope.$eval('foo[0] = ""', {foo: thing.constructor});
+          }).toThrowMinErr('$parse', 'isecaf');
+        });
+
+        it('should prevent assigning only in the context of an actual constructor', function() {
           // foo.constructor is not a constructor.
           expect(function() {
-            scope.$eval("foo.constructor[0] = ''", {foo: {constructor: ''}});
+            delete scope.foo;
+            scope.$eval('foo.constructor[0] = ""', {foo: {constructor: ''}});
+          }).not.toThrow();
+
+          expect(function() {
+            scope.$eval('"a".constructor.prototype.charAt = [].join');
+          }).toThrowMinErr('$parse', 'isecaf');
+          expect(function() {
+            scope.$eval('"a".constructor.prototype.charCodeAt = [].concat');
+          }).toThrowMinErr('$parse', 'isecaf');
+        });
+
+        they('should prevent assigning in the context of the $prop constructor prototype', {
+          Array: [[], '[]'],
+          Boolean: [true, '(true)'],
+          Number: [1, '(1)'],
+          String: ['string', '"string"']
+        }, function(values) {
+          var thing = values[0];
+          var expr = values[1];
+          var constructorExpr = expr + '.constructor';
+          var prototypeExpr = constructorExpr + '.prototype';
+
+          expect(function() {
+            scope.$eval(prototypeExpr + '.boin');
           }).not.toThrow();
           expect(function() {
-            scope.$eval("objConstructor = {}.constructor; objConstructor.join = ''");
+            delete scope.foo;
+            scope.$eval('foo = ' + prototypeExpr + '.boin');
+          }).not.toThrow();
+          expect(function() {
+            scope.$eval(prototypeExpr + '.boin = ""');
+          }).toThrowMinErr('$parse', 'isecaf');
+          expect(function() {
+            scope.$eval(prototypeExpr + '[0] = ""');
+          }).toThrowMinErr('$parse', 'isecaf');
+          expect(function() {
+            delete scope.foo;
+            scope.$eval('foo = ' + constructorExpr + '; foo.prototype.boin = ""');
+          }).toThrowMinErr('$parse', 'isecaf');
+          expect(function() {
+            delete scope.foo;
+            scope.$eval('foo = ' + prototypeExpr + '; foo.boin = ""');
+          }).toThrowMinErr('$parse', 'isecaf');
+
+          expect(function() {
+            scope.foo = thing.constructor;
+            scope.$eval('foo.prototype[0] = ""');
+          }).toThrowMinErr('$parse', 'isecaf');
+          expect(function() {
+            delete scope.foo;
+            scope.$eval('foo.prototype[0] = ""', {foo: thing.constructor});
+          }).toThrowMinErr('$parse', 'isecaf');
+          expect(function() {
+            scope.foo = thing.constructor.prototype;
+            scope.$eval('foo[0] = ""');
+          }).toThrowMinErr('$parse', 'isecaf');
+          expect(function() {
+            delete scope.foo;
+            scope.$eval('foo[0] = ""', {foo: thing.constructor.prototype});
+          }).toThrowMinErr('$parse', 'isecaf');
+        });
+
+        they('should prevent assigning in the context of a constructor prototype', {
+          // These might throw different error (e.g. isecobj, isecfn),
+          // but still having them here for good measure
+          Function: [noop, '$eval'],
+          Object: [{}, '{}']
+        }, function(values) {
+          var thing = values[0];
+          var expr = values[1];
+          var constructorExpr = expr + '.constructor';
+          var prototypeExpr = constructorExpr + '.prototype';
+
+          expect(function() {
+            scope.$eval(prototypeExpr + '.boin');
+          }).not.toThrowMinErr('$parse', 'isecaf');
+          expect(function() {
+            delete scope.foo;
+            scope.$eval('foo = ' + prototypeExpr + '.boin');
+          }).not.toThrowMinErr('$parse', 'isecaf');
+          expect(function() {
+            scope.$eval(prototypeExpr + '.boin = ""');
           }).toThrow();
           expect(function() {
-            scope.$eval("'a'.constructor.prototype.charAt=[].join");
+            scope.$eval(prototypeExpr + '[0] = ""');
           }).toThrow();
           expect(function() {
-            scope.$eval("'a'.constructor.prototype.charCodeAt=[].concat");
+            delete scope.foo;
+            scope.$eval('foo = ' + constructorExpr + '; foo.prototype.boin = ""');
           }).toThrow();
+          expect(function() {
+            delete scope.foo;
+            scope.$eval('foo = ' + prototypeExpr + '; foo.boin = ""');
+          }).toThrow();
+
+          expect(function() {
+            scope.foo = thing.constructor;
+            scope.$eval('foo.prototype[0] = ""');
+          }).toThrowMinErr('$parse', 'isecaf');
+          expect(function() {
+            delete scope.foo;
+            scope.$eval('foo.prototype[0] = ""', {foo: thing.constructor});
+          }).toThrowMinErr('$parse', 'isecaf');
+          expect(function() {
+            scope.foo = thing.constructor.prototype;
+            scope.$eval('foo[0] = ""');
+          }).toThrowMinErr('$parse', 'isecaf');
+          expect(function() {
+            delete scope.foo;
+            scope.$eval('foo[0] = ""', {foo: thing.constructor.prototype});
+          }).toThrowMinErr('$parse', 'isecaf');
+        });
+
+        it('should prevent assigning only in the context of an actual prototype', function() {
+          // foo.constructor.prototype is not a constructor prototype.
+          expect(function() {
+            delete scope.foo;
+            scope.$eval('foo.constructor.prototype[0] = ""', {foo: {constructor: {prototype: ''}}});
+          }).not.toThrow();
         });
       });
 
