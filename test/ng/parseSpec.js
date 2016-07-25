@@ -2958,38 +2958,106 @@ describe('parser', function() {
         });
 
         it('should prevent assigning in the context of a constructor', function() {
-          expect(function() {
-            scope.$eval("''.constructor.join");
-          }).not.toThrow();
-          expect(function() {
-            scope.$eval("''.constructor.join = ''.constructor.join");
-          }).toThrow();
-          expect(function() {
-            scope.$eval("''.constructor[0] = ''");
-          }).toThrow();
-          expect(function() {
-            scope.$eval("(0).constructor[0] = ''");
-          }).toThrow();
-          expect(function() {
-            scope.$eval("{}.constructor[0] = ''");
-          }).toThrow();
-          // foo.constructor is the object constructor.
-          expect(function() {
-            scope.$eval("foo.constructor[0] = ''", {foo: {}});
-          }).toThrow();
+          forEach({
+            '(true)': true,
+            '(1)': 1,
+            '"string"': 'string',
+            '[]': []
+          }, function(thing, expr) {
+            var constructorExpr = expr + '.constructor';
+
+            expect(function() {
+              scope.$eval(constructorExpr + '.join');
+            }).not.toThrow();
+            expect(function() {
+              delete scope.foo;
+              scope.$eval('foo = ' + constructorExpr + '.join');
+            }).not.toThrow();
+            expect(function() {
+              scope.$eval(constructorExpr + '.join = ""');
+            }).toThrowMinErr('$parse', 'isecaf');
+            expect(function() {
+              scope.$eval(constructorExpr + '[0] = ""');
+            }).toThrowMinErr('$parse', 'isecaf');
+            expect(function() {
+              delete scope.foo;
+              scope.$eval('foo = ' + constructorExpr + '; foo.join = ""');
+            }).toThrowMinErr('$parse', 'isecaf');
+
+            expect(function() {
+              scope.foo = thing;
+              scope.$eval('foo.constructor[0] = ""');
+            }).toThrowMinErr('$parse', 'isecaf');
+            expect(function() {
+              delete scope.foo;
+              scope.$eval('foo.constructor[0] = ""', {foo: thing});
+            }).toThrowMinErr('$parse', 'isecaf');
+            expect(function() {
+              scope.foo = thing.constructor;
+              scope.$eval('foo[0] = ""');
+            }).toThrowMinErr('$parse', 'isecaf');
+            expect(function() {
+              delete scope.foo;
+              scope.$eval('foo[0] = ""', {foo: thing.constructor});
+            }).toThrowMinErr('$parse', 'isecaf');
+          });
+
+          // These might throw different error (e.g. isecobj, isecfn),
+          // but still having them here for good measure
+          forEach({
+            '{}': {},
+            '$eval': scope.$eval
+          }, function(thing, expr) {
+            var constructorExpr = expr + '.constructor';
+
+            expect(function() {
+              scope.$eval(constructorExpr + '.join');
+            }).not.toThrowMinErr('$parse', 'isecaf');
+            expect(function() {
+              delete scope.foo;
+              scope.$eval('foo = ' + constructorExpr + '.join');
+            }).not.toThrowMinErr('$parse', 'isecaf');
+            expect(function() {
+              scope.$eval(constructorExpr + '.join = ""');
+            }).toThrow();
+            expect(function() {
+              scope.$eval(constructorExpr + '[0] = ""');
+            }).toThrow();
+            expect(function() {
+              delete scope.foo;
+              scope.$eval('foo = ' + constructorExpr + '; foo.join = ""');
+            }).toThrow();
+
+            expect(function() {
+              scope.foo = thing;
+              scope.$eval('foo.constructor[0] = ""');
+            }).toThrow();
+            expect(function() {
+              delete scope.foo;
+              scope.$eval('foo.constructor[0] = ""', {foo: thing});
+            }).toThrow();
+            expect(function() {
+              scope.foo = thing.constructor;
+              scope.$eval('foo[0] = ""');
+            }).toThrowMinErr('$parse', 'isecaf');
+            expect(function() {
+              delete scope.foo;
+              scope.$eval('foo[0] = ""', {foo: thing.constructor});
+            }).toThrowMinErr('$parse', 'isecaf');
+          });
+
           // foo.constructor is not a constructor.
           expect(function() {
-            scope.$eval("foo.constructor[0] = ''", {foo: {constructor: ''}});
+            delete scope.foo;
+            scope.$eval('foo.constructor[0] = ""', {foo: {constructor: ''}});
           }).not.toThrow();
+
           expect(function() {
-            scope.$eval("objConstructor = {}.constructor; objConstructor.join = ''");
-          }).toThrow();
+            scope.$eval('"a".constructor.prototype.charAt = [].join');
+          }).toThrowMinErr('$parse', 'isecaf');
           expect(function() {
-            scope.$eval("'a'.constructor.prototype.charAt=[].join");
-          }).toThrow();
-          expect(function() {
-            scope.$eval("'a'.constructor.prototype.charCodeAt=[].concat");
-          }).toThrow();
+            scope.$eval('"a".constructor.prototype.charCodeAt = [].concat');
+          }).toThrowMinErr('$parse', 'isecaf');
         });
       });
 
