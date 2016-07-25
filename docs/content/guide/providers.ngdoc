@@ -242,9 +242,9 @@ myApp.config(["unicornLauncherProvider", function(unicornLauncherProvider) {
 }]);
 ```
 
-Notice that the unicorn provider is injected into the config function. This injection is done by a
+Notice that the unicorn provider is injected into the config function. <b>This injection is done by a
 provider injector which is different from the regular instance injector, in that it instantiates
-and wires (injects) all provider instances only.
+and wires (injects) all provider instances only.</b>
 
 During application bootstrap, before Angular goes off creating all services, it configures and
 instantiates all providers. We call this the configuration phase of the application life-cycle.
