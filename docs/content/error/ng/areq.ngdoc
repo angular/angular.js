@@ -1,8 +1,14 @@
-@ngdoc error
-@name ng:areq
-@fullName Bad Argument
-@description
+<!DOCTYPE html>
+<html ng-app>
 
-AngularJS often asserts that certain values will be present and truthy using a
-helper function. If the assertion fails, this error is thrown. To fix this problem,
-make sure that the value the assertion expects is defined and truthy.
+  <head>
+    <script data-require="angular.js@1.3.0" data-semver="1.3.0" src="https://code.angularjs.org/1.3.0/angular.js"></script>
+    <link rel="stylesheet" href="style.css" />
+    <script src="script.js"></script>
+  </head>
+
+  <body ng-controller="MainController">
+    <h1>{{message}}</h1>
+  </body>
+
+</html>
