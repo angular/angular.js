@@ -104,6 +104,25 @@ function $LogProvider() {
 
       /**
        * @ngdoc method
+       * @name $log#snapshot[(.log(..)/.info(..)/.warn(..)/.error(..)/.debug(..))]
+       *
+       * @description
+       * Make an angular.copy of arguments prior to logging; useful for logging a snapshot of nested or complex objects
+       * which may change later in your program, which would otherwise resulting in misleading console log output.
+       * Default $log.snapshot uses log level "log", or specify an optional .loglevel explicitly.
+       */
+      snapshot: (function() {
+        var snapshot = consoleLog('log', true); // define default snapshot function
+        snapshot.log = consoleLog('log', true);
+        snapshot.info = consoleLog('info',true);
+        snapshot.warn = consoleLog('warn', true);
+        snapshot.error = consoleLog('error', true);
+        snapshot.debug = consoleLog('debug', true);
+        return snapshot;
+      }()),
+
+      /**
+       * @ngdoc method
        * @name $log#debug
        *
        * @description
@@ -120,7 +139,7 @@ function $LogProvider() {
       }())
     };
 
-    function formatError(arg) {
+    function formatError(arg, copyFlag) {
       if (arg instanceof Error) {
         if (arg.stack) {
           arg = (arg.message && arg.stack.indexOf(arg.message) === -1)
@@ -129,11 +148,13 @@ function $LogProvider() {
         } else if (arg.sourceURL) {
           arg = arg.message + '\n' + arg.sourceURL + ':' + arg.line;
         }
+      } else if (copyFlag) {
+        return angular.copy(arg);
       }
       return arg;
     }
 
-    function consoleLog(type) {
+    function consoleLog(type, copyFlag) {
       var console = $window.console || {},
           logFn = console[type] || console.log || noop,
           hasApply = false;
@@ -148,7 +169,7 @@ function $LogProvider() {
         return function() {
           var args = [];
           forEach(arguments, function(arg) {
-            args.push(formatError(arg));
+            args.push(formatError(arg, copyFlag));
           });
           return logFn.apply(console, args);
         };
@@ -162,3 +183,4 @@ function $LogProvider() {
     }
   }];
 }
+
