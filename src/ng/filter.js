@@ -149,6 +149,7 @@ function $FilterProvider($provide) {
     lowercaseFilter: false,
     numberFilter: false,
     orderByFilter: false,
+    sliceFilter: false,
     uppercaseFilter: false,
   */
 
@@ -160,5 +161,6 @@ function $FilterProvider($provide) {
   register('lowercase', lowercaseFilter);
   register('number', numberFilter);
   register('orderBy', orderByFilter);
+  register('slice', sliceFilter);
   register('uppercase', uppercaseFilter);
 }
