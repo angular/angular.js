@@ -8,6 +8,7 @@
  lowercaseFilter: true,
  numberFilter: true,
  orderByFilter: true,
+ range: true,
  uppercaseFilter: true,
  */
 
@@ -149,6 +150,7 @@ function $FilterProvider($provide) {
     lowercaseFilter: false,
     numberFilter: false,
     orderByFilter: false,
+    range: false,
     uppercaseFilter: false,
   */
 
@@ -160,5 +162,6 @@ function $FilterProvider($provide) {
   register('lowercase', lowercaseFilter);
   register('number', numberFilter);
   register('orderBy', orderByFilter);
+  register('range', rangeFilter);
   register('uppercase', uppercaseFilter);
 }
