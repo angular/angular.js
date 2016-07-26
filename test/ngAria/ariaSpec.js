@@ -352,6 +352,20 @@ describe('$aria', function() {
       scope.$apply('val = {}');
       expect(element.attr('aria-disabled')).toBe('true');
     });
+
+
+    it('should always set aria-disabled to a boolean value', function() {
+      compileElement('<div ng-disabled="val"></div>');
+
+      scope.$apply('val = "test angular"');
+      expect(element.attr('aria-disabled')).toBe('true');
+
+      scope.$apply('val = null');
+      expect(element.attr('aria-disabled')).toBe('false');
+
+      scope.$apply('val = {}');
+      expect(element.attr('aria-disabled')).toBe('true');
+    });
   });
 
   describe('aria-disabled when disabled', function() {
