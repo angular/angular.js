@@ -327,6 +327,16 @@ function qFactory(nextTick, exceptionHandler, errorOnUnhandledRejections) {
       return this.then(null, callback);
     },
 
+    always: function(callback) {
+      return this.then(function(value) {
+        safeInvoke(callback, value);
+        return value;
+      }, function(reason) {
+        safeInvoke(callback, reason);
+        return reject(reason);
+      });
+    },
+
     "finally": function(callback, progressBack) {
       return this.then(function(value) {
         return handleCallback(value, true, callback);
@@ -554,6 +564,14 @@ function qFactory(nextTick, exceptionHandler, errorOnUnhandledRejections) {
       });
     } else {
       return makePromise(value, isResolved);
+    }
+  };
+
+  var safeInvoke = function safeInvoke(callback, value) {
+    try {
+      callback(value);
+    } catch(e) {
+
     }
   };
 
