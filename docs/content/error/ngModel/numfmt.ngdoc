@@ -47,7 +47,7 @@ directive to convert it into the format the `input[number]` directive expects.
           return '' + value;
         });
         ngModel.$formatters.push(function(value) {
-          return parseFloat(value, 10);
+          return parseFloat(value);
         });
       }
     };
