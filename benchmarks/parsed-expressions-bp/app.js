@@ -23,7 +23,6 @@ app.directive('bmPeWatch', function() {
       return function($scope, $element, $attrs) {
         $scope.$watch($attrs.bmPeWatch, function(val) {
           $element.text(val);
-
         });
       };
     }
@@ -55,19 +54,19 @@ app.controller('DataController', function($scope, $rootScope) {
 
   var star = '*';
 
-  $scope.func = function() { return star;};
+  $scope.func = function() { return star; };
 
   for (var i = 0; i < totalRows; i++) {
     data.push({
       index: i,
-      odd:   i % 2 === 0,
-      even:  i % 2 === 1,
-      str0: "foo-" + Math.random() * Date.now(),
-      str1: "bar-" + Math.random() * Date.now(),
-      str2: "baz-" + Math.random() * Date.now(),
-      num0:  Math.random() * Date.now(),
-      num1:  Math.random() * Date.now(),
-      num2:  Math.random() * Date.now(),
+      odd: i % 2 === 0,
+      even: i % 2 === 1,
+      str0: 'foo-' + Math.random() * Date.now(),
+      str1: 'bar-' + Math.random() * Date.now(),
+      str2: 'baz-' + Math.random() * Date.now(),
+      num0: Math.random() * Date.now(),
+      num1: Math.random() * Date.now(),
+      num2: Math.random() * Date.now(),
       date0: new Date(Math.random() * Date.now()),
       date1: new Date(Math.random() * Date.now()),
       date2: new Date(Math.random() * Date.now()),
