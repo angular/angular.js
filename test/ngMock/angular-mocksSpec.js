@@ -1,5 +1,7 @@
 'use strict';
 
+/* globals support: false */
+
 describe('ngMock', function() {
   var noop = angular.noop;
 
