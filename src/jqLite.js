@@ -413,15 +413,33 @@ function jqLiteHasClass(element, selector) {
       indexOf(" " + selector + " ") > -1);
 }
 
-function jqLiteRemoveClass(element, cssClasses) {
-  if (cssClasses && element.setAttribute) {
-    forEach(cssClasses.split(' '), function(cssClass) {
-      element.setAttribute('class', trim(
-          (" " + (element.getAttribute('class') || '') + " ")
-          .replace(/[\n\t]/g, " ")
-          .replace(" " + trim(cssClass) + " ", " "))
-      );
-    });
+function jqLiteRemoveClass(element, cssClassesOrFunc) {
+  if (element.setAttribute) {
+
+    //if selector is passed
+    if (cssClassesOrFunc) {
+      //if cssClassesOrFunc is a function
+      if (isFunction(cssClassesOrFunc)) {
+        /*
+        * takes index of element in the set, and a list of the elements class names
+        * index of element in set will always be 0
+        * returns one or more space-separated class names to be removed
+        */
+        cssClassesOrFunc = cssClassesOrFunc.call(element, 0, element.className);
+      }
+      //remove classes
+      forEach(cssClassesOrFunc.split(' '), function(cssClass) {
+        element.setAttribute('class', trim(
+            (" " + (element.getAttribute('class') || '') + " ")
+            .replace(/[\n\t]/g, " ")
+            .replace(" " + trim(cssClass) + " ", " "))
+        );
+      });
+
+    } else {
+      // if no class names are specified in the parameter, all classes will be removed
+      element.setAttribute('class', '');
+    }
   }
 }
 
@@ -974,15 +992,32 @@ forEach({
   addClass: jqLiteAddClass,
   removeClass: jqLiteRemoveClass,
 
-  toggleClass: function(element, selector, condition) {
-    if (selector) {
-      forEach(selector.split(' '), function(className) {
+  toggleClass: function(element, selectorOrFunc, condition) {
+
+    //if selector passed toggle classes
+    if (selectorOrFunc) {
+
+      //if selector is a function
+      if (isFunction(selectorOrFunc)) {
+        /*
+        * takes index of element in the set, and a list of the elements class names
+        * index of element in set will always be 0
+        * returns one or more space-separated class names to be toggled
+        */
+        selectorOrFunc = selectorOrFunc.call(element, 0, element.className, condition);
+      }
+      //toggle values
+      forEach(selectorOrFunc.split(' '), function(className) {
         var classCondition = condition;
         if (isUndefined(classCondition)) {
           classCondition = !jqLiteHasClass(element, className);
         }
         (classCondition ? jqLiteAddClass : jqLiteRemoveClass)(element, className);
       });
+
+    // if no selector is passed all class names on the element will be toggled.
+    } else {
+      jqLiteRemoveClass(element);
     }
   },
 

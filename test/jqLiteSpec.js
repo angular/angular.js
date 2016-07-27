@@ -874,6 +874,42 @@ describe('jqLite', function() {
         expect(jqLite(b).hasClass('cde')).toBe(false);
       });
 
+
+      it('should allow function to be passed', function() {
+        var selector = jqLite([a, b]);
+        selector.addClass('abc');
+        selector.addClass('cde');
+        selector.addClass('fgh');
+        selector.addClass('ijk');
+
+        expect(selector.toggleClass(function(index, className) {
+          return 'abc cde';
+        })).toBe(selector);
+
+        expect(jqLite(a).hasClass('abc')).toBe(false);
+        expect(jqLite(a).hasClass('cde')).toBe(false);
+        expect(jqLite(a).hasClass('fgh')).toBe(true);
+        expect(jqLite(a).hasClass('ijk')).toBe(true);
+
+        expect(jqLite(b).hasClass('abc')).toBe(false);
+        expect(jqLite(b).hasClass('cde')).toBe(false);
+        expect(jqLite(b).hasClass('fgh')).toBe(true);
+        expect(jqLite(b).hasClass('ijk')).toBe(true);
+      });
+
+      it('should toggle all classes if no selector is passed', function() {
+        var selector = jqLite([a, b]);
+        selector.addClass('abc');
+        selector.addClass('cde');
+
+        expect(selector.toggleClass()).toBe(selector);
+
+        expect(jqLite(a).hasClass('abc')).toBe(false);
+        expect(jqLite(a).hasClass('cde')).toBe(false);
+        expect(jqLite(b).hasClass('abc')).toBe(false);
+        expect(jqLite(b).hasClass('cde')).toBe(false);
+      });
+
       it('should not break for null / undefined selectors', function() {
         var selector = jqLite([a, b]);
         expect(selector.toggleClass(null)).toBe(selector);
@@ -899,6 +935,30 @@ describe('jqLite', function() {
         element.removeClass('bar');
 
         expect(element.hasClass('foo')).toBe(true);
+        expect(element.hasClass('bar')).toBe(false);
+        expect(element.hasClass('baz')).toBe(true);
+      });
+
+
+      it('should remove all classes if no class is specified', function() {
+        var element = jqLite('<div class="foo bar baz"></div>');
+
+        expect(element.removeClass()).toEqual(element);
+
+        expect(element.hasClass('foo')).toBe(false);
+        expect(element.hasClass('bar')).toBe(false);
+        expect(element.hasClass('baz')).toBe(false);
+      });
+
+
+      it('should allow a function as a paramater', function() {
+        var element = jqLite('<div class="foo bar baz"></div>');
+
+        expect(element.removeClass(function(index, className) {
+          return 'foo bar';
+        })).toEqual(element);
+
+        expect(element.hasClass('foo')).toBe(false);
         expect(element.hasClass('bar')).toBe(false);
         expect(element.hasClass('baz')).toBe(true);
       });
