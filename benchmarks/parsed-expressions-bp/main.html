@@ -53,6 +53,11 @@
         </li>
 
         <li>
+          <input type="radio" ng-model="expressionType" value="assignment" id="assignment">
+          <label for="assignment">Assignment</label>
+        </li>
+
+        <li>
           <input type="radio" ng-model="expressionType" value="objectLiterals" id="objectLiterals">
           <label for="objectLiterals">Object Literals</label>
         </li>
@@ -195,6 +200,18 @@
           <span bm-pe-watch="func(func(), func())"></span>
           <span bm-pe-watch="row.func(row.func())"></span>
           <span bm-pe-watch="row.func(row.func(), row.func())"></span>
+        </li>
+
+        <li ng-switch-when="assignment" ng-repeat="(rowIdx, row) in ::data">
+          <span bm-pe-watch="row.foo = row.str0"></span>
+          <span bm-pe-watch="row.obj.foo = row.str1"></span>
+          <span bm-pe-watch="row.obj.obj.foo = row.str2"></span>
+          <span bm-pe-watch="row['bar'] = row.num0"></span>
+          <span bm-pe-watch="row.obj['bar'] = row.num1"></span>
+          <span bm-pe-watch="row.obj.obj['bar'] = row.num2"></span>
+          <span bm-pe-watch="row[0] = row.date0"></span>
+          <span bm-pe-watch="row.obj[0] = row.date1"></span>
+          <span bm-pe-watch="row.obj.obj[0] = row.date2"></span>
         </li>
 
         <li ng-switch-when="objectLiterals" ng-repeat="(rowIdx, row) in ::data">
