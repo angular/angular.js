@@ -135,6 +135,9 @@ If the PR gets too outdated we may ask you to rebase and force push to update th
     git rebase master -i
     git push origin my-fix-branch -f
     ```
+    
+
+WARNING. Forced push may delete all in-code comments made in your PR
 
 *WARNING. Squashing or reverting commits and forced push thereafter may remove GitHub comments
 on code that were previously made by you and others in your commits.*
