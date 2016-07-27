@@ -44,10 +44,10 @@ directive to convert it into the format the `input[number]` directive expects.
       require: 'ngModel',
       link: function(scope, element, attrs, ngModel) {
         ngModel.$parsers.push(function(value) {
-          return '' + value;
+          return parseFloat(value, 10);
         });
         ngModel.$formatters.push(function(value) {
-          return parseFloat(value, 10);
+          return '' + value;
         });
       }
     };
