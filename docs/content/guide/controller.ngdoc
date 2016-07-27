@@ -132,7 +132,7 @@ The message in our template contains a binding to the `spice` model which, by de
 string "very". Depending on which button is clicked, the `spice` model is set to `chili` or
 `jalapeño`, and the message is automatically updated by data-binding.
 
-<example module="spicyApp1">
+<example module="spicyApp1" name="controller-spicy-1">
   <file name="index.html">
     <div ng-controller="SpicyController">
      <button ng-click="chiliSpicy()">Chili</button>
@@ -173,7 +173,7 @@ its children).
 Controller methods can also take arguments, as demonstrated in the following variation of the
 previous example.
 
-<example module="spicyApp2">
+<example module="spicyApp2" name="controller-spicy-2">
   <file name="index.html">
   <div ng-controller="SpicyController">
    <input ng-model="customSpice">
@@ -210,7 +210,7 @@ have access to properties and methods defined by Controllers higher up the hiera
 See [Understanding Scopes](https://github.com/angular/angular.js/wiki/Understanding-Scopes) for
 more information about scope inheritance.
 
-<example module="scopeInheritance">
+<example module="scopeInheritance" name="controller-scope-inheritance">
   <file name="index.html">
     <div class="spicy">
       <div ng-controller="MainController">

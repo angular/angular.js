@@ -62,7 +62,7 @@ attributes (if they have not been explicitly specified by the developer):
 
 ### Example
 
-<example module="ngAria_ngModelExample" deps="angular-aria.js">
+<example module="ngAria_ngModelExample" deps="angular-aria.js" name="accessibility-ng-model">
   <file name="index.html">
     <form ng-controller="formsController">
       <some-checkbox role="checkbox" ng-model="checked" ng-class="{active: checked}"
@@ -331,7 +331,7 @@ The attribute magic of ngAria may not work for every scenario. To disable indivi
 you can use the {@link ngAria.$ariaProvider#config config} method. Just keep in mind this will
 tell ngAria to ignore the attribute globally.
 
-<example module="ngAria_ngClickExample" deps="angular-aria.js">
+<example module="ngAria_ngClickExample" deps="angular-aria.js" name="accessibility-ng-click">
  <file name="index.html">
   <div ng-click="someFunction" show-attrs>
     &lt;div&gt; with ng-click and bindRoleForClick, tabindex set to false
