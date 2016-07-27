@@ -673,6 +673,34 @@ describe('angular', function() {
     });
   });
 
+  describe("extendWith", function() {
+
+    it('should extend with the customized reducer', function() {
+      var reducer = function(dstValue, srcValue) {
+        if (isArray(dstValue)) {
+          return dstValue.concat(srcValue);
+        }
+        return srcValue;
+      };
+      var src = {
+        x: [1, 2, 3],
+        y: 8,
+        z: 'src only'
+      };
+      var dst = {
+        x: [4, 5, 6],
+        y: 7,
+        w: 'dst only'
+      };
+      dst = extendWith(dst, reducer, src);
+      expect(dst).toEqual({
+        x: [4, 5, 6, 1, 2, 3],
+        y: 8,
+        z: 'src only',
+        w: 'dst only'
+      });
+    });
+  });
 
   describe('merge', function() {
     it('should recursively copy objects into dst from left to right', function() {

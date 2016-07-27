@@ -27,6 +27,7 @@
   nextUid: true,
   setHashKey: true,
   extend: true,
+  extendWith: true,
   toInt: true,
   inherit: true,
   merge: true,
@@ -324,7 +325,7 @@ function setHashKey(obj, h) {
 }
 
 
-function baseExtend(dst, objs, deep) {
+function baseExtend(dst, objs, deep, reducer) {
   var h = dst.$$hashKey;
 
   for (var i = 0, ii = objs.length; i < ii; ++i) {
@@ -349,7 +350,11 @@ function baseExtend(dst, objs, deep) {
           baseExtend(dst[key], [src], true);
         }
       } else {
-        dst[key] = src;
+        if (isDefined(dst[key]) && isFunction(reducer)) {
+          dst[key] = reducer(dst[key], src);
+        } else {
+          dst[key] = src;
+        }
       }
     }
   }
@@ -378,6 +383,33 @@ function baseExtend(dst, objs, deep) {
  */
 function extend(dst) {
   return baseExtend(dst, slice.call(arguments, 1), false);
+}
+
+
+/**
+ * @ngdoc function
+ * @name angular.extendWith
+ * @module ng
+ * @kind function
+ *
+ * @description
+ * Extends the destination object `dst` by copying own enumerable properties from the `src` object(s)
+ * to `dst`. You can specify multiple `src` objects. If you want to preserve original objects, you can do so
+ * by passing an empty object as the target: `var object = angular.extend({}, object1, object2)`.
+ *
+ * The difference between this method and '{@link angular.extend}' is that when a property is specified in
+ * both the destination object and source object, the assigned value will be calculated by reducer from
+ * the orginal values.
+ *
+ * **Note:** Keep in mind that `angular.extendWith` does not support recursive merge (deep copy).
+ *
+ * @param {Object} dst Destination object.
+ * @param {function(dstValue, srcValue)} reducer Function for producing assigned value.
+ * @param {...Object} src Source object(s).
+ * @returns {Object} Reference to `dst`.
+ */
+function extendWith(dst, reducer) {
+  return baseExtend(dst, slice.call(arguments, 2), false, reducer);
 }
 
 

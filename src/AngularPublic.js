@@ -128,6 +128,7 @@ function publishExternalAPI(angular) {
     'bootstrap': bootstrap,
     'copy': copy,
     'extend': extend,
+    'extendWith': extendWith,
     'merge': merge,
     'equals': equals,
     'element': jqLite,
