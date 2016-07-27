@@ -1352,6 +1352,97 @@ describe('parser', function() {
       );
     });
 
+    it('should understand ES6 object initializer', function() {
+      // Shorthand properties definitions.
+      expect(createAst('{x, y, z}')).toEqual(
+        {
+          type: 'Program',
+          body: [
+            {
+              type: 'ExpressionStatement',
+              expression: {
+                type: 'ObjectExpression',
+                properties: [
+                  {
+                    type: 'Property',
+                    kind: 'init',
+                    key: { type: 'Identifier', name: 'x' },
+                    computed: false,
+                    value: { type: 'Identifier', name: 'x' }
+                  },
+                  {
+                    type: 'Property',
+                    kind: 'init',
+                    key: { type: 'Identifier', name: 'y' },
+                    computed: false,
+                    value: { type: 'Identifier', name: 'y' }
+                  },
+                  {
+                    type: 'Property',
+                    kind: 'init',
+                    key: { type: 'Identifier', name: 'z' },
+                    computed: false,
+                    value: { type: 'Identifier', name: 'z' }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      );
+      expect(function() { createAst('{"foo"}'); }).toThrow();
+
+      // Computed properties
+      expect(createAst('{[x]: x}')).toEqual(
+        {
+          type: 'Program',
+          body: [
+            {
+              type: 'ExpressionStatement',
+              expression: {
+                type: 'ObjectExpression',
+                properties: [
+                  {
+                    type: 'Property',
+                    kind: 'init',
+                    key: { type: 'Identifier', name: 'x' },
+                    computed: true,
+                    value: { type: 'Identifier', name: 'x' }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      );
+      expect(createAst('{[x + 1]: x}')).toEqual(
+        {
+          type: 'Program',
+          body: [
+            {
+              type: 'ExpressionStatement',
+              expression: {
+                type: 'ObjectExpression',
+                properties: [
+                  {
+                    type: 'Property',
+                    kind: 'init',
+                    key: {
+                      type: 'BinaryExpression',
+                      operator: '+',
+                      left: { type: 'Identifier', name: 'x' },
+                      right: { type: 'Literal', value: 1 }
+                    },
+                    computed: true,
+                    value: { type: 'Identifier', name: 'x' }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      );
+    });
 
     it('should understand ES6 object initializer', function() {
       // Shorthand properties definitions.
