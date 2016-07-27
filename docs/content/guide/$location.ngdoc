@@ -834,7 +834,7 @@ then uses the information it obtains to compose hashbang URLs (such as
 Because `$location` uses getters/setters, you can use `ng-model-options="{ getterSetter: true }"`
 to bind it to `ngModel`:
 
-<example module="locationExample">
+<example module="locationExample" name="location-two-way-binding">
 <file name="index.html">
 <div ng-controller="LocationController">
   <input type="text" ng-model="locationPath" ng-model-options="{ getterSetter: true }" />

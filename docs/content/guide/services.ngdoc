@@ -30,7 +30,7 @@ To use an Angular service, you add it as a dependency for the component (control
 filter or directive) that depends on the service. Angular's {@link di dependency injection}
 subsystem takes care of the rest.
 
-<example module="myServiceModule">
+<example module="myServiceModule" name="services-usage">
   <file name="index.html">
     <div id="simple" ng-controller="MyController">
       <p>Let's try this simple notify service, injected into the controller...</p>

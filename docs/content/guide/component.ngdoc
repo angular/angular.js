@@ -383,7 +383,7 @@ but they are guaranteed to be available just before the `$onInit` method is exec
 
 Here is a tab pane example built from components:
 
-<example module="docsTabsExample">
+<example module="docsTabsExample" name="component-tabs-pane">
   <file name="script.js">
 angular.module('docsTabsExample', [])
   .component('myTabs', {

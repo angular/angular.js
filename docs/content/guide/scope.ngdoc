@@ -43,7 +43,7 @@ arrangement isolates the controller from the directive as well as from the DOM. 
 point since it makes the controllers view agnostic, which greatly improves the testing story of
 the applications.
 
-<example module="scopeExample">
+<example module="scopeExample" name="scope-data-model">
   <file name="script.js">
     angular.module('scopeExample', [])
       .controller('MyController', ['$scope', function($scope) {
@@ -124,7 +124,7 @@ inheritance, and child scopes prototypically inherit from their parents.
 This example illustrates scopes in application, and prototypical inheritance of properties. The example is followed by
 a diagram depicting the scope boundaries.
 
-<example module="scopeExample">
+<example module="scopeExample" name="scope-hierarchies">
   <file name="index.html">
   <div class="show-scope-demo">
     <div ng-controller="GreetController">
@@ -192,7 +192,7 @@ Scopes can propagate events in similar fashion to DOM events. The event can be {
 ng.$rootScope.Scope#$broadcast broadcasted} to the scope children or {@link
 ng.$rootScope.Scope#$emit emitted} to scope parents.
 
-<example module="eventExample">
+<example module="eventExample" name="scope-events-propagation">
   <file name="script.js">
     angular.module('eventExample', [])
       .controller('EventController', ['$scope', function($scope) {
@@ -391,7 +391,7 @@ implementing custom event callbacks, or when working with third-party library ca
   5. The {@link ng.$rootScope.Scope#$watch $watch} list is a set of expressions
      which may have changed since last iteration. If a change is detected then the `$watch`
      function is called which typically updates the DOM with the new value.
-  6. Once the Angular {@link ng.$rootScope.Scope#$digest $digest} loop finishes, 
+  6. Once the Angular {@link ng.$rootScope.Scope#$digest $digest} loop finishes,
      the execution leaves the Angular and JavaScript context. This is followed by the browser
      re-rendering the DOM to reflect any changes.
 

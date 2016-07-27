@@ -51,7 +51,7 @@ the method from your view. If you want to `eval()` an Angular expression yoursel
 {@link ng.$rootScope.Scope#$eval `$eval()`} method.
 
 ## Example
-<example>
+<example name="expression-simple">
   <file name="index.html">
     <span>
       1+2={{1+2}}
@@ -67,7 +67,7 @@ the method from your view. If you want to `eval()` an Angular expression yoursel
 
 You can try evaluating different expressions here:
 
-<example module="expressionExample">
+<example module="expressionExample" name="expression-eval">
   <file name="index.html">
     <div ng-controller="ExampleController" class="expressions">
       Expression:
@@ -122,7 +122,7 @@ provide mockable access to globals.
 It is possible to access the context object using the identifier `this` and the locals object using the
 identifier `$locals`.
 
-<example module="expressionExample">
+<example module="expressionExample" name="expression-locals">
   <file name="index.html">
     <div class="example2" ng-controller="ExampleController">
       Name: <input ng-model="name" type="text"/>
@@ -197,7 +197,7 @@ expose a `$event` object within the scope of that expression. The object is an i
 Event Object](http://api.jquery.com/category/events/event-object/) when jQuery is present or a
 similar jqLite object.
 
-<example module="eventExampleApp">
+<example module="eventExampleApp" name="expression-events">
   <file name="index.html">
     <div ng-controller="EventController">
       <button ng-click="clickMe($event)">Event</button>
@@ -241,7 +241,7 @@ An expression that starts with `::` is considered a one-time expression. One-tim
 will stop recalculating once they are stable, which happens after the first digest if the expression
 result is a non-undefined value (see value stabilization algorithm below).
 
-<example module="oneTimeBidingExampleApp">
+<example module="oneTimeBidingExampleApp" name="expression-one-time">
   <file name="index.html">
     <div ng-controller="EventController">
       <button ng-click="clickMe($event)">Click Me</button>
