@@ -1,0 +1,10 @@
+{
+  "name": "example-location-hashbang-mode",
+  "files": [
+    "index-production.html",
+    "app.js",
+    "fakeBrowser.js",
+    "addressBar.js",
+    "protractor.js"
+  ]
+}

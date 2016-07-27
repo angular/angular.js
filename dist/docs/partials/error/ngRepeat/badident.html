@@ -1,0 +1,45 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/error/ngRepeat/badident.ngdoc?message=docs(error%2Fbadident)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1>Error: error:badident
+  <div><span class='hint'>Invalid identifier expression</span></div>
+</h1>
+
+<div>
+    <pre class="minerr-errmsg" error-display="alias '{0}' is invalid --- must be a valid JS identifier which is not a reserved name.">alias '{0}' is invalid --- must be a valid JS identifier which is not a reserved name.</pre>
+</div>
+
+<h2>Description</h2>
+<div class="description">
+  <p>Occurs when an invalid identifier is specified in an <a href="api/ng/directive/ngRepeat">ngRepeat</a> expression.</p>
+<p>The <a href="api/ng/directive/ngRepeat">ngRepeat</a> directive&#39;s <code>alias as</code> syntax is used to assign an alias for the processed collection in scope.</p>
+<p>If the expression is not a simple identifier (such that you could declare it with <code>var {name}</code>, or if the expression is a reserved name,
+this error is thrown.</p>
+<p>Reserved names include:</p>
+<ul>
+<li><code>null</code></li>
+<li><code>this</code></li>
+<li><code>undefined</code></li>
+<li><code>$parent</code></li>
+<li><code>$id</code></li>
+<li><code>$root</code></li>
+<li><code>$even</code></li>
+<li><code>$odd</code></li>
+<li><code>$first</code></li>
+<li><code>$last</code></li>
+<li><code>$middle</code></li>
+</ul>
+<p>Invalid expressions might look like this:</p>
+<pre><code class="lang-html">&lt;li ng-repeat=&quot;item in items | filter:searchString as this&quot;&gt;{{item}}&lt;/li&gt;
+&lt;li ng-repeat=&quot;item in items | filter:searchString as some.objects[&quot;property&quot;]&quot;&gt;{{item}}&lt;/li&gt;
+&lt;li ng-repeat=&quot;item in items | filter:searchString as resultOfSomeMethod()&quot;&gt;{{item}}&lt;/li&gt;
+&lt;li ng-repeat=&quot;item in items | filter:searchString as foo=6&quot;&gt;{{item}}&lt;/li&gt;
+</code></pre>
+<p>Valid expressions might look like this:</p>
+<pre><code class="lang-html">&lt;li ng-repeat=&quot;item in items | filter:searchString as collections&quot;&gt;{{item}}&lt;/li&gt;
+&lt;li ng-repeat=&quot;item in items | filter:searchString as filteredCollection&quot;&gt;{{item}}&lt;/li&gt;
+</code></pre>
+
+</div>
+
+

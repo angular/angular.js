@@ -1,0 +1,7 @@
+{
+  "name": "example-ngModelOptions-directive-debounce",
+  "files": [
+    "index-production.html",
+    "app.js"
+  ]
+}

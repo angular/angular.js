@@ -1,0 +1,437 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ngAnimate/animate.js?message=docs(ngAnimate)%3A%20describe%20your%20change...#L4' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1>
+  <code>ngAnimate</code>
+</h1>
+
+<p>The <code>ngAnimate</code> module provides support for JavaScript, CSS3 transition and CSS3 keyframe animation hooks within existing core and custom directives.</p>
+<div doc-module-components="ngAnimate"></div>
+
+<h1 id="usage">Usage</h1>
+<p>To see animations in action, all that is required is to define the appropriate CSS classes
+or to register a JavaScript animation via the <code>myModule.animation()</code> function. The directives that support animation automatically are:
+<code>ngRepeat</code>, <code>ngInclude</code>, <code>ngIf</code>, <code>ngSwitch</code>, <code>ngShow</code>, <code>ngHide</code>, <code>ngView</code> and <code>ngClass</code>. Custom directives can take advantage of animation
+by using the <code>$animate</code> service.</p>
+<p>Below is a more detailed breakdown of the supported animation events provided by pre-existing ng directives:</p>
+<table>
+<thead>
+<tr>
+<th>Directive</th>
+<th>Supported Animations</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="api/ng/directive/ngRepeat#animations">ngRepeat</a></td>
+<td>enter, leave and move</td>
+</tr>
+<tr>
+<td><a href="api/ngRoute/directive/ngView#animations">ngView</a></td>
+<td>enter and leave</td>
+</tr>
+<tr>
+<td><a href="api/ng/directive/ngInclude#animations">ngInclude</a></td>
+<td>enter and leave</td>
+</tr>
+<tr>
+<td><a href="api/ng/directive/ngSwitch#animations">ngSwitch</a></td>
+<td>enter and leave</td>
+</tr>
+<tr>
+<td><a href="api/ng/directive/ngIf#animations">ngIf</a></td>
+<td>enter and leave</td>
+</tr>
+<tr>
+<td><a href="api/ng/directive/ngClass#animations">ngClass</a></td>
+<td>add and remove (the CSS class(es) present)</td>
+</tr>
+<tr>
+<td><a href="api/ng/directive/ngShow#animations">ngShow</a> &amp; <a href="api/ng/directive/ngHide#animations">ngHide</a></td>
+<td>add and remove (the ng-hide class value)</td>
+</tr>
+<tr>
+<td><a href="api/ng/directive/form#animation-hooks">form</a> &amp; <a href="api/ng/directive/ngModel#animation-hooks">ngModel</a></td>
+<td>add and remove (dirty, pristine, valid, invalid &amp; all other validations)</td>
+</tr>
+<tr>
+<td><a href="api/ngMessages#animations">ngMessages</a></td>
+<td>add and remove (ng-active &amp; ng-inactive)</td>
+</tr>
+<tr>
+<td><a href="api/ngMessages#animations">ngMessage</a></td>
+<td>enter and leave</td>
+</tr>
+</tbody>
+</table>
+<p>You can find out more information about animations upon visiting each directive page.</p>
+<p>Below is an example of how to apply animations to a directive that supports animation hooks:</p>
+<pre><code class="lang-html">&lt;style type=&quot;text/css&quot;&gt;
+.slide.ng-enter, .slide.ng-leave {
+  -webkit-transition:0.5s linear all;
+  transition:0.5s linear all;
+}
+
+.slide.ng-enter { }        /* starting animations for enter */
+.slide.ng-enter.ng-enter-active { } /* terminal animations for enter */
+.slide.ng-leave { }        /* starting animations for leave */
+.slide.ng-leave.ng-leave-active { } /* terminal animations for leave */
+&lt;/style&gt;
+
+&lt;!--
+the animate service will automatically add .ng-enter and .ng-leave to the element
+to trigger the CSS transition/animations
+--&gt;
+&lt;ANY class=&quot;slide&quot; ng-include=&quot;...&quot;&gt;&lt;/ANY&gt;
+</code></pre>
+<p>Keep in mind that, by default, if an animation is running, any child elements cannot be animated
+until the parent element&#39;s animation has completed. This blocking feature can be overridden by
+placing the <code>ng-animate-children</code> attribute on a parent container tag.</p>
+<pre><code class="lang-html">&lt;div class=&quot;slide-animation&quot; ng-if=&quot;on&quot; ng-animate-children&gt;
+  &lt;div class=&quot;fade-animation&quot; ng-if=&quot;on&quot;&gt;
+    &lt;div class=&quot;explode-animation&quot; ng-if=&quot;on&quot;&gt;
+       ...
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</code></pre>
+<p>When the <code>on</code> expression value changes and an animation is triggered then each of the elements within
+will all animate without the block being applied to child elements.</p>
+<h2 id="are-animations-run-when-the-application-starts-">Are animations run when the application starts?</h2>
+<p>No they are not. When an application is bootstrapped Angular will disable animations from running to avoid
+a frenzy of animations from being triggered as soon as the browser has rendered the screen. For this to work,
+Angular will wait for two digest cycles until enabling animations. From there on, any animation-triggering
+layout changes in the application will trigger animations as normal.</p>
+<p>In addition, upon bootstrap, if the routing system or any directives or load remote data (via $http) then Angular
+will automatically extend the wait time to enable animations once <strong>all</strong> of the outbound HTTP requests
+are complete.</p>
+<h2 id="css-defined-animations">CSS-defined Animations</h2>
+<p>The animate service will automatically apply two CSS classes to the animated element and these two CSS classes
+are designed to contain the start and end CSS styling. Both CSS transitions and keyframe animations are supported
+and can be used to play along with this naming structure.</p>
+<p>The following code below demonstrates how to perform animations using <strong>CSS transitions</strong> with Angular:</p>
+<pre><code class="lang-html">&lt;style type=&quot;text/css&quot;&gt;
+/*
+ The animate class is apart of the element and the ng-enter class
+ is attached to the element once the enter animation event is triggered
+*/
+.reveal-animation.ng-enter {
+ -webkit-transition: 1s linear all; /* Safari/Chrome */
+ transition: 1s linear all; /* All other modern browsers and IE10+ */
+
+ /* The animation preparation code */
+ opacity: 0;
+}
+
+/*
+ Keep in mind that you want to combine both CSS
+ classes together to avoid any CSS-specificity
+ conflicts
+*/
+.reveal-animation.ng-enter.ng-enter-active {
+ /* The animation code itself */
+ opacity: 1;
+}
+&lt;/style&gt;
+
+&lt;div class=&quot;view-container&quot;&gt;
+  &lt;div ng-view class=&quot;reveal-animation&quot;&gt;&lt;/div&gt;
+&lt;/div&gt;
+</code></pre>
+<p>The following code below demonstrates how to perform animations using <strong>CSS animations</strong> with Angular:</p>
+<pre><code class="lang-html">&lt;style type=&quot;text/css&quot;&gt;
+.reveal-animation.ng-enter {
+  -webkit-animation: enter_sequence 1s linear; /* Safari/Chrome */
+  animation: enter_sequence 1s linear; /* IE10+ and Future Browsers */
+}
+@-webkit-keyframes enter_sequence {
+  from { opacity:0; }
+  to { opacity:1; }
+}
+@keyframes enter_sequence {
+  from { opacity:0; }
+  to { opacity:1; }
+}
+&lt;/style&gt;
+
+&lt;div class=&quot;view-container&quot;&gt;
+  &lt;div ng-view class=&quot;reveal-animation&quot;&gt;&lt;/div&gt;
+&lt;/div&gt;
+</code></pre>
+<p>Both CSS3 animations and transitions can be used together and the animate service will figure out the correct duration and delay timing.</p>
+<p>Upon DOM mutation, the event class is added first (something like <code>ng-enter</code>), then the browser prepares itself to add
+the active class (in this case <code>ng-enter-active</code>) which then triggers the animation. The animation module will automatically
+detect the CSS code to determine when the animation ends. Once the animation is over then both CSS classes will be
+removed from the DOM. If a browser does not support CSS transitions or CSS animations then the animation will start and end
+immediately resulting in a DOM element that is at its final state. This final state is when the DOM element
+has no CSS transition/animation classes applied to it.</p>
+<h3 id="structural-transition-animations">Structural transition animations</h3>
+<p>Structural transitions (such as enter, leave and move) will always apply a <code>0s none</code> transition
+value to force the browser into rendering the styles defined in the setup (<code>.ng-enter</code>, <code>.ng-leave</code>
+or <code>.ng-move</code>) class. This means that any active transition animations operating on the element
+will be cut off to make way for the enter, leave or move animation.</p>
+<h3 id="class-based-transition-animations">Class-based transition animations</h3>
+<p>Class-based transitions refer to transition animations that are triggered when a CSS class is
+added to or removed from the element (via <code>$animate.addClass</code>, <code>$animate.removeClass</code>,
+<code>$animate.setClass</code>, or by directives such as <code>ngClass</code>, <code>ngModel</code> and <code>form</code>).
+They are different when compared to structural animations since they <strong>do not cancel existing
+animations</strong> nor do they <strong>block successive transitions</strong> from rendering on the same element.
+This distinction allows for <strong>multiple class-based transitions</strong> to be performed on the same element.</p>
+<p>In addition to ngAnimate supporting the default (natural) functionality of class-based transition
+animations, ngAnimate also decorates the element with starting and ending CSS classes to aid the
+developer in further styling the element throughout the transition animation. Earlier versions
+of ngAnimate may have caused natural CSS transitions to break and not render properly due to
+$animate temporarily blocking transitions using <code>0s none</code> in order to allow the setup CSS class
+(the <code>-add</code> or <code>-remove</code> class) to be applied without triggering an animation. However, as of
+<strong>version 1.3</strong>, this workaround has been removed with ngAnimate and all non-ngAnimate CSS
+class transitions are compatible with ngAnimate.</p>
+<p>There is, however, one special case when dealing with class-based transitions in ngAnimate.
+When rendering class-based transitions that make use of the setup and active CSS classes
+(e.g. <code>.fade-add</code> and <code>.fade-add-active</code> for when <code>.fade</code> is added) be sure to define
+the transition value <strong>on the active CSS class</strong> and not the setup class.</p>
+<pre><code class="lang-css">.fade-add {
+  /* remember to place a 0s transition here
+     to ensure that the styles are applied instantly
+     even if the element already has a transition style */
+  transition:0s linear all;
+
+  /* starting CSS styles */
+  opacity:1;
+}
+.fade-add.fade-add-active {
+  /* this will be the length of the animation */
+  transition:1s linear all;
+  opacity:0;
+}
+</code></pre>
+<p>The setup CSS class (in this case <code>.fade-add</code>) also has a transition style property, however, it
+has a duration of zero. This may not be required, however, incase the browser is unable to render
+the styling present in this CSS class instantly then it could be that the browser is attempting
+to perform an unnecessary transition.</p>
+<p>This workaround, however, does not apply to  standard class-based transitions that are rendered
+when a CSS class containing a transition is applied to an element:</p>
+<pre><code class="lang-css">/* this works as expected */
+.fade {
+  transition:1s linear all;
+  opacity:0;
+}
+</code></pre>
+<p>Please keep this in mind when coding the CSS markup that will be used within class-based transitions.
+Also, try not to mix the two class-based animation flavors together since the CSS code may become
+overly complex.</p>
+<h3 id="preventing-collisions-with-third-party-libraries">Preventing Collisions With Third Party Libraries</h3>
+<p>Some third-party frameworks place animation duration defaults across many element or className
+selectors in order to make their code small and reuseable. This can lead to issues with ngAnimate, which
+is expecting actual animations on these elements and has to wait for their completion.</p>
+<p>You can prevent this unwanted behavior by using a prefix on all your animation classes:</p>
+<pre><code class="lang-css">/* prefixed with animate- */
+.animate-fade-add.animate-fade-add-active {
+  transition:1s linear all;
+  opacity:0;
+}
+</code></pre>
+<p>You then configure <code>$animate</code> to enforce this prefix:</p>
+<pre><code class="lang-js">$animateProvider.classNameFilter(/animate-/);
+</code></pre>
+<p></div></p>
+<h3 id="css-staggering-animations">CSS Staggering Animations</h3>
+<p>A Staggering animation is a collection of animations that are issued with a slight delay in between each successive operation resulting in a
+curtain-like effect. The ngAnimate module (versions &gt;=1.2) supports staggering animations and the stagger effect can be
+performed by creating a <strong>ng-EVENT-stagger</strong> CSS class and attaching that class to the base CSS class used for
+the animation. The style property expected within the stagger class can either be a <strong>transition-delay</strong> or an
+<strong>animation-delay</strong> property (or both if your animation contains both transitions and keyframe animations).</p>
+<pre><code class="lang-css">.my-animation.ng-enter {
+  /* standard transition code */
+  -webkit-transition: 1s linear all;
+  transition: 1s linear all;
+  opacity:0;
+}
+.my-animation.ng-enter-stagger {
+  /* this will have a 100ms delay between each successive leave animation */
+  -webkit-transition-delay: 0.1s;
+  transition-delay: 0.1s;
+
+  /* in case the stagger doesn&#39;t work then these two values
+   must be set to 0 to avoid an accidental CSS inheritance */
+  -webkit-transition-duration: 0s;
+  transition-duration: 0s;
+}
+.my-animation.ng-enter.ng-enter-active {
+  /* standard transition styles */
+  opacity:1;
+}
+</code></pre>
+<p>Staggering animations work by default in ngRepeat (so long as the CSS class is defined). Outside of ngRepeat, to use staggering animations
+on your own, they can be triggered by firing multiple calls to the same event on $animate. However, the restrictions surrounding this
+are that each of the elements must have the same CSS className value as well as the same parent element. A stagger operation
+will also be reset if more than 10ms has passed after the last animation has been fired.</p>
+<p>The following code will issue the <strong>ng-leave-stagger</strong> event on the element provided:</p>
+<pre><code class="lang-js">var kids = parent.children();
+
+$animate.leave(kids[0]); //stagger index=0
+$animate.leave(kids[1]); //stagger index=1
+$animate.leave(kids[2]); //stagger index=2
+$animate.leave(kids[3]); //stagger index=3
+$animate.leave(kids[4]); //stagger index=4
+
+$timeout(function() {
+  //stagger has reset itself
+  $animate.leave(kids[5]); //stagger index=0
+  $animate.leave(kids[6]); //stagger index=1
+}, 100, false);
+</code></pre>
+<p>Stagger animations are currently only supported within CSS-defined animations.</p>
+<h2 id="javascript-defined-animations">JavaScript-defined Animations</h2>
+<p>In the event that you do not want to use CSS3 transitions or CSS3 animations or if you wish to offer animations on browsers that do not
+yet support CSS transitions/animations, then you can make use of JavaScript animations defined inside of your AngularJS module.</p>
+<pre><code class="lang-js">//!annotate=&quot;YourApp&quot; Your AngularJS Module|Replace this or ngModule with the module that you used to define your application.
+var ngModule = angular.module(&#39;YourApp&#39;, [&#39;ngAnimate&#39;]);
+ngModule.animation(&#39;.my-crazy-animation&#39;, function() {
+  return {
+    enter: function(element, done) {
+      //run the animation here and call done when the animation is complete
+      return function(cancelled) {
+        //this (optional) function will be called when the animation
+        //completes or when the animation is cancelled (the cancelled
+        //flag will be set to true if cancelled).
+      };
+    },
+    leave: function(element, done) { },
+    move: function(element, done) { },
+
+    //animation that can be triggered before the class is added
+    beforeAddClass: function(element, className, done) { },
+
+    //animation that can be triggered after the class is added
+    addClass: function(element, className, done) { },
+
+    //animation that can be triggered before the class is removed
+    beforeRemoveClass: function(element, className, done) { },
+
+    //animation that can be triggered after the class is removed
+    removeClass: function(element, className, done) { }
+  };
+});
+</code></pre>
+<p>JavaScript-defined animations are created with a CSS-like class selector and a collection of events which are set to run
+a javascript callback function. When an animation is triggered, $animate will look for a matching animation which fits
+the element&#39;s CSS class attribute value and then run the matching animation event function (if found).
+In other words, if the CSS classes present on the animated element match any of the JavaScript animations then the callback function will
+be executed. It should be also noted that only simple, single class selectors are allowed (compound class selectors are not supported).</p>
+<p>Within a JavaScript animation, an object containing various event callback animation functions is expected to be returned.
+As explained above, these callbacks are triggered based on the animation event. Therefore if an enter animation is run,
+and the JavaScript animation is found, then the enter callback will handle that animation (in addition to the CSS keyframe animation
+or transition code that is defined via a stylesheet).</p>
+<h3 id="applying-directive-specific-styles-to-an-animation">Applying Directive-specific Styles to an Animation</h3>
+<p>In some cases a directive or service may want to provide <code>$animate</code> with extra details that the animation will
+include into its animation. Let&#39;s say for example we wanted to render an animation that animates an element
+towards the mouse coordinates as to where the user clicked last. By collecting the X/Y coordinates of the click
+(via the event parameter) we can set the <code>top</code> and <code>left</code> styles into an object and pass that into our function
+call to <code>$animate.addClass</code>.</p>
+<pre><code class="lang-js">canvas.on(&#39;click&#39;, function(e) {
+  $animate.addClass(element, &#39;on&#39;, {
+    to: {
+      left : e.client.x + &#39;px&#39;,
+      top : e.client.y + &#39;px&#39;
+    }
+  }):
+});
+</code></pre>
+<p>Now when the animation runs, and a transition or keyframe animation is picked up, then the animation itself will
+also include and transition the styling of the <code>left</code> and <code>top</code> properties into its running animation. If we want
+to provide some starting animation values then we can do so by placing the starting animations styles into an object
+called <code>from</code> in the same object as the <code>to</code> animations.</p>
+<pre><code class="lang-js">canvas.on(&#39;click&#39;, function(e) {
+  $animate.addClass(element, &#39;on&#39;, {
+    from: {
+       position: &#39;absolute&#39;,
+       left: &#39;0px&#39;,
+       top: &#39;0px&#39;
+    },
+    to: {
+      left : e.client.x + &#39;px&#39;,
+      top : e.client.y + &#39;px&#39;
+    }
+  }):
+});
+</code></pre>
+<p>Once the animation is complete or cancelled then the union of both the before and after styles are applied to the
+element. If <code>ngAnimate</code> is not present then the styles will be applied immediately.</p>
+
+
+
+  <h2>Installation</h2>
+
+  <p>First include <code>angular-animate.js</code> in your HTML:</p>
+
+  <pre><code>&lt;script src=&quot;angular.js&quot;&gt;&#10;&lt;script src=&quot;angular-animate.js&quot;&gt;</code></pre>
+
+  <p>You can download this file from the following places:</p>
+  <ul>
+    <li>
+      <a href="https://developers.google.com/speed/libraries/devguide#angularjs">Google CDN</a><br>
+      e.g. <code>//ajax.googleapis.com/ajax/libs/angularjs/X.Y.Z/angular-animate.js</code>
+    </li>
+    <li>
+      <a href="http://bower.io">Bower</a><br>
+      e.g. <pre><code>bower install angular-animate@X.Y.Z</code></pre>
+    </li>
+    <li>
+      <a href="http://code.angularjs.org/">code.angularjs.org</a><br>
+      e.g. <pre><code>&quot;//code.angularjs.org/X.Y.Z/angular-animate.js&quot;</code></pre>
+    </li>
+  </ul>
+  <p>where X.Y.Z is the AngularJS version you are running.</p>
+  <p>Then load the module in your application by adding it as a dependent module:</p>
+  <pre><code>angular.module(&#39;app&#39;, [&#39;ngAnimate&#39;]);</code></pre>
+
+  <p>With that you&apos;re ready to get started!</p>
+
+
+<div class="component-breakdown">
+  <h2>Module Components</h2>
+  
+  <div>
+    <h3 class="component-heading" id="provider">Provider</h3>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ngAnimate/provider/$animateProvider">$animateProvider</a></td>
+        <td><p>The <code>$animateProvider</code> allows developers to register JavaScript animation event handlers directly inside of a module.
+When an animation is triggered, the $animate service will query the $animate service to find any animations that match
+the provided name value.</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+  
+  <div>
+    <h3 class="component-heading" id="service">Service</h3>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ngAnimate/service/$animate">$animate</a></td>
+        <td><p>The <code>$animate</code> service provides animation detection support while performing DOM operations (enter, leave and move) as well as during addClass and removeClass operations.
+When any of these operations are run, the $animate service
+will examine any JavaScript-defined animations (which are defined by using the $animateProvider provider object)
+as well as any CSS-defined animations against the CSS classes present on the element once the DOM operation is run.</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+  
+</div>
+
+
+
+

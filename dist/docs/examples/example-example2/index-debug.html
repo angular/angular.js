@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Example - example-example2-debug</title>
+  
+
+  <script src="../../../angular.js"></script>
+  <script src="../../../angular-aria.js"></script>
+  
+
+  
+</head>
+<body ng-app="ngAria_ngDisabledExample">
+   <style>
+   [role=checkbox] {
+     cursor: pointer;
+     display: inline-block;
+   }
+   [role=checkbox] .icon:before {
+     content: '\2610';
+     display: inline-block;
+     font-size: 2em;
+     line-height: 1;
+     vertical-align: middle;
+     speak: none;
+   }
+   [role=checkbox].active .icon:before {
+     content: '\2611';
+   }
+ </style>
+<form ng-controller="formsController">
+ <div ng-model="someModel" show-attrs>
+   Div with ngModel and aria-invalid disabled
+ </div>
+ <div role="checkbox" ng-model="checked" ng-class="{active: checked}"
+   aria-label="Custom Checkbox" ng-click="toggleCheckbox()" some-checkbox show-attrs>
+   <span class="icon" aria-hidden="true"></span>
+   Custom Checkbox for comparison
+ </div>
+</form>
+<script>
+ angular.module('ngAria_ngDisabledExample', ['ngAria'], function config($ariaProvider) {
+   $ariaProvider.config({
+     ariaInvalid: false,
+     tabindex: true
+   });
+ })
+ .controller('formsController', function($scope){
+   $scope.checked = false;
+   $scope.toggleCheckbox = function(){
+     $scope.checked = !$scope.checked;
+   }
+ })
+ .directive('someCheckbox', function(){
+   return {
+     restrict: 'A',
+     link: function($scope, $el, $attrs) {
+       $el.on('keypress', function(event){
+         event.preventDefault();
+         if(event.keyCode === 32 || event.keyCode === 13){
+           $scope.toggleCheckbox();
+           $scope.$apply();
+         }
+       });
+     }
+   }
+ })
+ .directive('showAttrs', function() {
+   return function(scope, el, attrs) {
+     var pre = document.createElement('pre');
+     el.after(pre);
+     scope.$watch(function() {
+       var attrs = {};
+       Array.prototype.slice.call(el[0].attributes, 0).forEach(function(item) {
+         if (item.name !== 'show-attrs') {
+           attrs[item.name] = item.value;
+         }
+       });
+       return attrs;
+     }, function(newAttrs, oldAttrs) {
+       pre.textContent = JSON.stringify(newAttrs, null, 2);
+     }, true);
+   }
+ });
+</script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/error/$resource/badcfg.ngdoc?message=docs(error%2Fbadcfg)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1>Error: error:badcfg
+  <div><span class='hint'>Response does not match configured parameter</span></div>
+</h1>
+
+<div>
+    <pre class="minerr-errmsg" error-display="Error in resource configuration for action `{0}`. Expected response to contain an {1} but got an {2}">Error in resource configuration for action `{0}`. Expected response to contain an {1} but got an {2}</pre>
+</div>
+
+<h2>Description</h2>
+<div class="description">
+  <p>This error occurs when the <a href="api/ngResource/service/$resource"><code>$resource</code></a> service expects a response that can be deserialized as an array but receives an object, or vice versa.
+By default, all resource actions expect objects, except <code>query</code> which expects arrays.</p>
+<p>To resolve this error, make sure your <code>$resource</code> configuration matches the actual format of the data returned from the server.</p>
+<p>For more information, see the <a href="api/ngResource/service/$resource"><code>$resource</code></a> API reference documentation.</p>
+
+</div>
+
+

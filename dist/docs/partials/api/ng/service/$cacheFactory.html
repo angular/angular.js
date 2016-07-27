@@ -1,0 +1,261 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/cacheFactory.js?message=docs($cacheFactory)%3A%20describe%20your%20change...#L3' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/cacheFactory.js#L3' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">$cacheFactory</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+  
+
+    <li>
+      - service in module <a href="api/ng">ng</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Factory that constructs <a href="api/ng/type/$cacheFactory.Cache">Cache</a> objects and gives access to
+them.</p>
+<pre><code class="lang-js">var cache = $cacheFactory(&#39;cacheId&#39;);
+expect($cacheFactory.get(&#39;cacheId&#39;)).toBe(cache);
+expect($cacheFactory.get(&#39;noSuchCacheId&#39;)).not.toBeDefined();
+
+cache.put(&quot;key&quot;, &quot;value&quot;);
+cache.put(&quot;another key&quot;, &quot;another value&quot;);
+
+// We&#39;ve specified no options on creation
+expect(cache.info()).toEqual({id: &#39;cacheId&#39;, size: 2});
+</code></pre>
+
+</div>
+
+
+
+
+<div>
+  
+
+    
+
+  <h2 id="usage">Usage</h2>
+    
+      <p><code>$cacheFactory(cacheId, [options]);</code></p>
+
+
+    
+
+    
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        cacheId
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Name or id of the newly created cache.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        options
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>Options object that specifies the cache behavior. Properties:</p>
+<ul>
+<li><code>{number=}</code> <code>capacity</code> — turns the cache into LRU cache.</li>
+</ul>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
+    
+    <h3>Returns</h3>
+<table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-object">object</a></td>
+    <td><p>Newly created cache object with the following set of methods:</p>
+<ul>
+<li><code>{object}</code> <code>info()</code> — Returns id, size, and options of cache.</li>
+<li><code>{{*}}</code> <code>put({string} key, {*} value)</code> — Puts a new key-value pair into the cache and returns
+it.</li>
+<li><code>{{*}}</code> <code>get({string} key)</code> — Returns cached value for <code>key</code> or undefined for cache miss.</li>
+<li><code>{void}</code> <code>remove({string} key)</code> — Removes a key-value pair from the cache.</li>
+<li><code>{void}</code> <code>removeAll()</code> — Removes all cached values.</li>
+<li><code>{void}</code> <code>destroy()</code> — Removes references to this cache from $cacheFactory.</li>
+</ul>
+</td>
+  </tr>
+</table>
+
+  
+<h2>Methods</h2>
+<ul class="methods">
+  <li id="info">
+    <h3><p><code>info();</code></p>
+
+</h3>
+    <div><p>Get information about all the caches that have been created</p>
+</div>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-object">Object</a></td>
+    <td><ul>
+<li>key-value map of <code>cacheId</code> to the result of calling <code>cache#info</code></li>
+</ul>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="get">
+    <h3><p><code>get(cacheId);</code></p>
+
+</h3>
+    <div><p>Get access to a cache object by the <code>cacheId</code> used when it was created.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        cacheId
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Name or id of a cache to access.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-object">object</a></td>
+    <td><p>Cache object identified by the cacheId or undefined if no such cache.</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  </ul>
+  
+  
+
+
+
+  
+  <h2 id="example">Example</h2><p>
+
+<div>
+  <a ng-click="openPlunkr('examples/example-example50', $event)" class="btn pull-right">
+    <i class="glyphicon glyphicon-edit">&nbsp;</i>
+    Edit in Plunker</a>
+
+  <div class="runnable-example"
+      path="examples/example-example50"
+      module="cacheExampleApp">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;div ng-controller=&quot;CacheController&quot;&gt;&#10;  &lt;input ng-model=&quot;newCacheKey&quot; placeholder=&quot;Key&quot;&gt;&#10;  &lt;input ng-model=&quot;newCacheValue&quot; placeholder=&quot;Value&quot;&gt;&#10;  &lt;button ng-click=&quot;put(newCacheKey, newCacheValue)&quot;&gt;Cache&lt;/button&gt;&#10;&#10;  &lt;p ng-if=&quot;keys.length&quot;&gt;Cached Values&lt;/p&gt;&#10;  &lt;div ng-repeat=&quot;key in keys&quot;&gt;&#10;    &lt;span ng-bind=&quot;key&quot;&gt;&lt;/span&gt;&#10;    &lt;span&gt;: &lt;/span&gt;&#10;    &lt;b ng-bind=&quot;cache.get(key)&quot;&gt;&lt;/b&gt;&#10;  &lt;/div&gt;&#10;&#10;  &lt;p&gt;Cache Info&lt;/p&gt;&#10;  &lt;div ng-repeat=&quot;(key, value) in cache.info()&quot;&gt;&#10;    &lt;span ng-bind=&quot;key&quot;&gt;&lt;/span&gt;&#10;    &lt;span&gt;: &lt;/span&gt;&#10;    &lt;b ng-bind=&quot;value&quot;&gt;&lt;/b&gt;&#10;  &lt;/div&gt;&#10;&lt;/div&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="script.js"
+      language="js"
+      type="js">
+      <pre><code>angular.module(&#39;cacheExampleApp&#39;, []).&#10;controller(&#39;CacheController&#39;, [&#39;$scope&#39;, &#39;$cacheFactory&#39;, function($scope, $cacheFactory) {&#10;  $scope.keys = [];&#10;  $scope.cache = $cacheFactory(&#39;cacheId&#39;);&#10;  $scope.put = function(key, value) {&#10;    if ($scope.cache.get(key) === undefined) {&#10;      $scope.keys.push(key);&#10;    }&#10;    $scope.cache.put(key, value === undefined ? null : value);&#10;  };&#10;}]);</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="style.css"
+      language="css"
+      type="css">
+      <pre><code>p {&#10;  margin: 10px 0 3px;&#10;}</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-example50/index.html" name="example-example50"></iframe>
+  </div>
+</div>
+
+
+</p>
+
+</div>
+
+

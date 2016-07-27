@@ -1,0 +1,130 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ngTouch/directive/ngSwipe.js?message=docs(ngSwipeRight)%3A%20describe%20your%20change...#L41' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ngTouch/directive/ngSwipe.js#L41' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">ngSwipeRight</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - directive in module <a href="api/ngTouch">ngTouch</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Specify custom behavior when an element is swiped to the right on a touchscreen device.
+A rightward swipe is a quick, left-to-right slide of the finger.
+Though ngSwipeRight is designed for touch-based devices, it will work with a mouse click and drag
+too.</p>
+<p>Requires the <a href="api/ngTouch"><code>ngTouch</code></a> module to be installed.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+  
+  <h2>Directive Info</h2>
+  <ul>
+    
+    <li>This directive executes at priority level 0.</li>
+  </ul>
+
+  
+  <h2 id="usage">Usage</h2>
+  <div class="usage">
+  
+    <ul>
+    <li>as attribute:
+        <pre><code>&lt;ANY&#10;  ng-swipe-right=&quot;&quot;&gt;&#10;...&#10;&lt;/ANY&gt;</code></pre>
+      </li>
+    
+  </div>
+  
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        ngSwipeRight
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-expression">expression</a>
+      </td>
+      <td>
+        <p><a href="guide/expression">Expression</a> to evaluate
+upon right swipe. (Event object is available as <code>$event</code>)</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
+  
+
+
+  
+  <h2 id="example">Example</h2><p>
+
+<div>
+  <a ng-click="openPlunkr('examples/example-example116', $event)" class="btn pull-right">
+    <i class="glyphicon glyphicon-edit">&nbsp;</i>
+    Edit in Plunker</a>
+
+  <div class="runnable-example"
+      path="examples/example-example116"
+      module="ngSwipeRightExample"
+      deps="angular-touch.js">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;div ng-show=&quot;!showActions&quot; ng-swipe-left=&quot;showActions = true&quot;&gt;&#10;  Some list content, like an email in the inbox&#10;&lt;/div&gt;&#10;&lt;div ng-show=&quot;showActions&quot; ng-swipe-right=&quot;showActions = false&quot;&gt;&#10;  &lt;button ng-click=&quot;reply()&quot;&gt;Reply&lt;/button&gt;&#10;  &lt;button ng-click=&quot;delete()&quot;&gt;Delete&lt;/button&gt;&#10;&lt;/div&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="script.js"
+      language="js"
+      type="js">
+      <pre><code>angular.module(&#39;ngSwipeRightExample&#39;, [&#39;ngTouch&#39;]);</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-example116/index.html" name="example-example116"></iframe>
+  </div>
+</div>
+
+
+</p>
+
+</div>
+
+

@@ -1,0 +1,298 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/tutorial/step_07.ngdoc?message=docs(tutorial%2F7 - Routing & Multiple Views)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<ul doc-tutorial-nav="7"></ul>
+
+
+<p>In this step, you will learn how to create a layout template and how to build an app that has
+multiple views by adding routing, using an Angular module called &#39;ngRoute&#39;.</p>
+<ul>
+<li>When you now navigate to <code>app/index.html</code>, you are redirected to <code>app/index.html/#/phones</code>
+and the phone list appears in the browser.</li>
+<li>When you click on a phone link, the url changes to that specific phone and the stub of a
+phone detail page is displayed.</li>
+</ul>
+<div doc-tutorial-reset="7"></div>
+
+<h2 id="dependencies">Dependencies</h2>
+<p>The routing functionality added by this step is provided by angular in the <code>ngRoute</code> module, which
+is distributed separately from the core Angular framework.</p>
+<p>We are using <a href="http://bower.io">Bower</a> to install client-side dependencies.  This step updates the
+<code>bower.json</code> configuration file to include the new dependency:</p>
+<pre><code class="lang-json">{
+  &quot;name&quot;: &quot;angular-phonecat&quot;,
+  &quot;description&quot;: &quot;A starter project for AngularJS&quot;,
+  &quot;version&quot;: &quot;0.0.0&quot;,
+  &quot;homepage&quot;: &quot;https://github.com/angular/angular-phonecat&quot;,
+  &quot;license&quot;: &quot;MIT&quot;,
+  &quot;private&quot;: true,
+  &quot;dependencies&quot;: {
+    &quot;angular&quot;: &quot;~1.3.0&quot;,
+    &quot;angular-mocks&quot;: &quot;~1.3.0&quot;,
+    &quot;jquery&quot;: &quot;2.1.1&quot;,
+    &quot;bootstrap&quot;: &quot;~3.1.1&quot;,
+    &quot;angular-route&quot;: &quot;~1.3.0&quot;
+  }
+}
+</code></pre>
+<p>The new dependency <code>&quot;angular-route&quot;: &quot;~1.3.0&quot;</code> tells bower to install a version of the
+angular-route component that is compatible with version 1.3.x.  We must tell bower to download
+and install this dependency.</p>
+<p>If you have bower installed globally, then you can run <code>bower install</code> but for this project, we have
+preconfigured npm to run bower install for us:</p>
+<pre><code>npm install
+</code></pre>
+<h2 id="multiple-views-routing-and-layout-template">Multiple Views, Routing and Layout Template</h2>
+<p>Our app is slowly growing and becoming more complex. Before step 7, the app provided our users with
+a single view (the list of all phones), and all of the template code was located in the
+<code>index.html</code> file. The next step in building the app is to add a view that will show detailed
+information about each of the devices in our list.</p>
+<p>To add the detailed view, we could expand the <code>index.html</code> file to contain template code for both
+views, but that would get messy very quickly. Instead, we are going to turn the <code>index.html</code>
+template into what we call a &quot;layout template&quot;. This is a template that is common for all views in
+our application. Other &quot;partial templates&quot; are then included into this layout template depending on
+the current &quot;route&quot; — the view that is currently displayed to the user.</p>
+<p>Application routes in Angular are declared via the <a href="api/ngRoute/provider/$routeProvider">$routeProvider</a>,
+which is the provider of the <a href="api/ngRoute/service/$route">$route service</a>. This service makes it easy to
+wire together controllers, view templates, and the current URL location in the browser. Using this
+feature, we can implement <a href="http://en.wikipedia.org/wiki/Deep_linking">deep linking</a>, which lets us
+utilize the browser&#39;s history (back and forward navigation) and bookmarks.</p>
+<h3 id="a-note-about-di-injector-and-providers">A Note About DI, Injector and Providers</h3>
+<p>As you <a href="tutorial/step_05">noticed</a>, <a href="guide/di">dependency injection</a> (DI) is at the core of
+AngularJS, so it&#39;s important for you to understand a thing or two about how it works.</p>
+<p>When the application bootstraps, Angular creates an injector that will be used to find and inject all
+of the services that are required by your app. The injector itself doesn&#39;t know anything about what
+<code>$http</code> or <code>$route</code> services do. In fact, the injector doesn&#39;t even know about the existence of these services
+unless it is configured with proper module definitions.</p>
+<p>The injector only carries out the following steps :</p>
+<ul>
+<li>load the module definition(s) that you specify in your app</li>
+<li>register all Providers defined in these module definitions</li>
+<li>when asked to do so, inject a specified function and any necessary dependencies (services) that
+it lazily instantiates via their Providers.</li>
+</ul>
+<p>Providers are objects that provide (create) instances of services and expose configuration APIs
+that can be used to control the creation and runtime behavior of a service. In case of the <code>$route</code>
+service, the <code>$routeProvider</code> exposes APIs that allow you to define routes for your application.</p>
+<div class="alert alert-warning">
+<strong>Note:</strong> Providers can only be injected into <code>config</code> functions. Thus you could not inject
+<code>$routeProvider</code> into <code>PhoneListCtrl</code>.
+</div>
+
+<p>Angular modules solve the problem of removing global state from the application and provide a way
+of configuring the injector. As opposed to AMD or require.js modules, Angular modules don&#39;t try to
+solve the problem of script load ordering or lazy script fetching. These goals are totally independent and
+both module systems can live side by side and fulfill their goals.</p>
+<p>To deepen your understanding of DI on Angular, see
+<a href="https://github.com/angular/angular.js/wiki/Understanding-Dependency-Injection">Understanding Dependency Injection</a>.</p>
+<h2 id="template">Template</h2>
+<p>The <code>$route</code> service is usually used in conjunction with the <a href="api/ngRoute/directive/ngView">ngView</a> directive. The role of the <code>ngView</code> directive is to include the view template for the current
+route into the layout template. This makes it a perfect fit for our <code>index.html</code> template.</p>
+<div class="alert alert-info">
+<strong>Note:</strong> Starting with AngularJS version 1.2, <code>ngRoute</code> is in its own module and must be loaded by
+loading the additional <code>angular-route.js</code> file, which we download via Bower above.
+</div>
+
+<p><strong><code>app/index.html</code>:</strong></p>
+<pre><code class="lang-html">&lt;!doctype html&gt;
+&lt;html lang=&quot;en&quot; ng-app=&quot;phonecatApp&quot;&gt;
+&lt;head&gt;
+...
+  &lt;script src=&quot;bower_components/angular/angular.js&quot;&gt;&lt;/script&gt;
+  &lt;script src=&quot;bower_components/angular-route/angular-route.js&quot;&gt;&lt;/script&gt;
+  &lt;script src=&quot;js/app.js&quot;&gt;&lt;/script&gt;
+  &lt;script src=&quot;js/controllers.js&quot;&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+  &lt;div ng-view&gt;&lt;/div&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<p>We have added two new <code>&lt;script&gt;</code> tags in our index file to load up extra JavaScript files into our
+application:</p>
+<ul>
+<li><code>angular-route.js</code> : defines the Angular <code>ngRoute</code> module, which provides us with routing.</li>
+<li><code>app.js</code> : this file now holds the root module of our application.</li>
+</ul>
+<p>Note that we removed most of the code in the <code>index.html</code> template and replaced it with a single
+line containing a div with the <code>ng-view</code> attribute. The code that we removed was placed into the
+<code>phone-list.html</code> template:</p>
+<p><strong><code>app/partials/phone-list.html</code>:</strong></p>
+<pre><code class="lang-html">&lt;div class=&quot;container-fluid&quot;&gt;
+  &lt;div class=&quot;row&quot;&gt;
+    &lt;div class=&quot;col-md-2&quot;&gt;
+      &lt;!--Sidebar content--&gt;
+
+      Search: &lt;input ng-model=&quot;query&quot;&gt;
+      Sort by:
+      &lt;select ng-model=&quot;orderProp&quot;&gt;
+        &lt;option value=&quot;name&quot;&gt;Alphabetical&lt;/option&gt;
+        &lt;option value=&quot;age&quot;&gt;Newest&lt;/option&gt;
+      &lt;/select&gt;
+
+    &lt;/div&gt;
+    &lt;div class=&quot;col-md-10&quot;&gt;
+      &lt;!--Body content--&gt;
+
+      &lt;ul class=&quot;phones&quot;&gt;
+        &lt;li ng-repeat=&quot;phone in phones | filter:query | orderBy:orderProp&quot; class=&quot;thumbnail&quot;&gt;
+          &lt;a href=&quot;#/phones/{{phone.id}}&quot; class=&quot;thumb&quot;&gt;&lt;img ng-src=&quot;{{phone.imageUrl}}&quot;&gt;&lt;/a&gt;
+          &lt;a href=&quot;#/phones/{{phone.id}}&quot;&gt;{{phone.name}}&lt;/a&gt;
+          &lt;p&gt;{{phone.snippet}}&lt;/p&gt;
+        &lt;/li&gt;
+      &lt;/ul&gt;
+
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</code></pre>
+<div style="display:none">
+TODO!
+<img  class="diagram" src="img/tutorial/tutorial_07_final.png">
+</div>
+
+<p>We also added a placeholder template for the phone details view:</p>
+<p><strong><code>app/partials/phone-detail.html</code>:</strong></p>
+<pre><code class="lang-html">TBD: detail view for &lt;span&gt;{{phoneId}}&lt;/span&gt;
+</code></pre>
+<p>Note how we are using the <code>phoneId</code> expression which will be defined in the <code>PhoneDetailCtrl</code> controller.</p>
+<h2 id="the-app-module">The App Module</h2>
+<p>To improve the organization of the app, we are making use of Angular&#39;s <code>ngRoute</code> module and we&#39;ve
+moved the controllers into their own module <code>phonecatControllers</code> (as shown below).</p>
+<p>We added <code>angular-route.js</code> to <code>index.html</code> and created a new <code>phonecatControllers</code> module in
+<code>controllers.js</code>. That&#39;s not all we need to do to be able to use their code, however. We also have
+to add the modules as dependencies of our app. By listing these two modules as dependencies of
+<code>phonecatApp</code>, we can use the directives and services they provide.</p>
+<p><strong><code>app/js/app.js</code>:</strong></p>
+<pre><code class="lang-js">var phonecatApp = angular.module(&#39;phonecatApp&#39;, [
+  &#39;ngRoute&#39;,
+  &#39;phonecatControllers&#39;
+]);
+
+...
+</code></pre>
+<p>Notice the second argument passed to <code>angular.module</code>, <code>[&#39;ngRoute&#39;, &#39;phonecatControllers&#39;]</code>. This
+array lists the modules that <code>phonecatApp</code> depends on.</p>
+<pre><code class="lang-js">...
+
+phonecatApp.config([&#39;$routeProvider&#39;,
+  function($routeProvider) {
+    $routeProvider.
+      when(&#39;/phones&#39;, {
+        templateUrl: &#39;partials/phone-list.html&#39;,
+        controller: &#39;PhoneListCtrl&#39;
+      }).
+      when(&#39;/phones/:phoneId&#39;, {
+        templateUrl: &#39;partials/phone-detail.html&#39;,
+        controller: &#39;PhoneDetailCtrl&#39;
+      }).
+      otherwise({
+        redirectTo: &#39;/phones&#39;
+      });
+  }]);
+</code></pre>
+<p>Using the <code>phonecatApp.config()</code> method, we request the <code>$routeProvider</code> to be injected into our
+config function and use the <a href="api/ngRoute/provider/$routeProvider#when"><code>$routeProvider.when()</code></a> method to
+define our routes.</p>
+<p>Our application routes are defined as follows:</p>
+<ul>
+<li><p><code>when(&#39;/phones&#39;)</code>: The phone list view will be shown when the URL hash fragment is <code>/phones</code>. To
+construct this view, Angular will use the <code>phone-list.html</code> template and the <code>PhoneListCtrl</code>
+controller.</p>
+</li>
+<li><p><code>when(&#39;/phones/:phoneId&#39;)</code>: The phone details view will be shown when the URL hash fragment
+matches &#39;/phones/:phoneId&#39;, where <code>:phoneId</code> is a variable part of the URL. To construct the phone
+details view, Angular will use the <code>phone-detail.html</code> template and the <code>PhoneDetailCtrl</code>
+controller.</p>
+</li>
+<li><p><code>otherwise({redirectTo: &#39;/phones&#39;})</code>:  triggers a redirection to <code>/phones</code> when the browser
+address doesn&#39;t match either of our routes.</p>
+</li>
+</ul>
+<p>We reused the <code>PhoneListCtrl</code> controller that we constructed in previous steps and we added a new,
+empty <code>PhoneDetailCtrl</code> controller to the <code>app/js/controllers.js</code> file for the phone details view.</p>
+<p>Note the use of the <code>:phoneId</code> parameter in the second route declaration. The <code>$route</code> service uses
+the route declaration — <code>&#39;/phones/:phoneId&#39;</code> — as a template that is matched against the current
+URL. All variables defined with the <code>:</code> notation are extracted into the
+<a href="api/ngRoute/service/$routeParams"><code>$routeParams</code></a> object.</p>
+<h2 id="controllers">Controllers</h2>
+<p><strong><code>app/js/controllers.js</code>:</strong></p>
+<pre><code class="lang-js">var phonecatControllers = angular.module(&#39;phonecatControllers&#39;, []);
+
+phonecatControllers.controller(&#39;PhoneListCtrl&#39;, [&#39;$scope&#39;, &#39;$http&#39;,
+  function ($scope, $http) {
+    $http.get(&#39;phones/phones.json&#39;).success(function(data) {
+      $scope.phones = data;
+    });
+
+    $scope.orderProp = &#39;age&#39;;
+  }]);
+
+phonecatControllers.controller(&#39;PhoneDetailCtrl&#39;, [&#39;$scope&#39;, &#39;$routeParams&#39;,
+  function($scope, $routeParams) {
+    $scope.phoneId = $routeParams.phoneId;
+  }]);
+</code></pre>
+<p>Again, note that we created a new module called <code>phonecatControllers</code>. For small AngularJS
+applications, it&#39;s common to create just one module for all of your controllers if there are just a
+few. As your application grows, it is quite common to refactor your code into additional modules.
+For larger apps, you will probably want to create separate modules for each major feature of
+your app.</p>
+<p>Because our example app is relatively small, we&#39;ll just add all of our controllers to the
+<code>phonecatControllers</code> module.</p>
+<h2 id="test">Test</h2>
+<p>To automatically verify that everything is wired properly, we wrote end-to-end tests that navigate
+to various URLs and verify that the correct view was rendered.</p>
+<pre><code class="lang-js">...
+   it(&#39;should redirect index.html to index.html#/phones&#39;, function() {
+    browser.get(&#39;app/index.html&#39;);
+    browser.getLocationAbsUrl().then(function(url) {
+        expect(url.split(&#39;#&#39;)[1]).toBe(&#39;/phones&#39;);
+      });
+  });
+
+  describe(&#39;Phone list view&#39;, function() {
+    beforeEach(function() {
+      browser.get(&#39;app/index.html#/phones&#39;);
+    });
+...
+
+  describe(&#39;Phone detail view&#39;, function() {
+
+    beforeEach(function() {
+      browser.get(&#39;app/index.html#/phones/nexus-s&#39;);
+    });
+
+
+    it(&#39;should display placeholder page with phoneId&#39;, function() {
+      expect(element(by.binding(&#39;phoneId&#39;)).getText()).toBe(&#39;nexus-s&#39;);
+    });
+  });
+</code></pre>
+<p>You can now rerun <code>npm run protractor</code> to see the tests run.</p>
+<h1 id="experiments">Experiments</h1>
+<ul>
+<li>Try to add an <code>{{orderProp}}</code> binding to <code>index.html</code>, and you&#39;ll see that nothing happens even
+when you are in the phone list view. This is because the <code>orderProp</code> model is visible only in the
+scope managed by <code>PhoneListCtrl</code>, which is associated with the <code>&lt;div ng-view&gt;</code> element. If you add
+the same binding into the <code>phone-list.html</code> template, the binding will work as expected.</li>
+</ul>
+<div style="display: none">
+* In <code>PhoneCatCtrl</code>, create a new model called &quot;<code>hero</code>&quot; with <code>this.hero = &#39;Zoro&#39;</code>. In
+<code>PhoneListCtrl</code>, let&#39;s shadow it with <code>this.hero = &#39;Batman&#39;</code>. In <code>PhoneDetailCtrl</code>, we&#39;ll use
+<code>this.hero = &quot;Captain Proton&quot;</code>. Then add the <code>&lt;p&gt;hero = {{hero}}&lt;/p&gt;</code> to all three of our templates
+(<code>index.html</code>, <code>phone-list.html</code>, and <code>phone-detail.html</code>). Open the app and you&#39;ll see scope
+inheritance and model property shadowing do some wonders.
+</div>
+
+
+<h1 id="summary">Summary</h1>
+<p>With the routing set up and the phone list view implemented, we&#39;re ready to go to <a href="tutorial/step_08">step 8</a> to implement the phone details view.</p>
+<ul doc-tutorial-nav="7"></ul>
+
+
+
+
+

@@ -1,0 +1,48 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/error/$compile/ctreq.ngdoc?message=docs(error%2Fctreq)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1>Error: error:ctreq
+  <div><span class='hint'>Missing Required Controller</span></div>
+</h1>
+
+<div>
+    <pre class="minerr-errmsg" error-display="Controller '{0}', required by directive '{1}', can't be found!">Controller '{0}', required by directive '{1}', can't be found!</pre>
+</div>
+
+<h2>Description</h2>
+<div class="description">
+  <p>This error occurs when <a href="api/ng/service/$compile">HTML compiler</a> tries to process a directive that specifies the <a href="api/ng/service/$compile#directive-definition-object"><code>require</code> option</a> in a <a href="api/ng/service/$compile#comprehensive-directive-api">directive definition</a>,
+but the required directive controller is not present on the current DOM element (or its ancestor element, if <code>^</code> was specified).</p>
+<p>To resolve this error ensure that there is no typo in the required controller name and that the required directive controller is present on the current element.</p>
+<p>If the required controller is expected to be on a ancestor element, make sure that you prefix the controller name in the <code>require</code> definition with <code>^</code>.</p>
+<p>If the required controller is optionally requested, use <code>?</code> or <code>^?</code> to specify that.</p>
+<p>Example of a directive that requires <a href="api/ng/directive/ngModel">ngModel</a> controller:</p>
+<pre><code>myApp.directive(&#39;myDirective&#39;, function() {
+  return {
+    require: &#39;ngModel&#39;,
+    ...
+  }
+}
+</code></pre>
+<p>This directive can then be used as:</p>
+<pre><code>&lt;input ng-model=&quot;some.path&quot; my-directive&gt;
+</code></pre>
+<p>Example of a directive that optionally requires a <a href="api/ng/directive/form">form</a> controller from an ancestor:</p>
+<pre><code>myApp.directive(&#39;myDirective&#39;, function() {
+  return {
+    require: &#39;^?form&#39;,
+    ...
+  }
+}
+</code></pre>
+<p>This directive can then be used as:</p>
+<pre><code>&lt;form name=&quot;myForm&quot;&gt;
+  &lt;div&gt;
+    &lt;span my-directive&gt;&lt;/span&gt;
+  &lt;/div&gt;
+&lt;/form&gt;
+</code></pre>
+
+</div>
+
+

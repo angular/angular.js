@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Example - example-example106-jquery</title>
+  
+
+  <script src="../../components/jquery-2.1.1/jquery.js"></script>
+  <script src="../../../angular.js"></script>
+  
+
+  
+</head>
+<body ng-app="customInterpolationApp">
+  <script>
+  var customInterpolationApp = angular.module('customInterpolationApp', []);
+
+  customInterpolationApp.config(function($interpolateProvider) {
+    $interpolateProvider.startSymbol('//');
+    $interpolateProvider.endSymbol('//');
+  });
+
+
+  customInterpolationApp.controller('DemoController', function() {
+      this.label = "This binding is brought you by // interpolation symbols.";
+  });
+</script>
+<div ng-app="App" ng-controller="DemoController as demo">
+    //demo.label//
+</div>
+</body>
+</html>

@@ -1,0 +1,184 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/anchorScroll.js?message=docs($anchorScroll)%3A%20describe%20your%20change...#L32' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/anchorScroll.js#L32' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">$anchorScroll</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+  <li>
+    <a href="api/ng/provider/$anchorScrollProvider">- $anchorScrollProvider</a>
+  </li>
+
+    <li>
+      - service in module <a href="api/ng">ng</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>When called, it checks the current value of <a href="api/ng/service/$location#hash">$location.hash()</a> and
+scrolls to the related element, according to the rules specified in the
+<a href="http://dev.w3.org/html5/spec/Overview.html#the-indicated-part-of-the-document">Html5 spec</a>.</p>
+<p>It also watches the <a href="api/ng/service/$location#hash">$location.hash()</a> and automatically scrolls to
+match any anchor whenever it changes. This can be disabled by calling
+<a href="api/ng/provider/$anchorScrollProvider#disableAutoScrolling">$anchorScrollProvider.disableAutoScrolling()</a>.</p>
+<p>Additionally, you can use its <a href="api/ng/service/$anchorScroll#yOffset">yOffset</a> property to specify a
+vertical scroll-offset (either fixed or dynamic).</p>
+
+</div>
+
+
+
+
+<div>
+  
+  <h2 id="dependencies">Dependencies</h2>
+  <ul>
+    <li><a href="api/ng/service/$window"><code>$window</code></a></li><li><a href="api/ng/service/$location"><code>$location</code></a></li><li><a href="api/ng/service/$rootScope"><code>$rootScope</code></a></li>
+  </ul>
+  
+
+    
+
+  <h2 id="usage">Usage</h2>
+    
+      <p><code>$anchorScroll();</code></p>
+
+
+    
+
+    
+    
+    
+
+  
+  
+  
+<h2>Properties</h2>
+<ul class="properties">
+  <li id="yOffset">
+    <h3><code>yOffset</code></h3>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-number">number</a><a href="" class="label type-hint type-hint-function">function()</a><a href="" class="label type-hint type-hint-jqlite">jqLite</a></td>
+    <td><p>If set, specifies a vertical scroll-offset. This is often useful when there are fixed
+positioned elements at the top of the page, such as navbars, headers etc.</p>
+<p><code>yOffset</code> can be specified in various ways:</p>
+<ul>
+<li><strong>number</strong>: A fixed number of pixels to be used as offset.<br /><br /></li>
+<li><strong>function</strong>: A getter function called everytime <code>$anchorScroll()</code> is executed. Must return
+a number representing the offset (in pixels).<br /><br /></li>
+<li><strong>jqLite</strong>: A jqLite/jQuery element to be used for specifying the offset. The distance from
+the top of the page to the element&#39;s bottom will be used as offset.<br />
+<strong>Note</strong>: The element will be taken into account only as long as its <code>position</code> is set to
+<code>fixed</code>. This option is useful, when dealing with responsive navbars/headers that adjust
+their height and/or positioning according to the viewport&#39;s size.</li>
+</ul>
+<p><br /></p>
+<div class="alert alert-warning">
+In order for <code>yOffset</code> to work properly, scrolling should take place on the document&#39;s root and
+not some child element.
+</div></td>
+  </tr>
+</table>
+  </li>
+  </ul>
+
+
+
+  
+  <h2 id="example">Example</h2><p>
+
+<div>
+  <a ng-click="openPlunkr('examples/example-example48', $event)" class="btn pull-right">
+    <i class="glyphicon glyphicon-edit">&nbsp;</i>
+    Edit in Plunker</a>
+
+  <div class="runnable-example"
+      path="examples/example-example48"
+      module="anchorScrollExample">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;div id=&quot;scrollArea&quot; ng-controller=&quot;ScrollController&quot;&gt;&#10;  &lt;a ng-click=&quot;gotoBottom()&quot;&gt;Go to bottom&lt;/a&gt;&#10;  &lt;a id=&quot;bottom&quot;&gt;&lt;/a&gt; You&#39;re at the bottom!&#10;&lt;/div&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="script.js"
+      language="js"
+      type="js">
+      <pre><code>angular.module(&#39;anchorScrollExample&#39;, [])&#10;.controller(&#39;ScrollController&#39;, [&#39;$scope&#39;, &#39;$location&#39;, &#39;$anchorScroll&#39;,&#10;  function ($scope, $location, $anchorScroll) {&#10;    $scope.gotoBottom = function() {&#10;      // set the location.hash to the id of&#10;      // the element you wish to scroll to.&#10;      $location.hash(&#39;bottom&#39;);&#10;&#10;      // call $anchorScroll()&#10;      $anchorScroll();&#10;    };&#10;  }]);</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="style.css"
+      language="css"
+      type="css">
+      <pre><code>#scrollArea {&#10;  height: 280px;&#10;  overflow: auto;&#10;}&#10;&#10;#bottom {&#10;  display: block;&#10;  margin-top: 2000px;&#10;}</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-example48/index.html" name="example-example48"></iframe>
+  </div>
+</div>
+
+
+</p>
+<p><hr />
+The example below illustrates the use of a vertical scroll-offset (specified as a fixed value).
+See <a href="api/ng/service/$anchorScroll#yOffset">$anchorScroll.yOffset</a> for more details.</p>
+<p>
+
+<div>
+  <a ng-click="openPlunkr('examples/example-example49', $event)" class="btn pull-right">
+    <i class="glyphicon glyphicon-edit">&nbsp;</i>
+    Edit in Plunker</a>
+
+  <div class="runnable-example"
+      path="examples/example-example49"
+      module="anchorScrollOffsetExample">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;div class=&quot;fixed-header&quot; ng-controller=&quot;headerCtrl&quot;&gt;&#10;  &lt;a href=&quot;&quot; ng-click=&quot;gotoAnchor(x)&quot; ng-repeat=&quot;x in [1,2,3,4,5]&quot;&gt;&#10;    Go to anchor {{x}}&#10;  &lt;/a&gt;&#10;&lt;/div&gt;&#10;&lt;div id=&quot;anchor{{x}}&quot; class=&quot;anchor&quot; ng-repeat=&quot;x in [1,2,3,4,5]&quot;&gt;&#10;  Anchor {{x}} of 5&#10;&lt;/div&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="script.js"
+      language="js"
+      type="js">
+      <pre><code>angular.module(&#39;anchorScrollOffsetExample&#39;, [])&#10;.run([&#39;$anchorScroll&#39;, function($anchorScroll) {&#10;  $anchorScroll.yOffset = 50;   // always scroll by 50 extra pixels&#10;}])&#10;.controller(&#39;headerCtrl&#39;, [&#39;$anchorScroll&#39;, &#39;$location&#39;, &#39;$scope&#39;,&#10;  function ($anchorScroll, $location, $scope) {&#10;    $scope.gotoAnchor = function(x) {&#10;      var newHash = &#39;anchor&#39; + x;&#10;      if ($location.hash() !== newHash) {&#10;        // set the $location.hash to `newHash` and&#10;        // $anchorScroll will automatically scroll to it&#10;        $location.hash(&#39;anchor&#39; + x);&#10;      } else {&#10;        // call $anchorScroll() explicitly,&#10;        // since $location.hash hasn&#39;t changed&#10;        $anchorScroll();&#10;      }&#10;    };&#10;  }&#10;]);</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="style.css"
+      language="css"
+      type="css">
+      <pre><code>body {&#10;  padding-top: 50px;&#10;}&#10;&#10;.anchor {&#10;  border: 2px dashed DarkOrchid;&#10;  padding: 10px 10px 200px 10px;&#10;}&#10;&#10;.fixed-header {&#10;  background-color: rgba(0, 0, 0, 0.2);&#10;  height: 50px;&#10;  position: fixed;&#10;  top: 0; left: 0; right: 0;&#10;}&#10;&#10;.fixed-header &gt; a {&#10;  display: inline-block;&#10;  margin: 5px 15px;&#10;}</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-example49/index.html" name="example-example49"></iframe>
+  </div>
+</div>
+
+
+</p>
+
+</div>
+
+

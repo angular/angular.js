@@ -1,0 +1,92 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ngSanitize/sanitize.js?message=docs(ngSanitize)%3A%20describe%20your%20change...#L5' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1>
+  <code>ngSanitize</code>
+</h1>
+
+<h1 id="ngsanitize">ngSanitize</h1>
+<p>The <code>ngSanitize</code> module provides functionality to sanitize HTML.</p>
+<div doc-module-components="ngSanitize"></div>
+
+<p>See <a href="api/ngSanitize/service/$sanitize"><code>$sanitize</code></a> for usage.</p>
+
+
+
+  <h2>Installation</h2>
+
+  <p>First include <code>angular-sanitize.js</code> in your HTML:</p>
+
+  <pre><code>&lt;script src=&quot;angular.js&quot;&gt;&#10;&lt;script src=&quot;angular-sanitize.js&quot;&gt;</code></pre>
+
+  <p>You can download this file from the following places:</p>
+  <ul>
+    <li>
+      <a href="https://developers.google.com/speed/libraries/devguide#angularjs">Google CDN</a><br>
+      e.g. <code>//ajax.googleapis.com/ajax/libs/angularjs/X.Y.Z/angular-sanitize.js</code>
+    </li>
+    <li>
+      <a href="http://bower.io">Bower</a><br>
+      e.g. <pre><code>bower install angular-sanitize@X.Y.Z</code></pre>
+    </li>
+    <li>
+      <a href="http://code.angularjs.org/">code.angularjs.org</a><br>
+      e.g. <pre><code>&quot;//code.angularjs.org/X.Y.Z/angular-sanitize.js&quot;</code></pre>
+    </li>
+  </ul>
+  <p>where X.Y.Z is the AngularJS version you are running.</p>
+  <p>Then load the module in your application by adding it as a dependent module:</p>
+  <pre><code>angular.module(&#39;app&#39;, [&#39;ngSanitize&#39;]);</code></pre>
+
+  <p>With that you&apos;re ready to get started!</p>
+
+
+<div class="component-breakdown">
+  <h2>Module Components</h2>
+  
+  <div>
+    <h3 class="component-heading" id="filter">Filter</h3>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ngSanitize/filter/linky">linky</a></td>
+        <td><p>Finds links in text input and turns them into html links. Supports http/https/ftp/mailto and
+plain email address links.</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+  
+  <div>
+    <h3 class="component-heading" id="service">Service</h3>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ngSanitize/service/$sanitize">$sanitize</a></td>
+        <td><p>The input is sanitized by parsing the HTML into tokens. All safe tokens (from a whitelist) are
+  then serialized back to properly escaped html string. This means that no unsafe input can make
+  it into the returned string, however, since our parser is more strict than a typical browser
+  parser, it&#39;s possible that some obscure input, which would be recognized as valid HTML by a
+  browser, won&#39;t make it through the sanitizer. The input may also contain SVG markup.
+  The whitelist is configured using the functions <code>aHrefSanitizationWhitelist</code> and
+  <code>imgSrcSanitizationWhitelist</code> of <a href="api/ng/provider/$compileProvider"><code>$compileProvider</code></a>.</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+  
+</div>
+
+
+
+

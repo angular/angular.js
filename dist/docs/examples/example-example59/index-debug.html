@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Example - example-example59-debug</title>
+  
+
+  <script src="../../../angular.js"></script>
+  
+
+  
+</head>
+<body ng-app="bindExample">
+  <script>
+  angular.module('bindExample', [])
+    .controller('ExampleController', ['$scope', function($scope) {
+      $scope.name = 'Whirled';
+    }]);
+</script>
+<div ng-controller="ExampleController">
+  Enter name: <input type="text" ng-model="name"><br>
+  Hello <span ng-bind="name"></span>!
+</div>
+</body>
+</html>

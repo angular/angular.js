@@ -1,0 +1,21 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/error/jqLite/nosel.ngdoc?message=docs(error%2Fnosel)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1>Error: error:nosel
+  <div><span class='hint'>Unsupported Selector Lookup</span></div>
+</h1>
+
+<div>
+    <pre class="minerr-errmsg" error-display="Looking up elements via selectors is not supported by jqLite! See: http://docs.angularjs.org/api/angular.element">Looking up elements via selectors is not supported by jqLite! See: http://docs.angularjs.org/api/angular.element</pre>
+</div>
+
+<h2>Description</h2>
+<div class="description">
+  <p>In order to keep Angular small, Angular implements only a subset of the selectors in <a href="api/ng/function/angular.element#angular-s-jqlite">jqLite</a>.
+This error occurs when a jqLite instance is invoked with a selector other than this subset.</p>
+<p>In order to resolve this error, rewrite your code to only use tag name selectors and manually traverse the DOM using the APIs provided by jqLite.</p>
+<p>Alternatively, you can include a full version of jQuery, which Angular will automatically use and that will make all selectors available.</p>
+
+</div>
+
+

@@ -1,0 +1,7 @@
+{
+  "name": "example-email-input-directive",
+  "files": [
+    "index-production.html",
+    "protractor.js"
+  ]
+}

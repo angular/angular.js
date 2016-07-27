@@ -1,0 +1,139 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/misc/faq.ngdoc?message=docs(misc%2FFAQ)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1 id="faq">FAQ</h1>
+<h2 id="questions">Questions</h2>
+<h3 id="why-is-this-project-called-angularjs-why-is-the-namespace-called-ng-">Why is this project called &quot;AngularJS&quot;? Why is the namespace called &quot;ng&quot;?</h3>
+<p>Because HTML has Angular brackets and &quot;ng&quot; sounds like &quot;Angular&quot;.</p>
+<h3 id="is-angularjs-a-library-framework-plugin-or-a-browser-extension-">Is AngularJS a library, framework, plugin or a browser extension?</h3>
+<p>AngularJS fits the definition of a framework the best, even though it&#39;s much more lightweight than
+a typical framework and that&#39;s why many confuse it with a library.</p>
+<p>AngularJS is 100% JavaScript, 100% client-side and compatible with both desktop and mobile browsers.
+So it&#39;s definitely not a plugin or some other native browser extension.</p>
+<h3 id="is-angularjs-a-templating-system-">Is AngularJS a templating system?</h3>
+<p>At the highest level, Angular does look like just another templating system. But there is one
+important reason why the Angular templating system is different, that makes it very good fit for
+application development: bidirectional data binding. The template is compiled in the browser and
+the compilation step produces a live view. This means you, the developers, don&#39;t need to write
+code to constantly sync the view with the model and the model with the view as in other
+templating systems.</p>
+<h3 id="do-i-need-to-worry-about-security-holes-in-angularjs-">Do I need to worry about security holes in AngularJS?</h3>
+<p>Like any other technology, AngularJS is not impervious to attack. Angular does, however, provide
+built-in protection from basic security holes, including cross-site scripting and HTML injection
+attacks. AngularJS does round-trip escaping on all strings for you and even offers XSRF protection
+for server-side communication.</p>
+<p>AngularJS was designed to be compatible with other security measures like Content Security Policy
+(CSP), HTTPS (SSL/TLS) and server-side authentication and authorization that greatly reduce the
+possible attack vectors and we highly recommend their use.</p>
+<h3 id="can-i-download-the-source-build-and-host-the-angularjs-environment-locally-">Can I download the source, build, and host the AngularJS environment locally?</h3>
+<p>Yes. See instructions in <a href="misc/downloading"><code>Downloading</code></a>.</p>
+<h3 id="what-browsers-does-angular-work-with-">What browsers does Angular work with?</h3>
+<p>We run our extensive test suite against the following browsers: Safari, Chrome, Firefox, Opera 15,
+IE9 and mobile browsers (Android, Chrome Mobile, iOS Safari). See <a href="guide/ie">Internet
+Explorer Compatibility</a> for more details on supporting legacy IE browsers.</p>
+<h3 id="what-s-angular-s-performance-like-">What&#39;s Angular&#39;s performance like?</h3>
+<p>The startup time heavily depends on your network connection, state of the cache, browser used and
+available hardware, but typically we measure bootstrap time in tens or hundreds of milliseconds.</p>
+<p>The runtime performance will vary depending on the number and complexity of bindings on the page
+as well as the speed of your backend (for apps that fetch data from the backend). For an
+illustration, we typically build snappy apps with hundreds or thousands of active bindings.</p>
+<h3 id="how-big-is-the-angular-js-file-that-i-need-to-include-">How big is the angular.js file that I need to include?</h3>
+<p>The size of the file is &lt; 36KB compressed and minified.</p>
+<h3 id="can-i-use-the-open-source-closure-library-with-angular-">Can I use the open-source Closure Library with Angular?</h3>
+<p>Yes, you can use widgets from the <a href="https://developers.google.com/closure/library/">Closure Library</a>
+in Angular.</p>
+<h3 id="does-angular-use-the-jquery-library-">Does Angular use the jQuery library?</h3>
+<p>Yes, Angular can use <a href="http://jquery.com/">jQuery</a> if it&#39;s present in your app when the
+application is being bootstrapped. If jQuery is not present in your script path, Angular falls back
+to its own implementation of the subset of jQuery that we call <a href="api/ng/function/angular.element">jQLite</a>.</p>
+<p>Angular 1.3 only supports jQuery 2.1 or above. jQuery 1.7 and newer might work correctly with Angular
+but we don&#39;t guarantee that.</p>
+<h3 id="what-is-testability-like-in-angular-">What is testability like in Angular?</h3>
+<p>Very testable and designed this way from the ground up. It has an integrated dependency injection
+framework, provides mocks for many heavy dependencies (server-side communication). See
+<a href="api/ngMock"><code>ngMock</code></a> for details.</p>
+<h3 id="how-can-i-learn-more-about-angular-">How can I learn more about Angular?</h3>
+<p>Watch the July 17, 2012 talk
+&quot;<a href="http://www.youtube.com/watch?v=1CpiB3Wk25U">AngularJS Intro + Dependency Injection</a>&quot;.</p>
+<h3 id="how-is-angular-licensed-">How is Angular licensed?</h3>
+<p>The <a href="https://github.com/angular/angular.js/blob/master/LICENSE">MIT License</a>.</p>
+<h3 id="can-i-download-and-use-the-angular-logo-artwork-">Can I download and use the Angular logo artwork?</h3>
+<p>Yes! You can find design files in our github repository, under &quot;<a href="https://github.com/angular/angular.js/tree/master/images/logo">angular.js/images/logo</a>&quot;
+The logo design is licensed under a &quot;<a href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>&quot;. If you have some other use in mind, contact us.</p>
+<h3 id="how-can-i-get-some-angularjs-schwag-">How can I get some AngularJS schwag?</h3>
+<p>We often bring a few t-shirts and stickers to events where we&#39;re presenting. If you want to order your own, the folks who
+make our schwag will be happy to do a custom run for you, based on our existing template. By using the design they have on file,
+they&#39;ll waive the setup costs, and you can order any quantity you need.</p>
+<p><strong>Stickers</strong>
+For orders of 250 stickers or more within Canada or the United States, contact Tom Witting (or anyone in sales) via email at <a href="&#x6d;&#x61;&#105;&#x6c;&#x74;&#111;&#x3a;&#x74;&#x6f;&#x6d;&#64;&#x73;&#x74;&#105;&#x63;&#x6b;&#x65;&#x72;&#x67;&#x69;&#97;&#110;&#x74;&#x2e;&#x63;&#x6f;&#109;">&#x74;&#x6f;&#x6d;&#64;&#x73;&#x74;&#105;&#x63;&#x6b;&#x65;&#x72;&#x67;&#x69;&#97;&#110;&#x74;&#x2e;&#x63;&#x6f;&#109;</a>, and tell him you want to order some AngularJS
+stickers just like the ones in job #42711. You&#39;ll have to give them your own info for billing and shipping.</p>
+<p>As long as the design stays exactly the same, <a href="http://www.stickergiant.com">StickerGiant</a> will give you a reorder discount.</p>
+<p>For a smaller order, or for other countries, we suggest downloading the logo artwork and making your own.</p>
+<h2 id="common-pitfalls">Common Pitfalls</h2>
+<p>The Angular support channel (#angularjs on Freenode) sees a number of recurring pitfalls that new users of Angular fall into.
+This document aims to point them out before you discover them the hard way.</p>
+<h3 id="dom-manipulation">DOM Manipulation</h3>
+<p>Stop trying to use jQuery to modify the DOM in controllers. Really.
+That includes adding elements, removing elements, retrieving their contents, showing and hiding them.
+Use built-in directives, or write your own where necessary, to do your DOM manipulation.
+See below about duplicating functionality.</p>
+<p>If you&#39;re struggling to break the habit, consider removing jQuery from your app.
+Really. Angular has the $http service and powerful directives that make it almost always unnecessary.
+Angular&#39;s bundled jQLite has a handful of the features most commonly used in writing Angular directives, especially binding to events.</p>
+<h3 id="trying-to-duplicate-functionality-that-already-exists">Trying to duplicate functionality that already exists</h3>
+<p>There&#39;s a good chance that your app isn&#39;t the first to require certain functionality.
+There are a few pieces of Angular that are particularly likely to be reimplemented out of old habits.</p>
+<p><strong>ng-repeat</strong></p>
+<p><code>ng-repeat</code> gets this a lot.
+People try to use jQuery (see above) to add more elements to some container as they&#39;re fetched from the server.
+No, bad dog.
+This is what <code>ng-repeat</code> is for, and it does its job very well.
+Store the data from the server in an array on your <code>$scope</code>, and bind it to the DOM with <code>ng-repeat</code>.</p>
+<p><strong>ng-show</strong></p>
+<p><code>ng-show</code> gets this frequently too.
+Conditionally showing and hiding things using jQuery is a common pattern in other apps, but Angular has a better way.
+<code>ng-show</code> (and <code>ng-hide</code>) conditionally show and hide elements based on boolean expressions.
+Describe the conditions for showing and hiding an element in terms of <code>$scope</code> variables:</p>
+<pre><code>&lt;div ng-show=&quot;!loggedIn&quot;&gt;Click &lt;a href=&quot;#/login&quot;&gt;here&lt;/a&gt; to log in&lt;/div&gt;
+</code></pre>
+<p>Note also the counterpart <code>ng-hide</code> and similar <code>ng-disabled</code>.
+Note especially the powerful <code>ng-switch</code> that should be used instead of several mutually exclusive <code>ng-show</code>s.</p>
+<p><strong>ng-class</strong></p>
+<p><code>ng-class</code> is the last of the big three.
+Conditionally applying classes to elements is another thing commonly done manually using jQuery.
+Angular, of course, has a better way.
+You can give <code>ng-class</code> a whitespace-separated set of class names, and then it&#39;s identical to ordinary <code>class</code>.
+That&#39;s not very exciting, so there&#39;s a second syntax:</p>
+<pre><code>&lt;div ng-class=&quot;{ errorClass: isError, warningClass: isWarning, okClass: !isError &amp;&amp; !isWarning }&quot;&gt;...&lt;/div&gt;
+</code></pre>
+<p>Where you give <code>ng-class</code> an object, whose keys are CSS class names and whose values are conditional expressions using <code>$scope</code> variables.
+The element will then have all the classes whose conditions are truthy, and none of those whose conditions are falsy.</p>
+<p>Note also the handy <code>ng-class-even</code> and <code>ng-class-odd</code>, and the related though somewhat different <code>ng-style</code>.</p>
+<h3 id="-watch-and-apply-"><code>$watch</code> and <code>$apply</code></h3>
+<p>Angular&#39;s two-way data binding is the root of all awesome in Angular.
+However, it&#39;s not magic, and there are some situations where you need to give it a nudge in the right direction.</p>
+<p>When you bind a value to an element in Angular using <code>ng-model</code>, <code>ng-repeat</code>, etc., Angular creates a <code>$watch</code> on that value.
+Then whenever a value on a scope changes, all <code>$watch</code>es observing that element are executed, and everything updates.</p>
+<p>Sometimes, usually when you&#39;re writing a custom directive, you will have to define your own <code>$watch</code> on a scope value to make the directive react to changes.</p>
+<p>On the flip side, sometimes you change a scope value in some code, but the app doesn&#39;t react to it.
+Angular checks for scope variable changes after pieces of your code have finished running; for example, when <code>ng-click</code> calls a function on your scope, Angular will check for changes and react.
+However, some code is outside of Angular and you&#39;ll have to call <code>scope.$apply()</code> yourself to trigger the update.
+This is most commonly seen in event handlers in custom directives.</p>
+<h3 id="combining-ng-repeat-with-other-directives">Combining <code>ng-repeat</code> with other directives</h3>
+<p><code>ng-repeat</code> is extremely useful, one of the most powerful directives in Angular.
+However the transformation it applies to the DOM is substantial.
+Therefore applying other directives (such as <code>ng-show</code>, <code>ng-controller</code> and others) to the same element as <code>ng-repeat</code> generally leads to problems.</p>
+<p>If you want to apply a directive to the whole repeat, wrap the repeat in a parent element and put it there.
+If you want to apply a directive to each inner piece of the repeat, put it on a child of the element with <code>ng-repeat</code>.</p>
+<h3 id="-rootscope-exists-but-it-can-be-used-for-evil"><code>$rootScope</code> exists, but it can be used for evil</h3>
+<p>Scopes in Angular form a hierarchy, prototypally inheriting from a root scope at the top of the tree.
+Usually this can be ignored, since most views have a controller, and therefore a scope, of their own.</p>
+<p>Occasionally there are pieces of data that you want to make global to the whole app.
+For these, you can inject <code>$rootScope</code> and set values on it like any other scope.
+Since the scopes inherit from the root scope, these values will be available to the expressions attached to directives like <code>ng-show</code> just like values on your local <code>$scope</code>.</p>
+<p>Of course, global state sucks and you should use <code>$rootScope</code> sparingly, like you would (hopefully) use with global variables in any language.
+In particular, don&#39;t use it for code, only data.
+If you&#39;re tempted to put a function on <code>$rootScope</code>, it&#39;s almost always better to put it in a service that can be injected where it&#39;s needed, and more easily tested.</p>
+<p>Conversely, don&#39;t create a service whose only purpose in life is to store and return bits of data.</p>
+
+

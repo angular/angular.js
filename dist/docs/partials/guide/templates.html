@@ -1,0 +1,47 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/guide/templates.ngdoc?message=docs(guide%2FTemplates)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<p>In Angular, templates are written with HTML that contains Angular-specific elements and attributes.
+Angular combines the template with information from the model and controller to render the dynamic
+view that a user sees in the browser.</p>
+<p>These are the types of Angular elements and attributes you can use:</p>
+<ul>
+<li><a href="guide/directive">Directive</a> — An attribute or element that
+augments an existing DOM element or represents a reusable DOM component.</li>
+<li><a href="api/ng/service/$interpolate">Markup</a> — The double curly brace notation <code>{{ }}</code> to bind expressions
+to elements is built-in Angular markup.</li>
+<li><a href="guide/filter">Filter</a> — Formats data for display.</li>
+<li><a href="guide/forms">Form controls</a> — Validates user input.</li>
+</ul>
+<p>The following code snippet shows a template with <a href="guide/directive">directives</a> and
+curly-brace <a href="guide/expression">expression</a> bindings:</p>
+<pre><code class="lang-html">&lt;html ng-app&gt;
+ &lt;!-- Body tag augmented with ngController directive  --&gt;
+ &lt;body ng-controller=&quot;MyController&quot;&gt;
+   &lt;input ng-model=&quot;foo&quot; value=&quot;bar&quot;&gt;
+   &lt;!-- Button tag with ng-click directive, and
+          string expression &#39;buttonText&#39;
+          wrapped in &quot;{{ }}&quot; markup --&gt;
+   &lt;button ng-click=&quot;changeFoo()&quot;&gt;{{buttonText}}&lt;/button&gt;
+   &lt;script src=&quot;angular.js&quot;&gt;
+ &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<p>In a simple app, the template consists of HTML, CSS, and Angular directives contained
+in just one HTML file (usually <code>index.html</code>).</p>
+<p>In a more complex app, you can display multiple views within one main page using &quot;partials&quot; –
+segments of template located in separate HTML files. You can use the
+<a href="api/ngRoute/directive/ngView">ngView</a> directive to load partials based on configuration passed
+to the <a href="api/ngRoute/service/$route">$route</a> service. The <a href="tutorial/">angular tutorial</a> shows this
+technique in steps seven and eight.</p>
+<h2 id="related-topics">Related Topics</h2>
+<ul>
+<li><a href="guide/filter">Filters</a></li>
+<li><a href="guide/forms">Forms</a></li>
+</ul>
+<h2 id="related-api">Related API</h2>
+<ul>
+<li><a href="./api">API Reference</a></li>
+</ul>
+
+

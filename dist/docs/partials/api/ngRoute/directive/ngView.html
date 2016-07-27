@@ -1,0 +1,213 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ngRoute/directive/ngView.js?message=docs(ngView)%3A%20describe%20your%20change...#L7' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ngRoute/directive/ngView.js#L7' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">ngView</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - directive in module <a href="api/ngRoute">ngRoute</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <h1 id="overview">Overview</h1>
+<p><code>ngView</code> is a directive that complements the <a href="api/ngRoute/service/$route">$route</a> service by
+including the rendered template of the current route into the main layout (<code>index.html</code>) file.
+Every time the current route changes, the included view changes with it according to the
+configuration of the <code>$route</code> service.</p>
+<p>Requires the <a href="api/ngRoute"><code>ngRoute</code></a> module to be installed.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+  
+  <h2>Directive Info</h2>
+  <ul>
+    <li>This directive creates new scope.</li>
+    <li>This directive executes at priority level 400.</li>
+  </ul>
+
+  
+  <h2 id="usage">Usage</h2>
+  <div class="usage">
+  
+    <ul>
+    
+      <li>as element:
+      (This directive can be used as custom element, but be aware of <a href="guide/ie">IE restrictions</a>).
+      <pre><code>&lt;ng-view&#10;  [onload=&quot;&quot;]&#10;  [autoscroll=&quot;&quot;]&gt;&#10;...&#10;&lt;/ng-view&gt;</code></pre>
+      </li>
+    <li>as attribute:
+        <pre><code>&lt;ANY&#10;  [onload=&quot;&quot;]&#10;  [autoscroll=&quot;&quot;]&gt;&#10;...&#10;&lt;/ANY&gt;</code></pre>
+      </li>
+    <li>as CSS class:
+        <pre><code>&lt;ANY class=&quot;[onload: ;] [autoscroll: ;]&quot;&gt; ... &lt;/ANY&gt;</code></pre>
+      </li>
+    
+  </div>
+  
+  <h2 id="animations">Animations</h2>
+  <p>enter - animation is used to bring new content into the browser.
+leave - animation is used to animate existing content away.</p>
+<p>The enter and leave animation occur concurrently.</p>
+
+  <a href="api/ngAnimate/service/$animate">Click here</a> to learn more about the steps involved in the animation.
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        onload
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Expression to evaluate whenever the view updates.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        autoscroll
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Whether <code>ngView</code> should call <a href="api/ng/service/$anchorScroll">$anchorScroll</a> to scroll the viewport after the view is updated.</p>
+<pre><code>- If the attribute is not set, disable scrolling.
+- If the attribute is set without value, enable scrolling.
+- Otherwise enable scrolling only if the `autoscroll` attribute value evaluated
+  as an expression yields a truthy value.
+</code></pre>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
+  
+<h2>Events</h2>
+<ul class="events">
+  <li id="$viewContentLoaded">
+    <h3>$viewContentLoaded</h3>
+    <div><p>Emitted every time the ngView content is reloaded.</p>
+</div>
+    <div class="inline">
+      <h4>Type:</h4>
+      <div class="type">emit</div>
+    </div>
+    <div class="inline">
+      <h4>Target:</h4>
+      <div class="target">the current ngView scope</div>
+    </div>
+    </li>
+  </ul>
+
+
+
+  
+  <h2 id="example">Example</h2><p>
+
+<div>
+  <a ng-click="openPlunkr('examples/example-ngView-directive', $event)" class="btn pull-right">
+    <i class="glyphicon glyphicon-edit">&nbsp;</i>
+    Edit in Plunker</a>
+
+  <div class="runnable-example"
+      path="examples/example-ngView-directive"
+      name="ngView-directive"
+      module="ngViewExample"
+      deps="angular-route.js;angular-animate.js"
+      animations="true"
+      fixBase="true">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;div ng-controller=&quot;MainCtrl as main&quot;&gt;&#10;  Choose:&#10;  &lt;a href=&quot;Book/Moby&quot;&gt;Moby&lt;/a&gt; |&#10;  &lt;a href=&quot;Book/Moby/ch/1&quot;&gt;Moby: Ch1&lt;/a&gt; |&#10;  &lt;a href=&quot;Book/Gatsby&quot;&gt;Gatsby&lt;/a&gt; |&#10;  &lt;a href=&quot;Book/Gatsby/ch/4?key=value&quot;&gt;Gatsby: Ch4&lt;/a&gt; |&#10;  &lt;a href=&quot;Book/Scarlet&quot;&gt;Scarlet Letter&lt;/a&gt;&lt;br/&gt;&#10;&#10;  &lt;div class=&quot;view-animate-container&quot;&gt;&#10;    &lt;div ng-view class=&quot;view-animate&quot;&gt;&lt;/div&gt;&#10;  &lt;/div&gt;&#10;  &lt;hr /&gt;&#10;&#10;  &lt;pre&gt;$location.path() = {{main.$location.path()}}&lt;/pre&gt;&#10;  &lt;pre&gt;$route.current.templateUrl = {{main.$route.current.templateUrl}}&lt;/pre&gt;&#10;  &lt;pre&gt;$route.current.params = {{main.$route.current.params}}&lt;/pre&gt;&#10;  &lt;pre&gt;$routeParams = {{main.$routeParams}}&lt;/pre&gt;&#10;&lt;/div&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="book.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;div&gt;&#10;  controller: {{book.name}}&lt;br /&gt;&#10;  Book Id: {{book.params.bookId}}&lt;br /&gt;&#10;&lt;/div&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="chapter.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;div&gt;&#10;  controller: {{chapter.name}}&lt;br /&gt;&#10;  Book Id: {{chapter.params.bookId}}&lt;br /&gt;&#10;  Chapter Id: {{chapter.params.chapterId}}&#10;&lt;/div&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="animations.css"
+      language="css"
+      type="css">
+      <pre><code>.view-animate-container {&#10;  position:relative;&#10;  height:100px!important;&#10;  background:white;&#10;  border:1px solid black;&#10;  height:40px;&#10;  overflow:hidden;&#10;}&#10;&#10;.view-animate {&#10;  padding:10px;&#10;}&#10;&#10;.view-animate.ng-enter, .view-animate.ng-leave {&#10;  -webkit-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 1.5s;&#10;  transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 1.5s;&#10;&#10;  display:block;&#10;  width:100%;&#10;  border-left:1px solid black;&#10;&#10;  position:absolute;&#10;  top:0;&#10;  left:0;&#10;  right:0;&#10;  bottom:0;&#10;  padding:10px;&#10;}&#10;&#10;.view-animate.ng-enter {&#10;  left:100%;&#10;}&#10;.view-animate.ng-enter.ng-enter-active {&#10;  left:0;&#10;}&#10;.view-animate.ng-leave.ng-leave-active {&#10;  left:-100%;&#10;}</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="script.js"
+      language="js"
+      type="js">
+      <pre><code>angular.module(&#39;ngViewExample&#39;, [&#39;ngRoute&#39;, &#39;ngAnimate&#39;])&#10;.config([&#39;$routeProvider&#39;, &#39;$locationProvider&#39;,&#10;  function($routeProvider, $locationProvider) {&#10;    $routeProvider&#10;      .when(&#39;/Book/:bookId&#39;, {&#10;        templateUrl: &#39;book.html&#39;,&#10;        controller: &#39;BookCtrl&#39;,&#10;        controllerAs: &#39;book&#39;&#10;      })&#10;      .when(&#39;/Book/:bookId/ch/:chapterId&#39;, {&#10;        templateUrl: &#39;chapter.html&#39;,&#10;        controller: &#39;ChapterCtrl&#39;,&#10;        controllerAs: &#39;chapter&#39;&#10;      });&#10;&#10;    $locationProvider.html5Mode(true);&#10;}])&#10;.controller(&#39;MainCtrl&#39;, [&#39;$route&#39;, &#39;$routeParams&#39;, &#39;$location&#39;,&#10;  function($route, $routeParams, $location) {&#10;    this.$route = $route;&#10;    this.$location = $location;&#10;    this.$routeParams = $routeParams;&#10;}])&#10;.controller(&#39;BookCtrl&#39;, [&#39;$routeParams&#39;, function($routeParams) {&#10;  this.name = &quot;BookCtrl&quot;;&#10;  this.params = $routeParams;&#10;}])&#10;.controller(&#39;ChapterCtrl&#39;, [&#39;$routeParams&#39;, function($routeParams) {&#10;  this.name = &quot;ChapterCtrl&quot;;&#10;  this.params = $routeParams;&#10;}]);</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="protractor.js"
+      type="protractor"
+      language="js">
+      <pre><code>it(&#39;should load and compile correct template&#39;, function() {&#10;  element(by.linkText(&#39;Moby: Ch1&#39;)).click();&#10;  var content = element(by.css(&#39;[ng-view]&#39;)).getText();&#10;  expect(content).toMatch(/controller\: ChapterCtrl/);&#10;  expect(content).toMatch(/Book Id\: Moby/);&#10;  expect(content).toMatch(/Chapter Id\: 1/);&#10;&#10;  element(by.partialLinkText(&#39;Scarlet&#39;)).click();&#10;&#10;  content = element(by.css(&#39;[ng-view]&#39;)).getText();&#10;  expect(content).toMatch(/controller\: BookCtrl/);&#10;  expect(content).toMatch(/Book Id\: Scarlet/);&#10;});</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-ngView-directive/index.html" name="example-ngView-directive"></iframe>
+  </div>
+</div>
+
+
+</p>
+
+</div>
+
+

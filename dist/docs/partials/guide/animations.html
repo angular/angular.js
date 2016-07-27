@@ -1,0 +1,286 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/guide/animations.ngdoc?message=docs(guide%2FAnimations)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1 id="animations">Animations</h1>
+<p>AngularJS 1.3 provides animation hooks for common directives such as <code>ngRepeat</code>, <code>ngSwitch</code>, and <code>ngView</code>, as well as custom directives
+via the <code>$animate</code> service. These animation hooks are set in place to trigger animations during the life cycle of various directives and when
+triggered, will attempt to perform a CSS Transition, CSS Keyframe Animation or a JavaScript callback Animation (depending on if an animation is
+placed on the given directive). Animations can be placed using vanilla CSS by following the naming conventions set in place by AngularJS
+or with JavaScript code when it&#39;s defined as a factory.</p>
+<p>Animations are not available unless you include the <a href="api/ngAnimate"><code>ngAnimate</code> module</a> as a dependency within your application.</p>
+<p>Below is a quick example of animations being enabled for <code>ngShow</code> and <code>ngHide</code>:</p>
+<p>
+
+<div>
+  <a ng-click="openPlunkr('examples/example-example3', $event)" class="btn pull-right">
+    <i class="glyphicon glyphicon-edit">&nbsp;</i>
+    Edit in Plunker</a>
+
+  <div class="runnable-example"
+      path="examples/example-example3"
+      module="ngAnimate"
+      deps="angular-animate.js"
+      animations="true">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;div ng-init=&quot;checked=true&quot;&gt;&#10;  &lt;label&gt;&#10;    &lt;input type=&quot;checkbox&quot; ng-model=&quot;checked&quot; style=&quot;float:left; margin-right:10px;&quot;&gt; Is Visible...&#10;  &lt;/label&gt;&#10;  &lt;div class=&quot;check-element sample-show-hide&quot; ng-show=&quot;checked&quot; style=&quot;clear:both;&quot;&gt;&#10;    Visible...&#10;  &lt;/div&gt;&#10;&lt;/div&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="animations.css"
+      language="css"
+      type="css">
+      <pre><code>.sample-show-hide {&#10;  padding:10px;&#10;  border:1px solid black;&#10;  background:white;&#10;}&#10;&#10;.sample-show-hide {&#10;  -webkit-transition:all linear 0.5s;&#10;  transition:all linear 0.5s;&#10;}&#10;&#10;.sample-show-hide.ng-hide {&#10;  opacity:0;&#10;}</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-example3/index.html" name="example-example3"></iframe>
+  </div>
+</div>
+
+
+</p>
+<h2 id="installation">Installation</h2>
+<p>See the <a href="api/ngAnimate">API docs for <code>ngAnimate</code></a> for instructions on installing the module.</p>
+<p>You may also want to setup a separate CSS file for defining CSS-based animations.</p>
+<h2 id="how-they-work">How they work</h2>
+<p>Animations in AngularJS are completely based on CSS classes. As long as you have a CSS class attached to a HTML element within
+your website, you can apply animations to it. Lets say for example that we have an HTML template with a repeater in it like so:</p>
+<pre><code class="lang-html">&lt;div ng-repeat=&quot;item in items&quot; class=&quot;repeated-item&quot;&gt;
+  {{ item.id }}
+&lt;/div&gt;
+</code></pre>
+<p>As you can see, the <code>.repeated-item</code> class is present on the element that will be repeated and this class will be
+used as a reference within our application&#39;s CSS and/or JavaScript animation code to tell AngularJS to perform an animation.</p>
+<p>As ngRepeat does its thing, each time a new item is added into the list, ngRepeat will add
+a <code>ng-enter</code> class name to the element that is being added. When removed it will apply a <code>ng-leave</code> class name and when moved around
+it will apply a <code>ng-move</code> class name.</p>
+<p>Taking a look at the following CSS code, we can see some transition and keyframe animation code set for each of those events that
+occur when ngRepeat triggers them:</p>
+<pre><code class="lang-css">/*
+  We&#39;re using CSS transitions for when
+  the enter and move events are triggered
+  for the element that has the .repeated-item
+  class
+*/
+.repeated-item.ng-enter, .repeated-item.ng-move {
+  -webkit-transition:0.5s linear all;
+  -moz-transition:0.5s linear all;
+  -o-transition:0.5s linear all;
+  transition:0.5s linear all;
+  opacity:0;
+}
+
+/*
+ The ng-enter-active and ng-move-active
+ are where the transition destination properties
+ are set so that the animation knows what to
+ animate.
+*/
+.repeated-item.ng-enter.ng-enter-active,
+.repeated-item.ng-move.ng-move-active {
+  opacity:1;
+}
+
+/*
+  We&#39;re using CSS keyframe animations for when
+  the leave event is triggered for the element
+  that has the .repeated-item class
+*/
+.repeated-item.ng-leave {
+  -webkit-animation:0.5s my_animation;
+  -moz-animation:0.5s my_animation;
+  -o-animation:0.5s my_animation;
+  animation:0.5s my_animation;
+}
+
+@keyframes my_animation {
+  from { opacity:1; }
+  to { opacity:0; }
+}
+
+/*
+  Unfortunately each browser vendor requires
+  its own definition of keyframe animation code...
+*/
+@-webkit-keyframes my_animation {
+  from { opacity:1; }
+  to { opacity:0; }
+}
+
+@-moz-keyframes my_animation {
+  from { opacity:1; }
+  to { opacity:0; }
+}
+
+@-o-keyframes my_animation {
+  from { opacity:1; }
+  to { opacity:0; }
+}
+</code></pre>
+<p>The same approach to animation can be used using JavaScript code (<strong>jQuery is used within to perform animations</strong>):</p>
+<pre><code class="lang-js">myModule.animation(&#39;.repeated-item&#39;, function() {
+  return {
+    enter : function(element, done) {
+      element.css(&#39;opacity&#39;,0);
+      jQuery(element).animate({
+        opacity: 1
+      }, done);
+
+      // optional onDone or onCancel callback
+      // function to handle any post-animation
+      // cleanup operations
+      return function(isCancelled) {
+        if(isCancelled) {
+          jQuery(element).stop();
+        }
+      }
+    },
+    leave : function(element, done) {
+      element.css(&#39;opacity&#39;, 1);
+      jQuery(element).animate({
+        opacity: 0
+      }, done);
+
+      // optional onDone or onCancel callback
+      // function to handle any post-animation
+      // cleanup operations
+      return function(isCancelled) {
+        if(isCancelled) {
+          jQuery(element).stop();
+        }
+      }
+    },
+    move : function(element, done) {
+      element.css(&#39;opacity&#39;, 0);
+      jQuery(element).animate({
+        opacity: 1
+      }, done);
+
+      // optional onDone or onCancel callback
+      // function to handle any post-animation
+      // cleanup operations
+      return function(isCancelled) {
+        if(isCancelled) {
+          jQuery(element).stop();
+        }
+      }
+    },
+
+    // you can also capture these animation events
+    addClass : function(element, className, done) {},
+    removeClass : function(element, className, done) {}
+  }
+});
+</code></pre>
+<p>With these generated CSS class names present on the element at the time, AngularJS automatically
+figures out whether to perform a CSS and/or JavaScript animation. If both CSS and JavaScript animation
+code is present, and match the CSS class name on the element, then AngularJS will run both animations at the same time.</p>
+<h2 id="class-and-ngclass-animation-hooks">Class and ngClass animation hooks</h2>
+<p>AngularJS also pays attention to CSS class changes on elements by triggering the <strong>add</strong> and <strong>remove</strong> hooks.
+This means that if a CSS class is added to or removed from an element then an animation can be executed in between,
+before the CSS class addition or removal is finalized. (Keep in mind that AngularJS will only be
+able to capture class changes if an <strong>expression</strong> or the <strong>ng-class</strong> directive is used on the element.)</p>
+<p>The example below shows how to perform animations during class changes:</p>
+<p>
+
+<div>
+  <a ng-click="openPlunkr('examples/example-example4', $event)" class="btn pull-right">
+    <i class="glyphicon glyphicon-edit">&nbsp;</i>
+    Edit in Plunker</a>
+
+  <div class="runnable-example"
+      path="examples/example-example4"
+      module="ngAnimate"
+      deps="angular-animate.js"
+      animations="true">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;p&gt;&#10;  &lt;input type=&quot;button&quot; value=&quot;set&quot; ng-click=&quot;myCssVar=&#39;css-class&#39;&quot;&gt;&#10;  &lt;input type=&quot;button&quot; value=&quot;clear&quot; ng-click=&quot;myCssVar=&#39;&#39;&quot;&gt;&#10;  &lt;br&gt;&#10;  &lt;span ng-class=&quot;myCssVar&quot;&gt;CSS-Animated Text&lt;/span&gt;&#10;&lt;/p&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="style.css"
+      language="css"
+      type="css">
+      <pre><code>.css-class-add, .css-class-remove {&#10;  -webkit-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;&#10;  -moz-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;&#10;  -o-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;&#10;  transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;&#10;}&#10;&#10;.css-class,&#10;.css-class-add.css-class-add-active {&#10;  color: red;&#10;  font-size:3em;&#10;}&#10;&#10;.css-class-remove.css-class-remove-active {&#10;  font-size:1.0em;&#10;  color:black;&#10;}</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-example4/index.html" name="example-example4"></iframe>
+  </div>
+</div>
+
+
+</p>
+<p>Although the CSS is a little different then what we saw before, the idea is the same.</p>
+<h2 id="which-directives-support-animations-">Which directives support animations?</h2>
+<p>A handful of common AngularJS directives support and trigger animation hooks whenever any major event occurs during its life cycle.
+The table below explains in detail which animation events are triggered</p>
+<table>
+<thead>
+<tr>
+<th>Directive</th>
+<th>Supported Animations</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="api/ng/directive/ngRepeat#animations">ngRepeat</a></td>
+<td>enter, leave, and move</td>
+</tr>
+<tr>
+<td><a href="api/ngRoute/directive/ngView#animations">ngView</a></td>
+<td>enter and leave</td>
+</tr>
+<tr>
+<td><a href="api/ng/directive/ngInclude#animations">ngInclude</a></td>
+<td>enter and leave</td>
+</tr>
+<tr>
+<td><a href="api/ng/directive/ngSwitch#animations">ngSwitch</a></td>
+<td>enter and leave</td>
+</tr>
+<tr>
+<td><a href="api/ng/directive/ngIf#animations">ngIf</a></td>
+<td>enter and leave</td>
+</tr>
+<tr>
+<td><a href="api/ng/directive/ngClass#animations">ngClass or &#123;&#123;class&#125;&#125;</a></td>
+<td>add and remove</td>
+</tr>
+<tr>
+<td><a href="api/ng/directive/ngShow#animations">ngShow &amp; ngHide</a></td>
+<td>add and remove (the ng-hide class value)</td>
+</tr>
+</tbody>
+</table>
+<p>For a full breakdown of the steps involved during each animation event, refer to the <a href="api/ngAnimate/service/$animate">API docs</a>.</p>
+<h2 id="how-do-i-use-animations-in-my-own-directives-">How do I use animations in my own directives?</h2>
+<p>Animations within custom directives can also be established by injecting <code>$animate</code> directly into your directive and
+making calls to it when needed.</p>
+<pre><code class="lang-js">myModule.directive(&#39;my-directive&#39;, [&#39;$animate&#39;, function($animate) {
+  return function(scope, element, attrs) {
+    element.on(&#39;click&#39;, function() {
+      if(element.hasClass(&#39;clicked&#39;)) {
+        $animate.removeClass(element, &#39;clicked&#39;);
+      } else {
+        $animate.addClass(element, &#39;clicked&#39;);
+      }
+    });
+  };
+}]);
+</code></pre>
+<h2 id="more-about-animations">More about animations</h2>
+<p>For a full breakdown of each method available on <code>$animate</code>, see the <a href="api/ngAnimate/service/$animate">API documentation</a>.</p>
+<p>To see a complete demo, see the <a href="tutorial/step_12">animation step within the AngularJS phonecat tutorial</a>.</p>
+
+

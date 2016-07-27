@@ -1,0 +1,87 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/document.js?message=docs($document)%3A%20describe%20your%20change...#L3' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/document.js#L3' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">$document</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+  
+
+    <li>
+      - service in module <a href="api/ng">ng</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>A <a href="api/ng/function/angular.element">jQuery or jqLite</a> wrapper for the browser&#39;s <code>window.document</code> object.</p>
+
+</div>
+
+
+
+
+<div>
+  
+  <h2 id="dependencies">Dependencies</h2>
+  <ul>
+    <li><a href="api/ng/service/$window"><code>$window</code></a></li>
+  </ul>
+  
+
+    
+
+  
+
+  
+  
+  
+
+
+
+  
+  <h2 id="example">Example</h2><p>
+
+<div>
+  <a ng-click="openPlunkr('examples/example-example96', $event)" class="btn pull-right">
+    <i class="glyphicon glyphicon-edit">&nbsp;</i>
+    Edit in Plunker</a>
+
+  <div class="runnable-example"
+      path="examples/example-example96"
+      module="documentExample">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;div ng-controller=&quot;ExampleController&quot;&gt;&#10;  &lt;p&gt;$document title: &lt;b ng-bind=&quot;title&quot;&gt;&lt;/b&gt;&lt;/p&gt;&#10;  &lt;p&gt;window.document title: &lt;b ng-bind=&quot;windowTitle&quot;&gt;&lt;/b&gt;&lt;/p&gt;&#10;&lt;/div&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="script.js"
+      language="js"
+      type="js">
+      <pre><code>angular.module(&#39;documentExample&#39;, [])&#10;.controller(&#39;ExampleController&#39;, [&#39;$scope&#39;, &#39;$document&#39;, function($scope, $document) {&#10;  $scope.title = $document[0].title;&#10;  $scope.windowTitle = angular.element(window.document)[0].title;&#10;}]);</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-example96/index.html" name="example-example96"></iframe>
+  </div>
+</div>
+
+
+</p>
+
+</div>
+
+

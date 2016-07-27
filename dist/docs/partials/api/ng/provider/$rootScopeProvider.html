@@ -1,0 +1,107 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/rootScope.js?message=docs($rootScopeProvider)%3A%20describe%20your%20change...#L29' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/rootScope.js#L29' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">$rootScopeProvider</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+  <li>
+    <a href="api/ng/service/$rootScope">- $rootScope</a>
+  </li>
+
+    <li>
+      - provider in module <a href="api/ng">ng</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Provider for the $rootScope service.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+    
+
+  
+
+  
+<h2>Methods</h2>
+<ul class="methods">
+  <li id="digestTtl">
+    <h3><p><code>digestTtl(limit);</code></p>
+
+</h3>
+    <div><p>Sets the number of <code>$digest</code> iterations the scope should attempt to execute before giving up and
+assuming that the model is unstable.</p>
+<p>The current default is 10 iterations.</p>
+<p>In complex applications it&#39;s possible that the dependencies between <code>$watch</code>s will result in
+several digest iterations. However if an application needs more than the default 10 digest
+iterations for its model to stabilize then you should investigate what is causing the model to
+continuously change during the digest.</p>
+<p>Increasing the TTL could have performance implications, so you should not change it without
+proper justification.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        limit
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-number">number</a>
+      </td>
+      <td>
+        <p>The number of digest iterations.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+
+  </li>
+  </ul>
+  
+  
+
+
+
+  
+</div>
+
+

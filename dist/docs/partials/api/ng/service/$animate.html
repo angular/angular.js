@@ -1,0 +1,636 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/animate.js?message=docs($animate)%3A%20describe%20your%20change...#L155' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/animate.js#L155' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">$animate</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+  <li>
+    <a href="api/ng/provider/$animateProvider">- $animateProvider</a>
+  </li>
+
+    <li>
+      - service in module <a href="api/ng">ng</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>The $animate service provides rudimentary DOM manipulation functions to
+insert, remove and move elements within the DOM, as well as adding and removing classes.
+This service is the core service used by the ngAnimate $animator service which provides
+high-level animation hooks for CSS and JavaScript.</p>
+<p>$animate is available in the AngularJS core, however, the ngAnimate module must be included
+to enable full out animation support. Otherwise, $animate will only perform simple DOM
+manipulation operations.</p>
+<p>To learn more about enabling animation support, click here to visit the <a href="api/ngAnimate">ngAnimate module page</a> as well as the <a href="api/ngAnimate/service/$animate">ngAnimate $animate service
+page</a>.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+    
+
+  
+
+  
+<h2>Methods</h2>
+<ul class="methods">
+  <li id="enter">
+    <h3><p><code>enter(element, parent, after, [options]);</code></p>
+
+</h3>
+    <div><p>Inserts the element into the DOM either after the <code>after</code> element or
+as the first child within the <code>parent</code> element. When the function is called a promise
+is returned that will be resolved at a later time.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        element
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-domelement">DOMElement</a>
+      </td>
+      <td>
+        <p>the element which will be inserted into the DOM</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        parent
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-domelement">DOMElement</a>
+      </td>
+      <td>
+        <p>the parent element which will append the element as
+  a child (if the after element is not present)</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        after
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-domelement">DOMElement</a>
+      </td>
+      <td>
+        <p>the sibling element which will append the element
+  after itself</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        options
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>an optional collection of styles that will be applied to the element.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-promise">Promise</a></td>
+    <td><p>the animation callback promise</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="leave">
+    <h3><p><code>leave(element, [options]);</code></p>
+
+</h3>
+    <div><p>Removes the element from the DOM. When the function is called a promise
+is returned that will be resolved at a later time.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        element
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-domelement">DOMElement</a>
+      </td>
+      <td>
+        <p>the element which will be removed from the DOM</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        options
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>an optional collection of options that will be applied to the element.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-promise">Promise</a></td>
+    <td><p>the animation callback promise</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="move">
+    <h3><p><code>move(element, parent, after, [options]);</code></p>
+
+</h3>
+    <div><p>Moves the position of the provided element within the DOM to be placed
+either after the <code>after</code> element or inside of the <code>parent</code> element. When the function
+is called a promise is returned that will be resolved at a later time.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        element
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-domelement">DOMElement</a>
+      </td>
+      <td>
+        <p>the element which will be moved around within the
+  DOM</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        parent
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-domelement">DOMElement</a>
+      </td>
+      <td>
+        <p>the parent element where the element will be
+  inserted into (if the after element is not present)</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        after
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-domelement">DOMElement</a>
+      </td>
+      <td>
+        <p>the sibling element where the element will be
+  positioned next to</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        options
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>an optional collection of options that will be applied to the element.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-promise">Promise</a></td>
+    <td><p>the animation callback promise</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="addClass">
+    <h3><p><code>addClass(element, className, [options]);</code></p>
+
+</h3>
+    <div><p>Adds the provided className CSS class value to the provided element.
+When the function is called a promise is returned that will be resolved at a later time.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        element
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-domelement">DOMElement</a>
+      </td>
+      <td>
+        <p>the element which will have the className value
+  added to it</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        className
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>the CSS class which will be added to the element</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        options
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>an optional collection of options that will be applied to the element.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-promise">Promise</a></td>
+    <td><p>the animation callback promise</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="removeClass">
+    <h3><p><code>removeClass(element, className, [options]);</code></p>
+
+</h3>
+    <div><p>Removes the provided className CSS class value from the provided element.
+When the function is called a promise is returned that will be resolved at a later time.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        element
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-domelement">DOMElement</a>
+      </td>
+      <td>
+        <p>the element which will have the className value
+  removed from it</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        className
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>the CSS class which will be removed from the element</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        options
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>an optional collection of options that will be applied to the element.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-promise">Promise</a></td>
+    <td><p>the animation callback promise</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="setClass">
+    <h3><p><code>setClass(element, add, remove, [options]);</code></p>
+
+</h3>
+    <div><p>Adds and/or removes the given CSS classes to and from the element.
+When the function is called a promise is returned that will be resolved at a later time.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        element
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-domelement">DOMElement</a>
+      </td>
+      <td>
+        <p>the element which will have its CSS classes changed
+  removed from it</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        add
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>the CSS classes which will be added to the element</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        remove
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>the CSS class which will be removed from the element</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        options
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>an optional collection of options that will be applied to the element.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-promise">Promise</a></td>
+    <td><p>the animation callback promise</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  </ul>
+  
+  
+
+
+
+  
+</div>
+
+

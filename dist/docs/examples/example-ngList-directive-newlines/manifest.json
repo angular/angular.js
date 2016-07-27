@@ -1,0 +1,7 @@
+{
+  "name": "example-ngList-directive-newlines",
+  "files": [
+    "index-production.html",
+    "protractor.js"
+  ]
+}

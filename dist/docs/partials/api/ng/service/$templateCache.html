@@ -1,0 +1,71 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/cacheFactory.js?message=docs($templateCache)%3A%20describe%20your%20change...#L354' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/cacheFactory.js#L354' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">$templateCache</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+  
+
+    <li>
+      - service in module <a href="api/ng">ng</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>The first time a template is used, it is loaded in the template cache for quick retrieval. You
+can load templates directly into the cache in a <code>script</code> tag, or by consuming the
+<code>$templateCache</code> service directly.</p>
+<p>Adding via the <code>script</code> tag:</p>
+<pre><code class="lang-html">&lt;script type=&quot;text/ng-template&quot; id=&quot;templateId.html&quot;&gt;
+  &lt;p&gt;This is the content of the template&lt;/p&gt;
+&lt;/script&gt;
+</code></pre>
+<p><strong>Note:</strong> the <code>script</code> tag containing the template does not need to be included in the <code>head</code> of
+the document, but it must be a descendent of the <a href="api/ng/service/$rootElement">$rootElement</a> (IE,
+element with ng-app attribute), otherwise the template will be ignored.</p>
+<p>Adding via the $templateCache service:</p>
+<pre><code class="lang-js">var myApp = angular.module(&#39;myApp&#39;, []);
+myApp.run(function($templateCache) {
+  $templateCache.put(&#39;templateId.html&#39;, &#39;This is the content of the template&#39;);
+});
+</code></pre>
+<p>To retrieve the template later, simply use it in your HTML:</p>
+<pre><code class="lang-html">&lt;div ng-include=&quot; &#39;templateId.html&#39; &quot;&gt;&lt;/div&gt;
+</code></pre>
+<p>or get it via Javascript:</p>
+<pre><code class="lang-js">$templateCache.get(&#39;templateId.html&#39;)
+</code></pre>
+<p>See <a href="api/ng/service/$cacheFactory">$cacheFactory</a>.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+    
+
+  
+
+  
+  
+  
+
+
+
+  
+</div>
+
+

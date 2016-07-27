@@ -1,0 +1,140 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/directive/ngInit.js?message=docs(ngInit)%3A%20describe%20your%20change...#L3' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/directive/ngInit.js#L3' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">ngInit</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - directive in module <a href="api/ng">ng</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>The <code>ngInit</code> directive allows you to evaluate an expression in the
+current scope.</p>
+<div class="alert alert-error">
+The only appropriate use of <code>ngInit</code> is for aliasing special properties of
+<a href="api/ng/directive/ngRepeat"><code>ngRepeat</code></a>, as seen in the demo below. Besides this case, you
+should use <a href="guide/controller">controllers</a> rather than <code>ngInit</code>
+to initialize values on a scope.
+</div>
+<div class="alert alert-warning">
+<strong>Note</strong>: If you have assignment in <code>ngInit</code> along with <a href="api/ng/service/$filter"><code>$filter</code></a>, make
+sure you have parenthesis for correct precedence:
+<pre class="prettyprint">
+<code>&lt;div ng-init=&quot;test1 = (data | orderBy:&#39;name&#39;)&quot;&gt;&lt;/div&gt;</code>
+</pre>
+</div>
+</div>
+
+
+
+
+<div>
+  
+
+  
+  <h2>Directive Info</h2>
+  <ul>
+    
+    <li>This directive executes at priority level 450.</li>
+  </ul>
+
+  
+  <h2 id="usage">Usage</h2>
+  <div class="usage">
+  
+    <ul>
+    <li>as attribute:
+        <pre><code>&lt;ANY&#10;  ng-init=&quot;&quot;&gt;&#10;...&#10;&lt;/ANY&gt;</code></pre>
+      </li>
+    <li>as CSS class:
+        <pre><code>&lt;ANY class=&quot;ng-init: ;&quot;&gt; ... &lt;/ANY&gt;</code></pre>
+      </li>
+    
+  </div>
+  
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        ngInit
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-expression">expression</a>
+      </td>
+      <td>
+        <p><a href="guide/expression">Expression</a> to eval.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
+  
+
+
+  
+  <h2 id="example">Example</h2><p>
+
+<div>
+  <a ng-click="openPlunkr('examples/example-example84', $event)" class="btn pull-right">
+    <i class="glyphicon glyphicon-edit">&nbsp;</i>
+    Edit in Plunker</a>
+
+  <div class="runnable-example"
+      path="examples/example-example84"
+      module="initExample">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;script&gt;&#10;  angular.module(&#39;initExample&#39;, [])&#10;    .controller(&#39;ExampleController&#39;, [&#39;$scope&#39;, function($scope) {&#10;      $scope.list = [[&#39;a&#39;, &#39;b&#39;], [&#39;c&#39;, &#39;d&#39;]];&#10;    }]);&#10;&lt;/script&gt;&#10;&lt;div ng-controller=&quot;ExampleController&quot;&gt;&#10;  &lt;div ng-repeat=&quot;innerList in list&quot; ng-init=&quot;outerIndex = $index&quot;&gt;&#10;    &lt;div ng-repeat=&quot;value in innerList&quot; ng-init=&quot;innerIndex = $index&quot;&gt;&#10;       &lt;span class=&quot;example-init&quot;&gt;list[ {{outerIndex}} ][ {{innerIndex}} ] = {{value}};&lt;/span&gt;&#10;    &lt;/div&gt;&#10;  &lt;/div&gt;&#10;&lt;/div&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="protractor.js"
+      type="protractor"
+      language="js">
+      <pre><code>it(&#39;should alias index positions&#39;, function() {&#10;  var elements = element.all(by.css(&#39;.example-init&#39;));&#10;  expect(elements.get(0).getText()).toBe(&#39;list[ 0 ][ 0 ] = a;&#39;);&#10;  expect(elements.get(1).getText()).toBe(&#39;list[ 0 ][ 1 ] = b;&#39;);&#10;  expect(elements.get(2).getText()).toBe(&#39;list[ 1 ][ 0 ] = c;&#39;);&#10;  expect(elements.get(3).getText()).toBe(&#39;list[ 1 ][ 1 ] = d;&#39;);&#10;});</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-example84/index.html" name="example-example84"></iframe>
+  </div>
+</div>
+
+
+</p>
+
+</div>
+
+

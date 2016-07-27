@@ -1,0 +1,7 @@
+{
+  "name": "example-ngMessages-directive",
+  "files": [
+    "index-production.html",
+    "script.js"
+  ]
+}

@@ -1,0 +1,27 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/guide/ie.ngdoc?message=docs(guide%2FInternet Explorer Compatibility)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1 id="internet-explorer-compatibility">Internet Explorer Compatibility</h1>
+<div class="alert alert-warning">
+<strong>Note:</strong> AngularJS 1.3 has dropped support for IE8. Read more about it on
+<a href="http://blog.angularjs.org/2013/12/angularjs-13-new-release-approaches.html">our blog</a>.
+AngularJS 1.2 will continue to support IE8, but the core team does not plan to spend time
+addressing issues specific to IE8 or earlier.
+</div>
+
+<p>This document describes the Internet Explorer (IE) idiosyncrasies when dealing with custom HTML
+attributes and tags. Read this document if you are planning on deploying your Angular application
+on IE.</p>
+<p>The project currently supports and will attempt to fix bugs for IE9 and above. The continuous
+integration server runs all the tests against IE9, IE10, and IE11. See
+<a href="https://travis-ci.org/angular/angular.js">Travis CI</a> and
+<a href="http://ci.angularjs.org">ci.angularjs.org</a>.</p>
+<p>We do not run tests on IE8 and below. A subset of the AngularJS functionality may work on these
+browsers, but it is up to you to test and decide whether it works for your particular app.</p>
+<p>To ensure your Angular application works on IE please consider:</p>
+<ol>
+<li>Use <code>ng-style</code> tags instead of <code>style=&quot;{{ someCss }}&quot;</code>. The latter works in Chrome and Firefox
+but does not work in Internet Explorer &lt;= 11 (the most recent version at time of writing).</li>
+</ol>
+
+

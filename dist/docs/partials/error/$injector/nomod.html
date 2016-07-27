@@ -1,0 +1,36 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/error/$injector/nomod.ngdoc?message=docs(error%2Fnomod)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1>Error: error:nomod
+  <div><span class='hint'>Module Unavailable</span></div>
+</h1>
+
+<div>
+    <pre class="minerr-errmsg" error-display="Module '{0}' is not available! You either misspelled the module name or forgot to load it. If registering a module ensure that you specify the dependencies as the second argument.">Module '{0}' is not available! You either misspelled the module name or forgot to load it. If registering a module ensure that you specify the dependencies as the second argument.</pre>
+</div>
+
+<h2>Description</h2>
+<div class="description">
+  <p>This error occurs when you declare a dependency on a module that isn&#39;t defined anywhere or hasn&#39;t
+been loaded in the current browser context.</p>
+<p>When you receive this error, check that the name of the module in question is correct and that the
+file in which this module is defined has been loaded (either via <code>&lt;script&gt;</code> tag, loader like
+require.js, or testing harness like karma).</p>
+<p>A less common reason for this error is trying to &quot;re-open&quot; a module that has not yet been defined.</p>
+<p>To define a new module, call <a href="api/ng/function/angular.module">angular.module</a> with a name
+and an array of dependent modules, like so:</p>
+<pre><code class="lang-js">// When defining a module with no module dependencies,
+// the array of dependencies should be defined and empty.
+var myApp = angular.module(&#39;myApp&#39;, []);
+</code></pre>
+<p>To retrieve a reference to the same module for further configuration, call
+<code>angular.module</code> without the array argument.</p>
+<pre><code class="lang-js">var myApp = angular.module(&#39;myApp&#39;);
+</code></pre>
+<p>Calling <code>angular.module</code> without the array of dependencies when the module has not yet been defined
+causes this error to be thrown. To fix it, define your module with a name and an empty array, as in
+the first example above.</p>
+
+</div>
+
+

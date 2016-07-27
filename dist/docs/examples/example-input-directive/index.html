@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Example - example-input-directive</title>
+  
+
+  <script src="../../../angular.min.js"></script>
+  
+
+  
+</head>
+<body ng-app="inputExample">
+  <script>
+   angular.module('inputExample', [])
+     .controller('ExampleController', ['$scope', function($scope) {
+       $scope.user = {name: 'guest', last: 'visitor'};
+     }]);
+</script>
+<div ng-controller="ExampleController">
+  <form name="myForm">
+    User name: <input type="text" name="userName" ng-model="user.name" required>
+    <span class="error" ng-show="myForm.userName.$error.required">
+      Required!</span><br>
+    Last name: <input type="text" name="lastName" ng-model="user.last"
+      ng-minlength="3" ng-maxlength="10">
+    <span class="error" ng-show="myForm.lastName.$error.minlength">
+      Too short!</span>
+    <span class="error" ng-show="myForm.lastName.$error.maxlength">
+      Too long!</span><br>
+  </form>
+  <hr>
+  <tt>user = {{user}}</tt><br/>
+  <tt>myForm.userName.$valid = {{myForm.userName.$valid}}</tt><br>
+  <tt>myForm.userName.$error = {{myForm.userName.$error}}</tt><br>
+  <tt>myForm.lastName.$valid = {{myForm.lastName.$valid}}</tt><br>
+  <tt>myForm.lastName.$error = {{myForm.lastName.$error}}</tt><br>
+  <tt>myForm.$valid = {{myForm.$valid}}</tt><br>
+  <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br>
+  <tt>myForm.$error.minlength = {{!!myForm.$error.minlength}}</tt><br>
+  <tt>myForm.$error.maxlength = {{!!myForm.$error.maxlength}}</tt><br>
+</div>
+</body>
+</html>

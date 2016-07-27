@@ -1,0 +1,264 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/guide/module.ngdoc?message=docs(guide%2FModules)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1 id="what-is-a-module-">What is a Module?</h1>
+<p>You can think of a module as a container for the different parts of your app – controllers,
+services, filters, directives, etc.</p>
+<h1 id="why-">Why?</h1>
+<p>Most applications have a main method that instantiates and wires together the different parts of
+the application.</p>
+<p>Angular apps don&#39;t have a main method. Instead modules declaratively specify how an application
+should be bootstrapped. There are several advantages to this approach:</p>
+<ul>
+<li>The declarative process is easier to understand.</li>
+<li>You can package code as reusable modules.</li>
+<li>The modules can be loaded in any order (or even in parallel) because modules delay execution.</li>
+<li>Unit tests only have to load relevant modules, which keeps them fast.</li>
+<li>End-to-end tests can use modules to override configuration.</li>
+</ul>
+<h1 id="the-basics">The Basics</h1>
+<p>I&#39;m in a hurry. How do I get a Hello World module working?</p>
+<p>
+
+<div>
+  <a ng-click="openPlunkr('examples/example-example39', $event)" class="btn pull-right">
+    <i class="glyphicon glyphicon-edit">&nbsp;</i>
+    Edit in Plunker</a>
+
+  <div class="runnable-example"
+      path="examples/example-example39"
+      ng-app-included="true">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;div ng-app=&quot;myApp&quot;&gt;&#10;  &lt;div&gt;&#10;    {{ &#39;World&#39; | greet }}&#10;  &lt;/div&gt;&#10;&lt;/div&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="script.js"
+      language="js"
+      type="js">
+      <pre><code>// declare a module&#10;var myAppModule = angular.module(&#39;myApp&#39;, []);&#10;&#10;// configure the module.&#10;// in this example we will create a greeting filter&#10;myAppModule.filter(&#39;greet&#39;, function() {&#10; return function(name) {&#10;    return &#39;Hello, &#39; + name + &#39;!&#39;;&#10;  };&#10;});</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="protractor.js"
+      type="protractor"
+      language="js">
+      <pre><code>it(&#39;should add Hello to the name&#39;, function() {&#10;  expect(element(by.binding(&quot;&#39;World&#39; | greet&quot;)).getText()).toEqual(&#39;Hello, World!&#39;);&#10;});</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-example39/index.html" name="example-example39"></iframe>
+  </div>
+</div>
+
+
+</p>
+<p>Important things to notice:</p>
+<ul>
+<li>The <a href="api/ng/type/angular.Module">Module</a> API</li>
+<li>The reference to <code>myApp</code> module in <code>&lt;div ng-app=&quot;myApp&quot;&gt;</code>.
+This is what bootstraps the app using your module.</li>
+<li>The empty array in <code>angular.module(&#39;myApp&#39;, [])</code>.
+This array is the list of modules <code>myApp</code> depends on.</li>
+</ul>
+<h1 id="recommended-setup">Recommended Setup</h1>
+<p>While the example above is simple, it will not scale to large applications. Instead we recommend
+that you break your application to multiple modules like this:</p>
+<ul>
+<li>A module for each feature</li>
+<li>A module for each reusable component (especially directives and filters)</li>
+<li>And an application level module which depends on the above modules and contains any
+initialization code.</li>
+</ul>
+<p>We&#39;ve also
+<a href="http://blog.angularjs.org/2014/02/an-angularjs-style-guide-and-best.html">written a document</a>
+on how we organize large apps at Google.</p>
+<p>The above is a suggestion. Tailor it to your needs.</p>
+<p>
+
+<div>
+  <a ng-click="openPlunkr('examples/example-example40', $event)" class="btn pull-right">
+    <i class="glyphicon glyphicon-edit">&nbsp;</i>
+    Edit in Plunker</a>
+
+  <div class="runnable-example"
+      path="examples/example-example40"
+      module="xmpl">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;div ng-controller=&quot;XmplController&quot;&gt;&#10;  {{ greeting }}&#10;&lt;/div&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="script.js"
+      language="js"
+      type="js">
+      <pre><code>angular.module(&#39;xmpl.service&#39;, [])&#10;&#10;  .value(&#39;greeter&#39;, {&#10;    salutation: &#39;Hello&#39;,&#10;    localize: function(localization) {&#10;      this.salutation = localization.salutation;&#10;    },&#10;    greet: function(name) {&#10;      return this.salutation + &#39; &#39; + name + &#39;!&#39;;&#10;    }&#10;  })&#10;&#10;  .value(&#39;user&#39;, {&#10;    load: function(name) {&#10;      this.name = name;&#10;    }&#10;  });&#10;&#10;angular.module(&#39;xmpl.directive&#39;, []);&#10;&#10;angular.module(&#39;xmpl.filter&#39;, []);&#10;&#10;angular.module(&#39;xmpl&#39;, [&#39;xmpl.service&#39;, &#39;xmpl.directive&#39;, &#39;xmpl.filter&#39;])&#10;&#10;  .run(function(greeter, user) {&#10;    // This is effectively part of the main method initialization code&#10;    greeter.localize({&#10;      salutation: &#39;Bonjour&#39;&#10;    });&#10;    user.load(&#39;World&#39;);&#10;  })&#10;&#10;  .controller(&#39;XmplController&#39;, function($scope, greeter, user){&#10;    $scope.greeting = greeter.greet(user.name);&#10;  });</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="protractor.js"
+      type="protractor"
+      language="js">
+      <pre><code>it(&#39;should add Hello to the name&#39;, function() {&#10;  expect(element(by.binding(&quot;greeting&quot;)).getText()).toEqual(&#39;Bonjour World!&#39;);&#10;});</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-example40/index.html" name="example-example40"></iframe>
+  </div>
+</div>
+
+
+</p>
+<h1 id="module-loading-dependencies">Module Loading &amp; Dependencies</h1>
+<p>A module is a collection of configuration and run blocks which get applied to the application
+during the bootstrap process. In its simplest form the module consist of a collection of two kinds
+of blocks:</p>
+<ol>
+<li><strong>Configuration blocks</strong> - get executed during the provider registrations and configuration
+phase. Only providers and constants can be injected into configuration blocks. This is to
+prevent accidental instantiation of services before they have been fully configured.</li>
+<li><strong>Run blocks</strong> - get executed after the injector is created and are used to kickstart the
+application. Only instances and constants can be injected into run blocks. This is to prevent
+further system configuration during application run time.</li>
+</ol>
+<pre><code class="lang-js">angular.module(&#39;myModule&#39;, []).
+config(function(injectables) { // provider-injector
+  // This is an example of config block.
+  // You can have as many of these as you want.
+  // You can only inject Providers (not instances)
+  // into config blocks.
+}).
+run(function(injectables) { // instance-injector
+  // This is an example of a run block.
+  // You can have as many of these as you want.
+  // You can only inject instances (not Providers)
+  // into run blocks
+});
+</code></pre>
+<h2 id="configuration-blocks">Configuration Blocks</h2>
+<p>There are some convenience methods on the module which are equivalent to the <code>config</code> block. For
+example:</p>
+<pre><code class="lang-js">angular.module(&#39;myModule&#39;, []).
+  value(&#39;a&#39;, 123).
+  factory(&#39;a&#39;, function() { return 123; }).
+  directive(&#39;directiveName&#39;, ...).
+  filter(&#39;filterName&#39;, ...);
+
+// is same as
+
+angular.module(&#39;myModule&#39;, []).
+  config(function($provide, $compileProvider, $filterProvider) {
+    $provide.value(&#39;a&#39;, 123);
+    $provide.factory(&#39;a&#39;, function() { return 123; });
+    $compileProvider.directive(&#39;directiveName&#39;, ...);
+    $filterProvider.register(&#39;filterName&#39;, ...);
+  });
+</code></pre>
+<div class="alert alert-info">
+When bootstrapping, first Angular applies all constant definitions.
+Then Angular applies configuration blocks in the same order they were registered.
+</div>
+
+<h2 id="run-blocks">Run Blocks</h2>
+<p>Run blocks are the closest thing in Angular to the main method. A run block is the code which
+needs to run to kickstart the application. It is executed after all of the services have been
+configured and the injector has been created. Run blocks typically contain code which is hard
+to unit-test, and for this reason should be declared in isolated modules, so that they can be
+ignored in the unit-tests.</p>
+<h2 id="dependencies">Dependencies</h2>
+<p>Modules can list other modules as their dependencies. Depending on a module implies that the required
+module needs to be loaded before the requiring module is loaded. In other words the configuration
+blocks of the required modules execute before the configuration blocks of the requiring module.
+The same is true for the run blocks. Each module can only be loaded once, even if multiple other
+modules require it.</p>
+<h2 id="asynchronous-loading">Asynchronous Loading</h2>
+<p>Modules are a way of managing $injector configuration, and have nothing to do with loading of
+scripts into a VM. There are existing projects which deal with script loading, which may be used
+with Angular. Because modules do nothing at load time they can be loaded into the VM in any order
+and thus script loaders can take advantage of this property and parallelize the loading process.</p>
+<h2 id="creation-versus-retrieval">Creation versus Retrieval</h2>
+<p>Beware that using <code>angular.module(&#39;myModule&#39;, [])</code> will create the module <code>myModule</code> and overwrite any
+existing module named <code>myModule</code>. Use <code>angular.module(&#39;myModule&#39;)</code> to retrieve an existing module.</p>
+<pre><code class="lang-js">var myModule = angular.module(&#39;myModule&#39;, []);
+
+// add some directives and services
+myModule.service(&#39;myService&#39;, ...);
+myModule.directive(&#39;myDirective&#39;, ...);
+
+// overwrites both myService and myDirective by creating a new module
+var myModule = angular.module(&#39;myModule&#39;, []);
+
+// throws an error because myOtherModule has yet to be defined
+var myModule = angular.module(&#39;myOtherModule&#39;);
+</code></pre>
+<h1 id="unit-testing">Unit Testing</h1>
+<p>A unit test is a way of instantiating a subset of an application to apply stimulus to it.
+Small, structured modules help keep unit tests concise and focused.</p>
+<div class="did you know...">
+Each module can only be loaded once per injector.
+Usually an Angular app has only one injector and modules are only loaded once.
+Each test has its own injector and modules are loaded multiple times.
+</div>
+
+<p>In all of these examples we are going to assume this module definition:</p>
+<pre><code class="lang-js">angular.module(&#39;greetMod&#39;, []).
+
+factory(&#39;alert&#39;, function($window) {
+  return function(text) {
+    $window.alert(text);
+  }
+}).
+
+value(&#39;salutation&#39;, &#39;Hello&#39;).
+
+factory(&#39;greet&#39;, function(alert, salutation) {
+  return function(name) {
+    alert(salutation + &#39; &#39; + name + &#39;!&#39;);
+  }
+});
+</code></pre>
+<p>Let&#39;s write some tests to show how to override configuration in tests.</p>
+<pre><code class="lang-js">describe(&#39;myApp&#39;, function() {
+  // load application module (`greetMod`) then load a special
+  // test module which overrides `$window` with a mock version,
+  // so that calling `window.alert()` will not block the test
+  // runner with a real alert box.
+  beforeEach(module(&#39;greetMod&#39;, function($provide) {
+    $provide.value(&#39;$window&#39;, {
+      alert: jasmine.createSpy(&#39;alert&#39;)
+    });
+  }));
+
+  // inject() will create the injector and inject the `greet` and
+  // `$window` into the tests.
+  it(&#39;should alert on $window&#39;, inject(function(greet, $window) {
+    greet(&#39;World&#39;);
+    expect($window.alert).toHaveBeenCalledWith(&#39;Hello World!&#39;);
+  }));
+
+  // this is another way of overriding configuration in the
+  // tests using inline `module` and `inject` methods.
+  it(&#39;should alert using the alert service&#39;, function() {
+    var alertSpy = jasmine.createSpy(&#39;alert&#39;);
+    module(function($provide) {
+      $provide.value(&#39;alert&#39;, alertSpy);
+    });
+    inject(function(greet) {
+      greet(&#39;World&#39;);
+      expect(alertSpy).toHaveBeenCalledWith(&#39;Hello World!&#39;);
+    });
+  });
+});
+</code></pre>
+
+

@@ -1,0 +1,45 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/error/$compile/nonassign.ngdoc?message=docs(error%2Fnonassign)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1>Error: error:nonassign
+  <div><span class='hint'>Non-Assignable Expression</span></div>
+</h1>
+
+<div>
+    <pre class="minerr-errmsg" error-display="Expression '{0}' used with directive '{1}' is non-assignable!">Expression '{0}' used with directive '{1}' is non-assignable!</pre>
+</div>
+
+<h2>Description</h2>
+<div class="description">
+  <p>This error occurs when a directive defines an isolate scope property
+(using the <code>=</code> mode in the <a href="api/ng/service/$compile#directive-definition-object"><code>scope</code> option</a> of a directive definition) but the directive is used with an expression that is not-assignable.</p>
+<p>In order for the two-way data-binding to work, it must be possible to write new values back into the path defined with the expression.</p>
+<p>For example, given a directive:</p>
+<pre><code>myModule.directive(&#39;myDirective&#39;, function factory() {
+  return {
+    ...
+    scope: {
+      localValue: &#39;=bind&#39;
+    }
+    ...
+  }
+});
+</code></pre>
+<p>Following are invalid uses of this directive:</p>
+<pre><code>&lt;!-- ERROR because `1+2=localValue` is an invalid statement --&gt;
+&lt;my-directive bind=&quot;1+2&quot;&gt;
+
+&lt;!-- ERROR because `myFn()=localValue` is an invalid statement --&gt;
+&lt;my-directive bind=&quot;myFn()&quot;&gt;
+
+&lt;!-- ERROR because attribute bind wasn&#39;t provided --&gt;
+&lt;my-directive&gt;
+</code></pre>
+<p>To resolve this error, always use path expressions with scope properties that are two-way data-bound:</p>
+<pre><code>&lt;my-directive bind=&quot;some.property&quot;&gt;
+&lt;my-directive bind=&quot;some[3][&#39;property&#39;]&quot;&gt;
+</code></pre>
+
+</div>
+
+

@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Example - example-example99-jquery</title>
+  
+
+  <script src="../../components/jquery-2.1.1/jquery.js"></script>
+  <script src="../../../angular.js"></script>
+  
+
+  
+</head>
+<body ng-app="numberFilterExample">
+  <script>
+  angular.module('numberFilterExample', [])
+    .controller('ExampleController', ['$scope', function($scope) {
+      $scope.val = 1234.56789;
+    }]);
+</script>
+<div ng-controller="ExampleController">
+  Enter number: <input ng-model='val'><br>
+  Default formatting: <span id='number-default'>{{val | number}}</span><br>
+  No fractions: <span>{{val | number:0}}</span><br>
+  Negative number: <span>{{-val | number:4}}</span>
+</div>
+</body>
+</html>

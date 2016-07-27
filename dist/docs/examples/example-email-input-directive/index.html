@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Example - example-email-input-directive</title>
+  
+
+  <script src="../../../angular.min.js"></script>
+  
+
+  
+</head>
+<body ng-app="emailExample">
+  <script>
+  angular.module('emailExample', [])
+    .controller('ExampleController', ['$scope', function($scope) {
+      $scope.email = {
+        text: 'me@example.com'
+      };
+    }]);
+</script>
+  <form name="myForm" ng-controller="ExampleController">
+    Email: <input type="email" name="input" ng-model="email.text" required>
+    <span class="error" ng-show="myForm.input.$error.required">
+      Required!</span>
+    <span class="error" ng-show="myForm.input.$error.email">
+      Not valid email!</span>
+    <tt>text = {{email.text}}</tt><br/>
+    <tt>myForm.input.$valid = {{myForm.input.$valid}}</tt><br/>
+    <tt>myForm.input.$error = {{myForm.input.$error}}</tt><br/>
+    <tt>myForm.$valid = {{myForm.$valid}}</tt><br/>
+    <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br/>
+    <tt>myForm.$error.email = {{!!myForm.$error.email}}</tt><br/>
+  </form>
+</body>
+</html>

@@ -1,0 +1,230 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/directive/input.js?message=docs(textarea)%3A%20describe%20your%20change...#L1378' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/directive/input.js#L1378' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">textarea</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - directive in module <a href="api/ng">ng</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>HTML textarea element control with angular data-binding. The data-binding and validation
+properties of this element are exactly the same as those of the
+<a href="api/ng/directive/input">input element</a>.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+  
+  <h2>Directive Info</h2>
+  <ul>
+    
+    <li>This directive executes at priority level 0.</li>
+  </ul>
+
+  
+  <h2 id="usage">Usage</h2>
+  <div class="usage">
+  
+    <ul>
+    
+      <li>as element:
+      
+      <pre><code>&lt;textarea&#10;  ng-model=&quot;&quot;&#10;  [name=&quot;&quot;]&#10;  [required=&quot;&quot;]&#10;  [ng-required=&quot;&quot;]&#10;  [ng-minlength=&quot;&quot;]&#10;  [ng-maxlength=&quot;&quot;]&#10;  [ng-pattern=&quot;&quot;]&#10;  [ng-change=&quot;&quot;]&#10;  [ng-trim=&quot;&quot;]&gt;&#10;...&#10;&lt;/textarea&gt;</code></pre>
+      </li>
+    
+  </div>
+  
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        ngModel
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Assignable angular expression to data-bind to.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        name
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Property name of the form under which the control is published.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        required
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Sets <code>required</code> validation error key if the value is not entered.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        ngRequired
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Adds <code>required</code> attribute and <code>required</code> validation constraint to
+   the element when the ngRequired expression evaluates to true. Use <code>ngRequired</code> instead of
+   <code>required</code> when you want to data-bind to the <code>required</code> attribute.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        ngMinlength
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-number">number</a>
+      </td>
+      <td>
+        <p>Sets <code>minlength</code> validation error key if the value is shorter than
+   minlength.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        ngMaxlength
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-number">number</a>
+      </td>
+      <td>
+        <p>Sets <code>maxlength</code> validation error key if the value is longer than
+   maxlength. Setting the attribute to a negative or non-numeric value, allows view values of any
+   length.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        ngPattern
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Sets <code>pattern</code> validation error key if the value does not match the
+   RegExp pattern expression. Expected value is <code>/regexp/</code> for inline patterns or <code>regexp</code> for
+   patterns defined as scope expressions.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        ngChange
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Angular expression to be executed when input changes due to user
+   interaction with the input element.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        ngTrim
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-boolean">boolean</a>
+      </td>
+      <td>
+        <p>If set to false Angular will not automatically trim the input.</p>
+
+        <p><em>(default: true)</em></p>
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
+  
+
+
+  
+</div>
+
+

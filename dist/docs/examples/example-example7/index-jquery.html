@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Example - example-example7-jquery</title>
+  
+
+  <script src="../../components/jquery-2.1.1/jquery.js"></script>
+  <script src="../../../angular.js"></script>
+  <script src="app.js"></script>
+  
+
+  
+</head>
+<body ng-app="spicyApp2">
+  <div ng-controller="SpicyController">
+ <input ng-model="customSpice">
+ <button ng-click="spicy('chili')">Chili</button>
+ <button ng-click="spicy(customSpice)">Custom spice</button>
+ <p>The food is {{spice}} spicy!</p>
+</div>
+</body>
+</html>

@@ -1,0 +1,207 @@
+
+<h1>Service components in <code>ng</code></h1>
+
+
+
+<div class="component-breakdown">
+  <div>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/service/$anchorScroll">$anchorScroll</a></td>
+        <td><p>When called, it checks the current value of <a href="api/ng/service/$location#hash">$location.hash()</a> and
+scrolls to the related element, according to the rules specified in the
+<a href="http://dev.w3.org/html5/spec/Overview.html#the-indicated-part-of-the-document">Html5 spec</a>.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/service/$animate">$animate</a></td>
+        <td><p>The $animate service provides rudimentary DOM manipulation functions to
+insert, remove and move elements within the DOM, as well as adding and removing classes.
+This service is the core service used by the ngAnimate $animator service which provides
+high-level animation hooks for CSS and JavaScript.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/service/$cacheFactory">$cacheFactory</a></td>
+        <td><p>Factory that constructs <a href="api/ng/type/$cacheFactory.Cache">Cache</a> objects and gives access to
+them.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/service/$templateCache">$templateCache</a></td>
+        <td><p>The first time a template is used, it is loaded in the template cache for quick retrieval. You
+can load templates directly into the cache in a <code>script</code> tag, or by consuming the
+<code>$templateCache</code> service directly.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/service/$compile">$compile</a></td>
+        <td><p>Compiles an HTML string or DOM into a template and produces a template function, which
+can then be used to link <a href="api/ng/type/$rootScope.Scope"><code>scope</code></a> and the template together.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/service/$controller">$controller</a></td>
+        <td><p><code>$controller</code> service is responsible for instantiating controllers.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/service/$document">$document</a></td>
+        <td><p>A <a href="api/ng/function/angular.element">jQuery or jqLite</a> wrapper for the browser&#39;s <code>window.document</code> object.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/service/$exceptionHandler">$exceptionHandler</a></td>
+        <td><p>Any uncaught exception in angular expressions is delegated to this service.
+The default implementation simply delegates to <code>$log.error</code> which logs it into
+the browser console.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/service/$filter">$filter</a></td>
+        <td><p>Filters are used for formatting data displayed to the user.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/service/$http">$http</a></td>
+        <td><p>The <code>$http</code> service is a core Angular service that facilitates communication with the remote
+HTTP servers via the browser&#39;s <a href="https://developer.mozilla.org/en/xmlhttprequest">XMLHttpRequest</a>
+object or via <a href="http://en.wikipedia.org/wiki/JSONP">JSONP</a>.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/service/$httpBackend">$httpBackend</a></td>
+        <td><p>HTTP backend used by the <a href="api/ng/service/$http">service</a> that delegates to
+XMLHttpRequest object or JSONP and deals with browser incompatibilities.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/service/$interpolate">$interpolate</a></td>
+        <td><p>Compiles a string with markup into an interpolation function. This service is used by the
+HTML <a href="api/ng/service/$compile">$compile</a> service for data binding. See
+<a href="api/ng/provider/$interpolateProvider">$interpolateProvider</a> for configuring the
+interpolation markup.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/service/$interval">$interval</a></td>
+        <td><p>Angular&#39;s wrapper for <code>window.setInterval</code>. The <code>fn</code> function is executed every <code>delay</code>
+milliseconds.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/service/$locale">$locale</a></td>
+        <td><p>$locale service provides localization rules for various Angular components. As of right now the
+only public api is:</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/service/$location">$location</a></td>
+        <td><p>The $location service parses the URL in the browser address bar (based on the
+<a href="https://developer.mozilla.org/en/window.location">window.location</a>) and makes the URL
+available to your application. Changes to the URL in the address bar are reflected into
+$location service and changes to $location are reflected into the browser address bar.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/service/$log">$log</a></td>
+        <td><p>Simple service for logging. Default implementation safely writes the message
+into the browser&#39;s console (if present).</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/service/$parse">$parse</a></td>
+        <td><p>Converts Angular <a href="guide/expression">expression</a> into a function.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/service/$q">$q</a></td>
+        <td><p>A service that helps you run functions asynchronously, and use their return values (or exceptions)
+when they are done processing.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/service/$rootElement">$rootElement</a></td>
+        <td><p>The root element of Angular application. This is either the element where <a href="api/ng/directive/ngApp">ngApp</a> was declared or the element passed into
+<a href="api/ng/function/angular.bootstrap"><code>angular.bootstrap</code></a>. The element represents the root element of application. It is also the
+location where the application&#39;s <a href="api/auto/service/$injector">$injector</a> service gets
+published, and can be retrieved using <code>$rootElement.injector()</code>.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/service/$rootScope">$rootScope</a></td>
+        <td><p>Every application has a single root <a href="api/ng/type/$rootScope.Scope">scope</a>.
+All other scopes are descendant scopes of the root scope. Scopes provide separation
+between the model and the view, via a mechanism for watching the model for changes.
+They also provide an event emission/broadcast and subscription facility. See the
+<a href="guide/scope">developer guide on scopes</a>.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/service/$sceDelegate">$sceDelegate</a></td>
+        <td><p><code>$sceDelegate</code> is a service that is used by the <code>$sce</code> service to provide <a href="api/ng/service/$sce">Strict
+Contextual Escaping (SCE)</a> services to AngularJS.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/service/$sce">$sce</a></td>
+        <td><p><code>$sce</code> is a service that provides Strict Contextual Escaping services to AngularJS.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/service/$templateRequest">$templateRequest</a></td>
+        <td><p>The <code>$templateRequest</code> service downloads the provided template using <code>$http</code> and, upon success,
+stores the contents inside of <code>$templateCache</code>. If the HTTP request fails or the response data
+of the HTTP request is empty, a <code>$compile</code> error will be thrown (the exception can be thwarted
+by setting the 2nd parameter of the function to true).</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/service/$timeout">$timeout</a></td>
+        <td><p>Angular&#39;s wrapper for <code>window.setTimeout</code>. The <code>fn</code> function is wrapped into a try/catch
+block and delegates any exceptions to
+<a href="api/ng/service/$exceptionHandler">$exceptionHandler</a> service.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/service/$window">$window</a></td>
+        <td><p>A reference to the browser&#39;s <code>window</code> object. While <code>window</code>
+is globally available in JavaScript, it causes testability problems, because
+it is a global variable. In angular we always refer to it through the
+<code>$window</code> service, so it may be overridden, removed or mocked for testing.</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+</div>
+

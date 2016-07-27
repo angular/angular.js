@@ -1,0 +1,76 @@
+
+<h1>Type components in <code>ng</code></h1>
+
+
+
+<div class="component-breakdown">
+  <div>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/type/angular.Module">angular.Module</a></td>
+        <td><p>Interface for configuring angular <a href="api/ng/function/angular.module">modules</a>.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/type/$cacheFactory.Cache">$cacheFactory.Cache</a></td>
+        <td><p>A cache object used to store and retrieve data, primarily used by
+<a href="api/ng/service/$http">$http</a> and the <a href="api/ng/directive/script">script</a> directive to cache
+templates and other data.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/type/$compile.directive.Attributes">$compile.directive.Attributes</a></td>
+        <td><p>A shared object between directive compile / linking functions which contains normalized DOM
+element attributes. The values reflect current binding state <code>{{ }}</code>. The normalization is
+needed since all of these are treated as equivalent in Angular:</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/type/form.FormController">form.FormController</a></td>
+        <td><p><code>FormController</code> keeps track of all its controls and nested forms as well as the state of them,
+such as being valid/invalid or dirty/pristine.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/type/ngModel.NgModelController">ngModel.NgModelController</a></td>
+        <td><p><code>NgModelController</code> provides API for the <a href="api/ng/directive/ngModel"><code>ngModel</code></a> directive.
+The controller contains services for data-binding, validation, CSS updates, and value formatting
+and parsing. It purposefully does not contain any logic which deals with DOM rendering or
+listening to DOM events.
+Such DOM related logic should be provided by other directives which make use of
+<code>NgModelController</code> for data-binding to control elements.
+Angular provides this DOM logic for most <a href="api/ng/directive/input"><code>input</code></a> elements.
+At the end of this page you can find a <a href="api/ng/type/ngModel.NgModelController#custom-control-example">custom control example</a> that uses <code>ngModelController</code> to bind to <code>contenteditable</code> elements.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/type/select.SelectController">select.SelectController</a></td>
+        <td><p>The controller for the <code>&lt;select&gt;</code> directive. This provides support for reading
+and writing the selected value(s) of the control and also coordinates dynamically
+added <code>&lt;option&gt;</code> elements, perhaps by an <code>ngRepeat</code> directive.</p>
+</td>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ng/type/$rootScope.Scope">$rootScope.Scope</a></td>
+        <td><p>A root scope can be retrieved using the <a href="api/ng/service/$rootScope">$rootScope</a> key from the
+<a href="api/auto/service/$injector">$injector</a>. Child scopes are created using the
+<a href="api/ng/type/$rootScope.Scope#$new">$new()</a> method. (Most scopes are created automatically when
+compiled HTML template is executed.)</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+</div>
+

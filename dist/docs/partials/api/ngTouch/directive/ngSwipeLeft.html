@@ -1,0 +1,132 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ngTouch/directive/ngSwipe.js?message=docs(ngSwipeLeft)%3A%20describe%20your%20change...#L5' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ngTouch/directive/ngSwipe.js#L5' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">ngSwipeLeft</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - directive in module <a href="api/ngTouch">ngTouch</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Specify custom behavior when an element is swiped to the left on a touchscreen device.
+A leftward swipe is a quick, right-to-left slide of the finger.
+Though ngSwipeLeft is designed for touch-based devices, it will work with a mouse click and drag
+too.</p>
+<p>To disable the mouse click and drag functionality, add <code>ng-swipe-disable-mouse</code> to
+the <code>ng-swipe-left</code> or <code>ng-swipe-right</code> DOM Element.</p>
+<p>Requires the <a href="api/ngTouch"><code>ngTouch</code></a> module to be installed.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+  
+  <h2>Directive Info</h2>
+  <ul>
+    
+    <li>This directive executes at priority level 0.</li>
+  </ul>
+
+  
+  <h2 id="usage">Usage</h2>
+  <div class="usage">
+  
+    <ul>
+    <li>as attribute:
+        <pre><code>&lt;ANY&#10;  ng-swipe-left=&quot;&quot;&gt;&#10;...&#10;&lt;/ANY&gt;</code></pre>
+      </li>
+    
+  </div>
+  
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        ngSwipeLeft
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-expression">expression</a>
+      </td>
+      <td>
+        <p><a href="guide/expression">Expression</a> to evaluate
+upon left swipe. (Event object is available as <code>$event</code>)</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
+  
+
+
+  
+  <h2 id="example">Example</h2><p>
+
+<div>
+  <a ng-click="openPlunkr('examples/example-example115', $event)" class="btn pull-right">
+    <i class="glyphicon glyphicon-edit">&nbsp;</i>
+    Edit in Plunker</a>
+
+  <div class="runnable-example"
+      path="examples/example-example115"
+      module="ngSwipeLeftExample"
+      deps="angular-touch.js">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;div ng-show=&quot;!showActions&quot; ng-swipe-left=&quot;showActions = true&quot;&gt;&#10;  Some list content, like an email in the inbox&#10;&lt;/div&gt;&#10;&lt;div ng-show=&quot;showActions&quot; ng-swipe-right=&quot;showActions = false&quot;&gt;&#10;  &lt;button ng-click=&quot;reply()&quot;&gt;Reply&lt;/button&gt;&#10;  &lt;button ng-click=&quot;delete()&quot;&gt;Delete&lt;/button&gt;&#10;&lt;/div&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="script.js"
+      language="js"
+      type="js">
+      <pre><code>angular.module(&#39;ngSwipeLeftExample&#39;, [&#39;ngTouch&#39;]);</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-example115/index.html" name="example-example115"></iframe>
+  </div>
+</div>
+
+
+</p>
+
+</div>
+
+

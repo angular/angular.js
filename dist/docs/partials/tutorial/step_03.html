@@ -1,0 +1,195 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/tutorial/step_03.ngdoc?message=docs(tutorial%2F3 - Filtering Repeaters)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<ul doc-tutorial-nav="3"></ul>
+
+
+<p>We did a lot of work in laying a foundation for the app in the last step, so now we&#39;ll do something
+simple; we will add full text search (yes, it will be simple!). We will also write an end-to-end
+test, because a good end-to-end test is a good friend. It stays with your app, keeps an eye on it,
+and quickly detects regressions.</p>
+<ul>
+<li>The app now has a search box. Notice that the phone list on the page changes depending on what a
+user types into the search box.</li>
+</ul>
+<div doc-tutorial-reset="3"></div>
+
+
+<h2 id="controller">Controller</h2>
+<p>We made no changes to the controller.</p>
+<h2 id="template">Template</h2>
+<p><strong><code>app/index.html</code>:</strong></p>
+<pre><code class="lang-html">&lt;div class=&quot;container-fluid&quot;&gt;
+  &lt;div class=&quot;row&quot;&gt;
+    &lt;div class=&quot;col-md-2&quot;&gt;
+      &lt;!--Sidebar content--&gt;
+
+      Search: &lt;input ng-model=&quot;query&quot;&gt;
+
+    &lt;/div&gt;
+    &lt;div class=&quot;col-md-10&quot;&gt;
+      &lt;!--Body content--&gt;
+
+      &lt;ul class=&quot;phones&quot;&gt;
+        &lt;li ng-repeat=&quot;phone in phones | filter:query&quot;&gt;
+          {{phone.name}}
+          &lt;p&gt;{{phone.snippet}}&lt;/p&gt;
+        &lt;/li&gt;
+      &lt;/ul&gt;
+
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</code></pre>
+<p>We added a standard HTML <code>&lt;input&gt;</code> tag and used Angular&#39;s
+<a href="api/ng/filter/filter">filter</a> function to process the input for the
+<a href="api/ng/directive/ngRepeat">ngRepeat</a> directive.</p>
+<p>This lets a user enter search criteria and immediately see the effects of their search on the phone
+list. This new code demonstrates the following:</p>
+<ul>
+<li><p>Data-binding: This is one of the core features in Angular. When the page loads, Angular binds the
+name of the input box to a variable of the same name in the data model and keeps the two in sync.</p>
+<p>In this code, the data that a user types into the input box (named <strong><code>query</code></strong>) is immediately
+available as a filter input in the list repeater (<code>phone in phones | filter:</code><strong><code>query</code></strong>). When
+changes to the data model cause the repeater&#39;s input to change, the repeater efficiently updates
+the DOM to reflect the current state of the model.</p>
+</li>
+</ul>
+<p><img  class="diagram" src="img/tutorial/tutorial_03.png"></p>
+<ul>
+<li><p>Use of the <code>filter</code> filter: The <a href="api/ng/filter/filter">filter</a> function uses the
+<code>query</code> value to create a new array that contains only those records that match the <code>query</code>.</p>
+<p><code>ngRepeat</code> automatically updates the view in response to the changing number of phones returned
+by the <code>filter</code> filter. The process is completely transparent to the developer.</p>
+</li>
+</ul>
+<h2 id="test">Test</h2>
+<p>In Step 2, we learned how to write and run unit tests. Unit tests are perfect for testing
+controllers and other components of our application written in JavaScript, but they can&#39;t easily
+test DOM manipulation or the wiring of our application. For these, an end-to-end test is a much
+better choice.</p>
+<p>The search feature was fully implemented via templates and data-binding, so we&#39;ll write our first
+end-to-end test, to verify that the feature works.</p>
+<p><strong><code>test/e2e/scenarios.js</code>:</strong></p>
+<pre><code class="lang-js">describe(&#39;PhoneCat App&#39;, function() {
+
+  describe(&#39;Phone list view&#39;, function() {
+
+    beforeEach(function() {
+      browser.get(&#39;app/index.html&#39;);
+    });
+
+
+    it(&#39;should filter the phone list as a user types into the search box&#39;, function() {
+
+      var phoneList = element.all(by.repeater(&#39;phone in phones&#39;));
+      var query = element(by.model(&#39;query&#39;));
+
+      expect(phoneList.count()).toBe(3);
+
+      query.sendKeys(&#39;nexus&#39;);
+      expect(phoneList.count()).toBe(1);
+
+      query.clear();
+      query.sendKeys(&#39;motorola&#39;);
+      expect(phoneList.count()).toBe(2);
+    });
+  });
+});
+</code></pre>
+<p>This test verifies that the search box and the repeater are correctly wired together. Notice how
+easy it is to write end-to-end tests in Angular. Although this example is for a simple test, it
+really is that easy to set up any functional, readable, end-to-end test.</p>
+<h3 id="running-end-to-end-tests-with-protractor">Running End to End Tests with Protractor</h3>
+<p>Even though the syntax of this test looks very much like our controller unit test written with
+Jasmine, the end-to-end test uses APIs of <a href="https://github.com/angular/protractor">Protractor</a>. Read
+about the Protractor APIs at <a href="http://angular.github.io/protractor/#/api">http://angular.github.io/protractor/#/api</a>.</p>
+<p>Much like Karma is the test runner for unit tests, we use Protractor to run end-to-end tests.
+Try it with <code>npm run protractor</code>. End-to-end tests are slow, so unlike with unit tests, Protractor
+will exit after the test run and will not automatically rerun the test suite on every file change.
+To rerun the test suite, execute <code>npm run protractor</code> again.</p>
+<div class="alert alert-info">
+  Note: You must ensure your application is being served via a web-server to test with protractor.
+  You can do this using <code>npm start</code>.
+  You also need to ensure you&#39;ve installed the protractor and updated webdriver prior to running the
+  <code>npm run protractor</code>. You can do this by issuing <code>npm install</code> and <code>npm run update-webdriver</code> into
+  your terminal.
+</div>
+
+
+<h1 id="experiments">Experiments</h1>
+<h3 id="display-current-query">Display Current Query</h3>
+<p>Display the current value of the <code>query</code> model by adding a <code>{{query}}</code> binding into the
+<code>index.html</code> template, and see how it changes when you type in the input box.</p>
+<h3 id="display-query-in-title">Display Query in Title</h3>
+<p>Let&#39;s see how we can get the current value of the <code>query</code> model to appear in the HTML page title.</p>
+<ul>
+<li><p>Add an end-to-end test into the <code>describe</code> block, <code>test/e2e/scenarios.js</code> should look like this:</p>
+<pre><code class="lang-js">describe(&#39;PhoneCat App&#39;, function() {
+
+  describe(&#39;Phone list view&#39;, function() {
+
+    beforeEach(function() {
+      browser.get(&#39;app/index.html&#39;);
+    });
+
+    var phoneList = element.all(by.repeater(&#39;phone in phones&#39;));
+    var query = element(by.model(&#39;query&#39;));
+
+    it(&#39;should filter the phone list as a user types into the search box&#39;, function() {
+      expect(phoneList.count()).toBe(3);
+
+      query.sendKeys(&#39;nexus&#39;);
+      expect(phoneList.count()).toBe(1);
+
+      query.clear();
+      query.sendKeys(&#39;motorola&#39;);
+      expect(phoneList.count()).toBe(2);
+    });
+
+    it(&#39;should display the current filter value in the title bar&#39;, function() {
+      query.clear();
+      expect(browser.getTitle()).toMatch(/Google Phone Gallery:\s*$/);
+
+      query.sendKeys(&#39;nexus&#39;);
+      expect(browser.getTitle()).toMatch(/Google Phone Gallery: nexus$/);
+    });
+  });
+});
+</code></pre>
+<p>Run protractor (<code>npm run protractor</code>) to see this test fail.</p>
+</li>
+</ul>
+<ul>
+<li><p>You might think you could just add the <code>{{query}}</code> to the title tag element as follows:</p>
+<pre><code>&lt;title&gt;Google Phone Gallery: {{query}}&lt;/title&gt;
+</code></pre>
+<p>However, when you reload the page, you won&#39;t see the expected result. This is because the &quot;query&quot;
+model lives in the scope, defined by the <code>ng-controller=&quot;PhoneListCtrl&quot;</code> directive, on the body
+element:</p>
+<pre><code>&lt;body ng-controller=&quot;PhoneListCtrl&quot;&gt;
+</code></pre>
+<p>If you want to bind to the query model from the <code>&lt;title&gt;</code> element, you must <strong>move</strong> the
+<code>ngController</code> declaration to the HTML element because it is the common parent of both the body
+and title elements:</p>
+<pre><code>&lt;html ng-app=&quot;phonecatApp&quot; ng-controller=&quot;PhoneListCtrl&quot;&gt;
+</code></pre>
+<p>Be sure to <strong>remove</strong> the <code>ng-controller</code> declaration from the body element.</p>
+</li>
+<li><p>Re-run <code>npm run protractor</code> to see the test now pass.</p>
+</li>
+<li><p>While using double curlies works fine within the title element, you might have noticed that
+for a split second they are actually displayed to the user while the page is loading. A better
+solution would be to use the <a href="api/ng/directive/ngBind">ngBind</a> or
+<a href="api/ng/directive/ngBindTemplate">ngBindTemplate</a> directives, which are invisible to the user
+while the page is loading:</p>
+<pre><code>&lt;title ng-bind-template=&quot;Google Phone Gallery: {{query}}&quot;&gt;Google Phone Gallery&lt;/title&gt;
+</code></pre>
+</li>
+</ul>
+<h1 id="summary">Summary</h1>
+<p>We have now added full text search and included a test to verify that search works! Now let&#39;s go on
+to <a href="tutorial/step_04">step 4</a> to learn how to add sorting capability to the phone app.</p>
+<ul doc-tutorial-nav="3"></ul>
+
+

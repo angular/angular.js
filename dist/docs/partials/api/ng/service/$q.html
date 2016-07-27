@@ -1,0 +1,492 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/q.js?message=docs($q)%3A%20describe%20your%20change...#L3' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/q.js#L3' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">$q</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+  
+
+    <li>
+      - service in module <a href="api/ng">ng</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>A service that helps you run functions asynchronously, and use their return values (or exceptions)
+when they are done processing.</p>
+<p>This is an implementation of promises/deferred objects inspired by
+<a href="https://github.com/kriskowal/q">Kris Kowal&#39;s Q</a>.</p>
+<p>$q can be used in two fashions --- one which is more similar to Kris Kowal&#39;s Q or jQuery&#39;s Deferred
+implementations, and the other which resembles ES6 promises to some degree.</p>
+<h1 id="-q-constructor">$q constructor</h1>
+<p>The streamlined ES6 style promise is essentially just using $q as a constructor which takes a <code>resolver</code>
+function as the first argument. This is similar to the native Promise implementation from ES6 Harmony,
+see <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">MDN</a>.</p>
+<p>While the constructor-style use is supported, not all of the supporting methods from ES6 Harmony promises are
+available yet.</p>
+<p>It can be used like so:</p>
+<pre><code class="lang-js">// for the purpose of this example let&#39;s assume that variables `$q` and `okToGreet`
+// are available in the current lexical scope (they could have been injected or passed in).
+
+function asyncGreet(name) {
+  // perform some asynchronous operation, resolve or reject the promise when appropriate.
+  return $q(function(resolve, reject) {
+    setTimeout(function() {
+      if (okToGreet(name)) {
+        resolve(&#39;Hello, &#39; + name + &#39;!&#39;);
+      } else {
+        reject(&#39;Greeting &#39; + name + &#39; is not allowed.&#39;);
+      }
+    }, 1000);
+  });
+}
+
+var promise = asyncGreet(&#39;Robin Hood&#39;);
+promise.then(function(greeting) {
+  alert(&#39;Success: &#39; + greeting);
+}, function(reason) {
+  alert(&#39;Failed: &#39; + reason);
+});
+</code></pre>
+<p>Note: progress/notify callbacks are not currently supported via the ES6-style interface.</p>
+<p>However, the more traditional CommonJS-style usage is still available, and documented below.</p>
+<p><a href="http://wiki.commonjs.org/wiki/Promises">The CommonJS Promise proposal</a> describes a promise as an
+interface for interacting with an object that represents the result of an action that is
+performed asynchronously, and may or may not be finished at any given point in time.</p>
+<p>From the perspective of dealing with error handling, deferred and promise APIs are to
+asynchronous programming what <code>try</code>, <code>catch</code> and <code>throw</code> keywords are to synchronous programming.</p>
+<pre><code class="lang-js">// for the purpose of this example let&#39;s assume that variables `$q` and `okToGreet`
+// are available in the current lexical scope (they could have been injected or passed in).
+
+function asyncGreet(name) {
+  var deferred = $q.defer();
+
+  setTimeout(function() {
+    deferred.notify(&#39;About to greet &#39; + name + &#39;.&#39;);
+
+    if (okToGreet(name)) {
+      deferred.resolve(&#39;Hello, &#39; + name + &#39;!&#39;);
+    } else {
+      deferred.reject(&#39;Greeting &#39; + name + &#39; is not allowed.&#39;);
+    }
+  }, 1000);
+
+  return deferred.promise;
+}
+
+var promise = asyncGreet(&#39;Robin Hood&#39;);
+promise.then(function(greeting) {
+  alert(&#39;Success: &#39; + greeting);
+}, function(reason) {
+  alert(&#39;Failed: &#39; + reason);
+}, function(update) {
+  alert(&#39;Got notification: &#39; + update);
+});
+</code></pre>
+<p>At first it might not be obvious why this extra complexity is worth the trouble. The payoff
+comes in the way of guarantees that promise and deferred APIs make, see
+<a href="https://github.com/kriskowal/uncommonjs/blob/master/promises/specification.md">https://github.com/kriskowal/uncommonjs/blob/master/promises/specification.md</a>.</p>
+<p>Additionally the promise api allows for composition that is very hard to do with the
+traditional callback (<a href="http://en.wikipedia.org/wiki/Continuation-passing_style">CPS</a>) approach.
+For more on this please see the <a href="https://github.com/kriskowal/q">Q documentation</a> especially the
+section on serial or parallel joining of promises.</p>
+<h1 id="the-deferred-api">The Deferred API</h1>
+<p>A new instance of deferred is constructed by calling <code>$q.defer()</code>.</p>
+<p>The purpose of the deferred object is to expose the associated Promise instance as well as APIs
+that can be used for signaling the successful or unsuccessful completion, as well as the status
+of the task.</p>
+<p><strong>Methods</strong></p>
+<ul>
+<li><code>resolve(value)</code> – resolves the derived promise with the <code>value</code>. If the value is a rejection
+constructed via <code>$q.reject</code>, the promise will be rejected instead.</li>
+<li><code>reject(reason)</code> – rejects the derived promise with the <code>reason</code>. This is equivalent to
+resolving it with a rejection constructed via <code>$q.reject</code>.</li>
+<li><code>notify(value)</code> - provides updates on the status of the promise&#39;s execution. This may be called
+multiple times before the promise is either resolved or rejected.</li>
+</ul>
+<p><strong>Properties</strong></p>
+<ul>
+<li>promise – <code>{Promise}</code> – promise object associated with this deferred.</li>
+</ul>
+<h1 id="the-promise-api">The Promise API</h1>
+<p>A new promise instance is created when a deferred instance is created and can be retrieved by
+calling <code>deferred.promise</code>.</p>
+<p>The purpose of the promise object is to allow for interested parties to get access to the result
+of the deferred task when it completes.</p>
+<p><strong>Methods</strong></p>
+<ul>
+<li><p><code>then(successCallback, errorCallback, notifyCallback)</code> – regardless of when the promise was or
+will be resolved or rejected, <code>then</code> calls one of the success or error callbacks asynchronously
+as soon as the result is available. The callbacks are called with a single argument: the result
+or rejection reason. Additionally, the notify callback may be called zero or more times to
+provide a progress indication, before the promise is resolved or rejected.</p>
+<p>This method <em>returns a new promise</em> which is resolved or rejected via the return value of the
+<code>successCallback</code>, <code>errorCallback</code>. It also notifies via the return value of the
+<code>notifyCallback</code> method. The promise cannot be resolved or rejected from the notifyCallback
+method.</p>
+</li>
+<li><p><code>catch(errorCallback)</code> – shorthand for <code>promise.then(null, errorCallback)</code></p>
+</li>
+<li><p><code>finally(callback, notifyCallback)</code> – allows you to observe either the fulfillment or rejection of a promise,
+but to do so without modifying the final value. This is useful to release resources or do some
+clean-up that needs to be done whether the promise was rejected or resolved. See the <a href="https://github.com/kriskowal/q/wiki/API-Reference#promisefinallycallback">full
+specification</a> for
+more information.</p>
+</li>
+</ul>
+<h1 id="chaining-promises">Chaining promises</h1>
+<p>Because calling the <code>then</code> method of a promise returns a new derived promise, it is easily
+possible to create a chain of promises:</p>
+<pre><code class="lang-js">promiseB = promiseA.then(function(result) {
+  return result + 1;
+});
+
+// promiseB will be resolved immediately after promiseA is resolved and its value
+// will be the result of promiseA incremented by 1
+</code></pre>
+<p>It is possible to create chains of any length and since a promise can be resolved with another
+promise (which will defer its resolution further), it is possible to pause/defer resolution of
+the promises at any point in the chain. This makes it possible to implement powerful APIs like
+$http&#39;s response interceptors.</p>
+<h1 id="differences-between-kris-kowal-s-q-and-q">Differences between Kris Kowal&#39;s Q and $q</h1>
+<p> There are two main differences:</p>
+<ul>
+<li>$q is integrated with the <a href="api/ng/type/$rootScope.Scope"><code>$rootScope.Scope</code></a> Scope model observation
+mechanism in angular, which means faster propagation of resolution or rejection into your
+models and avoiding unnecessary browser repaints, which would result in flickering UI.</li>
+<li><p>Q has many more features than $q, but that comes at a cost of bytes. $q is tiny, but contains
+all the important functionality needed for common async tasks.</p>
+<h1 id="testing">Testing</h1>
+<pre><code class="lang-js">it(&#39;should simulate promise&#39;, inject(function($q, $rootScope) {
+  var deferred = $q.defer();
+  var promise = deferred.promise;
+  var resolvedValue;
+
+  promise.then(function(value) { resolvedValue = value; });
+  expect(resolvedValue).toBeUndefined();
+
+  // Simulate resolving of promise
+  deferred.resolve(123);
+  // Note that the &#39;then&#39; function does not get called synchronously.
+  // This is because we want the promise API to always be async, whether or not
+  // it got called synchronously or asynchronously.
+  expect(resolvedValue).toBeUndefined();
+
+  // Propagate promise resolution to &#39;then&#39; functions using $apply().
+  $rootScope.$apply();
+  expect(resolvedValue).toEqual(123);
+}));
+</code></pre>
+</li>
+</ul>
+
+</div>
+
+
+
+
+<div>
+  
+  <h2 id="dependencies">Dependencies</h2>
+  <ul>
+    <li><a href="api/ng/service/$rootScope"><code>$rootScope</code></a></li>
+  </ul>
+  
+
+    
+
+  <h2 id="usage">Usage</h2>
+    
+      <p><code>$q(resolver);</code></p>
+
+
+    
+
+    
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        resolver
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-function">function(function, function)</a>
+      </td>
+      <td>
+        <p>Function which is responsible for resolving or
+  rejecting the newly created promise. The first parameter is a function which resolves the
+  promise, the second parameter is a function which rejects the promise.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
+    
+    <h3>Returns</h3>
+<table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-promise">Promise</a></td>
+    <td><p>The newly created promise.</p>
+</td>
+  </tr>
+</table>
+
+  
+<h2>Methods</h2>
+<ul class="methods">
+  <li id="defer">
+    <h3><p><code>defer();</code></p>
+
+</h3>
+    <div><p>Creates a <code>Deferred</code> object which represents a task which will finish in the future.</p>
+</div>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-deferred">Deferred</a></td>
+    <td><p>Returns a new instance of deferred.</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="reject">
+    <h3><p><code>reject(reason);</code></p>
+
+</h3>
+    <div><p>Creates a promise that is resolved as rejected with the specified <code>reason</code>. This api should be
+used to forward rejection in a chain of promises. If you are dealing with the last promise in
+a promise chain, you don&#39;t need to worry about it.</p>
+<p>When comparing deferreds/promises to the familiar behavior of try/catch/throw, think of
+<code>reject</code> as the <code>throw</code> keyword in JavaScript. This also means that if you &quot;catch&quot; an error via
+a promise error callback and you want to forward the error to the promise derived from the
+current promise, you have to &quot;rethrow&quot; the error by returning a rejection constructed via
+<code>reject</code>.</p>
+<pre><code class="lang-js">promiseB = promiseA.then(function(result) {
+  // success: do something and resolve promiseB
+  //          with the old or a new result
+  return result;
+}, function(reason) {
+  // error: handle the error if possible and
+  //        resolve promiseB with newPromiseOrValue,
+  //        otherwise forward the rejection to promiseB
+  if (canHandle(reason)) {
+   // handle the error and recover
+   return newPromiseOrValue;
+  }
+  return $q.reject(reason);
+});
+</code></pre>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        reason
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">*</a>
+      </td>
+      <td>
+        <p>Constant, message, exception or an object representing the rejection reason.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-promise">Promise</a></td>
+    <td><p>Returns a promise that was already resolved as rejected with the <code>reason</code>.</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="when">
+    <h3><p><code>when(value);</code></p>
+
+</h3>
+    <div><p>Wraps an object that might be a value or a (3rd party) then-able promise into a $q promise.
+This is useful when you are dealing with an object that might or might not be a promise, or if
+the promise comes from a source that can&#39;t be trusted.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        value
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">*</a>
+      </td>
+      <td>
+        <p>Value or a promise</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-promise">Promise</a></td>
+    <td><p>Returns a promise of the passed value or promise</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="all">
+    <h3><p><code>all(promises);</code></p>
+
+</h3>
+    <div><p>Combines multiple promises into a single promise that is resolved when all of the input
+promises are resolved.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        promises
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-array">Array.&lt;Promise&gt;</a><a href="" class="label type-hint type-hint-object">Object.&lt;Promise&gt;</a>
+      </td>
+      <td>
+        <p>An array or hash of promises.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-promise">Promise</a></td>
+    <td><p>Returns a single promise that will be resolved with an array/hash of values,
+  each value corresponding to the promise at the same index/key in the <code>promises</code> array/hash.
+  If any of the promises is resolved with a rejection, this resulting promise will be rejected
+  with the same rejection value.</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  </ul>
+  
+  
+
+
+
+  
+</div>
+
+

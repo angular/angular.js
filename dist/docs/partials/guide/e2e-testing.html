@@ -1,0 +1,69 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/guide/e2e-testing.ngdoc?message=docs(guide%2FE2E Testing)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1 id="e2e-testing">E2E Testing</h1>
+<div class="alert alert-danger">
+<strong>Note:</strong> In the past, end-to-end testing could be done with a deprecated tool called
+<a href="http://code.angularjs.org/1.2.16/docs/guide/e2e-testing">Angular Scenario Runner</a>. That tool
+is now in maintenance mode.
+</div>
+
+<p>As applications grow in size and complexity, it becomes unrealistic to rely on manual testing to
+verify the correctness of new features, catch bugs and notice regressions. Unit tests
+are the first line of defense for catching bugs, but sometimes issues come up with integration
+between components which can&#39;t be captured in a unit test. End-to-end tests are made to find
+these problems.</p>
+<p>We have built <a href="https://github.com/angular/protractor">Protractor</a>, an end
+to end test runner which simulates user interactions that will help you verify the health of your
+Angular application.</p>
+<h2 id="using-protractor">Using Protractor</h2>
+<p>Protractor is a <a href="http://nodejs.org">Node.js</a> program, and runs end-to-end tests that are also
+written in JavaScript and run with node. Protractor uses <a href="https://code.google.com/p/selenium/wiki/GettingStarted">WebDriver</a>
+to control browsers and simulate user actions.</p>
+<p>For more information on Protractor, view <a href="http://angular.github.io/protractor/#/getting-started">getting started</a>
+or the <a href="http://angular.github.io/protractor/#/api">api docs</a>.</p>
+<p>Protractor uses <a href="http://jasmine.github.io/1.3/introduction.html">Jasmine</a> for its test syntax.
+As in unit testing, a test file is comprised of one or
+more <code>it</code> blocks that describe the requirements of your application. <code>it</code> blocks are made of
+<strong>commands</strong> and <strong>expectations</strong>. Commands tell Protractor to do something with the application
+such as navigate to a page or click on a button. Expectations tell Protractor to assert something
+about the application&#39;s state, such as the value of a field or the current URL.</p>
+<p>If any expectation within an <code>it</code> block fails, the runner marks the <code>it</code> as &quot;failed&quot; and continues
+on to the next block.</p>
+<p>Test files may also have <code>beforeEach</code> and <code>afterEach</code> blocks, which will be run before or after
+each <code>it</code> block regardless of whether the block passes or fails.</p>
+<p><img src="img/guide/scenario_runner.png"></p>
+<p>In addition to the above elements, tests may also contain helper functions to avoid duplicating
+code in the <code>it</code> blocks.</p>
+<p>Here is an example of a simple test:</p>
+<pre><code class="lang-js">describe(&#39;TODO list&#39;, function() {
+  it(&#39;should filter results&#39;, function() {
+
+    // Find the element with ng-model=&quot;user&quot; and type &quot;jacksparrow&quot; into it
+    element(by.model(&#39;user&#39;)).sendKeys(&#39;jacksparrow&#39;);
+
+    // Find the first (and only) button on the page and click it
+    element(by.css(&#39;:button&#39;)).click();
+
+    // Verify that there are 10 tasks
+    expect(element.all(by.repeater(&#39;task in tasks&#39;)).count()).toEqual(10);
+
+    // Enter &#39;groceries&#39; into the element with ng-model=&quot;filterText&quot;
+    element(by.model(&#39;filterText&#39;)).sendKeys(&#39;groceries&#39;);
+
+    // Verify that now there is only one item in the task list
+    expect(element.all(by.repeater(&#39;task in tasks&#39;)).count()).toEqual(1);
+  });
+});
+</code></pre>
+<p>This test describes the requirements of a ToDo list, specifically, that it should be able to
+filter the list of items.</p>
+<h2 id="example">Example</h2>
+<p>See the <a href="https://github.com/angular/angular-seed">angular-seed</a> project for more examples, or look
+at the embedded examples in the Angular documentation (For example, <a href="api/ng/service/$http">$http</a>
+has an end-to-end test in the example under the <code>protractor.js</code> tag).</p>
+<h2 id="caveats">Caveats</h2>
+<p>Protractor does not work out-of-the-box with apps that bootstrap manually using
+<code>angular.bootstrap</code>. You must use the <code>ng-app</code> directive.</p>
+
+

@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Example - example-NgModelController-production</title>
+  <link href="style.css" rel="stylesheet" type="text/css">
+  
+
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular-sanitize.js"></script>
+  <script src="script.js"></script>
+  
+
+  
+</head>
+<body ng-app="customControl">
+  <form name="myForm">
+ <div contenteditable
+      name="myWidget" ng-model="userContent"
+      strip-br="true"
+      required>Change me!</div>
+  <span ng-show="myForm.myWidget.$error.required">Required!</span>
+ <hr>
+ <textarea ng-model="userContent"></textarea>
+</form>
+</body>
+</html>

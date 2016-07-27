@@ -1,0 +1,31 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/error/$injector/pget.ngdoc?message=docs(error%2Fpget)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1>Error: error:pget
+  <div><span class='hint'>Provider Missing $get</span></div>
+</h1>
+
+<div>
+    <pre class="minerr-errmsg" error-display="Provider '{0}' must define $get factory method.">Provider '{0}' must define $get factory method.</pre>
+</div>
+
+<h2>Description</h2>
+<div class="description">
+  <p>This error occurs when attempting to register a provider that does not have a
+<code>$get</code> method. For example:</p>
+<pre><code>function BadProvider() {} // No $get method!
+angular.module(&quot;myApp&quot;, [])
+  .provider(&#39;bad&#39;, BadProvider);  // this throws the error
+</code></pre>
+<p>To fix the error, fill in the <code>$get</code> method on the provider like so:</p>
+<pre><code>function GoodProvider() {
+  this.$get = angular.noop;
+}
+angular.module(&quot;myApp&quot;, [])
+  .provider(&#39;good&#39;, GoodProvider);
+</code></pre>
+<p>For more information, refer to the <a href="api/auto/service/$provide#provider">$provide.provider</a> api doc.</p>
+
+</div>
+
+

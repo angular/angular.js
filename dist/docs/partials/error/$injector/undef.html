@@ -1,0 +1,38 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/error/$injector/undef.ngdoc?message=docs(error%2Fundef)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1>Error: error:undef
+  <div><span class='hint'>Undefined Value</span></div>
+</h1>
+
+<div>
+    <pre class="minerr-errmsg" error-display="Provider '{0}' must return a value from $get factory method.">Provider '{0}' must return a value from $get factory method.</pre>
+</div>
+
+<h2>Description</h2>
+<div class="description">
+  <p>This error results from registering a factory which does not return a value (or whose return value is undefined).</p>
+<p>The following is an example of a factory which will throw this error upon injection:</p>
+<pre><code class="lang-js">angular.module(&quot;badModule&quot;, []).
+factory(&quot;badFactory&quot;, function() {
+  doLotsOfThings();
+  butDontReturnAValue();
+});
+</code></pre>
+<p>In order to prevent the error, return a value of some sort, such as an object which exposes an API for working
+with the injected object.</p>
+<pre><code class="lang-js">angular.module(&quot;goodModule&quot;, []).
+factory(&quot;goodFactory&quot;, function() {
+  doLotsOfThings();
+  butDontReturnAValue();
+
+  return {
+      doTheThing: function methodThatDoesAThing() {
+      }
+  };
+});
+</code></pre>
+
+</div>
+
+

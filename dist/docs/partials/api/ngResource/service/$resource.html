@@ -1,0 +1,382 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ngResource/resource.js?message=docs($resource)%3A%20describe%20your%20change...#L62' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ngResource/resource.js#L62' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">$resource</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+  
+
+    <li>
+      - service in module <a href="api/ngResource">ngResource</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>A factory which creates a resource object that lets you interact with
+<a href="http://en.wikipedia.org/wiki/Representational_State_Transfer">RESTful</a> server-side data sources.</p>
+<p>The returned resource object has action methods which provide high-level behaviors without
+the need to interact with the low level <a href="api/ng/service/$http">$http</a> service.</p>
+<p>Requires the <a href="api/ngResource"><code>ngResource</code></a> module to be installed.</p>
+<p>By default, trailing slashes will be stripped from the calculated URLs,
+which can pose problems with server backends that do not expect that
+behavior.  This can be disabled by configuring the <code>$resourceProvider</code> like
+this:</p>
+<pre><code class="lang-js">app.config([&#39;$resourceProvider&#39;, function($resourceProvider) {
+  // Don&#39;t strip trailing slashes from calculated URLs
+  $resourceProvider.defaults.stripTrailingSlashes = false;
+}]);
+</code></pre>
+
+</div>
+
+
+
+
+<div>
+  
+  <h2 id="dependencies">Dependencies</h2>
+  <ul>
+    <li><a href="api/ng/service/$http"><code>$http</code></a></li>
+  </ul>
+  
+
+    
+
+  <h2 id="usage">Usage</h2>
+    
+      <p><code>$resource(url, [paramDefaults], [actions], options);</code></p>
+
+
+    
+
+    
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        url
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>A parametrized URL template with parameters prefixed by <code>:</code> as in
+  <code>/user/:username</code>. If you are using a URL with a port number (e.g.
+  <code>http://example.com:8080/api</code>), it will be respected.</p>
+<p>  If you are using a url with a suffix, just add the suffix, like this:
+  <code>$resource(&#39;http://example.com/resource.json&#39;)</code> or <code>$resource(&#39;http://example.com/:id.json&#39;)</code>
+  or even <code>$resource(&#39;http://example.com/resource/:resource_id.:format&#39;)</code>
+  If the parameter before the suffix is empty, :resource_id in this case, then the <code>/.</code> will be
+  collapsed down to a single <code>.</code>.  If you need this sequence to appear and not collapse then you
+  can escape it with <code>/\.</code>.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        paramDefaults
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">Object</a>
+      </td>
+      <td>
+        <p>Default values for <code>url</code> parameters. These can be overridden in
+  <code>actions</code> methods. If any of the parameter value is a function, it will be executed every time
+  when a param value needs to be obtained for a request (unless the param was overridden).</p>
+<p>  Each key value in the parameter object is first bound to url template if present and then any
+  excess keys are appended to the url search query after the <code>?</code>.</p>
+<p>  Given a template <code>/path/:verb</code> and parameter <code>{verb:&#39;greet&#39;, salutation:&#39;Hello&#39;}</code> results in
+  URL <code>/path/greet?salutation=Hello</code>.</p>
+<p>  If the parameter value is prefixed with <code>@</code> then the value for that parameter will be extracted
+  from the corresponding property on the <code>data</code> object (provided when calling an action method).  For
+  example, if the <code>defaultParam</code> object is <code>{someParam: &#39;@someProp&#39;}</code> then the value of <code>someParam</code>
+  will be <code>data.someProp</code>.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        actions
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">Object.&lt;Object&gt;=</a>
+      </td>
+      <td>
+        <p>Hash with declaration of custom actions that should extend
+  the default set of resource actions. The declaration should be created in the format of <a href="api/ng/service/$http#usage">$http.config</a>:</p>
+<pre><code>{action1: {method:?, params:?, isArray:?, headers:?, ...},
+ action2: {method:?, params:?, isArray:?, headers:?, ...},
+ ...}
+</code></pre>
+<p>  Where:</p>
+<ul>
+<li><strong><code>action</code></strong> – {string} – The name of action. This name becomes the name of the method on
+your resource object.</li>
+<li><strong><code>method</code></strong> – {string} – Case insensitive HTTP method (e.g. <code>GET</code>, <code>POST</code>, <code>PUT</code>,
+<code>DELETE</code>, <code>JSONP</code>, etc).</li>
+<li><strong><code>params</code></strong> – {Object=} – Optional set of pre-bound parameters for this action. If any of
+the parameter value is a function, it will be executed every time when a param value needs to
+be obtained for a request (unless the param was overridden).</li>
+<li><strong><code>url</code></strong> – {string} – action specific <code>url</code> override. The url templating is supported just
+like for the resource-level urls.</li>
+<li><strong><code>isArray</code></strong> – {boolean=} – If true then the returned object for this action is an array,
+see <code>returns</code> section.</li>
+<li><strong><code>transformRequest</code></strong> –
+<code>{function(data, headersGetter)|Array.&lt;function(data, headersGetter)&gt;}</code> –
+transform function or an array of such functions. The transform function takes the http
+request body and headers and returns its transformed (typically serialized) version.
+By default, transformRequest will contain one function that checks if the request data is
+an object and serializes to using <code>angular.toJson</code>. To prevent this behavior, set
+<code>transformRequest</code> to an empty array: <code>transformRequest: []</code></li>
+<li><strong><code>transformResponse</code></strong> –
+<code>{function(data, headersGetter)|Array.&lt;function(data, headersGetter)&gt;}</code> –
+transform function or an array of such functions. The transform function takes the http
+response body and headers and returns its transformed (typically deserialized) version.
+By default, transformResponse will contain one function that checks if the response looks like
+a JSON string and deserializes it using <code>angular.fromJson</code>. To prevent this behavior, set
+<code>transformResponse</code> to an empty array: <code>transformResponse: []</code></li>
+<li><strong><code>cache</code></strong> – <code>{boolean|Cache}</code> – If true, a default $http cache will be used to cache the
+GET request, otherwise if a cache instance built with
+<a href="api/ng/service/$cacheFactory">$cacheFactory</a>, this cache will be used for
+caching.</li>
+<li><strong><code>timeout</code></strong> – <code>{number|Promise}</code> – timeout in milliseconds, or <a href="api/ng/service/$q">promise</a> that
+should abort the request when resolved.</li>
+<li><strong><code>withCredentials</code></strong> - <code>{boolean}</code> - whether to set the <code>withCredentials</code> flag on the
+XHR object. See
+<a href="https://developer.mozilla.org/en/http_access_control#section_5">requests with credentials</a>
+for more information.</li>
+<li><strong><code>responseType</code></strong> - <code>{string}</code> - see
+<a href="https://developer.mozilla.org/en-US/docs/DOM/XMLHttpRequest#responseType">requestType</a>.</li>
+<li><strong><code>interceptor</code></strong> - <code>{Object=}</code> - The interceptor object has two optional methods -
+<code>response</code> and <code>responseError</code>. Both <code>response</code> and <code>responseError</code> interceptors get called
+with <code>http response</code> object. See <a href="api/ng/service/$http">$http interceptors</a>.</li>
+</ul>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        options
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">Object</a>
+      </td>
+      <td>
+        <p>Hash with custom settings that should extend the
+  default <code>$resourceProvider</code> behavior.  The only supported option is</p>
+<p>  Where:</p>
+<ul>
+<li><strong><code>stripTrailingSlashes</code></strong> – {boolean} – If true then the trailing
+slashes from any calculated URL will be stripped. (Defaults to true.)</li>
+</ul>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
+    
+    <h3>Returns</h3>
+<table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-object">Object</a></td>
+    <td><p>A resource &quot;class&quot; object with methods for the default set of resource actions
+  optionally extended with custom <code>actions</code>. The default set contains these actions:</p>
+<pre><code class="lang-js">{ &#39;get&#39;:    {method:&#39;GET&#39;},
+  &#39;save&#39;:   {method:&#39;POST&#39;},
+  &#39;query&#39;:  {method:&#39;GET&#39;, isArray:true},
+  &#39;remove&#39;: {method:&#39;DELETE&#39;},
+  &#39;delete&#39;: {method:&#39;DELETE&#39;} };
+</code></pre>
+<p>  Calling these methods invoke an <a href="api/ng/service/$http"><code>$http</code></a> with the specified http method,
+  destination and parameters. When the data is returned from the server then the object is an
+  instance of the resource class. The actions <code>save</code>, <code>remove</code> and <code>delete</code> are available on it
+  as  methods with the <code>$</code> prefix. This allows you to easily perform CRUD operations (create,
+  read, update, delete) on server-side data like this:</p>
+<pre><code class="lang-js">var User = $resource(&#39;/user/:userId&#39;, {userId:&#39;@id&#39;});
+var user = User.get({userId:123}, function() {
+  user.abc = true;
+  user.$save();
+});
+</code></pre>
+<p>  It is important to realize that invoking a $resource object method immediately returns an
+  empty reference (object or array depending on <code>isArray</code>). Once the data is returned from the
+  server the existing reference is populated with the actual data. This is a useful trick since
+  usually the resource is assigned to a model which is then rendered by the view. Having an empty
+  object results in no rendering, once the data arrives from the server then the object is
+  populated with the data and the view automatically re-renders itself showing the new data. This
+  means that in most cases one never has to write a callback function for the action methods.</p>
+<p>  The action methods on the class object or instance object can be invoked with the following
+  parameters:</p>
+<ul>
+<li>HTTP GET &quot;class&quot; actions: <code>Resource.action([parameters], [success], [error])</code></li>
+<li>non-GET &quot;class&quot; actions: <code>Resource.action([parameters], postData, [success], [error])</code></li>
+<li><p>non-GET instance actions:  <code>instance.$action([parameters], [success], [error])</code></p>
+<p>Success callback is called with (value, responseHeaders) arguments. Error callback is called
+with (httpResponse) argument.</p>
+<p>Class actions return empty instance (with additional properties below).
+Instance actions return promise of the action.</p>
+<p>The Resource instances and collection have these additional properties:</p>
+</li>
+<li><p><code>$promise</code>: the <a href="api/ng/service/$q">promise</a> of the original server interaction that created this
+instance or collection.</p>
+<p>On success, the promise is resolved with the same resource instance or collection object,
+updated with data from server. This makes it easy to use in
+<a href="api/ngRoute/provider/$routeProvider">resolve section of $routeProvider.when()</a> to defer view
+rendering until the resource(s) are loaded.</p>
+<p>On failure, the promise is resolved with the <a href="api/ng/service/$http">http response</a> object, without
+the <code>resource</code> property.</p>
+<p>If an interceptor object was provided, the promise will instead be resolved with the value
+returned by the interceptor.</p>
+</li>
+<li><p><code>$resolved</code>: <code>true</code> after first server interaction is completed (either with success or
+ rejection), <code>false</code> before that. Knowing if the Resource has been resolved is useful in
+ data-binding.</p>
+</li>
+</ul>
+</td>
+  </tr>
+</table>
+
+  
+  
+  
+
+
+
+  
+  <h2 id="example">Example</h2><h1 id="credit-card-resource">Credit card resource</h1>
+<pre><code class="lang-js">// Define CreditCard class
+var CreditCard = $resource(&#39;/user/:userId/card/:cardId&#39;,
+ {userId:123, cardId:&#39;@id&#39;}, {
+  charge: {method:&#39;POST&#39;, params:{charge:true}}
+ });
+
+// We can retrieve a collection from the server
+var cards = CreditCard.query(function() {
+  // GET: /user/123/card
+  // server returns: [ {id:456, number:&#39;1234&#39;, name:&#39;Smith&#39;} ];
+
+  var card = cards[0];
+  // each item is an instance of CreditCard
+  expect(card instanceof CreditCard).toEqual(true);
+  card.name = &quot;J. Smith&quot;;
+  // non GET methods are mapped onto the instances
+  card.$save();
+  // POST: /user/123/card/456 {id:456, number:&#39;1234&#39;, name:&#39;J. Smith&#39;}
+  // server returns: {id:456, number:&#39;1234&#39;, name: &#39;J. Smith&#39;};
+
+  // our custom method is mapped as well.
+  card.$charge({amount:9.99});
+  // POST: /user/123/card/456?amount=9.99&amp;charge=true {id:456, number:&#39;1234&#39;, name:&#39;J. Smith&#39;}
+});
+
+// we can create an instance as well
+var newCard = new CreditCard({number:&#39;0123&#39;});
+newCard.name = &quot;Mike Smith&quot;;
+newCard.$save();
+// POST: /user/123/card {number:&#39;0123&#39;, name:&#39;Mike Smith&#39;}
+// server returns: {id:789, number:&#39;0123&#39;, name: &#39;Mike Smith&#39;};
+expect(newCard.id).toEqual(789);
+</code></pre>
+<p>The object returned from this function execution is a resource &quot;class&quot; which has &quot;static&quot; method
+for each action in the definition.</p>
+<p>Calling these methods invoke <code>$http</code> on the <code>url</code> template with the given <code>method</code>, <code>params</code> and
+<code>headers</code>.
+When the data is returned from the server then the object is an instance of the resource type and
+all of the non-GET methods are available with <code>$</code> prefix. This allows you to easily support CRUD
+operations (create, read, update, delete) on server-side data.</p>
+<pre><code class="lang-js">var User = $resource(&#39;/user/:userId&#39;, {userId:&#39;@id&#39;});
+User.get({userId:123}, function(user) {
+  user.abc = true;
+  user.$save();
+});
+</code></pre>
+<p>It&#39;s worth noting that the success callback for <code>get</code>, <code>query</code> and other methods gets passed
+in the response that came from the server as well as $http header getter function, so one
+could rewrite the above example and get access to http headers as:</p>
+<pre><code class="lang-js">var User = $resource(&#39;/user/:userId&#39;, {userId:&#39;@id&#39;});
+User.get({userId:123}, function(u, getResponseHeaders){
+  u.abc = true;
+  u.$save(function(u, putResponseHeaders) {
+    //u =&gt; saved user object
+    //putResponseHeaders =&gt; $http header getter
+  });
+});
+</code></pre>
+<p>You can also access the raw <code>$http</code> promise via the <code>$promise</code> property on the object returned</p>
+<pre><code>var User = $resource(&#39;/user/:userId&#39;, {userId:&#39;@id&#39;});
+User.get({userId:123})
+    .$promise.then(function(user) {
+      $scope.user = user;
+    });
+</code></pre>
+<h1 id="creating-a-custom-put-request">Creating a custom &#39;PUT&#39; request</h1>
+<p>In this example we create a custom method on our resource to make a PUT request</p>
+<pre><code class="lang-js">var app = angular.module(&#39;app&#39;, [&#39;ngResource&#39;, &#39;ngRoute&#39;]);
+
+// Some APIs expect a PUT request in the format URL/object/ID
+// Here we are creating an &#39;update&#39; method
+app.factory(&#39;Notes&#39;, [&#39;$resource&#39;, function($resource) {
+return $resource(&#39;/notes/:id&#39;, null,
+    {
+        &#39;update&#39;: { method:&#39;PUT&#39; }
+    });
+}]);
+
+// In our controller we get the ID from the URL using ngRoute and $routeParams
+// We pass in $routeParams and our Notes factory along with $scope
+app.controller(&#39;NotesCtrl&#39;, [&#39;$scope&#39;, &#39;$routeParams&#39;, &#39;Notes&#39;,
+                                   function($scope, $routeParams, Notes) {
+// First get a note object from the factory
+var note = Notes.get({ id:$routeParams.id });
+$id = note.id;
+
+// Now call update passing in the ID first then the object you are updating
+Notes.update({ id:$id }, note);
+
+// This will PUT /notes/ID with the note object in the request payload
+}]);
+</code></pre>
+
+</div>
+
+

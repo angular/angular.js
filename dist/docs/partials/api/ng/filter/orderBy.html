@@ -1,0 +1,207 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/filter/orderBy.js?message=docs(orderBy)%3A%20describe%20your%20change...#L3' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/filter/orderBy.js#L3' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">orderBy</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - filter in module <a href="api/ng">ng</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Orders a specified <code>array</code> by the <code>expression</code> predicate. It is ordered alphabetically
+for strings and numerically for numbers. Note: if you notice numbers are not being sorted
+correctly, make sure they are actually being saved as numbers and not strings.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+  
+  <h2>Usage</h2>
+  <h3>In HTML Template Binding</h3>
+  
+    <pre><code>{{ orderBy_expression | orderBy : expression : reverse}}</code></pre>
+  
+
+  <h3>In JavaScript</h3>
+  <pre><code>$filter(&#39;orderBy&#39;)(array, expression, reverse)</code></pre>
+
+  
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        array
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-array">Array</a>
+      </td>
+      <td>
+        <p>The array to sort.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        expression
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-function">function(*)</a><a href="" class="label type-hint type-hint-string">string</a><a href="" class="label type-hint type-hint-array">Array.&lt;(function(*)|string)&gt;=</a>
+      </td>
+      <td>
+        <p>A predicate to be
+   used by the comparator to determine the order of elements.</p>
+<p>   Can be one of:</p>
+<ul>
+<li><code>function</code>: Getter function. The result of this function will be sorted using the
+<code>&lt;</code>, <code>=</code>, <code>&gt;</code> operator.</li>
+<li><code>string</code>: An Angular expression. The result of this expression is used to compare elements
+(for example <code>name</code> to sort by a property called <code>name</code> or <code>name.substr(0, 3)</code> to sort by
+3 first characters of a property called <code>name</code>). The result of a constant expression
+is interpreted as a property name to be used in comparisons (for example <code>&quot;special name&quot;</code>
+to sort object by the value of their <code>special name</code> property). An expression can be
+optionally prefixed with <code>+</code> or <code>-</code> to control ascending or descending sort order
+(for example, <code>+name</code> or <code>-name</code>). If no property is provided, (e.g. <code>&#39;+&#39;</code>) then the array
+element itself is used to compare where sorting.</li>
+<li><p><code>Array</code>: An array of function or string predicates. The first predicate in the array
+is used for sorting, but when two items are equivalent, the next predicate is used.</p>
+<p>If the predicate is missing or empty then it defaults to <code>&#39;+&#39;</code>.</p>
+</li>
+</ul>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        reverse
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-boolean">boolean</a>
+      </td>
+      <td>
+        <p>Reverse the order of the array.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
+  
+  <h3>Returns</h3>
+<table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-array">Array</a></td>
+    <td><p>Sorted copy of the source array.</p>
+</td>
+  </tr>
+</table>
+
+
+  
+  <h2 id="example">Example</h2><p>
+
+<div>
+  <a ng-click="openPlunkr('examples/example-example103', $event)" class="btn pull-right">
+    <i class="glyphicon glyphicon-edit">&nbsp;</i>
+    Edit in Plunker</a>
+
+  <div class="runnable-example"
+      path="examples/example-example103"
+      module="orderByExample">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;script&gt;&#10;  angular.module(&#39;orderByExample&#39;, [])&#10;    .controller(&#39;ExampleController&#39;, [&#39;$scope&#39;, function($scope) {&#10;      $scope.friends =&#10;          [{name:&#39;John&#39;, phone:&#39;555-1212&#39;, age:10},&#10;           {name:&#39;Mary&#39;, phone:&#39;555-9876&#39;, age:19},&#10;           {name:&#39;Mike&#39;, phone:&#39;555-4321&#39;, age:21},&#10;           {name:&#39;Adam&#39;, phone:&#39;555-5678&#39;, age:35},&#10;           {name:&#39;Julie&#39;, phone:&#39;555-8765&#39;, age:29}];&#10;      $scope.predicate = &#39;-age&#39;;&#10;    }]);&#10;&lt;/script&gt;&#10;&lt;div ng-controller=&quot;ExampleController&quot;&gt;&#10;  &lt;pre&gt;Sorting predicate = {{predicate}}; reverse = {{reverse}}&lt;/pre&gt;&#10;  &lt;hr/&gt;&#10;  [ &lt;a href=&quot;&quot; ng-click=&quot;predicate=&#39;&#39;&quot;&gt;unsorted&lt;/a&gt; ]&#10;  &lt;table class=&quot;friend&quot;&gt;&#10;    &lt;tr&gt;&#10;      &lt;th&gt;&lt;a href=&quot;&quot; ng-click=&quot;predicate = &#39;name&#39;; reverse=false&quot;&gt;Name&lt;/a&gt;&#10;          (&lt;a href=&quot;&quot; ng-click=&quot;predicate = &#39;-name&#39;; reverse=false&quot;&gt;^&lt;/a&gt;)&lt;/th&gt;&#10;      &lt;th&gt;&lt;a href=&quot;&quot; ng-click=&quot;predicate = &#39;phone&#39;; reverse=!reverse&quot;&gt;Phone Number&lt;/a&gt;&lt;/th&gt;&#10;      &lt;th&gt;&lt;a href=&quot;&quot; ng-click=&quot;predicate = &#39;age&#39;; reverse=!reverse&quot;&gt;Age&lt;/a&gt;&lt;/th&gt;&#10;    &lt;/tr&gt;&#10;    &lt;tr ng-repeat=&quot;friend in friends | orderBy:predicate:reverse&quot;&gt;&#10;      &lt;td&gt;{{friend.name}}&lt;/td&gt;&#10;      &lt;td&gt;{{friend.phone}}&lt;/td&gt;&#10;      &lt;td&gt;{{friend.age}}&lt;/td&gt;&#10;    &lt;/tr&gt;&#10;  &lt;/table&gt;&#10;&lt;/div&gt;</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-example103/index.html" name="example-example103"></iframe>
+  </div>
+</div>
+
+
+</p>
+<p>It&#39;s also possible to call the orderBy filter manually, by injecting <code>$filter</code>, retrieving the
+filter routine with <code>$filter(&#39;orderBy&#39;)</code>, and calling the returned filter routine with the
+desired parameters.</p>
+<p>Example:</p>
+<p>
+
+<div>
+  <a ng-click="openPlunkr('examples/example-example104', $event)" class="btn pull-right">
+    <i class="glyphicon glyphicon-edit">&nbsp;</i>
+    Edit in Plunker</a>
+
+  <div class="runnable-example"
+      path="examples/example-example104"
+      module="orderByExample">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;div ng-controller=&quot;ExampleController&quot;&gt;&#10;  &lt;table class=&quot;friend&quot;&gt;&#10;    &lt;tr&gt;&#10;      &lt;th&gt;&lt;a href=&quot;&quot; ng-click=&quot;reverse=false;order(&#39;name&#39;, false)&quot;&gt;Name&lt;/a&gt;&#10;        (&lt;a href=&quot;&quot; ng-click=&quot;order(&#39;-name&#39;,false)&quot;&gt;^&lt;/a&gt;)&lt;/th&gt;&#10;      &lt;th&gt;&lt;a href=&quot;&quot; ng-click=&quot;reverse=!reverse;order(&#39;phone&#39;, reverse)&quot;&gt;Phone Number&lt;/a&gt;&lt;/th&gt;&#10;      &lt;th&gt;&lt;a href=&quot;&quot; ng-click=&quot;reverse=!reverse;order(&#39;age&#39;,reverse)&quot;&gt;Age&lt;/a&gt;&lt;/th&gt;&#10;    &lt;/tr&gt;&#10;    &lt;tr ng-repeat=&quot;friend in friends&quot;&gt;&#10;      &lt;td&gt;{{friend.name}}&lt;/td&gt;&#10;      &lt;td&gt;{{friend.phone}}&lt;/td&gt;&#10;      &lt;td&gt;{{friend.age}}&lt;/td&gt;&#10;    &lt;/tr&gt;&#10;  &lt;/table&gt;&#10;&lt;/div&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="script.js"
+      language="js"
+      type="js">
+      <pre><code>angular.module(&#39;orderByExample&#39;, [])&#10;.controller(&#39;ExampleController&#39;, [&#39;$scope&#39;, &#39;$filter&#39;, function($scope, $filter) {&#10;  var orderBy = $filter(&#39;orderBy&#39;);&#10;  $scope.friends = [&#10;    { name: &#39;John&#39;,    phone: &#39;555-1212&#39;,    age: 10 },&#10;    { name: &#39;Mary&#39;,    phone: &#39;555-9876&#39;,    age: 19 },&#10;    { name: &#39;Mike&#39;,    phone: &#39;555-4321&#39;,    age: 21 },&#10;    { name: &#39;Adam&#39;,    phone: &#39;555-5678&#39;,    age: 35 },&#10;    { name: &#39;Julie&#39;,   phone: &#39;555-8765&#39;,    age: 29 }&#10;  ];&#10;  $scope.order = function(predicate, reverse) {&#10;    $scope.friends = orderBy($scope.friends, predicate, reverse);&#10;  };&#10;  $scope.order(&#39;-age&#39;,false);&#10;}]);</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-example104/index.html" name="example-example104"></iframe>
+  </div>
+</div>
+
+
+</p>
+
+</div>
+
+

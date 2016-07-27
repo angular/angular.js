@@ -1,0 +1,58 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/error/$injector/strictdi.ngdoc?message=docs(error%2Fstrictdi)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1>Error: error:strictdi
+  <div><span class='hint'>Explicit annotation required</span></div>
+</h1>
+
+<div>
+    <pre class="minerr-errmsg" error-display="{0} is not using explicit annotation and cannot be invoked in strict mode">{0} is not using explicit annotation and cannot be invoked in strict mode</pre>
+</div>
+
+<h2>Description</h2>
+<div class="description">
+  <p>This error occurs when attempting to invoke a function or provider which
+has not been explicitly annotated, while the application is running with
+strict-di mode enabled.</p>
+<p>For example:</p>
+<pre><code>angular.module(&quot;myApp&quot;, [])
+// BadController cannot be invoked, because
+// the dependencies to be injected are not
+// explicitly listed.
+.controller(&quot;BadController&quot;, function($scope, $http, $filter) {
+  // ...
+});
+</code></pre>
+<p>To fix the error, explicitly annotate the function using either the inline
+bracket notation, or with the $inject property:</p>
+<pre><code>function GoodController1($scope, $http, $filter) {
+  // ...
+}
+GoodController1.$inject = [&quot;$scope&quot;, &quot;$http&quot;, &quot;$filter&quot;];
+
+angular.module(&quot;myApp&quot;, [])
+  // GoodController1 can be invoked because it
+  // had an $inject property, which is an array
+  // containing the dependency names to be
+  // injected.
+  .controller(&quot;GoodController1&quot;, GoodController1)
+
+  // GoodController2 can also be invoked, because
+  // the dependencies to inject are listed, in
+  // order, in the array, with the function to be
+  // invoked trailing on the end.
+  .controller(&quot;GoodController2&quot;, [
+    &quot;$scope&quot;,
+    &quot;$http&quot;,
+    &quot;$filter&quot;,
+    function($scope, $http, $filter) {
+      // ...
+    }
+  ]);
+</code></pre>
+<p>For more information about strict-di mode, see <a href="api/ng/directive/ngApp">ngApp</a>
+and <a href="api/ng/function/angular.bootstrap">angular.bootstrap</a>.</p>
+
+</div>
+
+

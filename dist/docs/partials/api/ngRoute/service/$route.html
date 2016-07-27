@@ -1,0 +1,297 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ngRoute/route.js?message=docs($route)%3A%20describe%20your%20change...#L254' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ngRoute/route.js#L254' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">$route</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+  <li>
+    <a href="api/ngRoute/provider/$routeProvider">- $routeProvider</a>
+  </li>
+
+    <li>
+      - service in module <a href="api/ngRoute">ngRoute</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p><code>$route</code> is used for deep-linking URLs to controllers and views (HTML partials).
+It watches <code>$location.url()</code> and tries to map the path to an existing route definition.</p>
+<p>Requires the <a href="api/ngRoute"><code>ngRoute</code></a> module to be installed.</p>
+<p>You can define routes through <a href="api/ngRoute/provider/$routeProvider">$routeProvider</a>&#39;s API.</p>
+<p>The <code>$route</code> service is typically used in conjunction with the
+<a href="api/ngRoute/directive/ngView"><code>ngView</code></a> directive and the
+<a href="api/ngRoute/service/$routeParams"><code>$routeParams</code></a> service.</p>
+
+</div>
+
+
+
+
+<div>
+  
+  <h2 id="dependencies">Dependencies</h2>
+  <ul>
+    <li><a href="api/ng/service/$location"><code>$location</code></a></li><li><a href="api/ngRoute/service/$routeParams"><code>$routeParams</code></a></li>
+  </ul>
+  
+
+    
+
+  
+
+  
+<h2>Methods</h2>
+<ul class="methods">
+  <li id="reload">
+    <h3><p><code>reload();</code></p>
+
+</h3>
+    <div><p>Causes <code>$route</code> service to reload the current route even if
+<a href="api/ng/service/$location">$location</a> hasn&#39;t changed.</p>
+<p>As a result of that, <a href="api/ngRoute/directive/ngView">ngView</a>
+creates new scope and reinstantiates the controller.</p>
+</div>
+
+    
+
+    
+    
+    
+
+  </li>
+  
+  <li id="updateParams">
+    <h3><p><code>updateParams(newParams);</code></p>
+
+</h3>
+    <div><p>Causes <code>$route</code> service to update the current URL, replacing
+current route parameters with those specified in <code>newParams</code>.
+Provided property names that match the route&#39;s path segment
+definitions will be interpolated into the location&#39;s path, while
+remaining properties will be treated as query params.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        newParams
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">!Object&lt;string, string&gt;</a>
+      </td>
+      <td>
+        <p>mapping of URL parameter names to values</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+
+  </li>
+  </ul>
+  
+<h2>Events</h2>
+<ul class="events">
+  <li id="$routeChangeStart">
+    <h3>$routeChangeStart</h3>
+    <div><p>Broadcasted before a route change. At this  point the route services starts
+resolving all of the dependencies needed for the route change to occur.
+Typically this involves fetching the view template as well as any dependencies
+defined in <code>resolve</code> route property. Once  all of the dependencies are resolved
+<code>$routeChangeSuccess</code> is fired.</p>
+<p>The route change (and the <code>$location</code> change that triggered it) can be prevented
+by calling <code>preventDefault</code> method of the event. See <a href="api/ng/type/$rootScope.Scope#$on"><code>$rootScope.Scope</code></a>
+for more details about event object.</p>
+</div>
+    <div class="inline">
+      <h4>Type:</h4>
+      <div class="type">broadcast</div>
+    </div>
+    <div class="inline">
+      <h4>Target:</h4>
+      <div class="target">root scope</div>
+    </div>
+    </li>
+  
+  <li id="$routeChangeSuccess">
+    <h3>$routeChangeSuccess</h3>
+    <div><p>Broadcasted after a route dependencies are resolved.
+<a href="api/ngRoute/directive/ngView">ngView</a> listens for the directive
+to instantiate the controller and render the view.</p>
+</div>
+    <div class="inline">
+      <h4>Type:</h4>
+      <div class="type">broadcast</div>
+    </div>
+    <div class="inline">
+      <h4>Target:</h4>
+      <div class="target">root scope</div>
+    </div>
+    </li>
+  
+  <li id="$routeChangeError">
+    <h3>$routeChangeError</h3>
+    <div><p>Broadcasted if any of the resolve promises are rejected.</p>
+</div>
+    <div class="inline">
+      <h4>Type:</h4>
+      <div class="type">broadcast</div>
+    </div>
+    <div class="inline">
+      <h4>Target:</h4>
+      <div class="target">root scope</div>
+    </div>
+    </li>
+  
+  <li id="$routeUpdate">
+    <h3>$routeUpdate</h3>
+    <div><p>The <code>reloadOnSearch</code> property has been set to false, and we are reusing the same
+instance of the Controller.</p>
+</div>
+    <div class="inline">
+      <h4>Type:</h4>
+      <div class="type">broadcast</div>
+    </div>
+    <div class="inline">
+      <h4>Target:</h4>
+      <div class="target">root scope</div>
+    </div>
+    </li>
+  </ul>
+
+  
+<h2>Properties</h2>
+<ul class="properties">
+  <li id="current">
+    <h3><code>current</code></h3>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-object">Object</a></td>
+    <td><p>Reference to the current route definition.
+The route definition contains:</p>
+<ul>
+<li><code>controller</code>: The controller constructor as define in route definition.</li>
+<li><p><code>locals</code>: A map of locals which is used by <a href="api/ng/service/$controller">$controller</a> service for
+controller instantiation. The <code>locals</code> contain
+the resolved values of the <code>resolve</code> map. Additionally the <code>locals</code> also contain:</p>
+<ul>
+<li><code>$scope</code> - The current route scope.</li>
+<li><code>$template</code> - The current route template HTML.</li>
+</ul>
+</li>
+</ul>
+</td>
+  </tr>
+</table>
+  </li>
+  
+  <li id="routes">
+    <h3><code>routes</code></h3>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-object">Object</a></td>
+    <td><p>Object with all route configuration Objects as its properties.</p>
+</td>
+  </tr>
+</table>
+  </li>
+  </ul>
+
+
+
+  
+  <h2 id="example">Example</h2><p>This example shows how changing the URL hash causes the <code>$route</code> to match a route against the
+URL, and the <code>ngView</code> pulls in the partial.</p>
+<p>
+
+<div>
+  <a ng-click="openPlunkr('examples/example-$route-service', $event)" class="btn pull-right">
+    <i class="glyphicon glyphicon-edit">&nbsp;</i>
+    Edit in Plunker</a>
+
+  <div class="runnable-example"
+      path="examples/example-$route-service"
+      name="$route-service"
+      module="ngRouteExample"
+      deps="angular-route.js"
+      fixBase="true">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;div ng-controller=&quot;MainController&quot;&gt;&#10;  Choose:&#10;  &lt;a href=&quot;Book/Moby&quot;&gt;Moby&lt;/a&gt; |&#10;  &lt;a href=&quot;Book/Moby/ch/1&quot;&gt;Moby: Ch1&lt;/a&gt; |&#10;  &lt;a href=&quot;Book/Gatsby&quot;&gt;Gatsby&lt;/a&gt; |&#10;  &lt;a href=&quot;Book/Gatsby/ch/4?key=value&quot;&gt;Gatsby: Ch4&lt;/a&gt; |&#10;  &lt;a href=&quot;Book/Scarlet&quot;&gt;Scarlet Letter&lt;/a&gt;&lt;br/&gt;&#10;&#10;  &lt;div ng-view&gt;&lt;/div&gt;&#10;&#10;  &lt;hr /&gt;&#10;&#10;  &lt;pre&gt;$location.path() = {{$location.path()}}&lt;/pre&gt;&#10;  &lt;pre&gt;$route.current.templateUrl = {{$route.current.templateUrl}}&lt;/pre&gt;&#10;  &lt;pre&gt;$route.current.params = {{$route.current.params}}&lt;/pre&gt;&#10;  &lt;pre&gt;$route.current.scope.name = {{$route.current.scope.name}}&lt;/pre&gt;&#10;  &lt;pre&gt;$routeParams = {{$routeParams}}&lt;/pre&gt;&#10;&lt;/div&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="book.html"
+      language="html"
+      type="html">
+      <pre><code>controller: {{name}}&lt;br /&gt;&#10;Book Id: {{params.bookId}}&lt;br /&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="chapter.html"
+      language="html"
+      type="html">
+      <pre><code>controller: {{name}}&lt;br /&gt;&#10;Book Id: {{params.bookId}}&lt;br /&gt;&#10;Chapter Id: {{params.chapterId}}</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="script.js"
+      language="js"
+      type="js">
+      <pre><code>angular.module(&#39;ngRouteExample&#39;, [&#39;ngRoute&#39;])&#10;&#10; .controller(&#39;MainController&#39;, function($scope, $route, $routeParams, $location) {&#10;     $scope.$route = $route;&#10;     $scope.$location = $location;&#10;     $scope.$routeParams = $routeParams;&#10; })&#10;&#10; .controller(&#39;BookController&#39;, function($scope, $routeParams) {&#10;     $scope.name = &quot;BookController&quot;;&#10;     $scope.params = $routeParams;&#10; })&#10;&#10; .controller(&#39;ChapterController&#39;, function($scope, $routeParams) {&#10;     $scope.name = &quot;ChapterController&quot;;&#10;     $scope.params = $routeParams;&#10; })&#10;&#10;.config(function($routeProvider, $locationProvider) {&#10;  $routeProvider&#10;   .when(&#39;/Book/:bookId&#39;, {&#10;    templateUrl: &#39;book.html&#39;,&#10;    controller: &#39;BookController&#39;,&#10;    resolve: {&#10;      // I will cause a 1 second delay&#10;      delay: function($q, $timeout) {&#10;        var delay = $q.defer();&#10;        $timeout(delay.resolve, 1000);&#10;        return delay.promise;&#10;      }&#10;    }&#10;  })&#10;  .when(&#39;/Book/:bookId/ch/:chapterId&#39;, {&#10;    templateUrl: &#39;chapter.html&#39;,&#10;    controller: &#39;ChapterController&#39;&#10;  });&#10;&#10;  // configure html5 to get links working on jsfiddle&#10;  $locationProvider.html5Mode(true);&#10;});</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="protractor.js"
+      type="protractor"
+      language="js">
+      <pre><code>it(&#39;should load and compile correct template&#39;, function() {&#10;  element(by.linkText(&#39;Moby: Ch1&#39;)).click();&#10;  var content = element(by.css(&#39;[ng-view]&#39;)).getText();&#10;  expect(content).toMatch(/controller\: ChapterController/);&#10;  expect(content).toMatch(/Book Id\: Moby/);&#10;  expect(content).toMatch(/Chapter Id\: 1/);&#10;&#10;  element(by.partialLinkText(&#39;Scarlet&#39;)).click();&#10;&#10;  content = element(by.css(&#39;[ng-view]&#39;)).getText();&#10;  expect(content).toMatch(/controller\: BookController/);&#10;  expect(content).toMatch(/Book Id\: Scarlet/);&#10;});</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-$route-service/index.html" name="example-$route-service"></iframe>
+  </div>
+</div>
+
+
+</p>
+
+</div>
+
+

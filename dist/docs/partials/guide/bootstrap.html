@@ -1,0 +1,132 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/guide/bootstrap.ngdoc?message=docs(guide%2FBootstrap)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1 id="bootstrap">Bootstrap</h1>
+<p>This page explains the Angular initialization process and how you can manually initialize Angular
+if necessary.</p>
+<h2 id="angular-script-tag">Angular <code>&lt;script&gt;</code> Tag</h2>
+<p>This example shows the recommended path for integrating Angular with what we call automatic
+initialization.</p>
+<pre><code class="lang-html">&lt;!doctype html&gt;
+&lt;html xmlns:ng=&quot;http://angularjs.org&quot; ng-app&gt;
+  &lt;body&gt;
+    ...
+    &lt;script src=&quot;angular.js&quot;&gt;&lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<ol>
+<li>Place the <code>script</code> tag at the bottom of the page. Placing script tags at the end of the page
+improves app load time because the HTML loading is not blocked by loading of the <code>angular.js</code>
+script. You can get the latest bits from <a href="http://code.angularjs.org">http://code.angularjs.org</a>. Please don&#39;t link
+your production code to this URL, as it will expose a security hole on your site. For
+experimental development linking to our site is fine.<ul>
+<li>Choose: <code>angular-[version].js</code> for a human-readable file, suitable for development and
+debugging.</li>
+<li>Choose: <code>angular-[version].min.js</code> for a compressed and obfuscated file, suitable for use in
+production.</li>
+</ul>
+</li>
+<li><p>Place <code>ng-app</code> to the root of your application, typically on the <code>&lt;html&gt;</code> tag if you want
+angular to auto-bootstrap your application.</p>
+   <html ng-app>
+</li>
+<li><p>If you choose to use the old style directive syntax <code>ng:</code> then include xml-namespace in <code>html</code>
+to make IE happy. (This is here for historical reasons, and we no longer recommend use of
+<code>ng:</code>.)</p>
+   <html xmlns:ng="http://angularjs.org">
+
+
+
+</li>
+</ol>
+<h2 id="automatic-initialization">Automatic Initialization</h2>
+<p><img class="pull-right" style="padding-left: 3em;" src="img/guide/concepts-startup.png"></p>
+<p>Angular initializes automatically upon <code>DOMContentLoaded</code> event or when the <code>angular.js</code> script is
+evaluated if at that time <code>document.readyState</code> is set to <code>&#39;complete&#39;</code>. At this point Angular looks
+for the <a href="api/ng/directive/ngApp"><code>ng-app</code></a> directive which designates your application root.
+If the <a href="api/ng/directive/ngApp"><code>ng-app</code></a> directive is found then Angular will:</p>
+<ul>
+<li>load the <a href="guide/module">module</a> associated with the directive.</li>
+<li>create the application <a href="api/auto/service/$injector">injector</a></li>
+<li>compile the DOM treating the <a href="api/ng/directive/ngApp"><code>ng-app</code></a> directive as the root of the compilation. This allows you to tell it to treat only a
+portion of the DOM as an Angular application.</li>
+</ul>
+<pre><code class="lang-html">&lt;!doctype html&gt;
+&lt;html ng-app=&quot;optionalModuleName&quot;&gt;
+  &lt;body&gt;
+    I can add: {{ 1+2 }}.
+    &lt;script src=&quot;angular.js&quot;&gt;&lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<p>As a best practice, consider adding an <code>ng-strict-di</code> directive on the same element as
+<code>ng-app</code>:</p>
+<pre><code class="lang-html">&lt;!doctype html&gt;
+&lt;html ng-app=&quot;optionalModuleName&quot; ng-strict-di&gt;
+  &lt;body&gt;
+    I can add: {{ 1+2 }}.
+    &lt;script src=&quot;angular.js&quot;&gt;&lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<p>This will ensure that all services in your application are properly annotated.
+See the <a href="guide/di#using-strict-dependency-injection">dependency injection strict mode</a> docs
+for more.</p>
+<h2 id="manual-initialization">Manual Initialization</h2>
+<p>If you need to have more control over the initialization process, you can use a manual
+bootstrapping method instead. Examples of when you&#39;d need to do this include using script loaders
+or the need to perform an operation before Angular compiles a page.</p>
+<p>Here is an example of manually initializing Angular:</p>
+<pre><code class="lang-html">&lt;!doctype html&gt;
+&lt;html&gt;
+&lt;body&gt;
+  &lt;div ng-controller=&quot;MyController&quot;&gt;
+    Hello {{greetMe}}!
+  &lt;/div&gt;
+  &lt;script src=&quot;http://code.angularjs.org/snapshot/angular.js&quot;&gt;&lt;/script&gt;
+
+  &lt;script&gt;
+    angular.module(&#39;myApp&#39;, [])
+      .controller(&#39;MyController&#39;, [&#39;$scope&#39;, function ($scope) {
+        $scope.greetMe = &#39;World&#39;;
+      }]);
+
+    angular.element(document).ready(function() {
+      angular.bootstrap(document, [&#39;myApp&#39;]);
+    });
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<p>Note that we provided the name of our application module to be loaded into the injector as the second
+parameter of the <a href="api/ng/function/angular.bootstrap"><code>angular.bootstrap</code></a> function. Notice that <code>angular.bootstrap</code> will not create modules
+on the fly. You must create any custom <a href="guide/module">modules</a> before you pass them as a parameter.</p>
+<p>You should call <code>angular.bootstrap()</code> <em>after</em> you&#39;ve loaded or defined your modules.
+You cannot add controllers, services, directives, etc after an application bootstraps.</p>
+<div class="alert alert-warning">
+<strong>Note:</strong> You should not use the ng-app directive when manually bootstrapping your app.
+</div>
+
+<p>This is the sequence that your code should follow:</p>
+<ol>
+<li><p>After the page and all of the code is loaded, find the root element of your AngularJS
+application, which is typically the root of the document.</p>
+</li>
+<li><p>Call <a href="api/ng/function/angular.bootstrap"><code>angular.bootstrap</code></a> to <a href="guide/compiler">compile</a> the element into an
+executable, bi-directionally bound application.</p>
+</li>
+</ol>
+<h2 id="deferred-bootstrap">Deferred Bootstrap</h2>
+<p>This feature enables tools like <a href="https://github.com/angular/angularjs-batarang">Batarang</a> and test runners
+to hook into angular&#39;s bootstrap process and sneak in more modules
+into the DI registry which can replace or augment DI services for
+the purpose of instrumentation or mocking out heavy dependencies.</p>
+<p>If <code>window.name</code> contains prefix <code>NG_DEFER_BOOTSTRAP!</code> when
+<a href="api/ng/function/angular.bootstrap"><code>angular.bootstrap</code></a> is called, the bootstrap process will be paused
+until <code>angular.resumeBootstrap()</code> is called.</p>
+<p><code>angular.resumeBootstrap()</code> takes an optional array of modules that
+should be added to the original list of modules that the app was
+about to be bootstrapped with.</p>
+
+

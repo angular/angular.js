@@ -1,0 +1,56 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/error/filter/notarray.ngdoc?message=docs(error%2Fnotarray)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1>Error: error:notarray
+  <div><span class='hint'>Not an array</span></div>
+</h1>
+
+<div>
+    <pre class="minerr-errmsg" error-display="Expected array but received: {0}">Expected array but received: {0}</pre>
+</div>
+
+<h2>Description</h2>
+<div class="description">
+  <p>This error occurs when <a href="api/ng/filter/filter">filter</a> is not used with an array:</p>
+<pre><code class="lang-html">&lt;input ng-model=&quot;search&quot;&gt;
+&lt;div ng-repeat=&quot;(key, value) in myObj | filter:search&quot;&gt;
+  {{ key }} : {{ value }}
+&lt;/div&gt;
+</code></pre>
+<p>Filter must be used with an array so a subset of items can be returned.
+The array can be initialized asynchronously and therefore null or undefined won&#39;t throw this error.</p>
+<p>To filter an object by the value of its properties you can create your own custom filter:</p>
+<pre><code class="lang-js">angular.module(&#39;customFilter&#39;,[])
+.filter(&#39;custom&#39;, function() {
+  return function(input, search) {
+    if (!input) return input;
+    if (!search) return input;
+    var expected = (&#39;&#39; + search).toLowerCase();
+    var result = {};
+    angular.forEach(input, function(value, key) {
+      var actual = (&#39;&#39; + value).toLowerCase();
+      if (actual.indexOf(expected) !== -1) {
+        result[key] = value;
+      }
+    });
+    return result;
+  }
+});
+</code></pre>
+<p>That can be used as:</p>
+<pre><code class="lang-html">&lt;input ng-model=&quot;search&quot;&gt;
+&lt;div ng-repeat=&quot;(key, value) in myObj | custom:search&quot;&gt;
+  {{ key }} : {{ value }}
+&lt;/div&gt;
+</code></pre>
+<p>You could as well convert the object to an array using a filter such as
+<a href="https://github.com/petebacondarwin/angular-toArrayFilter">toArrayFilter</a>:</p>
+<pre><code class="lang-html">&lt;input ng-model=&quot;search&quot;&gt;
+&lt;div ng-repeat=&quot;item in myObj | toArray:false | filter:search&quot;&gt;
+  {{ item }}
+&lt;/div&gt;
+</code></pre>
+
+</div>
+
+

@@ -1,0 +1,115 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/directive/ngCloak.js?message=docs(ngCloak)%3A%20describe%20your%20change...#L3' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/directive/ngCloak.js#L3' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">ngCloak</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - directive in module <a href="api/ng">ng</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>The <code>ngCloak</code> directive is used to prevent the Angular html template from being briefly
+displayed by the browser in its raw (uncompiled) form while your application is loading. Use this
+directive to avoid the undesirable flicker effect caused by the html template display.</p>
+<p>The directive can be applied to the <code>&lt;body&gt;</code> element, but the preferred usage is to apply
+multiple <code>ngCloak</code> directives to small portions of the page to permit progressive rendering
+of the browser view.</p>
+<p><code>ngCloak</code> works in cooperation with the following css rule embedded within <code>angular.js</code> and
+<code>angular.min.js</code>.
+For CSP mode please add <code>angular-csp.css</code> to your html file (see <a href="api/ng/directive/ngCsp">ngCsp</a>).</p>
+<pre><code class="lang-css">[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+  display: none !important;
+}
+</code></pre>
+<p>When this css rule is loaded by the browser, all html elements (including their children) that
+are tagged with the <code>ngCloak</code> directive are hidden. When Angular encounters this directive
+during the compilation of the template it deletes the <code>ngCloak</code> element attribute, making
+the compiled element visible.</p>
+<p>For the best result, the <code>angular.js</code> script must be loaded in the head section of the html
+document; alternatively, the css rule above must be included in the external stylesheet of the
+application.</p>
+<p>Legacy browsers, like IE7, do not provide attribute selector support (added in CSS 2.1) so they
+cannot match the <code>[ng\:cloak]</code> selector. To work around this limitation, you must add the css
+class <code>ng-cloak</code> in addition to the <code>ngCloak</code> directive as shown in the example below.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+  
+  <h2>Directive Info</h2>
+  <ul>
+    
+    <li>This directive executes at priority level 0.</li>
+  </ul>
+
+  
+  <h2 id="usage">Usage</h2>
+  <div class="usage">
+  
+    <ul>
+    <li>as attribute:
+        <pre><code>&lt;ANY&gt;&#10;...&#10;&lt;/ANY&gt;</code></pre>
+      </li>
+    <li>as CSS class:
+        <pre><code>&lt;ANY class=&quot;&quot;&gt; ... &lt;/ANY&gt;</code></pre>
+      </li>
+    
+  </div>
+  
+  
+
+
+  
+  <h2 id="example">Example</h2><p>
+
+<div>
+  <a ng-click="openPlunkr('examples/example-example66', $event)" class="btn pull-right">
+    <i class="glyphicon glyphicon-edit">&nbsp;</i>
+    Edit in Plunker</a>
+
+  <div class="runnable-example"
+      path="examples/example-example66">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;div id=&quot;template1&quot; ng-cloak&gt;{{ &#39;hello&#39; }}&lt;/div&gt;&#10;&lt;div id=&quot;template2&quot; ng-cloak class=&quot;ng-cloak&quot;&gt;{{ &#39;hello IE7&#39; }}&lt;/div&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="protractor.js"
+      type="protractor"
+      language="js">
+      <pre><code>it(&#39;should remove the template directive and css class&#39;, function() {&#10;  expect($(&#39;#template1&#39;).getAttribute(&#39;ng-cloak&#39;)).&#10;    toBeNull();&#10;  expect($(&#39;#template2&#39;).getAttribute(&#39;ng-cloak&#39;)).&#10;    toBeNull();&#10;});</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-example66/index.html" name="example-example66"></iframe>
+  </div>
+</div>
+
+
+</p>
+
+</div>
+
+

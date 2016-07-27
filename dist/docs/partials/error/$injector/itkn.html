@@ -1,0 +1,33 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/error/$injector/itkn.ngdoc?message=docs(error%2Fitkn)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1>Error: error:itkn
+  <div><span class='hint'>Bad Injection Token</span></div>
+</h1>
+
+<div>
+    <pre class="minerr-errmsg" error-display="Incorrect injection token! Expected service name as string, got {0}">Incorrect injection token! Expected service name as string, got {0}</pre>
+</div>
+
+<h2>Description</h2>
+<div class="description">
+  <p>This error occurs when using a bad token as a dependency injection annotation.
+Dependency injection annotation tokens should always be strings. Using any other
+type will cause this error to be thrown.</p>
+<p>Examples of code with bad injection tokens include:</p>
+<pre><code>var myCtrl = function ($scope, $http) { /* ... */ };
+myCtrl.$inject = [&#39;$scope&#39;, 42];
+
+myAppModule.controller(&#39;MyCtrl&#39;, [&#39;$scope&#39;, {}, function ($scope, $timeout) {
+  // ...
+}]);
+</code></pre>
+<p>The bad injection tokens are <code>42</code> in the first example and <code>{}</code> in the second.
+To avoid the error, always use string literals for dependency injection annotation
+tokens.</p>
+<p>For an explanation of what injection annotations are and how to use them, refer
+to the <a href="guide/di">Dependency Injection Guide</a>.</p>
+
+</div>
+
+

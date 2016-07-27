@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Example - example-example102-jquery</title>
+  
+
+  <script src="../../components/jquery-2.1.1/jquery.js"></script>
+  <script src="../../../angular.js"></script>
+  
+
+  
+</head>
+<body ng-app="limitToExample">
+  <script>
+  angular.module('limitToExample', [])
+    .controller('ExampleController', ['$scope', function($scope) {
+      $scope.numbers = [1,2,3,4,5,6,7,8,9];
+      $scope.letters = "abcdefghi";
+      $scope.longNumber = 2345432342;
+      $scope.numLimit = 3;
+      $scope.letterLimit = 3;
+      $scope.longNumberLimit = 3;
+    }]);
+</script>
+<div ng-controller="ExampleController">
+  Limit {{numbers}} to: <input type="number" step="1" ng-model="numLimit">
+  <p>Output numbers: {{ numbers | limitTo:numLimit }}</p>
+  Limit {{letters}} to: <input type="number" step="1" ng-model="letterLimit">
+  <p>Output letters: {{ letters | limitTo:letterLimit }}</p>
+  Limit {{longNumber}} to: <input type="number" step="1" ng-model="longNumberLimit">
+  <p>Output long number: {{ longNumber | limitTo:longNumberLimit }}</p>
+</div>
+</body>
+</html>

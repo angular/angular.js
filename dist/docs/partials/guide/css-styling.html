@@ -1,0 +1,52 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/guide/css-styling.ngdoc?message=docs(guide%2FWorking With CSS)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<p>Angular sets these CSS classes. It is up to your application to provide useful styling.</p>
+<h1 id="css-classes-used-by-angular">CSS classes used by angular</h1>
+<ul>
+<li><p><code>ng-scope</code></p>
+<ul>
+<li><strong>Usage:</strong> angular applies this class to any element for which a new <a href="api/ng/service/$rootScope">scope</a>
+is defined. (see <a href="guide/scope">scope</a> guide for more information about scopes)</li>
+</ul>
+</li>
+<li><p><code>ng-isolate-scope</code></p>
+<ul>
+<li><strong>Usage:</strong> angular applies this class to any element for which a new
+<a href="guide/directive#isolating-the-scope-of-a-directive">isolate scope</a> is defined.</li>
+</ul>
+</li>
+<li><p><code>ng-binding</code></p>
+<ul>
+<li><strong>Usage:</strong> angular applies this class to any element that is attached to a data binding, via <code>ng-bind</code> or
+<code>{{}}</code> curly braces, for example. (see <a href="guide/databinding">databinding</a> guide)</li>
+</ul>
+</li>
+<li><p><code>ng-invalid</code>, <code>ng-valid</code></p>
+<ul>
+<li><strong>Usage:</strong> angular applies this class to a form control widget element if that element&#39;s input does
+not pass validation. (see <a href="api/ng/directive/input">input</a> directive)</li>
+</ul>
+</li>
+<li><p><code>ng-pristine</code>, <code>ng-dirty</code></p>
+<ul>
+<li><strong>Usage:</strong> angular <a href="api/ng/directive/ngModel">ngModel</a> directive applies <code>ng-pristine</code> class
+to a new form control widget which did not have user interaction. Once the user interacts with
+the form control, the class is changed to <code>ng-dirty</code>.</li>
+</ul>
+</li>
+<li><p><code>ng-touched</code>, <code>ng-untouched</code></p>
+<ul>
+<li><strong>Usage:</strong> angular <a href="api/ng/directive/ngModel">ngModel</a> directive applies <code>ng-untouched</code> class
+to a new form control widget which has not been blurred. Once the user blurs the form control,
+the class is changed to <code>ng-touched</code>.</li>
+</ul>
+</li>
+</ul>
+<h2 id="related-topics">Related Topics</h2>
+<ul>
+<li><a href="guide/templates">Angular Templates</a></li>
+<li><a href="guide/forms">Angular Forms</a></li>
+</ul>
+
+

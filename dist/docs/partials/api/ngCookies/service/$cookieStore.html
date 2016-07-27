@@ -1,0 +1,235 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ngCookies/cookies.js?message=docs($cookieStore)%3A%20describe%20your%20change...#L126' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ngCookies/cookies.js#L126' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">$cookieStore</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+  
+
+    <li>
+      - service in module <a href="api/ngCookies">ngCookies</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Provides a key-value (string-object) storage, that is backed by session cookies.
+Objects put or retrieved from this storage are automatically serialized or
+deserialized by angular&#39;s toJson/fromJson.</p>
+<p>Requires the <a href="api/ngCookies"><code>ngCookies</code></a> module to be installed.</p>
+
+</div>
+
+
+
+
+<div>
+  
+  <h2 id="dependencies">Dependencies</h2>
+  <ul>
+    <li><a href="api/ngCookies/service/$cookies"><code>$cookies</code></a></li>
+  </ul>
+  
+
+    
+
+  
+
+  
+<h2>Methods</h2>
+<ul class="methods">
+  <li id="get">
+    <h3><p><code>get(key);</code></p>
+
+</h3>
+    <div><p>Returns the value of given cookie key</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        key
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Id to use for lookup.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-object">Object</a></td>
+    <td><p>Deserialized cookie value, undefined if the cookie does not exist.</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="put">
+    <h3><p><code>put(key, value);</code></p>
+
+</h3>
+    <div><p>Sets a value for given cookie key</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        key
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Id for the <code>value</code>.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        value
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">Object</a>
+      </td>
+      <td>
+        <p>Value to be stored.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+
+  </li>
+  
+  <li id="remove">
+    <h3><p><code>remove(key);</code></p>
+
+</h3>
+    <div><p>Remove given cookie</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        key
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Id of the key-value pair to delete.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+
+  </li>
+  </ul>
+  
+  
+
+
+
+  
+  <h2 id="example">Example</h2><pre><code class="lang-js">angular.module(&#39;cookieStoreExample&#39;, [&#39;ngCookies&#39;])
+.controller(&#39;ExampleController&#39;, [&#39;$cookieStore&#39;, function($cookieStore) {
+  // Put cookie
+  $cookieStore.put(&#39;myFavorite&#39;,&#39;oatmeal&#39;);
+  // Get cookie
+  var favoriteCookie = $cookieStore.get(&#39;myFavorite&#39;);
+  // Removing a cookie
+  $cookieStore.remove(&#39;myFavorite&#39;);
+}]);
+</code></pre>
+
+</div>
+
+

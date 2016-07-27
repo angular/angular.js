@@ -1,0 +1,125 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/directive/ngEventDirs.js?message=docs(ngClick)%3A%20describe%20your%20change...#L3' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/directive/ngEventDirs.js#L3' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">ngClick</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - directive in module <a href="api/ng">ng</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>The ngClick directive allows you to specify custom behavior when
+an element is clicked.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+  
+  <h2>Directive Info</h2>
+  <ul>
+    
+    <li>This directive executes at priority level 0.</li>
+  </ul>
+
+  
+  <h2 id="usage">Usage</h2>
+  <div class="usage">
+  
+    <ul>
+    <li>as attribute:
+        <pre><code>&lt;ANY&#10;  ng-click=&quot;&quot;&gt;&#10;...&#10;&lt;/ANY&gt;</code></pre>
+      </li>
+    
+  </div>
+  
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        ngClick
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-expression">expression</a>
+      </td>
+      <td>
+        <p><a href="guide/expression">Expression</a> to evaluate upon
+click. (<a href="guide/expression#-event-">Event object is available as <code>$event</code></a>)</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
+  
+
+
+  
+  <h2 id="example">Example</h2><p>
+
+<div>
+  <a ng-click="openPlunkr('examples/example-example67', $event)" class="btn pull-right">
+    <i class="glyphicon glyphicon-edit">&nbsp;</i>
+    Edit in Plunker</a>
+
+  <div class="runnable-example"
+      path="examples/example-example67">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;button ng-click=&quot;count = count + 1&quot; ng-init=&quot;count=0&quot;&gt;&#10;  Increment&#10;&lt;/button&gt;&#10;&lt;span&gt;&#10;  count: {{count}}&#10;&lt;/span&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="protractor.js"
+      type="protractor"
+      language="js">
+      <pre><code>it(&#39;should check ng-click&#39;, function() {&#10;  expect(element(by.binding(&#39;count&#39;)).getText()).toMatch(&#39;0&#39;);&#10;  element(by.css(&#39;button&#39;)).click();&#10;  expect(element(by.binding(&#39;count&#39;)).getText()).toMatch(&#39;1&#39;);&#10;});</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-example67/index.html" name="example-example67"></iframe>
+  </div>
+</div>
+
+
+</p>
+
+</div>
+
+

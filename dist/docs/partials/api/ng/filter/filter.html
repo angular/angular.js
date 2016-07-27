@@ -1,0 +1,191 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/filter/filter.js?message=docs(filter)%3A%20describe%20your%20change...#L3' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/filter/filter.js#L3' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">filter</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - filter in module <a href="api/ng">ng</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Selects a subset of items from <code>array</code> and returns it as a new array.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+  
+  <h2>Usage</h2>
+  <h3>In HTML Template Binding</h3>
+  
+    <pre><code>{{ filter_expression | filter : expression : comparator}}</code></pre>
+  
+
+  <h3>In JavaScript</h3>
+  <pre><code>$filter(&#39;filter&#39;)(array, expression, comparator)</code></pre>
+
+  
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        array
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-array">Array</a>
+      </td>
+      <td>
+        <p>The source array.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        expression
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a><a href="" class="label type-hint type-hint-object">Object</a><a href="" class="label type-hint type-hint-function">function()</a>
+      </td>
+      <td>
+        <p>The predicate to be used for selecting items from
+  <code>array</code>.</p>
+<p>  Can be one of:</p>
+<ul>
+<li><p><code>string</code>: The string is used for matching against the contents of the <code>array</code>. All strings or
+objects with string properties in <code>array</code> that match this string will be returned. This also
+applies to nested object properties.
+The predicate can be negated by prefixing the string with <code>!</code>.</p>
+</li>
+<li><p><code>Object</code>: A pattern object can be used to filter specific properties on objects contained
+by <code>array</code>. For example <code>{name:&quot;M&quot;, phone:&quot;1&quot;}</code> predicate will return an array of items
+which have property <code>name</code> containing &quot;M&quot; and property <code>phone</code> containing &quot;1&quot;. A special
+property name <code>$</code> can be used (as in <code>{$:&quot;text&quot;}</code>) to accept a match against any
+property of the object or its nested object properties. That&#39;s equivalent to the simple
+substring match with a <code>string</code> as described above. The predicate can be negated by prefixing
+the string with <code>!</code>.
+For example <code>{name: &quot;!M&quot;}</code> predicate will return an array of items which have property <code>name</code>
+not containing &quot;M&quot;.</p>
+<p>Note that a named property will match properties on the same level only, while the special
+<code>$</code> property will match properties on the same level or deeper. E.g. an array item like
+<code>{name: {first: &#39;John&#39;, last: &#39;Doe&#39;}}</code> will <strong>not</strong> be matched by <code>{name: &#39;John&#39;}</code>, but
+<strong>will</strong> be matched by <code>{$: &#39;John&#39;}</code>.</p>
+</li>
+<li><p><code>function(value, index)</code>: A predicate function can be used to write arbitrary filters. The
+function is called for each element of <code>array</code>. The final result is an array of those
+elements that the predicate returned true for.</p>
+</li>
+</ul>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        comparator
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-function">function(actual, expected)</a><a href="" class="label type-hint type-hint-true">true</a><a href="" class="label type-hint type-hint-undefined">undefined</a>
+      </td>
+      <td>
+        <p>Comparator which is used in
+    determining if the expected value (from the filter expression) and actual value (from
+    the object in the array) should be considered a match.</p>
+<p>  Can be one of:</p>
+<ul>
+<li><p><code>function(actual, expected)</code>:
+The function will be given the object value and the predicate value to compare and
+should return true if both values should be considered equal.</p>
+</li>
+<li><p><code>true</code>: A shorthand for <code>function(actual, expected) { return angular.equals(actual, expected)}</code>.
+This is essentially strict comparison of expected and actual.</p>
+</li>
+<li><p><code>false|undefined</code>: A short hand for a function which will look for a substring match in case
+insensitive way.</p>
+</li>
+</ul>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
+  
+  
+
+
+  
+  <h2 id="example">Example</h2><p>
+
+<div>
+  <a ng-click="openPlunkr('examples/example-example97', $event)" class="btn pull-right">
+    <i class="glyphicon glyphicon-edit">&nbsp;</i>
+    Edit in Plunker</a>
+
+  <div class="runnable-example"
+      path="examples/example-example97">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;div ng-init=&quot;friends = [{name:&#39;John&#39;, phone:&#39;555-1276&#39;},&#10;                         {name:&#39;Mary&#39;, phone:&#39;800-BIG-MARY&#39;},&#10;                         {name:&#39;Mike&#39;, phone:&#39;555-4321&#39;},&#10;                         {name:&#39;Adam&#39;, phone:&#39;555-5678&#39;},&#10;                         {name:&#39;Julie&#39;, phone:&#39;555-8765&#39;},&#10;                         {name:&#39;Juliette&#39;, phone:&#39;555-5678&#39;}]&quot;&gt;&lt;/div&gt;&#10;&#10;Search: &lt;input ng-model=&quot;searchText&quot;&gt;&#10;&lt;table id=&quot;searchTextResults&quot;&gt;&#10;  &lt;tr&gt;&lt;th&gt;Name&lt;/th&gt;&lt;th&gt;Phone&lt;/th&gt;&lt;/tr&gt;&#10;  &lt;tr ng-repeat=&quot;friend in friends | filter:searchText&quot;&gt;&#10;    &lt;td&gt;{{friend.name}}&lt;/td&gt;&#10;    &lt;td&gt;{{friend.phone}}&lt;/td&gt;&#10;  &lt;/tr&gt;&#10;&lt;/table&gt;&#10;&lt;hr&gt;&#10;Any: &lt;input ng-model=&quot;search.$&quot;&gt; &lt;br&gt;&#10;Name only &lt;input ng-model=&quot;search.name&quot;&gt;&lt;br&gt;&#10;Phone only &lt;input ng-model=&quot;search.phone&quot;&gt;&lt;br&gt;&#10;Equality &lt;input type=&quot;checkbox&quot; ng-model=&quot;strict&quot;&gt;&lt;br&gt;&#10;&lt;table id=&quot;searchObjResults&quot;&gt;&#10;  &lt;tr&gt;&lt;th&gt;Name&lt;/th&gt;&lt;th&gt;Phone&lt;/th&gt;&lt;/tr&gt;&#10;  &lt;tr ng-repeat=&quot;friendObj in friends | filter:search:strict&quot;&gt;&#10;    &lt;td&gt;{{friendObj.name}}&lt;/td&gt;&#10;    &lt;td&gt;{{friendObj.phone}}&lt;/td&gt;&#10;  &lt;/tr&gt;&#10;&lt;/table&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="protractor.js"
+      type="protractor"
+      language="js">
+      <pre><code>var expectFriendNames = function(expectedNames, key) {&#10;  element.all(by.repeater(key + &#39; in friends&#39;).column(key + &#39;.name&#39;)).then(function(arr) {&#10;    arr.forEach(function(wd, i) {&#10;      expect(wd.getText()).toMatch(expectedNames[i]);&#10;    });&#10;  });&#10;};&#10;&#10;it(&#39;should search across all fields when filtering with a string&#39;, function() {&#10;  var searchText = element(by.model(&#39;searchText&#39;));&#10;  searchText.clear();&#10;  searchText.sendKeys(&#39;m&#39;);&#10;  expectFriendNames([&#39;Mary&#39;, &#39;Mike&#39;, &#39;Adam&#39;], &#39;friend&#39;);&#10;&#10;  searchText.clear();&#10;  searchText.sendKeys(&#39;76&#39;);&#10;  expectFriendNames([&#39;John&#39;, &#39;Julie&#39;], &#39;friend&#39;);&#10;});&#10;&#10;it(&#39;should search in specific fields when filtering with a predicate object&#39;, function() {&#10;  var searchAny = element(by.model(&#39;search.$&#39;));&#10;  searchAny.clear();&#10;  searchAny.sendKeys(&#39;i&#39;);&#10;  expectFriendNames([&#39;Mary&#39;, &#39;Mike&#39;, &#39;Julie&#39;, &#39;Juliette&#39;], &#39;friendObj&#39;);&#10;});&#10;it(&#39;should use a equal comparison when comparator is true&#39;, function() {&#10;  var searchName = element(by.model(&#39;search.name&#39;));&#10;  var strict = element(by.model(&#39;strict&#39;));&#10;  searchName.clear();&#10;  searchName.sendKeys(&#39;Julie&#39;);&#10;  strict.click();&#10;  expectFriendNames([&#39;Julie&#39;], &#39;friendObj&#39;);&#10;});</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-example97/index.html" name="example-example97"></iframe>
+  </div>
+</div>
+
+
+</p>
+
+</div>
+
+

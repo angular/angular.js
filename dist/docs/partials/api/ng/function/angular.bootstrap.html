@@ -1,0 +1,160 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/Angular.js?message=docs(angular.bootstrap)%3A%20describe%20your%20change...#L1308' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/Angular.js#L1308' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">angular.bootstrap</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - function in module <a href="api/ng">ng</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Use this function to manually start up angular application.</p>
+<p>See: <a href="guide/bootstrap">Bootstrap</a></p>
+<p>Note that Protractor based end-to-end tests cannot use this function to bootstrap manually.
+They must use <a href="api/ng/directive/ngApp">ngApp</a>.</p>
+<p>Angular will detect if it has been loaded into the browser more than once and only allow the
+first loaded script to be bootstrapped and will report a warning to the browser console for
+each of the subsequent scripts. This prevents strange results in applications, where otherwise
+multiple instances of Angular try to work on the DOM.</p>
+<pre><code class="lang-html">&lt;!doctype html&gt;
+&lt;html&gt;
+&lt;body&gt;
+&lt;div ng-controller=&quot;WelcomeController&quot;&gt;
+  {{greeting}}
+&lt;/div&gt;
+
+&lt;script src=&quot;angular.js&quot;&gt;&lt;/script&gt;
+&lt;script&gt;
+  var app = angular.module(&#39;demo&#39;, [])
+  .controller(&#39;WelcomeController&#39;, function($scope) {
+      $scope.greeting = &#39;Welcome!&#39;;
+  });
+  angular.bootstrap(document, [&#39;demo&#39;]);
+&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
+</div>
+
+
+
+
+<div>
+  
+
+    
+
+  <h2 id="usage">Usage</h2>
+    
+      <p><code>angular.bootstrap(element, [modules], [config]);</code></p>
+
+
+    
+
+    
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        element
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-domelement">DOMElement</a>
+      </td>
+      <td>
+        <p>DOM element which is the root of angular application.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        modules
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-array">Array&lt;String|Function|Array&gt;=</a>
+      </td>
+      <td>
+        <p>an array of modules to load into the application.
+    Each item in the array should be the name of a predefined module or a (DI annotated)
+    function that will be invoked by the injector as a <code>config</code> block.
+    See: <a href="api/ng/function/angular.module">modules</a></p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        config
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">Object</a>
+      </td>
+      <td>
+        <p>an object for defining configuration options for the application. The
+    following keys are supported:</p>
+<ul>
+<li><code>strictDi</code> - disable automatic function annotation for the application. This is meant to
+assist in finding bugs which break minified code. Defaults to <code>false</code>.</li>
+</ul>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
+    
+    <h3>Returns</h3>
+<table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-auto">auto.$injector</a></td>
+    <td><p>Returns the newly created injector for this app.</p>
+</td>
+  </tr>
+</table>
+
+  
+  
+  
+
+
+
+  
+</div>
+
+

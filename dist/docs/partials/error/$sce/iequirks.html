@@ -1,0 +1,25 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/error/$sce/iequirks.ngdoc?message=docs(error%2Fiequirks)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1>Error: error:iequirks
+  <div><span class='hint'>IE<11 in quirks mode is unsupported</span></div>
+</h1>
+
+<div>
+    <pre class="minerr-errmsg" error-display="Strict Contextual Escaping does not support Internet Explorer version < 11 in quirks mode.  You can fix this by adding the text <!doctype html> to the top of your HTML document.  See http://docs.angularjs.org/api/ng.$sce for more information.">Strict Contextual Escaping does not support Internet Explorer version < 11 in quirks mode.  You can fix this by adding the text <!doctype html> to the top of your HTML document.  See http://docs.angularjs.org/api/ng.$sce for more information.</pre>
+</div>
+
+<h2>Description</h2>
+<div class="description">
+  <p>This error occurs when you are using AngularJS with <a href="api/ng/service/$sce">Strict Contextual Escaping (SCE)</a> mode enabled (the default) on IE10 or lower in quirks mode.</p>
+<p>In this mode, IE&lt;11 allow one to execute arbitrary javascript by the use of the <code>expression()</code> syntax and is not supported.
+Refer
+<a href="http://msdn.microsoft.com/en-us/library/ie/dn384050(v=vs.85">CSS expressions no longer supported for the Internet zone</a>.aspx)
+to learn more about them.</p>
+<p>To resolve this error please specify the proper doctype at the top of your main html document:</p>
+<pre><code>&lt;!doctype html&gt;
+</code></pre>
+
+</div>
+
+

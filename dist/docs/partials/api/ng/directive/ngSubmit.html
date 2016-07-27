@@ -1,0 +1,133 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/directive/ngEventDirs.js?message=docs(ngSubmit)%3A%20describe%20your%20change...#L317' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/directive/ngEventDirs.js#L317' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">ngSubmit</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - directive in module <a href="api/ng">ng</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Enables binding angular expressions to onsubmit events.</p>
+<p>Additionally it prevents the default action (which for form means sending the request to the
+server and reloading the current page), but only if the form does not contain <code>action</code>,
+<code>data-action</code>, or <code>x-action</code> attributes.</p>
+<div class="alert alert-warning">
+<strong>Warning:</strong> Be careful not to cause &quot;double-submission&quot; by using both the <code>ngClick</code> and
+<code>ngSubmit</code> handlers together. See the
+<a href="api/ng/directive/form#submitting-a-form-and-preventing-the-default-action"><code>form</code> directive documentation</a>
+for a detailed discussion of when <code>ngSubmit</code> may be triggered.
+</div>
+</div>
+
+
+
+
+<div>
+  
+
+  
+  <h2>Directive Info</h2>
+  <ul>
+    
+    <li>This directive executes at priority level 0.</li>
+  </ul>
+
+  
+  <h2 id="usage">Usage</h2>
+  <div class="usage">
+  
+    <ul>
+    <li>as attribute:
+        <pre><code>&lt;form&#10;  ng-submit=&quot;&quot;&gt;&#10;...&#10;&lt;/form&gt;</code></pre>
+      </li>
+    
+  </div>
+  
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        ngSubmit
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-expression">expression</a>
+      </td>
+      <td>
+        <p><a href="guide/expression">Expression</a> to eval.
+(<a href="guide/expression#-event-">Event object is available as <code>$event</code></a>)</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
+  
+
+
+  
+  <h2 id="example">Example</h2><p>
+
+<div>
+  <a ng-click="openPlunkr('examples/example-example78', $event)" class="btn pull-right">
+    <i class="glyphicon glyphicon-edit">&nbsp;</i>
+    Edit in Plunker</a>
+
+  <div class="runnable-example"
+      path="examples/example-example78"
+      module="submitExample">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;script&gt;&#10;  angular.module(&#39;submitExample&#39;, [])&#10;    .controller(&#39;ExampleController&#39;, [&#39;$scope&#39;, function($scope) {&#10;      $scope.list = [];&#10;      $scope.text = &#39;hello&#39;;&#10;      $scope.submit = function() {&#10;        if ($scope.text) {&#10;          $scope.list.push(this.text);&#10;          $scope.text = &#39;&#39;;&#10;        }&#10;      };&#10;    }]);&#10;&lt;/script&gt;&#10;&lt;form ng-submit=&quot;submit()&quot; ng-controller=&quot;ExampleController&quot;&gt;&#10;  Enter text and hit enter:&#10;  &lt;input type=&quot;text&quot; ng-model=&quot;text&quot; name=&quot;text&quot; /&gt;&#10;  &lt;input type=&quot;submit&quot; id=&quot;submit&quot; value=&quot;Submit&quot; /&gt;&#10;  &lt;pre&gt;list={{list}}&lt;/pre&gt;&#10;&lt;/form&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="protractor.js"
+      type="protractor"
+      language="js">
+      <pre><code>it(&#39;should check ng-submit&#39;, function() {&#10;  expect(element(by.binding(&#39;list&#39;)).getText()).toBe(&#39;list=[]&#39;);&#10;  element(by.css(&#39;#submit&#39;)).click();&#10;  expect(element(by.binding(&#39;list&#39;)).getText()).toContain(&#39;hello&#39;);&#10;  expect(element(by.model(&#39;text&#39;)).getAttribute(&#39;value&#39;)).toBe(&#39;&#39;);&#10;});&#10;it(&#39;should ignore empty strings&#39;, function() {&#10;  expect(element(by.binding(&#39;list&#39;)).getText()).toBe(&#39;list=[]&#39;);&#10;  element(by.css(&#39;#submit&#39;)).click();&#10;  element(by.css(&#39;#submit&#39;)).click();&#10;  expect(element(by.binding(&#39;list&#39;)).getText()).toContain(&#39;hello&#39;);&#10; });</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-example78/index.html" name="example-example78"></iframe>
+  </div>
+</div>
+
+
+</p>
+
+</div>
+
+

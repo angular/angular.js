@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Example - example-example52</title>
+  
+
+  <script src="../../../angular.min.js"></script>
+  
+
+  
+</head>
+<body ng-app="">
+  <input ng-model="value" /><br />
+<a id="link-1" href ng-click="value = 1">link 1</a> (link, don't reload)<br />
+<a id="link-2" href="" ng-click="value = 2">link 2</a> (link, don't reload)<br />
+<a id="link-3" ng-href="/{{'123'}}">link 3</a> (link, reload!)<br />
+<a id="link-4" href="" name="xx" ng-click="value = 4">anchor</a> (link, don't reload)<br />
+<a id="link-5" name="xxx" ng-click="value = 5">anchor</a> (no link)<br />
+<a id="link-6" ng-href="{{value}}">link</a> (link, change location)
+</body>
+</html>

@@ -1,0 +1,140 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ngMock/angular-mocks.js?message=docs($log)%3A%20describe%20your%20change...#L286' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ngMock/angular-mocks.js#L286' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">$log</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+  
+
+    <li>
+      - service in module <a href="api/ngMock">ngMock</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Mock implementation of <a href="api/ng/service/$log"><code>$log</code></a> that gathers all logged messages in arrays
+(one array per logging level). These arrays are exposed as <code>logs</code> property of each of the
+level-specific log function, e.g. for level <code>error</code> the array is exposed as <code>$log.error.logs</code>.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+    
+
+  
+
+  
+<h2>Methods</h2>
+<ul class="methods">
+  <li id="reset">
+    <h3><p><code>reset();</code></p>
+
+</h3>
+    <div><p>Reset all of the logging arrays to empty.</p>
+</div>
+
+    
+
+    
+    
+    
+
+  </li>
+  
+  <li id="assertEmpty">
+    <h3><p><code>assertEmpty();</code></p>
+
+</h3>
+    <div><p>Assert that all of the logging methods have no logged messages. If any messages are present,
+an exception is thrown.</p>
+</div>
+
+    
+
+    
+    
+    
+
+  </li>
+  </ul>
+  
+  
+<h2>Properties</h2>
+<ul class="properties">
+  <li id="log.logs">
+    <h3><code>log.logs</code></h3>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td></td>
+    <td><p>Array of messages logged using <a href="api/ng/service/$log#log"><code>log()</code></a>.</p>
+</td>
+  </tr>
+</table>
+  </li>
+  
+  <li id="info.logs">
+    <h3><code>info.logs</code></h3>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td></td>
+    <td><p>Array of messages logged using <a href="api/ng/service/$log#info"><code>info()</code></a>.</p>
+</td>
+  </tr>
+</table>
+  </li>
+  
+  <li id="warn.logs">
+    <h3><code>warn.logs</code></h3>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td></td>
+    <td><p>Array of messages logged using <a href="api/ng/service/$log#warn"><code>warn()</code></a>.</p>
+</td>
+  </tr>
+</table>
+  </li>
+  
+  <li id="error.logs">
+    <h3><code>error.logs</code></h3>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td></td>
+    <td><p>Array of messages logged using <a href="api/ng/service/$log#error"><code>error()</code></a>.</p>
+</td>
+  </tr>
+</table>
+  </li>
+  
+  <li id="debug.logs">
+    <h3><code>debug.logs</code></h3>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td></td>
+    <td><p>Array of messages logged using <a href="api/ng/service/$log#debug"><code>debug()</code></a>.</p>
+</td>
+  </tr>
+</table>
+  </li>
+  </ul>
+
+
+
+  
+</div>
+
+

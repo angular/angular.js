@@ -1,0 +1,549 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/auto/injector.js?message=docs($provide)%3A%20describe%20your%20change...#L313' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/auto/injector.js#L313' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">$provide</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+  
+
+    <li>
+      - service in module <a href="api/auto">auto</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>The <a href="api/auto/service/$provide">$provide</a> service has a number of methods for registering components
+with the <a href="api/auto/service/$injector">$injector</a>. Many of these functions are also exposed on
+<a href="api/ng/type/angular.Module"><code>angular.Module</code></a>.</p>
+<p>An Angular <strong>service</strong> is a singleton object created by a <strong>service factory</strong>.  These <strong>service
+factories</strong> are functions which, in turn, are created by a <strong>service provider</strong>.
+The <strong>service providers</strong> are constructor functions. When instantiated they must contain a
+property called <code>$get</code>, which holds the <strong>service factory</strong> function.</p>
+<p>When you request a service, the <a href="api/auto/service/$injector">$injector</a> is responsible for finding the
+correct <strong>service provider</strong>, instantiating it and then calling its <code>$get</code> <strong>service factory</strong>
+function to get the instance of the <strong>service</strong>.</p>
+<p>Often services have no configuration options and there is no need to add methods to the service
+provider.  The provider will be no more than a constructor function with a <code>$get</code> property. For
+these cases the <a href="api/auto/service/$provide">$provide</a> service has additional helper methods to register
+services without specifying a provider.</p>
+<ul>
+<li><a href="api/auto/service/$provide#provider">provider(provider)</a> - registers a <strong>service provider</strong> with the
+  <a href="api/auto/service/$injector">$injector</a></li>
+<li><a href="api/auto/service/$provide#constant">constant(obj)</a> - registers a value/object that can be accessed by
+  providers and services.</li>
+<li><a href="api/auto/service/$provide#value">value(obj)</a> - registers a value/object that can only be accessed by
+  services, not providers.</li>
+<li><a href="api/auto/service/$provide#factory">factory(fn)</a> - registers a service <strong>factory function</strong>, <code>fn</code>,
+  that will be wrapped in a <strong>service provider</strong> object, whose <code>$get</code> property will contain the
+  given factory function.</li>
+<li><a href="api/auto/service/$provide#service">service(class)</a> - registers a <strong>constructor function</strong>, <code>class</code>
+  that will be wrapped in a <strong>service provider</strong> object, whose <code>$get</code> property will instantiate
+   a new object using the given constructor function.</li>
+</ul>
+<p>See the individual methods for more information and examples.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+    
+
+  
+
+  
+<h2>Methods</h2>
+<ul class="methods">
+  <li id="provider">
+    <h3><p><code>provider(name, provider);</code></p>
+
+</h3>
+    <div><p>Register a <strong>provider function</strong> with the <a href="api/auto/service/$injector">$injector</a>. Provider functions
+are constructor functions, whose instances are responsible for &quot;providing&quot; a factory for a
+service.</p>
+<p>Service provider names start with the name of the service they provide followed by <code>Provider</code>.
+For example, the <a href="api/ng/service/$log">$log</a> service has a provider called
+<a href="api/ng/provider/$logProvider">$logProvider</a>.</p>
+<p>Service provider objects can have additional methods which allow configuration of the provider
+and its service. Importantly, you can configure what kind of service is created by the <code>$get</code>
+method, or how that service will act. For example, the <a href="api/ng/provider/$logProvider">$logProvider</a> has a
+method <a href="api/ng/provider/$logProvider#debugEnabled">debugEnabled</a>
+which lets you specify whether the <a href="api/ng/service/$log">$log</a> service will log debug messages to the
+console or not.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        name
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>The name of the instance. NOTE: the provider will be available under <code>name +
+                        &#39;Provider&#39;</code> key.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        provider
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">Object</a><a href="" class="label type-hint type-hint-function">function()</a>
+      </td>
+      <td>
+        <p>If the provider is:</p>
+<ul>
+<li><code>Object</code>: then it should have a <code>$get</code> method. The <code>$get</code> method will be invoked using
+<a href="api/auto/service/$injector#invoke">$injector.invoke()</a> when an instance needs to be created.</li>
+<li><code>Constructor</code>: a new instance of the provider will be created using
+<a href="api/auto/service/$injector#instantiate">$injector.instantiate()</a>, then treated as <code>object</code>.</li>
+</ul>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-object">Object</a></td>
+    <td><p>registered provider instance</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="factory">
+    <h3><p><code>factory(name, $getFn);</code></p>
+
+</h3>
+    <div><p>Register a <strong>service factory</strong>, which will be called to return the service instance.
+This is short for registering a service where its provider consists of only a <code>$get</code> property,
+which is the given service factory function.
+You should use <a href="api/auto/service/$provide#factory">$provide.factory(getFn)</a> if you do not need to
+configure your service in a provider.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        name
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>The name of the instance.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        $getFn
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-function">function()</a>
+      </td>
+      <td>
+        <p>The $getFn for the instance creation. Internally this is a short hand
+                           for <code>$provide.provider(name, {$get: $getFn})</code>.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-object">Object</a></td>
+    <td><p>registered provider instance</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="service">
+    <h3><p><code>service(name, constructor);</code></p>
+
+</h3>
+    <div><p>Register a <strong>service constructor</strong>, which will be invoked with <code>new</code> to create the service
+instance.
+This is short for registering a service where its provider&#39;s <code>$get</code> property is the service
+constructor function that will be used to instantiate the service instance.</p>
+<p>You should use <a href="api/auto/service/$provide#service">$provide.service(class)</a> if you define your service
+as a type/class.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        name
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>The name of the instance.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        constructor
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-function">Function</a>
+      </td>
+      <td>
+        <p>A class (constructor function) that will be instantiated.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-object">Object</a></td>
+    <td><p>registered provider instance</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="value">
+    <h3><p><code>value(name, value);</code></p>
+
+</h3>
+    <div><p>Register a <strong>value service</strong> with the <a href="api/auto/service/$injector">$injector</a>, such as a string, a
+number, an array, an object or a function.  This is short for registering a service where its
+provider&#39;s <code>$get</code> property is a factory function that takes no arguments and returns the <strong>value
+service</strong>.</p>
+<p>Value services are similar to constant services, except that they cannot be injected into a
+module configuration function (see <a href="api/ng/type/angular.Module#config"><code>angular.Module</code></a>) but they can be overridden by
+an Angular
+<a href="api/auto/service/$provide#decorator">decorator</a>.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        name
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>The name of the instance.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        value
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">*</a>
+      </td>
+      <td>
+        <p>The value.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-object">Object</a></td>
+    <td><p>registered provider instance</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="constant">
+    <h3><p><code>constant(name, value);</code></p>
+
+</h3>
+    <div><p>Register a <strong>constant service</strong>, such as a string, a number, an array, an object or a function,
+with the <a href="api/auto/service/$injector">$injector</a>. Unlike <a href="api/auto/service/$provide#value">value</a> it can be
+injected into a module configuration function (see <a href="api/ng/type/angular.Module#config"><code>angular.Module</code></a>) and it cannot
+be overridden by an Angular <a href="api/auto/service/$provide#decorator">decorator</a>.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        name
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>The name of the constant.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        value
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">*</a>
+      </td>
+      <td>
+        <p>The constant value.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-object">Object</a></td>
+    <td><p>registered instance</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="decorator">
+    <h3><p><code>decorator(name, decorator);</code></p>
+
+</h3>
+    <div><p>Register a <strong>service decorator</strong> with the <a href="api/auto/service/$injector">$injector</a>. A service decorator
+intercepts the creation of a service, allowing it to override or modify the behaviour of the
+service. The object returned by the decorator may be the original service, or a new service
+object which replaces or wraps and delegates to the original service.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        name
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>The name of the service to decorate.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        decorator
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-function">function()</a>
+      </td>
+      <td>
+        <p>This function will be invoked when the service needs to be
+   instantiated and should return the decorated service instance. The function is called using
+   the <a href="api/auto/service/$injector#invoke">injector.invoke</a> method and is therefore fully injectable.
+   Local injection arguments:</p>
+<ul>
+<li><code>$delegate</code> - The original service instance, which can be monkey patched, configured,
+decorated or delegated to.</li>
+</ul>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+
+  </li>
+  </ul>
+  
+  
+
+
+
+  
+</div>
+
+

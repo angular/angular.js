@@ -1,0 +1,143 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ngAria/aria.js?message=docs(ngAria)%3A%20describe%20your%20change...#L3' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1>
+  <code>ngAria</code>
+</h1>
+
+<p>The <code>ngAria</code> module provides support for common
+<a href="http://www.w3.org/TR/wai-aria/"><abbr title="Accessible Rich Internet Applications">ARIA</abbr></a>
+attributes that convey state or semantic information about the application for users
+of assistive technologies, such as screen readers.</p>
+<div doc-module-components="ngAria"></div>
+
+<h2 id="usage">Usage</h2>
+<p>For ngAria to do its magic, simply include the module as a dependency. The directives supported
+by ngAria are:
+<code>ngModel</code>, <code>ngDisabled</code>, <code>ngShow</code>, <code>ngHide</code>, <code>ngClick</code>, <code>ngDblClick</code>, and <code>ngMessages</code>.</p>
+<p>Below is a more detailed breakdown of the attributes handled by ngAria:</p>
+<table>
+<thead>
+<tr>
+<th>Directive</th>
+<th>Supported Attributes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="api/ng/directive/ngModel">ngModel</a></td>
+<td>aria-checked, aria-valuemin, aria-valuemax, aria-valuenow, aria-invalid, aria-required</td>
+</tr>
+<tr>
+<td><a href="api/ng/directive/ngDisabled">ngDisabled</a></td>
+<td>aria-disabled</td>
+</tr>
+<tr>
+<td><a href="api/ng/directive/ngShow">ngShow</a></td>
+<td>aria-hidden</td>
+</tr>
+<tr>
+<td><a href="api/ng/directive/ngHide">ngHide</a></td>
+<td>aria-hidden</td>
+</tr>
+<tr>
+<td><a href="api/ng/directive/ngClick">ngClick</a></td>
+<td>tabindex, keypress event</td>
+</tr>
+<tr>
+<td><a href="api/ng/directive/ngDblclick">ngDblclick</a></td>
+<td>tabindex</td>
+</tr>
+<tr>
+<td><a href="api/ngMessages">ngMessages</a></td>
+<td>aria-live</td>
+</tr>
+</tbody>
+</table>
+<p>Find out more information about each directive by reading the
+<a href="guide/accessibility">ngAria Developer Guide</a>.</p>
+<h2 id="example">Example</h2>
+<p>Using ngDisabled with ngAria:</p>
+<pre><code class="lang-html">&lt;md-checkbox ng-disabled=&quot;disabled&quot;&gt;
+</code></pre>
+<p>Becomes:</p>
+<pre><code class="lang-html">&lt;md-checkbox ng-disabled=&quot;disabled&quot; aria-disabled=&quot;true&quot;&gt;
+</code></pre>
+<h2 id="disabling-attributes">Disabling Attributes</h2>
+<p>It&#39;s possible to disable individual attributes added by ngAria with the
+<a href="api/ngAria/provider/$ariaProvider#config">config</a> method. For more details, see the
+<a href="guide/accessibility">Developer Guide</a>.</p>
+
+
+
+  <h2>Installation</h2>
+
+  <p>First include <code>angular-aria.js</code> in your HTML:</p>
+
+  <pre><code>&lt;script src=&quot;angular.js&quot;&gt;&#10;&lt;script src=&quot;angular-aria.js&quot;&gt;</code></pre>
+
+  <p>You can download this file from the following places:</p>
+  <ul>
+    <li>
+      <a href="https://developers.google.com/speed/libraries/devguide#angularjs">Google CDN</a><br>
+      e.g. <code>//ajax.googleapis.com/ajax/libs/angularjs/X.Y.Z/angular-aria.js</code>
+    </li>
+    <li>
+      <a href="http://bower.io">Bower</a><br>
+      e.g. <pre><code>bower install angular-aria@X.Y.Z</code></pre>
+    </li>
+    <li>
+      <a href="http://code.angularjs.org/">code.angularjs.org</a><br>
+      e.g. <pre><code>&quot;//code.angularjs.org/X.Y.Z/angular-aria.js&quot;</code></pre>
+    </li>
+  </ul>
+  <p>where X.Y.Z is the AngularJS version you are running.</p>
+  <p>Then load the module in your application by adding it as a dependent module:</p>
+  <pre><code>angular.module(&#39;app&#39;, [&#39;ngAria&#39;]);</code></pre>
+
+  <p>With that you&apos;re ready to get started!</p>
+
+
+<div class="component-breakdown">
+  <h2>Module Components</h2>
+  
+  <div>
+    <h3 class="component-heading" id="provider">Provider</h3>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ngAria/provider/$ariaProvider">$ariaProvider</a></td>
+        <td><p>Used for configuring the ARIA attributes injected and managed by ngAria.</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+  
+  <div>
+    <h3 class="component-heading" id="service">Service</h3>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      
+      <tr>
+        <td><a href="api/ngAria/service/$aria">$aria</a></td>
+        <td><p>The $aria service contains helper methods for applying common
+<a href="http://www.w3.org/TR/wai-aria/">ARIA</a> attributes to HTML directives.</p>
+</td>
+      </tr>
+      
+    </table>
+  </div>
+  
+</div>
+
+
+
+

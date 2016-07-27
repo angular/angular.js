@@ -1,0 +1,20 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/error/$http/badreq.ngdoc?message=docs(error%2Fbadreq)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1>Error: error:badreq
+  <div><span class='hint'>Bad Request Configuration</span></div>
+</h1>
+
+<div>
+    <pre class="minerr-errmsg" error-display="Http request configuration must be an object.  Received: {0}">Http request configuration must be an object.  Received: {0}</pre>
+</div>
+
+<h2>Description</h2>
+<div class="description">
+  <p>This error occurs when the request configuration parameter passed to the <a href="api/ng/service/$http"><code>$http</code></a> service is not an object.  <code>$http</code> expects a single parameter, the request configuration object, but received a parameter that was not an object.  The error message should provide additional context such as the actual value of the parameter that was received.  If you passed a string parameter, perhaps you meant to call one of the shorthand methods on <code>$http</code> such as <code>$http.get(…)</code>, etc.</p>
+<p>To resolve this error, make sure you pass a valid request configuration object to <code>$http</code>.</p>
+<p>For more information, see the <a href="api/ng/service/$http"><code>$http</code></a> service API documentation.</p>
+
+</div>
+
+

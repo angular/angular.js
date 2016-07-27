@@ -1,0 +1,73 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ngMock/angular-mocks.js?message=docs($exceptionHandler)%3A%20describe%20your%20change...#L200' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ngMock/angular-mocks.js#L200' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">$exceptionHandler</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+  <li>
+    <a href="api/ngMock/provider/$exceptionHandlerProvider">- $exceptionHandlerProvider</a>
+  </li>
+
+    <li>
+      - service in module <a href="api/ngMock">ngMock</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Mock implementation of <a href="api/ng/service/$exceptionHandler"><code>$exceptionHandler</code></a> that rethrows or logs errors passed
+to it. See <a href="api/ngMock/provider/$exceptionHandlerProvider">$exceptionHandlerProvider</a> for configuration
+information.</p>
+<pre><code class="lang-js">describe(&#39;$exceptionHandlerProvider&#39;, function() {
+
+  it(&#39;should capture log messages and exceptions&#39;, function() {
+
+    module(function($exceptionHandlerProvider) {
+      $exceptionHandlerProvider.mode(&#39;log&#39;);
+    });
+
+    inject(function($log, $exceptionHandler, $timeout) {
+      $timeout(function() { $log.log(1); });
+      $timeout(function() { $log.log(2); throw &#39;banana peel&#39;; });
+      $timeout(function() { $log.log(3); });
+      expect($exceptionHandler.errors).toEqual([]);
+      expect($log.assertEmpty());
+      $timeout.flush();
+      expect($exceptionHandler.errors).toEqual([&#39;banana peel&#39;]);
+      expect($log.log.logs).toEqual([[1], [2], [3]]);
+    });
+  });
+});
+</code></pre>
+
+</div>
+
+
+
+
+<div>
+  
+
+    
+
+  
+
+  
+  
+  
+
+
+
+  
+</div>
+
+

@@ -1,0 +1,81 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ngAria/aria.js?message=docs($aria)%3A%20describe%20your%20change...#L126' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ngAria/aria.js#L126' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">$aria</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+  <li>
+    <a href="api/ngAria/provider/$ariaProvider">- $ariaProvider</a>
+  </li>
+
+    <li>
+      - service in module <a href="api/ngAria">ngAria</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>The $aria service contains helper methods for applying common
+<a href="http://www.w3.org/TR/wai-aria/">ARIA</a> attributes to HTML directives.</p>
+<p>ngAria injects common accessibility attributes that tell assistive technologies when HTML
+elements are enabled, selected, hidden, and more. To see how this is performed with ngAria,
+let&#39;s review a code snippet from ngAria itself:</p>
+<pre><code class="lang-js">ngAriaModule.directive(&#39;ngDisabled&#39;, [&#39;$aria&#39;, function($aria) {
+  return $aria.$$watchExpr(&#39;ngDisabled&#39;, &#39;aria-disabled&#39;);
+}])
+</code></pre>
+<p>Shown above, the ngAria module creates a directive with the same signature as the
+traditional <code>ng-disabled</code> directive. But this ngAria version is dedicated to
+solely managing accessibility attributes. The internal <code>$aria</code> service is used to watch the
+boolean attribute <code>ngDisabled</code>. If it has not been explicitly set by the developer,
+<code>aria-disabled</code> is injected as an attribute with its value synchronized to the value in
+<code>ngDisabled</code>.</p>
+<p>Because ngAria hooks into the <code>ng-disabled</code> directive, developers do not have to do
+anything to enable this feature. The <code>aria-disabled</code> attribute is automatically managed
+simply as a silent side-effect of using <code>ng-disabled</code> with the ngAria module.</p>
+<p>The full list of directives that interface with ngAria:</p>
+<ul>
+<li><strong>ngModel</strong></li>
+<li><strong>ngShow</strong></li>
+<li><strong>ngHide</strong></li>
+<li><strong>ngClick</strong></li>
+<li><strong>ngDblclick</strong></li>
+<li><strong>ngMessages</strong></li>
+<li><strong>ngDisabled</strong></li>
+</ul>
+<p>Read the <a href="guide/accessibility">ngAria Developer Guide</a> for a thorough explanation of each
+directive.</p>
+<h2 id="dependencies">Dependencies</h2>
+<p>Requires the <a href="api/ngAria"><code>ngAria</code></a> module to be installed.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+    
+
+  
+
+  
+  
+  
+
+
+
+  
+</div>
+
+

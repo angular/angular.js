@@ -1,0 +1,155 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/loader.js?message=docs(angular.module)%3A%20describe%20your%20change...#L30' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/loader.js#L30' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">angular.module</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - function in module <a href="api/ng">ng</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>The <code>angular.module</code> is a global place for creating, registering and retrieving Angular
+modules.
+All modules (angular core or 3rd party) that should be available to an application must be
+registered using this mechanism.</p>
+<p>When passed two or more arguments, a new module is created.  If passed only one argument, an
+existing module (the name passed as the first argument to <code>module</code>) is retrieved.</p>
+<h1 id="module">Module</h1>
+<p>A module is a collection of services, directives, controllers, filters, and configuration information.
+<code>angular.module</code> is used to configure the <a href="api/auto/service/$injector">$injector</a>.</p>
+<pre><code class="lang-js">// Create a new module
+var myModule = angular.module(&#39;myModule&#39;, []);
+
+// register a new service
+myModule.value(&#39;appName&#39;, &#39;MyCoolApp&#39;);
+
+// configure existing services inside initialization blocks.
+myModule.config([&#39;$locationProvider&#39;, function($locationProvider) {
+  // Configure existing providers
+  $locationProvider.hashPrefix(&#39;!&#39;);
+}]);
+</code></pre>
+<p>Then you can create an injector and load your modules like this:</p>
+<pre><code class="lang-js">var injector = angular.injector([&#39;ng&#39;, &#39;myModule&#39;])
+</code></pre>
+<p>However it&#39;s more likely that you&#39;ll just use
+<a href="api/ng/directive/ngApp">ngApp</a> or
+<a href="api/ng/function/angular.bootstrap"><code>angular.bootstrap</code></a> to simplify this process for you.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+    
+
+  <h2 id="usage">Usage</h2>
+    
+      <p><code>angular.module(name, [requires], [configFn]);</code></p>
+
+
+    
+
+    
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        name
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>The name of the module to create or retrieve.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        requires
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">!Array.&lt;string&gt;=</a>
+      </td>
+      <td>
+        <p>If specified then new module is being created. If
+       unspecified then the module is being retrieved for further configuration.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        configFn
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-function">Function=</a>
+      </td>
+      <td>
+        <p>Optional configuration function for the module. Same as
+       <a href="api/ng/type/angular.Module#config">Module#config()</a>.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
+    
+    <h3>Returns</h3>
+<table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-module">module</a></td>
+    <td><p>new module with the <a href="api/ng/type/angular.Module"><code>angular.Module</code></a> api.</p>
+</td>
+  </tr>
+</table>
+
+  
+  
+  
+
+
+
+  
+</div>
+
+

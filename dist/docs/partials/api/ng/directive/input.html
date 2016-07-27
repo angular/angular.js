@@ -1,0 +1,268 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/directive/input.js?message=docs(input)%3A%20describe%20your%20change...#L1408' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/directive/input.js#L1408' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">input</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - directive in module <a href="api/ng">ng</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>HTML input element control. When used together with <a href="api/ng/directive/ngModel"><code>ngModel</code></a>, it provides data-binding,
+input state control, and validation.
+Input control follows HTML5 input types and polyfills the HTML5 validation behavior for older browsers.</p>
+<div class="alert alert-warning">
+<strong>Note:</strong> Not every feature offered is available for all input types.
+Specifically, data binding and event handling via <code>ng-model</code> is unsupported for <code>input[file]</code>.
+</div>
+</div>
+
+
+
+
+<div>
+  
+
+  
+  <h2>Directive Info</h2>
+  <ul>
+    
+    <li>This directive executes at priority level 0.</li>
+  </ul>
+
+  
+  <h2 id="usage">Usage</h2>
+  <div class="usage">
+  
+    <ul>
+    
+      <li>as element:
+      
+      <pre><code>&lt;input&#10;  ng-model=&quot;&quot;&#10;  [name=&quot;&quot;]&#10;  [required=&quot;&quot;]&#10;  [ng-required=&quot;&quot;]&#10;  [ng-minlength=&quot;&quot;]&#10;  [ng-maxlength=&quot;&quot;]&#10;  [ng-pattern=&quot;&quot;]&#10;  [ng-change=&quot;&quot;]&#10;  [ng-trim=&quot;&quot;]&gt;&#10;...&#10;&lt;/input&gt;</code></pre>
+      </li>
+    
+  </div>
+  
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        ngModel
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Assignable angular expression to data-bind to.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        name
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Property name of the form under which the control is published.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        required
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Sets <code>required</code> validation error key if the value is not entered.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        ngRequired
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-boolean">boolean</a>
+      </td>
+      <td>
+        <p>Sets <code>required</code> attribute if set to true</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        ngMinlength
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-number">number</a>
+      </td>
+      <td>
+        <p>Sets <code>minlength</code> validation error key if the value is shorter than
+   minlength.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        ngMaxlength
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-number">number</a>
+      </td>
+      <td>
+        <p>Sets <code>maxlength</code> validation error key if the value is longer than
+   maxlength. Setting the attribute to a negative or non-numeric value, allows view values of any
+   length.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        ngPattern
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Sets <code>pattern</code> validation error key if the value does not match the
+   RegExp pattern expression. Expected value is <code>/regexp/</code> for inline patterns or <code>regexp</code> for
+   patterns defined as scope expressions.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        ngChange
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>Angular expression to be executed when input changes due to user
+   interaction with the input element.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        ngTrim
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-boolean">boolean</a>
+      </td>
+      <td>
+        <p>If set to false Angular will not automatically trim the input.
+   This parameter is ignored for input[type=password] controls, which will never trim the
+   input.</p>
+
+        <p><em>(default: true)</em></p>
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
+  
+
+
+  
+  <h2 id="example">Example</h2><p>
+
+<div>
+  <a ng-click="openPlunkr('examples/example-input-directive', $event)" class="btn pull-right">
+    <i class="glyphicon glyphicon-edit">&nbsp;</i>
+    Edit in Plunker</a>
+
+  <div class="runnable-example"
+      path="examples/example-input-directive"
+      name="input-directive"
+      module="inputExample">
+
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;script&gt;&#10;   angular.module(&#39;inputExample&#39;, [])&#10;     .controller(&#39;ExampleController&#39;, [&#39;$scope&#39;, function($scope) {&#10;       $scope.user = {name: &#39;guest&#39;, last: &#39;visitor&#39;};&#10;     }]);&#10;&lt;/script&gt;&#10;&lt;div ng-controller=&quot;ExampleController&quot;&gt;&#10;  &lt;form name=&quot;myForm&quot;&gt;&#10;    User name: &lt;input type=&quot;text&quot; name=&quot;userName&quot; ng-model=&quot;user.name&quot; required&gt;&#10;    &lt;span class=&quot;error&quot; ng-show=&quot;myForm.userName.$error.required&quot;&gt;&#10;      Required!&lt;/span&gt;&lt;br&gt;&#10;    Last name: &lt;input type=&quot;text&quot; name=&quot;lastName&quot; ng-model=&quot;user.last&quot;&#10;      ng-minlength=&quot;3&quot; ng-maxlength=&quot;10&quot;&gt;&#10;    &lt;span class=&quot;error&quot; ng-show=&quot;myForm.lastName.$error.minlength&quot;&gt;&#10;      Too short!&lt;/span&gt;&#10;    &lt;span class=&quot;error&quot; ng-show=&quot;myForm.lastName.$error.maxlength&quot;&gt;&#10;      Too long!&lt;/span&gt;&lt;br&gt;&#10;  &lt;/form&gt;&#10;  &lt;hr&gt;&#10;  &lt;tt&gt;user = {{user}}&lt;/tt&gt;&lt;br/&gt;&#10;  &lt;tt&gt;myForm.userName.$valid = {{myForm.userName.$valid}}&lt;/tt&gt;&lt;br&gt;&#10;  &lt;tt&gt;myForm.userName.$error = {{myForm.userName.$error}}&lt;/tt&gt;&lt;br&gt;&#10;  &lt;tt&gt;myForm.lastName.$valid = {{myForm.lastName.$valid}}&lt;/tt&gt;&lt;br&gt;&#10;  &lt;tt&gt;myForm.lastName.$error = {{myForm.lastName.$error}}&lt;/tt&gt;&lt;br&gt;&#10;  &lt;tt&gt;myForm.$valid = {{myForm.$valid}}&lt;/tt&gt;&lt;br&gt;&#10;  &lt;tt&gt;myForm.$error.required = {{!!myForm.$error.required}}&lt;/tt&gt;&lt;br&gt;&#10;  &lt;tt&gt;myForm.$error.minlength = {{!!myForm.$error.minlength}}&lt;/tt&gt;&lt;br&gt;&#10;  &lt;tt&gt;myForm.$error.maxlength = {{!!myForm.$error.maxlength}}&lt;/tt&gt;&lt;br&gt;&#10;&lt;/div&gt;</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="protractor.js"
+      type="protractor"
+      language="js">
+      <pre><code>var user = element(by.exactBinding(&#39;user&#39;));&#10;var userNameValid = element(by.binding(&#39;myForm.userName.$valid&#39;));&#10;var lastNameValid = element(by.binding(&#39;myForm.lastName.$valid&#39;));&#10;var lastNameError = element(by.binding(&#39;myForm.lastName.$error&#39;));&#10;var formValid = element(by.binding(&#39;myForm.$valid&#39;));&#10;var userNameInput = element(by.model(&#39;user.name&#39;));&#10;var userLastInput = element(by.model(&#39;user.last&#39;));&#10;&#10;it(&#39;should initialize to model&#39;, function() {&#10;  expect(user.getText()).toContain(&#39;{&quot;name&quot;:&quot;guest&quot;,&quot;last&quot;:&quot;visitor&quot;}&#39;);&#10;  expect(userNameValid.getText()).toContain(&#39;true&#39;);&#10;  expect(formValid.getText()).toContain(&#39;true&#39;);&#10;});&#10;&#10;it(&#39;should be invalid if empty when required&#39;, function() {&#10;  userNameInput.clear();&#10;  userNameInput.sendKeys(&#39;&#39;);&#10;&#10;  expect(user.getText()).toContain(&#39;{&quot;last&quot;:&quot;visitor&quot;}&#39;);&#10;  expect(userNameValid.getText()).toContain(&#39;false&#39;);&#10;  expect(formValid.getText()).toContain(&#39;false&#39;);&#10;});&#10;&#10;it(&#39;should be valid if empty when min length is set&#39;, function() {&#10;  userLastInput.clear();&#10;  userLastInput.sendKeys(&#39;&#39;);&#10;&#10;  expect(user.getText()).toContain(&#39;{&quot;name&quot;:&quot;guest&quot;,&quot;last&quot;:&quot;&quot;}&#39;);&#10;  expect(lastNameValid.getText()).toContain(&#39;true&#39;);&#10;  expect(formValid.getText()).toContain(&#39;true&#39;);&#10;});&#10;&#10;it(&#39;should be invalid if less than required min length&#39;, function() {&#10;  userLastInput.clear();&#10;  userLastInput.sendKeys(&#39;xx&#39;);&#10;&#10;  expect(user.getText()).toContain(&#39;{&quot;name&quot;:&quot;guest&quot;}&#39;);&#10;  expect(lastNameValid.getText()).toContain(&#39;false&#39;);&#10;  expect(lastNameError.getText()).toContain(&#39;minlength&#39;);&#10;  expect(formValid.getText()).toContain(&#39;false&#39;);&#10;});&#10;&#10;it(&#39;should be invalid if longer than max length&#39;, function() {&#10;  userLastInput.clear();&#10;  userLastInput.sendKeys(&#39;some ridiculously long name&#39;);&#10;&#10;  expect(user.getText()).toContain(&#39;{&quot;name&quot;:&quot;guest&quot;}&#39;);&#10;  expect(lastNameValid.getText()).toContain(&#39;false&#39;);&#10;  expect(lastNameError.getText()).toContain(&#39;maxlength&#39;);&#10;  expect(formValid.getText()).toContain(&#39;false&#39;);&#10;});</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-input-directive/index.html" name="example-input-directive"></iframe>
+  </div>
+</div>
+
+
+</p>
+
+</div>
+
+

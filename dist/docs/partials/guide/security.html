@@ -1,0 +1,43 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/guide/security.ngdoc?message=docs(guide%2FSecurity)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1 id="security">Security</h1>
+<p>This document explains some of AngularJS&#39;s security features and best practices that you should
+keep in mind as you build your application.</p>
+<h2 id="expression-sandboxing">Expression Sandboxing</h2>
+<p>AngularJS&#39;s expressions are sandboxed not for security reasons, but instead to maintain a proper
+separation of application responsibilities. For example, access to <code>window</code> is disallowed
+because it makes it easy to introduce brittle global state into your application.</p>
+<p>However, this sandbox is not intended to stop attackers who can edit the template before it&#39;s
+processed by Angular. It may be possible to run arbitrary JavaScript inside double-curly bindings
+if an attacker can modify them.</p>
+<p>But if an attacker can change arbitrary HTML templates, there&#39;s nothing stopping them from doing:</p>
+<pre><code class="lang-html">&lt;script&gt;somethingEvil();&lt;/script&gt;
+</code></pre>
+<p>It&#39;s better to design your application in such a way that users cannot change client-side templates.
+For instance:</p>
+<ul>
+<li>Do not mix client and server templates</li>
+<li>Do not use user input to generate templates dynamically</li>
+<li>Do not run user input through <code>$scope.$eval</code></li>
+<li>Consider using <a href="api/ng/directive/ngCsp">CSP</a> (but don&#39;t rely only on CSP)</li>
+</ul>
+<h2 id="mixing-client-side-and-server-side-templates">Mixing client-side and server-side templates</h2>
+<p>In general, we recommend against this because it can create unintended XSS vectors.</p>
+<p>However, it&#39;s ok to mix server-side templating in the bootstrap template (<code>index.html</code>) as long
+as user input cannot be used on the server to output html that would then be processed by Angular
+in a way that would cause allow for arbitrary code execution.</p>
+<p>For instance, you can use server-side templating to dynamically generate CSS, URLs, etc, but not
+for generating templates that are bootstrapped/compiled by Angular.</p>
+<h2 id="reporting-a-security-issue">Reporting a security issue</h2>
+<p>Email us at <a href="mailto:security@angularjs.org">security@angularjs.org</a> to report any potential
+security issues in AngularJS.</p>
+<p>Please keep in mind the above points about Angular&#39;s expression language.</p>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="api/ng/directive/ngCsp">Content Security Policy</a></li>
+<li><a href="api/ng/service/$sce">Strict Contextual Escaping</a></li>
+<li><a href="api/ngSanitize/service/$sanitize">$sanitize</a></li>
+</ul>
+
+

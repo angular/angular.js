@@ -1,0 +1,83 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/tutorial/step_06.ngdoc?message=docs(tutorial%2F6 - Templating Links & Images)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<ul doc-tutorial-nav="6"></ul>
+
+
+<p>In this step, you will add thumbnail images for the phones in the phone list, and links that, for
+now, will go nowhere. In subsequent steps you will use the links to display additional information
+about the phones in the catalog.</p>
+<ul>
+<li>There are now links and images of the phones in the list.</li>
+</ul>
+<div doc-tutorial-reset="6"></div>
+
+<h2 id="data">Data</h2>
+<p>Note that the <code>phones.json</code> file contains unique IDs and image URLs for each of the phones. The
+URLs point to the <code>app/img/phones/</code> directory.</p>
+<p><strong><code>app/phones/phones.json</code></strong> (sample snippet):</p>
+<pre><code class="lang-js">[
+  {
+    ...
+    &quot;id&quot;: &quot;motorola-defy-with-motoblur&quot;,
+    &quot;imageUrl&quot;: &quot;img/phones/motorola-defy-with-motoblur.0.jpg&quot;,
+    &quot;name&quot;: &quot;Motorola DEFY\u2122 with MOTOBLUR\u2122&quot;,
+    ...
+  },
+  ...
+]
+</code></pre>
+<h2 id="template">Template</h2>
+<p><strong><code>app/index.html</code>:</strong></p>
+<pre><code class="lang-html">...
+        &lt;ul class=&quot;phones&quot;&gt;
+          &lt;li ng-repeat=&quot;phone in phones | filter:query | orderBy:orderProp&quot; class=&quot;thumbnail&quot;&gt;
+            &lt;a href=&quot;#/phones/{{phone.id}}&quot; class=&quot;thumb&quot;&gt;&lt;img ng-src=&quot;{{phone.imageUrl}}&quot;&gt;&lt;/a&gt;
+            &lt;a href=&quot;#/phones/{{phone.id}}&quot;&gt;{{phone.name}}&lt;/a&gt;
+            &lt;p&gt;{{phone.snippet}}&lt;/p&gt;
+          &lt;/li&gt;
+        &lt;/ul&gt;
+...
+</code></pre>
+<p>To dynamically generate links that will in the future lead to phone detail pages, we used the
+now-familiar double-curly brace binding in the <code>href</code> attribute values. In step 2, we added the
+<code>{{phone.name}}</code> binding as the element content. In this step the <code>{{phone.id}}</code> binding is used in
+the element attribute.</p>
+<p>We also added phone images next to each record using an image tag with the <a href="api/ng/directive/ngSrc">ngSrc</a> directive. That directive prevents the
+browser from treating the Angular <code>{{ expression }}</code> markup literally, and initiating a request to
+invalid URL <code>http://localhost:8000/app/{{phone.imageUrl}}</code>, which it would have done if we had only
+specified an attribute binding in a regular <code>src</code> attribute (<code>&lt;img src=&quot;{{phone.imageUrl}}&quot;&gt;</code>).
+Using the <code>ngSrc</code> directive prevents the browser from making an http request to an invalid location.</p>
+<h2 id="test">Test</h2>
+<p><strong><code>test/e2e/scenarios.js</code></strong>:</p>
+<pre><code class="lang-js">...
+    it(&#39;should render phone specific links&#39;, function() {
+      var query = element(by.model(&#39;query&#39;));
+      query.sendKeys(&#39;nexus&#39;);
+      element.all(by.css(&#39;.phones li a&#39;)).first().click();
+      browser.getLocationAbsUrl().then(function(url) {
+        expect(url.split(&#39;#&#39;)[1]).toBe(&#39;/phones/nexus-s&#39;);
+      });
+    });
+...
+</code></pre>
+<p>We added a new end-to-end test to verify that the app is generating correct links to the phone
+views that we will implement in the upcoming steps.</p>
+<p>You can now rerun <code>npm run protractor</code> to see the tests run.</p>
+<h1 id="experiments">Experiments</h1>
+<ul>
+<li><p>Replace the <code>ng-src</code> directive with a plain old <code>src</code> attribute. Using tools such as Firebug,
+or Chrome&#39;s Web Inspector, or inspecting the webserver access logs, confirm that the app is indeed
+making an extraneous request to <code>/app/%7B%7Bphone.imageUrl%7D%7D</code> (or
+<code>/app/{{phone.imageUrl}}</code>).</p>
+<p>The issue here is that the browser will fire a request for that invalid image address as soon as
+it hits the <code>img</code> tag, which is before Angular has a chance to evaluate the expression and inject
+the valid address.</p>
+</li>
+</ul>
+<h1 id="summary">Summary</h1>
+<p>Now that you have added phone images and links, go to <a href="tutorial/step_07">step 7</a> to learn about Angular
+layout templates and how Angular makes it easy to create applications that have multiple views.</p>
+<ul doc-tutorial-nav="6"></ul>
+
+

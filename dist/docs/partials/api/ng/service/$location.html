@@ -1,0 +1,592 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/location.js?message=docs($location)%3A%20describe%20your%20change...#L653' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/location.js#L653' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">$location</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+  <li>
+    <a href="api/ng/provider/$locationProvider">- $locationProvider</a>
+  </li>
+
+    <li>
+      - service in module <a href="api/ng">ng</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>The $location service parses the URL in the browser address bar (based on the
+<a href="https://developer.mozilla.org/en/window.location">window.location</a>) and makes the URL
+available to your application. Changes to the URL in the address bar are reflected into
+$location service and changes to $location are reflected into the browser address bar.</p>
+<p><strong>The $location service:</strong></p>
+<ul>
+<li>Exposes the current URL in the browser address bar, so you can<ul>
+<li>Watch and observe the URL.</li>
+<li>Change the URL.</li>
+</ul>
+</li>
+<li>Synchronizes the URL with the browser when the user<ul>
+<li>Changes the address bar.</li>
+<li>Clicks the back or forward button (or clicks a History link).</li>
+<li>Clicks on a link.</li>
+</ul>
+</li>
+<li>Represents the URL object as a set of methods (protocol, host, port, path, search, hash).</li>
+</ul>
+<p>For more information see <a href="guide/$location">Developer Guide: Using $location</a></p>
+
+</div>
+
+
+
+
+<div>
+  
+  <h2 id="dependencies">Dependencies</h2>
+  <ul>
+    <li><a href="api/ng/service/$rootElement"><code>$rootElement</code></a></li>
+  </ul>
+  
+
+    
+
+  
+
+  
+<h2>Methods</h2>
+<ul class="methods">
+  <li id="absUrl">
+    <h3><p><code>absUrl();</code></p>
+
+</h3>
+    <div><p>This method is getter only.</p>
+<p>Return full url representation with all segments encoded according to rules specified in
+<a href="http://www.ietf.org/rfc/rfc3986.txt">RFC 3986</a>.</p>
+<pre><code class="lang-js">// given url http://example.com/#/some/path?foo=bar&amp;baz=xoxo
+var absUrl = $location.absUrl();
+// =&gt; &quot;http://example.com/#/some/path?foo=bar&amp;baz=xoxo&quot;
+</code></pre>
+</div>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-string">string</a></td>
+    <td><p>full url</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="url">
+    <h3><p><code>url([url]);</code></p>
+
+</h3>
+    <div><p>This method is getter / setter.</p>
+<p>Return url (e.g. <code>/path?a=b#hash</code>) when called without any parameter.</p>
+<p>Change path, search and hash, when called with parameter and return <code>$location</code>.</p>
+<pre><code class="lang-js">// given url http://example.com/#/some/path?foo=bar&amp;baz=xoxo
+var url = $location.url();
+// =&gt; &quot;/some/path?foo=bar&amp;baz=xoxo&quot;
+</code></pre>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        url
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a>
+      </td>
+      <td>
+        <p>New url without base prefix (e.g. <code>/path?a=b#hash</code>)</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-string">string</a></td>
+    <td><p>url</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="protocol">
+    <h3><p><code>protocol();</code></p>
+
+</h3>
+    <div><p>This method is getter only.</p>
+<p>Return protocol of current url.</p>
+<pre><code class="lang-js">// given url http://example.com/#/some/path?foo=bar&amp;baz=xoxo
+var protocol = $location.protocol();
+// =&gt; &quot;http&quot;
+</code></pre>
+</div>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-string">string</a></td>
+    <td><p>protocol of current url</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="host">
+    <h3><p><code>host();</code></p>
+
+</h3>
+    <div><p>This method is getter only.</p>
+<p>Return host of current url.</p>
+<pre><code class="lang-js">// given url http://example.com/#/some/path?foo=bar&amp;baz=xoxo
+var host = $location.host();
+// =&gt; &quot;example.com&quot;
+</code></pre>
+</div>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-string">string</a></td>
+    <td><p>host of current url.</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="port">
+    <h3><p><code>port();</code></p>
+
+</h3>
+    <div><p>This method is getter only.</p>
+<p>Return port of current url.</p>
+<pre><code class="lang-js">// given url http://example.com/#/some/path?foo=bar&amp;baz=xoxo
+var port = $location.port();
+// =&gt; 80
+</code></pre>
+</div>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-number">Number</a></td>
+    <td><p>port</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="path">
+    <h3><p><code>path([path]);</code></p>
+
+</h3>
+    <div><p>This method is getter / setter.</p>
+<p>Return path of current url when called without any parameter.</p>
+<p>Change path when called with parameter and return <code>$location</code>.</p>
+<p>Note: Path should always begin with forward slash (/), this method will add the forward slash
+if it is missing.</p>
+<pre><code class="lang-js">// given url http://example.com/#/some/path?foo=bar&amp;baz=xoxo
+var path = $location.path();
+// =&gt; &quot;/some/path&quot;
+</code></pre>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        path
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a><a href="" class="label type-hint type-hint-number">number</a>
+      </td>
+      <td>
+        <p>New path</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-string">string</a></td>
+    <td><p>path</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="search">
+    <h3><p><code>search(search, [paramValue]);</code></p>
+
+</h3>
+    <div><p>This method is getter / setter.</p>
+<p>Return search part (as object) of current url when called without any parameter.</p>
+<p>Change search part when called with parameter and return <code>$location</code>.</p>
+<pre><code class="lang-js">// given url http://example.com/#/some/path?foo=bar&amp;baz=xoxo
+var searchObject = $location.search();
+// =&gt; {foo: &#39;bar&#39;, baz: &#39;xoxo&#39;}
+
+// set foo to &#39;yipee&#39;
+$location.search(&#39;foo&#39;, &#39;yipee&#39;);
+// $location.search() =&gt; {foo: &#39;yipee&#39;, baz: &#39;xoxo&#39;}
+</code></pre>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        search
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a><a href="" class="label type-hint type-hint-object">Object.&lt;string&gt;</a><a href="" class="label type-hint type-hint-object">Object.&lt;Array.&lt;string&gt;&gt;</a>
+      </td>
+      <td>
+        <p>New search params - string or
+hash object.</p>
+<p>When called with a single argument the method acts as a setter, setting the <code>search</code> component
+of <code>$location</code> to the specified value.</p>
+<p>If the argument is a hash object containing an array of values, these values will be encoded
+as duplicate search parameters in the url.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        paramValue
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a><a href="" class="label type-hint type-hint-number">Number</a><a href="" class="label type-hint type-hint-array">Array.&lt;string&gt;</a><a href="" class="label type-hint type-hint-boolean">boolean</a>
+      </td>
+      <td>
+        <p>If <code>search</code> is a string or number, then <code>paramValue</code>
+will override only a single search property.</p>
+<p>If <code>paramValue</code> is an array, it will override the property of the <code>search</code> component of
+<code>$location</code> specified via the first argument.</p>
+<p>If <code>paramValue</code> is <code>null</code>, the property specified via the first argument will be deleted.</p>
+<p>If <code>paramValue</code> is <code>true</code>, the property specified via the first argument will be added with no
+value nor trailing equal sign.</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-object">Object</a></td>
+    <td><p>If called with no arguments returns the parsed <code>search</code> object. If called with
+one or more arguments returns <code>$location</code> object itself.</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="hash">
+    <h3><p><code>hash([hash]);</code></p>
+
+</h3>
+    <div><p>This method is getter / setter.</p>
+<p>Return hash fragment when called without any parameter.</p>
+<p>Change hash fragment when called with parameter and return <code>$location</code>.</p>
+<pre><code class="lang-js">// given url http://example.com/#/some/path?foo=bar&amp;baz=xoxo#hashValue
+var hash = $location.hash();
+// =&gt; &quot;hashValue&quot;
+</code></pre>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        hash
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-string">string</a><a href="" class="label type-hint type-hint-number">number</a>
+      </td>
+      <td>
+        <p>New hash fragment</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-string">string</a></td>
+    <td><p>hash</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  
+  <li id="replace">
+    <h3><p><code>replace();</code></p>
+
+</h3>
+    <div><p>If called, all changes to $location during current <code>$digest</code> will be replacing current history
+record, instead of adding new one.</p>
+</div>
+
+    
+
+    
+    
+    
+
+  </li>
+  
+  <li id="state">
+    <h3><p><code>state([state]);</code></p>
+
+</h3>
+    <div><p>This method is getter / setter.</p>
+<p>Return the history state object when called without any parameter.</p>
+<p>Change the history state object when called with one parameter and return <code>$location</code>.
+The state object is later passed to <code>pushState</code> or <code>replaceState</code>.</p>
+<p>NOTE: This method is supported only in HTML5 mode and only in browsers supporting
+the HTML5 History API (i.e. methods <code>pushState</code> and <code>replaceState</code>). If you need to support
+older browsers (like IE9 or Android &lt; 4.0), don&#39;t use this method.</p>
+</div>
+
+    
+    <h4>Parameters</h4>
+    
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        state
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-object">object</a>
+      </td>
+      <td>
+        <p>State object for pushState or replaceState</p>
+
+        
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+    
+
+    
+    
+    
+    <h4>Returns</h4>
+    <table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-object">object</a></td>
+    <td><p>state</p>
+</td>
+  </tr>
+</table>
+    
+
+  </li>
+  </ul>
+  
+<h2>Events</h2>
+<ul class="events">
+  <li id="$locationChangeStart">
+    <h3>$locationChangeStart</h3>
+    <div><p>Broadcasted before a URL will change.</p>
+<p>This change can be prevented by calling
+<code>preventDefault</code> method of the event. See <a href="api/ng/type/$rootScope.Scope#$on"><code>$rootScope.Scope</code></a> for more
+details about event object. Upon successful change
+<a href="api/ng/service/$location#$locationChangeSuccess">$locationChangeSuccess</a> is fired.</p>
+<p>The <code>newState</code> and <code>oldState</code> parameters may be defined only in HTML5 mode and when
+the browser supports the HTML5 History API.</p>
+</div>
+    <div class="inline">
+      <h4>Type:</h4>
+      <div class="type">broadcast</div>
+    </div>
+    <div class="inline">
+      <h4>Target:</h4>
+      <div class="target">root scope</div>
+    </div>
+    </li>
+  
+  <li id="$locationChangeSuccess">
+    <h3>$locationChangeSuccess</h3>
+    <div><p>Broadcasted after a URL was changed.</p>
+<p>The <code>newState</code> and <code>oldState</code> parameters may be defined only in HTML5 mode and when
+the browser supports the HTML5 History API.</p>
+</div>
+    <div class="inline">
+      <h4>Type:</h4>
+      <div class="type">broadcast</div>
+    </div>
+    <div class="inline">
+      <h4>Target:</h4>
+      <div class="target">root scope</div>
+    </div>
+    </li>
+  </ul>
+
+  
+
+
+
+  
+</div>
+
+

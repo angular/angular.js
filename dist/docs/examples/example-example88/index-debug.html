@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Example - example-example88-debug</title>
+  
+
+  <script src="../../../angular.js"></script>
+  
+
+  
+</head>
+<body ng-app="pluralizeExample">
+  <script>
+  angular.module('pluralizeExample', [])
+    .controller('ExampleController', ['$scope', function($scope) {
+      $scope.person1 = 'Igor';
+      $scope.person2 = 'Misko';
+      $scope.personCount = 1;
+    }]);
+</script>
+<div ng-controller="ExampleController">
+  Person 1:<input type="text" ng-model="person1" value="Igor" /><br/>
+  Person 2:<input type="text" ng-model="person2" value="Misko" /><br/>
+  Number of People:<input type="text" ng-model="personCount" value="1" /><br/>
+
+  <!--- Example with simple pluralization rules for en locale --->
+  Without Offset:
+  <ng-pluralize count="personCount"
+                when="{'0': 'Nobody is viewing.',
+                       'one': '1 person is viewing.',
+                       'other': '{} people are viewing.'}">
+  </ng-pluralize><br>
+
+  <!--- Example with offset --->
+  With Offset(2):
+  <ng-pluralize count="personCount" offset=2
+                when="{'0': 'Nobody is viewing.',
+                       '1': '{{person1}} is viewing.',
+                       '2': '{{person1}} and {{person2}} are viewing.',
+                       'one': '{{person1}}, {{person2}} and one other person are viewing.',
+                       'other': '{{person1}}, {{person2}} and {} other people are viewing.'}">
+  </ng-pluralize>
+</div>
+</body>
+</html>

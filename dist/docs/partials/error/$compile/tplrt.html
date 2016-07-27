@@ -1,0 +1,51 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/error/$compile/tplrt.ngdoc?message=docs(error%2Ftplrt)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1>Error: error:tplrt
+  <div><span class='hint'>Invalid Template Root</span></div>
+</h1>
+
+<div>
+    <pre class="minerr-errmsg" error-display="Template for directive '{0}' must have exactly one root element. {1}">Template for directive '{0}' must have exactly one root element. {1}</pre>
+</div>
+
+<h2>Description</h2>
+<div class="description">
+  <p>When a directive is declared with <code>template</code> (or <code>templateUrl</code>) and <code>replace</code> mode on, the template
+must have exactly one root element. That is, the text of the template property or the content
+referenced by the templateUrl must be contained within a single html element.
+For example, <code>&lt;p&gt;blah &lt;em&gt;blah&lt;/em&gt; blah&lt;/p&gt;</code> instead of simply <code>blah &lt;em&gt;blah&lt;/em&gt; blah</code>.
+Otherwise, the replacement operation would result in a single element (the directive) being replaced
+with multiple elements or nodes, which is unsupported and not commonly needed in practice.</p>
+<p>For example a directive with definition:</p>
+<pre><code>myModule.directive(&#39;myDirective&#39;, function factory() {
+  return {
+    ...
+    replace: true,
+    templateUrl: &#39;someUrl&#39;
+    ...
+  }
+});
+</code></pre>
+<p>And a template provided at URL <code>someUrl</code>. The template must be an html fragment that has only a
+single root element, like the <code>div</code> element in this template:</p>
+<pre><code>&lt;div&gt;&lt;b&gt;Hello&lt;/b&gt; World!&lt;/div&gt;
+</code></pre>
+<p>An an invalid template to be used with this directive is one that defines multiple root nodes or
+elements. For example:</p>
+<pre><code>&lt;b&gt;Hello&lt;/b&gt; World!
+</code></pre>
+<p>Watch out for html comments at the beginning or end of templates, as these can cause this error as
+well.  Consider the following template:</p>
+<pre><code>&lt;div class=&#39;container&#39;&gt;
+  &lt;div class=&#39;wrapper&gt;
+     ...
+  &lt;/div&gt; &lt;!-- wrapper --&gt;
+&lt;/div&gt; &lt;!-- container --&gt;
+</code></pre>
+<p>The <code>&lt;!-- container --&gt;</code> comment is interpreted as a second root element and causes the template to
+be invalid.</p>
+
+</div>
+
+

@@ -1,0 +1,21 @@
+<a href='https://github.com/angular/angular.js/edit/master/docs/content/error/ng/cpi.ngdoc?message=docs(error%2Fcpi)%3A%20describe%20your%20change...' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+<h1>Error: error:cpi
+  <div><span class='hint'>Bad Copy</span></div>
+</h1>
+
+<div>
+    <pre class="minerr-errmsg" error-display="Can't copy! Source and destination are identical.">Can't copy! Source and destination are identical.</pre>
+</div>
+
+<h2>Description</h2>
+<div class="description">
+  <p>This error occurs when attempting to copy an object to itself. Calling <a href="api/ng/function/angular.copy">angular.copy</a> with a <code>destination</code> object deletes
+all of the elements or properties on <code>destination</code> before copying to it. Copying
+an object to itself is not supported. Make sure to check your calls to
+<code>angular.copy</code> and avoid copying objects or arrays to themselves.</p>
+
+</div>
+
+

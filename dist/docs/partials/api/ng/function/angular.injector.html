@@ -1,0 +1,143 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/auto/injector.js?message=docs(angular.injector)%3A%20describe%20your%20change...#L3' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/auto/injector.js#L3' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">angular.injector</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - function in module <a href="api/ng">ng</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Creates an injector object that can be used for retrieving services as well as for
+dependency injection (see <a href="guide/di">dependency injection</a>).</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+    
+
+  <h2 id="usage">Usage</h2>
+    
+      <p><code>angular.injector(modules, [strictDi]);</code></p>
+
+
+    
+
+    
+<section class="api-section">
+  <h3>Arguments</h3>
+
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>
+        modules
+        
+        
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-array">Array.&lt;string|Function&gt;</a>
+      </td>
+      <td>
+        <p>A list of module functions or their aliases. See
+    <a href="api/ng/function/angular.module"><code>angular.module</code></a>. The <code>ng</code> module must be explicitly added.</p>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        strictDi
+        
+        <div><em>(optional)</em></div>
+      </td>
+      <td>
+        <a href="" class="label type-hint type-hint-boolean">boolean</a>
+      </td>
+      <td>
+        <p>Whether the injector should be in strict mode, which
+    disallows argument name annotation inference.</p>
+
+        <p><em>(default: false)</em></p>
+      </td>
+    </tr>
+    
+  </tbody>
+</table>
+
+</section>
+    
+    <h3>Returns</h3>
+<table class="variables-matrix return-arguments">
+  <tr>
+    <td><a href="" class="label type-hint type-hint-injector">injector</a></td>
+    <td><p>Injector object. See <a href="api/auto/service/$injector">$injector</a>.</p>
+</td>
+  </tr>
+</table>
+
+  
+  
+  
+
+
+
+  
+  <h2 id="example">Example</h2><p>Typical usage</p>
+<pre><code class="lang-js">// create an injector
+var $injector = angular.injector([&#39;ng&#39;]);
+
+// use the injector to kick off your application
+// use the type inference to auto inject arguments, or use implicit injection
+$injector.invoke(function($rootScope, $compile, $document) {
+  $compile($document)($rootScope);
+  $rootScope.$digest();
+});
+</code></pre>
+<p>Sometimes you want to get access to the injector of a currently running Angular app
+from outside Angular. Perhaps, you want to inject and compile some markup after the
+application has been bootstrapped. You can do this using the extra <code>injector()</code> added
+to JQuery/jqLite elements. See <a href="api/ng/function/angular.element"><code>angular.element</code></a>.</p>
+<p><em>This is fairly rare but could be the case if a third party library is injecting the
+markup.</em></p>
+<p>In the following example a new block of HTML containing a <code>ng-controller</code>
+directive is added to the end of the document body by JQuery. We then compile and link
+it into the current AngularJS scope.</p>
+<pre><code class="lang-js">var $div = $(&#39;&lt;div ng-controller=&quot;MyCtrl&quot;&gt;{{content.label}}&lt;/div&gt;&#39;);
+$(document.body).append($div);
+
+angular.element(document).injector().invoke(function($compile) {
+  var scope = angular.element($div).scope();
+  $compile($div)(scope);
+});
+</code></pre>
+
+</div>
+
+

@@ -1,0 +1,93 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ngTouch/swipe.js?message=docs($swipe)%3A%20describe%20your%20change...#L5' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ngTouch/swipe.js#L5' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">$swipe</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+  
+
+    <li>
+      - service in module <a href="api/ngTouch">ngTouch</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>The <code>$swipe</code> service is a service that abstracts the messier details of hold-and-drag swipe
+behavior, to make implementing swipe-related directives more convenient.</p>
+<p>Requires the <a href="api/ngTouch"><code>ngTouch</code></a> module to be installed.</p>
+<p><code>$swipe</code> is used by the <code>ngSwipeLeft</code> and <code>ngSwipeRight</code> directives in <code>ngTouch</code>, and by
+<code>ngCarousel</code> in a separate component.</p>
+<h1 id="usage">Usage</h1>
+<p>The <code>$swipe</code> service is an object with a single method: <code>bind</code>. <code>bind</code> takes an element
+which is to be watched for swipes, and an object with four handler functions. See the
+documentation for <code>bind</code> below.</p>
+
+</div>
+
+
+
+
+<div>
+  
+
+    
+
+  
+
+  
+<h2>Methods</h2>
+<ul class="methods">
+  <li id="bind">
+    <h3><p><code>bind();</code></p>
+
+</h3>
+    <div><p>The main method of <code>$swipe</code>. It takes an element to be watched for swipe motions, and an
+object containing event handlers.
+The pointer types that should be used can be specified via the optional
+third argument, which is an array of strings <code>&#39;mouse&#39;</code> and <code>&#39;touch&#39;</code>. By default,
+<code>$swipe</code> will listen for <code>mouse</code> and <code>touch</code> events.</p>
+<p>The four events are <code>start</code>, <code>move</code>, <code>end</code>, and <code>cancel</code>. <code>start</code>, <code>move</code>, and <code>end</code>
+receive as a parameter a coordinates object of the form <code>{ x: 150, y: 310 }</code>.</p>
+<p><code>start</code> is called on either <code>mousedown</code> or <code>touchstart</code>. After this event, <code>$swipe</code> is
+watching for <code>touchmove</code> or <code>mousemove</code> events. These events are ignored until the total
+distance moved in either dimension exceeds a small threshold.</p>
+<p>Once this threshold is exceeded, either the horizontal or vertical delta is greater.</p>
+<ul>
+<li>If the horizontal distance is greater, this is a swipe and <code>move</code> and <code>end</code> events follow.</li>
+<li>If the vertical distance is greater, this is a scroll, and we let the browser take over.
+A <code>cancel</code> event is sent.</li>
+</ul>
+<p><code>move</code> is called on <code>mousemove</code> and <code>touchmove</code> after the above logic has determined that
+a swipe is in progress.</p>
+<p><code>end</code> is called when a swipe is successfully completed with a <code>touchend</code> or <code>mouseup</code>.</p>
+<p><code>cancel</code> is called either on a <code>touchcancel</code> from the browser, or when we begin scrolling
+as described above.</p>
+</div>
+
+    
+
+    
+    
+    
+
+  </li>
+  </ul>
+  
+  
+
+
+
+  
+</div>
+
+

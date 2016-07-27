@@ -1,0 +1,170 @@
+<a href='https://github.com/angular/angular.js/edit/master/src/ng/log.js?message=docs($log)%3A%20describe%20your%20change...#L3' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this Doc</a>
+
+
+
+<a href='https://github.com/angular/angular.js/tree/master/src/ng/log.js#L3' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">$log</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+  <li>
+    <a href="api/ng/provider/$logProvider">- $logProvider</a>
+  </li>
+
+    <li>
+      - service in module <a href="api/ng">ng</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+  <p>Simple service for logging. Default implementation safely writes the message
+into the browser&#39;s console (if present).</p>
+<p>The main purpose of this service is to simplify debugging and troubleshooting.</p>
+<p>The default is to log <code>debug</code> messages. You can use
+<a href="api/ng/provider/$logProvider">ng.$logProvider#debugEnabled</a> to change this.</p>
+
+</div>
+
+
+
+
+<div>
+  
+  <h2 id="dependencies">Dependencies</h2>
+  <ul>
+    <li><a href="api/ng/service/$window"><code>$window</code></a></li>
+  </ul>
+  
+
+    
+
+  
+
+  
+<h2>Methods</h2>
+<ul class="methods">
+  <li id="log">
+    <h3><p><code>log();</code></p>
+
+</h3>
+    <div><p>Write a log message</p>
+</div>
+
+    
+
+    
+    
+    
+
+  </li>
+  
+  <li id="info">
+    <h3><p><code>info();</code></p>
+
+</h3>
+    <div><p>Write an information message</p>
+</div>
+
+    
+
+    
+    
+    
+
+  </li>
+  
+  <li id="warn">
+    <h3><p><code>warn();</code></p>
+
+</h3>
+    <div><p>Write a warning message</p>
+</div>
+
+    
+
+    
+    
+    
+
+  </li>
+  
+  <li id="error">
+    <h3><p><code>error();</code></p>
+
+</h3>
+    <div><p>Write an error message</p>
+</div>
+
+    
+
+    
+    
+    
+
+  </li>
+  
+  <li id="debug">
+    <h3><p><code>debug();</code></p>
+
+</h3>
+    <div><p>Write a debug message</p>
+</div>
+
+    
+
+    
+    
+    
+
+  </li>
+  </ul>
+  
+  
+
+
+
+  
+  <h2 id="example">Example</h2><p>
+
+<div>
+  <a ng-click="openPlunkr('examples/example-example109', $event)" class="btn pull-right">
+    <i class="glyphicon glyphicon-edit">&nbsp;</i>
+    Edit in Plunker</a>
+
+  <div class="runnable-example"
+      path="examples/example-example109"
+      module="logExample">
+
+  
+    <div class="runnable-example-file" 
+      name="script.js"
+      language="js"
+      type="js">
+      <pre><code>angular.module(&#39;logExample&#39;, [])&#10;.controller(&#39;LogController&#39;, [&#39;$scope&#39;, &#39;$log&#39;, function($scope, $log) {&#10;  $scope.$log = $log;&#10;  $scope.message = &#39;Hello World!&#39;;&#10;}]);</code></pre>
+    </div>
+  
+    <div class="runnable-example-file" 
+      name="index.html"
+      language="html"
+      type="html">
+      <pre><code>&lt;div ng-controller=&quot;LogController&quot;&gt;&#10;  &lt;p&gt;Reload this page with open console, enter text and hit the log button...&lt;/p&gt;&#10;  Message:&#10;  &lt;input type=&quot;text&quot; ng-model=&quot;message&quot;/&gt;&#10;  &lt;button ng-click=&quot;$log.log(message)&quot;&gt;log&lt;/button&gt;&#10;  &lt;button ng-click=&quot;$log.warn(message)&quot;&gt;warn&lt;/button&gt;&#10;  &lt;button ng-click=&quot;$log.info(message)&quot;&gt;info&lt;/button&gt;&#10;  &lt;button ng-click=&quot;$log.error(message)&quot;&gt;error&lt;/button&gt;&#10;&lt;/div&gt;</code></pre>
+    </div>
+  
+
+    <iframe class="runnable-example-frame" src="examples/example-example109/index.html" name="example-example109"></iframe>
+  </div>
+</div>
+
+
+</p>
+
+</div>
+
+
