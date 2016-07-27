@@ -27,7 +27,7 @@ should be bootstrapped. There are several advantages to this approach:
 
 I'm in a hurry. How do I get a Hello World module working?
 
-<example ng-app-included="true">
+<example ng-app-included="true" name="module-hello-world">
   <file name="index.html">
     <div ng-app="myApp">
       <div>
@@ -80,7 +80,7 @@ yourself when application grows.
 
 The above is a suggestion. Tailor it to your needs.
 
-<example module='xmpl'>
+<example module='xmpl' name="module-suggested-layout">
   <file name="index.html">
     <div ng-controller="XmplController">
       {{ greeting }}

@@ -20,7 +20,7 @@ In this example, our model stores the number as a string, so we provide the `str
 directive to convert it into the format the `input[number]` directive expects.
 
 
-<example module="numfmt-error-module">
+<example module="numfmt-error-module" name="number-format-error">
  <file name="index.html">
   <table>
     <tr ng-repeat="x in ['0', '1']">
