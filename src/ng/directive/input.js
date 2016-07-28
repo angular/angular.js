@@ -1960,22 +1960,19 @@ var CONSTANT_VALUE_REGEXP = /^(true|false|\d+)$/;
  * @name ngValue
  *
  * @description
- * Binds the given expression to the value of `<option>` or {@link input[radio] `input[radio]`},
- * so that when the element is selected, the {@link ngModel `ngModel`} of that element is set to
- * the bound value.
+ * Binds the given expression to the value of the element.
  *
- * `ngValue` is useful when dynamically generating lists of radio buttons using
- * {@link ngRepeat `ngRepeat`}, as shown below.
+ * It is mainly used on {@link input[radio] `input[radio]`} and option elements,
+ * so that when the element is selected, the {@link ngModel `ngModel`} of that element (or its
+ * {@link select `select`} parent element) is set to the bound value. It is especially useful
+ * for dynamically generated lists using {@link ngRepeat `ngRepeat`}, as shown below.
  *
- * Likewise, `ngValue` can be used to set the value of `<option>` elements for
- * the {@link select `select`} element.
- *
- * It can further be used to achieve one-way binding of a given expression to an input element that
- * does not use ngModel.
+ * It can also be used to achieve one-way binding of a given expression to an input element
+ * such as an `input[text]` or a `textarea`, when that element does not use ngModel.
  *
  * @element input
  * @param {string=} ngValue angular expression, whose value will be bound to the `value` attribute
- * and `value` property of the element
+ * and `value` property of the element.
  *
  * @example
     <example name="ngValue-directive" module="valueExample">
