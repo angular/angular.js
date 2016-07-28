@@ -2210,7 +2210,7 @@ describe('$http with $applyAsync', function() {
     // Ensure requests are sent
     $rootScope.$digest();
 
-    $httpBackend.flush(null, false);
+    $httpBackend.flush(null, null, false);
     expect($rootScope.$applyAsync).toHaveBeenCalledOnce();
     expect(handler).not.toHaveBeenCalled();
 
@@ -2228,7 +2228,7 @@ describe('$http with $applyAsync', function() {
     // Ensure requests are sent
     $rootScope.$digest();
 
-    $httpBackend.flush(null, false);
+    $httpBackend.flush(null, null, false);
     expect(log).toEqual([]);
 
     $browser.defer.flush();
@@ -2253,7 +2253,7 @@ describe('$http with $applyAsync', function() {
     expect(log).toEqual(['response 1', 'response 2']);
 
     // Finally, third response is received, and a second coalesced $apply is started
-    $httpBackend.flush(null, false);
+    $httpBackend.flush(null, null, false);
     $browser.defer.flush();
     expect(log).toEqual(['response 1', 'response 2', 'response 3']);
   });

@@ -1788,24 +1788,29 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
    * @ngdoc method
    * @name $httpBackend#flush
    * @description
-   * Flushes all pending requests using the trained responses.
+   * Flushes pending requests using the trained responses in the order they arrived.
+   * If there are no pending requests when the flush method is called
+   * an exception is thrown (as this typically a sign of programming error).
    *
-   * @param {number=} count Number of responses to flush (in the order they arrived). If undefined,
-   *   all pending requests will be flushed. If there are no pending requests when the flush method
-   *   is called an exception is thrown (as this typically a sign of programming error).
+   * @param {number=} count Number of responses to flush. If undefined,
+   *   all pending requests will be flushed beginning at `start`.
+   * @param {number=} [start=0] Sequential request number at which to begin to flush.
    */
-  $httpBackend.flush = function(count, digest) {
+  $httpBackend.flush = function(count, start, digest) {
     if (digest !== false) $rootScope.$digest();
     if (!responses.length) throw new Error('No pending request to flush !');
 
+    start = angular.isDefined(start) && start !== null ? start : 0;
+
     if (angular.isDefined(count) && count !== null) {
       while (count--) {
-        if (!responses.length) throw new Error('No more pending request to flush !');
-        responses.shift()();
+        var part = responses.splice(start, 1);
+        if (!part.length) throw new Error('No more pending request to flush !');
+        part[0]();
       }
     } else {
-      while (responses.length) {
-        responses.shift()();
+      while (responses.length > start) {
+        responses.splice(start, 1)[0]();
       }
     }
     $httpBackend.verifyNoOutstandingExpectation(digest);
