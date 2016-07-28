@@ -25,26 +25,26 @@ Below is a quick example of animations being enabled for `ngShow` and `ngHide`:
 
 <example module="ngAnimate" deps="angular-animate.js" animations="true">
   <file name="index.html">
-    <div ng-init="checked=true">
+    <div ng-init="checked = true">
       <label>
-        <input type="checkbox" ng-model="checked" style="float:left; margin-right:10px;"> Is Visible...
+        <input type="checkbox" ng-model="checked" />
+        Is visible
       </label>
-      <div class="check-element sample-show-hide" ng-show="checked" style="clear:both;">
-        Visible...
+      <div class="content-area sample-show-hide" ng-show="checked">
+        Content...
       </div>
     </div>
   </file>
   <file name="animations.css">
-    .sample-show-hide {
-      padding: 10px;
+    .content-area {
       border: 1px solid black;
-      background: white;
+      margin-top: 10px;
+      padding: 10px;
     }
 
     .sample-show-hide {
       transition: all linear 0.5s;
     }
-
     .sample-show-hide.ng-hide {
       opacity: 0;
     }
