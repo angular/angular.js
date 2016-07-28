@@ -1439,6 +1439,36 @@ describe('ngMock', function() {
       });
 
 
+      it('should flush given number of pending requests beginning at specified request', function() {
+        var dontCallMe = jasmine.createSpy('dontCallMe');
+
+        hb.when('GET').respond(200, '');
+        hb('GET', '/some', null, dontCallMe);
+        hb('GET', '/some', null, callback);
+        hb('GET', '/some', null, callback);
+        hb('GET', '/some', null, dontCallMe);
+
+        hb.flush(2, 1);
+        expect(dontCallMe).not.toHaveBeenCalled();
+        expect(callback).toHaveBeenCalledTimes(2);
+      });
+
+
+      it('should flush all pending requests beginning at specified request', function() {
+        var dontCallMe = jasmine.createSpy('dontCallMe');
+
+        hb.when('GET').respond(200, '');
+        hb('GET', '/some', null, dontCallMe);
+        hb('GET', '/some', null, dontCallMe);
+        hb('GET', '/some', null, callback);
+        hb('GET', '/some', null, callback);
+
+        hb.flush(null, 2);
+        expect(dontCallMe).not.toHaveBeenCalled();
+        expect(callback).toHaveBeenCalledTimes(2);
+      });
+
+
       it('should throw exception when flushing more requests than pending', function() {
         hb.when('GET').respond(200, '');
         hb('GET', '/url', null, callback);
@@ -1453,8 +1483,9 @@ describe('ngMock', function() {
 
         hb.when('GET').respond(200, '');
         hb('GET', '/some', null, callback);
-        hb.flush();
+        expect(function() {hb.flush(null, 1);}).toThrowError('No pending request to flush !');
 
+        hb.flush();
         expect(function() {hb.flush();}).toThrowError('No pending request to flush !');
       });
 
