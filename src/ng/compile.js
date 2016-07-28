@@ -1386,7 +1386,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
     return TTL;
   };
 
-  var COMMENT_DIRECTIVES_ENABLED = true;
+  var commentDirectivesEnabledConfig = true;
   /**
    * @ngdoc method
    * @name $compileProvider#commentDirectivesEnabled
@@ -1400,28 +1400,22 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
    * on comments for the whole application.
    * This results in a compilation performance gain,
    * as the compiler doesn't have to check comments when looking for directives.
-   * This should however only be used if you are sure that no comment directives are used in the application
-   * (including any 3rd party directives).
+   * This should however only be used if you are sure that no comment directives are used in
+   * the application (including any 3rd party directives).
    *
-   * Example:
-   *
-   * ```
-   * $compileProvider.commentDirectivesEnabled(false);
-   * ```
-   *
-   * @param {boolean} false if the compiler may ignore directives on comments
-   * @returns {number|object} the current value (or `this` if called as a setter for chaining)
+   * @param {boolean} enabled `false` if the compiler may ignore directives on comments
+   * @returns {boolean|object} the current value (or `this` if called as a setter for chaining)
    */
   this.commentDirectivesEnabled = function(value) {
     if (arguments.length) {
-      COMMENT_DIRECTIVES_ENABLED = value;
+      commentDirectivesEnabledConfig = value;
       return this;
     }
-    return COMMENT_DIRECTIVES_ENABLED;
+    return commentDirectivesEnabledConfig;
   };
 
 
-  var CSS_CLASS_DIRECTIVES_ENABLED = true;
+  var cssClassDirectivesEnabledConfig = true;
   /**
    * @ngdoc method
    * @name $compileProvider#cssClassDirectivesEnabled
@@ -1435,24 +1429,18 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
    * on element classes for the whole application.
    * This results in a compilation performance gain,
    * as the compiler doesn't have to check element classes when looking for directives.
-   * This should however only be used if you are sure that no class directives are used in the application
-   * (including any 3rd party directives).
+   * This should however only be used if you are sure that no class directives are used in
+   * the application (including any 3rd party directives).
    *
-   * Example:
-   *
-   * ```
-   * $compileProvider.cssClassDirectivesEnabled(false);
-   * ```
-   *
-   * @param {boolean} false if the compiler may ignore directives on element classes
-   * @returns {number|object} the current value (or `this` if called as a setter for chaining)
+   * @param {boolean} enabled `false` if the compiler may ignore directives on element classes
+   * @returns {boolean|object} the current value (or `this` if called as a setter for chaining)
    */
   this.cssClassDirectivesEnabled = function(value) {
     if (arguments.length) {
-      CSS_CLASS_DIRECTIVES_ENABLED = value;
+      cssClassDirectivesEnabledConfig = value;
       return this;
     }
-    return CSS_CLASS_DIRECTIVES_ENABLED;
+    return cssClassDirectivesEnabledConfig;
   };
 
   this.$get = [
@@ -1465,8 +1453,8 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
     var specialAttrHolder = window.document.createElement('div');
 
 
-    var commentDirectivesEnabled = COMMENT_DIRECTIVES_ENABLED;
-    var cssClassDirectivesEnabled = CSS_CLASS_DIRECTIVES_ENABLED;
+    var commentDirectivesEnabled = commentDirectivesEnabledConfig;
+    var cssClassDirectivesEnabled = cssClassDirectivesEnabledConfig;
 
 
     var onChangesTtl = TTL;
