@@ -25,7 +25,8 @@ describe('$anchorScroll', function() {
               pass: browser.driver.
                 executeScript(_script_getTop, id).
                 then(function(actualTop) {
-                  var passed = actualTop === expectedTop;
+                  // Some browsers may report have +/-1 pixel deviation
+                  var passed = Math.abs(expectedTop - actualTop) <= 1;
                   result.message = 'Expected #' + id + '\'s top' + (passed ? ' not' : '') +
                                    ' to be ' + expectedTop + ', but it was ' + actualTop;
                   return passed;
