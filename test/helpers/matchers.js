@@ -319,6 +319,47 @@ beforeEach(function() {
           }
         };
       }
+    },
+    toBeMarkedAsSelected: function() {
+      // Selected is special because the element property and attribute reflect each other's state.
+      // IE9 will wrongly report hasAttribute('selected') === true when the property is
+      // undefined or null, and the dev tools show that no attribute is set
+      return {
+        compare: function(actual) {
+          var errors = [];
+          if (actual.selected === null || typeof actual.selected === 'undefined' || actual.selected === false) {
+            errors.push('Expected option property "selected" to be truthy');
+          }
+
+          if (msie !== 9 && actual.hasAttribute('selected') === false) {
+            errors.push('Expected option to have attribute "selected"');
+          }
+
+          var result = {
+            pass: errors.length === 0,
+            message: errors.join('\n')
+          };
+
+          return result;
+        },
+        negativeCompare: function(actual) {
+          var errors = [];
+          if (actual.selected) {
+            errors.push('Expected option property "selected" to be falsy');
+          }
+
+          if (msie !== 9 && actual.hasAttribute('selected')) {
+            errors.push('Expected option not to have attribute "selected"');
+          }
+
+          var result = {
+            pass: errors.length === 0,
+            message: errors.join('\n')
+          };
+
+          return result;
+        }
+      };
     }
   });
 });
