@@ -36,16 +36,14 @@ var SelectController =
     var unknownVal = self.generateUnknownOptionValue(val);
     self.unknownOption.val(unknownVal);
     $element.prepend(self.unknownOption);
-    self.unknownOption.prop('selected', true); // needed for IE
-    self.unknownOption.attr('selected', true);
+    setOptionAsSelected(self.unknownOption);
     $element.val(unknownVal);
   };
 
   self.updateUnknownOption = function(val) {
     var unknownVal = self.generateUnknownOptionValue(val);
     self.unknownOption.val(unknownVal);
-    self.unknownOption.prop('selected', true); // needed for IE
-    self.unknownOption.attr('selected', true);
+    setOptionAsSelected(self.unknownOption);
     $element.val(unknownVal);
   };
 
@@ -67,8 +65,7 @@ var SelectController =
   self.selectEmptyOption = function() {
     if (self.emptyOption) {
       $element.val('');
-      self.emptyOption.prop('selected', true); // needed for IE
-      self.emptyOption.attr('selected', true);
+      setOptionAsSelected(self.emptyOption);
     }
   };
 
@@ -101,13 +98,20 @@ var SelectController =
   // Write the value to the select control, the implementation of this changes depending
   // upon whether the select can have multiple values and whether ngOptions is at work.
   self.writeValue = function writeSingleValue(value) {
+    // Make sure to remove the selected attribute from the previously selected option
+    // Otherwise, screen readers might get confused
+    var currentlySelectedOption = $element[0].options[$element[0].selectedIndex];
+    if (currentlySelectedOption) currentlySelectedOption.removeAttribute('selected');
+
     if (self.hasOption(value)) {
       self.removeUnknownOption();
 
       var hashedVal = hashKey(value);
       $element.val(hashedVal in self.selectValueMap ? hashedVal : value);
 
-      if (value === '') self.emptyOption.prop('selected', true); // to make IE9 happy
+      // Set selected attribute and property on selected option for screen readers
+      var selectedOption = $element[0].options[$element[0].selectedIndex];
+      setOptionAsSelected(jqLite(selectedOption));
     } else {
       if (value == null && self.emptyOption) {
         self.removeUnknownOption();
@@ -283,6 +287,11 @@ var SelectController =
       }
     });
   };
+
+  function setOptionAsSelected(optionEl) {
+    optionEl.prop('selected', true); // needed for IE
+    optionEl.attr('selected', true);
+  }
 }];
 
 /**
