@@ -1018,13 +1018,16 @@ var inputType = {
         </file>
         <file name="protractor.js" type="protractor">
           it('should change state', function() {
+            var inputs = element.all(by.model('color.name'));
             var color = element(by.binding('color.name'));
 
             expect(color.getText()).toContain('blue');
 
-            element.all(by.model('color.name')).get(0).click();
-
+            inputs.get(0).click();
             expect(color.getText()).toContain('red');
+
+            inputs.get(1).click();
+            expect(color.getText()).toContain('green');
           });
         </file>
       </example>
