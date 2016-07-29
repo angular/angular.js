@@ -337,6 +337,44 @@ describe('select', function() {
       dealoc(select);
     });
 
+
+    it('should remove the "selected" attribute from the previous option when the model changes', function() {
+      compile('<select name="select" ng-model="selected">' +
+        '<option value="a">A</option>' +
+        '<option value="b">B</option>' +
+      '</select>');
+
+      scope.$digest();
+
+      var options = element.find('option');
+      expect(options[0]).toBeMarkedAsSelected();
+      expect(options[1]).not.toBeMarkedAsSelected();
+      expect(options[2]).not.toBeMarkedAsSelected();
+
+      scope.selected = 'a';
+      scope.$digest();
+
+      options = element.find('option');
+      expect(options.length).toBe(2);
+      expect(options[0]).toBeMarkedAsSelected();
+      expect(options[1]).not.toBeMarkedAsSelected();
+
+      scope.selected = 'b';
+      scope.$digest();
+
+      options = element.find('option');
+      expect(options[0]).not.toBeMarkedAsSelected();
+      expect(options[1]).toBeMarkedAsSelected();
+
+      scope.selected = 'no match';
+      scope.$digest();
+
+      options = element.find('option');
+      expect(options[0]).toBeMarkedAsSelected();
+      expect(options[1]).not.toBeMarkedAsSelected();
+      expect(options[2]).not.toBeMarkedAsSelected();
+    });
+
     describe('empty option', function() {
 
       it('should allow empty option to be added and removed dynamically', function() {
@@ -525,6 +563,40 @@ describe('select', function() {
           expect(element).toEqualSelect([''], 'wallee');
         });
       });
+
+      it('should add/remove the "selected" attribute when the empty option is selected/unselected', function() {
+        compile('<select name="select" ng-model="selected">' +
+          '<option value="">--select--</option>' +
+          '<option value="a">A</option>' +
+          '<option value="b">B</option>' +
+        '</select>');
+
+        scope.$digest();
+
+        var options = element.find('option');
+        expect(options.length).toBe(3);
+        expect(options[0]).toBeMarkedAsSelected();
+        expect(options[1]).not.toBeMarkedAsSelected();
+        expect(options[2]).not.toBeMarkedAsSelected();
+
+        scope.selected = 'a';
+        scope.$digest();
+
+        options = element.find('option');
+        expect(options.length).toBe(3);
+        expect(options[0]).not.toBeMarkedAsSelected();
+        expect(options[1]).toBeMarkedAsSelected();
+        expect(options[2]).not.toBeMarkedAsSelected();
+
+        scope.selected = 'no match';
+        scope.$digest();
+
+        options = element.find('option');
+        expect(options[0]).toBeMarkedAsSelected();
+        expect(options[1]).not.toBeMarkedAsSelected();
+        expect(options[2]).not.toBeMarkedAsSelected();
+      });
+
     });
 
 
