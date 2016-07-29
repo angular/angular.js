@@ -3,7 +3,7 @@
 @fullName Model is not of type `number`
 @description
 
-The number input directive `<input type="number">` requires the model to be a `number`.
+The `input[number]` and `input[range]` directives require the model to be a `number`.
 
 If the model is something else, this error will be thrown.
 
