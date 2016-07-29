@@ -1034,6 +1034,113 @@ var inputType = {
    */
   'radio': radioInputType,
 
+  /**
+   * @ngdoc input
+   * @name input[range]
+   *
+   * @description
+   * Native range input with validation and transformation.
+   *
+   * The model for the range input must always be a `Number`.
+   *
+   * IE9 and other browsers that do not support the `range` type fall back
+   * to a text input. Model binding, validation and number parsing are nevertheless supported.
+   *
+   * Browsers that support range (latest Chrome, Safari, Firefox, Edge) treat `input[range]`
+   * in a way that never allows the input to hold an invalid value. That means:
+   * - any non-numerical value is set to `(max + min) / 2`.
+   * - any numerical value that is less than the current min val, or greater than the current max val
+   * is set to the min / max val respectively.
+   *
+   * This has the following consequences for Angular:
+   *
+   * Since the element value should always reflect the current model value, a range input
+   * will set the bound ngModel expression to the value that the browser has set for the
+   * input element. For example, in the following input `<input type="range" ng-model="model.value">`,
+   * if the application sets `model.value = null`, the browser will set the input to `'50'`.
+   * Angular will then set the model to `50`, to prevent input and model value being out of sync.
+   *
+   * That means the model for range will immediately be set to `50` after `ngModel` has been
+   * initialized. It also means a range input can never have the required error.
+   *
+   * This does not only affect changes to the model value, but also to the values of the `min` and
+   * `max` attributes. When these change in a way that will cause the browser to modify the input value,
+   * Angular will also update the model value.
+   *
+   * Automatic value adjustment also means that a range input element can never have the `required`,
+   * `min`, or `max` errors, except when using `ngMax` and `ngMin`, which are not affected by automatic
+   * value adjustment, because they do not set the `min` and `max` attributes.
+   *
+   * @param {string}  ngModel Assignable angular expression to data-bind to.
+   * @param {string=} name Property name of the form under which the control is published.
+   * @param {string=} min Sets the `min` validation to ensure that the value entered is greater
+   *                  than `min`. Can be interpolated.
+   * @param {string=} max Sets the `max` validation to ensure that the value entered is less than `max`.
+   *                  Can be interpolated.
+   * @param {string=} ngMin Takes an expression. Sets the `min` validation to ensure that the value
+   *                  entered is greater than `min`. Does not set the `min` attribute and therefore
+   *                  adds no native HTML5 validation. It also means the browser won't adjust the
+   *                  element value in case `min` is greater than the current value.
+   * @param {string=} ngMax Takes an expression. Sets the `max` validation to ensure that the value
+   *                  entered is less than `max`. Does not set the `max` attribute and therefore
+   *                  adds no native HTML5 validation. It also means the browser won't adjust the
+   *                  element value in case `max` is less than the current value.
+   * @param {string=} ngChange Angular expression to be executed when the ngModel value changes due
+   *                  to user interaction with the input element.
+   *
+   * @example
+      <example name="range-input-directive" module="rangeExample">
+        <file name="index.html">
+          <script>
+            angular.module('rangeExample', [])
+              .controller('ExampleController', ['$scope', function($scope) {
+                $scope.value = 75;
+                $scope.min = 10;
+                $scope.max = 90;
+              }]);
+          </script>
+          <form name="myForm" ng-controller="ExampleController">
+
+            Model as range: <input type="range" name="range" ng-model="value" min="{{min}}"  max="{{max}}">
+            <hr>
+            Model as number: <input type="number" ng-model="value"><br>
+            Min: <input type="number" ng-model="min"><br>
+            Max: <input type="number" ng-model="min"><br>
+            value = <code>{{value}}</code><br/>
+            myForm.range.$valid = <code>{{myForm.range.$valid}}</code><br/>
+            myForm.range.$error = <code>{{myForm.range.$error}}</code>
+          </form>
+        </file>
+      </example>
+
+   * ## Range Input with ngMin & ngMax attributes
+
+   * @example
+      <example name="range-input-directive-ng" module="rangeExample">
+        <file name="index.html">
+          <script>
+            angular.module('rangeExample', [])
+              .controller('ExampleController', ['$scope', function($scope) {
+                $scope.value = 75;
+                $scope.min = 10;
+                $scope.max = 90;
+              }]);
+          </script>
+          <form name="myForm" ng-controller="ExampleController">
+            Model as range: <input type="range" name="range" ng-model="value" ng-min="min" ng-max="max">
+            <hr>
+            Model as number: <input type="number" ng-model="value"><br>
+            Min: <input type="number" ng-model="min"><br>
+            Max: <input type="number" ng-model="min"><br>
+            value = <code>{{value}}</code><br/>
+            myForm.range.$valid = <code>{{myForm.range.$valid}}</code><br/>
+            myForm.range.$error = <code>{{myForm.range.$error}}</code>
+          </form>
+        </file>
+      </example>
+
+   */
+  'range': rangeInputType,
 
   /**
    * @ngdoc input
@@ -1385,10 +1492,7 @@ function badInputChecker(scope, element, attr, ctrl) {
   }
 }
 
-function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
-  badInputChecker(scope, element, attr, ctrl);
-  baseInputType(scope, element, attr, ctrl, $sniffer, $browser);
-
+function numberFormatterParser(ctrl) {
   ctrl.$$parserName = 'number';
   ctrl.$parsers.push(function(value) {
     if (ctrl.$isEmpty(value))      return null;
@@ -1405,6 +1509,12 @@ function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
     }
     return value;
   });
+}
+
+function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
+  badInputChecker(scope, element, attr, ctrl);
+  numberFormatterParser(ctrl);
+  baseInputType(scope, element, attr, ctrl, $sniffer, $browser);
 
   if (isDefined(attr.min) || attr.ngMin) {
     var minVal;
@@ -1437,6 +1547,110 @@ function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
       ctrl.$validate();
     });
   }
+}
+
+function rangeInputType(scope, element, attr, ctrl, $sniffer, $browser) {
+  badInputChecker(scope, element, attr, ctrl);
+  numberFormatterParser(ctrl);
+  baseInputType(scope, element, attr, ctrl, $sniffer, $browser);
+
+  var minVal = 0,
+      maxVal = 100,
+      supportsRange = ctrl.$$hasNativeValidators && element[0].type === 'range',
+      validity = element[0].validity;
+
+  var originalRender = ctrl.$render;
+
+  ctrl.$render = supportsRange && isDefined(validity.rangeUnderflow) && isDefined(validity.rangeOverflow) ?
+    //Browsers that implement range will set these values automatically, but reading the adjusted values after
+    //$render would cause the min / max validators to be applied with the wrong value
+    function rangeRender() {
+      originalRender();
+      ctrl.$setViewValue(element.val());
+    } :
+    originalRender;
+
+  function minChange(val) {
+    if (isDefined(val) && !isNumber(val)) {
+      val = parseFloat(val);
+    }
+    minVal = isNumber(val) && !isNaN(val) ? val : undefined;
+    // ignore changes before model is initialized
+    if (isNumber(ctrl.$modelValue) && isNaN(ctrl.$modelValue)) {
+      return;
+    }
+
+    if (supportsRange && minAttrType === 'min') {
+      var elVal = element.val();
+      // IE11 doesn't set the el val correctly if the minVal is greater than the element value
+      if (minVal > elVal) {
+        element.val(minVal);
+        elVal = minVal;
+      }
+      ctrl.$setViewValue(elVal);
+    } else {
+      // TODO(matsko): implement validateLater to reduce number of validations
+      ctrl.$validate();
+    }
+  }
+
+  var minAttrType = isDefined(attr.ngMin) ? 'ngMin' : isDefined(attr.min) ? 'min' : false;
+  if (minAttrType) {
+    ctrl.$validators.min = isDefined(attr.min) && supportsRange ?
+      function noopMinValidator(value) {
+        // Since all browsers set the input to a valid value, we don't need to check validity
+        return true;
+      } :
+      // ngMin doesn't set the min attr, so the browser doesn't adjust the input value as setting min would
+      function minValidator(modelValue, viewValue) {
+        return ctrl.$isEmpty(viewValue) || isUndefined(minVal) || viewValue >= minVal;
+      };
+
+    // Assign minVal when the directive is linked. This won't run the validators as the model isn't ready yet
+    minChange(attr.min);
+    attr.$observe('min', minChange);
+  }
+
+  function maxChange(val) {
+    if (isDefined(val) && !isNumber(val)) {
+      val = parseFloat(val);
+    }
+    maxVal = isNumber(val) && !isNaN(val) ? val : undefined;
+    // ignore changes before model is initialized
+    if (isNumber(ctrl.$modelValue) && isNaN(ctrl.$modelValue)) {
+      return;
+    }
+
+    if (supportsRange && maxAttrType === 'max') {
+      var elVal = element.val();
+      // IE11 doesn't set the el val correctly if the maxVal is less than the element value
+      if (maxVal < elVal) {
+        element.val(maxVal);
+        elVal = minVal;
+      }
+      ctrl.$setViewValue(elVal);
+    } else {
+      // TODO(matsko): implement validateLater to reduce number of validations
+      ctrl.$validate();
+    }
+  }
+  var maxAttrType = isDefined(attr.max) ? 'max' : attr.ngMax ? 'ngMax' : false;
+  if (maxAttrType) {
+    ctrl.$validators.max = isDefined(attr.max) && supportsRange ?
+      function noopMaxValidator() {
+        // Since all browsers set the input to a valid value, we don't need to check validity
+        return true;
+      } :
+      // ngMax doesn't set the max attr, so the browser doesn't adjust the input value as setting max would
+      function maxValidator(modelValue, viewValue) {
+        return ctrl.$isEmpty(viewValue) || isUndefined(maxVal) || viewValue <= maxVal;
+      };
+
+    // Assign maxVal when the directive is linked. This won't run the validators as the model isn't ready yet
+    maxChange(attr.max);
+    attr.$observe('max', maxChange);
+  }
+
 }
 
 function urlInputType(scope, element, attr, ctrl, $sniffer, $browser) {
