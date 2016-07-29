@@ -374,13 +374,15 @@ describe('select', function() {
       });
 
 
-      it('should cope with a dynamic empty option added to a static empty option', function() {
+      it('should cope use a dynamic empty option that is added to a static empty option', function() {
+        // We do not make any special provisions for multiple empty options, so this behavior is
+        // largely untested
         scope.dynamicOptions = [];
         scope.robot = 'x';
         compile('<select ng-model="robot">' +
-                  '<option value="">--static-select--</option>' +
-                  '<option ng-repeat="opt in dynamicOptions" value="{{opt.val}}">{{opt.display}}</option>' +
-                '</selec>');
+                 '<option value="">--static-select--</option>' +
+                 '<option ng-repeat="opt in dynamicOptions" value="{{opt.val}}">{{opt.display}}</option>' +
+               '</selec>');
         scope.$digest();
         expect(element).toEqualSelect([unknownValue('x')], '');
 
@@ -390,18 +392,18 @@ describe('select', function() {
         expect(element.find('option').eq(0).text()).toBe('--static-select--');
 
         scope.dynamicOptions = [
-          { val: '', display: '--dynamic-select--' },
-          { val: 'x', display: 'robot x' },
-          { val: 'y', display: 'robot y' }
+         { val: '', display: '--dynamic-select--' },
+         { val: 'x', display: 'robot x' },
+         { val: 'y', display: 'robot y' }
         ];
         scope.$digest();
-        expect(element).toEqualSelect([''], '', 'x', 'y');
-
+        expect(element).toEqualSelect('', [''], 'x', 'y');
 
         scope.dynamicOptions = [];
         scope.$digest();
         expect(element).toEqualSelect(['']);
       });
+
 
       it('should select the empty option when model is undefined', function() {
         compile('<select ng-model="robot">' +

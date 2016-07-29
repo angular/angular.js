@@ -416,15 +416,14 @@ var ngOptionsDirective = ['$compile', '$document', '$parse', function($compile, 
 
       // The emptyOption allows the application developer to provide their own custom "empty"
       // option when the viewValue does not match any of the option values.
-      var emptyOption;
       for (var i = 0, children = selectElement.children(), ii = children.length; i < ii; i++) {
         if (children[i].value === '') {
-          emptyOption = children.eq(i);
+          selectCtrl.emptyOption = children.eq(i);
           break;
         }
       }
 
-      var providedEmptyOption = !!emptyOption;
+      var providedEmptyOption = !!selectCtrl.emptyOption;
 
       var unknownOption = jqLite(optionTemplate.cloneNode(false));
       unknownOption.val('?');
@@ -436,32 +435,9 @@ var ngOptionsDirective = ['$compile', '$document', '$parse', function($compile, 
       // we only need to create it once.
       var listFragment = $document[0].createDocumentFragment();
 
-      var renderEmptyOption = function() {
-        if (!providedEmptyOption) {
-          selectElement.prepend(emptyOption);
-        }
-        selectElement.val('');
-        emptyOption.prop('selected', true); // needed for IE
-        emptyOption.attr('selected', true);
-      };
-
-      var removeEmptyOption = function() {
-        if (!providedEmptyOption) {
-          emptyOption.remove();
-        } else {
-          emptyOption.removeAttr('selected');
-        }
-      };
-
-      var renderUnknownOption = function() {
-        selectElement.prepend(unknownOption);
-        selectElement.val('?');
-        unknownOption.prop('selected', true); // needed for IE
-        unknownOption.attr('selected', true);
-      };
-
-      var removeUnknownOption = function() {
-        unknownOption.remove();
+      // Overwrite the implementation. ngOptions doesn't use hashes
+      selectCtrl.generateUnknownOptionValue = function(val) {
+        return '?';
       };
 
       // Update the controller methods for multiple selectable options
@@ -482,8 +458,8 @@ var ngOptionsDirective = ['$compile', '$document', '$parse', function($compile, 
             // set always
 
             if (selectElement[0].value !== option.selectValue) {
-              removeUnknownOption();
-              removeEmptyOption();
+              selectCtrl.removeUnknownOption();
+              selectCtrl.unselectEmptyOption();
 
               selectElement[0].value = option.selectValue;
               option.element.selected = true;
@@ -491,12 +467,13 @@ var ngOptionsDirective = ['$compile', '$document', '$parse', function($compile, 
 
             option.element.setAttribute('selected', 'selected');
           } else {
-            if (value === null || providedEmptyOption) {
-              removeUnknownOption();
-              renderEmptyOption();
+
+            if (providedEmptyOption) {
+              selectCtrl.selectEmptyOption();
+            } else if (selectCtrl.unknownOption.parent().length) {
+              selectCtrl.updateUnknownOption(value);
             } else {
-              removeEmptyOption();
-              renderUnknownOption();
+              selectCtrl.renderUnknownOption(value);
             }
           }
         };
@@ -506,8 +483,8 @@ var ngOptionsDirective = ['$compile', '$document', '$parse', function($compile, 
           var selectedOption = options.selectValueMap[selectElement.val()];
 
           if (selectedOption && !selectedOption.disabled) {
-            removeEmptyOption();
-            removeUnknownOption();
+            selectCtrl.unselectEmptyOption();
+            selectCtrl.removeUnknownOption();
             return options.getViewValueFromOption(selectedOption);
           }
           return null;
@@ -573,21 +550,18 @@ var ngOptionsDirective = ['$compile', '$document', '$parse', function($compile, 
         }
       }
 
-
       if (providedEmptyOption) {
 
         // we need to remove it before calling selectElement.empty() because otherwise IE will
         // remove the label from the element. wtf?
-        emptyOption.remove();
+        selectCtrl.emptyOption.remove();
 
         // compile the element since there might be bindings in it
-        $compile(emptyOption)(scope);
+        $compile(selectCtrl.emptyOption)(scope);
 
         // remove the class, which is added automatically because we recompile the element and it
         // becomes the compilation root
-        emptyOption.removeClass('ng-scope');
-      } else {
-        emptyOption = jqLite(optionTemplate.cloneNode(false));
+        selectCtrl.emptyOption.removeClass('ng-scope');
       }
 
       selectElement.empty();
@@ -649,7 +623,7 @@ var ngOptionsDirective = ['$compile', '$document', '$parse', function($compile, 
 
         // Ensure that the empty option is always there if it was explicitly provided
         if (providedEmptyOption) {
-          selectElement.prepend(emptyOption);
+          selectElement.prepend(selectCtrl.emptyOption);
         }
 
         options.items.forEach(function addOption(option) {
