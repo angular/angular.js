@@ -1037,13 +1037,19 @@ var inputType = {
    * The model for the range input must always be a `Number`.
    *
    * IE9 and other browsers that do not support the `range` type fall back
-   * to a text input. Model binding, validation and number parsing are nevertheless supported.
+   * to a text input without any default values for `min`, `max` and `step`. Model binding,
+   * validation and number parsing are nevertheless supported.
    *
    * Browsers that support range (latest Chrome, Safari, Firefox, Edge) treat `input[range]`
    * in a way that never allows the input to hold an invalid value. That means:
    * - any non-numerical value is set to `(max + min) / 2`.
    * - any numerical value that is less than the current min val, or greater than the current max val
    * is set to the min / max val respectively.
+   * - additionally, the current `step` is respected, so the nearest value that satisfies a step
+   * is used.
+   *
+   * See the [HTML Spec on input[type=range]](https://www.w3.org/TR/html5/forms.html#range-state-(type=range))
+   * for more info.
    *
    * This has the following consequences for Angular:
    *
@@ -1056,22 +1062,29 @@ var inputType = {
    * That means the model for range will immediately be set to `50` after `ngModel` has been
    * initialized. It also means a range input can never have the required error.
    *
-   * This does not only affect changes to the model value, but also to the values of the `min` and
-   * `max` attributes. When these change in a way that will cause the browser to modify the input value,
-   * Angular will also update the model value.
+   * This does not only affect changes to the model value, but also to the values of the `min`,
+   * `max`, and `step` attributes. When these change in a way that will cause the browser to modify
+   * the input value, Angular will also update the model value.
    *
    * Automatic value adjustment also means that a range input element can never have the `required`,
    * `min`, or `max` errors.
    *
-   * Note that `input[range]` is not compatible with`ngMax` and `ngMin`, because they do not set the
-   * `min` and `max` attributes, which means that the browser won't automatically adjust the input
-   * value based on their values, and will always assume min = 0 and max = 100.
+   * However, `step` is currently only fully implemented by Firefox. Other browsers have problems
+   * when the step value changes dynamically - they do not adjust the element value correctly, but
+   * instead may set the `stepMismatch` error. If that's the case, the Angular will set the `step`
+   * error on the input, and set the model to `undefined`.
+   *
+   * Note that `input[range]` is not compatible with`ngMax`, `ngMin`, and `ngStep`, because they do
+   * not set the `min` and `max` attributes, which means that the browser won't automatically adjust
+   * the input value based on their values, and will always assume min = 0, max = 100, and step = 1.
    *
    * @param {string}  ngModel Assignable angular expression to data-bind to.
    * @param {string=} name Property name of the form under which the control is published.
    * @param {string=} min Sets the `min` validation to ensure that the value entered is greater
    *                  than `min`. Can be interpolated.
    * @param {string=} max Sets the `max` validation to ensure that the value entered is less than `max`.
+   *                  Can be interpolated.
+   * @param {string=} step Sets the `step` validation to ensure that the value entered matches the `step`
    *                  Can be interpolated.
    * @param {string=} ngChange Angular expression to be executed when the ngModel value changes due
    *                  to user interaction with the input element.
@@ -1499,6 +1512,13 @@ function numberFormatterParser(ctrl) {
   });
 }
 
+function parseNumberAttrVal(val) {
+  if (isDefined(val) && !isNumber(val)) {
+    val = parseFloat(val);
+  }
+  return isNumber(val) && !isNaN(val) ? val : undefined;
+}
+
 function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   badInputChecker(scope, element, attr, ctrl);
   numberFormatterParser(ctrl);
@@ -1511,10 +1531,7 @@ function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
     };
 
     attr.$observe('min', function(val) {
-      if (isDefined(val) && !isNumber(val)) {
-        val = parseFloat(val);
-      }
-      minVal = isNumber(val) && !isNaN(val) ? val : undefined;
+      minVal = parseNumberAttrVal(val);
       // TODO(matsko): implement validateLater to reduce number of validations
       ctrl.$validate();
     });
@@ -1527,10 +1544,7 @@ function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
     };
 
     attr.$observe('max', function(val) {
-      if (isDefined(val) && !isNumber(val)) {
-        val = parseFloat(val);
-      }
-      maxVal = isNumber(val) && !isNaN(val) ? val : undefined;
+      maxVal = parseNumberAttrVal(val);
       // TODO(matsko): implement validateLater to reduce number of validations
       ctrl.$validate();
     });
@@ -1545,9 +1559,11 @@ function rangeInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   var supportsRange = ctrl.$$hasNativeValidators && element[0].type === 'range',
       minVal = supportsRange ? 0 : undefined,
       maxVal = supportsRange ? 100 : undefined,
+      stepVal = supportsRange ? 1 : undefined,
       validity = element[0].validity,
       hasMinAttr = isDefined(attr.min),
-      hasMaxAttr = isDefined(attr.max);
+      hasMaxAttr = isDefined(attr.max),
+      hasStepAttr = isDefined(attr.step);
 
   var originalRender = ctrl.$render;
 
@@ -1564,7 +1580,7 @@ function rangeInputType(scope, element, attr, ctrl, $sniffer, $browser) {
     ctrl.$validators.min = supportsRange ?
       // Since all browsers set the input to a valid value, we don't need to check validity
       function noopMinValidator() { return true; } :
-      // non-support browsers validate the range
+      // non-support browsers validate the min val
       function minValidator(modelValue, viewValue) {
         return ctrl.$isEmpty(viewValue) || isUndefined(minVal) || viewValue >= minVal;
       };
@@ -1576,7 +1592,7 @@ function rangeInputType(scope, element, attr, ctrl, $sniffer, $browser) {
     ctrl.$validators.max = supportsRange ?
       // Since all browsers set the input to a valid value, we don't need to check validity
       function noopMaxValidator() { return true; } :
-      // ngMax doesn't set the max attr, so the browser doesn't adjust the input value as setting max would
+      // non-support browsers validate the max val
       function maxValidator(modelValue, viewValue) {
         return ctrl.$isEmpty(viewValue) || isUndefined(maxVal) || viewValue <= maxVal;
       };
@@ -1584,20 +1600,32 @@ function rangeInputType(scope, element, attr, ctrl, $sniffer, $browser) {
     setInitialValueAndObserver('max', maxChange);
   }
 
+  if (hasStepAttr) {
+    ctrl.$validators.step = supportsRange ?
+      function nativeStepValidator() {
+        // Currently, only FF implements the spec on step change correctly (i.e. adjusting the
+        // input element value to a valid value). It's possible that other browsers set the stepMismatch
+        // validity error instead, so we can at least report an error in that case.
+        return !validity.stepMismatch;
+      } :
+      // ngStep doesn't set the setp attr, so the browser doesn't adjust the input value as setting step would
+      function stepValidator(modelValue, viewValue) {
+        return ctrl.$isEmpty(viewValue) || isUndefined(stepVal) || viewValue % stepVal === 0;
+      };
+
+    setInitialValueAndObserver('step', stepChange);
+  }
+
   function setInitialValueAndObserver(htmlAttrName, changeFn) {
     // interpolated attributes set the attribute value only after a digest, but we need the
     // attribute value when the input is first rendered, so that the browser can adjust the
     // input value based on the min/max value
     element.attr(htmlAttrName, attr[htmlAttrName]);
-
     attr.$observe(htmlAttrName, changeFn);
   }
 
   function minChange(val) {
-    if (isDefined(val) && !isNumber(val)) {
-      val = parseFloat(val);
-    }
-    minVal = isNumber(val) && !isNaN(val) ? val : undefined;
+    minVal = parseNumberAttrVal(val);
     // ignore changes before model is initialized
     if (isNumber(ctrl.$modelValue) && isNaN(ctrl.$modelValue)) {
       return;
@@ -1618,10 +1646,7 @@ function rangeInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   }
 
   function maxChange(val) {
-    if (isDefined(val) && !isNumber(val)) {
-      val = parseFloat(val);
-    }
-    maxVal = isNumber(val) && !isNaN(val) ? val : undefined;
+    maxVal = parseNumberAttrVal(val);
     // ignore changes before model is initialized
     if (isNumber(ctrl.$modelValue) && isNaN(ctrl.$modelValue)) {
       return;
@@ -1642,6 +1667,21 @@ function rangeInputType(scope, element, attr, ctrl, $sniffer, $browser) {
     }
   }
 
+  function stepChange(val) {
+    stepVal = parseNumberAttrVal(val);
+    // ignore changes before model is initialized
+    if (isNumber(ctrl.$modelValue) && isNaN(ctrl.$modelValue)) {
+      return;
+    }
+
+    // Some browsers don't adjust the input value correctly, but set the stepMismatch error
+    if (supportsRange && ctrl.$viewValue !== element.val()) {
+      ctrl.$setViewValue(element.val());
+    } else {
+      // TODO(matsko): implement validateLater to reduce number of validations
+      ctrl.$validate();
+    }
+  }
 }
 
 function urlInputType(scope, element, attr, ctrl, $sniffer, $browser) {
