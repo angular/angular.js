@@ -1543,7 +1543,6 @@ describe('ngMock', function() {
 
         hb.flush(2, 1);
         expect(dontCallMe).not.toHaveBeenCalled();
-        expect(callback).toHaveBeenCalled();
         expect(callback).toHaveBeenCalledTimes(2);
       });
 
@@ -1559,7 +1558,6 @@ describe('ngMock', function() {
 
         hb.flush(null, 2);
         expect(dontCallMe).not.toHaveBeenCalled();
-        expect(callback).toHaveBeenCalled();
         expect(callback).toHaveBeenCalledTimes(2);
       });
 
@@ -1578,8 +1576,9 @@ describe('ngMock', function() {
 
         hb.when('GET').respond(200, '');
         hb('GET', '/some', null, callback);
-        hb.flush();
+        expect(function() {hb.flush(null, 1);}).toThrowError('No pending request to flush !');
 
+        hb.flush();
         expect(function() {hb.flush();}).toThrowError('No pending request to flush !');
       });
 
