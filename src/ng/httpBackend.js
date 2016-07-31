@@ -110,6 +110,7 @@ function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDoc
 
       xhr.onerror = requestError;
       xhr.onabort = requestError;
+      xhr.ontimeout = requestError;
 
       forEach(eventHandlers, function(value, key) {
           xhr.addEventListener(key, value);
