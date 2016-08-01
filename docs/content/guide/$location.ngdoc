@@ -91,15 +91,27 @@ To configure the `$location` service, retrieve the
 {@link ng.$locationProvider $locationProvider} and set the parameters as follows:
 
 
-- **html5Mode(mode)**: {boolean|Object}<br />
-  `true` or `enabled:true` - see HTML5 mode<br />
-  `false` or `enabled:false` - see Hashbang mode<br />
-  `requireBase:true` - see Relative links<br />
-  default: `enabled:false`
+- **html5Mode(mode)**: `{boolean|Object}`<br />
+  `false` or `{enabled: false}` (default) -
+    see [Hashbang mode](guide/$location#hashbang-mode-default-mode-)<br />
+  `true` or `{enabled: true}` -
+    see [HTML5 mode](guide/$location#html5-mode)<br />
+  `{..., requireBase: true/false}` (only affects HTML5 mode) -
+    see [Relative links](guide/$location#relative-links)<br />
+  `{..., rewriteLinks: true/false/'string'}` (only affects HTML5 mode) -
+    see [HTML link rewriting](guide/$location#html-link-rewriting)<br />
+  Default:
+    ```j
+    {
+      enabled: false,
+      requireBase: true,
+      rewriteLinks: true
+    }
+    ```
 
-- **hashPrefix(prefix)**: {string}<br />
-  prefix used for Hashbang URLs (used in Hashbang mode or in legacy browser in Html5 mode)<br />
-  default: `"!"`
+- **hashPrefix(prefix)**: `{string}`<br />
+  Prefix used for Hashbang URLs (used in Hashbang mode or in legacy browsers in HTML5 mode).<br />
+  Default: `'!'`
 
 ### Example configuration
 ```js
@@ -305,7 +317,7 @@ path and search. If the history API is not supported by a browser, `$location` s
 URL. This frees you from having to worry about whether the browser viewing your app supports the
 history API  or not; the `$location` service makes this transparent to you.
 
-### Html link rewriting
+### HTML link rewriting
 
 When you use HTML5 history API mode, you will not need special hashbang links. All you have to do
 is specify regular URL links, such as: `<a href="/some?foo=bar">link</a>`
@@ -325,6 +337,18 @@ reload to the original link.
   Example: `<a href="http://angularjs.org/">link</a>`
 - Links starting with '/' that lead to a different base path<br>
   Example: `<a href="/not-my-base/link">link</a>`
+
+If `mode.rewriteLinks` is set to `false` in the `mode` configuration object passed to
+`$locationProvider.html5Mode()`, the browser will perform a full page reload for every link.
+`mode.rewriteLinks` can also be set to a string, which will enable link rewriting only on anchor
+elements that have the given attribute.
+
+For example, if `mode.rewriteLinks` is set to `'internal-link'`:
+- `<a href="/some/path" internal-link>link</a>` will be rewritten
+- `<a href="/some/path">link</a>` will perform a full page reload
+
+Note that [attribute name normalization](guide/directive#normalization) does not apply here, so
+`'internalLink'` will **not** match `'internal-link'`.
 
 
 ### Relative links
@@ -853,6 +877,3 @@ angular.module('locationExample', [])
 # Related API
 
 * {@link ng.$location `$location` API}
-
-
-

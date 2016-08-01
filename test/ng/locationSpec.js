@@ -1588,10 +1588,38 @@ describe('$location', function() {
 
 
     it('should not rewrite links when rewriting links is disabled', function() {
-      configureTestLink({linkHref: 'link?a#b', html5Mode: {enabled: true, rewriteLinks:false}, supportHist: true});
+      configureTestLink({linkHref: 'link?a#b'});
       initService({html5Mode:{enabled: true, rewriteLinks:false},supportHistory:true});
       inject(
         initBrowser({ url: 'http://host.com/base/index.html', basePath: '/base/index.html' }),
+        setupRewriteChecks(),
+        function($browser) {
+          browserTrigger(link, 'click');
+          expectNoRewrite($browser);
+        }
+      );
+    });
+
+
+    it('should rewrite links when the specified rewriteLinks attr is present', function() {
+      configureTestLink({linkHref: 'link?a#b', attrs: 'do-rewrite'});
+      initService({html5Mode: {enabled: true, rewriteLinks: 'do-rewrite'}, supportHistory: true});
+      inject(
+        initBrowser({url: 'http://host.com/base/index.html', basePath: '/base/index.html'}),
+        setupRewriteChecks(),
+        function($browser) {
+          browserTrigger(link, 'click');
+          expectRewriteTo($browser, 'http://host.com/base/link?a#b');
+        }
+      );
+    });
+
+
+    it('should not rewrite links when the specified rewriteLinks attr is not present', function() {
+      configureTestLink({linkHref: 'link?a#b'});
+      initService({html5Mode: {enabled: true, rewriteLinks: 'do-rewrite'}, supportHistory: true});
+      inject(
+        initBrowser({url: 'http://host.com/base/index.html', basePath: '/base/index.html'}),
         setupRewriteChecks(),
         function($browser) {
           browserTrigger(link, 'click');
@@ -1692,7 +1720,7 @@ describe('$location', function() {
 
     it('should not rewrite when full link to different base path when history enabled on old browser',
         function() {
-      configureTestLink({linkHref: 'http://host.com/other_base/link', html5Mode: true, supportHist: false});
+      configureTestLink({linkHref: 'http://host.com/other_base/link'});
       inject(
         initBrowser({ url: 'http://host.com/base/index.html', basePath: '/base/index.html' }),
         setupRewriteChecks(),
@@ -2343,7 +2371,7 @@ describe('$location', function() {
 
   describe('$locationProvider', function() {
     describe('html5Mode', function() {
-      it('should set enabled,  requireBase and rewriteLinks when called with object', function() {
+      it('should set enabled, requireBase and rewriteLinks when called with object', function() {
         module(function($locationProvider) {
           $locationProvider.html5Mode({enabled: true, requireBase: false, rewriteLinks: false});
           expect($locationProvider.html5Mode()).toEqual({
@@ -2357,12 +2385,12 @@ describe('$location', function() {
       });
 
 
-      it('should only overwrite existing properties if values are boolean', function() {
+      it('should only overwrite existing properties if values are of the correct type', function() {
         module(function($locationProvider) {
           $locationProvider.html5Mode({
             enabled: 'duh',
             requireBase: 'probably',
-            rewriteLinks: 'nope'
+            rewriteLinks: 0
           });
 
           expect($locationProvider.html5Mode()).toEqual({
@@ -2370,6 +2398,19 @@ describe('$location', function() {
             requireBase: true,
             rewriteLinks: true
           });
+        });
+
+        inject(function() {});
+      });
+
+
+      it('should support setting rewriteLinks to a string', function() {
+        module(function($locationProvider) {
+          $locationProvider.html5Mode({
+            rewriteLinks: 'yes-rewrite'
+          });
+
+          expect($locationProvider.html5Mode().rewriteLinks).toEqual('yes-rewrite');
         });
 
         inject(function() {});
