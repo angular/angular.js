@@ -47,7 +47,7 @@ This is a collection of external, 3rd party resources for learning and developin
 ##### Server-Specific
 
 * **Django:** [Tutorial](http://blog.mourafiq.com/post/55034504632/end-to-end-web-app-with-django-rest-framework), [Integrating AngularJS with Django](http://django-angular.readthedocs.org/en/latest/integration.html), [Getting Started with Django Rest Framework and AngularJS](http://blog.kevinastone.com/getting-started-with-django-rest-framework-and-angularjs.html)
-* **FireBase:** [AngularFire](http://angularfire.com/), [Firebase Foundations for AngularJS](http://blog.watchandcode.com/firebase-foundations/), [Realtime Apps with AngularJS and FireBase (video)](http://www.youtube.com/watch?v=C7ZI7z7qnHU)
+* **FireBase:** [AngularFire](http://angularfire.com/), [Realtime Apps with AngularJS and FireBase (video)](http://www.youtube.com/watch?v=C7ZI7z7qnHU)
 * **Google Cloud Platform: **[with Cloud Endpoints](https://cloud.google.com/developers/articles/angularjs-cloud-endpoints-recipe-for-building-modern-web-applications/), [with Go](https://github.com/GoogleCloudPlatform/appengine-angular-gotodos)
 * **Hood.ie:** [60 Minutes to Awesome](http://www.roberthorvick.com/2013/06/30/todomvc-angularjs-hood-ie-60-minutes-to-awesome/)
 * **MEAN Stack: **[Blog post](http://blog.mongodb.org/post/49262866911/the-mean-stack-mongodb-expressjs-angularjs-and), [Setup](http://thecodebarbarian.wordpress.com/2013/07/22/introduction-to-the-mean-stack-part-one-setting-up-your-tools/), [GDL Video](https://developers.google.com/live/shows/913996610)
@@ -137,7 +137,6 @@ You can find a larger list of Angular external libraries at [ngmodules.org](http
   [CodeAcademy](http://www.codecademy.com/courses/javascript-advanced-en-2hJ3J/0/1),
   [CodeSchool](https://www.codeschool.com/courses/shaping-up-with-angular-js)
 * **Paid online:**
-  [The Angular Course (115 videos that show you how to build a full app)](http://watchandcode.com/courses/angular-course/),
   [Pluralsite (3 courses)](http://www.pluralsight.com/training/Courses/Find?highlight=true&searchTerm=angularjs),
   [Tuts+](https://tutsplus.com/course/easier-js-apps-with-angular/),
   [lynda.com](http://www.lynda.com/AngularJS-tutorials/Up-Running-AngularJS/133318-2.html),
