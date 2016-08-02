@@ -59,9 +59,10 @@ angular.module('ngCookies').
        *
        * @param {string} key Id for the `value`.
        * @param {Object} value Value to be stored.
+       * @param {Object=} options Options object.
        */
-      put: function(key, value) {
-        $cookies.putObject(key, value);
+      put: function(key, value, options) {
+        $cookies.putObject(key, value, options);
       },
 
       /**
