@@ -738,7 +738,7 @@ describe('browser', function() {
       browser.onUrlChange(callback);
       fakeWindow.location.href = 'http://server/new';
 
-      browser.$$applicationDestroyed();
+      browser.shutdown();
 
       fakeWindow.fire('popstate');
       expect(callback).not.toHaveBeenCalled();

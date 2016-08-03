@@ -87,6 +87,7 @@
   $$SanitizeUriProvider,
   $SceProvider,
   $SceDelegateProvider,
+  $ShutdownProvider,
   $SnifferProvider,
   $TemplateCacheProvider,
   $TemplateRequestProvider,
@@ -126,6 +127,7 @@ var version = {
 function publishExternalAPI(angular) {
   extend(angular, {
     'bootstrap': bootstrap,
+    'shutdown': shutdown,
     'copy': copy,
     'extend': extend,
     'merge': merge,
@@ -164,6 +166,8 @@ function publishExternalAPI(angular) {
 
   angularModule('ng', ['ngLocale'], ['$provide',
     function ngModule($provide) {
+      // $shutdown provider needs to be first as other providers might use it.
+      $provide.provider('$shutdown', $ShutdownProvider);
       // $$sanitizeUriProvider needs to be before $compileProvider as it is used by it.
       $provide.provider({
         $$sanitizeUri: $$SanitizeUriProvider

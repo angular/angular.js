@@ -4,109 +4,63 @@ describe('$interval', function() {
   /* global $IntervalProvider: false */
 
   beforeEach(module(function($provide) {
-    var repeatFns = [],
-        nextRepeatId = 0,
-        now = 0,
-        $window;
-
-    $window = {
-      setInterval: function(fn, delay, count) {
-        repeatFns.push({
-          nextTime:(now + delay),
-          delay: delay,
-          fn: fn,
-          id: nextRepeatId
-        });
-        repeatFns.sort(function(a, b) { return a.nextTime - b.nextTime;});
-
-        return nextRepeatId++;
-      },
-
-      clearInterval: function(id) {
-        var fnIndex;
-
-        angular.forEach(repeatFns, function(fn, index) {
-          if (fn.id === id) fnIndex = index;
-        });
-
-        if (isDefined(fnIndex)) {
-          repeatFns.splice(fnIndex, 1);
-          return true;
-        }
-
-        return false;
-      },
-
-      flush: function(millis) {
-        now += millis;
-        while (repeatFns.length && repeatFns[0].nextTime <= now) {
-          var task = repeatFns[0];
-          task.fn();
-          task.nextTime += task.delay;
-          repeatFns.sort(function(a, b) { return a.nextTime - b.nextTime;});
-        }
-        return millis;
-      }
-    };
-
     $provide.provider('$interval', $IntervalProvider);
-    $provide.value('$window', $window);
   }));
 
-  it('should run tasks repeatedly', inject(function($interval, $window) {
+  it('should run tasks repeatedly', inject(function($interval, $browser) {
     var counter = 0;
     $interval(function() { counter++; }, 1000);
 
     expect(counter).toBe(0);
 
-    $window.flush(1000);
+    $browser.interval.flush(1000);
     expect(counter).toBe(1);
 
-    $window.flush(1000);
+    $browser.interval.flush(1000);
 
     expect(counter).toBe(2);
   }));
 
   it('should call $apply after each task is executed',
-      inject(function($interval, $rootScope, $window) {
+      inject(function($interval, $rootScope, $browser) {
     var applySpy = spyOn($rootScope, '$apply').and.callThrough();
 
     $interval(noop, 1000);
     expect(applySpy).not.toHaveBeenCalled();
 
-    $window.flush(1000);
+    $browser.interval.flush(1000);
     expect(applySpy).toHaveBeenCalledOnce();
 
     applySpy.calls.reset();
 
     $interval(noop, 1000);
     $interval(noop, 1000);
-    $window.flush(1000);
+    $browser.interval.flush(1000);
     expect(applySpy).toHaveBeenCalledTimes(3);
   }));
 
 
   it('should NOT call $apply if invokeApply is set to false',
-      inject(function($interval, $rootScope, $window) {
+      inject(function($interval, $rootScope, $browser) {
     var applySpy = spyOn($rootScope, '$apply').and.callThrough();
 
     $interval(noop, 1000, 0, false);
     expect(applySpy).not.toHaveBeenCalled();
 
-    $window.flush(2000);
+    $browser.interval.flush(2000);
     expect(applySpy).not.toHaveBeenCalled();
   }));
 
 
   it('should NOT call $evalAsync or $digest if invokeApply is set to false',
-      inject(function($interval, $rootScope, $window, $timeout) {
+      inject(function($interval, $rootScope, $browser, $timeout) {
     var evalAsyncSpy = spyOn($rootScope, '$evalAsync').and.callThrough();
     var digestSpy = spyOn($rootScope, '$digest').and.callThrough();
     var notifySpy = jasmine.createSpy('notify');
 
     $interval(notifySpy, 1000, 1, false);
 
-    $window.flush(2000);
+    $browser.interval.flush(2000);
     $timeout.flush(); // flush $browser.defer() timeout
 
     expect(notifySpy).toHaveBeenCalledOnce();
@@ -128,50 +82,50 @@ describe('$interval', function() {
       });
     });
 
-    inject(function($interval, $window) {
+    inject(function($interval, $browser) {
       var counter = 0;
       $interval(function() { counter++; }, 1000);
 
       expect(counter).toBe(0);
 
-      $window.flush(1000);
+      $browser.interval.flush(1000);
       expect(counter).toBe(1);
 
-      $window.flush(1000);
+      $browser.interval.flush(1000);
 
       expect(counter).toBe(2);
     });
   });
 
 
-  it('should allow you to specify the delay time', inject(function($interval, $window) {
+  it('should allow you to specify the delay time', inject(function($interval, $browser) {
     var counter = 0;
     $interval(function() { counter++; }, 123);
 
     expect(counter).toBe(0);
 
-    $window.flush(122);
+    $browser.interval.flush(122);
     expect(counter).toBe(0);
 
-    $window.flush(1);
+    $browser.interval.flush(1);
     expect(counter).toBe(1);
   }));
 
 
-  it('should allow you to specify a number of iterations', inject(function($interval, $window) {
+  it('should allow you to specify a number of iterations', inject(function($interval, $browser) {
     var counter = 0;
     $interval(function() {counter++;}, 1000, 2);
 
-    $window.flush(1000);
+    $browser.interval.flush(1000);
     expect(counter).toBe(1);
-    $window.flush(1000);
+    $browser.interval.flush(1000);
     expect(counter).toBe(2);
-    $window.flush(1000);
+    $browser.interval.flush(1000);
     expect(counter).toBe(2);
   }));
 
 
-  it('should allow you to specify a number of arguments', inject(function($interval, $window) {
+  it('should allow you to specify a number of arguments', inject(function($interval, $browser) {
     var task1 = jasmine.createSpy('task1'),
         task2 = jasmine.createSpy('task2'),
         task3 = jasmine.createSpy('task3');
@@ -179,7 +133,7 @@ describe('$interval', function() {
     $interval(task2, 1000, 2, true, 'Task2');
     $interval(task3, 1000, 2, true, 'I', 'am', 'a', 'Task3', 'spy');
 
-    $window.flush(1000);
+    $browser.interval.flush(1000);
     expect(task1).toHaveBeenCalledWith('Task1');
     expect(task2).toHaveBeenCalledWith('Task2');
     expect(task3).toHaveBeenCalledWith('I', 'am', 'a', 'Task3', 'spy');
@@ -188,7 +142,7 @@ describe('$interval', function() {
     task2.calls.reset();
     task3.calls.reset();
 
-    $window.flush(1000);
+    $browser.interval.flush(1000);
     expect(task1).toHaveBeenCalledWith('Task1');
     expect(task2).toHaveBeenCalledWith('Task2');
     expect(task3).toHaveBeenCalledWith('I', 'am', 'a', 'Task3', 'spy');
@@ -197,7 +151,7 @@ describe('$interval', function() {
 
 
   it('should return a promise which will be updated with the count on each iteration',
-      inject(function($interval, $window) {
+      inject(function($interval, $browser) {
     var log = [],
         promise = $interval(function() { log.push('tick'); }, 1000);
 
@@ -206,16 +160,16 @@ describe('$interval', function() {
                  function(note) { log.push('promise update: ' + note); });
     expect(log).toEqual([]);
 
-    $window.flush(1000);
+    $browser.interval.flush(1000);
     expect(log).toEqual(['tick', 'promise update: 0']);
 
-    $window.flush(1000);
+    $browser.interval.flush(1000);
     expect(log).toEqual(['tick', 'promise update: 0', 'tick', 'promise update: 1']);
   }));
 
 
   it('should return a promise which will be resolved after the specified number of iterations',
-      inject(function($interval, $window) {
+      inject(function($interval, $browser) {
     var log = [],
         promise = $interval(function() { log.push('tick'); }, 1000, 2);
 
@@ -224,9 +178,9 @@ describe('$interval', function() {
                  function(note) { log.push('promise update: ' + note); });
     expect(log).toEqual([]);
 
-    $window.flush(1000);
+    $browser.interval.flush(1000);
     expect(log).toEqual(['tick', 'promise update: 0']);
-    $window.flush(1000);
+    $browser.interval.flush(1000);
 
     expect(log).toEqual([
       'tick', 'promise update: 0', 'tick', 'promise update: 1', 'promise success: 2'
@@ -242,39 +196,39 @@ describe('$interval', function() {
 
 
     it('should delegate exception to the $exceptionHandler service', inject(
-        function($interval, $exceptionHandler, $window) {
+        function($interval, $exceptionHandler, $browser) {
       $interval(function() { throw "Test Error"; }, 1000);
       expect($exceptionHandler.errors).toEqual([]);
 
-      $window.flush(1000);
+      $browser.interval.flush(1000);
       expect($exceptionHandler.errors).toEqual(["Test Error"]);
 
-      $window.flush(1000);
+      $browser.interval.flush(1000);
       expect($exceptionHandler.errors).toEqual(["Test Error", "Test Error"]);
     }));
 
 
     it('should call $apply even if an exception is thrown in callback', inject(
-        function($interval, $rootScope, $window) {
+        function($interval, $rootScope, $browser) {
       var applySpy = spyOn($rootScope, '$apply').and.callThrough();
 
       $interval(function() { throw "Test Error"; }, 1000);
       expect(applySpy).not.toHaveBeenCalled();
 
-      $window.flush(1000);
+      $browser.interval.flush(1000);
       expect(applySpy).toHaveBeenCalled();
     }));
 
 
     it('should still update the interval promise when an exception is thrown',
-        inject(function($interval, $window) {
+        inject(function($interval, $browser) {
       var log = [],
           promise = $interval(function() { throw "Some Error"; }, 1000);
 
       promise.then(function(value) { log.push('promise success: ' + value); },
                  function(err) { log.push('promise error: ' + err); },
                  function(note) { log.push('promise update: ' + note); });
-      $window.flush(1000);
+      $browser.interval.flush(1000);
 
       expect(log).toEqual(['promise update: 0']);
     }));
@@ -282,7 +236,7 @@ describe('$interval', function() {
 
 
   describe('cancel', function() {
-    it('should cancel tasks', inject(function($interval, $window) {
+    it('should cancel tasks', inject(function($interval, $browser) {
       var task1 = jasmine.createSpy('task1', 1000),
           task2 = jasmine.createSpy('task2', 1000),
           task3 = jasmine.createSpy('task3', 1000),
@@ -294,7 +248,7 @@ describe('$interval', function() {
 
       $interval.cancel(promise3);
       $interval.cancel(promise1);
-      $window.flush(1000);
+      $browser.interval.flush(1000);
 
       expect(task1).not.toHaveBeenCalled();
       expect(task2).toHaveBeenCalledOnce();
@@ -302,7 +256,7 @@ describe('$interval', function() {
     }));
 
 
-    it('should cancel the promise', inject(function($interval, $rootScope, $window) {
+    it('should cancel the promise', inject(function($interval, $rootScope, $browser) {
       var promise = $interval(noop, 1000),
           log = [];
       promise.then(function(value) { log.push('promise success: ' + value); },
@@ -310,9 +264,9 @@ describe('$interval', function() {
                  function(note) { log.push('promise update: ' + note); });
       expect(log).toEqual([]);
 
-      $window.flush(1000);
+      $browser.interval.flush(1000);
       $interval.cancel(promise);
-      $window.flush(1000);
+      $browser.interval.flush(1000);
       $rootScope.$apply(); // For resolving the promise -
                            // necessary since q uses $rootScope.evalAsync.
 
@@ -321,13 +275,13 @@ describe('$interval', function() {
 
 
     it('should return true if a task was successfully canceled',
-        inject(function($interval, $window) {
+        inject(function($interval, $browser) {
       var task1 = jasmine.createSpy('task1'),
           task2 = jasmine.createSpy('task2'),
           promise1, promise2;
 
       promise1 = $interval(task1, 1000, 1);
-      $window.flush(1000);
+      $browser.interval.flush(1000);
       promise2 = $interval(task2, 1000, 1);
 
       expect($interval.cancel(promise1)).toBe(false);
@@ -341,19 +295,19 @@ describe('$interval', function() {
     }));
   });
 
-  describe('$window delegation', function() {
-    it('should use $window.setInterval instead of the global function', inject(function($interval, $window) {
-      var setIntervalSpy = spyOn($window, 'setInterval');
+  describe('$browser delegation', function() {
+    it('should use $borwser.interval instead of the global function', inject(function($interval, $browser) {
+      var setIntervalSpy = spyOn($browser, 'interval');
 
       $interval(noop, 1000);
       expect(setIntervalSpy).toHaveBeenCalled();
     }));
 
-    it('should use $window.clearInterval instead of the global function', inject(function($interval, $window) {
-      var clearIntervalSpy = spyOn($window, 'clearInterval');
+    it('should use $browser.interval.cancel instead of the global function', inject(function($interval, $browser) {
+      var clearIntervalSpy = spyOn($browser.interval, 'cancel');
 
       $interval(noop, 1000, 1);
-      $window.flush(1000);
+      $browser.interval.flush(1000);
       expect(clearIntervalSpy).toHaveBeenCalled();
 
       clearIntervalSpy.calls.reset();

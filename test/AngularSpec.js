@@ -1685,6 +1685,110 @@ describe('angular', function() {
     });
   });
 
+  describe('shutdown', function() {
+    it('should be able to shutdown an angular app', function() {
+      var element = jqLite('<div>bootstrap me!</div>');
+      angular.bootstrap(element);
+
+      angular.shutdown(element);
+      expect(element.data('$injector')).toBeUndefined();
+      expect(element.text()).toBe('bootstrap me!');
+    });
+
+    it('should be able to shutdown on any element that is part of the app', function() {
+      var element = jqLite('<div><span>Bootstrap me!</span></div>');
+
+      angular.bootstrap(element);
+      angular.shutdown(element.find('span'));
+      expect(element.data('$injector')).toBeUndefined();
+      expect(element.text()).toBe('Bootstrap me!');
+    });
+
+    it('should throw if trying to shutdown an element that is not part of an app', function() {
+      var element = jqLite('<div>Not an app</div>');
+
+      expect(function() {
+        angular.shutdown(element);
+        }).toThrowMinErr('ng', 'shtdwn', 'Element not part of an app');
+    });
+
+    it('should preserve the html as it is', function() {
+      var element = jqLite('<div>Hello World<span ng-if="false">Do not see me</span></div>');
+
+      angular.bootstrap(element);
+      angular.shutdown(element);
+      expect(element.text()).toBe('Hello World');
+    });
+
+    it('should remove all the data from all the elements', function() {
+      var element = jqLite('<div><span>Bootstrap me!</span></div>');
+
+      angular.bootstrap(element);
+      element.find('span').data('foo', 'bar');
+      angular.shutdown(element);
+      expect(element.find('span').data('foo')).toBeUndefined();
+    });
+
+    describe('setTimeout and setInterval shutdown', function() {
+      var setTimeoutSpy, setInternalSpy;
+      beforeEach(inject(function($window) {
+        spyOn($window, 'setInterval').and.returnValue(42);
+        spyOn($window, 'clearInterval');
+        spyOn($window, 'setTimeout');
+      }));
+
+      it('should stop calling the window setTimeout', inject(function($window) {
+        var element = jqLite('<div><span>Bootstrap me!</span></div>'),
+          injector = angular.bootstrap(element),
+          $timeout = injector.get('$timeout');
+
+        $timeout(function() {});
+        expect($window.setTimeout).toHaveBeenCalledOnce();
+        angular.shutdown(element);
+        $timeout(function() {});
+        expect($window.setTimeout).toHaveBeenCalledOnce();
+      }));
+
+      it('should cancel all active interval calls', inject(function($window) {
+        var element = jqLite('<div><span>Bootstrap me!</span></div>'),
+          injector = angular.bootstrap(element),
+          $interval = injector.get('$interval');
+
+        $interval(function() {}, 100);
+        expect($window.setInterval).toHaveBeenCalledOnce();
+        expect($window.clearInterval).not.toHaveBeenCalled();
+        angular.shutdown(element);
+        expect($window.clearInterval).toHaveBeenCalledOnce();
+        expect($window.clearInterval.calls.mostRecent().args[0]).toBe(42);
+      }));
+
+      it('should not cancel intervals that were already canceled', inject(function($window) {
+        var element = jqLite('<div><span>Bootstrap me!</span></div>'),
+          injector = angular.bootstrap(element),
+          $interval = injector.get('$interval'),
+          intervalPromise = $interval(function() {}, 100);
+
+        $interval.cancel(intervalPromise);
+        expect($window.setInterval).toHaveBeenCalledOnce();
+        expect($window.clearInterval).toHaveBeenCalledOnce();
+        angular.shutdown(element);
+        expect($window.setInterval).toHaveBeenCalledOnce();
+        expect($window.clearInterval).toHaveBeenCalledOnce();
+      }));
+    });
+
+    it('should destroy the root scope', function() {
+      var element = jqLite('<div><span>Bootstrap me!</span></div>'),
+        injector = angular.bootstrap(element),
+        rootScope = injector.get('$rootScope'),
+        listener = jasmine.createSpy('listener');
+
+      rootScope.$on('$destroy', listener);
+      angular.shutdown(element);
+      expect(listener).toHaveBeenCalled();
+    });
+  });
+
 
   describe('angular service', function() {
     it('should override services', function() {
