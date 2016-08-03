@@ -6,3 +6,5 @@
 AngularJS often asserts that certain values will be present and truthy using a
 helper function. If the assertion fails, this error is thrown. To fix this problem,
 make sure that the value the assertion expects is defined and truthy.
+Check and make sure that provided controller name is exact, this may be a syntax error
+as well and you have included app-name and check that the current controller is included in root html.
