@@ -482,6 +482,19 @@ describe('ngModel', function() {
       });
 
 
+      it('should be possible to force model -> view binding from ngModelController', function() {
+        var spyFormatter = jasmine.createSpy('spyValidator');
+        ctrl.$formatters = ctrl.$formatters.concat(spyFormatter);
+        spyOn(ctrl, '$render');
+        spyOn(ctrl, '$$runValidators');
+
+        ctrl.$forceModelToViewBound();
+        expect(spyFormatter).toHaveBeenCalledOnce();
+        expect(ctrl.$render).toHaveBeenCalledOnce();
+        expect(ctrl.$$runValidators).toHaveBeenCalledOnce();
+      });
+
+
       it('should clear the view even if invalid', function() {
         spyOn(ctrl, '$render');
 
