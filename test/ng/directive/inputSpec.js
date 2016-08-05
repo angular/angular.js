@@ -2877,7 +2877,7 @@ describe('input', function() {
         expect(inputElm.val()).toEqual('50');
       });
 
-      it('should set model to 50 when no value specified', function() {
+      it('should set model to 50 when no value specified and default min/max', function() {
         var inputElm = helper.compileInput('<input type="range" ng-model="age" />');
 
         expect(inputElm.val()).toBe('50');
@@ -2887,7 +2887,7 @@ describe('input', function() {
         expect(scope.age).toBe(50);
       });
 
-      it('should parse non-number values to 50', function() {
+      it('should parse non-number values to 50 when default min/max', function() {
         var inputElm = helper.compileInput('<input type="range" ng-model="age" />');
 
         scope.$apply('age = 10');
@@ -2949,8 +2949,20 @@ describe('input', function() {
     describe('min', function() {
 
       if (supportsRange) {
+
+        it('should initialize correctly with non-default model and min value', function() {
+          scope.value = -3;
+          scope.min = -5;
+          var inputElm = helper.compileInput('<input type="range" ng-model="value" name="alias" min="{{min}}" />');
+
+          expect(inputElm).toBeValid();
+          expect(inputElm.val()).toBe('-3');
+          expect(scope.value).toBe(-3);
+          expect(scope.form.alias.$error.min).toBeFalsy();
+        });
+
         // Browsers that implement range will never allow you to set the value < min values
-        it('should validate', function() {
+        it('should adjust invalid input values', function() {
           var inputElm = helper.compileInput('<input type="range" ng-model="value" name="alias" min="10" />');
 
           helper.changeInputValueTo('5');
@@ -2962,6 +2974,22 @@ describe('input', function() {
           expect(inputElm).toBeValid();
           expect(scope.value).toBe(100);
           expect(scope.form.alias.$error.min).toBeFalsy();
+        });
+
+        it('should set the model to the min val if it is less than the min val', function() {
+          scope.value = -10;
+          // Default min is 0
+          var inputElm = helper.compileInput('<input type="range" ng-model="value" name="alias" min="{{min}}" />');
+
+          expect(inputElm).toBeValid();
+          expect(inputElm.val()).toBe('0');
+          expect(scope.value).toBe(0);
+
+          scope.$apply('value = 5; min = 10');
+
+          expect(inputElm).toBeValid();
+          expect(inputElm.val()).toBe('10');
+          expect(scope.value).toBe(10);
         });
 
         it('should adjust the element and model value when the min value changes on-the-fly', function() {
@@ -2997,8 +3025,9 @@ describe('input', function() {
         });
 
       } else {
+        // input[type=range] will become type=text in browsers that don't support it
+
         it('should validate if "range" is not implemented', function() {
-          // This will become type=text in browsers that don't support it
           var inputElm = helper.compileInput('<input type="range" ng-model="value" name="alias" min="10" />');
 
           helper.changeInputValueTo('5');
@@ -3010,6 +3039,34 @@ describe('input', function() {
           expect(inputElm).toBeValid();
           expect(scope.value).toBe(100);
           expect(scope.form.alias.$error.min).toBeFalsy();
+        });
+
+        it('should not assume a min val of 0 if the min interpolates to a non-number', function() {
+          scope.value = -10;
+          var inputElm = helper.compileInput('<input type="range" ng-model="value" name="alias" min="{{min}}" />');
+
+          expect(inputElm).toBeValid();
+          expect(inputElm.val()).toBe('-10');
+          expect(scope.value).toBe(-10);
+          expect(scope.form.alias.$error.min).toBeFalsy();
+
+          helper.changeInputValueTo('-5');
+          expect(inputElm).toBeValid();
+          expect(inputElm.val()).toBe('-5');
+          expect(scope.value).toBe(-5);
+          expect(scope.form.alias.$error.min).toBeFalsy();
+
+          scope.$apply('max = "null"');
+          expect(inputElm).toBeValid();
+          expect(inputElm.val()).toBe('-5');
+          expect(scope.value).toBe(-5);
+          expect(scope.form.alias.$error.max).toBeFalsy();
+
+          scope.$apply('max = "asdf"');
+          expect(inputElm).toBeValid();
+          expect(inputElm.val()).toBe('-5');
+          expect(scope.value).toBe(-5);
+          expect(scope.form.alias.$error.max).toBeFalsy();
         });
 
         it('should validate even if the min value changes on-the-fly', function() {
@@ -3074,6 +3131,7 @@ describe('input', function() {
         scope.min = 20;
         scope.$digest();
         expect(inputElm).toBeInvalid();
+        expect(inputElm.val()).toBe('15');
 
         scope.min = null;
         scope.$digest();
@@ -3094,6 +3152,17 @@ describe('input', function() {
 
       if (supportsRange) {
         // Browsers that implement range will never allow you to set the value > max value
+        it('should initialize correctly with non-default model and max value', function() {
+          scope.value = 130;
+          scope.max = 150;
+          var inputElm = helper.compileInput('<input type="range" ng-model="value" name="alias" max="{{max}}" />');
+
+          expect(inputElm).toBeValid();
+          expect(inputElm.val()).toBe('130');
+          expect(scope.value).toBe(130);
+          expect(scope.form.alias.$error.max).toBeFalsy();
+        });
+
         it('should validate', function() {
           var inputElm = helper.compileInput('<input type="range" ng-model="value" name="alias" max="10" />');
 
@@ -3108,9 +3177,16 @@ describe('input', function() {
           expect(scope.form.alias.$error.max).toBeFalsy();
         });
 
-        it('should set the model to the max val if it is more than the max val', function() {
-          scope.value = 90;
-          var inputElm = helper.compileInput('<input type="range" ng-model="value" name="alias" max="10" />');
+        it('should set the model to the max val if it is greater than the max val', function() {
+          scope.value = 110;
+          // Default max is 100
+          var inputElm = helper.compileInput('<input type="range" ng-model="value" name="alias" max="{{max}}" />');
+
+          expect(inputElm).toBeValid();
+          expect(inputElm.val()).toBe('100');
+          expect(scope.value).toBe(100);
+
+          scope.$apply('value = 90; max = 10');
 
           expect(inputElm).toBeValid();
           expect(inputElm.val()).toBe('10');
@@ -3161,6 +3237,34 @@ describe('input', function() {
           helper.changeInputValueTo('0');
           expect(inputElm).toBeValid();
           expect(scope.value).toBe(0);
+          expect(scope.form.alias.$error.max).toBeFalsy();
+        });
+
+        it('should not assume a max val of 100 if the max attribute interpolates to a non-number', function() {
+          scope.value = 120;
+          var inputElm = helper.compileInput('<input type="range" ng-model="value" name="alias" max="{{max}}" />');
+
+          expect(inputElm).toBeValid();
+          expect(inputElm.val()).toBe('120');
+          expect(scope.value).toBe(120);
+          expect(scope.form.alias.$error.max).toBeFalsy();
+
+          helper.changeInputValueTo('140');
+          expect(inputElm).toBeValid();
+          expect(inputElm.val()).toBe('140');
+          expect(scope.value).toBe(140);
+          expect(scope.form.alias.$error.max).toBeFalsy();
+
+          scope.$apply('max = null');
+          expect(inputElm).toBeValid();
+          expect(inputElm.val()).toBe('140');
+          expect(scope.value).toBe(140);
+          expect(scope.form.alias.$error.max).toBeFalsy();
+
+          scope.$apply('max = "asdf"');
+          expect(inputElm).toBeValid();
+          expect(inputElm.val()).toBe('140');
+          expect(scope.value).toBe(140);
           expect(scope.form.alias.$error.max).toBeFalsy();
         });
 
@@ -3245,22 +3349,21 @@ describe('input', function() {
 
       describe('min and max', function() {
 
-        it('should keep the initial default value when min and max are specified', function() {
+        it('should set the correct initial value when min and max are specified', function() {
           scope.max = 80;
           scope.min = 40;
           var inputElm = helper.compileInput('<input type="range" ng-model="value" name="alias" max="{{max}}" min="{{min}}" />');
 
-          expect(inputElm.val()).toBe('50');
-          expect(scope.value).toBe(50);
+          expect(inputElm.val()).toBe('60');
+          expect(scope.value).toBe(60);
         });
-
 
         it('should set element and model value to min if max is less than min', function() {
           scope.min = 40;
           var inputElm = helper.compileInput('<input type="range" ng-model="value" name="alias" max="{{max}}" min="{{min}}" />');
 
-          expect(inputElm.val()).toBe('50');
-          expect(scope.value).toBe(50);
+          expect(inputElm.val()).toBe('70');
+          expect(scope.value).toBe(70);
 
           scope.max = 20;
           scope.$digest();

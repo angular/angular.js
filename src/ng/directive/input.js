@@ -1547,10 +1547,12 @@ function rangeInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   numberFormatterParser(ctrl);
   baseInputType(scope, element, attr, ctrl, $sniffer, $browser);
 
-  var minVal = 0,
-      maxVal = 100,
-      supportsRange = ctrl.$$hasNativeValidators && element[0].type === 'range',
-      validity = element[0].validity;
+  var supportsRange = ctrl.$$hasNativeValidators && element[0].type === 'range',
+      minVal = supportsRange ? 0 : undefined,
+      maxVal = supportsRange ? 100 : undefined,
+      validity = element[0].validity,
+      minAttrType = isDefined(attr.ngMin) ? 'ngMin' : isDefined(attr.min) ? 'min' : false,
+      maxAttrType = isDefined(attr.ngMax) ? 'ngMax' : isDefined(attr.max) ? 'max' : false;
 
   var originalRender = ctrl.$render;
 
@@ -1562,6 +1564,42 @@ function rangeInputType(scope, element, attr, ctrl, $sniffer, $browser) {
       ctrl.$setViewValue(element.val());
     } :
     originalRender;
+
+  if (minAttrType) {
+    ctrl.$validators.min = minAttrType === 'min' && supportsRange ?
+      // Since all browsers set the input to a valid value, we don't need to check validity
+      function noopMinValidator() { return true; } :
+      // ngMin doesn't set the min attr, so the browser doesn't adjust the input value as setting min would
+      function minValidator(modelValue, viewValue) {
+        return ctrl.$isEmpty(viewValue) || isUndefined(minVal) || viewValue >= minVal;
+      };
+
+    setInitialValueAndObserver(minAttrType, 'min', minChange);
+  }
+
+  if (maxAttrType) {
+    ctrl.$validators.max = maxAttrType === 'max' && supportsRange ?
+      // Since all browsers set the input to a valid value, we don't need to check validity
+      function noopMaxValidator() { return true; } :
+      // ngMax doesn't set the max attr, so the browser doesn't adjust the input value as setting max would
+      function maxValidator(modelValue, viewValue) {
+        return ctrl.$isEmpty(viewValue) || isUndefined(maxVal) || viewValue <= maxVal;
+      };
+
+    setInitialValueAndObserver(maxAttrType, 'max', maxChange);
+  }
+
+  function setInitialValueAndObserver(actualAttrName, htmlAttrName, changeFn) {
+    // e.g. max === max
+    if (actualAttrName === htmlAttrName) {
+      // interpolated attributes set the attribute value only after a digest, but we need the
+      // attribute value when the input is first rendered, so that the browser can adjust the
+      // input value based on the min/max value
+      element.attr(htmlAttrName, attr[htmlAttrName]);
+    }
+
+    attr.$observe(htmlAttrName, changeFn);
+  }
 
   function minChange(val) {
     if (isDefined(val) && !isNumber(val)) {
@@ -1577,31 +1615,14 @@ function rangeInputType(scope, element, attr, ctrl, $sniffer, $browser) {
       var elVal = element.val();
       // IE11 doesn't set the el val correctly if the minVal is greater than the element value
       if (minVal > elVal) {
-        element.val(minVal);
         elVal = minVal;
+        element.val(elVal);
       }
       ctrl.$setViewValue(elVal);
     } else {
       // TODO(matsko): implement validateLater to reduce number of validations
       ctrl.$validate();
     }
-  }
-
-  var minAttrType = isDefined(attr.ngMin) ? 'ngMin' : isDefined(attr.min) ? 'min' : false;
-  if (minAttrType) {
-    ctrl.$validators.min = isDefined(attr.min) && supportsRange ?
-      function noopMinValidator(value) {
-        // Since all browsers set the input to a valid value, we don't need to check validity
-        return true;
-      } :
-      // ngMin doesn't set the min attr, so the browser doesn't adjust the input value as setting min would
-      function minValidator(modelValue, viewValue) {
-        return ctrl.$isEmpty(viewValue) || isUndefined(minVal) || viewValue >= minVal;
-      };
-
-    // Assign minVal when the directive is linked. This won't run the validators as the model isn't ready yet
-    minChange(attr.min);
-    attr.$observe('min', minChange);
   }
 
   function maxChange(val) {
@@ -1626,22 +1647,6 @@ function rangeInputType(scope, element, attr, ctrl, $sniffer, $browser) {
       // TODO(matsko): implement validateLater to reduce number of validations
       ctrl.$validate();
     }
-  }
-  var maxAttrType = isDefined(attr.max) ? 'max' : attr.ngMax ? 'ngMax' : false;
-  if (maxAttrType) {
-    ctrl.$validators.max = isDefined(attr.max) && supportsRange ?
-      function noopMaxValidator() {
-        // Since all browsers set the input to a valid value, we don't need to check validity
-        return true;
-      } :
-      // ngMax doesn't set the max attr, so the browser doesn't adjust the input value as setting max would
-      function maxValidator(modelValue, viewValue) {
-        return ctrl.$isEmpty(viewValue) || isUndefined(maxVal) || viewValue <= maxVal;
-      };
-
-    // Assign maxVal when the directive is linked. This won't run the validators as the model isn't ready yet
-    maxChange(attr.max);
-    attr.$observe('max', maxChange);
   }
 
 }
