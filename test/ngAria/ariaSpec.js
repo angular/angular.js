@@ -123,29 +123,31 @@ describe('$aria', function() {
       expect(element.attr('aria-checked')).toBe('false');
     });
 
-    it('should rely on the `$isEmpty()` method', function() {
-      compileElement('<div role="checkbox" ng-model="val"></div>');
-      var ctrl = element.controller('ngModel');
-      ctrl.$isEmpty = function(value) {
-        return value === 'not-checked';
-      };
+    it('should use `$isEmpty()` to determine if the checkbox is checked',
+      function() {
+        compileElement('<div role="checkbox" ng-model="val"></div>');
+        var ctrl = element.controller('ngModel');
+        ctrl.$isEmpty = function(value) {
+          return value === 'not-checked';
+        };
 
-      scope.$apply('val = true');
-      expect(ctrl.$modelValue).toBe(true);
-      expect(element.attr('aria-checked')).toBe('true');
+        scope.$apply('val = true');
+        expect(ctrl.$modelValue).toBe(true);
+        expect(element.attr('aria-checked')).toBe('true');
 
-      scope.$apply('val = false');
-      expect(ctrl.$modelValue).toBe(false);
-      expect(element.attr('aria-checked')).toBe('true');
+        scope.$apply('val = false');
+        expect(ctrl.$modelValue).toBe(false);
+        expect(element.attr('aria-checked')).toBe('true');
 
-      scope.$apply('val = "not-checked"');
-      expect(ctrl.$modelValue).toBe('not-checked');
-      expect(element.attr('aria-checked')).toBe('false');
+        scope.$apply('val = "not-checked"');
+        expect(ctrl.$modelValue).toBe('not-checked');
+        expect(element.attr('aria-checked')).toBe('false');
 
-      scope.$apply('val = "checked"');
-      expect(ctrl.$modelValue).toBe('checked');
-      expect(element.attr('aria-checked')).toBe('true');
-    });
+        scope.$apply('val = "checked"');
+        expect(ctrl.$modelValue).toBe('checked');
+        expect(element.attr('aria-checked')).toBe('true');
+      }
+    );
 
     it('should not handle native checkbox with ngChecked', function() {
       var element = $compile('<input type="checkbox" ng-checked="val">')(scope);
