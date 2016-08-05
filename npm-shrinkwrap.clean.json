@@ -139,9 +139,6 @@
                 }
               }
             },
-            "serve-static": {
-              "version": "1.11.1"
-            },
             "type-is": {
               "version": "1.6.13",
               "dependencies": {
@@ -8061,7 +8058,7 @@
       }
     },
     "protractor": {
-      "version": "4.0.0",
+      "version": "4.0.2",
       "dependencies": {
         "adm-zip": {
           "version": "0.4.7"
@@ -8117,7 +8114,7 @@
               "version": "3.0.2",
               "dependencies": {
                 "brace-expansion": {
-                  "version": "1.1.5",
+                  "version": "1.1.6",
                   "dependencies": {
                     "balanced-match": {
                       "version": "0.4.2"
@@ -8222,7 +8219,7 @@
               "version": "0.4.4"
             },
             "rimraf": {
-              "version": "2.5.3"
+              "version": "2.5.4"
             },
             "tmp": {
               "version": "0.0.24"
@@ -8325,7 +8322,7 @@
               "version": "1.2.0"
             },
             "request": {
-              "version": "2.73.0",
+              "version": "2.74.0",
               "dependencies": {
                 "aws-sign2": {
                   "version": "0.6.0"
@@ -8467,7 +8464,7 @@
                       }
                     },
                     "sshpk": {
-                      "version": "1.8.3",
+                      "version": "1.9.2",
                       "dependencies": {
                         "asn1": {
                           "version": "0.2.3"
@@ -8521,13 +8518,13 @@
                   "version": "0.8.2"
                 },
                 "qs": {
-                  "version": "6.2.0"
+                  "version": "6.2.1"
                 },
                 "stringstream": {
                   "version": "0.0.5"
                 },
                 "tough-cookie": {
-                  "version": "2.2.2"
+                  "version": "2.3.1"
                 },
                 "tunnel-agent": {
                   "version": "0.4.3"
@@ -8535,7 +8532,7 @@
               }
             },
             "rimraf": {
-              "version": "2.5.3"
+              "version": "2.5.4"
             }
           }
         }
