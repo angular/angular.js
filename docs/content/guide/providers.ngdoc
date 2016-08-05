@@ -217,7 +217,7 @@ that need it. We can make it configurable like so:
 
 
 ```javascript
-myApp.provider('unicornLauncher', function UnicornLauncherProvider() {
+myApp.provider('unicornLauncher', function unicornLauncherProvider() {
   var useTinfoilShielding = false;
 
   this.useTinfoilShielding = function(value) {
