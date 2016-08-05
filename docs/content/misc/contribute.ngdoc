@@ -139,7 +139,7 @@ grunt test:unit
 To run the tests on other browsers (Chrome, ChromeCanary, Firefox, Opera and Safari are pre-configured) use:
 
 ```shell
-grunt test:unit --browsers Opera,Firefox
+grunt test:unit --browsers=Opera,Firefox
 ```
 
 Note there should be _no spaces between browsers_. `Opera, Firefox` is INVALID.
