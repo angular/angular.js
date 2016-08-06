@@ -1168,3 +1168,190 @@ describe('strict-di injector', function() {
     expect($injector.strictDi).toBe(true);
   }));
 });
+
+describe('injector with non-string IDs', function() {
+  it('should support non-string service identifiers', function() {
+    var ids = [
+      null,
+      true,
+      1,
+      {},
+      [],
+      noop,
+      /./
+    ];
+
+    module(function($provide) {
+      ids.forEach(function(id, idx) { $provide.value(id, idx); });
+      $provide.factory('allDeps', ids.concat(function() { return sliceArgs(arguments); }));
+    });
+
+    inject(function(allDeps) {
+      expect(allDeps.length).toBe(ids.length);
+      expect(allDeps.every(function(dep, idx) { return dep === idx; })).toBe(true);
+    });
+  });
+
+
+  it('should support configuring services with non-string identifiers', function() {
+    /* eslint-disable no-new-wrappers */
+    var id1 = new String('same string, no problem');
+    var id2 = new String('same string, no problem');
+    /* eslint-enable */
+
+    angular.
+      module('test', []).
+      factory(id2, [id1, identity]).
+      provider(id1, function Id1Provider() {
+        var value = 'foo';
+        this.setValue = function setValue(newValue) { value = newValue; };
+        this.$get = function $get() { return value; };
+      }).
+      config([id1, function config(id1Provider) {
+        id1Provider.setValue('bar');
+      }]);
+
+    module('test');
+    inject([id2, function(dep2) {
+      expect(dep2).toBe('bar');
+    }]);
+  });
+
+
+  it('should support decorating services with non-string identifiers', function() {
+    /* eslint-disable no-new-wrappers */
+    var id1 = new String('same string, no problem');
+    var id2 = new String('same string, no problem');
+    /* eslint-enable */
+
+    angular.
+      module('test', []).
+      factory(id2, [id1, identity]).
+      value(id1, 'foo').
+      decorator(id1, function decorator($delegate) {
+        expect($delegate).toBe('foo');
+        return 'bar';
+      });
+
+    module('test');
+    inject([id2, function(dep2) {
+      expect(dep2).toBe('bar');
+    }]);
+  });
+
+
+  it('should still allow passing multiple providers as object', function() {
+    var obj = {
+      foo: 'foo',
+      bar: 'bar'
+    };
+
+    module(function($provide) {
+      $provide.value(obj);
+      $provide.value(obj, 'foo&bar');
+    });
+
+    inject(['foo', 'bar', obj, function(foo, bar, fooBar) {
+      expect(foo).toBe('foo');
+      expect(bar).toBe('bar');
+      expect(fooBar).toBe('foo&bar');
+    }]);
+  });
+
+
+  describe('should stringify non-string identifiers for error messages', function() {
+    var foo, bar, baz;
+
+    beforeEach(function() {
+      foo = {toString: valueFn('fooThingy')};
+      bar = {toString: valueFn('barThingy')};
+      baz = {toString: valueFn('bazThingy')};
+    });
+
+
+    it('(Unknown provider)', function() {
+      var executed = false;
+
+      module(function($provide) {
+        expect(function() {
+          $provide.provider('foo', ['barProvider', noop]);
+        }).toThrowMinErr('$injector', 'unpr', 'Unknown provider: barProvider\n');
+
+        expect(function() {
+          $provide.provider('foo', [{}, noop]);
+        }).toThrowMinErr('$injector', 'unpr', 'Unknown provider: [object Object] (provider)\n');
+
+        expect(function() {
+          $provide.provider('foo', [bar, noop]);
+        }).toThrowMinErr('$injector', 'unpr', 'Unknown provider: barThingy (provider)\n');
+
+        executed = true;
+      });
+
+      inject();
+
+      expect(executed).toBe(true);
+    });
+
+
+    it('(Unknown service)', function() {
+      var executed = false;
+
+      module(function($provide) {
+        $provide.provider(foo, valueFn({$get: ['bar', noop]}));
+        $provide.provider('bar', valueFn({$get: [baz, noop]}));
+
+        $provide.provider('foo', valueFn({$get: [bar, noop]}));
+        $provide.provider(bar, valueFn({$get: ['baz', noop]}));
+      });
+
+      inject(function($injector) {
+        var specs = [
+          ['bar', 'bazThingy (provider) <- bazThingy <- bar'],
+          [foo,   'bazThingy (provider) <- bazThingy <- bar <- fooThingy'],
+          [bar,   'bazProvider <- baz <- barThingy'],
+          ['foo', 'bazProvider <- baz <- barThingy <- foo']
+        ];
+
+        forEach(specs, function(spec) {
+          var serviceId = spec[0];
+          var errorPath = spec[1];
+
+          expect(function() {
+            $injector.get(serviceId);
+          }).toThrowMinErr('$injector', 'unpr', 'Unknown provider: ' + errorPath + '\n');
+        });
+
+        executed = true;
+      });
+
+      expect(executed).toBe(true);
+    });
+
+
+    it('(Circular dependency)', function() {
+      var executed = false;
+
+      module(function($provide) {
+        $provide.provider(foo, valueFn({$get: ['bar', noop]}));
+        $provide.provider('bar', valueFn({$get: [baz, noop]}));
+        $provide.provider(baz, valueFn({$get: ['foo', noop]}));
+        $provide.provider('foo', valueFn({$get: [bar, noop]}));
+        $provide.provider(bar, valueFn({$get: ['baz', noop]}));
+        $provide.provider('baz', valueFn({$get: [foo, noop]}));
+      });
+
+      inject(function($injector) {
+        var errorPath = 'fooThingy <- baz <- barThingy <- foo <- bazThingy <- bar <- fooThingy';
+
+        expect(function() {
+          $injector.get(foo);
+        }).toThrowMinErr('$injector', 'cdep', 'Circular dependency found: ' + errorPath + '\n');
+
+        executed = true;
+      });
+
+      expect(executed).toBe(true);
+    });
+  });
+});
