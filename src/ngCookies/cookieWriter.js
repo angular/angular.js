@@ -55,6 +55,6 @@ function $$CookieWriter($document, $log, $browser) {
 
 $$CookieWriter.$inject = ['$document', '$log', '$browser'];
 
-angular.module('ngCookies').provider('$$cookieWriter', /* @this */ function $$CookieWriterProvider() {
+angular.module('ngCookies').provider('$$cookieWriter', /** @this */ function $$CookieWriterProvider() {
   this.$get = $$CookieWriter;
 });

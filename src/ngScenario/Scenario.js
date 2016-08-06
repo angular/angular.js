@@ -40,7 +40,7 @@ angular.scenario.output = angular.scenario.output || function(name, fn) {
 angular.scenario.dsl = angular.scenario.dsl || function(name, fn) {
   angular.scenario.dsl[name] = function() {
     // The dsl binds `this` for us when calling chained functions
-    /* @this */
+    /** @this */
     function executeStatement(statement, args) {
       var result = statement.apply(this, args);
       if (angular.isFunction(result) || result instanceof angular.scenario.Future) {
@@ -60,7 +60,7 @@ angular.scenario.dsl = angular.scenario.dsl || function(name, fn) {
       return chain;
     }
     var statement = fn.apply(this, arguments);
-    return /* @this */ function() {
+    return /** @this */ function() {
       return executeStatement.call(this, statement, arguments);
     };
   };

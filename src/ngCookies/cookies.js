@@ -23,7 +23,7 @@ angular.module('ngCookies', ['ng']).
    * @description
    * Use `$cookiesProvider` to change the default behavior of the {@link ngCookies.$cookies $cookies} service.
    * */
-   provider('$cookies', [/* @this */function $CookiesProvider() {
+   provider('$cookies', [/** @this */function $CookiesProvider() {
     /**
      * @ngdoc property
      * @name $cookiesProvider#defaults
