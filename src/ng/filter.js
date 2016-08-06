@@ -106,7 +106,7 @@
    </example>
   */
 $FilterProvider.$inject = ['$provide'];
-/* @this */
+/** @this */
 function $FilterProvider($provide) {
   var suffix = 'Filter';
 

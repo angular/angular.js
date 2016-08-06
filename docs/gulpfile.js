@@ -126,8 +126,12 @@ gulp.task('eslint', ['doc-gen'], function() {
   // compatible with non-browser window implementations like jsdom, it's not necessary
   // in examples and may look weird to casual readers.
   examplesConfig.envs = ['browser'];
+  // Dgeni-generated files use the system's default linebreak style (i.e. CRLF on Windows)
+  examplesConfig.rules['linebreak-style'] = 'off';
 
   var protractorConfig = getMergedEslintConfig('../docs/app/e2e/.eslintrc.json');
+  // Dgeni-generated files use the system's default linebreak style (i.e. CRLF on Windows)
+  protractorConfig.rules['linebreak-style'] = 'off';
   protractorConfig.rules['no-unused-vars'] = ['error', {
     vars: 'local',
     args: 'none',

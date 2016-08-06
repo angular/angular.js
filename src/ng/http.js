@@ -23,7 +23,7 @@ function serializeValue(v) {
 }
 
 
-/* @this */
+/** @this */
 function $HttpParamSerializerProvider() {
   /**
    * @ngdoc service
@@ -61,7 +61,7 @@ function $HttpParamSerializerProvider() {
   };
 }
 
-/* @this */
+/** @this */
 function $HttpParamSerializerJQLikeProvider() {
   /**
    * @ngdoc service

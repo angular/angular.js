@@ -2874,7 +2874,7 @@ angular.mock.$RootScopeDecorator = ['$delegate', function($delegate) {
 
     var initialized = false;
 
-    module.$$beforeAllHook(/* @this */ function() {
+    module.$$beforeAllHook(/** @this */ function() {
       if (injectorState.shared) {
         injectorState.sharedError = Error("sharedInjector() cannot be called inside a context that has already called sharedInjector()");
         throw injectorState.sharedError;
