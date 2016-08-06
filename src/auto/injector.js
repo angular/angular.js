@@ -74,7 +74,7 @@ function stringifyFn(fn) {
   // Support: Chrome 50-51 only
   // Creating a new string by adding `' '` at the end, to hack around some bug in Chrome v50/51
   // (See https://github.com/angular/angular.js/issues/14487.)
-  // TODO (gkalpak): Remove workaround when Chrome v52 is released
+  // TODO(gkalpak): Remove workaround when Chrome v52 is released
   return Function.prototype.toString.call(fn) + ' ';
 }
 
@@ -649,16 +649,16 @@ function createInjector(modulesToLoad, strictDi) {
   var INSTANTIATING = {},
       providerSuffix = 'Provider',
       path = [],
-      loadedModules = new HashMap([], true),
+      loadedModules = new HashMap(null, true),
       providerCache = {
         $provide: {
-            provider: supportObject(provider),
-            factory: supportObject(factory),
-            service: supportObject(service),
-            value: supportObject(value),
-            constant: supportObject(constant),
-            decorator: decorator
-          }
+          provider: supportObject(provider),
+          factory: supportObject(factory),
+          service: supportObject(service),
+          value: supportObject(value),
+          constant: supportObject(constant),
+          decorator: decorator
+        }
       },
       providerInjector = (providerCache.$injector =
           createInternalInjector(providerCache, function(serviceName, caller) {
@@ -731,7 +731,9 @@ function createInjector(modulesToLoad, strictDi) {
     }]);
   }
 
-  function value(name, val) { return factory(name, valueFn(val), false); }
+  function value(name, val) {
+    return factory(name, valueFn(val), false);
+  }
 
   function constant(name, value) {
     assertNotHasOwnProperty(name, 'constant');
@@ -775,9 +777,7 @@ function createInjector(modulesToLoad, strictDi) {
           runBlocks = runBlocks.concat(loadModules(moduleFn.requires)).concat(moduleFn._runBlocks);
           runInvokeQueue(moduleFn._invokeQueue);
           runInvokeQueue(moduleFn._configBlocks);
-        } else if (isFunction(module)) {
-            runBlocks.push(providerInjector.invoke(module));
-        } else if (isArray(module)) {
+        } else if (isFunction(module) || isArray(module)) {
             runBlocks.push(providerInjector.invoke(module));
         } else {
           assertArgFn(module, 'module');

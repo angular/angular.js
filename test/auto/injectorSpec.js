@@ -46,13 +46,13 @@ describe('injector', function() {
   it('should resolve dependency graph and instantiate all services just once', function() {
     var log = [];
 
-//          s1
-//        /  | \
-//       /  s2  \
-//      /  / | \ \
-//     /s3 < s4 > s5
-//    //
-//   s6
+    //        ____ s1 _
+    //      /      |   \
+    //     /   __ s2 __ \
+    //    /  /    |    \ \
+    //   | s3 <- s4 --> s5
+    //   | /
+    //   s6
 
 
     providers('s1', function() { log.push('s1'); return {}; }, {$inject: ['s2', 's5', 's6']});
@@ -287,7 +287,7 @@ describe('injector', function() {
         });
 
         // Support: Chrome 50-51 only
-        // TODO (gkalpak): Remove when Chrome v52 is released.
+        // TODO(gkalpak): Remove when Chrome v52 is released.
         // it('should be able to inject fat-arrow function', function() {
         //   inject(($injector) => {
         //     expect($injector).toBeDefined();
@@ -327,7 +327,7 @@ describe('injector', function() {
         }
 
         // Support: Chrome 50-51 only
-        // TODO (gkalpak): Remove when Chrome v52 is released.
+        // TODO(gkalpak): Remove when Chrome v52 is released.
         // it('should be able to invoke classes', function() {
         //   class Test {
         //     constructor($injector) {
@@ -884,7 +884,6 @@ describe('injector', function() {
       var $injector = createInjectorWithValue('instance', instance);
       expect($injector.invoke(function(instance) { return instance; })).toBe(instance);
     });
-
   });
 
 
@@ -1039,7 +1038,7 @@ describe('injector', function() {
 
   describe('protection modes', function() {
     it('should prevent provider lookup in app', function() {
-      var  $injector = createInjector([function($provide) {
+      var $injector = createInjector([function($provide) {
         $provide.value('name', 'angular');
       }]);
       expect(function() {
@@ -1049,7 +1048,7 @@ describe('injector', function() {
 
 
     it('should prevent provider configuration in app', function() {
-      var  $injector = createInjector([]);
+      var $injector = createInjector([]);
       expect(function() {
         $injector.get('$provide').value('a', 'b');
       }).toThrowMinErr("$injector", "unpr", "Unknown provider: $provideProvider <- $provide");
