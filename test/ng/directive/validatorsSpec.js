@@ -351,7 +351,7 @@ describe('validators', function() {
 
 
     it('should accept values of any length when maxlength is non-numeric', function() {
-      var inputElm = helper.compileInput('<input type="text" ng-model="value" ng-maxlength="{{maxlength}}" />');
+      var inputElm = helper.compileInput('<input type="text" ng-model="value" ng-maxlength="maxlength" />');
       helper.changeInputValueTo('aaaaaaaaaa');
 
       $rootScope.$apply('maxlength = "5"');
