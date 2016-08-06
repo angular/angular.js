@@ -55,6 +55,7 @@ module.exports = new Package('angularjs', [
   parseTagsProcessor.tagDefinitions.push(require('./tag-defs/tutorial-step'));
   parseTagsProcessor.tagDefinitions.push(require('./tag-defs/sortOrder'));
   parseTagsProcessor.tagDefinitions.push(require('./tag-defs/installation'));
+  parseTagsProcessor.tagDefinitions.push(require('./tag-defs/this'));
 })
 
 

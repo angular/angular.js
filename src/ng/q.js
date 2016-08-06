@@ -227,7 +227,7 @@ function $QProvider() {
   }];
 }
 
-/* @this */
+/** @this */
 function $$QProvider() {
   this.$get = ['$browser', '$exceptionHandler', function($browser, $exceptionHandler) {
     return qFactory(function(callback) {

@@ -9,7 +9,7 @@
  * Override this service if you wish to customise where the callbacks are stored and
  * how they vary compared to the requested url.
  */
-var $jsonpCallbacksProvider = /* @this */ function() {
+var $jsonpCallbacksProvider = /** @this */ function() {
   this.$get = ['$window', function($window) {
     var callbacks = $window.angular.callbacks;
     var callbackMap = {};

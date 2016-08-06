@@ -34,6 +34,8 @@ var getMergedEslintConfig = function(filepath) {
       strict: 'off',
       // Generated examples may miss the final EOL; ignore that.
       'eol-last': 'off',
+      // Generated files use the system's default linebreak style (e.g. CRLF on Windows)
+      'linebreak-style': 'off',
       // While alerts would be bad to have in the library or test code,
       // they're perfectly fine in examples.
       'no-alert': 'off',

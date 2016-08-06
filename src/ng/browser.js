@@ -353,7 +353,7 @@ function Browser(window, document, $log, $sniffer) {
 
 }
 
-/* @this */
+/** @this */
 function $BrowserProvider() {
   this.$get = ['$window', '$log', '$sniffer', '$document',
       function($window, $log, $sniffer, $document) {
