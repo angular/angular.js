@@ -183,11 +183,20 @@ function $RouteProvider() {
    *      `redirectTo` takes precedence over `resolveRedirectTo`, so specifying both on the same
    *      route definition, will cause the latter to be ignored.
    *
+   *    - `[reloadOnUrl=true]` - `{boolean=}` - reload route when any part of the URL changes
+   *      (inluding the path) even if the new URL maps to the same route.
+   *
+   *      If the option is set to `false` and the URL in the browser changes, but the new URL maps
+   *      to the same route, then a `$routeUpdate` event is broadcasted on the root scope (without
+   *      reloading the route).
+   *
    *    - `[reloadOnSearch=true]` - `{boolean=}` - reload route when only `$location.search()`
    *      or `$location.hash()` changes.
    *
-   *      If the option is set to `false` and url in the browser changes, then
-   *      `$routeUpdate` event is broadcasted on the root scope.
+   *      If the option is set to `false` and the URL in the browser changes, then a `$routeUpdate`
+   *      event is broadcasted on the root scope (without reloading the route).
+   *
+   *      **Note:** This option has no effect if `reloadOnUrl` is set to false.
    *
    *    - `[caseInsensitiveMatch=false]` - `{boolean=}` - match routes without being case sensitive
    *
@@ -202,6 +211,9 @@ function $RouteProvider() {
   this.when = function(path, route) {
     //copy original route object to preserve params inherited from proto chain
     var routeCopy = shallowCopy(route);
+    if (angular.isUndefined(routeCopy.reloadOnUrl)) {
+      routeCopy.reloadOnUrl = true;
+    }
     if (angular.isUndefined(routeCopy.reloadOnSearch)) {
       routeCopy.reloadOnSearch = true;
     }
@@ -544,8 +556,9 @@ function $RouteProvider() {
      * @name $route#$routeUpdate
      * @eventType broadcast on root scope
      * @description
-     * The `reloadOnSearch` property has been set to false, and we are reusing the same
-     * instance of the Controller.
+     * Any of the `reloadOnSearch` and `reloadOnUrl` properties has been set to false and we are
+     * reusing the same instance of the route (including template, controller instance, resolved
+     * dependencies etc).
      *
      * @param {Object} angularEvent Synthetic event object
      * @param {Route} current Current/previous route information.
@@ -653,9 +666,21 @@ function $RouteProvider() {
       var lastRoute = $route.current;
 
       preparedRoute = parseRoute();
-      preparedRouteIsUpdateOnly = preparedRoute && lastRoute && preparedRoute.$$route === lastRoute.$$route
-          && angular.equals(preparedRoute.pathParams, lastRoute.pathParams)
-          && !preparedRoute.reloadOnSearch && !forceReload;
+      preparedRouteIsUpdateOnly =
+          // IF this is not a forced reload
+          !forceReload
+          // AND both `lastRoute`/`preparedRoute` are defined
+          && preparedRoute && lastRoute
+          // AND they map to the same Route Definition Object
+          && (preparedRoute.$$route === lastRoute.$$route)
+          // AND `reloadOnUrl` is disabled
+          && (!preparedRoute.reloadOnUrl
+              // OR `reloadOnSearch` is disabled
+              || (!preparedRoute.reloadOnSearch
+                  // AND both routes have the same path params
+                  && angular.equals(preparedRoute.pathParams, lastRoute.pathParams)
+              )
+          );
 
       if (!preparedRouteIsUpdateOnly && (lastRoute || preparedRoute)) {
         if ($rootScope.$broadcast('$routeChangeStart', preparedRoute, lastRoute).defaultPrevented) {
