@@ -80,7 +80,6 @@ var angularFiles = {
     'src/ng/directive/ngTransclude.js',
     'src/ng/directive/script.js',
     'src/ng/directive/select.js',
-    'src/ng/directive/style.js',
     'src/ng/directive/validators.js',
     'src/angular.bind.js',
     'src/publishExternalApis.js',
