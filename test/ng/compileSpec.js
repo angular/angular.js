@@ -3375,6 +3375,146 @@ describe('$compile', function() {
     });
   });
 
+  describe('collector', function() {
+
+    var collected;
+    beforeEach(module(function($compileProvider) {
+      collected = false;
+      $compileProvider.directive('testCollect', function() {
+        return {
+          restrict: 'EACM',
+          link: function() {
+            collected = true;
+          }
+        };
+      });
+    }));
+
+    it('should collect comment directives by default', inject(function() {
+      var html = '<!-- directive: test-collect -->';
+      element = $compile('<div>' + html + '</div>')($rootScope);
+      expect(collected).toBe(true);
+    }));
+
+    it('should collect css class directives by default', inject(function() {
+      element = $compile('<div class="test-collect"></div>')($rootScope);
+      expect(collected).toBe(true);
+    }));
+
+    forEach([
+      {commentEnabled: true, cssEnabled: true},
+      {commentEnabled: true, cssEnabled: false},
+      {commentEnabled: false, cssEnabled: true},
+      {commentEnabled: false, cssEnabled: false}
+    ], function(config) {
+      describe('commentDirectivesEnabled(' + config.commentEnabled + ') ' +
+               'cssClassDirectivesEnabled(' + config.cssEnabled + ')', function() {
+
+        beforeEach(module(function($compileProvider) {
+          $compileProvider.commentDirectivesEnabled(config.commentEnabled);
+          $compileProvider.cssClassDirectivesEnabled(config.cssEnabled);
+        }));
+
+        var $compile, $rootScope;
+        beforeEach(inject(function(_$compile_,_$rootScope_) {
+          $compile = _$compile_;
+          $rootScope = _$rootScope_;
+        }));
+
+        it('should handle comment directives appropriately', function() {
+          var html = '<!-- directive: test-collect -->';
+          element = $compile('<div>' + html + '</div>')($rootScope);
+          expect(collected).toBe(config.commentEnabled);
+        });
+
+        it('should handle css directives appropriately', function() {
+          element = $compile('<div class="test-collect"></div>')($rootScope);
+          expect(collected).toBe(config.cssEnabled);
+        });
+
+        it('should not prevent to compile entity directives', function() {
+          element = $compile('<test-collect></test-collect>')($rootScope);
+          expect(collected).toBe(true);
+        });
+
+        it('should not prevent to compile attribute directives', function() {
+          element = $compile('<span test-collect></span>')($rootScope);
+          expect(collected).toBe(true);
+        });
+
+        it('should not prevent to compile interpolated expressions', function() {
+          element = $compile('<span>{{"text "+"interpolated"}}</span>')($rootScope);
+          $rootScope.$apply();
+          expect(element.text()).toBe('text interpolated');
+        });
+
+        it('should interpolate expressions inside class attribute', function() {
+          $rootScope.interpolateMe = 'interpolated';
+          var html = '<div class="{{interpolateMe}}"></div>';
+          element = $compile(html)($rootScope);
+          $rootScope.$apply();
+          expect(element).toHaveClass('interpolated');
+        });
+      });
+    });
+
+    it('should configure comment directives true by default',
+      module(function($compileProvider) {
+        var commentDirectivesEnabled = $compileProvider.commentDirectivesEnabled();
+        expect(commentDirectivesEnabled).toBe(true);
+      })
+    );
+
+    it('should return self when setting commentDirectivesEnabled',
+      module(function($compileProvider) {
+        var self = $compileProvider.commentDirectivesEnabled(true);
+        expect(self).toBe($compileProvider);
+      })
+    );
+
+    it('should cache commentDirectivesEnabled value when configure ends', function() {
+      var $compileProvider;
+      module(function(_$compileProvider_) {
+        $compileProvider = _$compileProvider_;
+        $compileProvider.commentDirectivesEnabled(false);
+      });
+
+      inject(function($compile, $rootScope) {
+        $compileProvider.commentDirectivesEnabled(true);
+        var html = '<!-- directive: test-collect -->';
+        element = $compile('<div>' + html + '</div>')($rootScope);
+        expect(collected).toBe(false);
+      });
+    });
+
+    it('should configure css class directives true by default',
+      module(function($compileProvider) {
+        var cssClassDirectivesEnabled = $compileProvider.cssClassDirectivesEnabled();
+        expect(cssClassDirectivesEnabled).toBe(true);
+      })
+    );
+
+    it('should return self when setting cssClassDirectivesEnabled',
+      module(function($compileProvider) {
+        var self = $compileProvider.cssClassDirectivesEnabled(true);
+        expect(self).toBe($compileProvider);
+      })
+    );
+
+    it('should cache cssClassDirectivesEnabled value when configure ends', function() {
+      var $compileProvider;
+      module(function(_$compileProvider_) {
+        $compileProvider = _$compileProvider_;
+        $compileProvider.cssClassDirectivesEnabled(false);
+      });
+
+      inject(function($compile, $rootScope) {
+        $compileProvider.cssClassDirectivesEnabled(true);
+        element = $compile('<div class="test-collect"></div>')($rootScope);
+        expect(collected).toBe(false);
+      });
+    });
+  });
 
   describe('link phase', function() {
 
