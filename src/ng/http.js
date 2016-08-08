@@ -1345,7 +1345,8 @@ function $HttpProvider() {
         }
 
         if (useApplyAsync) {
-          $rootScope.$applyAsync(resolveHttpPromise);
+          // $rootScope.$applyAsync(resolveHttpPromise);
+          resolveHttpPromise();
         } else {
           resolveHttpPromise();
           if (!$rootScope.$$phase) $rootScope.$apply();
