@@ -3260,6 +3260,26 @@ describe('$compile', function() {
     }));
 
 
+    it('should not process text nodes merged into their sibling', inject(function($compile, $rootScope) {
+      var div = document.createElement('div');
+      div.appendChild(document.createTextNode('1{{ value }}'));
+      div.appendChild(document.createTextNode('2{{ value }}'));
+      div.appendChild(document.createTextNode('3{{ value }}'));
+
+      element = jqLite(div.childNodes);
+
+      var initialWatcherCount = $rootScope.$countWatchers();
+      $compile(element)($rootScope);
+      $rootScope.$apply('value = 0');
+      var newWatcherCount = $rootScope.$countWatchers() - initialWatcherCount;
+
+      expect(element.text()).toBe('102030');
+      expect(newWatcherCount).toBe(3);
+
+      dealoc(div);
+    }));
+
+
     it('should support custom start/end interpolation symbols in template and directive template',
         function() {
       module(function($interpolateProvider, $compileProvider) {
@@ -8670,8 +8690,36 @@ describe('$compile', function() {
           element = $compile('<div transclude><div child></div></div>')($rootScope);
           expect(capturedChildCtrl).toBeTruthy();
         });
-
       });
+
+
+      // See issue https://github.com/angular/angular.js/issues/14924
+      it('should not process top-level transcluded text nodes merged into their sibling',
+        function() {
+          module(function() {
+            directive('transclude', valueFn({
+              template: '<ng-transclude></ng-transclude>',
+              transclude: true,
+              scope: {}
+            }));
+          });
+
+          inject(function($compile) {
+            element = jqLite('<div transclude></div>');
+            element[0].appendChild(document.createTextNode('1{{ value }}'));
+            element[0].appendChild(document.createTextNode('2{{ value }}'));
+            element[0].appendChild(document.createTextNode('3{{ value }}'));
+
+            var initialWatcherCount = $rootScope.$countWatchers();
+            $compile(element)($rootScope);
+            $rootScope.$apply('value = 0');
+            var newWatcherCount = $rootScope.$countWatchers() - initialWatcherCount;
+
+            expect(element.text()).toBe('102030');
+            expect(newWatcherCount).toBe(3);
+          });
+        }
+      );
 
 
       // see issue https://github.com/angular/angular.js/issues/9413
@@ -10136,6 +10184,39 @@ describe('$compile', function() {
         expect(element.children().eq(2).text()).toEqual('dorothy');
       });
     });
+
+
+    // See issue https://github.com/angular/angular.js/issues/14924
+    it('should not process top-level transcluded text nodes merged into their sibling',
+      function() {
+        module(function() {
+          directive('transclude', valueFn({
+            template: '<ng-transclude></ng-transclude>',
+            transclude: {},
+            scope: {}
+          }));
+        });
+
+        inject(function($compile) {
+          element = jqLite('<div transclude></div>');
+          element[0].appendChild(document.createTextNode('1{{ value }}'));
+          element[0].appendChild(document.createTextNode('2{{ value }}'));
+          element[0].appendChild(document.createTextNode('3{{ value }}'));
+
+          var initialWatcherCount = $rootScope.$countWatchers();
+          $compile(element)($rootScope);
+          $rootScope.$apply('value = 0');
+          var newWatcherCount = $rootScope.$countWatchers() - initialWatcherCount;
+
+          expect(element.text()).toBe('102030');
+          expect(newWatcherCount).toBe(3);
+
+          if (msie === 11) {
+            expect(element.find('ng-transclude').contents().length).toBe(1);
+          }
+        });
+      }
+    );
   });
 
 
