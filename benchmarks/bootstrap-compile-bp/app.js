@@ -1,3 +1,5 @@
+'use strict';
+
 var app = angular.module('boostrapCompileBenchmark', []);
 
 var commentDirectivesEnabled;
@@ -13,7 +15,7 @@ app.config(function($compileProvider) {
     .commentDirectivesEnabled(commentDirectivesEnabled)
     .cssClassDirectivesEnabled(cssClassDirectivesEnabled);
 })
-.controller('DataController', function($compile, $http, $rootScope) {
+.controller('DataController', function DataController($compile, $http, $rootScope) {
 
   this.isEA = !commentDirectivesEnabled && !cssClassDirectivesEnabled;
   this.isEAC = !commentDirectivesEnabled && cssClassDirectivesEnabled;
@@ -30,7 +32,7 @@ app.config(function($compileProvider) {
   this.html = null;
   this.loadTemplate = function() {
     this.html = null;
-    $http.get(location.pathname + this.selectedTemplate)
+    $http.get(window.location.pathname + this.selectedTemplate)
       .then(function(response) { this.html = response.data; }.bind(this));
   };
 
@@ -57,5 +59,3 @@ app.config(function($compileProvider) {
   });
 
 });
-
-
