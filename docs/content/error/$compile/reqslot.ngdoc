@@ -14,7 +14,7 @@ Also you can make a transclusion slot optional with a `?` prefix.
 
 var componentConfig = {
   template: 'path/to/template.html',
-  tranclude: {
+  transclude: {
     importantSlot: 'importantComponent', // mandatory transclusion
     optionalSlot: '?optionalComponent',  // optional transclusion
   }
