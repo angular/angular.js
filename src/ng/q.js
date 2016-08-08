@@ -254,7 +254,7 @@ function $QProvider() {
   };
 }
 
-/* @this */
+/** @this */
 function $$QProvider() {
   var errorOnUnhandledRejections = true;
   this.$get = ['$browser', '$exceptionHandler', function($browser, $exceptionHandler) {

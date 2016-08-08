@@ -95,7 +95,7 @@ angular.module('search', [])
     }
 
     // Create the lunr index
-    var index = lunr(/* @this */ function() {
+    var index = lunr(/** @this */ function() {
       this.ref('path');
       this.field('titleWords', {boost: 50});
       this.field('members', { boost: 40});

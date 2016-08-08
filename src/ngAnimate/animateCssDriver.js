@@ -1,6 +1,6 @@
 'use strict';
 
-var $$AnimateCssDriverProvider = ['$$animationProvider', /* @this */ function($$animationProvider) {
+var $$AnimateCssDriverProvider = ['$$animationProvider', /** @this */ function($$animationProvider) {
   $$animationProvider.drivers.push('$$animateCssDriver');
 
   var NG_ANIMATE_SHIM_CLASS_NAME = 'ng-animate-shim';

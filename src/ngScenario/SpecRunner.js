@@ -107,7 +107,7 @@ angular.scenario.SpecRunner.prototype.addFuture = function(name, behavior, line)
 angular.scenario.SpecRunner.prototype.addFutureAction = function(name, behavior, line) {
   var self = this;
   var NG = /\[ng\\:/;
-  return this.addFuture(name, /* @this */ function(done) {
+  return this.addFuture(name, /** @this */ function(done) {
     this.application.executeAction(function($window, $document) {
 
       //TODO(esprehn): Refactor this so it doesn't need to be in here.
