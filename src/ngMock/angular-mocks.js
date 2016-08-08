@@ -1789,14 +1789,18 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
    * @ngdoc method
    * @name $httpBackend#flush
    * @description
-   * Flushes pending requests in the order they arrived beginning at specified request using the trained responses.
-   * If there are no pending requests to flush when the method is called
-   * an exception is thrown (as this typically a sign of programming error).
+   * Flushes pending requests using the trained responses. Requests are flushed in the order they
+   * were made, but it is also possible to skip one or more requests (for example to have them
+   * flushed later). This is useful for simulating scenarios where responses arrive from the server
+   * in any order.
    *
-   * @param {number=} count Number of responses to flush. If undefined,
-   *   all pending requests from `skip` will be flushed.
-   * @param {number=} [skip=0] Number of pending requests to skip before flushing.
-   *   So it specifies the first request to flush.
+   * If there are no pending requests to flush when the method is called, an exception is thrown (as
+   * this is typically a sign of programming error).
+   *
+   * @param {number=} count - Number of responses to flush. If undefined/null, all pending requests
+   *     (starting after `skip`) will be flushed.
+   * @param {number=} [skip=0] - Number of pending requests to skip. For example, a value of `5`
+   *     would skip the first 5 pending requests and start flushing from the 6th onwards.
    */
   $httpBackend.flush = function(count, skip, digest) {
     if (digest !== false) $rootScope.$digest();
