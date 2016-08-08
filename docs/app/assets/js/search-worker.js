@@ -26,7 +26,7 @@ searchDataRequest.onload = function() {
   searchData.forEach(function(page) {
     index.add(page);
   });
-  postMessage({e: 'index-ready'});
+  self.postMessage({e: 'index-ready'});
 };
 searchDataRequest.open('GET', 'search-data.json');
 searchDataRequest.send();
