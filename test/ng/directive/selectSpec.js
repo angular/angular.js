@@ -7,6 +7,7 @@ describe('select', function() {
     formElement = jqLite('<form name="form">' + html + '</form>');
     element = formElement.find('select');
     $compile(formElement)(scope);
+    ngModelCtrl = element.controller('ngModel');
     scope.$digest();
   }
 
@@ -79,6 +80,7 @@ describe('select', function() {
   afterEach(function() {
     scope.$destroy(); //disables unknown option work during destruction
     dealoc(formElement);
+    ngModelCtrl = null;
   });
 
 
@@ -190,54 +192,108 @@ describe('select', function() {
     });
 
 
-    it('should require', function() {
-      compile(
-        '<select name="select" ng-model="selection" required ng-change="change()">' +
-          '<option value=""></option>' +
-          '<option value="c">C</option>' +
-        '</select>');
+    describe('required state', function() {
 
-      scope.change = function() {
-        scope.log += 'change;';
-      };
+      it('should set the error if the empty option is selected', function() {
+        compile(
+          '<select name="select" ng-model="selection" required>' +
+            '<option value=""></option>' +
+            '<option value="a">A</option>' +
+            '<option value="b">B</option>' +
+          '</select>');
 
-      scope.$apply(function() {
-        scope.log = '';
-        scope.selection = 'c';
+        scope.$apply(function() {
+          scope.selection = 'a';
+        });
+
+        expect(element).toBeValid();
+        expect(ngModelCtrl.$error.required).toBeFalsy();
+
+        var options = element.find('option');
+
+        // view -> model
+        browserTrigger(options[0], 'click');
+        expect(element).toBeInvalid();
+        expect(ngModelCtrl.$error.required).toBeTruthy();
+
+        browserTrigger(options[1], 'click');
+        expect(element).toBeValid();
+        expect(ngModelCtrl.$error.required).toBeFalsy();
+
+        // model -> view
+        scope.$apply('selection = null');
+        options = element.find('option');
+        expect(options[0]).toBeMarkedAsSelected();
+        expect(element).toBeInvalid();
+        expect(ngModelCtrl.$error.required).toBeTruthy();
       });
 
-      expect(scope.form.select.$error.required).toBeFalsy();
-      expect(element).toBeValid();
-      expect(element).toBePristine();
 
-      scope.$apply(function() {
-        scope.selection = '';
+      it('should validate with empty option and bound ngRequired', function() {
+        compile(
+          '<select name="select" ng-model="selection" ng-required="required">' +
+            '<option value=""></option>' +
+            '<option value="a">A</option>' +
+            '<option value="b">B</option>' +
+          '</select>');
+
+        scope.$apply(function() {
+          scope.required = false;
+        });
+
+        var options = element.find('option');
+
+        browserTrigger(options[0], 'click');
+        expect(element).toBeValid();
+
+        scope.$apply('required = true');
+        expect(element).toBeInvalid();
+
+        scope.$apply('selection = "a"');
+        expect(element).toBeValid();
+        expect(element).toEqualSelect('', ['a'], 'b');
+
+        browserTrigger(options[0], 'click');
+        expect(element).toBeInvalid();
+
+        scope.$apply('required = false');
+        expect(element).toBeValid();
       });
 
-      expect(scope.form.select.$error.required).toBeTruthy();
-      expect(element).toBeInvalid();
-      expect(element).toBePristine();
-      expect(scope.log).toEqual('');
 
-      element[0].value = 'c';
-      browserTrigger(element, 'change');
-      expect(element).toBeValid();
-      expect(element).toBeDirty();
-      expect(scope.log).toEqual('change;');
+      it('should not be invalid if no required attribute is present', function() {
+        compile(
+          '<select name="select" ng-model="selection">' +
+            '<option value=""></option>' +
+            '<option value="c">C</option>' +
+          '</select>');
+
+        expect(element).toBeValid();
+        expect(element).toBePristine();
+      });
+
+
+      it('should NOT set the error if the unknown option is selected', function() {
+        compile(
+          '<select name="select" ng-model="selection" required>' +
+            '<option value="a">A</option>' +
+            '<option value="b">B</option>' +
+          '</select>');
+
+        scope.$apply(function() {
+          scope.selection = 'a';
+        });
+
+        expect(element).toBeValid();
+        expect(ngModelCtrl.$error.required).toBeFalsy();
+
+        scope.$apply('selection = "c"');
+        expect(element).toEqualSelect([unknownValue('c')], 'a', 'b');
+        expect(element).toBeValid();
+        expect(ngModelCtrl.$error.required).toBeFalsy();
+      });
+
     });
-
-
-    it('should not be invalid if no require', function() {
-      compile(
-        '<select name="select" ng-model="selection">' +
-          '<option value=""></option>' +
-          '<option value="c">C</option>' +
-        '</select>');
-
-      expect(element).toBeValid();
-      expect(element).toBePristine();
-    });
-
 
     it('should work with repeated value options', function() {
       scope.robots = ['c3p0', 'r2d2'];
@@ -2357,6 +2413,35 @@ describe('select', function() {
           // Ensure the assumption that the element is re-created is true
           expect(previouslySelectedOptionElement).not.toBe(optionElements[0]);
       });
+
+
+      it('should validate when the options change', function() {
+          scope.values = ['A', 'B'];
+          scope.selection = 'A';
+
+          compile(
+            '<select ng-model="selection" required>' +
+              '<option value="">--select--</option>' +
+              '<option ng-repeat="option in values" value="{{option}}">{{option}}</option>' +
+            '</select>'
+          );
+
+          expect(element).toEqualSelect('', ['A'], 'B');
+          expect(element).toBeValid();
+          expect(ngModelCtrl.$error.required).toBeFalsy();
+
+          scope.$apply(function() {
+            // Only when new objects are used, ngRepeat re-creates the element from scratch
+            scope.values = ['B', 'C'];
+          });
+
+          expect(element).toEqualSelect([''], 'B', 'C');
+          expect(element).toBeInvalid();
+          expect(ngModelCtrl.$error.required).toBeTruthy();
+          // ngModel sets undefined for invalid values
+          expect(scope.selection).toBeUndefined();
+      });
+
 
     });
 
