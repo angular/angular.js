@@ -131,10 +131,10 @@ Before you submit your pull request consider the following guidelines:
 
 If the PR gets too outdated we may ask you to rebase and force push to update the PR:
 
-    ```shell
-    git rebase master -i
-    git push origin my-fix-branch -f
-    ```
+```shell
+git rebase master -i
+git push origin my-fix-branch -f
+```
 
 *WARNING. Squashing or reverting commits and forced push thereafter may remove GitHub comments
 on code that were previously made by you and others in your commits.*
