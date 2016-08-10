@@ -149,11 +149,11 @@ ngRouteModule.directive('ngView', ngViewFillContentFactory);
               this.$routeParams = $routeParams;
           }])
           .controller('BookCtrl', ['$routeParams', function BookCtrl($routeParams) {
-            this.name = "BookCtrl";
+            this.name = 'BookCtrl';
             this.params = $routeParams;
           }])
           .controller('ChapterCtrl', ['$routeParams', function ChapterCtrl($routeParams) {
-            this.name = "ChapterCtrl";
+            this.name = 'ChapterCtrl';
             this.params = $routeParams;
           }]);
 

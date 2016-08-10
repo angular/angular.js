@@ -198,7 +198,7 @@
 
   function patchEventTargetForBubbling(event, target) {
     event._target = target;
-    Object.defineProperty(event, "target", {get: function() { return this._target;}});
+    Object.defineProperty(event, 'target', {get: function() { return this._target;}});
   }
 
   function isAttachedToDocument(element) {

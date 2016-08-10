@@ -1,6 +1,6 @@
 'use strict';
 
-describe("code", function() {
+describe('code', function() {
   var prettyPrintOne, oldPP;
   var compile, scope;
 

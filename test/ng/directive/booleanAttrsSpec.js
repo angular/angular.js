@@ -152,9 +152,9 @@ describe('ngSrc', function() {
       var element = $compile('<div ng-src="some/{{id}}"></div>')($rootScope);
       dealoc(element);
     }).toThrowMinErr(
-          "$interpolate", "noconcat", "Error while interpolating: some/{{id}}\nStrict " +
-          "Contextual Escaping disallows interpolations that concatenate multiple expressions " +
-          "when a trusted value is required.  See http://docs.angularjs.org/api/ng.$sce");
+          '$interpolate', 'noconcat', 'Error while interpolating: some/{{id}}\nStrict ' +
+          'Contextual Escaping disallows interpolations that concatenate multiple expressions ' +
+          'when a trusted value is required.  See http://docs.angularjs.org/api/ng.$sce');
   }));
 
 
@@ -177,8 +177,8 @@ describe('ngSrc', function() {
       });
       element.attr('src');
     }).toThrowMinErr(
-            "$interpolate", "interr", "Can't interpolate: {{id}}\nError: [$sce:insecurl] Blocked " +
-                "loading resource from url not allowed by $sceDelegate policy.  URL: http://somewhere");
+            '$interpolate', 'interr', 'Can\'t interpolate: {{id}}\nError: [$sce:insecurl] Blocked ' +
+                'loading resource from url not allowed by $sceDelegate policy.  URL: http://somewhere');
   }));
 
 

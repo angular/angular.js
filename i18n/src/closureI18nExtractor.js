@@ -84,7 +84,7 @@ function pluralExtractor(content, localeInfo) {
       // eslint-disable-next-line no-eval
       eval(contentText);
     } catch (e) {
-      console.log("Error in eval(contentText): " + e.stack);
+      console.log('Error in eval(contentText): ' + e.stack);
     }
     if (!goog.i18n.pluralRules.select) {
       console.log('No select for lang [' + goog.LOCALE + ']');
@@ -99,7 +99,7 @@ function pluralExtractor(content, localeInfo) {
         replace(/\n/g, '');
 
     ///@@ is a crazy place holder to be replaced before writing to file
-    localeInfo[localeIds[i]].pluralCat = "@@" + temp + "@@";
+    localeInfo[localeIds[i]].pluralCat = '@@' + temp + '@@';
   }
 }
 
@@ -125,7 +125,7 @@ function canonicalizeForJsonStringify(unused_key, object) {
   //    2. https://code.google.com/p/v8/issues/detail?id=164
   //       ECMA-262 does not specify enumeration order. The de facto standard
   //       is to match insertion order, which V8 also does ...
-  if (typeof object !== "object" || Object.prototype.toString.apply(object) === '[object Array]') {
+  if (typeof object !== 'object' || Object.prototype.toString.apply(object) === '[object Array]') {
     return object;
   }
   var result = {};
@@ -158,7 +158,7 @@ function outputLocale(localeInfo, localeID) {
   // don't want to write locale files that only have dateformat (i.e. missing
   // number formats.)  So we skip them.
   if (!localeObj.NUMBER_FORMATS) {
-    console.log("Skipping locale %j: Don't have any number formats", localeID);
+    console.log('Skipping locale %j: Don\'t have any number formats', localeID);
     return null;
   }
 
@@ -222,7 +222,7 @@ function outputLocale(localeInfo, localeID) {
   }
 
   var prefix =
-      "'use strict';\n" +
+      '\'use strict\';\n' +
       'angular.module("ngLocale", [], ["$provide", function($provide) {\n' +
           'var PLURAL_CATEGORY = {' +
           'ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "many", OTHER: "other"' +

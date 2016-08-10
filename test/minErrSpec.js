@@ -19,7 +19,7 @@ describe('minErr', function() {
 
     function someFn() {
       function nestedFn() {
-        myError = testError('fail', "I fail!");
+        myError = testError('fail', 'I fail!');
       }
       nestedFn();
     }

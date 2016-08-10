@@ -209,7 +209,7 @@ var angularFiles = {
     'build/docs/docs-scenario.js'
   ],
 
-  "karmaModules": [
+  'karmaModules': [
     'build/angular.js',
     '@angularSrcModules',
     'test/modules/no_bootstrap.js',

@@ -25,14 +25,14 @@ describe('$location', function() {
       //temporarily overriding the DOM element
       //with output from IE, if not in IE
       urlParsingNode = {
-        hash: "#/C:/",
-        host: "",
-        hostname: "",
-        href: "file:///C:/base#!/C:/foo",
-        pathname: "/C:/foo",
-        port: "",
-        protocol: "file:",
-        search: "",
+        hash: '#/C:/',
+        host: '',
+        hostname: '',
+        href: 'file:///C:/base#!/C:/foo',
+        pathname: '/C:/foo',
+        port: '',
+        protocol: 'file:',
+        search: '',
         setAttribute: angular.noop
       };
     }));
@@ -2420,7 +2420,7 @@ describe('$location', function() {
         expect(function() {
           $injector.get('$location');
         }).toThrowMinErr('$location', 'nobase',
-          "$location in HTML5 mode requires a <base> tag to be present!");
+          '$location in HTML5 mode requires a <base> tag to be present!');
       });
     });
 
@@ -2438,7 +2438,7 @@ describe('$location', function() {
         expect(function() {
           $injector.get('$location');
         }).not.toThrowMinErr('$location', 'nobase',
-          "$location in HTML5 mode requires a <base> tag to be present!");
+          '$location in HTML5 mode requires a <base> tag to be present!');
       });
     });
 
@@ -2461,7 +2461,7 @@ describe('$location', function() {
       expect(parseLinkAndReturn(locationUrl, 'javascript:void(0)')).toEqual(undefined);
     });
 
-    it("should not set hash if one was not originally specified", function() {
+    it('should not set hash if one was not originally specified', function() {
       locationUrl = new LocationHashbangUrl('http://server/pre/index.html', 'http://server/pre/', '#');
 
       locationUrl.$$parse('http://server/pre/index.html');
@@ -2469,7 +2469,7 @@ describe('$location', function() {
       expect(locationUrl.absUrl()).toBe('http://server/pre/index.html');
     });
 
-    it("should parse hash if one was specified", function() {
+    it('should parse hash if one was specified', function() {
       locationUrl = new LocationHashbangUrl('http://server/pre/index.html', 'http://server/pre/', '#');
 
       locationUrl.$$parse('http://server/pre/index.html#/foo/bar');
@@ -2478,7 +2478,7 @@ describe('$location', function() {
     });
 
 
-    it("should prefix hash url with / if one was originally missing", function() {
+    it('should prefix hash url with / if one was originally missing', function() {
       locationUrl = new LocationHashbangUrl('http://server/pre/index.html', 'http://server/pre/', '#');
 
       locationUrl.$$parse('http://server/pre/index.html#not-starting-with-slash');

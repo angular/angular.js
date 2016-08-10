@@ -79,11 +79,11 @@ describe('filters', function() {
     });
 
     it('should format the same with string as well as numeric fractionSize', function() {
-      var num = formatNumber(123.1, pattern, ',', '.', "0");
+      var num = formatNumber(123.1, pattern, ',', '.', '0');
       expect(num).toBe('123');
       num = formatNumber(123.1, pattern, ',', '.', 0);
       expect(num).toBe('123');
-      num = formatNumber(123.1, pattern, ',', '.', "3");
+      num = formatNumber(123.1, pattern, ',', '.', '3');
       expect(num).toBe('123.100');
       num = formatNumber(123.1, pattern, ',', '.', 3);
       expect(num).toBe('123.100');
@@ -160,8 +160,8 @@ describe('filters', function() {
     it('should do basic currency filtering', function() {
       expect(currency(0)).toEqual('$0.00');
       expect(currency(-999)).toEqual('-$999.00');
-      expect(currency(1234.5678, "USD$")).toEqual('USD$1,234.57');
-      expect(currency(1234.5678, "USD$", 0)).toEqual('USD$1,235');
+      expect(currency(1234.5678, 'USD$')).toEqual('USD$1,234.57');
+      expect(currency(1234.5678, 'USD$', 0)).toEqual('USD$1,235');
     });
 
     it('should pass through null and undefined to be compatible with one-time binding', function() {
@@ -209,30 +209,30 @@ describe('filters', function() {
       expect(number([])).toEqual('');
       expect(number(+Infinity)).toEqual('∞');
       expect(number(-Infinity)).toEqual('-∞');
-      expect(number("1234.5678")).toEqual('1,234.568');
+      expect(number('1234.5678')).toEqual('1,234.568');
       expect(number(1 / 0)).toEqual('∞');
-      expect(number(1,        2)).toEqual("1.00");
-      expect(number(.1,       2)).toEqual("0.10");
-      expect(number(.01,      2)).toEqual("0.01");
-      expect(number(.001,     3)).toEqual("0.001");
-      expect(number(.0001,    3)).toEqual("0.000");
-      expect(number(9,        2)).toEqual("9.00");
-      expect(number(.9,       2)).toEqual("0.90");
-      expect(number(.99,      2)).toEqual("0.99");
-      expect(number(.999,     3)).toEqual("0.999");
-      expect(number(.9999,    3)).toEqual("1.000");
-      expect(number(1.9,      2)).toEqual("1.90");
-      expect(number(1.99,     2)).toEqual("1.99");
-      expect(number(1.999,    3)).toEqual("1.999");
-      expect(number(1.9999,   3)).toEqual("2.000");
-      expect(number(1234.567, 0)).toEqual("1,235");
-      expect(number(1234.567, 1)).toEqual("1,234.6");
-      expect(number(1234.567, 2)).toEqual("1,234.57");
-      expect(number(1.255,    0)).toEqual("1");
-      expect(number(1.255,    1)).toEqual("1.3");
-      expect(number(1.255,    2)).toEqual("1.26");
-      expect(number(1.255,    3)).toEqual("1.255");
-      expect(number(0,        8)).toEqual("0.00000000");
+      expect(number(1,        2)).toEqual('1.00');
+      expect(number(.1,       2)).toEqual('0.10');
+      expect(number(.01,      2)).toEqual('0.01');
+      expect(number(.001,     3)).toEqual('0.001');
+      expect(number(.0001,    3)).toEqual('0.000');
+      expect(number(9,        2)).toEqual('9.00');
+      expect(number(.9,       2)).toEqual('0.90');
+      expect(number(.99,      2)).toEqual('0.99');
+      expect(number(.999,     3)).toEqual('0.999');
+      expect(number(.9999,    3)).toEqual('1.000');
+      expect(number(1.9,      2)).toEqual('1.90');
+      expect(number(1.99,     2)).toEqual('1.99');
+      expect(number(1.999,    3)).toEqual('1.999');
+      expect(number(1.9999,   3)).toEqual('2.000');
+      expect(number(1234.567, 0)).toEqual('1,235');
+      expect(number(1234.567, 1)).toEqual('1,234.6');
+      expect(number(1234.567, 2)).toEqual('1,234.57');
+      expect(number(1.255,    0)).toEqual('1');
+      expect(number(1.255,    1)).toEqual('1.3');
+      expect(number(1.255,    2)).toEqual('1.26');
+      expect(number(1.255,    3)).toEqual('1.255');
+      expect(number(0,        8)).toEqual('0.00000000');
       /* eslint-enable */
     });
 
@@ -271,10 +271,10 @@ describe('filters', function() {
 
   describe('json', function() {
     it('should do basic filter', function() {
-      expect(filter('json')({a:"b"})).toEqual(toJson({a:"b"}, true));
+      expect(filter('json')({a:'b'})).toEqual(toJson({a:'b'}, true));
     });
     it('should allow custom indentation', function() {
-      expect(filter('json')({a:"b"}, 4)).toEqual(toJson({a:"b"}, 4));
+      expect(filter('json')({a:'b'}, 4)).toEqual(toJson({a:'b'}, 4));
     });
   });
 
@@ -323,7 +323,7 @@ describe('filters', function() {
 
     it('should accept number or number string representing milliseconds as input', function() {
       expect(date(noon.getTime())).toEqual(date(noon.getTime(), 'mediumDate'));
-      expect(date(noon.getTime() + "")).toEqual(date(noon.getTime() + "", 'mediumDate'));
+      expect(date(noon.getTime() + '')).toEqual(date(noon.getTime() + '', 'mediumDate'));
     });
 
     it('should accept various format strings', function() {
@@ -333,55 +333,55 @@ describe('filters', function() {
       expect(date(secondWeek, 'yyyy-Www')).
                       toEqual('2013-W02');
 
-      expect(date(morning, "yy-MM-dd HH:mm:ss")).
+      expect(date(morning, 'yy-MM-dd HH:mm:ss')).
                       toEqual('10-09-03 07:05:08');
 
-      expect(date(morning, "yy-MM-dd HH:mm:ss.sss")).
+      expect(date(morning, 'yy-MM-dd HH:mm:ss.sss')).
                       toEqual('10-09-03 07:05:08.001');
 
-      expect(date(midnight, "yyyy-M-d h=H:m:saZ")).
+      expect(date(midnight, 'yyyy-M-d h=H:m:saZ')).
                       toEqual('2010-9-3 12=0:5:8AM-0500');
 
-      expect(date(midnight, "yyyy-MM-dd hh=HH:mm:ssaZ")).
+      expect(date(midnight, 'yyyy-MM-dd hh=HH:mm:ssaZ')).
                       toEqual('2010-09-03 12=00:05:08AM-0500');
 
-      expect(date(midnight, "yyyy-MM-dd hh=HH:mm:ss.sssaZ")).
+      expect(date(midnight, 'yyyy-MM-dd hh=HH:mm:ss.sssaZ')).
                       toEqual('2010-09-03 12=00:05:08.123AM-0500');
 
-      expect(date(noon, "yyyy-MM-dd hh=HH:mm:ssaZ")).
+      expect(date(noon, 'yyyy-MM-dd hh=HH:mm:ssaZ')).
                       toEqual('2010-09-03 12=12:05:08PM-0500');
 
-      expect(date(noon, "yyyy-MM-dd hh=HH:mm:ss.sssaZ")).
+      expect(date(noon, 'yyyy-MM-dd hh=HH:mm:ss.sssaZ')).
                       toEqual('2010-09-03 12=12:05:08.012PM-0500');
 
-      expect(date(noon, "EEE, MMM d, yyyy")).
+      expect(date(noon, 'EEE, MMM d, yyyy')).
                       toEqual('Fri, Sep 3, 2010');
 
-      expect(date(noon, "EEEE, MMMM dd, yyyy")).
+      expect(date(noon, 'EEEE, MMMM dd, yyyy')).
                       toEqual('Friday, September 03, 2010');
 
-      expect(date(earlyDate, "MMMM dd, y")).
+      expect(date(earlyDate, 'MMMM dd, y')).
                       toEqual('September 03, 1');
 
-      expect(date(earlyDate, "MMMM dd, yyyy")).
+      expect(date(earlyDate, 'MMMM dd, yyyy')).
                       toEqual('September 03, 0001');
 
-      expect(date(year0Date, "dd MMMM y G")).
+      expect(date(year0Date, 'dd MMMM y G')).
                       toEqual('25 December 1 BC');
 
-      expect(date(bcDate, "dd MMMM y G")).
+      expect(date(bcDate, 'dd MMMM y G')).
                       toEqual('16 January 27 BC');
 
-      expect(date(noon, "MMMM dd, y G")).
+      expect(date(noon, 'MMMM dd, y G')).
                       toEqual('September 03, 2010 AD');
 
-      expect(date(noon, "MMMM dd, y GG")).
+      expect(date(noon, 'MMMM dd, y GG')).
                       toEqual('September 03, 2010 AD');
 
-      expect(date(noon, "MMMM dd, y GGG")).
+      expect(date(noon, 'MMMM dd, y GGG')).
                       toEqual('September 03, 2010 AD');
 
-      expect(date(noon, "MMMM dd, y GGGG")).
+      expect(date(noon, 'MMMM dd, y GGGG')).
                       toEqual('September 03, 2010 Anno Domini');
     });
 
@@ -415,19 +415,19 @@ describe('filters', function() {
       var eastOfUTCPartial = new angular.mock.TzDate(-5.5, '2010-09-03T12:05:08.000Z');
       var westOfUTCPartial = new angular.mock.TzDate(+5.5, '2010-09-03T12:05:08.000Z');
 
-      expect(date(utc, "yyyy-MM-ddTHH:mm:ssZ")).
+      expect(date(utc, 'yyyy-MM-ddTHH:mm:ssZ')).
                     toEqual('2010-09-03T12:05:08+0000');
 
-      expect(date(eastOfUTC, "yyyy-MM-ddTHH:mm:ssZ")).
+      expect(date(eastOfUTC, 'yyyy-MM-ddTHH:mm:ssZ')).
                     toEqual('2010-09-03T17:05:08+0500');
 
-      expect(date(westOfUTC, "yyyy-MM-ddTHH:mm:ssZ")).
+      expect(date(westOfUTC, 'yyyy-MM-ddTHH:mm:ssZ')).
                     toEqual('2010-09-03T07:05:08-0500');
 
-      expect(date(eastOfUTCPartial, "yyyy-MM-ddTHH:mm:ssZ")).
+      expect(date(eastOfUTCPartial, 'yyyy-MM-ddTHH:mm:ssZ')).
                     toEqual('2010-09-03T17:35:08+0530');
 
-      expect(date(westOfUTCPartial, "yyyy-MM-ddTHH:mm:ssZ")).
+      expect(date(westOfUTCPartial, 'yyyy-MM-ddTHH:mm:ssZ')).
                     toEqual('2010-09-03T06:35:08-0530');
     });
 
@@ -462,41 +462,41 @@ describe('filters', function() {
     });
 
     it('should treat single quoted strings as string literals', function() {
-      expect(date(midnight, "yyyy'de' 'a'x'dd' 'adZ' h=H:m:saZ")).
+      expect(date(midnight, 'yyyy\'de\' \'a\'x\'dd\' \'adZ\' h=H:m:saZ')).
                       toEqual('2010de axdd adZ 12=0:5:8AM-0500');
     });
 
     it('should treat a sequence of two single quotes as a literal single quote', function() {
-      expect(date(midnight, "yyyy'de' 'a''dd' 'adZ' h=H:m:saZ")).
-                      toEqual("2010de a'dd adZ 12=0:5:8AM-0500");
-      expect(date(midnight, "EEE, MMM d, ''yy")).
-                      toEqual("Fri, Sep 3, '10");
+      expect(date(midnight, 'yyyy\'de\' \'a\'\'dd\' \'adZ\' h=H:m:saZ')).
+                      toEqual('2010de a\'dd adZ 12=0:5:8AM-0500');
+      expect(date(midnight, 'EEE, MMM d, \'\'yy')).
+                      toEqual('Fri, Sep 3, \'10');
     });
 
     it('should accept default formats', function() {
 
-      expect(date(noon, "medium")).
+      expect(date(noon, 'medium')).
                       toEqual('Sep 3, 2010 12:05:08 PM');
 
-      expect(date(noon, "short")).
+      expect(date(noon, 'short')).
                       toEqual('9/3/10 12:05 PM');
 
-      expect(date(noon, "fullDate")).
+      expect(date(noon, 'fullDate')).
                       toEqual('Friday, September 3, 2010');
 
-      expect(date(noon, "longDate")).
+      expect(date(noon, 'longDate')).
                       toEqual('September 3, 2010');
 
-      expect(date(noon, "mediumDate")).
+      expect(date(noon, 'mediumDate')).
                       toEqual('Sep 3, 2010');
 
-      expect(date(noon, "shortDate")).
+      expect(date(noon, 'shortDate')).
                       toEqual('9/3/10');
 
-      expect(date(noon, "mediumTime")).
+      expect(date(noon, 'mediumTime')).
                       toEqual('12:05:08 PM');
 
-      expect(date(noon, "shortTime")).
+      expect(date(noon, 'shortTime')).
                       toEqual('12:05 PM');
     });
 

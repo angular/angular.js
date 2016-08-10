@@ -171,7 +171,7 @@ describe('ngOptions', function() {
     $compileProvider
       .directive('customSelect', function() {
         return {
-          restrict: "E",
+          restrict: 'E',
           replace: true,
           scope: {
             ngModel: '=',

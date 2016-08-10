@@ -906,8 +906,8 @@ describe('ngModel', function() {
 
         expect(function() {
           scope.$apply('value = "123"');
-        }).toThrowMinErr("ngModel", "nopromise",
-          "Expected asynchronous validator to return a promise but got 'true' instead.");
+        }).toThrowMinErr('ngModel', 'nopromise',
+          'Expected asynchronous validator to return a promise but got \'true\' instead.');
       }));
 
 
@@ -1362,7 +1362,7 @@ describe('ngModel', function() {
       expect(element.hasClass('ng-valid-email')).toBe(true);
       expect(element.hasClass('ng-invalid-email')).toBe(false);
 
-      $rootScope.$apply("value = 'invalid-email'");
+      $rootScope.$apply('value = \'invalid-email\'');
       expect(element).toBeInvalid();
       expect(element).toBePristine();
       expect(element.hasClass('ng-valid-email')).toBe(false);
@@ -1922,7 +1922,7 @@ describe('ngModelOptions attributes', function() {
           'ng-model-options="{ updateOn: \'blur\'}"' +
         '/>');
 
-    $rootScope.$apply("color = 'white'");
+    $rootScope.$apply('color = \'white\'');
     browserTrigger(inputElm[2], 'click');
     expect($rootScope.color).toBe('white');
 
@@ -1944,7 +1944,7 @@ describe('ngModelOptions attributes', function() {
           'ng-model-options="{ updateOn: \'blur default\' }"' +
         '/>');
 
-    $rootScope.$apply("color = 'white'");
+    $rootScope.$apply('color = \'white\'');
     browserTrigger(inputElm[2], 'click');
     expect($rootScope.color).toBe('blue');
   });
@@ -2187,7 +2187,7 @@ describe('ngModelOptions attributes', function() {
         'ng-model-options="{ updateOn: \'blur\' }" />');
 
     helper.changeInputValueTo('a');
-    $rootScope.$apply("name = 'b'");
+    $rootScope.$apply('name = \'b\'');
     browserTrigger(inputElm, 'blur');
     expect($rootScope.name).toBe('b');
   });
