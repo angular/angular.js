@@ -31,32 +31,32 @@ function newTestLocaleInfo() {
       shortTime: 'HH:mm'
     },
     NUMBER_FORMATS: {
-      "DECIMAL_SEP": ".",
-      "GROUP_SEP": ",",
-      "PATTERNS": [{
-        "minInt": 1,
-        "minFrac": 0,
-        "macFrac": 0,
-        "posPre": "",
-        "posSuf": "",
-        "negPre": "-",
-        "negSuf": "",
-        "gSize": 3,
-        "lgSize": 3,
-        "maxFrac": 3
+      'DECIMAL_SEP': '.',
+      'GROUP_SEP': ',',
+      'PATTERNS': [{
+        'minInt': 1,
+        'minFrac': 0,
+        'macFrac': 0,
+        'posPre': '',
+        'posSuf': '',
+        'negPre': '-',
+        'negSuf': '',
+        'gSize': 3,
+        'lgSize': 3,
+        'maxFrac': 3
       }, {
-        "minInt": 1,
-        "minFrac": 2,
-        "macFrac": 0,
-        "posPre": "¤",
-        "posSuf": "",
-        "negPre": "¤-",
-        "negSuf": "",
-        "gSize": 3,
-        "lgSize": 3,
-        "maxFrac": 2
+        'minInt': 1,
+        'minFrac': 2,
+        'macFrac': 0,
+        'posPre': '¤',
+        'posSuf': '',
+        'negPre': '¤-',
+        'negSuf': '',
+        'gSize': 3,
+        'lgSize': 3,
+        'maxFrac': 2
       }],
-      "CURRENCY_SYM": "£"
+      'CURRENCY_SYM': '£'
     }}};
 }
 
@@ -87,26 +87,26 @@ describe('findLocaleId', function() {
   });
 });
 
-describe("extractNumberSymbols", function() {
-  it("should extract number data", function() {
+describe('extractNumberSymbols', function() {
+  it('should extract number data', function() {
     var CONTENT = [
-      "goog.provide('goog.i18n.NumberFormatSymbols_en_GB');",
-      "goog.i18n.NumberFormatSymbols_en_GB = {",
-      "DECIMAL_SEP: '.',",
-      "GROUP_SEP: ',',",
-      "PERCENT: '%',",
-      "ZERO_DIGIT: '0',",
-      "PLUS_SIGN: '+',",
-      "MINUS_SIGN: '-',",
-      "EXP_SYMBOL: 'E',",
-      "PERMILL: '\u2030',",
-      "INFINITY: '\u221E',",
-      "NAN: 'NaN',",
-      "DECIMAL_PATTERN: '#,##0.###',",
-      "SCIENTIFIC_PATTERN: '#E0',",
-      "PERCENT_PATTERN: '#,##0%',",
-      "CURRENCY_PATTERN: '\u00A4#,##0.00',",
-      "DEF_CURRENCY_CODE: 'GBP' };"
+      'goog.provide(\'goog.i18n.NumberFormatSymbols_en_GB\');',
+      'goog.i18n.NumberFormatSymbols_en_GB = {',
+      'DECIMAL_SEP: \'.\',',
+      'GROUP_SEP: \',\',',
+      'PERCENT: \'%\',',
+      'ZERO_DIGIT: \'0\',',
+      'PLUS_SIGN: \'+\',',
+      'MINUS_SIGN: \'-\',',
+      'EXP_SYMBOL: \'E\',',
+      'PERMILL: \'\u2030\',',
+      'INFINITY: \'\u221E\',',
+      'NAN: \'NaN\',',
+      'DECIMAL_PATTERN: \'#,##0.###\',',
+      'SCIENTIFIC_PATTERN: \'#E0\',',
+      'PERCENT_PATTERN: \'#,##0%\',',
+      'CURRENCY_PATTERN: \'\u00A4#,##0.00\',',
+      'DEF_CURRENCY_CODE: \'GBP\' };'
     ].join('\n');
 
     var currencySymbols = {'GBP':[2, '£', 'GB£']};
@@ -130,15 +130,15 @@ describe("extractNumberSymbols", function() {
   });
 });
 
-describe("extractCurrencySymbols", function() {
-  it("should extract currency data", function() {
+describe('extractCurrencySymbols', function() {
+  it('should extract currency data', function() {
     var CONTENT = [
-      "goog.i18n.currency.CurrencyInfo = {",
-      "  'GBP':[2, '£', 'GB£'],",
-      "};",
-      "goog.i18n.currency.CurrencyInfoTier2 = {",
-      "  'AOA':[2, 'Kz', 'Kz'],",
-      "};"
+      'goog.i18n.currency.CurrencyInfo = {',
+      '  \'GBP\':[2, \'£\', \'GB£\'],',
+      '};',
+      'goog.i18n.currency.CurrencyInfoTier2 = {',
+      '  \'AOA\':[2, \'Kz\', \'Kz\'],',
+      '};'
     ].join('\n');
 
     var currencySymbols = extractCurrencySymbols(CONTENT);
@@ -152,42 +152,42 @@ describe("extractCurrencySymbols", function() {
 });
 
 
-describe("extractDateTimeSymbols", function() {
-  it("should extract date time data", function() {
+describe('extractDateTimeSymbols', function() {
+  it('should extract date time data', function() {
     var CONTENT = [
-      "goog.i18n.DateTimeSymbols_fr_CA = {",
-      "  ERAS: ['av. J.-C.', 'ap. J.-C.'],",
-      "  ERANAMES: ['avant Jésus-Christ', 'après Jésus-Christ'],",
-      "  NARROWMONTHS: ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],",
-      "  STANDALONENARROWMONTHS: ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O',",
-      "      'N', 'D'],",
-      "  MONTHS: ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet',",
-      "      'août', 'septembre', 'octobre', 'novembre', 'décembre'],",
-      "  STANDALONEMONTHS: ['janvier', 'février', 'mars', 'avril', 'mai', 'juin',",
-      "      'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'],",
-      "  SHORTMONTHS: ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.',",
-      "      'août', 'sept.', 'oct.', 'nov.', 'déc.'],",
-      "  STANDALONESHORTMONTHS: ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin',",
-      "      'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'],",
-      "  WEEKDAYS: ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi',",
-      "      'samedi'],",
-      "  STANDALONEWEEKDAYS: ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi',",
-      "      'vendredi', 'samedi'],",
-      "  SHORTWEEKDAYS: ['dim.', 'lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.'],",
-      "  STANDALONESHORTWEEKDAYS: ['dim.', 'lun.', 'mar.', 'mer.', 'jeu.', 'ven.',",
-      "      'sam.'],",
-      "  NARROWWEEKDAYS: ['D', 'L', 'M', 'M', 'J', 'V', 'S'],",
-      "  STANDALONENARROWWEEKDAYS: ['D', 'L', 'M', 'M', 'J', 'V', 'S'],",
-      "  SHORTQUARTERS: ['T1', 'T2', 'T3', 'T4'],",
-      "  QUARTERS: ['1er trimestre', '2e trimestre', '3e trimestre', '4e trimestre'],",
-      "  AMPMS: ['AM', 'PM'],",
-      "  DATEFORMATS: ['EEEE d MMMM y', 'd MMMM y', 'yyyy-MM-dd', 'yy-MM-dd'],",
-      "  TIMEFORMATS: ['HH \\'h\\' mm \\'min\\' ss \\'s\\' zzzz', 'HH:mm:ss z',",
-      "      'HH:mm:ss', 'HH:mm'],",
-      "  FIRSTDAYOFWEEK: 6,",
-      "  WEEKENDRANGE: [5, 6],",
-      "  FIRSTWEEKCUTOFFDAY: 2",
-      "};"
+      'goog.i18n.DateTimeSymbols_fr_CA = {',
+      '  ERAS: [\'av. J.-C.\', \'ap. J.-C.\'],',
+      '  ERANAMES: [\'avant Jésus-Christ\', \'après Jésus-Christ\'],',
+      '  NARROWMONTHS: [\'J\', \'F\', \'M\', \'A\', \'M\', \'J\', \'J\', \'A\', \'S\', \'O\', \'N\', \'D\'],',
+      '  STANDALONENARROWMONTHS: [\'J\', \'F\', \'M\', \'A\', \'M\', \'J\', \'J\', \'A\', \'S\', \'O\',',
+      '      \'N\', \'D\'],',
+      '  MONTHS: [\'janvier\', \'février\', \'mars\', \'avril\', \'mai\', \'juin\', \'juillet\',',
+      '      \'août\', \'septembre\', \'octobre\', \'novembre\', \'décembre\'],',
+      '  STANDALONEMONTHS: [\'janvier\', \'février\', \'mars\', \'avril\', \'mai\', \'juin\',',
+      '      \'juillet\', \'août\', \'septembre\', \'octobre\', \'novembre\', \'décembre\'],',
+      '  SHORTMONTHS: [\'janv.\', \'févr.\', \'mars\', \'avr.\', \'mai\', \'juin\', \'juil.\',',
+      '      \'août\', \'sept.\', \'oct.\', \'nov.\', \'déc.\'],',
+      '  STANDALONESHORTMONTHS: [\'janv.\', \'févr.\', \'mars\', \'avr.\', \'mai\', \'juin\',',
+      '      \'juil.\', \'août\', \'sept.\', \'oct.\', \'nov.\', \'déc.\'],',
+      '  WEEKDAYS: [\'dimanche\', \'lundi\', \'mardi\', \'mercredi\', \'jeudi\', \'vendredi\',',
+      '      \'samedi\'],',
+      '  STANDALONEWEEKDAYS: [\'dimanche\', \'lundi\', \'mardi\', \'mercredi\', \'jeudi\',',
+      '      \'vendredi\', \'samedi\'],',
+      '  SHORTWEEKDAYS: [\'dim.\', \'lun.\', \'mar.\', \'mer.\', \'jeu.\', \'ven.\', \'sam.\'],',
+      '  STANDALONESHORTWEEKDAYS: [\'dim.\', \'lun.\', \'mar.\', \'mer.\', \'jeu.\', \'ven.\',',
+      '      \'sam.\'],',
+      '  NARROWWEEKDAYS: [\'D\', \'L\', \'M\', \'M\', \'J\', \'V\', \'S\'],',
+      '  STANDALONENARROWWEEKDAYS: [\'D\', \'L\', \'M\', \'M\', \'J\', \'V\', \'S\'],',
+      '  SHORTQUARTERS: [\'T1\', \'T2\', \'T3\', \'T4\'],',
+      '  QUARTERS: [\'1er trimestre\', \'2e trimestre\', \'3e trimestre\', \'4e trimestre\'],',
+      '  AMPMS: [\'AM\', \'PM\'],',
+      '  DATEFORMATS: [\'EEEE d MMMM y\', \'d MMMM y\', \'yyyy-MM-dd\', \'yy-MM-dd\'],',
+      '  TIMEFORMATS: [\'HH \\\'h\\\' mm \\\'min\\\' ss \\\'s\\\' zzzz\', \'HH:mm:ss z\',',
+      '      \'HH:mm:ss\', \'HH:mm\'],',
+      '  FIRSTDAYOFWEEK: 6,',
+      '  WEEKENDRANGE: [5, 6],',
+      '  FIRSTWEEKCUTOFFDAY: 2',
+      '};'
     ].join('\n');
     var localeInfo = {};
     var expectedLocaleInfo = {
@@ -222,34 +222,34 @@ describe("extractDateTimeSymbols", function() {
   });
 });
 
-describe("pluralExtractor", function() {
-  it("should output PLURAL_CAT in the output string code", function() {
+describe('pluralExtractor', function() {
+  it('should output PLURAL_CAT in the output string code', function() {
     var content = (
-        "goog.provide('goog.i18n.pluralRules');\n" +
-        "\n" +
-        "goog.i18n.pluralRules.Keyword = {\n" +
-        "  ZERO: 'zero',\n" +
-        "  ONE: 'one',\n" +
-        "  TWO: 'two',\n" +
-        "  FEW: 'few',\n" +
-        "  MANY: 'many',\n" +
-        "  OTHER: 'other'\n" +
-        "};\n" +
-        "\n" +
-        "goog.i18n.pluralRules.frSelect_ = function(n) {\n" +
-        "  if (n >= 0 && n < 2) {\n" +
-        "    return goog.i18n.pluralRules.Keyword.ONE;\n" +
-        "  }\n" +
-        "  return goog.i18n.pluralRules.Keyword.OTHER;\n" +
-        "};\n" +
-        "\n" +
-        "if (goog.LOCALE == 'fr') {\n" +
-        "  goog.i18n.pluralRules.select = goog.i18n.pluralRules.frSelect_;\n" +
-        "}"
+        'goog.provide(\'goog.i18n.pluralRules\');\n' +
+        '\n' +
+        'goog.i18n.pluralRules.Keyword = {\n' +
+        '  ZERO: \'zero\',\n' +
+        '  ONE: \'one\',\n' +
+        '  TWO: \'two\',\n' +
+        '  FEW: \'few\',\n' +
+        '  MANY: \'many\',\n' +
+        '  OTHER: \'other\'\n' +
+        '};\n' +
+        '\n' +
+        'goog.i18n.pluralRules.frSelect_ = function(n) {\n' +
+        '  if (n >= 0 && n < 2) {\n' +
+        '    return goog.i18n.pluralRules.Keyword.ONE;\n' +
+        '  }\n' +
+        '  return goog.i18n.pluralRules.Keyword.OTHER;\n' +
+        '};\n' +
+        '\n' +
+        'if (goog.LOCALE == \'fr\') {\n' +
+        '  goog.i18n.pluralRules.select = goog.i18n.pluralRules.frSelect_;\n' +
+        '}'
         );
     var localeInfo = newTestLocaleInfo();
     closureI18nExtractor.pluralExtractor(content, localeInfo);
-    var pluralCat = localeInfo["fr_CA"].pluralCat;
+    var pluralCat = localeInfo['fr_CA'].pluralCat;
     expect(pluralCat).toBeDefined();
     // pluralCat is the source text for the pluralCat and contains @@
     // placeholders that need to be stripped before evaluation.
@@ -258,38 +258,38 @@ describe("pluralExtractor", function() {
     // pluralCat requires these constants to exist.
     // eslint-disable-next-line no-unused-vars
     var PLURAL_CATEGORY = {
-      ZERO: "zero", ONE: "one", TWO: "two",
-      FEW: "few", MANY: "many", OTHER: "other"
+      ZERO: 'zero', ONE: 'one', TWO: 'two',
+      FEW: 'few', MANY: 'many', OTHER: 'other'
       };
     // Obtain the function by evaluating the source text.
     // eslint-disable-next-line no-eval
-    pluralCat = eval("(" + pluralCat + ")");
+    pluralCat = eval('(' + pluralCat + ')');
     // Confirm some expectations for pluralCat in fr_CA.
-    expect(pluralCat(0)).toEqual("one");
-    expect(pluralCat(3)).toEqual("other");
+    expect(pluralCat(0)).toEqual('one');
+    expect(pluralCat(3)).toEqual('other');
   });
 });
 
-describe("serializeContent", function() {
-  it("should not make any modifications to the content of the locale", function() {
+describe('serializeContent', function() {
+  it('should not make any modifications to the content of the locale', function() {
     var serializedContent = closureI18nExtractor.serializeContent(newTestLocaleInfo());
     // eslint-disable-next-line no-eval
-    expect(eval("(" + serializedContent + ")")).toEqual(newTestLocaleInfo());
+    expect(eval('(' + serializedContent + ')')).toEqual(newTestLocaleInfo());
   });
-  it("should only have ascii characters", function() {
+  it('should only have ascii characters', function() {
     var serializedContent = closureI18nExtractor.serializeContent(newTestLocaleInfo());
     expect((/[^\u0001-\u007f]/).test(serializedContent)).toBe(false);
   });
-  it("should not transform arrays into objects", function() {
+  it('should not transform arrays into objects', function() {
     var serializedContent = closureI18nExtractor.serializeContent(newTestLocaleInfo().fr_CA);
     // eslint-disable-next-line no-eval
-    var deserializedLocale = eval("(" + serializedContent + ")");
+    var deserializedLocale = eval('(' + serializedContent + ')');
     expect(deserializedLocale.DATETIME_FORMATS.MONTH.length).not.toBeUndefined();
   });
 });
 
-describe("outputLocale", function() {
-  it("should render the correct locale ids", function() {
+describe('outputLocale', function() {
+  it('should render the correct locale ids', function() {
     var output = outputLocale(newTestLocaleInfo(), 'fr_CA');
     expect(output).toContain('"id": "fr-ca"');
     expect(output).toContain('"localeID": "fr_CA"');

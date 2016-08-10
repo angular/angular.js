@@ -160,7 +160,7 @@ var writeChangelog = function(stream, commits, version) {
     if (commit.breaking) {
       sections.breaks[component] = sections.breaks[component] || [];
       sections.breaks[component].push({
-        subject: util.format("due to %s,\n %s", linkToCommit(commit.hash), commit.breaking),
+        subject: util.format('due to %s,\n %s', linkToCommit(commit.hash), commit.breaking),
         hash: commit.hash,
         closes: []
       });

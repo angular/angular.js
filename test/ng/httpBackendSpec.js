@@ -72,7 +72,7 @@ describe('$httpBackend', function() {
 
   it('should pass the correct falsy value to send if falsy body is set (excluding undefined, NaN)',
     function() {
-      var values = [false, 0, "", null];
+      var values = [false, 0, '', null];
       angular.forEach(values, function(value) {
         $backend('GET', '/some-url', value, noop);
         xhr = MockXhr.$$lastInstance;
@@ -349,7 +349,7 @@ describe('$httpBackend', function() {
 
       expect(url[1]).toBe('http://example.org/path');
       $jsonpCallbacks[url[2]]('some-data');
-      browserTrigger(script, "load");
+      browserTrigger(script, 'load');
 
       expect(callback).toHaveBeenCalledOnce();
     });
@@ -366,7 +366,7 @@ describe('$httpBackend', function() {
           callbackId = script.src.match(SCRIPT_URL)[2];
 
       $jsonpCallbacks[callbackId]('some-data');
-      browserTrigger(script, "load");
+      browserTrigger(script, 'load');
 
       expect($jsonpCallbacks.removeCallback).toHaveBeenCalledOnceWith(callbackId);
       expect(fakeDocument.body.removeChild).toHaveBeenCalledOnceWith(script);
@@ -462,14 +462,14 @@ describe('$httpBackend', function() {
 
       //temporarily overriding the DOM element to pretend that the test runs origin with file:// protocol
       urlParsingNode = {
-        hash: "#/C:/",
-        host: "",
-        hostname: "",
-        href: "file:///C:/base#!/C:/foo",
-        pathname: "/C:/foo",
-        port: "",
-        protocol: "file:",
-        search: "",
+        hash: '#/C:/',
+        host: '',
+        hostname: '',
+        href: 'file:///C:/base#!/C:/foo',
+        pathname: '/C:/foo',
+        port: '',
+        protocol: 'file:',
+        search: '',
         setAttribute: angular.noop
       };
 

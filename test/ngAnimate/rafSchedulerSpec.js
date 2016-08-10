@@ -1,6 +1,6 @@
 'use strict';
 
-describe("$$rAFScheduler", function() {
+describe('$$rAFScheduler', function() {
 
   beforeEach(module('ngAnimate'));
 

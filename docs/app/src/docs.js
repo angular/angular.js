@@ -54,7 +54,7 @@ angular.module('DocsController', [])
    ***********************************/
 
   $scope.versionNumber = angular.version.full;
-  $scope.version = angular.version.full + "  " + angular.version.codeName;
+  $scope.version = angular.version.full + '  ' + angular.version.codeName;
   $scope.loading = 0;
 
 
