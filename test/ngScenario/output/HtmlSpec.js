@@ -24,7 +24,7 @@ describe('angular.scenario.output.html', function() {
     };
     runner = new angular.scenario.testing.MockRunner();
     model = new angular.scenario.ObjectModel(runner);
-    context = _jQuery("<div></div>");
+    context = _jQuery('<div></div>');
     ui = angular.scenario.output.html(context, runner, model);
   });
 

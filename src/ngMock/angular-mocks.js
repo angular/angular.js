@@ -33,7 +33,7 @@ angular.mock.$Browser = function() {
   var self = this;
 
   this.isMock = true;
-  self.$$url = "http://server/";
+  self.$$url = 'http://server/';
   self.$$lastUrl = self.$$url; // used by url polling fn
   self.pollFns = [];
 
@@ -250,14 +250,14 @@ angular.mock.$ExceptionHandlerProvider = function() {
           } else {
             errors.push([].slice.call(arguments, 0));
           }
-          if (mode === "rethrow") {
+          if (mode === 'rethrow') {
             throw e;
           }
         };
         handler.errors = errors;
         break;
       default:
-        throw new Error("Unknown mode '" + mode + "', only 'log'/'rethrow' modes are allowed!");
+        throw new Error('Unknown mode \'' + mode + '\', only \'log\'/\'rethrow\' modes are allowed!');
     }
   };
 
@@ -407,8 +407,8 @@ angular.mock.$LogProvider = function() {
         });
       });
       if (errors.length) {
-        errors.unshift("Expected $log to be empty! Either a message was logged unexpectedly, or " +
-          "an expected log message was not checked and removed:");
+        errors.unshift('Expected $log to be empty! Either a message was logged unexpectedly, or ' +
+          'an expected log message was not checked and removed:');
         errors.push('');
         throw new Error(errors.join('\n---------\n'));
       }
@@ -643,8 +643,8 @@ angular.mock.TzDate = function(offset, timestamp) {
     if (isNaN(timestamp)) {
       // eslint-disable-next-line no-throw-literal
       throw {
-        name: "Illegal Argument",
-        message: "Arg '" + tsStr + "' passed into TzDate constructor is not a valid date string"
+        name: 'Illegal Argument',
+        message: 'Arg \'' + tsStr + '\' passed into TzDate constructor is not a valid date string'
       };
     }
   } else {
@@ -750,7 +750,7 @@ angular.mock.TzDate = function(offset, timestamp) {
 
   angular.forEach(unimplementedMethods, function(methodName) {
     self[methodName] = function() {
-      throw new Error("Method '" + methodName + "' is not implemented in the TzDate mock");
+      throw new Error('Method \'' + methodName + '\' is not implemented in the TzDate mock');
     };
   });
 
@@ -1909,7 +1909,7 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
 
 function assertArgDefined(args, index, name) {
   if (args.length > index && angular.isUndefined(args[index])) {
-    throw new Error("Undefined argument `" + name + "`; the argument is provided but not defined");
+    throw new Error('Undefined argument `' + name + '`; the argument is provided but not defined');
   }
 }
 
@@ -1989,7 +1989,7 @@ function MockHttpExpectation(method, url, data, headers, keys) {
       var obj = {}, key_value, key,
           queryStr = u.indexOf('?') > -1
           ? u.substring(u.indexOf('?') + 1)
-          : "";
+          : '';
 
       angular.forEach(queryStr.split('&'), function(keyValue) {
         if (keyValue) {
@@ -2879,14 +2879,14 @@ angular.mock.$RootScopeDecorator = ['$delegate', function($delegate) {
    */
   module.sharedInjector = function() {
     if (!(module.$$beforeAllHook && module.$$afterAllHook)) {
-      throw Error("sharedInjector() cannot be used unless your test runner defines beforeAll/afterAll");
+      throw Error('sharedInjector() cannot be used unless your test runner defines beforeAll/afterAll');
     }
 
     var initialized = false;
 
     module.$$beforeAllHook(/** @this */ function() {
       if (injectorState.shared) {
-        injectorState.sharedError = Error("sharedInjector() cannot be called inside a context that has already called sharedInjector()");
+        injectorState.sharedError = Error('sharedInjector() cannot be called inside a context that has already called sharedInjector()');
         throw injectorState.sharedError;
       }
       initialized = true;
@@ -2908,7 +2908,7 @@ angular.mock.$RootScopeDecorator = ['$delegate', function($delegate) {
     if (injectorState.shared && currentSpec && currentSpec !== this) {
       var state = currentSpec;
       currentSpec = this;
-      angular.forEach(["$injector","$modules","$providerInjector", "$injectorStrict"], function(k) {
+      angular.forEach(['$injector','$modules','$providerInjector', '$injectorStrict'], function(k) {
         currentSpec[k] = state[k];
         state[k] = null;
       });
@@ -3098,7 +3098,7 @@ angular.mock.$RootScopeDecorator = ['$delegate', function($delegate) {
         if (strictDi) {
           // If strictDi is enabled, annotate the providerInjector blocks
           angular.forEach(modules, function(moduleFn) {
-            if (typeof moduleFn === "function") {
+            if (typeof moduleFn === 'function') {
               angular.injector.$$annotate(moduleFn);
             }
           });

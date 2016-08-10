@@ -25,15 +25,15 @@ describe('angular', function() {
     });
   });
 
-  describe("copy", function() {
-    it("should return same object", function() {
+  describe('copy', function() {
+    it('should return same object', function() {
       var obj = {};
       var arr = [];
       expect(copy({}, obj)).toBe(obj);
       expect(copy([], arr)).toBe(arr);
     });
 
-    it("should preserve prototype chaining", function() {
+    it('should preserve prototype chaining', function() {
       var GrandParentProto = {};
       var ParentProto = Object.create(GrandParentProto);
       var obj = Object.create(ParentProto);
@@ -43,51 +43,51 @@ describe('angular', function() {
       expect(copy(new Foo()) instanceof Foo).toBe(true);
     });
 
-    it("should copy Date", function() {
+    it('should copy Date', function() {
       var date = new Date(123);
       expect(copy(date) instanceof Date).toBeTruthy();
       expect(copy(date).getTime()).toEqual(123);
       expect(copy(date) === date).toBeFalsy();
     });
 
-    it("should copy RegExp", function() {
-      var re = new RegExp(".*");
+    it('should copy RegExp', function() {
+      var re = new RegExp('.*');
       expect(copy(re) instanceof RegExp).toBeTruthy();
-      expect(copy(re).source).toBe(".*");
+      expect(copy(re).source).toBe('.*');
       expect(copy(re) === re).toBe(false);
     });
 
-    it("should copy literal RegExp", function() {
+    it('should copy literal RegExp', function() {
       var re = /.*/;
       expect(copy(re) instanceof RegExp).toBeTruthy();
-      expect(copy(re).source).toEqual(".*");
+      expect(copy(re).source).toEqual('.*');
       expect(copy(re) === re).toBeFalsy();
     });
 
-    it("should copy RegExp with flags", function() {
+    it('should copy RegExp with flags', function() {
       var re = new RegExp('.*', 'gim');
       expect(copy(re).global).toBe(true);
       expect(copy(re).ignoreCase).toBe(true);
       expect(copy(re).multiline).toBe(true);
     });
 
-    it("should copy RegExp with lastIndex", function() {
+    it('should copy RegExp with lastIndex', function() {
       var re = /a+b+/g;
       var str = 'ab aabb';
       expect(re.exec(str)[0]).toEqual('ab');
       expect(copy(re).exec(str)[0]).toEqual('aabb');
     });
 
-    it("should deeply copy literal RegExp", function() {
+    it('should deeply copy literal RegExp', function() {
       var objWithRegExp = {
         re: /.*/
       };
       expect(copy(objWithRegExp).re instanceof RegExp).toBeTruthy();
-      expect(copy(objWithRegExp).re.source).toEqual(".*");
+      expect(copy(objWithRegExp).re.source).toEqual('.*');
       expect(copy(objWithRegExp.re) === objWithRegExp.re).toBeFalsy();
     });
 
-    it("should copy a Uint8Array with no destination", function() {
+    it('should copy a Uint8Array with no destination', function() {
       if (typeof Uint8Array !== 'undefined') {
         var src = new Uint8Array(2);
         src[1] = 1;
@@ -99,7 +99,7 @@ describe('angular', function() {
       }
     });
 
-    it("should copy a Uint8ClampedArray with no destination", function() {
+    it('should copy a Uint8ClampedArray with no destination', function() {
       if (typeof Uint8ClampedArray !== 'undefined') {
         var src = new Uint8ClampedArray(2);
         src[1] = 1;
@@ -111,7 +111,7 @@ describe('angular', function() {
       }
     });
 
-    it("should copy a Uint16Array with no destination", function() {
+    it('should copy a Uint16Array with no destination', function() {
       if (typeof Uint16Array !== 'undefined') {
         var src = new Uint16Array(2);
         src[1] = 1;
@@ -123,7 +123,7 @@ describe('angular', function() {
       }
     });
 
-    it("should copy a Uint32Array with no destination", function() {
+    it('should copy a Uint32Array with no destination', function() {
       if (typeof Uint32Array !== 'undefined') {
         var src = new Uint32Array(2);
         src[1] = 1;
@@ -135,7 +135,7 @@ describe('angular', function() {
       }
     });
 
-    it("should copy a Int8Array with no destination", function() {
+    it('should copy a Int8Array with no destination', function() {
       if (typeof Int8Array !== 'undefined') {
         var src = new Int8Array(2);
         src[1] = 1;
@@ -147,7 +147,7 @@ describe('angular', function() {
       }
     });
 
-    it("should copy a Int16Array with no destination", function() {
+    it('should copy a Int16Array with no destination', function() {
       if (typeof Int16Array !== 'undefined') {
         var src = new Int16Array(2);
         src[1] = 1;
@@ -159,7 +159,7 @@ describe('angular', function() {
       }
     });
 
-    it("should copy a Int32Array with no destination", function() {
+    it('should copy a Int32Array with no destination', function() {
       if (typeof Int32Array !== 'undefined') {
         var src = new Int32Array(2);
         src[1] = 1;
@@ -171,7 +171,7 @@ describe('angular', function() {
       }
     });
 
-    it("should copy a Float32Array with no destination", function() {
+    it('should copy a Float32Array with no destination', function() {
       if (typeof Float32Array !== 'undefined') {
         var src = new Float32Array(2);
         src[1] = 1;
@@ -183,7 +183,7 @@ describe('angular', function() {
       }
     });
 
-    it("should copy a Float64Array with no destination", function() {
+    it('should copy a Float64Array with no destination', function() {
       if (typeof Float64Array !== 'undefined') {
         var src = new Float64Array(2);
         src[1] = 1;
@@ -249,7 +249,7 @@ describe('angular', function() {
       }
     });
 
-    it("should handle Uint16Array subarray", function() {
+    it('should handle Uint16Array subarray', function() {
       if (typeof Uint16Array !== 'undefined') {
         var arr = new Uint16Array(4);
         arr[1] = 1;
@@ -263,109 +263,109 @@ describe('angular', function() {
       }
     });
 
-    it("should throw an exception if a Uint8Array is the destination", function() {
+    it('should throw an exception if a Uint8Array is the destination', function() {
       if (typeof Uint8Array !== 'undefined') {
         var src = new Uint8Array();
         var dst = new Uint8Array(5);
         expect(function() { copy(src, dst); })
-          .toThrowMinErr("ng", "cpta", "Can't copy! TypedArray destination cannot be mutated.");
+          .toThrowMinErr('ng', 'cpta', 'Can\'t copy! TypedArray destination cannot be mutated.');
       }
     });
 
-    it("should throw an exception if a Uint8ClampedArray is the destination", function() {
+    it('should throw an exception if a Uint8ClampedArray is the destination', function() {
       if (typeof Uint8ClampedArray !== 'undefined') {
         var src = new Uint8ClampedArray();
         var dst = new Uint8ClampedArray(5);
         expect(function() { copy(src, dst); })
-          .toThrowMinErr("ng", "cpta", "Can't copy! TypedArray destination cannot be mutated.");
+          .toThrowMinErr('ng', 'cpta', 'Can\'t copy! TypedArray destination cannot be mutated.');
       }
     });
 
-    it("should throw an exception if a Uint16Array is the destination", function() {
+    it('should throw an exception if a Uint16Array is the destination', function() {
       if (typeof Uint16Array !== 'undefined') {
         var src = new Uint16Array();
         var dst = new Uint16Array(5);
         expect(function() { copy(src, dst); })
-          .toThrowMinErr("ng", "cpta", "Can't copy! TypedArray destination cannot be mutated.");
+          .toThrowMinErr('ng', 'cpta', 'Can\'t copy! TypedArray destination cannot be mutated.');
       }
     });
 
-    it("should throw an exception if a Uint32Array is the destination", function() {
+    it('should throw an exception if a Uint32Array is the destination', function() {
       if (typeof Uint32Array !== 'undefined') {
         var src = new Uint32Array();
         var dst = new Uint32Array(5);
         expect(function() { copy(src, dst); })
-          .toThrowMinErr("ng", "cpta", "Can't copy! TypedArray destination cannot be mutated.");
+          .toThrowMinErr('ng', 'cpta', 'Can\'t copy! TypedArray destination cannot be mutated.');
       }
     });
 
-    it("should throw an exception if a Int8Array is the destination", function() {
+    it('should throw an exception if a Int8Array is the destination', function() {
       if (typeof Int8Array !== 'undefined') {
         var src = new Int8Array();
         var dst = new Int8Array(5);
         expect(function() { copy(src, dst); })
-          .toThrowMinErr("ng", "cpta", "Can't copy! TypedArray destination cannot be mutated.");
+          .toThrowMinErr('ng', 'cpta', 'Can\'t copy! TypedArray destination cannot be mutated.');
       }
     });
 
-    it("should throw an exception if a Int16Array is the destination", function() {
+    it('should throw an exception if a Int16Array is the destination', function() {
       if (typeof Int16Array !== 'undefined') {
         var src = new Int16Array();
         var dst = new Int16Array(5);
         expect(function() { copy(src, dst); })
-          .toThrowMinErr("ng", "cpta", "Can't copy! TypedArray destination cannot be mutated.");
+          .toThrowMinErr('ng', 'cpta', 'Can\'t copy! TypedArray destination cannot be mutated.');
       }
     });
 
-    it("should throw an exception if a Int32Array is the destination", function() {
+    it('should throw an exception if a Int32Array is the destination', function() {
       if (typeof Int32Array !== 'undefined') {
         var src = new Int32Array();
         var dst = new Int32Array(5);
         expect(function() { copy(src, dst); })
-          .toThrowMinErr("ng", "cpta", "Can't copy! TypedArray destination cannot be mutated.");
+          .toThrowMinErr('ng', 'cpta', 'Can\'t copy! TypedArray destination cannot be mutated.');
       }
     });
 
-    it("should throw an exception if a Float32Array is the destination", function() {
+    it('should throw an exception if a Float32Array is the destination', function() {
       if (typeof Float32Array !== 'undefined') {
         var src = new Float32Array();
         var dst = new Float32Array(5);
         expect(function() { copy(src, dst); })
-          .toThrowMinErr("ng", "cpta", "Can't copy! TypedArray destination cannot be mutated.");
+          .toThrowMinErr('ng', 'cpta', 'Can\'t copy! TypedArray destination cannot be mutated.');
       }
     });
 
-    it("should throw an exception if a Float64Array is the destination", function() {
+    it('should throw an exception if a Float64Array is the destination', function() {
       if (typeof Float64Array !== 'undefined') {
         var src = new Float64Array();
         var dst = new Float64Array(5);
         expect(function() { copy(src, dst); })
-          .toThrowMinErr("ng", "cpta", "Can't copy! TypedArray destination cannot be mutated.");
+          .toThrowMinErr('ng', 'cpta', 'Can\'t copy! TypedArray destination cannot be mutated.');
       }
     });
 
-    it("should throw an exception if an ArrayBuffer is the destination", function() {
+    it('should throw an exception if an ArrayBuffer is the destination', function() {
       if (typeof ArrayBuffer !== 'undefined') {
         var src = new ArrayBuffer(5);
         var dst = new ArrayBuffer(5);
         expect(function() { copy(src, dst); })
-          .toThrowMinErr("ng", "cpta", "Can't copy! TypedArray destination cannot be mutated.");
+          .toThrowMinErr('ng', 'cpta', 'Can\'t copy! TypedArray destination cannot be mutated.');
       }
     });
 
-    it("should deeply copy an array into an existing array", function() {
-      var src = [1, {name:"value"}];
-      var dst = [{key:"v"}];
+    it('should deeply copy an array into an existing array', function() {
+      var src = [1, {name:'value'}];
+      var dst = [{key:'v'}];
       expect(copy(src, dst)).toBe(dst);
-      expect(dst).toEqual([1, {name:"value"}]);
-      expect(dst[1]).toEqual({name:"value"});
+      expect(dst).toEqual([1, {name:'value'}]);
+      expect(dst[1]).toEqual({name:'value'});
       expect(dst[1]).not.toBe(src[1]);
     });
 
-    it("should deeply copy an array into a new array", function() {
-      var src = [1, {name:"value"}];
+    it('should deeply copy an array into a new array', function() {
+      var src = [1, {name:'value'}];
       var dst = copy(src);
-      expect(src).toEqual([1, {name:"value"}]);
+      expect(src).toEqual([1, {name:'value'}]);
       expect(dst).toEqual(src);
       expect(dst).not.toBe(src);
       expect(dst[1]).not.toBe(src[1]);
@@ -373,31 +373,31 @@ describe('angular', function() {
 
     it('should copy empty array', function() {
       var src = [];
-      var dst = [{key: "v"}];
+      var dst = [{key: 'v'}];
       expect(copy(src, dst)).toEqual([]);
       expect(dst).toEqual([]);
     });
 
-    it("should deeply copy an object into an existing object", function() {
-      var src = {a:{name:"value"}};
-      var dst = {b:{key:"v"}};
+    it('should deeply copy an object into an existing object', function() {
+      var src = {a:{name:'value'}};
+      var dst = {b:{key:'v'}};
       expect(copy(src, dst)).toBe(dst);
-      expect(dst).toEqual({a:{name:"value"}});
+      expect(dst).toEqual({a:{name:'value'}});
       expect(dst.a).toEqual(src.a);
       expect(dst.a).not.toBe(src.a);
     });
 
-    it("should deeply copy an object into a non-existing object", function() {
-      var src = {a:{name:"value"}};
+    it('should deeply copy an object into a non-existing object', function() {
+      var src = {a:{name:'value'}};
       var dst = copy(src, undefined);
-      expect(src).toEqual({a:{name:"value"}});
+      expect(src).toEqual({a:{name:'value'}});
       expect(dst).toEqual(src);
       expect(dst).not.toBe(src);
       expect(dst.a).toEqual(src.a);
       expect(dst.a).not.toBe(src.a);
     });
 
-    it("should copy primitives", function() {
+    it('should copy primitives', function() {
       expect(copy(null)).toEqual(null);
       expect(copy('')).toBe('');
       expect(copy('lala')).toBe('lala');
@@ -407,28 +407,28 @@ describe('angular', function() {
 
     it('should throw an exception if a Scope is being copied', inject(function($rootScope) {
       expect(function() { copy($rootScope.$new()); }).
-          toThrowMinErr("ng", "cpws", "Can't copy! Making copies of Window or Scope instances is not supported.");
+          toThrowMinErr('ng', 'cpws', 'Can\'t copy! Making copies of Window or Scope instances is not supported.');
       expect(function() { copy({child: $rootScope.$new()}, {}); }).
-          toThrowMinErr("ng", "cpws", "Can't copy! Making copies of Window or Scope instances is not supported.");
+          toThrowMinErr('ng', 'cpws', 'Can\'t copy! Making copies of Window or Scope instances is not supported.');
       expect(function() { copy([$rootScope.$new()]); }).
-          toThrowMinErr("ng", "cpws", "Can't copy! Making copies of Window or Scope instances is not supported.");
+          toThrowMinErr('ng', 'cpws', 'Can\'t copy! Making copies of Window or Scope instances is not supported.');
     }));
 
     it('should throw an exception if a Window is being copied', function() {
       expect(function() { copy(window); }).
-          toThrowMinErr("ng", "cpws", "Can't copy! Making copies of Window or Scope instances is not supported.");
+          toThrowMinErr('ng', 'cpws', 'Can\'t copy! Making copies of Window or Scope instances is not supported.');
       expect(function() { copy({child: window}); }).
-          toThrowMinErr("ng", "cpws", "Can't copy! Making copies of Window or Scope instances is not supported.");
+          toThrowMinErr('ng', 'cpws', 'Can\'t copy! Making copies of Window or Scope instances is not supported.');
       expect(function() { copy([window], []); }).
-          toThrowMinErr("ng", "cpws", "Can't copy! Making copies of Window or Scope instances is not supported.");
+          toThrowMinErr('ng', 'cpws', 'Can\'t copy! Making copies of Window or Scope instances is not supported.');
     });
 
     it('should throw an exception when source and destination are equivalent', function() {
       var src, dst;
       src = dst = {key: 'value'};
-      expect(function() { copy(src, dst); }).toThrowMinErr("ng", "cpi", "Can't copy! Source and destination are identical.");
+      expect(function() { copy(src, dst); }).toThrowMinErr('ng', 'cpi', 'Can\'t copy! Source and destination are identical.');
       src = dst = [2, 4];
-      expect(function() { copy(src, dst); }).toThrowMinErr("ng", "cpi", "Can't copy! Source and destination are identical.");
+      expect(function() { copy(src, dst); }).toThrowMinErr('ng', 'cpi', 'Can\'t copy! Source and destination are identical.');
     });
 
     it('should not copy the private $$hashKey', function() {
@@ -604,7 +604,7 @@ describe('angular', function() {
     });
   });
 
-  describe("extend", function() {
+  describe('extend', function() {
 
     it('should not copy the private $$hashKey', function() {
       var src,dst;
@@ -669,7 +669,7 @@ describe('angular', function() {
 
     it('should copy elements by reference', function() {
       var src = { element: document.createElement('div'),
-        jqObject: jqLite("<p><span>s1</span><span>s2</span></p>").find("span") };
+        jqObject: jqLite('<p><span>s1</span><span>s2</span></p>').find('span') };
       var dst = {};
 
       extend(dst, src);
@@ -697,13 +697,13 @@ describe('angular', function() {
 
 
     it('should replace primitives with objects', function() {
-      var dst = { foo: "bloop" };
-      var src = { foo: { bar: { baz: "bloop" }}};
+      var dst = { foo: 'bloop' };
+      var src = { foo: { bar: { baz: 'bloop' }}};
       merge(dst, src);
       expect(dst).toEqual({
         foo: {
           bar: {
-            baz: "bloop"
+            baz: 'bloop'
           }
         }
       });
@@ -712,12 +712,12 @@ describe('angular', function() {
 
     it('should replace null values in destination with objects', function() {
       var dst = { foo: null };
-      var src = { foo: { bar: { baz: "bloop" }}};
+      var src = { foo: { bar: { baz: 'bloop' }}};
       merge(dst, src);
       expect(dst).toEqual({
         foo: {
           bar: {
-            baz: "bloop"
+            baz: 'bloop'
           }
         }
       });
@@ -1237,7 +1237,7 @@ describe('angular', function() {
     });
 
     it('should return true if passed an object', function() {
-      expect(isArrayLike({0:"test", 1:"bob", 2:"tree", length:3})).toBe(true);
+      expect(isArrayLike({0:'test', 1:'bob', 2:'tree', length:3})).toBe(true);
     });
 
     it('should return true if passed arguments object', function() {
@@ -1316,21 +1316,21 @@ describe('angular', function() {
 
 
     it('should handle JQLite and jQuery objects like arrays', function() {
-      var jqObject = jqLite("<p><span>s1</span><span>s2</span></p>").find("span"),
+      var jqObject = jqLite('<p><span>s1</span><span>s2</span></p>').find('span'),
           log = [];
 
       forEach(jqObject, function(value, key) { log.push(key + ':' + value.innerHTML); });
       expect(log).toEqual(['0:s1', '1:s2']);
 
       log = [];
-      jqObject = jqLite("<pane></pane>");
+      jqObject = jqLite('<pane></pane>');
       forEach(jqObject.children(), function(value, key) { log.push(key + ':' + value.innerHTML); });
       expect(log).toEqual([]);
     });
 
 
     it('should handle NodeList objects like arrays', function() {
-      var nodeList = jqLite("<p><span>a</span><span>b</span><span>c</span></p>")[0].childNodes,
+      var nodeList = jqLite('<p><span>a</span><span>b</span><span>c</span></p>')[0].childNodes,
           log = [];
 
 
@@ -1340,11 +1340,11 @@ describe('angular', function() {
 
 
     it('should handle HTMLCollection objects like arrays', function() {
-      document.body.innerHTML = "<p>" +
-                                  "<a name='x'>a</a>" +
-                                  "<a name='y'>b</a>" +
-                                  "<a name='x'>c</a>" +
-                                "</p>";
+      document.body.innerHTML = '<p>' +
+                                  '<a name=\'x\'>a</a>' +
+                                  '<a name=\'y\'>b</a>' +
+                                  '<a name=\'x\'>c</a>' +
+                                '</p>';
 
       var htmlCollection = document.getElementsByName('x'),
           log = [];
@@ -1478,22 +1478,22 @@ describe('angular', function() {
 
 
       it('should follow the ES spec when called with jQuery/jqLite', function() {
-        testForEachSpec(2, jqLite("<span>a</span><span>b</span>"));
+        testForEachSpec(2, jqLite('<span>a</span><span>b</span>'));
       });
 
 
       it('should follow the ES spec when called with childNodes NodeList', function() {
-        testForEachSpec(2, jqLite("<p><span>a</span><span>b</span></p>")[0].childNodes);
+        testForEachSpec(2, jqLite('<p><span>a</span><span>b</span></p>')[0].childNodes);
       });
 
 
       it('should follow the ES spec when called with getElementsByTagName HTMLCollection', function() {
-        testForEachSpec(2, jqLite("<p><span>a</span><span>b</span></p>")[0].getElementsByTagName("*"));
+        testForEachSpec(2, jqLite('<p><span>a</span><span>b</span></p>')[0].getElementsByTagName('*'));
       });
 
 
       it('should follow the ES spec when called with querySelectorAll HTMLCollection', function() {
-        testForEachSpec(2, jqLite("<p><span>a</span><span>b</span></p>")[0].querySelectorAll("*"));
+        testForEachSpec(2, jqLite('<p><span>a</span><span>b</span></p>')[0].querySelectorAll('*'));
       });
 
 
@@ -1520,8 +1520,8 @@ describe('angular', function() {
         toEqual('asdf1234asdf');
 
       //don't encode unreserved'
-      expect(encodeUriSegment("-_.!~*'(); -_.!~*'();")).
-        toEqual("-_.!~*'();%20-_.!~*'();");
+      expect(encodeUriSegment('-_.!~*\'(); -_.!~*\'();')).
+        toEqual('-_.!~*\'();%20-_.!~*\'();');
 
       //don't encode the rest of pchar'
       expect(encodeUriSegment(':@&=+$, :@&=+$,')).
@@ -1542,8 +1542,8 @@ describe('angular', function() {
         toEqual('asdf1234asdf');
 
       //don't encode unreserved
-      expect(encodeUriQuery("-_.!~*'() -_.!~*'()")).
-        toEqual("-_.!~*'()+-_.!~*'()");
+      expect(encodeUriQuery('-_.!~*\'() -_.!~*\'()')).
+        toEqual('-_.!~*\'()+-_.!~*\'()');
 
       //don't encode the rest of pchar
       expect(encodeUriQuery(':@$, :@$,')).
@@ -1842,9 +1842,9 @@ describe('angular', function() {
     it('version should have full/major/minor/dot/codeName properties', function() {
       expect(version).toBeDefined();
       expect(version.full).toBe('"NG_VERSION_FULL"');
-      expect(version.major).toBe("NG_VERSION_MAJOR");
-      expect(version.minor).toBe("NG_VERSION_MINOR");
-      expect(version.dot).toBe("NG_VERSION_DOT");
+      expect(version.major).toBe('NG_VERSION_MAJOR');
+      expect(version.minor).toBe('NG_VERSION_MINOR');
+      expect(version.dot).toBe('NG_VERSION_DOT');
       expect(version.codeName).toBe('"NG_VERSION_CODENAME"');
     });
   });
@@ -1858,7 +1858,7 @@ describe('angular', function() {
       dealoc(element);
     });
 
-    it("should complain if app module can't be found", function() {
+    it('should complain if app module can\'t be found', function() {
       var element = jqLite('<div>{{1+2}}</div>');
 
       expect(function() {
@@ -1903,7 +1903,7 @@ describe('angular', function() {
         window.name = 'NG_DEFER_BOOTSTRAP!';
 
         angular.resumeDeferredBootstrap = noop;
-        var spy = spyOn(angular, "resumeDeferredBootstrap");
+        var spy = spyOn(angular, 'resumeDeferredBootstrap');
         injector = angular.bootstrap(element);
         expect(spy).toHaveBeenCalled();
       });
@@ -2065,7 +2065,7 @@ describe('angular', function() {
       var element = $compile('<p>Hello, world!</p>')($rootScope),
           body = $document.find('body')[0],
           expected = [false, false, false, false, false, false, false, true, true],
-          tests = [null, undefined, "string", 1001, {}, 0, false, body, element];
+          tests = [null, undefined, 'string', 1001, {}, 0, false, body, element];
       angular.forEach(tests, function(value, idx) {
         var result = angular.isElement(value);
         expect(typeof result).toEqual('boolean');

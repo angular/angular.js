@@ -20,7 +20,6 @@
     "key-spacing": ["error", { "beforeColon": false, "afterColon": true, "mode": "minimum" }],
     "object-curly-spacing": ["error", "never"],
     "object-property-newline": ["error", { "allowMultiplePropertiesPerLine": true }],
-    "operator-linebreak": ["error", "after", { "overrides": { "?": "before", ":": "before" }}],
-    "quotes": ["error", "single"]
+    "operator-linebreak": ["error", "after", { "overrides": { "?": "before", ":": "before" }}]
   }
 }

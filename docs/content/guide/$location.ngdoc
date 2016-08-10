@@ -409,9 +409,9 @@ In these examples we use `<base href="/base/index.html" />`. The inputs represen
    .constant('baseHref', '/base/index.html')
    .value('$sniffer', { history: true })
 
-   .controller("LocationController", function($scope, $location) {
+   .controller('LocationController', function($scope, $location) {
      $scope.$location = {};
-     angular.forEach("protocol host port path search hash".split(" "), function(method) {
+     angular.forEach('protocol host port path search hash'.split(' '), function(method) {
       $scope.$location[method] = function() {
         var result = $location[method]();
         return angular.isObject(result) ? angular.toJson(result) : result;
@@ -461,7 +461,7 @@ In these examples we use `<base href="/base/index.html" />`. The inputs represen
       return {
         template: 'Address: <input id="addressBar" type="text" style="width: 400px" >',
         link: function(scope, element, attrs) {
-          var input = element.children("input"), delay;
+          var input = element.children('input'), delay;
 
           input.on('keypress keyup keydown', function(event) {
                   delay = (!delay ? $timeout(fireUrlChange, 250) : null);
@@ -563,9 +563,9 @@ In these examples we use `<base href="/base/index.html" />`. The inputs represen
       $locationProvider.html5Mode(true).hashPrefix('!');
     })
 
-    .controller("LocationController", function($scope, $location) {
+    .controller('LocationController', function($scope, $location) {
       $scope.$location = {};
-      angular.forEach("protocol host port path search hash".split(" "), function(method) {
+      angular.forEach('protocol host port path search hash'.split(' '), function(method) {
         $scope.$location[method] = function() {
           var result = $location[method]();
           return angular.isObject(result) ? angular.toJson(result) : result;
@@ -615,7 +615,7 @@ In these examples we use `<base href="/base/index.html" />`. The inputs represen
       return {
         template: 'Address: <input id="addressBar" type="text" style="width: 400px" >',
         link: function(scope, element, attrs) {
-          var input = element.children("input"), delay;
+          var input = element.children('input'), delay;
 
           input.on('keypress keyup keydown', function(event) {
                   delay = (!delay ? $timeout(fireUrlChange, 250) : null);

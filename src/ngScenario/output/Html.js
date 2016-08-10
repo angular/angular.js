@@ -76,7 +76,7 @@ angular.scenario.output('html', function(context, runner, model) {
     spec = model.getSpec(spec.id);
     ui.removeClass('status-pending');
     ui.addClass('status-' + spec.status);
-    ui.find("> .test-info .timer-result").text(spec.duration + "ms");
+    ui.find('> .test-info .timer-result').text(spec.duration + 'ms');
     if (spec.status === 'success') {
       ui.find('> .test-info .test-name').addClass('closed');
       ui.find('> .scrollpane .test-actions').hide();

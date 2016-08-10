@@ -361,7 +361,7 @@ var $AnimateCssProvider = ['$animateProvider', /** @this */ function($animatePro
 
     var parentCounter = 0;
     function gcsHashFn(node, extraClasses) {
-      var KEY = "$$ngAnimateParentKey";
+      var KEY = '$$ngAnimateParentKey';
       var parentNode = node.parentNode;
       var parentID = parentNode[KEY] || (parentNode[KEY] = ++parentCounter);
       return parentID + '-' + node.getAttribute('class') + '-' + extraClasses;
@@ -632,7 +632,7 @@ var $AnimateCssProvider = ['$animateProvider', /** @this */ function($animatePro
 
       if (options.delay != null) {
         var delayStyle;
-        if (typeof options.delay !== "boolean") {
+        if (typeof options.delay !== 'boolean') {
           delayStyle = parseFloat(options.delay);
           // number in options.delay means we have to recalculate the delay for the closing timeout
           maxDelay = Math.max(delayStyle, 0);
@@ -915,7 +915,7 @@ var $AnimateCssProvider = ['$animateProvider', /** @this */ function($animatePro
           }
 
           if (flags.applyAnimationDelay) {
-            relativeDelay = typeof options.delay !== "boolean" && truthyTimingValue(options.delay)
+            relativeDelay = typeof options.delay !== 'boolean' && truthyTimingValue(options.delay)
                   ? parseFloat(options.delay)
                   : relativeDelay;
 

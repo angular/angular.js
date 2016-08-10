@@ -253,9 +253,9 @@ var ngOptionsDirective = ['$compile', '$document', '$parse', function($compile, 
     var match = optionsExp.match(NG_OPTIONS_REGEXP);
     if (!(match)) {
       throw ngOptionsMinErr('iexp',
-        "Expected expression in form of " +
-        "'_select_ (as _label_)? for (_key_,)?_value_ in _collection_'" +
-        " but got '{0}'. Element: {1}",
+        'Expected expression in form of ' +
+        '\'_select_ (as _label_)? for (_key_,)?_value_ in _collection_\'' +
+        ' but got \'{0}\'. Element: {1}',
         optionsExp, startingTag(selectElement));
     }
 

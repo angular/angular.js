@@ -1,6 +1,6 @@
 'use strict';
 
-describe("ngAnimateSwap", function() {
+describe('ngAnimateSwap', function() {
 
   beforeEach(module('ngAnimate'));
   beforeEach(module('ngAnimateMock'));
@@ -133,7 +133,7 @@ describe("ngAnimateSwap", function() {
   }));
 
 
-  describe("animations", function() {
+  describe('animations', function() {
     it('should trigger a leave animation followed by an enter animation upon swap',
       inject(function() {
 

@@ -244,7 +244,7 @@ describe('ngClass', function() {
   }));
 
 
-  it("should allow ngClassOdd/Even on the same element with overlapping classes", inject(function($rootScope, $compile, $animate) {
+  it('should allow ngClassOdd/Even on the same element with overlapping classes', inject(function($rootScope, $compile, $animate) {
       var className;
 
       element = $compile('<ul><li ng-repeat="i in [0,1,2]" ng-class-odd="\'same odd\'" ng-class-even="\'same even\'"></li><ul>')($rootScope);
@@ -304,7 +304,7 @@ describe('ngClass', function() {
     element = $compile('<div class="one {{cls}} three" ng-class="{four: four}"></div>')($rootScope);
 
     $rootScope.$apply(function() {
-      $rootScope.cls = "two";
+      $rootScope.cls = 'two';
       $rootScope.four = true;
     });
     expect(element).toHaveClass('one');
@@ -313,7 +313,7 @@ describe('ngClass', function() {
     expect(element).toHaveClass('four');
 
     $rootScope.$apply(function() {
-      $rootScope.cls = "too";
+      $rootScope.cls = 'too';
     });
     expect(element).toHaveClass('one');
     expect(element).toHaveClass('too'); // interpolated
@@ -322,7 +322,7 @@ describe('ngClass', function() {
     expect(element.hasClass('two')).toBeFalsy();
 
     $rootScope.$apply(function() {
-      $rootScope.cls = "to";
+      $rootScope.cls = 'to';
     });
     expect(element).toHaveClass('one');
     expect(element).toHaveClass('to'); // interpolated
@@ -335,7 +335,7 @@ describe('ngClass', function() {
 
   it('should not mess up class value due to observing an interpolated class attribute', inject(function($rootScope, $compile) {
     $rootScope.foo = true;
-    $rootScope.$watch("anything", function() {
+    $rootScope.$watch('anything', function() {
       $rootScope.foo = false;
     });
     element = $compile('<div ng-class="{foo:foo}"></div>')($rootScope);
@@ -433,7 +433,7 @@ describe('ngClass animations', function() {
     dealoc(element);
   });
 
-  it("should avoid calling addClass accidentally when removeClass is going on", function() {
+  it('should avoid calling addClass accidentally when removeClass is going on', function() {
     module('ngAnimateMock');
     inject(function($compile, $rootScope, $animate, $timeout) {
       element = angular.element('<div ng-class="val"></div>');
@@ -466,7 +466,7 @@ describe('ngClass animations', function() {
     });
   });
 
-  it("should combine the ngClass evaluation with the enter animation", function() {
+  it('should combine the ngClass evaluation with the enter animation', function() {
 
     //mocks are not used since the enter delegation method is called before addClass and
     //it makes it impossible to test to see that addClass is called first
@@ -512,7 +512,7 @@ describe('ngClass animations', function() {
     });
   });
 
-  it("should not remove classes if they're going to be added back right after", function() {
+  it('should not remove classes if they\'re going to be added back right after', function() {
     module('ngAnimateMock');
 
     inject(function($rootScope, $compile, $animate) {

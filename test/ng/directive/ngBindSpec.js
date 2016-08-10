@@ -163,7 +163,7 @@ describe('ngBind*', function() {
       expect(function() {
         $compile('<div ng-bind-html="{{myHtml}}"></div>');
       }).toThrowMinErr('$parse', 'syntax',
-        "Syntax Error: Token '{' invalid key at column 2 of the expression [{{myHtml}}] starting at [{myHtml}}]");
+        'Syntax Error: Token \'{\' invalid key at column 2 of the expression [{{myHtml}}] starting at [{myHtml}}]');
     }));
 
 

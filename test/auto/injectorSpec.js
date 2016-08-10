@@ -20,7 +20,7 @@ describe('injector', function() {
   }));
 
 
-  it("should return same instance from calling provider", function() {
+  it('should return same instance from calling provider', function() {
     var instance = {},
         original = instance;
     providers('instance', function() { return instance; });
@@ -80,14 +80,14 @@ describe('injector', function() {
   it('should provide useful message if no provider', function() {
     expect(function() {
       injector.get('idontexist');
-    }).toThrowMinErr("$injector", "unpr", "Unknown provider: idontexistProvider <- idontexist");
+    }).toThrowMinErr('$injector', 'unpr', 'Unknown provider: idontexistProvider <- idontexist');
   });
 
 
   it('should provide the caller name if given', function() {
     expect(function() {
       injector.get('idontexist', 'callerName');
-    }).toThrowMinErr("$injector", "unpr", "Unknown provider: idontexistProvider <- idontexist <- callerName");
+    }).toThrowMinErr('$injector', 'unpr', 'Unknown provider: idontexistProvider <- idontexist <- callerName');
   });
 
 
@@ -96,18 +96,18 @@ describe('injector', function() {
     var $controller = injector.get('$controller');
     expect(function() {
       $controller('myCtrl', {$scope: {}});
-    }).toThrowMinErr("$injector", "unpr", "Unknown provider: idontexistProvider <- idontexist <- myCtrl");
+    }).toThrowMinErr('$injector', 'unpr', 'Unknown provider: idontexistProvider <- idontexist <- myCtrl');
   });
 
 
   it('should not corrupt the cache when an object fails to get instantiated', function() {
     expect(function() {
       injector.get('idontexist');
-    }).toThrowMinErr("$injector", "unpr", "Unknown provider: idontexistProvider <- idontexist");
+    }).toThrowMinErr('$injector', 'unpr', 'Unknown provider: idontexistProvider <- idontexist');
 
     expect(function() {
       injector.get('idontexist');
-    }).toThrowMinErr("$injector", "unpr", "Unknown provider: idontexistProvider <- idontexist");
+    }).toThrowMinErr('$injector', 'unpr', 'Unknown provider: idontexistProvider <- idontexist');
   });
 
 
@@ -116,7 +116,7 @@ describe('injector', function() {
     providers('b', function(a) {return 2;});
     expect(function() {
       injector.get('b');
-    }).toThrowMinErr("$injector", "unpr", "Unknown provider: idontexistProvider <- idontexist <- a <- b");
+    }).toThrowMinErr('$injector', 'unpr', 'Unknown provider: idontexistProvider <- idontexist <- a <- b');
   });
 
 
@@ -147,13 +147,13 @@ describe('injector', function() {
 
     it('should call function', function() {
       Fn.$inject = ['a', 'b', 'c', 'd'];
-      injector.invoke(Fn, {name:"this"},  {c:3, d:4});
+      injector.invoke(Fn, {name:'this'},  {c:3, d:4});
       expect(args).toEqual([{name:'this'}, 1, 2, 3, 4]);
     });
 
 
     it('should treat array as annotations', function() {
-      injector.invoke(['a', 'b', 'c', 'd', Fn], {name:"this"}, {c:3, d:4});
+      injector.invoke(['a', 'b', 'c', 'd', Fn], {name:'this'}, {c:3, d:4});
       expect(args).toEqual([{name:'this'}, 1, 2, 3, 4]);
     });
 
@@ -168,10 +168,10 @@ describe('injector', function() {
     it('should fail with errors if not function or array', function() {
       expect(function() {
         injector.invoke({});
-      }).toThrowMinErr("ng", "areq", "Argument 'fn' is not a function, got Object");
+      }).toThrowMinErr('ng', 'areq', 'Argument \'fn\' is not a function, got Object');
       expect(function() {
         injector.invoke(['a', 123], {});
-      }).toThrowMinErr("ng", "areq", "Argument 'fn' is not a function, got number");
+      }).toThrowMinErr('ng', 'areq', 'Argument \'fn\' is not a function, got number');
     });
   });
 
@@ -947,7 +947,7 @@ describe('injector', function() {
     it('should throw usefull error on wrong argument type]', function() {
       expect(function() {
         $injector.invoke({});
-      }).toThrowMinErr("ng", "areq", "Argument 'fn' is not a function, got Object");
+      }).toThrowMinErr('ng', 'areq', 'Argument \'fn\' is not a function, got Object');
     });
   });
 
@@ -1044,7 +1044,7 @@ describe('injector', function() {
       }]);
       expect(function() {
         $injector.get('nameProvider');
-      }).toThrowMinErr("$injector", "unpr", "Unknown provider: nameProviderProvider <- nameProvider");
+      }).toThrowMinErr('$injector', 'unpr', 'Unknown provider: nameProviderProvider <- nameProvider');
     });
 
 
@@ -1052,7 +1052,7 @@ describe('injector', function() {
       var  $injector = createInjector([]);
       expect(function() {
         $injector.get('$provide').value('a', 'b');
-      }).toThrowMinErr("$injector", "unpr", "Unknown provider: $provideProvider <- $provide");
+      }).toThrowMinErr('$injector', 'unpr', 'Unknown provider: $provideProvider <- $provide');
     });
 
 

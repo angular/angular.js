@@ -1,6 +1,6 @@
 'use strict';
 
-describe("ngAnimate $$animateJsDriver", function() {
+describe('ngAnimate $$animateJsDriver', function() {
 
   beforeEach(module('ngAnimate'));
   beforeEach(module('ngAnimateMock'));

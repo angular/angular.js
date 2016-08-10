@@ -20,7 +20,7 @@ describe('jqLite', function() {
       toJqEqual: function() {
         return {
           compare: function(_actual_, expected) {
-            var msg = "Unequal length";
+            var msg = 'Unequal length';
             var message = function() {return msg;};
 
             var value = _actual_ && expected && _actual_.length === expected.length;
@@ -28,9 +28,9 @@ describe('jqLite', function() {
               var actual = jqLite(_actual_[i])[0];
               var expect = jqLite(expected[i])[0];
               value = value && equals(expect, actual);
-              msg = "Not equal at index: " + i
-                  + " - Expected: " + expect
-                  + " - Actual: " + actual;
+              msg = 'Not equal at index: ' + i
+                  + ' - Expected: ' + expect
+                  + ' - Actual: ' + actual;
             }
             return { pass: value, message: message };
           }
@@ -230,9 +230,9 @@ describe('jqLite', function() {
           frag = document.createDocumentFragment(),
           $frag = jqLite(frag);
       frag.host = host[0];
-      host.data("foo", 123);
+      host.data('foo', 123);
       host.append($frag);
-      expect($frag.inheritedData("foo")).toBe(123);
+      expect($frag.inheritedData('foo')).toBe(123);
 
       dealoc(host);
       dealoc($frag);
@@ -438,24 +438,24 @@ describe('jqLite', function() {
       var node = document.createElement('div');
 
       expect(jqLite.hasData(node)).toBe(false);
-      expect(jqLite.data(node, "foo")).toBeUndefined();
+      expect(jqLite.data(node, 'foo')).toBeUndefined();
       expect(jqLite.hasData(node)).toBe(false);
 
-      jqLite.data(node, "foo", "bar");
+      jqLite.data(node, 'foo', 'bar');
 
       expect(jqLite.hasData(node)).toBe(true);
-      expect(jqLite.data(node, "foo")).toBe("bar");
-      expect(jqLite(node).data("foo")).toBe("bar");
+      expect(jqLite.data(node, 'foo')).toBe('bar');
+      expect(jqLite(node).data('foo')).toBe('bar');
 
       expect(jqLite.data(node)).toBe(jqLite(node).data());
 
-      jqLite.removeData(node, "foo");
-      expect(jqLite.data(node, "foo")).toBeUndefined();
+      jqLite.removeData(node, 'foo');
+      expect(jqLite.data(node, 'foo')).toBeUndefined();
 
-      jqLite.data(node, "bar", "baz");
+      jqLite.data(node, 'bar', 'baz');
       jqLite.removeData(node);
       jqLite.removeData(node);
-      expect(jqLite.data(node, "bar")).toBeUndefined();
+      expect(jqLite.data(node, 'bar')).toBeUndefined();
 
       jqLite(node).remove();
       expect(jqLite.hasData(node)).toBe(false);
@@ -1857,7 +1857,7 @@ describe('jqLite', function() {
     it('should wrap text node', function() {
       var root = jqLite('<div>A&lt;a&gt;B&lt;/a&gt;C</div>');
       var text = root.contents();
-      expect(text.wrap("<span>")[0]).toBe(text[0]);
+      expect(text.wrap('<span>')[0]).toBe(text[0]);
       expect(root.find('span').text()).toEqual('A<a>B</a>C');
     });
     it('should wrap free text node', function() {
@@ -1866,7 +1866,7 @@ describe('jqLite', function() {
       text.remove();
       expect(root.text()).toBe('');
 
-      text.wrap("<span>");
+      text.wrap('<span>');
       expect(text.parent().text()).toEqual('A<a>B</a>C');
     });
     it('should clone elements to be wrapped around target', function() {
@@ -2084,9 +2084,9 @@ describe('jqLite', function() {
 
       element.on('click', pokeSpy);
 
-      element.triggerHandler('click', [{hello: "world"}]);
+      element.triggerHandler('click', [{hello: 'world'}]);
       data = pokeSpy.calls.mostRecent().args[1];
-      expect(data.hello).toBe("world");
+      expect(data.hello).toBe('world');
     });
 
     it('should mark event as prevented if preventDefault is called', function() {
@@ -2122,7 +2122,7 @@ describe('jqLite', function() {
       expect(clickSpy).toHaveBeenCalledTimes(2);
     });
 
-    it("should accept a custom event instead of eventName", function() {
+    it('should accept a custom event instead of eventName', function() {
       var element = jqLite('<a>poke</a>'),
           pokeSpy = jasmine.createSpy('poke'),
           customEvent = {

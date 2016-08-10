@@ -29,8 +29,8 @@ describe('$$animateAsyncRun', function() {
   }));
 });
 
-describe("$$AnimateRunner", function() {
-  they("should trigger the host $prop function",
+describe('$$AnimateRunner', function() {
+  they('should trigger the host $prop function',
     ['end', 'cancel', 'pause', 'resume'], function(method) {
 
     inject(function($$AnimateRunner) {
@@ -42,7 +42,7 @@ describe("$$AnimateRunner", function() {
     });
   });
 
-  they("should trigger the inner runner's host $prop function",
+  they('should trigger the inner runner\'s host $prop function',
     ['end', 'cancel', 'pause', 'resume'], function(method) {
 
     inject(function($$AnimateRunner) {
@@ -56,7 +56,7 @@ describe("$$AnimateRunner", function() {
     });
   });
 
-  it("should resolve the done function only if one RAF has passed",
+  it('should resolve the done function only if one RAF has passed',
     inject(function($$AnimateRunner, $$rAF) {
 
     var runner = new $$AnimateRunner();
@@ -68,7 +68,7 @@ describe("$$AnimateRunner", function() {
     expect(spy).toHaveBeenCalled();
   }));
 
-  it("should resolve with the status provided in the completion function",
+  it('should resolve with the status provided in the completion function',
     inject(function($$AnimateRunner, $$rAF) {
 
     var runner = new $$AnimateRunner();
@@ -81,7 +81,7 @@ describe("$$AnimateRunner", function() {
     expect(capturedValue).toBe('special value');
   }));
 
-  they("should immediately resolve each combined runner in a bottom-up order when $prop is called",
+  they('should immediately resolve each combined runner in a bottom-up order when $prop is called',
     ['end', 'cancel'], function(method) {
 
     inject(function($$AnimateRunner) {
@@ -109,7 +109,7 @@ describe("$$AnimateRunner", function() {
     });
   });
 
-  they("should resolve/reject using a newly created promise when .then() is used upon $prop",
+  they('should resolve/reject using a newly created promise when .then() is used upon $prop',
     ['end', 'cancel'], function(method) {
 
     inject(function($$AnimateRunner, $rootScope) {
@@ -140,14 +140,14 @@ describe("$$AnimateRunner", function() {
     });
   });
 
-  it("should expose/create the contained promise when getPromise() is called",
+  it('should expose/create the contained promise when getPromise() is called',
     inject(function($$AnimateRunner, $rootScope) {
 
     var runner = new $$AnimateRunner();
     expect(isPromiseLike(runner.getPromise())).toBeTruthy();
   }));
 
-  it("should expose the `catch` promise function to handle the rejected state",
+  it('should expose the `catch` promise function to handle the rejected state',
     inject(function($$AnimateRunner, $rootScope) {
 
     var runner = new $$AnimateRunner();
@@ -160,7 +160,7 @@ describe("$$AnimateRunner", function() {
     expect(animationFailed).toBe(true);
   }));
 
-  it("should use timeouts to trigger async operations when the document is hidden", function() {
+  it('should use timeouts to trigger async operations when the document is hidden', function() {
     var hidden = true;
 
     module(function($provide) {
@@ -196,7 +196,7 @@ describe("$$AnimateRunner", function() {
     });
   });
 
-  they("should expose the `finally` promise function to handle the final state when $prop",
+  they('should expose the `finally` promise function to handle the final state when $prop',
     { 'rejected': 'cancel', 'resolved': 'end' }, function(method) {
     inject(function($$AnimateRunner, $rootScope) {
         var runner = new $$AnimateRunner();
@@ -210,8 +210,8 @@ describe("$$AnimateRunner", function() {
     });
   });
 
-  describe(".all()", function() {
-    it("should resolve when all runners have naturally resolved",
+  describe('.all()', function() {
+    it('should resolve when all runners have naturally resolved',
       inject(function($$rAF, $$AnimateRunner) {
 
       var runner1 = new $$AnimateRunner();
@@ -234,7 +234,7 @@ describe("$$AnimateRunner", function() {
       expect(status).toBe(true);
     }));
 
-    they("should immediately resolve if and when all runners have been $prop",
+    they('should immediately resolve if and when all runners have been $prop',
       { ended: 'end', cancelled: 'cancel' }, function(method) {
 
       inject(function($$AnimateRunner) {
@@ -257,7 +257,7 @@ describe("$$AnimateRunner", function() {
       });
     });
 
-    it("should return a status of `false` if one or more runners was cancelled",
+    it('should return a status of `false` if one or more runners was cancelled',
       inject(function($$AnimateRunner) {
 
       var runner1 = new $$AnimateRunner();
@@ -277,8 +277,8 @@ describe("$$AnimateRunner", function() {
     }));
   });
 
-  describe(".chain()", function() {
-    it("should evaluate an array of functions in a chain",
+  describe('.chain()', function() {
+    it('should evaluate an array of functions in a chain',
       inject(function($$rAF, $$AnimateRunner) {
 
       var runner1 = new $$AnimateRunner();
@@ -329,7 +329,7 @@ describe("$$AnimateRunner", function() {
       expect(status).toBe(true);
     }));
 
-    it("should break the chian when a function evaluates to false",
+    it('should break the chian when a function evaluates to false',
       inject(function($$rAF, $$AnimateRunner) {
 
       var runner1 = new $$AnimateRunner();

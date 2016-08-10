@@ -97,7 +97,7 @@ angular.scenario.Application.prototype.navigateTo = function(url, loadFn, errorF
     }).attr('src', url);
 
     // for IE compatibility set the name *after* setting the frame url
-    frame[0].contentWindow.name = "NG_DEFER_BOOTSTRAP!";
+    frame[0].contentWindow.name = 'NG_DEFER_BOOTSTRAP!';
   }
   self.context.find('> h2 a').attr('href', url).text(url);
 };

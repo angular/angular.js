@@ -1,8 +1,8 @@
 'use strict';
 
-describe("resource", function() {
+describe('resource', function() {
 
-describe("basic usage", function() {
+describe('basic usage', function() {
   var $resource, CreditCard, callback, $httpBackend, resourceProvider;
 
   beforeEach(module('ngResource'));
@@ -98,7 +98,7 @@ describe("basic usage", function() {
   });
 
 
-  it("should build resource", function() {
+  it('should build resource', function() {
     expect(typeof CreditCard).toBe('function');
     expect(typeof CreditCard.get).toBe('function');
     expect(typeof CreditCard.save).toBe('function');
@@ -140,14 +140,14 @@ describe("basic usage", function() {
     it('should omit properties from prototype chain', function() {
       var original, clone = {};
       function Func() {}
-      Func.prototype.hello = "world";
+      Func.prototype.hello = 'world';
 
       original = new Func();
-      original.goodbye = "world";
+      original.goodbye = 'world';
 
       expect(shallowClearAndCopy(original, clone)).toBe(clone);
       expect(clone.hello).toBeUndefined();
-      expect(clone.goodbye).toBe("world");
+      expect(clone.goodbye).toBe('world');
     });
   });
 
@@ -403,7 +403,7 @@ describe("basic usage", function() {
   });
 
 
-  it("should build resource with action default param overriding default param", function() {
+  it('should build resource with action default param overriding default param', function() {
     $httpBackend.expect('GET', '/Customer/123').respond({id: 'abc'});
     var TypeItem = $resource('/:type/:typeId', {type: 'Order'},
                                   {get: {method: 'GET', params: {type: 'Customer'}}});
@@ -448,11 +448,11 @@ describe("basic usage", function() {
   it('should throw an exception if a param is called "hasOwnProperty"', function() {
     expect(function() {
       $resource('/:hasOwnProperty').get();
-    }).toThrowMinErr('$resource','badname', "hasOwnProperty is not a valid parameter name");
+    }).toThrowMinErr('$resource','badname', 'hasOwnProperty is not a valid parameter name');
   });
 
 
-  it("should create resource", function() {
+  it('should create resource', function() {
     $httpBackend.expect('POST', '/CreditCard', '{"name":"misko"}').respond({id: 123, name: 'misko'});
 
     var cc = CreditCard.save({name: 'misko'}, callback);
@@ -467,7 +467,7 @@ describe("basic usage", function() {
   });
 
 
-  it("should read resource", function() {
+  it('should read resource', function() {
     $httpBackend.expect('GET', '/CreditCard/123').respond({id: 123, number: '9876'});
     var cc = CreditCard.get({id: 123}, callback);
 
@@ -484,14 +484,14 @@ describe("basic usage", function() {
 
   it('should send correct headers', function() {
     $httpBackend.expectPUT('/CreditCard/123', undefined, function(headers) {
-      return headers['If-None-Match'] === "*";
+      return headers['If-None-Match'] === '*';
     }).respond({id:123});
 
     CreditCard.conditionalPut({id: {key:123}});
   });
 
 
-  it("should read partial resource", function() {
+  it('should read partial resource', function() {
     $httpBackend.expect('GET', '/CreditCard').respond([{id:{key:123}}]);
     var ccs = CreditCard.query();
 
@@ -511,7 +511,7 @@ describe("basic usage", function() {
   });
 
 
-  it("should update resource", function() {
+  it('should update resource', function() {
     $httpBackend.expect('POST', '/CreditCard/123', '{"id":{"key":123},"name":"misko"}').
                  respond({id: {key: 123}, name: 'rama'});
 
@@ -522,7 +522,7 @@ describe("basic usage", function() {
   });
 
 
-  it("should query resource", function() {
+  it('should query resource', function() {
     $httpBackend.expect('GET', '/CreditCard?key=value').respond([{id: 1}, {id: 2}]);
 
     var ccs = CreditCard.query({key: 'value'}, callback);
@@ -536,7 +536,7 @@ describe("basic usage", function() {
   });
 
 
-  it("should have all arguments optional", function() {
+  it('should have all arguments optional', function() {
     $httpBackend.expect('GET', '/CreditCard').respond([{id:1}]);
 
     var log = '';
@@ -583,7 +583,7 @@ describe("basic usage", function() {
   });
 
 
-  it("should patch a resource", function() {
+  it('should patch a resource', function() {
     $httpBackend.expectPATCH('/CreditCard/123', '{"name":"igor"}').
                      respond({id: 123, name: 'rama'});
 
@@ -1228,10 +1228,10 @@ describe("basic usage", function() {
       });
 
       it('should not convert string literals in array into Resource objects', function() {
-        $httpBackend.expect('GET', '/names.json').respond(["mary", "jane"]);
+        $httpBackend.expect('GET', '/names.json').respond(['mary', 'jane']);
         var strings = $resource('/names.json').query();
         $httpBackend.flush();
-        expect(strings).toEqualData(["mary", "jane"]);
+        expect(strings).toEqualData(['mary', 'jane']);
       });
 
       it('should not convert number literals in array into Resource objects', function() {
@@ -1288,7 +1288,7 @@ describe("basic usage", function() {
       });
     });
 
-    describe("save", function() {
+    describe('save', function() {
       it('should append the suffix', function() {
         $httpBackend.expect('POST', '/users.json', '{"name":"user1"}').respond({id: 123, name: 'user1'});
         var UserService = $resource('/users/:user_id.json', {user_id: '@id'});

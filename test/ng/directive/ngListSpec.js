@@ -16,7 +16,7 @@ describe('ngList', function() {
     var inputElm = helper.compileInput('<input type="text" ng-model="list" ng-list />');
 
     // model -> view
-    $rootScope.$apply("list = ['x', 'y', 'z']");
+    $rootScope.$apply('list = [\'x\', \'y\', \'z\']');
     expect(inputElm.val()).toBe('x, y, z');
 
     // view -> model
@@ -25,7 +25,7 @@ describe('ngList', function() {
   });
 
 
-  it("should not clobber text if model changes due to itself", function() {
+  it('should not clobber text if model changes due to itself', function() {
     // When the user types 'a,b' the 'a,' stage parses to ['a'] but if the
     // $parseModel function runs it will change to 'a', in essence preventing
     // the user from ever typing ','.
@@ -79,7 +79,7 @@ describe('ngList', function() {
     });
 
 
-    it("should join the list back together with the custom separator", function() {
+    it('should join the list back together with the custom separator', function() {
       var inputElm = helper.compileInput('<input type="text" ng-model="list" ng-list=" : " />');
 
       $rootScope.$apply(function() {
@@ -119,13 +119,13 @@ describe('ngList', function() {
 
     });
 
-    it("should not trim whitespace from each list item", function() {
+    it('should not trim whitespace from each list item', function() {
       helper.compileInput('<input type="text" ng-model="list" ng-trim="false" ng-list="|" />');
       helper.changeInputValueTo('a  |  b');
       expect($rootScope.list).toEqual(['a  ','  b']);
     });
 
-    it("should support splitting on newlines", function() {
+    it('should support splitting on newlines', function() {
       helper.compileInput('<textarea type="text" ng-model="list" ng-trim="false" ng-list="&#10;"></textarea>');
       helper.changeInputValueTo('a\nb');
       expect($rootScope.list).toEqual(['a','b']);

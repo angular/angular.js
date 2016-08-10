@@ -542,12 +542,12 @@ angular.module('ngResource', ['ng']).
           var urlParams = self.urlParams = Object.create(null);
           forEach(url.split(/\W/), function(param) {
             if (param === 'hasOwnProperty') {
-              throw $resourceMinErr('badname', "hasOwnProperty is not a valid parameter name.");
+              throw $resourceMinErr('badname', 'hasOwnProperty is not a valid parameter name.');
             }
-            if (!(new RegExp("^\\d+$").test(param)) && param &&
-              (new RegExp("(^|[^\\\\]):" + param + "(\\W|$)").test(url))) {
+            if (!(new RegExp('^\\d+$').test(param)) && param &&
+              (new RegExp('(^|[^\\\\]):' + param + '(\\W|$)').test(url))) {
               urlParams[param] = {
-                isQueryParamValue: (new RegExp("\\?.*=:" + param + "(?:\\W|$)")).test(url)
+                isQueryParamValue: (new RegExp('\\?.*=:' + param + '(?:\\W|$)')).test(url)
               };
             }
           });
@@ -566,11 +566,11 @@ angular.module('ngResource', ['ng']).
               } else {
                 encodedVal = encodeUriSegment(val);
               }
-              url = url.replace(new RegExp(":" + urlParam + "(\\W|$)", "g"), function(match, p1) {
+              url = url.replace(new RegExp(':' + urlParam + '(\\W|$)', 'g'), function(match, p1) {
                 return encodedVal + p1;
               });
             } else {
-              url = url.replace(new RegExp("(/?):" + urlParam + "(\\W|$)", "g"), function(match,
+              url = url.replace(new RegExp('(/?):' + urlParam + '(\\W|$)', 'g'), function(match,
                   leadingSlashes, tail) {
                 if (tail.charAt(0) === '/') {
                   return tail;
@@ -687,7 +687,7 @@ angular.module('ngResource', ['ng']).
               case 0: break;
               default:
                 throw $resourceMinErr('badargs',
-                  "Expected up to 4 arguments [params, data, success, error], got {0} arguments",
+                  'Expected up to 4 arguments [params, data, success, error], got {0} arguments',
                   arguments.length);
             }
 
@@ -744,7 +744,7 @@ angular.module('ngResource', ['ng']).
                 if (action.isArray) {
                   value.length = 0;
                   forEach(data, function(item) {
-                    if (typeof item === "object") {
+                    if (typeof item === 'object') {
                       value.push(new Resource(item));
                     } else {
                       // Valid JSON values may be string literals, and these should not be converted

@@ -1,6 +1,6 @@
 'use strict';
 
-describe("animations", function() {
+describe('animations', function() {
 
   beforeEach(module('ngAnimate'));
   beforeEach(module('ngAnimateMock'));
@@ -137,7 +137,7 @@ describe("animations", function() {
       };
     }));
 
-    it("should not alter the provided options input in any way throughout the animation", inject(function($animate, $rootScope) {
+    it('should not alter the provided options input in any way throughout the animation', inject(function($animate, $rootScope) {
       var initialOptions = {
         from: { height: '50px' },
         to: { width: '50px' },
@@ -156,7 +156,7 @@ describe("animations", function() {
       expect(copiedOptions).toEqual(initialOptions);
     }));
 
-    it("should skip animations entirely if the document is hidden", function() {
+    it('should skip animations entirely if the document is hidden', function() {
       var hidden = true;
 
       module(function($provide) {
@@ -296,7 +296,7 @@ describe("animations", function() {
     });
 
     describe('enabled()', function() {
-      it("should work for all animations", inject(function($animate) {
+      it('should work for all animations', inject(function($animate) {
 
         expect($animate.enabled()).toBe(true);
 
@@ -682,7 +682,7 @@ describe("animations", function() {
         { '{}': {},
           'null': null,
           'false': false,
-          '""': "",
+          '""': '',
           '[]': [] }, function(toStyle) {
 
         inject(function($animate, $rootScope) {
@@ -795,7 +795,7 @@ describe("animations", function() {
       });
     });
 
-    it("should NOT clobber all data on an element when animation is finished",
+    it('should NOT clobber all data on an element when animation is finished',
       inject(function($animate, $rootScope) {
 
       element.data('foo', 'bar');
@@ -870,7 +870,7 @@ describe("animations", function() {
         expect(capturedAnimation).toBeFalsy();
       }));
 
-      it("should disable all child animations for atleast one turn when a structural animation is issued",
+      it('should disable all child animations for atleast one turn when a structural animation is issued',
         inject(function($animate, $rootScope, $compile, $document, $rootElement, $$AnimateRunner) {
 
         element = $compile(

@@ -89,7 +89,7 @@ function download(collection, name, url) {
 
       // fix smart-quotes
       data = data.replace(/[“”]/g, '"');
-      data = data.replace(/[‘’]/g, "'");
+      data = data.replace(/[‘’]/g, '\'');
 
 
       data = data + '\n';
@@ -135,7 +135,7 @@ function login(username, password) {
       });
       if (token) {
         fs.writeFileSync('tmp/gdocs.auth', token);
-        console.log("logged in, token saved in 'tmp/gdocs.auth'");
+        console.log('logged in, token saved in \'tmp/gdocs.auth\'');
       } else {
         console.log('failed to log in');
       }
@@ -209,23 +209,23 @@ function encodeData(obj) {
 
 function askPassword(callback) {
   var stdin = process.openStdin(),
-      stdio = process.binding("stdio");
+      stdio = process.binding('stdio');
 
   stdio.setRawMode();
 
   console.log('Enter your password:');
-  var password = "";
-  stdin.on("data", function(c) {
-    c = c + "";
+  var password = '';
+  stdin.on('data', function(c) {
+    c = c + '';
     switch (c) {
-      case "\n":
-      case "\r":
-      case "\u0004":
+      case '\n':
+      case '\r':
+      case '\u0004':
         stdio.setRawMode(false);
         stdin.pause();
         callback(password);
         break;
-      case "\u0003":
+      case '\u0003':
         process.exit();
         break;
       default:

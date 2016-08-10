@@ -650,7 +650,7 @@ describe('q', function() {
           expect(logStr()).toBe('finally1()');
         });
 
-        describe("when the promise is fulfilled", function() {
+        describe('when the promise is fulfilled', function() {
           it('should call the callback',
               function() {
             var promise = createPromise();
@@ -693,9 +693,9 @@ describe('q', function() {
                                  'successCCCC(cc)->ccc']);
           });
 
-          describe("when the callback returns a promise", function() {
-            describe("that is fulfilled", function() {
-              it("should fulfill with the original reason after that promise resolves",
+          describe('when the callback returns a promise', function() {
+            describe('that is fulfilled', function() {
+              it('should fulfill with the original reason after that promise resolves',
                 function() {
                 var promise = createPromise();
                 var promise2 = createPromise();
@@ -711,8 +711,8 @@ describe('q', function() {
               });
             });
 
-            describe("that is rejected", function() {
-              it("should reject with this new rejection reason",
+            describe('that is rejected', function() {
+              it('should reject with this new rejection reason',
                   function() {
                 var promise = createPromise();
                 var promise2 = createPromise();
@@ -727,10 +727,10 @@ describe('q', function() {
 
           });
 
-          describe("when the callback throws an exception", function() {
-            it("should reject with this new exception", function() {
+          describe('when the callback throws an exception', function() {
+            it('should reject with this new exception', function() {
               var promise = createPromise();
-              promise['finally'](fin(1, "exception", true))
+              promise['finally'](fin(1, 'exception', true))
                      .then(success(1), error(2));
               resolve('foo');
               mockNextTick.flush();
@@ -741,8 +741,8 @@ describe('q', function() {
         });
 
 
-        describe("when the promise is rejected", function() {
-          it("should call the callback", function() {
+        describe('when the promise is rejected', function() {
+          it('should call the callback', function() {
             var promise = createPromise();
             promise['finally'](fin(1))
                    .then(success(2), error(1));
@@ -753,16 +753,16 @@ describe('q', function() {
 
           it('should reject with the original reason', function() {
             var promise = createPromise();
-            promise['finally'](fin(1), "hello")
+            promise['finally'](fin(1), 'hello')
                    .then(success(2), error(2));
             reject('original');
             mockNextTick.flush();
             expect(logStr()).toBe('finally1(); error2(original)->reject(original)');
           });
 
-          describe("when the callback returns a promise", function() {
-            describe("that is fulfilled", function() {
-              it("should reject with the original reason after that promise resolves", function() {
+          describe('when the callback returns a promise', function() {
+            describe('that is fulfilled', function() {
+              it('should reject with the original reason after that promise resolves', function() {
                 var promise = createPromise();
                 var promise2 = createPromise();
                 resolve2('bar');
@@ -774,8 +774,8 @@ describe('q', function() {
               });
             });
 
-            describe("that is rejected", function() {
-              it("should reject with the new reason", function() {
+            describe('that is rejected', function() {
+              it('should reject with the new reason', function() {
                 var promise = createPromise();
                 var promise2 = createPromise();
                 reject2('bar');
@@ -788,10 +788,10 @@ describe('q', function() {
             });
           });
 
-          describe("when the callback throws an exception", function() {
-            it("should reject with this new exception", function() {
+          describe('when the callback throws an exception', function() {
+            it('should reject with this new exception', function() {
               var promise = createPromise();
-              promise['finally'](fin(1, "exception", true))
+              promise['finally'](fin(1, 'exception', true))
                      .then(success(1), error(2));
               resolve('foo');
               mockNextTick.flush();
@@ -1126,7 +1126,7 @@ describe('q', function() {
       });
 
 
-      it("should not save and re-emit progress notifications between ticks", function() {
+      it('should not save and re-emit progress notifications between ticks', function() {
         promise.then(success(1), error(1), progress(1));
         deferred.notify('foo');
         deferred.notify('bar');
@@ -1406,7 +1406,7 @@ describe('q', function() {
           expect(logStr()).toBe('finally1()');
         });
 
-        describe("when the promise is fulfilled", function() {
+        describe('when the promise is fulfilled', function() {
 
           it('should call the callback',
               function() {
@@ -1444,10 +1444,10 @@ describe('q', function() {
                                  'successCCCC(cc)->ccc']);
           });
 
-          describe("when the callback returns a promise", function() {
+          describe('when the callback returns a promise', function() {
 
-            describe("that is fulfilled", function() {
-              it("should fulfill with the original reason after that promise resolves",
+            describe('that is fulfilled', function() {
+              it('should fulfill with the original reason after that promise resolves',
                 function() {
 
                 var returnedDef = defer();
@@ -1462,8 +1462,8 @@ describe('q', function() {
               });
             });
 
-            describe("that is rejected", function() {
-              it("should reject with this new rejection reason",
+            describe('that is rejected', function() {
+              it('should reject with this new rejection reason',
                 function() {
                 var returnedDef = defer();
                 returnedDef.reject('bar');
@@ -1476,9 +1476,9 @@ describe('q', function() {
 
           });
 
-          describe("when the callback throws an exception", function() {
-            it("should reject with this new exception", function() {
-              promise['finally'](fin(1, "exception", true))
+          describe('when the callback throws an exception', function() {
+            it('should reject with this new exception', function() {
+              promise['finally'](fin(1, 'exception', true))
                      .then(success(1), error(2));
               syncResolve(deferred, 'foo');
               expect(logStr()).toBe('finally1()->throw(exception); error2(exception)->reject(exception)');
@@ -1488,9 +1488,9 @@ describe('q', function() {
         });
 
 
-        describe("when the promise is rejected", function() {
+        describe('when the promise is rejected', function() {
 
-          it("should call the callback", function() {
+          it('should call the callback', function() {
             promise['finally'](fin(1))
                    .then(success(2), error(1));
             syncReject(deferred, 'foo');
@@ -1498,17 +1498,17 @@ describe('q', function() {
           });
 
           it('should reject with the original reason', function() {
-            promise['finally'](fin(1), "hello")
+            promise['finally'](fin(1), 'hello')
                    .then(success(2), error(2));
             syncReject(deferred, 'original');
             expect(logStr()).toBe('finally1(); error2(original)->reject(original)');
           });
 
-          describe("when the callback returns a promise", function() {
+          describe('when the callback returns a promise', function() {
 
-            describe("that is fulfilled", function() {
+            describe('that is fulfilled', function() {
 
-              it("should reject with the original reason after that promise resolves", function() {
+              it('should reject with the original reason after that promise resolves', function() {
                 var returnedDef = defer();
                 returnedDef.resolve('bar');
                 promise['finally'](fin(1, returnedDef.promise))
@@ -1519,9 +1519,9 @@ describe('q', function() {
 
             });
 
-            describe("that is rejected", function() {
+            describe('that is rejected', function() {
 
-              it("should reject with the new reason", function() {
+              it('should reject with the new reason', function() {
                 var returnedDef = defer();
                 returnedDef.reject('bar');
                 promise['finally'](fin(1, returnedDef.promise))
@@ -1534,10 +1534,10 @@ describe('q', function() {
 
           });
 
-          describe("when the callback throws an exception", function() {
+          describe('when the callback throws an exception', function() {
 
-            it("should reject with this new exception", function() {
-              promise['finally'](fin(1, "exception", true))
+            it('should reject with this new exception', function() {
+              promise['finally'](fin(1, 'exception', true))
                      .then(success(1), error(2));
               syncResolve(deferred, 'foo');
               expect(logStr()).toBe('finally1()->throw(exception); error2(exception)->reject(exception)');

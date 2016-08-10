@@ -633,7 +633,7 @@ describe('ngView', function() {
       });
     });
 
-    it("should compile its content correctly (although we remove it later)", function() {
+    it('should compile its content correctly (although we remove it later)', function() {
       var testElement;
       module(function($compileProvider, $routeProvider) {
         $routeProvider.when('/view', {template: ' '});

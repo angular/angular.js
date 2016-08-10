@@ -74,7 +74,7 @@ describe('$controller', function() {
     it('should throw an exception if a controller is called "hasOwnProperty"', function() {
       expect(function() {
         $controllerProvider.register('hasOwnProperty', function($scope) {});
-      }).toThrowMinErr('ng', 'badname', "hasOwnProperty is not a valid controller name");
+      }).toThrowMinErr('ng', 'badname', 'hasOwnProperty is not a valid controller name');
     });
 
 
@@ -113,9 +113,9 @@ describe('$controller', function() {
     it('should throw ctrlfmt if name contains spaces', function() {
       expect(function() {
         $controller('ctrl doom');
-      }).toThrowMinErr("$controller", "ctrlfmt",
-                       "Badly formed controller string 'ctrl doom'. " +
-                       "Must match `__name__ as __id__` or `__name__`.");
+      }).toThrowMinErr('$controller', 'ctrlfmt',
+                       'Badly formed controller string \'ctrl doom\'. ' +
+                       'Must match `__name__ as __id__` or `__name__`.');
     });
   });
 
@@ -191,7 +191,7 @@ describe('$controller', function() {
 
       expect(function() {
         $controller('a.b.FooCtrl as foo');
-      }).toThrowMinErr("$controller", "noscp", "Cannot export controller 'a.b.FooCtrl' as 'foo'! No $scope object provided via `locals`.");
+      }).toThrowMinErr('$controller', 'noscp', 'Cannot export controller \'a.b.FooCtrl\' as \'foo\'! No $scope object provided via `locals`.');
 
     });
 
@@ -199,32 +199,32 @@ describe('$controller', function() {
     it('should throw ctrlfmt if identifier contains non-ident characters', function() {
       expect(function() {
         $controller('ctrl as foo<bar');
-      }).toThrowMinErr("$controller", "ctrlfmt",
-                       "Badly formed controller string 'ctrl as foo<bar'. " +
-                       "Must match `__name__ as __id__` or `__name__`.");
+      }).toThrowMinErr('$controller', 'ctrlfmt',
+                       'Badly formed controller string \'ctrl as foo<bar\'. ' +
+                       'Must match `__name__ as __id__` or `__name__`.');
     });
 
 
     it('should throw ctrlfmt if identifier contains spaces', function() {
       expect(function() {
         $controller('ctrl as foo bar');
-      }).toThrowMinErr("$controller", "ctrlfmt",
-                       "Badly formed controller string 'ctrl as foo bar'. " +
-                       "Must match `__name__ as __id__` or `__name__`.");
+      }).toThrowMinErr('$controller', 'ctrlfmt',
+                       'Badly formed controller string \'ctrl as foo bar\'. ' +
+                       'Must match `__name__ as __id__` or `__name__`.');
     });
 
 
     it('should throw ctrlfmt if identifier missing after " as "', function() {
       expect(function() {
         $controller('ctrl as ');
-      }).toThrowMinErr("$controller", "ctrlfmt",
-                       "Badly formed controller string 'ctrl as '. " +
-                       "Must match `__name__ as __id__` or `__name__`.");
+      }).toThrowMinErr('$controller', 'ctrlfmt',
+                       'Badly formed controller string \'ctrl as \'. ' +
+                       'Must match `__name__ as __id__` or `__name__`.');
       expect(function() {
         $controller('ctrl as');
-      }).toThrowMinErr("$controller", "ctrlfmt",
-                       "Badly formed controller string 'ctrl as'. " +
-                       "Must match `__name__ as __id__` or `__name__`.");
+      }).toThrowMinErr('$controller', 'ctrlfmt',
+                       'Badly formed controller string \'ctrl as\'. ' +
+                       'Must match `__name__ as __id__` or `__name__`.');
     });
 
 

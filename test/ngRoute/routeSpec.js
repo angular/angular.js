@@ -403,7 +403,7 @@ describe('$route', function() {
       expect($route.current).toBeDefined();
     }));
 
-    it("should use route params inherited from prototype chain", function() {
+    it('should use route params inherited from prototype chain', function() {
       function BaseRoute() {}
       BaseRoute.prototype.templateUrl = 'foo.html';
 
@@ -882,7 +882,7 @@ describe('$route', function() {
         $rootScope.$digest();
 
         $httpBackend.flush();
-        expect($exceptionHandler.errors.pop().message).toContain("[$compile:tpload] Failed to load template: r1.html");
+        expect($exceptionHandler.errors.pop().message).toContain('[$compile:tpload] Failed to load template: r1.html');
 
         $httpBackend.expectGET('r2.html').respond('');
         $location.path('/r2');

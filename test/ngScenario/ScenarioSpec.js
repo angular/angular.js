@@ -1,6 +1,6 @@
 'use strict';
 
-describe("ScenarioSpec: Compilation", function() {
+describe('ScenarioSpec: Compilation', function() {
   var element;
 
   afterEach(function() {
@@ -9,7 +9,7 @@ describe("ScenarioSpec: Compilation", function() {
 
 
   describe('compilation', function() {
-    it("should compile dom node and return scope", inject(function($rootScope, $compile) {
+    it('should compile dom node and return scope', inject(function($rootScope, $compile) {
       var node = jqLite('<div ng-init="a=1">{{b=a+1}}</div>')[0];
       element = $compile(node)($rootScope);
       $rootScope.$digest();
@@ -17,13 +17,13 @@ describe("ScenarioSpec: Compilation", function() {
       expect($rootScope.b).toEqual(2);
     }));
 
-    it("should compile jQuery node and return scope", inject(function($rootScope, $compile) {
+    it('should compile jQuery node and return scope', inject(function($rootScope, $compile) {
       element = $compile(jqLite('<div>{{a=123}}</div>'))($rootScope);
       $rootScope.$digest();
       expect(jqLite(element).text()).toEqual('123');
     }));
 
-    it("should compile text node and return scope", inject(function($rootScope, $compile) {
+    it('should compile text node and return scope', inject(function($rootScope, $compile) {
       element = $compile('<div>{{a=123}}</div>')($rootScope);
       $rootScope.$digest();
       expect(jqLite(element).text()).toEqual('123');

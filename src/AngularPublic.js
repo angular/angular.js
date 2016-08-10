@@ -115,9 +115,9 @@
  */
 var version = {
   full: '"NG_VERSION_FULL"',    // all of these placeholder strings will be replaced by grunt's
-  major: "NG_VERSION_MAJOR",    // package task
-  minor: "NG_VERSION_MINOR",
-  dot: "NG_VERSION_DOT",
+  major: 'NG_VERSION_MAJOR',    // package task
+  minor: 'NG_VERSION_MINOR',
+  dot: 'NG_VERSION_DOT',
   codeName: '"NG_VERSION_CODENAME"'
 };
 

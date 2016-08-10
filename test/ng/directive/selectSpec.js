@@ -281,11 +281,11 @@ describe('select', function() {
 
 
     it('should rename select controls in form when interpolated name changes', function() {
-      scope.nameID = "A";
+      scope.nameID = 'A';
       compile('<select ng-model="name" name="name{{nameID}}"></select>');
       expect(scope.form.nameA.$name).toBe('nameA');
       var oldModel = scope.form.nameA;
-      scope.nameID = "B";
+      scope.nameID = 'B';
       scope.$digest();
       expect(scope.form.nameA).toBeUndefined();
       expect(scope.form.nameB).toBe(oldModel);
@@ -463,7 +463,7 @@ describe('select', function() {
                   '<option value="x">robot x</option>' +
                   '<option value="y">robot y</option>' +
                 '</select>');
-        expect(element).toEqualSelect(["? undefined:undefined ?"], "--select--", 'x', 'y');
+        expect(element).toEqualSelect(['? undefined:undefined ?'], '--select--', 'x', 'y');
       });
 
 
@@ -473,7 +473,7 @@ describe('select', function() {
                   '<option value="x">robot x</option>' +
                   '<option value="y">robot y</option>' +
                 '</select>');
-        expect(element).toEqualSelect(["? undefined:undefined ?"], "--select--", 'x', 'y');
+        expect(element).toEqualSelect(['? undefined:undefined ?'], '--select--', 'x', 'y');
       });
 
 
@@ -528,7 +528,7 @@ describe('select', function() {
 
     describe('unknown option', function() {
 
-      it("should insert&select temporary unknown option when no options-model match", function() {
+      it('should insert&select temporary unknown option when no options-model match', function() {
         compile('<select ng-model="robot">' +
                   '<option>c3p0</option>' +
                   '<option>r2d2</option>' +
@@ -543,14 +543,14 @@ describe('select', function() {
 
 
         scope.$apply(function() {
-          scope.robot = "wallee";
+          scope.robot = 'wallee';
         });
         expect(element).toEqualSelect([unknownValue('wallee')], 'c3p0', 'r2d2');
       });
 
 
-      it("should NOT insert temporary unknown option when model is undefined and empty options " +
-          "is present", function() {
+      it('should NOT insert temporary unknown option when model is undefined and empty options ' +
+          'is present', function() {
         compile('<select ng-model="robot">' +
                   '<option value="">--select--</option>' +
                   '<option>c3p0</option>' +
@@ -577,8 +577,8 @@ describe('select', function() {
       });
 
 
-      it("should insert&select temporary unknown option when no options-model match, empty " +
-          "option is present and model is defined", function() {
+      it('should insert&select temporary unknown option when no options-model match, empty ' +
+          'option is present and model is defined', function() {
         scope.robot = 'wallee';
         compile('<select ng-model="robot">' +
                   '<option value="">--select--</option>' +
@@ -1259,7 +1259,7 @@ describe('select', function() {
     }));
 
     it('should throw an exception if an option value interpolates to "hasOwnProperty"', function() {
-      scope.hasOwnPropertyOption = "hasOwnProperty";
+      scope.hasOwnPropertyOption = 'hasOwnProperty';
       expect(function() {
         compile('<select ng-model="x">' +
                   '<option>{{hasOwnPropertyOption}}</option>' +

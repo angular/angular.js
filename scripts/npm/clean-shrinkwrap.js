@@ -37,4 +37,4 @@ cleanModule(shrinkwrap, shrinkwrap.name);
 
 var cleanShrinkwrapPath = path.join(__dirname, '..', '..', 'npm-shrinkwrap.clean.json');
 console.log('Writing cleaned to', cleanShrinkwrapPath);
-fs.writeFileSync(cleanShrinkwrapPath, JSON.stringify(sorted(shrinkwrap), null, 2) + "\n");
+fs.writeFileSync(cleanShrinkwrapPath, JSON.stringify(sorted(shrinkwrap), null, 2) + '\n');

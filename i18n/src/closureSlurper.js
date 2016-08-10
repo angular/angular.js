@@ -11,7 +11,7 @@ var NG_LOCALE_DIR = '../src/ngLocale/';
 
 
 function readSymbols() {
-  console.log("Processing currency and number symbols ...");
+  console.log('Processing currency and number symbols ...');
   var numericStagePromise = qfs.read(__dirname + '/../closure/currencySymbols.js', 'b')
     .then(function(content) {
       var currencySymbols = closureI18nExtractor.extractCurrencySymbols(content);
@@ -25,7 +25,7 @@ function readSymbols() {
         });
       });
 
-  console.log("Processing datetime symbols ...");
+  console.log('Processing datetime symbols ...');
   var datetimeStagePromise = qfs.read(__dirname + '/../closure/datetimeSymbols.js', 'b')
       .then(function(content) {
         closureI18nExtractor.extractDateTimeSymbols(content, localeInfo);
@@ -98,4 +98,4 @@ createFolder(NG_LOCALE_DIR)
   .then(readSymbols)
   .then(extractPlurals)
   .then(writeLocaleFiles)
-  .done(function(num_files) { console.log("Wrote %j files.\nAll Done!", num_files); });
+  .done(function(num_files) { console.log('Wrote %j files.\nAll Done!', num_files); });

@@ -4,16 +4,16 @@ describe('$$cookieWriter', function() {
   var $$cookieWriter, document;
 
   function deleteAllCookies() {
-    var cookies = document.cookie.split(";");
+    var cookies = document.cookie.split(';');
     var path = window.location.pathname;
 
     for (var i = 0; i < cookies.length; i++) {
       var cookie = cookies[i];
-      var eqPos = cookie.indexOf("=");
+      var eqPos = cookie.indexOf('=');
       var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
       var parts = path.split('/');
       while (parts.length) {
-        document.cookie = name + "=;path=" + (parts.join('/') || '/') + ";expires=Thu, 01 Jan 1970 00:00:00 GMT";
+        document.cookie = name + '=;path=' + (parts.join('/') || '/') + ';expires=Thu, 01 Jan 1970 00:00:00 GMT';
         parts.pop();
       }
     }
@@ -64,7 +64,7 @@ describe('$$cookieWriter', function() {
 
 
     it('should overwrite an existing unsynced cookie', function() {
-      document.cookie = "cookie=new;path=/";
+      document.cookie = 'cookie=new;path=/';
 
       var oldVal = $$cookieWriter('cookie', 'newer');
 
@@ -76,7 +76,7 @@ describe('$$cookieWriter', function() {
       $$cookieWriter('cookie1=', 'val;ue');
       $$cookieWriter('cookie2=bar;baz', 'val=ue');
 
-      var rawCookies = document.cookie.split("; "); //order is not guaranteed, so we need to parse
+      var rawCookies = document.cookie.split('; '); //order is not guaranteed, so we need to parse
       expect(rawCookies.length).toEqual(2);
       expect(rawCookies).toContain('cookie1%3D=val%3Bue');
       expect(rawCookies).toContain('cookie2%3Dbar%3Bbaz=val%3Due');
@@ -97,8 +97,8 @@ describe('$$cookieWriter', function() {
 
       $$cookieWriter('x', longVal + 'xxxx'); //total size 4097-4099, a warning should be logged
       expect($log.warn.logs).toEqual(
-        [["Cookie 'x' possibly not set or overflowed because it was too large (4097 > 4096 " +
-           "bytes)!"]]);
+        [['Cookie \'x\' possibly not set or overflowed because it was too large (4097 > 4096 ' +
+           'bytes)!']]);
 
       //force browser to dropped a cookie and make sure that the cache is not out of sync
       $$cookieWriter('x', 'shortVal');
@@ -107,8 +107,8 @@ describe('$$cookieWriter', function() {
       $$cookieWriter('x', longVal + longVal + longVal); //should be too long for all browsers
 
       if (document.cookie !== cookieStr) {
-        this.fail(new Error("browser didn't drop long cookie when it was expected. make the " +
-            "cookie in this test longer"));
+        this.fail(new Error('browser didn\'t drop long cookie when it was expected. make the ' +
+            'cookie in this test longer'));
       }
 
       expect(document.cookie).toEqual('x=shortVal');

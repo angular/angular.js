@@ -64,7 +64,7 @@ function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDoc
       var jsonpDone = jsonpReq(url, callbackPath, function(status, text) {
         // jsonpReq only ever sets status to 200 (OK), 404 (ERROR) or -1 (WAITING)
         var response = (status === 200) && callbacks.getResponse(callbackPath);
-        completeRequest(callback, status, response, "", text);
+        completeRequest(callback, status, response, '', text);
         callbacks.removeCallback(callbackPath);
       });
     } else {
@@ -177,7 +177,7 @@ function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDoc
     // - fetches local scripts via XHR and evals them
     // - adds and immediately removes script elements from the document
     var script = rawDocument.createElement('script'), callback = null;
-    script.type = "text/javascript";
+    script.type = 'text/javascript';
     script.src = url;
     script.async = true;
 
@@ -187,14 +187,14 @@ function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDoc
       rawDocument.body.removeChild(script);
       script = null;
       var status = -1;
-      var text = "unknown";
+      var text = 'unknown';
 
       if (event) {
-        if (event.type === "load" && !callbacks.wasCalled(callbackPath)) {
-          event = { type: "error" };
+        if (event.type === 'load' && !callbacks.wasCalled(callbackPath)) {
+          event = { type: 'error' };
         }
         text = event.type;
-        status = event.type === "error" ? 404 : 200;
+        status = event.type === 'error' ? 404 : 200;
       }
 
       if (done) {

@@ -39,8 +39,16 @@ var getMergedEslintConfig = function(filepath) {
       // While alerts would be bad to have in the library or test code,
       // they're perfectly fine in examples.
       'no-alert': 'off',
+
+      // The following rules have to be disabled or tweaked because dgeni template wrappers
+      // don't follow them and we have no way to validate only the parts taken
+      // from ngdoc.
+
       // some dgeni-packages templates generate whitespace-only lines
-      'no-trailing-spaces': ['error', { 'skipBlankLines': true }]
+      'no-trailing-spaces': ['error', { 'skipBlankLines': true }],
+
+      // dgeni templates use double quotes as string delimiters
+      quotes: 'off'
     },
     ignore: false,
     useEslintrc: false

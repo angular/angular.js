@@ -54,9 +54,9 @@
  *     this.gender = gender;
  *   }
  *
- *   var alice   = new Person("Alice", "female"),
- *       bob     = new Person("Bob", "male"),
- *       ashley = new Person("Ashley", "");
+ *   var alice   = new Person('Alice', 'female'),
+ *       bob     = new Person('Bob', 'male'),
+ *       ashley = new Person('Ashley', '');
  *
  *   angular.module('msgFmtExample', ['ngMessageFormat'])
  *     .controller('AppController', ['$scope', function($scope) {
@@ -97,11 +97,11 @@
  *     this.gender = gender;
  *   }
  *
- *   var alice   = new Person("Alice", "female"),
- *       bob     = new Person("Bob", "male"),
- *       sarah     = new Person("Sarah", "female"),
- *       harry   = new Person("Harry Potter", "male"),
- *       ashley   = new Person("Ashley", "");
+ *   var alice   = new Person('Alice', 'female'),
+ *       bob     = new Person('Bob', 'male'),
+ *       sarah     = new Person('Sarah', 'female'),
+ *       harry   = new Person('Harry Potter', 'male'),
+ *       ashley   = new Person('Ashley', '');
  *
  *   angular.module('msgFmtExample', ['ngMessageFormat'])
  *     .controller('AppController', ['$scope', function($scope) {
@@ -157,10 +157,10 @@
  *        this.gender = gender;
  *      }
  *
- *      var alice   = new Person("Alice", "female"),
- *          bob     = new Person("Bob", "male"),
- *          harry   = new Person("Harry Potter", "male"),
- *          ashley   = new Person("Ashley", "");
+ *      var alice   = new Person('Alice', 'female'),
+ *          bob     = new Person('Bob', 'male'),
+ *          harry   = new Person('Harry Potter', 'male'),
+ *          ashley   = new Person('Ashley', '');
  *
  *      angular.module('msgFmtExample', ['ngMessageFormat'])
  *        .controller('AppController', ['$scope', function($scope) {
@@ -200,7 +200,7 @@ var $$MessageFormatFactory = ['$parse', '$locale', '$sce', '$exceptionHandler', 
 }];
 
 var $$interpolateDecorator = ['$$messageFormat', '$delegate', function $$interpolateDecorator($$messageFormat, $interpolate) {
-  if ($interpolate['startSymbol']() !== "{{" || $interpolate['endSymbol']() !== "}}") {
+  if ($interpolate['startSymbol']() !== '{{' || $interpolate['endSymbol']() !== '}}') {
     throw $interpolateMinErr('nochgmustache', 'angular-message-format.js currently does not allow you to use custom start and end symbols for interpolation.');
   }
   var interpolate = $$messageFormat['interpolate'];

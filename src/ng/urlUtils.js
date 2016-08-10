@@ -6,7 +6,7 @@
 // doesn't know about mocked locations and resolves URLs to the real document - which is
 // exactly the behavior needed here.  There is little value is mocking these out for this
 // service.
-var urlParsingNode = window.document.createElement("a");
+var urlParsingNode = window.document.createElement('a');
 var originUrl = urlResolve(window.location.href);
 
 
@@ -61,7 +61,7 @@ function urlResolve(url) {
   if (msie) {
     // Normalize before parse.  Refer Implementation Notes on why this is
     // done in two steps on IE.
-    urlParsingNode.setAttribute("href", href);
+    urlParsingNode.setAttribute('href', href);
     href = urlParsingNode.href;
   }
 

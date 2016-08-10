@@ -15,17 +15,17 @@ describe('ngPluralize', function() {
     beforeEach(inject(function($rootScope, $compile) {
       element = $compile(
           '<ng:pluralize count="email"' +
-                         "when=\"{'-1': 'You have negative email. Whohoo!'," +
-                                 "'0': 'You have no new email'," +
-                                 "'one': 'You have one new email'," +
-                                 "'other': 'You have {} new emails'}\">" +
+                         'when="{\'-1\': \'You have negative email. Whohoo!\',' +
+                                 '\'0\': \'You have no new email\',' +
+                                 '\'one\': \'You have one new email\',' +
+                                 '\'other\': \'You have {} new emails\'}">' +
           '</ng:pluralize>')($rootScope);
       elementAlt = $compile(
           '<ng:pluralize count="email" ' +
-                         "when-minus-1='You have negative email. Whohoo!' " +
-                         "when-0='You have no new email' " +
-                         "when-one='You have one new email' " +
-                         "when-other='You have {} new emails'>" +
+                         'when-minus-1=\'You have negative email. Whohoo!\' ' +
+                         'when-0=\'You have no new email\' ' +
+                         'when-one=\'You have one new email\' ' +
+                         'when-other=\'You have {} new emails\'>' +
           '</ng:pluralize>')($rootScope);
     }));
 
@@ -90,14 +90,14 @@ describe('ngPluralize', function() {
         expect(element.text()).toBe('');
         expect(elementAlt.text()).toBe('');
         expect($log.debug.logs.shift()).toEqual([
-          "ngPluralize: no rule defined for 'NaN' in {" +
-          "'-1': 'You have negative email. Whohoo!'," +
-          "'0': 'You have no new email'," +
-          "'one': 'You have one new email'," +
-          "'other': 'You have {} new emails'}"
+          'ngPluralize: no rule defined for \'NaN\' in {' +
+          '\'-1\': \'You have negative email. Whohoo!\',' +
+          '\'0\': \'You have no new email\',' +
+          '\'one\': \'You have one new email\',' +
+          '\'other\': \'You have {} new emails\'}'
         ]);
         expect($log.debug.logs.shift()).toEqual([
-          "ngPluralize: no rule defined for 'NaN' in undefined"
+          'ngPluralize: no rule defined for \'NaN\' in undefined'
         ]);
 
         $rootScope.email = null;
@@ -148,9 +148,9 @@ describe('ngPluralize', function() {
     it('should be able to handle empty strings as possible values', inject(function($rootScope, $compile) {
       element = $compile(
           '<ng:pluralize count="email"' +
-                         "when=\"{'0': ''," +
-                                 "'one': 'Some text'," +
-                                 "'other': 'Some text'}\">" +
+                         'when="{\'0\': \'\',' +
+                                 '\'one\': \'Some text\',' +
+                                 '\'other\': \'Some text\'}">' +
           '</ng:pluralize>')($rootScope);
       $rootScope.email = '0';
       $rootScope.$digest();
@@ -161,10 +161,10 @@ describe('ngPluralize', function() {
       function($compile, $rootScope) {
         element = $compile(
             '<ng:pluralize count="email"' +
-                          "when=\"{'NaN': 'Unspecified email count'," +
-                                  "'0': ''," +
-                                  "'one': 'Some text'," +
-                                  "'other': 'Some text'}\">" +
+                          'when="{\'NaN\': \'Unspecified email count\',' +
+                                  '\'0\': \'\',' +
+                                  '\'one\': \'Some text\',' +
+                                  '\'other\': \'Some text\'}">' +
             '</ng:pluralize>')($rootScope);
 
       $rootScope.email = '0';
@@ -199,29 +199,29 @@ describe('ngPluralize', function() {
       inject(function($rootScope, $compile) {
       element = $compile(
           '<ng:pluralize count="email"' +
-                         "when=\"{'0': 'Zero'," +
-                                 "'one': 'Some text'," +
-                                 "'other': 'Some text'}\">" +
+                         'when="{\'0\': \'Zero\',' +
+                                 '\'one\': \'Some text\',' +
+                                 '\'other\': \'Some text\'}">' +
           '</ng:pluralize>')($rootScope);
-      $locale.pluralCat = function() {return "few";};
+      $locale.pluralCat = function() {return 'few';};
 
       $rootScope.email = '3';
       expect($log.debug.logs).toEqual([]);
       $rootScope.$digest();
       expect(element.text()).toBe('');
       expect($log.debug.logs.shift())
-        .toEqual(["ngPluralize: no rule defined for 'few' in {'0': 'Zero','one': 'Some text','other': 'Some text'}"]);
+        .toEqual(['ngPluralize: no rule defined for \'few\' in {\'0\': \'Zero\',\'one\': \'Some text\',\'other\': \'Some text\'}']);
     }));
 
     it('should empty the element content when using a rule that is not defined',
       inject(function($rootScope, $compile) {
       element = $compile(
           '<ng:pluralize count="email"' +
-                         "when=\"{'0': 'Zero'," +
-                                 "'one': 'Some text'," +
-                                 "'other': 'Some text'}\">" +
+                         'when="{\'0\': \'Zero\',' +
+                                 '\'one\': \'Some text\',' +
+                                 '\'other\': \'Some text\'}">' +
           '</ng:pluralize>')($rootScope);
-      $locale.pluralCat = function(count) {return count === 1 ? "one" : "few";};
+      $locale.pluralCat = function(count) {return count === 1 ? 'one' : 'few';};
 
       $rootScope.email = '0';
       $rootScope.$digest();
@@ -244,21 +244,21 @@ describe('ngPluralize', function() {
   describe('deal with pluralized strings with offset', function() {
     it('should show single/plural strings with offset', inject(function($rootScope, $compile) {
       element = $compile(
-        "<ng:pluralize count='viewCount'  offset='2' " +
-            "when=\"{'0': 'Nobody is viewing.'," +
-                    "'1': '{{p1}} is viewing.'," +
-                    "'2': '{{p1}} and {{p2}} are viewing.'," +
-                    "'one': '{{p1}}, {{p2}} and one other person are viewing.'," +
-                    "'other': '{{p1}}, {{p2}} and {} other people are viewing.'}\">" +
-        "</ng:pluralize>")($rootScope);
+        '<ng:pluralize count=\'viewCount\'  offset=\'2\' ' +
+            'when="{\'0\': \'Nobody is viewing.\',' +
+                    '\'1\': \'{{p1}} is viewing.\',' +
+                    '\'2\': \'{{p1}} and {{p2}} are viewing.\',' +
+                    '\'one\': \'{{p1}}, {{p2}} and one other person are viewing.\',' +
+                    '\'other\': \'{{p1}}, {{p2}} and {} other people are viewing.\'}">' +
+        '</ng:pluralize>')($rootScope);
       elementAlt = $compile(
-        "<ng:pluralize count='viewCount'  offset='2' " +
-            "when-0='Nobody is viewing.'" +
-            "when-1='{{p1}} is viewing.'" +
-            "when-2='{{p1}} and {{p2}} are viewing.'" +
-            "when-one='{{p1}}, {{p2}} and one other person are viewing.'" +
-            "when-other='{{p1}}, {{p2}} and {} other people are viewing.'>" +
-        "</ng:pluralize>")($rootScope);
+        '<ng:pluralize count=\'viewCount\'  offset=\'2\' ' +
+            'when-0=\'Nobody is viewing.\'' +
+            'when-1=\'{{p1}} is viewing.\'' +
+            'when-2=\'{{p1}} and {{p2}} are viewing.\'' +
+            'when-one=\'{{p1}}, {{p2}} and one other person are viewing.\'' +
+            'when-other=\'{{p1}}, {{p2}} and {} other people are viewing.\'>' +
+        '</ng:pluralize>')($rootScope);
       $rootScope.p1 = 'Igor';
       $rootScope.p2 = 'Misko';
 
@@ -304,19 +304,19 @@ describe('ngPluralize', function() {
 
       inject(function($compile, $rootScope) {
         element = $compile(
-            "<ng:pluralize count=\"viewCount\" offset=\"1\"" +
-              "when=\"{'0': 'Nobody is viewing.'," +
-                      "'1': '[[p1%% is viewing.'," +
-                      "'one': '[[p1%% and one other person are viewing.'," +
-                      "'other': '[[p1%% and {} other people are viewing.'}\">" +
-            "</ng:pluralize>")($rootScope);
+            '<ng:pluralize count="viewCount" offset="1"' +
+              'when="{\'0\': \'Nobody is viewing.\',' +
+                      '\'1\': \'[[p1%% is viewing.\',' +
+                      '\'one\': \'[[p1%% and one other person are viewing.\',' +
+                      '\'other\': \'[[p1%% and {} other people are viewing.\'}">' +
+            '</ng:pluralize>')($rootScope);
         elementAlt = $compile(
-            "<ng:pluralize count='viewCount' offset='1'" +
-              "when-0='Nobody is viewing.'" +
-              "when-1='[[p1%% is viewing.'" +
-              "when-one='[[p1%% and one other person are viewing.'" +
-              "when-other='[[p1%% and {} other people are viewing.'>" +
-            "</ng:pluralize>")($rootScope);
+            '<ng:pluralize count=\'viewCount\' offset=\'1\'' +
+              'when-0=\'Nobody is viewing.\'' +
+              'when-1=\'[[p1%% is viewing.\'' +
+              'when-one=\'[[p1%% and one other person are viewing.\'' +
+              'when-other=\'[[p1%% and {} other people are viewing.\'>' +
+            '</ng:pluralize>')($rootScope);
         $rootScope.p1 = 'Igor';
 
         $rootScope.viewCount = 0;
@@ -348,13 +348,13 @@ describe('ngPluralize', function() {
       inject(function($compile, $rootScope) {
         element = $compile(
             '<ng:pluralize count="::email"' +
-                           "when=\"{'one': 'You have one new email'," +
-                                   "'other': 'You have {} new emails'}\">" +
+                           'when="{\'one\': \'You have one new email\',' +
+                                   '\'other\': \'You have {} new emails\'}">' +
             '</ng:pluralize>')($rootScope);
         elementAlt = $compile(
             '<ng:pluralize count="::email" ' +
-                           "when-one='You have one new email' " +
-                           "when-other='You have {} new emails'>" +
+                           'when-one=\'You have one new email\' ' +
+                           'when-other=\'You have {} new emails\'>' +
             '</ng:pluralize>')($rootScope);
 
         $rootScope.email = undefined;
@@ -389,13 +389,13 @@ describe('ngPluralize', function() {
       inject(function($compile, $rootScope) {
         element = $compile(
             '<ng:pluralize count="::email"' +
-                           "when=\"{'one': 'You, {{user}}, have one new email'," +
-                                   "'other': 'You, {{user}}, have {} new emails'}\">" +
+                           'when="{\'one\': \'You, {{user}}, have one new email\',' +
+                                   '\'other\': \'You, {{user}}, have {} new emails\'}">' +
             '</ng:pluralize>')($rootScope);
         elementAlt = $compile(
             '<ng:pluralize count="::email" ' +
-                           "when-one='You, {{user}}, have one new email' " +
-                           "when-other='You, {{user}}, have {} new emails'>" +
+                           'when-one=\'You, {{user}}, have one new email\' ' +
+                           'when-other=\'You, {{user}}, have {} new emails\'>' +
             '</ng:pluralize>')($rootScope);
 
         $rootScope.user = 'Lucas';

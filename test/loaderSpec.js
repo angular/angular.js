@@ -66,7 +66,7 @@ describe('module loader', function() {
   });
 
 
-  it("should not throw error when `module.decorator` is declared before provider that it decorates", function() {
+  it('should not throw error when `module.decorator` is declared before provider that it decorates', function() {
     angular.module('theModule', []).
       decorator('theProvider', function($delegate) { return $delegate; }).
       factory('theProvider', function() { return {}; });
@@ -77,7 +77,7 @@ describe('module loader', function() {
   });
 
 
-  it("should run decorators in order of declaration, even when mixed with provider.decorator", function() {
+  it('should run decorators in order of declaration, even when mixed with provider.decorator', function() {
     var log = '';
 
     angular.module('theModule', [])
@@ -107,7 +107,7 @@ describe('module loader', function() {
   });
 
 
-  it("should decorate the last declared provider if multiple have been declared", function() {
+  it('should decorate the last declared provider if multiple have been declared', function() {
     var log = '';
 
     angular.module('theModule', []).
@@ -142,15 +142,15 @@ describe('module loader', function() {
   it('should complain of no module', function() {
     expect(function() {
       window.angular.module('dontExist');
-    }).toThrowMinErr("$injector", "nomod", "Module 'dontExist' is not available! You either misspelled the module name " +
-            "or forgot to load it. If registering a module ensure that you specify the dependencies as the second " +
-            "argument.");
+    }).toThrowMinErr('$injector', 'nomod', 'Module \'dontExist\' is not available! You either misspelled the module name ' +
+            'or forgot to load it. If registering a module ensure that you specify the dependencies as the second ' +
+            'argument.');
   });
 
   it('should complain if a module is called "hasOwnProperty', function() {
     expect(function() {
       window.angular.module('hasOwnProperty', []);
-    }).toThrowMinErr('ng','badname', "hasOwnProperty is not a valid module name");
+    }).toThrowMinErr('ng','badname', 'hasOwnProperty is not a valid module name');
   });
 
   it('should expose `$$minErr` on the `angular` object', function() {
