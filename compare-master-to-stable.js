@@ -21,7 +21,7 @@ var exec = function(cmd) {
 };
 
 var andThen = function(fn, after) {
-  return /* @this */ function() {
+  return /** @this */ function() {
     return fn.apply(this, arguments).then(after);
   };
 };

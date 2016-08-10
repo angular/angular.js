@@ -8,7 +8,7 @@ importScripts('../components/lunr.js-0.5.12/lunr.min.js');
 
 // Create the lunr index - the docs should be an array of object, each object containing
 // the path and search terms for a page
-var index = lunr(/* @this */function() {
+var index = lunr(/** @this */function() {
   this.ref('path');
   this.field('titleWords', {boost: 50});
   this.field('members', {boost: 40});
