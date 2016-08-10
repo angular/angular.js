@@ -19,9 +19,9 @@ beforeEach(function() {
           });
 
           var message = function() {
-            return "Expected to have " + presentClasses +
-              (absentClasses ? (" and not have " + absentClasses + "") : "") +
-              " but had " + element[0].className + ".";
+            return 'Expected to have ' + presentClasses +
+              (absentClasses ? (' and not have ' + absentClasses + '') : '') +
+              ' but had ' + element[0].className + '.';
           };
           return {
             pass: present && !absent,
@@ -60,7 +60,7 @@ beforeEach(function() {
       function generateCompare(isNot) {
         return function(actual) {
           var message = valueFn(
-            "Expected object " + (isNot ? "not " : "") + "to be a promise");
+            'Expected object ' + (isNot ? 'not ' : '') + 'to be a promise');
           return { pass: isPromiseLike(actual), message: message };
         };
       }
@@ -72,7 +72,7 @@ beforeEach(function() {
       };
       function generateCompare(isNot) {
         return function(actual) {
-          var message = valueFn("Expected element " + (isNot ? "" : "not ") + "to have 'ng-hide' class");
+          var message = valueFn('Expected element ' + (isNot ? '' : 'not ') + 'to have \'ng-hide\' class');
           var pass = !isNgElementHidden(actual);
           if (isNot) {
             pass = !pass;
@@ -88,7 +88,7 @@ beforeEach(function() {
       };
       function generateCompare(isNot) {
         return function(actual) {
-          var message = valueFn("Expected element " + (isNot ? "not " : "") + "to have 'ng-hide' class");
+          var message = valueFn('Expected element ' + (isNot ? 'not ' : '') + 'to have \'ng-hide\' class');
           var pass = isNgElementHidden(actual);
           if (isNot) {
             pass = !pass;
@@ -235,13 +235,13 @@ beforeEach(function() {
       };
       function hasClass(element, selector) {
         if (!element.getAttribute) return false;
-        return ((" " + (element.getAttribute('class') || '') + " ").replace(/[\n\t]/g, " ").
-            indexOf(" " + selector + " ") > -1);
+        return ((' ' + (element.getAttribute('class') || '') + ' ').replace(/[\n\t]/g, ' ').
+            indexOf(' ' + selector + ' ') > -1);
       }
       function generateCompare(isNot) {
         return function(actual, clazz) {
           var message = function() {
-            return "Expected '" + angular.mock.dump(actual) + "'" + (isNot ? " not " : "") + " to have class '" + clazz + "'.";
+            return 'Expected \'' + angular.mock.dump(actual) + '\'' + (isNot ? ' not ' : '') + ' to have class \'' + clazz + '\'.';
           };
           var classes = clazz.trim().split(/\s+/);
           for (var i = 0; i < classes.length; ++i) {
@@ -268,11 +268,11 @@ beforeEach(function() {
               // This function escapes all special regex characters.
               // We use it to create matching regex from arbitrary strings.
               // http://stackoverflow.com/questions/3446170/escape-string-for-use-in-javascript-regex
-              return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+              return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
             },
             codeRegex = new RegExp('^\\[' + escapeRegexp(namespace) + ':' + escapeRegexp(code) + '\\]'),
-            not = isNot ? "not " : "",
-            regex = jasmine.isA_("RegExp", content) ? content :
+            not = isNot ? 'not ' : '',
+            regex = jasmine.isA_('RegExp', content) ? content :
                       angular.isDefined(content) ? new RegExp(escapeRegexp(content)) : undefined;
 
           if (!angular.isFunction(actual)) {
@@ -290,10 +290,10 @@ beforeEach(function() {
           }
 
           var message = function() {
-            return "Expected function " + not + "to throw " +
-              namespace + "MinErr('" + code + "')" +
-              (regex ? " matching " + regex.toString() : "") +
-              (exception ? ", but it threw " + exceptionMessage : ".");
+            return 'Expected function ' + not + 'to throw ' +
+              namespace + 'MinErr(\'' + code + '\')' +
+              (regex ? ' matching ' + regex.toString() : '') +
+              (exception ? ', but it threw ' + exceptionMessage : '.');
           };
 
           result = codeRegex.test(exceptionMessage);

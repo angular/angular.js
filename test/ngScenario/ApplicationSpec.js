@@ -10,7 +10,7 @@ describe('angular.scenario.Application', function() {
 
   beforeEach(function() {
     window.document.body.innerHTML = '';
-    frames = _jQuery("<div></div>");
+    frames = _jQuery('<div></div>');
     _jQuery(window.document.body).append(frames);
     app = new angular.scenario.Application(frames);
   });
@@ -134,7 +134,7 @@ describe('angular.scenario.Application', function() {
     var injectorGet = $injector.get;
     spyOn($injector, 'get').and.callFake(function(name) {
       switch (name) {
-        case "$rootElement": return jqLite(testWindow.document);
+        case '$rootElement': return jqLite(testWindow.document);
         default: return injectorGet(name);
       }
     });
@@ -164,7 +164,7 @@ describe('angular.scenario.Application', function() {
     var injectorGet = $injector.get;
     var injectorSpy = spyOn($injector, 'get').and.callFake(function(name) {
       switch (name) {
-        case "$rootElement": return jqLite(testWindow.document);
+        case '$rootElement': return jqLite(testWindow.document);
         default: return injectorGet(name);
       }
     });
@@ -183,7 +183,7 @@ describe('angular.scenario.Application', function() {
     testWindow.angular.resumeDeferredBootstrap();
     expect(app.rootElement).toBe(testWindow.document);
     expect(resumeBootstrapSpy).toHaveBeenCalled();
-    expect(injectorSpy).toHaveBeenCalledWith("$rootElement");
+    expect(injectorSpy).toHaveBeenCalledWith('$rootElement');
     dealoc(testWindow.document);
   }));
 

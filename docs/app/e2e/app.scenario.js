@@ -73,10 +73,10 @@ describe('docs.angularjs.org', function() {
 
     it('should display formatted error messages on error doc pages', function() {
       browser.get('build/docs/index-production.html#!error/ng/areq?p0=Missing&p1=not%20a%20function,%20got%20undefined');
-      expect(element(by.css('.minerr-errmsg')).getText()).toEqual("Argument 'Missing' is not a function, got undefined");
+      expect(element(by.css('.minerr-errmsg')).getText()).toEqual('Argument \'Missing\' is not a function, got undefined');
     });
 
-    it("should display an error if the page does not exist", function() {
+    it('should display an error if the page does not exist', function() {
       browser.get('build/docs/index-production.html#!/api/does/not/exist');
       expect(element(by.css('h1')).getText()).toBe('Oops!');
     });

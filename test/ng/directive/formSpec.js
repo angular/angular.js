@@ -1118,7 +1118,7 @@ describe('form', function() {
   it('should rename forms with no parent when interpolated name changes', function() {
     var element = $compile('<form name="name{{nameID}}"></form>')(scope);
     var element2 = $compile('<div ng-form="ngform{{nameID}}"></div>')(scope);
-    scope.nameID = "A";
+    scope.nameID = 'A';
     scope.$digest();
     var form = element.controller('form');
     var form2 = element2.controller('form');
@@ -1127,7 +1127,7 @@ describe('form', function() {
     expect(form.$name).toBe('nameA');
     expect(form2.$name).toBe('ngformA');
 
-    scope.nameID = "B";
+    scope.nameID = 'B';
     scope.$digest();
     expect(scope.nameA).toBeUndefined();
     expect(scope.ngformA).toBeUndefined();

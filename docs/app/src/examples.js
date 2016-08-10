@@ -138,8 +138,8 @@ angular.module('examples', [])
         var newWindow = clickEvent.ctrlKey || clickEvent.metaKey;
 
         var postData = {
-          'tags[0]': "angularjs",
-          'tags[1]': "example",
+          'tags[0]': 'angularjs',
+          'tags[1]': 'example',
           'private': true
         };
 
@@ -183,8 +183,8 @@ angular.module('examples', [])
 
               // The manifests provide the production index file but Plunkr wants
               // a straight index.html
-              if (filename === "index-production.html") {
-                filename = "index.html";
+              if (filename === 'index-production.html') {
+                filename = 'index.html';
               }
 
               return {

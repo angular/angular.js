@@ -99,7 +99,7 @@ describe('ngAnimate integration tests', function() {
   describe('CSS animations', function() {
     if (!browserSupportsCssAnimations()) return;
 
-    it("should only create a single copy of the provided animation options",
+    it('should only create a single copy of the provided animation options',
       inject(function($rootScope, $rootElement, $animate) {
 
       ss.addRule('.animate-me', 'transition:2s linear all;');
@@ -481,7 +481,7 @@ describe('ngAnimate integration tests', function() {
     }));
 
 
-    it("should remove a class when the same class is currently being added by a joined class-based animation",
+    it('should remove a class when the same class is currently being added by a joined class-based animation',
       inject(function($animate, $animateCss, $rootScope, $document, $rootElement, $$rAF) {
 
       ss.addRule('.hide', 'opacity: 0');
@@ -756,7 +756,7 @@ describe('ngAnimate integration tests', function() {
       });
     });
 
-    it("should not alter the provided options values in anyway throughout the animation", function() {
+    it('should not alter the provided options values in anyway throughout the animation', function() {
       var animationSpy = jasmine.createSpy();
       module(function($animateProvider) {
         $animateProvider.register('.this-animation', function() {

@@ -62,7 +62,7 @@ describe('Binder', function() {
   }));
 
   it('InputTypeButtonActionExecutesInScope2', inject(function($rootScope, $compile) {
-    var log = "";
+    var log = '';
     element = $compile('<input type="image" ng-click="action()">')($rootScope);
     $rootScope.action = function() {
       log += 'click;';
@@ -359,11 +359,11 @@ describe('Binder', function() {
 
   it('ShoulIgnoreVbNonBindable', inject(function($rootScope, $compile) {
     element = $compile(
-      "<div>{{a}}" +
-        "<div ng-non-bindable>{{a}}</div>" +
-        "<div ng-non-bindable=''>{{b}}</div>" +
-        "<div ng-non-bindable='true'>{{c}}</div>" +
-      "</div>")($rootScope);
+      '<div>{{a}}' +
+        '<div ng-non-bindable>{{a}}</div>' +
+        '<div ng-non-bindable=\'\'>{{b}}</div>' +
+        '<div ng-non-bindable=\'true\'>{{c}}</div>' +
+      '</div>')($rootScope);
     $rootScope.a = 123;
     $rootScope.$apply();
     expect(element.text()).toBe('123{{a}}{{b}}{{c}}');
@@ -371,7 +371,7 @@ describe('Binder', function() {
 
   it('ShouldTemplateBindPreElements', inject(function($rootScope, $compile) {
     element = $compile('<pre>Hello {{name}}!</pre>')($rootScope);
-    $rootScope.name = "World";
+    $rootScope.name = 'World';
     $rootScope.$apply();
 
     expect(sortedHtml(element)).toBe('<pre>Hello World!</pre>');

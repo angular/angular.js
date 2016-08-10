@@ -37,7 +37,7 @@ describe('ngRepeat', function() {
       '</ul>')(scope);
 
     // eslint-disable-next-line no-extend-native
-    Array.prototype.extraProperty = "should be ignored";
+    Array.prototype.extraProperty = 'should be ignored';
     // INIT
     scope.items = [{name: 'misko'}, {name:'shyam'}];
     scope.$digest();
@@ -102,11 +102,11 @@ describe('ngRepeat', function() {
         '<li ng-repeat="item in items">{{item.name}};</li>' +
       '</ul>')(scope);
 
-    window.document.body.innerHTML = "<p>" +
-                                       "<a name='x'>a</a>" +
-                                       "<a name='y'>b</a>" +
-                                       "<a name='x'>c</a>" +
-                                     "</p>";
+    window.document.body.innerHTML = '<p>' +
+                                       '<a name=\'x\'>a</a>' +
+                                       '<a name=\'y\'>b</a>' +
+                                       '<a name=\'x\'>c</a>' +
+                                     '</p>';
 
     var htmlCollection = window.document.getElementsByTagName('a');
     scope.items = htmlCollection;
@@ -122,9 +122,9 @@ describe('ngRepeat', function() {
     Collection.prototype.length = 0;
 
     var collection = new Collection();
-    collection.push({ name: "x" });
-    collection.push({ name: "y" });
-    collection.push({ name: "z" });
+    collection.push({ name: 'x' });
+    collection.push({ name: 'y' });
+    collection.push({ name: 'z' });
 
     element = $compile(
       '<ul>' +
@@ -162,7 +162,7 @@ describe('ngRepeat', function() {
       '<ul>' +
         '<li ng-repeat="(key, value) in items">{{key}}:{{value}}|</li>' +
       '</ul>')(scope);
-    scope.items = {age:20, wealth:20, prodname: "Bingo", dogname: "Bingo", codename: "20"};
+    scope.items = {age:20, wealth:20, prodname: 'Bingo', dogname: 'Bingo', codename: '20'};
     scope.$digest();
     expect(element.text()).toEqual('age:20|wealth:20|prodname:Bingo|dogname:Bingo|codename:20|');
   });
@@ -277,7 +277,7 @@ describe('ngRepeat', function() {
           '</ul>')(scope);
 
       // eslint-disable-next-line no-extend-native
-      Array.prototype.extraProperty = "should be ignored";
+      Array.prototype.extraProperty = 'should be ignored';
       // INIT
       scope.items = [true, true, true];
       scope.$digest();
@@ -523,7 +523,7 @@ describe('ngRepeat', function() {
       });
 
       function escape(text) {
-        return text.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+        return text.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
       }
     }));
   });
@@ -585,7 +585,7 @@ describe('ngRepeat', function() {
   });
 
 
-  it("should throw error when left-hand-side of ngRepeat can't be parsed", function() {
+  it('should throw error when left-hand-side of ngRepeat can\'t be parsed', function() {
     element = jqLite('<ul><li ng-repeat="i dont parse in foo"></li></ul>');
     $compile(element)(scope);
     expect($exceptionHandler.errors.shift()[0].message).
