@@ -2080,7 +2080,7 @@ function $ParseProvider() {
       var unwatch, lastValue;
       unwatch = scope.$watch(function oneTimeWatch(scope) {
         return parsedExpression(scope);
-      }, /* @this */ function oneTimeListener(value, old, scope) {
+      }, /** @this */ function oneTimeListener(value, old, scope) {
         lastValue = value;
         if (isFunction(listener)) {
           listener.apply(this, arguments);
@@ -2100,7 +2100,7 @@ function $ParseProvider() {
       var unwatch, lastValue;
       unwatch = scope.$watch(function oneTimeWatch(scope) {
         return parsedExpression(scope);
-      }, /* @this */ function oneTimeListener(value, old, scope) {
+      }, /** @this */ function oneTimeListener(value, old, scope) {
         lastValue = value;
         if (isFunction(listener)) {
           listener.call(this, value, old, scope);
