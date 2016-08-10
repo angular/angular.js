@@ -8,11 +8,16 @@ describe('api', function() {
       var key = {};
       var value1 = {};
       var value2 = {};
+
       map.put(key, value1);
       map.put(key, value2);
+
+      expect(map.has(key)).toBe(true);
+      expect(map.has({})).toBe(false);
       expect(map.get(key)).toBe(value2);
       expect(map.get({})).toBeUndefined();
       expect(map.remove(key)).toBe(value2);
+      expect(map.has(key)).toBe(false);
       expect(map.get(key)).toBeUndefined();
     });
 
@@ -20,6 +25,13 @@ describe('api', function() {
       var map = new HashMap(['a','b']);
       expect(map.get('a')).toBe(0);
       expect(map.get('b')).toBe(1);
+      expect(map.get('c')).toBeUndefined();
+    });
+
+    it('should init from an object', function() {
+      var map = new HashMap({a: 'foo', b: 'bar'});
+      expect(map.get('a')).toBe('foo');
+      expect(map.get('b')).toBe('bar');
       expect(map.get('c')).toBeUndefined();
     });
 

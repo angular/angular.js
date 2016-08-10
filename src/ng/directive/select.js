@@ -563,8 +563,11 @@ var selectDirective = function() {
         // Write value now needs to set the selected property of each matching option
         selectCtrl.writeValue = function writeMultipleValue(value) {
           var items = new HashMap(value);
+          var selectValueMap = selectCtrl.selectValueMap;
+
           forEach(element.find('option'), function(option) {
-            option.selected = isDefined(items.get(option.value)) || isDefined(items.get(selectCtrl.selectValueMap[option.value]));
+            var value = option.value;
+            option.selected = items.has(value) || items.has(selectValueMap[value]);
           });
         };
 

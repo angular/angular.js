@@ -1994,7 +1994,7 @@ describe('parser', function() {
 
         expect(function() {
           scope.$eval("1|nonexistent");
-        }).toThrowMinErr('$injector', 'unpr', 'Unknown provider: nonexistentFilterProvider <- nonexistentFilter');
+        }).toThrowMinErr('$injector', 'unpr', 'Unknown provider: nonexistentFilterProvider <- nonexistentFilter\n');
 
         scope.offset =  3;
         expect(scope.$eval("'abcd'|substring:1:offset")).toEqual("bc");

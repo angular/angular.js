@@ -36,14 +36,19 @@ function hashKey(obj, nextUidFn) {
 /**
  * HashMap which can use objects as keys
  */
-function HashMap(array, isolatedUid) {
+function HashMap(seedData, isolatedUid) {
   if (isolatedUid) {
     var uid = 0;
     this.nextUid = function() {
       return ++uid;
     };
   }
-  forEach(array, this.put, this);
+
+  if (seedData) {
+    var putFn = isArray(seedData) ?
+        this.put : reverseParams(this.put.bind(this));
+    forEach(seedData, putFn, this);
+  }
 }
 HashMap.prototype = {
   /**
@@ -61,6 +66,14 @@ HashMap.prototype = {
    */
   get: function(key) {
     return this[hashKey(key, this.nextUid)];
+  },
+
+  /**
+   * @param key
+   * @returns {boolean} whether a value is stored under the specified key
+   */
+  has: function(key) {
+    return this.hasOwnProperty(hashKey(key, this.nextUid));
   },
 
   /**
