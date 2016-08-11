@@ -3105,49 +3105,6 @@ describe('input', function() {
       }
     });
 
-    describe('ngMin', function() {
-
-      it('should validate', function() {
-        var inputElm = helper.compileInput('<input type="range" ng-model="value" name="alias" ng-min="50" />');
-
-        helper.changeInputValueTo('1');
-        expect(inputElm).toBeInvalid();
-        expect(scope.value).toBeFalsy();
-        expect(scope.form.alias.$error.min).toBeTruthy();
-
-        helper.changeInputValueTo('100');
-        expect(inputElm).toBeValid();
-        expect(scope.value).toBe(100);
-        expect(scope.form.alias.$error.min).toBeFalsy();
-      });
-
-      it('should validate even if the ngMin value changes on-the-fly', function() {
-        scope.min = 10;
-        var inputElm = helper.compileInput('<input type="range" ng-model="value" name="alias" ng-min="min" />');
-
-        helper.changeInputValueTo('15');
-        expect(inputElm).toBeValid();
-
-        scope.min = 20;
-        scope.$digest();
-        expect(inputElm).toBeInvalid();
-        expect(inputElm.val()).toBe('15');
-
-        scope.min = null;
-        scope.$digest();
-        expect(inputElm).toBeValid();
-
-        scope.min = '20';
-        scope.$digest();
-        expect(inputElm).toBeInvalid();
-
-        scope.min = 'abc';
-        scope.$digest();
-        expect(inputElm).toBeValid();
-      });
-    });
-
-
     describe('max', function() {
 
       if (supportsRange) {
@@ -3301,48 +3258,6 @@ describe('input', function() {
           expect(inputElm.val()).toBe('5');
         });
       }
-    });
-
-    describe('ngMax', function() {
-
-      it('should validate', function() {
-        var inputElm = helper.compileInput('<input type="range" ng-model="value" name="alias" ng-max="5" />');
-
-        helper.changeInputValueTo('20');
-        expect(inputElm).toBeInvalid();
-        expect(scope.value).toBeUndefined();
-        expect(scope.form.alias.$error.max).toBeTruthy();
-
-        helper.changeInputValueTo('0');
-        expect(inputElm).toBeValid();
-        expect(scope.value).toBe(0);
-        expect(scope.form.alias.$error.max).toBeFalsy();
-      });
-
-      it('should validate even if the ngMax value changes on-the-fly', function() {
-        scope.max = 10;
-        var inputElm = helper.compileInput('<input type="range" ng-model="value" name="alias" ng-max="max" />');
-
-        helper.changeInputValueTo('5');
-        expect(inputElm).toBeValid();
-
-        scope.max = 0;
-        scope.$digest();
-        expect(inputElm).toBeInvalid();
-
-        scope.max = null;
-        scope.$digest();
-        expect(inputElm).toBeValid();
-
-        scope.max = '4';
-        scope.$digest();
-        expect(inputElm).toBeInvalid();
-
-        scope.max = 'abc';
-        scope.$digest();
-        expect(inputElm).toBeValid();
-      });
-
     });
 
     if (supportsRange) {

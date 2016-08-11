@@ -1061,8 +1061,11 @@ var inputType = {
    * Angular will also update the model value.
    *
    * Automatic value adjustment also means that a range input element can never have the `required`,
-   * `min`, or `max` errors, except when using `ngMax` and `ngMin`, which are not affected by automatic
-   * value adjustment, because they do not set the `min` and `max` attributes.
+   * `min`, or `max` errors.
+   *
+   * Note that `input[range]` is not compatible with`ngMax` and `ngMin`, because they do not set the
+   * `min` and `max` attributes, which means that the browser won't automatically adjust the input
+   * value based on their values, and will always assume min = 0 and max = 100.
    *
    * @param {string}  ngModel Assignable angular expression to data-bind to.
    * @param {string=} name Property name of the form under which the control is published.
@@ -1070,14 +1073,6 @@ var inputType = {
    *                  than `min`. Can be interpolated.
    * @param {string=} max Sets the `max` validation to ensure that the value entered is less than `max`.
    *                  Can be interpolated.
-   * @param {string=} ngMin Takes an expression. Sets the `min` validation to ensure that the value
-   *                  entered is greater than `min`. Does not set the `min` attribute and therefore
-   *                  adds no native HTML5 validation. It also means the browser won't adjust the
-   *                  element value in case `min` is greater than the current value.
-   * @param {string=} ngMax Takes an expression. Sets the `max` validation to ensure that the value
-   *                  entered is less than `max`. Does not set the `max` attribute and therefore
-   *                  adds no native HTML5 validation. It also means the browser won't adjust the
-   *                  element value in case `max` is less than the current value.
    * @param {string=} ngChange Angular expression to be executed when the ngModel value changes due
    *                  to user interaction with the input element.
    *
@@ -1551,8 +1546,8 @@ function rangeInputType(scope, element, attr, ctrl, $sniffer, $browser) {
       minVal = supportsRange ? 0 : undefined,
       maxVal = supportsRange ? 100 : undefined,
       validity = element[0].validity,
-      minAttrType = isDefined(attr.ngMin) ? 'ngMin' : isDefined(attr.min) ? 'min' : false,
-      maxAttrType = isDefined(attr.ngMax) ? 'ngMax' : isDefined(attr.max) ? 'max' : false;
+      hasMinAttr = isDefined(attr.min),
+      hasMaxAttr = isDefined(attr.max);
 
   var originalRender = ctrl.$render;
 
@@ -1565,20 +1560,20 @@ function rangeInputType(scope, element, attr, ctrl, $sniffer, $browser) {
     } :
     originalRender;
 
-  if (minAttrType) {
-    ctrl.$validators.min = minAttrType === 'min' && supportsRange ?
+  if (hasMinAttr) {
+    ctrl.$validators.min = supportsRange ?
       // Since all browsers set the input to a valid value, we don't need to check validity
       function noopMinValidator() { return true; } :
-      // ngMin doesn't set the min attr, so the browser doesn't adjust the input value as setting min would
+      // non-support browsers validate the range
       function minValidator(modelValue, viewValue) {
         return ctrl.$isEmpty(viewValue) || isUndefined(minVal) || viewValue >= minVal;
       };
 
-    setInitialValueAndObserver(minAttrType, 'min', minChange);
+    setInitialValueAndObserver('min', minChange);
   }
 
-  if (maxAttrType) {
-    ctrl.$validators.max = maxAttrType === 'max' && supportsRange ?
+  if (hasMaxAttr) {
+    ctrl.$validators.max = supportsRange ?
       // Since all browsers set the input to a valid value, we don't need to check validity
       function noopMaxValidator() { return true; } :
       // ngMax doesn't set the max attr, so the browser doesn't adjust the input value as setting max would
@@ -1586,17 +1581,14 @@ function rangeInputType(scope, element, attr, ctrl, $sniffer, $browser) {
         return ctrl.$isEmpty(viewValue) || isUndefined(maxVal) || viewValue <= maxVal;
       };
 
-    setInitialValueAndObserver(maxAttrType, 'max', maxChange);
+    setInitialValueAndObserver('max', maxChange);
   }
 
-  function setInitialValueAndObserver(actualAttrName, htmlAttrName, changeFn) {
-    // e.g. max === max
-    if (actualAttrName === htmlAttrName) {
-      // interpolated attributes set the attribute value only after a digest, but we need the
-      // attribute value when the input is first rendered, so that the browser can adjust the
-      // input value based on the min/max value
-      element.attr(htmlAttrName, attr[htmlAttrName]);
-    }
+  function setInitialValueAndObserver(htmlAttrName, changeFn) {
+    // interpolated attributes set the attribute value only after a digest, but we need the
+    // attribute value when the input is first rendered, so that the browser can adjust the
+    // input value based on the min/max value
+    element.attr(htmlAttrName, attr[htmlAttrName]);
 
     attr.$observe(htmlAttrName, changeFn);
   }
@@ -1611,7 +1603,7 @@ function rangeInputType(scope, element, attr, ctrl, $sniffer, $browser) {
       return;
     }
 
-    if (supportsRange && minAttrType === 'min') {
+    if (supportsRange) {
       var elVal = element.val();
       // IE11 doesn't set the el val correctly if the minVal is greater than the element value
       if (minVal > elVal) {
@@ -1635,7 +1627,7 @@ function rangeInputType(scope, element, attr, ctrl, $sniffer, $browser) {
       return;
     }
 
-    if (supportsRange && maxAttrType === 'max') {
+    if (supportsRange) {
       var elVal = element.val();
       // IE11 doesn't set the el val correctly if the maxVal is less than the element value
       if (maxVal < elVal) {
