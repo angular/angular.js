@@ -122,6 +122,11 @@ function $ControllerProvider() {
             : getter(locals.$scope, constructor, true) ||
                 (globals ? getter($window, constructor, true) : undefined);
 
+        if (!expression) {
+          throw $controllerMinErr('ctrlreg',
+            'The controller with the name \'{0}\' is not registered.', constructor);
+        }
+
         assertArgFn(expression, constructor, true);
       }
 
