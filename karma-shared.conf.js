@@ -135,7 +135,7 @@ module.exports = function(config, specificOptions) {
 
     config.logLevel = config.LOG_DEBUG;
     // Karma (with socket.io 1.x) buffers by 50 and 50 tests can take a long time on IEs;-)
-    config.browserNoActivityTimeout = 140000;
+    config.browserNoActivityTimeout = 120000;
 
     config.browserStack.build = buildLabel;
     config.browserStack.startTunnel = false;
