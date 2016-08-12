@@ -161,11 +161,11 @@ describe('$controller', function() {
     }).toThrow();
   }));
 
-  it('should throw ctrlreg when the controller name does not match a registered controller', inject(function($compile, $rootScope) {
+  it('should throw ctrlreg when the controller name does not match a registered controller', function() {
     expect(function() {
       $controller('IDoNotExist', {$scope: {}});
     }).toThrowMinErr('$controller', 'ctrlreg', 'The controller with the name \'IDoNotExist\' is not registered.');
-  }));
+  });
 
 
   describe('ctrl as syntax', function() {

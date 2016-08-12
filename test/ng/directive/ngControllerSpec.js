@@ -151,12 +151,4 @@ describe('ngController', function() {
     expect(controllerScope.name).toBeUndefined();
   }));
 
-  it('should throw ctrlreg when the controller name does not match a registered controller', inject(function($compile, $rootScope) {
-    element = jqLite('<div ng-controller="IDoNotExist"></div>');
-
-   expect(function() {
-      element = $compile(element)($rootScope);
-    }).toThrowMinErr('$controller', 'ctrlreg', 'The controller with the name \'IDoNotExist\' is not registered.');
-  }));
-
 });

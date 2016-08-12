@@ -5,20 +5,19 @@
 
 This error occurs when the {@link ng.$controller `$controller()`} service is called
 with a string that does not match any of the registered controllers. The controller service may have
-been invoked directly, or indirectly through the {@link ng.ngController `ngController`} directive,
-or when inside a {@link angular.Module#component component} / {@link angular.Module#directive directive}
-definition (when using string notation for the controller property).
+been invoked directly, or indirectly, for example through the {@link ng.ngController `ngController`} directive,
+or inside a {@link angular.Module#component component} / {@link angular.Module#directive directive} /
+{@link ngRoute.$routeProvider#when route} definition (when using a string for the controller property).
+Third-party modules can also instantiate controllers with the {@link ng.$controller `$controller()`} service.
 
-Sources for this error can be:
+Causes for this error can be:
 
-1. You have a typo in the {@link ng.ngController `ngController`} directive,
-in a {@link angular.Module#component component} / {@link angular.Module#directive directive}
+1. Your reference to the controller has a typo. For example, in
+the {@link ng.ngController `ngController`} directive attribute, in a {@link angular.Module#component component}
 definition's controller property, or in the call to {@link ng.$controller `$controller()`}.
 2. You have not registered the controller (neither via {@link angular.Module#controller `Module.controller`}
 nor {@link ng.$controllerProvider#register `$controllerProvider.register()`}.
 3. You have a typo in the *registered* controller name.
-4. You want to use controllers defined on the `window`, but have turned off
-{@link ng.$controllerProvider#allowGlobals `allowGlobals()`}.
 
 
 Please consult the {@link ng.$controller $controller} service api docs to learn more.
