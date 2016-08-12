@@ -37,10 +37,12 @@ describe('angular.version', function() {
     expect(version.then(get('codeName'))).not.toMatch(/NG_VERSION_/);
   });
 
-  it('should have `full` === `"major.minor.dot"`', function() {
+  it('\'s `full` property should start with `"major.minor.dot"`', function() {
     expect(version.then(validate)).toBe(true);
 
     function validate(ver) {
+      // We test for "starts with", because `full` is not always equal to `"major.minor.dot"`.
+      // Possible formats: `1.5.8`, `1.5.0-rc.2`, `1.5.9-build.4949`, `1.5.9-local+sha.859348c`
       return ver.full.indexOf([ver.major, ver.minor, ver.dot].join('.')) === 0;
     }
   });
