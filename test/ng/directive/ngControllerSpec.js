@@ -150,4 +150,5 @@ describe('ngController', function() {
     $httpBackend.flush();
     expect(controllerScope.name).toBeUndefined();
   }));
+
 });
