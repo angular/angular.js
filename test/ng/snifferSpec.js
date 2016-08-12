@@ -90,6 +90,28 @@ describe('$sniffer', function() {
 
       expect(pushStateAccessCount).toBe(0);
     });
+
+    it('should not try to access `history.pushState` in sandboxed Chrome Packaged Apps',
+      function() {
+        var pushStateAccessCount = 0;
+
+        var mockHistory = Object.create(Object.prototype, {
+          pushState: {get: function() { pushStateAccessCount++; return noop; }}
+        });
+        var mockWindow = {
+          chrome: {
+            runtime: {
+              id: 'x'
+            }
+          },
+          history: mockHistory
+        };
+
+        sniffer(mockWindow);
+
+        expect(pushStateAccessCount).toBe(0);
+      }
+    );
   });
 
 
