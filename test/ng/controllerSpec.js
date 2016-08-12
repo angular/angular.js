@@ -161,6 +161,12 @@ describe('$controller', function() {
     }).toThrow();
   }));
 
+  it('should throw ctrlreg when the controller name does not match a registered controller', function() {
+    expect(function() {
+      $controller('IDoNotExist', {$scope: {}});
+    }).toThrowMinErr('$controller', 'ctrlreg', 'The controller with the name \'IDoNotExist\' is not registered.');
+  });
+
 
   describe('ctrl as syntax', function() {
 
@@ -226,7 +232,6 @@ describe('$controller', function() {
                        'Badly formed controller string \'ctrl as\'. ' +
                        'Must match `__name__ as __id__` or `__name__`.');
     });
-
 
     it('should allow identifiers containing `$`', function() {
       var scope = {};
