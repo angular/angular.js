@@ -33,6 +33,10 @@ describe('angular.version', function() {
     expect(version.then(get('codeName'))).toEqual(jasmine.any(String));
   });
 
+  it('should not contain "NG_VERSION_" in `codeName`', function() {
+    expect(version.then(get('codeName'))).not.toMatch(/NG_VERSION_/);
+  });
+
   it('should have `full` === `"major.minor.dot"`', function() {
     expect(version.then(validate)).toBe(true);
 
