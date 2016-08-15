@@ -264,7 +264,7 @@ function forEach(obj, iterator, context) {
     } else if (typeof obj.hasOwnProperty === 'function') {
       // Slow path for objects inheriting Object.prototype, hasOwnProperty check needed
       for (key in obj) {
-        if (obj.hasOwnProperty(key)) {
+        if (hasOwnProperty.call(obj, key)) {
           iterator.call(context, obj[key], key, obj);
         }
       }

@@ -66,8 +66,8 @@ function FormController(element, attrs, $scope, $animate, $interpolate) {
       controls = [];
 
   // init state
-  form.$error = {};
-  form.$$success = {};
+  form.$error = createMap();
+  form.$$success = createMap();
   form.$pending = undefined;
   form.$name = $interpolate(attrs.name || attrs.ngForm || '')($scope);
   form.$dirty = false;
