@@ -7,6 +7,7 @@ var nullFormCtrl = {
   $$renameControl: nullFormRenameControl,
   $removeControl: noop,
   $setValidity: noop,
+  $resetValidity: noop,
   $setDirty: noop,
   $setPristine: noop,
   $setSubmitted: noop
@@ -203,6 +204,7 @@ function FormController(element, attrs, $scope, $animate, $interpolate) {
   addSetValidityMethod({
     ctrl: this,
     $element: element,
+    classCache: {},
     set: function(object, property, controller) {
       var list = object[property];
       if (!list) {
@@ -301,6 +303,28 @@ function FormController(element, attrs, $scope, $animate, $interpolate) {
     $animate.addClass(element, SUBMITTED_CLASS);
     form.$submitted = true;
     form.$$parentForm.$setSubmitted();
+  };
+
+  /**
+   * @ngdoc method
+   * @name form.FormController#$resetErrors
+   *
+   * @description
+   * Deletes all validities of a form control.
+   */
+  form.$resetErrors = function() {
+    var errors = copy(form.$error);
+    forEach(errors, function(fields, validityName) {
+      forEach(fields, function(field) {
+        field.$resetErrors();
+        cleanUp(form.$error, validityName);
+        $animate.removeClass(element, INVALID_CLASS + '-' + snake_case(validityName, '-'));
+      });
+    });
+
+    function cleanUp(object, name) {
+      delete object[name];
+    }
   };
 }
 
