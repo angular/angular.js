@@ -9470,6 +9470,21 @@ describe('$compile', function() {
       });
     });
 
+    it("should throw an error if required controller can't be found and no link function has been provided",function() {
+      module(function() {
+        directive('dep', function(log) {
+          return {
+            require: '^main'
+          };
+        });
+      });
+      inject(function(log, $compile, $rootScope) {
+        expect(function() {
+          $compile('<div><div dep></div></div>')($rootScope);
+        }).toThrowMinErr("$compile", "ctreq", "Controller 'main', required by directive 'dep', can't be found!");
+      });
+    });
+
 
     it('should be possible to change the scope of a directive using $provide', function() {
       module(function($provide) {
