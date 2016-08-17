@@ -151,8 +151,9 @@ different currencies and also pay the invoice.
 What changed?
 
 First, there is a new JavaScript file that contains a <a name="controller">{@link controller controller}</a>.
-More exactly, the file contains a constructor function that creates the actual controller instance.
-The purpose of controllers is to expose variables and functionality to expressions and directives.
+More accurately, the file specifies a constructor function that will be used to create the actual
+controller instance. The purpose of controllers is to expose variables and functionality to
+expressions and directives.
 
 Besides the new file that contains the controller code we also added an
 {@link ng.directive:ngController `ng-controller`} directive to the HTML.
@@ -251,6 +252,7 @@ Let's refactor our example and move the currency conversion into a service in an
 <img class="pull-right" style="padding-left: 3em; padding-bottom: 1em;" src="img/guide/concepts-module-service.png">
 
 What changed?
+
 We moved the `convertCurrency` function and the definition of the existing currencies
 into the new file `finance2.js`. But how does the controller
 get a hold of the now separated function?
@@ -274,10 +276,11 @@ The code snippet `angular.module('invoice2', ['finance2'])`  specifies that the 
 `finance2` module. By this, Angular uses the `InvoiceController` as well as the `currencyConverter` service.
 
 Now that Angular knows of all the parts of the application, it needs to create them.
-In the previous section we saw that controllers are created using a factory function.
-For services there are multiple ways to define their factory
+In the previous section we saw that controllers are created using a constructor function.
+For services, there are multiple ways to specify how they are created
 (see the {@link services service guide}).
-In the example above, we are using an anonymous function as the factory function for `currencyConverter` service.
+In the example above, we are using an anonymous function as the factory function for the
+`currencyConverter` service.
 This function should return the `currencyConverter` service instance.
 
 Back to the initial question: How does the `InvoiceController` get a reference to the `currencyConverter` function?
