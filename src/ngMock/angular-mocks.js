@@ -2257,12 +2257,21 @@ angular.mock.$ControllerDecorator = ['$delegate', function($delegate) {
  * @ngdoc service
  * @name $componentController
  * @description
- * A service that can be used to create instances of component controllers.
- * <div class="alert alert-info">
+ * A service that can be used to create instances of component controllers. Useful for unit-testing.
+ *
  * Be aware that the controller will be instantiated and attached to the scope as specified in
  * the component definition object. If you do not provide a `$scope` object in the `locals` param
  * then the helper will create a new isolated scope as a child of `$rootScope`.
- * </div>
+ *
+ * If you are using `$element` or `$attrs` in the controller, make sure to provide them as `locals`.
+ * The `$element` must be a jqLite-wrapped DOM element, and `$attrs` should be an object that
+ * has all properties / functions that you are using in the controller. If this is getting too complex,
+ * you should compile the component instead and access the component's controller via the
+ * {@link angular.element#methods `controller`} function.
+ *
+ * See also the section on {@link guide/component#unit-testing-component-controllers unit-testing component controllers}
+ * in the guide.
+ *
  * @param {string} componentName the name of the component whose controller we want to instantiate
  * @param {Object} locals Injection locals for Controller.
  * @param {Object=} bindings Properties to add to the controller before invoking the constructor. This is used
