@@ -90,6 +90,48 @@ describe('event directives', function() {
 
   });
 
+  describe('focusout', function() {
+
+    describe('call the listener asynchronously during $apply', function() {
+      function run(scope) {
+        inject(function($compile) {
+          element = $compile('<input type="text" ng-focusout="focusout()">')(scope);
+          scope.focusout = jasmine.createSpy('focusout');
+
+          scope.$apply(function() {
+            element.triggerHandler('focusout');
+            expect(scope.focusout).not.toHaveBeenCalled();
+          });
+
+          expect(scope.focusout).toHaveBeenCalledOnce();
+        });
+      }
+
+      it('should call the listener with non isolate scopes', inject(function($rootScope) {
+        run($rootScope.$new());
+      }));
+
+      it('should call the listener with isolate scopes', inject(function($rootScope) {
+        run($rootScope.$new(true));
+      }));
+
+    });
+
+    it('should call the listener synchronously inside of $apply if outside of $apply',
+        inject(function($rootScope, $compile) {
+      element = $compile('<input type="text" ng-focusout="focusout()" ng-model="value">')($rootScope);
+      $rootScope.focusout = jasmine.createSpy('focusout').andCallFake(function() {
+        $rootScope.value = 'newValue';
+      });
+
+      element.triggerHandler('focusout');
+
+      expect($rootScope.focusout).toHaveBeenCalledOnce();
+      expect(element.val()).toBe('newValue');
+    }));
+
+  });
+
   describe('security', function() {
     it('should allow access to the $event object', inject(function($rootScope, $compile) {
       var scope = $rootScope.$new();
