@@ -2652,11 +2652,22 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           }
         }
 
-        // Bind the required controllers to the controller, if `require` is an object and `bindToController` is truthy
         forEach(controllerDirectives, function(controllerDirective, name) {
-          var require = controllerDirective.require;
-          if (controllerDirective.bindToController && !isArray(require) && isObject(require)) {
-            extend(elementControllers[name].instance, getControllers(name, require, $element, elementControllers));
+          if (controllerDirective.bindToController) {
+
+            var controllerInstance = elementControllers[name].instance;
+
+            // Bind the required controllers to the controller, if `require` is an object and `bindToController` is truthy
+            var require = controllerDirective.require;
+            if (!isArray(require) && isObject(require)) {
+              extend(controllerInstance, getControllers(name, require, $element, elementControllers));
+            }
+
+            // Re-assign the properties in case they were changed in the constructor
+            var initialChanges = controller.bindingInfo.initialChanges;
+            forEach(initialChanges, function(value, key) {
+              controllerInstance[key] = value.currentValue;
+            });
           }
         });
 

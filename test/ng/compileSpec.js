@@ -5315,6 +5315,31 @@ describe('$compile', function() {
             });
         });
 
+
+        it('should reassign bindings to the controller before $onInit, in case the constructor has overwritten them', function() {
+          angular.module('owComponentTest', [])
+            .component('owComponent', {
+              bindings: { input: '<' },
+              controller: function() {
+                component = this;
+                this.input = 'constructor-changed';
+                this.$onInit = function() {
+                  log.push('$onInit: input=' + this.input);
+                };
+              }
+            });
+
+          module('owComponentTest');
+          inject(function() {
+            $rootScope.name = 'outer';
+            compile('<ow-component input="name"></ow-component>');
+            expect(component.input).toEqual('outer');
+            expect(log).toEqual([
+              '$onInit: input=outer'
+            ]);
+          });
+        });
+
         it('should not update isolate again after $onInit if outer has not changed', function() {
           module('owComponentTest');
           inject(function() {
