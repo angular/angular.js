@@ -95,6 +95,8 @@ To configure the `$location` service, retrieve the
   `true` or `enabled:true` - see HTML5 mode<br />
   `false` or `enabled:false` - see Hashbang mode<br />
   `requireBase:true` - see Relative links<br />
+  `rewriteLinks:true` - see Html link rewriting<br />
+  `rewriteLinks:'string'` - see Html link rewriting<br />
   default: `enabled:false`
 
 - **hashPrefix(prefix)**: {string}<br />
@@ -325,6 +327,18 @@ reload to the original link.
   Example: `<a href="http://angularjs.org/">link</a>`
 - Links starting with '/' that lead to a different base path<br>
   Example: `<a href="/not-my-base/link">link</a>`
+
+If `html5Mode.rewriteLinks` is set to `false` in the html5Mode definition object passed to
+`$locationProvider.html5Mode()`, the browser will perform a full page reload for every link.
+`html5Mode.rewriteLinks` can also be set to a string, which will enable link re-writing only on
+links that have the given attribute.
+
+For example, if `html5Mode.rewriteLinks` is set to "internal-link":
+- `<a href="/some/path" internal-link>link</a>` will be rewritten
+- `<a href="/some/path">link</a>` will perform a full page reload
+
+Note that attribute name (de)normalization does not apply here, so "internalLink" is different from
+"internal-link".
 
 
 ### Relative links
@@ -853,6 +867,3 @@ angular.module('locationExample', [])
 # Related API
 
 * {@link ng.$location `$location` API}
-
-
-
