@@ -679,7 +679,7 @@ function qFactory(nextTick, exceptionHandler, errorOnUnhandledRejections) {
     function rejectFn(reason) {
       deferred.reject(reason);
     }
-    
+
     function notifyFn(value) {
       deferred.notify(value);
     }
