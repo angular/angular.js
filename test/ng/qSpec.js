@@ -467,7 +467,7 @@ describe('q', function() {
 
         log = [];
         notify('bar');
-        expect(mockTickNext.queue.length).toBe(0);
+        expect(mockNextTick.queue.length).toBe(0);
         expect(logStr()).toBe('');
 
         promise.then(success(2), error(), progress(2));
@@ -483,10 +483,10 @@ describe('q', function() {
         reject('foo');
         mockNextTick.flush();
         expect(logStr()).toBe('error1(foo)->reject(foo)');
-        
+
         log = [];
         notify('bar');
-        expect(mockTickNext.queue.length).toBe(0);
+        expect(mockNextTick.queue.length).toBe(0);
         expect(logStr()).toBe('');
 
         promise.then(success(), error(2), progress(2));
