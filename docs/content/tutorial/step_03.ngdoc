@@ -69,7 +69,7 @@ To create a component, we use the {@link angular.Module#component .component()} 
 Definition Object (CDO for short).
 
 Remember that (since components are also directives) the name of the component is in `camelCase`,
-but we will use `kebab-case`, when referring to it in our HTML.
+but we will use `camel-case`, when referring to it in our HTML.
 
 In its simplest form, the CDO will just contain a template and a controller. (We can actually omit
 the controller and Angular will create a dummy controller for us. This is useful for simple
