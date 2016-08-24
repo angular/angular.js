@@ -423,8 +423,7 @@
  * controllers.
  *
  * If the `require` property is an object and `bindToController` is truthy, then the required controllers are
- * bound to the controller using the keys of the `require` property. This binding occurs after all the controllers
- * have been constructed but before `$onInit` is called.
+ * bound to the controller using the keys of the `require` property.
  * If the name of the required controller is the same as the local name (the key), the name can be
  * omitted. For example, `{parentDir: '^^'}` is equivalent to `{parentDir: '^^parentDir'}`.
  * See the {@link $compileProvider#component} helper for an example of how this can be used.
@@ -2625,11 +2624,18 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           }
         }
 
+        // get the sorted controller directive names to ensure the controllers construction order
+        var sortedControllerDirectiveNames = getSortedControllerDirectiveNames();
+
         // Initialize bindToController bindings
-        for (var name in elementControllers) {
+        forEach(sortedControllerDirectiveNames, function(name) {
           var controllerDirective = controllerDirectives[name];
           var controller = elementControllers[name];
           var bindings = controllerDirective.$$bindings.bindToController;
+
+          // bind required controllers before directive bindings initialize
+          // thus controller can receive required controllers during constructing
+          bindRequiredControllers(name, controllerDirective);
 
           if (controller.identifier && bindings) {
             controller.bindingInfo =
@@ -2647,16 +2653,9 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             if (controller.bindingInfo.removeWatches) {
               controller.bindingInfo.removeWatches();
             }
+            bindRequiredControllers(name, controllerDirective);
             controller.bindingInfo =
               initializeDirectiveBindings(controllerScope, attrs, controller.instance, bindings, controllerDirective);
-          }
-        }
-
-        // Bind the required controllers to the controller, if `require` is an object and `bindToController` is truthy
-        forEach(controllerDirectives, function(controllerDirective, name) {
-          var require = controllerDirective.require;
-          if (controllerDirective.bindToController && !isArray(require) && isObject(require)) {
-            extend(elementControllers[name].instance, getControllers(name, require, $element, elementControllers));
           }
         });
 
@@ -2730,6 +2729,64 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             controllerInstance.$postLink();
           }
         });
+
+        // if the controller require another controller of sibling elements and bindToController is truthy
+        // the depended controllers should have a high order for constructing earlier
+        function getSortedControllerDirectiveNames() {
+
+          forEach(controllerDirectives, function(controllerDirective) {
+
+            controllerDirective.$$depth = controllerDirective.$$depth || 0;
+
+            var require = controllerDirective.require;
+            if (controllerDirective.bindToController && !isArray(require) && isObject(require)) {
+              setDepth(require, 1);
+            }
+
+          });
+
+          // set the depth of nest required controller
+          function setDepth(require, depth) {
+
+            forEach(require, function(directive) {
+
+              directive = directive.match(/\w+/)[0];
+              var controllerDirective = controllerDirectives[directive];
+              if (controllerDirective) {
+
+                if (controllerDirective.require) {
+                  setDepth(controllerDirective.require, depth + 1);
+                }
+
+                controllerDirective.$$depth = controllerDirective.$$depth || depth;
+                if (controllerDirective.$$depth < depth) {
+                  controllerDirective.$$depth = depth;
+                }
+              }
+
+            });
+          }
+
+          // sort controllers by depth value
+          // the deeper controller should has a lower index to ensure the earlier construction
+          var sortedNames = Object.keys(controllerDirectives || {}).map(function(directiveName) {
+            return {name: directiveName, $$depth: controllerDirectives[directiveName].$$depth};
+          }).sort(function(a, b) {
+            return b.$$depth - a.$$depth;
+          }).map(function(directive) {
+            return directive.name;
+          });
+
+          return sortedNames;
+        }
+
+        // Bind the required controllers to the controller, if `require` is an object and `bindToController` is truthy
+        function bindRequiredControllers(directiveName, controllerDirective) {
+          var require = controllerDirective.require;
+          if (controllerDirective.bindToController && !isArray(require) && isObject(require)) {
+            extend(elementControllers[directiveName].instance, getControllers(directiveName, require, $element, elementControllers));
+          }
+        }
 
         // This is the function that is injected as `$transclude`.
         // Note: all arguments are optional!
