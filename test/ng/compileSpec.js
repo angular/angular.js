@@ -214,6 +214,7 @@ describe('$compile', function() {
       });
       inject(function($compile) {});
     });
+
     it('should throw an exception if a directive name has leading or trailing whitespace', function() {
       module(function() {
         function assertLeadingOrTrailingWhitespaceInDirectiveName(name) {
@@ -226,6 +227,24 @@ describe('$compile', function() {
         assertLeadingOrTrailingWhitespaceInDirectiveName(' leadingWhitespaceDirectiveName');
         assertLeadingOrTrailingWhitespaceInDirectiveName('trailingWhitespaceDirectiveName ');
         assertLeadingOrTrailingWhitespaceInDirectiveName(' leadingAndTrailingWhitespaceDirectiveName ');
+      });
+      inject(function($compile) {});
+    });
+
+    it('should throw an exception if the directive name is not defined', function() {
+      module(function() {
+        expect(function() {
+          directive();
+        }).toThrowMinErr('ng','areq');
+      });
+      inject(function($compile) {});
+    });
+
+    it('should throw an exception if the directive factory is not defined', function() {
+      module(function() {
+        expect(function() {
+          directive('myDir');
+        }).toThrowMinErr('ng','areq');
       });
       inject(function($compile) {});
     });
