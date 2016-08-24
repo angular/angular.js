@@ -10154,7 +10154,7 @@ describe('$compile', function() {
     // IE9 rejects the video / audio tag with "Error: Not implemented" and the source tag with
     // "Unable to get value of the property 'childNodes': object is null or undefined"
     if (!msie || msie > 9) {
-      they('should NOT require trusted values for $prop src', ['video', 'audio', 'source'],
+      they('should NOT require trusted values for $prop src', ['video', 'audio'],
       function(tag) {
         inject(function($rootScope, $compile, $sce) {
           element = $compile('<' + tag + ' src="{{testUrl}}"></' + tag + '>')($rootScope);
@@ -10171,6 +10171,26 @@ describe('$compile', function() {
           $rootScope.testUrl = $sce.trustAsResourceUrl('http://example.com/image3.mp4');
           $rootScope.$digest();
           expect(element.attr('src')).toEqual('http://example.com/image3.mp4');
+        });
+      });
+
+      they('should NOT require trusted values for $prop src', ['source', 'track'],
+      function(tag) {
+        inject(function($rootScope, $compile, $sce) {
+          element = $compile('<video><' + tag + ' src="{{testUrl}}"></' + tag + '></video>')($rootScope);
+          $rootScope.testUrl = 'http://example.com/image.mp4';
+          $rootScope.$digest();
+          expect(element.find(tag).attr('src')).toEqual('http://example.com/image.mp4');
+
+          // But it should accept trusted values anyway.
+          $rootScope.testUrl = $sce.trustAsUrl('http://example.com/image2.mp4');
+          $rootScope.$digest();
+          expect(element.find(tag).attr('src')).toEqual('http://example.com/image2.mp4');
+
+          // and trustedResourceUrls for retrocompatibility
+          $rootScope.testUrl = $sce.trustAsResourceUrl('http://example.com/image3.mp4');
+          $rootScope.$digest();
+          expect(element.find(tag).attr('src')).toEqual('http://example.com/image3.mp4');
         });
       });
     }
