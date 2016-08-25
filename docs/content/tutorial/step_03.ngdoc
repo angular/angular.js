@@ -68,8 +68,9 @@ To create a component, we use the {@link angular.Module#component .component()} 
 {@link module Angular module}. We must provide the name of the component and the Component
 Definition Object (CDO for short).
 
-Remember that (since components are also directives) the name of the component is in `camelCase`,
-but we will use `kebab-case`, when referring to it in our HTML.
+Remember that (since components are also directives) the name of the component is in `camelCase`
+(e.g. `myAwesomeComponent`), but we will use `kebab-case` (e.g. `my-awesome-component`) when
+referring to it in our HTML. (See [here][case-styles] for a description of different case styles.)
 
 In its simplest form, the CDO will just contain a template and a controller. (We can actually omit
 the controller and Angular will create a dummy controller for us. This is useful for simple
@@ -276,6 +277,7 @@ files, so it remains easy to locate as our application grows.
 <ul doc-tutorial-nav="3"></ul>
 
 
+[case-styles]: https://en.wikipedia.org/wiki/Letter_case#Special_case_styles
 [jasmine-docs]: http://jasmine.github.io/2.4/introduction.html
 [jasmine-home]: http://jasmine.github.io/
 [karma]: https://karma-runner.github.io/
