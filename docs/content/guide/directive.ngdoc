@@ -70,7 +70,7 @@ Angular **normalizes** an element's tag and attribute name to determine which el
 directives. We typically refer to directives by their case-sensitive
 [camelCase](http://en.wikipedia.org/wiki/CamelCase) **normalized** name (e.g. `ngModel`).
 However, since HTML is case-insensitive, we refer to directives in the DOM by lower-case
-forms, typically using [dash-delimited](http://en.wikipedia.org/wiki/Letter_case#Computers)
+forms, typically using [dash-delimited](https://en.wikipedia.org/wiki/Letter_case#Special_case_styles)
 attributes on DOM elements (e.g. `ng-model`).
 
 The **normalization** process is as follows:
