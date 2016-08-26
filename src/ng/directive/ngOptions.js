@@ -388,6 +388,34 @@ var ngOptionsDirective = ['$compile', '$document', '$parse', function($compile, 
           selectValueMap[selectValue] = optionItem;
         }
 
+        /**
+         *
+         * @returns {boolean}
+         */
+        function isSelectedOptionValid() {
+
+          var selectedValue = selectElement.val();
+
+          if (!selectedValue) {
+            return false;
+          }
+
+          // in case  select is multiple then check
+          // if one of the selected values matched with the options  return true
+          // or return false if no value match
+          if (isArray(selectedValue)) {
+            for (var i = 0, length = selectedValue.length; i < length; i++) {
+              if (selectValueMap[selectedValue[i]]) {
+                return true;
+              }
+            }
+            return false;
+          }
+
+          return !!selectValueMap[selectedValue];
+
+        }
+
         return {
           items: optionItems,
           selectValueMap: selectValueMap,
@@ -398,7 +426,9 @@ var ngOptionsDirective = ['$compile', '$document', '$parse', function($compile, 
             // If the viewValue could be an object that may be mutated by the application,
             // we need to make a copy and not return the reference to the value on the option.
             return trackBy ? angular.copy(option.viewValue) : option.viewValue;
-          }
+          },
+
+          isSelectedOptionValid: isSelectedOptionValid
         };
       }
     };
@@ -527,11 +557,6 @@ var ngOptionsDirective = ['$compile', '$document', '$parse', function($compile, 
 
       } else {
 
-        ngModelCtrl.$isEmpty = function(value) {
-          return !value || value.length === 0;
-        };
-
-
         selectCtrl.writeValue = function writeNgOptionsMultiple(value) {
           options.items.forEach(function(option) {
             option.element.selected = false;
@@ -574,7 +599,12 @@ var ngOptionsDirective = ['$compile', '$document', '$parse', function($compile, 
 
         }
       }
+      // Copy the implementation of $isEmpty function to be used in overwritten one
+      var $$isEmpty = ngModelCtrl.$isEmpty;
 
+      ngModelCtrl.$isEmpty = function(value) {
+        return $$isEmpty(value) || !options.isSelectedOptionValid();
+      };
 
       if (providedEmptyOption) {
 
@@ -690,7 +720,7 @@ var ngOptionsDirective = ['$compile', '$document', '$parse', function($compile, 
         ngModelCtrl.$render();
 
         // Check to see if the value has changed due to the update to the options
-        if (!ngModelCtrl.$isEmpty(previousValue)) {
+        if (!$$isEmpty(previousValue)) {
           var nextValue = selectCtrl.readValue();
           var isNotPrimitive = ngOptions.trackBy || multiple;
           if (isNotPrimitive ? !equals(previousValue, nextValue) : previousValue !== nextValue) {
