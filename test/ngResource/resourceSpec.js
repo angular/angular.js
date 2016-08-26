@@ -1124,6 +1124,65 @@ describe('basic usage', function() {
   });
 
 
+  describe('success mode', function() {
+    it('should call the success callback (as 1st argument) on 2xx responses', function() {
+      var instance, headers, status, statusText;
+      var successCb = jasmine.createSpy('successCb').and.callFake(function(d, h, s, t) {
+        expect(d).toBe(instance);
+        expect(h()).toEqual(jasmine.objectContaining(headers));
+        expect(s).toBe(status);
+        expect(t).toBe(statusText);
+      });
+
+      instance = CreditCard.get(successCb);
+      headers = {foo: 'bar'};
+      status = 200;
+      statusText = 'OK';
+      $httpBackend.expect('GET', '/CreditCard').respond(status, {}, headers, statusText);
+      $httpBackend.flush();
+
+      expect(successCb).toHaveBeenCalledOnce();
+
+      instance = CreditCard.get(successCb);
+      headers = {baz: 'qux'};
+      status = 299;
+      statusText = 'KO';
+      $httpBackend.expect('GET', '/CreditCard').respond(status, {}, headers, statusText);
+      $httpBackend.flush();
+
+      expect(successCb).toHaveBeenCalledTimes(2);
+    });
+
+
+    it('should call the success callback (as 2nd argument) on 2xx responses', function() {
+      var instance, headers, status, statusText;
+      var successCb = jasmine.createSpy('successCb').and.callFake(function(d, h, s, t) {
+        expect(d).toBe(instance);
+        expect(h()).toEqual(jasmine.objectContaining(headers));
+        expect(s).toBe(status);
+        expect(t).toBe(statusText);
+      });
+
+      instance = CreditCard.get({id: 123}, successCb);
+      headers = {foo: 'bar'};
+      status = 200;
+      statusText = 'OK';
+      $httpBackend.expect('GET', '/CreditCard/123').respond(status, {}, headers, statusText);
+      $httpBackend.flush();
+
+      expect(successCb).toHaveBeenCalledOnce();
+
+      instance = CreditCard.get({id: 456}, successCb);
+      headers = {baz: 'qux'};
+      status = 299;
+      statusText = 'KO';
+      $httpBackend.expect('GET', '/CreditCard/456').respond(status, {}, headers, statusText);
+      $httpBackend.flush();
+
+      expect(successCb).toHaveBeenCalledTimes(2);
+    });
+  });
+
   describe('failure mode', function() {
     var ERROR_CODE = 500,
         ERROR_RESPONSE = 'Server Error',

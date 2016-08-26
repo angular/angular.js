@@ -242,9 +242,9 @@ function shallowClearAndCopy(src, dst) {
  *   - non-GET instance actions:  `instance.$action([parameters], [success], [error])`
  *
  *
- *   Success callback is called with (value, responseHeaders) arguments, where the value is
- *   the populated resource instance or collection object. The error callback is called
- *   with (httpResponse) argument.
+ *   Success callback is called with (value (Object|Array), responseHeaders (Function),
+ *   status (number), statusText (string)) arguments, where the value is the populated resource
+ *   instance or collection object. The error callback is called with (httpResponse) argument.
  *
  *   Class actions return empty instance (with additional properties below).
  *   Instance actions return promise of the action.
@@ -777,7 +777,7 @@ angular.module('ngResource', ['ng']).
             promise = promise.then(
               function(response) {
                 var value = responseInterceptor(response);
-                (success || noop)(value, response.headers);
+                (success || noop)(value, response.headers, response.status, response.statusText);
                 return value;
               },
               (hasError || hasResponseErrorInterceptor) ?
