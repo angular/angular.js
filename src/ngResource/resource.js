@@ -692,8 +692,14 @@ angular.module('ngResource', ['ng']).
                   arguments.length);
             }
 
-            var isInstanceCall = this instanceof Resource;
-            var value = isInstanceCall ? data : (action.isArray ? [] : new Resource(data));
+            var isInstanceCall = this instanceof Resource, value;
+
+            if (action.isArray) {
+              value = [];
+            } else {
+              value = isInstanceCall ? data : new Resource(data);
+            }
+
             var httpConfig = {};
             var responseInterceptor = action.interceptor && action.interceptor.response ||
               defaultResponseInterceptor;
@@ -777,6 +783,9 @@ angular.module('ngResource', ['ng']).
             promise = promise.then(
               function(response) {
                 var value = responseInterceptor(response);
+                if(action.saveAs){
+                  data[action.saveAs] = value;
+                }
                 (success || noop)(value, response.headers);
                 return value;
               },
