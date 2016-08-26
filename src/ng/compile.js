@@ -3180,18 +3180,13 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         return $sce.HTML;
       }
       var tag = nodeName_(node);
-      // All tags with src attributes require a RESOURCE_URL value, except for
-      // img and various html5 media tags.
-      if (attrNormalizedName === 'src' || attrNormalizedName === 'ngSrc') {
-        if (['img', 'video', 'audio', 'source', 'track'].indexOf(tag) === -1) {
-          return $sce.RESOURCE_URL;
-        }
       // maction[xlink:href] can source SVG.  It's not limited to <maction>.
-      } else if (attrNormalizedName === 'xlinkHref' ||
+      if (attrNormalizedName === 'xlinkHref' ||
           (tag === 'form' && attrNormalizedName === 'action') ||
           // links can be stylesheets or imports, which can run script in the current origin
-          (tag === 'link' && attrNormalizedName === 'href')
-      ) {
+          (tag === 'link' && attrNormalizedName === 'href') ||
+          (tag !== 'img' && (attrNormalizedName === 'src' ||
+                            attrNormalizedName === 'ngSrc'))) {
         return $sce.RESOURCE_URL;
       }
     }
