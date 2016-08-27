@@ -743,7 +743,9 @@ function arrayRemove(array, value) {
   return index;
 }
 
-
+// A minimal ES6 Map implementation.
+// Should be bug/feature equivelent to the native implementations of supported browsers.
+// See https://kangax.github.io/compat-table/es6/#test-Map
 function ES6MapShim() {
   this._keys = [];
   this._values = [];
@@ -771,29 +773,15 @@ ES6MapShim.prototype = {
     }
     this._keys[idx] = key;
     this._values[idx] = value;
-    return this;
+
+    // Support: IE11
+    // Do not `return this` to simulate the partial IE11 implementation
   }
 };
 
-function testES6Map(Map) {
-  var m, o = {};
-  return isFunction(Map) && (m = new Map())
-
-    // Required functions
-    && isFunction(m.get) && isFunction(m.set)
-
-    // Number keys, must not call toString
-    && m.get(1) === undefined
-    && m.set(1, o) === m
-    && m.get(1) === o
-    && m.get('1') === undefined
-
-    // Object keys, must use instance as key and not call toString
-    && m.set(o, 2) === m && m.get(o) === 2
-    && m.get({}) === undefined;
-}
-
-var ES6Map = testES6Map(window.Map) ? window.Map : ES6MapShim;
+var ES6Map = isFunction(window.Map) && toString.call(window.Map.prototype) === '[object Map]'
+  ? window.Map
+  : ES6MapShim;
 
 /**
  * @ngdoc function
