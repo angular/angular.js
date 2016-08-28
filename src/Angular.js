@@ -849,7 +849,7 @@ var ES6Map = isFunction(window.Map) && toString.call(window.Map.prototype) === '
   </example>
  */
 function copy(source, destination) {
-  var stack = new ES6Map();
+  var stack;
 
   if (destination) {
     if (isTypedArray(destination) || isArrayBuffer(destination)) {
@@ -870,13 +870,14 @@ function copy(source, destination) {
       });
     }
 
-    stack.set(source, destination);
     return copyRecurse(source, destination);
   }
 
   return copyElement(source);
 
   function copyRecurse(source, destination) {
+    (stack || (stack = new ES6Map())).set(source, destination);
+
     var h = destination.$$hashKey;
     var key;
     if (isArray(source)) {
@@ -914,7 +915,7 @@ function copy(source, destination) {
     }
 
     // Already copied values
-    var existingCopy = stack.get(source);
+    var existingCopy = stack && stack.get(source);
     if (existingCopy) {
       return existingCopy;
     }
@@ -924,19 +925,15 @@ function copy(source, destination) {
         'Can\'t copy! Making copies of Window or Scope instances is not supported.');
     }
 
-    var needsRecurse = false;
     var destination = copyType(source);
 
     if (destination === undefined) {
-      destination = isArray(source) ? [] : Object.create(getPrototypeOf(source));
-      needsRecurse = true;
+      destination = copyRecurse(source, isArray(source) ? [] : Object.create(getPrototypeOf(source)));
+    } else if (stack) {
+      stack.set(source, destination);
     }
 
-    stack.set(source, destination);
-
-    return needsRecurse
-      ? copyRecurse(source, destination)
-      : destination;
+    return destination;
   }
 
   function copyType(source) {
