@@ -5877,6 +5877,38 @@ describe('$compile', function() {
     });
 
 
+    it('should throw badrestrict on first compilation when restrict is invalid', function() {
+      module(function($compileProvider, $exceptionHandlerProvider) {
+        $compileProvider.directive('invalidRestrictBadString', valueFn({restrict: '"'}));
+        $compileProvider.directive('invalidRestrictTrue', valueFn({restrict: true}));
+        $compileProvider.directive('invalidRestrictObject', valueFn({restrict: {}}));
+        $compileProvider.directive('invalidRestrictNumber', valueFn({restrict: 42}));
+
+        // We need to test with the exceptionHandler not rethrowing...
+        $exceptionHandlerProvider.mode('log');
+      });
+
+      inject(function($exceptionHandler, $compile, $rootScope) {
+        $compile('<div invalid-restrict-true>')($rootScope);
+        expect($exceptionHandler.errors.length).toBe(1);
+        expect($exceptionHandler.errors[0]).toMatch(/\$compile.*badrestrict.*'true'/);
+
+        $compile('<div invalid-restrict-bad-string>')($rootScope);
+        $compile('<div invalid-restrict-bad-string>')($rootScope);
+        expect($exceptionHandler.errors.length).toBe(2);
+        expect($exceptionHandler.errors[1]).toMatch(/\$compile.*badrestrict.*'"'/);
+
+        $compile('<div invalid-restrict-bad-string invalid-restrict-object>')($rootScope);
+        expect($exceptionHandler.errors.length).toBe(3);
+        expect($exceptionHandler.errors[2]).toMatch(/\$compile.*badrestrict.*'{}'/);
+
+        $compile('<div invalid-restrict-object invalid-restrict-number>')($rootScope);
+        expect($exceptionHandler.errors.length).toBe(4);
+        expect($exceptionHandler.errors[3]).toMatch(/\$compile.*badrestrict.*'42'/);
+      });
+    });
+
+
     it('should throw noident when missing controllerAs directive property', function() {
       module(function($compileProvider) {
         $compileProvider.directive('noIdent', valueFn({
