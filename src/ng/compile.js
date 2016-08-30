@@ -2945,7 +2945,9 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           (tag !== "img" && (attrNormalizedName === "src" ||
                             attrNormalizedName === "ngSrc"))) {
         return $sce.RESOURCE_URL;
-      } else if (tag === "img" && (attrNormalizedName === "src" ||
+      } else if ((tag === "img" || tag === "audio" || tag === "video" ||
+                  tag === "track" || tag === "source") &&
+                                 (attrNormalizedName === "src" ||
                                   attrNormalizedName === "ngSrc") ||
           tag === "a" && (attrNormalizedName === "href" ||
                          attrNormalizedName === "xlinkHref" ||

@@ -371,7 +371,7 @@ function $InterpolateProvider() {
 
               return compute(values);
             } catch (err) {
-              $exceptionHandler(err);
+              $exceptionHandler($interpolateMinErr.interr(text, err));
             }
 
           }, {

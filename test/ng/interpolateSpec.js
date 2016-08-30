@@ -263,7 +263,7 @@ describe('$interpolate', function() {
       expect(function() {
         return $interpolate('{{foo}}{{bar}}', true, sce.CSS)({foo: foo, bar: bar});
       }).toThrowMinErr(
-                "$interpolate", "noconcat", "Error while interpolating: {{foo}}{{bar}}\n" +
+                "$interpolate", "interr", "Error while interpolating: {{foo}}{{bar}}\n" +
                 "Strict Contextual Escaping disallows interpolations that concatenate " +
                 "multiple expressions in some secure contexts. See http://docs.angularjs.org/api/ng.$sce");
     }));
@@ -349,19 +349,19 @@ describe('$interpolate', function() {
       expect(function() {
           $interpolate('constant/{{var}}', true, isTrustedContext)('val');
       }).toThrowMinErr(
-          "$interpolate", "noconcat", "Error while interpolating: constant/{{var}}\n" +
+          "$interpolate", "interr", "Error while interpolating: constant/{{var}}\n" +
             "Strict Contextual Escaping disallows interpolations that concatenate " +
             "multiple expressions in some secure contexts. See http://docs.angularjs.org/api/ng.$sce");
       expect(function() {
         $interpolate('{{var}}/constant', true, isTrustedContext)('val');
       }).toThrowMinErr(
-          "$interpolate", "noconcat", "Error while interpolating: {{var}}/constant\n" +
+          "$interpolate", "interr", "Error while interpolating: {{var}}/constant\n" +
             "Strict Contextual Escaping disallows interpolations that concatenate " +
             "multiple expressions in some secure contexts. See http://docs.angularjs.org/api/ng.$sce");
       expect(function() {
         $interpolate('{{foo}}{{bar}}', true, isTrustedContext)('val');
       }).toThrowMinErr(
-          "$interpolate", "noconcat", "Error while interpolating: {{foo}}{{bar}}\n" +
+          "$interpolate", "interr", "Error while interpolating: {{foo}}{{bar}}\n" +
             "Strict Contextual Escaping disallows interpolations that concatenate " +
             "multiple expressions in some secure contexts. See http://docs.angularjs.org/api/ng.$sce");
     }));
