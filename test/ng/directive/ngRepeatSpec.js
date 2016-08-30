@@ -1489,7 +1489,7 @@ describe('ngRepeat animations', function() {
 
     while ($animate.queue.length) {
       item = $animate.queue.shift();
-      if (item.event == 'leave') {
+      if (item.event === 'leave') {
         break;
       }
     }

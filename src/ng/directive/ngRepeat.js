@@ -339,9 +339,9 @@ var ngRepeatDirective = ['$parse', '$animate', '$compile', function($parse, $ani
     scope.$odd = !(scope.$even = (index & 1) === 0);
   };
 
-  var getBlockStart = function(block) {
-    return block.clone[0];
-  };
+  // var getBlockStart = function(block) {
+  //   return block.clone[0];
+  // };
 
   var getBlockEnd = function(block) {
     return block.clone[block.clone.length - 1];
