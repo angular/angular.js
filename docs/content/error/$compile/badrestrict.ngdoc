@@ -1,0 +1,18 @@
+@ngdoc error
+@name $compile:badrestrict
+@fullName Invalid Directive Restrict
+@description
+
+This error occurs when the restrict property of a directive is not valid.
+
+The directive restrict property must be a string including one of more of the following characters:
+* E (element)
+* A (attribute)
+* C (class)
+* M (comment)
+
+For example:
+```javascript
+restrict: 'E'
+restrict: 'EAC'
+```
