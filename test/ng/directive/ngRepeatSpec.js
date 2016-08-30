@@ -1487,7 +1487,13 @@ describe('ngRepeat animations', function() {
     $rootScope.items = ['1','3'];
     $rootScope.$digest();
 
-    item = $animate.queue.shift();
+    while ($animate.queue.length) {
+      item = $animate.queue.shift();
+      if (item.event == 'leave') {
+        break;
+      }
+    }
+
     expect(item.event).toBe('leave');
     expect(item.element.text()).toBe('2');
   }));
@@ -1565,6 +1571,56 @@ describe('ngRepeat animations', function() {
       item = $animate.queue.shift();
       expect(item.event).toBe('move');
       expect(item.element.text()).toBe('3');
+
+      item = $animate.queue.shift();
+      expect(item.event).toBe('move');
+      expect(item.element.text()).toBe('1');
+    })
+  );
+
+  it('should fire off the move animation for filtered items',
+    inject(function($compile, $rootScope, $animate) {
+
+      var item;
+
+      element = $compile(html(
+        '<div>' +
+          '<div ng-repeat="item in items | filter:search">' +
+            '{{ item }}' +
+          '</div>' +
+        '</div>'
+      ))($rootScope);
+
+      $rootScope.items = ['1','2','3'];
+      $rootScope.search = '';
+      $rootScope.$digest();
+
+      item = $animate.queue.shift();
+      expect(item.event).toBe('enter');
+      expect(item.element.text()).toBe('1');
+
+      item = $animate.queue.shift();
+      expect(item.event).toBe('enter');
+      expect(item.element.text()).toBe('2');
+
+      item = $animate.queue.shift();
+      expect(item.event).toBe('enter');
+      expect(item.element.text()).toBe('3');
+
+      $rootScope.search = '3';
+      $rootScope.$digest();
+
+      item = $animate.queue.shift();
+      expect(item.event).toBe('move');
+      expect(item.element.text()).toBe('3');
+
+      item = $animate.queue.shift();
+      expect(item.event).toBe('leave');
+      expect(item.element.text()).toBe('1');
+
+      item = $animate.queue.shift();
+      expect(item.event).toBe('leave');
+      expect(item.element.text()).toBe('2');
     })
   );
 });
