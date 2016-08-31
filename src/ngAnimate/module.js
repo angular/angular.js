@@ -1,19 +1,5 @@
 'use strict';
 
-/* global angularAnimateModule: true,
-
-   ngAnimateSwapDirective,
-   $$AnimateAsyncRunFactory,
-   $$rAFSchedulerFactory,
-   $$AnimateChildrenDirective,
-   $$AnimateQueueProvider,
-   $$AnimationProvider,
-   $AnimateCssProvider,
-   $$AnimateCssDriverProvider,
-   $$AnimateJsProvider,
-   $$AnimateJsDriverProvider,
-*/
-
 /**
  * @ngdoc module
  * @name ngAnimate
@@ -566,22 +552,23 @@
         }])
         .run(['$rootScope', function($rootScope) {
           $rootScope.records = [
-            { id:1, title: "Miss Beulah Roob" },
-            { id:2, title: "Trent Morissette" },
-            { id:3, title: "Miss Ava Pouros" },
-            { id:4, title: "Rod Pouros" },
-            { id:5, title: "Abdul Rice" },
-            { id:6, title: "Laurie Rutherford Sr." },
-            { id:7, title: "Nakia McLaughlin" },
-            { id:8, title: "Jordon Blanda DVM" },
-            { id:9, title: "Rhoda Hand" },
-            { id:10, title: "Alexandrea Sauer" }
+            { id: 1, title: 'Miss Beulah Roob' },
+            { id: 2, title: 'Trent Morissette' },
+            { id: 3, title: 'Miss Ava Pouros' },
+            { id: 4, title: 'Rod Pouros' },
+            { id: 5, title: 'Abdul Rice' },
+            { id: 6, title: 'Laurie Rutherford Sr.' },
+            { id: 7, title: 'Nakia McLaughlin' },
+            { id: 8, title: 'Jordon Blanda DVM' },
+            { id: 9, title: 'Rhoda Hand' },
+            { id: 10, title: 'Alexandrea Sauer' }
           ];
         }])
         .controller('HomeController', [function() {
           //empty
         }])
-        .controller('ProfileController', ['$rootScope', '$routeParams', function($rootScope, $routeParams) {
+        .controller('ProfileController', ['$rootScope', '$routeParams',
+            function ProfileController($rootScope, $routeParams) {
           var index = parseInt($routeParams.id, 10);
           var record = $rootScope.records[index - 1];
 
@@ -730,6 +717,19 @@
  * (Note that you will need to trigger a digest within the callback to get angular to notice any scope-related changes.)
  */
 
+var copy;
+var extend;
+var forEach;
+var isArray;
+var isDefined;
+var isElement;
+var isFunction;
+var isObject;
+var isString;
+var isUndefined;
+var jqLite;
+var noop;
+
 /**
  * @ngdoc service
  * @name $animate
@@ -740,7 +740,22 @@
  *
  * Click here {@link ng.$animate to learn more about animations with `$animate`}.
  */
-angular.module('ngAnimate', [])
+angular.module('ngAnimate', [], function initAngularHelpers() {
+  // Access helpers from angular core.
+  // Do it inside a `config` block to ensure `window.angular` is available.
+  noop        = angular.noop;
+  copy        = angular.copy;
+  extend      = angular.extend;
+  jqLite      = angular.element;
+  forEach     = angular.forEach;
+  isArray     = angular.isArray;
+  isString    = angular.isString;
+  isObject    = angular.isObject;
+  isUndefined = angular.isUndefined;
+  isDefined   = angular.isDefined;
+  isFunction  = angular.isFunction;
+  isElement   = angular.isElement;
+})
   .directive('ngAnimateSwap', ngAnimateSwapDirective)
 
   .directive('ngAnimateChildren', $$AnimateChildrenDirective)

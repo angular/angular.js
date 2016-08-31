@@ -8,6 +8,8 @@ Welcome to the AngularJS API docs page. These pages contain the AngularJS refere
 The documentation is organized into **{@link guide/module modules}** which contain various components of an AngularJS application.
 These components are {@link guide/directive directives}, {@link guide/services services}, {@link guide/filter filters}, {@link guide/providers providers}, {@link guide/templates templates}, global APIs, and testing mocks.
 
+There is also a {@link guide/index guide} with articles on various topics, and a list of external resources.
+
 <div class="alert alert-info">
 **Angular Prefixes `$` and `$$`**:
 

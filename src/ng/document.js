@@ -4,12 +4,13 @@
  * @ngdoc service
  * @name $document
  * @requires $window
+ * @this
  *
  * @description
  * A {@link angular.element jQuery or jqLite} wrapper for the browser's `window.document` object.
  *
  * @example
-   <example module="documentExample">
+   <example module="documentExample" name="document">
      <file name="index.html">
        <div ng-controller="ExampleController">
          <p>$document title: <b ng-bind="title"></b></p>
@@ -34,6 +35,7 @@ function $DocumentProvider() {
 
 /**
  * @private
+ * @this
  * Listens for document visibility change and makes the current status accessible.
  */
 function $$IsDocumentHiddenProvider() {

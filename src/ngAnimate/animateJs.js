@@ -4,7 +4,7 @@
 // TODO(matsko): add documentation
 //  by the time...
 
-var $$AnimateJsProvider = ['$animateProvider', function($animateProvider) {
+var $$AnimateJsProvider = ['$animateProvider', /** @this */ function($animateProvider) {
   this.$get = ['$injector', '$$AnimateRunner', '$$jqLite',
        function($injector,   $$AnimateRunner,   $$jqLite) {
 
@@ -228,7 +228,7 @@ var $$AnimateJsProvider = ['$animateProvider', function($animateProvider) {
       function packageAnimations(element, event, options, animations, fnName) {
         var operations = groupEventedAnimations(element, event, options, animations, fnName);
         if (operations.length === 0) {
-          var a,b;
+          var a, b;
           if (fnName === 'beforeSetClass') {
             a = groupEventedAnimations(element, 'removeClass', options, animations, 'beforeRemoveClass');
             b = groupEventedAnimations(element, 'addClass', options, animations, 'beforeAddClass');
@@ -256,11 +256,19 @@ var $$AnimateJsProvider = ['$animateProvider', function($animateProvider) {
             });
           }
 
-          runners.length ? $$AnimateRunner.all(runners, callback) : callback();
+          if (runners.length) {
+            $$AnimateRunner.all(runners, callback);
+          }  else {
+            callback();
+          }
 
           return function endFn(reject) {
             forEach(runners, function(runner) {
-              reject ? runner.cancel() : runner.end();
+              if (reject) {
+                runner.cancel();
+              } else {
+                runner.end();
+              }
             });
           };
         };
@@ -270,7 +278,7 @@ var $$AnimateJsProvider = ['$animateProvider', function($animateProvider) {
     function lookupAnimations(classes) {
       classes = isArray(classes) ? classes : classes.split(' ');
       var matches = [], flagMap = {};
-      for (var i=0; i < classes.length; i++) {
+      for (var i = 0; i < classes.length; i++) {
         var klass = classes[i],
             animationFactory = $animateProvider.$$registeredAnimations[klass];
         if (animationFactory && !flagMap[klass]) {

@@ -3,6 +3,11 @@
  * @name ngComponentRouter
  * @installation
  *
+ * <div class="alert alert-info">
+ * **Deprecation Notice:** In an effort to keep synchronized with router changes in Angular 2, this implementation of the Component Router (ngComponentRouter module) has been deprecated and will not receive further updates.
+ * We are investigating backporting the Angular 2 Router to Angular 1, but alternatively, use the {@link ngRoute} module or community developed projects (e.g. [ui-router](https://github.com/angular-ui/ui-router)).
+ * </div>
+ *
  * Currently, the **Component Router** module must be installed via `npm`, it is not yet available
  * on Bower or the Google CDN.
  *
@@ -15,7 +20,8 @@
  * <script src="/node_modules/@angular/router/angular1/angular_1_router.js"></script>
  *```
  *
- * You also need to include ES6 shims to support running on Internet Explorer:
+ * You also need to include ES6 shims for browsers that do not support ES6 code (Internet Explorer,
+ iOs < 8, Android < 5.0, Windows Mobile < 10):
  *  ```html
  *  <!-- IE required polyfills, in this exact order -->
  *  <script src="https://cdnjs.cloudflare.com/ajax/libs/es6-shim/0.33.3/es6-shim.min.js"></script>
@@ -45,6 +51,11 @@
  * You can see the state of a router by inspecting the read-only field `router.navigating`.
  * This may be useful for showing a spinner, for instance.
  *
+ * @deprecated
+ * In an effort to keep synchronized with router changes in Angular 2, this implementation of the Component Router (ngComponentRouter module)
+ * has been deprecated and will not receive further updates.
+ * We are investigating backporting the Angular 2 Router to Angular 1, but alternatively, use the {@link ngRoute} module or community developed
+ * projects (e.g. [ui-router](https://github.com/angular-ui/ui-router)).
  */
 
 /**
@@ -57,6 +68,12 @@
  * Apart from the **Top Level Component** ({@link $routerRootComponent}) which is associated with
  * the {@link $rootRouter}, every **Routing Component** is associated with a `ChildRouter`,
  * which manages the routing for that **Routing Component**.
+ *
+ * @deprecated
+ * In an effort to keep synchronized with router changes in Angular 2, this implementation of the Component Router (ngComponentRouter module)
+ * has been deprecated and will not receive further updates.
+ * We are investigating backporting the Angular 2 Router to Angular 1, but alternatively, use the {@link ngRoute} module or community developed
+ * projects (e.g. [ui-router](https://github.com/angular-ui/ui-router)).
  */
 
 /**
@@ -69,12 +86,19 @@
  * There is only one instance of this type in a Component Router application injectable as the
  * {@link $rootRouter} service. This **Router** is associate with the **Top Level Component**
  * ({@link $routerRootComponent}). It acts as the connection between the **Routers** and the **Location**.
+ *
+ * @deprecated
+ * In an effort to keep synchronized with router changes in Angular 2, this implementation of the Component Router (ngComponentRouter module)
+ * has been deprecated and will not receive further updates.
+ * We are investigating backporting the Angular 2 Router to Angular 1, but alternatively, use the {@link ngRoute} module or community developed
+ * projects (e.g. [ui-router](https://github.com/angular-ui/ui-router)).
  */
 
 /**
  * @ngdoc type
  * @name ComponentInstruction
  * @description
+ *
  * A `ComponentInstruction` represents the route state for a single component. An `Instruction` is
  * composed of a tree of these `ComponentInstruction`s.
  *
@@ -82,6 +106,12 @@
  * to route lifecycle hooks, like `$routerCanActivate`.
  *
  * You should not modify this object. It should be treated as immutable.
+ *
+ * @deprecated
+ * In an effort to keep synchronized with router changes in Angular 2, this implementation of the Component Router (ngComponentRouter module)
+ * has been deprecated and will not receive further updates.
+ * We are investigating backporting the Angular 2 Router to Angular 1, but alternatively, use the {@link ngRoute} module or community developed
+ * projects (e.g. [ui-router](https://github.com/angular-ui/ui-router)).
  */
 
 /**
@@ -96,14 +126,27 @@
  * * `component`, `loader`, `redirectTo` (requires exactly one of these)
  * * `name` - the name used to identify the **Route Definition** when generating links
  * * `data` (optional)
+ *
+ * @deprecated
+ * In an effort to keep synchronized with router changes in Angular 2, this implementation of the Component Router (ngComponentRouter module)
+ * has been deprecated and will not receive further updates.
+ * We are investigating backporting the Angular 2 Router to Angular 1, but alternatively, use the {@link ngRoute} module or community developed
+ * projects (e.g. [ui-router](https://github.com/angular-ui/ui-router)).
  */
 
 /**
  * @ngdoc type
  * @name  RouteParams
  * @description
+ *
  * A map of parameters for a given route, passed as part of the {@link ComponentInstruction} to
  * the Lifecycle Hooks, such as `$routerOnActivate` and `$routerOnDeactivate`.
+ *
+ * @deprecated
+ * In an effort to keep synchronized with router changes in Angular 2, this implementation of the Component Router (ngComponentRouter module)
+ * has been deprecated and will not receive further updates.
+ * We are investigating backporting the Angular 2 Router to Angular 1, but alternatively, use the {@link ngRoute} module or community developed
+ * projects (e.g. [ui-router](https://github.com/angular-ui/ui-router)).
  */
 
 /**
@@ -114,6 +157,12 @@
  * @description
  *
  * The directive that identifies where the {@link Router} should render its **Components**.
+ *
+ * @deprecated
+ * In an effort to keep synchronized with router changes in Angular 2, this implementation of the Component Router (ngComponentRouter module)
+ * has been deprecated and will not receive further updates.
+ * We are investigating backporting the Angular 2 Router to Angular 1, but alternatively, use the {@link ngRoute} module or community developed
+ * projects (e.g. [ui-router](https://github.com/angular-ui/ui-router)).
  */
 
 /**
@@ -128,6 +177,12 @@
  * ```html
  * <a ng-link="['Parent', {param: 1}, 'Child']">Link to Child View</a>
  * ````
+ *
+ * @deprecated
+ * In an effort to keep synchronized with router changes in Angular 2, this implementation of the Component Router (ngComponentRouter module)
+ * has been deprecated and will not receive further updates.
+ * We are investigating backporting the Angular 2 Router to Angular 1, but alternatively, use the {@link ngRoute} module or community developed
+ * projects (e.g. [ui-router](https://github.com/angular-ui/ui-router)).
  */
 
 
@@ -135,8 +190,15 @@
  * @ngdoc service
  * @name  $rootRouter
  * @description
+ *
  * The singleton instance of the {@link RootRouter} type, which is associated
  * with the top level {@link $routerRootComponent}.
+ *
+ * @deprecated
+ * In an effort to keep synchronized with router changes in Angular 2, this implementation of the Component Router (ngComponentRouter module)
+ * has been deprecated and will not receive further updates.
+ * We are investigating backporting the Angular 2 Router to Angular 1, but alternatively, use the {@link ngRoute} module or community developed
+ * projects (e.g. [ui-router](https://github.com/angular-ui/ui-router)).
  */
 
 
@@ -146,4 +208,10 @@
  * @description
  *
  * The top level **Routing Component** associated with the {@link $rootRouter}.
+ *
+ * @deprecated
+ * In an effort to keep synchronized with router changes in Angular 2, this implementation of the Component Router (ngComponentRouter module)
+ * has been deprecated and will not receive further updates.
+ * We are investigating backporting the Angular 2 Router to Angular 1, but alternatively, use the {@link ngRoute} module or community developed
+ * projects (e.g. [ui-router](https://github.com/angular-ui/ui-router)).
  */

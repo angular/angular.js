@@ -75,9 +75,15 @@
  * @description
  * Filters are used for formatting data displayed to the user.
  *
+ * They can be used in view templates, controllers or services.Angular comes
+ * with a collection of [built-in filters](api/ng/filter), but it is easy to
+ * define your own as well.
+ *
  * The general syntax in templates is as follows:
  *
- *         {{ expression [| filter_name[:parameter_value] ... ] }}
+ * ```html
+ * {{ expression [| filter_name[:parameter_value] ... ] }}
+ * ```
  *
  * @param {String} name Name of the filter function to retrieve
  * @return {Function} the filter function
@@ -100,6 +106,7 @@
    </example>
   */
 $FilterProvider.$inject = ['$provide'];
+/** @this */
 function $FilterProvider($provide) {
   var suffix = 'Filter';
 
@@ -149,7 +156,7 @@ function $FilterProvider($provide) {
     lowercaseFilter: false,
     numberFilter: false,
     orderByFilter: false,
-    uppercaseFilter: false,
+    uppercaseFilter: false
   */
 
   register('currency', currencyFilter);

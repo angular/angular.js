@@ -35,6 +35,12 @@ ngTouch.factory('$swipe', [function() {
       move: 'touchmove',
       end: 'touchend',
       cancel: 'touchcancel'
+    },
+    'pointer': {
+      start: 'pointerdown',
+      move: 'pointermove',
+      end: 'pointerup',
+      cancel: 'pointercancel'
     }
   };
 
@@ -69,15 +75,15 @@ ngTouch.factory('$swipe', [function() {
      * The main method of `$swipe`. It takes an element to be watched for swipe motions, and an
      * object containing event handlers.
      * The pointer types that should be used can be specified via the optional
-     * third argument, which is an array of strings `'mouse'` and `'touch'`. By default,
-     * `$swipe` will listen for `mouse` and `touch` events.
+     * third argument, which is an array of strings `'mouse'`, `'touch'` and `'pointer'`. By default,
+     * `$swipe` will listen for `mouse`, `touch` and `pointer` events.
      *
      * The four events are `start`, `move`, `end`, and `cancel`. `start`, `move`, and `end`
      * receive as a parameter a coordinates object of the form `{ x: 150, y: 310 }` and the raw
      * `event`. `cancel` receives the raw `event` as its single parameter.
      *
-     * `start` is called on either `mousedown` or `touchstart`. After this event, `$swipe` is
-     * watching for `touchmove` or `mousemove` events. These events are ignored until the total
+     * `start` is called on either `mousedown`, `touchstart` or `pointerdown`. After this event, `$swipe` is
+     * watching for `touchmove`, `mousemove` or `pointermove` events. These events are ignored until the total
      * distance moved in either dimension exceeds a small threshold.
      *
      * Once this threshold is exceeded, either the horizontal or vertical delta is greater.
@@ -85,12 +91,12 @@ ngTouch.factory('$swipe', [function() {
      * - If the vertical distance is greater, this is a scroll, and we let the browser take over.
      *   A `cancel` event is sent.
      *
-     * `move` is called on `mousemove` and `touchmove` after the above logic has determined that
+     * `move` is called on `mousemove`, `touchmove` and `pointermove` after the above logic has determined that
      * a swipe is in progress.
      *
-     * `end` is called when a swipe is successfully completed with a `touchend` or `mouseup`.
+     * `end` is called when a swipe is successfully completed with a `touchend`, `mouseup` or `pointerup`.
      *
-     * `cancel` is called either on a `touchcancel` from the browser, or when we begin scrolling
+     * `cancel` is called either on a `touchcancel` or `pointercancel`  from the browser, or when we begin scrolling
      * as described above.
      *
      */
@@ -104,20 +110,24 @@ ngTouch.factory('$swipe', [function() {
       // Whether a swipe is active.
       var active = false;
 
-      pointerTypes = pointerTypes || ['mouse', 'touch'];
+      pointerTypes = pointerTypes || ['mouse', 'touch', 'pointer'];
       element.on(getEvents(pointerTypes, 'start'), function(event) {
         startCoords = getCoordinates(event);
         active = true;
         totalX = 0;
         totalY = 0;
         lastPos = startCoords;
-        eventHandlers['start'] && eventHandlers['start'](startCoords, event);
+        if (eventHandlers['start']) {
+          eventHandlers['start'](startCoords, event);
+        }
       });
       var events = getEvents(pointerTypes, 'cancel');
       if (events) {
         element.on(events, function(event) {
           active = false;
-          eventHandlers['cancel'] && eventHandlers['cancel'](event);
+          if (eventHandlers['cancel']) {
+            eventHandlers['cancel'](event);
+          }
         });
       }
 
@@ -146,22 +156,27 @@ ngTouch.factory('$swipe', [function() {
         if (totalY > totalX) {
           // Allow native scrolling to take over.
           active = false;
-          eventHandlers['cancel'] && eventHandlers['cancel'](event);
+          if (eventHandlers['cancel']) {
+            eventHandlers['cancel'](event);
+          }
           return;
         } else {
           // Prevent the browser from scrolling.
           event.preventDefault();
-          eventHandlers['move'] && eventHandlers['move'](coords, event);
+          if (eventHandlers['move']) {
+            eventHandlers['move'](coords, event);
+          }
         }
       });
 
       element.on(getEvents(pointerTypes, 'end'), function(event) {
         if (!active) return;
         active = false;
-        eventHandlers['end'] && eventHandlers['end'](getCoordinates(event), event);
+        if (eventHandlers['end']) {
+          eventHandlers['end'](getCoordinates(event), event);
+        }
       });
     }
   };
 }]);
-
 

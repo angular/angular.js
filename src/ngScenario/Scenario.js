@@ -39,7 +39,8 @@ angular.scenario.output = angular.scenario.output || function(name, fn) {
  */
 angular.scenario.dsl = angular.scenario.dsl || function(name, fn) {
   angular.scenario.dsl[name] = function() {
-    /* jshint -W040 *//* The dsl binds `this` for us when calling chained functions */
+    // The dsl binds `this` for us when calling chained functions
+    /** @this */
     function executeStatement(statement, args) {
       var result = statement.apply(this, args);
       if (angular.isFunction(result) || result instanceof angular.scenario.Future) {
@@ -59,7 +60,7 @@ angular.scenario.dsl = angular.scenario.dsl || function(name, fn) {
       return chain;
     }
     var statement = fn.apply(this, arguments);
-    return function() {
+    return /** @this */ function() {
       return executeStatement.call(this, statement, arguments);
     };
   };
@@ -142,6 +143,7 @@ angular.scenario.setUpAndRun = function(config) {
       console.log(formatException(error));
     } else {
       // Do something for IE
+      // eslint-disable-next-line no-alert
       alert(error);
     }
   });
@@ -301,11 +303,11 @@ _jQuery.fn.bindings = function(windowJquery, bindExp) {
     result.push('' + value);
   }
 
-  selection.each(function() {
+  selection.each(/* @this Node */ function() {
     var element = windowJquery(this),
         bindings;
-    if (bindings = element.data('$binding')) {
-      for (var expressions = [], binding, j=0, jj=bindings.length; j < jj; j++) {
+    if ((bindings = element.data('$binding'))) {
+      for (var expressions = [], binding, j = 0, jj = bindings.length; j < jj; j++) {
         binding = bindings[j];
 
         if (binding.expressions) {

@@ -1,6 +1,8 @@
+'use strict';
+
 var converter = require('../src/converter.js');
 
-describe("convertNumberData", function() {
+describe('convertNumberData', function() {
   var convert = converter.convertNumberData,
       dataObj = { DECIMAL_SEP: ',',
                   GROUP_SEP: '.',
@@ -24,7 +26,7 @@ describe("convertNumberData", function() {
 });
 
 
-describe("convertDatetimeData", function() {
+describe('convertDatetimeData', function() {
   var convert = converter.convertDatetimeData,
       dataObj = { MONTHS: ['Enero', 'Pebrero'],
                   STANDALONEMONTHS: ['Enero', 'Pebrero'],

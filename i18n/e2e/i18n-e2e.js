@@ -1,51 +1,53 @@
-describe("localized filters", function() {
-  describe("es locale", function() {
+'use strict';
+
+describe('localized filters', function() {
+  describe('es locale', function() {
     beforeEach(function() {
-      browser().navigateTo("localeTest_es.html");
+      browser().navigateTo('localeTest_es.html');
     });
 
     it('should check filters for es locale', function() {
       expect(binding('input | date:"medium"')).toBe('03/06/1977 18:07:23');
-      expect(binding('input | date:"longDate"')).toBe("3 de junio de 1977");
+      expect(binding('input | date:"longDate"')).toBe('3 de junio de 1977');
       expect(binding('input | number')).toBe('234.234.443.432');
       expect(binding('input | currency')).toBe('€\u00a0234.234.443.432,00');
     });
   });
 
-  describe("cs locale", function() {
+  describe('cs locale', function() {
     beforeEach(function() {
-      browser().navigateTo("localeTest_cs.html");
+      browser().navigateTo('localeTest_cs.html');
     });
 
     it('should check filters for cs locale', function() {
       expect(binding('input | date:"medium"')).toBe('3.6.1977 18:07:23');
-      expect(binding('input | date:"longDate"')).toBe("3. června 1977");
+      expect(binding('input | date:"longDate"')).toBe('3. června 1977');
       expect(binding('input | number')).toBe('234\u00a0234\u00a0443\u00a0432');
       expect(binding('input | currency')).toBe('234\u00a0234\u00a0443\u00a0432,00\u00a0K\u010d');
     });
   });
 
-  describe("de locale", function() {
+  describe('de locale', function() {
     beforeEach(function() {
-      browser().navigateTo("localeTest_de.html");
+      browser().navigateTo('localeTest_de.html');
     });
 
     it('should check filters for de locale', function() {
       expect(binding('input | date:"medium"')).toBe('03.06.1977 18:07:23');
-      expect(binding('input | date:"longDate"')).toBe("3. Juni 1977");
+      expect(binding('input | date:"longDate"')).toBe('3. Juni 1977');
       expect(binding('input | number')).toBe('234.234.443.432');
       expect(binding('input | currency')).toBe('234.234.443.432,00\u00a0€');
     });
   });
 
-  describe("en locale", function() {
+  describe('en locale', function() {
     beforeEach(function() {
-      browser().navigateTo("localeTest_en.html");
+      browser().navigateTo('localeTest_en.html');
     });
 
     it('should check filters for en locale', function() {
       expect(binding('input | date:"medium"')).toBe('Jun 3, 1977 6:07:23 PM');
-      expect(binding('input | date:"longDate"')).toBe("June 3, 1977");
+      expect(binding('input | date:"longDate"')).toBe('June 3, 1977');
       expect(binding('input | number')).toBe('234,234,443,432');
       expect(binding('input | currency')).toBe('$234,234,443,432.00');
     });
@@ -90,17 +92,17 @@ describe("localized filters", function() {
         input('person2').enter('Vojta');
         expect(element('ng-pluralize:last').html()).toBe('Igor and Vojta are viewing!');
       });
-    })
+    });
   });
 
-  describe("sk locale", function() {
+  describe('sk locale', function() {
     beforeEach(function() {
-      browser().navigateTo("localeTest_sk.html");
+      browser().navigateTo('localeTest_sk.html');
     });
 
     it('should check filters for sk locale', function() {
       expect(binding('input | date:"medium"')).toBe('3.6.1977 18:07:23');
-      expect(binding('input | date:"longDate"')).toBe("3. júna 1977");
+      expect(binding('input | date:"longDate"')).toBe('3. júna 1977');
       expect(binding('input | number')).toBe('234\u00a0234\u00a0443\u00a0432');
       expect(binding('input | currency')).toBe('234\u00a0234\u00a0443\u00a0432,00\u00a0Sk');
     });
@@ -129,17 +131,17 @@ describe("localized filters", function() {
 
       it('should show pluralized strings with correct data-binding', function() {
       });
-    })
+    });
   });
 
-  describe("zh locale", function() {
+  describe('zh locale', function() {
     beforeEach(function() {
-      browser().navigateTo("localeTest_zh.html");
+      browser().navigateTo('localeTest_zh.html');
     });
 
     it('should check filters for zh locale', function() {
       expect(binding('input | date:"medium"')).toBe('1977-6-3 下午6:07:23');
-      expect(binding('input | date:"longDate"')).toBe("1977年6月3日");
+      expect(binding('input | date:"longDate"')).toBe('1977年6月3日');
       expect(binding('input | number')).toBe('234,234,443,432');
       expect(binding('input | currency')).toBe('¥234,234,443,432.00');
     });
@@ -180,6 +182,6 @@ describe("localized filters", function() {
         input('person2').enter('一哥');
         expect(element('ng-pluralize:last').html()).toBe('彭迪 和 一哥 在浏览该文件!');
       });
-    })
+    });
   });
 });

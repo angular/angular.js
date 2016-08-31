@@ -21,7 +21,7 @@ describe('ngSwitch', function() {
     $rootScope.select = 1;
     $rootScope.$apply();
     expect(element.text()).toEqual('first:');
-    $rootScope.name="shyam";
+    $rootScope.name = 'shyam';
     $rootScope.$apply();
     expect(element.text()).toEqual('first:shyam');
     $rootScope.select = 2;
@@ -51,7 +51,7 @@ describe('ngSwitch', function() {
     $rootScope.select = 1;
     $rootScope.$apply();
     expect(element.text()).toEqual('first:, first too:');
-    $rootScope.name="shyam";
+    $rootScope.name = 'shyam';
     $rootScope.$apply();
     expect(element.text()).toEqual('first:shyam, first too:shyam');
     $rootScope.select = 2;
@@ -238,7 +238,7 @@ describe('ngSwitch', function() {
   }));
 
 
-  it("should interoperate with other transclusion directives like ngRepeat", inject(function($rootScope, $compile) {
+  it('should interoperate with other transclusion directives like ngRepeat', inject(function($rootScope, $compile) {
     element = $compile(
       '<div ng-switch="value">' +
           '<div ng-switch-when="foo" ng-repeat="foo in foos">{{value}}:{{foo}}|</div>' +
@@ -314,7 +314,7 @@ describe('ngSwitch animation', function() {
     // we need to run animation on attached elements;
     return function(_$rootElement_) {
       $rootElement = _$rootElement_;
-      body = jqLite(document.body);
+      body = jqLite(window.document.body);
       body.append($rootElement);
     };
   }));

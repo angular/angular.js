@@ -77,7 +77,7 @@ to write directives.
 Here is a directive which makes any element draggable. Notice the `draggable` attribute on the
 `<span>` element.
 
-<example module="drag">
+<example module="drag" name="draggable">
   <file name="script.js">
     angular.module('drag', []).
       directive('draggable', function($document) {

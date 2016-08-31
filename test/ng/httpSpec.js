@@ -141,7 +141,7 @@ describe('$http', function() {
             return {
               request: function(config) {
                 expect(config.url).toEqual('/url');
-                expect(config.data).toEqual({one: "two"});
+                expect(config.data).toEqual({one: 'two'});
                 expect(config.headers.foo).toEqual('bar');
                 run = true;
                 return config;
@@ -682,7 +682,7 @@ describe('$http', function() {
 
       it('should send custom headers', function() {
         $httpBackend.expect('GET', '/url', undefined, function(headers) {
-          return headers['Custom'] == 'header';
+          return headers['Custom'] === 'header';
         }).respond('');
 
         $http({url: '/url', method: 'GET', headers: {
@@ -695,7 +695,7 @@ describe('$http', function() {
 
       it('should set default headers for GET request', function() {
         $httpBackend.expect('GET', '/url', undefined, function(headers) {
-          return headers['Accept'] == 'application/json, text/plain, */*';
+          return headers['Accept'] === 'application/json, text/plain, */*';
         }).respond('');
 
         $http({url: '/url', method: 'GET', headers: {}});
@@ -705,8 +705,8 @@ describe('$http', function() {
 
       it('should set default headers for POST request', function() {
         $httpBackend.expect('POST', '/url', 'messageBody', function(headers) {
-          return headers['Accept'] == 'application/json, text/plain, */*' &&
-                 headers['Content-Type'] == 'application/json;charset=utf-8';
+          return headers['Accept'] === 'application/json, text/plain, */*' &&
+                 headers['Content-Type'] === 'application/json;charset=utf-8';
         }).respond('');
 
         $http({url: '/url', method: 'POST', headers: {}, data: 'messageBody'});
@@ -716,8 +716,8 @@ describe('$http', function() {
 
       it('should set default headers for PUT request', function() {
         $httpBackend.expect('PUT', '/url', 'messageBody', function(headers) {
-          return headers['Accept'] == 'application/json, text/plain, */*' &&
-                 headers['Content-Type'] == 'application/json;charset=utf-8';
+          return headers['Accept'] === 'application/json, text/plain, */*' &&
+                 headers['Content-Type'] === 'application/json;charset=utf-8';
         }).respond('');
 
         $http({url: '/url', method: 'PUT', headers: {}, data: 'messageBody'});
@@ -726,8 +726,8 @@ describe('$http', function() {
 
       it('should set default headers for PATCH request', function() {
         $httpBackend.expect('PATCH', '/url', 'messageBody', function(headers) {
-          return headers['Accept'] == 'application/json, text/plain, */*' &&
-                 headers['Content-Type'] == 'application/json;charset=utf-8';
+          return headers['Accept'] === 'application/json, text/plain, */*' &&
+                 headers['Content-Type'] === 'application/json;charset=utf-8';
         }).respond('');
 
         $http({url: '/url', method: 'PATCH', headers: {}, data: 'messageBody'});
@@ -736,7 +736,7 @@ describe('$http', function() {
 
       it('should set default headers for custom HTTP method', function() {
         $httpBackend.expect('FOO', '/url', undefined, function(headers) {
-          return headers['Accept'] == 'application/json, text/plain, */*';
+          return headers['Accept'] === 'application/json, text/plain, */*';
         }).respond('');
 
         $http({url: '/url', method: 'FOO', headers: {}});
@@ -746,8 +746,8 @@ describe('$http', function() {
 
       it('should override default headers with custom', function() {
         $httpBackend.expect('POST', '/url', 'messageBody', function(headers) {
-          return headers['Accept'] == 'Rewritten' &&
-                 headers['Content-Type'] == 'Rewritten';
+          return headers['Accept'] === 'Rewritten' &&
+                 headers['Content-Type'] === 'Rewritten';
         }).respond('');
 
         $http({url: '/url', method: 'POST', data: 'messageBody', headers: {
@@ -771,8 +771,8 @@ describe('$http', function() {
 
       it('should override default headers with custom in a case insensitive manner', function() {
         $httpBackend.expect('POST', '/url', 'messageBody', function(headers) {
-          return headers['accept'] == 'Rewritten' &&
-                 headers['content-type'] == 'Content-Type Rewritten' &&
+          return headers['accept'] === 'Rewritten' &&
+                 headers['content-type'] === 'Content-Type Rewritten' &&
                  isUndefined(headers['Accept']) &&
                  isUndefined(headers['Content-Type']);
         }).respond('');
@@ -812,7 +812,7 @@ describe('$http', function() {
 
       it('should NOT delete Content-Type header if request data/body is set by request transform', function() {
         $httpBackend.expect('POST', '/url', {'one': 'two'}, function(headers) {
-          return headers['Content-Type'] == 'application/json;charset=utf-8';
+          return headers['Content-Type'] === 'application/json;charset=utf-8';
         }).respond('');
 
         $http({
@@ -830,7 +830,7 @@ describe('$http', function() {
       it('should set the XSRF cookie into a XSRF header', inject(function() {
         function checkXSRF(secret, header) {
           return function(headers) {
-            return headers[header || 'X-XSRF-TOKEN'] == secret;
+            return headers[header || 'X-XSRF-TOKEN'] === secret;
           };
         }
 
@@ -857,7 +857,7 @@ describe('$http', function() {
         var headerConfig = {'Accept': function() { return 'Rewritten'; }};
 
         function checkHeaders(headers) {
-          return headers['Accept'] == 'Rewritten';
+          return headers['Accept'] === 'Rewritten';
         }
 
         $httpBackend.expect('GET', '/url', undefined, checkHeaders).respond('');
@@ -923,7 +923,7 @@ describe('$http', function() {
 
       function checkHeader(name, value) {
         return function(headers) {
-          return headers[name] == value;
+          return headers[name] === value;
         };
       }
 
@@ -1093,7 +1093,7 @@ describe('$http', function() {
 
 
           it('should transform object with date into json', function() {
-            $httpBackend.expect('POST', '/url', {"date": new Date(Date.UTC(2013, 11, 25))}).respond('');
+            $httpBackend.expect('POST', '/url', {'date': new Date(Date.UTC(2013, 11, 25))}).respond('');
             $http({method: 'POST', url: '/url', data: {date: new Date(Date.UTC(2013, 11, 25))}});
           });
 
@@ -1127,6 +1127,7 @@ describe('$http', function() {
         it('should ignore Blob objects', function() {
           if (!window.Blob) return;
 
+          // eslint-disable-next-line no-undef
           var blob = new Blob(['blob!'], { type: 'text/plain' });
 
           $httpBackend.expect('POST', '/url', '[object Blob]').respond('');
@@ -1136,6 +1137,7 @@ describe('$http', function() {
         it('should ignore FormData objects', function() {
           if (!window.FormData) return;
 
+          // eslint-disable-next-line no-undef
           var formData = new FormData();
           formData.append('angular', 'is great');
 
@@ -1187,7 +1189,7 @@ describe('$http', function() {
         });
 
         it('should pipeline more functions', function() {
-          function first(d, h) {return d + '-first' + ':' + h('h1');}
+          function first(d, h) {return d + '-first:' + h('h1');}
           function second(d) {return uppercase(d);}
 
           $httpBackend.expect('POST', '/url', 'REQ-FIRST:V1').respond(200);
@@ -1418,7 +1420,7 @@ describe('$http', function() {
 
 
         it('should pipeline more functions', function() {
-          function first(d, h) {return d + '-first' + ':' + h('h1');}
+          function first(d, h) {return d + '-first:' + h('h1');}
           function second(d) {return uppercase(d);}
 
           $httpBackend.expect('POST', '/url').respond(200, 'resp', {h1: 'v1'});
@@ -1730,7 +1732,7 @@ describe('$http', function() {
           expect(callback.calls.mostRecent().args[0]).toBe('content');
 
           // Invalidate cache entry.
-          $http.defaults.cache.remove("/url");
+          $http.defaults.cache.remove('/url');
 
           // After cache entry removed, a request should be sent to server.
           $httpBackend.expect('GET', '/url').respond(200, 'content');
@@ -1878,7 +1880,7 @@ describe('$http', function() {
 
         $http.defaults.headers.common.foo = 'bar';
         $httpBackend.expect('GET', '/url', undefined, function(headers) {
-          return headers['foo'] == 'bar';
+          return headers['foo'] === 'bar';
         }).respond('');
 
         $http.get('/url');
@@ -1896,6 +1898,233 @@ describe('$http', function() {
         expect(paramSerializer({foo: 'foo', bar: ['bar', 'baz']})).toEqual('bar=bar&bar=baz&foo=foo');
       });
     });
+  });
+
+
+  describe('$browser\'s outstandingRequestCount', function() {
+    var $http;
+    var $httpBackend;
+    var $rootScope;
+    var incOutstandingRequestCountSpy;
+    var completeOutstandingRequestSpy;
+
+
+    describe('without interceptors', function() {
+      beforeEach(setupServicesAndSpies);
+
+
+      it('should immediately call `$browser.$$incOutstandingRequestCount()`', function() {
+        expect(incOutstandingRequestCountSpy).not.toHaveBeenCalled();
+        $http.get('');
+        expect(incOutstandingRequestCountSpy).toHaveBeenCalledOnce();
+      });
+
+
+      it('should call `$browser.$$completeOutstandingRequest()` on success', function() {
+        $httpBackend.when('GET').respond(200);
+
+        $http.get('');
+        expect(completeOutstandingRequestSpy).not.toHaveBeenCalled();
+        $httpBackend.flush();
+        expect(completeOutstandingRequestSpy).toHaveBeenCalledOnce();
+      });
+
+
+      it('should call `$browser.$$completeOutstandingRequest()` on error', function() {
+        $httpBackend.when('GET').respond(500);
+
+        $http.get('').catch(noop);
+        expect(completeOutstandingRequestSpy).not.toHaveBeenCalled();
+        $httpBackend.flush();
+        expect(completeOutstandingRequestSpy).toHaveBeenCalledOnce();
+      });
+
+
+      it('should increment/decrement `outstandingRequestCount` on error in `transformRequest`',
+        inject(function($exceptionHandler) {
+          expect(incOutstandingRequestCountSpy).not.toHaveBeenCalled();
+          expect(completeOutstandingRequestSpy).not.toHaveBeenCalled();
+
+          $http.get('', {transformRequest: function() { throw new Error(); }}).catch(noop);
+
+          expect(incOutstandingRequestCountSpy).toHaveBeenCalledOnce();
+          expect(completeOutstandingRequestSpy).not.toHaveBeenCalled();
+
+          $rootScope.$digest();
+
+          expect(incOutstandingRequestCountSpy).toHaveBeenCalledOnce();
+          expect(completeOutstandingRequestSpy).toHaveBeenCalledOnce();
+
+          expect($exceptionHandler.errors).toEqual([jasmine.any(Error)]);
+          $exceptionHandler.errors = [];
+        })
+      );
+
+
+      it('should increment/decrement `outstandingRequestCount` on error in `transformResponse`',
+        inject(function($exceptionHandler) {
+          expect(incOutstandingRequestCountSpy).not.toHaveBeenCalled();
+          expect(completeOutstandingRequestSpy).not.toHaveBeenCalled();
+
+          $httpBackend.when('GET').respond(200);
+          $http.get('', {transformResponse: function() { throw new Error(); }}).catch(noop);
+
+          expect(incOutstandingRequestCountSpy).toHaveBeenCalledOnce();
+          expect(completeOutstandingRequestSpy).not.toHaveBeenCalled();
+
+          $httpBackend.flush();
+
+          expect(incOutstandingRequestCountSpy).toHaveBeenCalledOnce();
+          expect(completeOutstandingRequestSpy).toHaveBeenCalledOnce();
+
+          expect($exceptionHandler.errors).toEqual([jasmine.any(Error)]);
+          $exceptionHandler.errors = [];
+        })
+      );
+    });
+
+
+    describe('with interceptors', function() {
+      var reqInterceptorDeferred;
+      var resInterceptorDeferred;
+      var reqInterceptorFulfilled;
+      var resInterceptorFulfilled;
+
+      beforeEach(module(function($httpProvider) {
+        reqInterceptorDeferred = null;
+        resInterceptorDeferred = null;
+        reqInterceptorFulfilled = false;
+        resInterceptorFulfilled = false;
+
+        $httpProvider.interceptors.push(function($q) {
+          return {
+            request: function(config) {
+              return (reqInterceptorDeferred = $q.defer()).
+                promise.
+                finally(function() { reqInterceptorFulfilled = true; }).
+                then(valueFn(config));
+            },
+            response: function() {
+              return (resInterceptorDeferred = $q.defer()).
+                promise.
+                finally(function() { resInterceptorFulfilled = true; });
+            }
+          };
+        });
+      }));
+
+      beforeEach(setupServicesAndSpies);
+
+      beforeEach(function() {
+        $httpBackend.when('GET').respond(200);
+      });
+
+
+      it('should increment/decrement `outstandingRequestCount` before/after async interceptors',
+        function() {
+          expect(reqInterceptorFulfilled).toBe(false);
+          expect(resInterceptorFulfilled).toBe(false);
+          expect(incOutstandingRequestCountSpy).not.toHaveBeenCalled();
+          expect(completeOutstandingRequestSpy).not.toHaveBeenCalled();
+
+          $http.get('');
+          $rootScope.$digest();
+
+          expect(reqInterceptorFulfilled).toBe(false);
+          expect(resInterceptorFulfilled).toBe(false);
+          expect(incOutstandingRequestCountSpy).toHaveBeenCalledOnce();
+          expect(completeOutstandingRequestSpy).not.toHaveBeenCalled();
+
+          reqInterceptorDeferred.resolve();
+          $httpBackend.flush();
+
+          expect(reqInterceptorFulfilled).toBe(true);
+          expect(resInterceptorFulfilled).toBe(false);
+          expect(incOutstandingRequestCountSpy).toHaveBeenCalledOnce();
+          expect(completeOutstandingRequestSpy).not.toHaveBeenCalled();
+
+          resInterceptorDeferred.resolve();
+          $rootScope.$digest();
+
+          expect(reqInterceptorFulfilled).toBe(true);
+          expect(resInterceptorFulfilled).toBe(true);
+          expect(incOutstandingRequestCountSpy).toHaveBeenCalledOnce();
+          expect(completeOutstandingRequestSpy).toHaveBeenCalledOnce();
+        }
+      );
+
+
+      it('should increment/decrement `outstandingRequestCount` on error in request interceptor',
+        function() {
+          expect(reqInterceptorFulfilled).toBe(false);
+          expect(incOutstandingRequestCountSpy).not.toHaveBeenCalled();
+          expect(completeOutstandingRequestSpy).not.toHaveBeenCalled();
+
+          $http.get('').catch(noop);
+          $rootScope.$digest();
+
+          expect(reqInterceptorFulfilled).toBe(false);
+          expect(incOutstandingRequestCountSpy).toHaveBeenCalledOnce();
+          expect(completeOutstandingRequestSpy).not.toHaveBeenCalled();
+
+          reqInterceptorDeferred.reject();
+          $rootScope.$digest();
+
+          expect(reqInterceptorFulfilled).toBe(true);
+          expect(incOutstandingRequestCountSpy).toHaveBeenCalledOnce();
+          expect(completeOutstandingRequestSpy).toHaveBeenCalledOnce();
+        }
+      );
+
+
+      it('should increment/decrement `outstandingRequestCount` on error in response interceptor',
+        function() {
+          expect(reqInterceptorFulfilled).toBe(false);
+          expect(resInterceptorFulfilled).toBe(false);
+          expect(incOutstandingRequestCountSpy).not.toHaveBeenCalled();
+          expect(completeOutstandingRequestSpy).not.toHaveBeenCalled();
+
+          $http.get('').catch(noop);
+          $rootScope.$digest();
+
+          expect(reqInterceptorFulfilled).toBe(false);
+          expect(resInterceptorFulfilled).toBe(false);
+          expect(incOutstandingRequestCountSpy).toHaveBeenCalledOnce();
+          expect(completeOutstandingRequestSpy).not.toHaveBeenCalled();
+
+          reqInterceptorDeferred.resolve();
+          $httpBackend.flush();
+
+          expect(reqInterceptorFulfilled).toBe(true);
+          expect(resInterceptorFulfilled).toBe(false);
+          expect(incOutstandingRequestCountSpy).toHaveBeenCalledOnce();
+          expect(completeOutstandingRequestSpy).not.toHaveBeenCalled();
+
+          resInterceptorDeferred.reject();
+          $rootScope.$digest();
+
+          expect(reqInterceptorFulfilled).toBe(true);
+          expect(resInterceptorFulfilled).toBe(true);
+          expect(incOutstandingRequestCountSpy).toHaveBeenCalledOnce();
+          expect(completeOutstandingRequestSpy).toHaveBeenCalledOnce();
+        }
+      );
+    });
+
+
+    // Helpers
+    function setupServicesAndSpies() {
+      inject(function($browser, _$http_, _$httpBackend_, _$rootScope_) {
+        $http = _$http_;
+        $httpBackend = _$httpBackend_;
+        $rootScope = _$rootScope_;
+
+        incOutstandingRequestCountSpy =
+            spyOn($browser, '$$incOutstandingRequestCount').and.callThrough();
+        completeOutstandingRequestSpy =
+            spyOn($browser, '$$completeOutstandingRequest').and.callThrough();
+      });
+    }
   });
 
 
@@ -1983,7 +2212,7 @@ describe('$http with $applyAsync', function() {
     // Ensure requests are sent
     $rootScope.$digest();
 
-    $httpBackend.flush(null, false);
+    $httpBackend.flush(null, null, false);
     expect($rootScope.$applyAsync).toHaveBeenCalledOnce();
     expect(handler).not.toHaveBeenCalled();
 
@@ -2001,7 +2230,7 @@ describe('$http with $applyAsync', function() {
     // Ensure requests are sent
     $rootScope.$digest();
 
-    $httpBackend.flush(null, false);
+    $httpBackend.flush(null, null, false);
     expect(log).toEqual([]);
 
     $browser.defer.flush();
@@ -2026,7 +2255,7 @@ describe('$http with $applyAsync', function() {
     expect(log).toEqual(['response 1', 'response 2']);
 
     // Finally, third response is received, and a second coalesced $apply is started
-    $httpBackend.flush(null, false);
+    $httpBackend.flush(null, null, false);
     $browser.defer.flush();
     expect(log).toEqual(['response 1', 'response 2', 'response 3']);
   });

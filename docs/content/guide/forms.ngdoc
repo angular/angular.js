@@ -22,7 +22,7 @@ The `ngModel` directive provides the two-way data-binding by synchronizing the m
 as well as view to the model. In addition it provides an {@link ngModel.NgModelController API}
 for other directives to augment its behavior.
 
-<example module="formExample">
+<example module="formExample" name="forms-simple">
   <file name="index.html">
     <div ng-controller="ExampleController">
       <form novalidate class="simple-form">
@@ -84,7 +84,7 @@ with red background only after the input is blurred (loses focus).
 This ensures that the user is not distracted with an error until after interacting with the control,
 and failing to satisfy its validity.
 
-<example module="formExample">
+<example module="formExample" name="forms-css-classes">
   <file name="index.html">
     <div ng-controller="ExampleController">
       <form novalidate class="css-form">
@@ -150,7 +150,7 @@ This allows us to extend the above example with these features:
 didn't interact with a control
 
 
-<example module="formExample">
+<example module="formExample" name="forms-custom-error-messages">
   <file name="index.html">
     <div ng-controller="ExampleController">
       <form name="form" class="css-form" novalidate>
@@ -232,7 +232,7 @@ I.e. `ng-model-options="{ updateOn: 'default blur' }"`
 The following example shows how to override immediate updates. Changes on the inputs within the form
 will update the model only when the control loses focus (blur event).
 
-<example module="customTriggerExample">
+<example module="customTriggerExample" name="forms-custom-triggers">
   <file name="index.html">
     <div ng-controller="ExampleController">
       <form>
@@ -278,7 +278,7 @@ controls that inherit from it unless they are overridden.
 This example shows how to debounce model changes. Model will be updated only 250 milliseconds
 after last change.
 
-<example module="debounceExample">
+<example module="debounceExample" name="forms-debounce">
   <file name="index.html">
     <div ng-controller="ExampleController">
       <form>
@@ -331,7 +331,7 @@ In the following example we create two directives:
  * A `username` directive that asynchronously checks if a user-entered value is already taken.
  We mock the server request with a `$q` deferred.
 
-<example module="form-example1">
+<example module="form-example1" name="forms-async-validation">
   <file name="index.html">
     <form name="form" class="css-form" novalidate>
       <div>
@@ -421,7 +421,7 @@ in `input[email]` from a custom directive so that it requires a specific top-lev
 `example.com` to be present.
 Note that you can alternatively use `ng-pattern` to further restrict the validation.
 
-<example module="form-example-modify-validators">
+<example module="form-example-modify-validators" name="forms-modify-validators">
   <file name="index.html">
     <form name="form" class="css-form" novalidate>
       <div>
@@ -474,7 +474,7 @@ See {@link guide/directive `$compileProvider.directive`} for more info.
 
 The following example shows how to add two-way data-binding to contentEditable elements.
 
-<example module="form-example2">
+<example module="form-example2" name="forms-custom-form-controls">
   <file name="index.html">
     <div contentEditable="true" ng-model="content" title="Click to edit">Some</div>
     <pre>model = {{content}}</pre>

@@ -1,6 +1,7 @@
 'use strict';
 
 /**
+ * @this
  * @description
  * Private service to sanitize uris for $sce.URL context. Used by $compile, $sce and $sanitize.
  */

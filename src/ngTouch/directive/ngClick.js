@@ -36,7 +36,7 @@
  * upon tap. (Event object is available as `$event`)
  *
  * @example
-    <example module="ngClickExample" deps="angular-touch.js">
+    <example module="ngClickExample" deps="angular-touch.js" name="ng-touch-ng-click">
       <file name="index.html">
         <button ng-click="count = count + 1" ng-init="count=0">
           Increment
@@ -161,7 +161,9 @@ var ngTouchClickDirectiveFactory = ['$parse', '$timeout', '$rootElement',
     event.preventDefault();
 
     // Blur focused form elements
-    event.target && event.target.blur && event.target.blur();
+    if (event.target && event.target.blur) {
+      event.target.blur();
+    }
   }
 
 

@@ -1,9 +1,0 @@
-{
-  "extends": "../../.jshintrc-base",
-  "globals": {
-    "window": false,
-
-    "angular": false,
-    "ngRouteModule": false
-  }
-}

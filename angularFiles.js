@@ -5,6 +5,7 @@ var angularFiles = {
     'src/minErr.js',
     'src/Angular.js',
     'src/loader.js',
+    'src/shallowCopy.js',
     'src/stringify.js',
     'src/AngularPublic.js',
     'src/jqLite.js',
@@ -27,6 +28,7 @@ var angularFiles = {
     'src/ng/httpBackend.js',
     'src/ng/interpolate.js',
     'src/ng/interval.js',
+    'src/ng/jsonpCallbacks.js',
     'src/ng/locale.js',
     'src/ng/location.js',
     'src/ng/log.js',
@@ -78,7 +80,6 @@ var angularFiles = {
     'src/ng/directive/ngTransclude.js',
     'src/ng/directive/script.js',
     'src/ng/directive/select.js',
-    'src/ng/directive/style.js',
     'src/ng/directive/validators.js',
     'src/angular.bind.js',
     'src/publishExternalApis.js',
@@ -128,6 +129,7 @@ var angularFiles = {
       'src/ngResource/resource.js'
     ],
     'ngRoute': [
+      'src/shallowCopy.js',
       'src/ngRoute/route.js',
       'src/ngRoute/routeParams.js',
       'src/ngRoute/directive/ngView.js'
@@ -137,7 +139,8 @@ var angularFiles = {
       'src/ngSanitize/filter/linky.js'
     ],
     'ngMock': [
-      'src/ngMock/angular-mocks.js'
+      'src/ngMock/angular-mocks.js',
+      'src/ngMock/browserTrigger.js'
     ],
     'ngTouch': [
       'src/ngTouch/touch.js',
@@ -152,7 +155,6 @@ var angularFiles = {
 
   'angularScenario': [
     'src/ngScenario/Scenario.js',
-    'src/ngScenario/browserTrigger.js',
     'src/ngScenario/Application.js',
     'src/ngScenario/Describe.js',
     'src/ngScenario/Future.js',
@@ -207,11 +209,10 @@ var angularFiles = {
     'build/docs/docs-scenario.js'
   ],
 
-  "karmaModules": [
+  'karmaModules': [
     'build/angular.js',
     '@angularSrcModules',
     'test/modules/no_bootstrap.js',
-    'src/ngScenario/browserTrigger.js',
     'test/helpers/*.js',
     'test/ngAnimate/*.js',
     'test/ngMessageFormat/*.js',
@@ -234,15 +235,6 @@ var angularFiles = {
     '@angularTest'
   ],
 
-  'karmaJqueryOld': [
-    'bower_components/jquery-2.1/dist/jquery.js',
-    'test/jquery_alias.js',
-    '@angularSrc',
-    '@angularSrcModules',
-    '@angularScenario',
-    '@angularTest'
-  ],
-
   'karmaJqueryExclude': [
     'src/angular-bootstrap.js',
     'src/ngScenario/angular-bootstrap.js',
@@ -250,6 +242,17 @@ var angularFiles = {
     'src/angular.bind.js'
   ]
 };
+
+['2.1', '2.2'].forEach(function(jQueryVersion) {
+  angularFiles['karmaJquery' + jQueryVersion] = []
+    .concat(angularFiles.karmaJquery)
+    .map(function(path) {
+      if (path.startsWith('bower_components/jquery')) {
+        return path.replace(/^bower_components\/jquery/, 'bower_components/jquery-' + jQueryVersion);
+      }
+      return path;
+    });
+});
 
 angularFiles['angularSrcModules'] = [].concat(
   angularFiles['angularModules']['ngAnimate'],
@@ -272,7 +275,7 @@ if (exports) {
     Array.prototype.slice.call(arguments, 0).forEach(function(filegroup) {
       angularFiles[filegroup].forEach(function(file) {
         // replace @ref
-        var match = file.match(/^\@(.*)/);
+        var match = file.match(/^@(.*)/);
         if (match) {
           files = files.concat(angularFiles[match[1]]);
         } else {

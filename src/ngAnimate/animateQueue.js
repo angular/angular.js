@@ -2,7 +2,7 @@
 
 var NG_ANIMATE_ATTR_NAME = 'data-ng-animate';
 var NG_ANIMATE_PIN_DATA = '$ngAnimatePin';
-var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
+var $$AnimateQueueProvider = ['$animateProvider', /** @this */ function($animateProvider) {
   var PRE_DIGEST_STATE = 1;
   var RUNNING_STATE = 2;
   var ONE_SPACE = ' ';
@@ -158,7 +158,7 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
       }
     );
 
-    var callbackRegistry = {};
+    var callbackRegistry = Object.create(null);
 
     // remember that the classNameFilter is set during the provider/config
     // stage therefore we can optimize here and setup a helper function
@@ -176,10 +176,9 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
     }
 
     // IE9-11 has no method "contains" in SVG element and in Node.prototype. Bug #10259.
-    var contains = window.Node.prototype.contains || function(arg) {
-      // jshint bitwise: false
+    var contains = window.Node.prototype.contains || /** @this */ function(arg) {
+      // eslint-disable-next-line no-bitwise
       return this === arg || !!(this.compareDocumentPosition(arg) & 16);
-      // jshint bitwise: true
     };
 
     function findCallbacks(parent, element, event) {
@@ -241,7 +240,7 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
       },
 
       off: function(event, container, callback) {
-        if (arguments.length === 1 && !angular.isString(arguments[0])) {
+        if (arguments.length === 1 && !isString(arguments[0])) {
           container = arguments[0];
           for (var eventType in callbackRegistry) {
             callbackRegistry[eventType] = filterFromRegistry(callbackRegistry[eventType], container);
@@ -289,11 +288,10 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
             bool = animationsEnabled = !!element;
           } else {
             var node = getDomNode(element);
-            var recordExists = disabledElementsLookup.get(node);
 
             if (argCount === 1) {
               // (element) - Element getter
-              bool = !recordExists;
+              bool = !disabledElementsLookup.get(node);
             } else {
               // (element, bool) - Element setter
               disabledElementsLookup.put(node, !bool);
@@ -578,7 +576,7 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
         runner.progress(event, phase, data);
       }
 
-      function close(reject) { // jshint ignore:line
+      function close(reject) {
         clearGeneratedClasses(element, options);
         applyAnimationClasses(element, options);
         applyAnimationStyles(element, options);
@@ -591,7 +589,7 @@ var $$AnimateQueueProvider = ['$animateProvider', function($animateProvider) {
       var node = getDomNode(element);
       var children = node.querySelectorAll('[' + NG_ANIMATE_ATTR_NAME + ']');
       forEach(children, function(child) {
-        var state = parseInt(child.getAttribute(NG_ANIMATE_ATTR_NAME));
+        var state = parseInt(child.getAttribute(NG_ANIMATE_ATTR_NAME), 10);
         var animationDetails = activeAnimationsLookup.get(child);
         if (animationDetails) {
           switch (state) {

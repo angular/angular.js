@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports = {
   name: 'sortOrder',
   transforms: function(doc, tag, value) {

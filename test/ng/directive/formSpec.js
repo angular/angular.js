@@ -402,7 +402,7 @@ describe('form', function() {
       browserTrigger(doc.find('input'));
 
       // let the browser process all events (and potentially reload the page)
-      setTimeout(function() { nextTurn = true;});
+      window.setTimeout(function() { nextTurn = true;});
       job.waitsFor(function() { return nextTurn; })
       .runs(function() {
         expect(reloadPrevented).toBe(true);
@@ -453,7 +453,7 @@ describe('form', function() {
         browserTrigger(doc.find('button'), 'click');
 
         // let the browser process all events (and potentially reload the page)
-        setTimeout(function() { nextTurn = true;}, 100);
+        window.setTimeout(function() { nextTurn = true;}, 100);
 
         var job = createAsync(done);
         job.waitsFor(function() { return nextTurn; })
@@ -1092,7 +1092,7 @@ describe('form', function() {
           '<div ng-form name="nested{{idB}}"' +
           '</div>' +
         '</div>' +
-      '</form'
+      '</form>'
     )(scope);
 
     scope.$digest();
@@ -1118,7 +1118,7 @@ describe('form', function() {
   it('should rename forms with no parent when interpolated name changes', function() {
     var element = $compile('<form name="name{{nameID}}"></form>')(scope);
     var element2 = $compile('<div ng-form="ngform{{nameID}}"></div>')(scope);
-    scope.nameID = "A";
+    scope.nameID = 'A';
     scope.$digest();
     var form = element.controller('form');
     var form2 = element2.controller('form');
@@ -1127,7 +1127,7 @@ describe('form', function() {
     expect(form.$name).toBe('nameA');
     expect(form2.$name).toBe('ngformA');
 
-    scope.nameID = "B";
+    scope.nameID = 'B';
     scope.$digest();
     expect(scope.nameA).toBeUndefined();
     expect(scope.ngformA).toBeUndefined();

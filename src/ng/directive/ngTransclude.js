@@ -69,7 +69,7 @@
  * This example shows how to use `NgTransclude` with fallback content, that
  * is displayed if no transcluded content is provided.
  *
- * <example module="transcludeFallbackContentExample">
+ * <example module="transcludeFallbackContentExample" name="ng-transclude">
  * <file name="index.html">
  * <script>
  * angular.module('transcludeFallbackContentExample', [])
@@ -122,7 +122,7 @@
  *   </file>
  *   <file name="app.js">
  *    angular.module('multiSlotTranscludeExample', [])
- *     .directive('pane', function(){
+ *     .directive('pane', function() {
  *        return {
  *          restrict: 'E',
  *          transclude: {
@@ -139,7 +139,7 @@
  *    })
  *    .controller('ExampleController', ['$scope', function($scope) {
  *      $scope.title = 'Lorem Ipsum';
- *      $scope.link = "https://google.com";
+ *      $scope.link = 'https://google.com';
  *      $scope.text = 'Neque porro quisquam est qui dolorem ipsum quia dolor...';
  *    }]);
  *   </file>
@@ -159,35 +159,60 @@
  * </example>
  */
 var ngTranscludeMinErr = minErr('ngTransclude');
-var ngTranscludeDirective = ngDirective({
-  restrict: 'EAC',
-  link: function($scope, $element, $attrs, controller, $transclude) {
+var ngTranscludeDirective = ['$compile', function($compile) {
+  return {
+    restrict: 'EAC',
+    terminal: true,
+    compile: function ngTranscludeCompile(tElement) {
 
-    if ($attrs.ngTransclude === $attrs.$attr.ngTransclude) {
-      // If the attribute is of the form: `ng-transclude="ng-transclude"`
-      // then treat it like the default
-      $attrs.ngTransclude = '';
+      // Remove and cache any original content to act as a fallback
+      var fallbackLinkFn = $compile(tElement.contents());
+      tElement.empty();
+
+      return function ngTranscludePostLink($scope, $element, $attrs, controller, $transclude) {
+
+        if (!$transclude) {
+          throw ngTranscludeMinErr('orphan',
+          'Illegal use of ngTransclude directive in the template! ' +
+          'No parent directive that requires a transclusion found. ' +
+          'Element: {0}',
+          startingTag($element));
+        }
+
+
+        // If the attribute is of the form: `ng-transclude="ng-transclude"` then treat it like the default
+        if ($attrs.ngTransclude === $attrs.$attr.ngTransclude) {
+          $attrs.ngTransclude = '';
+        }
+        var slotName = $attrs.ngTransclude || $attrs.ngTranscludeSlot;
+
+        // If the slot is required and no transclusion content is provided then this call will throw an error
+        $transclude(ngTranscludeCloneAttachFn, null, slotName);
+
+        // If the slot is optional and no transclusion content is provided then use the fallback content
+        if (slotName && !$transclude.isSlotFilled(slotName)) {
+          useFallbackContent();
+        }
+
+        function ngTranscludeCloneAttachFn(clone, transcludedScope) {
+          if (clone.length) {
+            $element.append(clone);
+          } else {
+            useFallbackContent();
+            // There is nothing linked against the transcluded scope since no content was available,
+            // so it should be safe to clean up the generated scope.
+            transcludedScope.$destroy();
+          }
+        }
+
+        function useFallbackContent() {
+          // Since this is the fallback content rather than the transcluded content,
+          // we link against the scope of this directive rather than the transcluded scope
+          fallbackLinkFn($scope, function(clone) {
+            $element.append(clone);
+          });
+        }
+      };
     }
-
-    function ngTranscludeCloneAttachFn(clone) {
-      if (clone.length) {
-        $element.empty();
-        $element.append(clone);
-      }
-    }
-
-    if (!$transclude) {
-      throw ngTranscludeMinErr('orphan',
-       'Illegal use of ngTransclude directive in the template! ' +
-       'No parent directive that requires a transclusion found. ' +
-       'Element: {0}',
-       startingTag($element));
-    }
-
-    // If there is no slot name defined or the slot name is not optional
-    // then transclude the slot
-    var slotName = $attrs.ngTransclude || $attrs.ngTranscludeSlot;
-    $transclude(ngTranscludeCloneAttachFn, null, slotName);
-  }
-});
-
+  };
+}];

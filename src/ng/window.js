@@ -3,6 +3,7 @@
 /**
  * @ngdoc service
  * @name $window
+ * @this
  *
  * @description
  * A reference to the browser's `window` object. While `window`
@@ -16,7 +17,7 @@
  * expression.
  *
  * @example
-   <example module="windowExample">
+   <example module="windowExample" name="window-service">
      <file name="index.html">
        <script>
          angular.module('windowExample', [])

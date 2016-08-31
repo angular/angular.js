@@ -5,6 +5,11 @@
 
 # Component Router
 
+<div class="alert alert-info">
+**Deprecation Notice:** In an effort to keep synchronized with router changes in Angular 2, this implementation of the Component Router (ngComponentRouter module) has been deprecated and will not receive further updates.
+We are investigating backporting the Angular 2 Router to Angular 1, but alternatively, use the {@link ngRoute} module or community developed projects (e.g. [ui-router](https://github.com/angular-ui/ui-router)).
+</div>
+
 This guide describes the new Component Router for AngularJS 1.5.
 
 <div class="alert alert-info">
@@ -225,8 +230,8 @@ You can see the complete application running below.
 
       this.getHero = function(id) {
         return heroesPromise.then(function(heroes) {
-          for(var i=0; i<heroes.length; i++) {
-            if ( heroes[i].id == id) return heroes[i];
+          for (var i = 0; i < heroes.length; i++) {
+            if (heroes[i].id === id) return heroes[i];
           }
         });
       };
@@ -245,7 +250,7 @@ You can see the complete application running below.
       };
 
       this.isSelected = function(hero) {
-        return (hero.id == selectedId);
+        return (hero.id === selectedId);
       };
     }
 
@@ -316,8 +321,8 @@ You can see the complete application running below.
 
       this.getCrisis = function(id) {
         return crisesPromise.then(function(crises) {
-          for(var i=0; i<crises.length; i++) {
-            if ( crises[i].id == id) return crises[i];
+          for (var i = 0; i < crises.length; i++) {
+            if (crises[i].id === id) return crises[i];
           }
         });
       };
@@ -337,7 +342,7 @@ You can see the complete application running below.
       };
 
       this.isSelected = function(crisis) {
-        return (crisis.id == selectedId);
+        return (crisis.id === selectedId);
       };
 
       this.onSelect = function(crisis) {
@@ -482,6 +487,14 @@ Just like any Angular application, we load the JavaScript files into our `index.
   <script src="/app/app.js"></script>
 ```
 
+You also need to include ES6 shims for browsers that do not support ES6 code (Internet Explorer,
+ iOs < 8, Android < 5.0, Windows Mobile < 10):
+ ```html
+ <!-- IE required polyfills, in this exact order -->
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/es6-shim/0.33.3/es6-shim.min.js"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/systemjs/0.19.20/system-polyfills.js"></script>
+ <script src="https://npmcdn.com/angular2/es6/dev/src/testing/shims_for_IE.js"></script>
+ ```
 
 ## Create the `app` module
 
@@ -712,8 +725,8 @@ function HeroService($q) {
 
   this.getHero = function(id) {
     return heroesPromise.then(function(heroes) {
-      for(var i=0; i<heroes.length; i++) {
-        if ( heroes[i].id == id) return heroes[i];
+      for (var i = 0; i < heroes.length; i++) {
+        if (heroes[i].id === id) return heroes[i];
       }
     });
   };
@@ -911,7 +924,7 @@ function HeroListComponent(heroService) {
   };
 
   this.isSelected = function(hero) {
-    return (hero.id == selectedId);
+    return (hero.id === selectedId);
   };
 }
 ```

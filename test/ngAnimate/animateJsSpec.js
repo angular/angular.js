@@ -1,6 +1,6 @@
 'use strict';
 
-describe("ngAnimate $$animateJs", function() {
+describe('ngAnimate $$animateJs', function() {
 
   beforeEach(module('ngAnimate'));
   beforeEach(module('ngAnimateMock'));
@@ -325,7 +325,7 @@ describe("ngAnimate $$animateJs", function() {
     });
   });
 
-  describe("events", function() {
+  describe('events', function() {
     var animations, runAnimation, element, log;
     beforeEach(module(function($animateProvider) {
       element = jqLite('<div class="test-animation"></div>');
@@ -352,7 +352,7 @@ describe("ngAnimate $$animateJs", function() {
       };
     }));
 
-    they("$prop should have the function signature of (element, done, options) for the after animation",
+    they('$prop should have the function signature of (element, done, options) for the after animation',
       ['enter', 'move', 'leave'], function(event) {
       inject(function() {
         var args;
@@ -370,7 +370,7 @@ describe("ngAnimate $$animateJs", function() {
       });
     });
 
-    they("$prop should not execute a before function", enterMoveEvents, function(event) {
+    they('$prop should not execute a before function', enterMoveEvents, function(event) {
       inject(function() {
         var args;
         var beforeMethod = 'before' + event.charAt(0).toUpperCase() + event.substr(1);
@@ -384,7 +384,7 @@ describe("ngAnimate $$animateJs", function() {
       });
     });
 
-    they("$prop should have the function signature of (element, className, done, options) for the before animation",
+    they('$prop should have the function signature of (element, className, done, options) for the before animation',
       ['addClass', 'removeClass'], function(event) {
       inject(function() {
         var beforeMethod = 'before' + event.charAt(0).toUpperCase() + event.substr(1);
@@ -407,7 +407,7 @@ describe("ngAnimate $$animateJs", function() {
       });
     });
 
-    they("$prop should have the function signature of (element, className, done, options) for the after animation",
+    they('$prop should have the function signature of (element, className, done, options) for the after animation',
       ['addClass', 'removeClass'], function(event) {
       inject(function() {
         var args;
@@ -429,7 +429,7 @@ describe("ngAnimate $$animateJs", function() {
       });
     });
 
-    they("setClass should have the function signature of (element, addClass, removeClass, done, options) for the $prop animation", ['before', 'after'], function(event) {
+    they('setClass should have the function signature of (element, addClass, removeClass, done, options) for the $prop animation', ['before', 'after'], function(event) {
       inject(function() {
         var args;
         var method = event === 'before' ? 'beforeSetClass' : 'setClass';
@@ -455,7 +455,7 @@ describe("ngAnimate $$animateJs", function() {
       });
     });
 
-    they("animate should have the function signature of (element, from, to, done, options) for the $prop animation", ['before', 'after'], function(event) {
+    they('animate should have the function signature of (element, from, to, done, options) for the $prop animation', ['before', 'after'], function(event) {
       inject(function() {
         var args;
         var method = event === 'before' ? 'beforeAnimate' : 'animate';
@@ -481,7 +481,7 @@ describe("ngAnimate $$animateJs", function() {
       });
     });
 
-    they("custom events should have the function signature of (element, done, options) for the $prop animation", ['before', 'after'], function(event) {
+    they('custom events should have the function signature of (element, done, options) for the $prop animation', ['before', 'after'], function(event) {
       inject(function() {
         var args;
         var method = event === 'before' ? 'beforeCustom' : 'custom';
@@ -504,7 +504,7 @@ describe("ngAnimate $$animateJs", function() {
     var otherEvents = ['addClass', 'removeClass', 'setClass'];
     var allEvents = ['leave'].concat(otherEvents).concat(enterMoveEvents);
 
-    they("$prop should asynchronously render the before$prop animation", otherEvents, function(event) {
+    they('$prop should asynchronously render the before$prop animation', otherEvents, function(event) {
       inject(function($animate) {
         var beforeMethod = 'before' + event.charAt(0).toUpperCase() + event.substr(1);
         animations[beforeMethod] = function(element, a, b, c) {
@@ -521,7 +521,7 @@ describe("ngAnimate $$animateJs", function() {
       });
     });
 
-    they("$prop should asynchronously render the $prop animation", allEvents, function(event) {
+    they('$prop should asynchronously render the $prop animation', allEvents, function(event) {
       inject(function($animate) {
         animations[event] = function(element, a, b, c) {
           log.push('after ' + event);
@@ -545,7 +545,7 @@ describe("ngAnimate $$animateJs", function() {
       });
     });
 
-    they("$prop should asynchronously render the $prop animation when a start/end animator object is returned",
+    they('$prop should asynchronously render the $prop animation when a start/end animator object is returned',
       allEvents, function(event) {
 
       inject(function($animate, $$AnimateRunner) {
@@ -554,7 +554,8 @@ describe("ngAnimate $$animateJs", function() {
           return {
             start: function() {
               log.push('start ' + event);
-              return runner = new $$AnimateRunner();
+              runner = new $$AnimateRunner();
+              return runner;
             }
           };
         };
@@ -577,14 +578,15 @@ describe("ngAnimate $$animateJs", function() {
       });
     });
 
-    they("$prop should asynchronously render the $prop animation when an instance of $$AnimateRunner is returned",
+    they('$prop should asynchronously render the $prop animation when an instance of $$AnimateRunner is returned',
       allEvents, function(event) {
 
       inject(function($animate, $$AnimateRunner) {
         var runner;
         animations[event] = function(element, a, b, c) {
           log.push('start ' + event);
-          return runner = new $$AnimateRunner();
+          runner = new $$AnimateRunner();
+          return runner;
         };
 
         runAnimation(event, function() {
@@ -605,7 +607,7 @@ describe("ngAnimate $$animateJs", function() {
       });
     });
 
-    they("$prop should asynchronously reject the before animation if the callback function is called with false", otherEvents, function(event) {
+    they('$prop should asynchronously reject the before animation if the callback function is called with false', otherEvents, function(event) {
       inject(function($animate, $rootScope) {
         var beforeMethod = 'before' + event.charAt(0).toUpperCase() + event.substr(1);
         animations[beforeMethod] = function(element, a, b, c) {
@@ -630,7 +632,7 @@ describe("ngAnimate $$animateJs", function() {
       });
     });
 
-    they("$prop should asynchronously reject the after animation if the callback function is called with false", allEvents, function(event) {
+    they('$prop should asynchronously reject the after animation if the callback function is called with false', allEvents, function(event) {
       inject(function($animate, $rootScope) {
         animations[event] = function(element, a, b, c) {
           log.push('after ' + event);

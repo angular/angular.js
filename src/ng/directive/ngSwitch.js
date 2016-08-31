@@ -57,7 +57,7 @@
  *
  *
  * @example
-  <example module="switchExample" deps="angular-animate.js" animations="true">
+  <example module="switchExample" deps="angular-animate.js" animations="true" name="ng-switch">
     <file name="index.html">
       <div ng-controller="ExampleController">
         <select ng-model="selection" ng-options="item for item in items">
@@ -134,7 +134,7 @@ var ngSwitchDirective = ['$animate', '$compile', function($animate, $compile) {
     require: 'ngSwitch',
 
     // asks for $scope to fool the BC controller module
-    controller: ['$scope', function ngSwitchController() {
+    controller: ['$scope', function NgSwitchController() {
      this.cases = {};
     }],
     link: function(scope, element, attr, ngSwitchController) {

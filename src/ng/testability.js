@@ -1,6 +1,6 @@
 'use strict';
 
-
+/** @this */
 function $$TestabilityProvider() {
   this.$get = ['$rootScope', '$browser', '$location',
        function($rootScope,   $browser,   $location) {

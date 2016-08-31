@@ -68,8 +68,9 @@ To create a component, we use the {@link angular.Module#component .component()} 
 {@link module Angular module}. We must provide the name of the component and the Component
 Definition Object (CDO for short).
 
-Remember that (since components are also directives) the name of the component is in `camelCase`,
-but we will use `kebab-case`, when referring to it in our HTML.
+Remember that (since components are also directives) the name of the component is in `camelCase`
+(e.g. `myAwesomeComponent`), but we will use `kebab-case` (e.g. `my-awesome-component`) when
+referring to it in our HTML. (See [here][case-styles] for a description of different case styles.)
 
 In its simplest form, the CDO will just contain a template and a controller. (We can actually omit
 the controller and Angular will create a dummy controller for us. This is useful for simple
@@ -199,16 +200,16 @@ Voilà! The resulting output should look the same, but let's see what we have ga
 # Testing
 
 Although we have combined our controller with a template into a component, we still can (and should)
-unit test the controller separately, since this is where are application logic and data reside.
+unit test the controller separately, since this is where our application logic and data reside.
 
 In order to retrieve and instantiate a component's controller, Angular provides the
 {@link ngMock.$componentController $componentController} service.
 
 <div class="alert alert-info">
-  The `$controller` service that we used in the previous step, can only instantiate controllers that
-  where registered by name, using the `.controller()` method. We could have registered our component
-  controller this way too, if we wanted to. Instead, we chose to define it inline &mdash; inside the
-  CDO &mdash; to keep things localized, but either way works equally well.
+  The `$controller` service that we used in the previous step can only instantiate controllers that
+  were registered by name, using the `.controller()` method. We could have registered our component
+  controller this way, too, if we wanted to. Instead, we chose to define it inline &mdash; inside
+  the CDO &mdash; to keep things localized, but either way works equally well.
 </div>
 
 <br />
@@ -268,7 +269,7 @@ Same as before, execute `npm test` to run the tests and then watch the files for
 
 # Summary
 
-You have learned how to organize your application and presentation logic into isolated reusable
+You have learned how to organize your application and presentation logic into isolated, reusable
 components. Let's go to {@link step_04 step 4} to learn how to organize our code in directories and
 files, so it remains easy to locate as our application grows.
 
@@ -276,6 +277,7 @@ files, so it remains easy to locate as our application grows.
 <ul doc-tutorial-nav="3"></ul>
 
 
+[case-styles]: https://en.wikipedia.org/wiki/Letter_case#Special_case_styles
 [jasmine-docs]: http://jasmine.github.io/2.4/introduction.html
 [jasmine-home]: http://jasmine.github.io/
 [karma]: https://karma-runner.github.io/

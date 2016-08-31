@@ -13,6 +13,25 @@
 
 var $parseMinErr = minErr('$parse');
 
+var ARRAY_CTOR = [].constructor;
+var BOOLEAN_CTOR = (false).constructor;
+var FUNCTION_CTOR = Function.constructor;
+var NUMBER_CTOR = (0).constructor;
+var OBJECT_CTOR = {}.constructor;
+var STRING_CTOR = ''.constructor;
+var ARRAY_CTOR_PROTO = ARRAY_CTOR.prototype;
+var BOOLEAN_CTOR_PROTO = BOOLEAN_CTOR.prototype;
+var FUNCTION_CTOR_PROTO = FUNCTION_CTOR.prototype;
+var NUMBER_CTOR_PROTO = NUMBER_CTOR.prototype;
+var OBJECT_CTOR_PROTO = OBJECT_CTOR.prototype;
+var STRING_CTOR_PROTO = STRING_CTOR.prototype;
+
+var CALL = FUNCTION_CTOR_PROTO.call;
+var APPLY = FUNCTION_CTOR_PROTO.apply;
+var BIND = FUNCTION_CTOR_PROTO.bind;
+
+var objectValueOf = OBJECT_CTOR_PROTO.valueOf;
+
 // Sandboxing Angular Expressions
 // ------------------------------
 // Angular expressions are generally considered safe because these expressions only have direct
@@ -38,9 +57,9 @@ var $parseMinErr = minErr('$parse');
 
 
 function ensureSafeMemberName(name, fullExpression) {
-  if (name === "__defineGetter__" || name === "__defineSetter__"
-      || name === "__lookupGetter__" || name === "__lookupSetter__"
-      || name === "__proto__") {
+  if (name === '__defineGetter__' || name === '__defineSetter__'
+      || name === '__lookupGetter__' || name === '__lookupSetter__'
+      || name === '__proto__') {
     throw $parseMinErr('isecfld',
         'Attempting to access a disallowed field in Angular expressions! '
         + 'Expression: {0}', fullExpression);
@@ -93,10 +112,6 @@ function ensureSafeObject(obj, fullExpression) {
   return obj;
 }
 
-var CALL = Function.prototype.call;
-var APPLY = Function.prototype.apply;
-var BIND = Function.prototype.bind;
-
 function ensureSafeFunction(obj, fullExpression) {
   if (obj) {
     if (obj.constructor === obj) {
@@ -113,17 +128,28 @@ function ensureSafeFunction(obj, fullExpression) {
 
 function ensureSafeAssignContext(obj, fullExpression) {
   if (obj) {
-    if (obj === (0).constructor || obj === (false).constructor || obj === ''.constructor ||
-        obj === {}.constructor || obj === [].constructor || obj === Function.constructor) {
+    if (obj === ARRAY_CTOR ||
+        obj === BOOLEAN_CTOR ||
+        obj === FUNCTION_CTOR ||
+        obj === NUMBER_CTOR ||
+        obj === OBJECT_CTOR ||
+        obj === STRING_CTOR ||
+        obj === ARRAY_CTOR_PROTO ||
+        obj === BOOLEAN_CTOR_PROTO ||
+        obj === FUNCTION_CTOR_PROTO ||
+        obj === NUMBER_CTOR_PROTO ||
+        obj === OBJECT_CTOR_PROTO ||
+        obj === STRING_CTOR_PROTO) {
       throw $parseMinErr('isecaf',
-        'Assigning to a constructor is disallowed! Expression: {0}', fullExpression);
+        'Assigning to a constructor or its prototype is disallowed! Expression: {0}',
+        fullExpression);
     }
   }
 }
 
 var OPERATORS = createMap();
 forEach('+ - * / % === !== == != < > <= >= && || ! = |'.split(' '), function(operator) { OPERATORS[operator] = true; });
-var ESCAPE = {"n":"\n", "f":"\f", "r":"\r", "t":"\t", "v":"\v", "'":"'", '"':'"'};
+var ESCAPE = {'n':'\n', 'f':'\f', 'r':'\r', 't':'\t', 'v':'\v', '\'':'\'', '"':'"'};
 
 
 /////////////////////////////////////////
@@ -132,7 +158,7 @@ var ESCAPE = {"n":"\n", "f":"\f", "r":"\r", "t":"\t", "v":"\v", "'":"'", '"':'"'
 /**
  * @constructor
  */
-var Lexer = function(options) {
+var Lexer = function Lexer(options) {
   this.options = options;
 };
 
@@ -146,7 +172,7 @@ Lexer.prototype = {
 
     while (this.index < this.text.length) {
       var ch = this.text.charAt(this.index);
-      if (ch === '"' || ch === "'") {
+      if (ch === '"' || ch === '\'') {
         this.readString(ch);
       } else if (this.isNumber(ch) || ch === '.' && this.isNumber(this.peek())) {
         this.readNumber();
@@ -185,7 +211,7 @@ Lexer.prototype = {
   },
 
   isNumber: function(ch) {
-    return ('0' <= ch && ch <= '9') && typeof ch === "string";
+    return ('0' <= ch && ch <= '9') && typeof ch === 'string';
   },
 
   isWhitespace: function(ch) {
@@ -218,9 +244,8 @@ Lexer.prototype = {
 
   codePointAt: function(ch) {
     if (ch.length === 1) return ch.charCodeAt(0);
-    /*jshint bitwise: false*/
+    // eslint-disable-next-line no-bitwise
     return (ch.charCodeAt(0) << 10) + ch.charCodeAt(1) - 0x35FDC00;
-    /*jshint bitwise: true*/
   },
 
   peekMultichar: function() {
@@ -342,7 +367,7 @@ Lexer.prototype = {
   }
 };
 
-var AST = function(lexer, options) {
+var AST = function AST(lexer, options) {
   this.lexer = lexer;
   this.options = options;
 };
@@ -398,8 +423,7 @@ AST.prototype = {
 
   filterChain: function() {
     var left = this.expression();
-    var token;
-    while ((token = this.expect('|'))) {
+    while (this.expect('|')) {
       left = this.filter(left);
     }
     return left;
@@ -545,7 +569,7 @@ AST.prototype = {
     var args = [];
     if (this.peekToken().text !== ')') {
       do {
-        args.push(this.expression());
+        args.push(this.filterChain());
       } while (this.expect(','));
     }
     return args;
@@ -611,7 +635,7 @@ AST.prototype = {
           this.consume(':');
           property.value = this.expression();
         } else {
-          this.throwError("invalid key", this.peek());
+          this.throwError('invalid key', this.peek());
         }
         properties.push(property);
       } while (this.expect(','));
@@ -695,6 +719,7 @@ function isStateless($filter, filterName) {
 function findConstantAndWatchExpressions(ast, $filter) {
   var allConstants;
   var argsToWatch;
+  var isStatelessFilter;
   switch (ast.type) {
   case AST.Program:
     allConstants = true;
@@ -745,7 +770,8 @@ function findConstantAndWatchExpressions(ast, $filter) {
     ast.toWatch = [ast];
     break;
   case AST.CallExpression:
-    allConstants = ast.filter ? isStateless($filter, ast.callee.name) : false;
+    isStatelessFilter = ast.filter ? isStateless($filter, ast.callee.name) : false;
+    allConstants = isStatelessFilter;
     argsToWatch = [];
     forEach(ast.arguments, function(expr) {
       findConstantAndWatchExpressions(expr, $filter);
@@ -755,7 +781,7 @@ function findConstantAndWatchExpressions(ast, $filter) {
       }
     });
     ast.constant = allConstants;
-    ast.toWatch = ast.filter && isStateless($filter, ast.callee.name) ? argsToWatch : [ast];
+    ast.toWatch = isStatelessFilter ? argsToWatch : [ast];
     break;
   case AST.AssignmentExpression:
     findConstantAndWatchExpressions(ast.left, $filter);
@@ -883,7 +909,7 @@ ASTCompiler.prototype = {
       this.watchFns() +
       'return fn;';
 
-    /* jshint -W054 */
+    // eslint-disable-next-line no-new-func
     var fn = (new Function('$filter',
         'ensureSafeMemberName',
         'ensureSafeObject',
@@ -903,7 +929,6 @@ ASTCompiler.prototype = {
           ifDefined,
           plusFn,
           expression);
-    /* jshint +W054 */
     this.state = this.stage = undefined;
     fn.literal = isLiteral(ast);
     fn.constant = isConstant(ast);
@@ -1260,7 +1285,7 @@ ASTCompiler.prototype = {
   },
 
   nonComputedMember: function(left, right) {
-    var SAFE_IDENTIFIER = /[$_a-zA-Z][$_a-zA-Z0-9]*/;
+    var SAFE_IDENTIFIER = /^[$_a-zA-Z][$_a-zA-Z0-9]*$/;
     var UNSAFE_CHARACTERS = /[^$_a-zA-Z0-9]/g;
     if (SAFE_IDENTIFIER.test(right)) {
       return left + '.' + right;
@@ -1335,7 +1360,7 @@ ASTCompiler.prototype = {
   },
 
   escape: function(value) {
-    if (isString(value)) return "'" + value.replace(this.stringEscapeRegex, this.stringEscapeFn) + "'";
+    if (isString(value)) return '\'' + value.replace(this.stringEscapeRegex, this.stringEscapeFn) + '\'';
     if (isNumber(value)) return value.toString();
     if (value === true) return 'true';
     if (value === false) return 'false';
@@ -1414,7 +1439,7 @@ ASTInterpreter.prototype = {
   },
 
   recurse: function(ast, context, create) {
-    var left, right, self = this, args, expression;
+    var left, right, self = this, args;
     if (ast.input) {
       return this.inputs(ast.input, ast.watchId);
     }
@@ -1626,14 +1651,14 @@ ASTInterpreter.prototype = {
   },
   'binary==': function(left, right, context) {
     return function(scope, locals, assign, inputs) {
-      /* jshint eqeqeq:false */
+      // eslint-disable-next-line eqeqeq
       var arg = left(scope, locals, assign, inputs) == right(scope, locals, assign, inputs);
       return context ? {value: arg} : arg;
     };
   },
   'binary!=': function(left, right, context) {
     return function(scope, locals, assign, inputs) {
-      /* jshint eqeqeq:false */
+      // eslint-disable-next-line eqeqeq
       var arg = left(scope, locals, assign, inputs) != right(scope, locals, assign, inputs);
       return context ? {value: arg} : arg;
     };
@@ -1756,7 +1781,7 @@ ASTInterpreter.prototype = {
 /**
  * @constructor
  */
-var Parser = function(lexer, $filter, options) {
+var Parser = function Parser(lexer, $filter, options) {
   this.lexer = lexer;
   this.$filter = $filter;
   this.options = options;
@@ -1776,8 +1801,6 @@ Parser.prototype = {
 function isPossiblyDangerousMemberName(name) {
   return name === 'constructor';
 }
-
-var objectValueOf = Object.prototype.valueOf;
 
 function getValueOf(value) {
   return isFunction(value.valueOf) ? value.valueOf() : objectValueOf.call(value);
@@ -1829,6 +1852,7 @@ function getValueOf(value) {
 /**
  * @ngdoc provider
  * @name $parseProvider
+ * @this
  *
  * @description
  * `$parseProvider` can be used for configuring the default behavior of the {@link ng.$parse $parse}
@@ -1863,6 +1887,7 @@ function $ParseProvider() {
  /**
   * @ngdoc method
   * @name $parseProvider#setIdentifierFns
+  *
   * @description
   *
   * Allows defining the set of characters that are allowed in Angular expressions. The function
@@ -2004,6 +2029,7 @@ function $ParseProvider() {
       }
 
       //Primitive or NaN
+      // eslint-disable-next-line no-self-compare
       return newValue === oldValueOfValue || (newValue !== newValue && oldValueOfValue !== oldValueOfValue);
     }
 
@@ -2053,10 +2079,12 @@ function $ParseProvider() {
     function oneTimeWatchDelegate(scope, listener, objectEquality, parsedExpression, prettyPrintExpression) {
       var unwatch, lastValue;
       if (parsedExpression.inputs) {
-        return unwatch = inputsWatchDelegate(scope, oneTimeListener, objectEquality, parsedExpression, prettyPrintExpression);
+        unwatch = inputsWatchDelegate(scope, oneTimeListener, objectEquality, parsedExpression, prettyPrintExpression);
       } else {
-        return unwatch = scope.$watch(oneTimeWatch, oneTimeListener, objectEquality);
+        unwatch = scope.$watch(oneTimeWatch, oneTimeListener, objectEquality);
       }
+      return unwatch;
+
       function oneTimeWatch(scope) {
         return parsedExpression(scope);
       }
@@ -2077,7 +2105,7 @@ function $ParseProvider() {
 
     function oneTimeLiteralWatchDelegate(scope, listener, objectEquality, parsedExpression) {
       var unwatch, lastValue;
-      return unwatch = scope.$watch(function oneTimeWatch(scope) {
+      unwatch = scope.$watch(function oneTimeWatch(scope) {
         return parsedExpression(scope);
       }, function oneTimeListener(value, old, scope) {
         lastValue = value;
@@ -2091,6 +2119,8 @@ function $ParseProvider() {
         }
       }, objectEquality);
 
+      return unwatch;
+
       function isAllDefined(value) {
         var allDefined = true;
         forEach(value, function(val) {
@@ -2101,11 +2131,11 @@ function $ParseProvider() {
     }
 
     function constantWatchDelegate(scope, listener, objectEquality, parsedExpression) {
-      var unwatch;
-      return unwatch = scope.$watch(function constantWatch(scope) {
+      var unwatch = scope.$watch(function constantWatch(scope) {
         unwatch();
         return parsedExpression(scope);
       }, listener, objectEquality);
+      return unwatch;
     }
 
     function addInterceptor(parsedExpression, interceptorFn) {

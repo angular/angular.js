@@ -3,7 +3,7 @@
 @fullName Model is not of type `number`
 @description
 
-The number input directive `<input type="number">` requires the model to be a `number`.
+The `input[number]` and `input[range]` directives require the model to be a `number`.
 
 If the model is something else, this error will be thrown.
 
@@ -20,7 +20,7 @@ In this example, our model stores the number as a string, so we provide the `str
 directive to convert it into the format the `input[number]` directive expects.
 
 
-<example module="numfmt-error-module">
+<example module="numfmt-error-module" name="number-format-error">
  <file name="index.html">
   <table>
     <tr ng-repeat="x in ['0', '1']">
@@ -47,7 +47,7 @@ directive to convert it into the format the `input[number]` directive expects.
           return '' + value;
         });
         ngModel.$formatters.push(function(value) {
-          return parseFloat(value, 10);
+          return parseFloat(value);
         });
       }
     };

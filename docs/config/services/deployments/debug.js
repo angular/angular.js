@@ -1,11 +1,11 @@
-"use strict";
+'use strict';
 
 module.exports = function debugDeployment(getVersion) {
   return {
     name: 'debug',
     examples: {
       commonFiles: {
-        scripts: [ '../../../angular.js' ]
+        scripts: ['../../../angular.js']
       },
       dependencyPath: '../../../'
     },

@@ -3,18 +3,19 @@
 var $interpolateMinErr = angular.$interpolateMinErr = minErr('$interpolate');
 $interpolateMinErr.throwNoconcat = function(text) {
   throw $interpolateMinErr('noconcat',
-      "Error while interpolating: {0}\nStrict Contextual Escaping disallows " +
-      "interpolations that concatenate multiple expressions in some secure contexts. " +
-      "See http://docs.angularjs.org/api/ng.$sce", text);
+      'Error while interpolating: {0}\nStrict Contextual Escaping disallows ' +
+      'interpolations that concatenate multiple expressions when a trusted value is ' +
+      'required.  See http://docs.angularjs.org/api/ng.$sce', text);
 };
 
 $interpolateMinErr.interr = function(text, err) {
-  return $interpolateMinErr('interr', "Can't interpolate: {0}\n{1}", text, err.toString());
+  return $interpolateMinErr('interr', 'Can\'t interpolate: {0}\n{1}', text, err.toString());
 };
 
 /**
  * @ngdoc provider
  * @name $interpolateProvider
+ * @this
  *
  * @description
  *
@@ -111,30 +112,13 @@ function $InterpolateProvider() {
         replace(escapedEndRegexp, endSymbol);
     }
 
-    function stringify(value) {
-      if (value == null) { // null || undefined
-        return '';
-      }
-      switch (typeof value) {
-        case 'string':
-          break;
-        case 'number':
-          value = '' + value;
-          break;
-        default:
-          value = toJson(value);
-      }
-
-      return value;
-    }
-
-    //TODO: this is the same as the constantWatchDelegate in parse.js
+    // TODO: this is the same as the constantWatchDelegate in parse.js
     function constantWatchDelegate(scope, listener, objectEquality, constantInterp) {
-      var unwatch;
-      return unwatch = scope.$watch(function constantInterpolateWatch(scope) {
+      var unwatch = scope.$watch(function constantInterpolateWatch(scope) {
         unwatch();
         return constantInterp(scope);
       }, listener, objectEquality);
+      return unwatch;
     }
 
     function isConcatenationAllowed(context) {
@@ -184,7 +168,7 @@ function $InterpolateProvider() {
      *
      * `allOrNothing` is useful for interpolating URLs. `ngSrc` and `ngSrcset` use this behavior.
      *
-     * ####Escaped Interpolation
+     * #### Escaped Interpolation
      * $interpolate provides a mechanism for escaping interpolation markers. Start and end markers
      * can be escaped by preceding each of their characters with a REVERSE SOLIDUS U+005C (backslash).
      * It will be rendered as a regular start/end marker, and will not be interpreted as an expression
@@ -205,7 +189,7 @@ function $InterpolateProvider() {
      * this is typically useful only when user-data is used in rendering a template from the server, or
      * when otherwise untrusted data is used by a directive.
      *
-     * <example>
+     * <example name="interpolation">
      *  <file name="index.html">
      *    <div ng-init="username='A user'">
      *      <p ng-init="apptitle='Escaping demo'">{{apptitle}}: \{\{ username = "defaced value"; \}\}
@@ -380,7 +364,7 @@ function $InterpolateProvider() {
           expressions: expressions,
           $$watchDelegate: function(scope, listener) {
             var lastValue;
-            return scope.$watchGroup(parseFns, function interpolateFnWatcher(values, oldValues) {
+            return scope.$watchGroup(parseFns, /** @this */ function interpolateFnWatcher(values, oldValues) {
               var currValue = compute(values);
               if (isFunction(listener)) {
                 listener.call(this, currValue, values !== oldValues ? lastValue : currValue, scope);
@@ -441,5 +425,4 @@ function $InterpolateProvider() {
     return $interpolate;
   }];
 }
-
 

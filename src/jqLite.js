@@ -11,9 +11,10 @@
  *     Or gives undesired access to variables likes document or window?    *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-/* global JQLitePrototype: true,
+/* global
+  JQLitePrototype: true,
   BOOLEAN_ATTR: true,
-  ALIASED_ATTR: true,
+  ALIASED_ATTR: true
 */
 
 //////////////////////////////////
@@ -51,7 +52,7 @@
  * ## Angular's jqLite
  * jqLite provides only the following jQuery methods:
  *
- * - [`addClass()`](http://api.jquery.com/addClass/)
+ * - [`addClass()`](http://api.jquery.com/addClass/) - Does not support a function as first argument
  * - [`after()`](http://api.jquery.com/after/)
  * - [`append()`](http://api.jquery.com/append/)
  * - [`attr()`](http://api.jquery.com/attr/) - Does not support functions as parameters
@@ -78,7 +79,7 @@
  * - [`ready()`](http://api.jquery.com/ready/)
  * - [`remove()`](http://api.jquery.com/remove/)
  * - [`removeAttr()`](http://api.jquery.com/removeAttr/)
- * - [`removeClass()`](http://api.jquery.com/removeClass/)
+ * - [`removeClass()`](http://api.jquery.com/removeClass/) - Does not support a function as first argument
  * - [`removeData()`](http://api.jquery.com/removeData/)
  * - [`replaceWith()`](http://api.jquery.com/replaceWith/)
  * - [`text()`](http://api.jquery.com/text/)
@@ -135,9 +136,9 @@ JQLite._data = function(node) {
 function jqNextId() { return ++jqId; }
 
 
-var SPECIAL_CHARS_REGEXP = /([\:\-\_]+(.))/g;
+var SPECIAL_CHARS_REGEXP = /([:\-_]+(.))/g;
 var MOZ_HACK_REGEXP = /^moz([A-Z])/;
-var MOUSE_EVENT_MAP= { mouseleave: "mouseout", mouseenter: "mouseover"};
+var MOUSE_EVENT_MAP = { mouseleave: 'mouseout', mouseenter: 'mouseover' };
 var jqLiteMinErr = minErr('jqLite');
 
 /**
@@ -165,7 +166,7 @@ var wrapMap = {
   'col': [2, '<table><colgroup>', '</colgroup></table>'],
   'tr': [2, '<table><tbody>', '</tbody></table>'],
   'td': [3, '<table><tbody><tr>', '</tr></tbody></table>'],
-  '_default': [0, "", ""]
+  '_default': [0, '', '']
 };
 
 wrapMap.optgroup = wrapMap.option;
@@ -207,10 +208,10 @@ function jqLiteBuildFragment(html, context) {
     nodes.push(context.createTextNode(html));
   } else {
     // Convert html into DOM nodes
-    tmp = tmp || fragment.appendChild(context.createElement("div"));
-    tag = (TAG_NAME_REGEXP.exec(html) || ["", ""])[1].toLowerCase();
+    tmp = fragment.appendChild(context.createElement('div'));
+    tag = (TAG_NAME_REGEXP.exec(html) || ['', ''])[1].toLowerCase();
     wrap = wrapMap[tag] || wrapMap._default;
-    tmp.innerHTML = wrap[1] + html.replace(XHTML_TAG_REGEXP, "<$1></$2>") + wrap[2];
+    tmp.innerHTML = wrap[1] + html.replace(XHTML_TAG_REGEXP, '<$1></$2>') + wrap[2];
 
     // Descend through wrappers to the right content
     i = wrap[0];
@@ -221,12 +222,12 @@ function jqLiteBuildFragment(html, context) {
     nodes = concat(nodes, tmp.childNodes);
 
     tmp = fragment.firstChild;
-    tmp.textContent = "";
+    tmp.textContent = '';
   }
 
   // Remove wrapper from fragment
-  fragment.textContent = "";
-  fragment.innerHTML = ""; // Clear inner HTML
+  fragment.textContent = '';
+  fragment.innerHTML = ''; // Clear inner HTML
   forEach(nodes, function(node) {
     fragment.appendChild(node);
   });
@@ -261,10 +262,9 @@ function jqLiteWrapNode(node, wrapper) {
 
 
 // IE9-11 has no method "contains" in SVG element and in Node.prototype. Bug #10259.
-var jqLiteContains = window.Node.prototype.contains || function(arg) {
-  // jshint bitwise: false
+var jqLiteContains = window.Node.prototype.contains || /** @this */ function(arg) {
+  // eslint-disable-next-line no-bitwise
   return !!(this.compareDocumentPosition(arg) & 16);
-  // jshint bitwise: true
 };
 
 /////////////////////////////////////////////
@@ -409,17 +409,17 @@ function jqLiteData(element, key, value) {
 
 function jqLiteHasClass(element, selector) {
   if (!element.getAttribute) return false;
-  return ((" " + (element.getAttribute('class') || '') + " ").replace(/[\n\t]/g, " ").
-      indexOf(" " + selector + " ") > -1);
+  return ((' ' + (element.getAttribute('class') || '') + ' ').replace(/[\n\t]/g, ' ').
+      indexOf(' ' + selector + ' ') > -1);
 }
 
 function jqLiteRemoveClass(element, cssClasses) {
   if (cssClasses && element.setAttribute) {
     forEach(cssClasses.split(' '), function(cssClass) {
       element.setAttribute('class', trim(
-          (" " + (element.getAttribute('class') || '') + " ")
-          .replace(/[\n\t]/g, " ")
-          .replace(" " + trim(cssClass) + " ", " "))
+          (' ' + (element.getAttribute('class') || '') + ' ')
+          .replace(/[\n\t]/g, ' ')
+          .replace(' ' + trim(cssClass) + ' ', ' '))
       );
     });
   }
@@ -428,7 +428,7 @@ function jqLiteRemoveClass(element, cssClasses) {
 function jqLiteAddClass(element, cssClasses) {
   if (cssClasses && element.setAttribute) {
     var existingClasses = (' ' + (element.getAttribute('class') || '') + ' ')
-                            .replace(/[\n\t]/g, " ");
+                            .replace(/[\n\t]/g, ' ');
 
     forEach(cssClasses.split(' '), function(cssClass) {
       cssClass = trim(cssClass);
@@ -538,9 +538,8 @@ var JQLitePrototype = JQLite.prototype = {
     } else {
       this.on('DOMContentLoaded', trigger); // works for modern browsers and IE9
       // we can not use jqLite since we are not done loading and jQuery could be loaded later.
-      // jshint -W064
+      // eslint-disable-next-line new-cap
       JQLite(window).on('load', trigger); // fallback to window.onload for others
-      // jshint +W064
     }
   },
   toString: function() {
@@ -577,7 +576,8 @@ var ALIASED_ATTR = {
   'ngMaxlength': 'maxlength',
   'ngMin': 'min',
   'ngMax': 'max',
-  'ngPattern': 'pattern'
+  'ngPattern': 'pattern',
+  'ngStep': 'step'
 };
 
 function getBooleanAttrName(element, name) {
@@ -645,7 +645,7 @@ forEach({
     var lowercasedName = lowercase(name);
     if (BOOLEAN_ATTR[lowercasedName]) {
       if (isDefined(value)) {
-        if (!!value) {
+        if (value) {
           element[name] = true;
           element.setAttribute(name, lowercasedName);
         } else {
@@ -1069,6 +1069,7 @@ forEach({
 
 
 // Provider for private $$jqLite service
+/** @this */
 function $$jqLiteProvider() {
   this.$get = function $$jqLite() {
     return extend(JQLite, {

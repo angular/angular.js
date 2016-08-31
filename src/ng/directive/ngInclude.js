@@ -51,7 +51,7 @@
  *                  - Otherwise enable scrolling only if the expression evaluates to truthy value.
  *
  * @example
-  <example module="includeExample" deps="angular-animate.js" animations="true">
+  <example module="includeExample" deps="angular-animate.js" animations="true" name="ng-include">
     <file name="index.html">
      <div ng-controller="ExampleController">
        <select ng-model="template" ng-options="t.name for t in templates">
@@ -68,8 +68,8 @@
       angular.module('includeExample', ['ngAnimate'])
         .controller('ExampleController', ['$scope', function($scope) {
           $scope.templates =
-            [ { name: 'template1.html', url: 'template1.html'},
-              { name: 'template2.html', url: 'template2.html'} ];
+            [{ name: 'template1.html', url: 'template1.html'},
+             { name: 'template2.html', url: 'template2.html'}];
           $scope.template = $scope.templates[0];
         }]);
      </file>
@@ -127,7 +127,7 @@
       });
 
       it('should load template2.html', function() {
-        if (browser.params.browser == 'firefox') {
+        if (browser.params.browser === 'firefox') {
           // Firefox can't handle using selects
           // See https://github.com/angular/protractor/issues/480
           return;
@@ -138,7 +138,7 @@
       });
 
       it('should change to blank', function() {
-        if (browser.params.browser == 'firefox') {
+        if (browser.params.browser === 'firefox') {
           // Firefox can't handle using selects
           return;
         }

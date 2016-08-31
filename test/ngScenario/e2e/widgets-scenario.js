@@ -32,18 +32,18 @@ describe('widgets', function() {
     expect(binding('button').fromJson()).toEqual({'count': 0});
     expect(binding('form').fromJson()).toEqual({'count': 0});
 
-    element('form a', "'action' link").click();
+    element('form a', '\'action\' link').click();
     expect(binding('button').fromJson()).toEqual({'count': 1});
 
-    element('input[value="submit input"]', "'submit input' button").click();
+    element('input[value="submit input"]', '\'submit input\' button').click();
     expect(binding('button').fromJson()).toEqual({'count': 2});
     expect(binding('form').fromJson()).toEqual({'count': 1});
 
-    element('button:contains("submit button")', "'submit button' button").click();
+    element('button:contains("submit button")', '\'submit button\' button').click();
     expect(binding('button').fromJson()).toEqual({'count': 2});
     expect(binding('form').fromJson()).toEqual({'count': 2});
 
-    element('input[value="button"]', "'button' button").click();
+    element('input[value="button"]', '\'button\' button').click();
     expect(binding('button').fromJson()).toEqual({'count': 3});
 
     element('input[type="image"]', 'form image').click();
@@ -53,6 +53,7 @@ describe('widgets', function() {
      * Custom value parser for futures.
      */
     function checkboxParser(value) {
+      // eslint-disable-next-line no-undef
       return angular.fromJson(value.substring(value.indexOf('=') + 1));
     }
 

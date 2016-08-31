@@ -53,7 +53,7 @@ minified AngularJS files:
 
 ```shell
 # Clone your Github repository:
-git clone "git@github.com:<github username>/angular.js.git"
+git clone https://github.com/<github username>/angular.js.git
 
 # Go to the AngularJS directory:
 cd angular.js
@@ -139,7 +139,7 @@ grunt test:unit
 To run the tests on other browsers (Chrome, ChromeCanary, Firefox, Opera and Safari are pre-configured) use:
 
 ```shell
-grunt test:unit --browsers Opera,Firefox
+grunt test:unit --browsers=Opera,Firefox
 ```
 
 Note there should be _no spaces between browsers_. `Opera, Firefox` is INVALID.

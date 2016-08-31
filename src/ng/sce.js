@@ -11,6 +11,8 @@
  *     Or gives undesired access to variables likes document or window?    *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+/* exported $SceProvider, $SceDelegateProvider */
+
 var $sceMinErr = minErr('$sce');
 
 var SCE_CONTEXTS = {
@@ -94,6 +96,8 @@ function adjustMatchers(matchers) {
 /**
  * @ngdoc provider
  * @name $sceDelegateProvider
+ * @this
+ *
  * @description
  *
  * The `$sceDelegateProvider` provider allows developers to configure the {@link ng.$sceDelegate
@@ -109,7 +113,7 @@ function adjustMatchers(matchers) {
  *
  * - your app is hosted at url `http://myapp.example.com/`
  * - but some of your templates are hosted on other domains you control such as
- *   `http://srv01.assets.example.com/`,  `http://srv02.assets.example.com/`, etc.
+ *   `http://srv01.assets.example.com/`, `http://srv02.assets.example.com/`, etc.
  * - and you have an open redirect at `http://myapp.example.com/clickThru?...`.
  *
  * Here is what a secure configuration for this scenario might look like:
@@ -406,6 +410,8 @@ function $SceDelegateProvider() {
 /**
  * @ngdoc provider
  * @name $sceProvider
+ * @this
+ *
  * @description
  *
  * The $sceProvider provider allows developers to configure the {@link ng.$sce $sce} service.
@@ -414,8 +420,6 @@ function $SceDelegateProvider() {
  *
  * Read more about {@link ng.$sce Strict Contextual Escaping (SCE)}.
  */
-
-/* jshint maxlen: false*/
 
 /**
  * @ngdoc service
@@ -546,7 +550,7 @@ function $SceDelegateProvider() {
  * | `$sce.HTML`         | For HTML that's safe to source into the application.  The {@link ng.directive:ngBindHtml ngBindHtml} directive uses this context for bindings. If an unsafe value is encountered and the {@link ngSanitize $sanitize} module is present this will sanitize the value instead of throwing an error. |
  * | `$sce.CSS`          | For CSS that's safe to source into the application.  Currently unused.  Feel free to use it in your own directives. |
  * | `$sce.URL`          | For URLs that are safe to follow as links or display as media. Is automatically converted from string by sanitizing when needed. |
- * | `$sce.RESOURCE_URL` | For URLs that are not only safe to follow as links, but whose contents are also safe to include in your application.  Examples include `ng-include`, `src` / `ngSrc` bindings for tags other than `IMG` (e.g. `IFRAME`, `OBJECT`, etc.)  <br><br>Note that `$sce.RESOURCE_URL` makes a stronger statement about the URL than `$sce.URL` does and therefore contexts requiring values trusted for `$sce.RESOURCE_URL` can be used anywhere that values trusted for `$sce.URL` are required. |
+ * | `$sce.RESOURCE_URL` | For URLs that are not only safe to follow as links, but whose contents are also safe to include in your application.  Examples include `ng-include`, `src` / `ngSrc` bindings for tags other than `IMG`, `VIDEO`, `AUDIO`, `SOURCE`, and `TRACK` (e.g. `IFRAME`, `OBJECT`, etc.)  <br><br>Note that `$sce.RESOURCE_URL` makes a stronger statement about the URL than `$sce.URL` does and therefore contexts requiring values trusted for `$sce.RESOURCE_URL` can be used anywhere that values trusted for `$sce.URL` are required. |
  * | `$sce.JS`           | For JavaScript that is safe to execute in your application's context.  Currently unused.  Feel free to use it in your own directives. |
  *
  * ## Format of items in {@link ng.$sceDelegateProvider#resourceUrlWhitelist resourceUrlWhitelist}/{@link ng.$sceDelegateProvider#resourceUrlBlacklist Blacklist} <a name="resourceUrlPatternItem"></a>
@@ -598,7 +602,7 @@ function $SceDelegateProvider() {
  *
  * ## Show me an example using SCE.
  *
- * <example module="mySceApp" deps="angular-sanitize.js">
+ * <example module="mySceApp" deps="angular-sanitize.js" name="sce-service">
  * <file name="index.html">
  *   <div ng-controller="AppController as myCtrl">
  *     <i ng-bind-html="myCtrl.explicitlyTrustedHtml" id="explicitlyTrustedHtml"></i><br><br>
@@ -619,9 +623,9 @@ function $SceDelegateProvider() {
  * <file name="script.js">
  *   angular.module('mySceApp', ['ngSanitize'])
  *     .controller('AppController', ['$http', '$templateCache', '$sce',
- *       function($http, $templateCache, $sce) {
+ *       function AppController($http, $templateCache, $sce) {
  *         var self = this;
- *         $http.get("test_data.json", {cache: $templateCache}).success(function(userComments) {
+ *         $http.get('test_data.json', {cache: $templateCache}).success(function(userComments) {
  *           self.userComments = userComments;
  *         });
  *         self.explicitlyTrustedHtml = $sce.trustAsHtml(
@@ -645,12 +649,12 @@ function $SceDelegateProvider() {
  * <file name="protractor.js" type="protractor">
  *   describe('SCE doc demo', function() {
  *     it('should sanitize untrusted values', function() {
- *       expect(element.all(by.css('.htmlComment')).first().getInnerHtml())
+ *       expect(element.all(by.css('.htmlComment')).first().getAttribute('innerHTML'))
  *           .toBe('<span>Is <i>anyone</i> reading this?</span>');
  *     });
  *
  *     it('should NOT sanitize explicitly trusted values', function() {
- *       expect(element(by.id('explicitlyTrustedHtml')).getInnerHtml()).toBe(
+ *       expect(element(by.id('explicitlyTrustedHtml')).getAttribute('innerHTML')).toBe(
  *           '<span onmouseover="this.textContent=&quot;Explicitly trusted HTML bypasses ' +
  *           'sanitization.&quot;">Hover over this text.</span>');
  *     });
@@ -679,7 +683,6 @@ function $SceDelegateProvider() {
  * ```
  *
  */
-/* jshint maxlen: 100 */
 
 function $SceProvider() {
   var enabled = true;
@@ -1064,13 +1067,13 @@ function $SceProvider() {
 
     forEach(SCE_CONTEXTS, function(enumValue, name) {
       var lName = lowercase(name);
-      sce[camelCase("parse_as_" + lName)] = function(expr) {
+      sce[camelCase('parse_as_' + lName)] = function(expr) {
         return parse(enumValue, expr);
       };
-      sce[camelCase("get_trusted_" + lName)] = function(value) {
+      sce[camelCase('get_trusted_' + lName)] = function(value) {
         return getTrusted(enumValue, value);
       };
-      sce[camelCase("trust_as_" + lName)] = function(value) {
+      sce[camelCase('trust_as_' + lName)] = function(value) {
         return trustAs(enumValue, value);
       };
     });

@@ -36,7 +36,7 @@ describe('boolean attr directives', function() {
     $rootScope.isChecked = false;
     $rootScope.$digest();
     expect(element.attr('checked')).toBeFalsy();
-    $rootScope.isChecked=true;
+    $rootScope.isChecked = true;
     $rootScope.$digest();
     expect(element.attr('checked')).toBeTruthy();
   }));
@@ -60,11 +60,11 @@ describe('boolean attr directives', function() {
 
   it('should bind selected', inject(function($rootScope, $compile) {
     element = $compile('<select><option value=""></option><option ng-selected="isSelected">Greetings!</option></select>')($rootScope);
-    jqLite(document.body).append(element);
-    $rootScope.isSelected=false;
+    jqLite(window.document.body).append(element);
+    $rootScope.isSelected = false;
     $rootScope.$digest();
     expect(element.children()[1].selected).toBeFalsy();
-    $rootScope.isSelected=true;
+    $rootScope.isSelected = true;
     $rootScope.$digest();
     expect(element.children()[1].selected).toBeTruthy();
   }));
@@ -72,10 +72,10 @@ describe('boolean attr directives', function() {
 
   it('should bind readonly', inject(function($rootScope, $compile) {
     element = $compile('<input type="text" ng-readonly="isReadonly" />')($rootScope);
-    $rootScope.isReadonly=false;
+    $rootScope.isReadonly = false;
     $rootScope.$digest();
     expect(element.attr('readOnly')).toBeFalsy();
-    $rootScope.isReadonly=true;
+    $rootScope.isReadonly = true;
     $rootScope.$digest();
     expect(element.attr('readOnly')).toBeTruthy();
   }));
@@ -83,10 +83,10 @@ describe('boolean attr directives', function() {
 
   it('should bind open', inject(function($rootScope, $compile) {
     element = $compile('<details ng-open="isOpen"></details>')($rootScope);
-    $rootScope.isOpen=false;
+    $rootScope.isOpen = false;
     $rootScope.$digest();
     expect(element.attr('open')).toBeFalsy();
-    $rootScope.isOpen=true;
+    $rootScope.isOpen = true;
     $rootScope.$digest();
     expect(element.attr('open')).toBeTruthy();
   }));
@@ -95,10 +95,10 @@ describe('boolean attr directives', function() {
   describe('multiple', function() {
     it('should NOT bind to multiple via ngMultiple', inject(function($rootScope, $compile) {
       element = $compile('<select ng-multiple="isMultiple"></select>')($rootScope);
-      $rootScope.isMultiple=false;
+      $rootScope.isMultiple = false;
       $rootScope.$digest();
       expect(element.attr('multiple')).toBeFalsy();
-      $rootScope.isMultiple='multiple';
+      $rootScope.isMultiple = 'multiple';
       $rootScope.$digest();
       expect(element.attr('multiple')).toBeFalsy(); // ignore
     }));
@@ -155,10 +155,13 @@ describe('ngSrc', function() {
       });
       dealoc(element);
     }).toThrowMinErr(
-          "$interpolate", "noconcat", "Error");
+          '$interpolate', 'noconcat', 'Error while interpolating: some/{{id}}\nStrict ' +
+          'Contextual Escaping disallows interpolations that concatenate multiple expressions ' +
+          'when a trusted value is required.  See http://docs.angularjs.org/api/ng.$sce');
+
   }));
 
-  it('should interpolate a multi-part expression for img src attribute (URL context)', inject(function($compile, $rootScope) {
+ it('should interpolate a multi-part expression for img src attribute (URL context)', inject(function($compile, $rootScope) {
     var element = $compile('<img ng-src="some/{{id}}"></img>')($rootScope);
     expect(element.attr('src')).toBe(undefined);  // URL concatenations are all-or-nothing
     $rootScope.$apply(function() {
@@ -187,7 +190,8 @@ describe('ngSrc', function() {
       });
       element.attr('src');
     }).toThrowMinErr(
-          "$interpolate", "interr", "Can't interpolate");
+            '$interpolate', 'interr', 'Can\'t interpolate: {{id}}\nError: [$sce:insecurl] Blocked ' +
+                'loading resource from url not allowed by $sceDelegate policy.  URL: http://somewhere');
   }));
 
 

@@ -94,7 +94,7 @@ describe('angular.scenario.SpecRunner', function() {
   it('should execute notify UI on spec setup error', function() {
     var finished;
     var spec = createSpec('test spec', function() {
-      throw 'message';
+      throw new Error('message');
     });
     runner.run(spec, function() {
       finished = true;
@@ -130,7 +130,7 @@ describe('angular.scenario.SpecRunner', function() {
     var finished;
     var spec = createSpec('test spec', function() {
       this.addFuture('test future', function(done) {
-        throw 'error message';
+        throw new Error('error message');
       });
     });
     runner.run(spec, function() {
@@ -150,7 +150,7 @@ describe('angular.scenario.SpecRunner', function() {
     var finished, after;
     var spec = createSpec('test spec', function() {
       this.addFuture('body', function(done) {
-        throw 'error message';
+        throw new Error('error message');
       });
     });
     spec.after = function() {

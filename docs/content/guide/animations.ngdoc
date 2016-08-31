@@ -23,28 +23,28 @@ Animations are not available unless you include the {@link ngAnimate `ngAnimate`
 
 Below is a quick example of animations being enabled for `ngShow` and `ngHide`:
 
-<example module="ngAnimate" deps="angular-animate.js" animations="true">
+<example module="ngAnimate" deps="angular-animate.js" animations="true" name="animate-ng-show">
   <file name="index.html">
-    <div ng-init="checked=true">
+    <div ng-init="checked = true">
       <label>
-        <input type="checkbox" ng-model="checked" style="float:left; margin-right:10px;"> Is Visible...
+        <input type="checkbox" ng-model="checked" />
+        Is visible
       </label>
-      <div class="check-element sample-show-hide" ng-show="checked" style="clear:both;">
-        Visible...
+      <div class="content-area sample-show-hide" ng-show="checked">
+        Content...
       </div>
     </div>
   </file>
   <file name="animations.css">
-    .sample-show-hide {
-      padding: 10px;
+    .content-area {
       border: 1px solid black;
-      background: white;
+      margin-top: 10px;
+      padding: 10px;
     }
 
     .sample-show-hide {
       transition: all linear 0.5s;
     }
-
     .sample-show-hide.ng-hide {
       opacity: 0;
     }
@@ -188,7 +188,7 @@ able to capture class changes if an **expression** or the **ng-class** directive
 
 The example below shows how to perform animations during class changes:
 
-<example module="ngAnimate" deps="angular-animate.js" animations="true">
+<example module="ngAnimate" deps="angular-animate.js" animations="true" name="animate-css-class">
  <file name="index.html">
   <p>
     <input type="button" value="set" ng-click="myCssVar='css-class'">
@@ -313,8 +313,8 @@ This function can be used to enable / disable animations in two different ways:
 With a single `boolean` argument, it enables / disables animations globally: `$animate.enabled(false)`
 disables all animations in your app.
 
-When the second argument is a native DOM or jQuery element, the function enables / disables
-animations on this element *and all its children*: `$animate.enabled(false, myElement)`. This is the
+When the first argument is a native DOM or jqLite/jQuery element, the function enables / disables
+animations on this element *and all its children*: `$animate.enabled(myElement, false)`. This is the
 most flexible way to change the animation state. For example, even if you have used it to disable
 animations on a parent element, you can still re-enable it for a child element. And compared to the
 `classNameFilter`, you can change the animation status at runtime instead of during the config phase.
@@ -346,6 +346,7 @@ my-class.ng-animate {
 By setting `transition: 0s`, ngAnimate will ignore the existing transition styles, and not try to animate them (Javascript
 animations will still execute, though). This can be used to prevent {@link guide/animations#preventing-collisions-with-existing-animations-and-third-party-libraries
 issues with existing animations interfering with ngAnimate}.
+
 
 ## Preventing flicker before an animation starts
 
@@ -419,8 +420,25 @@ than any styles that are independent from ngAnimate.
 
 You can also use one of the two other {@link guide/animations#how-to-selectively-enable-disable-and-skip-animations strategies to disable animations}.
 
+
+### Enable animations for elements outside of the Angular application DOM tree: {@link ng.$animate#pin $animate.pin()}
+
+Before animating, `ngAnimate` checks to see if the element being animated is inside the application DOM tree,
+and if it is not, no animation is run. Usually, this is not a problem as most apps use the `ngApp`
+attribute / bootstrap the app on the `html` or `body` element.
+
+Problems arise when the application is bootstrapped on a different element, and animations are
+attempted on elements that are outside the application tree, e.g. when libraries append popup and modal
+elements as the last child in the body tag.
+
+You can use {@link ng.$animate#pin `$animate.pin(elementToAnimate, parentHost)`} to specify that an
+element belongs to your application. Simply call it before the element is added to the DOM / before
+the animation starts, with the element you want to animate, and the element which should be its
+assumed parent.
+
+
 ## More about animations
 
 For a full breakdown of each method available on `$animate`, see the {@link ng.$animate API documentation}.
 
-To see a complete demo, see the {@link tutorial/step_12 animation step within the AngularJS phonecat tutorial}.
+To see a complete demo, see the {@link tutorial/step_14 animation step within the AngularJS phonecat tutorial}.

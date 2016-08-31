@@ -1,99 +1,100 @@
 'use strict';
 
-/* We need to tell jshint what variables are being exported */
-/* global angular: true,
-  msie: true,
-  jqLite: true,
-  jQuery: true,
-  slice: true,
-  splice: true,
-  push: true,
-  toString: true,
-  ngMinErr: true,
-  angularModule: true,
-  uid: true,
-  REGEX_STRING_REGEXP: true,
-  VALIDITY_STATE_PROPERTY: true,
+/* We need to tell ESLint what variables are being exported */
+/* exported
+  angular,
+  msie,
+  jqLite,
+  jQuery,
+  slice,
+  splice,
+  push,
+  toString,
+  ngMinErr,
+  angularModule,
+  uid,
+  REGEX_STRING_REGEXP,
+  VALIDITY_STATE_PROPERTY,
 
-  lowercase: true,
-  uppercase: true,
-  manualLowercase: true,
-  manualUppercase: true,
-  nodeName_: true,
-  isArrayLike: true,
-  forEach: true,
-  forEachSorted: true,
-  reverseParams: true,
-  nextUid: true,
-  setHashKey: true,
-  extend: true,
-  toInt: true,
-  inherit: true,
-  merge: true,
-  noop: true,
-  identity: true,
-  valueFn: true,
-  isUndefined: true,
-  isDefined: true,
-  isObject: true,
-  isBlankObject: true,
-  isString: true,
-  isNumber: true,
-  isDate: true,
-  isArray: true,
-  isFunction: true,
-  isRegExp: true,
-  isWindow: true,
-  isScope: true,
-  isFile: true,
-  isFormData: true,
-  isBlob: true,
-  isBoolean: true,
-  isPromiseLike: true,
-  trim: true,
-  escapeForRegexp: true,
-  isElement: true,
-  makeMap: true,
-  includes: true,
-  arrayRemove: true,
-  copy: true,
-  shallowCopy: true,
-  equals: true,
-  csp: true,
-  jq: true,
-  concat: true,
-  sliceArgs: true,
-  bind: true,
-  toJsonReplacer: true,
-  toJson: true,
-  fromJson: true,
-  convertTimezoneToLocal: true,
-  timezoneToOffset: true,
-  startingTag: true,
-  tryDecodeURIComponent: true,
-  parseKeyValue: true,
-  toKeyValue: true,
-  encodeUriSegment: true,
-  encodeUriQuery: true,
-  angularInit: true,
-  bootstrap: true,
-  getTestability: true,
-  snake_case: true,
-  bindJQuery: true,
-  assertArg: true,
-  assertArgFn: true,
-  assertNotHasOwnProperty: true,
-  getter: true,
-  getBlockNodes: true,
-  hasOwnProperty: true,
-  createMap: true,
+  lowercase,
+  uppercase,
+  manualLowercase,
+  manualUppercase,
+  nodeName_,
+  isArrayLike,
+  forEach,
+  forEachSorted,
+  reverseParams,
+  nextUid,
+  setHashKey,
+  extend,
+  toInt,
+  inherit,
+  merge,
+  noop,
+  identity,
+  valueFn,
+  isUndefined,
+  isDefined,
+  isObject,
+  isBlankObject,
+  isString,
+  isNumber,
+  isDate,
+  isArray,
+  isFunction,
+  isRegExp,
+  isWindow,
+  isScope,
+  isFile,
+  isFormData,
+  isBlob,
+  isBoolean,
+  isPromiseLike,
+  trim,
+  escapeForRegexp,
+  isElement,
+  makeMap,
+  includes,
+  arrayRemove,
+  copy,
+  equals,
+  csp,
+  jq,
+  concat,
+  sliceArgs,
+  bind,
+  toJsonReplacer,
+  toJson,
+  fromJson,
+  convertTimezoneToLocal,
+  timezoneToOffset,
+  startingTag,
+  tryDecodeURIComponent,
+  parseKeyValue,
+  toKeyValue,
+  encodeUriSegment,
+  encodeUriQuery,
+  angularInit,
+  bootstrap,
+  getTestability,
+  snake_case,
+  bindJQuery,
+  assertArg,
+  assertArgFn,
+  assertNotHasOwnProperty,
+  getter,
+  getBlockNodes,
+  hasOwnProperty,
+  createMap,
+  stringify,
 
-  NODE_TYPE_ELEMENT: true,
-  NODE_TYPE_ATTRIBUTE: true,
-  NODE_TYPE_TEXT: true,
-  NODE_TYPE_COMMENT: true,
-  NODE_TYPE_DOCUMENT: true,
-  NODE_TYPE_DOCUMENT_FRAGMENT: true,
+  NODE_TYPE_ELEMENT,
+  NODE_TYPE_ATTRIBUTE,
+  NODE_TYPE_TEXT,
+  NODE_TYPE_COMMENT,
+  NODE_TYPE_DOCUMENT,
+  NODE_TYPE_DOCUMENT_FRAGMENT
 */
 
 ////////////////////////////////////
@@ -127,16 +128,18 @@ var uppercase = function(string) {return isString(string) ? string.toUpperCase()
 
 
 var manualLowercase = function(s) {
-  /* jshint bitwise: false */
+  /* eslint-disable no-bitwise */
   return isString(s)
       ? s.replace(/[A-Z]/g, function(ch) {return String.fromCharCode(ch.charCodeAt(0) | 32);})
       : s;
+  /* eslint-enable */
 };
 var manualUppercase = function(s) {
-  /* jshint bitwise: false */
+  /* eslint-disable no-bitwise */
   return isString(s)
       ? s.replace(/[a-z]/g, function(ch) {return String.fromCharCode(ch.charCodeAt(0) & ~32);})
       : s;
+  /* eslint-enable */
 };
 
 
@@ -191,7 +194,7 @@ function isArrayLike(obj) {
 
   // Support: iOS 8.2 (not reproducible in simulator)
   // "length" in obj used to prevent JIT error (gh-11508)
-  var length = "length" in Object(obj) && obj.length;
+  var length = 'length' in Object(obj) && obj.length;
 
   // NodeList objects (with `item` method) and
   // other objects with suitable length characteristics are array-like
@@ -686,8 +689,10 @@ var trim = function(value) {
 // http://docs.closure-library.googlecode.com/git/local_closure_goog_string_string.js.source.html#line1021
 // Prereq: s is a string.
 var escapeForRegexp = function(s) {
-  return s.replace(/([-()\[\]{}+?*.$\^|,:#<!\\])/g, '\\$1').
-           replace(/\x08/g, '\\x08');
+  return s
+    .replace(/([-()\[\]{}+?*.$\^|,:#<!\\])/g, '\\$1')
+    // eslint-disable-next-line no-control-regex
+    .replace(/\x08/g, '\\x08');
 };
 
 
@@ -751,7 +756,13 @@ function arrayRemove(array, value) {
  * * If a destination is provided, all of its elements (for arrays) or properties (for objects)
  *   are deleted and then all elements/properties from the source are copied to it.
  * * If `source` is not an object or array (inc. `null` and `undefined`), `source` is returned.
- * * If `source` is identical to 'destination' an exception will be thrown.
+ * * If `source` is identical to `destination` an exception will be thrown.
+ *
+ * <br />
+ * <div class="alert alert-warning">
+ *   Only enumerable properties are taken into account. Non-enumerable properties (both on `source`
+ *   and on `destination`) will be ignored.
+ * </div>
  *
  * @param {*} source The source that will be used to make a copy.
  *                   Can be any type, including primitives, `null`, and `undefined`.
@@ -760,41 +771,42 @@ function arrayRemove(array, value) {
  * @returns {*} The copy or updated `destination`, if `destination` was specified.
  *
  * @example
- <example module="copyExample">
- <file name="index.html">
- <div ng-controller="ExampleController">
- <form novalidate class="simple-form">
- Name: <input type="text" ng-model="user.name" /><br />
- E-mail: <input type="email" ng-model="user.email" /><br />
- Gender: <input type="radio" ng-model="user.gender" value="male" />male
- <input type="radio" ng-model="user.gender" value="female" />female<br />
- <button ng-click="reset()">RESET</button>
- <button ng-click="update(user)">SAVE</button>
- </form>
- <pre>form = {{user | json}}</pre>
- <pre>master = {{master | json}}</pre>
- </div>
+  <example module="copyExample" name="angular-copy">
+    <file name="index.html">
+      <div ng-controller="ExampleController">
+        <form novalidate class="simple-form">
+          <label>Name: <input type="text" ng-model="user.name" /></label><br />
+          <label>Age:  <input type="number" ng-model="user.age" /></label><br />
+          Gender: <label><input type="radio" ng-model="user.gender" value="male" />male</label>
+                  <label><input type="radio" ng-model="user.gender" value="female" />female</label><br />
+          <button ng-click="reset()">RESET</button>
+          <button ng-click="update(user)">SAVE</button>
+        </form>
+        <pre>form = {{user | json}}</pre>
+        <pre>master = {{master | json}}</pre>
+      </div>
+    </file>
+    <file name="script.js">
+      // Module: copyExample
+      angular.
+        module('copyExample', []).
+        controller('ExampleController', ['$scope', function($scope) {
+          $scope.master = {};
 
- <script>
-  angular.module('copyExample', [])
-    .controller('ExampleController', ['$scope', function($scope) {
-      $scope.master= {};
+          $scope.reset = function() {
+            // Example with 1 argument
+            $scope.user = angular.copy($scope.master);
+          };
 
-      $scope.update = function(user) {
-        // Example with 1 argument
-        $scope.master= angular.copy(user);
-      };
+          $scope.update = function(user) {
+            // Example with 2 arguments
+            angular.copy(user, $scope.master);
+          };
 
-      $scope.reset = function() {
-        // Example with 2 arguments
-        angular.copy($scope.master, $scope.user);
-      };
-
-      $scope.reset();
-    }]);
- </script>
- </file>
- </example>
+          $scope.reset();
+        }]);
+    </file>
+  </example>
  */
 function copy(source, destination) {
   var stackSource = [];
@@ -802,10 +814,10 @@ function copy(source, destination) {
 
   if (destination) {
     if (isTypedArray(destination) || isArrayBuffer(destination)) {
-      throw ngMinErr('cpta', "Can't copy! TypedArray destination cannot be mutated.");
+      throw ngMinErr('cpta', 'Can\'t copy! TypedArray destination cannot be mutated.');
     }
     if (source === destination) {
-      throw ngMinErr('cpi', "Can't copy! Source and destination are identical.");
+      throw ngMinErr('cpi', 'Can\'t copy! Source and destination are identical.');
     }
 
     // Empty the destination object
@@ -871,7 +883,7 @@ function copy(source, destination) {
 
     if (isWindow(source) || isScope(source)) {
       throw ngMinErr('cpws',
-        "Can't copy! Making copies of Window or Scope instances is not supported.");
+        'Can\'t copy! Making copies of Window or Scope instances is not supported.');
     }
 
     var needsRecurse = false;
@@ -901,13 +913,16 @@ function copy(source, destination) {
       case '[object Uint8ClampedArray]':
       case '[object Uint16Array]':
       case '[object Uint32Array]':
-        return new source.constructor(copyElement(source.buffer));
+        return new source.constructor(copyElement(source.buffer), source.byteOffset, source.length);
 
       case '[object ArrayBuffer]':
-        //Support: IE10
+        // Support: IE10
         if (!source.slice) {
+          // If we're in this case we know the environment supports ArrayBuffer
+          /* eslint-disable no-undef */
           var copied = new ArrayBuffer(source.byteLength);
           new Uint8Array(copied).set(new Uint8Array(source));
+          /* eslint-enable */
           return copied;
         }
         return source.slice(0);
@@ -931,31 +946,6 @@ function copy(source, destination) {
       return source.cloneNode(true);
     }
   }
-}
-
-/**
- * Creates a shallow copy of an object, an array or a primitive.
- *
- * Assumes that there are no proto properties for objects.
- */
-function shallowCopy(src, dst) {
-  if (isArray(src)) {
-    dst = dst || [];
-
-    for (var i = 0, ii = src.length; i < ii; i++) {
-      dst[i] = src[i];
-    }
-  } else if (isObject(src)) {
-    dst = dst || {};
-
-    for (var key in src) {
-      if (!(key.charAt(0) === '$' && key.charAt(1) === '$')) {
-        dst[key] = src[key];
-      }
-    }
-  }
-
-  return dst || src;
 }
 
 
@@ -1015,7 +1005,6 @@ function shallowCopy(src, dst) {
         angular.module('equalsExample', []).controller('ExampleController', ['$scope', function($scope) {
           $scope.user1 = {};
           $scope.user2 = {};
-          $scope.result;
           $scope.compare = function() {
             $scope.result = angular.equals($scope.user1, $scope.user2);
           };
@@ -1026,6 +1015,7 @@ function shallowCopy(src, dst) {
 function equals(o1, o2) {
   if (o1 === o2) return true;
   if (o1 === null || o2 === null) return false;
+  // eslint-disable-next-line no-self-compare
   if (o1 !== o1 && o2 !== o2) return true; // NaN === NaN
   var t1 = typeof o1, t2 = typeof o2, length, key, keySet;
   if (t1 === t2 && t1 === 'object') {
@@ -1090,9 +1080,8 @@ var csp = function() {
 
   function noUnsafeEval() {
     try {
-      /* jshint -W031, -W054 */
+      // eslint-disable-next-line no-new, no-new-func
       new Function('');
-      /* jshint +W031, +W054 */
       return false;
     } catch (e) {
       return true;
@@ -1144,7 +1133,8 @@ var jq = function() {
   var i, ii = ngAttrPrefixes.length, prefix, name;
   for (i = 0; i < ii; ++i) {
     prefix = ngAttrPrefixes[i];
-    if (el = window.document.querySelector('[' + prefix.replace(':', '\\:') + 'jq]')) {
+    el = window.document.querySelector('[' + prefix.replace(':', '\\:') + 'jq]');
+    if (el) {
       name = el.getAttribute(prefix + 'jq');
       break;
     }
@@ -1162,7 +1152,6 @@ function sliceArgs(args, startIndex) {
 }
 
 
-/* jshint -W101 */
 /**
  * @ngdoc function
  * @name angular.bind
@@ -1180,7 +1169,6 @@ function sliceArgs(args, startIndex) {
  * @param {...*} args Optional arguments to be prebound to the `fn` function call.
  * @returns {function()} Function that wraps the `fn` with all the specified bindings.
  */
-/* jshint +W101 */
 function bind(self, fn) {
   var curryArgs = arguments.length > 2 ? sliceArgs(arguments, 2) : [];
   if (isFunction(fn) && !(fn instanceof RegExp)) {
@@ -1316,7 +1304,7 @@ function startingTag(element) {
     // turns out IE does not let you set .html() on elements which
     // are not allowed to have children. So we just ignore it.
     element.empty();
-  } catch (e) {}
+  } catch (e) { /* empty */ }
   var elemHtml = jqLite('<div>').append(element).html();
   try {
     return element[0].nodeType === NODE_TYPE_TEXT ? lowercase(elemHtml) :
@@ -1355,7 +1343,7 @@ function tryDecodeURIComponent(value) {
  */
 function parseKeyValue(/**string*/keyValue) {
   var obj = {};
-  forEach((keyValue || "").split('&'), function(keyValue) {
+  forEach((keyValue || '').split('&'), function(keyValue) {
     var splitPoint, key, val;
     if (keyValue) {
       key = keyValue = keyValue.replace(/\+/g,'%20');
@@ -1420,7 +1408,7 @@ function encodeUriSegment(val) {
  * This method is intended for encoding *key* or *value* parts of query component. We need a custom
  * method because encodeURIComponent is too aggressive and encodes stuff that doesn't have to be
  * encoded per http://tools.ietf.org/html/rfc3986:
- *    query       = *( pchar / "/" / "?" )
+ *    query         = *( pchar / "/" / "?" )
  *    pchar         = unreserved / pct-encoded / sub-delims / ":" / "@"
  *    unreserved    = ALPHA / DIGIT / "-" / "." / "_" / "~"
  *    pct-encoded   = "%" HEXDIG HEXDIG
@@ -1493,7 +1481,7 @@ function getNgAttribute(element, ngAttr) {
  *
  * `ngApp` is the easiest, and most common way to bootstrap an application.
  *
- <example module="ngAppDemo">
+ <example module="ngAppDemo" name="ng-app">
    <file name="index.html">
    <div ng-controller="ngAppDemoController">
      I can add: {{a}} + {{b}} =  {{ a+b }}
@@ -1509,7 +1497,7 @@ function getNgAttribute(element, ngAttr) {
  *
  * Using `ngStrictDi`, you would see something like this:
  *
- <example ng-app-included="true">
+ <example ng-app-included="true" name="strict-di">
    <file name="index.html">
    <div ng-app="ngAppStrictDemo" ng-strict-di>
        <div ng-controller="GoodController1">
@@ -1558,7 +1546,7 @@ function getNgAttribute(element, ngAttr) {
      }])
      .controller('GoodController2', GoodController2);
      function GoodController2($scope) {
-       $scope.name = "World";
+       $scope.name = 'World';
      }
      GoodController2.$inject = ['$scope'];
    </file>
@@ -1608,7 +1596,7 @@ function angularInit(element, bootstrap) {
     }
   });
   if (appElement) {
-    config.strictDi = getNgAttribute(appElement, "strict-di") !== null;
+    config.strictDi = getNgAttribute(appElement, 'strict-di') !== null;
     bootstrap(appElement, module ? [module] : [], config);
   }
 }
@@ -1686,7 +1674,7 @@ function bootstrap(element, modules, config) {
       // Encode angle brackets to prevent input from being sanitized to empty string #8683.
       throw ngMinErr(
           'btstrpd',
-          "App already bootstrapped with this element '{0}'",
+          'App already bootstrapped with this element \'{0}\'',
           tag.replace(/</,'&lt;').replace(/>/,'&gt;'));
     }
 
@@ -1815,7 +1803,7 @@ function bindJQuery() {
     jQuery.cleanData = function(elems) {
       var events;
       for (var i = 0, elem; (elem = elems[i]) != null; i++) {
-        events = jQuery._data(elem, "events");
+        events = jQuery._data(elem, 'events');
         if (events && events.$destroy) {
           jQuery(elem).triggerHandler('$destroy');
         }
@@ -1837,7 +1825,7 @@ function bindJQuery() {
  */
 function assertArg(arg, name, reason) {
   if (!arg) {
-    throw ngMinErr('areq', "Argument '{0}' is {1}", (name || '?'), (reason || "required"));
+    throw ngMinErr('areq', 'Argument \'{0}\' is {1}', (name || '?'), (reason || 'required'));
   }
   return arg;
 }
@@ -1859,7 +1847,7 @@ function assertArgFn(arg, name, acceptArrayAnnotation) {
  */
 function assertNotHasOwnProperty(name, context) {
   if (name === 'hasOwnProperty') {
-    throw ngMinErr('badname', "hasOwnProperty is not a valid {0} name", context);
+    throw ngMinErr('badname', 'hasOwnProperty is not a valid {0} name', context);
   }
 }
 
@@ -1927,6 +1915,27 @@ function getBlockNodes(nodes) {
  */
 function createMap() {
   return Object.create(null);
+}
+
+function stringify(value) {
+  if (value == null) { // null || undefined
+    return '';
+  }
+  switch (typeof value) {
+    case 'string':
+      break;
+    case 'number':
+      value = '' + value;
+      break;
+    default:
+      if (hasCustomToString(value) && !isArray(value) && !isDate(value)) {
+        value = value.toString();
+      } else {
+        value = toJson(value);
+      }
+  }
+
+  return value;
 }
 
 var NODE_TYPE_ELEMENT = 1;

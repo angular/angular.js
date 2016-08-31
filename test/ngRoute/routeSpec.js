@@ -1,5 +1,58 @@
 'use strict';
 
+describe('$routeProvider', function() {
+  var $routeProvider;
+
+  beforeEach(module('ngRoute'));
+  beforeEach(module(function(_$routeProvider_) {
+    $routeProvider = _$routeProvider_;
+    $routeProvider.when('/foo', {template: 'Hello, world!'});
+  }));
+
+
+  it('should support enabling/disabling automatic instantiation upon initial load',
+    inject(function() {
+      expect($routeProvider.eagerInstantiationEnabled(true)).toBe($routeProvider);
+      expect($routeProvider.eagerInstantiationEnabled()).toBe(true);
+
+      expect($routeProvider.eagerInstantiationEnabled(false)).toBe($routeProvider);
+      expect($routeProvider.eagerInstantiationEnabled()).toBe(false);
+
+      expect($routeProvider.eagerInstantiationEnabled(true)).toBe($routeProvider);
+      expect($routeProvider.eagerInstantiationEnabled()).toBe(true);
+    })
+  );
+
+
+  it('should automatically instantiate `$route` upon initial load', function() {
+    inject(function($location, $rootScope) {
+      $location.path('/foo');
+      $rootScope.$digest();
+    });
+
+    inject(function($route) {
+      expect($route.current).toBeDefined();
+    });
+  });
+
+
+  it('should not automatically instantiate `$route` if disabled', function() {
+    module(function($routeProvider) {
+      $routeProvider.eagerInstantiationEnabled(false);
+    });
+
+    inject(function($location, $rootScope) {
+      $location.path('/foo');
+      $rootScope.$digest();
+    });
+
+    inject(function($route) {
+      expect($route.current).toBeUndefined();
+    });
+  });
+});
+
+
 describe('$route', function() {
   var $httpBackend,
       element;
@@ -350,7 +403,7 @@ describe('$route', function() {
       expect($route.current).toBeDefined();
     }));
 
-    it("should use route params inherited from prototype chain", function() {
+    it('should use route params inherited from prototype chain', function() {
       function BaseRoute() {}
       BaseRoute.prototype.templateUrl = 'foo.html';
 
@@ -829,7 +882,7 @@ describe('$route', function() {
         $rootScope.$digest();
 
         $httpBackend.flush();
-        expect($exceptionHandler.errors.pop().message).toContain("[$compile:tpload] Failed to load template: r1.html");
+        expect($exceptionHandler.errors.pop().message).toContain('[$compile:tpload] Failed to load template: r1.html');
 
         $httpBackend.expectGET('r2.html').respond('');
         $location.path('/r2');
@@ -900,224 +953,714 @@ describe('$route', function() {
   });
 
 
-  describe('redirection', function() {
-    it('should support redirection via redirectTo property by updating $location', function() {
+  it('should not get affected by modifying the route definition object after route registration',
+    function() {
       module(function($routeProvider) {
-        $routeProvider.when('/', {redirectTo: '/foo'});
-        $routeProvider.when('/foo', {templateUrl: 'foo.html'});
-        $routeProvider.when('/bar', {templateUrl: 'bar.html'});
-        $routeProvider.when('/baz', {redirectTo: '/bar'});
-        $routeProvider.otherwise({templateUrl: '404.html'});
+        var rdo = {};
+
+        rdo.templateUrl = 'foo.html';
+        $routeProvider.when('/foo', rdo);
+
+        rdo.templateUrl = 'bar.html';
+        $routeProvider.when('/bar', rdo);
       });
 
-      inject(function($route, $location, $rootScope) {
-        var onChangeSpy = jasmine.createSpy('onChange');
-
-        $rootScope.$on('$routeChangeStart', onChangeSpy);
-        expect($route.current).toBeUndefined();
-        expect(onChangeSpy).not.toHaveBeenCalled();
-
-        $location.path('/');
-        $rootScope.$digest();
-        expect($location.path()).toBe('/foo');
-        expect($route.current.templateUrl).toBe('foo.html');
-        expect(onChangeSpy).toHaveBeenCalledTimes(2);
-
-        onChangeSpy.calls.reset();
-        $location.path('/baz');
+      inject(function($location, $rootScope, $route) {
+        $location.path('/bar');
         $rootScope.$digest();
         expect($location.path()).toBe('/bar');
         expect($route.current.templateUrl).toBe('bar.html');
-        expect(onChangeSpy).toHaveBeenCalledTimes(2);
+
+        $location.path('/foo');
+        $rootScope.$digest();
+        expect($location.path()).toBe('/foo');
+        expect($route.current.templateUrl).toBe('foo.html');
+      });
+    }
+  );
+
+
+  it('should use the property values of the passed in route definition object directly',
+    function() {
+      var $routeProvider;
+
+      module(function(_$routeProvider_) {
+        $routeProvider = _$routeProvider_;
+      });
+
+      inject(function($location, $rootScope, $route, $sce) {
+        var sceWrappedUrl = $sce.trustAsResourceUrl('foo.html');
+        $routeProvider.when('/foo', {templateUrl: sceWrappedUrl});
+
+        $location.path('/foo');
+        $rootScope.$digest();
+        expect($location.path()).toBe('/foo');
+        expect($route.current.templateUrl).toBe(sceWrappedUrl);
+      });
+    }
+  );
+
+
+  it('should support custom `$sce` implementations', function() {
+    function MySafeResourceUrl(val) {
+      var self = this;
+      this._val = val;
+      this.getVal = function() {
+        return (this !== self) ? null : this._val;
+      };
+    }
+
+    var $routeProvider;
+
+    module(function($provide, _$routeProvider_) {
+      $routeProvider = _$routeProvider_;
+
+      $provide.decorator('$sce', function($delegate) {
+        $delegate.trustAsResourceUrl = function(url) { return new MySafeResourceUrl(url); };
+        $delegate.getTrustedResourceUrl = function(v) { return v.getVal(); };
+        $delegate.valueOf = function(v) { return v.getVal(); };
+        return $delegate;
       });
     });
 
+    inject(function($location, $rootScope, $route, $sce) {
+      $routeProvider.when('/foo', {templateUrl: $sce.trustAsResourceUrl('foo.html')});
 
-    it('should interpolate route vars in the redirected path from original path', function() {
-      module(function($routeProvider) {
-        $routeProvider.when('/foo/:id/foo/:subid/:extraId', {redirectTo: '/bar/:id/:subid/23'});
-        $routeProvider.when('/bar/:id/:subid/:subsubid', {templateUrl: 'bar.html'});
-        $routeProvider.when('/baz/:id/:path*', {redirectTo: '/path/:path/:id'});
-        $routeProvider.when('/path/:path*/:id', {templateUrl: 'foo.html'});
+      $location.path('/foo');
+      $rootScope.$digest();
+      expect($location.path()).toBe('/foo');
+      expect($sce.valueOf($route.current.templateUrl)).toBe('foo.html');
+    });
+  });
+
+
+  describe('redirection', function() {
+    describe('via `redirectTo`', function() {
+      it('should support redirection via redirectTo property by updating $location', function() {
+        module(function($routeProvider) {
+          $routeProvider.when('/', {redirectTo: '/foo'});
+          $routeProvider.when('/foo', {templateUrl: 'foo.html'});
+          $routeProvider.when('/bar', {templateUrl: 'bar.html'});
+          $routeProvider.when('/baz', {redirectTo: '/bar'});
+          $routeProvider.otherwise({templateUrl: '404.html'});
+        });
+
+        inject(function($route, $location, $rootScope) {
+          var onChangeSpy = jasmine.createSpy('onChange');
+
+          $rootScope.$on('$routeChangeStart', onChangeSpy);
+          expect($route.current).toBeUndefined();
+          expect(onChangeSpy).not.toHaveBeenCalled();
+
+          $location.path('/');
+          $rootScope.$digest();
+          expect($location.path()).toBe('/foo');
+          expect($route.current.templateUrl).toBe('foo.html');
+          expect(onChangeSpy).toHaveBeenCalledTimes(2);
+
+          onChangeSpy.calls.reset();
+          $location.path('/baz');
+          $rootScope.$digest();
+          expect($location.path()).toBe('/bar');
+          expect($route.current.templateUrl).toBe('bar.html');
+          expect(onChangeSpy).toHaveBeenCalledTimes(2);
+        });
       });
 
-      inject(function($route, $location, $rootScope) {
-        $location.path('/foo/id1/foo/subid3/gah');
-        $rootScope.$digest();
 
-        expect($location.path()).toEqual('/bar/id1/subid3/23');
-        expect($location.search()).toEqual({extraId: 'gah'});
-        expect($route.current.templateUrl).toEqual('bar.html');
+      it('should interpolate route vars in the redirected path from original path', function() {
+        module(function($routeProvider) {
+          $routeProvider.when('/foo/:id/foo/:subid/:extraId', {redirectTo: '/bar/:id/:subid/23'});
+          $routeProvider.when('/bar/:id/:subid/:subsubid', {templateUrl: 'bar.html'});
+          $routeProvider.when('/baz/:id/:path*', {redirectTo: '/path/:path/:id'});
+          $routeProvider.when('/path/:path*/:id', {templateUrl: 'foo.html'});
+        });
 
-        $location.path('/baz/1/foovalue/barvalue');
-        $rootScope.$digest();
-        expect($location.path()).toEqual('/path/foovalue/barvalue/1');
-        expect($route.current.templateUrl).toEqual('foo.html');
+        inject(function($route, $location, $rootScope) {
+          $location.path('/foo/id1/foo/subid3/gah');
+          $rootScope.$digest();
+
+          expect($location.path()).toEqual('/bar/id1/subid3/23');
+          expect($location.search()).toEqual({extraId: 'gah'});
+          expect($route.current.templateUrl).toEqual('bar.html');
+
+          $location.path('/baz/1/foovalue/barvalue');
+          $rootScope.$digest();
+          expect($location.path()).toEqual('/path/foovalue/barvalue/1');
+          expect($route.current.templateUrl).toEqual('foo.html');
+        });
+      });
+
+
+      it('should interpolate route vars in the redirected path from original search', function() {
+        module(function($routeProvider) {
+          $routeProvider.when('/bar/:id/:subid/:subsubid', {templateUrl: 'bar.html'});
+          $routeProvider.when('/foo/:id/:extra', {redirectTo: '/bar/:id/:subid/99'});
+        });
+
+        inject(function($route, $location, $rootScope) {
+          $location.path('/foo/id3/eId').search('subid=sid1&appended=true');
+          $rootScope.$digest();
+
+          expect($location.path()).toEqual('/bar/id3/sid1/99');
+          expect($location.search()).toEqual({appended: 'true', extra: 'eId'});
+          expect($route.current.templateUrl).toEqual('bar.html');
+        });
+      });
+
+
+      it('should properly process route params which are both eager and optional', function() {
+        module(function($routeProvider) {
+          $routeProvider.when('/foo/:param1*?/:param2', {templateUrl: 'foo.html'});
+        });
+
+        inject(function($location, $rootScope, $route) {
+          $location.path('/foo/bar1/bar2/bar3/baz');
+          $rootScope.$digest();
+
+          expect($location.path()).toEqual('/foo/bar1/bar2/bar3/baz');
+          expect($route.current.params.param1).toEqual('bar1/bar2/bar3');
+          expect($route.current.params.param2).toEqual('baz');
+          expect($route.current.templateUrl).toEqual('foo.html');
+
+          $location.path('/foo/baz');
+          $rootScope.$digest();
+
+          expect($location.path()).toEqual('/foo/baz');
+          expect($route.current.params.param1).toEqual(undefined);
+          expect($route.current.params.param2).toEqual('baz');
+          expect($route.current.templateUrl).toEqual('foo.html');
+
+        });
+      });
+
+
+      it('should properly interpolate optional and eager route vars ' +
+         'when redirecting from path with trailing slash', function() {
+        module(function($routeProvider) {
+          $routeProvider.when('/foo/:id?/:subid?', {templateUrl: 'foo.html'});
+          $routeProvider.when('/bar/:id*/:subid', {templateUrl: 'bar.html'});
+        });
+
+        inject(function($location, $rootScope, $route) {
+          $location.path('/foo/id1/subid2/');
+          $rootScope.$digest();
+
+          expect($location.path()).toEqual('/foo/id1/subid2');
+          expect($route.current.templateUrl).toEqual('foo.html');
+
+          $location.path('/bar/id1/extra/subid2/');
+          $rootScope.$digest();
+
+          expect($location.path()).toEqual('/bar/id1/extra/subid2');
+          expect($route.current.templateUrl).toEqual('bar.html');
+        });
+      });
+
+
+      it('should allow custom redirectTo function to be used', function() {
+        function customRedirectFn(routePathParams, path, search) {
+          expect(routePathParams).toEqual({id: 'id3'});
+          expect(path).toEqual('/foo/id3');
+          expect(search).toEqual({subid: 'sid1', appended: 'true'});
+          return '/custom';
+        }
+
+        module(function($routeProvider) {
+          $routeProvider.when('/foo/:id', {redirectTo: customRedirectFn});
+        });
+
+        inject(function($route, $location, $rootScope) {
+          $location.path('/foo/id3').search('subid=sid1&appended=true');
+          $rootScope.$digest();
+
+          expect($location.path()).toEqual('/custom');
+        });
+      });
+
+
+      it('should broadcast `$routeChangeError` when redirectTo throws', function() {
+        var error = new Error('Test');
+
+        module(function($exceptionHandlerProvider, $routeProvider) {
+          $exceptionHandlerProvider.mode('log');
+          $routeProvider.when('/foo', {redirectTo: function() { throw error; }});
+        });
+
+        inject(function($exceptionHandler, $location, $rootScope, $route) {
+          spyOn($rootScope, '$broadcast').and.callThrough();
+
+          $location.path('/foo');
+          $rootScope.$digest();
+
+          var lastCallArgs = $rootScope.$broadcast.calls.mostRecent().args;
+          expect(lastCallArgs[0]).toBe('$routeChangeError');
+          expect(lastCallArgs[3]).toBe(error);
+          expect($exceptionHandler.errors[0]).toBe(error);
+        });
+      });
+
+
+      it('should replace the url when redirecting',  function() {
+        module(function($routeProvider) {
+          $routeProvider.when('/bar/:id', {templateUrl: 'bar.html'});
+          $routeProvider.when('/foo/:id/:extra', {redirectTo: '/bar/:id'});
+        });
+        inject(function($browser, $route, $location, $rootScope) {
+          var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').and.callThrough();
+
+          $location.path('/foo/id3/eId');
+          $rootScope.$digest();
+
+          expect($location.path()).toEqual('/bar/id3');
+          expect($browserUrl.calls.mostRecent().args)
+              .toEqual(['http://server/#!/bar/id3?extra=eId', true, null]);
+        });
+      });
+
+
+      it('should not process route bits', function() {
+        var firstController = jasmine.createSpy('first controller spy');
+        var firstTemplate = jasmine.createSpy('first template spy').and.returnValue('redirected view');
+        var firstResolve = jasmine.createSpy('first resolve spy');
+        var secondController = jasmine.createSpy('second controller spy');
+        var secondTemplate = jasmine.createSpy('second template spy').and.returnValue('redirected view');
+        var secondResolve = jasmine.createSpy('second resolve spy');
+        module(function($routeProvider) {
+          $routeProvider.when('/redirect', {
+            template: firstTemplate,
+            redirectTo: '/redirected',
+            resolve: { value: firstResolve },
+            controller: firstController
+          });
+          $routeProvider.when('/redirected', {
+            template: secondTemplate,
+            resolve: { value: secondResolve },
+            controller: secondController
+          });
+        });
+        inject(function($route, $location, $rootScope, $compile) {
+          var element = $compile('<div><ng-view></ng-view></div>')($rootScope);
+          $location.path('/redirect');
+          $rootScope.$digest();
+
+          expect(firstController).not.toHaveBeenCalled();
+          expect(firstTemplate).not.toHaveBeenCalled();
+          expect(firstResolve).not.toHaveBeenCalled();
+
+          expect(secondController).toHaveBeenCalled();
+          expect(secondTemplate).toHaveBeenCalled();
+          expect(secondResolve).toHaveBeenCalled();
+
+          dealoc(element);
+        });
+      });
+
+
+      it('should not redirect transition if `redirectTo` returns `undefined`', function() {
+        var controller = jasmine.createSpy('first controller spy');
+        var templateFn = jasmine.createSpy('first template spy').and.returnValue('redirected view');
+        module(function($routeProvider) {
+          $routeProvider.when('/redirect/to/undefined', {
+            template: templateFn,
+            redirectTo: function() {},
+            controller: controller
+          });
+        });
+        inject(function($route, $location, $rootScope, $compile) {
+          var element = $compile('<div><ng-view></ng-view></div>')($rootScope);
+          $location.path('/redirect/to/undefined');
+          $rootScope.$digest();
+          expect(controller).toHaveBeenCalled();
+          expect(templateFn).toHaveBeenCalled();
+          expect($location.path()).toEqual('/redirect/to/undefined');
+          dealoc(element);
+        });
       });
     });
 
+    describe('via `resolveRedirectTo`', function() {
+      var $compile;
+      var $location;
+      var $rootScope;
+      var $route;
 
-    it('should interpolate route vars in the redirected path from original search', function() {
-      module(function($routeProvider) {
-        $routeProvider.when('/bar/:id/:subid/:subsubid', {templateUrl: 'bar.html'});
-        $routeProvider.when('/foo/:id/:extra', {redirectTo: '/bar/:id/:subid/99'});
+      beforeEach(module(function() {
+        return function(_$compile_, _$location_, _$rootScope_, _$route_) {
+          $compile = _$compile_;
+          $location = _$location_;
+          $rootScope = _$rootScope_;
+          $route = _$route_;
+        };
+      }));
+
+
+      it('should be ignored if `redirectTo` is also present', function() {
+        var newUrl;
+        var getNewUrl = function() { return newUrl; };
+
+        var resolveRedirectToSpy = jasmine.createSpy('resolveRedirectTo').and.returnValue('/bar');
+        var redirectToSpy = jasmine.createSpy('redirectTo').and.callFake(getNewUrl);
+        var templateSpy = jasmine.createSpy('template').and.returnValue('Foo');
+
+        module(function($routeProvider) {
+          $routeProvider.
+            when('/foo', {
+              resolveRedirectTo: resolveRedirectToSpy,
+              redirectTo: redirectToSpy,
+              template: templateSpy
+            }).
+            when('/bar', {template: 'Bar'}).
+            when('/baz', {template: 'Baz'});
+        });
+
+        inject(function() {
+          newUrl = '/baz';
+          $location.path('/foo');
+          $rootScope.$digest();
+
+          expect($location.path()).toBe('/baz');
+          expect($route.current.template).toBe('Baz');
+          expect(resolveRedirectToSpy).not.toHaveBeenCalled();
+          expect(redirectToSpy).toHaveBeenCalled();
+          expect(templateSpy).not.toHaveBeenCalled();
+
+          redirectToSpy.calls.reset();
+
+          newUrl = undefined;
+          $location.path('/foo');
+          $rootScope.$digest();
+
+          expect($location.path()).toBe('/foo');
+          expect($route.current.template).toBe(templateSpy);
+          expect(resolveRedirectToSpy).not.toHaveBeenCalled();
+          expect(redirectToSpy).toHaveBeenCalled();
+          expect(templateSpy).toHaveBeenCalled();
+        });
       });
 
-      inject(function($route, $location, $rootScope) {
-        $location.path('/foo/id3/eId').search('subid=sid1&appended=true');
-        $rootScope.$digest();
 
-        expect($location.path()).toEqual('/bar/id3/sid1/99');
-        expect($location.search()).toEqual({appended: 'true', extra: 'eId'});
-        expect($route.current.templateUrl).toEqual('bar.html');
-      });
-    });
+      it('should redirect to the returned url', function() {
+        module(function($routeProvider) {
+          $routeProvider.
+            when('/foo', {resolveRedirectTo: function() { return '/bar?baz=qux'; }}).
+            when('/bar', {template: 'Bar'});
+        });
 
+        inject(function() {
+          $location.path('/foo');
+          $rootScope.$digest();
 
-    it('should properly process route params which are both eager and optional', function() {
-      module(function($routeProvider) {
-        $routeProvider.when('/foo/:param1*?/:param2', {templateUrl: 'foo.html'});
-      });
-
-      inject(function($location, $rootScope, $route) {
-        $location.path('/foo/bar1/bar2/bar3/baz');
-        $rootScope.$digest();
-
-        expect($location.path()).toEqual('/foo/bar1/bar2/bar3/baz');
-        expect($route.current.params.param1).toEqual('bar1/bar2/bar3');
-        expect($route.current.params.param2).toEqual('baz');
-        expect($route.current.templateUrl).toEqual('foo.html');
-
-        $location.path('/foo/baz');
-        $rootScope.$digest();
-
-        expect($location.path()).toEqual('/foo/baz');
-        expect($route.current.params.param1).toEqual(undefined);
-        expect($route.current.params.param2).toEqual('baz');
-        expect($route.current.templateUrl).toEqual('foo.html');
-
-      });
-    });
-
-
-    it('should properly interpolate optional and eager route vars ' +
-       'when redirecting from path with trailing slash', function() {
-      module(function($routeProvider) {
-        $routeProvider.when('/foo/:id?/:subid?', {templateUrl: 'foo.html'});
-        $routeProvider.when('/bar/:id*/:subid', {templateUrl: 'bar.html'});
+          expect($location.path()).toBe('/bar');
+          expect($location.search()).toEqual({baz: 'qux'});
+          expect($route.current.template).toBe('Bar');
+        });
       });
 
-      inject(function($location, $rootScope, $route) {
-        $location.path('/foo/id1/subid2/');
-        $rootScope.$digest();
 
-        expect($location.path()).toEqual('/foo/id1/subid2');
-        expect($route.current.templateUrl).toEqual('foo.html');
+      it('should support returning a promise', function() {
+        module(function($routeProvider) {
+          $routeProvider.
+            when('/foo', {resolveRedirectTo: function($q) { return $q.resolve('/bar'); }}).
+            when('/bar', {template: 'Bar'});
+        });
 
-        $location.path('/bar/id1/extra/subid2/');
-        $rootScope.$digest();
+        inject(function() {
+          $location.path('/foo');
+          $rootScope.$digest();
 
-        expect($location.path()).toEqual('/bar/id1/extra/subid2');
-        expect($route.current.templateUrl).toEqual('bar.html');
+          expect($location.path()).toBe('/bar');
+          expect($route.current.template).toBe('Bar');
+        });
       });
-    });
 
 
-    it('should allow custom redirectTo function to be used', function() {
-      function customRedirectFn(routePathParams, path, search) {
-        expect(routePathParams).toEqual({id: 'id3'});
-        expect(path).toEqual('/foo/id3');
-        expect(search).toEqual({ subid: 'sid1', appended: 'true' });
-        return '/custom';
+      it('should support dependency injection', function() {
+        module(function($provide, $routeProvider) {
+          $provide.value('nextRoute', '/bar');
+
+          $routeProvider.
+            when('/foo', {
+              resolveRedirectTo: function(nextRoute) {
+                return nextRoute;
+              }
+            });
+        });
+
+        inject(function() {
+          $location.path('/foo');
+          $rootScope.$digest();
+
+          expect($location.path()).toBe('/bar');
+        });
+      });
+
+
+      it('should have access to the current routeParams via `$route.current.params`', function() {
+        module(function($routeProvider) {
+          $routeProvider.
+            when('/foo/:bar/baz/:qux', {
+              resolveRedirectTo: function($route) {
+                expect($route.current.params).toEqual(jasmine.objectContaining({
+                  bar: '1',
+                  qux: '2'
+                }));
+
+                return '/passed';
+              }
+            });
+        });
+
+        inject(function() {
+          $location.path('/foo/1/baz/2').search({bar: 'qux'});
+          $rootScope.$digest();
+
+          expect($location.path()).toBe('/passed');
+        });
+      });
+
+
+      it('should not process route bits until the promise is resolved', function() {
+        var spies = createSpies();
+        var called = false;
+        var deferred;
+
+        module(function($routeProvider) {
+          setupRoutes($routeProvider, spies, function($q) {
+            called = true;
+            deferred = $q.defer();
+            return deferred.promise;
+          });
+        });
+
+        inject(function() {
+          var element = $compile('<div><ng-view></ng-view></div>')($rootScope);
+
+          $location.path('/foo');
+          $rootScope.$digest();
+
+          expect($location.path()).toBe('/foo');
+          expect(called).toBe(true);
+          expect(spies.fooResolveSpy).not.toHaveBeenCalled();
+          expect(spies.fooTemplateSpy).not.toHaveBeenCalled();
+          expect(spies.fooControllerSpy).not.toHaveBeenCalled();
+          expect(spies.barResolveSpy).not.toHaveBeenCalled();
+          expect(spies.barTemplateSpy).not.toHaveBeenCalled();
+          expect(spies.barControllerSpy).not.toHaveBeenCalled();
+
+          deferred.resolve('/bar');
+          $rootScope.$digest();
+          expect($location.path()).toBe('/bar');
+          expect(spies.fooResolveSpy).not.toHaveBeenCalled();
+          expect(spies.fooTemplateSpy).not.toHaveBeenCalled();
+          expect(spies.fooControllerSpy).not.toHaveBeenCalled();
+          expect(spies.barResolveSpy).toHaveBeenCalled();
+          expect(spies.barTemplateSpy).toHaveBeenCalled();
+          expect(spies.barControllerSpy).toHaveBeenCalled();
+
+          dealoc(element);
+        });
+      });
+
+
+      it('should not redirect if `undefined` is returned', function() {
+        var spies = createSpies();
+        var called = false;
+
+        module(function($routeProvider) {
+          setupRoutes($routeProvider, spies, function() {
+            called = true;
+            return undefined;
+          });
+        });
+
+        inject(function() {
+          var element = $compile('<div><ng-view></ng-view></div>')($rootScope);
+
+          $location.path('/foo');
+          $rootScope.$digest();
+
+          expect($location.path()).toBe('/foo');
+          expect(called).toBe(true);
+          expect(spies.fooResolveSpy).toHaveBeenCalled();
+          expect(spies.fooTemplateSpy).toHaveBeenCalled();
+          expect(spies.fooControllerSpy).toHaveBeenCalled();
+          expect(spies.barResolveSpy).not.toHaveBeenCalled();
+          expect(spies.barTemplateSpy).not.toHaveBeenCalled();
+          expect(spies.barControllerSpy).not.toHaveBeenCalled();
+
+          dealoc(element);
+        });
+      });
+
+
+      it('should not redirect if the returned promise resolves to `undefined`', function() {
+        var spies = createSpies();
+        var called = false;
+
+        module(function($routeProvider) {
+          setupRoutes($routeProvider, spies, function($q) {
+            called = true;
+            return $q.resolve(undefined);
+          });
+        });
+
+        inject(function() {
+          var element = $compile('<div><ng-view></ng-view></div>')($rootScope);
+
+          $location.path('/foo');
+          $rootScope.$digest();
+
+          expect($location.path()).toBe('/foo');
+          expect(called).toBe(true);
+          expect(spies.fooResolveSpy).toHaveBeenCalled();
+          expect(spies.fooTemplateSpy).toHaveBeenCalled();
+          expect(spies.fooControllerSpy).toHaveBeenCalled();
+          expect(spies.barResolveSpy).not.toHaveBeenCalled();
+          expect(spies.barTemplateSpy).not.toHaveBeenCalled();
+          expect(spies.barControllerSpy).not.toHaveBeenCalled();
+
+          dealoc(element);
+        });
+      });
+
+
+      it('should not redirect if the returned promise gets rejected', function() {
+        var spies = createSpies();
+        var called = false;
+
+        module(function($routeProvider) {
+          setupRoutes($routeProvider, spies, function($q) {
+            called = true;
+            return $q.reject('');
+          });
+        });
+
+        inject(function() {
+          spyOn($rootScope, '$broadcast').and.callThrough();
+
+          var element = $compile('<div><ng-view></ng-view></div>')($rootScope);
+
+          $location.path('/foo');
+          $rootScope.$digest();
+
+          expect($location.path()).toBe('/foo');
+          expect(called).toBe(true);
+          expect(spies.fooResolveSpy).not.toHaveBeenCalled();
+          expect(spies.fooTemplateSpy).not.toHaveBeenCalled();
+          expect(spies.fooControllerSpy).not.toHaveBeenCalled();
+          expect(spies.barResolveSpy).not.toHaveBeenCalled();
+          expect(spies.barTemplateSpy).not.toHaveBeenCalled();
+          expect(spies.barControllerSpy).not.toHaveBeenCalled();
+
+          var lastCallArgs = $rootScope.$broadcast.calls.mostRecent().args;
+          expect(lastCallArgs[0]).toBe('$routeChangeError');
+
+          dealoc(element);
+        });
+      });
+
+
+      it('should ignore previous redirection if newer transition happened', function() {
+        var spies = createSpies();
+        var called = false;
+        var deferred;
+
+        module(function($routeProvider) {
+          setupRoutes($routeProvider, spies, function($q) {
+            called = true;
+            deferred = $q.defer();
+            return deferred.promise;
+          });
+        });
+
+        inject(function() {
+          spyOn($location, 'url').and.callThrough();
+
+          var element = $compile('<div><ng-view></ng-view></div>')($rootScope);
+
+          $location.path('/foo');
+          $rootScope.$digest();
+
+          expect($location.path()).toBe('/foo');
+          expect(called).toBe(true);
+          expect(spies.fooResolveSpy).not.toHaveBeenCalled();
+          expect(spies.fooTemplateSpy).not.toHaveBeenCalled();
+          expect(spies.fooControllerSpy).not.toHaveBeenCalled();
+          expect(spies.barResolveSpy).not.toHaveBeenCalled();
+          expect(spies.barTemplateSpy).not.toHaveBeenCalled();
+          expect(spies.barControllerSpy).not.toHaveBeenCalled();
+          expect(spies.bazResolveSpy).not.toHaveBeenCalled();
+          expect(spies.bazTemplateSpy).not.toHaveBeenCalled();
+          expect(spies.bazControllerSpy).not.toHaveBeenCalled();
+
+          $location.path('/baz');
+          $rootScope.$digest();
+
+          expect($location.path()).toBe('/baz');
+          expect(spies.fooResolveSpy).not.toHaveBeenCalled();
+          expect(spies.fooTemplateSpy).not.toHaveBeenCalled();
+          expect(spies.fooControllerSpy).not.toHaveBeenCalled();
+          expect(spies.barResolveSpy).not.toHaveBeenCalled();
+          expect(spies.barTemplateSpy).not.toHaveBeenCalled();
+          expect(spies.barControllerSpy).not.toHaveBeenCalled();
+          expect(spies.bazResolveSpy).toHaveBeenCalledOnce();
+          expect(spies.bazTemplateSpy).toHaveBeenCalledOnce();
+          expect(spies.bazControllerSpy).toHaveBeenCalledOnce();
+
+          deferred.resolve();
+          $rootScope.$digest();
+
+          expect($location.path()).toBe('/baz');
+          expect(spies.fooResolveSpy).not.toHaveBeenCalled();
+          expect(spies.fooTemplateSpy).not.toHaveBeenCalled();
+          expect(spies.fooControllerSpy).not.toHaveBeenCalled();
+          expect(spies.barResolveSpy).not.toHaveBeenCalled();
+          expect(spies.barTemplateSpy).not.toHaveBeenCalled();
+          expect(spies.barControllerSpy).not.toHaveBeenCalled();
+          expect(spies.bazResolveSpy).toHaveBeenCalledOnce();
+          expect(spies.bazTemplateSpy).toHaveBeenCalledOnce();
+          expect(spies.bazControllerSpy).toHaveBeenCalledOnce();
+
+          dealoc(element);
+        });
+      });
+
+
+      // Helpers
+      function createSpies() {
+        return {
+          fooResolveSpy: jasmine.createSpy('fooResolve'),
+          fooTemplateSpy: jasmine.createSpy('fooTemplate').and.returnValue('Foo'),
+          fooControllerSpy: jasmine.createSpy('fooController'),
+          barResolveSpy: jasmine.createSpy('barResolve'),
+          barTemplateSpy: jasmine.createSpy('barTemplate').and.returnValue('Bar'),
+          barControllerSpy: jasmine.createSpy('barController'),
+          bazResolveSpy: jasmine.createSpy('bazResolve'),
+          bazTemplateSpy: jasmine.createSpy('bazTemplate').and.returnValue('Baz'),
+          bazControllerSpy: jasmine.createSpy('bazController')
+        };
       }
 
-      module(function($routeProvider) {
-        $routeProvider.when('/bar/:id/:subid/:subsubid', {templateUrl: 'bar.html'});
-        $routeProvider.when('/foo/:id', {redirectTo: customRedirectFn});
-      });
-
-      inject(function($route, $location, $rootScope) {
-        $location.path('/foo/id3').search('subid=sid1&appended=true');
-        $rootScope.$digest();
-
-        expect($location.path()).toEqual('/custom');
-      });
-    });
-
-
-    it('should replace the url when redirecting',  function() {
-      module(function($routeProvider) {
-        $routeProvider.when('/bar/:id', {templateUrl: 'bar.html'});
-        $routeProvider.when('/foo/:id/:extra', {redirectTo: '/bar/:id'});
-      });
-      inject(function($browser, $route, $location, $rootScope) {
-        var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').and.callThrough();
-
-        $location.path('/foo/id3/eId');
-        $rootScope.$digest();
-
-        expect($location.path()).toEqual('/bar/id3');
-        expect($browserUrl.calls.mostRecent().args)
-            .toEqual(['http://server/#!/bar/id3?extra=eId', true, null]);
-      });
-    });
-
-    it('should not process route bits', function() {
-      var firstController = jasmine.createSpy('first controller spy');
-      var firstTemplate = jasmine.createSpy('first template spy').and.returnValue('redirected view');
-      var firstResolve = jasmine.createSpy('first resolve spy');
-      var secondController = jasmine.createSpy('second controller spy');
-      var secondTemplate = jasmine.createSpy('second template spy').and.returnValue('redirected view');
-      var secondResolve = jasmine.createSpy('second resolve spy');
-      module(function($routeProvider) {
-        $routeProvider.when('/redirect', {
-          template: firstTemplate,
-          redirectTo: '/redirected',
-          resolve: { value: firstResolve },
-          controller: firstController
-        });
-        $routeProvider.when('/redirected', {
-          template: secondTemplate,
-          resolve: { value: secondResolve },
-          controller: secondController
-        });
-      });
-      inject(function($route, $location, $rootScope, $compile) {
-        var element = $compile('<div><ng-view></ng-view></div>')($rootScope);
-        $location.path('/redirect');
-        $rootScope.$digest();
-
-        expect(firstController).not.toHaveBeenCalled();
-        expect(firstTemplate).not.toHaveBeenCalled();
-        expect(firstResolve).not.toHaveBeenCalled();
-
-        expect(secondController).toHaveBeenCalled();
-        expect(secondTemplate).toHaveBeenCalled();
-        expect(secondResolve).toHaveBeenCalled();
-
-        dealoc(element);
-      });
-    });
-
-    it('should not redirect transition if `redirectTo` returns `undefined`', function() {
-      var controller = jasmine.createSpy('first controller spy');
-      var templateFn = jasmine.createSpy('first template spy').and.returnValue('redirected view');
-      module(function($routeProvider) {
-        $routeProvider.when('/redirect/to/undefined', {
-          template: templateFn,
-          redirectTo: function() {},
-          controller: controller
-        });
-      });
-      inject(function($route, $location, $rootScope, $compile) {
-        var element = $compile('<div><ng-view></ng-view></div>')($rootScope);
-        $location.path('/redirect/to/undefined');
-        $rootScope.$digest();
-        expect(controller).toHaveBeenCalled();
-        expect(templateFn).toHaveBeenCalled();
-        expect($location.path()).toEqual('/redirect/to/undefined');
-        dealoc(element);
-      });
+      function setupRoutes(routeProvider, spies, resolveRedirectToFn) {
+        routeProvider.
+          when('/foo', {
+            resolveRedirectTo: resolveRedirectToFn,
+            resolve: {_: spies.fooResolveSpy},
+            template: spies.fooTemplateSpy,
+            controller: spies.fooControllerSpy
+          }).
+          when('/bar', {
+            resolve: {_: spies.barResolveSpy},
+            template: spies.barTemplateSpy,
+            controller: spies.barControllerSpy
+          }).
+          when('/baz', {
+            resolve: {_: spies.bazResolveSpy},
+            template: spies.bazTemplateSpy,
+            controller: spies.bazControllerSpy
+          });
+      }
     });
   });
 

@@ -5,7 +5,7 @@
   PRISTINE_CLASS: true,
   DIRTY_CLASS: true,
   UNTOUCHED_CLASS: true,
-  TOUCHED_CLASS: true,
+  TOUCHED_CLASS: true
 */
 
 var VALID_CLASS = 'ng-valid',
@@ -178,7 +178,7 @@ is set to `true`. The parse error is stored in `ngModel.$error.parse`.
                 var html = element.html();
                 // When we clear the content editable the browser leaves a <br> behind
                 // If strip-br attribute is provided then we strip this out
-                if ( attrs.stripBr && html == '<br>' ) {
+                if (attrs.stripBr && html === '<br>') {
                   html = '';
                 }
                 ngModel.$setViewValue(html);
@@ -200,7 +200,7 @@ is set to `true`. The parse error is stored in `ngModel.$error.parse`.
     </file>
     <file name="protractor.js" type="protractor">
     it('should data-bind and become invalid', function() {
-      if (browser.params.browser == 'safari' || browser.params.browser == 'firefox') {
+      if (browser.params.browser === 'safari' || browser.params.browser === 'firefox') {
         // SafariDriver can't handle contenteditable
         // and Firefox driver can't clear contenteditables very well
         return;
@@ -221,7 +221,7 @@ is set to `true`. The parse error is stored in `ngModel.$error.parse`.
  *
  */
 var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$parse', '$animate', '$timeout', '$rootScope', '$q', '$interpolate',
-    function($scope, $exceptionHandler, $attr, $element, $parse, $animate, $timeout, $rootScope, $q, $interpolate) {
+    /** @this */ function($scope, $exceptionHandler, $attr, $element, $parse, $animate, $timeout, $rootScope, $q, $interpolate) {
   this.$viewValue = Number.NaN;
   this.$modelValue = Number.NaN;
   this.$$rawModelValue = undefined; // stores the parsed modelValue / model set from scope regardless of validity.
@@ -271,7 +271,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
         }
       };
     } else if (!parsedNgModel.assign) {
-      throw ngModelMinErr('nonassign', "Expression '{0}' is non-assignable. Element: {1}",
+      throw ngModelMinErr('nonassign', 'Expression \'{0}\' is non-assignable. Element: {1}',
           $attr.ngModel, startingTag($element));
     }
   };
@@ -317,6 +317,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    * @returns {boolean} True if `value` is "empty".
    */
   this.$isEmpty = function(value) {
+    // eslint-disable-next-line no-self-compare
     return isUndefined(value) || value === '' || value === null || value !== value;
   };
 
@@ -471,7 +472,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    *       $scope.model = {};
    *
    *       $scope.setEmpty = function(e, value, rollback) {
-   *         if (e.keyCode == 27) {
+   *         if (e.keyCode === 27) {
    *           e.preventDefault();
    *           if (rollback) {
    *             $scope.myForm[value].$rollbackViewValue();
@@ -639,7 +640,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
         var promise = validator(modelValue, viewValue);
         if (!isPromiseLike(promise)) {
           throw ngModelMinErr('nopromise',
-            "Expected asynchronous validator to return a promise but got '{0}' instead.", promise);
+            'Expected asynchronous validator to return a promise but got \'{0}\' instead.', promise);
         }
         setValidity(name, undefined);
         validatorPromises.push(promise.then(function() {
@@ -864,6 +865,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
     // TODO(perf): why not move this to the action fn?
     if (modelValue !== ctrl.$modelValue &&
        // checks for NaN is needed to allow setting the model to NaN when there's an asyncValidator
+        // eslint-disable-next-line no-self-compare
        (ctrl.$modelValue === ctrl.$modelValue || modelValue === modelValue)
     ) {
       ctrl.$modelValue = ctrl.$$rawModelValue = modelValue;
@@ -881,7 +883,8 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
         ctrl.$viewValue = ctrl.$$lastCommittedViewValue = viewValue;
         ctrl.$render();
 
-        ctrl.$$runValidators(modelValue, viewValue, noop);
+        // It is possible that model and view value have been updated during render
+        ctrl.$$runValidators(ctrl.$modelValue, ctrl.$viewValue, noop);
       }
     }
 
@@ -997,7 +1000,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
  * </pre>
  *
  * @example
- * <example deps="angular-animate.js" animations="true" fixBase="true" module="inputExample">
+ * <example deps="angular-animate.js" animations="true" fixBase="true" module="inputExample" name="ng-model">
      <file name="index.html">
        <script>
         angular.module('inputExample', [])
@@ -1135,8 +1138,6 @@ var ngModelDirective = ['$rootScope', function($rootScope) {
 
 
 
-'use strict';
-
 var DEFAULT_REGEXP = /(\s+|^)default(\s+|$)/;
 
 /**
@@ -1212,7 +1213,7 @@ var DEFAULT_REGEXP = /(\s+|^)default(\s+|$)/;
           $scope.user = { name: 'John', data: '' };
 
           $scope.cancel = function(e) {
-            if (e.keyCode == 27) {
+            if (e.keyCode === 27) {
               $scope.userForm.userName.$rollbackViewValue();
             }
           };
@@ -1303,7 +1304,7 @@ var DEFAULT_REGEXP = /(\s+|^)default(\s+|$)/;
 var ngModelOptionsDirective = function() {
   return {
     restrict: 'A',
-    controller: ['$scope', '$attrs', function($scope, $attrs) {
+    controller: ['$scope', '$attrs', function NgModelOptionsController($scope, $attrs) {
       var that = this;
       this.$options = copy($scope.$eval($attrs.ngModelOptions));
       // Allow adding/overriding bound events

@@ -20,7 +20,7 @@ describe('input', function() {
   it('should bind to a model', function() {
     var inputElm = helper.compileInput('<input type="text" ng-model="name" name="alias" ng-change="change()" />');
 
-    $rootScope.$apply("name = 'misko'");
+    $rootScope.$apply('name = \'misko\'');
 
     expect(inputElm.val()).toBe('misko');
   });
@@ -33,12 +33,12 @@ describe('input', function() {
           compare: function(actual, attributeName) {
             var actualValue = actual.attr(attributeName);
             var message = function() {
-              return "Attribute '" + attributeName + "' expected to be off but was '" + actualValue +
-                "' in: " + angular.mock.dump(actual);
+              return 'Attribute \'' + attributeName + '\' expected to be off but was \'' + actualValue +
+                '\' in: ' + angular.mock.dump(actual);
             };
 
             return {
-              pass: !actualValue || actualValue == 'false',
+              pass: !actualValue || actualValue === 'false',
               message: message
             };
           }
@@ -134,7 +134,7 @@ describe('input', function() {
   });
 
 
-  describe("IE placeholder input events", function() {
+  describe('IE placeholder input events', function() {
     //IE fires an input event whenever a placeholder visually changes, essentially treating it as a value
     //Events:
     //  placeholder attribute change: *input*
@@ -145,22 +145,30 @@ describe('input', function() {
 
     it('should not dirty the model on an input event in response to a placeholder change', function() {
       var inputElm = helper.compileInput('<input type="text" placeholder="Test" attr-capture ng-model="unsetValue" name="name" />');
-      msie && browserTrigger(inputElm, 'input');
+      if (msie) {
+        browserTrigger(inputElm, 'input');
+      }
       expect(inputElm.attr('placeholder')).toBe('Test');
       expect(inputElm).toBePristine();
 
       helper.attrs.$set('placeholder', '');
-      msie && browserTrigger(inputElm, 'input');
+      if (msie) {
+        browserTrigger(inputElm, 'input');
+      }
       expect(inputElm.attr('placeholder')).toBe('');
       expect(inputElm).toBePristine();
 
       helper.attrs.$set('placeholder', 'Test Again');
-      msie && browserTrigger(inputElm, 'input');
+      if (msie) {
+        browserTrigger(inputElm, 'input');
+      }
       expect(inputElm.attr('placeholder')).toBe('Test Again');
       expect(inputElm).toBePristine();
 
       helper.attrs.$set('placeholder', undefined);
-      msie && browserTrigger(inputElm, 'input');
+      if (msie) {
+        browserTrigger(inputElm, 'input');
+      }
       expect(inputElm.attr('placeholder')).toBeUndefined();
       expect(inputElm).toBePristine();
 
@@ -171,17 +179,23 @@ describe('input', function() {
 
     it('should not dirty the model on an input event in response to a interpolated placeholder change', function() {
       var inputElm = helper.compileInput('<input type="text" placeholder="{{ph}}" ng-model="unsetValue" name="name" />');
-      msie && browserTrigger(inputElm, 'input');
+      if (msie) {
+        browserTrigger(inputElm, 'input');
+      }
       expect(inputElm).toBePristine();
 
       $rootScope.ph = 1;
       $rootScope.$digest();
-      msie && browserTrigger(inputElm, 'input');
+      if (msie) {
+        browserTrigger(inputElm, 'input');
+      }
       expect(inputElm).toBePristine();
 
-      $rootScope.ph = "";
+      $rootScope.ph = '';
       $rootScope.$digest();
-      msie && browserTrigger(inputElm, 'input');
+      if (msie) {
+        browserTrigger(inputElm, 'input');
+      }
       expect(inputElm).toBePristine();
 
       helper.changeInputValueTo('foo');
@@ -196,7 +210,9 @@ describe('input', function() {
 
       browserTrigger(inputElm, 'focusin');
       browserTrigger(inputElm, 'focus');
-      msie && browserTrigger(inputElm, 'input');
+      if (msie) {
+        browserTrigger(inputElm, 'input');
+      }
       expect(inputElm.attr('placeholder')).toBe('Test');
       expect(inputElm).toBePristine();
 
@@ -215,12 +231,16 @@ describe('input', function() {
 
       $rootScope.ph = 1;
       $rootScope.$digest();
-      msie && browserTrigger(inputElm, 'input');
+      if (msie) {
+        browserTrigger(inputElm, 'input');
+      }
       expect(inputElm).toBePristine();
 
-      $rootScope.ph = "";
+      $rootScope.ph = '';
       $rootScope.$digest();
-      msie && browserTrigger(inputElm, 'input');
+      if (msie) {
+        browserTrigger(inputElm, 'input');
+      }
       expect(inputElm).toBePristine();
 
       helper.changeInputValueTo('foo');
@@ -230,13 +250,17 @@ describe('input', function() {
 
     it('should not dirty the model on an input event in response to a focus', function() {
       var inputElm = helper.compileInput('<input type="text" placeholder="Test" ng-model="unsetValue" name="name" />');
-      msie && browserTrigger(inputElm, 'input');
+      if (msie) {
+        browserTrigger(inputElm, 'input');
+      }
       expect(inputElm.attr('placeholder')).toBe('Test');
       expect(inputElm).toBePristine();
 
       browserTrigger(inputElm, 'focusin');
       browserTrigger(inputElm, 'focus');
-      msie && browserTrigger(inputElm, 'input');
+      if (msie) {
+        browserTrigger(inputElm, 'input');
+      }
       expect(inputElm.attr('placeholder')).toBe('Test');
       expect(inputElm).toBePristine();
 
@@ -247,17 +271,23 @@ describe('input', function() {
 
     it('should not dirty the model on an input event in response to a blur', function() {
       var inputElm = helper.compileInput('<input type="text" placeholder="Test" ng-model="unsetValue" name="name" />');
-      msie && browserTrigger(inputElm, 'input');
+      if (msie) {
+        browserTrigger(inputElm, 'input');
+      }
       expect(inputElm.attr('placeholder')).toBe('Test');
       expect(inputElm).toBePristine();
 
       browserTrigger(inputElm, 'focusin');
       browserTrigger(inputElm, 'focus');
-      msie && browserTrigger(inputElm, 'input');
+      if (msie) {
+        browserTrigger(inputElm, 'input');
+      }
       expect(inputElm).toBePristine();
 
       browserTrigger(inputElm, 'focusout');
-      msie && browserTrigger(inputElm, 'input');
+      if (msie) {
+        browserTrigger(inputElm, 'input');
+      }
       browserTrigger(inputElm, 'blur');
       expect(inputElm).toBePristine();
 
@@ -320,11 +350,11 @@ describe('input', function() {
 
 
     it('should rename form controls in form when interpolated name changes', function() {
-      $rootScope.nameID = "A";
+      $rootScope.nameID = 'A';
       var inputElm = helper.compileInput('<input type="text" ng-model="name" name="name{{nameID}}" />');
       expect($rootScope.form.nameA.$name).toBe('nameA');
       var oldModel = $rootScope.form.nameA;
-      $rootScope.nameID = "B";
+      $rootScope.nameID = 'B';
       $rootScope.$digest();
       expect($rootScope.form.nameA).toBeUndefined();
       expect($rootScope.form.nameB).toBe(oldModel);
@@ -333,12 +363,12 @@ describe('input', function() {
 
 
     it('should rename form controls in null form when interpolated name changes', function() {
-      $rootScope.nameID = "A";
+      $rootScope.nameID = 'A';
       var inputElm = helper.compileInput('<input type="text" ng-model="name" name="name{{nameID}}" />');
       var model = inputElm.controller('ngModel');
       expect(model.$name).toBe('nameA');
 
-      $rootScope.nameID = "B";
+      $rootScope.nameID = 'B';
       $rootScope.$digest();
       expect(model.$name).toBe('nameB');
     });
@@ -479,7 +509,7 @@ describe('input', function() {
   it('should allow complex reference binding', function() {
     var inputElm = helper.compileInput('<input type="text" ng-model="obj[\'abc\'].name"/>');
 
-    $rootScope.$apply("obj = { abc: { name: 'Misko'} }");
+    $rootScope.$apply('obj = { abc: { name: \'Misko\'} }');
     expect(inputElm.val()).toEqual('Misko');
   });
 
@@ -498,11 +528,11 @@ describe('input', function() {
   it('should report error on assignment error', function() {
     expect(function() {
       var inputElm = helper.compileInput('<input type="text" ng-model="throw \'\'">');
-    }).toThrowMinErr("$parse", "syntax", "Syntax Error: Token '''' is an unexpected token at column 7 of the expression [throw ''] starting at [''].");
+    }).toThrowMinErr('$parse', 'syntax', 'Syntax Error: Token \'\'\'\' is an unexpected token at column 7 of the expression [throw \'\'] starting at [\'\'].');
   });
 
 
-  it("should render as blank if null", function() {
+  it('should render as blank if null', function() {
     var inputElm = helper.compileInput('<input type="text" ng-model="age" />');
 
     $rootScope.$apply('age = null');
@@ -631,7 +661,7 @@ describe('input', function() {
     they('should use any timezone if specified in the options (format: $prop)',
       {'+HHmm': '+0500', '+HH:mm': '+05:00'},
       function(tz) {
-        var ngModelOptions = "{timezone: '" + tz + "'}";
+        var ngModelOptions = '{timezone: \'' + tz + '\'}';
         var inputElm = helper.compileInput(
             '<input type="month" ng-model="value" ng-model-options="' + ngModelOptions + '" />');
 
@@ -896,7 +926,7 @@ describe('input', function() {
     they('should use any timezone if specified in the options (format: $prop)',
       {'+HHmm': '+0500', '+HH:mm': '+05:00'},
       function(tz) {
-        var ngModelOptions = "{timezone: '" + tz + "'}";
+        var ngModelOptions = '{timezone: \'' + tz + '\'}';
         var inputElm = helper.compileInput(
             '<input type="week" ng-model="value" ng-model-options="' + ngModelOptions + '" />');
 
@@ -1102,7 +1132,7 @@ describe('input', function() {
     they('should use any timezone if specified in the options (format: $prop)',
       {'+HHmm': '+0500', '+HH:mm': '+05:00'},
       function(tz) {
-        var ngModelOptions = "{timezone: '" + tz + "'}";
+        var ngModelOptions = '{timezone: \'' + tz + '\'}';
         var inputElm = helper.compileInput(
             '<input type="datetime-local" ng-model="value" ng-model-options="' + ngModelOptions + '" />');
 
@@ -1443,7 +1473,7 @@ describe('input', function() {
     they('should use any timezone if specified in the options (format: $prop)',
       {'+HHmm': '+0500', '+HH:mm': '+05:00'},
       function(tz) {
-        var ngModelOptions = "{timezone: '" + tz + "'}";
+        var ngModelOptions = '{timezone: \'' + tz + '\'}';
         var inputElm = helper.compileInput(
             '<input type="time" ng-model="value" ng-model-options="' + ngModelOptions + '" />');
 
@@ -1755,7 +1785,7 @@ describe('input', function() {
     they('should use any timezone if specified in the options (format: $prop)',
       {'+HHmm': '+0500', '+HH:mm': '+05:00'},
       function(tz) {
-        var ngModelOptions = "{timezone: '" + tz + "'}";
+        var ngModelOptions = '{timezone: \'' + tz + '\'}';
         var inputElm = helper.compileInput(
             '<input type="date" ng-model="value" ng-model-options="' + ngModelOptions + '" />');
 
@@ -1858,6 +1888,16 @@ describe('input', function() {
         var inputElm = helper.compileInput('<input name="myControl" type="date" min="{{ min }}" ng-model="value">');
 
         $rootScope.value = new Date(2010, 1, 1, 0, 0, 0);
+        $rootScope.min = new Date(2014, 10, 10, 0, 0, 0).toISOString();
+        $rootScope.$digest();
+
+        expect($rootScope.form.myControl.$error.min).toBeTruthy();
+      });
+
+      it('should parse interpolated Date objects as a valid min date value', function() {
+        var inputElm = helper.compileInput('<input name="myControl" type="date" min="{{ min }}" ng-model="value">');
+
+        $rootScope.value = new Date(2010, 1, 1, 0, 0, 0);
         $rootScope.min = new Date(2014, 10, 10, 0, 0, 0);
         $rootScope.$digest();
 
@@ -1894,6 +1934,16 @@ describe('input', function() {
       });
 
       it('should parse ISO-based date strings as a valid max date value', function() {
+        var inputElm = helper.compileInput('<input name="myControl" type="date" max="{{ max }}" ng-model="value">');
+
+        $rootScope.value = new Date(2020, 1, 1, 0, 0, 0);
+        $rootScope.max = new Date(2014, 10, 10, 0, 0, 0).toISOString();
+        $rootScope.$digest();
+
+        expect($rootScope.form.myControl.$error.max).toBeTruthy();
+      });
+
+      it('should parse interpolated Date objects as a valid max date value', function() {
         var inputElm = helper.compileInput('<input name="myControl" type="date" max="{{ max }}" ng-model="value">');
 
         $rootScope.value = new Date(2020, 1, 1, 0, 0, 0);
@@ -1985,6 +2035,44 @@ describe('input', function() {
       expect(inputElm).toBeInvalid();
 
       $rootScope.min = '2009-01-01';
+      $rootScope.$digest();
+
+      expect(inputElm).toBeValid();
+    });
+
+
+    it('should allow Date objects as valid ng-max values', function() {
+      $rootScope.max = new Date(2012, 1, 1, 1, 2, 0);
+      var inputElm = helper.compileInput('<input type="datetime-local" ng-model="value" name="alias" ng-max="max" />');
+
+      helper.changeInputValueTo('2014-01-01T12:34:00');
+      expect(inputElm).toBeInvalid();
+
+      $rootScope.max = new Date(2013, 1, 1, 1, 2, 0);
+      $rootScope.$digest();
+
+      expect(inputElm).toBeInvalid();
+
+      $rootScope.max = new Date(2014, 1, 1, 1, 2, 0);
+      $rootScope.$digest();
+
+      expect(inputElm).toBeValid();
+    });
+
+
+    it('should allow Date objects as valid ng-min values', function() {
+      $rootScope.min = new Date(2013, 1, 1, 1, 2, 0);
+      var inputElm = helper.compileInput('<input type="datetime-local" ng-model="value" name="alias" ng-min="min" />');
+
+      helper.changeInputValueTo('2010-01-01T12:34:00');
+      expect(inputElm).toBeInvalid();
+
+      $rootScope.min = new Date(2014, 1, 1, 1, 2, 0);
+      $rootScope.$digest();
+
+      expect(inputElm).toBeInvalid();
+
+      $rootScope.min = new Date(2009, 1, 1, 1, 2, 0);
       $rootScope.$digest();
 
       expect(inputElm).toBeValid();
@@ -2279,7 +2367,7 @@ describe('input', function() {
       expect(function() {
         $rootScope.value = 'one';
         var inputElm = helper.compileInput('<input type="number" ng-model="value" />');
-      }).toThrowMinErr('ngModel', 'numfmt', "Expected `one` to be a number");
+      }).toThrowMinErr('ngModel', 'numfmt', 'Expected `one` to be a number');
     });
 
 
@@ -2287,62 +2375,62 @@ describe('input', function() {
       var inputElm = helper.compileInput('<input type="number" name="alias" ng-model="value" />');
 
       // #.###e+##
-      $rootScope.form.alias.$setViewValue("1.23214124123412412e+26");
+      $rootScope.form.alias.$setViewValue('1.23214124123412412e+26');
       expect(inputElm).toBeValid();
       expect($rootScope.value).toBe(1.23214124123412412e+26);
 
       // #.###e##
-      $rootScope.form.alias.$setViewValue("1.23214124123412412e26");
+      $rootScope.form.alias.$setViewValue('1.23214124123412412e26');
       expect(inputElm).toBeValid();
       expect($rootScope.value).toBe(1.23214124123412412e26);
 
       // #.###e-##
-      $rootScope.form.alias.$setViewValue("1.23214124123412412e-26");
+      $rootScope.form.alias.$setViewValue('1.23214124123412412e-26');
       expect(inputElm).toBeValid();
       expect($rootScope.value).toBe(1.23214124123412412e-26);
 
       // ####e+##
-      $rootScope.form.alias.$setViewValue("123214124123412412e+26");
+      $rootScope.form.alias.$setViewValue('123214124123412412e+26');
       expect(inputElm).toBeValid();
       expect($rootScope.value).toBe(123214124123412412e26);
 
       // ####e##
-      $rootScope.form.alias.$setViewValue("123214124123412412e26");
+      $rootScope.form.alias.$setViewValue('123214124123412412e26');
       expect(inputElm).toBeValid();
       expect($rootScope.value).toBe(123214124123412412e26);
 
       // ####e-##
-      $rootScope.form.alias.$setViewValue("123214124123412412e-26");
+      $rootScope.form.alias.$setViewValue('123214124123412412e-26');
       expect(inputElm).toBeValid();
       expect($rootScope.value).toBe(123214124123412412e-26);
 
       // #.###E+##
-      $rootScope.form.alias.$setViewValue("1.23214124123412412E+26");
+      $rootScope.form.alias.$setViewValue('1.23214124123412412E+26');
       expect(inputElm).toBeValid();
       expect($rootScope.value).toBe(1.23214124123412412e+26);
 
       // #.###E##
-      $rootScope.form.alias.$setViewValue("1.23214124123412412E26");
+      $rootScope.form.alias.$setViewValue('1.23214124123412412E26');
       expect(inputElm).toBeValid();
       expect($rootScope.value).toBe(1.23214124123412412e26);
 
       // #.###E-##
-      $rootScope.form.alias.$setViewValue("1.23214124123412412E-26");
+      $rootScope.form.alias.$setViewValue('1.23214124123412412E-26');
       expect(inputElm).toBeValid();
       expect($rootScope.value).toBe(1.23214124123412412e-26);
 
       // ####E+##
-      $rootScope.form.alias.$setViewValue("123214124123412412E+26");
+      $rootScope.form.alias.$setViewValue('123214124123412412E+26');
       expect(inputElm).toBeValid();
       expect($rootScope.value).toBe(123214124123412412e26);
 
       // ####E##
-      $rootScope.form.alias.$setViewValue("123214124123412412E26");
+      $rootScope.form.alias.$setViewValue('123214124123412412E26');
       expect(inputElm).toBeValid();
       expect($rootScope.value).toBe(123214124123412412e26);
 
       // ####E-##
-      $rootScope.form.alias.$setViewValue("123214124123412412E-26");
+      $rootScope.form.alias.$setViewValue('123214124123412412E-26');
       expect(inputElm).toBeValid();
       expect($rootScope.value).toBe(123214124123412412e-26);
     });
@@ -2533,6 +2621,157 @@ describe('input', function() {
       });
     });
 
+    describe('step', function() {
+      it('should validate', function() {
+        $rootScope.step = 10;
+        $rootScope.value = 20;
+        var inputElm = helper.compileInput('<input type="number" ng-model="value" name="alias" step="{{step}}" />');
+
+        expect(inputElm.val()).toBe('20');
+        expect(inputElm).toBeValid();
+        expect($rootScope.value).toBe(20);
+        expect($rootScope.form.alias.$error.step).toBeFalsy();
+
+        helper.changeInputValueTo('18');
+        expect(inputElm).toBeInvalid();
+        expect(inputElm.val()).toBe('18');
+        expect($rootScope.value).toBeUndefined();
+        expect($rootScope.form.alias.$error.step).toBeTruthy();
+
+        helper.changeInputValueTo('10');
+        expect(inputElm).toBeValid();
+        expect(inputElm.val()).toBe('10');
+        expect($rootScope.value).toBe(10);
+        expect($rootScope.form.alias.$error.step).toBeFalsy();
+
+        $rootScope.$apply('value = 12');
+        expect(inputElm).toBeInvalid();
+        expect(inputElm.val()).toBe('12');
+        expect($rootScope.value).toBe(12);
+        expect($rootScope.form.alias.$error.step).toBeTruthy();
+      });
+
+      it('should validate even if the step value changes on-the-fly', function() {
+        $rootScope.step = 10;
+        var inputElm = helper.compileInput('<input type="number" ng-model="value" name="alias" step="{{step}}" />');
+
+        helper.changeInputValueTo('10');
+        expect(inputElm).toBeValid();
+        expect($rootScope.value).toBe(10);
+
+        // Step changes, but value matches
+        $rootScope.$apply('step = 5');
+        expect(inputElm.val()).toBe('10');
+        expect(inputElm).toBeValid();
+        expect($rootScope.value).toBe(10);
+        expect($rootScope.form.alias.$error.step).toBeFalsy();
+
+        // Step changes, value does not match
+        $rootScope.$apply('step = 6');
+        expect(inputElm).toBeInvalid();
+        expect($rootScope.value).toBeUndefined();
+        expect(inputElm.val()).toBe('10');
+        expect($rootScope.form.alias.$error.step).toBeTruthy();
+
+        // null = valid
+        $rootScope.$apply('step = null');
+        expect(inputElm).toBeValid();
+        expect($rootScope.value).toBe(10);
+        expect(inputElm.val()).toBe('10');
+        expect($rootScope.form.alias.$error.step).toBeFalsy();
+
+        // Step val as string
+        $rootScope.$apply('step = "7"');
+        expect(inputElm).toBeInvalid();
+        expect($rootScope.value).toBeUndefined();
+        expect(inputElm.val()).toBe('10');
+        expect($rootScope.form.alias.$error.step).toBeTruthy();
+
+        // unparsable string is ignored
+        $rootScope.$apply('step = "abc"');
+        expect(inputElm).toBeValid();
+        expect($rootScope.value).toBe(10);
+        expect(inputElm.val()).toBe('10');
+        expect($rootScope.form.alias.$error.step).toBeFalsy();
+      });
+    });
+
+
+    describe('ngStep', function() {
+      it('should validate', function() {
+        $rootScope.step = 10;
+        $rootScope.value = 20;
+        var inputElm = helper.compileInput('<input type="number" ng-model="value" name="alias" ng-step="step" />');
+
+        expect(inputElm.val()).toBe('20');
+        expect(inputElm).toBeValid();
+        expect($rootScope.value).toBe(20);
+        expect($rootScope.form.alias.$error.step).toBeFalsy();
+
+        helper.changeInputValueTo('18');
+        expect(inputElm).toBeInvalid();
+        expect(inputElm.val()).toBe('18');
+        expect($rootScope.value).toBeUndefined();
+        expect($rootScope.form.alias.$error.step).toBeTruthy();
+
+        helper.changeInputValueTo('10');
+        expect(inputElm).toBeValid();
+        expect(inputElm.val()).toBe('10');
+        expect($rootScope.value).toBe(10);
+        expect($rootScope.form.alias.$error.step).toBeFalsy();
+
+        $rootScope.$apply('value = 12');
+        expect(inputElm).toBeInvalid();
+        expect(inputElm.val()).toBe('12');
+        expect($rootScope.value).toBe(12);
+        expect($rootScope.form.alias.$error.step).toBeTruthy();
+      });
+
+      it('should validate even if the step value changes on-the-fly', function() {
+        $rootScope.step = 10;
+        var inputElm = helper.compileInput('<input type="number" ng-model="value" name="alias" ng-step="step" />');
+
+        helper.changeInputValueTo('10');
+        expect(inputElm).toBeValid();
+        expect($rootScope.value).toBe(10);
+
+        // Step changes, but value matches
+        $rootScope.$apply('step = 5');
+        expect(inputElm.val()).toBe('10');
+        expect(inputElm).toBeValid();
+        expect($rootScope.value).toBe(10);
+        expect($rootScope.form.alias.$error.step).toBeFalsy();
+
+        // Step changes, value does not match
+        $rootScope.$apply('step = 6');
+        expect(inputElm).toBeInvalid();
+        expect($rootScope.value).toBeUndefined();
+        expect(inputElm.val()).toBe('10');
+        expect($rootScope.form.alias.$error.step).toBeTruthy();
+
+        // null = valid
+        $rootScope.$apply('step = null');
+        expect(inputElm).toBeValid();
+        expect($rootScope.value).toBe(10);
+        expect(inputElm.val()).toBe('10');
+        expect($rootScope.form.alias.$error.step).toBeFalsy();
+
+        // Step val as string
+        $rootScope.$apply('step = "7"');
+        expect(inputElm).toBeInvalid();
+        expect($rootScope.value).toBeUndefined();
+        expect(inputElm.val()).toBe('10');
+        expect($rootScope.form.alias.$error.step).toBeTruthy();
+
+        // unparsable string is ignored
+        $rootScope.$apply('step = "abc"');
+        expect(inputElm).toBeValid();
+        expect($rootScope.value).toBe(10);
+        expect(inputElm.val()).toBe('10');
+        expect($rootScope.form.alias.$error.step).toBeFalsy();
+      });
+    });
+
 
     describe('required', function() {
 
@@ -2558,7 +2797,7 @@ describe('input', function() {
       it('should register required on non boolean elements', function() {
         var inputElm = helper.compileInput('<div ng-model="value" name="alias" required>');
 
-        $rootScope.$apply("value = ''");
+        $rootScope.$apply('value = \'\'');
 
         expect(inputElm).toBeInvalid();
         expect($rootScope.form.alias.$error.required).toBeTruthy();
@@ -2567,7 +2806,7 @@ describe('input', function() {
       it('should not invalidate number if ng-required=false and viewValue has not been committed', function() {
         var inputElm = helper.compileInput('<input type="number" ng-model="value" name="alias" ng-required="required">');
 
-        $rootScope.$apply("required = false");
+        $rootScope.$apply('required = false');
 
         expect(inputElm).toBeValid();
       });
@@ -2599,7 +2838,7 @@ describe('input', function() {
         it('should register required on non boolean elements', function() {
           var inputElm = helper.compileInput('<div ng-model="value" name="numberInput" ng-required="true">');
 
-          $rootScope.$apply("value = ''");
+          $rootScope.$apply('value = \'\'');
 
           expect(inputElm).toBeInvalid();
           expect($rootScope.form.numberInput.$error.required).toBeTruthy();
@@ -2645,7 +2884,7 @@ describe('input', function() {
         it('should not register required on non boolean elements', function() {
           var inputElm = helper.compileInput('<div ng-model="value" name="numberInput" ng-required="false">');
 
-          $rootScope.$apply("value = ''");
+          $rootScope.$apply('value = \'\'');
 
           expect(inputElm).toBeValid();
           expect($rootScope.form.numberInput.$error.required).toBeFalsy();
@@ -2761,6 +3000,593 @@ describe('input', function() {
     });
   });
 
+  describe('range', function() {
+
+    var scope;
+
+    var rangeTestEl = angular.element('<input type="range">');
+    var supportsRange = rangeTestEl[0].type === 'range';
+    beforeEach(function() {
+      scope = $rootScope;
+    });
+
+    if (supportsRange) {
+      // This behavior only applies to browsers that implement the range input, which do not
+      // allow to set a non-number value and will set the value of the input to 50 even when you
+      // change it directly on the element.
+      // Other browsers fall back to text inputs, where setting a model value of 50 does not make
+      // sense if the input value is a string. These browsers will mark the input as invalid instead.
+
+      it('should render as 50 if null', function() {
+        var inputElm = helper.compileInput('<input type="range" ng-model="age" />');
+
+        helper.changeInputValueTo('25');
+        expect(scope.age).toBe(25);
+
+        scope.$apply('age = null');
+
+        expect(inputElm.val()).toEqual('50');
+      });
+
+      it('should set model to 50 when no value specified and default min/max', function() {
+        var inputElm = helper.compileInput('<input type="range" ng-model="age" />');
+
+        expect(inputElm.val()).toBe('50');
+
+        scope.$apply('age = null');
+
+        expect(scope.age).toBe(50);
+      });
+
+      it('should parse non-number values to 50 when default min/max', function() {
+        var inputElm = helper.compileInput('<input type="range" ng-model="age" />');
+
+        scope.$apply('age = 10');
+        expect(inputElm.val()).toBe('10');
+
+        helper.changeInputValueTo('');
+        expect(scope.age).toBe(50);
+        expect(inputElm).toBeValid();
+      });
+
+    } else {
+
+      it('should reset the model if view is invalid', function() {
+        var inputElm = helper.compileInput('<input type="range" ng-model="age"/>');
+
+        scope.$apply('age = 100');
+        expect(inputElm.val()).toBe('100');
+
+        helper.changeInputValueTo('100X');
+        expect(inputElm.val()).toBe('100X');
+        expect(scope.age).toBeUndefined();
+        expect(inputElm).toBeInvalid();
+      });
+    }
+
+    it('should parse the input value to a Number', function() {
+      var inputElm = helper.compileInput('<input type="range" ng-model="age" />');
+
+      helper.changeInputValueTo('75');
+      expect(scope.age).toBe(75);
+    });
+
+
+    it('should only invalidate the model if suffering from bad input when the data is parsed', function() {
+      scope.age = 60;
+
+      var inputElm = helper.compileInput('<input type="range" ng-model="age" />', {
+        valid: false,
+        badInput: true
+      });
+
+      expect(inputElm).toBeValid();
+
+      helper.changeInputValueTo('this-will-fail-because-of-the-badInput-flag');
+
+      expect(scope.age).toBeUndefined();
+      expect(inputElm).toBeInvalid();
+    });
+
+
+    it('should throw if the model value is not a number', function() {
+      expect(function() {
+        scope.value = 'one';
+        var inputElm = helper.compileInput('<input type="range" ng-model="value" />');
+      }).toThrowMinErr('ngModel', 'numfmt', 'Expected `one` to be a number');
+    });
+
+
+    describe('min', function() {
+
+      if (supportsRange) {
+
+        it('should initialize correctly with non-default model and min value', function() {
+          scope.value = -3;
+          scope.min = -5;
+          var inputElm = helper.compileInput('<input type="range" ng-model="value" name="alias" min="{{min}}" />');
+
+          expect(inputElm).toBeValid();
+          expect(inputElm.val()).toBe('-3');
+          expect(scope.value).toBe(-3);
+          expect(scope.form.alias.$error.min).toBeFalsy();
+        });
+
+        // Browsers that implement range will never allow you to set the value < min values
+        it('should adjust invalid input values', function() {
+          var inputElm = helper.compileInput('<input type="range" ng-model="value" name="alias" min="10" />');
+
+          helper.changeInputValueTo('5');
+          expect(inputElm).toBeValid();
+          expect(scope.value).toBe(10);
+          expect(scope.form.alias.$error.min).toBeFalsy();
+
+          helper.changeInputValueTo('100');
+          expect(inputElm).toBeValid();
+          expect(scope.value).toBe(100);
+          expect(scope.form.alias.$error.min).toBeFalsy();
+        });
+
+        it('should set the model to the min val if it is less than the min val', function() {
+          scope.value = -10;
+          // Default min is 0
+          var inputElm = helper.compileInput('<input type="range" ng-model="value" name="alias" min="{{min}}" />');
+
+          expect(inputElm).toBeValid();
+          expect(inputElm.val()).toBe('0');
+          expect(scope.value).toBe(0);
+
+          scope.$apply('value = 5; min = 10');
+
+          expect(inputElm).toBeValid();
+          expect(inputElm.val()).toBe('10');
+          expect(scope.value).toBe(10);
+        });
+
+        it('should adjust the element and model value when the min value changes on-the-fly', function() {
+          scope.min = 10;
+          var inputElm = helper.compileInput('<input type="range" ng-model="value" name="alias" min="{{min}}" />');
+
+          helper.changeInputValueTo('15');
+          expect(inputElm).toBeValid();
+
+          scope.min = 20;
+          scope.$digest();
+          expect(inputElm).toBeValid();
+          expect(scope.value).toBe(20);
+          expect(inputElm.val()).toBe('20');
+
+          scope.min = null;
+          scope.$digest();
+          expect(inputElm).toBeValid();
+          expect(scope.value).toBe(20);
+          expect(inputElm.val()).toBe('20');
+
+          scope.min = '15';
+          scope.$digest();
+          expect(inputElm).toBeValid();
+          expect(scope.value).toBe(20);
+          expect(inputElm.val()).toBe('20');
+
+          scope.min = 'abc';
+          scope.$digest();
+          expect(inputElm).toBeValid();
+          expect(scope.value).toBe(20);
+          expect(inputElm.val()).toBe('20');
+        });
+
+      } else {
+        // input[type=range] will become type=text in browsers that don't support it
+
+        it('should validate if "range" is not implemented', function() {
+          var inputElm = helper.compileInput('<input type="range" ng-model="value" name="alias" min="10" />');
+
+          helper.changeInputValueTo('5');
+          expect(inputElm).toBeInvalid();
+          expect(scope.value).toBeUndefined();
+          expect(scope.form.alias.$error.min).toBeTruthy();
+
+          helper.changeInputValueTo('100');
+          expect(inputElm).toBeValid();
+          expect(scope.value).toBe(100);
+          expect(scope.form.alias.$error.min).toBeFalsy();
+        });
+
+        it('should not assume a min val of 0 if the min interpolates to a non-number', function() {
+          scope.value = -10;
+          var inputElm = helper.compileInput('<input type="range" ng-model="value" name="alias" min="{{min}}" />');
+
+          expect(inputElm).toBeValid();
+          expect(inputElm.val()).toBe('-10');
+          expect(scope.value).toBe(-10);
+          expect(scope.form.alias.$error.min).toBeFalsy();
+
+          helper.changeInputValueTo('-5');
+          expect(inputElm).toBeValid();
+          expect(inputElm.val()).toBe('-5');
+          expect(scope.value).toBe(-5);
+          expect(scope.form.alias.$error.min).toBeFalsy();
+
+          scope.$apply('max = "null"');
+          expect(inputElm).toBeValid();
+          expect(inputElm.val()).toBe('-5');
+          expect(scope.value).toBe(-5);
+          expect(scope.form.alias.$error.max).toBeFalsy();
+
+          scope.$apply('max = "asdf"');
+          expect(inputElm).toBeValid();
+          expect(inputElm.val()).toBe('-5');
+          expect(scope.value).toBe(-5);
+          expect(scope.form.alias.$error.max).toBeFalsy();
+        });
+
+        it('should validate even if the min value changes on-the-fly', function() {
+          scope.min = 10;
+          var inputElm = helper.compileInput('<input type="range" ng-model="value" name="alias" min="{{min}}" />');
+
+          helper.changeInputValueTo('15');
+          expect(inputElm).toBeValid();
+          expect(scope.value).toBe(15);
+
+          scope.min = 20;
+          scope.$digest();
+          expect(inputElm).toBeInvalid();
+          expect(scope.value).toBeUndefined();
+          expect(inputElm.val()).toBe('15');
+
+          scope.min = null;
+          scope.$digest();
+          expect(inputElm).toBeValid();
+          expect(scope.value).toBe(15);
+          expect(inputElm.val()).toBe('15');
+
+          scope.min = '16';
+          scope.$digest();
+          expect(inputElm).toBeInvalid();
+          expect(scope.value).toBeUndefined();
+          expect(inputElm.val()).toBe('15');
+
+          scope.min = 'abc';
+          scope.$digest();
+          expect(inputElm).toBeValid();
+          expect(scope.value).toBe(15);
+          expect(inputElm.val()).toBe('15');
+        });
+
+      }
+    });
+
+    describe('max', function() {
+
+      if (supportsRange) {
+        // Browsers that implement range will never allow you to set the value > max value
+        it('should initialize correctly with non-default model and max value', function() {
+          scope.value = 130;
+          scope.max = 150;
+          var inputElm = helper.compileInput('<input type="range" ng-model="value" name="alias" max="{{max}}" />');
+
+          expect(inputElm).toBeValid();
+          expect(inputElm.val()).toBe('130');
+          expect(scope.value).toBe(130);
+          expect(scope.form.alias.$error.max).toBeFalsy();
+        });
+
+        it('should validate', function() {
+          var inputElm = helper.compileInput('<input type="range" ng-model="value" name="alias" max="10" />');
+
+          helper.changeInputValueTo('20');
+          expect(inputElm).toBeValid();
+          expect(scope.value).toBe(10);
+          expect(scope.form.alias.$error.max).toBeFalsy();
+
+          helper.changeInputValueTo('0');
+          expect(inputElm).toBeValid();
+          expect(scope.value).toBe(0);
+          expect(scope.form.alias.$error.max).toBeFalsy();
+        });
+
+        it('should set the model to the max val if it is greater than the max val', function() {
+          scope.value = 110;
+          // Default max is 100
+          var inputElm = helper.compileInput('<input type="range" ng-model="value" name="alias" max="{{max}}" />');
+
+          expect(inputElm).toBeValid();
+          expect(inputElm.val()).toBe('100');
+          expect(scope.value).toBe(100);
+
+          scope.$apply('value = 90; max = 10');
+
+          expect(inputElm).toBeValid();
+          expect(inputElm.val()).toBe('10');
+          expect(scope.value).toBe(10);
+        });
+
+        it('should adjust the element and model value if the max value changes on-the-fly', function() {
+          scope.max = 10;
+          var inputElm = helper.compileInput('<input type="range" ng-model="value" name="alias" max="{{max}}" />');
+
+          helper.changeInputValueTo('5');
+          expect(inputElm).toBeValid();
+
+          scope.max = 0;
+          scope.$digest();
+          expect(inputElm).toBeValid();
+          expect(scope.value).toBe(0);
+          expect(inputElm.val()).toBe('0');
+
+          scope.max = null;
+          scope.$digest();
+          expect(inputElm).toBeValid();
+          expect(scope.value).toBe(0);
+          expect(inputElm.val()).toBe('0');
+
+          scope.max = '4';
+          scope.$digest();
+          expect(inputElm).toBeValid();
+          expect(scope.value).toBe(0);
+          expect(inputElm.val()).toBe('0');
+
+          scope.max = 'abc';
+          scope.$digest();
+          expect(inputElm).toBeValid();
+          expect(scope.value).toBe(0);
+          expect(inputElm.val()).toBe('0');
+        });
+
+      } else {
+        it('should validate if "range" is not implemented', function() {
+          var inputElm = helper.compileInput('<input type="range" ng-model="value" name="alias" max="10" />');
+
+          helper.changeInputValueTo('20');
+          expect(inputElm).toBeInvalid();
+          expect(scope.value).toBeUndefined();
+          expect(scope.form.alias.$error.max).toBeTruthy();
+
+          helper.changeInputValueTo('0');
+          expect(inputElm).toBeValid();
+          expect(scope.value).toBe(0);
+          expect(scope.form.alias.$error.max).toBeFalsy();
+        });
+
+        it('should not assume a max val of 100 if the max attribute interpolates to a non-number', function() {
+          scope.value = 120;
+          var inputElm = helper.compileInput('<input type="range" ng-model="value" name="alias" max="{{max}}" />');
+
+          expect(inputElm).toBeValid();
+          expect(inputElm.val()).toBe('120');
+          expect(scope.value).toBe(120);
+          expect(scope.form.alias.$error.max).toBeFalsy();
+
+          helper.changeInputValueTo('140');
+          expect(inputElm).toBeValid();
+          expect(inputElm.val()).toBe('140');
+          expect(scope.value).toBe(140);
+          expect(scope.form.alias.$error.max).toBeFalsy();
+
+          scope.$apply('max = null');
+          expect(inputElm).toBeValid();
+          expect(inputElm.val()).toBe('140');
+          expect(scope.value).toBe(140);
+          expect(scope.form.alias.$error.max).toBeFalsy();
+
+          scope.$apply('max = "asdf"');
+          expect(inputElm).toBeValid();
+          expect(inputElm.val()).toBe('140');
+          expect(scope.value).toBe(140);
+          expect(scope.form.alias.$error.max).toBeFalsy();
+        });
+
+        it('should validate even if the max value changes on-the-fly', function() {
+          scope.max = 10;
+          var inputElm = helper.compileInput('<input type="range" ng-model="value" name="alias" max="{{max}}" />');
+
+          helper.changeInputValueTo('5');
+          expect(inputElm).toBeValid();
+          expect(scope.value).toBe(5);
+
+          scope.max = 0;
+          scope.$digest();
+          expect(inputElm).toBeInvalid();
+          expect(scope.value).toBeUndefined();
+          expect(inputElm.val()).toBe('5');
+
+          scope.max = null;
+          scope.$digest();
+          expect(inputElm).toBeValid();
+          expect(scope.value).toBe(5);
+          expect(inputElm.val()).toBe('5');
+
+          scope.max = '4';
+          scope.$digest();
+          expect(inputElm).toBeInvalid();
+          expect(scope.value).toBeUndefined();
+          expect(inputElm.val()).toBe('5');
+
+          scope.max = 'abc';
+          scope.$digest();
+          expect(inputElm).toBeValid();
+          expect(scope.value).toBe(5);
+          expect(inputElm.val()).toBe('5');
+        });
+      }
+    });
+
+    if (supportsRange) {
+
+      describe('min and max', function() {
+
+        it('should set the correct initial value when min and max are specified', function() {
+          scope.max = 80;
+          scope.min = 40;
+          var inputElm = helper.compileInput('<input type="range" ng-model="value" name="alias" max="{{max}}" min="{{min}}" />');
+
+          expect(inputElm.val()).toBe('60');
+          expect(scope.value).toBe(60);
+        });
+
+        it('should set element and model value to min if max is less than min', function() {
+          scope.min = 40;
+          var inputElm = helper.compileInput('<input type="range" ng-model="value" name="alias" max="{{max}}" min="{{min}}" />');
+
+          expect(inputElm.val()).toBe('70');
+          expect(scope.value).toBe(70);
+
+          scope.max = 20;
+          scope.$digest();
+
+          expect(inputElm.val()).toBe('40');
+          expect(scope.value).toBe(40);
+        });
+      });
+
+    }
+
+
+    describe('step', function() {
+
+      if (supportsRange) {
+        // Browsers that implement range will never allow you to set a value that doesn't match the step value
+        // However, currently only Firefox fully inplements the spec when setting the value after the step value changes.
+        // Other browsers fail in various edge cases, which is why they are not tested here.
+        it('should round the input value to the nearest step on user input', function() {
+          var inputElm = helper.compileInput('<input type="range" ng-model="value" name="alias" step="5" />');
+
+          helper.changeInputValueTo('5');
+          expect(inputElm).toBeValid();
+          expect(scope.value).toBe(5);
+          expect(scope.form.alias.$error.step).toBeFalsy();
+
+          helper.changeInputValueTo('10');
+          expect(inputElm).toBeValid();
+          expect(scope.value).toBe(10);
+          expect(scope.form.alias.$error.step).toBeFalsy();
+
+          helper.changeInputValueTo('9');
+          expect(inputElm).toBeValid();
+          expect(scope.value).toBe(10);
+          expect(scope.form.alias.$error.step).toBeFalsy();
+
+          helper.changeInputValueTo('7');
+          expect(inputElm).toBeValid();
+          expect(scope.value).toBe(5);
+          expect(scope.form.alias.$error.step).toBeFalsy();
+
+          helper.changeInputValueTo('7.5');
+          expect(inputElm).toBeValid();
+          expect(scope.value).toBe(10);
+          expect(scope.form.alias.$error.step).toBeFalsy();
+        });
+
+        it('should round the input value to the nearest step when setting the model', function() {
+          var inputElm = helper.compileInput('<input type="range" ng-model="value" name="alias" step="5" />');
+
+          scope.$apply('value = 10');
+          expect(inputElm.val()).toBe('10');
+          expect(inputElm).toBeValid();
+          expect(scope.value).toBe(10);
+          expect(scope.form.alias.$error.step).toBeFalsy();
+
+          scope.$apply('value = 5');
+          expect(inputElm.val()).toBe('5');
+          expect(inputElm).toBeValid();
+          expect(scope.value).toBe(5);
+          expect(scope.form.alias.$error.step).toBeFalsy();
+
+          scope.$apply('value = 7.5');
+          expect(inputElm.val()).toBe('10');
+          expect(inputElm).toBeValid();
+          expect(scope.value).toBe(10);
+          expect(scope.form.alias.$error.step).toBeFalsy();
+
+          scope.$apply('value = 7');
+          expect(inputElm.val()).toBe('5');
+          expect(inputElm).toBeValid();
+          expect(scope.value).toBe(5);
+          expect(scope.form.alias.$error.step).toBeFalsy();
+
+          scope.$apply('value = 9');
+          expect(inputElm.val()).toBe('10');
+          expect(inputElm).toBeValid();
+          expect(scope.value).toBe(10);
+          expect(scope.form.alias.$error.step).toBeFalsy();
+        });
+
+      } else {
+        it('should validate if "range" is not implemented', function() {
+          scope.step = 10;
+          scope.value = 20;
+          var inputElm = helper.compileInput('<input type="range" ng-model="value" name="alias" step="{{step}}" />');
+
+          expect(inputElm.val()).toBe('20');
+          expect(inputElm).toBeValid();
+          expect(scope.value).toBe(20);
+          expect(scope.form.alias.$error.step).toBeFalsy();
+
+          helper.changeInputValueTo('18');
+          expect(inputElm).toBeInvalid();
+          expect(inputElm.val()).toBe('18');
+          expect(scope.value).toBeUndefined();
+          expect(scope.form.alias.$error.step).toBeTruthy();
+
+          helper.changeInputValueTo('10');
+          expect(inputElm).toBeValid();
+          expect(inputElm.val()).toBe('10');
+          expect(scope.value).toBe(10);
+          expect(scope.form.alias.$error.step).toBeFalsy();
+
+          scope.$apply('value = 12');
+          expect(inputElm).toBeInvalid();
+          expect(inputElm.val()).toBe('12');
+          expect(scope.value).toBe(12);
+          expect(scope.form.alias.$error.step).toBeTruthy();
+        });
+
+        it('should validate even if the step value changes on-the-fly', function() {
+          scope.step = 10;
+          var inputElm = helper.compileInput('<input type="range" ng-model="value" name="alias" step="{{step}}" />');
+
+          helper.changeInputValueTo('10');
+          expect(inputElm).toBeValid();
+          expect(scope.value).toBe(10);
+
+          // Step changes, but value matches
+          scope.$apply('step = 5');
+          expect(inputElm.val()).toBe('10');
+          expect(inputElm).toBeValid();
+          expect(scope.value).toBe(10);
+          expect(scope.form.alias.$error.step).toBeFalsy();
+
+          // Step changes, value does not match
+          scope.$apply('step = 6');
+          expect(inputElm).toBeInvalid();
+          expect(scope.value).toBeUndefined();
+          expect(inputElm.val()).toBe('10');
+          expect(scope.form.alias.$error.step).toBeTruthy();
+
+          // null = valid
+          scope.$apply('step = null');
+          expect(inputElm).toBeValid();
+          expect(scope.value).toBe(10);
+          expect(inputElm.val()).toBe('10');
+          expect(scope.form.alias.$error.step).toBeFalsy();
+
+          // Step val as string
+          scope.$apply('step = "7"');
+          expect(inputElm).toBeInvalid();
+          expect(scope.value).toBeUndefined();
+          expect(inputElm.val()).toBe('10');
+          expect(scope.form.alias.$error.step).toBeTruthy();
+
+          // unparsable string is ignored
+          scope.$apply('step = "abc"');
+          expect(inputElm).toBeValid();
+          expect(scope.value).toBe(10);
+          expect(inputElm.val()).toBe('10');
+          expect(scope.form.alias.$error.step).toBeFalsy();
+        });
+      }
+    });
+  });
 
   describe('email', function() {
 
@@ -2784,14 +3610,103 @@ describe('input', function() {
     describe('EMAIL_REGEXP', function() {
       /* global EMAIL_REGEXP: false */
       it('should validate email', function() {
+        /* basic functionality */
         expect(EMAIL_REGEXP.test('a@b.com')).toBe(true);
         expect(EMAIL_REGEXP.test('a@b.museum')).toBe(true);
         expect(EMAIL_REGEXP.test('a@B.c')).toBe(true);
+        /* domain label separation, hyphen-minus, syntax */
+        expect(EMAIL_REGEXP.test('a@b.c.')).toBe(false);
         expect(EMAIL_REGEXP.test('a@.b.c')).toBe(false);
         expect(EMAIL_REGEXP.test('a@-b.c')).toBe(false);
         expect(EMAIL_REGEXP.test('a@b-.c')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@b-c')).toBe(true);
+        expect(EMAIL_REGEXP.test('a@-')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@.')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@host_name')).toBe(false);
+        /* leading or sole digit */
         expect(EMAIL_REGEXP.test('a@3b.c')).toBe(true);
+        expect(EMAIL_REGEXP.test('a@3')).toBe(true);
+        /* TLD eMail address */
         expect(EMAIL_REGEXP.test('a@b')).toBe(true);
+        /* domain valid characters */
+        expect(EMAIL_REGEXP.test('a@abcdefghijklmnopqrstuvwxyz-ABCDEFGHIJKLMNOPQRSTUVWXYZ.0123456789')).toBe(true);
+        /* domain invalid characters */
+        expect(EMAIL_REGEXP.test('a@')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@ ')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@!')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@"')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@#')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@$')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@%')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@&')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@\'')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@(')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@)')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@*')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@+')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@,')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@/')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@:')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@;')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@<')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@=')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@>')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@?')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@@')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@[')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@\\')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@]')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@^')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@_')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@`')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@{')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@|')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@}')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@~')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@İ')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@ı')).toBe(false);
+        /* domain length, label and total */
+        expect(EMAIL_REGEXP.test('a@xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')).toBe(true);
+        expect(EMAIL_REGEXP.test('a@xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')).toBe(false);
+        /* eslint-disable max-len */
+        expect(EMAIL_REGEXP.test('a@xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')).toBe(true);
+        expect(EMAIL_REGEXP.test('a@xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.x')).toBe(true);
+        expect(EMAIL_REGEXP.test('a@xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xx')).toBe(false);
+        expect(EMAIL_REGEXP.test('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xx')).toBe(true);
+        expect(EMAIL_REGEXP.test('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xxx')).toBe(false);
+        /* eslint-enable */
+        /* local-part valid characters and dot-atom syntax */
+        expect(EMAIL_REGEXP.test('\'@x')).toBe(true);
+        expect(EMAIL_REGEXP.test('-!#$%&*+/0123456789=?ABCDEFGHIJKLMNOPQRSTUVWXYZ@x')).toBe(true);
+        expect(EMAIL_REGEXP.test('^_`abcdefghijklmnopqrstuvwxyz{|}~@x')).toBe(true);
+        expect(EMAIL_REGEXP.test('.@x')).toBe(false);
+        expect(EMAIL_REGEXP.test('\'.@x')).toBe(false);
+        expect(EMAIL_REGEXP.test('.\'@x')).toBe(false);
+        expect(EMAIL_REGEXP.test('\'.\'@x')).toBe(true);
+        /* local-part invalid characters */
+        expect(EMAIL_REGEXP.test('@x')).toBe(false);
+        expect(EMAIL_REGEXP.test(' @x')).toBe(false);
+        expect(EMAIL_REGEXP.test('"@x')).toBe(false);
+        expect(EMAIL_REGEXP.test('(@x')).toBe(false);
+        expect(EMAIL_REGEXP.test(')@x')).toBe(false);
+        expect(EMAIL_REGEXP.test(',@x')).toBe(false);
+        expect(EMAIL_REGEXP.test(':@x')).toBe(false);
+        expect(EMAIL_REGEXP.test(';@x')).toBe(false);
+        expect(EMAIL_REGEXP.test('<@x')).toBe(false);
+        expect(EMAIL_REGEXP.test('>@x')).toBe(false);
+        expect(EMAIL_REGEXP.test('@@x')).toBe(false);
+        expect(EMAIL_REGEXP.test('[@x')).toBe(false);
+        expect(EMAIL_REGEXP.test('\\@x')).toBe(false);
+        expect(EMAIL_REGEXP.test(']@x')).toBe(false);
+        expect(EMAIL_REGEXP.test('İ@x')).toBe(false);
+        expect(EMAIL_REGEXP.test('ı@x')).toBe(false);
+        /* local-part size limit */
+        expect(EMAIL_REGEXP.test('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx@x')).toBe(true);
+        expect(EMAIL_REGEXP.test('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx@x')).toBe(false);
+        /* content (local-part + ‘@’ + domain) is required */
+        expect(EMAIL_REGEXP.test('')).toBe(false);
+        expect(EMAIL_REGEXP.test('a')).toBe(false);
+        expect(EMAIL_REGEXP.test('aa')).toBe(false);
       });
     });
   });
@@ -2938,12 +3853,12 @@ describe('input', function() {
           '<input type="radio" ng-model="color" value="red" />' +
           '<input type="radio" ng-model="color" value="blue" />');
 
-      $rootScope.$apply("color = 'white'");
+      $rootScope.$apply('color = \'white\'');
       expect(inputElm[0].checked).toBe(true);
       expect(inputElm[1].checked).toBe(false);
       expect(inputElm[2].checked).toBe(false);
 
-      $rootScope.$apply("color = 'red'");
+      $rootScope.$apply('color = \'red\'');
       expect(inputElm[0].checked).toBe(false);
       expect(inputElm[1].checked).toBe(true);
       expect(inputElm[2].checked).toBe(false);
@@ -2958,10 +3873,10 @@ describe('input', function() {
       var inputElm = helper.compileInput(
           '<input type="radio" ng-model="model" value="0" />');
 
-      $rootScope.$apply("model = '0'");
+      $rootScope.$apply('model = \'0\'');
       expect(inputElm[0].checked).toBe(true);
 
-      $rootScope.$apply("model = 0");
+      $rootScope.$apply('model = 0');
       expect(inputElm[0].checked).toBe(true);
     });
 
@@ -2984,10 +3899,57 @@ describe('input', function() {
       browserTrigger(inputElm[1], 'click');
       expect($rootScope.value).toBe('red');
 
-      $rootScope.$apply("other = 'non-red'");
+      $rootScope.$apply('other = \'non-red\'');
 
       expect(inputElm[0].checked).toBe(false);
       expect(inputElm[1].checked).toBe(false);
+    });
+
+
+    it('should allow the use of ngTrim', function() {
+      $rootScope.some = 11;
+      var inputElm = helper.compileInput(
+          '<input type="radio" ng-model="value" value="opt1" />' +
+          '<input type="radio" ng-model="value" value="  opt2  " />' +
+          '<input type="radio" ng-model="value" ng-trim="false" value="  opt3  " />' +
+          '<input type="radio" ng-model="value" ng-trim="false" value="{{some}}" />' +
+          '<input type="radio" ng-model="value" ng-trim="false" value="  {{some}}  " />');
+
+      $rootScope.$apply(function() {
+        $rootScope.value = 'blue';
+        $rootScope.some = 'blue';
+      });
+
+      expect(inputElm[0].checked).toBe(false);
+      expect(inputElm[1].checked).toBe(false);
+      expect(inputElm[2].checked).toBe(false);
+      expect(inputElm[3].checked).toBe(true);
+      expect(inputElm[4].checked).toBe(false);
+
+      browserTrigger(inputElm[1], 'click');
+      expect($rootScope.value).toBe('opt2');
+      browserTrigger(inputElm[2], 'click');
+      expect($rootScope.value).toBe('  opt3  ');
+      browserTrigger(inputElm[3], 'click');
+      expect($rootScope.value).toBe('blue');
+      browserTrigger(inputElm[4], 'click');
+      expect($rootScope.value).toBe('  blue  ');
+
+      $rootScope.$apply('value = \'  opt2  \'');
+      expect(inputElm[1].checked).toBe(false);
+      $rootScope.$apply('value = \'opt2\'');
+      expect(inputElm[1].checked).toBe(true);
+      $rootScope.$apply('value = \'  opt3  \'');
+      expect(inputElm[2].checked).toBe(true);
+      $rootScope.$apply('value = \'opt3\'');
+      expect(inputElm[2].checked).toBe(false);
+
+      $rootScope.$apply('value = \'blue\'');
+      expect(inputElm[3].checked).toBe(true);
+      expect(inputElm[4].checked).toBe(false);
+      $rootScope.$apply('value = \'  blue  \'');
+      expect(inputElm[3].checked).toBe(false);
+      expect(inputElm[4].checked).toBe(true);
     });
   });
 
@@ -3008,10 +3970,10 @@ describe('input', function() {
     it('should format booleans', function() {
       var inputElm = helper.compileInput('<input type="checkbox" ng-model="name" />');
 
-      $rootScope.$apply("name = false");
+      $rootScope.$apply('name = false');
       expect(inputElm[0].checked).toBe(false);
 
-      $rootScope.$apply("name = true");
+      $rootScope.$apply('name = true');
       expect(inputElm[0].checked).toBe(true);
     });
 
@@ -3031,13 +3993,13 @@ describe('input', function() {
       var inputElm = helper.compileInput('<input type="checkbox" ng-model="name" ng-true-value="\'y\'" ' +
           'ng-false-value="\'n\'">');
 
-      $rootScope.$apply("name = 'y'");
+      $rootScope.$apply('name = \'y\'');
       expect(inputElm[0].checked).toBe(true);
 
-      $rootScope.$apply("name = 'n'");
+      $rootScope.$apply('name = \'n\'');
       expect(inputElm[0].checked).toBe(false);
 
-      $rootScope.$apply("name = 'something else'");
+      $rootScope.$apply('name = \'something else\'');
       expect(inputElm[0].checked).toBe(false);
 
       browserTrigger(inputElm, 'click');
@@ -3051,14 +4013,14 @@ describe('input', function() {
     it('should throw if ngTrueValue is present and not a constant expression', function() {
       expect(function() {
         var inputElm = helper.compileInput('<input type="checkbox" ng-model="value" ng-true-value="yes" />');
-      }).toThrowMinErr('ngModel', 'constexpr', "Expected constant expression for `ngTrueValue`, but saw `yes`.");
+      }).toThrowMinErr('ngModel', 'constexpr', 'Expected constant expression for `ngTrueValue`, but saw `yes`.');
     });
 
 
     it('should throw if ngFalseValue is present and not a constant expression', function() {
       expect(function() {
         var inputElm = helper.compileInput('<input type="checkbox" ng-model="value" ng-false-value="no" />');
-      }).toThrowMinErr('ngModel', 'constexpr', "Expected constant expression for `ngFalseValue`, but saw `no`.");
+      }).toThrowMinErr('ngModel', 'constexpr', 'Expected constant expression for `ngFalseValue`, but saw `no`.');
     });
 
 
@@ -3099,10 +4061,10 @@ describe('input', function() {
 
   describe('textarea', function() {
 
-    it("should process textarea", function() {
+    it('should process textarea', function() {
       var inputElm = helper.compileInput('<textarea ng-model="name"></textarea>');
 
-      $rootScope.$apply("name = 'Adam'");
+      $rootScope.$apply('name = \'Adam\'');
       expect(inputElm.val()).toEqual('Adam');
 
       helper.changeInputValueTo('Shyam');
@@ -3130,12 +4092,28 @@ describe('input', function() {
     it('should update the dom "value" property and attribute', function() {
       var inputElm = helper.compileInput('<input type="submit" ng-value="value">');
 
-      $rootScope.$apply("value = 'something'");
+      $rootScope.$apply('value = \'something\'');
 
       expect(inputElm[0].value).toBe('something');
       expect(inputElm[0].getAttribute('value')).toBe('something');
     });
 
+    they('should update the $prop "value" property and attribute after the bound expression changes', {
+      input: '<input type="text" ng-value="value">',
+      textarea: '<textarea ng-value="value"></textarea>'
+    }, function(tmpl) {
+      var element = helper.compileInput(tmpl);
+
+      helper.changeInputValueTo('newValue');
+      expect(element[0].value).toBe('newValue');
+      expect(element[0].getAttribute('value')).toBeNull();
+
+      $rootScope.$apply(function() {
+        $rootScope.value = 'anotherValue';
+      });
+      expect(element[0].value).toBe('anotherValue');
+      expect(element[0].getAttribute('value')).toBe('anotherValue');
+    });
 
     it('should evaluate and set constant expressions', function() {
       var inputElm = helper.compileInput('<input type="radio" ng-model="selected" ng-value="true">' +

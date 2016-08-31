@@ -1,4 +1,7 @@
-angular.module("test", []).
-  controller("TestCtrl", function($scope) {
-    $scope.text = "Hello, world!";
+'use strict';
+
+angular.
+  module('test', []).
+  controller('TestController', function($scope) {
+    $scope.text = 'Hello, world!';
   });

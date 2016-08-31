@@ -322,7 +322,6 @@ function annotate(fn, strictDi, name) {
 
 
 
-
 /**
  * @ngdoc service
  * @name $provide
@@ -666,7 +665,7 @@ function createInjector(modulesToLoad, strictDi) {
             if (angular.isString(caller)) {
               path.push(caller);
             }
-            throw $injectorMinErr('unpr', "Unknown provider: {0}", path.join(' <- '));
+            throw $injectorMinErr('unpr', 'Unknown provider: {0}', path.join(' <- '));
           })),
       instanceCache = {},
       protoInstanceInjector =
@@ -705,16 +704,16 @@ function createInjector(modulesToLoad, strictDi) {
       provider_ = providerInjector.instantiate(provider_);
     }
     if (!provider_.$get) {
-      throw $injectorMinErr('pget', "Provider '{0}' must define $get factory method.", name);
+      throw $injectorMinErr('pget', 'Provider \'{0}\' must define $get factory method.', name);
     }
-    return providerCache[name + providerSuffix] = provider_;
+    return (providerCache[name + providerSuffix] = provider_);
   }
 
   function enforceReturnValue(name, factory) {
-    return function enforcedReturnValue() {
+    return /** @this */ function enforcedReturnValue() {
       var result = instanceInjector.invoke(factory, this);
       if (isUndefined(result)) {
-        throw $injectorMinErr('undef', "Provider '{0}' must return a value from $get factory method.", name);
+        throw $injectorMinErr('undef', 'Provider \'{0}\' must return a value from $get factory method.', name);
       }
       return result;
     };
@@ -792,10 +791,10 @@ function createInjector(modulesToLoad, strictDi) {
           // unlike those of Chrome and IE
           // So if stack doesn't contain message, we create a new string that contains both.
           // Since error.stack is read-only in Safari, I'm overriding e and not e.stack here.
-          /* jshint -W022 */
+          // eslint-disable-next-line no-ex-assign
           e = e.message + '\n' + e.stack;
         }
-        throw $injectorMinErr('modulerr', "Failed to instantiate module {0} due to:\n{1}",
+        throw $injectorMinErr('modulerr', 'Failed to instantiate module {0} due to:\n{1}',
                   module, e.stack || e.message || e);
       }
     });
@@ -819,7 +818,8 @@ function createInjector(modulesToLoad, strictDi) {
         try {
           path.unshift(serviceName);
           cache[serviceName] = INSTANTIATING;
-          return cache[serviceName] = factory(serviceName, caller);
+          cache[serviceName] = factory(serviceName, caller);
+          return cache[serviceName];
         } catch (err) {
           if (cache[serviceName] === INSTANTIATING) {
             delete cache[serviceName];
@@ -855,9 +855,9 @@ function createInjector(modulesToLoad, strictDi) {
       }
       var result = func.$$ngIsClass;
       if (!isBoolean(result)) {
-        // Workaround for MS Edge.
-        // Check https://connect.microsoft.com/IE/Feedback/Details/2211653
-        result = func.$$ngIsClass = /^(?:class\s|constructor\()/.test(stringifyFn(func));
+        // Support: Edge 12-13 only
+        // See: https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/6156135/
+        result = func.$$ngIsClass = /^(?:class\b|constructor\()/.test(stringifyFn(func));
       }
       return result;
     }

@@ -19,11 +19,10 @@ describe('HTML', function() {
 
   describe('htmlParser', function() {
     /* global htmlParser */
-    if (angular.isUndefined(window.htmlParser)) return;
 
     var handler, start, text, comment;
     beforeEach(function() {
-      text = "";
+      text = '';
       start = null;
       handler = {
         start: function(tag, attrs) {
@@ -309,13 +308,12 @@ describe('HTML', function() {
 
   describe('htmlSanitizerWriter', function() {
     /* global htmlSanitizeWriter: false */
-    if (angular.isUndefined(window.htmlSanitizeWriter)) return;
 
     var writer, html, uriValidator;
     beforeEach(function() {
       html = '';
       uriValidator = jasmine.createSpy('uriValidator');
-      writer = htmlSanitizeWriter({push:function(text) {html+=text;}}, uriValidator);
+      writer = htmlSanitizeWriter({push:function(text) {html += text;}}, uriValidator);
     });
 
     it('should write basic HTML', function() {
@@ -349,7 +347,7 @@ describe('HTML', function() {
     });
 
     it('should ignore unknown attributes', function() {
-      writer.start('div', {unknown:""});
+      writer.start('div', {unknown:''});
       expect(html).toEqual('<div>');
     });
 
@@ -481,13 +479,13 @@ describe('HTML', function() {
     });
 
     it('should not be URI', function() {
-      /* jshint scripturl: true */
+      // eslint-disable-next-line no-script-url
       expect('javascript:alert').not.toBeValidUrl();
     });
 
     describe('javascript URLs', function() {
       it('should ignore javascript:', function() {
-        /* jshint scripturl: true */
+        // eslint-disable-next-line no-script-url
         expect('JavaScript:abc').not.toBeValidUrl();
         expect(' \n Java\n Script:abc').not.toBeValidUrl();
         expect('http://JavaScript/my.js').toBeValidUrl();

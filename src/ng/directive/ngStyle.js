@@ -8,6 +8,11 @@
  * @description
  * The `ngStyle` directive allows you to set CSS style on an HTML element conditionally.
  *
+ * @knownIssue
+ * You should not use {@link guide/interpolation interpolation} in the value of the `style`
+ * attribute, when using the `ngStyle` directive on the same element.
+ * See {@link guide/interpolation#known-issues here} for more info.
+ *
  * @element ANY
  * @param {expression} ngStyle
  *
@@ -19,7 +24,7 @@
  * See the 'background-color' style in the example below.
  *
  * @example
-   <example>
+   <example name="ng-style">
      <file name="index.html">
         <input type="button" value="set color" ng-click="myStyle={color:'red'}">
         <input type="button" value="set background" ng-click="myStyle={'background-color':'blue'}">

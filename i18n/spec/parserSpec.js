@@ -1,3 +1,5 @@
+'use strict';
+
 var parsePattern = require('../src/parser.js').parsePattern;
 
 describe('parsePattern', function() {
@@ -22,7 +24,7 @@ describe('parsePattern', function() {
     parseAndExpect('#,##0.###', '', '-', '', '', 1, 0, 3, 3, 3);
     parseAndExpect('#,##0.###;#,##0.###-', '', '', '', '-', 1, 0, 3, 3, 3);
     parseAndExpect('#,##,##0.###', '', '-', '', '', 1, 0, 3, 2, 3);
-    parseAndExpect("#,##0.###;\'\u202A\'-#,##0.###\'\u202C\'",
+    parseAndExpect('#,##0.###;\'\u202A\'-#,##0.###\'\u202C\'',
         '', '\u202A-', '', '\u202C', 1, 0, 3, 3, 3);
     parseAndExpect('#0.###;#0.###-', '', '', '', '-', 1, 0, 3, 0, 0);
 
@@ -31,7 +33,7 @@ describe('parsePattern', function() {
   it('should parse CURRENCY patterns', function() {
     // all CURRENCY patterns from closure
     parseAndExpect('#,##0.00 \u00A4', '', '-', ' \u00A4', ' \u00A4', 1, 2, 2, 3, 3);
-    parseAndExpect("#,##0.00\u00A0\u00A4;\'\u202A\'-#,##0.00\'\u202C\'\u00A0\u00A4",
+    parseAndExpect('#,##0.00\u00A0\u00A4;\'\u202A\'-#,##0.00\'\u202C\'\u00A0\u00A4',
                    '', '\u202A-', '\u00A0\u00A4', '\u202C\u00A0\u00A4', 1, 2, 2, 3, 3);
     parseAndExpect('#,##0.00 \u00A4;(#,##0.00 \u00A4)',
                    '', '(', ' \u00A4', ' \u00A4)', 1, 2, 2, 3, 3);

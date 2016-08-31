@@ -3,8 +3,8 @@
 describe('$document', function() {
 
 
-  it("should inject $document", inject(function($document) {
-    expect($document).toEqual(jqLite(document));
+  it('should inject $document', inject(function($document) {
+    expect($document).toEqual(jqLite(window.document));
   }));
 
 
@@ -33,7 +33,7 @@ describe('$$isDocumentHidden', function() {
   it('should listen on the visibilitychange event', function() {
     var doc;
 
-    var spy = spyOn(document, 'addEventListener').and.callThrough();
+    var spy = spyOn(window.document, 'addEventListener').and.callThrough();
 
     inject(function($$isDocumentHidden, $document) {
       expect(spy.calls.mostRecent().args[0]).toBe('visibilitychange');
@@ -44,7 +44,7 @@ describe('$$isDocumentHidden', function() {
   });
 
   it('should remove the listener when the $rootScope is destroyed', function() {
-    var spy = spyOn(document, 'removeEventListener').and.callThrough();
+    var spy = spyOn(window.document, 'removeEventListener').and.callThrough();
 
     inject(function($$isDocumentHidden, $rootScope) {
       $rootScope.$destroy();

@@ -3,6 +3,7 @@
 /**
  * @ngdoc service
  * @name $cacheFactory
+ * @this
  *
  * @description
  * Factory that constructs {@link $cacheFactory.Cache Cache} objects and gives access to
@@ -39,7 +40,7 @@
  * - `{void}` `destroy()` — Removes references to this cache from $cacheFactory.
  *
  * @example
-   <example module="cacheExampleApp">
+   <example module="cacheExampleApp" name="cache-factory">
      <file name="index.html">
        <div ng-controller="CacheController">
          <input ng-model="newCacheKey" placeholder="Key">
@@ -88,7 +89,7 @@ function $CacheFactoryProvider() {
 
     function cacheFactory(cacheId, options) {
       if (cacheId in caches) {
-        throw minErr('$cacheFactory')('iid', "CacheId '{0}' is already taken!", cacheId);
+        throw minErr('$cacheFactory')('iid', 'CacheId \'{0}\' is already taken!', cacheId);
       }
 
       var size = 0,
@@ -138,7 +139,7 @@ function $CacheFactoryProvider() {
        *  }));
        * ```
        */
-      return caches[cacheId] = {
+      return (caches[cacheId] = {
 
         /**
          * @ngdoc method
@@ -282,7 +283,7 @@ function $CacheFactoryProvider() {
         info: function() {
           return extend({}, stats, {size: size});
         }
-      };
+      });
 
 
       /**
@@ -356,6 +357,7 @@ function $CacheFactoryProvider() {
 /**
  * @ngdoc service
  * @name $templateCache
+ * @this
  *
  * @description
  * The first time a template is used, it is loaded in the template cache for quick retrieval. You

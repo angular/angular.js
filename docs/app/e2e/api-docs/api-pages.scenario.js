@@ -1,10 +1,10 @@
 'use strict';
 
-describe("doc.angularjs.org", function() {
+describe('doc.angularjs.org', function() {
 
-  describe("API pages", function() {
+  describe('API pages', function() {
 
-    it("should display links to code on GitHub", function() {
+    it('should display links to code on GitHub', function() {
       browser.get('build/docs/index.html#!/api/ng/service/$http');
       expect(element(by.css('.improve-docs')).getAttribute('href')).toMatch(/https?:\/\/github\.com\/angular\/angular\.js\/edit\/.+\/src\/ng\/http\.js/);
 
@@ -12,7 +12,7 @@ describe("doc.angularjs.org", function() {
       expect(element(by.css('.view-source')).getAttribute('href')).toMatch(/https?:\/\/github\.com\/angular\/angular\.js\/tree\/.+\/src\/ng\/http\.js#L\d+/);
     });
 
-    it('should change the page content when clicking a link to a service', function () {
+    it('should change the page content when clicking a link to a service', function() {
       browser.get('build/docs/index.html');
 
       var ngBindLink = element(by.css('.definition-table td a[href="api/ng/directive/ngClick"]'));
@@ -23,7 +23,7 @@ describe("doc.angularjs.org", function() {
     });
 
 
-    it('should show the functioning input directive example', function () {
+    it('should show the functioning input directive example', function() {
       browser.get('build/docs/index.html#!/api/ng/directive/input');
 
       // Ensure that the page is loaded before trying to switch frames.
@@ -38,7 +38,7 @@ describe("doc.angularjs.org", function() {
       expect(code.getText()).toContain('guest!!!');
     });
 
-    it("should trim indentation from code blocks", function() {
+    it('should trim indentation from code blocks', function() {
       browser.get('build/docs/index.html#!/api/ng/type/$rootScope.Scope');
 
       var codeBlocks = element.all(by.css('pre > code.lang-js'));

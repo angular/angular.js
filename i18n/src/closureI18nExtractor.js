@@ -20,7 +20,7 @@ function findLocaleId(str, type) {
     return (str.match(/^NumberFormatSymbols_(.+)$/) || [])[1];
   }
 
-  if (type != 'datetime') { throw new Error('unknown type in findLocaleId: ' + type); }
+  if (type !== 'datetime') { throw new Error('unknown type in findLocaleId: ' + type); }
 
   return (str.match(/^DateTimeSymbols_(.+)$/) || [])[1];
 }
@@ -36,6 +36,7 @@ function getInfoForLocale(localeInfo, localeID) {
 
 function extractNumberSymbols(content, localeInfo, currencySymbols) {
   //eval script in the current context so that we get access to all the symbols
+  // eslint-disable-next-line no-eval
   eval(content.toString());
   for (var propName in goog.i18n) {
     var localeID = findLocaleId(propName, 'num');
@@ -49,6 +50,7 @@ function extractNumberSymbols(content, localeInfo, currencySymbols) {
 
 function extractCurrencySymbols(content) {
   //eval script in the current context so that we get access to all the symbols
+  // eslint-disable-next-line no-eval
   eval(content.toString());
   // var currencySymbols = goog.i18n.currency.CurrencyInfo;
   // currencySymbols.__proto__ = goog.i18n.currency.CurrencyInfoTier2;
@@ -58,12 +60,13 @@ function extractCurrencySymbols(content) {
 
 function extractDateTimeSymbols(content, localeInfo) {
   //eval script in the current context so that we get access to all the symbols
+  // eslint-disable-next-line no-eval
   eval(content.toString());
   for (var propName in goog.i18n) {
     var localeID = findLocaleId(propName, 'datetime');
     if (localeID) {
       var info = getInfoForLocale(localeInfo, localeID);
-      localeInfo[localeID].DATETIME_FORMATS =
+      info.DATETIME_FORMATS =
           converter.convertDatetimeData(goog.i18n[propName]);
     }
   }
@@ -78,9 +81,10 @@ function pluralExtractor(content, localeInfo) {
     // e.g. plural rules for en_SG is the same as those for en.
     goog.LOCALE = localeIds[i].match(/[^_]+/)[0];
     try {
+      // eslint-disable-next-line no-eval
       eval(contentText);
     } catch (e) {
-      console.log("Error in eval(contentText): " + e.stack);
+      console.log('Error in eval(contentText): ' + e.stack);
     }
     if (!goog.i18n.pluralRules.select) {
       console.log('No select for lang [' + goog.LOCALE + ']');
@@ -95,7 +99,7 @@ function pluralExtractor(content, localeInfo) {
         replace(/\n/g, '');
 
     ///@@ is a crazy place holder to be replaced before writing to file
-    localeInfo[localeIds[i]].pluralCat = "@@" + temp + "@@";
+    localeInfo[localeIds[i]].pluralCat = '@@' + temp + '@@';
   }
 }
 
@@ -121,7 +125,7 @@ function canonicalizeForJsonStringify(unused_key, object) {
   //    2. https://code.google.com/p/v8/issues/detail?id=164
   //       ECMA-262 does not specify enumeration order. The de facto standard
   //       is to match insertion order, which V8 also does ...
-  if (typeof object != "object" || Object.prototype.toString.apply(object) === '[object Array]') {
+  if (typeof object !== 'object' || Object.prototype.toString.apply(object) === '[object Array]') {
     return object;
   }
   var result = {};
@@ -154,7 +158,7 @@ function outputLocale(localeInfo, localeID) {
   // don't want to write locale files that only have dateformat (i.e. missing
   // number formats.)  So we skip them.
   if (!localeObj.NUMBER_FORMATS) {
-    console.log("Skipping locale %j: Don't have any number formats", localeID);
+    console.log('Skipping locale %j: Don\'t have any number formats', localeID);
     return null;
   }
 
@@ -218,7 +222,7 @@ function outputLocale(localeInfo, localeID) {
   }
 
   var prefix =
-      "'use strict';\n" +
+      '\'use strict\';\n' +
       'angular.module("ngLocale", [], ["$provide", function($provide) {\n' +
           'var PLURAL_CATEGORY = {' +
           'ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "many", OTHER: "other"' +

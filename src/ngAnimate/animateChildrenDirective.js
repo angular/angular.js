@@ -21,7 +21,7 @@
  * @example
  * <example module="ngAnimateChildren" name="ngAnimateChildren" deps="angular-animate.js" animations="true">
      <file name="index.html">
-       <div ng-controller="mainController as main">
+       <div ng-controller="MainController as main">
          <label>Show container? <input type="checkbox" ng-model="main.enterElement" /></label>
          <label>Animate children? <input type="checkbox" ng-model="main.animateChildren" /></label>
          <hr>
@@ -71,7 +71,7 @@
     </file>
     <file name="script.js">
       angular.module('ngAnimateChildren', ['ngAnimate'])
-        .controller('mainController', function() {
+        .controller('MainController', function MainController() {
           this.animateChildren = false;
           this.enterElement = false;
         });
@@ -82,7 +82,7 @@ var $$AnimateChildrenDirective = ['$interpolate', function($interpolate) {
   return {
     link: function(scope, element, attrs) {
       var val = attrs.ngAnimateChildren;
-      if (angular.isString(val) && val.length === 0) { //empty attribute
+      if (isString(val) && val.length === 0) { //empty attribute
         element.data(NG_ANIMATE_CHILDREN_DATA, true);
       } else {
         // Interpolate and set the value, so that it is available to

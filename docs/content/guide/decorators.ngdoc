@@ -311,7 +311,7 @@ those conditions.
   <file name="script.js">
     angular.module('urlDecorator', []).
 
-      controller('Ctrl', ['$scope', function ($scope) {
+      controller('Ctrl', ['$scope', function($scope) {
         $scope.id = 3;
         $scope.warnCount = 0; // for testing
       }]).
@@ -354,8 +354,8 @@ those conditions.
               var exps = matchExpressions(originalExp);
 
               // create and store the getters using $parse
-              var getters = exps.map(function(el) {
-                if (el) return $parse(el);
+              var getters = exps.map(function(exp) {
+                return exp && $parse(exp);
               });
 
               return function newLinkFn(scope, elem, attr) {
@@ -406,13 +406,13 @@ those conditions.
   <file name="index.html">
     <div ng-controller="Ctrl">
       <a ng-href="/products/{{ id }}/view" id="id3">View Product {{ id }}</a>
-      - <strong>id == 3</strong>, so no warning<br>
+      - <strong>id === 3</strong>, so no warning<br>
       <a ng-href="/products/{{ id + 5 }}/view" id="id8">View Product {{ id + 5 }}</a>
-      - <strong>id + 5 == 8</strong>, so no warning<br>
+      - <strong>id + 5 === 8</strong>, so no warning<br>
       <a ng-href="/products/{{ someOtherId }}/view" id="someOtherId">View Product {{ someOtherId }}</a>
-      - <strong style="background-color: #ffff00;">someOtherId == undefined</strong>, so warn<br>
+      - <strong style="background-color: #ffff00;">someOtherId === undefined</strong>, so warn<br>
       <a ng-href="/products/{{ someOtherId + 5 }}/view" id="someOtherId5">View Product {{ someOtherId + 5 }}</a>
-      - <strong>someOtherId + 5 == 5</strong>, so no warning<br>
+      - <strong>someOtherId + 5 === 5</strong>, so no warning<br>
       <div>Warn Count: {{ warnCount }}</div>
     </div>
   </file>
@@ -450,7 +450,7 @@ changed (that never happens) and we need all of our default dates to be `'shortD
   <file name="script.js">
     angular.module('filterDecorator', []).
 
-      controller('Ctrl', ['$scope', function ($scope) {
+      controller('Ctrl', ['$scope', function($scope) {
         $scope.genesis = new Date(2010, 0, 5);
         $scope.ngConf = new Date(2016, 4, 4);
       }]).
@@ -498,7 +498,7 @@ changed (that never happens) and we need all of our default dates to be `'shortD
 
     it('should still allow dates to be formatted', function() {
       expect(element(by.id('ngConf')).getText())
-        .toMatch(/ng-conf 2016 with full date format\: [A-Za-z]+, [A-Za-z]+ \d{1,2}, \d{4}/);
+        .toMatch(/ng-conf 2016 with full date format: [A-Za-z]+, [A-Za-z]+ \d{1,2}, \d{4}/);
     });
   </file>
 </example>

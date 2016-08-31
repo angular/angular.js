@@ -15,7 +15,7 @@ exports.config = {
 
   baseUrl: 'http://localhost:8000/',
 
-  framework: 'jasmine',
+  framework: 'jasmine2',
 
   onPrepare: function() {
     /* global angular: false, browser: false, jasmine: false */
@@ -29,9 +29,10 @@ exports.config = {
 
     browser.addMockModule('disableNgAnimate', disableNgAnimate);
 
-    require('jasmine-reporters');
-    jasmine.getEnv().addReporter(
-      new jasmine.JUnitXmlReporter('test_out/docs-e2e-' + exports.config.capabilities.browserName + '-', true, true));
+    var reporters = require('jasmine-reporters');
+    jasmine.getEnv().addReporter(new reporters.JUnitXmlReporter({
+      savePath: 'test_out/docs-e2e-' + exports.config.capabilities.browserName + '-'
+    }));
   },
 
   jasmineNodeOpts: {

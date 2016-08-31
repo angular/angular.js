@@ -906,8 +906,8 @@ describe('ngModel', function() {
 
         expect(function() {
           scope.$apply('value = "123"');
-        }).toThrowMinErr("ngModel", "nopromise",
-          "Expected asynchronous validator to return a promise but got 'true' instead.");
+        }).toThrowMinErr('ngModel', 'nopromise',
+          'Expected asynchronous validator to return a promise but got \'true\' instead.');
       }));
 
 
@@ -1095,6 +1095,7 @@ describe('ngModel', function() {
 
       it('should be possible to extend Object prototype and still be able to do form validation',
         inject(function($compile, $rootScope) {
+        // eslint-disable-next-line no-extend-native
         Object.prototype.someThing = function() {};
         var element = $compile('<form name="myForm">' +
                                  '<input type="text" name="username" ng-model="username" minlength="10" required />' +
@@ -1361,7 +1362,7 @@ describe('ngModel', function() {
       expect(element.hasClass('ng-valid-email')).toBe(true);
       expect(element.hasClass('ng-invalid-email')).toBe(false);
 
-      $rootScope.$apply("value = 'invalid-email'");
+      $rootScope.$apply('value = \'invalid-email\'');
       expect(element).toBeInvalid();
       expect(element).toBePristine();
       expect(element.hasClass('ng-valid-email')).toBe(false);
@@ -1630,7 +1631,7 @@ describe('ngModel', function() {
       expect(isFormValid).toBe(false);
       expect($rootScope.myForm.$valid).toBe(false);
 
-      $rootScope.value='value';
+      $rootScope.value = 'value';
       $rootScope.$apply();
       expect(isFormValid).toBe(true);
       expect($rootScope.myForm.$valid).toBe(true);
@@ -1647,7 +1648,7 @@ describe('ngModel', function() {
       var animations = [];
       for (var i = 0; i < queue.length; i++) {
         var animation = queue[i];
-        if (animation.element[0] == node) {
+        if (animation.element[0] === node) {
           animations.push(animation);
         }
       }
@@ -1921,7 +1922,7 @@ describe('ngModelOptions attributes', function() {
           'ng-model-options="{ updateOn: \'blur\'}"' +
         '/>');
 
-    $rootScope.$apply("color = 'white'");
+    $rootScope.$apply('color = \'white\'');
     browserTrigger(inputElm[2], 'click');
     expect($rootScope.color).toBe('white');
 
@@ -1943,7 +1944,7 @@ describe('ngModelOptions attributes', function() {
           'ng-model-options="{ updateOn: \'blur default\' }"' +
         '/>');
 
-    $rootScope.$apply("color = 'white'");
+    $rootScope.$apply('color = \'white\'');
     browserTrigger(inputElm[2], 'click');
     expect($rootScope.color).toBe('blue');
   });
@@ -2186,7 +2187,7 @@ describe('ngModelOptions attributes', function() {
         'ng-model-options="{ updateOn: \'blur\' }" />');
 
     helper.changeInputValueTo('a');
-    $rootScope.$apply("name = 'b'");
+    $rootScope.$apply('name = \'b\'');
     browserTrigger(inputElm, 'blur');
     expect($rootScope.name).toBe('b');
   });

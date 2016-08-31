@@ -172,7 +172,7 @@ describe('ngMock', function() {
           $log.reset();
         }));
 
-        it("should skip debugging output if disabled (" + debugEnabled + ")", inject(function($log) {
+        it('should skip debugging output if disabled (' + debugEnabled + ')', inject(function($log) {
             $log.log('fake log');
             $log.info('fake log');
             $log.warn('fake log');
@@ -428,14 +428,14 @@ describe('ngMock', function() {
 
       it('should delegate exception to the $exceptionHandler service', inject(
           function($interval, $exceptionHandler) {
-        $interval(function() { throw "Test Error"; }, 1000);
+        $interval(function() { throw 'Test Error'; }, 1000);
         expect($exceptionHandler.errors).toEqual([]);
 
         $interval.flush(1000);
-        expect($exceptionHandler.errors).toEqual(["Test Error"]);
+        expect($exceptionHandler.errors).toEqual(['Test Error']);
 
         $interval.flush(1000);
-        expect($exceptionHandler.errors).toEqual(["Test Error", "Test Error"]);
+        expect($exceptionHandler.errors).toEqual(['Test Error', 'Test Error']);
       }));
 
 
@@ -443,7 +443,7 @@ describe('ngMock', function() {
           function($interval, $rootScope) {
         var applySpy = spyOn($rootScope, '$apply').and.callThrough();
 
-        $interval(function() { throw "Test Error"; }, 1000);
+        $interval(function() { throw new Error('Test Error'); }, 1000);
         expect(applySpy).not.toHaveBeenCalled();
 
         $interval.flush(1000);
@@ -454,7 +454,7 @@ describe('ngMock', function() {
       it('should still update the interval promise when an exception is thrown',
           inject(function($interval) {
         var log = [],
-            promise = $interval(function() { throw "Some Error"; }, 1000);
+            promise = $interval(function() { throw new Error('Some Error'); }, 1000);
 
         promise.then(function(value) { log.push('promise success: ' + value); },
                    function(err) { log.push('promise error: ' + err); },
@@ -626,12 +626,11 @@ describe('ngMock', function() {
       module(function($exceptionHandlerProvider) {
         expect(function() {
           $exceptionHandlerProvider.mode('XXX');
-        }).toThrowError("Unknown mode 'XXX', only 'log'/'rethrow' modes are allowed!");
+        }).toThrowError('Unknown mode \'XXX\', only \'log\'/\'rethrow\' modes are allowed!');
       });
 
       inject(); // Trigger the tests in `module`
     });
-
   });
 
 
@@ -746,7 +745,6 @@ describe('ngMock', function() {
     }));
 
     it('should serialize scope that has overridden "hasOwnProperty"', inject(function($rootScope, $sniffer) {
-      /* jshint -W001 */
       $rootScope.hasOwnProperty = 'X';
       expect(d($rootScope)).toMatch(/Scope\(.*\): \{/);
       expect(d($rootScope)).toMatch(/hasOwnProperty: "X"/);
@@ -950,7 +948,7 @@ describe('ngMock', function() {
           if (!error.stack) {
             try {
               throw error;
-            } catch (e) {}
+            } catch (e) { /* empty */}
           }
 
           return !!error.stack;
@@ -985,6 +983,22 @@ describe('ngMock', function() {
           });
         }
       });
+
+      describe('ErrorAddingDeclarationLocationStack', function() {
+        it('should be caught by Jasmine\'s `toThrowError()`', function() {
+          function throwErrorAddingDeclarationStack() {
+            module(function($provide) {
+              $provide.factory('badFactory', function() {
+                throw new Error('BadFactoryError');
+              });
+            });
+
+            inject(function(badFactory) {});
+          }
+
+          expect(throwErrorAddingDeclarationStack).toThrowError(/BadFactoryError/);
+        });
+      });
     });
   });
 
@@ -997,28 +1011,30 @@ describe('ngMock', function() {
       hb = $httpBackend;
     }));
 
+
     it('should provide "expect" methods for each HTTP verb', function() {
-      expect(typeof hb.expectGET).toBe("function");
-      expect(typeof hb.expectPOST).toBe("function");
-      expect(typeof hb.expectPUT).toBe("function");
-      expect(typeof hb.expectPATCH).toBe("function");
-      expect(typeof hb.expectDELETE).toBe("function");
-      expect(typeof hb.expectHEAD).toBe("function");
+      expect(typeof hb.expectGET).toBe('function');
+      expect(typeof hb.expectPOST).toBe('function');
+      expect(typeof hb.expectPUT).toBe('function');
+      expect(typeof hb.expectPATCH).toBe('function');
+      expect(typeof hb.expectDELETE).toBe('function');
+      expect(typeof hb.expectHEAD).toBe('function');
     });
 
 
     it('should provide "when" methods for each HTTP verb', function() {
-      expect(typeof hb.whenGET).toBe("function");
-      expect(typeof hb.whenPOST).toBe("function");
-      expect(typeof hb.whenPUT).toBe("function");
-      expect(typeof hb.whenPATCH).toBe("function");
-      expect(typeof hb.whenDELETE).toBe("function");
-      expect(typeof hb.whenHEAD).toBe("function");
+      expect(typeof hb.whenGET).toBe('function');
+      expect(typeof hb.whenPOST).toBe('function');
+      expect(typeof hb.whenPUT).toBe('function');
+      expect(typeof hb.whenPATCH).toBe('function');
+      expect(typeof hb.whenDELETE).toBe('function');
+      expect(typeof hb.whenHEAD).toBe('function');
     });
 
+
     it('should provide "route" shortcuts for expect and when', function() {
-      expect(typeof hb.whenRoute).toBe("function");
-      expect(typeof hb.expectRoute).toBe("function");
+      expect(typeof hb.whenRoute).toBe('function');
+      expect(typeof hb.expectRoute).toBe('function');
     });
 
 
@@ -1066,6 +1082,7 @@ describe('ngMock', function() {
 
     it('should be able to handle Blobs as mock data', function() {
       if (typeof Blob !== 'undefined') {
+        // eslint-disable-next-line no-undef
         var mockBlob = new Blob(['{"foo":"bar"}'], {type: 'application/json'});
 
         hb.when('GET', '/url1').respond(200, mockBlob, {});
@@ -1173,6 +1190,97 @@ describe('ngMock', function() {
     });
 
 
+    it('should not error if the url is not provided', function() {
+      expect(function() {
+        hb.when('GET');
+
+        hb.whenGET();
+        hb.whenPOST();
+        hb.whenPUT();
+        hb.whenPATCH();
+        hb.whenDELETE();
+        hb.whenHEAD();
+
+        hb.expect('GET');
+
+        hb.expectGET();
+        hb.expectPOST();
+        hb.expectPUT();
+        hb.expectPATCH();
+        hb.expectDELETE();
+        hb.expectHEAD();
+      }).not.toThrow();
+    });
+
+
+    it('should error if the url is undefined', function() {
+      expect(function() {
+        hb.when('GET', undefined);
+      }).toThrowError('Undefined argument `url`; the argument is provided but not defined');
+
+      expect(function() {
+        hb.whenGET(undefined);
+      }).toThrowError('Undefined argument `url`; the argument is provided but not defined');
+
+      expect(function() {
+        hb.whenDELETE(undefined);
+      }).toThrowError('Undefined argument `url`; the argument is provided but not defined');
+
+      expect(function() {
+        hb.whenJSONP(undefined);
+      }).toThrowError('Undefined argument `url`; the argument is provided but not defined');
+
+      expect(function() {
+        hb.whenHEAD(undefined);
+      }).toThrowError('Undefined argument `url`; the argument is provided but not defined');
+
+      expect(function() {
+        hb.whenPATCH(undefined);
+      }).toThrowError('Undefined argument `url`; the argument is provided but not defined');
+
+      expect(function() {
+        hb.whenPOST(undefined);
+      }).toThrowError('Undefined argument `url`; the argument is provided but not defined');
+
+      expect(function() {
+        hb.whenPUT(undefined);
+      }).toThrowError('Undefined argument `url`; the argument is provided but not defined');
+
+
+      expect(function() {
+        hb.expect('GET', undefined);
+      }).toThrowError('Undefined argument `url`; the argument is provided but not defined');
+
+      expect(function() {
+        hb.expectGET(undefined);
+      }).toThrowError('Undefined argument `url`; the argument is provided but not defined');
+
+      expect(function() {
+        hb.expectDELETE(undefined);
+      }).toThrowError('Undefined argument `url`; the argument is provided but not defined');
+
+      expect(function() {
+        hb.expectJSONP(undefined);
+      }).toThrowError('Undefined argument `url`; the argument is provided but not defined');
+
+      expect(function() {
+        hb.expectHEAD(undefined);
+      }).toThrowError('Undefined argument `url`; the argument is provided but not defined');
+
+      expect(function() {
+        hb.expectPATCH(undefined);
+      }).toThrowError('Undefined argument `url`; the argument is provided but not defined');
+
+      expect(function() {
+        hb.expectPOST(undefined);
+      }).toThrowError('Undefined argument `url`; the argument is provided but not defined');
+
+      expect(function() {
+        hb.expectPUT(undefined);
+      }).toThrowError('Undefined argument `url`; the argument is provided but not defined');
+    });
+
+
     it('should preserve the order of requests', function() {
       hb.when('GET', '/url1').respond(200, 'first');
       hb.when('GET', '/url2').respond(201, 'second');
@@ -1234,7 +1342,7 @@ describe('ngMock', function() {
       it('should decode query parameters in respond() function', function() {
         hb.expect('GET', '/url?query=l%E2%80%A2ng%20string%20w%2F%20spec%5Eal%20char%24&id=1234&orderBy=-name')
         .respond(function(m, u, d, h, p) {
-          return [200, "id=" + p.id + ";orderBy=" + p.orderBy + ";query=" + p.query];
+          return [200, 'id=' + p.id + ';orderBy=' + p.orderBy + ';query=' + p.query];
         });
 
         hb('GET', '/url?query=l%E2%80%A2ng%20string%20w%2F%20spec%5Eal%20char%24&id=1234&orderBy=-name', null, callback);
@@ -1246,7 +1354,7 @@ describe('ngMock', function() {
       it('should include regex captures in respond() params when keys provided', function() {
         hb.expect('GET', /\/(.+)\/article\/(.+)/, undefined, undefined, ['id', 'name'])
         .respond(function(m, u, d, h, p) {
-          return [200, "id=" + p.id + ";name=" + p.name];
+          return [200, 'id=' + p.id + ';name=' + p.name];
         });
 
         hb('GET', '/1234/article/cool-angular-article', null, callback);
@@ -1383,7 +1491,7 @@ describe('ngMock', function() {
       });
 
 
-      it("should use when's respond() when no expect() respond is defined", function() {
+      it('should use when\'s respond() when no expect() respond is defined', function() {
         callback.and.callFake(function(status, response) {
           expect(status).toBe(201);
           expect(response).toBe('data');
@@ -1424,6 +1532,36 @@ describe('ngMock', function() {
       });
 
 
+      it('should flush given number of pending requests beginning at specified request', function() {
+        var dontCallMe = jasmine.createSpy('dontCallMe');
+
+        hb.when('GET').respond(200, '');
+        hb('GET', '/some', null, dontCallMe);
+        hb('GET', '/some', null, callback);
+        hb('GET', '/some', null, callback);
+        hb('GET', '/some', null, dontCallMe);
+
+        hb.flush(2, 1);
+        expect(dontCallMe).not.toHaveBeenCalled();
+        expect(callback).toHaveBeenCalledTimes(2);
+      });
+
+
+      it('should flush all pending requests beginning at specified request', function() {
+        var dontCallMe = jasmine.createSpy('dontCallMe');
+
+        hb.when('GET').respond(200, '');
+        hb('GET', '/some', null, dontCallMe);
+        hb('GET', '/some', null, dontCallMe);
+        hb('GET', '/some', null, callback);
+        hb('GET', '/some', null, callback);
+
+        hb.flush(null, 2);
+        expect(dontCallMe).not.toHaveBeenCalled();
+        expect(callback).toHaveBeenCalledTimes(2);
+      });
+
+
       it('should throw exception when flushing more requests than pending', function() {
         hb.when('GET').respond(200, '');
         hb('GET', '/url', null, callback);
@@ -1438,8 +1576,9 @@ describe('ngMock', function() {
 
         hb.when('GET').respond(200, '');
         hb('GET', '/some', null, callback);
-        hb.flush();
+        expect(function() {hb.flush(null, 1);}).toThrowError('No pending request to flush !');
 
+        hb.flush();
         expect(function() {hb.flush();}).toThrowError('No pending request to flush !');
       });
 
@@ -1547,6 +1686,7 @@ describe('ngMock', function() {
       });
     });
 
+
     describe('verifyRequests', function() {
 
       it('should throw exception if not all requests were flushed', function() {
@@ -1557,6 +1697,18 @@ describe('ngMock', function() {
           hb.verifyNoOutstandingRequest();
         }).toThrowError('Unflushed requests: 1');
       });
+
+
+      it('should verify requests fired asynchronously', inject(function($q) {
+        hb.when('GET').respond(200);
+        $q.resolve().then(function() {
+          hb('GET', '/some', null, noop, {});
+        });
+
+        expect(function() {
+          hb.verifyNoOutstandingRequest();
+        }).toThrowError('Unflushed requests: 1');
+      }));
     });
 
 
@@ -1617,6 +1769,7 @@ describe('ngMock', function() {
       });
     });
 
+
     describe('expectRoute/whenRoute shortcuts', function() {
       angular.forEach(['expectRoute', 'whenRoute'], function(routeShortcut) {
         var methods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'JSONP'];
@@ -1646,6 +1799,7 @@ describe('ngMock', function() {
         );
       });
     });
+
 
     describe('MockHttpExpectation', function() {
       /* global MockHttpExpectation */
@@ -1694,7 +1848,7 @@ describe('ngMock', function() {
 
         expect(exp.matchData({})).toBe(false);
         expect(exp.match('POST', '/url', '{"id": "xxx", "status": "N"}')).toBe(true);
-        expect(exp.match('POST', '/url', {"id": "xxx", "status": "N"})).toBe(true);
+        expect(exp.match('POST', '/url', {'id': 'xxx', 'status': 'N'})).toBe(true);
       });
 
 
@@ -1711,7 +1865,7 @@ describe('ngMock', function() {
 
       it('should accept headers as function', function() {
         var exp = new MockHttpExpectation('GET', '/url', undefined, function(h) {
-          return h['Content-Type'] == 'application/json';
+          return h['Content-Type'] === 'application/json';
         });
 
         expect(exp.matchHeaders({})).toBe(false);
@@ -1919,6 +2073,51 @@ describe('ngMock', function() {
         expect(called).toBe(true);
       });
     });
+
+    it('should support assigning bindings when a value is returned from the constructor',
+      function() {
+        var called = false;
+        var data = [
+          { name: 'derp1', id: 0 },
+          { name: 'testname', id: 1 },
+          { name: 'flurp', id: 2 }
+        ];
+        module(function($controllerProvider) {
+          $controllerProvider.register('testCtrl', function() {
+            called = true;
+            expect(this.data).toBe(data);
+
+            return {};
+          });
+        });
+        inject(function($controller, $rootScope) {
+          var ctrl = $controller('testCtrl', { scope: $rootScope }, { data: data });
+          expect(ctrl.data).toBe(data);
+          expect(called).toBe(true);
+        });
+      }
+    );
+
+    if (/chrome/.test(window.navigator.userAgent)) {
+      it('should support assigning bindings to class-based controller', function() {
+        var called = false;
+        var data = [
+          { name: 'derp1', id: 0 },
+          { name: 'testname', id: 1 },
+          { name: 'flurp', id: 2 }
+        ];
+        module(function($controllerProvider) {
+          // eslint-disable-next-line no-eval
+          var TestCtrl = eval('(class { constructor() { called = true; } })');
+          $controllerProvider.register('testCtrl', TestCtrl);
+        });
+        inject(function($controller, $rootScope) {
+          var ctrl = $controller('testCtrl', { scope: $rootScope }, { data: data });
+          expect(ctrl.data).toBe(data);
+          expect(called).toBe(true);
+        });
+      });
+    }
   });
 
 
@@ -2150,12 +2349,12 @@ describe('ngMockE2E', function() {
     var hb, realHttpBackend, callback;
 
     beforeEach(function() {
-      module(function($provide) {
-        callback = jasmine.createSpy('callback');
+      callback = jasmine.createSpy('callback');
+      angular.module('ng').config(function($provide) {
         realHttpBackend = jasmine.createSpy('real $httpBackend');
         $provide.value('$httpBackend', realHttpBackend);
-        $provide.decorator('$httpBackend', angular.mock.e2e.$httpBackendDecorator);
       });
+      module('ngMockE2E');
       inject(function($injector) {
         hb = $injector.get('$httpBackend');
       });
@@ -2479,8 +2678,10 @@ describe('make sure that we can create an injector outside of tests', function()
   angular.injector([function($injector) {}]);
 });
 
+
 describe('`afterEach` clean-up', function() {
   describe('`$rootElement`', function() {
+
     describe('undecorated', function() {
       var prevRootElement;
       var prevCleanDataSpy;
@@ -2643,6 +2844,7 @@ describe('`afterEach` clean-up', function() {
   });
 });
 
+
 describe('sharedInjector', function() {
   // this is of a bit tricky feature to test as we hit angular's own testing
   // mechanisms (e.g around jQuery cache checking), as ngMock augments the very
@@ -2654,42 +2856,42 @@ describe('sharedInjector', function() {
 
   // we use the 'module' and 'inject' globals from ngMock
 
-  it("allowes me to mutate a single instace of a module (proving it has been shared)", ngMockTest(function() {
-    sdescribe("test state is shared", function() {
-      angular.module("sharedInjectorTestModuleA", [])
-        .factory("testService", function() {
+  it('allowes me to mutate a single instace of a module (proving it has been shared)', ngMockTest(function() {
+    sdescribe('test state is shared', function() {
+      angular.module('sharedInjectorTestModuleA', [])
+        .factory('testService', function() {
           return { state: 0 };
         });
 
       module.sharedInjector();
 
-      sbeforeAll(module("sharedInjectorTestModuleA"));
+      sbeforeAll(module('sharedInjectorTestModuleA'));
 
-      sit("access and mutate", inject(function(testService) {
+      sit('access and mutate', inject(function(testService) {
         testService.state += 1;
       }));
 
-      sit("expect mutation to have persisted", inject(function(testService) {
+      sit('expect mutation to have persisted', inject(function(testService) {
         expect(testService.state).toEqual(1);
       }));
     });
   }));
 
 
-  it("works with standard beforeEach", ngMockTest(function() {
-    sdescribe("test state is not shared", function() {
-      angular.module("sharedInjectorTestModuleC", [])
-        .factory("testService", function() {
+  it('works with standard beforeEach', ngMockTest(function() {
+    sdescribe('test state is not shared', function() {
+      angular.module('sharedInjectorTestModuleC', [])
+        .factory('testService', function() {
           return { state: 0 };
         });
 
-      sbeforeEach(module("sharedInjectorTestModuleC"));
+      sbeforeEach(module('sharedInjectorTestModuleC'));
 
-      sit("access and mutate", inject(function(testService) {
+      sit('access and mutate', inject(function(testService) {
         testService.state += 1;
       }));
 
-      sit("expect mutation not to have persisted", inject(function(testService) {
+      sit('expect mutation not to have persisted', inject(function(testService) {
         expect(testService.state).toEqual(0);
       }));
     });
@@ -2697,70 +2899,70 @@ describe('sharedInjector', function() {
 
 
   it('allows me to stub with shared injector', ngMockTest(function() {
-    sdescribe("test state is shared", function() {
-      angular.module("sharedInjectorTestModuleD", [])
-        .value("testService", 43);
+    sdescribe('test state is shared', function() {
+      angular.module('sharedInjectorTestModuleD', [])
+        .value('testService', 43);
 
       module.sharedInjector();
 
-      sbeforeAll(module("sharedInjectorTestModuleD", function($provide) {
-        $provide.value("testService", 42);
+      sbeforeAll(module('sharedInjectorTestModuleD', function($provide) {
+        $provide.value('testService', 42);
       }));
 
-      sit("expected access stubbed value", inject(function(testService) {
+      sit('expected access stubbed value', inject(function(testService) {
         expect(testService).toEqual(42);
       }));
     });
   }));
 
-  it("doesn't interfere with other test describes", ngMockTest(function() {
-    angular.module("sharedInjectorTestModuleE", [])
-      .factory("testService", function() {
+  it('doesn\'t interfere with other test describes', ngMockTest(function() {
+    angular.module('sharedInjectorTestModuleE', [])
+      .factory('testService', function() {
         return { state: 0 };
       });
 
-    sdescribe("with stubbed injector", function() {
+    sdescribe('with stubbed injector', function() {
 
       module.sharedInjector();
 
-      sbeforeAll(module("sharedInjectorTestModuleE"));
+      sbeforeAll(module('sharedInjectorTestModuleE'));
 
-      sit("access and mutate", inject(function(testService) {
+      sit('access and mutate', inject(function(testService) {
         expect(testService.state).toEqual(0);
         testService.state += 1;
       }));
 
-      sit("expect mutation to have persisted", inject(function(testService) {
+      sit('expect mutation to have persisted', inject(function(testService) {
         expect(testService.state).toEqual(1);
       }));
     });
 
-    sdescribe("without stubbed injector", function() {
-      sbeforeEach(module("sharedInjectorTestModuleE"));
+    sdescribe('without stubbed injector', function() {
+      sbeforeEach(module('sharedInjectorTestModuleE'));
 
-      sit("access and mutate", inject(function(testService) {
+      sit('access and mutate', inject(function(testService) {
         expect(testService.state).toEqual(0);
         testService.state += 1;
       }));
 
-      sit("expect original, unmutated value", inject(function(testService) {
+      sit('expect original, unmutated value', inject(function(testService) {
         expect(testService.state).toEqual(0);
       }));
     });
   }));
 
-  it("prevents nested use of sharedInjector()", function() {
+  it('prevents nested use of sharedInjector()', function() {
     var test = ngMockTest(function() {
-      sdescribe("outer", function() {
+      sdescribe('outer', function() {
 
         module.sharedInjector();
 
-        sdescribe("inner", function() {
+        sdescribe('inner', function() {
 
           module.sharedInjector();
 
-          sit("should not get here", function() {
-            throw Error("should have thrown before here!");
+          sit('should not get here', function() {
+            throw Error('should have thrown before here!');
           });
         });
 
@@ -2784,9 +2986,9 @@ describe('sharedInjector', function() {
       if (re.test(e.message)) {
         return;
       }
-      throw Error("thrown error '" + e.message + "' did not match:" + re);
+      throw Error('thrown error \'' + e.message + '\' did not match:' + re);
     }
-    throw Error("should have thrown error");
+    throw Error('should have thrown error');
   }
 
   // run a set of test cases in the sdescribe stub test framework
@@ -2800,7 +3002,7 @@ describe('sharedInjector', function() {
       module.$$beforeAllHook = sbeforeAll;
       module.$$afterAllHook = safterAll;
 
-      sdescribe.root = sdescribe("root", function() {});
+      sdescribe.root = sdescribe('root', function() {});
 
       sdescribe.root.beforeEach.push(module.$$beforeEach);
       sdescribe.root.afterEach.push(module.$$afterEach);
@@ -2843,21 +3045,21 @@ describe('sharedInjector', function() {
 
     self.run = function() {
       var spec = {};
-      self.hooks("beforeAll", spec);
+      self.hooks('beforeAll', spec);
 
       self.tests.forEach(function(test) {
-        if (self.parent) self.parent.hooks("beforeEach", spec);
-        self.hooks("beforeEach", spec);
+        if (self.parent) self.parent.hooks('beforeEach', spec);
+        self.hooks('beforeEach', spec);
         test.run.call(spec);
-        self.hooks("afterEach", spec);
-        if (self.parent) self.parent.hooks("afterEach", spec);
+        self.hooks('afterEach', spec);
+        if (self.parent) self.parent.hooks('afterEach', spec);
       });
 
       self.describes.forEach(function(d) {
         d.run();
       });
 
-      self.hooks("afterAll", spec);
+      self.hooks('afterAll', spec);
     };
 
     self.hooks = function(hook, spec) {
@@ -2874,7 +3076,7 @@ describe('sharedInjector', function() {
   }
 
   function sit(name, fn) {
-    if (typeof fn !== "function") throw Error("not fn", fn);
+    if (typeof fn !== 'function') throw Error('not fn', fn);
     sdescribe.current.tests.push({
       name: name,
       run: fn
@@ -2882,23 +3084,22 @@ describe('sharedInjector', function() {
   }
 
   function sbeforeAll(fn) {
-    if (typeof fn !== "function") throw Error("not fn", fn);
+    if (typeof fn !== 'function') throw Error('not fn', fn);
     sdescribe.current.beforeAll.push(fn);
   }
 
   function safterAll(fn) {
-    if (typeof fn !== "function") throw Error("not fn", fn);
+    if (typeof fn !== 'function') throw Error('not fn', fn);
     sdescribe.current.afterAll.push(fn);
   }
 
   function sbeforeEach(fn) {
-    if (typeof fn !== "function") throw Error("not fn", fn);
+    if (typeof fn !== 'function') throw Error('not fn', fn);
     sdescribe.current.beforeEach.push(fn);
   }
 
   function safterEach(fn) {
-    if (typeof fn !== "function") throw Error("not fn", fn);
+    if (typeof fn !== 'function') throw Error('not fn', fn);
     sdescribe.current.afterEach.push(fn);
   }
-
 });

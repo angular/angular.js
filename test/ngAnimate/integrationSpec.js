@@ -51,10 +51,55 @@ describe('ngAnimate integration tests', function() {
     expect(doneHandler).toHaveBeenCalled();
   }));
 
+  it('should remove a class that is currently being added by a running animation when another class is added in before in the same digest',
+    inject(function($animate, $rootScope, $$rAF, $document, $rootElement) {
+
+    jqLite($document[0].body).append($rootElement);
+    element = jqLite('<div></div>');
+    $rootElement.append(element);
+
+    var runner = $animate.addClass(element, 'red');
+
+    $rootScope.$digest();
+
+    $animate.addClass(element, 'blue');
+    $animate.removeClass(element, 'red');
+    $rootScope.$digest();
+
+    $$rAF.flush();
+
+    expect(element).not.toHaveClass('red');
+    expect(element).toHaveClass('blue');
+  }));
+
+
+  it('should add a class that is currently being removed by a running animation when another class is removed before in the same digest',
+    inject(function($animate, $rootScope, $$rAF, $document, $rootElement) {
+
+    jqLite($document[0].body).append($rootElement);
+    element = jqLite('<div></div>');
+    $rootElement.append(element);
+    element.addClass('red blue');
+
+    var runner = $animate.removeClass(element, 'red');
+
+    $rootScope.$digest();
+
+    $animate.removeClass(element, 'blue');
+    $animate.addClass(element, 'red');
+    $rootScope.$digest();
+
+    $$rAF.flush();
+
+    expect(element).not.toHaveClass('blue');
+    expect(element).toHaveClass('red');
+  }));
+
+
   describe('CSS animations', function() {
     if (!browserSupportsCssAnimations()) return;
 
-    it("should only create a single copy of the provided animation options",
+    it('should only create a single copy of the provided animation options',
       inject(function($rootScope, $rootElement, $animate) {
 
       ss.addRule('.animate-me', 'transition:2s linear all;');
@@ -436,7 +481,7 @@ describe('ngAnimate integration tests', function() {
     }));
 
 
-    it("should remove a class when the same class is currently being added by a joined class-based animation",
+    it('should remove a class when the same class is currently being added by a joined class-based animation',
       inject(function($animate, $animateCss, $rootScope, $document, $rootElement, $$rAF) {
 
       ss.addRule('.hide', 'opacity: 0');
@@ -711,7 +756,7 @@ describe('ngAnimate integration tests', function() {
       });
     });
 
-    it("should not alter the provided options values in anyway throughout the animation", function() {
+    it('should not alter the provided options values in anyway throughout the animation', function() {
       var animationSpy = jasmine.createSpy();
       module(function($animateProvider) {
         $animateProvider.register('.this-animation', function() {

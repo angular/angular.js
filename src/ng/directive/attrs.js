@@ -30,7 +30,7 @@
  * @example
  * This example shows various combinations of `href`, `ng-href` and `ng-click` attributes
  * in links and their different behaviors:
-    <example>
+    <example name="ng-href">
       <file name="index.html">
         <input ng-model="value" /><br />
         <a id="link-1" href ng-click="value = 1">link 1</a> (link, don't reload)<br />
@@ -166,7 +166,7 @@
  * attribute. See the {@link guide/interpolation interpolation guide} for more info.
  *
  * @example
-    <example>
+    <example name="ng-disabled">
       <file name="index.html">
         <label>Click me to toggle: <input type="checkbox" ng-model="checked"></label><br/>
         <button ng-model="button" ng-disabled="checked">Button</button>
@@ -202,7 +202,7 @@
  * attribute. See the {@link guide/interpolation interpolation guide} for more info.
  *
  * @example
-    <example>
+    <example name="ng-checked">
       <file name="index.html">
         <label>Check me to check both: <input type="checkbox" ng-model="master"></label><br/>
         <input id="checkSlave" type="checkbox" ng-checked="master" aria-label="Slave input">
@@ -230,13 +230,15 @@
  *
  * @description
  *
- * Sets the `readOnly` attribute on the element, if the expression inside `ngReadonly` is truthy.
+ * Sets the `readonly` attribute on the element, if the expression inside `ngReadonly` is truthy.
+ * Note that `readonly` applies only to `input` elements with specific types. [See the input docs on
+ * MDN](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#attr-readonly) for more information.
  *
- * A special directive is necessary because we cannot use interpolation inside the `readOnly`
+ * A special directive is necessary because we cannot use interpolation inside the `readonly`
  * attribute. See the {@link guide/interpolation interpolation guide} for more info.
  *
  * @example
-    <example>
+    <example name="ng-readonly">
       <file name="index.html">
         <label>Check me to make text readonly: <input type="checkbox" ng-model="checked"></label><br/>
         <input type="text" ng-readonly="checked" value="I'm Angular" aria-label="Readonly field" />
@@ -269,8 +271,15 @@
  * A special directive is necessary because we cannot use interpolation inside the `selected`
  * attribute. See the {@link guide/interpolation interpolation guide} for more info.
  *
+ * <div class="alert alert-warning">
+ *   **Note:** `ngSelected` does not interact with the `select` and `ngModel` directives, it only
+ *   sets the `selected` attribute on the element. If you are using `ngModel` on the select, you
+ *   should not use `ngSelected` on the options, as `ngModel` will set the select value and
+ *   selected options.
+ * </div>
+ *
  * @example
-    <example>
+    <example name="ng-selected">
       <file name="index.html">
         <label>Check me to select: <input type="checkbox" ng-model="selected"></label><br/>
         <select aria-label="ngSelected demo">
@@ -305,8 +314,13 @@
  * A special directive is necessary because we cannot use interpolation inside the `open`
  * attribute. See the {@link guide/interpolation interpolation guide} for more info.
  *
+ * ## A note about browser compatibility
+ *
+ * Edge, Firefox, and Internet Explorer do not support the `details` element, it is
+ * recommended to use {@link ng.ngShow} and {@link ng.ngHide} instead.
+ *
  * @example
-     <example>
+     <example name="ng-open">
        <file name="index.html">
          <label>Check me check multiple: <input type="checkbox" ng-model="open"></label><br/>
          <details id="details" ng-open="open">
@@ -332,7 +346,7 @@ var ngAttributeAliasDirectives = {};
 // boolean attrs are evaluated
 forEach(BOOLEAN_ATTR, function(propName, attrName) {
   // binding to multiple is not supported
-  if (propName === "multiple") return;
+  if (propName === 'multiple') return;
 
   function defaultLinkFn(scope, element, attr) {
     scope.$watch(attr[normalized], function ngBooleanAttrWatchAction(value) {
@@ -369,10 +383,10 @@ forEach(ALIASED_ATTR, function(htmlAttr, ngAttr) {
       link: function(scope, element, attr) {
         //special case ngPattern when a literal regular expression value
         //is used as the expression (this way we don't have to watch anything).
-        if (ngAttr === "ngPattern" && attr.ngPattern.charAt(0) === "/") {
+        if (ngAttr === 'ngPattern' && attr.ngPattern.charAt(0) === '/') {
           var match = attr.ngPattern.match(REGEX_STRING_REGEXP);
           if (match) {
-            attr.$set("ngPattern", new RegExp(match[1], match[2]));
+            attr.$set('ngPattern', new RegExp(match[1], match[2]));
             return;
           }
         }

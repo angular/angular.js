@@ -27,12 +27,12 @@ describe('$$rAF', function() {
 
     try {
       $$rAF.flush();
-    } catch (e) {}
+    } catch (e) { /* empty */ }
     expect(present).toBe(true);
   }));
 
   describe('$timeout fallback', function() {
-    it("it should use a $timeout incase native rAF isn't suppored", function() {
+    it('it should use a $timeout incase native rAF isn\'t suppored', function() {
       var timeoutSpy = jasmine.createSpy('callback');
 
       //we need to create our own injector to work around the ngMock overrides
@@ -94,7 +94,7 @@ describe('$$rAF', function() {
 
       try {
         cancel();
-      } catch (e) {}
+      } catch (e) { /* empty */ }
 
       expect($window.webkitCancelRequestAnimationFrame).toHaveBeenCalled();
     });

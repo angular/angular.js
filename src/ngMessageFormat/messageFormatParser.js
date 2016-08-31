@@ -130,7 +130,7 @@ MessageFormatParser.prototype.errorInParseLogic = function errorInParseLogic() {
 };
 
 MessageFormatParser.prototype.assertRuleOrNull = function assertRuleOrNull(rule) {
-  if (rule === void 0) {
+  if (rule === undefined) {
     this.errorInParseLogic();
   }
 };
@@ -146,7 +146,7 @@ MessageFormatParser.prototype.errorExpecting = function errorExpecting() {
         position.line, position.column, this.text);
   }
   var word = match[1];
-  if (word === "select" || word === "plural") {
+  if (word === 'select' || word === 'plural') {
     position = indexToLineAndColumn(this.text, this.index);
     throw $interpolateMinErr('reqcomma',
         'Expected a comma after the keyword “{0}” at line {1}, column {2} of text “{3}”',
@@ -174,7 +174,7 @@ MessageFormatParser.prototype.ruleString = function ruleString() {
 MessageFormatParser.prototype.startStringAtMatch = function startStringAtMatch(match) {
   this.stringStartIndex = match.index;
   this.stringQuote = match[0];
-  this.stringInterestsRe = this.stringQuote === "'" ? SQUOTED_STRING_INTEREST_RE : DQUOTED_STRING_INTEREST_RE;
+  this.stringInterestsRe = this.stringQuote === '\'' ? SQUOTED_STRING_INTEREST_RE : DQUOTED_STRING_INTEREST_RE;
   this.rule = this.ruleInsideString;
 };
 
@@ -201,8 +201,8 @@ MessageFormatParser.prototype.rulePluralOrSelect = function rulePluralOrSelect()
   }
   var argType = match[1];
   switch (argType) {
-    case "plural": this.rule = this.rulePluralStyle; break;
-    case "select": this.rule = this.ruleSelectStyle; break;
+    case 'plural': this.rule = this.rulePluralStyle; break;
+    case 'select': this.rule = this.ruleSelectStyle; break;
     default: this.errorInParseLogic();
   }
 };
@@ -220,7 +220,7 @@ MessageFormatParser.prototype.ruleSelectStyle = function ruleSelectStyle() {
 };
 
 var NUMBER_RE = /[0]|(?:[1-9][0-9]*)/g;
-var PLURAL_OFFSET_RE = new RegExp("\\s*offset\\s*:\\s*(" + NUMBER_RE.source + ")", "g");
+var PLURAL_OFFSET_RE = new RegExp('\\s*offset\\s*:\\s*(' + NUMBER_RE.source + ')', 'g');
 
 MessageFormatParser.prototype.rulePluralOffset = function rulePluralOffset() {
   var match = this.matchRe(PLURAL_OFFSET_RE);
@@ -230,7 +230,7 @@ MessageFormatParser.prototype.rulePluralOffset = function rulePluralOffset() {
 };
 
 MessageFormatParser.prototype.assertChoiceKeyIsNew = function assertChoiceKeyIsNew(choiceKey, index) {
-  if (this.choices[choiceKey] !== void 0) {
+  if (this.choices[choiceKey] !== undefined) {
     var position = indexToLineAndColumn(this.text, index);
     throw $interpolateMinErr('dupvalue',
         'The choice “{0}” is specified more than once. Duplicate key is at line {1}, column {2} in text “{3}”',
@@ -251,7 +251,7 @@ MessageFormatParser.prototype.ruleSelectKeyword = function ruleSelectKeyword() {
   this.rule = this.ruleMessageText;
 };
 
-var EXPLICIT_VALUE_OR_KEYWORD_RE = new RegExp("\\s*(?:(?:=(" + NUMBER_RE.source + "))|(\\w+))", "g");
+var EXPLICIT_VALUE_OR_KEYWORD_RE = new RegExp('\\s*(?:(?:=(' + NUMBER_RE.source + '))|(\\w+))', 'g');
 MessageFormatParser.prototype.rulePluralValueOrKeyword = function rulePluralValueOrKeyword() {
   var match = this.matchRe(EXPLICIT_VALUE_OR_KEYWORD_RE);
   if (match == null) {
@@ -268,7 +268,7 @@ MessageFormatParser.prototype.rulePluralValueOrKeyword = function rulePluralValu
   this.rule = this.ruleMessageText;
 };
 
-var BRACE_OPEN_RE = /\s*{/g;
+var BRACE_OPEN_RE = /\s*\{/g;
 var BRACE_CLOSE_RE = /}/g;
 MessageFormatParser.prototype.ruleMessageText = function ruleMessageText() {
   if (!this.consumeRe(BRACE_OPEN_RE)) {
@@ -288,7 +288,7 @@ var INTERP_OR_END_MESSAGE_RE = /\\.|{{|}/g;
 var INTERP_OR_PLURALVALUE_OR_END_MESSAGE_RE = /\\.|{{|#|}/g;
 var ESCAPE_OR_MUSTACHE_BEGIN_RE = /\\.|{{/g;
 MessageFormatParser.prototype.advanceInInterpolationOrMessageText = function advanceInInterpolationOrMessageText() {
-  var currentIndex = this.index, match, re;
+  var currentIndex = this.index, match;
   if (this.ruleChoiceKeyword == null) { // interpolation
     match = this.searchRe(ESCAPE_OR_MUSTACHE_BEGIN_RE);
     if (match == null) { // End of interpolation text.  Nothing more to process.
@@ -322,20 +322,20 @@ MessageFormatParser.prototype.ruleInInterpolationOrMessageText = function ruleIn
     this.rule = null;
     return;
   }
-  if (token[0] === "\\") {
+  if (token[0] === '\\') {
     // unescape next character and continue
     this.interpolationParts.addText(this.textPart + token[1]);
     return;
   }
   this.interpolationParts.addText(this.textPart);
-  if (token === "{{") {
+  if (token === '{{') {
     this.pushState();
     this.ruleStack.push(this.ruleEndMustacheInInterpolationOrMessage);
     this.rule = this.ruleEnteredMustache;
-  } else if (token === "}") {
+  } else if (token === '}') {
     this.choices[this.choiceKey] = this.interpolationParts.toParsedFn(/*mustHaveExpression=*/false, this.text);
     this.rule = this.ruleChoiceKeyword;
-  } else if (token === "#") {
+  } else if (token === '#') {
     this.interpolationParts.addExpressionFn(this.expressionMinusOffsetFn);
   } else {
     this.errorInParseLogic();
@@ -359,7 +359,7 @@ MessageFormatParser.prototype.ruleInInterpolation = function ruleInInterpolation
     return;
   }
   var token = match[0];
-  if (token[0] === "\\") {
+  if (token[0] === '\\') {
     // unescape next character and continue
     this.interpolationParts.addText(this.text.substring(currentIndex, match.index) + token[1]);
     return;
@@ -425,18 +425,18 @@ MessageFormatParser.prototype.ruleAngularExpression = function ruleAngularExpres
 
 function getEndOperator(opBegin) {
   switch (opBegin) {
-    case "{": return "}";
-    case "[": return "]";
-    case "(": return ")";
+    case '{': return '}';
+    case '[': return ']';
+    case '(': return ')';
     default: return null;
   }
 }
 
 function getBeginOperator(opEnd) {
   switch (opEnd) {
-    case "}": return "{";
-    case "]": return "[";
-    case ")": return "(";
+    case '}': return '{';
+    case ']': return '[';
+    case ')': return '(';
     default: return null;
   }
 }
@@ -446,7 +446,6 @@ function getBeginOperator(opEnd) {
 // should support any other type of start/end interpolation symbol.
 var INTERESTING_OPERATORS_RE = /[[\]{}()'",]/g;
 MessageFormatParser.prototype.ruleInAngularExpression = function ruleInAngularExpression() {
-  var startIndex = this.index;
   var match = this.searchRe(INTERESTING_OPERATORS_RE);
   var position;
   if (match == null) {
@@ -471,12 +470,12 @@ MessageFormatParser.prototype.ruleInAngularExpression = function ruleInAngularEx
         this.getEndOperator(innermostOperator), this.text);
   }
   var operator = match[0];
-  if (operator === "'" || operator === '"') {
+  if (operator === '\'' || operator === '"') {
     this.ruleStack.push(this.ruleInAngularExpression);
     this.startStringAtMatch(match);
     return;
   }
-  if (operator === ",") {
+  if (operator === ',') {
     if (this.trustedContext) {
       position = indexToLineAndColumn(this.text, this.index);
       throw $interpolateMinErr('unsafe',

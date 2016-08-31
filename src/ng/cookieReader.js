@@ -51,6 +51,7 @@ function $$CookieReader($document) {
 
 $$CookieReader.$inject = ['$document'];
 
+/** @this */
 function $$CookieReaderProvider() {
   this.$get = $$CookieReader;
 }

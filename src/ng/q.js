@@ -135,7 +135,7 @@
  *
  * **Methods**
  *
- * - `then(successCallback, errorCallback, notifyCallback)` – regardless of when the promise was or
+ * - `then(successCallback, [errorCallback], [notifyCallback])` – regardless of when the promise was or
  *   will be resolved or rejected, `then` calls one of the success or error callbacks asynchronously
  *   as soon as the result is available. The callbacks are called with a single argument: the result
  *   or rejection reason. Additionally, the notify callback may be called zero or more times to
@@ -146,7 +146,8 @@
  *   with the value which is resolved in that promise using
  *   [promise chaining](http://www.html5rocks.com/en/tutorials/es6/promises/#toc-promises-queues)).
  *   It also notifies via the return value of the `notifyCallback` method. The promise cannot be
- *   resolved or rejected from the notifyCallback method.
+ *   resolved or rejected from the notifyCallback method. The errorCallback and notifyCallback
+ *   arguments are optional.
  *
  * - `catch(errorCallback)` – shorthand for `promise.then(null, errorCallback)`
  *
@@ -219,6 +220,7 @@
 /**
  * @ngdoc provider
  * @name $qProvider
+ * @this
  *
  * @description
  */
@@ -252,6 +254,7 @@ function $QProvider() {
   };
 }
 
+/** @this */
 function $$QProvider() {
   var errorOnUnhandledRejections = true;
   this.$get = ['$browser', '$exceptionHandler', function($browser, $exceptionHandler) {
@@ -322,11 +325,11 @@ function qFactory(nextTick, exceptionHandler, errorOnUnhandledRejections) {
       return result.promise;
     },
 
-    "catch": function(callback) {
+    'catch': function(callback) {
       return this.then(null, callback);
     },
 
-    "finally": function(callback, progressBack) {
+    'finally': function(callback, progressBack) {
       return this.then(function(value) {
         return handleCallback(value, true, callback);
       }, function(error) {
@@ -375,6 +378,7 @@ function qFactory(nextTick, exceptionHandler, errorOnUnhandledRejections) {
   }
 
   function processChecks() {
+    // eslint-disable-next-line no-unmodified-loop-condition
     while (!queueSize && checkQueue.length) {
       var toCheck = checkQueue.shift();
       if (!toCheck.pur) {
@@ -416,7 +420,7 @@ function qFactory(nextTick, exceptionHandler, errorOnUnhandledRejections) {
       if (val === this.promise) {
         this.$$reject($qMinErr(
           'qcycle',
-          "Expected promise to be resolved with value other than itself '{0}'",
+          'Expected promise to be resolved with value other than itself \'{0}\'',
           val));
       } else {
         this.$$resolve(val);
@@ -636,9 +640,33 @@ function qFactory(nextTick, exceptionHandler, errorOnUnhandledRejections) {
     return deferred.promise;
   }
 
+  /**
+   * @ngdoc method
+   * @name $q#race
+   * @kind function
+   *
+   * @description
+   * Returns a promise that resolves or rejects as soon as one of those promises
+   * resolves or rejects, with the value or reason from that promise.
+   *
+   * @param {Array.<Promise>|Object.<Promise>} promises An array or hash of promises.
+   * @returns {Promise} a promise that resolves or rejects as soon as one of the `promises`
+   * resolves or rejects, with the value or reason from that promise.
+   */
+
+  function race(promises) {
+    var deferred = defer();
+
+    forEach(promises, function(promise) {
+      when(promise).then(deferred.resolve, deferred.reject);
+    });
+
+    return deferred.promise;
+  }
+
   var $Q = function Q(resolver) {
     if (!isFunction(resolver)) {
-      throw $qMinErr('norslvr', "Expected resolverFn, got '{0}'", resolver);
+      throw $qMinErr('norslvr', 'Expected resolverFn, got \'{0}\'', resolver);
     }
 
     var deferred = new Deferred();
@@ -665,6 +693,7 @@ function qFactory(nextTick, exceptionHandler, errorOnUnhandledRejections) {
   $Q.when = when;
   $Q.resolve = resolve;
   $Q.all = all;
+  $Q.race = race;
 
   return $Q;
 }

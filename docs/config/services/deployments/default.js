@@ -1,11 +1,11 @@
-"use strict";
+'use strict';
 
 module.exports = function defaultDeployment(getVersion) {
   return {
     name: 'default',
     examples: {
       commonFiles: {
-        scripts: [ '../../../angular.min.js' ]
+        scripts: ['../../../angular.min.js']
       },
       dependencyPath: '../../../'
     },

@@ -1,5 +1,7 @@
 'use strict';
 
+/* exported ngRepeatDirective */
+
 /**
  * @ngdoc directive
  * @name ngRepeat
@@ -231,8 +233,8 @@
  *
  * @example
  * This example uses `ngRepeat` to display a list of people. A filter is used to restrict the displayed
- * results by name. New (entering) and removed (leaving) items are animated.
-  <example module="ngRepeat" name="ngRepeat" deps="angular-animate.js" animations="true">
+ * results by name or by age. New (entering) and removed (leaving) items are animated.
+  <example module="ngRepeat" name="ngRepeat" deps="angular-animate.js" animations="true" name="ng-repeat">
     <file name="index.html">
       <div ng-controller="repeatController">
         I have {{friends.length}} friends. They are:
@@ -241,7 +243,7 @@
           <li class="animate-repeat" ng-repeat="friend in friends | filter:q as results">
             [{{$index + 1}}] {{friend.name}} who is {{friend.age}} years old.
           </li>
-          <li class="animate-repeat" ng-if="results.length == 0">
+          <li class="animate-repeat" ng-if="results.length === 0">
             <strong>No results found...</strong>
           </li>
         </ul>
@@ -334,9 +336,8 @@ var ngRepeatDirective = ['$parse', '$animate', '$compile', function($parse, $ani
     scope.$first = (index === 0);
     scope.$last = (index === (arrayLength - 1));
     scope.$middle = !(scope.$first || scope.$last);
-    // jshint bitwise: false
-    scope.$odd = !(scope.$even = (index&1) === 0);
-    // jshint bitwise: true
+    // eslint-disable-next-line no-bitwise
+    scope.$odd = !(scope.$even = (index & 1) === 0);
   };
 
   var getBlockStart = function(block) {
@@ -362,7 +363,7 @@ var ngRepeatDirective = ['$parse', '$animate', '$compile', function($parse, $ani
       var match = expression.match(/^\s*([\s\S]+?)\s+in\s+([\s\S]+?)(?:\s+as\s+([\s\S]+?))?(?:\s+track\s+by\s+([\s\S]+?))?\s*$/);
 
       if (!match) {
-        throw ngRepeatMinErr('iexp', "Expected expression in form of '_item_ in _collection_[ track by _id_]' but got '{0}'.",
+        throw ngRepeatMinErr('iexp', 'Expected expression in form of \'_item_ in _collection_[ track by _id_]\' but got \'{0}\'.',
             expression);
       }
 
@@ -374,7 +375,7 @@ var ngRepeatDirective = ['$parse', '$animate', '$compile', function($parse, $ani
       match = lhs.match(/^(?:(\s*[\$\w]+)|\(\s*([\$\w]+)\s*,\s*([\$\w]+)\s*\))$/);
 
       if (!match) {
-        throw ngRepeatMinErr('iidexp', "'_item_' in '_item_ in _collection_' should be an identifier or '(_key_, _value_)' expression, but got '{0}'.",
+        throw ngRepeatMinErr('iidexp', '\'_item_\' in \'_item_ in _collection_\' should be an identifier or \'(_key_, _value_)\' expression, but got \'{0}\'.',
             lhs);
       }
       var valueIdentifier = match[3] || match[1];
@@ -382,7 +383,7 @@ var ngRepeatDirective = ['$parse', '$animate', '$compile', function($parse, $ani
 
       if (aliasAs && (!/^[$a-zA-Z_][$a-zA-Z0-9_]*$/.test(aliasAs) ||
           /^(null|undefined|this|\$index|\$first|\$middle|\$last|\$even|\$odd|\$parent|\$root|\$id)$/.test(aliasAs))) {
-        throw ngRepeatMinErr('badident', "alias '{0}' is invalid --- must be a valid JS identifier which is not a reserved name.",
+        throw ngRepeatMinErr('badident', 'alias \'{0}\' is invalid --- must be a valid JS identifier which is not a reserved name.',
           aliasAs);
       }
 
@@ -478,7 +479,7 @@ var ngRepeatDirective = ['$parse', '$animate', '$compile', function($parse, $ani
                 if (block && block.scope) lastBlockMap[block.id] = block;
               });
               throw ngRepeatMinErr('dupes',
-                  "Duplicates in a repeater are not allowed. Use 'track by' expression to specify unique keys. Repeater: {0}, Duplicate key: {1}, Duplicate value: {2}",
+                  'Duplicates in a repeater are not allowed. Use \'track by\' expression to specify unique keys. Repeater: {0}, Duplicate key: {1}, Duplicate value: {2}',
                   expression, trackById, value);
             } else {
               // new never before seen block

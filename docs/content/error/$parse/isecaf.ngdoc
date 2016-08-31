@@ -1,0 +1,12 @@
+@ngdoc error
+@name $parse:isecaf
+@fullName Assigning to Fields of Disallowed Context
+@description
+
+Occurs when an expression attempts to assign a value on a field of any of the `Boolean`, `Number`,
+`String`, `Array`, `Object`, or `Function` constructors or the corresponding prototypes.
+
+Angular bans the modification of these constructors or their prototypes from within expressions,
+since it is a known way to modify the behaviour of existing functions/operations.
+
+To resolve this error, avoid assigning to fields of constructors or their prototypes in expressions.

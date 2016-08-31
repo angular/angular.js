@@ -126,10 +126,10 @@ function MockDocument() {
   this.basePath = '/';
 
   this.find = function(name) {
-    if (name == 'base') {
+    if (name === 'base') {
       return {
         attr: function(name) {
-          if (name == 'href') {
+          if (name === 'href') {
             return self.basePath;
           } else {
             throw new Error(name);
@@ -337,7 +337,7 @@ describe('browser', function() {
       expect(locationReplace).not.toHaveBeenCalled();
     });
 
-    it("should retain the # character when the only change is clearing the hash fragment, to prevent page reload", function() {
+    it('should retain the # character when the only change is clearing the hash fragment, to prevent page reload', function() {
       sniffer.history = true;
 
       browser.url('http://server/#123');
@@ -384,8 +384,8 @@ describe('browser', function() {
     });
 
     it('should decode single quotes to work around FF bug 407273', function() {
-      fakeWindow.location.href = "http://ff-bug/?single%27quote";
-      expect(browser.url()).toBe("http://ff-bug/?single'quote");
+      fakeWindow.location.href = 'http://ff-bug/?single%27quote';
+      expect(browser.url()).toBe('http://ff-bug/?single\'quote');
     });
 
     it('should not set URL when the URL is already set', function() {
@@ -733,7 +733,7 @@ describe('browser', function() {
     });
 
 
-    it("should stop calling callbacks when application has been torn down", function() {
+    it('should stop calling callbacks when application has been torn down', function() {
       sniffer.history = true;
       browser.onUrlChange(callback);
       fakeWindow.location.href = 'http://server/new';
@@ -755,7 +755,7 @@ describe('browser', function() {
     var jqDocHead;
 
     beforeEach(function() {
-      jqDocHead = jqLite(document).find('head');
+      jqDocHead = jqLite(window.document).find('head');
     });
 
     it('should return value from <base href>', function() {

@@ -1,0 +1,15 @@
+<div ng-app="selectBenchmark" ng-cloak>
+  <div ng-controller="DataController">
+    <div class="container-fluid">
+      <p>
+        Tests the execution of a select with ngRepeat'ed options with ngValue for rendering during model
+        and option updates.
+      </p>
+      <select ng-model="x">
+        <optgroup ng-repeat="g in groups track by g.name" label="{{g.name}}">
+          <option ng-repeat="a in g.items track by a.id" ng-value="a">{{a.label}}</option>
+        </optgroup>
+      </select>
+    </div>
+  </div>
+</div>

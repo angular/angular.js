@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 var path = require('canonical-path');
 var packagePath = __dirname;
@@ -55,6 +55,7 @@ module.exports = new Package('angularjs', [
   parseTagsProcessor.tagDefinitions.push(require('./tag-defs/tutorial-step'));
   parseTagsProcessor.tagDefinitions.push(require('./tag-defs/sortOrder'));
   parseTagsProcessor.tagDefinitions.push(require('./tag-defs/installation'));
+  parseTagsProcessor.tagDefinitions.push(require('./tag-defs/this'));
 })
 
 
@@ -87,7 +88,7 @@ module.exports = new Package('angularjs', [
     docTypes: ['overview', 'tutorial'],
     getPath: function(doc) {
       var docPath = path.dirname(doc.fileInfo.relativePath);
-      if ( doc.fileInfo.baseName !== 'index' ) {
+      if (doc.fileInfo.baseName !== 'index') {
         docPath = path.join(docPath, doc.fileInfo.baseName);
       }
       return docPath;
@@ -108,12 +109,12 @@ module.exports = new Package('angularjs', [
   });
 
   computePathsProcessor.pathTemplates.push({
-    docTypes: ['module' ],
+    docTypes: ['module'],
     pathTemplate: '${area}/${name}',
     outputPathTemplate: 'partials/${area}/${name}.html'
   });
   computePathsProcessor.pathTemplates.push({
-    docTypes: ['componentGroup' ],
+    docTypes: ['componentGroup'],
     pathTemplate: '${area}/${moduleName}/${groupType}',
     outputPathTemplate: 'partials/${area}/${moduleName}/${groupType}.html'
   });

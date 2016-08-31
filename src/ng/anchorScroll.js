@@ -3,6 +3,7 @@
 /**
  * @ngdoc provider
  * @name $anchorScrollProvider
+ * @this
  *
  * @description
  * Use `$anchorScrollProvider` to disable automatic scrolling whenever
@@ -74,7 +75,7 @@ function $AnchorScrollProvider() {
    * </div>
    *
    * @example
-     <example module="anchorScrollExample">
+     <example module="anchorScrollExample" name="anchor-scroll">
        <file name="index.html">
          <div id="scrollArea" ng-controller="ScrollController">
            <a ng-click="gotoBottom()">Go to bottom</a>
@@ -84,7 +85,7 @@ function $AnchorScrollProvider() {
        <file name="script.js">
          angular.module('anchorScrollExample', [])
            .controller('ScrollController', ['$scope', '$location', '$anchorScroll',
-             function ($scope, $location, $anchorScroll) {
+             function($scope, $location, $anchorScroll) {
                $scope.gotoBottom = function() {
                  // set the location.hash to the id of
                  // the element you wish to scroll to.
@@ -113,7 +114,7 @@ function $AnchorScrollProvider() {
    * See {@link ng.$anchorScroll#yOffset $anchorScroll.yOffset} for more details.
    *
    * @example
-     <example module="anchorScrollOffsetExample">
+     <example module="anchorScrollOffsetExample" name="anchor-scroll-offset">
        <file name="index.html">
          <div class="fixed-header" ng-controller="headerCtrl">
            <a href="" ng-click="gotoAnchor(x)" ng-repeat="x in [1,2,3,4,5]">
@@ -130,7 +131,7 @@ function $AnchorScrollProvider() {
              $anchorScroll.yOffset = 50;   // always scroll by 50 extra pixels
            }])
            .controller('headerCtrl', ['$anchorScroll', '$location', '$scope',
-             function ($anchorScroll, $location, $scope) {
+             function($anchorScroll, $location, $scope) {
                $scope.gotoAnchor = function(x) {
                  var newHash = 'anchor' + x;
                  if ($location.hash() !== newHash) {
@@ -249,7 +250,7 @@ function $AnchorScrollProvider() {
       // first anchor with given name :-D
       else if ((elm = getFirstAnchor(document.getElementsByName(hash)))) scrollTo(elm);
 
-      // no element and hash == 'top', scroll to the top of the page
+      // no element and hash === 'top', scroll to the top of the page
       else if (hash === 'top') scrollTo(null);
     }
 

@@ -1,25 +1,26 @@
 'use strict';
 
 describe('$$cookieReader', function() {
-  var $$cookieReader;
+  var $$cookieReader, document;
 
   function deleteAllCookies() {
-    var cookies = document.cookie.split(";");
-    var path = location.pathname;
+    var cookies = document.cookie.split(';');
+    var path = window.location.pathname;
 
     for (var i = 0; i < cookies.length; i++) {
       var cookie = cookies[i];
-      var eqPos = cookie.indexOf("=");
+      var eqPos = cookie.indexOf('=');
       var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
       var parts = path.split('/');
       while (parts.length) {
-        document.cookie = name + "=;path=" + (parts.join('/') || '/') + ";expires=Thu, 01 Jan 1970 00:00:00 GMT";
+        document.cookie = name + '=;path=' + (parts.join('/') || '/') + ';expires=Thu, 01 Jan 1970 00:00:00 GMT';
         parts.pop();
       }
     }
   }
 
   beforeEach(function() {
+    document = window.document;
     deleteAllCookies();
     expect(document.cookie).toEqual('');
 
@@ -43,7 +44,7 @@ describe('$$cookieReader', function() {
 
 
     it('should return a value for an existing cookie', function() {
-      document.cookie = "foo=bar=baz;path=/";
+      document.cookie = 'foo=bar=baz;path=/';
       expect($$cookieReader().foo).toEqual('bar=baz');
     });
 
@@ -56,7 +57,7 @@ describe('$$cookieReader', function() {
     });
 
     it('should decode cookie values that were encoded by puts', function() {
-      document.cookie = "cookie2%3Dbar%3Bbaz=val%3Due;path=/";
+      document.cookie = 'cookie2%3Dbar%3Bbaz=val%3Due;path=/';
       expect($$cookieReader()['cookie2=bar;baz']).toEqual('val=ue');
     });
 
@@ -83,8 +84,8 @@ describe('$$cookieReader', function() {
   describe('getAll via $$cookieReader()', function() {
 
     it('should return cookies as hash', function() {
-      document.cookie = "foo1=bar1;path=/";
-      document.cookie = "foo2=bar2;path=/";
+      document.cookie = 'foo1=bar1;path=/';
+      document.cookie = 'foo2=bar2;path=/';
       expect($$cookieReader()).toEqual({'foo1':'bar1', 'foo2':'bar2'});
     });
 
@@ -96,7 +97,7 @@ describe('$$cookieReader', function() {
 
 
   it('should initialize cookie cache with existing cookies', function() {
-    document.cookie = "existingCookie=existingValue;path=/";
+    document.cookie = 'existingCookie=existingValue;path=/';
     expect($$cookieReader()).toEqual({'existingCookie':'existingValue'});
   });
 

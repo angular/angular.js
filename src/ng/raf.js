@@ -1,5 +1,6 @@
 'use strict';
 
+/** @this */
 function $$RAFProvider() { //rAF
   this.$get = ['$window', '$timeout', function($window, $timeout) {
     var requestAnimationFrame = $window.requestAnimationFrame ||

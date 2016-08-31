@@ -31,7 +31,7 @@
  * @param {expression} ngInit {@link guide/expression Expression} to eval.
  *
  * @example
-   <example module="initExample">
+   <example module="initExample" name="ng-init">
      <file name="index.html">
    <script>
      angular.module('initExample', [])
