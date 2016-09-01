@@ -508,7 +508,7 @@ function trimFilter() {
     return string.trim();
   };
 }
-	
+
 /**
  * @ngdoc filter
  * @name date
