@@ -6897,7 +6897,11 @@ describe('$compile', function() {
 
       function ParentController() { this.name = 'Parent'; }
       function SiblingController() { this.name = 'Sibling'; }
-      function MeController() { this.name = 'Me'; }
+      function MeController() {
+        this.name = 'Me';
+        expect(this.container).toEqual(jasmine.any(ParentController));
+        expect(this.friend).toEqual(jasmine.any(SiblingController));
+      }
       MeController.prototype.$onInit = function() {
         parentController = this.container;
         siblingController = this.friend;
@@ -7026,7 +7030,11 @@ describe('$compile', function() {
 
       function ParentController() { this.name = 'Parent'; }
       function SiblingController() { this.name = 'Sibling'; }
-      function MeController() { this.name = 'Me'; }
+      function MeController() {
+        this.name = 'Me';
+        expect(this.container).toBeUndefined();
+        expect(this.friend).toBeUndefined();
+      }
       MeController.prototype.$onInit = function() {
         parentController = this.container;
         siblingController = this.friend;
@@ -7077,6 +7085,8 @@ describe('$compile', function() {
             siblingController = this.friend;
           }
         };
+        expect(this.container).toEqual(jasmine.any(ParentController));
+        expect(this.friend).toEqual(jasmine.any(SiblingController));
         spyOn(meController, '$onInit').and.callThrough();
         return meController;
       }
@@ -7124,6 +7134,8 @@ describe('$compile', function() {
           containerController = this.container;
           friendController = this.friend;
         };
+        expect(this.container).toEqual(new ParentController());
+        expect(this.friend).toEqual(new SiblingController());
       }
       function ParentController() {
         parentController = { name: 'Parent' };
@@ -7157,11 +7169,16 @@ describe('$compile', function() {
           return {
             controller: SiblingController
           };
+        })
+        .directive('aSibling', function() {
+          return {
+            controller: SiblingController
+          };
         });
 
       module('my');
       inject(function($compile, $rootScope, meDirective) {
-        element = $compile('<parent><me sibling></me></parent>')($rootScope);
+        element = $compile('<parent><me a-sibling sibling></me></parent>')($rootScope);
         expect(containerController).toEqual(parentController);
         expect(friendController).toEqual(siblingController);
       });
