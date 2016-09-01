@@ -290,7 +290,7 @@ describe('form', function() {
   describe('triggering commit value on submit', function() {
     it('should trigger update on form submit', function() {
       var form = $compile(
-          '<form name="test" ng-model-options="{ updateOn: \'\' }" >' +
+          '<form name="test" ng-model-options="{ updateOn: \'submit\' }" >' +
             '<input type="text" ng-model="name" />' +
           '</form>')(scope);
       scope.$digest();
@@ -305,7 +305,7 @@ describe('form', function() {
 
     it('should trigger update on form submit with nested forms', function() {
       var form = $compile(
-          '<form name="test" ng-model-options="{ updateOn: \'\' }" >' +
+          '<form name="test" ng-model-options="{ updateOn: \'submit\' }" >' +
             '<div class="ng-form" name="child">' +
               '<input type="text" ng-model="name" />' +
             '</div>' +
@@ -323,7 +323,7 @@ describe('form', function() {
     it('should trigger update before ng-submit is invoked', function() {
       var form = $compile(
           '<form name="test" ng-submit="submit()" ' +
-              'ng-model-options="{ updateOn: \'\' }" >' +
+              'ng-model-options="{ updateOn: \'submit\' }" >' +
             '<input type="text" ng-model="name" />' +
           '</form>')(scope);
       scope.$digest();
@@ -342,7 +342,7 @@ describe('form', function() {
   describe('rollback view value', function() {
     it('should trigger rollback on form controls', function() {
       var form = $compile(
-          '<form name="test" ng-model-options="{ updateOn: \'\' }" >' +
+          '<form name="test" ng-model-options="{ updateOn: \'submit\' }" >' +
             '<input type="text" ng-model="name" />' +
             '<button ng-click="test.$rollbackViewValue()" />' +
           '</form>')(scope);
@@ -358,7 +358,7 @@ describe('form', function() {
 
     it('should trigger rollback on form controls with nested forms', function() {
       var form = $compile(
-          '<form name="test" ng-model-options="{ updateOn: \'\' }" >' +
+          '<form name="test" ng-model-options="{ updateOn: \'submit\' }" >' +
             '<div class="ng-form" name="child">' +
               '<input type="text" ng-model="name" />' +
             '</div>' +
