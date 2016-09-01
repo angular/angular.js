@@ -17,7 +17,8 @@
     "postinstall": "node scripts/npm/copy-npm-shrinkwrap.js",
     "commit": "git-cz",
     "test-i18n": "jasmine-node i18n/spec",
-    "test-i18n-ucd": "jasmine-node i18n/ucd/spec"
+    "test-i18n-ucd": "jasmine-node i18n/ucd/spec",
+    "gulp": "gulp"
   },
   "devDependencies": {
     "angular-benchpress": "0.x.x",
@@ -27,6 +28,7 @@
     "canonical-path": "0.0.2",
     "cheerio": "^0.17.0",
     "commitizen": "^2.3.0",
+    "cross-spawn": "^4.0.0",
     "cz-conventional-changelog": "1.1.4",
     "dgeni": "^0.4.0",
     "dgeni-packages": "^0.14.0",
