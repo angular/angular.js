@@ -8,6 +8,7 @@
  lowercaseFilter: true,
  numberFilter: true,
  orderByFilter: true,
+ trimFilter: true,
  uppercaseFilter: true,
  */
 
@@ -156,6 +157,7 @@ function $FilterProvider($provide) {
     lowercaseFilter: false,
     numberFilter: false,
     orderByFilter: false,
+	trimFilter: false,
     uppercaseFilter: false
   */
 
@@ -168,4 +170,5 @@ function $FilterProvider($provide) {
   register('number', numberFilter);
   register('orderBy', orderByFilter);
   register('uppercase', uppercaseFilter);
+  register('trim', trimFilter);
 }

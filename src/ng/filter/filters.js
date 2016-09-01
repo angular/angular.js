@@ -480,6 +480,37 @@ var DATE_FORMATS_SPLIT = /((?:[^yMLdHhmsaZEwG']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+
 
 /**
  * @ngdoc filter
+ * @name trim
+ * @kind function
+ *
+ * @description
+ *   Allows you to remove beginning and trailing whitespace from a given string.
+ *
+ * @param {string} Any string.
+ * @returns {string} string with no beginning or trailing whitespace.
+ *
+ *
+ * @example
+   <example name="filter-trim">
+     <file name="index.html">
+       <pre id="trim-me">{{ {'    I Am A String  '} | trim }}</pre>
+     </file>
+     <file name="protractor.js" type="protractor">
+       it('should trim filtered strings', function() {
+         expect(element(by.id('trim-me')).getText()).toMatch('I Am A String');
+       });
+     </file>
+   </example>
+ *
+ */
+function trimFilter() {
+  return function(string) {
+    return string.trim();
+  };
+}
+	
+/**
+ * @ngdoc filter
  * @name date
  * @kind function
  *
