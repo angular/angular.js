@@ -4040,6 +4040,42 @@
         }
       }
     },
+    "cross-spawn": {
+      "version": "4.0.0",
+      "from": "cross-spawn@latest",
+      "resolved": "https://registry.npmjs.org/cross-spawn/-/cross-spawn-4.0.0.tgz",
+      "dependencies": {
+        "lru-cache": {
+          "version": "4.0.1",
+          "from": "lru-cache@>=4.0.1 <5.0.0",
+          "resolved": "https://registry.npmjs.org/lru-cache/-/lru-cache-4.0.1.tgz",
+          "dependencies": {
+            "pseudomap": {
+              "version": "1.0.2",
+              "from": "pseudomap@>=1.0.1 <2.0.0",
+              "resolved": "https://registry.npmjs.org/pseudomap/-/pseudomap-1.0.2.tgz"
+            },
+            "yallist": {
+              "version": "2.0.0",
+              "from": "yallist@>=2.0.0 <3.0.0",
+              "resolved": "https://registry.npmjs.org/yallist/-/yallist-2.0.0.tgz"
+            }
+          }
+        },
+        "which": {
+          "version": "1.2.10",
+          "from": "which@>=1.2.9 <2.0.0",
+          "resolved": "https://registry.npmjs.org/which/-/which-1.2.10.tgz",
+          "dependencies": {
+            "isexe": {
+              "version": "1.1.2",
+              "from": "isexe@>=1.1.1 <2.0.0",
+              "resolved": "https://registry.npmjs.org/isexe/-/isexe-1.1.2.tgz"
+            }
+          }
+        }
+      }
+    },
     "cz-conventional-changelog": {
       "version": "1.1.4",
       "from": "https://registry.npmjs.org/cz-conventional-changelog/-/cz-conventional-changelog-1.1.4.tgz",
