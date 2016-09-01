@@ -2630,6 +2630,30 @@
         }
       }
     },
+    "cross-spawn": {
+      "version": "4.0.0",
+      "dependencies": {
+        "lru-cache": {
+          "version": "4.0.1",
+          "dependencies": {
+            "pseudomap": {
+              "version": "1.0.2"
+            },
+            "yallist": {
+              "version": "2.0.0"
+            }
+          }
+        },
+        "which": {
+          "version": "1.2.10",
+          "dependencies": {
+            "isexe": {
+              "version": "1.1.2"
+            }
+          }
+        }
+      }
+    },
     "cz-conventional-changelog": {
       "version": "1.1.4",
       "dependencies": {
