@@ -72,7 +72,7 @@ var ngChangeDirective = valueFn({
   require: 'ngModel',
   link: function(scope, element, attr, ctrl) {
     ctrl.$viewChangeListeners.push(function() {
-      scope.$eval(attr.ngChange);
+      scope.$eval(attr.ngChange, ctrl.$ngChangeLocals);
     });
   }
 });
