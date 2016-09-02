@@ -96,6 +96,14 @@ function $RootScopeProvider() {
     return ChildScope;
   }
 
+  function watchEquals(value, last, objectEquality) {
+    return value !== last &&
+      !(objectEquality
+          ? equals(value, last)
+          : (typeof value === 'number' && typeof last === 'number'
+            && isNaN(value) && isNaN(last)))
+  }
+
   this.$get = ['$exceptionHandler', '$parse', '$browser',
       function($exceptionHandler, $parse, $browser) {
 
@@ -390,6 +398,29 @@ function $RootScopeProvider() {
        * @returns {function()} Returns a deregistration function for this listener.
        */
       $watch: function(watchExp, listener, objectEquality, prettyPrintExpression) {
+        if (!angular.isFunction(listener)) {
+          listener = angular.noop;
+        }
+
+        if (typeof watchExp === 'string' && watchExp.match(/^ *[a-zA-Z]+ *:/)) {
+          var statement = watchExp.split(':'),
+              eventName = statement[0].trim(),
+              get = $parse(statement.slice(1).join(':')),
+              last = initWatchVal,
+              scope = this;
+          function watchOnEvaluate() {
+            var reallyLast,
+                value = get(scope);
+            if (watchEquals(value, last, objectEquality)) {
+              reallyLast = last; // before setting new last
+              last = objectEquality ? copy(value, null) : value;
+              return listener(value, (reallyLast === initWatchVal ? value : reallyLast), scope);
+            }
+          }
+          watchOnEvaluate();
+          return this.$on(eventName, watchOnEvaluate);
+        }
+
         var get = $parse(watchExp);
 
         if (get.$$watchDelegate) {
@@ -406,10 +437,6 @@ function $RootScopeProvider() {
             };
 
         lastDirtyWatch = null;
-
-        if (!isFunction(listener)) {
-          watcher.fn = noop;
-        }
 
         if (!array) {
           array = scope.$$watchers = [];
@@ -803,11 +830,7 @@ function $RootScopeProvider() {
                   // circuit it with === operator, only when === fails do we use .equals
                   if (watch) {
                     get = watch.get;
-                    if ((value = get(current)) !== (last = watch.last) &&
-                        !(watch.eq
-                            ? equals(value, last)
-                            : (typeof value === 'number' && typeof last === 'number'
-                               && isNaN(value) && isNaN(last)))) {
+                    if (watchEquals((value = get(current)), (last = watch.last), watch.eq)) {
                       dirty = true;
                       lastDirtyWatch = watch;
                       watch.last = watch.eq ? copy(value, null) : value;
