@@ -16,7 +16,7 @@ For example, the following directives are valid:
 directive("okay", function() {
   return {
     bindToController: true,
-    controller: "myCtrl as $ctrl"
+    controller: "myCtrl as $ctrl",
     scope: {
       text: "@text"
     }
