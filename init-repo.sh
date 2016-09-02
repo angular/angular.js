@@ -27,6 +27,3 @@ if [ $? -ne 0 ]; then
   echo "Installing Karma..."
   npm install -g karma
 fi
-
-echo "Installing git hooks..."
-ln -sf ../../validate-commit-msg.js .git/hooks/commit-msg
