@@ -69,11 +69,10 @@ function currencyFilter($locale) {
     }
 
     // if null or undefined pass it through
-    var currencyString = (amount == null)
+    return currencyString = (amount == null)
         ? amount
         : formatNumber(amount, formats.PATTERNS[1], formats.GROUP_SEP, formats.DECIMAL_SEP, fractionSize).
-            replace(/\u00A4/g, currencySymbol);
-	return currencyString.trim();
+            replace(/\u00A4/g, currencySymbol).trim();
   };
 }
 
