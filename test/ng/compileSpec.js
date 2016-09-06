@@ -4327,6 +4327,40 @@ describe('$compile', function() {
       });
 
 
+      it('should not call `$onChanges` twice even when the initial value is `NaN`', function() {
+        var onChangesSpy = jasmine.createSpy('$onChanges');
+
+        module(function($compileProvider) {
+          $compileProvider.component('test', {
+            bindings: {prop: '<', attr: '@'},
+            controller: function TestController() {
+              this.$onChanges = onChangesSpy;
+            }
+          });
+        });
+
+        inject(function($compile, $rootScope) {
+          var template = '<test prop="a" attr="{{a}}"></test>' +
+                         '<test prop="b" attr="{{b}}"></test>';
+          $rootScope.a = 'foo';
+          $rootScope.b = NaN;
+
+          element = $compile(template)($rootScope);
+          $rootScope.$digest();
+
+          expect(onChangesSpy).toHaveBeenCalledTimes(2);
+          expect(onChangesSpy.calls.argsFor(0)[0]).toEqual({
+            prop: jasmine.objectContaining({currentValue: 'foo'}),
+            attr: jasmine.objectContaining({currentValue: 'foo'})
+          });
+          expect(onChangesSpy.calls.argsFor(1)[0]).toEqual({
+            prop: jasmine.objectContaining({currentValue: NaN}),
+            attr: jasmine.objectContaining({currentValue: 'NaN'})
+          });
+        });
+      });
+
+
       it('should only trigger one extra digest however many controllers have changes', function() {
         var log = [];
         function TestController1() { }
