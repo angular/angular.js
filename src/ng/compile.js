@@ -1371,10 +1371,10 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
   /**
    * @ngdoc method
-   * @name  $compileProvider#preAssignBindings
+   * @name  $compileProvider#preAssignBindingsEnabled
    *
-   * @param {boolean=} enabled update the preAssignBindings state if provided, otherwise just return the
-   * current preAssignBindings state
+   * @param {boolean=} enabled update the preAssignBindingsEnabled state if provided, otherwise just return the
+   * current preAssignBindingsEnabled state
    * @returns {*} current value if used as getter or itself (chaining) if used as setter
    *
    * @kind function
@@ -1389,13 +1389,13 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
    *
    * The default value is true in Angular 1.5.x but will switch to false in Angular 1.6.x.
    */
-  var preAssignBindings = true;
-  this.preAssignBindings = function(enabled) {
+  var preAssignBindingsEnabled = true;
+  this.preAssignBindingsEnabled = function(enabled) {
     if (isDefined(enabled)) {
-      preAssignBindings = enabled;
+      preAssignBindingsEnabled = enabled;
       return this;
     }
-    return preAssignBindings;
+    return preAssignBindingsEnabled;
   };
 
 
@@ -2708,7 +2708,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           var controller = elementControllers[name];
           var bindings = controllerDirective.$$bindings.bindToController;
 
-          if (preAssignBindings) {
+          if (preAssignBindingsEnabled) {
             if (controller.identifier && bindings) {
               controller.bindingInfo =
                 initializeDirectiveBindings(controllerScope, attrs, controller.instance, bindings, controllerDirective);

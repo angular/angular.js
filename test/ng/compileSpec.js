@@ -3845,10 +3845,10 @@ describe('$compile', function() {
     });
   });
 
-  forEach([true, false], function(preAssignBindings) {
-    describe((preAssignBindings ? 'with' : 'without') + ' pre-assigned bindings', function() {
+  forEach([true, false], function(preAssignBindingsEnabled) {
+    describe((preAssignBindingsEnabled ? 'with' : 'without') + ' pre-assigned bindings', function() {
       beforeEach(module(function($compileProvider) {
-        $compileProvider.preAssignBindings(preAssignBindings);
+        $compileProvider.preAssignBindingsEnabled(preAssignBindingsEnabled);
       }));
 
       describe('controller lifecycle hooks', function() {
@@ -5716,7 +5716,7 @@ describe('$compile', function() {
                   expect(this.str).toBe('Hello, world!');
                   expect(this.fn()).toBe('called!');
                 };
-                if (preAssignBindings) {
+                if (preAssignBindingsEnabled) {
                   this.check();
                 } else {
                   this.$onInit = this.check;
@@ -5741,6 +5741,104 @@ describe('$compile', function() {
           });
         });
 
+
+        it('should not pre-assign bound properties to the controller if `preAssignBindingsEnabled` is disabled', function() {
+          var controllerCalled = false, onInitCalled = false;
+          module(function($compileProvider) {
+            $compileProvider.preAssignBindingsEnabled(false);
+            $compileProvider.directive('fooDir', valueFn({
+              template: '<p>isolate</p>',
+              scope: {
+                'data': '=dirData',
+                'oneway': '<dirData',
+                'str': '@dirStr',
+                'fn': '&dirFn'
+              },
+              controller: function($scope) {
+                expect(this.data).toBeUndefined();
+                expect(this.oneway).toBeUndefined();
+                expect(this.str).toBeUndefined();
+                expect(this.fn).toBeUndefined();
+                controllerCalled = true;
+                this.$onInit = function() {
+                  expect(this.data).toEqualData({
+                    'foo': 'bar',
+                    'baz': 'biz'
+                  });
+                  expect(this.oneway).toEqualData({
+                    'foo': 'bar',
+                    'baz': 'biz'
+                  });
+                  expect(this.str).toBe('Hello, world!');
+                  expect(this.fn()).toBe('called!');
+                  onInitCalled = true;
+                };
+              },
+              controllerAs: 'test',
+              bindToController: true
+            }));
+          });
+          inject(function($compile, $rootScope) {
+            $rootScope.fn = valueFn('called!');
+            $rootScope.whom = 'world';
+            $rootScope.remoteData = {
+              'foo': 'bar',
+              'baz': 'biz'
+            };
+            element = $compile('<div foo-dir dir-data="remoteData" ' +
+                                    'dir-str="Hello, {{whom}}!" ' +
+                                    'dir-fn="fn()"></div>')($rootScope);
+            expect(controllerCalled).toBe(true);
+            expect(onInitCalled).toBe(true);
+          });
+        });
+
+        it('should pre-assign bound properties to the controller if `preAssignBindingsEnabled` is enabled', function() {
+          var controllerCalled = false, onInitCalled = false;
+          module(function($compileProvider) {
+            $compileProvider.preAssignBindingsEnabled(true);
+            $compileProvider.directive('fooDir', valueFn({
+              template: '<p>isolate</p>',
+              scope: {
+                'data': '=dirData',
+                'oneway': '<dirData',
+                'str': '@dirStr',
+                'fn': '&dirFn'
+              },
+              controller: function($scope) {
+                expect(this.data).toEqualData({
+                  'foo': 'bar',
+                  'baz': 'biz'
+                });
+                expect(this.oneway).toEqualData({
+                  'foo': 'bar',
+                  'baz': 'biz'
+                });
+                expect(this.str).toBe('Hello, world!');
+                expect(this.fn()).toBe('called!');
+                controllerCalled = true;
+                this.$onInit = function() {
+                  onInitCalled = true;
+                };
+              },
+              controllerAs: 'test',
+              bindToController: true
+            }));
+          });
+          inject(function($compile, $rootScope) {
+            $rootScope.fn = valueFn('called!');
+            $rootScope.whom = 'world';
+            $rootScope.remoteData = {
+              'foo': 'bar',
+              'baz': 'biz'
+            };
+            element = $compile('<div foo-dir dir-data="remoteData" ' +
+                                    'dir-str="Hello, {{whom}}!" ' +
+                                    'dir-fn="fn()"></div>')($rootScope);
+            expect(controllerCalled).toBe(true);
+            expect(onInitCalled).toBe(true);
+          });
+        });
 
         it('should eventually expose isolate scope variables on ES6 class controller with controllerAs when bindToController is true', function() {
           if (!/chrome/i.test(window.navigator.userAgent)) return;
@@ -5846,7 +5944,7 @@ describe('$compile', function() {
                   expect(this.str).toBe('Hello, world!');
                   expect(this.fn()).toBe('called!');
                 };
-                if (preAssignBindings) {
+                if (preAssignBindingsEnabled) {
                   this.check();
                 } else {
                   this.$onInit = this.check;
@@ -5993,7 +6091,7 @@ describe('$compile', function() {
                 expect(this.fn()).toBe('called!');
               };
               controllerCalled = true;
-              if (preAssignBindings) {
+              if (preAssignBindingsEnabled) {
                 this.check();
               } else {
                 this.$onInit = this.check;
@@ -6045,7 +6143,7 @@ describe('$compile', function() {
                 expect(this.fn()).toBe('called!');
               };
               controllerCalled = true;
-              if (preAssignBindings) {
+              if (preAssignBindingsEnabled) {
                 this.check();
               } else {
                 this.$onInit = this.check;
@@ -6100,7 +6198,7 @@ describe('$compile', function() {
                   expect(this.fn()).toBe('called!');
                 };
                 controller1Called = true;
-                if (preAssignBindings) {
+                if (preAssignBindingsEnabled) {
                   this.check();
                 } else {
                   this.$onInit = this.check;
@@ -6123,7 +6221,7 @@ describe('$compile', function() {
                   expect(this.fn()).toBe('second called!');
                 };
                 controller2Called = true;
-                if (preAssignBindings) {
+                if (preAssignBindingsEnabled) {
                   this.check();
                 } else {
                   this.$onInit = this.check;
@@ -6177,7 +6275,7 @@ describe('$compile', function() {
                   expect(this.fn()).toBe('called!');
                 };
                 controller1Called = true;
-                if (preAssignBindings) {
+                if (preAssignBindingsEnabled) {
                   this.check();
                 } else {
                   this.$onInit = this.check;
@@ -6200,7 +6298,7 @@ describe('$compile', function() {
                   expect(this.fn()).toBe('second called!');
                 };
                 controller2Called = true;
-                if (preAssignBindings) {
+                if (preAssignBindingsEnabled) {
                   this.check();
                 } else {
                   this.$onInit = this.check;
@@ -6254,7 +6352,7 @@ describe('$compile', function() {
                   expect(this.fn()).toBe('called!');
                 };
                 controller1Called = true;
-                if (preAssignBindings) {
+                if (preAssignBindingsEnabled) {
                   this.check();
                 } else {
                   this.$onInit = this.check;
@@ -6278,7 +6376,7 @@ describe('$compile', function() {
                   expect(this.fn()).toBe('second called!');
                 };
                 controller2Called = true;
-                if (preAssignBindings) {
+                if (preAssignBindingsEnabled) {
                   this.check();
                 } else {
                   this.$onInit = this.check;
@@ -6598,7 +6696,7 @@ describe('$compile', function() {
                   this.initProp = function() {
                     this.prop = this.prop || 'default';
                   };
-                  if (preAssignBindings) {
+                  if (preAssignBindingsEnabled) {
                     this.initProp();
                   } else {
                     this.$onInit = this.initProp;
@@ -6636,7 +6734,7 @@ describe('$compile', function() {
                   this.getProp = function() {
                     return self.prop;
                   };
-                  if (preAssignBindings) {
+                  if (preAssignBindingsEnabled) {
                     this.initProp();
                   } else {
                     this.$onInit = this.initProp;
