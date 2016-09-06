@@ -113,11 +113,11 @@ You can try evaluating different expressions here:
 Angular does not use JavaScript's `eval()` to evaluate expressions. Instead Angular's
 {@link ng.$parse $parse} service processes these expressions.
 
-Angular expressions do not have access to global variables like `window`, `document` or `location`.
+Angular expressions do not have direct access to global variables like `window`, `document` or `location`.
 This restriction is intentional. It prevents accidental access to the global state – a common source of subtle bugs.
 
-Instead use services like `$window` and `$location` in functions called from expressions. Such services
-provide mockable access to globals.
+Instead use services like `$window` and `$location` in functions on controllers, which are then called from expressions.
+Such services provide mockable access to globals.
 
 It is possible to access the context object using the identifier `this` and the locals object using the
 identifier `$locals`.

@@ -30,42 +30,55 @@ so keeping to AngularJS standards is not just a functionality issue, it's also c
 facilitate rapid security updates.
 
 
-## Expression Sandboxing
+## Angular Templates and Expressions
 
-AngularJS's expressions are sandboxed not for security reasons, but instead to maintain a proper
-separation of application responsibilities. For example, access to `window` is disallowed
-because it makes it easy to introduce brittle global state into your application.
+**If an attacker has access to control Angular templates or expressions, they can exploit an Angular application
+via an XSS attack, regardless of the version.**
 
-However, this sandbox is not intended to stop attackers who can edit the template before it's
-processed by Angular. It may be possible to run arbitrary JavaScript inside double-curly bindings
-if an attacker can modify them.
+There are a number of ways that templates and expressions can be controlled:
 
-But if an attacker can change arbitrary HTML templates, there's nothing stopping them from doing:
+* **Generating Angular templates on the server containing user-provided content**. This is the most common pitfall
+  where you are generating HTML via some server-side engine such as PHP, Java or ASP.NET.
+* **Passing an expression generated from user-provided content in calls to the following methods on a {@link scope scope}**:
+  * `$watch(userContent, ...)`
+  * `$watchGroup(userContent, ...)`
+  * `$watchCollection(userContent, ...)`
+  * `$eval(userContent)`
+  * `$evalAsync(userContent)`
+  * `$apply(userContent)`
+  * `$applyAsync(userContent)`
+* **Passing an expression generated from user-provided content in calls to services that parse expressions**:
+  * `$compile(userContent)`
+  * `$parse(userContent)`
+  * `$interpolate(userContent)`
+* **Passing an expression generated from user provided content as a predicate to `orderBy` pipe**:
+  `{{ value | orderBy : userContent }}`
 
-```html
-<script>somethingEvil();</script>
-```
+### Sandbox removal
+Each version of Angular 1 up to, but not including 1.6, contained an expression sandbox, which reduced the surface area of
+the vulnerability but never removed it. **In Angular 1.6 we removed this sandbox as developers kept relying upon it as a security
+feature even though it was always possible to access arbitrary JavaScript code if one could control the Angular templates
+or expressions of applications.**
 
-**It's better to design your application in such a way that users cannot change client-side templates.**
+Control of the Angular templates makes applications vulnerable even if there was a completely secure sandbox:
+* https://ryhanson.com/stealing-session-tokens-on-plunker-with-an-angular-expression-injection/ in this blog post the author shows
+  a (now closed) vulnerability in the Plunker application due to server-side rendering inside an Angular template.
+* https://ryhanson.com/angular-expression-injection-walkthrough/ in this blog post the author describes an attack, which does not
+  rely upon an expression sandbox bypass, that can be made because the sample application is rendering a template on the server that
+  contains user entered content.
 
-For instance:
+**It's best to design your application in such a way that users cannot change client-side templates.**
 
 * Do not mix client and server templates
 * Do not use user input to generate templates dynamically
-* Do not run user input through `$scope.$eval`
+* Do not run user input through `$scope.$eval` (or any of the other expression parsing functions listed above)
 * Consider using {@link ng.directive:ngCsp CSP} (but don't rely only on CSP)
 
+**You can use suitably sanitized server-side templating to dynamically generate CSS, URLs, etc, but not for generating templates that are
+bootstrapped/compiled by Angular.**
 
-### Mixing client-side and server-side templates
-
-In general, we recommend against this because it can create unintended XSS vectors.
-
-However, it's ok to mix server-side templating in the bootstrap template (`index.html`) as long
-as user input cannot be used on the server to output html that would then be processed by Angular
-in a way that would allow for arbitrary code execution.
-
-**For instance, you can use server-side templating to dynamically generate CSS, URLs, etc, but not
-for generating templates that are bootstrapped/compiled by Angular.**
+**If you must continue to allow user-provided content in an Angular template then the safest option is to ensure that it is only
+present in the part of the template that is made inert via the {@link ngNonBindable} directive.**
 
 
 ## HTTP Requests
