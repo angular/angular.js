@@ -32,6 +32,12 @@ beforeEach(function() {
     };
   }
 
+  function DOMTester(a, b) {
+    if (a && b && a.nodeType > 0 && b.nodeType > 0) {
+      return a === b;
+    }
+  }
+
   function isNgElementHidden(element) {
     // we need to check element.getAttribute for SVG nodes
     var hidden = true;
@@ -111,12 +117,19 @@ beforeEach(function() {
           };
         }
       };
+    },
 
-      function DOMTester(a, b) {
-        if (a && b && a.nodeType > 0 && b.nodeType > 0) {
-          return a === b;
+    toEqualOneOf: function(util) {
+      return {
+        compare: function(actual) {
+          var expectedArgs = Array.prototype.slice.call(arguments, 1);
+          return {
+            pass: expectedArgs.some(function(expected) {
+              return util.equals(actual, expected, [DOMTester]);
+            })
+          };
         }
-      }
+      };
     },
 
     toEqualData: function() {
