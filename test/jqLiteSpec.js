@@ -1034,6 +1034,31 @@ describe('jqLite', function() {
           '<option>test 2</option>' +
         '</select>').val()).toEqualOneOf(null, []);
     });
+
+    it('should get an empty array from a multi select if no elements are chosen', function() {
+      // In jQuery < 3.0 .val() on select[multiple] with no selected options returns an
+      // null instead of an empty array.
+      // See https://github.com/jquery/jquery/issues/2562 for more details.
+      if (isJQuery2x()) return;
+
+      expect(jqLite(
+        '<select multiple>' +
+          '<optgroup>' +
+            '<option>test 1</option>' +
+            '<option>test 2</option>' +
+          '</optgroup>' +
+          '<option>test 3</option>' +
+        '</select>').val()).toEqual([]);
+
+      expect(jqLite(
+        '<select multiple>' +
+          '<optgroup disabled>' +
+            '<option>test 1</option>' +
+            '<option>test 2</option>' +
+          '</optgroup>' +
+          '<option disabled>test 3</option>' +
+        '</select>').val()).toEqual([]);
+    });
   });
 
 

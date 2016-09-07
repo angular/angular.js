@@ -699,7 +699,7 @@ forEach({
             result.push(option.value || option.text);
           }
         });
-        return result.length === 0 ? null : result;
+        return result;
       }
       return element.value;
     }
