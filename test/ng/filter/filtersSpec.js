@@ -186,12 +186,12 @@ describe('filters', function() {
 
       expect(currency(1.07)).toBe('$1.1');
     }));
-	
-	it('should trim the currency string if there are spaces before or after the currency string', inject(function($locale){
-	  $locale.NUMBER_FORMATS.PATTERNS[1].posPre = ' ';
-	  
-	  expect(currency(1.07, '')).toBe('1.07');
-	}));
+
+    it('should trim the currency string if there are spaces before or after the currency string', inject(function($locale){
+      $locale.NUMBER_FORMATS.PATTERNS[1].posPre = ' ';
+
+      expect(currency(1.07, '')).toBe('1.07');
+    }));
   });
 
   describe('number', function() {
