@@ -4397,7 +4397,7 @@ describe('$compile', function() {
                   this.$onChanges = onChangesSpy;
                 }
               });
-          });
+            });
 
             inject(function($compile, $rootScope) {
               var template = '<test prop="a" attr="{{a}}"></test>' +
@@ -4416,6 +4416,19 @@ describe('$compile', function() {
               expect(onChangesSpy.calls.argsFor(1)[0]).toEqual({
                 prop: jasmine.objectContaining({currentValue: NaN}),
                 attr: jasmine.objectContaining({currentValue: 'NaN'})
+              });
+
+              onChangesSpy.calls.reset();
+              $rootScope.$apply('a = "bar"; b = 42');
+
+              expect(onChangesSpy).toHaveBeenCalledTimes(2);
+              expect(onChangesSpy.calls.argsFor(0)[0]).toEqual({
+                prop: jasmine.objectContaining({previousValue: 'foo', currentValue: 'bar'}),
+                attr: jasmine.objectContaining({previousValue: 'foo', currentValue: 'bar'})
+              });
+              expect(onChangesSpy.calls.argsFor(1)[0]).toEqual({
+                prop: jasmine.objectContaining({previousValue: NaN, currentValue: 42}),
+                attr: jasmine.objectContaining({previousValue: 'NaN', currentValue: '42'})
               });
             });
           });
