@@ -27,12 +27,6 @@ var ZERO_CHAR = '0';
            .controller('ExampleController', ['$scope', function($scope) {
              $scope.amount = 1234.56;
            }]);
-		 angular.module('otherLocaleExample', []) {
-			 .controller('otherLocaleController', ['$scope', function($scope) {
-				 $locale.NUMBERFORMATS.PATTERNS[1].posPre = ' ';
-				 $scope.amount = 1234.56;
-			 }]);
-		 }
        </script>
        <div ng-controller="ExampleController">
          <input type="number" ng-model="amount" aria-label="amount"> <br>
@@ -40,17 +34,12 @@ var ZERO_CHAR = '0';
          custom currency identifier (USD$): <span id="currency-custom">{{amount | currency:"USD$"}}</span>
          no fractions (0): <span id="currency-no-fractions">{{amount | currency:"USD$":0}}</span>
        </div>
-	   <div ng-controller="otherLocaleController">
-		 <input type="number" ng-model="amount" aria-label="amount"> <br>
-		 no currency symbol: <span id="currency-no-symbol-other-locale">{{amount | currency:''}}</span>
-	   </div>
      </file>
      <file name="protractor.js" type="protractor">
        it('should init with 1234.56', function() {
          expect(element(by.id('currency-default')).getText()).toBe('$1,234.56');
          expect(element(by.id('currency-custom')).getText()).toBe('USD$1,234.56');
          expect(element(by.id('currency-no-fractions')).getText()).toBe('USD$1,235');
-		 expect(element(by.id('currency-no-symbol-other-locale')).getText()).toBe('1,234.56');
        });
        it('should update', function() {
          if (browser.params.browser === 'safari') {
@@ -63,7 +52,6 @@ var ZERO_CHAR = '0';
          expect(element(by.id('currency-default')).getText()).toBe('-$1,234.00');
          expect(element(by.id('currency-custom')).getText()).toBe('-USD$1,234.00');
          expect(element(by.id('currency-no-fractions')).getText()).toBe('-USD$1,234');
-		 expect(element(by.id('currency-no-symbol-other-locale')).getText()).toBe('-1,234');
        });
      </file>
    </example>
