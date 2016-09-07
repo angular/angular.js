@@ -151,6 +151,60 @@ describe('$compile', function() {
 
   describe('configuration', function() {
 
+    it('should allow aHrefSanitizationWhitelist to be configured', function() {
+      module(function($compileProvider) {
+        expect($compileProvider.aHrefSanitizationWhitelist()).toEqual(/^\s*(https?|ftp|mailto|tel|file):/); // the default
+        $compileProvider.aHrefSanitizationWhitelist(/other/);
+        expect($compileProvider.aHrefSanitizationWhitelist()).toEqual(/other/);
+      });
+      inject();
+    });
+
+    it('should allow debugInfoEnabled to be configured', function() {
+      module(function($compileProvider) {
+        expect($compileProvider.debugInfoEnabled()).toBe(true); // the default
+        $compileProvider.debugInfoEnabled(false);
+        expect($compileProvider.debugInfoEnabled()).toBe(false);
+      });
+      inject();
+    });
+
+    it('should allow preAssignBindingsEnabled to be configured', function() {
+      module(function($compileProvider) {
+        expect($compileProvider.preAssignBindingsEnabled()).toBe(true); // the default
+        $compileProvider.preAssignBindingsEnabled(false);
+        expect($compileProvider.preAssignBindingsEnabled()).toBe(false);
+      });
+      inject();
+    });
+
+    it('should allow onChangesTtl to be configured', function() {
+      module(function($compileProvider) {
+        expect($compileProvider.onChangesTtl()).toBe(10); // the default
+        $compileProvider.onChangesTtl(2);
+        expect($compileProvider.onChangesTtl()).toBe(2);
+      });
+      inject();
+    });
+
+    it('should allow commentDirectivesEnabled to be configured', function() {
+      module(function($compileProvider) {
+        expect($compileProvider.commentDirectivesEnabled()).toBe(true); // the default
+        $compileProvider.commentDirectivesEnabled(false);
+        expect($compileProvider.commentDirectivesEnabled()).toBe(false);
+      });
+      inject();
+    });
+
+    it('should allow cssClassDirectivesEnabled to be configured', function() {
+      module(function($compileProvider) {
+        expect($compileProvider.cssClassDirectivesEnabled()).toBe(true); // the default
+        $compileProvider.cssClassDirectivesEnabled(false);
+        expect($compileProvider.cssClassDirectivesEnabled()).toBe(false);
+      });
+      inject();
+    });
+
     it('should register a directive', function() {
       module(function() {
         directive('div', function(log) {
