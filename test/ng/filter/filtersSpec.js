@@ -186,6 +186,19 @@ describe('filters', function() {
 
       expect(currency(1.07)).toBe('$1.1');
     }));
+
+    it('should trim whitespace around the currency symbol if it is empty',
+      inject(function($locale) {
+        var pattern = $locale.NUMBER_FORMATS.PATTERNS[1];
+        pattern.posPre = pattern.posSuf = '     \u00A4     ';
+        pattern.negPre = pattern.negSuf = '  -  \u00A4  -  ';
+
+        expect(currency(+1.07, '$')).toBe('     $     1.07     $     ');
+        expect(currency(-1.07, '$')).toBe('  -  $  -  1.07  -  $  -  ');
+        expect(currency(+1.07, '')).toBe('1.07');
+        expect(currency(-1.07, '')).toBe('  --  1.07  --  ');
+      })
+    );
   });
 
   describe('number', function() {
