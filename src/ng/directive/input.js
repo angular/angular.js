@@ -1424,7 +1424,7 @@ function createDateInputType(type, regexp, parseDate, format) {
   return function dynamicDateInputType(scope, element, attr, ctrl, $sniffer, $browser, $filter) {
     badInputChecker(scope, element, attr, ctrl);
     baseInputType(scope, element, attr, ctrl, $sniffer, $browser);
-    var timezone = ctrl && ctrl.$options && ctrl.$options.timezone;
+    var timezone = ctrl && ctrl.$options.getOption('timezone');
     var previousDate;
 
     ctrl.$$parserName = type;
@@ -1526,7 +1526,7 @@ function parseNumberAttrVal(val) {
   if (isDefined(val) && !isNumber(val)) {
     val = parseFloat(val);
   }
-  return isNumber(val) && !isNaN(val) ? val : undefined;
+  return !isNumberNaN(val) ? val : undefined;
 }
 
 function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
@@ -1650,7 +1650,7 @@ function rangeInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   function minChange(val) {
     minVal = parseNumberAttrVal(val);
     // ignore changes before model is initialized
-    if (isNumber(ctrl.$modelValue) && isNaN(ctrl.$modelValue)) {
+    if (isNumberNaN(ctrl.$modelValue)) {
       return;
     }
 
@@ -1671,7 +1671,7 @@ function rangeInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   function maxChange(val) {
     maxVal = parseNumberAttrVal(val);
     // ignore changes before model is initialized
-    if (isNumber(ctrl.$modelValue) && isNaN(ctrl.$modelValue)) {
+    if (isNumberNaN(ctrl.$modelValue)) {
       return;
     }
 
@@ -1693,7 +1693,7 @@ function rangeInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   function stepChange(val) {
     stepVal = parseNumberAttrVal(val);
     // ignore changes before model is initialized
-    if (isNumber(ctrl.$modelValue) && isNaN(ctrl.$modelValue)) {
+    if (isNumberNaN(ctrl.$modelValue)) {
       return;
     }
 
