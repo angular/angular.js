@@ -2022,7 +2022,7 @@ describe('q', function() {
   });
 
   describe('race (hash)', function() {
-    it('should do nothing if given an empty array', function() {
+    it('should do nothing if given an empty object', function() {
       q.race({}).then(success(), error());
       expect(mockNextTick.queue.length).toBe(0);
       expect(logStr()).toBe('');
