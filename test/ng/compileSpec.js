@@ -5832,7 +5832,7 @@ describe('$compile', function() {
             $rootScope.remoteData = {
               'foo': 'bar',
               'baz': 'biz'
-            });
+            };
             expect(this.str).toBe('Hello, world!');
             expect(this.fn()).toBe('called!');
             controllerCalled = true;

@@ -1029,7 +1029,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
     }
     if (isObject(bindings.bindToController)) {
       var controller = directive.controller;
-      var controllerAs = directive.controllerAs;
       if (!controller) {
         // There is no controller, there may or may not be a controllerAs property
         throw $compileMinErr('noctrl',
