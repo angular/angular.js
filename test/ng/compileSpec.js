@@ -6205,154 +6205,113 @@ describe('$compile', function() {
         });
 
 
-        it('should throw noident when missing controllerAs directive property', function() {
-          module(function($compileProvider) {
-            $compileProvider.directive('noIdent', valueFn({
-              templateUrl: 'test.html',
-              scope: {
-                'data': '=dirData',
-                'oneway': '<dirData',
-                'str': '@dirStr',
-                'fn': '&dirFn'
-              },
-              controller: function() {},
-              bindToController: true
-            }));
-          });
-          inject(function($compile, $rootScope) {
-            expect(function() {
-              $compile('<div no-ident>')($rootScope);
-            }).toThrowMinErr('$compile', 'noident',
-            'Cannot bind to controller without identifier for directive \'noIdent\'.');
-          });
-        });
-
-
-        it('should throw noident when missing controller identifier', function() {
-          module(function($compileProvider, $controllerProvider) {
-            $controllerProvider.register('myCtrl', function() {});
-            $compileProvider.directive('noIdent', valueFn({
-              templateUrl: 'test.html',
-              scope: {
-                'data': '=dirData',
-                'oneway': '<dirData',
-                'str': '@dirStr',
-                'fn': '&dirFn'
-              },
+        describe('should bind to controller via object notation', function() {
+          var controllerOptions = [{
+              description: 'no controller identifier',
+              controller: 'myCtrl'
+            }, {
+              description: '"Ctrl as ident" syntax',
+              controller: 'myCtrl as myCtrl'
+            }, {
+              description: 'controllerAs setting',
               controller: 'myCtrl',
-              bindToController: true
-            }));
-          });
-          inject(function($compile, $rootScope) {
-            expect(function() {
-              $compile('<div no-ident>')($rootScope);
-            }).toThrowMinErr('$compile', 'noident',
-            'Cannot bind to controller without identifier for directive \'noIdent\'.');
-          });
-        });
+              controllerAs: 'myCtrl'
+            }],
 
+            scopeOptions = [{
+              description: 'isolate scope',
+              scope: {}
+            }, {
+              description: 'new scope',
+              scope: true
+            }, {
+              description: 'no scope',
+              scope: false
+            }],
 
-        it('should bind to controller via object notation (isolate scope)', function() {
-          var controllerCalled = false;
-          module(function($compileProvider, $controllerProvider) {
-            $controllerProvider.register('myCtrl', function() {
-              this.check = function() {
-                expect(this.data).toEqualData({
-                  'foo': 'bar',
-                  'baz': 'biz'
+            templateOptions = [{
+              description: 'inline template',
+              template: '<p>template</p>'
+            }, {
+              description: 'templateUrl setting',
+              templateUrl: 'test.html'
+            }, {
+              description: 'no template'
+            }];
+
+          forEach(controllerOptions, function(controllerOption) {
+            forEach(scopeOptions, function(scopeOption) {
+              forEach(templateOptions, function(templateOption) {
+
+                var description = [],
+                  ddo = {
+                    bindToController: {
+                      'data': '=dirData',
+                      'oneway': '<dirData',
+                      'str': '@dirStr',
+                      'fn': '&dirFn'
+                    }
+                  };
+
+                forEach([controllerOption, scopeOption, templateOption], function(option) {
+                  description.push(option.description);
+                  delete option.description;
+                  extend(ddo, option);
                 });
-                expect(this.oneway).toEqualData({
-                  'foo': 'bar',
-                  'baz': 'biz'
+
+                it('(' + description.join(', ') + ')', function() {
+                  var controllerCalled = false;
+                  module(function($compileProvider, $controllerProvider) {
+                    $controllerProvider.register('myCtrl', function() {
+                      this.check = function() {
+                        expect(this.data).toEqualData({
+                          'foo': 'bar',
+                          'baz': 'biz'
+                        });
+                        expect(this.oneway).toEqualData({
+                          'foo': 'bar',
+                          'baz': 'biz'
+                        });
+                        expect(this.str).toBe('Hello, world!');
+                        expect(this.fn()).toBe('called!');
+                      };
+                      controllerCalled = true;
+                      if (preAssignBindingsEnabled) {
+                        this.check();
+                      } else {
+                        this.$onInit = this.check;
+                      }
+                    });
+                    $compileProvider.directive('fooDir', valueFn(ddo));
+                  });
+                  inject(function($compile, $rootScope, $templateCache) {
+                    $templateCache.put('test.html', '<p>template</p>');
+                    $rootScope.fn = valueFn('called!');
+                    $rootScope.whom = 'world';
+                    $rootScope.remoteData = {
+                      'foo': 'bar',
+                      'baz': 'biz'
+                    };
+                    element = $compile('<div foo-dir dir-data="remoteData" ' +
+                                      'dir-str="Hello, {{whom}}!" ' +
+                                      'dir-fn="fn()"></div>')($rootScope);
+                    $rootScope.$digest();
+                    expect(controllerCalled).toBe(true);
+                    if (ddo.controllerAs || ddo.controller.indexOf(' as ') !== -1) {
+                      if (ddo.scope) {
+                        expect($rootScope.myCtrl).toBeUndefined();
+                      } else {
+                        // The controller identifier was added to the containing scope.
+                        expect($rootScope.myCtrl).toBeDefined();
+                      }
+                    }
+                  });
                 });
-                expect(this.str).toBe('Hello, world!');
-                expect(this.fn()).toBe('called!');
-              };
-              controllerCalled = true;
-              if (preAssignBindingsEnabled) {
-                this.check();
-              } else {
-                this.$onInit = this.check;
-              }
+
+              });
             });
-            $compileProvider.directive('fooDir', valueFn({
-              templateUrl: 'test.html',
-              bindToController: {
-                'data': '=dirData',
-                'oneway': '<dirData',
-                'str': '@dirStr',
-                'fn': '&dirFn'
-              },
-              scope: {},
-              controller: 'myCtrl as myCtrl'
-            }));
           });
-          inject(function($compile, $rootScope, $templateCache) {
-            $templateCache.put('test.html', '<p>isolate</p>');
-            $rootScope.fn = valueFn('called!');
-            $rootScope.whom = 'world';
-            $rootScope.remoteData = {
-              'foo': 'bar',
-              'baz': 'biz'
-            };
-            element = $compile('<div foo-dir dir-data="remoteData" ' +
-                              'dir-str="Hello, {{whom}}!" ' +
-                              'dir-fn="fn()"></div>')($rootScope);
-            $rootScope.$digest();
-            expect(controllerCalled).toBe(true);
-          });
-        });
 
-
-        it('should bind to controller via object notation (new scope)', function() {
-          var controllerCalled = false;
-          module(function($compileProvider, $controllerProvider) {
-            $controllerProvider.register('myCtrl', function() {
-              this.check = function() {
-                expect(this.data).toEqualData({
-                  'foo': 'bar',
-                  'baz': 'biz'
-                });
-                expect(this.data).toEqualData({
-                  'foo': 'bar',
-                  'baz': 'biz'
-                });
-                expect(this.str).toBe('Hello, world!');
-                expect(this.fn()).toBe('called!');
-              };
-              controllerCalled = true;
-              if (preAssignBindingsEnabled) {
-                this.check();
-              } else {
-                this.$onInit = this.check;
-              }
-            });
-            $compileProvider.directive('fooDir', valueFn({
-              templateUrl: 'test.html',
-              bindToController: {
-                'data': '=dirData',
-                'oneway': '<dirData',
-                'str': '@dirStr',
-                'fn': '&dirFn'
-              },
-              scope: true,
-              controller: 'myCtrl as myCtrl'
-            }));
-          });
-          inject(function($compile, $rootScope, $templateCache) {
-            $templateCache.put('test.html', '<p>isolate</p>');
-            $rootScope.fn = valueFn('called!');
-            $rootScope.whom = 'world';
-            $rootScope.remoteData = {
-              'foo': 'bar',
-              'baz': 'biz'
-            };
-            element = $compile('<div foo-dir dir-data="remoteData" ' +
-                              'dir-str="Hello, {{whom}}!" ' +
-                              'dir-fn="fn()"></div>')($rootScope);
-            $rootScope.$digest();
-            expect(controllerCalled).toBe(true);
-          });
         });
 
 
