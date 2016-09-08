@@ -299,6 +299,113 @@ describe('ngSwitch', function() {
     $rootScope.$apply('mode = "b"');
     expect(element.children().length).toBe(1);
   }));
+
+
+  describe('ngSwitchWhen separator', function() {
+    it('should be possible to define a separator', inject(function($rootScope, $compile) {
+      element = $compile(
+        '<div ng-switch="mode">' +
+          '<p ng-switch-when="a|b" ng-switch-when-separator="|">Block1|</p>' +
+          '<p ng-switch-when="a">Block2|</p>' +
+          '<p ng-switch-default>Block3|</div>' +
+        '</div>'
+      )($rootScope);
+
+      $rootScope.$apply('mode = "a"');
+      expect(element.children().length).toBe(2);
+      expect(element.text()).toBe('Block1|Block2|');
+      $rootScope.$apply('mode = "b"');
+      expect(element.children().length).toBe(1);
+      expect(element.text()).toBe('Block1|');
+      $rootScope.$apply('mode = "c"');
+      expect(element.children().length).toBe(1);
+      expect(element.text()).toBe('Block3|');
+    }));
+
+
+    it('should be possible to use a separator at the end of the value', inject(function($rootScope, $compile) {
+      element = $compile(
+        '<div ng-switch="mode">' +
+          '<p ng-switch-when="a|b|" ng-switch-when-separator="|">Block1|</p>' +
+          '<p ng-switch-when="a">Block2|</p>' +
+          '<p ng-switch-default>Block3|</div>' +
+        '</div>'
+      )($rootScope);
+
+      $rootScope.$apply('mode = "a"');
+      expect(element.children().length).toBe(2);
+      expect(element.text()).toBe('Block1|Block2|');
+      $rootScope.$apply('mode = ""');
+      expect(element.children().length).toBe(1);
+      expect(element.text()).toBe('Block1|');
+      $rootScope.$apply('mode = "c"');
+      expect(element.children().length).toBe(1);
+      expect(element.text()).toBe('Block3|');
+    }));
+
+
+    it('should be possible to use the empty string as a separator', inject(function($rootScope, $compile) {
+      element = $compile(
+        '<div ng-switch="mode">' +
+          '<p ng-switch-when="ab" ng-switch-when-separator="">Block1|</p>' +
+          '<p ng-switch-when="a">Block2|</p>' +
+          '<p ng-switch-default>Block3|</div>' +
+        '</div>'
+      )($rootScope);
+
+      $rootScope.$apply('mode = "a"');
+      expect(element.children().length).toBe(2);
+      expect(element.text()).toBe('Block1|Block2|');
+      $rootScope.$apply('mode = "b"');
+      expect(element.children().length).toBe(1);
+      expect(element.text()).toBe('Block1|');
+      $rootScope.$apply('mode = "c"');
+      expect(element.children().length).toBe(1);
+      expect(element.text()).toBe('Block3|');
+    }));
+
+
+    it('should be possible to use separators that are multiple characters long', inject(function($rootScope, $compile) {
+      element = $compile(
+        '<div ng-switch="mode">' +
+          '<p ng-switch-when="a||b|a" ng-switch-when-separator="||">Block1|</p>' +
+          '<p ng-switch-when="a">Block2|</p>' +
+          '<p ng-switch-default>Block3|</div>' +
+        '</div>'
+      )($rootScope);
+
+      $rootScope.$apply('mode = "a"');
+      expect(element.children().length).toBe(2);
+      expect(element.text()).toBe('Block1|Block2|');
+      $rootScope.$apply('mode = "b|a"');
+      expect(element.children().length).toBe(1);
+      expect(element.text()).toBe('Block1|');
+      $rootScope.$apply('mode = "c"');
+      expect(element.children().length).toBe(1);
+      expect(element.text()).toBe('Block3|');
+    }));
+
+
+    it('should ignore multiple appearances of the same item', inject(function($rootScope, $compile) {
+      element = $compile(
+        '<div ng-switch="mode">' +
+          '<p ng-switch-when="a|b|a" ng-switch-when-separator="|">Block1|</p>' +
+          '<p ng-switch-when="a">Block2|</p>' +
+          '<p ng-switch-default>Block3|</div>' +
+        '</div>'
+      )($rootScope);
+
+      $rootScope.$apply('mode = "a"');
+      expect(element.children().length).toBe(2);
+      expect(element.text()).toBe('Block1|Block2|');
+      $rootScope.$apply('mode = "b"');
+      expect(element.children().length).toBe(1);
+      expect(element.text()).toBe('Block1|');
+      $rootScope.$apply('mode = "c"');
+      expect(element.children().length).toBe(1);
+      expect(element.text()).toBe('Block3|');
+    }));
+  });
 });
 
 describe('ngSwitch animation', function() {
