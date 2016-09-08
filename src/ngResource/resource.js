@@ -475,7 +475,7 @@ angular.module('ngResource', ['ng']).
      * ```js
      *   angular.
      *     module('myApp').
-     *     config(['resourceProvider', function ($resourceProvider) {
+     *     config(['$resourceProvider', function ($resourceProvider) {
      *       $resourceProvider.defaults.actions.update = {
      *         method: 'PUT'
      *       };
@@ -487,7 +487,7 @@ angular.module('ngResource', ['ng']).
      * ```js
      *   angular.
      *     module('myApp').
-     *     config(['resourceProvider', function ($resourceProvider) {
+     *     config(['$resourceProvider', function ($resourceProvider) {
      *       $resourceProvider.defaults.actions = {
      *         create: {method: 'POST'}
      *         get:    {method: 'GET'},
