@@ -1035,11 +1035,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         throw $compileMinErr('noctrl',
               'Cannot bind to controller without directive \'{0}\'s controller.',
               directiveName);
-      } else if (!identifierForController(controller, controllerAs)) {
-        // There is a controller, but no identifier or controllerAs property
-        throw $compileMinErr('noident',
-              'Cannot bind to controller without identifier for directive \'{0}\'.',
-              directiveName);
       }
     }
     return bindings;

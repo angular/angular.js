@@ -5869,7 +5869,7 @@ describe('$compile', function() {
     });
 
 
-    it('should throw noident when missing controllerAs directive property', function() {
+    it('should not throw noident when missing controllerAs directive property', function() {
       module(function($compileProvider) {
         $compileProvider.directive('noIdent', valueFn({
           templateUrl: 'test.html',
@@ -5886,13 +5886,12 @@ describe('$compile', function() {
       inject(function($compile, $rootScope) {
         expect(function() {
           $compile('<div no-ident>')($rootScope);
-        }).toThrowMinErr('$compile', 'noident',
-        'Cannot bind to controller without identifier for directive \'noIdent\'.');
+        }).not.toThrow();
       });
     });
 
 
-    it('should throw noident when missing controller identifier', function() {
+    it('should not throw noident when missing controller identifier', function() {
       module(function($compileProvider, $controllerProvider) {
         $controllerProvider.register('myCtrl', function() {});
         $compileProvider.directive('noIdent', valueFn({
@@ -5910,8 +5909,7 @@ describe('$compile', function() {
       inject(function($compile, $rootScope) {
         expect(function() {
           $compile('<div no-ident>')($rootScope);
-        }).toThrowMinErr('$compile', 'noident',
-        'Cannot bind to controller without identifier for directive \'noIdent\'.');
+        }).not.toThrow();
       });
     });
 
