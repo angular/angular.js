@@ -1375,7 +1375,7 @@ describe('select', function() {
           expect(element.find('option').eq(0).val()).toBe('? boolean:false ?');
 
           browserTrigger(element.find('option').eq(0));
-          if (typeof prop === 'number' && isNaN(prop)) {
+          if (isNumberNaN(prop)) {
             expect(scope.selected).toBeNaN();
           } else {
             expect(scope.selected).toBe(prop);
@@ -1419,7 +1419,7 @@ describe('select', function() {
           expect(selectController.removeOption.calls.count()).toBe(1);
 
           // Updating the option value currently does not update the select model
-          if (typeof prop === 'number' && isNaN(prop)) {
+          if (isNumberNaN(prop)) {
             expect(selectController.removeOption.calls.argsFor(0)[0]).toBeNaN();
           } else {
             expect(selectController.removeOption.calls.argsFor(0)[0]).toBe(prop);

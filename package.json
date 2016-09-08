@@ -17,7 +17,8 @@
     "postinstall": "node scripts/npm/copy-npm-shrinkwrap.js",
     "commit": "git-cz",
     "test-i18n": "jasmine-node i18n/spec",
-    "test-i18n-ucd": "jasmine-node i18n/ucd/spec"
+    "test-i18n-ucd": "jasmine-node i18n/ucd/spec",
+    "gulp": "gulp"
   },
   "devDependencies": {
     "angular-benchpress": "0.x.x",
@@ -27,6 +28,7 @@
     "canonical-path": "0.0.2",
     "cheerio": "^0.17.0",
     "commitizen": "^2.3.0",
+    "cross-spawn": "^4.0.0",
     "cz-conventional-changelog": "1.1.4",
     "dgeni": "^0.4.0",
     "dgeni-packages": "^0.14.0",
@@ -65,6 +67,7 @@
     "karma-script-launcher": "^1.0.0",
     "load-grunt-tasks": "^3.5.0",
     "lodash": "~2.4.1",
+    "log4js": "^0.6.27",
     "marked": "~0.3.0",
     "node-html-encoder": "0.0.2",
     "promises-aplus-tests": "~2.1.0",
@@ -74,6 +77,7 @@
     "qq": "^0.3.5",
     "rewire": "~2.1.0",
     "sax": "^1.1.1",
+    "selenium-webdriver": "^2.53.1",
     "semver": "~4.0.3",
     "serve-favicon": "^2.3.0",
     "serve-index": "^1.8.0",
