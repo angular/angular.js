@@ -225,7 +225,7 @@ ngAriaModule.directive('ngShow', ['$aria', function($aria) {
 .directive('ngModel', ['$aria', function($aria) {
 
   function shouldAttachAttr(attr, normalizedAttr, elem, allowBlacklistEls) {
-    return $aria.config(normalizedAttr) && !elem.attr(attr) && (allowBlacklistEls || !isNodeOneOf(elem, nodeBlackList));
+    return $aria.config(normalizedAttr) && !elem.attr(attr) && (allowBlacklistEls || !isNodeOneOf(elem, nodeBlackList)) && elem.attr('type') !== 'hidden';
   }
 
   function shouldAttachRole(role, elem) {

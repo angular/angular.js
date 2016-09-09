@@ -420,6 +420,11 @@ describe('$aria', function() {
       scope.$apply('txtInput=\'LTten\'');
       expect(element.attr('aria-invalid')).toBe('userSetValue');
     });
+
+    it('should not attach if input is hidden', function() {
+      compileElement('<input type="hidden" ng-model="txtInput">');
+      expect(element.attr('aria-invalid')).toBeUndefined();
+    });
   });
 
   describe('aria-invalid when disabled', function() {
