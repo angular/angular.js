@@ -89,7 +89,6 @@
   hasOwnProperty,
   createMap,
   stringify,
-  ES6Map,
 
   NODE_TYPE_ELEMENT,
   NODE_TYPE_ATTRIBUTE,
@@ -750,61 +749,6 @@ function arrayRemove(array, value) {
   return index;
 }
 
-// A minimal ES6 Map implementation.
-// Should be bug/feature equivelent to the native implementations of supported browsers.
-// See https://kangax.github.io/compat-table/es6/#test-Map
-var nanPlaceholder = Object.create(null);
-function ES6MapShim() {
-  this._keys = [];
-  this._values = [];
-  this._lastKey = NaN;
-  this._lastIndex = -1;
-}
-ES6MapShim.prototype = {
-  _idx: function(key) {
-    if (key === this._lastKey) {
-      return this._lastIndex;
-    }
-    return (this._lastIndex = (this._keys.indexOf(this._lastKey = key)));
-  },
-  _transformKey: function(key) {
-    return isNumberNaN(key) ? nanPlaceholder : key;
-  },
-  get: function(key) {
-    var idx = this._idx(this._transformKey(key));
-    if (idx !== -1) {
-      return this._values[idx];
-    }
-  },
-  set: function(key, value) {
-    key = this._transformKey(key);
-    var idx = this._idx(key);
-    if (idx === -1) {
-      idx = this._lastIndex = this._keys.length;
-    }
-    this._keys[idx] = key;
-    this._values[idx] = value;
-
-    // Support: IE11
-    // Do not `return this` to simulate the partial IE11 implementation
-  },
-  delete: function(key) {
-    var idx = this._idx(this._transformKey(key));
-    if (idx === -1) {
-      return false;
-    }
-    this._keys.splice(idx, 1);
-    this._values.splice(idx, 1);
-    this._lastKey = NaN;
-    this._lastIndex = -1;
-    return true;
-  }
-};
-
-var ES6Map = isFunction(window.Map) && toString.call(window.Map.prototype) === '[object Map]'
-  ? window.Map
-  : ES6MapShim;
-
 /**
  * @ngdoc function
  * @name angular.copy
@@ -898,7 +842,7 @@ function copy(source, destination) {
   return copyElement(source);
 
   function copyRecurse(source, destination) {
-    (stack || (stack = new ES6Map())).set(source, destination);
+    (stack || (stack = new NgMap())).set(source, destination);
 
     var h = destination.$$hashKey;
     var key;
