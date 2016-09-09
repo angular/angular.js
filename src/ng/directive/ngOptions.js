@@ -17,8 +17,8 @@ var ngOptionsMinErr = minErr('ngOptions');
  * elements for the `<select>` element using the array or object obtained by evaluating the
  * `ngOptions` comprehension expression.
  *
- * In many cases, `ngRepeat` can be used on `<option>` elements instead of {@link ng.directive:ngOptions
- * ngOptions} to achieve a similar result. However, `ngOptions` provides some benefits:
+ * In many cases, {@link ng.directive:ngRepeat ngRepeat} can be used on `<option>` elements instead of
+ * `ngOptions` to achieve a similar result. However, `ngOptions` provides some benefits:
  * - more flexibility in how the `<select>`'s model is assigned via the `select` **`as`** part of the
  * comprehension expression
  * - reduced memory consumption by not creating a new scope for each repeated instance
