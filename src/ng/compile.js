@@ -1225,7 +1225,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
    * See also {@link ng.$compileProvider#directive $compileProvider.directive()}.
    */
   this.component = function registerComponent(name, options) {
-    var controller = options.controller || function() {};
+    var controller = options.controller || isFunction(options) && options || function() {};
 
     function factory($injector) {
       function makeInjectable(fn) {

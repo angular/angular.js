@@ -73,7 +73,7 @@ It's also possible to add components via {@link $compileProvider#component} in a
 | bindings          | No                   | Yes (binds to controller)      |
 | bindToController  | Yes (default: false) | No (use bindings instead)       |
 | compile function  | Yes                  | No       |
-| controller        | Yes                  | Yes (default `function() {}`)     |
+| controller        | Yes                  | Yes (default `function() {}` or _the Component config object_ if it is a function or class )     |
 | controllerAs      | Yes (default: false) | Yes (default: `$ctrl`)       |
 | link functions    | Yes                  | No       |
 | multiElement      | Yes                  | No       |
@@ -450,6 +450,96 @@ angular.module('docsTabsExample', [])
 </example>
 
 
+## Creating Components with classes
+
+It is possible to use ES2015 classes as components.
+The method `.component` can take a class (or function) as second argument.
+If it is the case,
+it will use the class (or function) as controller of the component.
+Component configuration will appear statically defined in the object.
+
+```javascript
+class EditableFieldComponent {
+  static get templateUrl() {
+    return 'heroDetail.html';
+  }
+  static get bindings() {
+    return {
+      fieldValue: '<',
+      fieldType: '@?',
+      onUpdate: '&'
+    };
+  }
+
+  constructor() {
+    this.editMode = false;
+  }
+
+  handleModeChange() {
+    if (this.editMode) {
+      this.onUpdate({value: this.fieldValue});
+      this.fieldValueCopy = this.fieldValue;
+    }
+    this.editMode = !this.editMode;
+  }
+
+  reset() {
+    this.fieldValue = this.fieldValueCopy;
+  }
+
+  $onInit() {
+    this.fieldValueCopy = this.fieldValue;
+
+    if (!this.fieldType) {
+      this.fieldType = 'text';
+    }
+  }
+}
+```
+
+If you are using Typescript, Babel, or Traceur
+you can use class properties:
+
+```javascript
+class EditableFieldComponent {
+  static template = `
+    <span ng-switch="$ctrl.editMode">
+      <input ng-switch-when="true" type="{{$ctrl.fieldType}}" ng-model="$ctrl.fieldValue">
+      <span ng-switch-default>{{$ctrl.fieldValue}}</span>
+    </span>
+    <button ng-click="$ctrl.handleModeChange()">{{$ctrl.editMode ? 'Save' : 'Edit'}}</button>
+    <button ng-if="$ctrl.editMode" ng-click="$ctrl.reset()">Reset</button>
+  `;
+  static bindings = {
+    fieldValue: '<',
+    fieldType: '@?',
+    onUpdate: '&'
+  };
+
+  editMode = false;
+
+  handleModeChange() {
+    if (this.editMode) {
+      this.onUpdate({value: this.fieldValue});
+      this.fieldValueCopy = this.fieldValue;
+    }
+    this.editMode = !this.editMode;
+  }
+
+  reset() {
+    this.fieldValue = this.fieldValueCopy;
+  }
+
+  $onInit() {
+    this.fieldValueCopy = this.fieldValue;
+
+    if (!this.fieldType) {
+      this.fieldType = 'text';
+    }
+  }
+}
+```
+
 # Unit-testing Component Controllers
 
 The easiest way to unit-test a component controller is by using the
@@ -502,3 +592,4 @@ describe('component: heroDetail', function() {
 
 });
 ```
+
