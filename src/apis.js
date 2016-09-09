@@ -1,5 +1,7 @@
 'use strict';
 
+/* global
+  ES6Map */
 
 /**
  * Computes a hash of an 'obj'.
@@ -36,13 +38,8 @@ function hashKey(obj, nextUidFn) {
 /**
  * HashMap which can use objects as keys
  */
-function HashMap(array, isolatedUid) {
-  if (isolatedUid) {
-    var uid = 0;
-    this.nextUid = function() {
-      return ++uid;
-    };
-  }
+function HashMap(array) {
+  this._map = new ES6Map();
   forEach(array, this.put, this);
 }
 HashMap.prototype = {
@@ -52,7 +49,7 @@ HashMap.prototype = {
    * @param value value to store can be any type
    */
   put: function(key, value) {
-    this[hashKey(key, this.nextUid)] = value;
+    this._map.set(key, value);
   },
 
   /**
@@ -60,7 +57,7 @@ HashMap.prototype = {
    * @returns {Object} the value for the key
    */
   get: function(key) {
-    return this[hashKey(key, this.nextUid)];
+    return this._map.get(key);
   },
 
   /**
@@ -68,8 +65,8 @@ HashMap.prototype = {
    * @param key
    */
   remove: function(key) {
-    var value = this[key = hashKey(key, this.nextUid)];
-    delete this[key];
+    var value = this._map.get(key);
+    this._map.delete(key);
     return value;
   }
 };

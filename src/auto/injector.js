@@ -649,7 +649,7 @@ function createInjector(modulesToLoad, strictDi) {
   var INSTANTIATING = {},
       providerSuffix = 'Provider',
       path = [],
-      loadedModules = new HashMap([], true),
+      loadedModules = new HashMap(),
       providerCache = {
         $provide: {
             provider: supportObject(provider),
