@@ -384,13 +384,7 @@ function $CacheFactoryProvider() {
  *   $templateCache.put('templateId.html', 'This is the content of the template');
  * });
  * ```
- *
- * To retrieve the template later, simply use it in your HTML:
- * ```html
- * <div ng-include=" 'templateId.html' "></div>
- * ```
- *
- * or get it via Javascript:
+ *  To retrieve the template later via Javascript:
  * ```js
  * $templateCache.get('templateId.html')
  * ```
