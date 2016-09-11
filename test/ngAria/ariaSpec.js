@@ -421,7 +421,7 @@ describe('$aria', function() {
       expect(element.attr('aria-invalid')).toBe('userSetValue');
     });
 
-    it('should not attach if input is hidden', function() {
+    it('should not attach if input is type="hidden"', function() {
       compileElement('<input type="hidden" ng-model="txtInput">');
       expect(element.attr('aria-invalid')).toBeUndefined();
     });
