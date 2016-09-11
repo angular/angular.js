@@ -3155,6 +3155,72 @@ describe('parser', function() {
           expect(isFunction(s.toString)).toBe(true);
           expect(l.toString).toBe(1);
         }));
+
+        it('should overwrite undefined / null scope properties when assigning', inject(function($parse) {
+          var scope;
+
+          scope = {};
+          $parse('a.b = 1')(scope);
+          $parse('c["d"] = 2')(scope);
+          expect(scope).toEqual({a: {b: 1}, c: {d: 2}});
+
+          scope = {a: {}};
+          $parse('a.b.c = 1')(scope);
+          $parse('a.c["d"] = 2')(scope);
+          expect(scope).toEqual({a: {b: {c: 1}, c: {d: 2}}});
+
+          scope = {a: undefined, c: undefined};
+          $parse('a.b = 1')(scope);
+          $parse('c["d"] = 2')(scope);
+          expect(scope).toEqual({a: {b: 1}, c: {d: 2}});
+
+          scope = {a: {b: undefined, c: undefined}};
+          $parse('a.b.c = 1')(scope);
+          $parse('a.c["d"] = 2')(scope);
+          expect(scope).toEqual({a: {b: {c: 1}, c: {d: 2}}});
+
+          scope = {a: null, c: null};
+          $parse('a.b = 1')(scope);
+          $parse('c["d"] = 2')(scope);
+          expect(scope).toEqual({a: {b: 1}, c: {d: 2}});
+
+          scope = {a: {b: null, c: null}};
+          $parse('a.b.c = 1')(scope);
+          $parse('a.c["d"] = 2')(scope);
+          expect(scope).toEqual({a: {b: {c: 1}, c: {d: 2}}});
+        }));
+
+        they('should not overwrite $prop scope properties when assigning', [0, false, '', NaN],
+          function(falsyValue) {
+            inject(function($parse) {
+              var scope;
+
+              scope = {a: falsyValue, c: falsyValue};
+              tryParseAndIgnoreException('a.b = 1');
+              tryParseAndIgnoreException('c["d"] = 2');
+              expect(scope).toEqual({a: falsyValue, c: falsyValue});
+
+              scope = {a: {b: falsyValue, c: falsyValue}};
+              tryParseAndIgnoreException('a.b.c = 1');
+              tryParseAndIgnoreException('a.c["d"] = 2');
+              expect(scope).toEqual({a: {b: falsyValue, c: falsyValue}});
+
+              // Helpers
+              //
+              // Normally assigning property on a primitive should throw exception in strict mode
+              // and silently fail in non-strict mode, IE seems to always have the non-strict-mode behavior,
+              // so if we try to use 'expect(function() {$parse('a.b=1')({a:false});).toThrow()' for testing
+              // the test will fail in case of IE because it will not throw exception, and if we just use
+              // '$parse('a.b=1')({a:false})' the test will fail because it will throw exception in case of Chrome
+              // so we use tryParseAndIgnoreException helper to catch the exception silently for all cases.
+              //
+              function tryParseAndIgnoreException(expression) {
+                try {
+                    $parse(expression)(scope);
+                } catch (error) {/* ignore exception */}
+              }
+            });
+          });
       });
 
       describe('literal', function() {
