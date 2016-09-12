@@ -7,7 +7,7 @@ app.controller('DataController', function DataController($rootScope, $scope) {
   this.rows = [];
   var self = this;
 
-  $scope.benchmarkType = 'basic';
+  $scope.benchmarkType = 'baseline';
 
   $scope.rawProperty = function(key) {
     return function(item) {
