@@ -5524,7 +5524,7 @@ describe('$compile', function() {
                 expect($rootScope.name).toEqual('outer');
                 expect(component.input).toEqual('$onInit');
 
-                $rootScope.$apply();
+                $rootScope.$digest();
 
                 expect($rootScope.name).toEqual('outer');
                 expect(component.input).toEqual('$onInit');
@@ -5533,6 +5533,37 @@ describe('$compile', function() {
                   'constructor',
                   ['$onChanges', jasmine.objectContaining({ currentValue: 'outer' })],
                   '$onInit'
+                ]);
+              });
+            });
+
+            it('should not update isolate again after $onInit if outer is a literal', function() {
+              module('owComponentTest');
+              inject(function() {
+                $rootScope.name = 'outer';
+                compile('<ow-component input="[name]"></ow-component>');
+
+                expect(component.input).toEqual('$onInit');
+
+                // No outer change
+                $rootScope.$apply('name = "outer"');
+                expect(component.input).toEqual('$onInit');
+
+                // Outer change
+                $rootScope.$apply('name = "re-outer"');
+                expect(component.input).toEqual(['re-outer']);
+
+                expect(log).toEqual([
+                  'constructor',
+                  [
+                    '$onChanges',
+                    jasmine.objectContaining({currentValue: ['outer']})
+                  ],
+                  '$onInit',
+                  [
+                    '$onChanges',
+                    jasmine.objectContaining({previousValue: ['outer'], currentValue: ['re-outer']})
+                  ]
                 ]);
               });
             });
