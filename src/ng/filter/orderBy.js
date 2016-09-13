@@ -565,7 +565,7 @@ function orderByFilter($parse) {
 
     // Since the sort is designed to be a stable sort, the defaultCompare
     // will be the lowest priority because it was called first.
-    var array = schwartzianTransformSort(array, defaultCompare);
+    array = schwartzianTransformSort(array, defaultCompare);
     return isFunction(compareFn) ? schwartzianTransformSort(array, compareFn) : array;
 
     // The next function is a version of a Swartzian Transform idiom from Perl
@@ -575,7 +575,7 @@ function orderByFilter($parse) {
       compare = compareFunction;
       var compareValues = Array.prototype.map.call(array, getComparisonObject);
       compareValues.sort(doComparison);
-      return compareValues.map(function(item) { return item.value });
+      return compareValues.map(function(item) { return item.value; });
     }
 
     function getComparisonObject(value, index) {
