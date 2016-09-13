@@ -550,7 +550,7 @@
 orderByFilter.$inject = ['$parse'];
 function orderByFilter($parse) {
   return function(array, sortPredicate, reverseOrder, compareFn) {
-
+    var compare;
     if (array == null) return array;
     if (!isArrayLike(array)) {
       throw minErr('orderBy')('notarray', 'Expected array but received: {0}', array);
@@ -563,17 +563,20 @@ function orderByFilter($parse) {
 
     var descending = reverseOrder ? -1 : 1;
 
-    // Define the `compare()` function. Use a default comparator if none is specified.
-    var compare = isFunction(compareFn) ? compareFn : defaultCompare;
+    // Since the sort is designed to be a stable sort, the defaultCompare
+    // will be the lowest priority because it was called first.
+    var array = schwartzianTransformSort(array, defaultCompare);
+    return isFunction(compareFn) ? schwartzianTransformSort(array, compareFn) : array;
 
-    // The next three lines are a version of a Swartzian Transform idiom from Perl
+    // The next function is a version of a Swartzian Transform idiom from Perl
     // (sometimes called the Decorate-Sort-Undecorate idiom)
     // See https://en.wikipedia.org/wiki/Schwartzian_transform
-    var compareValues = Array.prototype.map.call(array, getComparisonObject);
-    compareValues.sort(doComparison);
-    array = compareValues.map(function(item) { return item.value; });
-
-    return array;
+    function schwartzianTransformSort(inputArray, compareFunction) {
+      compare = compareFunction;
+      var compareValues = Array.prototype.map.call(array, getComparisonObject);
+      compareValues.sort(doComparison);
+      return compareValues.map(function(item) { return item.value });
+    }
 
     function getComparisonObject(value, index) {
       // NOTE: We are adding an extra `tieBreaker` value based on the element's index.
