@@ -65,6 +65,8 @@ function FormController(element, attrs, $scope, $animate, $interpolate) {
   var form = this,
       controls = [];
 
+  var topLevel = $scope.$eval(attrs.ngFormTopLevel) || false;
+
   // init state
   form.$error = {};
   form.$$success = {};
@@ -76,6 +78,7 @@ function FormController(element, attrs, $scope, $animate, $interpolate) {
   form.$invalid = false;
   form.$submitted = false;
   form.$$parentForm = nullFormCtrl;
+  form.$$topLevel = topLevel;
 
   /**
    * @ngdoc method
@@ -320,6 +323,9 @@ function FormController(element, attrs, $scope, $animate, $interpolate) {
  *
  * @param {string=} ngForm|name Name of the form. If specified, the form controller will be published into
  *                       related scope, under this name.
+ * @param {boolean} ngFormTopLevel Value which indicates that the form should be considered as a top level
+ *     and that it should not propagate its state to its parent form (if there is one). By default,
+ *     child forms propagate their state ($dirty, $pristine, $valid, ...) to its parent form.
  *
  */
 
@@ -418,6 +424,10 @@ function FormController(element, attrs, $scope, $animate, $interpolate) {
          angular.module('formExample', [])
            .controller('FormController', ['$scope', function($scope) {
              $scope.userType = 'guest';
+             $scope.submitted = false;
+             $scope.submit = function (){
+                $scope.submitted = true;
+             }
            }]);
        </script>
        <style>
@@ -499,18 +509,27 @@ var formDirectiveFactory = function(isNgForm) {
                 event.preventDefault();
               };
 
+              var handleKeypress = function(event) {
+                if (controller.$$topLevel && event.keyCode === 13 && event.target.nodeName === "INPUT") {
+                  event.stopPropagation();
+                  event.preventDefault();
+                }
+              };
+
               formElement[0].addEventListener('submit', handleFormSubmission);
+              formElement[0].addEventListener('keypress', handleKeypress);
 
               // unregister the preventDefault listener so that we don't not leak memory but in a
               // way that will achieve the prevention of the default action.
               formElement.on('$destroy', function() {
                 $timeout(function() {
                   formElement[0].removeEventListener('submit', handleFormSubmission);
+                  formElement[0].removeEventListener('keypress', handleKeypress);
                 }, 0, false);
               });
             }
 
-            var parentFormCtrl = ctrls[1] || controller.$$parentForm;
+            var parentFormCtrl = (!controller.$$topLevel && ctrls[1]) || controller.$$parentForm;
             parentFormCtrl.$addControl(controller);
 
             var setter = nameAttr ? getSetter(controller.$name) : noop;

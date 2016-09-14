@@ -1176,6 +1176,183 @@ describe('form', function() {
       expect(scope.form.$submitted).toBe(false);
     });
   });
+
+  describe('ngFormTopLevel attribute', function() {
+    it('should allow define a form as top level form', function() {
+      doc = jqLite(
+        '<ng:form name="parent">' +
+        '<ng:form name="child" ng-form-top-level="true">' +
+        '<input ng:model="modelA" name="inputA">' +
+        '<input ng:model="modelB" name="inputB">' +
+        '</ng:form>' +
+        '</ng:form>');
+      $compile(doc)(scope);
+
+      var parent = scope.parent,
+      child = scope.child,
+      inputA = child.inputA,
+      inputB = child.inputB;
+
+      inputA.$setValidity('MyError', false);
+      inputB.$setValidity('MyError', false);
+      expect(parent.$error.MyError).toBeFalsy();
+      expect(child.$error.MyError).toEqual([inputA, inputB]);
+
+      inputA.$setValidity('MyError', true);
+      expect(parent.$error.MyError).toBeFalsy();
+      expect(child.$error.MyError).toEqual([inputB]);
+
+      inputB.$setValidity('MyError', true);
+      expect(parent.$error.MyError).toBeFalsy();
+      expect(child.$error.MyError).toBeFalsy();
+
+      child.$setDirty();
+      expect(parent.$dirty).toBeFalsy();
+
+      child.$setSubmitted();
+      expect(parent.$submitted).toBeFalsy();
+    });
+
+
+
+    it('should stop enter triggered submit from propagating to parent forms', function() {
+      var form = $compile(
+          '<form name="parent">' +
+            '<ng-form name="topLevelForm" ng-form-top-level="true">' +
+              '<input type="text" name="i"/>' +
+            '</ng-form>' +
+          '</form>')(scope);
+      scope.$digest();
+
+      var inputElm = form.find('input').eq(0);
+      var topLevelFormElm = form.find('ng-form').eq(0);
+
+      var parentFormKeypress = jasmine.createSpy('parentFormKeypress');
+      var topLevelFormKeyPress = jasmine.createSpy('topLevelFormKeyPress');
+
+      form.on('keypress', parentFormKeypress);
+      topLevelFormElm.on('keypress', topLevelFormKeyPress);
+
+      browserTrigger(inputElm[0], 'keypress', {bubbles: true, keyCode:13});
+
+      expect(parentFormKeypress).not.toHaveBeenCalled();
+      expect(topLevelFormKeyPress).toHaveBeenCalled();
+
+      dealoc(form);
+    });
+
+
+    it('should chain nested forms as default behaviour', function() {
+      doc = jqLite(
+        '<ng:form name="parent">' +
+        '<ng:form name="child" >' +
+        '<input ng:model="modelA" name="inputA">' +
+        '<input ng:model="modelB" name="inputB">' +
+        '</ng:form>' +
+        '</ng:form>');
+      $compile(doc)(scope);
+
+      var parent = scope.parent,
+      child = scope.child,
+      inputA = child.inputA,
+      inputB = child.inputB;
+
+      inputA.$setValidity('MyError', false);
+      inputB.$setValidity('MyError', false);
+      expect(parent.$error.MyError).toEqual([child]);
+      expect(child.$error.MyError).toEqual([inputA, inputB]);
+
+      inputA.$setValidity('MyError', true);
+      expect(parent.$error.MyError).toEqual([child]);
+      expect(child.$error.MyError).toEqual([inputB]);
+
+      inputB.$setValidity('MyError', true);
+      expect(parent.$error.MyError).toBeFalsy();
+      expect(child.$error.MyError).toBeFalsy();
+
+      child.$setDirty();
+      expect(parent.$dirty).toBeTruthy();
+
+      child.$setSubmitted();
+      expect(parent.$submitted).toBeTruthy();
+    });
+
+    it('should chain nested forms when "ng-form-top-level" is false', function() {
+      doc = jqLite(
+        '<ng:form name="parent">' +
+        '<ng:form name="child"  ng-form-top-level="false">' +
+        '<input ng:model="modelA" name="inputA">' +
+        '<input ng:model="modelB" name="inputB">' +
+        '</ng:form>' +
+        '</ng:form>');
+      $compile(doc)(scope);
+
+      var parent = scope.parent,
+      child = scope.child,
+      inputA = child.inputA,
+      inputB = child.inputB;
+
+      inputA.$setValidity('MyError', false);
+      inputB.$setValidity('MyError', false);
+      expect(parent.$error.MyError).toEqual([child]);
+      expect(child.$error.MyError).toEqual([inputA, inputB]);
+
+      inputA.$setValidity('MyError', true);
+      expect(parent.$error.MyError).toEqual([child]);
+      expect(child.$error.MyError).toEqual([inputB]);
+
+      inputB.$setValidity('MyError', true);
+      expect(parent.$error.MyError).toBeFalsy();
+      expect(child.$error.MyError).toBeFalsy();
+
+      child.$setDirty();
+      expect(parent.$dirty).toBeTruthy();
+
+      child.$setSubmitted();
+      expect(parent.$submitted).toBeTruthy();
+    });
+
+    it('should maintain the default behavior for children of a root form', function() {
+      doc = jqLite(
+        '<ng:form name="parent">' +
+        '<ng:form name="child" ng-form-top-level="true">' +
+        '<ng:form name="grandchild">' +
+        '<input ng:model="modelA" name="inputA">' +
+        '<input ng:model="modelB" name="inputB">' +
+        '</ng:form>' +
+        '</ng:form>' +
+        '</ng:form>');
+      $compile(doc)(scope);
+
+      var parent = scope.parent,
+      child = scope.child,
+      grandchild = scope.grandchild,
+      inputA = grandchild.inputA,
+      inputB = grandchild.inputB;
+
+      inputA.$setValidity('MyError', false);
+      inputB.$setValidity('MyError', false);
+      expect(parent.$error.MyError).toBeFalsy();
+      expect(child.$error.MyError).toEqual([grandchild]);
+      expect(grandchild.$error.MyError).toEqual([inputA, inputB]);
+
+      inputA.$setValidity('MyError', true);
+      expect(parent.$error.MyError).toBeFalsy();
+      expect(child.$error.MyError).toEqual([grandchild]);
+      expect(grandchild.$error.MyError).toEqual([inputB]);
+
+      inputB.$setValidity('MyError', true);
+      expect(parent.$error.MyError).toBeFalsy();
+      expect(child.$error.MyError).toBeFalsy();
+      expect(grandchild.$error.MyError).toBeFalsy();
+
+      child.$setDirty();
+      expect(parent.$dirty).toBeFalsy();
+
+      child.$setSubmitted();
+      expect(parent.$submitted).toBeFalsy();
+    });
+  });
 });
 
 describe('form animations', function() {
