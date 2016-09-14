@@ -229,6 +229,17 @@ describe('ngModel', function() {
       });
 
 
+      it('should pass the previous view value to the change listener', function() {
+        ctrl.$setViewValue('val');
+
+        var spy = jasmine.createSpy('viewChangeListener');
+        ctrl.$viewChangeListeners.push(spy);
+        ctrl.$setViewValue('val2');
+
+        expect(spy).toHaveBeenCalledWith('val2', 'val');
+      });
+
+
       it('should reset the model when the view is invalid', function() {
         ctrl.$setViewValue('aaaa');
         expect(ctrl.$modelValue).toBe('aaaa');
