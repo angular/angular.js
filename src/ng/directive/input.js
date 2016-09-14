@@ -1116,7 +1116,7 @@ var inputType = {
             <hr>
             Model as number: <input type="number" ng-model="value"><br>
             Min: <input type="number" ng-model="min"><br>
-            Max: <input type="number" ng-model="min"><br>
+            Max: <input type="number" ng-model="max"><br>
             value = <code>{{value}}</code><br/>
             myForm.range.$valid = <code>{{myForm.range.$valid}}</code><br/>
             myForm.range.$error = <code>{{myForm.range.$error}}</code>
@@ -1142,7 +1142,7 @@ var inputType = {
             <hr>
             Model as number: <input type="number" ng-model="value"><br>
             Min: <input type="number" ng-model="min"><br>
-            Max: <input type="number" ng-model="min"><br>
+            Max: <input type="number" ng-model="max"><br>
             value = <code>{{value}}</code><br/>
             myForm.range.$valid = <code>{{myForm.range.$valid}}</code><br/>
             myForm.range.$error = <code>{{myForm.range.$error}}</code>
