@@ -160,7 +160,7 @@ text upper-case.
 
 ### Stateful filters
 
-It is strongly discouraged to write filters that are stateful, because the execution of those can't
+It is strongly discouraged to write filters that are stateful because the execution of stateful filters can't
 be optimized by Angular, which often leads to performance issues. Many stateful filters can be
 converted into stateless filters just by exposing the hidden state as a model and turning it into an
 argument for the filter.
