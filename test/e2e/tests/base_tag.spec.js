@@ -8,6 +8,9 @@ describe('base_tag', function() {
     var urlIsTrusted = browser.executeScript('return isTrustedUrl(arguments[0])', url);
     expect(urlIsTrusted).toBe(true);  // sanity check
 
+    var urlIsTrusted = browser.executeScript('return isTrustedUrl("//evil.com/")');
+    expect(urlIsTrusted).toBe(false);  // sanity check
+
     urlIsTrusted = browser.executeScript('return isTrustedUrl("/relative")');
     expect(urlIsTrusted).toBe(true);
   });
