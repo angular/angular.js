@@ -1364,6 +1364,22 @@ describe('$compile', function() {
           });
         });
 
+        it('should ignore whitespace betwee comment and root node when replacing with a template', function() {
+          module(function() {
+            directive('replaceWithWhitespace', valueFn({
+              replace: true,
+              template: '<!-- ignored comment --> <p>Hello, world!</p> <!-- ignored comment-->'
+            }));
+          });
+          inject(function($compile, $rootScope) {
+            expect(function() {
+              element = $compile('<div><div replace-with-whitespace></div></div>')($rootScope);
+            }).not.toThrow();
+            expect(element.find('p').length).toBe(1);
+            expect(element.find('p').text()).toBe('Hello, world!');
+          });
+        });
+
         it('should keep prototype properties on directive', function() {
           module(function() {
             function DirectiveClass() {
@@ -2092,6 +2108,18 @@ describe('$compile', function() {
             $compile('<p template></p>');
             $rootScope.$apply();
             expect($exceptionHandler.errors).toEqual([]);
+
+            // comments are ok
+            $templateCache.put('template.html', '<!-- oh hi --><div></div> \n');
+            $compile('<p template></p>');
+            $rootScope.$apply();
+            expect($exceptionHandler.errors).toEqual([]);
+
+            // white space around comments is ok
+            $templateCache.put('template.html', '  <!-- oh hi -->  <div></div>  <!-- oh hi -->\n');
+            $compile('<p template></p>');
+            $rootScope.$apply();
+            expect($exceptionHandler.errors).toEqual([]);
           });
         });
 
@@ -2302,6 +2330,26 @@ describe('$compile', function() {
             expect(element.find('p').text()).toBe('Hello, world!');
           });
         });
+
+        it('should ignore whitespace between comment and root node when replacing with a templateUrl', function() {
+          module(function() {
+            directive('replaceWithWhitespace', valueFn({
+              replace: true,
+              templateUrl: 'templateWithWhitespace.html'
+            }));
+          });
+          inject(function($compile, $rootScope, $httpBackend) {
+            $httpBackend.whenGET('templateWithWhitespace.html').
+              respond('<!-- ignored comment --> <p>Hello, world!</p> <!-- ignored comment-->');
+            expect(function() {
+              element = $compile('<div><div replace-with-whitespace></div></div>')($rootScope);
+            }).not.toThrow();
+            $httpBackend.flush();
+            expect(element.find('p').length).toBe(1);
+            expect(element.find('p').text()).toBe('Hello, world!');
+          });
+        });
+
 
         it('should keep prototype properties on sync version of async directive', function() {
           module(function() {
