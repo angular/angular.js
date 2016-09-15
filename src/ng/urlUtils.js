@@ -8,6 +8,7 @@
 // service.
 var urlParsingNode = window.document.createElement('a');
 var originUrl = urlResolve(window.location.href);
+var baseUrl;
 
 
 /**
@@ -94,4 +95,23 @@ function urlIsSameOrigin(requestUrl) {
   var parsed = (isString(requestUrl)) ? urlResolve(requestUrl) : requestUrl;
   return (parsed.protocol === originUrl.protocol &&
           parsed.host === originUrl.host);
+}
+
+/**
+ * Parse a request URL and determine whether it is same-origin as the document base URL.
+ *
+ * Note: The base URL is usually the same the document location (`location.href`) but can
+ * overriden by using the `<base>` tag.
+ *
+ * @param {string|object} requestUrl The url of the request as a string that will be resolved
+ * or a parsed URL object.
+ * @returns {boolean} Whether the URL is same-origin as the document base URL.
+ */
+function urlIsSameOriginAsBaseUrl(requestUrl) {
+  if (!baseUrl) {
+    baseUrl = urlResolve('.');
+  }
+  var parsed = (isString(requestUrl)) ? urlResolve(requestUrl) : requestUrl;
+  return (parsed.protocol === baseUrl.protocol &&
+          parsed.host === baseUrl.host);
 }
