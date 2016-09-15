@@ -8728,6 +8728,60 @@ describe('$compile', function() {
             });
           });
 
+          it('should compile and link the fallback content if only whitespace transcluded content is provided', function() {
+            var linkSpy = jasmine.createSpy('postlink');
+
+            module(function() {
+              directive('inner', function() {
+                return {
+                  restrict: 'E',
+                  template: 'old stuff! ',
+                  link: linkSpy
+                };
+              });
+
+              directive('trans', function() {
+                return {
+                  transclude: true,
+                  template: '<div ng-transclude><inner></inner></div>'
+                };
+              });
+            });
+            inject(function(log, $rootScope, $compile) {
+              element = $compile('<div trans>\n  \n</div>')($rootScope);
+              $rootScope.$apply();
+              expect(sortedHtml(element.html())).toEqual('<div ng-transclude=""><inner>old stuff! </inner></div>');
+              expect(linkSpy).toHaveBeenCalled();
+            });
+          });
+
+          it('should not link the fallback content if only whitespace and comments are provided as transclude content', function() {
+            var linkSpy = jasmine.createSpy('postlink');
+
+            module(function() {
+              directive('inner', function() {
+                return {
+                  restrict: 'E',
+                  template: 'old stuff! ',
+                  link: linkSpy
+                };
+              });
+
+              directive('trans', function() {
+                return {
+                  transclude: true,
+                  template: '<div ng-transclude><inner></inner></div>'
+                };
+              });
+            });
+            inject(function(log, $rootScope, $compile) {
+              element = $compile('<div trans>\n<!-- some comment -->  \n</div>')($rootScope);
+              $rootScope.$apply();
+              expect(sortedHtml(element.html())).toEqual('<div ng-transclude="">\n<!-- some comment -->  \n</div>');
+              expect(linkSpy).not.toHaveBeenCalled();
+            });
+          });
+
           it('should compile and link the fallback content if an optional transclusion slot is not provided', function() {
             var linkSpy = jasmine.createSpy('postlink');
 
