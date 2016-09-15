@@ -7,28 +7,32 @@
  * @element html
  * @description
  *
- * Angular has some features that can break certain
+ * Angular has some features that can conflict with certain restrictions that are applied when using
  * [CSP (Content Security Policy)](https://developer.mozilla.org/en/Security/CSP) rules.
  *
- * If you intend to implement these rules then you must tell Angular not to use these features.
+ * If you intend to implement CSP with these rules then you must tell Angular not to use these features.
  *
  * This is necessary when developing things like Google Chrome Extensions or Universal Windows Apps.
  *
  *
- * The following rules affect Angular:
+ * The following default rules in CSP affect Angular:
  *
- * * `unsafe-eval`: this rule forbids apps to use `eval` or `Function(string)` generated functions
- * (among other things). Angular makes use of this in the {@link $parse} service to provide a 30%
- * increase in the speed of evaluating Angular expressions.
+ * * The use of `eval()`, `Function(string)` and similar functions to dynamically create and execute 
+ * code from strings is forbidden. Angular makes use of this in the {@link $parse} service to provide 
+ * a 30% increase in the speed of evaluating Angular expressions. (This CSP rule can be disabled with 
+ * the CSP keyword `unsafe-eval`, but it is generally not recommended as it would weaken the protections 
+ * offered by CSP.) 
  *
- * * `unsafe-inline`: this rule forbids apps from inject custom styles into the document. Angular
- * makes use of this to include some CSS rules (e.g. {@link ngCloak} and {@link ngHide}).
- * To make these directives work when a CSP rule is blocking inline styles, you must link to the
- * `angular-csp.css` in your HTML manually.
+ * * The use of inline resources, such as inline <script> and <style> elements, are forbidden. This 
+ * prevents apps from injecting custom styles directly into the document. Angular makes use of this to 
+ * include some CSS rules (e.g. {@link ngCloak} and {@link ngHide}). To make these directives work when 
+ * a CSP rule is blocking inline styles, you must link to the `angular-csp.css` in your HTML manually. 
+ * (This CSP rule can be disabled with the CSP keyword `unsafe-inline`, but it is generally not recommended 
+ * as it would weaken the protections offered by CSP.)
  *
- * If you do not provide `ngCsp` then Angular tries to autodetect if CSP is blocking unsafe-eval
- * and automatically deactivates this feature in the {@link $parse} service. This autodetection,
- * however, triggers a CSP error to be logged in the console:
+ * If you do not provide `ngCsp` then Angular tries to autodetect if CSP is blocking dynamic code creation 
+ * from strings (e.g., `unsafe-eval` not specified in CSP header) and automatically deactivates this feature 
+ * in the {@link $parse} service. This autodetection, however, triggers a CSP error to be logged in the console:
  *
  * ```
  * Refused to evaluate a string as JavaScript because 'unsafe-eval' is not an allowed source of
