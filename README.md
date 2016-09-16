@@ -8,6 +8,8 @@ synchronizes data from your UI (view) with your JavaScript objects (model) throu
 binding. To help you structure your application better and make it easy to test, AngularJS teaches
 the browser how to do dependency injection and inversion of control.
 
+HTML is also used to determine the execution of the app. Special attributes in the HTML determine which controllers to use for each element. These attributes determine "what" gets loaded, but not "how". This declarative approach greatly simplifies app development in a sort of WYSIWYG way. Rather than spending time on how the program flows and what should get loaded first, you simply define what you want and Angular will take care of the dependencies.
+
 It also helps with server-side communication, taming async callbacks with promises and deferreds,
 and it makes client-side navigation and deeplinking with hashbang urls or HTML5 pushState a
 piece of cake. Best of all? It makes development fun!
