@@ -385,15 +385,20 @@ function $CacheFactoryProvider() {
  * });
  * ```
  *
- * To retrieve the template later, simply use it in your HTML:
+ * To retrieve the template later use $templateCache.get:
+ * ```js
+ * myApp.component('myComponent', {
+ *    controller: function($element $scope, $templateCache, $compile) {
+ *       $element.append($templateCache.get('templateId.html'));
+ *       $compile($element)($scope);
+ *    }  
+ * });
+ * ```
+ * You can also insert template directly in your HTML:
  * ```html
  * <div ng-include=" 'templateId.html' "></div>
  * ```
- *
- * or get it via Javascript:
- * ```js
- * $templateCache.get('templateId.html')
- * ```
+ * But "ng-include" directive is outdated and not recommended way of rendering partial template, you should use component approach instead.
  *
  * See {@link ng.$cacheFactory $cacheFactory}.
  *
