@@ -10911,8 +10911,7 @@ describe('$compile', function() {
   }
 
   describe('ngAttr* attribute binding', function() {
-
-    it('should bind after digest but not before', inject(function($compile, $rootScope) {
+    it('should bind after digest but not before', inject(function() {
       $rootScope.name = 'Misko';
       element = $compile('<span ng-attr-test="{{name}}"></span>')($rootScope);
       expect(element.attr('test')).toBeUndefined();
@@ -10920,7 +10919,7 @@ describe('$compile', function() {
       expect(element.attr('test')).toBe('Misko');
     }));
 
-    it('should bind after digest but not before when after overridden attribute', inject(function($compile, $rootScope) {
+    it('should bind after digest but not before when after overridden attribute', inject(function() {
       $rootScope.name = 'Misko';
       element = $compile('<span test="123" ng-attr-test="{{name}}"></span>')($rootScope);
       expect(element.attr('test')).toBe('123');
@@ -10928,7 +10927,7 @@ describe('$compile', function() {
       expect(element.attr('test')).toBe('Misko');
     }));
 
-    it('should bind after digest but not before when before overridden attribute', inject(function($compile, $rootScope) {
+    it('should bind after digest but not before when before overridden attribute', inject(function() {
       $rootScope.name = 'Misko';
       element = $compile('<span ng-attr-test="{{name}}" test="123"></span>')($rootScope);
       expect(element.attr('test')).toBe('123');
@@ -10936,7 +10935,15 @@ describe('$compile', function() {
       expect(element.attr('test')).toBe('Misko');
     }));
 
-    it('should remove attribute if any bindings are undefined', inject(function($compile, $rootScope) {
+    it('should set the attribute (after digest) even if there is no interpolation', inject(function() {
+      element = $compile('<span ng-attr-test="foo"></span>')($rootScope);
+      expect(element.attr('test')).toBeUndefined();
+
+      $rootScope.$digest();
+      expect(element.attr('test')).toBe('foo');
+    }));
+
+    it('should remove attribute if any bindings are undefined', inject(function() {
       element = $compile('<span ng-attr-test="{{name}}{{emphasis}}"></span>')($rootScope);
       $rootScope.$digest();
       expect(element.attr('test')).toBeUndefined();
@@ -10949,6 +10956,8 @@ describe('$compile', function() {
     }));
 
     describe('in directive', function() {
+      var log;
+
       beforeEach(module(function() {
         directive('syncTest', function(log) {
           return {
@@ -10969,47 +10978,52 @@ describe('$compile', function() {
         });
       }));
 
-      beforeEach(inject(function($templateCache) {
+      beforeEach(inject(function($templateCache, _log_) {
+        log = _log_;
         $templateCache.put('async.html', '<h1>Test</h1>');
       }));
 
       it('should provide post-digest value in synchronous directive link functions when after overridden attribute',
-          inject(function(log, $rootScope, $compile) {
-        $rootScope.test = 'TEST';
-        element = $compile('<div sync-test test="123" ng-attr-test="{{test}}"></div>')($rootScope);
-        expect(element.attr('test')).toBe('123');
-        expect(log.toArray()).toEqual(['TEST', 'TEST']);
-      }));
+        function() {
+          $rootScope.test = 'TEST';
+          element = $compile('<div sync-test test="123" ng-attr-test="{{test}}"></div>')($rootScope);
+          expect(element.attr('test')).toBe('123');
+          expect(log.toArray()).toEqual(['TEST', 'TEST']);
+        }
+      );
 
       it('should provide post-digest value in synchronous directive link functions when before overridden attribute',
-          inject(function(log, $rootScope, $compile) {
-        $rootScope.test = 'TEST';
-        element = $compile('<div sync-test ng-attr-test="{{test}}" test="123"></div>')($rootScope);
-        expect(element.attr('test')).toBe('123');
-        expect(log.toArray()).toEqual(['TEST', 'TEST']);
-      }));
+        function() {
+          $rootScope.test = 'TEST';
+          element = $compile('<div sync-test ng-attr-test="{{test}}" test="123"></div>')($rootScope);
+          expect(element.attr('test')).toBe('123');
+          expect(log.toArray()).toEqual(['TEST', 'TEST']);
+        }
+      );
 
 
       it('should provide post-digest value in asynchronous directive link functions when after overridden attribute',
-          inject(function(log, $rootScope, $compile) {
-        $rootScope.test = 'TEST';
-        element = $compile('<div async-test test="123" ng-attr-test="{{test}}"></div>')($rootScope);
-        expect(element.attr('test')).toBe('123');
-        $rootScope.$digest();
-        expect(log.toArray()).toEqual(['TEST', 'TEST']);
-      }));
+        function() {
+          $rootScope.test = 'TEST';
+          element = $compile('<div async-test test="123" ng-attr-test="{{test}}"></div>')($rootScope);
+          expect(element.attr('test')).toBe('123');
+          $rootScope.$digest();
+          expect(log.toArray()).toEqual(['TEST', 'TEST']);
+        }
+      );
 
       it('should provide post-digest value in asynchronous directive link functions when before overridden attribute',
-          inject(function(log, $rootScope, $compile) {
-        $rootScope.test = 'TEST';
-        element = $compile('<div async-test ng-attr-test="{{test}}" test="123"></div>')($rootScope);
-        expect(element.attr('test')).toBe('123');
-        $rootScope.$digest();
-        expect(log.toArray()).toEqual(['TEST', 'TEST']);
-      }));
+        function() {
+          $rootScope.test = 'TEST';
+          element = $compile('<div async-test ng-attr-test="{{test}}" test="123"></div>')($rootScope);
+          expect(element.attr('test')).toBe('123');
+          $rootScope.$digest();
+          expect(log.toArray()).toEqual(['TEST', 'TEST']);
+        }
+      );
     });
 
-    it('should work with different prefixes', inject(function($compile, $rootScope) {
+    it('should work with different prefixes', inject(function() {
       $rootScope.name = 'Misko';
       element = $compile('<span ng:attr:test="{{name}}" ng-Attr-test2="{{name}}" ng_Attr_test3="{{name}}"></span>')($rootScope);
       expect(element.attr('test')).toBeUndefined();
@@ -11021,14 +11035,14 @@ describe('$compile', function() {
       expect(element.attr('test3')).toBe('Misko');
     }));
 
-    it('should work with the "href" attribute', inject(function($compile, $rootScope) {
+    it('should work with the "href" attribute', inject(function() {
       $rootScope.value = 'test';
       element = $compile('<a ng-attr-href="test/{{value}}"></a>')($rootScope);
       $rootScope.$digest();
       expect(element.attr('href')).toBe('test/test');
     }));
 
-    it('should work if they are prefixed with x- or data- and different prefixes', inject(function($compile, $rootScope) {
+    it('should work if they are prefixed with x- or data- and different prefixes', inject(function() {
       $rootScope.name = 'Misko';
       element = $compile('<span data-ng-attr-test2="{{name}}" x-ng-attr-test3="{{name}}" data-ng:attr-test4="{{name}}" ' +
         'x_ng-attr-test5="{{name}}" data:ng-attr-test6="{{name}}"></span>')($rootScope);
@@ -11046,8 +11060,7 @@ describe('$compile', function() {
     }));
 
     describe('when an attribute has a dash-separated name', function() {
-
-      it('should work with different prefixes', inject(function($compile, $rootScope) {
+      it('should work with different prefixes', inject(function() {
         $rootScope.name = 'JamieMason';
         element = $compile('<span ng:attr:dash-test="{{name}}" ng-Attr-dash-test2="{{name}}" ng_Attr_dash-test3="{{name}}"></span>')($rootScope);
         expect(element.attr('dash-test')).toBeUndefined();
@@ -11059,7 +11072,7 @@ describe('$compile', function() {
         expect(element.attr('dash-test3')).toBe('JamieMason');
       }));
 
-      it('should work if they are prefixed with x- or data-', inject(function($compile, $rootScope) {
+      it('should work if they are prefixed with x- or data-', inject(function() {
         $rootScope.name = 'JamieMason';
         element = $compile('<span data-ng-attr-dash-test2="{{name}}" x-ng-attr-dash-test3="{{name}}" data-ng:attr-dash-test4="{{name}}"></span>')($rootScope);
         expect(element.attr('dash-test2')).toBeUndefined();
@@ -11088,7 +11101,6 @@ describe('$compile', function() {
         });
       });
 
-
       it('should keep attributes ending with -end single-element directives', function() {
         module(function($compileProvider) {
           $compileProvider.directive('dashEnder', function(log) {
@@ -11106,7 +11118,6 @@ describe('$compile', function() {
         });
       });
     });
-
   });
 
 
