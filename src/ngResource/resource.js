@@ -642,9 +642,8 @@ angular.module('ngResource', ['ng']).
         forEach(actions, function(action, name) {
           var hasBody = /^(POST|PUT|PATCH)$/i.test(action.method);
           var numericTimeout = action.timeout;
-          var cancellable = isDefined(action.cancellable) ? action.cancellable :
-              (options && isDefined(options.cancellable)) ? options.cancellable :
-              provider.defaults.cancellable;
+          var cancellable = isDefined(action.cancellable) ?
+              action.cancellable : route.defaults.cancellable;
 
           if (numericTimeout && !isNumber(numericTimeout)) {
             $log.debug('ngResource:\n' +
