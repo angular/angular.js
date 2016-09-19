@@ -9,11 +9,6 @@ var JSON_ENDS = {
 };
 var JSON_PROTECTION_PREFIX = /^\)\]\}',?\n/;
 var $httpMinErr = minErr('$http');
-var $httpMinErrLegacyFn = function(method) {
-  return function() {
-    throw $httpMinErr('legacy', 'The method `{0}` on the promise returned from `$http` has been disabled.', method);
-  };
-};
 
 function serializeValue(v) {
   if (isObject(v)) {
@@ -346,30 +341,6 @@ function $HttpProvider() {
     return useApplyAsync;
   };
 
-  var useLegacyPromise = true;
-  /**
-   * @ngdoc method
-   * @name $httpProvider#useLegacyPromiseExtensions
-   * @description
-   *
-   * Configure `$http` service to return promises without the shorthand methods `success` and `error`.
-   * This should be used to make sure that applications work without these methods.
-   *
-   * Defaults to true. If no value is specified, returns the current configured value.
-   *
-   * @param {boolean=} value If true, `$http` will return a promise with the deprecated legacy `success` and `error` methods.
-   *
-   * @returns {boolean|Object} If a value is specified, returns the $httpProvider for chaining.
-   *    otherwise, returns the current configured value.
-   **/
-  this.useLegacyPromiseExtensions = function(value) {
-    if (isDefined(value)) {
-      useLegacyPromise = !!value;
-      return this;
-    }
-    return useLegacyPromise;
-  };
-
   /**
    * @ngdoc property
    * @name $httpProvider#interceptors
@@ -502,14 +473,6 @@ function $HttpProvider() {
      * $http.get(...);
      * $httpBackend.flush();
      * ```
-     *
-     * ## Deprecation Notice
-     * <div class="alert alert-danger">
-     *   The `$http` legacy promise methods `success` and `error` have been deprecated.
-     *   Use the standard `then` method instead.
-     *   If {@link $httpProvider#useLegacyPromiseExtensions `$httpProvider.useLegacyPromiseExtensions`} is set to
-     *   `false` then these methods will throw {@link $http:legacy `$http/legacy`} error.
-     * </div>
      *
      * ## Setting HTTP Headers
      *
@@ -999,29 +962,6 @@ function $HttpProvider() {
       promise = promise.then(serverRequest);
       promise = chainInterceptors(promise, responseInterceptors);
       promise = promise.finally(completeOutstandingRequest);
-
-      if (useLegacyPromise) {
-        promise.success = function(fn) {
-          assertArgFn(fn, 'fn');
-
-          promise.then(function(response) {
-            fn(response.data, response.status, response.headers, config);
-          });
-          return promise;
-        };
-
-        promise.error = function(fn) {
-          assertArgFn(fn, 'fn');
-
-          promise.then(null, function(response) {
-            fn(response.data, response.status, response.headers, config);
-          });
-          return promise;
-        };
-      } else {
-        promise.success = $httpMinErrLegacyFn('success');
-        promise.error = $httpMinErrLegacyFn('error');
-      }
 
       return promise;
 
