@@ -1028,9 +1028,10 @@ describe('$route', function() {
       $routeProvider = _$routeProvider_;
 
       $provide.decorator('$sce', function($delegate) {
+        function getVal(v) { return v.getVal ? v.getVal() : v; }
         $delegate.trustAsResourceUrl = function(url) { return new MySafeResourceUrl(url); };
-        $delegate.getTrustedResourceUrl = function(v) { return v.getVal(); };
-        $delegate.valueOf = function(v) { return v.getVal(); };
+        $delegate.getTrustedResourceUrl = function(v) { return getVal(v); };
+        $delegate.valueOf = function(v) { return getVal(v); };
         return $delegate;
       });
     });
