@@ -376,7 +376,6 @@ You can see the complete application running below.
       };
 
       this.cancel = function() {
-        ctrl.editName = ctrl.crisis.name;
         ctrl.gotoCrises();
       };
 
