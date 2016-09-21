@@ -583,8 +583,7 @@ var ALIASED_ATTR = {
   'ngMaxlength': 'maxlength',
   'ngMin': 'min',
   'ngMax': 'max',
-  'ngPattern': 'pattern',
-  'ngStep': 'step'
+  'ngPattern': 'pattern'
 };
 
 function getBooleanAttrName(element, name) {
