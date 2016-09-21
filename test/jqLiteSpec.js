@@ -635,6 +635,43 @@ describe('jqLite', function() {
       expect(select.attr('multiple')).toBe('multiple');
     });
 
+    it('should not take properties into account when getting respective boolean attributes', function() {
+      // Use a div and not a select as the latter would itself reflect the multiple attribute
+      // to a property.
+      var div = jqLite('<div>');
+
+      div[0].multiple = true;
+      expect(div.attr('multiple')).toBe(undefined);
+
+      div.attr('multiple', 'multiple');
+      div[0].multiple = false;
+      expect(div.attr('multiple')).toBe('multiple');
+    });
+
+    it('should not set properties when setting respective boolean attributes', function() {
+      // jQuery 2.x has different behavior; skip the test.
+      if (isJQuery2x()) return;
+
+      // Use a div and not a select as the latter would itself reflect the multiple attribute
+      // to a property.
+      var div = jqLite('<div>');
+
+      // Check the initial state.
+      expect(div[0].multiple).toBe(undefined);
+
+      div.attr('multiple', 'multiple');
+      expect(div[0].multiple).toBe(undefined);
+
+      div.attr('multiple', '');
+      expect(div[0].multiple).toBe(undefined);
+
+      div.attr('multiple', false);
+      expect(div[0].multiple).toBe(undefined);
+
+      div.attr('multiple', null);
+      expect(div[0].multiple).toBe(undefined);
+    });
+
     it('should normalize the case of boolean attributes', function() {
       var input = jqLite('<input readonly>');
       expect(input.attr('readonly')).toBe('readonly');

@@ -646,17 +646,12 @@ forEach({
     if (BOOLEAN_ATTR[lowercasedName]) {
       if (isDefined(value)) {
         if (value) {
-          element[name] = true;
-          element.setAttribute(name, lowercasedName);
+          element.setAttribute(name, name);
         } else {
-          element[name] = false;
-          element.removeAttribute(lowercasedName);
+          element.removeAttribute(name);
         }
       } else {
-        return (element[name] ||
-                 (element.attributes.getNamedItem(name) || noop).specified)
-               ? lowercasedName
-               : undefined;
+        return element.getAttribute(name) != null ? lowercasedName : undefined;
       }
     } else if (isDefined(value)) {
       element.setAttribute(name, value);
