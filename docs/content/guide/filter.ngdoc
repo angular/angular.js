@@ -109,8 +109,9 @@ as the first argument. Any filter arguments are passed in as additional argument
 function.
 
 The filter function should be a [pure function](http://en.wikipedia.org/wiki/Pure_function), which
-means that it should be stateless and idempotent, and not rely for example on other Angular services.
-Angular relies on this contract and will by default execute a filter only when the inputs to the function change.
+means that it should always return the same result given the same input arguments and should not affect
+external state, for example, other Angular services. Angular relies on this contract and will by default
+execute a filter only when the inputs to the function change.
 {@link guide/filter#stateful-filters Stateful filters} are possible, but less performant.
 
 <div class="alert alert-warning">
