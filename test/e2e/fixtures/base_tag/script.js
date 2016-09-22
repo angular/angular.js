@@ -1,6 +1,8 @@
-angular
-  .module('test', [])
-  .run(function($sce) {
+'use strict';
+
+angular.
+  module('test', []).
+  run(function($sce) {
     window.isTrustedUrl = function(url) {
       try {
         $sce.getTrustedResourceUrl(url);
@@ -8,5 +10,5 @@ angular
         return false;
       }
       return true;
-    }
+    };
   });

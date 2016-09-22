@@ -8,7 +8,7 @@
 // service.
 var urlParsingNode = window.document.createElement('a');
 var originUrl = urlResolve(window.location.href);
-var baseUrl;
+var baseUrlParsingNode;
 
 
 /**
@@ -44,16 +44,16 @@ var baseUrl;
  * @description Normalizes and parses a URL.
  * @returns {object} Returns the normalized URL as a dictionary.
  *
- *   | member name   | Description    |
- *   |---------------|----------------|
+ *   | member name   | Description                                                            |
+ *   |---------------|------------------------------------------------------------------------|
  *   | href          | A normalized version of the provided URL if it was not an absolute URL |
- *   | protocol      | The protocol including the trailing colon                              |
+ *   | protocol      | The protocol without the trailing colon                                |
  *   | host          | The host and port (if the port is non-default) of the normalizedUrl    |
  *   | search        | The search params, minus the question mark                             |
- *   | hash          | The hash string, minus the hash symbol
- *   | hostname      | The hostname
- *   | port          | The port, without ":"
- *   | pathname      | The pathname, beginning with "/"
+ *   | hash          | The hash string, minus the hash symbol                                 |
+ *   | hostname      | The hostname                                                           |
+ *   | port          | The port, without ":"                                                  |
+ *   | pathname      | The pathname, beginning with "/"                                       |
  *
  */
 function urlResolve(url) {
@@ -69,19 +69,7 @@ function urlResolve(url) {
 
   urlParsingNode.setAttribute('href', href);
 
-  // urlParsingNode provides the UrlUtils interface - http://url.spec.whatwg.org/#urlutils
-  return {
-    href: urlParsingNode.href,
-    protocol: urlParsingNode.protocol ? urlParsingNode.protocol.replace(/:$/, '') : '',
-    host: urlParsingNode.host,
-    search: urlParsingNode.search ? urlParsingNode.search.replace(/^\?/, '') : '',
-    hash: urlParsingNode.hash ? urlParsingNode.hash.replace(/^#/, '') : '',
-    hostname: urlParsingNode.hostname,
-    port: urlParsingNode.port,
-    pathname: (urlParsingNode.pathname.charAt(0) === '/')
-      ? urlParsingNode.pathname
-      : '/' + urlParsingNode.pathname
-  };
+  return anchorElementToObject(urlParsingNode);
 }
 
 /**
@@ -93,12 +81,11 @@ function urlResolve(url) {
  */
 function urlIsSameOrigin(requestUrl) {
   var parsed = (isString(requestUrl)) ? urlResolve(requestUrl) : requestUrl;
-  return (parsed.protocol === originUrl.protocol &&
-          parsed.host === originUrl.host);
+  return urlsAreSameOrigin(parsed, originUrl);
 }
 
 /**
- * Parse a request URL and determine whether it is same-origin as the document base URL.
+ * Parse a request URL and determine whether it is same-origin as the current document base URL.
  *
  * Note: The base URL is usually the same the document location (`location.href`) but can
  * overriden by using the `<base>` tag.
@@ -108,10 +95,55 @@ function urlIsSameOrigin(requestUrl) {
  * @returns {boolean} Whether the URL is same-origin as the document base URL.
  */
 function urlIsSameOriginAsBaseUrl(requestUrl) {
-  if (!baseUrl) {
-    baseUrl = urlResolve('.');
+  if (!baseUrlParsingNode) {
+    baseUrlParsingNode = window.document.createElement('a');
+    baseUrlParsingNode.href = '.';
+
+    if (msie) {
+      // Work-around for IE bug described in Implementation Notes. The fix in urlResolve() is not
+      // suitable here because we need to track changes to the base URL.
+      baseUrlParsingNode = baseUrlParsingNode.cloneNode(false);
+    }
   }
   var parsed = (isString(requestUrl)) ? urlResolve(requestUrl) : requestUrl;
-  return (parsed.protocol === baseUrl.protocol &&
-          parsed.host === baseUrl.host);
+  return urlsAreSameOrigin(parsed, anchorElementToObject(baseUrlParsingNode));
+}
+
+/**
+ * Determines if two URLs share the same origin.
+ *
+ * @param {object} url1 First URL to compare. Must be a normalized URL in the form of a
+ *     dictionary object returned by `urlResolve()`.
+ * @param {object} url2 Second URL to compare. Must be a normalized URL in the form of a
+ *     dictionary object returned by `urlResolve()`.
+ * @return {boolean} True if both URLs have the same origin, and false otherwise.
+ */
+function urlsAreSameOrigin(url1, url2) {
+  // IE sometimes includes a port in the 'host' property, even if it is the default 80 port so
+  // we check hostname and port separately.
+  return url1.protocol === url2.protocol &&
+      url1.hostname === url2.hostname &&
+          url1.port === url2.port;
+}
+
+/**
+ * Converts properties in the given anchor element into a dictionary object as described in the
+ * documentation for `urlResolve()`.
+ * @param {HTMLAnchorElement} elem
+ * @returns {object}
+ */
+function anchorElementToObject(elem) {
+   // elem provides the UrlUtils interface - http://url.spec.whatwg.org/#urlutils
+   return {
+    href: elem.href,
+    protocol: elem.protocol ? elem.protocol.replace(/:$/, '') : '',
+    host: elem.host,
+    search: elem.search ? elem.search.replace(/^\?/, '') : '',
+    hash: elem.hash ? elem.hash.replace(/^#/, '') : '',
+    hostname: elem.hostname,
+    port: elem.port,
+    pathname: (elem.pathname.charAt(0) === '/')
+      ? elem.pathname
+      : '/' + elem.pathname
+  };
 }
