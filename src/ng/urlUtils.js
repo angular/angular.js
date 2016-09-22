@@ -69,7 +69,18 @@ function urlResolve(url) {
 
   urlParsingNode.setAttribute('href', href);
 
-  return anchorElementToObject(urlParsingNode);
+  return {
+    href: urlParsingNode.href,
+    protocol: urlParsingNode.protocol ? urlParsingNode.protocol.replace(/:$/, '') : '',
+    host: urlParsingNode.host,
+    search: urlParsingNode.search ? urlParsingNode.search.replace(/^\?/, '') : '',
+    hash: urlParsingNode.hash ? urlParsingNode.hash.replace(/^#/, '') : '',
+    hostname: urlParsingNode.hostname,
+    port: urlParsingNode.port,
+    pathname: (urlParsingNode.pathname.charAt(0) === '/')
+      ? urlParsingNode.pathname
+      : '/' + urlParsingNode.pathname
+  };
 }
 
 /**
@@ -95,18 +106,9 @@ function urlIsSameOrigin(requestUrl) {
  * @returns {boolean} Whether the URL is same-origin as the document base URL.
  */
 function urlIsSameOriginAsBaseUrl(requestUrl) {
-  if (!baseUrlParsingNode) {
-    baseUrlParsingNode = window.document.createElement('a');
-    baseUrlParsingNode.href = '.';
-
-    if (msie) {
-      // Work-around for IE bug described in Implementation Notes. The fix in urlResolve() is not
-      // suitable here because we need to track changes to the base URL.
-      baseUrlParsingNode = baseUrlParsingNode.cloneNode(false);
-    }
-  }
   var parsed = (isString(requestUrl)) ? urlResolve(requestUrl) : requestUrl;
-  return urlsAreSameOrigin(parsed, anchorElementToObject(baseUrlParsingNode));
+  var base = urlResolve(getBaseUrl());
+  return urlsAreSameOrigin(parsed, base);
 }
 
 /**
@@ -127,23 +129,22 @@ function urlsAreSameOrigin(url1, url2) {
 }
 
 /**
- * Converts properties in the given anchor element into a dictionary object as described in the
- * documentation for `urlResolve()`.
- * @param {HTMLAnchorElement} elem
- * @returns {object}
+ * Returns the current document base URL.
+ * @return {string}
  */
-function anchorElementToObject(elem) {
-   // elem provides the UrlUtils interface - http://url.spec.whatwg.org/#urlutils
-   return {
-    href: elem.href,
-    protocol: elem.protocol ? elem.protocol.replace(/:$/, '') : '',
-    host: elem.host,
-    search: elem.search ? elem.search.replace(/^\?/, '') : '',
-    hash: elem.hash ? elem.hash.replace(/^#/, '') : '',
-    hostname: elem.hostname,
-    port: elem.port,
-    pathname: (elem.pathname.charAt(0) === '/')
-      ? elem.pathname
-      : '/' + elem.pathname
-  };
+function getBaseUrl() {
+  if (window.document.baseURI) {
+    return window.document.baseURI;
+  }
+
+  // document.baseURI is available everywhere except IE
+  if (!baseUrlParsingNode) {
+    baseUrlParsingNode = window.document.createElement('a');
+    baseUrlParsingNode.href = '.';
+
+    // Work-around for IE bug described in Implementation Notes. The fix in urlResolve() is not
+    // suitable here because we need to track changes to the base URL.
+    baseUrlParsingNode = baseUrlParsingNode.cloneNode(false);
+  }
+  return baseUrlParsingNode.href;
 }
