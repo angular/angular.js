@@ -238,6 +238,9 @@ function $AnchorScrollProvider() {
     }
 
     function scroll(hash) {
+      //Allow hash to be a number
+      if(isNumber(hash)) hash = hash.toString();
+        
       hash = isString(hash) ? hash : $location.hash();
       var elm;
 
