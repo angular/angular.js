@@ -598,7 +598,7 @@ describe('jqLite', function() {
 
 
   describe('attr', function() {
-    it('should read write and remove attr', function() {
+    it('should read, write and remove attr', function() {
       var selector = jqLite([a, b]);
 
       expect(selector.attr('prop', 'value')).toEqual(selector);
