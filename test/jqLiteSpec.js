@@ -721,6 +721,18 @@ describe('jqLite', function() {
       expect(comment.attr('some-attribute','somevalue')).toEqual(comment);
       expect(comment.attr('some-attribute')).toBeUndefined();
     });
+
+    it('should remove the attribute for a null value', function() {
+      var elm = jqLite('<div attribute="value">a</div>');
+      elm.attr('attribute', null);
+      expect(elm[0].hasAttribute('attribute')).toBe(false);
+    });
+
+    it('should not remove the attribute for an empty string as a value', function() {
+      var elm = jqLite('<div attribute="value">a</div>');
+      elm.attr('attribute', '');
+      expect(elm[0].getAttribute('attribute')).toBe('');
+    });
   });
 
 

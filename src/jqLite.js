@@ -654,11 +654,13 @@ forEach({
         return element.getAttribute(name) != null ? lowercasedName : undefined;
       }
     } else if (isDefined(value)) {
-      element.setAttribute(name, value);
+      if (value === null) {
+        element.removeAttribute(name);
+      } else {
+        element.setAttribute(name, value);
+      }
     } else if (element.getAttribute) {
-      // the extra argument "2" is to get the right thing for a.href in IE, see jQuery code
-      // some elements (e.g. Document) don't have get attribute, so return undefined
-      var ret = element.getAttribute(name, 2);
+      var ret = element.getAttribute(name);
       // normalize non-existing attributes to undefined (as jQuery)
       return ret === null ? undefined : ret;
     }
