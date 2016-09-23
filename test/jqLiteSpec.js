@@ -733,6 +733,24 @@ describe('jqLite', function() {
       elm.attr('attribute', '');
       expect(elm[0].getAttribute('attribute')).toBe('');
     });
+
+    it('should remove the boolean attribute for a false value', function() {
+      var elm = jqLite('<select multiple>');
+      elm.attr('multiple', false);
+      expect(elm[0].hasAttribute('multiple')).toBe(false);
+    });
+
+    it('should remove the boolean attribute for a null value', function() {
+      var elm = jqLite('<select multiple>');
+      elm.attr('multiple', null);
+      expect(elm[0].hasAttribute('multiple')).toBe(false);
+    });
+
+    it('should not remove the boolean attribute for an empty string as a value', function() {
+      var elm = jqLite('<select multiple>');
+      elm.attr('multiple', '');
+      expect(elm[0].getAttribute('multiple')).toBe('multiple');
+    });
   });
 
 

@@ -645,7 +645,7 @@ forEach({
     var lowercasedName = lowercase(name);
     if (BOOLEAN_ATTR[lowercasedName]) {
       if (isDefined(value)) {
-        if (value) {
+        if (value !== false && value !== null) {
           element.setAttribute(name, name);
         } else {
           element.removeAttribute(name);
