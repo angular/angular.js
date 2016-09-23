@@ -260,6 +260,18 @@ describe('$anchorScroll', function() {
         addElements('id=top'),
         callAnchorScroll('top'),
         expectScrollingTo('id=top')));
+
+
+      it('should scroll to element with id "7" if present, with a given hash of type number', inject(
+        addElements('id=7'),
+        callAnchorScroll(7),
+        expectScrollingTo('id=7')));
+
+
+      it('should scroll to element with id "7" if present, with a given hash of type string', inject(
+        addElements('id=7'),
+        callAnchorScroll('7'),
+        expectScrollingTo('id=7')));
     });
   });
 
