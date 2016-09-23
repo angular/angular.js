@@ -638,30 +638,32 @@ forEach({
   },
 
   attr: function(element, name, value) {
+    var ret;
     var nodeType = element.nodeType;
     if (nodeType === NODE_TYPE_TEXT || nodeType === NODE_TYPE_ATTRIBUTE || nodeType === NODE_TYPE_COMMENT) {
       return;
     }
+
     var lowercasedName = lowercase(name);
-    if (BOOLEAN_ATTR[lowercasedName]) {
-      if (isDefined(value)) {
-        if (value !== false && value !== null) {
-          element.setAttribute(name, name);
-        } else {
-          element.removeAttribute(name);
-        }
-      } else {
-        return element.getAttribute(name) != null ? lowercasedName : undefined;
-      }
-    } else if (isDefined(value)) {
-      if (value === null) {
+    var isBooleanAttr = BOOLEAN_ATTR[lowercasedName];
+
+    if (isDefined(value)) {
+      // setter
+
+      if (value === null || (value === false && isBooleanAttr)) {
         element.removeAttribute(name);
       } else {
-        element.setAttribute(name, value);
+        element.setAttribute(name, isBooleanAttr ? lowercasedName : value);
       }
     } else if (element.getAttribute) {
-      var ret = element.getAttribute(name);
-      // normalize non-existing attributes to undefined (as jQuery)
+      // getter
+
+      ret = element.getAttribute(name);
+
+      if (isBooleanAttr && ret !== null) {
+        ret = lowercasedName;
+      }
+      // Normalize non-existing attributes to undefined (as jQuery).
       return ret === null ? undefined : ret;
     }
   },
