@@ -841,6 +841,34 @@ describe('animations', function() {
         expect(capturedAnimation).toBeFalsy();
       }));
 
+      it('should not skip animations if the $rootElement is a comment', function() {
+
+        module(function($provide) {
+          $provide.factory('$rootElement', function() {
+            var commentElement = jqLite('<!-- A Comment -->');
+            return commentElement;
+          });
+        });
+
+        inject(function($compile, $rootScope, $document, $animate, $rootElement) {
+
+          $animate.enabled(true);
+
+          var elm1 = $compile('<div class="animated"></div>')($rootScope);
+          var rootSibling = $compile('<div class="sibling"></div>')($rootScope);
+
+          jqLite($document[0].body).append($rootElement);
+
+          $rootElement.after(rootSibling);
+          rootSibling.append(elm1);
+
+          expect(capturedAnimation).toBeFalsy();
+          $animate.addClass(elm1, 'red');
+          $rootScope.$digest();
+          expect(capturedAnimation).toBeTruthy();
+        });
+      });
+
       it('should skip the animation if the element is removed from the DOM before the post digest kicks in',
         inject(function($animate, $rootScope) {
 

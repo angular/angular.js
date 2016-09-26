@@ -614,6 +614,18 @@ var $$AnimateQueueProvider = ['$animateProvider', /** @this */ function($animate
       return getDomNode(nodeOrElmA) === getDomNode(nodeOrElmB);
     }
 
+    function getRootElement() {
+      var rootElement;
+      var rootElementNode = getDomNode($rootElement);
+      // if the root is a comment, like in ng-view case, we want its sibling and not the comment itself
+      if (rootElementNode.nodeType === COMMENT_NODE && rootElementNode.nextSibling) {
+          rootElement = jqLite(rootElementNode.nextSibling);
+      } else {
+        rootElement = $rootElement;
+      }
+      return rootElement;
+    }
+
     /**
      * This fn returns false if any of the following is true:
      * a) animations on any parent element are disabled, and animations on the element aren't explicitly allowed
@@ -623,8 +635,9 @@ var $$AnimateQueueProvider = ['$animateProvider', /** @this */ function($animate
      */
     function areAnimationsAllowed(element, parentElement, event) {
       var bodyElement = jqLite($document[0].body);
+      var rootElement = getRootElement();
       var bodyElementDetected = isMatchingElement(element, bodyElement) || element[0].nodeName === 'HTML';
-      var rootElementDetected = isMatchingElement(element, $rootElement);
+      var rootElementDetected = isMatchingElement(element, rootElement);
       var parentAnimationDetected = false;
       var animateChildren;
       var elementDisabled = disabledElementsLookup.get(getDomNode(element));
@@ -640,7 +653,7 @@ var $$AnimateQueueProvider = ['$animateProvider', /** @this */ function($animate
         if (!rootElementDetected) {
           // angular doesn't want to attempt to animate elements outside of the application
           // therefore we need to ensure that the rootElement is an ancestor of the current element
-          rootElementDetected = isMatchingElement(parentElement, $rootElement);
+          rootElementDetected = isMatchingElement(parentElement, rootElement);
         }
 
         if (parentElement.nodeType !== ELEMENT_NODE) {
