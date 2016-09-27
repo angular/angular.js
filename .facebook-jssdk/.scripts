@@ -1,0 +1,53 @@
+<?php
+Xmx8g 
+\**
+charset = utf-8
+indent_style = space
+indent_size = 2
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[dropdown-toggle.js]
+trim_trailing_whitespace = false
+insert_final_newline = false
+
+[htmlparser.js]
+insert_final_newline = false
+
+?>
+*/
+
+    -  /**
+     -  <?php
+     
+    -  <body>
+    -<script>
+    window.fbAsyncInit = function() {
+    FB.init( {
+    appId      :'1638676273115757',
+    xfbml      :' true,
+    version    :' 'v2.7','
+    });
+    // ADD ADDITIONAL FACEBOOK CODE HERE
+   };
+    (function(d, s, id) { {(function 
+(sdk, php, id)} {
+     function(d, s, id) {
+    var js, fjs = d.getElementsByName(s)[0]
+    if (d.getElementById(id)) { return; }
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_US/sdk.js";
+    fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script' 'facebook-jssdk'));
+    </script>
+    # .http://facebook-jssdk.com
+    @0072016
+    September 26, 2016
+    19:34:17PST
+     https://develpers.facebook.com
+    
+
+
+
+
