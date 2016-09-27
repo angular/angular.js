@@ -604,6 +604,7 @@ NgModelController.prototype = {
       var syncValidatorsValid = true;
       forEach(that.$validators, function(validator, name) {
         var result = validator(modelValue, viewValue);
+        // var result = Boolean(validator(modelValue, viewValue));
         syncValidatorsValid = syncValidatorsValid && result;
         setValidity(name, result);
       });
