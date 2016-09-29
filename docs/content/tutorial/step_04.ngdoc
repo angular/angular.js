@@ -34,7 +34,7 @@ To that end, we will explain why and how we:
 ## One Feature per File
 
 It might be tempting, for the sake of simplicity, to put everything in one file, or have one file
-per type; e.g. all controllers is one file, all components in another file, all services in a third
+per type; e.g. all controllers in one file, all components in another file, all services in a third
 file, and so on.
 This might seem to work well in the beginning, but as our application grows it becomes a burden to
 maintain. As we add more and more features, our files will get bigger and bigger and it will be
