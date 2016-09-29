@@ -80,7 +80,7 @@ manipulation code is necessary!
 ## Component Controller
 
 <br />
-**`app/phone-list/phone-list.components.js`:**
+**`app/phone-list/phone-list.component.js`:**
 
 ```js
   angular.
