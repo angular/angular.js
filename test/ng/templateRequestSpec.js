@@ -114,49 +114,59 @@ describe('$templateRequest', function() {
     expect($templateCache.get('tpl.html')).toBe('matias');
   }));
 
-  it('should throw an error when the template is not found',
-    inject(function($rootScope, $templateRequest, $httpBackend) {
+  it('should call `$exceptionHandler` on request error', function() {
+    module(function($exceptionHandlerProvider) {
+      $exceptionHandlerProvider.mode('log');
+    });
 
-    $httpBackend.expectGET('tpl.html').respond(404, '', {}, 'Not found');
-
-    $templateRequest('tpl.html');
-
-    $rootScope.$digest();
-
-    expect(function() {
-      $rootScope.$digest();
-      $httpBackend.flush();
-    }).toThrowMinErr('$compile', 'tpload', 'Failed to load template: tpl.html (HTTP status: 404 Not found)');
-  }));
-
-  it('should not throw when the template is not found and ignoreRequestError is true',
-    inject(function($rootScope, $templateRequest, $httpBackend) {
-
-      $httpBackend.expectGET('tpl.html').respond(404);
+    inject(function($exceptionHandler, $httpBackend, $templateRequest) {
+      $httpBackend.expectGET('tpl.html').respond(404, '', {}, 'Not Found');
 
       var err;
-      $templateRequest('tpl.html', true).catch(function(reason) { err = reason; });
+      $templateRequest('tpl.html').catch(function(reason) { err = reason; });
+      $httpBackend.flush();
 
+      expect(err.message).toMatch(new RegExp(
+          '^\\[\\$compile:tpload] Failed to load template: tpl\\.html ' +
+          '\\(HTTP status: 404 Not Found\\)'));
+      expect($exceptionHandler.errors[0].message).toMatch(new RegExp(
+          '^\\[\\$compile:tpload] Failed to load template: tpl\\.html ' +
+          '\\(HTTP status: 404 Not Found\\)'));
+    });
+  });
+
+  it('should not call `$exceptionHandler` on request error when `ignoreRequestError` is true',
+    function() {
+      module(function($exceptionHandlerProvider) {
+        $exceptionHandlerProvider.mode('log');
+      });
+
+      inject(function($exceptionHandler, $httpBackend, $templateRequest) {
+        $httpBackend.expectGET('tpl.html').respond(404);
+
+        var err;
+        $templateRequest('tpl.html', true).catch(function(reason) { err = reason; });
+        $httpBackend.flush();
+
+        expect(err.status).toBe(404);
+        expect($exceptionHandler.errors).toEqual([]);
+      });
+    }
+  );
+
+  it('should not call `$exceptionHandler` when the template is empty',
+    inject(function($exceptionHandler, $httpBackend, $rootScope, $templateRequest) {
+      $httpBackend.expectGET('tpl.html').respond('');
+
+      var onError = jasmine.createSpy('onError');
+      $templateRequest('tpl.html').catch(onError);
       $rootScope.$digest();
       $httpBackend.flush();
 
-      expect(err.status).toBe(404);
-  }));
-
-  it('should not throw an error when the template is empty',
-    inject(function($rootScope, $templateRequest, $httpBackend) {
-
-    $httpBackend.expectGET('tpl.html').respond('');
-
-    $templateRequest('tpl.html');
-
-    $rootScope.$digest();
-
-    expect(function() {
-      $rootScope.$digest();
-      $httpBackend.flush();
-    }).not.toThrow();
-  }));
+      expect(onError).not.toHaveBeenCalled();
+      expect($exceptionHandler.errors).toEqual([]);
+    })
+  );
 
   it('should accept empty templates and refuse null or undefined templates in cache',
     inject(function($rootScope, $templateRequest, $templateCache, $sce) {

@@ -9,8 +9,8 @@
  * A service that helps you run functions asynchronously, and use their return values (or exceptions)
  * when they are done processing.
  *
- * This is an implementation of promises/deferred objects inspired by
- * [Kris Kowal's Q](https://github.com/kriskowal/q).
+ * This is a [Promises/A+](https://promisesaplus.com/)-compliant implementation of promises/deferred
+ * objects inspired by [Kris Kowal's Q](https://github.com/kriskowal/q).
  *
  * $q can be used in two fashions --- one which is more similar to Kris Kowal's Q or jQuery's Deferred
  * implementations, and the other which resembles ES6 (ES2015) promises to some degree.
@@ -366,7 +366,6 @@ function qFactory(nextTick, exceptionHandler, errorOnUnhandledRejections) {
           }
         } catch (e) {
           deferred.reject(e);
-          exceptionHandler(e);
         }
       }
     } finally {
@@ -417,7 +416,6 @@ function qFactory(nextTick, exceptionHandler, errorOnUnhandledRejections) {
       } else {
         this.$$resolve(val);
       }
-
     },
 
     $$resolve: function(val) {
@@ -425,7 +423,7 @@ function qFactory(nextTick, exceptionHandler, errorOnUnhandledRejections) {
       var that = this;
       var done = false;
       try {
-        if ((isObject(val) || isFunction(val))) then = val && val.then;
+        if (isObject(val) || isFunction(val)) then = val.then;
         if (isFunction(then)) {
           this.promise.$$state.status = -1;
           then.call(val, resolvePromise, rejectPromise, simpleBind(this, this.notify));
@@ -436,7 +434,6 @@ function qFactory(nextTick, exceptionHandler, errorOnUnhandledRejections) {
         }
       } catch (e) {
         rejectPromise(e);
-        exceptionHandler(e);
       }
 
       function resolvePromise(val) {

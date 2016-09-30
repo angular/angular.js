@@ -1854,17 +1854,18 @@ describe('$compile', function() {
         ));
 
 
-        it('should throw an error and clear element content if the template fails to load', inject(
-            function($compile, $httpBackend, $rootScope) {
-              $httpBackend.expect('GET', 'hello.html').respond(404, 'Not Found!');
-              element = $compile('<div><b class="hello">content</b></div>')($rootScope);
+        it('should throw an error and clear element content if the template fails to load',
+          inject(function($compile, $exceptionHandler, $httpBackend, $rootScope) {
+            $httpBackend.expect('GET', 'hello.html').respond(404, 'Not Found!');
+            element = $compile('<div><b class="hello">content</b></div>')($rootScope);
 
-              expect(function() {
-                $httpBackend.flush();
-              }).toThrowMinErr('$compile', 'tpload', 'Failed to load template: hello.html');
-              expect(sortedHtml(element)).toBe('<div><b class="hello"></b></div>');
-            }
-        ));
+            $httpBackend.flush();
+
+            expect(sortedHtml(element)).toBe('<div><b class="hello"></b></div>');
+            expect($exceptionHandler.errors[0].message).toMatch(
+                /^\[\$compile:tpload] Failed to load template: hello\.html/);
+          })
+        );
 
 
         it('should prevent multiple templates per element', function() {
@@ -1878,13 +1879,15 @@ describe('$compile', function() {
               templateUrl: 'template.html'
             }));
           });
-          inject(function($compile, $httpBackend) {
+          inject(function($compile, $exceptionHandler, $httpBackend) {
             $httpBackend.whenGET('template.html').respond('<p>template.html</p>');
-            expect(function() {
-              $compile('<div><div class="sync async"></div></div>');
-              $httpBackend.flush();
-            }).toThrowMinErr('$compile', 'multidir', 'Multiple directives [async, sync] asking for template on: ' +
-                '<div class="sync async">');
+
+            $compile('<div><div class="sync async"></div></div>');
+            $httpBackend.flush();
+
+            expect($exceptionHandler.errors[0].message).toMatch(new RegExp(
+                '^\\[\\$compile:multidir] Multiple directives \\[async, sync] asking for ' +
+                'template on: <div class="sync async">'));
           });
         });
 
@@ -2667,14 +2670,15 @@ describe('$compile', function() {
         );
 
         it('should not allow more than one isolate/new scope creation per element regardless of `templateUrl`',
-          inject(function($httpBackend) {
+          inject(function($exceptionHandler, $httpBackend) {
             $httpBackend.expect('GET', 'tiscope.html').respond('<div>Hello, world !</div>');
 
-            expect(function() {
-              compile('<div class="tiscope-a; scope-b"></div>');
-              $httpBackend.flush();
-            }).toThrowMinErr('$compile', 'multidir', 'Multiple directives [scopeB, tiscopeA] ' +
-                'asking for new/isolated scope on: <div class="tiscope-a; scope-b ng-scope">');
+            compile('<div class="tiscope-a; scope-b"></div>');
+            $httpBackend.flush();
+
+            expect($exceptionHandler.errors[0].message).toMatch(new RegExp(
+                '^\\[\\$compile:multidir] Multiple directives \\[scopeB, tiscopeA] ' +
+                'asking for new/isolated scope on: <div class="tiscope-a; scope-b ng-scope">'));
           })
         );
 
@@ -8875,28 +8879,29 @@ describe('$compile', function() {
                   '<div class="foo" ng-transclude></div>' +
                 '</div>',
                 transclude: true
-
               }));
 
               $compileProvider.directive('noTransBar', valueFn({
                 templateUrl: 'noTransBar.html',
                 transclude: false
-
               }));
             });
 
-            inject(function($compile, $rootScope, $templateCache) {
+            inject(function($compile, $exceptionHandler, $rootScope, $templateCache) {
               $templateCache.put('noTransBar.html',
                 '<div>' +
                   // This ng-transclude is invalid. It should throw an error.
                   '<div class="bar" ng-transclude></div>' +
                 '</div>');
 
-              expect(function() {
-                element = $compile('<div trans-foo>content</div>')($rootScope);
-                $rootScope.$apply();
-              }).toThrowMinErr('ngTransclude', 'orphan',
-                  'Illegal use of ngTransclude directive in the template! No parent directive that requires a transclusion found. Element: <div class="bar" ng-transclude="">');
+              element = $compile('<div trans-foo>content</div>')($rootScope);
+              $rootScope.$digest();
+
+              expect($exceptionHandler.errors[0][1]).toBe('<div class="bar" ng-transclude="">');
+              expect($exceptionHandler.errors[0][0].message).toMatch(new RegExp(
+                  '^\\[ngTransclude:orphan] Illegal use of ngTransclude directive in the ' +
+                  'template! No parent directive that requires a transclusion found. Element: ' +
+                  '<div class="bar" ng-transclude="">'));
             });
           });
 
@@ -9706,12 +9711,15 @@ describe('$compile', function() {
                 transclude: 'element'
               }));
             });
-            inject(function($compile, $httpBackend) {
+            inject(function($compile, $exceptionHandler, $httpBackend) {
               $httpBackend.expectGET('template.html').respond('<p second>template.html</p>');
+
               $compile('<div template first></div>');
-              expect(function() {
-                $httpBackend.flush();
-              }).toThrowMinErr('$compile', 'multidir', /Multiple directives \[first, second\] asking for transclusion on: <p .+/);
+              $httpBackend.flush();
+
+              expect($exceptionHandler.errors[0].message).toMatch(new RegExp(
+                  '^\\[\\$compile:multidir] Multiple directives \\[first, second] asking for ' +
+                  'transclusion on: <p '));
             });
           });
 

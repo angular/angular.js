@@ -3131,6 +3131,10 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
               childBoundTranscludeFn);
           }
           linkQueue = null;
+        }).catch(function(error) {
+          if (error instanceof Error) {
+            $exceptionHandler(error);
+          }
         }).catch(noop);
 
       return function delayedNodeLinkFn(ignoreChildLinkFn, scope, node, rootElement, boundTranscludeFn) {
