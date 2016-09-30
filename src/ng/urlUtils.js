@@ -91,8 +91,7 @@ function urlResolve(url) {
  * @returns {boolean} Whether the request is for the same origin as the application document.
  */
 function urlIsSameOrigin(requestUrl) {
-  var parsed = (isString(requestUrl)) ? urlResolve(requestUrl) : requestUrl;
-  return urlsAreSameOrigin(parsed, originUrl);
+  return urlsAreSameOrigin(requestUrl, originUrl);
 }
 
 /**
@@ -106,9 +105,7 @@ function urlIsSameOrigin(requestUrl) {
  * @returns {boolean} Whether the URL is same-origin as the document base URL.
  */
 function urlIsSameOriginAsBaseUrl(requestUrl) {
-  var parsed = (isString(requestUrl)) ? urlResolve(requestUrl) : requestUrl;
-  var base = urlResolve(getBaseUrl());
-  return urlsAreSameOrigin(parsed, base);
+  return urlsAreSameOrigin(requestUrl, getBaseUrl());
 }
 
 /**
