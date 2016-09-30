@@ -7,7 +7,7 @@ describe('SCE URL policy when base tags are present', function() {
   }
 
   beforeAll(function() {
-    loadFixture('base_tag');
+    loadFixture('base-tag');
   });
 
   it('allows the page URL (location.href)', function() {
@@ -30,5 +30,6 @@ describe('SCE URL policy when base tags are present', function() {
     browser.executeScript(
         'document.getElementsByTagName("base")[0].href = "http://xxx.example.com/";');
     checkUrl('http://xxx.example.com/path/to/file.html', true);
+    checkUrl('http://www.example.com/path/to/file.html', false);
   });
 });

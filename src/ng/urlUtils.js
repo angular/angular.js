@@ -99,7 +99,7 @@ function urlIsSameOrigin(requestUrl) {
  * Parse a request URL and determine whether it is same-origin as the current document base URL.
  *
  * Note: The base URL is usually the same the document location (`location.href`) but can
- * overriden by using the `<base>` tag.
+ * be overriden by using the `<base>` tag.
  *
  * @param {string|object} requestUrl The url of the request as a string that will be resolved
  * or a parsed URL object.
@@ -114,18 +114,18 @@ function urlIsSameOriginAsBaseUrl(requestUrl) {
 /**
  * Determines if two URLs share the same origin.
  *
- * @param {object} url1 First URL to compare. Must be a normalized URL in the form of a
- *     dictionary object returned by `urlResolve()`.
- * @param {object} url2 Second URL to compare. Must be a normalized URL in the form of a
- *     dictionary object returned by `urlResolve()`.
+ * @param {string|object} url1 First URL to compare as a string or a normalized URL in the form of
+ *     a dictionary object returned by `urlResolve()`.
+ * @param {string|object} url2 Second URL to compare as a string or a normalized URL in the form of
+ *     a dictionary object returned by `urlResolve()`.
  * @return {boolean} True if both URLs have the same origin, and false otherwise.
  */
 function urlsAreSameOrigin(url1, url2) {
-  // IE sometimes includes a port in the 'host' property, even if it is the default 80 port so
-  // we check hostname and port separately.
-  return url1.protocol === url2.protocol &&
-      url1.hostname === url2.hostname &&
-          url1.port === url2.port;
+  url1 = (isString(url1)) ? urlResolve(url1) : url1;
+  url2 = (isString(url2)) ? urlResolve(url2) : url2;
+
+  return (url1.protocol === url2.protocol &&
+          url1.host === url2.host);
 }
 
 /**
