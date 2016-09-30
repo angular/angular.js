@@ -1941,7 +1941,7 @@ describe('$http', function() {
 
 
       it('should increment/decrement `outstandingRequestCount` on error in `transformRequest`',
-        inject(function($exceptionHandler) {
+        function() {
           expect(incOutstandingRequestCountSpy).not.toHaveBeenCalled();
           expect(completeOutstandingRequestSpy).not.toHaveBeenCalled();
 
@@ -1954,15 +1954,12 @@ describe('$http', function() {
 
           expect(incOutstandingRequestCountSpy).toHaveBeenCalledOnce();
           expect(completeOutstandingRequestSpy).toHaveBeenCalledOnce();
-
-          expect($exceptionHandler.errors).toEqual([jasmine.any(Error)]);
-          $exceptionHandler.errors = [];
-        })
+        }
       );
 
 
       it('should increment/decrement `outstandingRequestCount` on error in `transformResponse`',
-        inject(function($exceptionHandler) {
+        function() {
           expect(incOutstandingRequestCountSpy).not.toHaveBeenCalled();
           expect(completeOutstandingRequestSpy).not.toHaveBeenCalled();
 
@@ -1976,10 +1973,7 @@ describe('$http', function() {
 
           expect(incOutstandingRequestCountSpy).toHaveBeenCalledOnce();
           expect(completeOutstandingRequestSpy).toHaveBeenCalledOnce();
-
-          expect($exceptionHandler.errors).toEqual([jasmine.any(Error)]);
-          $exceptionHandler.errors = [];
-        })
+        }
       );
     });
 

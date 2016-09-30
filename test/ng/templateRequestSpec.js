@@ -115,19 +115,17 @@ describe('$templateRequest', function() {
   }));
 
   it('should throw an error when the template is not found',
-    inject(function($rootScope, $templateRequest, $httpBackend) {
+    inject(function($exceptionHandler, $httpBackend, $rootScope, $templateRequest) {
+      $httpBackend.expectGET('tpl.html').respond(404, '', {}, 'Not found');
 
-    $httpBackend.expectGET('tpl.html').respond(404, '', {}, 'Not found');
-
-    $templateRequest('tpl.html');
-
-    $rootScope.$digest();
-
-    expect(function() {
-      $rootScope.$digest();
+      $templateRequest('tpl.html').catch(noop);
       $httpBackend.flush();
-    }).toThrowMinErr('$compile', 'tpload', 'Failed to load template: tpl.html (HTTP status: 404 Not found)');
-  }));
+
+      expect($exceptionHandler.errors[0].message).toMatch(new RegExp(
+          '^\\[\\$compile:tpload] Failed to load template: tpl\\.html ' +
+          '\\(HTTP status: 404 Not found\\)'));
+    })
+  );
 
   it('should not throw when the template is not found and ignoreRequestError is true',
     inject(function($rootScope, $templateRequest, $httpBackend) {
