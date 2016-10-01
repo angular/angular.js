@@ -26,18 +26,18 @@ describe('ngMock', function() {
 
 
     it('should fake getLocalDateString method', function() {
-      var millenium = new Date('2000').getTime();
+      var millennium = new Date('2000').getTime();
 
-      // millenium in -3h
-      var t0 = new angular.mock.TzDate(-3, millenium);
+      // millennium in -3h
+      var t0 = new angular.mock.TzDate(-3, millennium);
       expect(t0.toLocaleDateString()).toMatch('2000');
 
-      // millenium in +0h
-      var t1 = new angular.mock.TzDate(0, millenium);
+      // millennium in +0h
+      var t1 = new angular.mock.TzDate(0, millennium);
       expect(t1.toLocaleDateString()).toMatch('2000');
 
-      // millenium in +3h
-      var t2 = new angular.mock.TzDate(3, millenium);
+      // millennium in +3h
+      var t2 = new angular.mock.TzDate(3, millennium);
       expect(t2.toLocaleDateString()).toMatch('1999');
     });
 

@@ -451,7 +451,7 @@ describe('Filter: orderBy', function() {
             return (isNerd1 && isNerd2) ? 0 : (isNerd1) ? -1 : 1;
           }
 
-          // No "nerd"; alpabetical order
+          // No "nerd"; alphabetical order
           return (v1 === v2) ? 0 : (v1 < v2) ? -1 : 1;
         };
 
