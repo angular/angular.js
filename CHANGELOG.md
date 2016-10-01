@@ -86,7 +86,7 @@ to make the fixes available to people that still need IE8 support._
   - secure `link[href]` as a `RESOURCE_URL`s in `$sce`
   ([f35f334b](https://github.com/angular/angular.js/commit/f35f334bd3197585bdf034f4b6d9ffa3122dac62),
    [#14687](https://github.com/angular/angular.js/issues/14687))
-  - properly sanitize `xlink:href` attribute interoplation
+  - properly sanitize `xlink:href` attribute interpolation
   ([f2fa1ed8](https://github.com/angular/angular.js/commit/f2fa1ed83d18d4e79a36f8c0db1c2524d762e513),
    [2687c261](https://github.com/angular/angular.js/commit/2687c26140585d9e3716f9f559390f5d8d598fdf))
 - **ngSanitize:** blacklist the attribute `usemap` as it can be used as a security exploit
@@ -569,7 +569,7 @@ for more info.
   - prevent assignment on constructor properties
   ([f47e2180](https://github.com/angular/angular.js/commit/f47e218006029f39b4785d820b430de3a0eebcb0),
    [#13417](https://github.com/angular/angular.js/issues/13417))
-  - preserve expensive checks when runnning `$eval` inside an expression
+  - preserve expensive checks when running `$eval` inside an expression
   ([96d62cc0](https://github.com/angular/angular.js/commit/96d62cc0fc77248d7e3ec4aa458bac0d3e072629))
   - copy `inputs` for expressions with expensive checks
   ([0b7fff30](https://github.com/angular/angular.js/commit/0b7fff303f46202bbae1ff3ca9d0e5fa76e0fc9a))
@@ -691,7 +691,7 @@ changes section for more information
   - handle boolean attributes in `@` bindings
   ([db5e0ffe](https://github.com/angular/angular.js/commit/db5e0ffe124ac588f01ef0fe79efebfa72f5eec7),
    [#13767](https://github.com/angular/angular.js/issues/13767), [#13769](https://github.com/angular/angular.js/issues/13769))
-- **$parse:** Preserve expensive checks when runnning $eval inside an expression
+- **$parse:** Preserve expensive checks when running $eval inside an expression
   ([acfda102](https://github.com/angular/angular.js/commit/acfda1022d23ecaea34bbc8931588a0715b3ab03))
 - **dateFilter:** follow the CLDR on pattern escape sequences
   ([1ab4e444](https://github.com/angular/angular.js/commit/1ab4e44443716c33cd857dcb1098d20580dbb0cc),

@@ -50,7 +50,7 @@
  *
  * * `ngSwitchWhen`: the case statement to match against. If match then this
  *   case will be displayed. If the same match appears multiple times, all the
- *   elements will be displayed. It is possible to associate mutiple values to
+ *   elements will be displayed. It is possible to associate multiple values to
  *   the same `ngSwitchWhen` by defining the optional attribute
  *   `ngSwitchWhenSeparator`. The separator will be used to split the value of
  *   the `ngSwitchWhen` attribute into multiple tokens, and the element will show
