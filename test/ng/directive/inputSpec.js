@@ -2954,7 +2954,7 @@ describe('input', function() {
         ['scheme-://example.com', true],
         ['scheme_://example.com', false],
 
-        // Vaidating `:` and `/` after `scheme`
+        // Validating `:` and `/` after `scheme`
         ['scheme//example.com', false],
         ['scheme:example.com', true],
         ['scheme:/example.com', true],
@@ -3017,10 +3017,10 @@ describe('input', function() {
         ['scheme://example.com/path?query#~`!@#$%^&*-_=+|\\;:\'",.?/()[]{}<>', true],
 
         // Validating miscellaneous
-        ['scheme://☺.✪.⌘.➡/䨹', true],
-        ['scheme://مثال.إختبار', true],
+        ['scheme://☺.�.⌘.➡/䨹', true],
+        ['scheme://مثال.إخ�بار', true],
         ['scheme://例子.测试', true],
-        ['scheme://उदाहरण.परीक्षा', true],
+        ['scheme://उदाहरण.�रीक्षा', true],
 
         // Legacy tests
         ['http://server:123/path', true],

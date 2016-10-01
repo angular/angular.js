@@ -16,7 +16,7 @@
  * String, etc).
  *
  * The `expression` can be a single predicate, or a list of predicates each serving as a tie-breaker
- * for the preceeding one. The `expression` is evaluated against each item and the output is used
+ * for the preceding one. The `expression` is evaluated against each item and the output is used
  * for comparing with other items.
  *
  * You can change the sorting order by setting `reverse` to `true`. By default, items are sorted in
