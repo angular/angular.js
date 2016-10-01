@@ -64,7 +64,7 @@ var jqLite;
  * By default, `ngMessages` will only display one message for a particular key/value collection at any time. If more
  * than one message (or error) key is currently true, then which message is shown is determined by the order of messages
  * in the HTML template code (messages declared first are prioritised). This mechanism means the developer does not have
- * to prioritise messages using custom JavaScript code.
+ * to prioritize messages using custom JavaScript code.
  *
  * Given the following error object for our example (which informs us that the field `myField` currently has both the
  * `required` and `email` errors):

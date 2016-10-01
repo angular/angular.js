@@ -4331,7 +4331,7 @@ describe('$compile', function() {
               element = $compile('<c1 prop="a + b"></c1>')($rootScope);
 
               // We add this watch after the compilation to ensure that it will run after the binding watchers
-              // therefore triggering the thing that this test is hoping to enfore
+              // therefore triggering the thing that this test is hoping to enforce
               $rootScope.$watch('a', function(val) { $rootScope.b = val * 2; });
 
               expect(log).toEqual([{prop: jasmine.objectContaining({currentValue: undefined})}]);

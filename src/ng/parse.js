@@ -17,14 +17,14 @@ var objectValueOf = {}.constructor.prototype.valueOf;
 
 // Sandboxing Angular Expressions
 // ------------------------------
-// Angular expressions are no longer sandboxed. So it is now even easier to access arbitary JS code by
+// Angular expressions are no longer sandboxed. So it is now even easier to access arbitrary JS code by
 // various means such as obtaining a reference to native JS functions like the Function constructor.
 //
 // As an example, consider the following Angular expression:
 //
 //   {}.toString.constructor('alert("evil JS code")')
 //
-// It is important to realise that if you create an expression from a string that contains user provided
+// It is important to realize that if you create an expression from a string that contains user provided
 // content then it is possible that your application contains a security vulnerability to an XSS style attack.
 //
 // See https://docs.angularjs.org/guide/security
@@ -1719,7 +1719,7 @@ function $ParseProvider() {
   * representation. It is expected for the function to return `true` or `false`, whether that
   * character is allowed or not.
   *
-  * Since this function will be called extensivelly, keep the implementation of these functions fast,
+  * Since this function will be called extensively, keep the implementation of these functions fast,
   * as the performance of these functions have a direct impact on the expressions parsing speed.
   *
   * @param {function=} identifierStart The function that will decide whether the given character is
