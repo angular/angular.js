@@ -379,8 +379,8 @@ function $HttpProvider() {
    **/
   var interceptorFactories = this.interceptors = [];
 
-  this.$get = ['$browser', '$httpBackend', '$$cookieReader', '$cacheFactory', '$rootScope', '$q', '$injector',
-      function($browser, $httpBackend, $$cookieReader, $cacheFactory, $rootScope, $q, $injector) {
+  this.$get = ['$browser', '$httpBackend', '$$cookieReader', '$cacheFactory', '$rootScope', '$q', '$injector', '$sce',
+      function($browser, $httpBackend, $$cookieReader, $cacheFactory, $rootScope, $q, $injector, $sce) {
 
     var defaultCache = $cacheFactory('$http');
 
@@ -881,6 +881,12 @@ function $HttpProvider() {
 </file>
 <file name="script.js">
   angular.module('httpExample', [])
+    .config(['$sceDelegateProvider', function($sceDelegateProvider) {
+      $sceDelegateProvider.resourceUrlWhitelist([
+        'self',
+        'https://angularjs.org/**'
+      ]);
+    }])
     .controller('FetchController', ['$scope', '$http', '$templateCache',
       function($scope, $http, $templateCache) {
         $scope.method = 'GET';
@@ -948,7 +954,7 @@ function $HttpProvider() {
         throw minErr('$http')('badreq', 'Http request configuration must be an object.  Received: {0}', requestConfig);
       }
 
-      if (!isString(requestConfig.url)) {
+      if (!isString($sce.valueOf(requestConfig.url))) {
         throw minErr('$http')('badreq', 'Http request configuration url must be a string.  Received: {0}', requestConfig.url);
       }
 
@@ -1249,11 +1255,13 @@ function $HttpProvider() {
           cache,
           cachedResp,
           reqHeaders = config.headers,
-          url = buildUrl(config.url, config.paramSerializer(config.params));
+          needsTrustedUrl = (lowercase(config.method) === 'jsonp'),
+          url = needsTrustedUrl ? $sce.getTrustedResourceUrl(config.url) : config.url;
+
+      url = buildUrl(url, config.paramSerializer(config.params));
 
       $http.pendingRequests.push(config);
       promise.then(removePendingReq, removePendingReq);
-
 
       if ((config.cache || defaults.cache) && config.cache !== false &&
           (config.method === 'GET' || config.method === 'JSONP')) {
@@ -1293,7 +1301,7 @@ function $HttpProvider() {
           reqHeaders[(config.xsrfHeaderName || defaults.xsrfHeaderName)] = xsrfValue;
         }
 
-        $httpBackend(config.method, url, reqData, done, reqHeaders, config.timeout,
+        $httpBackend(config.method, needsTrustedUrl ? $sce.trustAsResourceUrl(url) : url, reqData, done, reqHeaders, config.timeout,
             config.withCredentials, config.responseType,
             createApplyHandlers(config.eventHandlers),
             createApplyHandlers(config.uploadEventHandlers));

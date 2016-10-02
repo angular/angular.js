@@ -1018,6 +1018,14 @@ describe('$http', function() {
         $httpBackend.expect('JSONP', '/url', undefined, checkHeader('Custom', 'Header')).respond('');
         $http.jsonp('/url', {headers: {'Custom': 'Header'}});
       });
+
+      it('jsonp() should allow trusted url', inject(['$sce', function($sce) {
+        $httpBackend.expect('JSONP', '/url').respond('');
+        $http.jsonp($sce.trustAsResourceUrl('/url'));
+
+        $httpBackend.expect('JSONP', '/url?a=b').respond('');
+        $http.jsonp($sce.trustAsResourceUrl('/url'), {params: {a: 'b'}});
+      }]));
     });
 
 
