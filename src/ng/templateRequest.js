@@ -60,7 +60,7 @@ function $TemplateRequestProvider() {
    *
    * @property {number} totalPendingRequests total amount of pending template requests being downloaded.
    */
-  this.$get = ['$templateCache', '$http', '$q', '$sce', function($templateCache, $http, $q, $sce) {
+  this.$get = ['$templateCache', '$http', '$q', '$sce', '$window', function($templateCache, $http, $q, $sce, $window) {
 
     function handleRequestFn(tpl, ignoreRequestError) {
       handleRequestFn.totalPendingRequests++;
@@ -84,12 +84,16 @@ function $TemplateRequestProvider() {
         transformResponse = null;
       }
 
+      var isUnloading = false;
+      $window.addEventListener('beforeunload', beforeUnload);
+
       return $http.get(tpl, extend({
           cache: $templateCache,
           transformResponse: transformResponse
         }, httpOptions))
         .finally(function() {
           handleRequestFn.totalPendingRequests--;
+          $window.removeEventListener('beforeunload', beforeUnload);
         })
         .then(function(response) {
           $templateCache.put(tpl, response.data);
@@ -97,11 +101,20 @@ function $TemplateRequestProvider() {
         }, handleError);
 
       function handleError(resp) {
+        if (resp.status === -1 && isUnloading) {
+          // Return a pending promise so that the callback never executes
+          return $q(function() {});
+        }
+
         if (!ignoreRequestError) {
           throw $templateRequestMinErr('tpload', 'Failed to load template: {0} (HTTP status: {1} {2})',
             tpl, resp.status, resp.statusText);
         }
         return $q.reject(resp);
+      }
+
+      function beforeUnload() {
+        isUnloading = true;
       }
     }
 
