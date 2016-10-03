@@ -847,43 +847,7 @@ describe('ngModel', function() {
         expect(ctrl.$valid).toBe(true);
       });
 
-      // See also the test on L886.
-      fit('should demonstrate how synchronous validators work now', function() {
-        var curry = function(v) {
-          return function() {
-            return v;
-          };
-        };
-
-        var tester = function(v, e) {
-          ctrl.$modelValue = undefined;
-          ctrl.$validators.a = curry(v);
-
-          ctrl.$validate();
-          expect(ctrl.$valid).toBe(e);
-        };
-
-        // False tests
-        tester(false, false);
-        tester(undefined, undefined);
-        tester(null, true);
-        tester(0, true);
-        tester(NaN, true);
-        tester('', true);
-
-        // True tests
-        tester(true, true);
-        tester(1, true);
-        tester('0', true);
-        tester('false', true);
-        tester([], true);
-        tester({}, true);
-      });
-
-      // Flip this test with the one above (L851) as well as line L606 with L607 in `ngModel.js`
-      // The differences between the two would likely being a breaking change
-      // Though the feature it is breaking was undocumented.
-      xit('should demonstrate how synchronous validators will work after this change', function() {
+      it('should treat all responses as boolean for synchronous validators', function() {
         var curry = function(v) {
           return function() {
             return v;
