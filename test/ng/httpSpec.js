@@ -326,10 +326,8 @@ describe('$http', function() {
     });
 
     it('should accept a $sce trusted object for the request configuration url', function() {
-      expect(function() {
-        $httpBackend.expect('GET', '/url').respond('');
-        $http({url: $sce.trustAsResourceUrl('/url')});
-      }).not.toThrowMinErr('$http','badreq', 'Http request configuration url must be a string.  Received: false');
+      $httpBackend.expect('GET', '/url').respond('');
+      $http({url: $sce.trustAsResourceUrl('/url')});
     });
 
     it('should send GET requests if no method specified', function() {
@@ -622,7 +620,7 @@ describe('$http', function() {
           expect(r.headers()).toEqual(Object.create(null));
         });
 
-        $httpBackend.expect('JSONP', '/some').respond(200);
+        $httpBackend.expect('JSONP', '/some?callback=JSON_CALLBACK').respond(200);
         $http({url: $sce.trustAsResourceUrl('/some'), method: 'JSONP'}).then(callback);
         $httpBackend.flush();
         expect(callback).toHaveBeenCalledOnce();
@@ -1030,13 +1028,13 @@ describe('$http', function() {
       });
 
       it('should have jsonp()', function() {
-        $httpBackend.expect('JSONP', '/url').respond('');
+        $httpBackend.expect('JSONP', '/url?callback=JSON_CALLBACK').respond('');
         $http.jsonp($sce.trustAsResourceUrl('/url'));
       });
 
 
       it('jsonp() should allow config param', function() {
-        $httpBackend.expect('JSONP', '/url', undefined, checkHeader('Custom', 'Header')).respond('');
+        $httpBackend.expect('JSONP', '/url?callback=JSON_CALLBACK', undefined, checkHeader('Custom', 'Header')).respond('');
         $http.jsonp($sce.trustAsResourceUrl('/url'), {headers: {'Custom': 'Header'}});
       });
     });
@@ -1044,24 +1042,65 @@ describe('$http', function() {
     describe('jsonp trust', function() {
       it('should throw error if the url is not a trusted resource', function() {
         var success, error;
-        $http({method: 'JSONP', url: 'http://example.org/path?cb=JSON_CALLBACK'}).catch(
-          function(e) { error = e; }
-        );
+        $http({method: 'JSONP', url: 'http://example.org/path'})
+              .catch(function(e) { error = e; });
         $rootScope.$digest();
         expect(error.message).toContain('[$sce:insecurl]');
       });
 
       it('should accept an explicitly trusted resource url', function() {
-        $httpBackend.expect('JSONP', 'http://example.org/path?cb=JSON_CALLBACK').respond('');
-        $http({ method: 'JSONP', url: $sce.trustAsResourceUrl('http://example.org/path?cb=JSON_CALLBACK')});
+        $httpBackend.expect('JSONP', 'http://example.org/path?callback=JSON_CALLBACK').respond('');
+        $http({ method: 'JSONP', url: $sce.trustAsResourceUrl('http://example.org/path')});
       });
 
       it('jsonp() should accept explictly trusted urls', function() {
-        $httpBackend.expect('JSONP', '/url').respond('');
+        $httpBackend.expect('JSONP', '/url?callback=JSON_CALLBACK').respond('');
         $http({method: 'JSONP', url: $sce.trustAsResourceUrl('/url')});
 
-        $httpBackend.expect('JSONP', '/url?a=b').respond('');
+        $httpBackend.expect('JSONP', '/url?a=b&callback=JSON_CALLBACK').respond('');
         $http({method: 'JSONP', url: $sce.trustAsResourceUrl('/url'), params: {a: 'b'}});
+      });
+
+      it('should error if the URL contains a JSON_CALLBACK parameter', function() {
+        var error;
+        $http({ method: 'JSONP', url: $sce.trustAsResourceUrl('http://example.org/path?callback=JSON_CALLBACK')})
+            .catch(function(e) { error = e; });
+        $rootScope.$digest();
+        expect(error.message).toContain('[$http:badjsonp]');
+
+        error = undefined;
+        $http({ method: 'JSONP', url: $sce.trustAsResourceUrl('http://example.org/path?other=JSON_CALLBACK')})
+            .catch(function(e) { error = e; });
+        $rootScope.$digest();
+        expect(error.message).toContain('[$http:badjsonp]');
+      });
+
+      it('should error if a param contains a JSON_CALLBACK value', function() {
+        var error;
+        $http({ method: 'JSONP', url: $sce.trustAsResourceUrl('http://example.org/path'), params: {callback: 'JSON_CALLBACK'}})
+            .catch(function(e) { error = e; });
+        $rootScope.$digest();
+        expect(error.message).toContain('[$http:badjsonp]');
+
+        error = undefined;
+        $http({ method: 'JSONP', url: $sce.trustAsResourceUrl('http://example.org/path'), params: {other: 'JSON_CALLBACK'}})
+            .catch(function(e) { error = e; });
+        $rootScope.$digest();
+        expect(error.message).toContain('[$http:badjsonp]');
+      });
+
+      it('should error if there is already a param matching the jsonpCallbackParam key', function() {
+        var error;
+        $http({ method: 'JSONP', url: $sce.trustAsResourceUrl('http://example.org/path'), params: {callback: 'evilThing'}})
+            .catch(function(e) { error = e; });
+        $rootScope.$digest();
+        expect(error.message).toContain('[$http:badjsonp]');
+
+        error = undefined;
+        $http({ method: 'JSONP', jsonpCallbackParam: 'cb', url: $sce.trustAsResourceUrl('http://example.org/path'), params: {cb: 'evilThing'}})
+            .catch(function(e) { error = e; });
+        $rootScope.$digest();
+        expect(error.message).toContain('[$http:badjsonp]');
       });
     });
 
@@ -1524,11 +1563,11 @@ describe('$http', function() {
       }));
 
       it('should cache JSONP request when cache is provided', inject(function($rootScope) {
-        $httpBackend.expect('JSONP', '/url?cb=JSON_CALLBACK').respond('content');
-        $http({method: 'JSONP', url: $sce.trustAsResourceUrl('/url?cb=JSON_CALLBACK'), cache: cache});
+        $httpBackend.expect('JSONP', '/url?callback=JSON_CALLBACK').respond('content');
+        $http({method: 'JSONP', url: $sce.trustAsResourceUrl('/url'), cache: cache});
         $httpBackend.flush();
 
-        $http({method: 'JSONP', url: $sce.trustAsResourceUrl('/url?cb=JSON_CALLBACK'), cache: cache}).success(callback);
+        $http({method: 'JSONP', url: $sce.trustAsResourceUrl('/url'), cache: cache}).success(callback);
         $rootScope.$digest();
 
         expect(callback).toHaveBeenCalledOnce();
