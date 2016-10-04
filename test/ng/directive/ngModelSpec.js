@@ -847,7 +847,7 @@ describe('ngModel', function() {
         expect(ctrl.$valid).toBe(true);
       });
 
-      fit('should treat all responses as boolean for synchronous validators', function() {
+      it('should treat all responses as boolean for synchronous validators', function() {
         // var curry = function(v) {
         //   return function() {
         //     return v;
