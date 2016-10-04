@@ -848,18 +848,12 @@ describe('ngModel', function() {
       });
 
       it('should treat all responses as boolean for synchronous validators', function() {
-        // var curry = function(v) {
-        //   return function() {
-        //     return v;
-        //   };
-        // };
-
-        var expectValid = function(v, e) {
+        var expectValid = function(value, expected) {
           ctrl.$modelValue = undefined;
-          ctrl.$validators.a = valueFn(v);
+          ctrl.$validators.a = valueFn(value);
 
           ctrl.$validate();
-          expect(ctrl.$valid).toBe(e);
+          expect(ctrl.$valid).toBe(expected);
         };
 
         // False tests
