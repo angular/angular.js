@@ -847,6 +847,32 @@ describe('ngModel', function() {
         expect(ctrl.$valid).toBe(true);
       });
 
+      it('should treat all responses as boolean for synchronous validators', function() {
+        var expectValid = function(value, expected) {
+          ctrl.$modelValue = undefined;
+          ctrl.$validators.a = valueFn(value);
+
+          ctrl.$validate();
+          expect(ctrl.$valid).toBe(expected);
+        };
+
+        // False tests
+        expectValid(false, false);
+        expectValid(undefined, false);
+        expectValid(null, false);
+        expectValid(0, false);
+        expectValid(NaN, false);
+        expectValid('', false);
+
+        // True tests
+        expectValid(true, true);
+        expectValid(1, true);
+        expectValid('0', true);
+        expectValid('false', true);
+        expectValid([], true);
+        expectValid({}, true);
+      });
+
 
       it('should register invalid validations on the $error object', function() {
         var curry = function(v) {
