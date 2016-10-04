@@ -419,12 +419,14 @@ function qFactory(nextTick, exceptionHandler, errorOnUnhandledRejections) {
     },
 
     $$resolve: function(val) {
+      var then;
       var that = this;
       var done = false;
       try {
-        if ((isObject(val) || isFunction(val)) && isFunction(val.then)) {
+        if (isObject(val) || isFunction(val)) then = val.then;
+        if (isFunction(then)) {
           this.promise.$$state.status = -1;
-          val.then(resolvePromise, rejectPromise, simpleBind(this, this.notify));
+          then.call(val, resolvePromise, rejectPromise, simpleBind(this, this.notify));
         } else {
           this.promise.$$state.value = val;
           this.promise.$$state.status = 1;
