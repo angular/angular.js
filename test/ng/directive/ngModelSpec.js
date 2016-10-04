@@ -847,36 +847,36 @@ describe('ngModel', function() {
         expect(ctrl.$valid).toBe(true);
       });
 
-      it('should treat all responses as boolean for synchronous validators', function() {
-        var curry = function(v) {
-          return function() {
-            return v;
-          };
-        };
+      fit('should treat all responses as boolean for synchronous validators', function() {
+        // var curry = function(v) {
+        //   return function() {
+        //     return v;
+        //   };
+        // };
 
-        var tester = function(v, e) {
+        var expectValid = function(v, e) {
           ctrl.$modelValue = undefined;
-          ctrl.$validators.a = curry(v);
+          ctrl.$validators.a = valueFn(v);
 
           ctrl.$validate();
           expect(ctrl.$valid).toBe(e);
         };
 
         // False tests
-        tester(false, false);
-        tester(undefined, false);
-        tester(null, false);
-        tester(0, false);
-        tester(NaN, false);
-        tester('', false);
+        expectValid(false, false);
+        expectValid(undefined, false);
+        expectValid(null, false);
+        expectValid(0, false);
+        expectValid(NaN, false);
+        expectValid('', false);
 
         // True tests
-        tester(true, true);
-        tester(1, true);
-        tester('0', true);
-        tester('false', true);
-        tester([], true);
-        tester({}, true);
+        expectValid(true, true);
+        expectValid(1, true);
+        expectValid('0', true);
+        expectValid('false', true);
+        expectValid([], true);
+        expectValid({}, true);
       });
 
 
