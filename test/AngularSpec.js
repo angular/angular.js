@@ -1650,8 +1650,8 @@ describe('angular', function() {
 
       expect(function() {
         angularInit(appElement, angular.bootstrap);
-      }).toThrowError(
-        new RegExp('\\[\\$injector:modulerr] Failed to instantiate module doesntexist due to:\\n' +
+      }).toThrowMinErr('$injector', 'modulerr',
+        new RegExp('Failed to instantiate module doesntexist due to:\\n' +
                    '.*\\[\\$injector:nomod] Module \'doesntexist\' is not available! You either ' +
                    'misspelled the module name or forgot to load it\\.')
       );
@@ -1664,9 +1664,8 @@ describe('angular', function() {
 
       expect(function() {
         angular.bootstrap(element);
-      }).toThrowError(
-        /\[ng:btstrpd\] App Already Bootstrapped with this Element '&lt;div class="?ng\-scope"?( ng[0-9]+="?[0-9]+"?)?&gt;'/i
-      );
+      }).toThrowMinErr('ng', 'btstrpd',
+          /App Already Bootstrapped with this Element '&lt;div class="?ng-scope"?( ng\d+="?\d+"?)?&gt;'/i);
 
       dealoc(element);
     });
@@ -1676,9 +1675,7 @@ describe('angular', function() {
       angular.bootstrap(document.getElementsByTagName('html')[0]);
       expect(function() {
         angular.bootstrap(document);
-      }).toThrowError(
-        /\[ng:btstrpd\] App Already Bootstrapped with this Element 'document'/i
-      );
+      }).toThrowMinErr('ng', 'btstrpd', /App Already Bootstrapped with this Element 'document'/i);
 
       dealoc(document);
     });
@@ -1877,8 +1874,8 @@ describe('angular', function() {
 
       expect(function() {
         angular.bootstrap(element, ['doesntexist']);
-      }).toThrowError(
-          new RegExp('\\[\\$injector:modulerr\\] Failed to instantiate module doesntexist due to:\\n' +
+      }).toThrowMinErr('$injector', 'modulerr',
+          new RegExp('Failed to instantiate module doesntexist due to:\\n' +
                      '.*\\[\\$injector:nomod\\] Module \'doesntexist\' is not available! You either ' +
                      'misspelled the module name or forgot to load it\\.'));
 
