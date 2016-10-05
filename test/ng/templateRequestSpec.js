@@ -126,12 +126,10 @@ describe('$templateRequest', function() {
       $templateRequest('tpl.html').catch(function(reason) { err = reason; });
       $httpBackend.flush();
 
-      expect(err.message).toMatch(new RegExp(
-          '^\\[\\$compile:tpload] Failed to load template: tpl\\.html ' +
-          '\\(HTTP status: 404 Not Found\\)'));
-      expect($exceptionHandler.errors[0].message).toMatch(new RegExp(
-          '^\\[\\$compile:tpload] Failed to load template: tpl\\.html ' +
-          '\\(HTTP status: 404 Not Found\\)'));
+      expect(err).toEqualMinErr('$compile', 'tpload',
+          'Failed to load template: tpl.html (HTTP status: 404 Not Found)');
+      expect($exceptionHandler.errors[0]).toEqualMinErr('$compile', 'tpload',
+          'Failed to load template: tpl.html (HTTP status: 404 Not Found)');
     });
   });
 

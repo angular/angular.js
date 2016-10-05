@@ -844,8 +844,8 @@ describe('q', function() {
 
         expect(resolveSpy).not.toHaveBeenCalled();
         expect(rejectSpy).toHaveBeenCalled();
-        expect(rejectSpy.calls.argsFor(0)[0].message).
-            toMatch(/\[\$q:qcycle\] Expected promise to be resolved with value other than itself/);
+        expect(rejectSpy.calls.argsFor(0)[0]).toEqualMinErr('$q', 'qcycle',
+            'Expected promise to be resolved with value other than itself');
       });
 
 

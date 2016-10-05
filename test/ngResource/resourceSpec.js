@@ -1550,9 +1550,9 @@ describe('errors', function() {
 
     expect(successSpy).not.toHaveBeenCalled();
     expect(failureSpy).toHaveBeenCalled();
-    expect(failureSpy.calls.mostRecent().args[0]).toMatch(
-        /^\[\$resource:badcfg\] Error in resource configuration for action `query`\. Expected response to contain an array but got an object \(Request: GET \/Customer\/123\)/
-      );
+    expect(failureSpy.calls.mostRecent().args[0]).toEqualMinErr('$resource', 'badcfg',
+        'Error in resource configuration for action `query`. ' +
+        'Expected response to contain an array but got an object (Request: GET /Customer/123)');
   });
 
   it('should fail if action expects an array but response is an object', function() {
@@ -1567,9 +1567,9 @@ describe('errors', function() {
 
     expect(successSpy).not.toHaveBeenCalled();
     expect(failureSpy).toHaveBeenCalled();
-    expect(failureSpy.calls.mostRecent().args[0]).toMatch(
-        /^\[\$resource:badcfg\] Error in resource configuration for action `get`\. Expected response to contain an object but got an array \(Request: GET \/Customer\/123\)/
-      );
+    expect(failureSpy.calls.mostRecent().args[0]).toEqualMinErr('$resource', 'badcfg',
+        'Error in resource configuration for action `get`. ' +
+        'Expected response to contain an object but got an array (Request: GET /Customer/123)');
   });
 });
 

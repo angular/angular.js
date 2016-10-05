@@ -1862,8 +1862,8 @@ describe('$compile', function() {
             $httpBackend.flush();
 
             expect(sortedHtml(element)).toBe('<div><b class="hello"></b></div>');
-            expect($exceptionHandler.errors[0].message).toMatch(
-                /^\[\$compile:tpload] Failed to load template: hello\.html/);
+            expect($exceptionHandler.errors[0]).toEqualMinErr('$compile', 'tpload',
+                'Failed to load template: hello.html');
           })
         );
 
@@ -1885,9 +1885,9 @@ describe('$compile', function() {
             $compile('<div><div class="sync async"></div></div>');
             $httpBackend.flush();
 
-            expect($exceptionHandler.errors[0].message).toMatch(new RegExp(
-                '^\\[\\$compile:multidir] Multiple directives \\[async, sync] asking for ' +
-                'template on: <div class="sync async">'));
+            expect($exceptionHandler.errors[0]).toEqualMinErr('$compile', 'multidir',
+                'Multiple directives [async, sync] asking for template on: ' +
+                '<div class="sync async">');
           });
         });
 
@@ -2096,15 +2096,17 @@ describe('$compile', function() {
             $templateCache.put('template.html', 'dada');
             $compile('<p template></p>');
             $rootScope.$digest();
-            expect($exceptionHandler.errors.pop().message).
-                toMatch(/\[\$compile:tplrt\] Template for directive 'template' must have exactly one root element\. template\.html/);
+            expect($exceptionHandler.errors.pop()).toEqualMinErr('$compile', 'tplrt',
+                'Template for directive \'template\' must have exactly one root element. ' +
+                'template.html');
 
             // multi root
             $templateCache.put('template.html', '<div></div><div></div>');
             $compile('<p template></p>');
             $rootScope.$digest();
-            expect($exceptionHandler.errors.pop().message).
-                toMatch(/\[\$compile:tplrt\] Template for directive 'template' must have exactly one root element\. template\.html/);
+            expect($exceptionHandler.errors.pop()).toEqualMinErr('$compile', 'tplrt',
+                'Template for directive \'template\' must have exactly one root element. ' +
+                'template.html');
 
             // ws is ok
             $templateCache.put('template.html', '  <div></div> \n');
@@ -2676,9 +2678,9 @@ describe('$compile', function() {
             compile('<div class="tiscope-a; scope-b"></div>');
             $httpBackend.flush();
 
-            expect($exceptionHandler.errors[0].message).toMatch(new RegExp(
-                '^\\[\\$compile:multidir] Multiple directives \\[scopeB, tiscopeA] ' +
-                'asking for new/isolated scope on: <div class="tiscope-a; scope-b ng-scope">'));
+            expect($exceptionHandler.errors[0]).toEqualMinErr('$compile', 'multidir',
+                'Multiple directives [scopeB, tiscopeA] asking for new/isolated scope on: ' +
+                '<div class="tiscope-a; scope-b ng-scope">');
           })
         );
 
@@ -4628,7 +4630,8 @@ describe('$compile', function() {
               // Update val to trigger the unstable onChanges, which will result in an error
               $rootScope.$apply('a = 42');
               expect($exceptionHandler.errors.length).toEqual(1);
-              expect($exceptionHandler.errors[0].toString()).toContain('[$compile:infchng] 10 $onChanges() iterations reached.');
+              expect($exceptionHandler.errors[0]).
+                  toEqualMinErr('$compile', 'infchng', '10 $onChanges() iterations reached.');
             });
           });
 
@@ -8821,16 +8824,19 @@ describe('$compile', function() {
 
           it('should throw on an ng-transclude element inside no transclusion directive', function() {
             inject(function($rootScope, $compile) {
-              // we need to do this because different browsers print empty attributes differently
+              var error;
+
               try {
                 $compile('<div><div ng-transclude></div></div>')($rootScope);
               } catch (e) {
-                expect(e.message).toMatch(new RegExp(
-                    '^\\[ngTransclude:orphan\\] ' +
-                        'Illegal use of ngTransclude directive in the template! ' +
-                        'No parent directive that requires a transclusion found\\. ' +
-                        'Element: <div ng-transclude.+'));
+                error = e;
               }
+
+              expect(error).toEqualMinErr('ngTransclude', 'orphan',
+                  'Illegal use of ngTransclude directive in the template! ' +
+                  'No parent directive that requires a transclusion found. ' +
+                  'Element: <div ng-transclude');
+              // we need to do this because different browsers print empty attributes differently
             });
           });
 
@@ -8898,10 +8904,10 @@ describe('$compile', function() {
               $rootScope.$digest();
 
               expect($exceptionHandler.errors[0][1]).toBe('<div class="bar" ng-transclude="">');
-              expect($exceptionHandler.errors[0][0].message).toMatch(new RegExp(
-                  '^\\[ngTransclude:orphan] Illegal use of ngTransclude directive in the ' +
-                  'template! No parent directive that requires a transclusion found. Element: ' +
-                  '<div class="bar" ng-transclude="">'));
+              expect($exceptionHandler.errors[0][0]).toEqualMinErr('ngTransclude', 'orphan',
+                  'Illegal use of ngTransclude directive in the template! ' +
+                  'No parent directive that requires a transclusion found. ' +
+                  'Element: <div class="bar" ng-transclude="">');
             });
           });
 
@@ -9717,9 +9723,8 @@ describe('$compile', function() {
               $compile('<div template first></div>');
               $httpBackend.flush();
 
-              expect($exceptionHandler.errors[0].message).toMatch(new RegExp(
-                  '^\\[\\$compile:multidir] Multiple directives \\[first, second] asking for ' +
-                  'transclusion on: <p '));
+              expect($exceptionHandler.errors[0]).toEqualMinErr('$compile', 'multidir',
+                  'Multiple directives [first, second] asking for transclusion on: <p ');
             });
           });
 

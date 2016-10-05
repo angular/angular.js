@@ -793,9 +793,9 @@ describe('$route', function() {
 
         expect(onSuccess).not.toHaveBeenCalled();
         expect(onError).toHaveBeenCalled();
-        expect(onError.calls.mostRecent().args[3].message).toMatch(new RegExp(
-            '^\\[\\$sce:insecurl] Blocked loading resource from url not allowed by ' +
-            '\\$sceDelegate policy\\.  URL: http:\\/\\/example\\.com\\/foo\\.html'));
+        expect(onError.calls.mostRecent().args[3]).toEqualMinErr('$sce', 'insecurl',
+            'Blocked loading resource from url not allowed by $sceDelegate policy.  ' +
+            'URL: http://example.com/foo.html');
       });
     });
 
@@ -891,7 +891,8 @@ describe('$route', function() {
         $rootScope.$digest();
 
         $httpBackend.flush();
-        expect($exceptionHandler.errors.pop().message).toContain('[$compile:tpload] Failed to load template: r1.html');
+        expect($exceptionHandler.errors.pop()).
+            toEqualMinErr('$compile', 'tpload', 'Failed to load template: r1.html');
 
         $httpBackend.expectGET('r2.html').respond('');
         $location.path('/r2');
