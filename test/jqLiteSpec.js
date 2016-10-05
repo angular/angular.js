@@ -1687,7 +1687,7 @@ describe('jqLite', function() {
       aElem.on('click', noop);
       expect(function() {
         aElem.off('click', noop, '.test');
-      }).toThrowError(/\[jqLite:offargs\]/);
+      }).toThrowMinErr('jqLite', 'offargs');
     });
   });
 
