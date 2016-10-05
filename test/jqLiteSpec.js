@@ -751,6 +751,17 @@ describe('jqLite', function() {
       elm.attr('multiple', '');
       expect(elm[0].getAttribute('multiple')).toBe('multiple');
     });
+
+    it('should not fail on elements without the getAttribute method', function() {
+      forEach([window, document], function(node) {
+        expect(function() {
+          var elem = jqLite(node);
+          elem.attr('foo');
+          elem.attr('bar', 'baz');
+          elem.attr('bar');
+        }).not.toThrow();
+      });
+    });
   });
 
 

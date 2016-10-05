@@ -640,7 +640,8 @@ forEach({
   attr: function(element, name, value) {
     var ret;
     var nodeType = element.nodeType;
-    if (nodeType === NODE_TYPE_TEXT || nodeType === NODE_TYPE_ATTRIBUTE || nodeType === NODE_TYPE_COMMENT) {
+    if (nodeType === NODE_TYPE_TEXT || nodeType === NODE_TYPE_ATTRIBUTE || nodeType === NODE_TYPE_COMMENT ||
+      !element.getAttribute) {
       return;
     }
 
@@ -655,7 +656,7 @@ forEach({
       } else {
         element.setAttribute(name, isBooleanAttr ? lowercasedName : value);
       }
-    } else if (element.getAttribute) {
+    } else {
       // getter
 
       ret = element.getAttribute(name);
