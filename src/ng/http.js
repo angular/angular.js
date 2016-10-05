@@ -346,6 +346,8 @@ function $HttpProvider() {
    * @name $httpProvider#useLegacyPromiseExtensions
    * @description
    *
+   * _Deprecated_ - This method will be removed in v1.6.0 along with the legacy promise methods.
+   *
    * Configure `$http` service to return promises without the shorthand methods `success` and `error`.
    * This should be used to make sure that applications work without these methods.
    *
