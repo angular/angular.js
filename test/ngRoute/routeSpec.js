@@ -793,9 +793,9 @@ describe('$route', function() {
 
         expect(onSuccess).not.toHaveBeenCalled();
         expect(onError).toHaveBeenCalled();
-        expect(onError.calls.mostRecent().args[3].message).toMatch(new RegExp(
-            '^\\[\\$sce:insecurl] Blocked loading resource from url not allowed by ' +
-            '\\$sceDelegate policy\\.  URL: http:\\/\\/example\\.com\\/foo\\.html'));
+        expect(onError.calls.mostRecent().args[3]).toEqualMinErr('$sce', 'insecurl',
+            'Blocked loading resource from url not allowed by $sceDelegate policy.  ' +
+            'URL: http://example.com/foo.html');
       });
     });
 
