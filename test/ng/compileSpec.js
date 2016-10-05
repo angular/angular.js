@@ -2081,15 +2081,17 @@ describe('$compile', function() {
             $templateCache.put('template.html', 'dada');
             $compile('<p template></p>');
             $rootScope.$digest();
-            expect($exceptionHandler.errors.pop().message).
-                toMatch(/\[\$compile:tplrt\] Template for directive 'template' must have exactly one root element\. template\.html/);
+            expect($exceptionHandler.errors.pop()).toEqualMinErr('$compile', 'tplrt',
+                'Template for directive \'template\' must have exactly one root element. ' +
+                'template.html');
 
             // multi root
             $templateCache.put('template.html', '<div></div><div></div>');
             $compile('<p template></p>');
             $rootScope.$digest();
-            expect($exceptionHandler.errors.pop().message).
-                toMatch(/\[\$compile:tplrt\] Template for directive 'template' must have exactly one root element\. template\.html/);
+            expect($exceptionHandler.errors.pop()).toEqualMinErr('$compile', 'tplrt',
+                'Template for directive \'template\' must have exactly one root element. ' +
+                'template.html');
 
             // ws is ok
             $templateCache.put('template.html', '  <div></div> \n');
@@ -4584,7 +4586,8 @@ describe('$compile', function() {
               // Update val to trigger the unstable onChanges, which will result in an error
               $rootScope.$apply('a = 42');
               expect($exceptionHandler.errors.length).toEqual(1);
-              expect($exceptionHandler.errors[0].toString()).toContain('[$compile:infchng] 10 $onChanges() iterations reached.');
+              expect($exceptionHandler.errors[0]).
+                  toEqualMinErr('$compile', 'infchng', '10 $onChanges() iterations reached.');
             });
           });
 
@@ -8146,8 +8149,8 @@ describe('$compile', function() {
               $rootScope.x = 'root';
               $rootScope.$apply();
               expect(element.text()).toEqual('W:iso-1-2;T:root-2-3;');
-          expect(jqLite(element.find('span')[0]).text()).toEqual('T:root-2-3');
-          expect(jqLite(element.find('span')[1]).text()).toEqual(';');
+              expect(jqLite(element.find('span')[0]).text()).toEqual('T:root-2-3');
+              expect(jqLite(element.find('span')[1]).text()).toEqual(';');
             });
           });
 
@@ -8667,16 +8670,19 @@ describe('$compile', function() {
 
           it('should throw on an ng-transclude element inside no transclusion directive', function() {
             inject(function($rootScope, $compile) {
-              // we need to do this because different browsers print empty attributes differently
+              var error;
+
               try {
                 $compile('<div><div ng-transclude></div></div>')($rootScope);
               } catch (e) {
-                expect(e.message).toMatch(new RegExp(
-                    '^\\[ngTransclude:orphan\\] ' +
-                        'Illegal use of ngTransclude directive in the template! ' +
-                        'No parent directive that requires a transclusion found\\. ' +
-                        'Element: <div ng-transclude.+'));
+                error = e;
               }
+
+              expect(error).toEqualMinErr('ngTransclude', 'orphan',
+                  'Illegal use of ngTransclude directive in the template! ' +
+                  'No parent directive that requires a transclusion found. ' +
+                  'Element: <div ng-transclude');
+              // we need to do this because different browsers print empty attributes differently
             });
           });
 

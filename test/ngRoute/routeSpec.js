@@ -829,7 +829,8 @@ describe('$route', function() {
         $rootScope.$digest();
 
         $httpBackend.flush();
-        expect($exceptionHandler.errors.pop().message).toContain('[$compile:tpload] Failed to load template: r1.html');
+        expect($exceptionHandler.errors.pop()).
+            toEqualMinErr('$compile', 'tpload', 'Failed to load template: r1.html');
 
         $httpBackend.expectGET('r2.html').respond('');
         $location.path('/r2');
