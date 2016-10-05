@@ -4630,7 +4630,8 @@ describe('$compile', function() {
               // Update val to trigger the unstable onChanges, which will result in an error
               $rootScope.$apply('a = 42');
               expect($exceptionHandler.errors.length).toEqual(1);
-              expect($exceptionHandler.errors[0].toString()).toContain('[$compile:infchng] 10 $onChanges() iterations reached.');
+              expect($exceptionHandler.errors[0]).
+                  toEqualMinErr('$compile', 'infchng', '10 $onChanges() iterations reached.');
             });
           });
 

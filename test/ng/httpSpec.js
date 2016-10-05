@@ -1045,7 +1045,7 @@ describe('$http', function() {
         $http({method: 'JSONP', url: 'http://example.org/path'})
               .catch(function(e) { error = e; });
         $rootScope.$digest();
-        expect(error.message).toContain('[$sce:insecurl]');
+        expect(error).toEqualMinErr('$sce', 'insecurl');
       });
 
       it('should accept an explicitly trusted resource url', function() {
@@ -1066,13 +1066,13 @@ describe('$http', function() {
         $http({ method: 'JSONP', url: $sce.trustAsResourceUrl('http://example.org/path?callback=JSON_CALLBACK')})
             .catch(function(e) { error = e; });
         $rootScope.$digest();
-        expect(error.message).toContain('[$http:badjsonp]');
+        expect(error).toEqualMinErr('$http', 'badjsonp');
 
         error = undefined;
         $http({ method: 'JSONP', url: $sce.trustAsResourceUrl('http://example.org/path?other=JSON_CALLBACK')})
             .catch(function(e) { error = e; });
         $rootScope.$digest();
-        expect(error.message).toContain('[$http:badjsonp]');
+        expect(error).toEqualMinErr('$http', 'badjsonp');
       });
 
       it('should error if a param contains a JSON_CALLBACK value', function() {
@@ -1080,13 +1080,13 @@ describe('$http', function() {
         $http({ method: 'JSONP', url: $sce.trustAsResourceUrl('http://example.org/path'), params: {callback: 'JSON_CALLBACK'}})
             .catch(function(e) { error = e; });
         $rootScope.$digest();
-        expect(error.message).toContain('[$http:badjsonp]');
+        expect(error).toEqualMinErr('$http', 'badjsonp');
 
         error = undefined;
         $http({ method: 'JSONP', url: $sce.trustAsResourceUrl('http://example.org/path'), params: {other: 'JSON_CALLBACK'}})
             .catch(function(e) { error = e; });
         $rootScope.$digest();
-        expect(error.message).toContain('[$http:badjsonp]');
+        expect(error).toEqualMinErr('$http', 'badjsonp');
       });
 
       it('should error if there is already a param matching the jsonpCallbackParam key', function() {
@@ -1094,13 +1094,13 @@ describe('$http', function() {
         $http({ method: 'JSONP', url: $sce.trustAsResourceUrl('http://example.org/path'), params: {callback: 'evilThing'}})
             .catch(function(e) { error = e; });
         $rootScope.$digest();
-        expect(error.message).toContain('[$http:badjsonp]');
+        expect(error).toEqualMinErr('$http', 'badjsonp');
 
         error = undefined;
         $http({ method: 'JSONP', jsonpCallbackParam: 'cb', url: $sce.trustAsResourceUrl('http://example.org/path'), params: {cb: 'evilThing'}})
             .catch(function(e) { error = e; });
         $rootScope.$digest();
-        expect(error.message).toContain('[$http:badjsonp]');
+        expect(error).toEqualMinErr('$http', 'badjsonp');
       });
     });
 
