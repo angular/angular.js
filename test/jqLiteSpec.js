@@ -2323,4 +2323,19 @@ describe('jqLite', function() {
       expect(onLoadCallback).toHaveBeenCalledOnce();
     });
   });
+
+
+  describe('bind/unbind', function() {
+    if (!_jqLiteMode) return;
+
+    it('should alias bind() to on()', function() {
+      var element = jqLite(a);
+      expect(element.bind).toBe(element.on);
+    });
+
+    it('should alias unbind() to off()', function() {
+      var element = jqLite(a);
+      expect(element.unbind).toBe(element.off);
+    });
+  });
 });
