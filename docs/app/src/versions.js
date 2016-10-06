@@ -8,6 +8,10 @@ angular.module('versions', [])
 
   for (var i = 0, minor = NaN; i < NG_VERSIONS.length; i++) {
     var version = NG_VERSIONS[i];
+    if (version.isSnapshot) {
+      version.isLatest = true;
+      continue;
+    }
     // NaN will give false here
     if (minor <= version.minor) {
       continue;
