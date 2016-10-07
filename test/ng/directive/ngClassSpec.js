@@ -461,6 +461,47 @@ describe('ngClass', function() {
     expect(e2.hasClass('odd')).toBeFalsy();
   }));
 
+
+  it('should add/remove the correct classes when the expression and `$index` change simultaneously',
+    inject(function($compile, $rootScope) {
+      element = $compile(
+          '<div>' +
+            '<div ng-class-odd="foo"></div>' +
+            '<div ng-class-even="foo"></div>' +
+          '</div>')($rootScope);
+      var odd = element.children().eq(0);
+      var even = element.children().eq(1);
+
+      $rootScope.$apply('$index = 0; foo = "class1"');
+
+      expect(odd).toHaveClass('class1');
+      expect(odd).not.toHaveClass('class2');
+      expect(even).not.toHaveClass('class1');
+      expect(even).not.toHaveClass('class2');
+
+      $rootScope.$apply('$index = 1; foo = "class2"');
+
+      expect(odd).not.toHaveClass('class1');
+      expect(odd).not.toHaveClass('class2');
+      expect(even).not.toHaveClass('class1');
+      expect(even).toHaveClass('class2');
+
+      $rootScope.$apply('foo = "class1"');
+
+      expect(odd).not.toHaveClass('class1');
+      expect(odd).not.toHaveClass('class2');
+      expect(even).toHaveClass('class1');
+      expect(even).not.toHaveClass('class2');
+
+      $rootScope.$apply('$index = 2');
+
+      expect(odd).toHaveClass('class1');
+      expect(odd).not.toHaveClass('class2');
+      expect(even).not.toHaveClass('class1');
+      expect(even).not.toHaveClass('class2');
+    })
+  );
+
   it('should support mixed array/object variable with a mutating object',
     inject(function($rootScope, $compile) {
       element = $compile('<div ng-class="classVar"></div>')($rootScope);
