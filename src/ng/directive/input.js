@@ -2002,13 +2002,16 @@ var inputDirective = ['$browser', '$sniffer', '$filter', '$parse',
   return {
     restrict: 'E',
     require: ['?ngModel'],
-    link: {
-      pre: function(scope, element, attr, ctrls) {
-        if (ctrls[0]) {
-          (inputType[lowercase(attr.type)] || inputType.text)(scope, element, attr, ctrls[0], $sniffer,
-                                                              $browser, $filter, $parse);
+    compile: function(tElement, tAttr) {
+      if (lowercase(tAttr.type) === 'hidden') tAttr.$set('autocomplete', 'off');
+      return {
+        pre: function(scope, element, attr, ctrls) {
+          if (ctrls[0]) {
+            (inputType[lowercase(attr.type)] || inputType.text)(scope, element, attr, ctrls[0], $sniffer,
+                                                                $browser, $filter, $parse);
+          }
         }
-      }
+      };
     }
   };
 }];
