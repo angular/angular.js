@@ -8,12 +8,14 @@
 
 function classDirective(name, selector) {
   name = 'ngClass' + name;
+  var indexWatchExpression;
 
-  return [function() {
+  return ['$parse', function($parse) {
     return {
       restrict: 'AC',
       link: function(scope, element, attr) {
         var classCounts = element.data('$classCounts');
+        var oldModulo = true;
         var oldVal;
 
         if (!classCounts) {
@@ -24,18 +26,22 @@ function classDirective(name, selector) {
         }
 
         if (name !== 'ngClass') {
-          scope.$watch('$index', function($index, old$index) {
-            /* eslint-disable no-bitwise */
-            var mod = $index & 1;
-            if (mod !== (old$index & 1)) {
-              var classes = arrayClasses(oldVal);
-              if (mod === selector) {
-                addClasses(classes);
-              } else {
-                removeClasses(classes);
-              }
+          if (!indexWatchExpression) {
+            indexWatchExpression = $parse('$index', function moduloTwo($index) {
+              // eslint-disable-next-line no-bitwise
+              return $index & 1;
+            });
+          }
+
+          scope.$watch(indexWatchExpression, function(newModulo) {
+            var classes = arrayClasses(oldVal);
+            if (newModulo === selector) {
+              addClasses(classes);
+            } else {
+              removeClasses(classes);
             }
-            /* eslint-enable */
+
+            oldModulo = newModulo;
           });
         }
 
@@ -77,8 +83,7 @@ function classDirective(name, selector) {
         }
 
         function ngClassWatchAction(newVal) {
-          // eslint-disable-next-line no-bitwise
-          if (selector === true || (scope.$index & 1) === selector) {
+          if (oldModulo === selector) {
             var newClasses = arrayClasses(newVal || []);
             if (!oldVal) {
               addClasses(newClasses);
