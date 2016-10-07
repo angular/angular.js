@@ -749,7 +749,7 @@ The **Lifecycle Hooks** that can be implemented as instance methods on the **Com
 
 * `$routerCanReuse` : called to to determine whether a **Component** can be reused across **Route Definitions**
   that match the same type of **Component**, or whether to destroy and instantiate a new **Component** every time.
-* `$routerOnActivate` / `$routeOnReuse` : called by the **Router** at the end of a successful navigation. Only
+* `$routerOnActivate` / `$routerOnReuse` : called by the **Router** at the end of a successful navigation. Only
   one of `$routerOnActivate` and `$routerOnReuse` will be called depending upon the result of a call to
   `$routerCanReuse`.
 * `$routerCanDeactivate` : called by the **Router** to determine if a **Component** can be removed as part of a
