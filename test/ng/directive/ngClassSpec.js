@@ -574,6 +574,76 @@ fdescribe('ngClass', function() {
       expect(element).not.toHaveClass('orange');
     })
   );
+
+  describe('large objects', function() {
+    var getProp;
+    var veryLargeObj;
+
+    beforeEach(function() {
+      getProp = jasmine.createSpy('getProp');
+      veryLargeObj = {};
+
+      Object.defineProperty(veryLargeObj, 'prop', {
+        get: getProp,
+        enumerable: true
+      });
+    });
+
+    it('should not be copied when using an expression', inject(function($compile, $rootScope) {
+      element = $compile('<div ng-class="fooClass"></div>')($rootScope);
+      $rootScope.fooClass = {foo: veryLargeObj};
+      $rootScope.$digest();
+
+      expect(element).toHaveClass('foo');
+      expect(getProp).not.toHaveBeenCalled();
+    }));
+
+    it('should not be copied when using a literal', inject(function($compile, $rootScope) {
+      element = $compile('<div ng-class="{foo: veryLargeObj}"></div>')($rootScope);
+      $rootScope.veryLargeObj = veryLargeObj;
+      $rootScope.$digest();
+
+      expect(element).toHaveClass('foo');
+      expect(getProp).not.toHaveBeenCalled();
+    }));
+
+    it('should not be copied when inside an array', inject(function($compile, $rootScope) {
+      element = $compile('<div ng-class="[{foo: veryLargeObj}]"></div>')($rootScope);
+      $rootScope.veryLargeObj = veryLargeObj;
+      $rootScope.$digest();
+
+      expect(element).toHaveClass('foo');
+      expect(getProp).not.toHaveBeenCalled();
+    }));
+
+    it('should not be copied when using one-time binding', inject(function($compile, $rootScope) {
+      element = $compile('<div ng-class="::{foo: veryLargeObj, bar: bar}"></div>')($rootScope);
+      $rootScope.veryLargeObj = veryLargeObj;
+      $rootScope.$digest();
+
+      expect(element).toHaveClass('foo');
+      expect(element).not.toHaveClass('bar');
+      expect(getProp).not.toHaveBeenCalled();
+
+      $rootScope.$apply('veryLargeObj.bar = "bar"');
+
+      expect(element).toHaveClass('foo');
+      expect(element).not.toHaveClass('bar');
+      expect(getProp).not.toHaveBeenCalled();
+
+      $rootScope.$apply('bar = "bar"');
+
+      expect(element).toHaveClass('foo');
+      expect(element).toHaveClass('bar');
+      expect(getProp).not.toHaveBeenCalled();
+
+      $rootScope.$apply('veryLargeObj.bar = "qux"');
+
+      expect(element).toHaveClass('foo');
+      expect(element).toHaveClass('bar');
+      expect(getProp).not.toHaveBeenCalled();
+    }));
+  });
 });
 
 describe('ngClass animations', function() {
