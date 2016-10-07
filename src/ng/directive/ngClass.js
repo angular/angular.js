@@ -14,9 +14,16 @@ function classDirective(name, selector) {
     return {
       restrict: 'AC',
       link: function(scope, element, attr) {
+        var expression = attr[name].trim();
+        var isOneTime = (expression.charAt(0) === ':') && (expression.charAt(1) === ':');
+
+        var watchInterceptor = isOneTime ? toFlatValue : toClassString;
+        var watchExpression = $parse(expression, watchInterceptor);
+        var watchAction = isOneTime ? ngClassOneTimeWatchAction : ngClassWatchAction;
+
         var classCounts = element.data('$classCounts');
         var oldModulo = true;
-        var oldVal;
+        var oldClassString;
 
         if (!classCounts) {
           // Use createMap() to prevent class assumptions involving property
@@ -33,34 +40,39 @@ function classDirective(name, selector) {
             });
           }
 
-          scope.$watch(indexWatchExpression, function(newModulo) {
-            var classes = arrayClasses(oldVal);
-            if (newModulo === selector) {
-              addClasses(classes);
-            } else {
-              removeClasses(classes);
-            }
-
-            oldModulo = newModulo;
-          });
+          scope.$watch(indexWatchExpression, ngClassIndexWatchAction);
         }
 
-        scope.$watch(attr[name], ngClassWatchAction, true);
+        scope.$watch(watchExpression, watchAction, isOneTime);
 
-        function addClasses(classes) {
-          var newClasses = digestClassCounts(classes, 1);
-          attr.$addClass(newClasses);
+        function addClasses(classString) {
+          classString = digestClassCounts(split(classString), 1);
+          attr.$addClass(classString);
         }
 
-        function removeClasses(classes) {
-          var newClasses = digestClassCounts(classes, -1);
-          attr.$removeClass(newClasses);
+        function removeClasses(classString) {
+          classString = digestClassCounts(split(classString), -1);
+          attr.$removeClass(classString);
         }
 
-        function digestClassCounts(classes, count) {
+        function updateClasses(oldClassString, newClassString) {
+          var oldClassArray = split(oldClassString);
+          var newClassArray = split(newClassString);
+
+          var toRemoveArray = arrayDifference(oldClassArray, newClassArray);
+          var toAddArray = arrayDifference(newClassArray, oldClassArray);
+
+          var toRemoveString = digestClassCounts(toRemoveArray, -1);
+          var toAddString = digestClassCounts(toAddArray, 1);
+
+          attr.$addClass(toAddString);
+          attr.$removeClass(toRemoveString);
+        }
+
+        function digestClassCounts(classArray, count) {
           var classesToUpdate = [];
 
-          forEach(classes, function(className) {
+          forEach(classArray, function(className) {
             if (count > 0 || classCounts[className]) {
               classCounts[className] = (classCounts[className] || 0) + count;
               if (classCounts[className] === +(count > 0)) {
@@ -72,31 +84,33 @@ function classDirective(name, selector) {
           return classesToUpdate.join(' ');
         }
 
-        function updateClasses(oldClasses, newClasses) {
-          var toAdd = arrayDifference(newClasses, oldClasses);
-          var toRemove = arrayDifference(oldClasses, newClasses);
-          toAdd = digestClassCounts(toAdd, 1);
-          toRemove = digestClassCounts(toRemove, -1);
+        function ngClassIndexWatchAction(newModulo) {
+          // This watch-action should run before the `ngClass[OneTime]WatchAction()`, thus it
+          // adds/removes `oldClassString`. If the `ngClass` expression has changed as well, the
+          // `ngClass[OneTime]WatchAction()` will update the classes.
+          if (newModulo === selector) {
+            addClasses(oldClassString);
+          } else {
+            removeClasses(oldClassString);
+          }
 
-          attr.$addClass(toAdd);
-          attr.$removeClass(toRemove);
+          oldModulo = newModulo;
         }
 
-        function ngClassWatchAction(newVal) {
+        function ngClassOneTimeWatchAction(newClassValue) {
+          var newClassString = toClassString(newClassValue);
+
+          if (newClassString !== oldClassString) {
+            ngClassWatchAction(newClassString);
+          }
+        }
+
+        function ngClassWatchAction(newClassString) {
           if (oldModulo === selector) {
-            var newClasses = arrayClasses(newVal || []);
-            if (!oldVal) {
-              addClasses(newClasses);
-            } else if (!equals(newVal,oldVal)) {
-              var oldClasses = arrayClasses(oldVal);
-              updateClasses(oldClasses, newClasses);
-            }
+            updateClasses(oldClassString, newClassString);
           }
-          if (isArray(newVal)) {
-            oldVal = newVal.map(function(v) { return shallowCopy(v); });
-          } else {
-            oldVal = shallowCopy(newVal);
-          }
+
+          oldClassString = newClassString;
         }
       }
     };
@@ -121,24 +135,50 @@ function classDirective(name, selector) {
     return values;
   }
 
-  function arrayClasses(classVal) {
-    var classes = [];
-    if (isArray(classVal)) {
-      forEach(classVal, function(v) {
-        classes = classes.concat(arrayClasses(v));
-      });
-      return classes;
-    } else if (isString(classVal)) {
-      return classVal.split(' ');
-    } else if (isObject(classVal)) {
-      forEach(classVal, function(v, k) {
-        if (v) {
-          classes = classes.concat(k.split(' '));
-        }
-      });
-      return classes;
+  function split(classString) {
+    return classString && classString.split(' ');
+  }
+
+  function toClassString(classValue) {
+    var classString = classValue;
+
+    if (isArray(classValue)) {
+      classString = classValue.map(toClassString).join(' ');
+    } else if (isObject(classValue)) {
+      classString = Object.keys(classValue).
+        filter(function(key) { return classValue[key]; }).
+        join(' ');
     }
-    return classVal;
+
+    return classString;
+  }
+
+  function toFlatValue(classValue) {
+    var flatValue = classValue;
+
+    if (isArray(classValue)) {
+      flatValue = classValue.map(toFlatValue);
+    } else if (isObject(classValue)) {
+      var hasUndefined = false;
+
+      flatValue = Object.keys(classValue).filter(function(key) {
+        var value = classValue[key];
+
+        if (!hasUndefined && isUndefined(value)) {
+          hasUndefined = true;
+        }
+
+        return value;
+      });
+
+      if (hasUndefined) {
+        // Prevent the `oneTimeLiteralWatchInterceptor` from unregistering
+        // the watcher, by including at least one `undefined` value.
+        flatValue.push(undefined);
+      }
+    }
+
+    return flatValue;
   }
 }
 
