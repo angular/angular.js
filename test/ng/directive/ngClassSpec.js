@@ -568,46 +568,71 @@ describe('ngClass', function() {
   );
 
   describe('large objects', function() {
+    var getProp;
+    var veryLargeObj;
 
-    var verylargeobject, getProp;
     beforeEach(function() {
       getProp = jasmine.createSpy('getProp');
-      verylargeobject = {};
-      Object.defineProperty(verylargeobject, 'prop', {
+      veryLargeObj = {};
+
+      Object.defineProperty(veryLargeObj, 'prop', {
         get: getProp,
         enumerable: true
       });
     });
 
-    it('should not be copied if static', inject(function($rootScope, $compile) {
-      element = $compile('<div ng-class="{foo: verylargeobject}"></div>')($rootScope);
-      $rootScope.verylargeobject = verylargeobject;
-      $rootScope.$digest();
-
-      expect(getProp).not.toHaveBeenCalled();
-    }));
-
-    it('should not be copied if dynamic', inject(function($rootScope, $compile) {
-      $rootScope.fooClass = {foo: verylargeobject};
+    it('should not be copied when using an expression', inject(function($compile, $rootScope) {
       element = $compile('<div ng-class="fooClass"></div>')($rootScope);
+      $rootScope.fooClass = {foo: veryLargeObj};
       $rootScope.$digest();
 
+      expect(element).toHaveClass('foo');
       expect(getProp).not.toHaveBeenCalled();
     }));
 
-    it('should not be copied if inside an array', inject(function($rootScope, $compile) {
-      element = $compile('<div ng-class="[{foo: verylargeobject}]"></div>')($rootScope);
-      $rootScope.verylargeobject = verylargeobject;
+    it('should not be copied when using a literal', inject(function($compile, $rootScope) {
+      element = $compile('<div ng-class="{foo: veryLargeObj}"></div>')($rootScope);
+      $rootScope.veryLargeObj = veryLargeObj;
       $rootScope.$digest();
 
+      expect(element).toHaveClass('foo');
       expect(getProp).not.toHaveBeenCalled();
     }));
 
-    it('should not be copied when one-time binding', inject(function($rootScope, $compile) {
-      element = $compile('<div ng-class="::{foo: verylargeobject}"></div>')($rootScope);
-      $rootScope.verylargeobject = verylargeobject;
+    it('should not be copied when inside an array', inject(function($compile, $rootScope) {
+      element = $compile('<div ng-class="[{foo: veryLargeObj}]"></div>')($rootScope);
+      $rootScope.veryLargeObj = veryLargeObj;
       $rootScope.$digest();
 
+      expect(element).toHaveClass('foo');
+      expect(getProp).not.toHaveBeenCalled();
+    }));
+
+    it('should not be copied when using one-time binding', inject(function($compile, $rootScope) {
+      element = $compile('<div ng-class="::{foo: veryLargeObj, bar: bar}"></div>')($rootScope);
+      $rootScope.veryLargeObj = veryLargeObj;
+      $rootScope.$digest();
+
+      expect(element).toHaveClass('foo');
+      expect(element).not.toHaveClass('bar');
+      expect(getProp).not.toHaveBeenCalled();
+
+      $rootScope.$apply('veryLargeObj.bar = "bar"');
+
+      expect(element).toHaveClass('foo');
+      expect(element).not.toHaveClass('bar');
+      expect(getProp).not.toHaveBeenCalled();
+
+      $rootScope.$apply('bar = "bar"');
+
+      expect(element).toHaveClass('foo');
+      expect(element).toHaveClass('bar');
+      expect(getProp).not.toHaveBeenCalled();
+
+      $rootScope.$apply('veryLargeObj.bar = "qux"');
+
+      expect(element).toHaveClass('foo');
+      expect(element).toHaveClass('bar');
       expect(getProp).not.toHaveBeenCalled();
     }));
   });
