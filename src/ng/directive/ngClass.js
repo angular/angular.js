@@ -8,18 +8,14 @@
 
 function classDirective(name, selector) {
   name = 'ngClass' + name;
-  return ['$animate', function($animate) {
+
+  return [function() {
     return {
       restrict: 'AC',
       link: function(scope, element, attr) {
         var oldVal;
 
         scope.$watch(attr[name], ngClassWatchAction, true);
-
-        attr.$observe('class', function(value) {
-          ngClassWatchAction(scope.$eval(attr[name]));
-        });
-
 
         if (name !== 'ngClass') {
           scope.$watch('$index', function($index, old$index) {
@@ -69,12 +65,9 @@ function classDirective(name, selector) {
           var toRemove = arrayDifference(oldClasses, newClasses);
           toAdd = digestClassCounts(toAdd, 1);
           toRemove = digestClassCounts(toRemove, -1);
-          if (toAdd && toAdd.length) {
-            $animate.addClass(element, toAdd);
-          }
-          if (toRemove && toRemove.length) {
-            $animate.removeClass(element, toRemove);
-          }
+
+          attr.$addClass(toAdd);
+          attr.$removeClass(toRemove);
         }
 
         function ngClassWatchAction(newVal) {
