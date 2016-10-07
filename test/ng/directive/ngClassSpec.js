@@ -244,21 +244,34 @@ describe('ngClass', function() {
   }));
 
 
-  it('should allow ngClassOdd/Even on the same element with overlapping classes', inject(function($rootScope, $compile, $animate) {
-      var className;
-
-      element = $compile('<ul><li ng-repeat="i in [0,1,2]" ng-class-odd="\'same odd\'" ng-class-even="\'same even\'"></li><ul>')($rootScope);
+  it('should allow ngClassOdd/Even on the same element with overlapping classes',
+    inject(function($compile, $rootScope) {
+      element = $compile(
+          '<ul>' +
+            '<li ng-repeat="i in [0,1,2]" ' +
+                'ng-class-odd="\'same odd\'" ' +
+                'ng-class-even="\'same even\'">' +
+            '</li>' +
+          '<ul>')($rootScope);
       $rootScope.$digest();
-      var e1 = jqLite(element[0].childNodes[1]);
-      var e2 = jqLite(element[0].childNodes[5]);
-      expect(e1.hasClass('same')).toBeTruthy();
-      expect(e1.hasClass('odd')).toBeTruthy();
-      expect(e2.hasClass('same')).toBeTruthy();
-      expect(e2.hasClass('odd')).toBeTruthy();
+
+      var e1 = element.children().eq(0);
+      var e2 = element.children().eq(1);
+      var e3 = element.children().eq(2);
+
+      expect(e1).toHaveClass('same');
+      expect(e1).toHaveClass('odd');
+      expect(e1).not.toHaveClass('even');
+      expect(e2).toHaveClass('same');
+      expect(e2).not.toHaveClass('odd');
+      expect(e2).toHaveClass('even');
+      expect(e3).toHaveClass('same');
+      expect(e3).toHaveClass('odd');
+      expect(e3).not.toHaveClass('even');
     })
   );
 
-  it('should allow ngClass with overlapping classes', inject(function($rootScope, $compile, $animate) {
+  it('should allow ngClass with overlapping classes', inject(function($rootScope, $compile) {
     element = $compile('<div ng-class="{\'same yes\': test, \'same no\': !test}"></div>')($rootScope);
     $rootScope.$digest();
 
@@ -266,9 +279,7 @@ describe('ngClass', function() {
     expect(element).not.toHaveClass('yes');
     expect(element).toHaveClass('no');
 
-    $rootScope.$apply(function() {
-      $rootScope.test = true;
-    });
+    $rootScope.$apply('test = true');
 
     expect(element).toHaveClass('same');
     expect(element).toHaveClass('yes');
@@ -300,37 +311,79 @@ describe('ngClass', function() {
   }));
 
 
-  it('should reapply ngClass when interpolated class attribute changes', inject(function($rootScope, $compile) {
-    element = $compile('<div class="one {{cls}} three" ng-class="{four: four}"></div>')($rootScope);
+  it('should reapply ngClass when interpolated class attribute changes',
+    inject(function($compile, $rootScope) {
+      element = $compile(
+        '<div>' +
+          '<div class="one {{two}} three" ng-class="{five: five}"></div>' +
+          '<div class="one {{two}} three {{four}}" ng-class="{five: five}"></div>' +
+        '</div>')($rootScope);
+      var e1 = element.children().eq(0);
+      var e2 = element.children().eq(1);
 
-    $rootScope.$apply(function() {
-      $rootScope.cls = 'two';
-      $rootScope.four = true;
-    });
-    expect(element).toHaveClass('one');
-    expect(element).toHaveClass('two'); // interpolated
-    expect(element).toHaveClass('three');
-    expect(element).toHaveClass('four');
+      $rootScope.$apply('two = "two"; five = true');
 
-    $rootScope.$apply(function() {
-      $rootScope.cls = 'too';
-    });
-    expect(element).toHaveClass('one');
-    expect(element).toHaveClass('too'); // interpolated
-    expect(element).toHaveClass('three');
-    expect(element).toHaveClass('four'); // should still be there
-    expect(element.hasClass('two')).toBeFalsy();
+      expect(e1).toHaveClass('one');
+      expect(e1).toHaveClass('two');
+      expect(e1).toHaveClass('three');
+      expect(e1).not.toHaveClass('four');
+      expect(e1).toHaveClass('five');
+      expect(e2).toHaveClass('one');
+      expect(e2).toHaveClass('two');
+      expect(e2).toHaveClass('three');
+      expect(e2).not.toHaveClass('four');
+      expect(e2).toHaveClass('five');
 
-    $rootScope.$apply(function() {
-      $rootScope.cls = 'to';
-    });
-    expect(element).toHaveClass('one');
-    expect(element).toHaveClass('to'); // interpolated
-    expect(element).toHaveClass('three');
-    expect(element).toHaveClass('four'); // should still be there
-    expect(element.hasClass('two')).toBeFalsy();
-    expect(element.hasClass('too')).toBeFalsy();
-  }));
+      $rootScope.$apply('two = "another-two"');
+
+      expect(e1).toHaveClass('one');
+      expect(e1).not.toHaveClass('two');
+      expect(e1).toHaveClass('another-two');
+      expect(e1).toHaveClass('three');
+      expect(e1).not.toHaveClass('four');
+      expect(e1).toHaveClass('five');
+      expect(e2).toHaveClass('one');
+      expect(e2).not.toHaveClass('two');
+      expect(e2).toHaveClass('another-two');
+      expect(e2).toHaveClass('three');
+      expect(e2).not.toHaveClass('four');
+      expect(e2).toHaveClass('five');
+
+      $rootScope.$apply('two = "two-more"; four = "four"');
+
+      expect(e1).toHaveClass('one');
+      expect(e1).not.toHaveClass('two');
+      expect(e1).not.toHaveClass('another-two');
+      expect(e1).toHaveClass('two-more');
+      expect(e1).toHaveClass('three');
+      expect(e1).not.toHaveClass('four');
+      expect(e1).toHaveClass('five');
+      expect(e2).toHaveClass('one');
+      expect(e2).not.toHaveClass('two');
+      expect(e2).not.toHaveClass('another-two');
+      expect(e2).toHaveClass('two-more');
+      expect(e2).toHaveClass('three');
+      expect(e2).toHaveClass('four');
+      expect(e2).toHaveClass('five');
+
+      $rootScope.$apply('five = false');
+
+      expect(e1).toHaveClass('one');
+      expect(e1).not.toHaveClass('two');
+      expect(e1).not.toHaveClass('another-two');
+      expect(e1).toHaveClass('two-more');
+      expect(e1).toHaveClass('three');
+      expect(e1).not.toHaveClass('four');
+      expect(e1).not.toHaveClass('five');
+      expect(e2).toHaveClass('one');
+      expect(e2).not.toHaveClass('two');
+      expect(e2).not.toHaveClass('another-two');
+      expect(e2).toHaveClass('two-more');
+      expect(e2).toHaveClass('three');
+      expect(e2).toHaveClass('four');
+      expect(e2).not.toHaveClass('five');
+    })
+  );
 
 
   it('should not mess up class value due to observing an interpolated class attribute', inject(function($rootScope, $compile) {
