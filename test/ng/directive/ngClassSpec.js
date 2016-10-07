@@ -477,6 +477,62 @@ fdescribe('ngClass', function() {
     })
   );
 
+  it('should do value stabilization as expected when one-time binding',
+    inject(function($rootScope, $compile) {
+      element = $compile('<div ng-class="::className"></div>')($rootScope);
+      $rootScope.$digest();
+
+      $rootScope.className = 'foo';
+      $rootScope.$digest();
+      expect(element).toHaveClass('foo');
+
+      $rootScope.className = 'bar';
+      $rootScope.$digest();
+      expect(element).toHaveClass('foo');
+    })
+  );
+
+  it('should remove the watcher when static array one-time binding',
+    inject(function($rootScope, $compile) {
+      element = $compile('<div ng-class="::[className]"></div>')($rootScope);
+      $rootScope.$digest();
+
+      $rootScope.$apply('className = "foo"');
+      expect(element).toHaveClass('foo');
+
+      $rootScope.$apply('className = "bar"');
+      expect(element).toHaveClass('foo');
+      expect(element).not.toHaveClass('bar');
+    })
+  );
+
+  it('should do value remove the watcher when static map one-time binding',
+    inject(function($rootScope, $compile) {
+      element = $compile('<div ng-class="::{foo: fooPresent}"></div>')($rootScope);
+      $rootScope.$digest();
+
+      $rootScope.fooPresent = true;
+      $rootScope.$digest();
+      expect(element).toHaveClass('foo');
+
+      $rootScope.fooPresent = false;
+      $rootScope.$digest();
+      expect(element).toHaveClass('foo');
+    })
+  );
+
+  it('should track changes of mutating object inside an array',
+    inject(function($rootScope, $compile) {
+      $rootScope.classVar = [{orange: true}];
+      element = $compile('<div ng-class="classVar"></div>')($rootScope);
+      $rootScope.$digest();
+
+      $rootScope.classVar[0].orange = false;
+      $rootScope.$digest();
+
+      expect(element).not.toHaveClass('orange');
+    })
+  );
 });
 
 describe('ngClass animations', function() {
