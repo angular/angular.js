@@ -104,6 +104,9 @@ function classDirective(name, selector) {
 
   // Helpers
   function arrayDifference(tokens1, tokens2) {
+    if (!tokens1 || !tokens1.length) return [];
+    if (!tokens2 || !tokens2.length) return tokens1;
+
     var values = [];
 
     outer:
@@ -114,6 +117,7 @@ function classDirective(name, selector) {
       }
       values.push(token);
     }
+
     return values;
   }
 
