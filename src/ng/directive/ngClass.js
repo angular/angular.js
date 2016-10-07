@@ -13,7 +13,15 @@ function classDirective(name, selector) {
     return {
       restrict: 'AC',
       link: function(scope, element, attr) {
+        var classCounts = element.data('$classCounts');
         var oldVal;
+
+        if (!classCounts) {
+          // Use createMap() to prevent class assumptions involving property
+          // names in Object.prototype
+          classCounts = createMap();
+          element.data('$classCounts', classCounts);
+        }
 
         if (name !== 'ngClass') {
           scope.$watch('$index', function($index, old$index) {
@@ -44,10 +52,8 @@ function classDirective(name, selector) {
         }
 
         function digestClassCounts(classes, count) {
-          // Use createMap() to prevent class assumptions involving property
-          // names in Object.prototype
-          var classCounts = element.data('$classCounts') || createMap();
           var classesToUpdate = [];
+
           forEach(classes, function(className) {
             if (count > 0 || classCounts[className]) {
               classCounts[className] = (classCounts[className] || 0) + count;
@@ -56,7 +62,7 @@ function classDirective(name, selector) {
               }
             }
           });
-          element.data('$classCounts', classCounts);
+
           return classesToUpdate.join(' ');
         }
 
