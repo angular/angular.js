@@ -14,8 +14,6 @@ function classDirective(name, selector) {
       link: function(scope, element, attr) {
         var oldVal;
 
-        scope.$watch(attr[name], ngClassWatchAction, true);
-
         attr.$observe('class', function(value) {
           ngClassWatchAction(scope.$eval(attr[name]));
         });
@@ -26,7 +24,7 @@ function classDirective(name, selector) {
             /* eslint-disable no-bitwise */
             var mod = $index & 1;
             if (mod !== (old$index & 1)) {
-              var classes = arrayClasses(scope.$eval(attr[name]));
+              var classes = arrayClasses(oldVal);
               if (mod === selector) {
                 addClasses(classes);
               } else {
@@ -36,6 +34,8 @@ function classDirective(name, selector) {
             /* eslint-enable */
           });
         }
+
+        scope.$watch(attr[name], ngClassWatchAction, true);
 
         function addClasses(classes) {
           var newClasses = digestClassCounts(classes, 1);
