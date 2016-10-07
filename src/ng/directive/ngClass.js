@@ -14,6 +14,7 @@ function classDirective(name, selector) {
       restrict: 'AC',
       link: function(scope, element, attr) {
         var classCounts = element.data('$classCounts');
+        var oldModulo = true;
         var oldVal;
 
         if (!classCounts) {
@@ -24,18 +25,20 @@ function classDirective(name, selector) {
         }
 
         if (name !== 'ngClass') {
-          scope.$watch('$index', function($index, old$index) {
-            /* eslint-disable no-bitwise */
-            var mod = $index & 1;
-            if (mod !== (old$index & 1)) {
+          scope.$watch('$index', function($index) {
+            // eslint-disable-next-line no-bitwise
+            var newModulo = $index & 1;
+
+            if (newModulo !== oldModulo) {
               var classes = arrayClasses(oldVal);
-              if (mod === selector) {
+              if (newModulo === selector) {
                 addClasses(classes);
               } else {
                 removeClasses(classes);
               }
+
+              oldModulo = newModulo;
             }
-            /* eslint-enable */
           });
         }
 
@@ -77,8 +80,7 @@ function classDirective(name, selector) {
         }
 
         function ngClassWatchAction(newVal) {
-          // eslint-disable-next-line no-bitwise
-          if (selector === true || (scope.$index & 1) === selector) {
+          if (oldModulo === selector) {
             var newClasses = arrayClasses(newVal || []);
             if (!oldVal) {
               addClasses(newClasses);
