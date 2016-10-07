@@ -17,11 +17,6 @@ function classDirective(name, selector) {
 
         scope.$watch(attr[name], ngClassWatchAction, true);
 
-        attr.$observe('class', function(value) {
-          ngClassWatchAction(scope.$eval(attr[name]));
-        });
-
-
         if (name !== 'ngClass') {
           scope.$watch('$index', function($index, old$index) {
             /* eslint-disable no-bitwise */

@@ -311,37 +311,79 @@ fdescribe('ngClass', function() {
   }));
 
 
-  it('should reapply ngClass when interpolated class attribute changes', inject(function($rootScope, $compile) {
-    element = $compile('<div class="one {{cls}} three" ng-class="{four: four}"></div>')($rootScope);
+  it('should reapply ngClass when interpolated class attribute changes',
+    inject(function($compile, $rootScope) {
+      element = $compile(
+        '<div>' +
+          '<div class="one {{two}} three" ng-class="{five: five}"></div>' +
+          '<div class="one {{two}} three {{four}}" ng-class="{five: five}"></div>' +
+        '</div>')($rootScope);
+      var e1 = element.children().eq(0);
+      var e2 = element.children().eq(1);
 
-    $rootScope.$apply(function() {
-      $rootScope.cls = 'two';
-      $rootScope.four = true;
-    });
-    expect(element).toHaveClass('one');
-    expect(element).toHaveClass('two'); // interpolated
-    expect(element).toHaveClass('three');
-    expect(element).toHaveClass('four');
+      $rootScope.$apply('two = "two"; five = true');
 
-    $rootScope.$apply(function() {
-      $rootScope.cls = 'too';
-    });
-    expect(element).toHaveClass('one');
-    expect(element).toHaveClass('too'); // interpolated
-    expect(element).toHaveClass('three');
-    expect(element).toHaveClass('four'); // should still be there
-    expect(element.hasClass('two')).toBeFalsy();
+      expect(e1).toHaveClass('one');
+      expect(e1).toHaveClass('two');
+      expect(e1).toHaveClass('three');
+      expect(e1).not.toHaveClass('four');
+      expect(e1).toHaveClass('five');
+      expect(e2).toHaveClass('one');
+      expect(e2).toHaveClass('two');
+      expect(e2).toHaveClass('three');
+      expect(e2).not.toHaveClass('four');
+      expect(e2).toHaveClass('five');
 
-    $rootScope.$apply(function() {
-      $rootScope.cls = 'to';
-    });
-    expect(element).toHaveClass('one');
-    expect(element).toHaveClass('to'); // interpolated
-    expect(element).toHaveClass('three');
-    expect(element).toHaveClass('four'); // should still be there
-    expect(element.hasClass('two')).toBeFalsy();
-    expect(element.hasClass('too')).toBeFalsy();
-  }));
+      $rootScope.$apply('two = "too"');
+
+      expect(e1).toHaveClass('one');
+      expect(e1).not.toHaveClass('two');
+      expect(e1).toHaveClass('too');
+      expect(e1).toHaveClass('three');
+      expect(e1).not.toHaveClass('four');
+      expect(e1).toHaveClass('five');
+      expect(e2).toHaveClass('one');
+      expect(e2).not.toHaveClass('two');
+      expect(e2).toHaveClass('too');
+      expect(e2).toHaveClass('three');
+      expect(e2).not.toHaveClass('four');
+      expect(e2).toHaveClass('five');
+
+      $rootScope.$apply('two = "to"; four = "four"');
+
+      expect(e1).toHaveClass('one');
+      expect(e1).not.toHaveClass('two');
+      expect(e1).not.toHaveClass('too');
+      expect(e1).toHaveClass('to');
+      expect(e1).toHaveClass('three');
+      expect(e1).not.toHaveClass('four');
+      expect(e1).toHaveClass('five');
+      expect(e2).toHaveClass('one');
+      expect(e2).not.toHaveClass('two');
+      expect(e2).not.toHaveClass('too');
+      expect(e2).toHaveClass('to');
+      expect(e2).toHaveClass('three');
+      expect(e2).toHaveClass('four');
+      expect(e2).toHaveClass('five');
+
+      $rootScope.$apply('five = false');
+
+      expect(e1).toHaveClass('one');
+      expect(e1).not.toHaveClass('two');
+      expect(e1).not.toHaveClass('too');
+      expect(e1).toHaveClass('to');
+      expect(e1).toHaveClass('three');
+      expect(e1).not.toHaveClass('four');
+      expect(e1).not.toHaveClass('five');
+      expect(e2).toHaveClass('one');
+      expect(e2).not.toHaveClass('two');
+      expect(e2).not.toHaveClass('too');
+      expect(e2).toHaveClass('to');
+      expect(e2).toHaveClass('three');
+      expect(e2).toHaveClass('four');
+      expect(e2).not.toHaveClass('five');
+    })
+  );
 
 
   it('should not mess up class value due to observing an interpolated class attribute', inject(function($rootScope, $compile) {
