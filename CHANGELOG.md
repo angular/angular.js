@@ -137,6 +137,9 @@ content, which is a security risk.
   - cope with `$onChanges` hooks throwing
   ([3749c858](https://github.com/angular/angular.js/commit/3749c85829406ca57cc5729e80696c7f34134068),
    [#14444](https://github.com/angular/angular.js/issues/14444), [#14463](https://github.com/angular/angular.js/issues/14463))
+- **$location:** initialize `$$absUrl` to empty string
+  ([294d6793f](https://github.com/angular/angular.js/commit/294d6793fd0e0781a257e35a165e0c6fde082fe7),
+   [#11091](https://github.com/angular/angular.js/issues/11091), [#13565](https://github.com/angular/angular.js/issues/13565), [#14488](https://github.com/angular/angular.js/issues/14488))
 - **$parse:** allow arguments to contain filter chains
   ([cc6dcb4b](https://github.com/angular/angular.js/commit/cc6dcb4bc28aadff4f62d76d6451b0f80b928e69),
    [#4175](https://github.com/angular/angular.js/issues/4175), [#4168](https://github.com/angular/angular.js/issues/4168), [#14720](https://github.com/angular/angular.js/issues/14720))
@@ -1071,26 +1074,20 @@ report any regressions or other issues you find as soon as possible.
 
 - **$parse:** provide a mechanism to access the locals object, `$locals`
   ([0ea53503](https://github.com/angular/angular.js/commit/0ea535035a3a1a992948490c3533bffb83235052))
-
 - **$resource:** add proper support for cancelling requests, `$cancelRequest()`
   ([98528be3](https://github.com/angular/angular.js/commit/98528be311b48269ba0e15ba4e3e2ad9b89693a9),
    [#9332](https://github.com/angular/angular.js/issues/9332), [#13050](https://github.com/angular/angular.js/issues/13050), [#13058](https://github.com/angular/angular.js/issues/13058), [#13210](https://github.com/angular/angular.js/issues/13210))
-
 - **ngAnimate:** provide ng-[event]-prepare class for structural animations
   ([6e18b50a](https://github.com/angular/angular.js/commit/6e18b50a5b168848cc526081b0a2a16075ee44bd))
-
 - **ngLocale:** add support for standalone months
   ([96c73a06](https://github.com/angular/angular.js/commit/96c73a0672f0e46ae9285c482b057bd03ce135ba),
    [#3744](https://github.com/angular/angular.js/issues/3744), [#10247](https://github.com/angular/angular.js/issues/10247), [#12642](https://github.com/angular/angular.js/issues/12642), [#12844](https://github.com/angular/angular.js/issues/12844))
-
 - **ngMock:** destroy $rootScope after each test
   ([b75c0d8d](https://github.com/angular/angular.js/commit/b75c0d8d0549261ece551210a11d8be48c3ab3cc),
    [#13433](https://github.com/angular/angular.js/issues/13433))
-
 - **ngTransclude:** don't overwrite the contents with an unfilled optional slot
   ([0812af49](https://github.com/angular/angular.js/commit/0812af49bd4f4fad4067603ff64dbe720bd6e3e5),
    [#13426](https://github.com/angular/angular.js/issues/13426))
-
 - **ngView:** reference resolved locals in scope, `resolveAs: '$resolve'`
   ([983b0598](https://github.com/angular/angular.js/commit/983b0598121a8c5a3a51a30120e114d7e3085d4d),
    [#13400](https://github.com/angular/angular.js/issues/13400))
@@ -1107,30 +1104,24 @@ report any regressions or other issues you find as soon as possible.
   - support merging special attribute names in `replace` directives
   ([a5ff651a](https://github.com/angular/angular.js/commit/a5ff651a59933c2c43b81642454ee458f98e1401),
    [#13317](https://github.com/angular/angular.js/issues/13317), [#13318](https://github.com/angular/angular.js/issues/13318))
-
 - **$http:** throw if url passed is not a string
   ([6628b4f1](https://github.com/angular/angular.js/commit/6628b4f1e5835d997290881c6ba394547883a516),
    [#12925](https://github.com/angular/angular.js/issues/12925), [#13444](https://github.com/angular/angular.js/issues/13444))
-
 - **$parse:**
   - prevent assignment on constructor properties
   ([5a674f3b](https://github.com/angular/angular.js/commit/5a674f3bb9d1118d11b333e3b966c01a571c09e6),
    [#13417](https://github.com/angular/angular.js/issues/13417))
   - handle interceptors with `undefined` expressions
   ([4473b81c](https://github.com/angular/angular.js/commit/4473b81cdaf16c5509ac53d80b9bdfb0a7ac5f30))
-
 - **$sanitize:** blacklist SVG `<use>` elements
   ([7a668cdd](https://github.com/angular/angular.js/commit/7a668cdd7d08a7016883eb3c671cbcd586223ae8),
    [#13453](https://github.com/angular/angular.js/issues/13453))
-
 - **formatNumber:** cope with large and small number corner cases
   ([6a0686d4](https://github.com/angular/angular.js/commit/6a0686d434c41445c50b2d9669073802ede77b3b),
    [#13394](https://github.com/angular/angular.js/issues/13394), [#8674](https://github.com/angular/angular.js/issues/8674), [#12709](https://github.com/angular/angular.js/issues/12709), [#8705](https://github.com/angular/angular.js/issues/8705), [#12707](https://github.com/angular/angular.js/issues/12707), [#10246](https://github.com/angular/angular.js/issues/10246), [#10252](https://github.com/angular/angular.js/issues/10252))
-
 - **input:** add missing chars to URL validation regex
   ([e4bb8387](https://github.com/angular/angular.js/commit/e4bb8387952069cca9da06bbc5c87ae576c2bf6f),
    [#13379](https://github.com/angular/angular.js/issues/13379), [#13460](https://github.com/angular/angular.js/issues/13460))
-
 - **ngAnimate:**
   - consider options.delay value for closing timeout
     ([7ffb2d3c](https://github.com/angular/angular.js/commit/7ffb2d3c17643303a51eb4e324c365af70fe3824),
@@ -1144,15 +1135,12 @@ report any regressions or other issues you find as soon as possible.
   - do not alter the provided options data
   ([193153c3](https://github.com/angular/angular.js/commit/193153c3d391338a859cb7788ef32a8af05fb920),
    [#13040](https://github.com/angular/angular.js/issues/13040), [#13175](https://github.com/angular/angular.js/issues/13175))
-
 - **ngMock:** clear out `$providerInjector` after each test
   ([a72c12bd](https://github.com/angular/angular.js/commit/a72c12bd7052da9f60da74625409374342b50b73),
    [#13397](https://github.com/angular/angular.js/issues/13397), [#13416](https://github.com/angular/angular.js/issues/13416))
-
 - **ngOptions:** don't $dirty multiple select after compilation
   ([c7a2028a](https://github.com/angular/angular.js/commit/c7a2028ab38cdfc4d956c50b6f41cbccef302165),
    [#13211](https://github.com/angular/angular.js/issues/13211), [#13326](https://github.com/angular/angular.js/issues/13326))
-
 - **ngTransclude:**
   - don't replace existing content if no transcluded content exists
   ([c3ae6ed7](https://github.com/angular/angular.js/commit/c3ae6ed78e145a9b0c13de7ef95852ba3c467551),
