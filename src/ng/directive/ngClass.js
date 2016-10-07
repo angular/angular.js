@@ -97,41 +97,42 @@ function classDirective(name, selector) {
         }
       }
     };
-
-    function arrayDifference(tokens1, tokens2) {
-      var values = [];
-
-      outer:
-      for (var i = 0; i < tokens1.length; i++) {
-        var token = tokens1[i];
-        for (var j = 0; j < tokens2.length; j++) {
-          if (token === tokens2[j]) continue outer;
-        }
-        values.push(token);
-      }
-      return values;
-    }
-
-    function arrayClasses(classVal) {
-      var classes = [];
-      if (isArray(classVal)) {
-        forEach(classVal, function(v) {
-          classes = classes.concat(arrayClasses(v));
-        });
-        return classes;
-      } else if (isString(classVal)) {
-        return classVal.split(' ');
-      } else if (isObject(classVal)) {
-        forEach(classVal, function(v, k) {
-          if (v) {
-            classes = classes.concat(k.split(' '));
-          }
-        });
-        return classes;
-      }
-      return classVal;
-    }
   }];
+
+  // Helpers
+  function arrayDifference(tokens1, tokens2) {
+    var values = [];
+
+    outer:
+    for (var i = 0; i < tokens1.length; i++) {
+      var token = tokens1[i];
+      for (var j = 0; j < tokens2.length; j++) {
+        if (token === tokens2[j]) continue outer;
+      }
+      values.push(token);
+    }
+    return values;
+  }
+
+  function arrayClasses(classVal) {
+    var classes = [];
+    if (isArray(classVal)) {
+      forEach(classVal, function(v) {
+        classes = classes.concat(arrayClasses(v));
+      });
+      return classes;
+    } else if (isString(classVal)) {
+      return classVal.split(' ');
+    } else if (isObject(classVal)) {
+      forEach(classVal, function(v, k) {
+        if (v) {
+          classes = classes.concat(k.split(' '));
+        }
+      });
+      return classes;
+    }
+    return classVal;
+  }
 }
 
 /**
