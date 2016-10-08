@@ -334,34 +334,34 @@ describe('ngClass', function() {
       expect(e2).not.toHaveClass('four');
       expect(e2).toHaveClass('five');
 
-      $rootScope.$apply('two = "too"');
+      $rootScope.$apply('two = "another-two"');
 
       expect(e1).toHaveClass('one');
       expect(e1).not.toHaveClass('two');
-      expect(e1).toHaveClass('too');
+      expect(e1).toHaveClass('another-two');
       expect(e1).toHaveClass('three');
       expect(e1).not.toHaveClass('four');
       expect(e1).toHaveClass('five');
       expect(e2).toHaveClass('one');
       expect(e2).not.toHaveClass('two');
-      expect(e2).toHaveClass('too');
+      expect(e2).toHaveClass('another-two');
       expect(e2).toHaveClass('three');
       expect(e2).not.toHaveClass('four');
       expect(e2).toHaveClass('five');
 
-      $rootScope.$apply('two = "to"; four = "four"');
+      $rootScope.$apply('two = "two-more"; four = "four"');
 
       expect(e1).toHaveClass('one');
       expect(e1).not.toHaveClass('two');
-      expect(e1).not.toHaveClass('too');
-      expect(e1).toHaveClass('to');
+      expect(e1).not.toHaveClass('another-two');
+      expect(e1).toHaveClass('two-more');
       expect(e1).toHaveClass('three');
       expect(e1).not.toHaveClass('four');
       expect(e1).toHaveClass('five');
       expect(e2).toHaveClass('one');
       expect(e2).not.toHaveClass('two');
-      expect(e2).not.toHaveClass('too');
-      expect(e2).toHaveClass('to');
+      expect(e2).not.toHaveClass('another-two');
+      expect(e2).toHaveClass('two-more');
       expect(e2).toHaveClass('three');
       expect(e2).toHaveClass('four');
       expect(e2).toHaveClass('five');
@@ -370,15 +370,15 @@ describe('ngClass', function() {
 
       expect(e1).toHaveClass('one');
       expect(e1).not.toHaveClass('two');
-      expect(e1).not.toHaveClass('too');
-      expect(e1).toHaveClass('to');
+      expect(e1).not.toHaveClass('another-two');
+      expect(e1).toHaveClass('two-more');
       expect(e1).toHaveClass('three');
       expect(e1).not.toHaveClass('four');
       expect(e1).not.toHaveClass('five');
       expect(e2).toHaveClass('one');
       expect(e2).not.toHaveClass('two');
-      expect(e2).not.toHaveClass('too');
-      expect(e2).toHaveClass('to');
+      expect(e2).not.toHaveClass('another-two');
+      expect(e2).toHaveClass('two-more');
       expect(e2).toHaveClass('three');
       expect(e2).toHaveClass('four');
       expect(e2).not.toHaveClass('five');
