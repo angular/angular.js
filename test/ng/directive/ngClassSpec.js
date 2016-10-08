@@ -1,6 +1,6 @@
 'use strict';
 
-fdescribe('ngClass', function() {
+describe('ngClass', function() {
   var element;
 
   beforeEach(module(function($compileProvider) {
