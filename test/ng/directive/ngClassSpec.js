@@ -547,7 +547,7 @@ describe('ngClass', function() {
     })
   );
 
-  it('should do value remove the watcher when static map one-time binding',
+  it('should remove the watcher when static map one-time binding',
     inject(function($rootScope, $compile) {
       element = $compile('<div ng-class="::{foo: fooPresent}"></div>')($rootScope);
       $rootScope.$digest();
@@ -567,6 +567,8 @@ describe('ngClass', function() {
       $rootScope.classVar = [{orange: true}];
       element = $compile('<div ng-class="classVar"></div>')($rootScope);
       $rootScope.$digest();
+
+      expect(element).toHaveClass('orange');
 
       $rootScope.classVar[0].orange = false;
       $rootScope.$digest();
