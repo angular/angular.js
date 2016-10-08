@@ -1034,6 +1034,28 @@ var inputType = {
    * @description
    * Native range input with validation and transformation.
    *
+   * <div class="alert alert-warning">
+   *   <p>
+   *     In v1.5.9+, in order to avoid interfering with already existing, custom directives for
+   *     `input[range]`, you need to let Angular know that you want to enable its built-in support.
+   *     You can do this by adding the `ng-input-range` attribute to the input element. E.g.:
+   *     `<input type="range" ng-input-range ... />`
+   *   </p><br />
+   *   <p>
+   *     Input elements without the `ng-input-range` attibute will continue to be treated the same
+   *     as in previous versions (e.g. their model value will be a string not a number and Angular
+   *     will not take `min`/`max`/`step` attributes and properties into account).
+   *   </p><br />
+   *   <p>
+   *     **Note:** From v1.6.x onwards, the support for `input[range]` will be always enabled and
+   *     the `ng-input-range` attribute will have no effect.
+   *   </p><br />
+   *   <p>
+   *     This documentation page refers to elements which have the built-in support enabled; i.e.
+   *     elements _with_ the `ng-input-range` attribute.
+   *   </p>
+   * </div>
+   *
    * The model for the range input must always be a `Number`.
    *
    * IE9 and other browsers that do not support the `range` type fall back
@@ -1055,7 +1077,7 @@ var inputType = {
    *
    * Since the element value should always reflect the current model value, a range input
    * will set the bound ngModel expression to the value that the browser has set for the
-   * input element. For example, in the following input `<input type="range" ng-model="model.value">`,
+   * input element. For example, in the following input `<input type="range" ng-input-range ng-model="model.value">`,
    * if the application sets `model.value = null`, the browser will set the input to `'50'`.
    * Angular will then set the model to `50`, to prevent input and model value being out of sync.
    *
@@ -1074,10 +1096,12 @@ var inputType = {
    * instead may set the `stepMismatch` error. If that's the case, the Angular will set the `step`
    * error on the input, and set the model to `undefined`.
    *
-   * Note that `input[range]` is not compatible with`ngMax`, `ngMin`, and `ngStep`, because they do
+   * Note that `input[range]` is not compatible with `ngMax`, `ngMin`, and `ngStep`, because they do
    * not set the `min` and `max` attributes, which means that the browser won't automatically adjust
    * the input value based on their values, and will always assume min = 0, max = 100, and step = 1.
    *
+   * @param           ngInputRange The presense of this attribute enables the built-in support for
+   *                  `input[range]`.
    * @param {string}  ngModel Assignable angular expression to data-bind to.
    * @param {string=} name Property name of the form under which the control is published.
    * @param {string=} min Sets the `min` validation to ensure that the value entered is greater
@@ -1102,7 +1126,7 @@ var inputType = {
           </script>
           <form name="myForm" ng-controller="ExampleController">
 
-            Model as range: <input type="range" name="range" ng-model="value" min="{{min}}"  max="{{max}}">
+            Model as range: <input type="range" ng-input-range name="range" ng-model="value" min="{{min}}"  max="{{max}}">
             <hr>
             Model as number: <input type="number" ng-model="value"><br>
             Min: <input type="number" ng-model="min"><br>
@@ -1128,7 +1152,7 @@ var inputType = {
               }]);
           </script>
           <form name="myForm" ng-controller="ExampleController">
-            Model as range: <input type="range" name="range" ng-model="value" ng-min="min" ng-max="max">
+            Model as range: <input type="range" ng-input-range name="range" ng-model="value" ng-min="min" ng-max="max">
             <hr>
             Model as number: <input type="number" ng-model="value"><br>
             Min: <input type="number" ng-model="min"><br>
@@ -1521,8 +1545,8 @@ function parseNumberAttrVal(val) {
 
 function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   badInputChecker(scope, element, attr, ctrl);
-  numberFormatterParser(ctrl);
   baseInputType(scope, element, attr, ctrl, $sniffer, $browser);
+  numberFormatterParser(ctrl);
 
   if (isDefined(attr.min) || attr.ngMin) {
     var minVal;
@@ -1971,7 +1995,11 @@ var inputDirective = ['$browser', '$sniffer', '$filter', '$parse',
     link: {
       pre: function(scope, element, attr, ctrls) {
         if (ctrls[0]) {
-          (inputType[lowercase(attr.type)] || inputType.text)(scope, element, attr, ctrls[0], $sniffer,
+          var type = lowercase(attr.type);
+          if ((type === 'range') && !attr.hasOwnProperty('ngInputRange')) {
+            type = 'text';
+          }
+          (inputType[type] || inputType.text)(scope, element, attr, ctrls[0], $sniffer,
                                                               $browser, $filter, $parse);
         }
       }

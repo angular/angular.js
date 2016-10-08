@@ -3,7 +3,8 @@
 @fullName Model is not of type `number`
 @description
 
-The `input[number]` and `input[range]` directives require the model to be a `number`.
+The `input[type="number"]` and `input[type="range"][ng-input-range]` directives require the model to
+be a `number`.
 
 If the model is something else, this error will be thrown.
 
@@ -17,7 +18,7 @@ pipeline.
 ## Example
 
 In this example, our model stores the number as a string, so we provide the `stringToNumber`
-directive to convert it into the format the `input[number]` directive expects.
+directive to convert it into the format the `input[type="number"]` directive expects.
 
 
 <example module="numfmt-error-module" name="number-format-error">
