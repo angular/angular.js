@@ -2,6 +2,37 @@
 
 /* globals support: false */
 
+describe('injector.modules', function() {
+    it('should expose the loaded module info on the instance injector', function() {
+      var test1 = angular.module('test1', ['test2']).info({ version: '1.1' });
+      var test2 = angular.module('test2', []).info({ version: '1.2' });
+      module('test1');
+      inject(['$injector', function($injector) {
+        expect(Object.keys($injector.modules)).toEqual(['ng', 'ngLocale', 'ngMock', 'test1', 'test2']);
+        expect($injector.modules['test1'].info()).toEqual({ version: '1.1' });
+        expect($injector.modules['test2'].info()).toEqual({ version: '1.2' });
+      }]);
+    });
+
+    it('should expose the loaded module info on the provider injector', function() {
+      var providerInjector;
+      var test1 = angular.module('test1', ['test2']).info({ version: '1.1' });
+      var test2 = angular.module('test2', [])
+        .info({ version: '1.2' })
+        .provider('test', ['$injector', function($injector) {
+          providerInjector = $injector;
+          return { $get: function() {} };
+        }]);
+      module('test1');
+      // needed to ensure that the provider blocks are executed
+      inject();
+
+      expect(Object.keys(providerInjector.modules)).toEqual(['ng', 'ngLocale', 'ngMock', 'test1', 'test2']);
+      expect(providerInjector.modules['test1'].info()).toEqual({ version: '1.1' });
+      expect(providerInjector.modules['test2'].info()).toEqual({ version: '1.2' });
+    });
+});
+
 describe('injector', function() {
   var providers;
   var injector;
