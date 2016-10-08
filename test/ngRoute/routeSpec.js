@@ -782,11 +782,20 @@ describe('$route', function() {
       });
 
       inject(function($route, $location, $rootScope) {
+        var onError = jasmine.createSpy('onError');
+        var onSuccess = jasmine.createSpy('onSuccess');
+
+        $rootScope.$on('$routeChangeError', onError);
+        $rootScope.$on('$routeChangeSuccess', onSuccess);
+
         $location.path('/foo');
-        expect(function() {
-          $rootScope.$digest();
-        }).toThrowMinErr('$sce', 'insecurl', 'Blocked loading resource from url not allowed by ' +
-          '$sceDelegate policy.  URL: http://example.com/foo.html');
+        $rootScope.$digest();
+
+        expect(onSuccess).not.toHaveBeenCalled();
+        expect(onError).toHaveBeenCalled();
+        expect(onError.calls.mostRecent().args[3]).toEqualMinErr('$sce', 'insecurl',
+            'Blocked loading resource from url not allowed by $sceDelegate policy.  ' +
+            'URL: http://example.com/foo.html');
       });
     });
 
@@ -882,7 +891,8 @@ describe('$route', function() {
         $rootScope.$digest();
 
         $httpBackend.flush();
-        expect($exceptionHandler.errors.pop().message).toContain('[$compile:tpload] Failed to load template: r1.html');
+        expect($exceptionHandler.errors.pop()).
+            toEqualMinErr('$compile', 'tpload', 'Failed to load template: r1.html');
 
         $httpBackend.expectGET('r2.html').respond('');
         $location.path('/r2');
@@ -903,8 +913,7 @@ describe('$route', function() {
 
     it('should catch local factory errors', function() {
       var myError = new Error('MyError');
-      module(function($routeProvider, $exceptionHandlerProvider) {
-        $exceptionHandlerProvider.mode('log');
+      module(function($routeProvider) {
         $routeProvider.when('/locals', {
           resolve: {
             a: function($q) {
@@ -914,10 +923,14 @@ describe('$route', function() {
         });
       });
 
-      inject(function($location, $route, $rootScope, $exceptionHandler) {
+      inject(function($location, $route, $rootScope) {
+        spyOn($rootScope, '$broadcast').and.callThrough();
+
         $location.path('/locals');
         $rootScope.$digest();
-        expect($exceptionHandler.errors).toEqual([myError]);
+
+        expect($rootScope.$broadcast).toHaveBeenCalledWith(
+            '$routeChangeError', jasmine.any(Object), undefined, myError);
       });
     });
   });
@@ -1016,9 +1029,10 @@ describe('$route', function() {
       $routeProvider = _$routeProvider_;
 
       $provide.decorator('$sce', function($delegate) {
+        function getVal(v) { return v.getVal ? v.getVal() : v; }
         $delegate.trustAsResourceUrl = function(url) { return new MySafeResourceUrl(url); };
-        $delegate.getTrustedResourceUrl = function(v) { return v.getVal(); };
-        $delegate.valueOf = function(v) { return v.getVal(); };
+        $delegate.getTrustedResourceUrl = function(v) { return getVal(v); };
+        $delegate.valueOf = function(v) { return getVal(v); };
         return $delegate;
       });
     });
@@ -1182,8 +1196,7 @@ describe('$route', function() {
       it('should broadcast `$routeChangeError` when redirectTo throws', function() {
         var error = new Error('Test');
 
-        module(function($exceptionHandlerProvider, $routeProvider) {
-          $exceptionHandlerProvider.mode('log');
+        module(function($routeProvider) {
           $routeProvider.when('/foo', {redirectTo: function() { throw error; }});
         });
 
@@ -1196,7 +1209,6 @@ describe('$route', function() {
           var lastCallArgs = $rootScope.$broadcast.calls.mostRecent().args;
           expect(lastCallArgs[0]).toBe('$routeChangeError');
           expect(lastCallArgs[3]).toBe(error);
-          expect($exceptionHandler.errors[0]).toBe(error);
         });
       });
 

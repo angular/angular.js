@@ -1854,17 +1854,18 @@ describe('$compile', function() {
         ));
 
 
-        it('should throw an error and clear element content if the template fails to load', inject(
-            function($compile, $httpBackend, $rootScope) {
-              $httpBackend.expect('GET', 'hello.html').respond(404, 'Not Found!');
-              element = $compile('<div><b class="hello">content</b></div>')($rootScope);
+        it('should throw an error and clear element content if the template fails to load',
+          inject(function($compile, $exceptionHandler, $httpBackend, $rootScope) {
+            $httpBackend.expect('GET', 'hello.html').respond(404, 'Not Found!');
+            element = $compile('<div><b class="hello">content</b></div>')($rootScope);
 
-              expect(function() {
-                $httpBackend.flush();
-              }).toThrowMinErr('$compile', 'tpload', 'Failed to load template: hello.html');
-              expect(sortedHtml(element)).toBe('<div><b class="hello"></b></div>');
-            }
-        ));
+            $httpBackend.flush();
+
+            expect(sortedHtml(element)).toBe('<div><b class="hello"></b></div>');
+            expect($exceptionHandler.errors[0]).toEqualMinErr('$compile', 'tpload',
+                'Failed to load template: hello.html');
+          })
+        );
 
 
         it('should prevent multiple templates per element', function() {
@@ -1878,12 +1879,14 @@ describe('$compile', function() {
               templateUrl: 'template.html'
             }));
           });
-          inject(function($compile, $httpBackend) {
+          inject(function($compile, $exceptionHandler, $httpBackend) {
             $httpBackend.whenGET('template.html').respond('<p>template.html</p>');
-            expect(function() {
-              $compile('<div><div class="sync async"></div></div>');
-              $httpBackend.flush();
-            }).toThrowMinErr('$compile', 'multidir', 'Multiple directives [async, sync] asking for template on: ' +
+
+            $compile('<div><div class="sync async"></div></div>');
+            $httpBackend.flush();
+
+            expect($exceptionHandler.errors[0]).toEqualMinErr('$compile', 'multidir',
+                'Multiple directives [async, sync] asking for template on: ' +
                 '<div class="sync async">');
           });
         });
@@ -2093,15 +2096,17 @@ describe('$compile', function() {
             $templateCache.put('template.html', 'dada');
             $compile('<p template></p>');
             $rootScope.$digest();
-            expect($exceptionHandler.errors.pop().message).
-                toMatch(/\[\$compile:tplrt\] Template for directive 'template' must have exactly one root element\. template\.html/);
+            expect($exceptionHandler.errors.pop()).toEqualMinErr('$compile', 'tplrt',
+                'Template for directive \'template\' must have exactly one root element. ' +
+                'template.html');
 
             // multi root
             $templateCache.put('template.html', '<div></div><div></div>');
             $compile('<p template></p>');
             $rootScope.$digest();
-            expect($exceptionHandler.errors.pop().message).
-                toMatch(/\[\$compile:tplrt\] Template for directive 'template' must have exactly one root element\. template\.html/);
+            expect($exceptionHandler.errors.pop()).toEqualMinErr('$compile', 'tplrt',
+                'Template for directive \'template\' must have exactly one root element. ' +
+                'template.html');
 
             // ws is ok
             $templateCache.put('template.html', '  <div></div> \n');
@@ -2667,14 +2672,15 @@ describe('$compile', function() {
         );
 
         it('should not allow more than one isolate/new scope creation per element regardless of `templateUrl`',
-          inject(function($httpBackend) {
+          inject(function($exceptionHandler, $httpBackend) {
             $httpBackend.expect('GET', 'tiscope.html').respond('<div>Hello, world !</div>');
 
-            expect(function() {
-              compile('<div class="tiscope-a; scope-b"></div>');
-              $httpBackend.flush();
-            }).toThrowMinErr('$compile', 'multidir', 'Multiple directives [scopeB, tiscopeA] ' +
-                'asking for new/isolated scope on: <div class="tiscope-a; scope-b ng-scope">');
+            compile('<div class="tiscope-a; scope-b"></div>');
+            $httpBackend.flush();
+
+            expect($exceptionHandler.errors[0]).toEqualMinErr('$compile', 'multidir',
+                'Multiple directives [scopeB, tiscopeA] asking for new/isolated scope on: ' +
+                '<div class="tiscope-a; scope-b ng-scope">');
           })
         );
 
@@ -4331,7 +4337,7 @@ describe('$compile', function() {
               element = $compile('<c1 prop="a + b"></c1>')($rootScope);
 
               // We add this watch after the compilation to ensure that it will run after the binding watchers
-              // therefore triggering the thing that this test is hoping to enfore
+              // therefore triggering the thing that this test is hoping to enforce
               $rootScope.$watch('a', function(val) { $rootScope.b = val * 2; });
 
               expect(log).toEqual([{prop: jasmine.objectContaining({currentValue: undefined})}]);
@@ -4624,7 +4630,8 @@ describe('$compile', function() {
               // Update val to trigger the unstable onChanges, which will result in an error
               $rootScope.$apply('a = 42');
               expect($exceptionHandler.errors.length).toEqual(1);
-              expect($exceptionHandler.errors[0].toString()).toContain('[$compile:infchng] 10 $onChanges() iterations reached.');
+              expect($exceptionHandler.errors[0]).
+                  toEqualMinErr('$compile', 'infchng', '10 $onChanges() iterations reached.');
             });
           });
 
@@ -8817,16 +8824,19 @@ describe('$compile', function() {
 
           it('should throw on an ng-transclude element inside no transclusion directive', function() {
             inject(function($rootScope, $compile) {
-              // we need to do this because different browsers print empty attributes differently
+              var error;
+
               try {
                 $compile('<div><div ng-transclude></div></div>')($rootScope);
               } catch (e) {
-                expect(e.message).toMatch(new RegExp(
-                    '^\\[ngTransclude:orphan\\] ' +
-                        'Illegal use of ngTransclude directive in the template! ' +
-                        'No parent directive that requires a transclusion found\\. ' +
-                        'Element: <div ng-transclude.+'));
+                error = e;
               }
+
+              expect(error).toEqualMinErr('ngTransclude', 'orphan',
+                  'Illegal use of ngTransclude directive in the template! ' +
+                  'No parent directive that requires a transclusion found. ' +
+                  'Element: <div ng-transclude');
+              // we need to do this because different browsers print empty attributes differently
             });
           });
 
@@ -8875,28 +8885,29 @@ describe('$compile', function() {
                   '<div class="foo" ng-transclude></div>' +
                 '</div>',
                 transclude: true
-
               }));
 
               $compileProvider.directive('noTransBar', valueFn({
                 templateUrl: 'noTransBar.html',
                 transclude: false
-
               }));
             });
 
-            inject(function($compile, $rootScope, $templateCache) {
+            inject(function($compile, $exceptionHandler, $rootScope, $templateCache) {
               $templateCache.put('noTransBar.html',
                 '<div>' +
                   // This ng-transclude is invalid. It should throw an error.
                   '<div class="bar" ng-transclude></div>' +
                 '</div>');
 
-              expect(function() {
-                element = $compile('<div trans-foo>content</div>')($rootScope);
-                $rootScope.$apply();
-              }).toThrowMinErr('ngTransclude', 'orphan',
-                  'Illegal use of ngTransclude directive in the template! No parent directive that requires a transclusion found. Element: <div class="bar" ng-transclude="">');
+              element = $compile('<div trans-foo>content</div>')($rootScope);
+              $rootScope.$digest();
+
+              expect($exceptionHandler.errors[0][1]).toBe('<div class="bar" ng-transclude="">');
+              expect($exceptionHandler.errors[0][0]).toEqualMinErr('ngTransclude', 'orphan',
+                  'Illegal use of ngTransclude directive in the template! ' +
+                  'No parent directive that requires a transclusion found. ' +
+                  'Element: <div class="bar" ng-transclude="">');
             });
           });
 
@@ -9706,12 +9717,14 @@ describe('$compile', function() {
                 transclude: 'element'
               }));
             });
-            inject(function($compile, $httpBackend) {
+            inject(function($compile, $exceptionHandler, $httpBackend) {
               $httpBackend.expectGET('template.html').respond('<p second>template.html</p>');
+
               $compile('<div template first></div>');
-              expect(function() {
-                $httpBackend.flush();
-              }).toThrowMinErr('$compile', 'multidir', /Multiple directives \[first, second\] asking for transclusion on: <p .+/);
+              $httpBackend.flush();
+
+              expect($exceptionHandler.errors[0]).toEqualMinErr('$compile', 'multidir',
+                  'Multiple directives [first, second] asking for transclusion on: <p ');
             });
           });
 
@@ -11151,8 +11164,7 @@ describe('$compile', function() {
   }
 
   describe('ngAttr* attribute binding', function() {
-
-    it('should bind after digest but not before', inject(function($compile, $rootScope) {
+    it('should bind after digest but not before', inject(function() {
       $rootScope.name = 'Misko';
       element = $compile('<span ng-attr-test="{{name}}"></span>')($rootScope);
       expect(element.attr('test')).toBeUndefined();
@@ -11160,7 +11172,7 @@ describe('$compile', function() {
       expect(element.attr('test')).toBe('Misko');
     }));
 
-    it('should bind after digest but not before when after overridden attribute', inject(function($compile, $rootScope) {
+    it('should bind after digest but not before when after overridden attribute', inject(function() {
       $rootScope.name = 'Misko';
       element = $compile('<span test="123" ng-attr-test="{{name}}"></span>')($rootScope);
       expect(element.attr('test')).toBe('123');
@@ -11168,7 +11180,7 @@ describe('$compile', function() {
       expect(element.attr('test')).toBe('Misko');
     }));
 
-    it('should bind after digest but not before when before overridden attribute', inject(function($compile, $rootScope) {
+    it('should bind after digest but not before when before overridden attribute', inject(function() {
       $rootScope.name = 'Misko';
       element = $compile('<span ng-attr-test="{{name}}" test="123"></span>')($rootScope);
       expect(element.attr('test')).toBe('123');
@@ -11176,7 +11188,15 @@ describe('$compile', function() {
       expect(element.attr('test')).toBe('Misko');
     }));
 
-    it('should remove attribute if any bindings are undefined', inject(function($compile, $rootScope) {
+    it('should set the attribute (after digest) even if there is no interpolation', inject(function() {
+      element = $compile('<span ng-attr-test="foo"></span>')($rootScope);
+      expect(element.attr('test')).toBeUndefined();
+
+      $rootScope.$digest();
+      expect(element.attr('test')).toBe('foo');
+    }));
+
+    it('should remove attribute if any bindings are undefined', inject(function() {
       element = $compile('<span ng-attr-test="{{name}}{{emphasis}}"></span>')($rootScope);
       $rootScope.$digest();
       expect(element.attr('test')).toBeUndefined();
@@ -11189,6 +11209,8 @@ describe('$compile', function() {
     }));
 
     describe('in directive', function() {
+      var log;
+
       beforeEach(module(function() {
         directive('syncTest', function(log) {
           return {
@@ -11209,47 +11231,52 @@ describe('$compile', function() {
         });
       }));
 
-      beforeEach(inject(function($templateCache) {
+      beforeEach(inject(function($templateCache, _log_) {
+        log = _log_;
         $templateCache.put('async.html', '<h1>Test</h1>');
       }));
 
       it('should provide post-digest value in synchronous directive link functions when after overridden attribute',
-          inject(function(log, $rootScope, $compile) {
-        $rootScope.test = 'TEST';
-        element = $compile('<div sync-test test="123" ng-attr-test="{{test}}"></div>')($rootScope);
-        expect(element.attr('test')).toBe('123');
-        expect(log.toArray()).toEqual(['TEST', 'TEST']);
-      }));
+        function() {
+          $rootScope.test = 'TEST';
+          element = $compile('<div sync-test test="123" ng-attr-test="{{test}}"></div>')($rootScope);
+          expect(element.attr('test')).toBe('123');
+          expect(log.toArray()).toEqual(['TEST', 'TEST']);
+        }
+      );
 
       it('should provide post-digest value in synchronous directive link functions when before overridden attribute',
-          inject(function(log, $rootScope, $compile) {
-        $rootScope.test = 'TEST';
-        element = $compile('<div sync-test ng-attr-test="{{test}}" test="123"></div>')($rootScope);
-        expect(element.attr('test')).toBe('123');
-        expect(log.toArray()).toEqual(['TEST', 'TEST']);
-      }));
+        function() {
+          $rootScope.test = 'TEST';
+          element = $compile('<div sync-test ng-attr-test="{{test}}" test="123"></div>')($rootScope);
+          expect(element.attr('test')).toBe('123');
+          expect(log.toArray()).toEqual(['TEST', 'TEST']);
+        }
+      );
 
 
       it('should provide post-digest value in asynchronous directive link functions when after overridden attribute',
-          inject(function(log, $rootScope, $compile) {
-        $rootScope.test = 'TEST';
-        element = $compile('<div async-test test="123" ng-attr-test="{{test}}"></div>')($rootScope);
-        expect(element.attr('test')).toBe('123');
-        $rootScope.$digest();
-        expect(log.toArray()).toEqual(['TEST', 'TEST']);
-      }));
+        function() {
+          $rootScope.test = 'TEST';
+          element = $compile('<div async-test test="123" ng-attr-test="{{test}}"></div>')($rootScope);
+          expect(element.attr('test')).toBe('123');
+          $rootScope.$digest();
+          expect(log.toArray()).toEqual(['TEST', 'TEST']);
+        }
+      );
 
       it('should provide post-digest value in asynchronous directive link functions when before overridden attribute',
-          inject(function(log, $rootScope, $compile) {
-        $rootScope.test = 'TEST';
-        element = $compile('<div async-test ng-attr-test="{{test}}" test="123"></div>')($rootScope);
-        expect(element.attr('test')).toBe('123');
-        $rootScope.$digest();
-        expect(log.toArray()).toEqual(['TEST', 'TEST']);
-      }));
+        function() {
+          $rootScope.test = 'TEST';
+          element = $compile('<div async-test ng-attr-test="{{test}}" test="123"></div>')($rootScope);
+          expect(element.attr('test')).toBe('123');
+          $rootScope.$digest();
+          expect(log.toArray()).toEqual(['TEST', 'TEST']);
+        }
+      );
     });
 
-    it('should work with different prefixes', inject(function($compile, $rootScope) {
+    it('should work with different prefixes', inject(function() {
       $rootScope.name = 'Misko';
       element = $compile('<span ng:attr:test="{{name}}" ng-Attr-test2="{{name}}" ng_Attr_test3="{{name}}"></span>')($rootScope);
       expect(element.attr('test')).toBeUndefined();
@@ -11261,14 +11288,14 @@ describe('$compile', function() {
       expect(element.attr('test3')).toBe('Misko');
     }));
 
-    it('should work with the "href" attribute', inject(function($compile, $rootScope) {
+    it('should work with the "href" attribute', inject(function() {
       $rootScope.value = 'test';
       element = $compile('<a ng-attr-href="test/{{value}}"></a>')($rootScope);
       $rootScope.$digest();
       expect(element.attr('href')).toBe('test/test');
     }));
 
-    it('should work if they are prefixed with x- or data- and different prefixes', inject(function($compile, $rootScope) {
+    it('should work if they are prefixed with x- or data- and different prefixes', inject(function() {
       $rootScope.name = 'Misko';
       element = $compile('<span data-ng-attr-test2="{{name}}" x-ng-attr-test3="{{name}}" data-ng:attr-test4="{{name}}" ' +
         'x_ng-attr-test5="{{name}}" data:ng-attr-test6="{{name}}"></span>')($rootScope);
@@ -11286,8 +11313,7 @@ describe('$compile', function() {
     }));
 
     describe('when an attribute has a dash-separated name', function() {
-
-      it('should work with different prefixes', inject(function($compile, $rootScope) {
+      it('should work with different prefixes', inject(function() {
         $rootScope.name = 'JamieMason';
         element = $compile('<span ng:attr:dash-test="{{name}}" ng-Attr-dash-test2="{{name}}" ng_Attr_dash-test3="{{name}}"></span>')($rootScope);
         expect(element.attr('dash-test')).toBeUndefined();
@@ -11299,7 +11325,7 @@ describe('$compile', function() {
         expect(element.attr('dash-test3')).toBe('JamieMason');
       }));
 
-      it('should work if they are prefixed with x- or data-', inject(function($compile, $rootScope) {
+      it('should work if they are prefixed with x- or data-', inject(function() {
         $rootScope.name = 'JamieMason';
         element = $compile('<span data-ng-attr-dash-test2="{{name}}" x-ng-attr-dash-test3="{{name}}" data-ng:attr-dash-test4="{{name}}"></span>')($rootScope);
         expect(element.attr('dash-test2')).toBeUndefined();
@@ -11328,7 +11354,6 @@ describe('$compile', function() {
         });
       });
 
-
       it('should keep attributes ending with -end single-element directives', function() {
         module(function($compileProvider) {
           $compileProvider.directive('dashEnder', function(log) {
@@ -11346,7 +11371,6 @@ describe('$compile', function() {
         });
       });
     });
-
   });
 
 

@@ -598,7 +598,7 @@ describe('jqLite', function() {
 
 
   describe('attr', function() {
-    it('should read write and remove attr', function() {
+    it('should read, write and remove attr', function() {
       var selector = jqLite([a, b]);
 
       expect(selector.attr('prop', 'value')).toEqual(selector);
@@ -633,6 +633,43 @@ describe('jqLite', function() {
 
       select.attr('multiple', true);
       expect(select.attr('multiple')).toBe('multiple');
+    });
+
+    it('should not take properties into account when getting respective boolean attributes', function() {
+      // Use a div and not a select as the latter would itself reflect the multiple attribute
+      // to a property.
+      var div = jqLite('<div>');
+
+      div[0].multiple = true;
+      expect(div.attr('multiple')).toBe(undefined);
+
+      div.attr('multiple', 'multiple');
+      div[0].multiple = false;
+      expect(div.attr('multiple')).toBe('multiple');
+    });
+
+    it('should not set properties when setting respective boolean attributes', function() {
+      // jQuery 2.x has different behavior; skip the test.
+      if (isJQuery2x()) return;
+
+      // Use a div and not a select as the latter would itself reflect the multiple attribute
+      // to a property.
+      var div = jqLite('<div>');
+
+      // Check the initial state.
+      expect(div[0].multiple).toBe(undefined);
+
+      div.attr('multiple', 'multiple');
+      expect(div[0].multiple).toBe(undefined);
+
+      div.attr('multiple', '');
+      expect(div[0].multiple).toBe(undefined);
+
+      div.attr('multiple', false);
+      expect(div[0].multiple).toBe(undefined);
+
+      div.attr('multiple', null);
+      expect(div[0].multiple).toBe(undefined);
     });
 
     it('should normalize the case of boolean attributes', function() {
@@ -683,6 +720,47 @@ describe('jqLite', function() {
       expect(comment[0].nodeType).toEqual(8);
       expect(comment.attr('some-attribute','somevalue')).toEqual(comment);
       expect(comment.attr('some-attribute')).toBeUndefined();
+    });
+
+    it('should remove the attribute for a null value', function() {
+      var elm = jqLite('<div attribute="value">a</div>');
+      elm.attr('attribute', null);
+      expect(elm[0].hasAttribute('attribute')).toBe(false);
+    });
+
+    it('should not remove the attribute for an empty string as a value', function() {
+      var elm = jqLite('<div attribute="value">a</div>');
+      elm.attr('attribute', '');
+      expect(elm[0].getAttribute('attribute')).toBe('');
+    });
+
+    it('should remove the boolean attribute for a false value', function() {
+      var elm = jqLite('<select multiple>');
+      elm.attr('multiple', false);
+      expect(elm[0].hasAttribute('multiple')).toBe(false);
+    });
+
+    it('should remove the boolean attribute for a null value', function() {
+      var elm = jqLite('<select multiple>');
+      elm.attr('multiple', null);
+      expect(elm[0].hasAttribute('multiple')).toBe(false);
+    });
+
+    it('should not remove the boolean attribute for an empty string as a value', function() {
+      var elm = jqLite('<select multiple>');
+      elm.attr('multiple', '');
+      expect(elm[0].getAttribute('multiple')).toBe('multiple');
+    });
+
+    it('should not fail on elements without the getAttribute method', function() {
+      forEach([window, document], function(node) {
+        expect(function() {
+          var elem = jqLite(node);
+          elem.attr('foo');
+          elem.attr('bar', 'baz');
+          elem.attr('bar');
+        }).not.toThrow();
+      });
     });
   });
 
@@ -1712,7 +1790,7 @@ describe('jqLite', function() {
       aElem.on('click', noop);
       expect(function() {
         aElem.off('click', noop, '.test');
-      }).toThrowError(/\[jqLite:offargs\]/);
+      }).toThrowMinErr('jqLite', 'offargs');
     });
   });
 
@@ -2254,6 +2332,21 @@ describe('jqLite', function() {
 
       jqLite(mockWindow).triggerHandler('load');
       expect(onLoadCallback).toHaveBeenCalledOnce();
+    });
+  });
+
+
+  describe('bind/unbind', function() {
+    if (!_jqLiteMode) return;
+
+    it('should alias bind() to on()', function() {
+      var element = jqLite(a);
+      expect(element.bind).toBe(element.on);
+    });
+
+    it('should alias unbind() to off()', function() {
+      var element = jqLite(a);
+      expect(element.unbind).toBe(element.off);
     });
   });
 });

@@ -136,7 +136,7 @@ describe('validators', function() {
       expect(function() {
         var inputElm = helper.compileInput('<input type="text" ng-model="foo" ng-pattern="fooRegexp" />');
         $rootScope.$apply('foo = \'bar\'');
-      }).not.toThrowError(/^\[ngPattern:noregexp\] Expected fooRegexp to be a RegExp but was/);
+      }).not.toThrow();
     });
 
 
@@ -147,7 +147,7 @@ describe('validators', function() {
           $rootScope.fooRegexp = {};
           $rootScope.foo = 'bar';
         });
-      }).toThrowError(/^\[ngPattern:noregexp\] Expected fooRegexp to be a RegExp but was/);
+      }).toThrowMinErr('ngPattern', 'noregexp', 'Expected fooRegexp to be a RegExp but was');
     });
 
 

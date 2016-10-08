@@ -3446,7 +3446,7 @@ describe('input', function() {
 
       if (supportsRange) {
         // Browsers that implement range will never allow you to set a value that doesn't match the step value
-        // However, currently only Firefox fully inplements the spec when setting the value after the step value changes.
+        // However, currently only Firefox fully implements the spec when setting the value after the step value changes.
         // Other browsers fail in various edge cases, which is why they are not tested here.
         it('should round the input value to the nearest step on user input', function() {
           var inputElm = helper.compileInput('<input type="range" ng-model="value" name="alias" step="5" />');
@@ -3750,7 +3750,7 @@ describe('input', function() {
         ['scheme-://example.com', true],
         ['scheme_://example.com', false],
 
-        // Vaidating `:` and `/` after `scheme`
+        // Validating `:` and `/` after `scheme`
         ['scheme//example.com', false],
         ['scheme:example.com', true],
         ['scheme:/example.com', true],

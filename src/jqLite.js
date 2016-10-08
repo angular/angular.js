@@ -56,7 +56,7 @@
  * - [`after()`](http://api.jquery.com/after/)
  * - [`append()`](http://api.jquery.com/append/)
  * - [`attr()`](http://api.jquery.com/attr/) - Does not support functions as parameters
- * - [`bind()`](http://api.jquery.com/bind/) - Does not support namespaces, selectors or eventData
+ * - [`bind()`](http://api.jquery.com/bind/) (_deprecated_ - to be removed in 1.7.0, use [`on()`](http://api.jquery.com/on/)) - Does not support namespaces, selectors or eventData
  * - [`children()`](http://api.jquery.com/children/) - Does not support selectors
  * - [`clone()`](http://api.jquery.com/clone/)
  * - [`contents()`](http://api.jquery.com/contents/)
@@ -78,14 +78,14 @@
  * - [`prop()`](http://api.jquery.com/prop/)
  * - [`ready()`](http://api.jquery.com/ready/)
  * - [`remove()`](http://api.jquery.com/remove/)
- * - [`removeAttr()`](http://api.jquery.com/removeAttr/)
+ * - [`removeAttr()`](http://api.jquery.com/removeAttr/) - Does not support multiple attributes
  * - [`removeClass()`](http://api.jquery.com/removeClass/) - Does not support a function as first argument
  * - [`removeData()`](http://api.jquery.com/removeData/)
  * - [`replaceWith()`](http://api.jquery.com/replaceWith/)
  * - [`text()`](http://api.jquery.com/text/)
  * - [`toggleClass()`](http://api.jquery.com/toggleClass/) - Does not support a function as first argument
  * - [`triggerHandler()`](http://api.jquery.com/triggerHandler/) - Passes a dummy event object to handlers
- * - [`unbind()`](http://api.jquery.com/unbind/) - Does not support namespaces or event object as parameter
+ * - [`unbind()`](http://api.jquery.com/unbind/) (_deprecated_ - to be removed in 1.7.0, use [`off()`](http://api.jquery.com/off/)) - Does not support namespaces or event object as parameter
  * - [`val()`](http://api.jquery.com/val/)
  * - [`wrap()`](http://api.jquery.com/wrap/)
  *
@@ -638,33 +638,33 @@ forEach({
   },
 
   attr: function(element, name, value) {
+    var ret;
     var nodeType = element.nodeType;
-    if (nodeType === NODE_TYPE_TEXT || nodeType === NODE_TYPE_ATTRIBUTE || nodeType === NODE_TYPE_COMMENT) {
+    if (nodeType === NODE_TYPE_TEXT || nodeType === NODE_TYPE_ATTRIBUTE || nodeType === NODE_TYPE_COMMENT ||
+      !element.getAttribute) {
       return;
     }
+
     var lowercasedName = lowercase(name);
-    if (BOOLEAN_ATTR[lowercasedName]) {
-      if (isDefined(value)) {
-        if (value) {
-          element[name] = true;
-          element.setAttribute(name, lowercasedName);
-        } else {
-          element[name] = false;
-          element.removeAttribute(lowercasedName);
-        }
+    var isBooleanAttr = BOOLEAN_ATTR[lowercasedName];
+
+    if (isDefined(value)) {
+      // setter
+
+      if (value === null || (value === false && isBooleanAttr)) {
+        element.removeAttribute(name);
       } else {
-        return (element[name] ||
-                 (element.attributes.getNamedItem(name) || noop).specified)
-               ? lowercasedName
-               : undefined;
+        element.setAttribute(name, isBooleanAttr ? lowercasedName : value);
       }
-    } else if (isDefined(value)) {
-      element.setAttribute(name, value);
-    } else if (element.getAttribute) {
-      // the extra argument "2" is to get the right thing for a.href in IE, see jQuery code
-      // some elements (e.g. Document) don't have get attribute, so return undefined
-      var ret = element.getAttribute(name, 2);
-      // normalize non-existing attributes to undefined (as jQuery)
+    } else {
+      // getter
+
+      ret = element.getAttribute(name);
+
+      if (isBooleanAttr && ret !== null) {
+        ret = lowercasedName;
+      }
+      // Normalize non-existing attributes to undefined (as jQuery).
       return ret === null ? undefined : ret;
     }
   },
@@ -1061,11 +1061,11 @@ forEach({
     }
     return isDefined(value) ? value : this;
   };
-
-  // bind legacy bind/unbind to on/off
-  JQLite.prototype.bind = JQLite.prototype.on;
-  JQLite.prototype.unbind = JQLite.prototype.off;
 });
+
+// bind legacy bind/unbind to on/off
+JQLite.prototype.bind = JQLite.prototype.on;
+JQLite.prototype.unbind = JQLite.prototype.off;
 
 
 // Provider for private $$jqLite service

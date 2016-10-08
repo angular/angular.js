@@ -1062,7 +1062,7 @@ describe('injector', function() {
         createInjector([function($provide) {
           $provide.value('name', 'angular');
         }, instanceLookupInModule]);
-      }).toThrowError(/\[\$injector:unpr] Unknown provider: name/);
+      }).toThrowMinErr('$injector', 'modulerr', '[$injector:unpr] Unknown provider: name');
     });
   });
 });

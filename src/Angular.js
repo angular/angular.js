@@ -1223,7 +1223,7 @@ function toJsonReplacer(key, value) {
  * Serializes input into a JSON-formatted string. Properties with leading $$ characters will be
  * stripped since angular uses this notation internally.
  *
- * @param {Object|Array|Date|string|number} obj Input to be serialized into JSON.
+ * @param {Object|Array|Date|string|number|boolean} obj Input to be serialized into JSON.
  * @param {boolean|number} [pretty=2] If set to true, the JSON output will contain newlines and whitespace.
  *    If set to an integer, the JSON output will contain that many spaces per indentation.
  * @returns {string|undefined} JSON-ified string representing `obj`.

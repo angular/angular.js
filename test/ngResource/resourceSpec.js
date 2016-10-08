@@ -636,10 +636,25 @@ describe('basic usage', function() {
 
   it('should bind default parameters', function() {
     $httpBackend.expect('GET', '/CreditCard/123.visa?minimum=0.05').respond({id: 123});
-    var Visa = CreditCard.bind({verb:'.visa', minimum:0.05});
-    var visa = Visa.get({id:123});
+    var Visa = CreditCard.bind({verb: '.visa', minimum: 0.05});
+    var visa = Visa.get({id: 123});
     $httpBackend.flush();
-    expect(visa).toEqualData({id:123});
+    expect(visa).toEqualData({id: 123});
+  });
+
+
+  it('should pass all original arguments when binding default params', function() {
+    $httpBackend.expect('GET', '/CancellableCreditCard/123.visa').respond({id: 123});
+
+    var CancellableCreditCard = $resource('/CancellableCreditCard/:id:verb', {},
+                                          {charge: {method: 'POST'}}, {cancellable: true});
+    var CancellableVisa = CancellableCreditCard.bind({verb: '.visa'});
+    var visa = CancellableVisa.get({id: 123});
+
+    $httpBackend.flush();
+
+    expect(visa.$charge).toEqual(jasmine.any(Function));
+    expect(visa.$cancelRequest).toEqual(jasmine.any(Function));
   });
 
 
@@ -1535,9 +1550,9 @@ describe('errors', function() {
 
     expect(successSpy).not.toHaveBeenCalled();
     expect(failureSpy).toHaveBeenCalled();
-    expect(failureSpy.calls.mostRecent().args[0]).toMatch(
-        /^\[\$resource:badcfg\] Error in resource configuration for action `query`\. Expected response to contain an array but got an object \(Request: GET \/Customer\/123\)/
-      );
+    expect(failureSpy.calls.mostRecent().args[0]).toEqualMinErr('$resource', 'badcfg',
+        'Error in resource configuration for action `query`. ' +
+        'Expected response to contain an array but got an object (Request: GET /Customer/123)');
   });
 
   it('should fail if action expects an array but response is an object', function() {
@@ -1552,9 +1567,9 @@ describe('errors', function() {
 
     expect(successSpy).not.toHaveBeenCalled();
     expect(failureSpy).toHaveBeenCalled();
-    expect(failureSpy.calls.mostRecent().args[0]).toMatch(
-        /^\[\$resource:badcfg\] Error in resource configuration for action `get`\. Expected response to contain an object but got an array \(Request: GET \/Customer\/123\)/
-      );
+    expect(failureSpy.calls.mostRecent().args[0]).toEqualMinErr('$resource', 'badcfg',
+        'Error in resource configuration for action `get`. ' +
+        'Expected response to contain an object but got an array (Request: GET /Customer/123)');
   });
 });
 
