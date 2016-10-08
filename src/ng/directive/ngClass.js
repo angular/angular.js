@@ -32,20 +32,7 @@ function classDirective(name, selector) {
         }
 
         if (name !== 'ngClass') {
-          scope.$watch('$index', function($index) {
-            // eslint-disable-next-line no-bitwise
-            var newModulo = $index & 1;
-
-            if (newModulo !== oldModulo) {
-              if (newModulo === selector) {
-                addClasses(oldClassString);
-              } else {
-                removeClasses(oldClassString);
-              }
-
-              oldModulo = newModulo;
-            }
-          });
+          scope.$watch('$index', ngClassIndexWatchAction);
         }
 
         scope.$watch(watchExpression, watchAction, isOneTime);
@@ -87,6 +74,24 @@ function classDirective(name, selector) {
           });
 
           return classesToUpdate.join(' ');
+        }
+
+        function ngClassIndexWatchAction($index) {
+          // eslint-disable-next-line no-bitwise
+          var newModulo = $index & 1;
+
+          if (newModulo !== oldModulo) {
+            // This watch-action should run before the `ngClass[OneTime]WatchAction()`, thus it
+            // adds/removes `oldClassString`. If the `ngClass` expression has changed as well, the
+            // `ngClass[OneTime]WatchAction()` will update the classes.
+            if (newModulo === selector) {
+              addClasses(oldClassString);
+            } else {
+              removeClasses(oldClassString);
+            }
+
+            oldModulo = newModulo;
+          }
         }
 
         function ngClassOneTimeWatchAction(newClassValue) {
