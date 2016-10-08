@@ -463,7 +463,7 @@ describe('ngClass', function() {
   }));
 
 
-  it('should keep track of old classes even if odd/even does not match `$index` atm',
+  it('should add/remove the correct classes when the expression and `$index` change simultaneously',
     inject(function($compile, $rootScope) {
       element = $compile(
           '<div>' +
