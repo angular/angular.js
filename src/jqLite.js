@@ -76,7 +76,7 @@
  * - [`parent()`](http://api.jquery.com/parent/) - Does not support selectors
  * - [`prepend()`](http://api.jquery.com/prepend/)
  * - [`prop()`](http://api.jquery.com/prop/)
- * - [`ready()`](http://api.jquery.com/ready/)
+ * - [`ready()`](http://api.jquery.com/ready/) (_deprecated_, use `angular.element(callback)` instead of `angular.element(document).ready(callback)`)
  * - [`remove()`](http://api.jquery.com/remove/)
  * - [`removeAttr()`](http://api.jquery.com/removeAttr/) - Does not support multiple attributes
  * - [`removeClass()`](http://api.jquery.com/removeClass/) - Does not support a function as first argument
