@@ -594,6 +594,39 @@ describe('jqLite', function() {
         }).not.toThrow();
       });
     });
+
+    describe('camelCasing keys', function() {
+      // jQuery 2.x has different behavior; skip the tests.
+      if (isJQuery2x()) return;
+
+      it('should camelCase the key in a setter', function() {
+        var element = jqLite(a);
+
+        element.data('a-B-c-d-42--e', 'z-x');
+        expect(element.data()).toEqual({'a-BCD-42-E': 'z-x'});
+      });
+
+      it('should camelCase the key in a getter', function() {
+        var element = jqLite(a);
+
+        element.data()['a-BCD-42-E'] = 'x-c';
+        expect(element.data('a-B-c-d-42--e')).toBe('x-c');
+      });
+
+      it('should camelCase the key in a mass setter', function() {
+        var element = jqLite(a);
+
+        element.data({'a-B-c-d-42--e': 'c-v', 'r-t-v': 42});
+        expect(element.data()).toEqual({'a-BCD-42-E': 'c-v', 'rTV': 42});
+      });
+
+      it('should ignore non-camelCase keys in the data in a getter', function() {
+        var element = jqLite(a);
+
+        element.data()['a-b'] = 'b-n';
+        expect(element.data('a-b')).toBe(undefined);
+      });
+    });
   });
 
 
