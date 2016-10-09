@@ -338,6 +338,10 @@ AST.prototype = {
   assignment: function() {
     var result = this.ternary();
     if (this.expect('=')) {
+      if (!isAssignable(result)) {
+        throw $parseMinErr('lval', 'Trying to assign a value to a non l-value');
+      }
+
       result = { type: AST.AssignmentExpression, left: result, right: this.assignment(), operator: '='};
     }
     return result;
@@ -1024,9 +1028,6 @@ ASTCompiler.prototype = {
     case AST.AssignmentExpression:
       right = this.nextId();
       left = {};
-      if (!isAssignable(ast.left)) {
-        throw $parseMinErr('lval', 'Trying to assign a value to a non l-value');
-      }
       this.recurse(ast.left, undefined, left, function() {
         self.if_(self.notNull(left.context), function() {
           self.recurse(ast.right, right);
