@@ -49,7 +49,7 @@ function parseAppUrl(relativeUrl, locationObj) {
 }
 
 function startsWith(haystack, needle) {
-  return haystack.lastIndexOf(needle, 0) === 0;
+  return haystack.indexOf(needle) === 0;
 }
 
 /**
