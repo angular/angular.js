@@ -115,7 +115,7 @@ Here is an example of manually initializing Angular:
         $scope.greetMe = 'World';
       }]);
 
-    angular.element(document).ready(function() {
+    angular.element(function() {
       angular.bootstrap(document, ['myApp']);
     });
   </script>
