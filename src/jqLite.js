@@ -288,6 +288,8 @@ function JQLite(element) {
 
   if (argIsString) {
     jqLiteAddNodes(this, jqLiteParseHTML(element));
+  } else if (isFunction(element)) {
+    jqLiteReady(element);
   } else {
     jqLiteAddNodes(this, element);
   }
@@ -519,29 +521,34 @@ function jqLiteDocumentLoaded(action, win) {
   }
 }
 
+function jqLiteReady(fn) {
+  var fired = false;
+
+  function trigger() {
+    if (fired) return;
+    fired = true;
+    fn();
+  }
+
+  // check if document is already loaded
+  if (window.document.readyState === 'complete') {
+    window.setTimeout(fn);
+  } else {
+    // We can not use jqLite since we are not done loading and jQuery could be loaded later.
+
+    // Works for modern browsers and IE9
+    window.document.addEventListener('DOMContentLoaded', trigger);
+
+    // Fallback to window.onload for others
+    window.addEventListener('load', trigger);
+  }
+}
+
 //////////////////////////////////////////
 // Functions which are declared directly.
 //////////////////////////////////////////
 var JQLitePrototype = JQLite.prototype = {
-  ready: function(fn) {
-    var fired = false;
-
-    function trigger() {
-      if (fired) return;
-      fired = true;
-      fn();
-    }
-
-    // check if document is already loaded
-    if (window.document.readyState === 'complete') {
-      window.setTimeout(trigger);
-    } else {
-      this.on('DOMContentLoaded', trigger); // works for modern browsers and IE9
-      // we can not use jqLite since we are not done loading and jQuery could be loaded later.
-      // eslint-disable-next-line new-cap
-      JQLite(window).on('load', trigger); // fallback to window.onload for others
-    }
-  },
+  ready: jqLiteReady,
   toString: function() {
     var value = [];
     forEach(this, function(e) { value.push('' + e);});
