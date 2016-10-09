@@ -2129,6 +2129,20 @@ describe('parser', function() {
         expect(scope.b).toEqual(234);
       });
 
+      it('should throw with invalid left-val in assignments', function() {
+        expect(function() { scope.$eval('1 = 1'); }).toThrowMinErr('$parse', 'lval');
+        expect(function() { scope.$eval('{} = 1'); }).toThrowMinErr('$parse', 'lval');
+        expect(function() { scope.$eval('[] = 1'); }).toThrowMinErr('$parse', 'lval');
+        expect(function() { scope.$eval('true = 1'); }).toThrowMinErr('$parse', 'lval');
+        expect(function() { scope.$eval('(a=b) = 1'); }).toThrowMinErr('$parse', 'lval');
+        expect(function() { scope.$eval('(1<2) = 1'); }).toThrowMinErr('$parse', 'lval');
+        expect(function() { scope.$eval('(1+2) = 1'); }).toThrowMinErr('$parse', 'lval');
+        expect(function() { scope.$eval('!v = 1'); }).toThrowMinErr('$parse', 'lval');
+        expect(function() { scope.$eval('this = 1'); }).toThrowMinErr('$parse', 'lval');
+        expect(function() { scope.$eval('+v = 1'); }).toThrowMinErr('$parse', 'lval');
+        expect(function() { scope.$eval('(1?v1:v2) = 1'); }).toThrowMinErr('$parse', 'lval');
+      });
+
       it('should evaluate assignments in ternary operator', function() {
         scope.$eval('a = 1 ? 2 : 3');
         expect(scope.a).toBe(2);
