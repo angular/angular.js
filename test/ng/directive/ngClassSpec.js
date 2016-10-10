@@ -299,6 +299,54 @@ describe('ngClass', function() {
     expect(e2.hasClass('D')).toBeFalsy();
   }));
 
+  it('should compute class names when changing row parity and class value',
+    inject(function($rootScope, $compile) {
+      element = $compile('<ul>' +
+        '<li ng-repeat="i in arr track by i" ng-class-even="cls"></li>' +
+        '</ul>')($rootScope);
+
+      $rootScope.$apply(function() {
+        $rootScope.arr = ['a','b'];
+        $rootScope.cls = 'even';
+      });
+      var e3 = jqLite(element[0].childNodes[3]);
+      expect(e3).toHaveClass('even');
+
+      $rootScope.$apply(function() {
+        $rootScope.arr = ['b'];
+        $rootScope.cls = 'off';
+      });
+      var e1 = jqLite(element[0].childNodes[1]);
+      expect(e3[0]).toBe(e1[0]); // make sure same instance of ngClassEven
+      expect(e3).not.toHaveClass('even');
+      expect(e3).not.toHaveClass('off');
+
+      $rootScope.$apply(function() {
+        $rootScope.arr = ['a','b'];
+        $rootScope.cls = 'on';
+      });
+      expect(e3).not.toHaveClass('even');
+      expect(e3).not.toHaveClass('off');
+      expect(e3).toHaveClass('on');
+
+      // activate both $watch functions (class and $index)
+      // see https://plnkr.co/edit/W1ck8dS08TCJpirWiGVA
+      $rootScope.$apply(function() {
+        $rootScope.arr = ['b'];
+        $rootScope.cls = 'off';
+      });
+      expect(e3).not.toHaveClass('even');
+      expect(e3).not.toHaveClass('off');
+      expect(e3).not.toHaveClass('on');
+
+      $rootScope.$apply(function() {
+        $rootScope.arr = ['a','b'];
+      });
+      expect(e3).not.toHaveClass('even');
+      expect(e3).toHaveClass('off');
+      expect(e3).not.toHaveClass('on');
+    })
+  );
 
   it('should reapply ngClass when interpolated class attribute changes', inject(function($rootScope, $compile) {
     element = $compile('<div class="one {{cls}} three" ng-class="{four: four}"></div>')($rootScope);
@@ -423,6 +471,112 @@ describe('ngClass', function() {
       expect(element).not.toHaveClass('orange');
     })
   );
+
+  it('should do value stabilization as expected when one-time binding',
+    inject(function($rootScope, $compile) {
+      element = $compile('<div ng-class=" :: className"></div>')($rootScope);
+      $rootScope.$digest();
+
+      $rootScope.className = 'foo';
+      $rootScope.$digest();
+      expect(element).toHaveClass('foo');
+
+      $rootScope.className = 'bar';
+      $rootScope.$digest();
+      expect(element).toHaveClass('foo');
+    })
+  );
+
+  it('should remove the watcher when static array one-time binding',
+    inject(function($rootScope, $compile) {
+      element = $compile('<div ng-class="::[className]"></div>')($rootScope);
+      $rootScope.$digest();
+
+      $rootScope.className = 'foo';
+      $rootScope.$digest();
+      expect(element).toHaveClass('foo');
+
+      $rootScope.className = 'bar';
+      $rootScope.$digest();
+      expect(element).toHaveClass('foo');
+      expect(element).not.toHaveClass('bar');
+    })
+  );
+
+  it('should remove the watcher when static map one-time binding',
+    inject(function($rootScope, $compile) {
+      element = $compile('<div ng-class="::{foo: fooPresent}"></div>')($rootScope);
+      $rootScope.$digest();
+
+      $rootScope.fooPresent = true;
+      $rootScope.$digest();
+      expect(element).toHaveClass('foo');
+
+      $rootScope.fooPresent = false;
+      $rootScope.$digest();
+      expect(element).toHaveClass('foo');
+    })
+  );
+
+  it('should track changes of mutating object inside an array',
+    inject(function($rootScope, $compile) {
+      $rootScope.classVar = [{orange: true}];
+      element = $compile('<div ng-class="classVar"></div>')($rootScope);
+      $rootScope.$digest();
+      expect(element).toHaveClass('orange');
+
+      $rootScope.classVar[0].orange = false;
+      $rootScope.$digest();
+
+      expect(element).not.toHaveClass('orange');
+    })
+  );
+
+  describe('large objects', function() {
+
+    var verylargeobject, getProp;
+    beforeEach(function() {
+      getProp = jasmine.createSpy('getProp');
+      verylargeobject = {};
+      Object.defineProperty(verylargeobject, 'prop', {
+        get: getProp,
+        enumerable: true
+      });
+    });
+
+    it('should not be copied if static', inject(function($rootScope, $compile) {
+      element = $compile('<div ng-class="{foo: verylargeobject}"></div>')($rootScope);
+      $rootScope.verylargeobject = verylargeobject;
+      $rootScope.$digest();
+
+      expect(getProp).not.toHaveBeenCalled();
+    }));
+
+    it('should not be copied if dynamic', inject(function($rootScope, $compile) {
+      $rootScope.fooClass = {foo: verylargeobject};
+      element = $compile('<div ng-class="fooClass"></div>')($rootScope);
+      $rootScope.$digest();
+
+      expect(getProp).not.toHaveBeenCalled();
+    }));
+
+    it('should not be copied if inside an array', inject(function($rootScope, $compile) {
+      element = $compile('<div ng-class="[{foo: verylargeobject}]"></div>')($rootScope);
+      $rootScope.verylargeobject = verylargeobject;
+      $rootScope.$digest();
+
+      expect(getProp).not.toHaveBeenCalled();
+    }));
+
+    it('should not be copied when one-time binding', inject(function($rootScope, $compile) {
+      element = $compile('<div ng-class="::{foo: verylargeobject}"></div>')($rootScope);
+      $rootScope.verylargeobject = verylargeobject;
+      $rootScope.$digest();
+
+      expect(getProp).not.toHaveBeenCalled();
+    }));
+
+  });
 
 });
 
