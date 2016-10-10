@@ -8,6 +8,7 @@
 
 function classDirective(name, selector) {
   name = 'ngClass' + name;
+  var indexWatchExpression;
 
   return ['$parse', function($parse) {
     return {
@@ -32,7 +33,14 @@ function classDirective(name, selector) {
         }
 
         if (name !== 'ngClass') {
-          scope.$watch('$index', ngClassIndexWatchAction);
+          if (!indexWatchExpression) {
+            indexWatchExpression = $parse('$index', function moduloTwo($index) {
+              // eslint-disable-next-line no-bitwise
+              return $index & 1;
+            });
+          }
+
+          scope.$watch(indexWatchExpression, ngClassIndexWatchAction);
         }
 
         scope.$watch(watchExpression, watchAction, isOneTime);
@@ -76,22 +84,17 @@ function classDirective(name, selector) {
           return classesToUpdate.join(' ');
         }
 
-        function ngClassIndexWatchAction($index) {
-          // eslint-disable-next-line no-bitwise
-          var newModulo = $index & 1;
-
-          if (newModulo !== oldModulo) {
-            // This watch-action should run before the `ngClass[OneTime]WatchAction()`, thus it
-            // adds/removes `oldClassString`. If the `ngClass` expression has changed as well, the
-            // `ngClass[OneTime]WatchAction()` will update the classes.
-            if (newModulo === selector) {
-              addClasses(oldClassString);
-            } else {
-              removeClasses(oldClassString);
-            }
-
-            oldModulo = newModulo;
+        function ngClassIndexWatchAction(newModulo) {
+          // This watch-action should run before the `ngClass[OneTime]WatchAction()`, thus it
+          // adds/removes `oldClassString`. If the `ngClass` expression has changed as well, the
+          // `ngClass[OneTime]WatchAction()` will update the classes.
+          if (newModulo === selector) {
+            addClasses(oldClassString);
+          } else {
+            removeClasses(oldClassString);
           }
+
+          oldModulo = newModulo;
         }
 
         function ngClassOneTimeWatchAction(newClassValue) {
