@@ -28,6 +28,8 @@
  *     the string with `!`.
  *     For example `{name: "!M"}` predicate will return an array of items which have property `name`
  *     not containing "M".
+ *     Note that if filtering for an exact match in javascript, you MUST wrap the object key in quotes.
+ *     For example: var john = $filter('filter')(friends, {'name': 'John'}, true)[0];
  *
  *     Note that a named property will match properties on the same level only, while the special
  *     `$` property will match properties on the same level or deeper. E.g. an array item like
