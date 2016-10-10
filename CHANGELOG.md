@@ -1,3 +1,17 @@
+<a name="1.4.13"></a>
+# 1.4.13 croaking-elderweed (2016-10-10)
+
+## Bug Fixes
+- **input:** ensure that hidden input values are correct after history back
+  ([693d1334](https://github.com/angular/angular.js/commit/693d1334566f78987f5a361a100db4f889f35abd)
+
+
+<a name="1.4.12"></a>
+# 1.4.12
+
+*Invalid release*
+
+
 <a name="1.4.11"></a>
 # 1.4.11 relentless-syncomania (2016-05-27)
 
