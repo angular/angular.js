@@ -73,12 +73,12 @@ Clone the [angular-phonecat repository][angular-phonecat] located at GitHub by r
 command:
 
 ```
-git clone --depth=14 https://github.com/angular/angular-phonecat.git
+git clone --depth=16 https://github.com/angular/angular-phonecat.git
 ```
 
 This command creates the `angular-phonecat` directory in your current directory.
 
-<div class="alert alert-info">The `--depth=14` option just tells Git to pull down only the last 14 commits.  This makes the
+<div class="alert alert-info">The `--depth=16` option just tells Git to pull down only the last 16 commits.  This makes the
 download much smaller and faster.
 </div>
 
