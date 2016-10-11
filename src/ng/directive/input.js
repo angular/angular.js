@@ -899,16 +899,11 @@ var inputDirective = ['$browser', '$sniffer', function($browser, $sniffer) {
   return {
     restrict: 'E',
     require: '?ngModel',
-    compile: function(tElement, tAttr) {
-      if (lowercase(tAttr.type) === 'hidden') tAttr.$set('autocomplete', 'off');
-      return {
-        pre: function(scope, element, attr, ctrl) {
-          if (ctrl) {
-            (inputType[lowercase(attr.type)] || inputType.text)(scope, element, attr, ctrl, $sniffer,
-                                                                $browser);
-          }
-        }
-      };
+    link: function(scope, element, attr, ctrl) {
+      if (ctrl) {
+        (inputType[lowercase(attr.type)] || inputType.text)(scope, element, attr, ctrl, $sniffer,
+                                                            $browser);
+      }
     }
   };
 }];
