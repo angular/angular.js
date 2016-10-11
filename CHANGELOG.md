@@ -1,9 +1,24 @@
+<a name="1.2.32"></a>
+# 1.2.32 alternation-intention (2016-10-10)
+
+This release reverts the fix in 1.2.31 and provides an alternative fix that doesn't break Angular Material.
+
+## Reverts
+
+- **input:** ensure that hidden input values are correct after history back
+  ([ed44dd065](https://github.com/angular/angular.js/commit/ed44dd0659f346ced78a112e4a2b30d3af4fd572))
+
+## Bug Fixes
+- **$compile:** ensure that hidden input values are correct after history back
+  ([b8a0ecdd6](https://github.com/angular/angular.js/commit/b8a0ecdd6189fb111734eb5b6d4d473d0dcf4c36))
+
+
 <a name="1.2.31"></a>
 # 1.2.31 barking-moustache (2016-10-10)
 
 ## Bug Fixes
 - **input:** ensure that hidden input values are correct after history back
-  ([7ec663fc](https://github.com/angular/angular.js/commit/7ec663fc708aa7a9a9ce62d2306f24d7a733a86d)
+  ([7ec663fc](https://github.com/angular/angular.js/commit/7ec663fc708aa7a9a9ce62d2306f24d7a733a86d))
 
 
 <a name="1.2.30"></a>
