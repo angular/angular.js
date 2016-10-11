@@ -1,5 +1,3 @@
-'use strict';
-
 describe('hidden thingy', function() {
   it('should pass', function() {
 
