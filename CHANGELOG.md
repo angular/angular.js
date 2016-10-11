@@ -1,9 +1,39 @@
+<a name="1.4.14"></a>
+# 1.4.14 material-distinction (2016-10-10)
+
+This release reverts the fix in 1.4.13 and provides an alternative fix that doesn't break Angular Material.
+
+## Reverts
+
+- **input:** ensure that hidden input values are correct after history back
+  ([ff7451129](https://github.com/angular/angular.js/commit/ff745112915ffa8249520218139b1a8021cd06d0))
+
+## Bug Fixes
+- **$compile:** ensure that hidden input values are correct after history back
+  ([35f3a4a0e](https://github.com/angular/angular.js/commit/35f3a4a0e30fef0e019ca0ea2ae434428eaff83b))
+
+
+<a name="1.2.32"></a>
+# 1.2.32 alternation-intention (2016-10-10)
+
+This release reverts the fix in 1.2.31 and provides an alternative fix that doesn't break Angular Material.
+
+## Reverts
+
+- **input:** ensure that hidden input values are correct after history back
+  ([ed44dd065](https://github.com/angular/angular.js/commit/ed44dd0659f346ced78a112e4a2b30d3af4fd572))
+
+## Bug Fixes
+- **$compile:** ensure that hidden input values are correct after history back
+  ([b8a0ecdd6](https://github.com/angular/angular.js/commit/b8a0ecdd6189fb111734eb5b6d4d473d0dcf4c36))
+
+
 <a name="1.4.13"></a>
 # 1.4.13 croaking-elderweed (2016-10-10)
 
 ## Bug Fixes
 - **input:** ensure that hidden input values are correct after history back
-  ([693d1334](https://github.com/angular/angular.js/commit/693d1334566f78987f5a361a100db4f889f35abd)
+  ([693d1334](https://github.com/angular/angular.js/commit/693d1334566f78987f5a361a100db4f889f35abd))
 
 
 <a name="1.4.12"></a>
