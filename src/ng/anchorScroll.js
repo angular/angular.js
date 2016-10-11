@@ -11,6 +11,7 @@
  */
 function $AnchorScrollProvider() {
 
+
   var autoScrollingEnabled = true;
 
   /**
