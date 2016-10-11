@@ -777,6 +777,24 @@ describe('basic usage', function() {
     expect(json).toEqual({id: 123, number: '9876', $myProp: 'still here'});
   });
 
+  it('should not include $cancelRequest when resource is toJson\'ed', function() {
+    $httpBackend.whenGET('/CreditCard').respond({});
+
+    var CreditCard = $resource('/CreditCard', {}, {
+      get: {
+        method: 'GET',
+        cancellable: true
+      }
+    });
+
+    var card = CreditCard.get();
+    var json = card.toJSON();
+
+    expect(card.$cancelRequest).toBeDefined();
+    expect(json.$cancelRequest).toBeUndefined();
+  });
+
+
   describe('promise api', function() {
 
     var $rootScope;
