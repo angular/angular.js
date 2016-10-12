@@ -27,6 +27,13 @@ var SCE_CONTEXTS = {
 
 // Helper functions follow.
 
+var UNDERSCORE_LOWERCASE_REGEXP = /_([a-z])/g;
+
+function snakeToCamel(name) {
+  return name
+    .replace(UNDERSCORE_LOWERCASE_REGEXP, fnCamelCaseReplace);
+}
+
 function adjustMatcher(matcher) {
   if (matcher === 'self') {
     return matcher;
@@ -1054,13 +1061,13 @@ function $SceProvider() {
 
     forEach(SCE_CONTEXTS, function(enumValue, name) {
       var lName = lowercase(name);
-      sce[camelCase('parse_as_' + lName)] = function(expr) {
+      sce[snakeToCamel('parse_as_' + lName)] = function(expr) {
         return parse(enumValue, expr);
       };
-      sce[camelCase('get_trusted_' + lName)] = function(value) {
+      sce[snakeToCamel('get_trusted_' + lName)] = function(value) {
         return getTrusted(enumValue, value);
       };
-      sce[camelCase('trust_as_' + lName)] = function(value) {
+      sce[snakeToCamel('trust_as_' + lName)] = function(value) {
         return trustAs(enumValue, value);
       };
     });

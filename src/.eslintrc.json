@@ -123,7 +123,7 @@
     "BOOLEAN_ATTR": false,
     "ALIASED_ATTR": false,
     "jqNextId": false,
-    "camelCase": false,
+    "fnCamelCaseReplace": false,
     "jqLitePatchJQueryRemove": false,
     "JQLite": false,
     "jqLiteClone": false,
