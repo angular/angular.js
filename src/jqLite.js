@@ -530,7 +530,7 @@ function jqLiteReady(fn) {
 
   // check if document is already loaded
   if (window.document.readyState === 'complete') {
-    window.setTimeout(trigger);
+    window.setTimeout(fn);
   } else {
     // We can not use jqLite since we are not done loading and jQuery could be loaded later.
 
