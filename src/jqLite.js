@@ -136,22 +136,31 @@ JQLite._data = function(node) {
 function jqNextId() { return ++jqId; }
 
 
-var SPECIAL_CHARS_REGEXP = /([:\-_]+(.))/g;
-var MOZ_HACK_REGEXP = /^moz([A-Z])/;
+var DASH_LOWERCASE_REGEXP = /-([a-z])/g;
+var MS_HACK_REGEXP = /^-ms-/;
 var MOUSE_EVENT_MAP = { mouseleave: 'mouseout', mouseenter: 'mouseover' };
 var jqLiteMinErr = minErr('jqLite');
 
 /**
- * Converts snake_case to camelCase.
- * Also there is special case for Moz prefix starting with upper case letter.
+ * Converts kebab-case to camelCase.
+ * There is also a special case for the ms prefix starting with a lowercase letter.
  * @param name Name to normalize
  */
-function camelCase(name) {
-  return name.
-    replace(SPECIAL_CHARS_REGEXP, function(_, separator, letter, offset) {
-      return offset ? letter.toUpperCase() : letter;
-    }).
-    replace(MOZ_HACK_REGEXP, 'Moz$1');
+function cssKebabToCamel(name) {
+    return kebabToCamel(name.replace(MS_HACK_REGEXP, 'ms-'));
+}
+
+function fnCamelCaseReplace(all, letter) {
+  return letter.toUpperCase();
+}
+
+/**
+ * Converts kebab-case to camelCase.
+ * @param name Name to normalize
+ */
+function kebabToCamel(name) {
+  return name
+    .replace(DASH_LOWERCASE_REGEXP, fnCamelCaseReplace);
 }
 
 var SINGLE_TAG_REGEXP = /^<([\w-]+)\s*\/?>(?:<\/\1>|)$/;
@@ -633,7 +642,7 @@ forEach({
   hasClass: jqLiteHasClass,
 
   css: function(element, name, value) {
-    name = camelCase(name);
+    name = cssKebabToCamel(name);
 
     if (isDefined(value)) {
       element.style[name] = value;

@@ -118,7 +118,8 @@
     /* jqLite.js */
     "BOOLEAN_ATTR": false,
     "jqNextId": false,
-    "camelCase": false,
+    "kebabToCamel": false,
+    "fnCamelCaseReplace": false,
     "jqLitePatchJQueryRemove": false,
     "JQLite": false,
     "jqLiteClone": false,

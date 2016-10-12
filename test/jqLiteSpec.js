@@ -1055,6 +1055,105 @@ describe('jqLite', function() {
       expect(jqA.css('z-index')).toBeOneOf('7', 7);
       expect(jqA.css('zIndex')).toBeOneOf('7', 7);
     });
+
+    it('should leave non-dashed strings alone', function() {
+      var jqA = jqLite(a);
+
+      jqA.css('foo', 'foo');
+      jqA.css('fooBar', 'bar');
+
+      expect(a.style.foo).toBe('foo');
+      expect(a.style.fooBar).toBe('bar');
+    });
+
+    it('should convert dash-separated strings to camelCase', function() {
+      var jqA = jqLite(a);
+
+      jqA.css('foo-bar', 'foo');
+      jqA.css('foo-bar-baz', 'bar');
+      jqA.css('foo:bar_baz', 'baz');
+
+      expect(a.style.fooBar).toBe('foo');
+      expect(a.style.fooBarBaz).toBe('bar');
+      expect(a.style['foo:bar_baz']).toBe('baz');
+    });
+
+    it('should convert leading dashes followed by a lowercase letter', function() {
+      var jqA = jqLite(a);
+
+      jqA.css('-foo-bar', 'foo');
+
+      expect(a.style.FooBar).toBe('foo');
+    });
+
+    it('should not convert slashes followed by a non-letter', function() {
+      // jQuery 2.x had different behavior; skip the test.
+      if (isJQuery2x()) return;
+
+      var jqA = jqLite(a);
+
+      jqA.css('foo-42- -a-B', 'foo');
+
+      expect(a.style['foo-42- A-B']).toBe('foo');
+    });
+
+    it('should convert the -ms- prefix to ms instead of Ms', function() {
+      var jqA = jqLite(a);
+
+      jqA.css('-ms-foo-bar', 'foo');
+      jqA.css('-moz-foo-bar', 'bar');
+      jqA.css('-webkit-foo-bar', 'baz');
+
+      expect(a.style.msFooBar).toBe('foo');
+      expect(a.style.MozFooBar).toBe('bar');
+      expect(a.style.WebkitFooBar).toBe('baz');
+    });
+
+    it('should not collapse sequences of dashes', function() {
+      var jqA = jqLite(a);
+
+      jqA.css('foo---bar-baz--qaz', 'foo');
+
+      expect(a.style['foo--BarBaz-Qaz']).toBe('foo');
+    });
+
+
+    it('should read vendor prefixes with the special -ms- exception', function() {
+      // jQuery uses getComputedStyle() in a css getter so these tests would fail there.
+      if (!_jqLiteMode) return;
+
+      var jqA = jqLite(a);
+
+      a.style.WebkitFooBar = 'webkit-uppercase';
+      a.style.webkitFooBar = 'webkit-lowercase';
+
+      a.style.MozFooBaz = 'moz-uppercase';
+      a.style.mozFooBaz = 'moz-lowercase';
+
+      a.style.MsFooQaz = 'ms-uppercase';
+      a.style.msFooQaz = 'ms-lowercase';
+
+      expect(jqA.css('-webkit-foo-bar')).toBe('webkit-uppercase');
+      expect(jqA.css('-moz-foo-baz')).toBe('moz-uppercase');
+      expect(jqA.css('-ms-foo-qaz')).toBe('ms-lowercase');
+    });
+
+    it('should write vendor prefixes with the special -ms- exception', function() {
+      var jqA = jqLite(a);
+
+      jqA.css('-webkit-foo-bar', 'webkit');
+      jqA.css('-moz-foo-baz', 'moz');
+      jqA.css('-ms-foo-qaz', 'ms');
+
+      expect(a.style.WebkitFooBar).toBe('webkit');
+      expect(a.style.webkitFooBar).not.toBeDefined();
+
+      expect(a.style.MozFooBaz).toBe('moz');
+      expect(a.style.mozFooBaz).not.toBeDefined();
+
+      expect(a.style.MsFooQaz).not.toBeDefined();
+      expect(a.style.msFooQaz).toBe('ms');
+    });
   });
 
 
@@ -2267,25 +2366,35 @@ describe('jqLite', function() {
   });
 
 
-  describe('camelCase', function() {
+  describe('kebabToCamel', function() {
     it('should leave non-dashed strings alone', function() {
-      expect(camelCase('foo')).toBe('foo');
-      expect(camelCase('')).toBe('');
-      expect(camelCase('fooBar')).toBe('fooBar');
+      expect(kebabToCamel('foo')).toBe('foo');
+      expect(kebabToCamel('')).toBe('');
+      expect(kebabToCamel('fooBar')).toBe('fooBar');
     });
 
-
-    it('should covert dash-separated strings to camelCase', function() {
-      expect(camelCase('foo-bar')).toBe('fooBar');
-      expect(camelCase('foo-bar-baz')).toBe('fooBarBaz');
-      expect(camelCase('foo:bar_baz')).toBe('fooBarBaz');
+    it('should convert dash-separated strings to camelCase', function() {
+      expect(kebabToCamel('foo-bar')).toBe('fooBar');
+      expect(kebabToCamel('foo-bar-baz')).toBe('fooBarBaz');
+      expect(kebabToCamel('foo:bar_baz')).toBe('foo:bar_baz');
     });
 
+    it('should convert leading dashes followed by a lowercase letter', function() {
+      expect(kebabToCamel('-foo-bar')).toBe('FooBar');
+    });
 
-    it('should covert browser specific css properties', function() {
-      expect(camelCase('-moz-foo-bar')).toBe('MozFooBar');
-      expect(camelCase('-webkit-foo-bar')).toBe('webkitFooBar');
-      expect(camelCase('-webkit-foo-bar')).toBe('webkitFooBar');
+    it('should not convert dashes followed by a non-letter', function() {
+      expect(kebabToCamel('foo-42- -a-B')).toBe('foo-42- A-B');
+    });
+
+    it('should not convert browser specific css properties in a special way', function() {
+      expect(kebabToCamel('-ms-foo-bar')).toBe('MsFooBar');
+      expect(kebabToCamel('-moz-foo-bar')).toBe('MozFooBar');
+      expect(kebabToCamel('-webkit-foo-bar')).toBe('WebkitFooBar');
+    });
+
+    it('should not collapse sequences of dashes', function() {
+      expect(kebabToCamel('foo---bar-baz--qaz')).toBe('foo--BarBaz-Qaz');
     });
   });
 
