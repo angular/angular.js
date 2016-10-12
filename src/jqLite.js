@@ -522,11 +522,9 @@ function jqLiteDocumentLoaded(action, win) {
 }
 
 function jqLiteReady(fn) {
-  var fired = false;
-
   function trigger() {
-    if (fired) return;
-    fired = true;
+    window.document.removeEventListener('DOMContentLoaded', trigger);
+    window.removeEventListener('load', trigger);
     fn();
   }
 
