@@ -1532,13 +1532,62 @@ function parseNumberAttrVal(val) {
   return !isNumberNaN(val) ? val : undefined;
 }
 
+function isNumberInteger(num) {
+  // See http://stackoverflow.com/questions/14636536/how-to-check-if-a-variable-is-an-integer-in-javascript#14794066
+  // (minus the assumption that `num` is a number)
+
+  // eslint-disable-next-line no-bitwise
+  return (num | 0) === num;
+}
+
+function countDecimals(num) {
+  var numString = num.toString();
+  var decimalSymbolIndex = numString.indexOf('.');
+
+  if (decimalSymbolIndex === -1) {
+    if (-1 < num && num < 1) {
+      // It may be in the exponential notation format (`1e-X`)
+      var match = /e-(\d+)$/.exec(numString);
+
+      if (match) {
+        return Number(match[1]);
+      }
+    }
+
+    return 0;
+  }
+
+  return numString.length - decimalSymbolIndex - 1;
+}
+
+function isValidForStep(viewValue, stepBase, step) {
+  // At this point `stepBase` and `step` are expected to be non-NaN values
+  // and `viewValue` is expected to be a valid stringified number.
+  var value = Number(viewValue);
+
+  // Due to limitations in Floating Point Arithmetic (e.g. `0.3 - 0.2 !== 0.1` or
+  // `0.5 % 0.1 !== 0`), we need to convert all numbers to integers.
+  if (!isNumberInteger(value) || !isNumberInteger(stepBase) || !isNumberInteger(step)) {
+    var decimalCount = Math.max(countDecimals(value), countDecimals(stepBase), countDecimals(step));
+    var multiplier = Math.pow(10, decimalCount);
+
+    value = value * multiplier;
+    stepBase = stepBase * multiplier;
+    step = step * multiplier;
+  }
+
+  return (value - stepBase) % step === 0;
+}
+
 function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   badInputChecker(scope, element, attr, ctrl);
   numberFormatterParser(ctrl);
   baseInputType(scope, element, attr, ctrl, $sniffer, $browser);
 
+  var minVal;
+  var maxVal;
+
   if (isDefined(attr.min) || attr.ngMin) {
-    var minVal;
     ctrl.$validators.min = function(value) {
       return ctrl.$isEmpty(value) || isUndefined(minVal) || value >= minVal;
     };
@@ -1551,7 +1600,6 @@ function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   }
 
   if (isDefined(attr.max) || attr.ngMax) {
-    var maxVal;
     ctrl.$validators.max = function(value) {
       return ctrl.$isEmpty(value) || isUndefined(maxVal) || value <= maxVal;
     };
@@ -1566,7 +1614,8 @@ function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   if (isDefined(attr.step) || attr.ngStep) {
     var stepVal;
     ctrl.$validators.step = function(modelValue, viewValue) {
-      return ctrl.$isEmpty(viewValue) || isUndefined(stepVal) || viewValue % stepVal === 0;
+      return ctrl.$isEmpty(viewValue) || isUndefined(stepVal) ||
+             isValidForStep(viewValue, minVal || 0, stepVal);
     };
 
     attr.$observe('step', function(val) {
@@ -1636,7 +1685,8 @@ function rangeInputType(scope, element, attr, ctrl, $sniffer, $browser) {
       } :
       // ngStep doesn't set the setp attr, so the browser doesn't adjust the input value as setting step would
       function stepValidator(modelValue, viewValue) {
-        return ctrl.$isEmpty(viewValue) || isUndefined(stepVal) || viewValue % stepVal === 0;
+        return ctrl.$isEmpty(viewValue) || isUndefined(stepVal) ||
+               isValidForStep(viewValue, minVal || 0, stepVal);
       };
 
     setInitialValueAndObserver('step', stepChange);
