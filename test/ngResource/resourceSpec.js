@@ -29,6 +29,9 @@ describe('basic usage', function() {
         }
       }
 
+    },
+    {
+      cancellable: true
     });
     callback = jasmine.createSpy('callback');
   }));
@@ -746,6 +749,7 @@ describe('basic usage', function() {
 
     expect(cc.$promise).toBeDefined();
     expect(cc.$resolved).toBe(true);
+    expect(cc.$cancelRequest).toBeDefined();
 
     var json = JSON.parse(angular.toJson(cc));
     expect(json.$promise).not.toBeDefined();
