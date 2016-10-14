@@ -48,8 +48,8 @@ function parseAppUrl(relativeUrl, locationObj) {
   }
 }
 
-function startsWith(haystack, needle) {
-  return haystack.indexOf(needle) === 0;
+function startsWith(str, search) {
+  return str.slice(0, search.length) === search;
 }
 
 /**
