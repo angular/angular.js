@@ -1201,41 +1201,52 @@ describe('$compile', function() {
           });
         });
 
-        it('should fail if replacing and template doesn\'t have a single root element', function() {
-          module(function() {
-            directive('noRootElem', function() {
+        describe('replace and not exactly one root element', function() {
+          var templateVar;
+
+          beforeEach(module(function() {
+            directive('template', function() {
               return {
                 replace: true,
-                template: 'dada'
+                template: function() {
+                  return templateVar;
+                }
               };
             });
-            directive('multiRootElem', function() {
-              return {
-                replace: true,
-                template: '<div></div><div></div>'
-              };
-            });
-            directive('singleRootWithWhiteSpace', function() {
-              return {
-                replace: true,
-                template: '  <div></div> \n'
-              };
-            });
+          }));
+
+          they('should throw if: $prop',
+            {
+              'no root element': 'dada',
+              'multiple root elements': '<div></div><div></div>'
+            }, function(directiveTemplate) {
+
+              inject(function($compile) {
+                templateVar = directiveTemplate;
+                expect(function() {
+                  $compile('<p template></p>');
+                }).toThrowMinErr('$compile', 'tplrt',
+                  'Template for directive \'template\' must have exactly one root element.'
+                );
+              });
           });
 
-          inject(function($compile) {
-            expect(function() {
-              $compile('<p no-root-elem></p>');
-            }).toThrowMinErr('$compile', 'tplrt', 'Template for directive \'noRootElem\' must have exactly one root element. ');
+          they('should not throw if the root element is accompanied by: $prop',
+            {
+              'whitespace': '  <div>Hello World!</div> \n',
+              'comments': '<!-- oh hi --><div>Hello World!</div> \n',
+              'comments + whitespace': '  <!-- oh hi -->  <div>Hello World!</div>  <!-- oh hi -->\n'
+            }, function(directiveTemplate) {
 
-            expect(function() {
-              $compile('<p multi-root-elem></p>');
-            }).toThrowMinErr('$compile', 'tplrt', 'Template for directive \'multiRootElem\' must have exactly one root element. ');
-
-            // ws is ok
-            expect(function() {
-              $compile('<p single-root-with-white-space></p>');
-            }).not.toThrow();
+              inject(function($compile, $rootScope) {
+                templateVar = directiveTemplate;
+                var element;
+                expect(function() {
+                  element = $compile('<p template></p>')($rootScope);
+                }).not.toThrow();
+                expect(element.length).toBe(1);
+                expect(element.text()).toBe('Hello World!');
+              });
           });
         });
 
@@ -1347,38 +1358,6 @@ describe('$compile', function() {
             });
           });
         }
-
-        it('should ignore comment nodes when replacing with a template', function() {
-          module(function() {
-            directive('replaceWithComments', valueFn({
-              replace: true,
-              template: '<!-- ignored comment --><p>Hello, world!</p><!-- ignored comment-->'
-            }));
-          });
-          inject(function($compile, $rootScope) {
-            expect(function() {
-              element = $compile('<div><div replace-with-comments></div></div>')($rootScope);
-            }).not.toThrow();
-            expect(element.find('p').length).toBe(1);
-            expect(element.find('p').text()).toBe('Hello, world!');
-          });
-        });
-
-        it('should ignore whitespace betwee comment and root node when replacing with a template', function() {
-          module(function() {
-            directive('replaceWithWhitespace', valueFn({
-              replace: true,
-              template: '<!-- ignored comment --> <p>Hello, world!</p> <!-- ignored comment-->'
-            }));
-          });
-          inject(function($compile, $rootScope) {
-            expect(function() {
-              element = $compile('<div><div replace-with-whitespace></div></div>')($rootScope);
-            }).not.toThrow();
-            expect(element.find('p').length).toBe(1);
-            expect(element.find('p').text()).toBe('Hello, world!');
-          });
-        });
 
         it('should keep prototype properties on directive', function() {
           module(function() {
@@ -2078,10 +2057,9 @@ describe('$compile', function() {
           }
         ));
 
+        describe('replace and not exactly one root element', function() {
 
-        it('should fail if replacing and template doesn\'t have a single root element', function() {
-          module(function($exceptionHandlerProvider) {
-            $exceptionHandlerProvider.mode('log');
+          beforeEach(module(function() {
 
             directive('template', function() {
               return {
@@ -2089,45 +2067,44 @@ describe('$compile', function() {
                 templateUrl: 'template.html'
               };
             });
+          }));
+
+          they('should throw if: $prop',
+            {
+              'no root element': 'dada',
+              'multiple root elements': '<div></div><div></div>'
+            }, function(directiveTemplate) {
+
+              inject(function($compile, $templateCache, $rootScope, $exceptionHandler) {
+                $templateCache.put('template.html', directiveTemplate);
+                $compile('<p template></p>')($rootScope);
+                $rootScope.$digest();
+
+                expect($exceptionHandler.errors.pop()).toEqualMinErr('$compile', 'tplrt',
+                  'Template for directive \'template\' must have exactly one root element. ' +
+                  'template.html'
+                );
+              });
           });
 
-          inject(function($compile, $templateCache, $rootScope, $exceptionHandler) {
-            // no root element
-            $templateCache.put('template.html', 'dada');
-            $compile('<p template></p>');
-            $rootScope.$digest();
-            expect($exceptionHandler.errors.pop()).toEqualMinErr('$compile', 'tplrt',
-                'Template for directive \'template\' must have exactly one root element. ' +
-                'template.html');
+          they('should not throw if the root element is accompanied by: $prop',
+            {
+              'whitespace': '  <div>Hello World!</div> \n',
+              'comments': '<!-- oh hi --><div>Hello World!</div> \n',
+              'comments + whitespace': '  <!-- oh hi -->  <div>Hello World!</div>  <!-- oh hi -->\n'
+            }, function(directiveTemplate) {
 
-            // multi root
-            $templateCache.put('template.html', '<div></div><div></div>');
-            $compile('<p template></p>');
-            $rootScope.$digest();
-            expect($exceptionHandler.errors.pop()).toEqualMinErr('$compile', 'tplrt',
-                'Template for directive \'template\' must have exactly one root element. ' +
-                'template.html');
-
-            // ws is ok
-            $templateCache.put('template.html', '  <div></div> \n');
-            $compile('<p template></p>');
-            $rootScope.$apply();
-            expect($exceptionHandler.errors).toEqual([]);
-
-            // comments are ok
-            $templateCache.put('template.html', '<!-- oh hi --><div></div> \n');
-            $compile('<p template></p>');
-            $rootScope.$apply();
-            expect($exceptionHandler.errors).toEqual([]);
-
-            // white space around comments is ok
-            $templateCache.put('template.html', '  <!-- oh hi -->  <div></div>  <!-- oh hi -->\n');
-            $compile('<p template></p>');
-            $rootScope.$apply();
-            expect($exceptionHandler.errors).toEqual([]);
+              inject(function($compile, $templateCache, $rootScope) {
+                $templateCache.put('template.html', directiveTemplate);
+                element = $compile('<p template></p>')($rootScope);
+                expect(function() {
+                  $rootScope.$digest();
+                }).not.toThrow();
+                expect(element.length).toBe(1);
+                expect(element.text()).toBe('Hello World!');
+              });
           });
         });
-
 
         it('should resume delayed compilation without duplicates when in a repeater', function() {
           // this is a test for a regression
@@ -2316,45 +2293,6 @@ describe('$compile', function() {
             });
           });
         }
-
-        it('should ignore comment nodes when replacing with a templateUrl', function() {
-          module(function() {
-            directive('replaceWithComments', valueFn({
-              replace: true,
-              templateUrl: 'templateWithComments.html'
-            }));
-          });
-          inject(function($compile, $rootScope, $httpBackend) {
-            $httpBackend.whenGET('templateWithComments.html').
-              respond('<!-- ignored comment --><p>Hello, world!</p><!-- ignored comment-->');
-            expect(function() {
-              element = $compile('<div><div replace-with-comments></div></div>')($rootScope);
-            }).not.toThrow();
-            $httpBackend.flush();
-            expect(element.find('p').length).toBe(1);
-            expect(element.find('p').text()).toBe('Hello, world!');
-          });
-        });
-
-        it('should ignore whitespace between comment and root node when replacing with a templateUrl', function() {
-          module(function() {
-            directive('replaceWithWhitespace', valueFn({
-              replace: true,
-              templateUrl: 'templateWithWhitespace.html'
-            }));
-          });
-          inject(function($compile, $rootScope, $httpBackend) {
-            $httpBackend.whenGET('templateWithWhitespace.html').
-              respond('<!-- ignored comment --> <p>Hello, world!</p> <!-- ignored comment-->');
-            expect(function() {
-              element = $compile('<div><div replace-with-whitespace></div></div>')($rootScope);
-            }).not.toThrow();
-            $httpBackend.flush();
-            expect(element.find('p').length).toBe(1);
-            expect(element.find('p').text()).toBe('Hello, world!');
-          });
-        });
-
 
         it('should keep prototype properties on sync version of async directive', function() {
           module(function() {
