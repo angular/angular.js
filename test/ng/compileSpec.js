@@ -2044,7 +2044,9 @@ describe('$compile', function() {
 
         describe('replace and not exactly one root element', function() {
 
-          beforeEach(module(function() {
+          beforeEach(module(function($exceptionHandlerProvider) {
+
+            $exceptionHandlerProvider.mode('log');
 
             directive('template', function() {
               return {
