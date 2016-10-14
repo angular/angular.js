@@ -2731,7 +2731,8 @@ describe('input', function() {
           expect(inputElm).toBeValid();
           expect($rootScope.value).toBe(8);
 
-          $rootScope.$apply('min = 10; step = 20; value = 30');
+          $rootScope.$apply('min = 10; step = 20');
+          helper.changeInputValueTo('30');
           expect(inputElm.val()).toBe('30');
           expect(inputElm).toBeValid();
           expect($rootScope.value).toBe(30);
@@ -2748,7 +2749,8 @@ describe('input', function() {
           expect($rootScope.value).toBe(30);
 
           // 0.3 - 0.2 === 0.09999999999999998
-          $rootScope.$apply('min = 0.2; step = 0.09999999999999998; value = 0.3');
+          $rootScope.$apply('min = 0.2; step = (0.3 - 0.2)');
+          helper.changeInputValueTo('0.3');
           expect(inputElm.val()).toBe('0.3');
           expect(inputElm).toBeInvalid();
           expect(ngModel.$error.step).toBe(true);

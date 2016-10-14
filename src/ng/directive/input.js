@@ -1543,7 +1543,7 @@ function countDecimals(num) {
 
   if (decimalSymbolIndex === -1) {
     if (-1 < num && num < 1) {
-      // It may be in the exponentional notation format (`1e-X`)
+      // It may be in the exponential notation format (`1e-X`)
       var match = /e-(\d+)$/.exec(numString);
 
       if (match) {
