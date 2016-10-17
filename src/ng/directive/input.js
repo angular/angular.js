@@ -1562,8 +1562,8 @@ function isValidForStep(viewValue, stepBase, step) {
   // and `viewValue` is expected to be a valid stringified number.
   var value = Number(viewValue);
 
-  // Due to limitations is Floating Point Arithmetic (e.g. `0.3 - 0.2 !== 0.1` or
-  // `0.5 % 0.1 !== 0`), we need to make sure all numbers are integers before proceeding.
+  // Due to limitations in Floating Point Arithmetic (e.g. `0.3 - 0.2 !== 0.1` or
+  // `0.5 % 0.1 !== 0`), we need to convert all numbers to integers.
   if (!isNumberInteger(value) || !isNumberInteger(stepBase) || !isNumberInteger(step)) {
     var decimalCount = Math.max(countDecimals(value), countDecimals(stepBase), countDecimals(step));
     var multiplier = Math.pow(10, decimalCount);
