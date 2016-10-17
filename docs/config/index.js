@@ -23,6 +23,7 @@ module.exports = new Package('angularjs', [
 .factory(require('./services/deployments/default'))
 .factory(require('./services/deployments/jquery'))
 .factory(require('./services/deployments/production'))
+.factory(require('./services/deployments/plnkr'))
 
 .factory(require('./inline-tag-defs/type'))
 
@@ -150,7 +151,8 @@ module.exports = new Package('angularjs', [
   generateProtractorTestsProcessor,
   generateExamplesProcessor,
   debugDeployment, defaultDeployment,
-  jqueryDeployment, productionDeployment) {
+  jqueryDeployment, productionDeployment,
+  plnkrDeployment) {
 
   generateIndexPagesProcessor.deployments = [
     debugDeployment,
@@ -170,7 +172,8 @@ module.exports = new Package('angularjs', [
     debugDeployment,
     defaultDeployment,
     jqueryDeployment,
-    productionDeployment
+    productionDeployment,
+    plnkrDeployment
   ];
 })
 
