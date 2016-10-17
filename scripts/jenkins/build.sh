@@ -4,10 +4,10 @@ echo "#################################"
 echo "####  Jenkins Build  ############"
 echo "#################################"
 
+source scripts/jenkins/set-node-version.sh
+
 # Enable tracing and exit on first failure
 set -xe
-
-scripts/jenkins/set-node-version.sh
 
 # This is the default set of browsers to use on the CI server unless overridden via env variable
 if [[ -z "$BROWSERS" ]]
@@ -28,13 +28,13 @@ grunt ci-checks package --no-color
 mkdir -p test_out
 
 # UNIT TESTS #
-grunt test:unit --browsers $BROWSERS --reporters=dots,junit --no-colors --no-color
+grunt test:unit --browsers="$BROWSERS" --reporters=dots,junit --no-colors --no-color
 
 # END TO END TESTS #
 grunt test:ci-protractor
 
 # DOCS APP TESTS #
-grunt test:docs --browsers $BROWSERS --reporters=dots,junit --no-colors --no-color
+grunt test:docs --browsers="$BROWSERS" --reporters=dots,junit --no-colors --no-color
 
 # Promises/A+ TESTS #
 grunt test:promises-aplus --no-color

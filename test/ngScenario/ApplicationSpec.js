@@ -9,16 +9,16 @@ describe('angular.scenario.Application', function() {
   }
 
   beforeEach(function() {
-    document.body.innerHTML = '';
-    frames = _jQuery("<div></div>");
-    _jQuery(document.body).append(frames);
+    window.document.body.innerHTML = '';
+    frames = _jQuery('<div></div>');
+    _jQuery(window.document.body).append(frames);
     app = new angular.scenario.Application(frames);
   });
 
 
   afterEach(function() {
     _jQuery('iframe').off(); // cleanup any leftover onload handlers
-    document.body.innerHTML = '';
+    window.document.body.innerHTML = '';
   });
 
 
@@ -129,12 +129,12 @@ describe('angular.scenario.Application', function() {
       }
     };
     jqLite(testWindow.document).data('$injector', $injector);
-    var resumeBootstrapSpy = spyOn(testWindow.angular, 'resumeBootstrap').andReturn($injector);
+    var resumeBootstrapSpy = spyOn(testWindow.angular, 'resumeBootstrap').and.returnValue($injector);
 
     var injectorGet = $injector.get;
-    spyOn($injector, 'get').andCallFake(function(name) {
+    spyOn($injector, 'get').and.callFake(function(name) {
       switch (name) {
-        case "$rootElement": return jqLite(testWindow.document);
+        case '$rootElement': return jqLite(testWindow.document);
         default: return injectorGet(name);
       }
     });
@@ -162,9 +162,9 @@ describe('angular.scenario.Application', function() {
     jqLite(testWindow.document).data('$injector', $injector);
 
     var injectorGet = $injector.get;
-    var injectorSpy = spyOn($injector, 'get').andCallFake(function(name) {
+    var injectorSpy = spyOn($injector, 'get').and.callFake(function(name) {
       switch (name) {
-        case "$rootElement": return jqLite(testWindow.document);
+        case '$rootElement': return jqLite(testWindow.document);
         default: return injectorGet(name);
       }
     });
@@ -176,14 +176,14 @@ describe('angular.scenario.Application', function() {
     expect(testWindow.angular.resumeDeferredBootstrap).toBeUndefined();
     callLoadHandlers(app);
     expect(testWindow.angular.resumeDeferredBootstrap).toBeDefined();
-    expect(app.rootElement).toBeUndefined;
+    expect(app.rootElement).toBeUndefined();
     expect(injectorSpy).not.toHaveBeenCalled();
 
-    var resumeBootstrapSpy = spyOn(testWindow.angular, 'resumeBootstrap').andReturn($injector);
+    var resumeBootstrapSpy = spyOn(testWindow.angular, 'resumeBootstrap').and.returnValue($injector);
     testWindow.angular.resumeDeferredBootstrap();
     expect(app.rootElement).toBe(testWindow.document);
     expect(resumeBootstrapSpy).toHaveBeenCalled();
-    expect(injectorSpy).toHaveBeenCalledWith("$rootElement");
+    expect(injectorSpy).toHaveBeenCalledWith('$rootElement');
     dealoc(testWindow.document);
   }));
 

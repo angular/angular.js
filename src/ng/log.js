@@ -15,7 +15,7 @@
  * {@link ng.$logProvider ng.$logProvider#debugEnabled} to change this.
  *
  * @example
-   <example module="logExample">
+   <example module="logExample" name="log-service">
      <file name="script.js">
        angular.module('logExample', [])
          .controller('LogController', ['$scope', '$log', function($scope, $log) {
@@ -41,6 +41,8 @@
 /**
  * @ngdoc provider
  * @name $logProvider
+ * @this
+ *
  * @description
  * Use the `$logProvider` to configure how the application logs messages
  */
@@ -117,7 +119,7 @@ function $LogProvider() {
             fn.apply(self, arguments);
           }
         };
-      }())
+      })()
     };
 
     function formatError(arg) {
@@ -142,7 +144,7 @@ function $LogProvider() {
       // The reason behind this is that console.log has type "object" in IE8...
       try {
         hasApply = !!logFn.apply;
-      } catch (e) {}
+      } catch (e) { /* empty */ }
 
       if (hasApply) {
         return function() {

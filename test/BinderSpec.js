@@ -62,7 +62,7 @@ describe('Binder', function() {
   }));
 
   it('InputTypeButtonActionExecutesInScope2', inject(function($rootScope, $compile) {
-    var log = "";
+    var log = '';
     element = $compile('<input type="image" ng-click="action()">')($rootScope);
     $rootScope.action = function() {
       log += 'click;';
@@ -186,7 +186,7 @@ describe('Binder', function() {
 
       $rootScope.error['throw'] =  function() { return 'X';};
       $rootScope.$apply();
-      expect(errorLogs.length).toMatch(0);
+      expect(errorLogs.length).toMatch('0');
     });
   });
 
@@ -224,7 +224,7 @@ describe('Binder', function() {
   }));
 
   it('HideBindingExpression', inject(function($rootScope, $compile) {
-    element = $compile('<div ng-hide="hidden == 3"/>')($rootScope);
+    element = $compile('<div ng-hide="hidden === 3"/>')($rootScope);
 
     $rootScope.hidden = 3;
     $rootScope.$apply();
@@ -359,11 +359,11 @@ describe('Binder', function() {
 
   it('ShoulIgnoreVbNonBindable', inject(function($rootScope, $compile) {
     element = $compile(
-      "<div>{{a}}" +
-        "<div ng-non-bindable>{{a}}</div>" +
-        "<div ng-non-bindable=''>{{b}}</div>" +
-        "<div ng-non-bindable='true'>{{c}}</div>" +
-      "</div>")($rootScope);
+      '<div>{{a}}' +
+        '<div ng-non-bindable>{{a}}</div>' +
+        '<div ng-non-bindable=\'\'>{{b}}</div>' +
+        '<div ng-non-bindable=\'true\'>{{c}}</div>' +
+      '</div>')($rootScope);
     $rootScope.a = 123;
     $rootScope.$apply();
     expect(element.text()).toBe('123{{a}}{{b}}{{c}}');
@@ -371,7 +371,7 @@ describe('Binder', function() {
 
   it('ShouldTemplateBindPreElements', inject(function($rootScope, $compile) {
     element = $compile('<pre>Hello {{name}}!</pre>')($rootScope);
-    $rootScope.name = "World";
+    $rootScope.name = 'World';
     $rootScope.$apply();
 
     expect(sortedHtml(element)).toBe('<pre>Hello World!</pre>');
@@ -426,15 +426,15 @@ describe('Binder', function() {
   it('ItShouldRepeatOnHashes', inject(function($rootScope, $compile) {
     element = $compile(
       '<ul>' +
-        '<li ng-repeat="(k,v) in {a:0,b:1}" ng-bind=\"k + v\"></li>' +
+        '<li ng-repeat="(k,v) in {a:0,b:1}" ng-bind="k + v"></li>' +
       '</ul>')($rootScope);
     $rootScope.$apply();
     expect(sortedHtml(element)).toBe(
         '<ul>' +
           '<!-- ngRepeat: (k,v) in {a:0,b:1} -->' +
-          '<li ng-bind=\"k + v\" ng-repeat="(k,v) in {a:0,b:1}">a0</li>' +
+          '<li ng-bind="k + v" ng-repeat="(k,v) in {a:0,b:1}">a0</li>' +
           '<!-- end ngRepeat: (k,v) in {a:0,b:1} -->' +
-          '<li ng-bind=\"k + v\" ng-repeat="(k,v) in {a:0,b:1}">b1</li>' +
+          '<li ng-bind="k + v" ng-repeat="(k,v) in {a:0,b:1}">b1</li>' +
           '<!-- end ngRepeat: (k,v) in {a:0,b:1} -->' +
         '</ul>');
   }));

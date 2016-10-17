@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+'use strict';
+
 /**
  * this script is just a temporary solution to deal with the issue of npm outputting the npm
  * shrinkwrap file in an unstable manner.
@@ -35,4 +37,4 @@ cleanModule(shrinkwrap, shrinkwrap.name);
 
 var cleanShrinkwrapPath = path.join(__dirname, '..', '..', 'npm-shrinkwrap.clean.json');
 console.log('Writing cleaned to', cleanShrinkwrapPath);
-fs.writeFileSync(cleanShrinkwrapPath, JSON.stringify(sorted(shrinkwrap), null, 2) + "\n");
+fs.writeFileSync(cleanShrinkwrapPath, JSON.stringify(sorted(shrinkwrap), null, 2) + '\n');

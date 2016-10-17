@@ -1,5 +1,7 @@
 'use strict';
 
+/* exported $AnimateCssProvider */
+
 var ANIMATE_TIMER_KEY = '$$animateCss';
 
 /**
@@ -217,7 +219,6 @@ var ANIMATE_TIMER_KEY = '$$animateCss';
  * * `end` - This method will cancel the animation and remove all applied CSS classes and styles.
  */
 var ONE_SECOND = 1000;
-var BASE_TEN = 10;
 
 var ELAPSED_TIME_MAX_DECIMAL_PLACES = 3;
 var CLOSING_TIME_BUFFER = 1.5;
@@ -279,7 +280,7 @@ function parseMaxTime(str) {
   forEach(values, function(value) {
     // it's always safe to consider only second values and omit `ms` values since
     // getComputedStyle will always handle the conversion for us
-    if (value.charAt(value.length - 1) == 's') {
+    if (value.charAt(value.length - 1) === 's') {
       value = value.substring(0, value.length - 1);
     }
     value = parseFloat(value) || 0;
@@ -347,7 +348,7 @@ function registerRestorableStyles(backup, node, properties) {
   });
 }
 
-var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
+var $AnimateCssProvider = ['$animateProvider', /** @this */ function($animateProvider) {
   var gcsLookup = createLocalCacheLookup();
   var gcsStaggerLookup = createLocalCacheLookup();
 
@@ -360,7 +361,7 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
 
     var parentCounter = 0;
     function gcsHashFn(node, extraClasses) {
-      var KEY = "$$ngAnimateParentKey";
+      var KEY = '$$ngAnimateParentKey';
       var parentNode = node.parentNode;
       var parentID = parentNode[KEY] || (parentNode[KEY] = ++parentCounter);
       return parentID + '-' + node.getAttribute('class') + '-' + extraClasses;
@@ -411,7 +412,6 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
       return stagger || {};
     }
 
-    var cancelLastRAFRequest;
     var rafWaitQueue = [];
     function waitUntilQuiet(callback) {
       rafWaitQueue.push(callback);
@@ -600,7 +600,7 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
       var flags = {};
       flags.hasTransitions          = timings.transitionDuration > 0;
       flags.hasAnimations           = timings.animationDuration > 0;
-      flags.hasTransitionAll        = flags.hasTransitions && timings.transitionProperty == 'all';
+      flags.hasTransitionAll        = flags.hasTransitions && timings.transitionProperty === 'all';
       flags.applyTransitionDuration = hasToStyles && (
                                         (flags.hasTransitions && !flags.hasTransitionAll)
                                          || (flags.hasAnimations && !flags.hasTransitions));
@@ -632,7 +632,7 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
 
       if (options.delay != null) {
         var delayStyle;
-        if (typeof options.delay !== "boolean") {
+        if (typeof options.delay !== 'boolean') {
           delayStyle = parseFloat(options.delay);
           // number in options.delay means we have to recalculate the delay for the closing timeout
           maxDelay = Math.max(delayStyle, 0);
@@ -710,7 +710,7 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
         close(true);
       }
 
-      function close(rejected) { // jshint ignore:line
+      function close(rejected) {
         // if the promise has been called already then we shouldn't close
         // the animation again
         if (animationClosed || (animationCompleted && animationPaused)) return;
@@ -737,8 +737,11 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
 
         if (Object.keys(restoreStyles).length) {
           forEach(restoreStyles, function(value, prop) {
-            value ? node.style.setProperty(prop, value)
-                  : node.style.removeProperty(prop);
+            if (value) {
+              node.style.setProperty(prop, value);
+            } else {
+              node.style.removeProperty(prop);
+            }
           });
         }
 
@@ -754,6 +757,13 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
         if (events && events.length) {
           // Remove the transitionend / animationend listener(s)
           element.off(events.join(' '), onAnimationProgress);
+        }
+
+        //Cancel the fallback closing timeout and remove the timer data
+        var animationTimerData = element.data(ANIMATE_TIMER_KEY);
+        if (animationTimerData) {
+          $timeout.cancel(animationTimerData[0].timer);
+          element.removeData(ANIMATE_TIMER_KEY);
         }
 
         // if the preparation function fails then the promise is not setup
@@ -834,9 +844,11 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
             animationPaused = !playAnimation;
             if (timings.animationDuration) {
               var value = blockKeyframeAnimations(node, animationPaused);
-              animationPaused
-                  ? temporaryStyles.push(value)
-                  : removeFromArray(temporaryStyles, value);
+              if (animationPaused) {
+                temporaryStyles.push(value);
+              } else {
+                removeFromArray(temporaryStyles, value);
+              }
             }
           } else if (animationPaused && playAnimation) {
             animationPaused = false;
@@ -885,7 +897,7 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
           $$jqLite.addClass(element, activeClasses);
 
           if (flags.recalculateTimingStyles) {
-            fullClassName = node.className + ' ' + preparationClasses;
+            fullClassName = node.getAttribute('class') + ' ' + preparationClasses;
             cacheKey = gcsHashFn(node, fullClassName);
 
             timings = computeTimings(node, fullClassName, cacheKey);
@@ -903,7 +915,7 @@ var $AnimateCssProvider = ['$animateProvider', function($animateProvider) {
           }
 
           if (flags.applyAnimationDelay) {
-            relativeDelay = typeof options.delay !== "boolean" && truthyTimingValue(options.delay)
+            relativeDelay = typeof options.delay !== 'boolean' && truthyTimingValue(options.delay)
                   ? parseFloat(options.delay)
                   : relativeDelay;
 

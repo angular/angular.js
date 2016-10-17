@@ -1,197 +1,117 @@
 @ngdoc tutorial
-@name 8 - More Templating
+@name 8 - Templating Links & Images
 @step 8
 @description
 
 <ul doc-tutorial-nav="8"></ul>
 
 
-In this step, you will implement the phone details view, which is displayed when a user clicks on a
-phone in the phone list.
+In this step, we will add thumbnail images for the phones in the phone list, and links that, for
+now, will go nowhere. In subsequent steps, we will use the links to display additional information
+about the phones in the catalog.
 
-* When you click on a phone on the list, the phone details page with phone-specific information
-is displayed.
+* There are now links and images of the phones in the list.
 
-To implement the phone details view we are going to use {@link ng.$http $http} to fetch our data,
-and then flesh out the `phone-detail.html` view template.
 
 <div doc-tutorial-reset="8"></div>
 
 
 ## Data
 
-In addition to `phones.json`, the `app/phones/` directory also contains one JSON file for each
-phone:
+Note that the `phones.json` file contains unique IDs and image URLs for each of the phones. The
+URLs point to the `app/img/phones/` directory.
 
-__`app/phones/nexus-s.json`:__ (sample snippet)
+<br />
+**`app/phones/phones.json`** (sample snippet):
 
-```js
-{
-  "additionalFeatures": "Contour Display, Near Field Communications (NFC),...",
-  "android": {
-      "os": "Android 2.3",
-      "ui": "Android"
+```json
+[
+  {
+    ...
+    "id": "motorola-defy-with-motoblur",
+    "imageUrl": "img/phones/motorola-defy-with-motoblur.0.jpg",
+    "name": "Motorola DEFY\u2122 with MOTOBLUR\u2122",
+    ...
   },
   ...
-  "images": [
-      "img/phones/nexus-s.0.jpg",
-      "img/phones/nexus-s.1.jpg",
-      "img/phones/nexus-s.2.jpg",
-      "img/phones/nexus-s.3.jpg"
-  ],
-  "storage": {
-      "flash": "16384MB",
-      "ram": "512MB"
-  }
-}
+]
 ```
 
 
-Each of these files describes various properties of the phone using the same data structure. We'll
-show this data in the phone detail view.
+## Component Template
 
-
-## Controller
-
-We'll expand the `PhoneDetailCtrl` by using the `$http` service to fetch the JSON files. This works
-the same way as the phone list controller.
-
-__`app/js/controllers.js`:__
-
-```js
-var phonecatControllers = angular.module('phonecatControllers',[]);
-
-phonecatControllers.controller('PhoneDetailCtrl', ['$scope', '$routeParams', '$http',
-  function($scope, $routeParams, $http) {
-    $http.get('phones/' + $routeParams.phoneId + '.json').success(function(data) {
-      $scope.phone = data;
-    });
-  }]);
-```
-
-To construct the URL for the HTTP request, we use `$routeParams.phoneId` extracted from the current
-route by the `$route` service.
-
-
-## Template
-
-The TBD placeholder line has been replaced with lists and bindings that comprise the phone details.
-Note where we use the Angular `{{expression}}` markup and `ngRepeat` to project phone data from
-our model into the view.
-
-
-__`app/partials/phone-detail.html`:__
+<br />
+**`app/phone-list/phone-list.template.html`:**
 
 ```html
-<img ng-src="{{phone.images[0]}}" class="phone">
-
-<h1>{{phone.name}}</h1>
-
-<p>{{phone.description}}</p>
-
-<ul class="phone-thumbs">
-  <li ng-repeat="img in phone.images">
-    <img ng-src="{{img}}">
+...
+<ul class="phones">
+  <li ng-repeat="phone in $ctrl.phones | filter:$ctrl.query | orderBy:$ctrl.orderProp" class="thumbnail">
+    <a href="#/phones/{{phone.id}}" class="thumb">
+      <img ng-src="{{phone.imageUrl}}" alt="{{phone.name}}" />
+    </a>
+    <a href="#/phones/{{phone.id}}">{{phone.name}}</a>
+    <p>{{phone.snippet}}</p>
   </li>
 </ul>
+...
+```
 
-<ul class="specs">
-  <li>
-    <span>Availability and Networks</span>
-    <dl>
-      <dt>Availability</dt>
-      <dd ng-repeat="availability in phone.availability">{{availability}}</dd>
-    </dl>
-  </li>
+To dynamically generate links that will in the future lead to phone detail pages, we used the
+now-familiar double-curly brace binding in the `href` attribute values. In step 2, we added the
+`{{phone.name}}` binding as the element content. In this step the `{{phone.id}}` binding is used in
+the element attribute.
+
+We also added phone images next to each record using an image tag with the {@link ngSrc ngSrc}
+directive. That directive prevents the browser from treating the Angular `{{ expression }}` markup
+literally, and initiating a request to an invalid URL (`http://localhost:8000/{{phone.imageUrl}}`),
+which it would have done if we had only specified an attribute binding in a regular `src` attribute
+(`<img src="{{phone.imageUrl}}">`). Using the `ngSrc` directive, prevents the browser from making an
+HTTP request to an invalid location.
+
+
+# Testing
+
+<br />
+**`e2e-tests/scenarios.js`**:
+
+```js
     ...
-  <li>
-    <span>Additional Features</span>
-    <dd>{{phone.additionalFeatures}}</dd>
-  </li>
-</ul>
-```
 
-<div style="display: none">
-TODO!
-<img  class="diagram" src="img/tutorial/tutorial_08-09_final.png">
-</div>
+    it('should render phone specific links', function() {
+      var query = element(by.model('$ctrl.query'));
+      query.sendKeys('nexus');
 
-## Test
-
-We wrote a new unit test that is similar to the one we wrote for the `PhoneListCtrl` controller in
-step 5.
-
-__`test/unit/controllersSpec.js`:__
-
-```js
-
-  beforeEach(module('phonecatApp'));
-
-  ...
-
-  describe('PhoneDetailCtrl', function(){
-    var scope, $httpBackend, ctrl;
-
-    beforeEach(inject(function(_$httpBackend_, $rootScope, $routeParams, $controller) {
-      $httpBackend = _$httpBackend_;
-      $httpBackend.expectGET('phones/xyz.json').respond({name:'phone xyz'});
-
-      $routeParams.phoneId = 'xyz';
-      scope = $rootScope.$new();
-      ctrl = $controller('PhoneDetailCtrl', {$scope: scope});
-    }));
-
-
-    it('should fetch phone detail', function() {
-      expect(scope.phone).toBeUndefined();
-      $httpBackend.flush();
-
-      expect(scope.phone).toEqual({name:'phone xyz'});
-    });
-  });
-...
-```
-
-You should now see the following output in the Karma tab:
-
-<pre>Chrome 22.0: Executed 3 of 3 SUCCESS (0.039 secs / 0.012 secs)</pre>
-
-
-We also added a new end-to-end test that navigates to the Nexus S detail page and verifies that the
-heading on the page is "Nexus S".
-
-__`test/e2e/scenarios.js`:__
-
-```js
-...
-  describe('Phone detail view', function() {
-
-    beforeEach(function() {
-      browser.get('app/index.html#/phones/nexus-s');
+      element.all(by.css('.phones li a')).first().click();
+      expect(browser.getLocationAbsUrl()).toBe('/phones/nexus-s');
     });
 
-
-    it('should display nexus-s page', function() {
-      expect(element(by.binding('phone.name')).getText()).toBe('Nexus S');
-    });
-  });
-...
+    ...
 ```
 
+We added a new E2E test to verify that the application is generating correct links to the phone
+views, that we will implement in the upcoming steps.
 
 You can now rerun `npm run protractor` to see the tests run.
 
 
 # Experiments
 
-* Using the [Protractor API](http://angular.github.io/protractor/#/api),
-write a test that verifies that we display 4 thumbnail images on the Nexus S details page.
+<div></div>
+
+* Replace the `ngSrc` directive with a plain old `src` attribute. Using tools such as your browser's
+  developer tools or inspecting the web server access logs, confirm that the application is indeed
+  making an extraneous request to `%7B%7Bphone.imageUrl%7D%7D` (or `{{phone.imageUrl}}`).
+
+  The issue here is that the browser will fire a request for that invalid image address as soon as
+  it hits the `<img>` tag, which is before Angular has a chance to evaluate the expression and
+  inject the valid address.
 
 
 # Summary
 
-Now that the phone details view is in place, proceed to {@link step_09 step 9} to learn how to
-write your own custom display filter.
+Now that you have added phone images and links, go to {@link step_09 step 9} to learn about Angular
+layout templates and how Angular makes it easy to create applications that have multiple views.
 
 
 <ul doc-tutorial-nav="8"></ul>

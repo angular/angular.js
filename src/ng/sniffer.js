@@ -1,11 +1,14 @@
 'use strict';
 
+/* exported $SnifferProvider */
+
 /**
  * !!! This is an undocumented "private" service !!!
  *
  * @name $sniffer
  * @requires $window
  * @requires $document
+ * @this
  *
  * @property {boolean} history Does the browser support html5 history api ?
  * @property {boolean} transitions Does the browser support CSS transition events ?
@@ -17,6 +20,16 @@
 function $SnifferProvider() {
   this.$get = ['$window', '$document', function($window, $document) {
     var eventSupport = {},
+        // Chrome Packaged Apps are not allowed to access `history.pushState`.
+        // If not sandboxed, they can be detected by the presence of `chrome.app.runtime`
+        // (see https://developer.chrome.com/apps/api_index). If sandboxed, they can be detected by
+        // the presence of an extension runtime ID and the absence of other Chrome runtime APIs
+        // (see https://developer.chrome.com/apps/manifest/sandbox).
+        isChromePackagedApp =
+            $window.chrome &&
+            ($window.chrome.app && $window.chrome.app.runtime ||
+                !$window.chrome.app && $window.chrome.runtime && $window.chrome.runtime.id),
+        hasHistoryPushState = !isChromePackagedApp && $window.history && $window.history.pushState,
         android =
           toInt((/android (\d+)/.exec(lowercase(($window.navigator || {}).userAgent)) || [])[1]),
         boxee = /Boxee/i.test(($window.navigator || {}).userAgent),
@@ -30,9 +43,9 @@ function $SnifferProvider() {
 
     if (bodyStyle) {
       for (var prop in bodyStyle) {
-        if (match = vendorRegex.exec(prop)) {
+        if ((match = vendorRegex.exec(prop))) {
           vendorPrefix = match[0];
-          vendorPrefix = vendorPrefix.substr(0, 1).toUpperCase() + vendorPrefix.substr(1);
+          vendorPrefix = vendorPrefix[0].toUpperCase() + vendorPrefix.substr(1);
           break;
         }
       }
@@ -60,9 +73,7 @@ function $SnifferProvider() {
       // older webkit browser (533.9) on Boxee box has exactly the same problem as Android has
       // so let's not use the history API also
       // We are purposefully using `!(android < 4)` to cover the case when `android` is undefined
-      // jshint -W018
-      history: !!($window.history && $window.history.pushState && !(android < 4) && !boxee),
-      // jshint +W018
+      history: !!(hasHistoryPushState && !(android < 4) && !boxee),
       hasEvent: function(event) {
         // IE9 implements 'input' event it's so fubared that we rather pretend that it doesn't have
         // it. In particular the event is not fired when backspace or delete key are pressed or

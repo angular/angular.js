@@ -121,7 +121,7 @@ $provide.value("$locale", {
     "shortTime": "HH.mm"
   },
   "NUMBER_FORMATS": {
-    "CURRENCY_SYM": "kr",
+    "CURRENCY_SYM": "kr.",
     "DECIMAL_SEP": ",",
     "GROUP_SEP": ".",
     "PATTERNS": [
@@ -150,6 +150,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "da",
+  "localeID": "da",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  var wt = getWT(vf.v, vf.f);  if (n == 1 || wt.t != 0 && (i == 0 || i == 1)) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

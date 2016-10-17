@@ -13,40 +13,22 @@
 
 var $parseMinErr = minErr('$parse');
 
+var objectValueOf = {}.constructor.prototype.valueOf;
+
 // Sandboxing Angular Expressions
 // ------------------------------
-// Angular expressions are generally considered safe because these expressions only have direct
-// access to `$scope` and locals. However, one can obtain the ability to execute arbitrary JS code by
-// obtaining a reference to native JS functions such as the Function constructor.
+// Angular expressions are no longer sandboxed. So it is now even easier to access arbitrary JS code by
+// various means such as obtaining a reference to native JS functions like the Function constructor.
 //
 // As an example, consider the following Angular expression:
 //
 //   {}.toString.constructor('alert("evil JS code")')
 //
-// This sandboxing technique is not perfect and doesn't aim to be. The goal is to prevent exploits
-// against the expression language, but not to prevent exploits that were enabled by exposing
-// sensitive JavaScript or browser APIs on Scope. Exposing such objects on a Scope is never a good
-// practice and therefore we are not even trying to protect against interaction with an object
-// explicitly exposed in this way.
-//
-// In general, it is not possible to access a Window object from an angular expression unless a
-// window or some DOM object that has a reference to window is published onto a Scope.
-// Similarly we prevent invocations of function known to be dangerous, as well as assignments to
-// native objects.
+// It is important to realize that if you create an expression from a string that contains user provided
+// content then it is possible that your application contains a security vulnerability to an XSS style attack.
 //
 // See https://docs.angularjs.org/guide/security
 
-
-function ensureSafeMemberName(name, fullExpression) {
-  if (name === "__defineGetter__" || name === "__defineSetter__"
-      || name === "__lookupGetter__" || name === "__lookupSetter__"
-      || name === "__proto__") {
-    throw $parseMinErr('isecfld',
-        'Attempting to access a disallowed field in Angular expressions! '
-        + 'Expression: {0}', fullExpression);
-  }
-  return name;
-}
 
 function getStringValue(name) {
   // Property names must be strings. This means that non-string objects cannot be used
@@ -66,64 +48,10 @@ function getStringValue(name) {
   return name + '';
 }
 
-function ensureSafeObject(obj, fullExpression) {
-  // nifty check if obj is Function that is fast and works across iframes and other contexts
-  if (obj) {
-    if (obj.constructor === obj) {
-      throw $parseMinErr('isecfn',
-          'Referencing Function in Angular expressions is disallowed! Expression: {0}',
-          fullExpression);
-    } else if (// isWindow(obj)
-        obj.window === obj) {
-      throw $parseMinErr('isecwindow',
-          'Referencing the Window in Angular expressions is disallowed! Expression: {0}',
-          fullExpression);
-    } else if (// isElement(obj)
-        obj.children && (obj.nodeName || (obj.prop && obj.attr && obj.find))) {
-      throw $parseMinErr('isecdom',
-          'Referencing DOM nodes in Angular expressions is disallowed! Expression: {0}',
-          fullExpression);
-    } else if (// block Object so that we can't get hold of dangerous Object.* methods
-        obj === Object) {
-      throw $parseMinErr('isecobj',
-          'Referencing Object in Angular expressions is disallowed! Expression: {0}',
-          fullExpression);
-    }
-  }
-  return obj;
-}
-
-var CALL = Function.prototype.call;
-var APPLY = Function.prototype.apply;
-var BIND = Function.prototype.bind;
-
-function ensureSafeFunction(obj, fullExpression) {
-  if (obj) {
-    if (obj.constructor === obj) {
-      throw $parseMinErr('isecfn',
-        'Referencing Function in Angular expressions is disallowed! Expression: {0}',
-        fullExpression);
-    } else if (obj === CALL || obj === APPLY || obj === BIND) {
-      throw $parseMinErr('isecff',
-        'Referencing call, apply or bind in Angular expressions is disallowed! Expression: {0}',
-        fullExpression);
-    }
-  }
-}
-
-function ensureSafeAssignContext(obj, fullExpression) {
-  if (obj) {
-    if (obj === (0).constructor || obj === (false).constructor || obj === ''.constructor ||
-        obj === {}.constructor || obj === [].constructor || obj === Function.constructor) {
-      throw $parseMinErr('isecaf',
-        'Assigning to a constructor is disallowed! Expression: {0}', fullExpression);
-    }
-  }
-}
 
 var OPERATORS = createMap();
 forEach('+ - * / % === !== == != < > <= >= && || ! = |'.split(' '), function(operator) { OPERATORS[operator] = true; });
-var ESCAPE = {"n":"\n", "f":"\f", "r":"\r", "t":"\t", "v":"\v", "'":"'", '"':'"'};
+var ESCAPE = {'n':'\n', 'f':'\f', 'r':'\r', 't':'\t', 'v':'\v', '\'':'\'', '"':'"'};
 
 
 /////////////////////////////////////////
@@ -132,7 +60,7 @@ var ESCAPE = {"n":"\n", "f":"\f", "r":"\r", "t":"\t", "v":"\v", "'":"'", '"':'"'
 /**
  * @constructor
  */
-var Lexer = function(options) {
+var Lexer = function Lexer(options) {
   this.options = options;
 };
 
@@ -146,11 +74,11 @@ Lexer.prototype = {
 
     while (this.index < this.text.length) {
       var ch = this.text.charAt(this.index);
-      if (ch === '"' || ch === "'") {
+      if (ch === '"' || ch === '\'') {
         this.readString(ch);
       } else if (this.isNumber(ch) || ch === '.' && this.isNumber(this.peek())) {
         this.readNumber();
-      } else if (this.isIdent(ch)) {
+      } else if (this.isIdentifierStart(this.peekMultichar())) {
         this.readIdent();
       } else if (this.is(ch, '(){}[].,;:?')) {
         this.tokens.push({index: this.index, text: ch});
@@ -185,7 +113,7 @@ Lexer.prototype = {
   },
 
   isNumber: function(ch) {
-    return ('0' <= ch && ch <= '9') && typeof ch === "string";
+    return ('0' <= ch && ch <= '9') && typeof ch === 'string';
   },
 
   isWhitespace: function(ch) {
@@ -194,10 +122,46 @@ Lexer.prototype = {
             ch === '\n' || ch === '\v' || ch === '\u00A0');
   },
 
-  isIdent: function(ch) {
+  isIdentifierStart: function(ch) {
+    return this.options.isIdentifierStart ?
+        this.options.isIdentifierStart(ch, this.codePointAt(ch)) :
+        this.isValidIdentifierStart(ch);
+  },
+
+  isValidIdentifierStart: function(ch) {
     return ('a' <= ch && ch <= 'z' ||
             'A' <= ch && ch <= 'Z' ||
             '_' === ch || ch === '$');
+  },
+
+  isIdentifierContinue: function(ch) {
+    return this.options.isIdentifierContinue ?
+        this.options.isIdentifierContinue(ch, this.codePointAt(ch)) :
+        this.isValidIdentifierContinue(ch);
+  },
+
+  isValidIdentifierContinue: function(ch, cp) {
+    return this.isValidIdentifierStart(ch, cp) || this.isNumber(ch);
+  },
+
+  codePointAt: function(ch) {
+    if (ch.length === 1) return ch.charCodeAt(0);
+    // eslint-disable-next-line no-bitwise
+    return (ch.charCodeAt(0) << 10) + ch.charCodeAt(1) - 0x35FDC00;
+  },
+
+  peekMultichar: function() {
+    var ch = this.text.charAt(this.index);
+    var peek = this.peek();
+    if (!peek) {
+      return ch;
+    }
+    var cp1 = ch.charCodeAt(0);
+    var cp2 = peek.charCodeAt(0);
+    if (cp1 >= 0xD800 && cp1 <= 0xDBFF && cp2 >= 0xDC00 && cp2 <= 0xDFFF) {
+      return ch + peek;
+    }
+    return ch;
   },
 
   isExpOperator: function(ch) {
@@ -218,19 +182,19 @@ Lexer.prototype = {
     var start = this.index;
     while (this.index < this.text.length) {
       var ch = lowercase(this.text.charAt(this.index));
-      if (ch == '.' || this.isNumber(ch)) {
+      if (ch === '.' || this.isNumber(ch)) {
         number += ch;
       } else {
         var peekCh = this.peek();
-        if (ch == 'e' && this.isExpOperator(peekCh)) {
+        if (ch === 'e' && this.isExpOperator(peekCh)) {
           number += ch;
         } else if (this.isExpOperator(ch) &&
             peekCh && this.isNumber(peekCh) &&
-            number.charAt(number.length - 1) == 'e') {
+            number.charAt(number.length - 1) === 'e') {
           number += ch;
         } else if (this.isExpOperator(ch) &&
             (!peekCh || !this.isNumber(peekCh)) &&
-            number.charAt(number.length - 1) == 'e') {
+            number.charAt(number.length - 1) === 'e') {
           this.throwError('Invalid exponent');
         } else {
           break;
@@ -248,12 +212,13 @@ Lexer.prototype = {
 
   readIdent: function() {
     var start = this.index;
+    this.index += this.peekMultichar().length;
     while (this.index < this.text.length) {
-      var ch = this.text.charAt(this.index);
-      if (!(this.isIdent(ch) || this.isNumber(ch))) {
+      var ch = this.peekMultichar();
+      if (!this.isIdentifierContinue(ch)) {
         break;
       }
-      this.index++;
+      this.index += ch.length;
     }
     this.tokens.push({
       index: start,
@@ -304,7 +269,7 @@ Lexer.prototype = {
   }
 };
 
-var AST = function(lexer, options) {
+var AST = function AST(lexer, options) {
   this.lexer = lexer;
   this.options = options;
 };
@@ -360,8 +325,7 @@ AST.prototype = {
 
   filterChain: function() {
     var left = this.expression();
-    var token;
-    while ((token = this.expect('|'))) {
+    while (this.expect('|')) {
       left = this.filter(left);
     }
     return left;
@@ -374,6 +338,10 @@ AST.prototype = {
   assignment: function() {
     var result = this.ternary();
     if (this.expect('=')) {
+      if (!isAssignable(result)) {
+        throw $parseMinErr('lval', 'Trying to assign a value to a non l-value');
+      }
+
       result = { type: AST.AssignmentExpression, left: result, right: this.assignment(), operator: '='};
     }
     return result;
@@ -463,8 +431,10 @@ AST.prototype = {
       primary = this.arrayDeclaration();
     } else if (this.expect('{')) {
       primary = this.object();
-    } else if (this.constants.hasOwnProperty(this.peek().text)) {
-      primary = copy(this.constants[this.consume().text]);
+    } else if (this.selfReferential.hasOwnProperty(this.peek().text)) {
+      primary = copy(this.selfReferential[this.consume().text]);
+    } else if (this.options.literals.hasOwnProperty(this.peek().text)) {
+      primary = { type: AST.Literal, value: this.options.literals[this.consume().text]};
     } else if (this.peek().identifier) {
       primary = this.identifier();
     } else if (this.peek().constant) {
@@ -505,7 +475,7 @@ AST.prototype = {
     var args = [];
     if (this.peekToken().text !== ')') {
       do {
-        args.push(this.expression());
+        args.push(this.filterChain());
       } while (this.expect(','));
     }
     return args;
@@ -551,13 +521,28 @@ AST.prototype = {
         property = {type: AST.Property, kind: 'init'};
         if (this.peek().constant) {
           property.key = this.constant();
+          property.computed = false;
+          this.consume(':');
+          property.value = this.expression();
         } else if (this.peek().identifier) {
           property.key = this.identifier();
+          property.computed = false;
+          if (this.peek(':')) {
+            this.consume(':');
+            property.value = this.expression();
+          } else {
+            property.value = property.key;
+          }
+        } else if (this.peek('[')) {
+          this.consume('[');
+          property.key = this.expression();
+          this.consume(']');
+          property.computed = true;
+          this.consume(':');
+          property.value = this.expression();
         } else {
-          this.throwError("invalid key", this.peek());
+          this.throwError('invalid key', this.peek());
         }
-        this.consume(':');
-        property.value = this.expression();
         properties.push(property);
       } while (this.expect(','));
     }
@@ -616,15 +601,7 @@ AST.prototype = {
     return false;
   },
 
-
-  /* `undefined` is not a constant, it is an identifier,
-   * but using it as an identifier is not supported
-   */
-  constants: {
-    'true': { type: AST.Literal, value: true },
-    'false': { type: AST.Literal, value: false },
-    'null': { type: AST.Literal, value: null },
-    'undefined': {type: AST.Literal, value: undefined },
+  selfReferential: {
     'this': {type: AST.ThisExpression },
     '$locals': {type: AST.LocalsExpression }
   }
@@ -648,6 +625,7 @@ function isStateless($filter, filterName) {
 function findConstantAndWatchExpressions(ast, $filter) {
   var allConstants;
   var argsToWatch;
+  var isStatelessFilter;
   switch (ast.type) {
   case AST.Program:
     allConstants = true;
@@ -698,7 +676,8 @@ function findConstantAndWatchExpressions(ast, $filter) {
     ast.toWatch = [ast];
     break;
   case AST.CallExpression:
-    allConstants = ast.filter ? isStateless($filter, ast.callee.name) : false;
+    isStatelessFilter = ast.filter ? isStateless($filter, ast.callee.name) : false;
+    allConstants = isStatelessFilter;
     argsToWatch = [];
     forEach(ast.arguments, function(expr) {
       findConstantAndWatchExpressions(expr, $filter);
@@ -708,7 +687,7 @@ function findConstantAndWatchExpressions(ast, $filter) {
       }
     });
     ast.constant = allConstants;
-    ast.toWatch = ast.filter && isStateless($filter, ast.callee.name) ? argsToWatch : [ast];
+    ast.toWatch = isStatelessFilter ? argsToWatch : [ast];
     break;
   case AST.AssignmentExpression:
     findConstantAndWatchExpressions(ast.left, $filter);
@@ -734,7 +713,7 @@ function findConstantAndWatchExpressions(ast, $filter) {
     argsToWatch = [];
     forEach(ast.properties, function(property) {
       findConstantAndWatchExpressions(property.value, $filter);
-      allConstants = allConstants && property.value.constant;
+      allConstants = allConstants && property.value.constant && !property.computed;
       if (!property.value.constant) {
         argsToWatch.push.apply(argsToWatch, property.value.toWatch);
       }
@@ -754,7 +733,7 @@ function findConstantAndWatchExpressions(ast, $filter) {
 }
 
 function getInputs(body) {
-  if (body.length != 1) return;
+  if (body.length !== 1) return;
   var lastExpression = body[0].expression;
   var candidate = lastExpression.toWatch;
   if (candidate.length !== 1) return candidate;
@@ -789,13 +768,12 @@ function ASTCompiler(astBuilder, $filter) {
 }
 
 ASTCompiler.prototype = {
-  compile: function(expression, expensiveChecks) {
+  compile: function(expression) {
     var self = this;
     var ast = this.astBuilder.ast(expression);
     this.state = {
       nextId: 0,
       filters: {},
-      expensiveChecks: expensiveChecks,
       fn: {vars: [], body: [], own: {}},
       assign: {vars: [], body: [], own: {}},
       inputs: []
@@ -836,27 +814,18 @@ ASTCompiler.prototype = {
       this.watchFns() +
       'return fn;';
 
-    /* jshint -W054 */
+    // eslint-disable-next-line no-new-func
     var fn = (new Function('$filter',
-        'ensureSafeMemberName',
-        'ensureSafeObject',
-        'ensureSafeFunction',
         'getStringValue',
-        'ensureSafeAssignContext',
         'ifDefined',
         'plus',
         'text',
         fnString))(
           this.$filter,
-          ensureSafeMemberName,
-          ensureSafeObject,
-          ensureSafeFunction,
           getStringValue,
-          ensureSafeAssignContext,
           ifDefined,
           plusFn,
           expression);
-    /* jshint +W054 */
     this.state = this.stage = undefined;
     fn.literal = isLiteral(ast);
     fn.constant = isConstant(ast);
@@ -906,7 +875,7 @@ ASTCompiler.prototype = {
   },
 
   recurse: function(ast, intoId, nameId, recursionFn, create, skipWatchIdCheck) {
-    var left, right, self = this, args, expression;
+    var left, right, self = this, args, expression, computed;
     recursionFn = recursionFn || noop;
     if (!skipWatchIdCheck && isDefined(ast.watchId)) {
       intoId = intoId || this.nextId();
@@ -930,7 +899,7 @@ ASTCompiler.prototype = {
     case AST.Literal:
       expression = this.escape(ast.value);
       this.assign(intoId, expression);
-      recursionFn(expression);
+      recursionFn(intoId || expression);
       break;
     case AST.UnaryExpression:
       this.recurse(ast.argument, undefined, undefined, function(expr) { right = expr; });
@@ -970,22 +939,18 @@ ASTCompiler.prototype = {
         nameId.computed = false;
         nameId.name = ast.name;
       }
-      ensureSafeMemberName(ast.name);
       self.if_(self.stage === 'inputs' || self.not(self.getHasOwnProperty('l', ast.name)),
         function() {
           self.if_(self.stage === 'inputs' || 's', function() {
             if (create && create !== 1) {
               self.if_(
-                self.not(self.nonComputedMember('s', ast.name)),
+                self.isNull(self.nonComputedMember('s', ast.name)),
                 self.lazyAssign(self.nonComputedMember('s', ast.name), '{}'));
             }
             self.assign(intoId, self.nonComputedMember('s', ast.name));
           });
         }, intoId && self.lazyAssign(intoId, self.nonComputedMember('l', ast.name))
         );
-      if (self.state.expensiveChecks || isPossiblyDangerousMemberName(ast.name)) {
-        self.addEnsureSafeObject(intoId);
-      }
       recursionFn(intoId);
       break;
     case AST.MemberExpression:
@@ -993,32 +958,24 @@ ASTCompiler.prototype = {
       intoId = intoId || this.nextId();
       self.recurse(ast.object, left, undefined, function() {
         self.if_(self.notNull(left), function() {
-          if (create && create !== 1) {
-            self.addEnsureSafeAssignContext(left);
-          }
           if (ast.computed) {
             right = self.nextId();
             self.recurse(ast.property, right);
             self.getStringValue(right);
-            self.addEnsureSafeMemberName(right);
             if (create && create !== 1) {
               self.if_(self.not(self.computedMember(left, right)), self.lazyAssign(self.computedMember(left, right), '{}'));
             }
-            expression = self.ensureSafeObject(self.computedMember(left, right));
+            expression = self.computedMember(left, right);
             self.assign(intoId, expression);
             if (nameId) {
               nameId.computed = true;
               nameId.name = right;
             }
           } else {
-            ensureSafeMemberName(ast.property.name);
             if (create && create !== 1) {
-              self.if_(self.not(self.nonComputedMember(left, ast.property.name)), self.lazyAssign(self.nonComputedMember(left, ast.property.name), '{}'));
+              self.if_(self.isNull(self.nonComputedMember(left, ast.property.name)), self.lazyAssign(self.nonComputedMember(left, ast.property.name), '{}'));
             }
             expression = self.nonComputedMember(left, ast.property.name);
-            if (self.state.expensiveChecks || isPossiblyDangerousMemberName(ast.property.name)) {
-              expression = self.ensureSafeObject(expression);
-            }
             self.assign(intoId, expression);
             if (nameId) {
               nameId.computed = false;
@@ -1050,21 +1007,16 @@ ASTCompiler.prototype = {
         args = [];
         self.recurse(ast.callee, right, left, function() {
           self.if_(self.notNull(right), function() {
-            self.addEnsureSafeFunction(right);
             forEach(ast.arguments, function(expr) {
-              self.recurse(expr, self.nextId(), undefined, function(argument) {
-                args.push(self.ensureSafeObject(argument));
+              self.recurse(expr, ast.constant ? undefined : self.nextId(), undefined, function(argument) {
+                args.push(argument);
               });
             });
             if (left.name) {
-              if (!self.state.expensiveChecks) {
-                self.addEnsureSafeObject(left.context);
-              }
               expression = self.member(left.context, left.name, left.computed) + '(' + args.join(',') + ')';
             } else {
               expression = right + '(' + args.join(',') + ')';
             }
-            expression = self.ensureSafeObject(expression);
             self.assign(intoId, expression);
           }, function() {
             self.assign(intoId, 'undefined');
@@ -1076,14 +1028,9 @@ ASTCompiler.prototype = {
     case AST.AssignmentExpression:
       right = this.nextId();
       left = {};
-      if (!isAssignable(ast.left)) {
-        throw $parseMinErr('lval', 'Trying to assign a value to a non l-value');
-      }
       this.recurse(ast.left, undefined, left, function() {
         self.if_(self.notNull(left.context), function() {
           self.recurse(ast.right, right);
-          self.addEnsureSafeObject(self.member(left.context, left.name, left.computed));
-          self.addEnsureSafeAssignContext(left.context);
           expression = self.member(left.context, left.name, left.computed) + ast.operator + right;
           self.assign(intoId, expression);
           recursionFn(intoId || expression);
@@ -1093,39 +1040,63 @@ ASTCompiler.prototype = {
     case AST.ArrayExpression:
       args = [];
       forEach(ast.elements, function(expr) {
-        self.recurse(expr, self.nextId(), undefined, function(argument) {
+        self.recurse(expr, ast.constant ? undefined : self.nextId(), undefined, function(argument) {
           args.push(argument);
         });
       });
       expression = '[' + args.join(',') + ']';
       this.assign(intoId, expression);
-      recursionFn(expression);
+      recursionFn(intoId || expression);
       break;
     case AST.ObjectExpression:
       args = [];
+      computed = false;
       forEach(ast.properties, function(property) {
-        self.recurse(property.value, self.nextId(), undefined, function(expr) {
-          args.push(self.escape(
-              property.key.type === AST.Identifier ? property.key.name :
-                ('' + property.key.value)) +
-              ':' + expr);
-        });
+        if (property.computed) {
+          computed = true;
+        }
       });
-      expression = '{' + args.join(',') + '}';
-      this.assign(intoId, expression);
-      recursionFn(expression);
+      if (computed) {
+        intoId = intoId || this.nextId();
+        this.assign(intoId, '{}');
+        forEach(ast.properties, function(property) {
+          if (property.computed) {
+            left = self.nextId();
+            self.recurse(property.key, left);
+          } else {
+            left = property.key.type === AST.Identifier ?
+                       property.key.name :
+                       ('' + property.key.value);
+          }
+          right = self.nextId();
+          self.recurse(property.value, right);
+          self.assign(self.member(intoId, left, property.computed), right);
+        });
+      } else {
+        forEach(ast.properties, function(property) {
+          self.recurse(property.value, ast.constant ? undefined : self.nextId(), undefined, function(expr) {
+            args.push(self.escape(
+                property.key.type === AST.Identifier ? property.key.name :
+                  ('' + property.key.value)) +
+                ':' + expr);
+          });
+        });
+        expression = '{' + args.join(',') + '}';
+        this.assign(intoId, expression);
+      }
+      recursionFn(intoId || expression);
       break;
     case AST.ThisExpression:
       this.assign(intoId, 's');
-      recursionFn('s');
+      recursionFn(intoId || 's');
       break;
     case AST.LocalsExpression:
       this.assign(intoId, 'l');
-      recursionFn('l');
+      recursionFn(intoId || 'l');
       break;
     case AST.NGValueParameter:
       this.assign(intoId, 'v');
-      recursionFn('v');
+      recursionFn(intoId || 'v');
       break;
     }
   },
@@ -1184,12 +1155,22 @@ ASTCompiler.prototype = {
     return '!(' + expression + ')';
   },
 
+  isNull: function(expression) {
+    return expression + '==null';
+  },
+
   notNull: function(expression) {
     return expression + '!=null';
   },
 
   nonComputedMember: function(left, right) {
-    return left + '.' + right;
+    var SAFE_IDENTIFIER = /^[$_a-zA-Z][$_a-zA-Z0-9]*$/;
+    var UNSAFE_CHARACTERS = /[^$_a-zA-Z0-9]/g;
+    if (SAFE_IDENTIFIER.test(right)) {
+      return left + '.' + right;
+    } else {
+      return left  + '["' + right.replace(UNSAFE_CHARACTERS, this.stringEscapeFn) + '"]';
+    }
   },
 
   computedMember: function(left, right) {
@@ -1201,40 +1182,8 @@ ASTCompiler.prototype = {
     return this.nonComputedMember(left, right);
   },
 
-  addEnsureSafeObject: function(item) {
-    this.current().body.push(this.ensureSafeObject(item), ';');
-  },
-
-  addEnsureSafeMemberName: function(item) {
-    this.current().body.push(this.ensureSafeMemberName(item), ';');
-  },
-
-  addEnsureSafeFunction: function(item) {
-    this.current().body.push(this.ensureSafeFunction(item), ';');
-  },
-
-  addEnsureSafeAssignContext: function(item) {
-    this.current().body.push(this.ensureSafeAssignContext(item), ';');
-  },
-
-  ensureSafeObject: function(item) {
-    return 'ensureSafeObject(' + item + ',text)';
-  },
-
-  ensureSafeMemberName: function(item) {
-    return 'ensureSafeMemberName(' + item + ',text)';
-  },
-
-  ensureSafeFunction: function(item) {
-    return 'ensureSafeFunction(' + item + ',text)';
-  },
-
   getStringValue: function(item) {
     this.assign(item, 'getStringValue(' + item + ')');
-  },
-
-  ensureSafeAssignContext: function(item) {
-    return 'ensureSafeAssignContext(' + item + ',text)';
   },
 
   lazyRecurse: function(ast, intoId, nameId, recursionFn, create, skipWatchIdCheck) {
@@ -1258,7 +1207,7 @@ ASTCompiler.prototype = {
   },
 
   escape: function(value) {
-    if (isString(value)) return "'" + value.replace(this.stringEscapeRegex, this.stringEscapeFn) + "'";
+    if (isString(value)) return '\'' + value.replace(this.stringEscapeRegex, this.stringEscapeFn) + '\'';
     if (isNumber(value)) return value.toString();
     if (value === true) return 'true';
     if (value === false) return 'false';
@@ -1288,11 +1237,10 @@ function ASTInterpreter(astBuilder, $filter) {
 }
 
 ASTInterpreter.prototype = {
-  compile: function(expression, expensiveChecks) {
+  compile: function(expression) {
     var self = this;
     var ast = this.astBuilder.ast(expression);
     this.expression = expression;
-    this.expensiveChecks = expensiveChecks;
     findConstantAndWatchExpressions(ast, self.$filter);
     var assignable;
     var assign;
@@ -1314,7 +1262,7 @@ ASTInterpreter.prototype = {
     forEach(ast.body, function(expression) {
       expressions.push(self.recurse(expression.expression));
     });
-    var fn = ast.body.length === 0 ? function() {} :
+    var fn = ast.body.length === 0 ? noop :
              ast.body.length === 1 ? expressions[0] :
              function(scope, locals) {
                var lastValue;
@@ -1337,7 +1285,7 @@ ASTInterpreter.prototype = {
   },
 
   recurse: function(ast, context, create) {
-    var left, right, self = this, args, expression;
+    var left, right, self = this, args;
     if (ast.input) {
       return this.inputs(ast.input, ast.watchId);
     }
@@ -1363,20 +1311,17 @@ ASTInterpreter.prototype = {
         context
       );
     case AST.Identifier:
-      ensureSafeMemberName(ast.name, self.expression);
       return self.identifier(ast.name,
-                             self.expensiveChecks || isPossiblyDangerousMemberName(ast.name),
                              context, create, self.expression);
     case AST.MemberExpression:
       left = this.recurse(ast.object, false, !!create);
       if (!ast.computed) {
-        ensureSafeMemberName(ast.property.name, self.expression);
         right = ast.property.name;
       }
       if (ast.computed) right = this.recurse(ast.property);
       return ast.computed ?
         this.computedMember(left, right, context, create, self.expression) :
-        this.nonComputedMember(left, right, self.expensiveChecks, context, create, self.expression);
+        this.nonComputedMember(left, right, context, create, self.expression);
     case AST.CallExpression:
       args = [];
       forEach(ast.arguments, function(expr) {
@@ -1397,13 +1342,11 @@ ASTInterpreter.prototype = {
           var rhs = right(scope, locals, assign, inputs);
           var value;
           if (rhs.value != null) {
-            ensureSafeObject(rhs.context, self.expression);
-            ensureSafeFunction(rhs.value, self.expression);
             var values = [];
             for (var i = 0; i < args.length; ++i) {
-              values.push(ensureSafeObject(args[i](scope, locals, assign, inputs), self.expression));
+              values.push(args[i](scope, locals, assign, inputs));
             }
-            value = ensureSafeObject(rhs.value.apply(rhs.context, values), self.expression);
+            value = rhs.value.apply(rhs.context, values);
           }
           return context ? {value: value} : value;
         };
@@ -1413,8 +1356,6 @@ ASTInterpreter.prototype = {
       return function(scope, locals, assign, inputs) {
         var lhs = left(scope, locals, assign, inputs);
         var rhs = right(scope, locals, assign, inputs);
-        ensureSafeObject(lhs.value, self.expression);
-        ensureSafeAssignContext(lhs.context);
         lhs.context[lhs.name] = rhs;
         return context ? {value: rhs} : rhs;
       };
@@ -1433,16 +1374,28 @@ ASTInterpreter.prototype = {
     case AST.ObjectExpression:
       args = [];
       forEach(ast.properties, function(property) {
-        args.push({key: property.key.type === AST.Identifier ?
-                        property.key.name :
-                        ('' + property.key.value),
-                   value: self.recurse(property.value)
-        });
+        if (property.computed) {
+          args.push({key: self.recurse(property.key),
+                     computed: true,
+                     value: self.recurse(property.value)
+          });
+        } else {
+          args.push({key: property.key.type === AST.Identifier ?
+                          property.key.name :
+                          ('' + property.key.value),
+                     computed: false,
+                     value: self.recurse(property.value)
+          });
+        }
       });
       return function(scope, locals, assign, inputs) {
         var value = {};
         for (var i = 0; i < args.length; ++i) {
-          value[args[i].key] = args[i].value(scope, locals, assign, inputs);
+          if (args[i].computed) {
+            value[args[i].key(scope, locals, assign, inputs)] = args[i].value(scope, locals, assign, inputs);
+          } else {
+            value[args[i].key] = args[i].value(scope, locals, assign, inputs);
+          }
         }
         return context ? {value: value} : value;
       };
@@ -1455,7 +1408,7 @@ ASTInterpreter.prototype = {
         return context ? {value: locals} : locals;
       };
     case AST.NGValueParameter:
-      return function(scope, locals, assign, inputs) {
+      return function(scope, locals, assign) {
         return context ? {value: assign} : assign;
       };
     }
@@ -1478,7 +1431,7 @@ ASTInterpreter.prototype = {
       if (isDefined(arg)) {
         arg = -arg;
       } else {
-        arg = 0;
+        arg = -0;
       }
       return context ? {value: arg} : arg;
     };
@@ -1537,12 +1490,14 @@ ASTInterpreter.prototype = {
   },
   'binary==': function(left, right, context) {
     return function(scope, locals, assign, inputs) {
+      // eslint-disable-next-line eqeqeq
       var arg = left(scope, locals, assign, inputs) == right(scope, locals, assign, inputs);
       return context ? {value: arg} : arg;
     };
   },
   'binary!=': function(left, right, context) {
     return function(scope, locals, assign, inputs) {
+      // eslint-disable-next-line eqeqeq
       var arg = left(scope, locals, assign, inputs) != right(scope, locals, assign, inputs);
       return context ? {value: arg} : arg;
     };
@@ -1592,16 +1547,13 @@ ASTInterpreter.prototype = {
   value: function(value, context) {
     return function() { return context ? {context: undefined, name: undefined, value: value} : value; };
   },
-  identifier: function(name, expensiveChecks, context, create, expression) {
+  identifier: function(name, context, create, expression) {
     return function(scope, locals, assign, inputs) {
       var base = locals && (name in locals) ? locals : scope;
-      if (create && create !== 1 && base && !(base[name])) {
+      if (create && create !== 1 && base && base[name] == null) {
         base[name] = {};
       }
       var value = base ? base[name] : undefined;
-      if (expensiveChecks) {
-        ensureSafeObject(value, expression);
-      }
       if (context) {
         return {context: base, name: name, value: value};
       } else {
@@ -1617,15 +1569,12 @@ ASTInterpreter.prototype = {
       if (lhs != null) {
         rhs = right(scope, locals, assign, inputs);
         rhs = getStringValue(rhs);
-        ensureSafeMemberName(rhs, expression);
         if (create && create !== 1) {
-          ensureSafeAssignContext(lhs);
           if (lhs && !(lhs[rhs])) {
             lhs[rhs] = {};
           }
         }
         value = lhs[rhs];
-        ensureSafeObject(value, expression);
       }
       if (context) {
         return {context: lhs, name: rhs, value: value};
@@ -1634,19 +1583,15 @@ ASTInterpreter.prototype = {
       }
     };
   },
-  nonComputedMember: function(left, right, expensiveChecks, context, create, expression) {
+  nonComputedMember: function(left, right, context, create, expression) {
     return function(scope, locals, assign, inputs) {
       var lhs = left(scope, locals, assign, inputs);
       if (create && create !== 1) {
-        ensureSafeAssignContext(lhs);
-        if (lhs && !(lhs[right])) {
+        if (lhs && lhs[right] == null) {
           lhs[right] = {};
         }
       }
       var value = lhs != null ? lhs[right] : undefined;
-      if (expensiveChecks || isPossiblyDangerousMemberName(right)) {
-        ensureSafeObject(value, expression);
-      }
       if (context) {
         return {context: lhs, name: right, value: value};
       } else {
@@ -1665,11 +1610,11 @@ ASTInterpreter.prototype = {
 /**
  * @constructor
  */
-var Parser = function(lexer, $filter, options) {
+var Parser = function Parser(lexer, $filter, options) {
   this.lexer = lexer;
   this.$filter = $filter;
   this.options = options;
-  this.ast = new AST(this.lexer);
+  this.ast = new AST(lexer, options);
   this.astCompiler = options.csp ? new ASTInterpreter(this.ast, $filter) :
                                    new ASTCompiler(this.ast, $filter);
 };
@@ -1678,15 +1623,9 @@ Parser.prototype = {
   constructor: Parser,
 
   parse: function(text) {
-    return this.astCompiler.compile(text, this.options.expensiveChecks);
+    return this.astCompiler.compile(text);
   }
 };
-
-function isPossiblyDangerousMemberName(name) {
-  return name == 'constructor';
-}
-
-var objectValueOf = Object.prototype.valueOf;
 
 function getValueOf(value) {
   return isFunction(value.valueOf) ? value.valueOf() : objectValueOf.call(value);
@@ -1738,27 +1677,78 @@ function getValueOf(value) {
 /**
  * @ngdoc provider
  * @name $parseProvider
+ * @this
  *
  * @description
  * `$parseProvider` can be used for configuring the default behavior of the {@link ng.$parse $parse}
  *  service.
  */
 function $ParseProvider() {
-  var cacheDefault = createMap();
-  var cacheExpensive = createMap();
+  var cache = createMap();
+  var literals = {
+    'true': true,
+    'false': false,
+    'null': null,
+    'undefined': undefined
+  };
+  var identStart, identContinue;
+
+  /**
+   * @ngdoc method
+   * @name $parseProvider#addLiteral
+   * @description
+   *
+   * Configure $parse service to add literal values that will be present as literal at expressions.
+   *
+   * @param {string} literalName Token for the literal value. The literal name value must be a valid literal name.
+   * @param {*} literalValue Value for this literal. All literal values must be primitives or `undefined`.
+   *
+   **/
+  this.addLiteral = function(literalName, literalValue) {
+    literals[literalName] = literalValue;
+  };
+
+ /**
+  * @ngdoc method
+  * @name $parseProvider#setIdentifierFns
+  *
+  * @description
+  *
+  * Allows defining the set of characters that are allowed in Angular expressions. The function
+  * `identifierStart` will get called to know if a given character is a valid character to be the
+  * first character for an identifier. The function `identifierContinue` will get called to know if
+  * a given character is a valid character to be a follow-up identifier character. The functions
+  * `identifierStart` and `identifierContinue` will receive as arguments the single character to be
+  * identifier and the character code point. These arguments will be `string` and `numeric`. Keep in
+  * mind that the `string` parameter can be two characters long depending on the character
+  * representation. It is expected for the function to return `true` or `false`, whether that
+  * character is allowed or not.
+  *
+  * Since this function will be called extensively, keep the implementation of these functions fast,
+  * as the performance of these functions have a direct impact on the expressions parsing speed.
+  *
+  * @param {function=} identifierStart The function that will decide whether the given character is
+  *   a valid identifier start character.
+  * @param {function=} identifierContinue The function that will decide whether the given character is
+  *   a valid identifier continue character.
+  */
+  this.setIdentifierFns = function(identifierStart, identifierContinue) {
+    identStart = identifierStart;
+    identContinue = identifierContinue;
+    return this;
+  };
 
   this.$get = ['$filter', function($filter) {
     var noUnsafeEval = csp().noUnsafeEval;
     var $parseOptions = {
           csp: noUnsafeEval,
-          expensiveChecks: false
-        },
-        $parseOptionsExpensive = {
-          csp: noUnsafeEval,
-          expensiveChecks: true
+          literals: copy(literals),
+          isIdentifierStart: isFunction(identStart) && identStart,
+          isIdentifierContinue: isFunction(identContinue) && identContinue
         };
+    return $parse;
 
-    return function $parse(exp, interceptorFn, expensiveChecks) {
+    function $parse(exp, interceptorFn) {
       var parsedExpression, oneTime, cacheKey;
 
       switch (typeof exp) {
@@ -1766,7 +1756,6 @@ function $ParseProvider() {
           exp = exp.trim();
           cacheKey = exp;
 
-          var cache = (expensiveChecks ? cacheExpensive : cacheDefault);
           parsedExpression = cache[cacheKey];
 
           if (!parsedExpression) {
@@ -1774,9 +1763,8 @@ function $ParseProvider() {
               oneTime = true;
               exp = exp.substring(2);
             }
-            var parseOptions = expensiveChecks ? $parseOptionsExpensive : $parseOptions;
-            var lexer = new Lexer(parseOptions);
-            var parser = new Parser(lexer, $filter, parseOptions);
+            var lexer = new Lexer($parseOptions);
+            var parser = new Parser(lexer, $filter, $parseOptions);
             parsedExpression = parser.parse(exp);
             if (parsedExpression.constant) {
               parsedExpression.$$watchDelegate = constantWatchDelegate;
@@ -1796,7 +1784,7 @@ function $ParseProvider() {
         default:
           return addInterceptor(noop, interceptorFn);
       }
-    };
+    }
 
     function expressionInputDirtyCheck(newValue, oldValueOfValue) {
 
@@ -1820,6 +1808,7 @@ function $ParseProvider() {
       }
 
       //Primitive or NaN
+      // eslint-disable-next-line no-self-compare
       return newValue === oldValueOfValue || (newValue !== newValue && oldValueOfValue !== oldValueOfValue);
     }
 
@@ -1866,14 +1855,22 @@ function $ParseProvider() {
       }, listener, objectEquality, prettyPrintExpression);
     }
 
-    function oneTimeWatchDelegate(scope, listener, objectEquality, parsedExpression) {
+    function oneTimeWatchDelegate(scope, listener, objectEquality, parsedExpression, prettyPrintExpression) {
       var unwatch, lastValue;
-      return unwatch = scope.$watch(function oneTimeWatch(scope) {
+      if (parsedExpression.inputs) {
+        unwatch = inputsWatchDelegate(scope, oneTimeListener, objectEquality, parsedExpression, prettyPrintExpression);
+      } else {
+        unwatch = scope.$watch(oneTimeWatch, oneTimeListener, objectEquality);
+      }
+      return unwatch;
+
+      function oneTimeWatch(scope) {
         return parsedExpression(scope);
-      }, function oneTimeListener(value, old, scope) {
+      }
+      function oneTimeListener(value, old, scope) {
         lastValue = value;
         if (isFunction(listener)) {
-          listener.apply(this, arguments);
+          listener(value, old, scope);
         }
         if (isDefined(value)) {
           scope.$$postDigest(function() {
@@ -1882,17 +1879,17 @@ function $ParseProvider() {
             }
           });
         }
-      }, objectEquality);
+      }
     }
 
     function oneTimeLiteralWatchDelegate(scope, listener, objectEquality, parsedExpression) {
       var unwatch, lastValue;
-      return unwatch = scope.$watch(function oneTimeWatch(scope) {
+      unwatch = scope.$watch(function oneTimeWatch(scope) {
         return parsedExpression(scope);
       }, function oneTimeListener(value, old, scope) {
         lastValue = value;
         if (isFunction(listener)) {
-          listener.call(this, value, old, scope);
+          listener(value, old, scope);
         }
         if (isAllDefined(value)) {
           scope.$$postDigest(function() {
@@ -1900,6 +1897,8 @@ function $ParseProvider() {
           });
         }
       }, objectEquality);
+
+      return unwatch;
 
       function isAllDefined(value) {
         var allDefined = true;
@@ -1911,11 +1910,11 @@ function $ParseProvider() {
     }
 
     function constantWatchDelegate(scope, listener, objectEquality, parsedExpression) {
-      var unwatch;
-      return unwatch = scope.$watch(function constantWatch(scope) {
+      var unwatch = scope.$watch(function constantWatch(scope) {
         unwatch();
         return parsedExpression(scope);
       }, listener, objectEquality);
+      return unwatch;
     }
 
     function addInterceptor(parsedExpression, interceptorFn) {
@@ -1939,14 +1938,15 @@ function $ParseProvider() {
       };
 
       // Propagate $$watchDelegates other then inputsWatchDelegate
+      useInputs = !parsedExpression.inputs;
       if (parsedExpression.$$watchDelegate &&
           parsedExpression.$$watchDelegate !== inputsWatchDelegate) {
         fn.$$watchDelegate = parsedExpression.$$watchDelegate;
+        fn.inputs = parsedExpression.inputs;
       } else if (!interceptorFn.$stateful) {
         // If there is an interceptor, but no watchDelegate then treat the interceptor like
         // we treat filters - it is assumed to be a pure function unless flagged with $stateful
         fn.$$watchDelegate = inputsWatchDelegate;
-        useInputs = !parsedExpression.inputs;
         fn.inputs = parsedExpression.inputs ? parsedExpression.inputs : [parsedExpression];
       }
 

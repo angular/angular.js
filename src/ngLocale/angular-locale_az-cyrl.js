@@ -90,7 +90,7 @@ $provide.value("$locale", {
     "shortTime": "HH:mm"
   },
   "NUMBER_FORMATS": {
-    "CURRENCY_SYM": "man.",
+    "CURRENCY_SYM": "\u20bc",
     "DECIMAL_SEP": ",",
     "GROUP_SEP": ".",
     "PATTERNS": [
@@ -119,6 +119,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "az-cyrl",
+  "localeID": "az_Cyrl",
   "pluralCat": function(n, opt_precision) {  if (n == 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

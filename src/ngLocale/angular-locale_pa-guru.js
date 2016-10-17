@@ -119,6 +119,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "pa-guru",
+  "localeID": "pa_Guru",
   "pluralCat": function(n, opt_precision) {  if (n >= 0 && n <= 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

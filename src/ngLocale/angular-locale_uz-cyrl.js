@@ -85,8 +85,8 @@ $provide.value("$locale", {
     "medium": "y MMM d HH:mm:ss",
     "mediumDate": "y MMM d",
     "mediumTime": "HH:mm:ss",
-    "short": "yy/MM/dd HH:mm",
-    "shortDate": "yy/MM/dd",
+    "short": "dd/MM/yy HH:mm",
+    "shortDate": "dd/MM/yy",
     "shortTime": "HH:mm"
   },
   "NUMBER_FORMATS": {
@@ -119,6 +119,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "uz-cyrl",
+  "localeID": "uz_Cyrl",
   "pluralCat": function(n, opt_precision) {  if (n == 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

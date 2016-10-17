@@ -82,6 +82,7 @@ describe('angular.scenario.Describe', function() {
     expect(specs.length).toEqual(0);
   });
 
+
   it('should only return iit and ddescribe if present', function() {
     root.describe('A', function() {
       this.it('1', angular.noop);
@@ -107,7 +108,7 @@ describe('angular.scenario.Describe', function() {
     angular.scenario.Describe.id = 0;
     var a = new angular.scenario.Describe();
     var b = new angular.scenario.Describe();
-    expect(a.id).toNotEqual(b.id);
+    expect(a.id).not.toEqual(b.id);
   });
 
   it('should create uniqueIds for each spec', function() {

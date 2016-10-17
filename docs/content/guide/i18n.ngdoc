@@ -225,12 +225,12 @@ You may find it helpful to play with the following example as you read the expla
     }
 
     angular.module('messageFormatExample', ['ngMessageFormat'])
-      .controller('ckCtrl', function ($scope, $injector, $parse) {
-        var people = [ new Person("Alice", "female"),
-                       new Person("Bob", "male"),
-                       new Person("Charlie", "male") ];
+      .controller('ckCtrl', function($scope, $injector, $parse) {
+        var people = [new Person('Alice', 'female'),
+                      new Person('Bob', 'male'),
+                      new Person('Charlie', 'male')];
 
-        $scope.sender = new Person("Harry Potter", "male");
+        $scope.sender = new Person('Harry Potter', 'male');
         $scope.recipients = people.slice();
 
         $scope.setNumRecipients = function(n) {

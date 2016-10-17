@@ -39,7 +39,7 @@ $provide.value("$locale", {
       "\u0632\u0627\u06cc\u06cc\u0646\u06cc"
     ],
     "ERAS": [
-      "\u067e\u06ce\u0634 \u0632\u0627\u06cc\u06cc\u06cc\u0646",
+      "\u067e.\u0646",
       "\u0632"
     ],
     "FIRSTDAYOFWEEK": 5,
@@ -100,12 +100,12 @@ $provide.value("$locale", {
     ],
     "fullDate": "y MMMM d, EEEE",
     "longDate": "d\u06cc MMMM\u06cc y",
-    "medium": "y MMM d HH:mm:ss",
+    "medium": "y MMM d h:mm:ss a",
     "mediumDate": "y MMM d",
-    "mediumTime": "HH:mm:ss",
-    "short": "y-MM-dd HH:mm",
+    "mediumTime": "h:mm:ss a",
+    "short": "y-MM-dd h:mm a",
     "shortDate": "y-MM-dd",
-    "shortTime": "HH:mm"
+    "shortTime": "h:mm a"
   },
   "NUMBER_FORMATS": {
     "CURRENCY_SYM": "din",
@@ -137,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "ckb-latn-iq",
+  "localeID": "ckb_Latn_IQ",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

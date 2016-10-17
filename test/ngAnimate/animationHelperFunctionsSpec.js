@@ -1,6 +1,6 @@
 'use strict';
 
-describe("animation option helper functions", function() {
+describe('animation option helper functions', function() {
 
   beforeEach(module('ngAnimate'));
 
@@ -110,7 +110,7 @@ describe("animation option helper functions", function() {
     }));
   });
 
-  describe('mergeAnimationOptions', function() {
+  describe('mergeAnimationDetails', function() {
     it('should merge in new options', inject(function() {
       element.attr('class', 'blue');
       var options = prepareAnimationOptions({
@@ -120,11 +120,16 @@ describe("animation option helper functions", function() {
         removeClass: 'blue gold'
       });
 
-      mergeAnimationOptions(element, options, {
-        age: 29,
-        addClass: 'gold brown',
-        removeClass: 'orange'
-      });
+      var animation1 = { options: options };
+      var animation2 = {
+        options: {
+          age: 29,
+          addClass: 'gold brown',
+          removeClass: 'orange'
+        }
+      };
+
+      mergeAnimationDetails(element, animation1, animation2);
 
       expect(options.name).toBe('matias');
       expect(options.age).toBe(29);

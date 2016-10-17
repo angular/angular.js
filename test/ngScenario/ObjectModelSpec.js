@@ -42,7 +42,7 @@ describe('angular.scenario.ObjectModel', function() {
   it('should value default empty value', function() {
     expect(model.value).toEqual({
       name: '',
-      children: []
+      children: {}
     });
   });
 
@@ -160,8 +160,8 @@ describe('angular.scenario.ObjectModel', function() {
       model.on('SpecBegin', callback);
       runner.emit('SpecBegin', spec);
 
-      expect(callback.mostRecentCall.args[0] instanceof Spec).toBe(true);
-      expect(callback.mostRecentCall.args[0].name).toEqual(spec.name);
+      expect(callback.calls.mostRecent().args[0] instanceof Spec).toBe(true);
+      expect(callback.calls.mostRecent().args[0].name).toEqual(spec.name);
     });
 
     it('should forward SpecError event', function() {
@@ -178,7 +178,7 @@ describe('angular.scenario.ObjectModel', function() {
       runner.emit('SpecBegin', spec);
       runner.emit('SpecError', spec, error);
 
-      var param = callback.mostRecentCall.args[0];
+      var param = callback.calls.mostRecent().args[0];
       expect(param instanceof Spec).toBe(true);
       expect(param.name).toEqual(spec.name);
       expect(param.status).toEqual('error');
@@ -198,8 +198,8 @@ describe('angular.scenario.ObjectModel', function() {
       runner.emit('SpecBegin', spec);
       runner.emit('SpecEnd', spec);
 
-      expect(callback.mostRecentCall.args[0] instanceof Spec).toBe(true);
-      expect(callback.mostRecentCall.args[0].name).toEqual(spec.name);
+      expect(callback.calls.mostRecent().args[0] instanceof Spec).toBe(true);
+      expect(callback.calls.mostRecent().args[0].name).toEqual(spec.name);
     });
 
     it('should forward StepBegin event', function() {
@@ -215,7 +215,7 @@ describe('angular.scenario.ObjectModel', function() {
       runner.emit('SpecBegin', spec);
       runner.emit('StepBegin', spec, step);
 
-      var params = callback.mostRecentCall.args;
+      var params = callback.calls.mostRecent().args;
       expect(params[0] instanceof Spec).toBe(true);
       expect(params[0].name).toEqual(spec.name);
       expect(params[1] instanceof Step).toBe(true);
@@ -237,7 +237,7 @@ describe('angular.scenario.ObjectModel', function() {
       runner.emit('StepBegin', spec, step);
       runner.emit('StepError', spec, step, error);
 
-      var params = callback.mostRecentCall.args;
+      var params = callback.calls.mostRecent().args;
       expect(params[0] instanceof Spec).toBe(true);
       expect(params[0].name).toEqual(spec.name);
       expect(params[1] instanceof Step).toBe(true);
@@ -261,7 +261,7 @@ describe('angular.scenario.ObjectModel', function() {
       runner.emit('StepBegin', spec, step);
       runner.emit('StepFailure', spec, step, error);
 
-      var params = callback.mostRecentCall.args;
+      var params = callback.calls.mostRecent().args;
       expect(params[0] instanceof Spec).toBe(true);
       expect(params[0].name).toEqual(spec.name);
       expect(params[1] instanceof Step).toBe(true);
@@ -284,7 +284,7 @@ describe('angular.scenario.ObjectModel', function() {
       runner.emit('StepBegin', spec, step);
       runner.emit('StepEnd', spec, step);
 
-      var params = callback.mostRecentCall.args;
+      var params = callback.calls.mostRecent().args;
       expect(params[0] instanceof Spec).toBe(true);
       expect(params[0].name).toEqual(spec.name);
       expect(params[1] instanceof Step).toBe(true);

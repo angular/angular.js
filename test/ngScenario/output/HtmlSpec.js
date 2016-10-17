@@ -24,7 +24,7 @@ describe('angular.scenario.output.html', function() {
     };
     runner = new angular.scenario.testing.MockRunner();
     model = new angular.scenario.ObjectModel(runner);
-    context = _jQuery("<div></div>");
+    context = _jQuery('<div></div>');
     ui = angular.scenario.output.html(context, runner, model);
   });
 
@@ -53,7 +53,7 @@ describe('angular.scenario.output.html', function() {
 
   it('should update totals when steps complete', function() {
     // Failure
-    for (var i=0; i < 3; ++i) {
+    for (var i = 0; i < 3; ++i) {
       runner.emit('SpecBegin', spec);
       runner.emit('StepBegin', spec, step);
       runner.emit('StepFailure', spec, step, 'error');

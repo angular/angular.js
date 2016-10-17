@@ -54,7 +54,9 @@ angular.module('ui.bootstrap.dropdown', [])
     }
   };
 
-  var closeDropdown = function() {
+  var closeDropdown = function(evt) {
+    if (evt && evt.which === 3) return;
+
     openScope.$apply(function() {
       openScope.isOpen = false;
     });

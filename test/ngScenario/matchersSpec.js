@@ -34,7 +34,7 @@ describe('angular.scenario.matchers', function() {
     expectMatcher(10, function() { matchers.toEqual(10); });
     expectMatcher('value', function() { matchers.toBeDefined(); });
     expectMatcher([1], function() { matchers.toBeTruthy(); });
-    expectMatcher("", function() { matchers.toBeFalsy(); });
+    expectMatcher('', function() { matchers.toBeFalsy(); });
     expectMatcher(0, function() { matchers.toBeFalsy(); });
     expectMatcher('foo', function() { matchers.toMatch('.o.'); });
     expectMatcher(null, function() { matchers.toBeNull(); });

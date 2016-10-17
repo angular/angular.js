@@ -1,5 +1,8 @@
 'use strict';
 
+var serveFavicon = require('serve-favicon');
+var serveStatic = require('serve-static');
+var serveIndex = require('serve-index');
 var files = require('./angularFiles').files;
 var util = require('./lib/grunt/utils.js');
 var versionInfo = require('./lib/versions/version-info');
@@ -15,7 +18,11 @@ module.exports = function(grunt) {
 
   var NG_VERSION = versionInfo.currentVersion;
   NG_VERSION.cdn = versionInfo.cdnVersion;
-  var dist = 'angular-'+ NG_VERSION.full;
+  var dist = 'angular-' + NG_VERSION.full;
+
+  if (versionInfo.cdnVersion == null) {
+    throw new Error('Unable to read CDN version, are you offline or has the CDN not been properly pushed?');
+  }
 
   //config
   grunt.initConfig({
@@ -34,15 +41,15 @@ module.exports = function(grunt) {
           hostname: '0.0.0.0',
           base: '.',
           keepalive: true,
-          middleware: function(connect, options){
+          middleware: function(connect, options) {
             var base = Array.isArray(options.base) ? options.base[options.base.length - 1] : options.base;
             return [
               util.conditionalCsp(),
               util.rewrite(),
               e2e.middleware(),
-              connect.favicon('images/favicon.ico'),
-              connect.static(base),
-              connect.directory(base)
+              serveFavicon('images/favicon.ico'),
+              serveStatic(base),
+              serveIndex(base)
             ];
           }
         }
@@ -54,7 +61,7 @@ module.exports = function(grunt) {
           // to avoid https://github.com/joyent/libuv/issues/826
           port: 8000,
           hostname: '0.0.0.0',
-          middleware: function(connect, options){
+          middleware: function(connect, options) {
             var base = Array.isArray(options.base) ? options.base[options.base.length - 1] : options.base;
             return [
               function(req, resp, next) {
@@ -67,8 +74,8 @@ module.exports = function(grunt) {
               },
               util.conditionalCsp(),
               e2e.middleware(),
-              connect.favicon('images/favicon.ico'),
-              connect.static(base)
+              serveFavicon('images/favicon.ico'),
+              serveStatic(base)
             ];
           }
         }
@@ -79,6 +86,8 @@ module.exports = function(grunt) {
     tests: {
       jqlite: 'karma-jqlite.conf.js',
       jquery: 'karma-jquery.conf.js',
+      'jquery-2.2': 'karma-jquery-2.2.conf.js',
+      'jquery-2.1': 'karma-jquery-2.1.conf.js',
       docs: 'karma-docs.conf.js',
       modules: 'karma-modules.conf.js'
     },
@@ -87,6 +96,8 @@ module.exports = function(grunt) {
     autotest: {
       jqlite: 'karma-jqlite.conf.js',
       jquery: 'karma-jquery.conf.js',
+      'jquery-2.2': 'karma-jquery-2.2.conf.js',
+      'jquery-2.1': 'karma-jquery-2.1.conf.js',
       modules: 'karma-modules.conf.js',
       docs: 'karma-docs.conf.js'
     },
@@ -104,65 +115,24 @@ module.exports = function(grunt) {
       tmp: ['tmp']
     },
 
-    jshint: {
-      options: {
-        jshintrc: true,
-      },
-      node: {
-        files: { src: ['*.js', 'lib/**/*.js'] },
-      },
-      tests: {
-        files: { src: 'test/**/*.js' },
-      },
-      ng: {
-        files: { src: files['angularSrc'].concat('!src/angular.bind.js') },
-      },
-      ngAnimate: {
-        files: { src: 'src/ngAnimate/**/*.js' },
-      },
-      ngCookies: {
-        files: { src: 'src/ngCookies/**/*.js' },
-      },
-      ngLocale: {
-        files: { src: 'src/ngLocale/**/*.js' },
-      },
-      ngMessageFormat: {
-        files: { src: 'src/ngMessageFormat/**/*.js' },
-      },
-      ngMessages: {
-        files: { src: 'src/ngMessages/**/*.js' },
-      },
-      ngMock: {
-        files: { src: 'src/ngMock/**/*.js' },
-      },
-      ngResource: {
-        files: { src: 'src/ngResource/**/*.js' },
-      },
-      ngRoute: {
-        files: { src: 'src/ngRoute/**/*.js' },
-      },
-      ngSanitize: {
-        files: { src: 'src/ngSanitize/**/*.js' },
-      },
-      ngScenario: {
-        files: { src: 'src/ngScenario/**/*.js' },
-      },
-      ngTouch: {
-        files: { src: 'src/ngTouch/**/*.js' },
-      },
-      ngAria: {
-        files: {src: 'src/ngAria/**/*.js'},
-      }
-    },
-
-    jscs: {
-      src: [
-        'src/**/*.js',
-        'test/**/*.js',
-        '!src/angular.bind.js' // we ignore this file since contains an early return statement
-      ],
-      options: {
-        config: '.jscsrc'
+    eslint: {
+      all: {
+        src: [
+          '*.js',
+          'benchmarks/**/*.js',
+          'docs/**/*.js',
+          'lib/**/*.js',
+          'scripts/**/*.js',
+          'src/**/*.js',
+          'test/**/*.js',
+          'i18n/**/*.js',
+          '!docs/app/assets/js/angular-bootstrap/**',
+          '!docs/bower_components/**',
+          '!docs/config/templates/**',
+          '!src/angular.bind.js',
+          '!i18n/closure/**',
+          '!src/ngParseExt/ucd.js'
+        ]
       }
     },
 
@@ -231,6 +201,10 @@ module.exports = function(grunt) {
         dest: 'build/angular-aria.js',
         src: util.wrap(files['angularModules']['ngAria'], 'module')
       },
+      parseext: {
+        dest: 'build/angular-parse-ext.js',
+        src: util.wrap(files['angularModules']['ngParseExt'], 'module')
+      },
       'promises-aplus-adapter': {
         dest:'tmp/promises-aplus-adapter++.js',
         src:['src/ng/q.js', 'lib/promises-aplus/promises-aplus-test-adapter.js']
@@ -249,7 +223,8 @@ module.exports = function(grunt) {
       resource: 'build/angular-resource.js',
       route: 'build/angular-route.js',
       sanitize: 'build/angular-sanitize.js',
-      aria: 'build/angular-aria.js'
+      aria: 'build/angular-aria.js',
+      parseext: 'build/angular-parse-ext.js'
     },
 
 
@@ -264,12 +239,17 @@ module.exports = function(grunt) {
       ],
       options: {
         disallowed: [
+          'fit',
           'iit',
           'xit',
+          'fthey',
           'tthey',
           'xthey',
+          'fdescribe',
           'ddescribe',
-          'xdescribe'
+          'xdescribe',
+          'it.only',
+          'describe.only'
         ]
       }
     },
@@ -294,7 +274,7 @@ module.exports = function(grunt) {
 
     compress: {
       build: {
-        options: {archive: 'build/' + dist +'.zip', mode: 'zip'},
+        options: {archive: 'build/' + dist + '.zip', mode: 'zip'},
         src: ['**'],
         cwd: 'build',
         expand: true,
@@ -342,12 +322,14 @@ module.exports = function(grunt) {
 
 
   //alias tasks
-  grunt.registerTask('test', 'Run unit, docs and e2e tests with Karma', ['jshint', 'jscs', 'package', 'test:unit', 'test:promises-aplus', 'tests:docs', 'test:protractor']);
+  grunt.registerTask('test', 'Run unit, docs and e2e tests with Karma', ['eslint', 'package', 'test:unit', 'test:promises-aplus', 'tests:docs', 'test:protractor']);
   grunt.registerTask('test:jqlite', 'Run the unit tests with Karma' , ['tests:jqlite']);
-  grunt.registerTask('test:jquery', 'Run the jQuery unit tests with Karma', ['tests:jquery']);
+  grunt.registerTask('test:jquery', 'Run the jQuery (latest) unit tests with Karma', ['tests:jquery']);
+  grunt.registerTask('test:jquery-2.2', 'Run the jQuery 2.2 unit tests with Karma', ['tests:jquery-2.2']);
+  grunt.registerTask('test:jquery-2.1', 'Run the jQuery 2.1 unit tests with Karma', ['tests:jquery-2.1']);
   grunt.registerTask('test:modules', 'Run the Karma module tests with Karma', ['build', 'tests:modules']);
   grunt.registerTask('test:docs', 'Run the doc-page tests with Karma', ['package', 'tests:docs']);
-  grunt.registerTask('test:unit', 'Run unit, jQuery and Karma module tests with Karma', ['test:jqlite', 'test:jquery', 'test:modules']);
+  grunt.registerTask('test:unit', 'Run unit, jQuery and Karma module tests with Karma', ['test:jqlite', 'test:jquery', 'test:jquery-2.2', 'test:jquery-2.1', 'test:modules']);
   grunt.registerTask('test:protractor', 'Run the end to end tests with Protractor and keep a test server running in the background', ['webdriver', 'connect:testserver', 'protractor:normal']);
   grunt.registerTask('test:travis-protractor', 'Run the end to end tests with Protractor for Travis CI builds', ['connect:testserver', 'protractor:travis']);
   grunt.registerTask('test:ci-protractor', 'Run the end to end tests with Protractor for Jenkins CI builds', ['webdriver', 'connect:testserver', 'protractor:jenkins']);
@@ -357,6 +339,6 @@ module.exports = function(grunt) {
   grunt.registerTask('minify', ['bower', 'clean', 'build', 'minall']);
   grunt.registerTask('webserver', ['connect:devserver']);
   grunt.registerTask('package', ['bower', 'validate-angular-files', 'clean', 'buildall', 'minall', 'collect-errors', 'docs', 'copy', 'write', 'compress']);
-  grunt.registerTask('ci-checks', ['ddescribe-iit', 'merge-conflict', 'jshint', 'jscs']);
+  grunt.registerTask('ci-checks', ['ddescribe-iit', 'merge-conflict', 'eslint']);
   grunt.registerTask('default', ['package']);
 };

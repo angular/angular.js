@@ -14,13 +14,13 @@ describe('$timeout', function() {
     $browser.defer.flush();
     expect(counter).toBe(1);
 
-    expect(function() {$browser.defer.flush();}).toThrow('No deferred tasks to be flushed');
+    expect(function() {$browser.defer.flush();}).toThrowError('No deferred tasks to be flushed');
     expect(counter).toBe(1);
   }));
 
 
   it('should call $apply after each callback is executed', inject(function($timeout, $rootScope) {
-    var applySpy = spyOn($rootScope, '$apply').andCallThrough();
+    var applySpy = spyOn($rootScope, '$apply').and.callThrough();
 
     $timeout(noop);
     expect(applySpy).not.toHaveBeenCalled();
@@ -28,17 +28,17 @@ describe('$timeout', function() {
     $timeout.flush();
     expect(applySpy).toHaveBeenCalledOnce();
 
-    applySpy.reset();
+    applySpy.calls.reset();
 
     $timeout(noop);
     $timeout(noop);
     $timeout.flush();
-    expect(applySpy.callCount).toBe(2);
+    expect(applySpy).toHaveBeenCalledTimes(2);
   }));
 
 
   it('should NOT call $apply if skipApply is set to true', inject(function($timeout, $rootScope) {
-    var applySpy = spyOn($rootScope, '$apply').andCallThrough();
+    var applySpy = spyOn($rootScope, '$apply').and.callThrough();
 
     $timeout(noop, 12, false);
     expect(applySpy).not.toHaveBeenCalled();
@@ -50,8 +50,8 @@ describe('$timeout', function() {
 
   it('should NOT call $evalAsync or $digest if invokeApply is set to false',
       inject(function($timeout, $rootScope) {
-    var evalAsyncSpy = spyOn($rootScope, '$evalAsync').andCallThrough();
-    var digestSpy = spyOn($rootScope, '$digest').andCallThrough();
+    var evalAsyncSpy = spyOn($rootScope, '$evalAsync').and.callThrough();
+    var digestSpy = spyOn($rootScope, '$digest').and.callThrough();
     var fulfilledSpy = jasmine.createSpy('fulfilled');
 
     $timeout(fulfilledSpy, 1000, false);
@@ -67,8 +67,8 @@ describe('$timeout', function() {
   it('should allow you to specify the delay time', inject(function($timeout, $browser) {
     var defer = spyOn($browser, 'defer');
     $timeout(noop, 123);
-    expect(defer.callCount).toEqual(1);
-    expect(defer.mostRecentCall.args[1]).toEqual(123);
+    expect(defer).toHaveBeenCalledTimes(1);
+    expect(defer.calls.mostRecent().args[1]).toEqual(123);
   }));
 
 
@@ -87,7 +87,7 @@ describe('$timeout', function() {
   it('should forget references to deferreds when callback called even if skipApply is true',
       inject(function($timeout, $browser) {
     // $browser.defer.cancel is only called on cancel if the deferred object is still referenced
-    var cancelSpy = spyOn($browser.defer, 'cancel').andCallThrough();
+    var cancelSpy = spyOn($browser.defer, 'cancel').and.callThrough();
 
     var promise1 = $timeout(noop, 0, false);
     var promise2 = $timeout(noop, 100, false);
@@ -161,19 +161,19 @@ describe('$timeout', function() {
 
     it('should delegate exception to the $exceptionHandler service', inject(
         function($timeout, $exceptionHandler) {
-      $timeout(function() { throw "Test Error"; });
+      $timeout(function() { throw 'Test Error'; });
       expect($exceptionHandler.errors).toEqual([]);
 
       $timeout.flush();
-      expect($exceptionHandler.errors).toEqual(["Test Error"]);
+      expect($exceptionHandler.errors).toEqual(['Test Error', 'Possibly unhandled rejection: Test Error']);
     }));
 
 
     it('should call $apply even if an exception is thrown in callback', inject(
         function($timeout, $rootScope) {
-      var applySpy = spyOn($rootScope, '$apply').andCallThrough();
+      var applySpy = spyOn($rootScope, '$apply').and.callThrough();
 
-      $timeout(function() { throw "Test Error"; });
+      $timeout(function() { throw 'Test Error'; });
       expect(applySpy).not.toHaveBeenCalled();
 
       $timeout.flush();
@@ -183,7 +183,7 @@ describe('$timeout', function() {
 
     it('should reject the timeout promise when an exception is thrown in the timeout callback',
         inject(function($timeout, log) {
-      var promise = $timeout(function() { throw "Some Error"; });
+      var promise = $timeout(function() { throw 'Some Error'; });
 
       promise.then(log.fn('success'), function(reason) { log('error: ' + reason); });
       $timeout.flush();
@@ -214,9 +214,9 @@ describe('$timeout', function() {
     it('should forget references to relevant deferred even when exception is thrown',
         inject(function($timeout, $browser) {
       // $browser.defer.cancel is only called on cancel if the deferred object is still referenced
-      var cancelSpy = spyOn($browser.defer, 'cancel').andCallThrough();
+      var cancelSpy = spyOn($browser.defer, 'cancel').and.callThrough();
 
-      var promise = $timeout(function() { throw "Test Error"; }, 0, false);
+      var promise = $timeout(function() { throw 'Test Error'; }, 0, false);
       $timeout.flush();
 
       expect(cancelSpy).not.toHaveBeenCalled();
@@ -238,7 +238,7 @@ describe('$timeout', function() {
       $timeout(task2);
       promise3 = $timeout(task3, 333);
       promise4 = $timeout(333);
-      promise3.then(task4);
+      promise3.then(task4, noop);
 
       $timeout.cancel(promise1);
       $timeout.cancel(promise3);
@@ -287,7 +287,7 @@ describe('$timeout', function() {
 
     it('should forget references to relevant deferred', inject(function($timeout, $browser) {
       // $browser.defer.cancel is only called on cancel if the deferred object is still referenced
-      var cancelSpy = spyOn($browser.defer, 'cancel').andCallThrough();
+      var cancelSpy = spyOn($browser.defer, 'cancel').and.callThrough();
 
       var promise = $timeout(noop, 0, false);
 

@@ -113,15 +113,15 @@ $provide.value("$locale", {
     ],
     "fullDate": "EEEE 'den' d. MMMM y",
     "longDate": "d. MMMM y",
-    "medium": "d. MMM y HH.mm.ss",
+    "medium": "d. MMM y h.mm.ss a",
     "mediumDate": "d. MMM y",
-    "mediumTime": "HH.mm.ss",
-    "short": "dd/MM/y HH.mm",
+    "mediumTime": "h.mm.ss a",
+    "short": "dd/MM/y h.mm a",
     "shortDate": "dd/MM/y",
-    "shortTime": "HH.mm"
+    "shortTime": "h.mm a"
   },
   "NUMBER_FORMATS": {
-    "CURRENCY_SYM": "kr",
+    "CURRENCY_SYM": "kr.",
     "DECIMAL_SEP": ",",
     "GROUP_SEP": ".",
     "PATTERNS": [
@@ -150,6 +150,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "da-gl",
+  "localeID": "da_GL",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  var wt = getWT(vf.v, vf.f);  if (n == 1 || wt.t != 0 && (i == 0 || i == 1)) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

@@ -1,5 +1,6 @@
-/* jshint scripturl: true */
 'use strict';
+
+/* eslint-disable no-script-url */
 
 describe('sanitizeUri', function() {
   var sanitizeHref, sanitizeImg, sanitizeUriProvider, testUrl;
@@ -18,7 +19,7 @@ describe('sanitizeUri', function() {
   });
 
   function isEvilInCurrentBrowser(uri) {
-    var a = document.createElement('a');
+    var a = window.document.createElement('a');
     a.setAttribute('href', uri);
     return a.href.substring(0, 4) !== 'http';
   }
@@ -26,51 +27,51 @@ describe('sanitizeUri', function() {
   describe('img[src] sanitization', function() {
 
     it('should sanitize javascript: urls', function() {
-      testUrl = "javascript:doEvilStuff()";
+      testUrl = 'javascript:doEvilStuff()';
       expect(sanitizeImg(testUrl)).toBe('unsafe:javascript:doEvilStuff()');
     });
 
     it('should sanitize javascript: urls with comments', function() {
-      testUrl = "javascript:alert(1)//data:image/";
+      testUrl = 'javascript:alert(1)//data:image/';
       expect(sanitizeImg(testUrl)).toBe('unsafe:javascript:alert(1)//data:image/');
     });
 
     it('should sanitize non-image data: urls', function() {
-      testUrl = "data:application/javascript;charset=US-ASCII,alert('evil!');";
-      expect(sanitizeImg(testUrl)).toBe("unsafe:data:application/javascript;charset=US-ASCII,alert('evil!');");
+      testUrl = 'data:application/javascript;charset=US-ASCII,alert(\'evil!\');';
+      expect(sanitizeImg(testUrl)).toBe('unsafe:data:application/javascript;charset=US-ASCII,alert(\'evil!\');');
 
-      testUrl = "data:,foo";
-      expect(sanitizeImg(testUrl)).toBe("unsafe:data:,foo");
+      testUrl = 'data:,foo';
+      expect(sanitizeImg(testUrl)).toBe('unsafe:data:,foo');
     });
 
     it('should sanitize mailto: urls', function() {
-      testUrl = "mailto:foo@bar.com";
+      testUrl = 'mailto:foo@bar.com';
       expect(sanitizeImg(testUrl)).toBe('unsafe:mailto:foo@bar.com');
     });
 
     it('should sanitize obfuscated javascript: urls', function() {
       // case-sensitive
-      testUrl = "JaVaScRiPt:doEvilStuff()";
+      testUrl = 'JaVaScRiPt:doEvilStuff()';
       expect(sanitizeImg(testUrl)).toBe('unsafe:javascript:doEvilStuff()');
 
       // tab in protocol
-      testUrl = "java\u0009script:doEvilStuff()";
+      testUrl = 'java\u0009script:doEvilStuff()';
       if (isEvilInCurrentBrowser(testUrl)) {
         expect(sanitizeImg(testUrl)).toEqual('unsafe:javascript:doEvilStuff()');
       }
 
       // space before
-      testUrl = " javascript:doEvilStuff()";
+      testUrl = ' javascript:doEvilStuff()';
       expect(sanitizeImg(testUrl)).toBe('unsafe:javascript:doEvilStuff()');
 
       // ws chars before
-      testUrl = " \u000e javascript:doEvilStuff()";
+      testUrl = ' \u000e javascript:doEvilStuff()';
       if (isEvilInCurrentBrowser(testUrl)) {
         expect(sanitizeImg(testUrl)).toEqual('unsafe:javascript:doEvilStuff()');
       }
 
       // post-fixed with proper url
-      testUrl = "javascript:doEvilStuff(); http://make.me/look/good";
+      testUrl = 'javascript:doEvilStuff(); http://make.me/look/good';
       expect(sanitizeImg(testUrl)).toBeOneOf(
         'unsafe:javascript:doEvilStuff(); http://make.me/look/good',
         'unsafe:javascript:doEvilStuff();%20http://make.me/look/good'
@@ -78,49 +79,49 @@ describe('sanitizeUri', function() {
     });
 
     it('should sanitize ng-src bindings as well', function() {
-      testUrl = "javascript:doEvilStuff()";
+      testUrl = 'javascript:doEvilStuff()';
       expect(sanitizeImg(testUrl)).toBe('unsafe:javascript:doEvilStuff()');
     });
 
 
     it('should not sanitize valid urls', function() {
-      testUrl = "foo/bar";
+      testUrl = 'foo/bar';
       expect(sanitizeImg(testUrl)).toBe('foo/bar');
 
-      testUrl = "/foo/bar";
+      testUrl = '/foo/bar';
       expect(sanitizeImg(testUrl)).toBe('/foo/bar');
 
-      testUrl = "../foo/bar";
+      testUrl = '../foo/bar';
       expect(sanitizeImg(testUrl)).toBe('../foo/bar');
 
-      testUrl = "#foo";
+      testUrl = '#foo';
       expect(sanitizeImg(testUrl)).toBe('#foo');
 
-      testUrl = "http://foo.com/bar";
+      testUrl = 'http://foo.com/bar';
       expect(sanitizeImg(testUrl)).toBe('http://foo.com/bar');
 
-      testUrl = " http://foo.com/bar";
+      testUrl = ' http://foo.com/bar';
       expect(sanitizeImg(testUrl)).toBe(' http://foo.com/bar');
 
-      testUrl = "https://foo.com/bar";
+      testUrl = 'https://foo.com/bar';
       expect(sanitizeImg(testUrl)).toBe('https://foo.com/bar');
 
-      testUrl = "ftp://foo.com/bar";
+      testUrl = 'ftp://foo.com/bar';
       expect(sanitizeImg(testUrl)).toBe('ftp://foo.com/bar');
 
-      testUrl = "file:///foo/bar.html";
+      testUrl = 'file:///foo/bar.html';
       expect(sanitizeImg(testUrl)).toBe('file:///foo/bar.html');
     });
 
     it('should not sanitize blob urls', function() {
-      testUrl = "blob:///foo/bar.html";
+      testUrl = 'blob:///foo/bar.html';
       expect(sanitizeImg(testUrl)).toBe('blob:///foo/bar.html');
     });
 
     it('should not sanitize data: URIs for images', function() {
       // image data uri
       // ref: http://probablyprogramming.com/2009/03/15/the-tiniest-gif-ever
-      testUrl = "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
+      testUrl = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
       expect(sanitizeImg(testUrl)).toBe('data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==');
     });
 
@@ -130,10 +131,10 @@ describe('sanitizeUri', function() {
       returnVal = sanitizeUriProvider.imgSrcSanitizationWhitelist(/javascript:/);
       expect(returnVal).toBe(sanitizeUriProvider);
 
-      testUrl = "javascript:doEvilStuff()";
+      testUrl = 'javascript:doEvilStuff()';
       expect(sanitizeImg(testUrl)).toBe('javascript:doEvilStuff()');
 
-      testUrl = "http://recon/figured";
+      testUrl = 'http://recon/figured';
       expect(sanitizeImg(testUrl)).toBe('unsafe:http://recon/figured');
     });
 
@@ -143,40 +144,40 @@ describe('sanitizeUri', function() {
   describe('a[href] sanitization', function() {
 
     it('should sanitize javascript: urls', inject(function() {
-      testUrl = "javascript:doEvilStuff()";
+      testUrl = 'javascript:doEvilStuff()';
       expect(sanitizeHref(testUrl)).toBe('unsafe:javascript:doEvilStuff()');
     }));
 
 
     it('should sanitize data: urls', inject(function() {
-      testUrl = "data:evilPayload";
+      testUrl = 'data:evilPayload';
       expect(sanitizeHref(testUrl)).toBe('unsafe:data:evilPayload');
     }));
 
 
     it('should sanitize obfuscated javascript: urls', inject(function() {
       // case-sensitive
-      testUrl = "JaVaScRiPt:doEvilStuff()";
+      testUrl = 'JaVaScRiPt:doEvilStuff()';
       expect(sanitizeHref(testUrl)).toBe('unsafe:javascript:doEvilStuff()');
 
       // tab in protocol
-      testUrl = "java\u0009script:doEvilStuff()";
+      testUrl = 'java\u0009script:doEvilStuff()';
       if (isEvilInCurrentBrowser(testUrl)) {
         expect(sanitizeHref(testUrl)).toEqual('unsafe:javascript:doEvilStuff()');
       }
 
       // space before
-      testUrl = " javascript:doEvilStuff()";
+      testUrl = ' javascript:doEvilStuff()';
       expect(sanitizeHref(testUrl)).toBe('unsafe:javascript:doEvilStuff()');
 
       // ws chars before
-      testUrl = " \u000e javascript:doEvilStuff()";
+      testUrl = ' \u000e javascript:doEvilStuff()';
       if (isEvilInCurrentBrowser(testUrl)) {
         expect(sanitizeHref(testUrl)).toEqual('unsafe:javascript:doEvilStuff()');
       }
 
       // post-fixed with proper url
-      testUrl = "javascript:doEvilStuff(); http://make.me/look/good";
+      testUrl = 'javascript:doEvilStuff(); http://make.me/look/good';
       expect(sanitizeHref(testUrl)).toBeOneOf(
         'unsafe:javascript:doEvilStuff(); http://make.me/look/good',
         'unsafe:javascript:doEvilStuff();%20http://make.me/look/good'
@@ -185,40 +186,40 @@ describe('sanitizeUri', function() {
 
 
     it('should sanitize ngHref bindings as well', inject(function() {
-      testUrl = "javascript:doEvilStuff()";
+      testUrl = 'javascript:doEvilStuff()';
       expect(sanitizeHref(testUrl)).toBe('unsafe:javascript:doEvilStuff()');
     }));
 
 
     it('should not sanitize valid urls', inject(function() {
-      testUrl = "foo/bar";
+      testUrl = 'foo/bar';
       expect(sanitizeHref(testUrl)).toBe('foo/bar');
 
-      testUrl = "/foo/bar";
+      testUrl = '/foo/bar';
       expect(sanitizeHref(testUrl)).toBe('/foo/bar');
 
-      testUrl = "../foo/bar";
+      testUrl = '../foo/bar';
       expect(sanitizeHref(testUrl)).toBe('../foo/bar');
 
-      testUrl = "#foo";
+      testUrl = '#foo';
       expect(sanitizeHref(testUrl)).toBe('#foo');
 
-      testUrl = "http://foo/bar";
+      testUrl = 'http://foo/bar';
       expect(sanitizeHref(testUrl)).toBe('http://foo/bar');
 
-      testUrl = " http://foo/bar";
+      testUrl = ' http://foo/bar';
       expect(sanitizeHref(testUrl)).toBe(' http://foo/bar');
 
-      testUrl = "https://foo/bar";
+      testUrl = 'https://foo/bar';
       expect(sanitizeHref(testUrl)).toBe('https://foo/bar');
 
-      testUrl = "ftp://foo/bar";
+      testUrl = 'ftp://foo/bar';
       expect(sanitizeHref(testUrl)).toBe('ftp://foo/bar');
 
-      testUrl = "mailto:foo@bar.com";
+      testUrl = 'mailto:foo@bar.com';
       expect(sanitizeHref(testUrl)).toBe('mailto:foo@bar.com');
 
-      testUrl = "file:///foo/bar.html";
+      testUrl = 'file:///foo/bar.html';
       expect(sanitizeHref(testUrl)).toBe('file:///foo/bar.html');
     }));
 
@@ -228,10 +229,10 @@ describe('sanitizeUri', function() {
       returnVal = sanitizeUriProvider.aHrefSanitizationWhitelist(/javascript:/);
       expect(returnVal).toBe(sanitizeUriProvider);
 
-      testUrl = "javascript:doEvilStuff()";
+      testUrl = 'javascript:doEvilStuff()';
       expect(sanitizeHref(testUrl)).toBe('javascript:doEvilStuff()');
 
-      testUrl = "http://recon/figured";
+      testUrl = 'http://recon/figured';
       expect(sanitizeHref(testUrl)).toBe('unsafe:http://recon/figured');
     });
 

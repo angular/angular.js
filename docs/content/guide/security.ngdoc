@@ -9,52 +9,134 @@ This document explains some of AngularJS's security features and best practices 
 keep in mind as you build your application.
 
 
-## Expression Sandboxing
-
-AngularJS's expressions are sandboxed not for security reasons, but instead to maintain a proper
-separation of application responsibilities. For example, access to `window` is disallowed
-because it makes it easy to introduce brittle global state into your application.
-
-However, this sandbox is not intended to stop attackers who can edit the template before it's
-processed by Angular. It may be possible to run arbitrary JavaScript inside double-curly bindings
-if an attacker can modify them.
-
-But if an attacker can change arbitrary HTML templates, there's nothing stopping them from doing:
-
-```html
-<script>somethingEvil();</script>
-```
-
-It's better to design your application in such a way that users cannot change client-side templates.
-For instance:
-
-* Do not mix client and server templates
-* Do not use user input to generate templates dynamically
-* Do not run user input through `$scope.$eval`
-* Consider using {@link ng.directive:ngCsp CSP} (but don't rely only on CSP)
-
-## Mixing client-side and server-side templates
-
-In general, we recommend against this because it can create unintended XSS vectors.
-
-However, it's ok to mix server-side templating in the bootstrap template (`index.html`) as long
-as user input cannot be used on the server to output html that would then be processed by Angular
-in a way that would allow for arbitrary code execution.
-
-For instance, you can use server-side templating to dynamically generate CSS, URLs, etc, but not
-for generating templates that are bootstrapped/compiled by Angular.
-
-
 ## Reporting a security issue
 
 Email us at [security@angularjs.org](mailto:security@angularjs.org) to report any potential
 security issues in AngularJS.
 
-Please keep in mind the above points about Angular's expression language.
+Please keep in mind the points below about Angular's expression language.
 
+
+## Use the latest AngularJS possible
+
+Like any software library, it is critical to keep AngularJS up to date. Please track the
+[CHANGELOG](https://github.com/angular/angular.js/blob/master/CHANGELOG.md) and make sure you are aware
+of upcoming security patches and other updates.
+
+Be ready to update rapidly when new security-centric patches are available.
+
+Those that stray from Angular standards (such as modifying Angular's core) may have difficulty updating,
+so keeping to AngularJS standards is not just a functionality issue, it's also critical in order to
+facilitate rapid security updates.
+
+
+## Angular Templates and Expressions
+
+**If an attacker has access to control Angular templates or expressions, they can exploit an Angular application
+via an XSS attack, regardless of the version.**
+
+There are a number of ways that templates and expressions can be controlled:
+
+* **Generating Angular templates on the server containing user-provided content**. This is the most common pitfall
+  where you are generating HTML via some server-side engine such as PHP, Java or ASP.NET.
+* **Passing an expression generated from user-provided content in calls to the following methods on a {@link scope scope}**:
+  * `$watch(userContent, ...)`
+  * `$watchGroup(userContent, ...)`
+  * `$watchCollection(userContent, ...)`
+  * `$eval(userContent)`
+  * `$evalAsync(userContent)`
+  * `$apply(userContent)`
+  * `$applyAsync(userContent)`
+* **Passing an expression generated from user-provided content in calls to services that parse expressions**:
+  * `$compile(userContent)`
+  * `$parse(userContent)`
+  * `$interpolate(userContent)`
+* **Passing an expression generated from user provided content as a predicate to `orderBy` pipe**:
+  `{{ value | orderBy : userContent }}`
+
+### Sandbox removal
+Each version of Angular 1 up to, but not including 1.6, contained an expression sandbox, which reduced the surface area of
+the vulnerability but never removed it. **In Angular 1.6 we removed this sandbox as developers kept relying upon it as a security
+feature even though it was always possible to access arbitrary JavaScript code if one could control the Angular templates
+or expressions of applications.**
+
+Control of the Angular templates makes applications vulnerable even if there was a completely secure sandbox:
+* https://ryhanson.com/stealing-session-tokens-on-plunker-with-an-angular-expression-injection/ in this blog post the author shows
+  a (now closed) vulnerability in the Plunker application due to server-side rendering inside an Angular template.
+* https://ryhanson.com/angular-expression-injection-walkthrough/ in this blog post the author describes an attack, which does not
+  rely upon an expression sandbox bypass, that can be made because the sample application is rendering a template on the server that
+  contains user entered content.
+
+**It's best to design your application in such a way that users cannot change client-side templates.**
+
+* Do not mix client and server templates
+* Do not use user input to generate templates dynamically
+* Do not run user input through `$scope.$eval` (or any of the other expression parsing functions listed above)
+* Consider using {@link ng.directive:ngCsp CSP} (but don't rely only on CSP)
+
+**You can use suitably sanitized server-side templating to dynamically generate CSS, URLs, etc, but not for generating templates that are
+bootstrapped/compiled by Angular.**
+
+**If you must continue to allow user-provided content in an Angular template then the safest option is to ensure that it is only
+present in the part of the template that is made inert via the {@link ngNonBindable} directive.**
+
+
+## HTTP Requests
+
+Whenever your application makes requests to a server there are potential security issues that need
+to be blocked. Both server and the client must cooperate in order to eliminate these threats.
+Angular comes pre-configured with strategies that address these issues, but for this to work backend
+server cooperation is required.
+
+
+### Cross Site Request Forgery (XSRF/CSRF)
+
+Protection from XSRF is provided by using the double-submit cookie defense pattern.
+For more information please visit {@link $http#cross-site-request-forgery-xsrf-protection XSRF protection}.
+
+### JSON Hijacking Protection
+
+Protection from JSON Hijacking is provided if the server prefixes all JSON requests with following string `")]}',\n"`.
+Angular will automatically strip the prefix before processing it as JSON.
+For more information please visit {@link $http#json-vulnerability-protection JSON Hijacking Protection}.
+
+Bear in mind that calling `$http.jsonp`, like in [our Yahoo! finance example](https://docs.angularjs.org/guide/concepts#accessing-the-backend),
+gives the remote server (and, if the request is not secured, any Man-in-the-Middle attackers)
+instant remote code execution in your application: the result of these requests is handed off
+to the browser as regular `<script>` tag.
+
+## Strict Contextual Escaping
+
+Strict Contextual Escaping (SCE) is a mode in which AngularJS requires bindings in certain contexts to require
+a value that is marked as safe to use for that context.
+
+This mode is implemented by the {@link $sce} service and various core directives.
+
+One example of such a context is rendering arbitrary content via the {@link ngBindHtml} directive. If the content is
+provided by a user there is a chance of Cross Site Scripting (XSS) attacks. The {@link ngBindHtml} directive will not
+render content that is not marked as safe by {@link $sce}. The {@link ngSanitize} module can be used to clean such
+user provided content and mark the content as safe.
+
+**Be aware that marking untrusted data as safe via calls to {@link $sce#trustAsHtml `$sce.trustAsHtml`}, etc is
+dangerous and will lead to Cross Site Scripting exploits.**
+
+For more information please visit {@link $sce} and {@link ngSanitize.$sanitize}.
+
+## Using Local Caches
+
+There are various places that the browser can store (or cache) data. Within Angular there are objects created by
+the {@link $cacheFactory}. These objects, such as {@link $templateCache} are used to store and retrieve data,
+primarily used by {@link $http} and the {@link script} directive to cache templates and other data.
+
+Similarly the browser itself offers `localStorage` and `sessionStorage` objects for caching data.
+
+**Attackers with local access can retrieve sensitive data from this cache even when users are not authenticated.**
+
+For instance in a long running Single Page Application (SPA), one user may "log out", but then another user
+may access the application without refreshing, in which case all the cached data is still available.
+
+For more information please visit [Web Storage Security](https://www.whitehatsec.com/blog/web-storage-security/).
 
 ## See also
 
 * {@link ng.directive:ngCsp Content Security Policy}
-* {@link ng.$sce Strict Contextual Escaping}
-* {@link ngSanitize.$sanitize $sanitize}

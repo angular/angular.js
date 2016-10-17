@@ -1,6 +1,6 @@
 @ngdoc error
 @name $location:nobase
-@fullName $location in HTML5 mode requires a `<base>` tag to be present!
+@fullName $location in HTML5 mode requires a &lt;base&gt; tag to be present!
 @description
 
 If you configure {@link ng.$location `$location`} to use

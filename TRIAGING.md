@@ -20,7 +20,7 @@ The following is done automatically so you don't have to worry about it:
 This process based on the idea of minimizing user pain
 [from this blog post](http://www.lostgarden.com/2008/05/improving-bug-triage-with-user-pain.html).
 
-1. Open the list of [non triaged issues](https://github.com/angular/angular.js/issues?direction=desc&milestone=none&page=1&sort=created&state=open)
+1. Open the list of [non triaged issues](https://github.com/angular/angular.js/issues?q=is%3Aopen+sort%3Acreated-desc+no%3Amilestone)
     * Sort by submit date, with the newest issues first
     * You don't have to do issues in order; feel free to pick and choose issues as you please.
     * You can triage older issues as well

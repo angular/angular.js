@@ -1,5 +1,11 @@
 'use strict';
 
+/* exported
+  ngClassDirective,
+  ngClassEvenDirective,
+  ngClassOddDirective
+*/
+
 function classDirective(name, selector) {
   name = 'ngClass' + name;
   return ['$animate', function($animate) {
@@ -17,14 +23,17 @@ function classDirective(name, selector) {
 
         if (name !== 'ngClass') {
           scope.$watch('$index', function($index, old$index) {
-            // jshint bitwise: false
+            /* eslint-disable no-bitwise */
             var mod = $index & 1;
             if (mod !== (old$index & 1)) {
               var classes = arrayClasses(scope.$eval(attr[name]));
-              mod === selector ?
-                addClasses(classes) :
+              if (mod === selector) {
+                addClasses(classes);
+              } else {
                 removeClasses(classes);
+              }
             }
+            /* eslint-enable */
           });
         }
 
@@ -69,7 +78,8 @@ function classDirective(name, selector) {
         }
 
         function ngClassWatchAction(newVal) {
-          if (selector === true || scope.$index % 2 === selector) {
+          // eslint-disable-next-line no-bitwise
+          if (selector === true || (scope.$index & 1) === selector) {
             var newClasses = arrayClasses(newVal || []);
             if (!oldVal) {
               addClasses(newClasses);
@@ -78,7 +88,11 @@ function classDirective(name, selector) {
               updateClasses(oldClasses, newClasses);
             }
           }
-          oldVal = shallowCopy(newVal);
+          if (isArray(newVal)) {
+            oldVal = newVal.map(function(v) { return shallowCopy(v); });
+          } else {
+            oldVal = shallowCopy(newVal);
+          }
         }
       }
     };
@@ -90,7 +104,7 @@ function classDirective(name, selector) {
       for (var i = 0; i < tokens1.length; i++) {
         var token = tokens1[i];
         for (var j = 0; j < tokens2.length; j++) {
-          if (token == tokens2[j]) continue outer;
+          if (token === tokens2[j]) continue outer;
         }
         values.push(token);
       }
@@ -147,10 +161,16 @@ function classDirective(name, selector) {
  * When the expression changes, the previously added classes are removed and only then are the
  * new classes added.
  *
- * @animations
- * **add** - happens just before the class is applied to the elements
+ * @knownIssue
+ * You should not use {@link guide/interpolation interpolation} in the value of the `class`
+ * attribute, when using the `ngClass` directive on the same element.
+ * See {@link guide/interpolation#known-issues here} for more info.
  *
- * **remove** - happens just before the class is removed from the element
+ * @animations
+ * | Animation                        | Occurs                              |
+ * |----------------------------------|-------------------------------------|
+ * | {@link ng.$animate#addClass addClass}       | just before the class is applied to the element   |
+ * | {@link ng.$animate#removeClass removeClass} | just before the class is removed from the element |
  *
  * @element ANY
  * @param {expression} ngClass {@link guide/expression Expression} to eval. The result
@@ -160,7 +180,7 @@ function classDirective(name, selector) {
  *   element.
  *
  * @example Example that demonstrates basic bindings via ngClass directive.
-   <example>
+   <example name="ng-class">
      <file name="index.html">
        <p ng-class="{strike: deleted, bold: important, 'has-error': error}">Map Syntax Example</p>
        <label>
@@ -253,7 +273,7 @@ function classDirective(name, selector) {
 
    The example below demonstrates how to perform animations using ngClass.
 
-   <example module="ngAnimate" deps="angular-animate.js" animations="true">
+   <example module="ngAnimate" deps="angular-animate.js" animations="true" name="ng-class">
      <file name="index.html">
       <input id="setbtn" type="button" value="set" ng-click="myVar='my-class'">
       <input id="clearbtn" type="button" value="clear" ng-click="myVar=''">
@@ -316,7 +336,7 @@ var ngClassDirective = classDirective('', true);
  *   of the evaluation can be a string representing space delimited class names or an array.
  *
  * @example
-   <example>
+   <example name="ng-class-odd">
      <file name="index.html">
         <ol ng-init="names=['John', 'Mary', 'Cate', 'Suz']">
           <li ng-repeat="name in names">
@@ -364,7 +384,7 @@ var ngClassOddDirective = classDirective('Odd', 0);
  *   result of the evaluation can be a string representing space delimited class names or an array.
  *
  * @example
-   <example>
+   <example name="ng-class-even">
      <file name="index.html">
         <ol ng-init="names=['John', 'Mary', 'Cate', 'Suz']">
           <li ng-repeat="name in names">

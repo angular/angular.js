@@ -3,6 +3,7 @@
 /**
  * @ngdoc service
  * @name $cacheFactory
+ * @this
  *
  * @description
  * Factory that constructs {@link $cacheFactory.Cache Cache} objects and gives access to
@@ -39,7 +40,7 @@
  * - `{void}` `destroy()` — Removes references to this cache from $cacheFactory.
  *
  * @example
-   <example module="cacheExampleApp">
+   <example module="cacheExampleApp" name="cache-factory">
      <file name="index.html">
        <div ng-controller="CacheController">
          <input ng-model="newCacheKey" placeholder="Key">
@@ -88,7 +89,7 @@ function $CacheFactoryProvider() {
 
     function cacheFactory(cacheId, options) {
       if (cacheId in caches) {
-        throw minErr('$cacheFactory')('iid', "CacheId '{0}' is already taken!", cacheId);
+        throw minErr('$cacheFactory')('iid', 'CacheId \'{0}\' is already taken!', cacheId);
       }
 
       var size = 0,
@@ -138,7 +139,7 @@ function $CacheFactoryProvider() {
        *  }));
        * ```
        */
-      return caches[cacheId] = {
+      return (caches[cacheId] = {
 
         /**
          * @ngdoc method
@@ -216,8 +217,8 @@ function $CacheFactoryProvider() {
 
             if (!lruEntry) return;
 
-            if (lruEntry == freshEnd) freshEnd = lruEntry.p;
-            if (lruEntry == staleEnd) staleEnd = lruEntry.n;
+            if (lruEntry === freshEnd) freshEnd = lruEntry.p;
+            if (lruEntry === staleEnd) staleEnd = lruEntry.n;
             link(lruEntry.n,lruEntry.p);
 
             delete lruHash[key];
@@ -282,17 +283,17 @@ function $CacheFactoryProvider() {
         info: function() {
           return extend({}, stats, {size: size});
         }
-      };
+      });
 
 
       /**
        * makes the `entry` the freshEnd of the LRU linked list
        */
       function refresh(entry) {
-        if (entry != freshEnd) {
+        if (entry !== freshEnd) {
           if (!staleEnd) {
             staleEnd = entry;
-          } else if (staleEnd == entry) {
+          } else if (staleEnd === entry) {
             staleEnd = entry.n;
           }
 
@@ -308,7 +309,7 @@ function $CacheFactoryProvider() {
        * bidirectionally links two entries of the LRU linked list
        */
       function link(nextEntry, prevEntry) {
-        if (nextEntry != prevEntry) {
+        if (nextEntry !== prevEntry) {
           if (nextEntry) nextEntry.p = prevEntry; //p stands for previous, 'prev' didn't minify
           if (prevEntry) prevEntry.n = nextEntry; //n stands for next, 'next' didn't minify
         }
@@ -356,6 +357,7 @@ function $CacheFactoryProvider() {
 /**
  * @ngdoc service
  * @name $templateCache
+ * @this
  *
  * @description
  * The first time a template is used, it is loaded in the template cache for quick retrieval. You
@@ -383,12 +385,14 @@ function $CacheFactoryProvider() {
  * });
  * ```
  *
- * To retrieve the template later, simply use it in your HTML:
- * ```html
- * <div ng-include=" 'templateId.html' "></div>
+ * To retrieve the template later, simply use it in your component:
+ * ```js
+ * myApp.component('myComponent', {
+ *    templateUrl: 'templateId.html'
+ * });
  * ```
  *
- * or get it via Javascript:
+ * or get it via the `$templateCache` service:
  * ```js
  * $templateCache.get('templateId.html')
  * ```

@@ -100,12 +100,12 @@ $provide.value("$locale", {
     ],
     "fullDate": "EEEE d MMMM y",
     "longDate": "d MMMM y",
-    "medium": "d MMM, y HH:mm:ss",
+    "medium": "d MMM, y h:mm:ss a",
     "mediumDate": "d MMM, y",
-    "mediumTime": "HH:mm:ss",
-    "short": "d/M/y HH:mm",
+    "mediumTime": "h:mm:ss a",
+    "short": "d/M/y h:mm a",
     "shortDate": "d/M/y",
-    "shortTime": "HH:mm"
+    "shortTime": "h:mm a"
   },
   "NUMBER_FORMATS": {
     "CURRENCY_SYM": "MRO",
@@ -137,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "ff-mr",
+  "localeID": "ff_MR",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

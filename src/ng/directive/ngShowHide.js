@@ -85,19 +85,21 @@ var NG_HIDE_IN_PROGRESS_CLASS = 'ng-hide-animate';
  * .my-element.ng-hide-remove.ng-hide-remove-active { ... }
  * ```
  *
- * Keep in mind that, as of AngularJS version 1.3.0-beta.11, there is no need to change the display
+ * Keep in mind that, as of AngularJS version 1.3, there is no need to change the display
  * property to block during animation states--ngAnimate will handle the style toggling automatically for you.
  *
  * @animations
- * addClass: `.ng-hide` - happens after the `ngShow` expression evaluates to a truthy value and the just before contents are set to visible
- * removeClass: `.ng-hide` - happens after the `ngShow` expression evaluates to a non truthy value and just before the contents are set to hidden
+ * | Animation                        | Occurs                              |
+ * |----------------------------------|-------------------------------------|
+ * | {@link $animate#addClass addClass} `.ng-hide`  | after the `ngShow` expression evaluates to a non truthy value and just before the contents are set to hidden |
+ * | {@link $animate#removeClass removeClass}  `.ng-hide`  | after the `ngShow` expression evaluates to a truthy value and just before contents are set to visible |
  *
  * @element ANY
  * @param {expression} ngShow If the {@link guide/expression expression} is truthy
  *     then the element is shown or hidden respectively.
  *
  * @example
-  <example module="ngAnimate" deps="angular-animate.js" animations="true">
+  <example module="ngAnimate" deps="angular-animate.js" animations="true" name="ng-show">
     <file name="index.html">
       Click me: <input type="checkbox" ng-model="checked" aria-label="Toggle ngHide"><br/>
       <div>
@@ -249,19 +251,22 @@ var ngShowDirective = ['$animate', function($animate) {
  * .my-element.ng-hide-remove.ng-hide-remove-active { ... }
  * ```
  *
- * Keep in mind that, as of AngularJS version 1.3.0-beta.11, there is no need to change the display
+ * Keep in mind that, as of AngularJS version 1.3, there is no need to change the display
  * property to block during animation states--ngAnimate will handle the style toggling automatically for you.
  *
  * @animations
- * removeClass: `.ng-hide` - happens after the `ngHide` expression evaluates to a truthy value and just before the contents are set to hidden
- * addClass: `.ng-hide` - happens after the `ngHide` expression evaluates to a non truthy value and just before the contents are set to visible
+ * | Animation                        | Occurs                              |
+ * |----------------------------------|-------------------------------------|
+ * | {@link $animate#addClass addClass} `.ng-hide`  | after the `ngHide` expression evaluates to a truthy value and just before the contents are set to hidden |
+ * | {@link $animate#removeClass removeClass}  `.ng-hide`  | after the `ngHide` expression evaluates to a non truthy value and just before contents are set to visible |
+ *
  *
  * @element ANY
  * @param {expression} ngHide If the {@link guide/expression expression} is truthy then
  *     the element is shown or hidden respectively.
  *
  * @example
-  <example module="ngAnimate" deps="angular-animate.js" animations="true">
+  <example module="ngAnimate" deps="angular-animate.js" animations="true" name="ng-hide">
     <file name="index.html">
       Click me: <input type="checkbox" ng-model="checked" aria-label="Toggle ngShow"><br/>
       <div>

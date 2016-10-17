@@ -4,7 +4,10 @@
  * Generates XML output into a context.
  */
 angular.scenario.output('xml', function(context, runner, model) {
-  var $ = function(args) {return new context.init(args);};
+  var $ = function(args) {
+    // eslint-disable-next-line new-cap
+    return new context.init(args);
+  };
   model.on('RunnerEnd', function() {
     var scenario = $('<scenario></scenario>');
     context.append(scenario);

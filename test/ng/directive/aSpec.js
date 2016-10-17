@@ -35,13 +35,13 @@ describe('a', function() {
 
 
   it('should prevent default action to be executed when href is empty', function() {
-    var orgLocation = document.location.href,
+    var orgLocation = window.document.location.href,
         preventDefaultCalled = false,
         event;
 
     element = $compile('<a href="">empty link</a>')($rootScope);
 
-    event = document.createEvent('MouseEvent');
+    event = window.document.createEvent('MouseEvent');
     event.initMouseEvent(
       'click', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
 
@@ -55,7 +55,7 @@ describe('a', function() {
 
     expect(preventDefaultCalled).toEqual(true);
 
-    expect(document.location.href).toEqual(orgLocation);
+    expect(window.document.location.href).toEqual(orgLocation);
   });
 
 
@@ -83,7 +83,7 @@ describe('a', function() {
 
 
   it('should not preventDefault if anchor element is replaced with href-containing element', function() {
-    spyOn(jqLite.prototype, 'on').andCallThrough();
+    spyOn(jqLite.prototype, 'on').and.callThrough();
     element = $compile('<a link-to="https://www.google.com">')($rootScope);
     $rootScope.$digest();
 
@@ -100,7 +100,7 @@ describe('a', function() {
 
 
   it('should preventDefault if anchor element is replaced with element without href attribute', function() {
-    spyOn(jqLite.prototype, 'on').andCallThrough();
+    spyOn(jqLite.prototype, 'on').and.callThrough();
     element = $compile('<a link-not="https://www.google.com">')($rootScope);
     $rootScope.$digest();
 
@@ -119,7 +119,7 @@ describe('a', function() {
   if (isDefined(window.SVGElement)) {
     describe('SVGAElement', function() {
       it('should prevent default action to be executed when href is empty', function() {
-        var orgLocation = document.location.href,
+        var orgLocation = window.document.location.href,
             preventDefaultCalled = false,
             event,
             child;
@@ -127,7 +127,7 @@ describe('a', function() {
         element = $compile('<svg><a xlink:href="">empty link</a></svg>')($rootScope);
         child = element.children('a');
 
-        event = document.createEvent('MouseEvent');
+        event = window.document.createEvent('MouseEvent');
         event.initMouseEvent(
           'click', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
 
@@ -140,7 +140,7 @@ describe('a', function() {
         child[0].dispatchEvent(event);
 
         expect(preventDefaultCalled).toEqual(true);
-        expect(document.location.href).toEqual(orgLocation);
+        expect(window.document.location.href).toEqual(orgLocation);
       });
 
 

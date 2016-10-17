@@ -1,6 +1,8 @@
 'use strict';
 
-var $$AnimationProvider = ['$animateProvider', function($animateProvider) {
+/* exported $$AnimationProvider */
+
+var $$AnimationProvider = ['$animateProvider', /** @this */ function($animateProvider) {
   var NG_ANIMATE_REF_ATTR = 'ng-animate-ref';
 
   var drivers = this.drivers = [];
@@ -348,8 +350,6 @@ var $$AnimationProvider = ['$animateProvider', function($animateProvider) {
         // may attempt more elements, but custom drivers are more particular
         for (var i = drivers.length - 1; i >= 0; i--) {
           var driverName = drivers[i];
-          if (!$injector.has(driverName)) continue; // TODO(matsko): remove this check
-
           var factory = $injector.get(driverName);
           var driver = factory(animationDetails);
           if (driver) {
@@ -378,7 +378,8 @@ var $$AnimationProvider = ['$animateProvider', function($animateProvider) {
         }
 
         function update(element) {
-          getRunner(element).setHost(newRunner);
+          var runner = getRunner(element);
+          if (runner) runner.setHost(newRunner);
         }
       }
 
@@ -389,7 +390,7 @@ var $$AnimationProvider = ['$animateProvider', function($animateProvider) {
         }
       }
 
-      function close(rejected) { // jshint ignore:line
+      function close(rejected) {
         element.off('$destroy', handleDestroyedElement);
         removeRunner(element);
 

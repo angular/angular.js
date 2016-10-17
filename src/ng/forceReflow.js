@@ -1,6 +1,6 @@
 'use strict';
 
-var $$ForceReflowProvider = function() {
+var $$ForceReflowProvider = /** @this */ function() {
   this.$get = ['$document', function($document) {
     return function(domNode) {
       //the line below will force the browser to perform a repaint so

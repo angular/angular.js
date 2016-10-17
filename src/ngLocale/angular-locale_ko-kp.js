@@ -21,8 +21,8 @@ $provide.value("$locale", {
       "\uc11c\uae30"
     ],
     "ERAS": [
-      "\uae30\uc6d0\uc804",
-      "\uc11c\uae30"
+      "BC",
+      "AD"
     ],
     "FIRSTDAYOFWEEK": 0,
     "MONTH": [
@@ -119,6 +119,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "ko-kp",
+  "localeID": "ko_KP",
   "pluralCat": function(n, opt_precision) {  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

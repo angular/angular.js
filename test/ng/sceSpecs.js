@@ -14,7 +14,7 @@ describe('SCE', function() {
     }));
 
     it('should not wrap/unwrap any value or throw exception on non-string values', inject(function($sce) {
-      var originalValue = { foo: "bar" };
+      var originalValue = { foo: 'bar' };
       expect($sce.trustAs($sce.JS, originalValue)).toBe(originalValue);
       expect($sce.getTrusted($sce.JS, originalValue)).toBe(originalValue);
     }));
@@ -122,11 +122,11 @@ describe('SCE', function() {
     }));
 
     it('should wrap undefined into undefined', inject(function($sce) {
-      expect($sce.trustAsHtml(undefined)).toBe(undefined);
+      expect($sce.trustAsHtml(undefined)).toBeUndefined();
     }));
 
     it('should unwrap undefined into undefined', inject(function($sce) {
-      expect($sce.getTrusted($sce.HTML, undefined)).toBe(undefined);
+      expect($sce.getTrusted($sce.HTML, undefined)).toBeUndefined();
     }));
 
     it('should wrap null into null', inject(function($sce) {
@@ -138,21 +138,21 @@ describe('SCE', function() {
     }));
 
     it('should wrap "" into ""', inject(function($sce) {
-      expect($sce.trustAsHtml("")).toBe("");
+      expect($sce.trustAsHtml('')).toBe('');
     }));
 
     it('should unwrap "" into ""', inject(function($sce) {
-      expect($sce.getTrusted($sce.HTML, "")).toBe("");
+      expect($sce.getTrusted($sce.HTML, '')).toBe('');
     }));
 
     it('should unwrap values and return the original', inject(function($sce) {
-      var originalValue = "originalValue";
+      var originalValue = 'originalValue';
       var wrappedValue = $sce.trustAs($sce.HTML, originalValue);
       expect($sce.getTrusted($sce.HTML, wrappedValue)).toBe(originalValue);
     }));
 
     it('should NOT unwrap values when the type is different', inject(function($sce) {
-      var originalValue = "originalValue";
+      var originalValue = 'originalValue';
       var wrappedValue = $sce.trustAs($sce.HTML, originalValue);
       expect(function() { $sce.getTrusted($sce.CSS, wrappedValue); }).toThrowMinErr(
           '$sce', 'unsafe', 'Attempting to use an unsafe value in a safe context.');
@@ -164,7 +164,7 @@ describe('SCE', function() {
           return trustedValue;
         };
       }
-      var wrappedValue = new TrustedValueHolder("originalValue");
+      var wrappedValue = new TrustedValueHolder('originalValue');
       expect(function() { return $sce.getTrusted($sce.HTML, wrappedValue); }).toThrowMinErr(
           '$sce', 'unsafe', 'Attempting to use an unsafe value in a safe context.');
     }));
@@ -182,23 +182,23 @@ describe('SCE', function() {
     it('should override the default $sce.trustAs/valueOf/etc.', function() {
       module(function($provide) {
         $provide.value('$sceDelegate', {
-          trustAs: function(type, value) { return "wrapped:"   + value; },
-          getTrusted: function(type, value) { return "unwrapped:" + value; },
-          valueOf: function(value) { return "valueOf:" + value; }
+          trustAs: function(type, value) { return 'wrapped:'   + value; },
+          getTrusted: function(type, value) { return 'unwrapped:' + value; },
+          valueOf: function(value) { return 'valueOf:' + value; }
         });
       });
 
       inject(function($sce) {
-        expect($sce.trustAsJs("value")).toBe("wrapped:value");
-        expect($sce.valueOf("value")).toBe("valueOf:value");
-        expect($sce.getTrustedJs("value")).toBe("unwrapped:value");
-        expect($sce.parseAsJs("name")({name: "chirayu"})).toBe("unwrapped:chirayu");
+        expect($sce.trustAsJs('value')).toBe('wrapped:value');
+        expect($sce.valueOf('value')).toBe('valueOf:value');
+        expect($sce.getTrustedJs('value')).toBe('unwrapped:value');
+        expect($sce.parseAsJs('name')({name: 'chirayu'})).toBe('unwrapped:chirayu');
       });
     });
   });
 
 
-  describe('$sce.parseAs', function($sce) {
+  describe('$sce.parseAs', function() {
     it('should parse constant literals as trusted', inject(function($sce) {
       expect($sce.parseAsJs('1')()).toBe(1);
       expect($sce.parseAsJs('1', $sce.ANY)()).toBe(1);
@@ -207,8 +207,8 @@ describe('SCE', function() {
       expect($sce.parseAsJs('true')()).toBe(true);
       expect($sce.parseAsJs('false')()).toBe(false);
       expect($sce.parseAsJs('null')()).toBe(null);
-      expect($sce.parseAsJs('undefined')()).toBe(undefined);
-      expect($sce.parseAsJs('"string"')()).toBe("string");
+      expect($sce.parseAsJs('undefined')()).toBeUndefined();
+      expect($sce.parseAsJs('"string"')()).toBe('string');
     }));
 
     it('should be possible to do one-time binding', function() {
@@ -437,7 +437,7 @@ describe('SCE', function() {
           runTest({whiteList: ['http://***']}, null)();
         }).toThrowMinErr('$injector', 'modulerr', new RegExp(
              /Failed to instantiate module function ?\(\$sceDelegateProvider\) due to:\n/.source +
-             /[^[]*\[\$sce:iwcard\] Illegal sequence \*\*\* in string matcher\.  String: http:\/\/\*\*\*/.source));
+             /[^[]*\[\$sce:iwcard\] Illegal sequence \*\*\* in string matcher\. {2}String: http:\/\/\*\*\*/.source));
       });
     });
 

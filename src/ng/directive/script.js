@@ -16,7 +16,7 @@
  * @param {string} id Cache name of the template.
  *
  * @example
-  <example>
+  <example  name="script-tag">
     <file name="index.html">
       <script type="text/ng-template" id="/tpl.html">
         Content of the template.
@@ -38,7 +38,7 @@ var scriptDirective = ['$templateCache', function($templateCache) {
     restrict: 'E',
     terminal: true,
     compile: function(element, attr) {
-      if (attr.type == 'text/ng-template') {
+      if (attr.type === 'text/ng-template') {
         var templateUrl = attr.id,
             text = element[0].text;
 

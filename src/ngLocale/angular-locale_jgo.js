@@ -39,8 +39,8 @@ $provide.value("$locale", {
       "ts\u025btts\u025bt m\u025b\u014bgu\ua78c mi \u025b\u0301 f\u00fan\u025b K\u025bl\u00eds\u025bt\u0254 t\u0254\u0301 m\u0254\u0301"
     ],
     "ERAS": [
-      "ts\u025btts\u025bt m\u025b\u014bgu\ua78c mi \u025b\u0301 l\u025b\u025bn\u025b K\u025bl\u00eds\u025bt\u0254 g\u0254 \u0144\u0254\u0301",
-      "ts\u025btts\u025bt m\u025b\u014bgu\ua78c mi \u025b\u0301 f\u00fan\u025b K\u025bl\u00eds\u025bt\u0254 t\u0254\u0301 m\u0254\u0301"
+      "BCE",
+      "CE"
     ],
     "FIRSTDAYOFWEEK": 0,
     "MONTH": [
@@ -137,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "jgo",
+  "localeID": "jgo",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

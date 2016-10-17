@@ -36,7 +36,7 @@
  * @element ANY
  *
  * @example
-   <example>
+   <example name="ng-cloak">
      <file name="index.html">
         <div id="template1" ng-cloak>{{ 'hello' }}</div>
         <div id="template2" class="ng-cloak">{{ 'world' }}</div>

@@ -1,6 +1,6 @@
 'use strict';
 
-describe("ngAnimate $$animateJsDriver", function() {
+describe('ngAnimate $$animateJsDriver', function() {
 
   beforeEach(module('ngAnimate'));
   beforeEach(module('ngAnimateMock'));
@@ -35,7 +35,7 @@ describe("ngAnimate $$animateJsDriver", function() {
       });
 
       captureLog.length = 0;
-      element = jqLite('<div></div');
+      element = jqLite('<div></div>');
 
       return function($rootElement, $$animateJsDriver) {
         $rootElement.append(element);
@@ -131,7 +131,7 @@ describe("ngAnimate $$animateJsDriver", function() {
         $animate.flush();
 
         expect(animationsClosed).toBe(true);
-        expect(status).toBe(method === 'end' ? true : false);
+        expect(status).toBe(method === 'end');
       });
     });
 
@@ -172,7 +172,7 @@ describe("ngAnimate $$animateJsDriver", function() {
 
         expect(animationsClosed).toBe(true);
 
-        expect(status).toBe(method === 'end' ? true : false);
+        expect(status).toBe(method === 'end');
       });
     });
   });

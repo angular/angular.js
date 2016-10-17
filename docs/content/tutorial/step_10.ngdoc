@@ -1,180 +1,214 @@
 @ngdoc tutorial
-@name 10 - Event Handlers
+@name 10 - More Templating
 @step 10
 @description
 
 <ul doc-tutorial-nav="10"></ul>
 
 
-In this step, you will add a clickable phone image swapper to the phone details page.
+In this step, we will implement the phone details view, which is displayed when a user clicks on a
+phone in the phone list.
 
-* The phone details view displays one large image of the current phone and several smaller thumbnail
-images. It would be great if we could replace the large image with any of the thumbnails just by
-clicking on the desired thumbnail image. Let's have a look at how we can do this with Angular.
+* When you click on a phone on the list, the phone details page with phone-specific information is
+  displayed.
+
+To implement the phone details view we are going to use {@link ng.$http $http} to fetch our data,
+and then flesh out the `phoneDetail` component's template.
+
 
 <div doc-tutorial-reset="10"></div>
 
-## Controller
 
-__`app/js/controllers.js`:__
+## Data
 
-```js
-...
-var phonecatControllers = angular.module('phonecatControllers',[]);
+In addition to `phones.json`, the `app/phones/` directory also contains one JSON file for each
+phone:
 
-phonecatControllers.controller('PhoneDetailCtrl', ['$scope', '$routeParams', '$http',
-  function($scope, $routeParams, $http) {
-    $http.get('phones/' + $routeParams.phoneId + '.json').success(function(data) {
-      $scope.phone = data;
-      $scope.mainImageUrl = data.images[0];
-    });
+<br />
+**`app/phones/nexus-s.json`:** (sample snippet)
 
-    $scope.setImage = function(imageUrl) {
-      $scope.mainImageUrl = imageUrl;
-    };
-  }]);
+```json
+{
+  "additionalFeatures": "Contour Display, Near Field Communications (NFC), ...",
+  "android": {
+    "os": "Android 2.3",
+    "ui": "Android"
+  },
+  ...
+  "images": [
+    "img/phones/nexus-s.0.jpg",
+    "img/phones/nexus-s.1.jpg",
+    "img/phones/nexus-s.2.jpg",
+    "img/phones/nexus-s.3.jpg"
+  ],
+  "storage": {
+    "flash": "16384MB",
+    "ram": "512MB"
+  }
+}
 ```
 
-In the `PhoneDetailCtrl` controller, we created the `mainImageUrl` model property and set its
-default value to the first phone image URL.
-
-We also created a `setImage` event handler function that will change the value of `mainImageUrl`.
+Each of these files describes various properties of the phone using the same data structure. We will
+show this data in the phone details view.
 
 
-## Template
+## Component Controller
 
-__`app/partials/phone-detail.html`:__
+We will expand the `phoneDetail` component's controller by using the `$http` service to fetch the
+appropriate JSON files. This works the same way as the `phoneList` component's controller.
+
+<br />
+**`app/phone-detail/phone-detail.component.js`:**
+
+```js
+  angular.
+    module('phoneDetail').
+    component('phoneDetail', {
+      templateUrl: 'phone-detail/phone-detail.template.html',
+      controller: ['$http', '$routeParams',
+        function PhoneDetailController($http, $routeParams) {
+          var self = this;
+
+          $http.get('phones/' + $routeParams.phoneId + '.json').then(function(response) {
+            self.phone = response.data;
+          });
+        }
+      ]
+    });
+```
+
+To construct the URL for the HTTP request, we use `$routeParams.phoneId`, which is extracted from
+the current route by the `$route` service.
+
+
+## Component Template
+
+The inline, TBD placeholder template has been replaced with a full blown external template,
+including lists and bindings that comprise the phone details. Note how we use the Angular
+`{{expression}}` markup and `ngRepeat` to project phone data from our model into the view.
+
+<br />
+**`app/phone-detail/phone-detail.template.html`:**
 
 ```html
-<img ng-src="{{mainImageUrl}}" class="phone">
+<img ng-src="{{$ctrl.phone.images[0]}}" class="phone" />
 
-...
+<h1>{{$ctrl.phone.name}}</h1>
+
+<p>{{$ctrl.phone.description}}</p>
 
 <ul class="phone-thumbs">
-  <li ng-repeat="img in phone.images">
-    <img ng-src="{{img}}" ng-click="setImage(img)">
+  <li ng-repeat="img in $ctrl.phone.images">
+    <img ng-src="{{img}}" />
   </li>
 </ul>
-...
+
+<ul class="specs">
+  <li>
+    <span>Availability and Networks</span>
+    <dl>
+      <dt>Availability</dt>
+      <dd ng-repeat="availability in $ctrl.phone.availability">{{availability}}</dd>
+    </dl>
+  </li>
+  ...
+  <li>
+    <span>Additional Features</span>
+    <dd>{{$ctrl.phone.additionalFeatures}}</dd>
+  </li>
+</ul>
 ```
 
-We bound the `ngSrc` directive of the large image to the `mainImageUrl` property.
+<img class="diagram" src="img/tutorial/tutorial_10.png">
 
-We also registered an {@link ng.directive:ngClick `ngClick`}
-handler with thumbnail images. When a user clicks on one of the thumbnail images, the handler will
-use the `setImage` event handler function to change the value of the `mainImageUrl` property to the
-URL of the thumbnail image.
 
-<div style="display: none">
-TODO!
-<img  class="diagram" src="img/tutorial/tutorial_10-11_final.png">
-</div>
+# Testing
 
-## Test
+We wrote a new unit test that is similar to the one we wrote for the `phoneList` component's
+controller in {@link step_07#testing step 7}.
 
-To verify this new feature, we added two end-to-end tests. One verifies that the main image is set
-to the first phone image by default. The second test clicks on several thumbnail images and
-verifies that the main image changed appropriately.
-
-__`test/e2e/scenarios.js`:__
+<br />
+**`app/phone-detail/phone-detail.component.spec.js`:**
 
 ```js
-...
-  describe('Phone detail view', function() {
+describe('phoneDetail', function() {
 
-...
+  // Load the module that contains the `phoneDetail` component before each test
+  beforeEach(module('phoneDetail'));
 
-    it('should display the first phone image as the main phone image', function() {
-      expect(element(by.css('img.phone')).getAttribute('src')).toMatch(/img\/phones\/nexus-s.0.jpg/);
-    });
+  // Test the controller
+  describe('PhoneDetailController', function() {
+    var $httpBackend, ctrl;
 
-
-    it('should swap main image if a thumbnail image is clicked on', function() {
-      element(by.css('.phone-thumbs li:nth-child(3) img')).click();
-      expect(element(by.css('img.phone')).getAttribute('src')).toMatch(/img\/phones\/nexus-s.2.jpg/);
-
-      element(by.css('.phone-thumbs li:nth-child(1) img')).click();
-      expect(element(by.css('img.phone')).getAttribute('src')).toMatch(/img\/phones\/nexus-s.0.jpg/);
-    });
-  });
-```
-
-You can now rerun `npm run protractor` to see the tests run.
-
-
-You also have to refactor one of your unit tests because of the addition of the `mainImageUrl`
-model property to the `PhoneDetailCtrl` controller. Below, we create the function `xyzPhoneData`
-which returns the appropriate json with the `images` attribute in order to get the test to pass.
-
-__`test/unit/controllersSpec.js`:__
-
-```js
-...
-  beforeEach(module('phonecatApp'));
-
-...
-
- describe('PhoneDetailCtrl', function(){
-    var scope, $httpBackend, ctrl,
-        xyzPhoneData = function() {
-          return {
-            name: 'phone xyz',
-            images: ['image/url1.png', 'image/url2.png']
-          }
-        };
-
-
-    beforeEach(inject(function(_$httpBackend_, $rootScope, $routeParams, $controller) {
+    beforeEach(inject(function($componentController, _$httpBackend_, $routeParams) {
       $httpBackend = _$httpBackend_;
-      $httpBackend.expectGET('phones/xyz.json').respond(xyzPhoneData());
+      $httpBackend.expectGET('phones/xyz.json').respond({name: 'phone xyz'});
 
       $routeParams.phoneId = 'xyz';
-      scope = $rootScope.$new();
-      ctrl = $controller('PhoneDetailCtrl', {$scope: scope});
+
+      ctrl = $componentController('phoneDetail');
     }));
 
+    it('should fetch the phone details', function() {
+      expect(ctrl.phone).toBeUndefined();
 
-    it('should fetch phone detail', function() {
-      expect(scope.phone).toBeUndefined();
       $httpBackend.flush();
-
-      expect(scope.phone).toEqual(xyzPhoneData());
+      expect(ctrl.phone).toEqual({name: 'phone xyz'});
     });
+
   });
+
+});
 ```
 
-Your unit tests should now be passing.
+You should now see the following output in the Karma tab:
+
+```
+Chrome 49.0: Executed 3 of 3 SUCCESS (0.159 secs / 0.136 secs)
+```
+
+We also added a new E2E test that navigates to the 'Nexus S' details page and verifies that the
+heading on the page is "Nexus S".
+
+<br />
+**`e2e-tests/scenarios.js`**
+
+```js
+  ...
+
+  describe('View: Phone detail', function() {
+
+    beforeEach(function() {
+      browser.get('index.html#!/phones/nexus-s');
+    });
+
+    it('should display the `nexus-s` page', function() {
+      expect(element(by.binding('$ctrl.phone.name')).getText()).toBe('Nexus S');
+    });
+
+  });
+
+  ...
+```
+
+You can run the tests with `npm run protractor`.
 
 
 # Experiments
 
-* Let's add a new controller method to `PhoneDetailCtrl`:
+<div></div>
 
-          $scope.hello = function(name) {
-              alert('Hello ' + (name || 'world') + '!');
-          }
-
-  and add:
-
-          <button ng-click="hello('Elmo')">Hello</button>
-
-  to the `phone-detail.html` template.
-
-<div style="display: none">
-TODO!
-  The controller methods are inherited between controllers/scopes, so you can use the same snippet
-in the `phone-list.html` template as well.
-
-* Move the `hello` method from `PhoneCatCtrl` to `PhoneListCtrl` and you'll see that the button
-declared in `index.html` will stop working, while the one declared in the `phone-list.html`
-template remains operational.
-</div>
+* Using [Protractor's API][protractor-docs], write a test that verifies that we display 4 thumbnail
+  images on the 'Nexus S' details page.
 
 
 # Summary
 
-With the phone image swapper in place, we're ready for {@link step_11 step 11} to
-learn an even better way to fetch data.
+Now that the phone details view is in place, proceed to {@link step_11 step 11} to learn how to
+write your own custom display filter.
 
 
 <ul doc-tutorial-nav="10"></ul>
+
+
+[protractor-docs]: https://angular.github.io/protractor/#/api

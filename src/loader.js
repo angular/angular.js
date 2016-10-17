@@ -91,9 +91,9 @@ function setupModuleLoader(window) {
       }
       return ensure(modules, name, function() {
         if (!requires) {
-          throw $injectorMinErr('nomod', "Module '{0}' is not available! You either misspelled " +
-             "the module name or forgot to load it. If registering a module ensure that you " +
-             "specify the dependencies as the second argument.", name);
+          throw $injectorMinErr('nomod', 'Module \'{0}\' is not available! You either misspelled ' +
+             'the module name or forgot to load it. If registering a module ensure that you ' +
+             'specify the dependencies as the second argument.', name);
         }
 
         /** @type {!Array.<Array.<*>>} */
@@ -197,13 +197,13 @@ function setupModuleLoader(window) {
            * @ngdoc method
            * @name angular.Module#decorator
            * @module ng
-           * @param {string} The name of the service to decorate.
-           * @param {Function} This function will be invoked when the service needs to be
-           *                                    instantiated and should return the decorated service instance.
+           * @param {string} name The name of the service to decorate.
+           * @param {Function} decorFn This function will be invoked when the service needs to be
+           *                           instantiated and should return the decorated service instance.
            * @description
            * See {@link auto.$provide#decorator $provide.decorator()}.
            */
-          decorator: invokeLaterAndSetModuleName('$provide', 'decorator'),
+          decorator: invokeLaterAndSetModuleName('$provide', 'decorator', configBlocks),
 
           /**
            * @ngdoc method
@@ -349,10 +349,11 @@ function setupModuleLoader(window) {
          * @param {string} method
          * @returns {angular.Module}
          */
-        function invokeLaterAndSetModuleName(provider, method) {
+        function invokeLaterAndSetModuleName(provider, method, queue) {
+          if (!queue) queue = invokeQueue;
           return function(recipeName, factoryFunction) {
             if (factoryFunction && isFunction(factoryFunction)) factoryFunction.$$moduleName = name;
-            invokeQueue.push([provider, method, arguments]);
+            queue.push([provider, method, arguments]);
             return moduleInstance;
           };
         }

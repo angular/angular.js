@@ -80,7 +80,7 @@ $provide.value("$locale", {
       5,
       6
     ],
-    "fullDate": "EEEE, d MMMM y",
+    "fullDate": "EEEE \u1363d MMMM y",
     "longDate": "d MMMM y",
     "medium": "d MMM y h:mm:ss a",
     "mediumDate": "d MMM y",
@@ -119,6 +119,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "am",
+  "localeID": "am",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  if (i == 0 || n == 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

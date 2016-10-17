@@ -1,6 +1,6 @@
 'use strict';
 
-
+/** @this */
 function $IntervalProvider() {
   this.$get = ['$rootScope', '$window', '$q', '$$q', '$browser',
        function($rootScope,   $window,   $q,   $$q,   $browser) {
@@ -43,7 +43,7 @@ function $IntervalProvider() {
       * @returns {promise} A promise which will be notified on each iteration.
       *
       * @example
-      * <example module="intervalExample">
+      * <example module="intervalExample" name="interval-service">
       * <file name="index.html">
       *   <script>
       *     angular.module('intervalExample', [])
@@ -188,6 +188,8 @@ function $IntervalProvider() {
       */
     interval.cancel = function(promise) {
       if (promise && promise.$$intervalId in intervals) {
+        // Interval cancels should not report as unhandled promise.
+        intervals[promise.$$intervalId].promise.catch(noop);
         intervals[promise.$$intervalId].reject('canceled');
         $window.clearInterval(promise.$$intervalId);
         delete intervals[promise.$$intervalId];

@@ -1,3 +1,5 @@
+'use strict';
+
 angular.module('docsApp', [
   'ngRoute',
   'ngCookies',
@@ -13,7 +15,6 @@ angular.module('docsApp', [
   'search',
   'tutorials',
   'versions',
-  'bootstrap',
   'ui.bootstrap.dropdown'
 ])
 

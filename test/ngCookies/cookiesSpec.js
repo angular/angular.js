@@ -6,7 +6,7 @@ describe('$cookies', function() {
   beforeEach(function() {
     mockedCookies = {};
     module('ngCookies', {
-      $$cookieWriter: jasmine.createSpy('$$cookieWriter').andCallFake(function(name, value) {
+      $$cookieWriter: jasmine.createSpy('$$cookieWriter').and.callFake(function(name, value) {
         mockedCookies[name] = value;
       }),
       $$cookieReader: function() {
@@ -29,7 +29,7 @@ describe('$cookies', function() {
 
 
   it('should delete objects from the store when remove is called', inject(function($cookies) {
-    $cookies.putObject('gonner', { "I'll":"Be Back"});
+    $cookies.putObject('gonner', { 'I\'ll':'Be Back'});
     expect($cookies.get('gonner')).toEqual('{"I\'ll":"Be Back"}');
     $cookies.remove('gonner');
     expect($cookies.get('gonner')).toEqual(undefined);
@@ -37,11 +37,11 @@ describe('$cookies', function() {
 
 
   it('should handle empty string value cookies', inject(function($cookies) {
-    $cookies.putObject("emptyCookie",'');
+    $cookies.putObject('emptyCookie','');
     expect($cookies.get('emptyCookie')).toEqual('""');
-    expect($cookies.getObject("emptyCookie")).toEqual('');
+    expect($cookies.getObject('emptyCookie')).toEqual('');
     mockedCookies['blankCookie'] = '';
-    expect($cookies.getObject("blankCookie")).toEqual('');
+    expect($cookies.getObject('blankCookie')).toEqual('');
   }));
 
 

@@ -3,16 +3,16 @@
 describe('urlUtils', function() {
   describe('urlResolve', function() {
     it('should normalize a relative url', function() {
-      expect(urlResolve("foo").href).toMatch(/^https?:\/\/[^/]+\/foo$/);
+      expect(urlResolve('foo').href).toMatch(/^https?:\/\/[^/]+\/foo$/);
     });
 
     it('should parse relative URL into component pieces', function() {
-      var parsed = urlResolve("foo");
+      var parsed = urlResolve('foo');
       expect(parsed.href).toMatch(/https?:\/\//);
       expect(parsed.protocol).toMatch(/^https?/);
-      expect(parsed.host).not.toBe("");
-      expect(parsed.hostname).not.toBe("");
-      expect(parsed.pathname).not.toBe("");
+      expect(parsed.host).not.toBe('');
+      expect(parsed.hostname).not.toBe('');
+      expect(parsed.pathname).not.toBe('');
     });
 
 

@@ -14,10 +14,12 @@ describe('validate-commit-msg.js', function() {
     logs.length = 0;
 
     spyOn(console, 'error').andCallFake(function(msg) {
+      // eslint-disable-next-line no-control-regex
       errors.push(msg.replace(/\x1B\[\d+m/g, '')); // uncolor
     });
 
     spyOn(console, 'log').andCallFake(function(msg) {
+      // eslint-disable-next-line no-control-regex
       logs.push(msg.replace(/\x1B\[\d+m/g, '')); // uncolor
     });
   });
@@ -42,7 +44,7 @@ describe('validate-commit-msg.js', function() {
 
 
     it('should validate 100 characters length', function() {
-      var msg = "fix($compile): something super mega extra giga tera long, maybe even longer and longer and longer... ";
+      var msg = 'fix($compile): something super mega extra giga tera long, maybe even longer and longer and longer... ';
 
       expect(m.validateMessage(msg)).toBe(INVALID);
       expect(errors).toEqual(['INVALID COMMIT MSG: is longer than 100 characters !']);

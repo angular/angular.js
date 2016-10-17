@@ -9,9 +9,31 @@ describe('$location', function() {
   afterEach(function() {
     // link rewriting used in html5 mode on legacy browsers binds to document.onClick, so we need
     // to clean this up after each test.
-    jqLite(document).off('click');
+    jqLite(window.document).off('click');
   });
 
+
+  describe('defaults', function() {
+    it('should have hashPrefix of "!"', function() {
+      initService({});
+      inject(
+        initBrowser({ url: 'http://host.com/base/index.html', basePath: '/base/index.html' }),
+        function($location) {
+          $location.path('/a/b/c');
+          expect($location.absUrl()).toEqual('http://host.com/base/index.html#!/a/b/c');
+        });
+    });
+
+    it('should not be html5 mode', function() {
+      initService({});
+      inject(
+        initBrowser({ url: 'http://host.com/base/index.html', basePath: '/base/index.html' }),
+        function($location) {
+          $location.path('/a/b/c');
+          expect($location.absUrl()).toContain('#!');
+        });
+    });
+  });
 
   describe('File Protocol', function() {
     /* global urlParsingNode: true */
@@ -25,14 +47,14 @@ describe('$location', function() {
       //temporarily overriding the DOM element
       //with output from IE, if not in IE
       urlParsingNode = {
-        hash: "#/C:/",
-        host: "",
-        hostname: "",
-        href: "file:///C:/base#!/C:/foo",
-        pathname: "/C:/foo",
-        port: "",
-        protocol: "file:",
-        search: "",
+        hash: '#/C:/',
+        host: '',
+        hostname: '',
+        href: 'file:///C:/base#!/C:/foo',
+        pathname: '/C:/foo',
+        port: '',
+        protocol: 'file:',
+        search: '',
         setAttribute: angular.noop
       };
     }));
@@ -310,7 +332,7 @@ describe('$location', function() {
 
 
     it('should prefix path with forward-slash', function() {
-      var locationUrl = new LocationHtml5Url('http://server/', 'http://server/') ;
+      var locationUrl = new LocationHtml5Url('http://server/', 'http://server/');
       locationUrl.path('b');
 
       expect(locationUrl.path()).toBe('/b');
@@ -319,7 +341,7 @@ describe('$location', function() {
 
 
     it('should set path to forward-slash when empty', function() {
-      var locationUrl = new LocationHtml5Url('http://server/', 'http://server/') ;
+      var locationUrl = new LocationHtml5Url('http://server/', 'http://server/');
       locationUrl.$$parse('http://server/');
       expect(locationUrl.path()).toBe('/');
       expect(locationUrl.absUrl()).toBe('http://server/');
@@ -356,7 +378,7 @@ describe('$location', function() {
     });
 
     it('should prepend path with basePath', function() {
-      var locationUrl = new LocationHtml5Url('http://server/base/', 'http://server/base/') ;
+      var locationUrl = new LocationHtml5Url('http://server/base/', 'http://server/base/');
       locationUrl.$$parse('http://server/base/abc?a');
       expect(locationUrl.path()).toBe('/abc');
       expect(locationUrl.search()).toEqual({a: true});
@@ -387,7 +409,7 @@ describe('$location', function() {
     describe('state', function() {
       it('should set $$state and return itself', function() {
         var locationUrl = createLocationHtml5Url();
-        expect(locationUrl.$$state).toEqual(null);
+        expect(locationUrl.$$state).toEqual(undefined);
 
         var returned = locationUrl.state({a: 2});
         expect(locationUrl.$$state).toEqual({a: 2});
@@ -615,21 +637,21 @@ describe('$location', function() {
       });
 
       it('should return an array for duplicate params', function() {
-        var locationUrl = new LocationHtml5Url('http://host.com', 'http://host.com') ;
+        var locationUrl = new LocationHtml5Url('http://host.com', 'http://host.com');
         locationUrl.$$parse('http://host.com');
         locationUrl.search('q', ['1/2 3','4/5 6']);
         expect(locationUrl.search()).toEqual({'q': ['1/2 3','4/5 6']});
       });
 
       it('should encode an array correctly from search and add to url', function() {
-        var locationUrl = new LocationHtml5Url('http://host.com', 'http://host.com') ;
+        var locationUrl = new LocationHtml5Url('http://host.com', 'http://host.com');
         locationUrl.$$parse('http://host.com');
         locationUrl.search({'q': ['1/2 3','4/5 6']});
         expect(locationUrl.absUrl()).toEqual('http://host.com?q=1%2F2%203&q=4%2F5%206');
       });
 
       it('should rewrite params when specifing a single param in search', function() {
-        var locationUrl = new LocationHtml5Url('http://host.com', 'http://host.com') ;
+        var locationUrl = new LocationHtml5Url('http://host.com', 'http://host.com');
         locationUrl.$$parse('http://host.com');
         locationUrl.search({'q': '1/2 3'});
         expect(locationUrl.absUrl()).toEqual('http://host.com?q=1%2F2%203');
@@ -647,7 +669,7 @@ describe('$location', function() {
       mockUpBrowser({initialUrl:'http://new.com/a/b#', baseHref:'/base/'});
       inject(function($rootScope, $browser, $location) {
         $browser.url('http://new.com/a/b');
-        var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+        var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').and.callThrough();
         $rootScope.$digest();
         expect($browserUrl).not.toHaveBeenCalled();
       });
@@ -676,10 +698,10 @@ describe('$location', function() {
                 $location.path('/').replace();
             }
           });
-          expect($browser.url()).toEqual('http://server/base/#/home');
+          expect($browser.url()).toEqual('http://server/base/#!/home');
           $rootScope.$digest();
           expect(handlerCalled).toEqual(true);
-          expect($browser.url()).toEqual('http://server/base/#/');
+          expect($browser.url()).toEqual('http://server/base/#!/');
         }
       );
     });
@@ -710,15 +732,15 @@ describe('$location', function() {
         initService({html5Mode: true, supportHistory: false});
         mockUpBrowser({initialUrl:'http://server/app/', baseHref:'/app/'});
         inject(function($rootScope, $location, $browser) {
-          var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+          var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').and.callThrough();
 
           updatePathOnLocationChangeSuccessTo('/Home');
 
           $rootScope.$digest();
 
-          expect($browser.url()).toEqual('http://server/app/#/Home');
+          expect($browser.url()).toEqual('http://server/app/#!/Home');
           expect($location.path()).toEqual('/Home');
-          expect($browserUrl.calls.length).toEqual(1);
+          expect($browserUrl).toHaveBeenCalledTimes(1);
         });
       });
 
@@ -726,16 +748,16 @@ describe('$location', function() {
         initService({html5Mode: true, supportHistory: false});
         mockUpBrowser({initialUrl:'http://server/app/Home', baseHref:'/app/'});
         inject(function($rootScope, $location, $browser, $window) {
-          var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+          var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').and.callThrough();
 
           updatePathOnLocationChangeSuccessTo('/');
 
           $rootScope.$digest();
 
-          expect($browser.url()).toEqual('http://server/app/#/');
+          expect($browser.url()).toEqual('http://server/app/#!/');
           expect($location.path()).toEqual('/');
-          expect($browserUrl.calls.length).toEqual(1);
-          expect($browserUrl.calls[0].args).toEqual(['http://server/app/#/', false, null]);
+          expect($browserUrl).toHaveBeenCalledTimes(1);
+          expect($browserUrl.calls.argsFor(0)).toEqual(['http://server/app/#!/', false, null]);
         });
       });
 
@@ -743,15 +765,15 @@ describe('$location', function() {
         initService({html5Mode: true, supportHistory: false});
         mockUpBrowser({initialUrl:'http://server/app/', baseHref:'/app/'});
         inject(function($rootScope, $location, $browser) {
-          var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+          var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').and.callThrough();
 
           updatePathOnLocationChangeSuccessTo('/Home');
           $rootScope.$digest();
 
-          expect($browser.url()).toEqual('http://server/app/#/Home');
+          expect($browser.url()).toEqual('http://server/app/#!/Home');
           expect($location.path()).toEqual('/Home');
-          expect($browserUrl.calls.length).toEqual(1);
-          expect($browserUrl.calls[0].args).toEqual(['http://server/app/#/Home', false, null]);
+          expect($browserUrl).toHaveBeenCalledTimes(1);
+          expect($browserUrl.calls.argsFor(0)).toEqual(['http://server/app/#!/Home', false, null]);
         });
       });
 
@@ -759,14 +781,14 @@ describe('$location', function() {
         initService({html5Mode: true, supportHistory: false});
         mockUpBrowser({initialUrl:'http://server/app/', baseHref:'/app/'});
         inject(function($rootScope, $location, $browser) {
-          var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+          var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').and.callThrough();
 
           updatePathOnLocationChangeSuccessTo('/');
           $rootScope.$digest();
 
-          expect($browser.url()).toEqual('http://server/app/#/');
+          expect($browser.url()).toEqual('http://server/app/#!/');
           expect($location.path()).toEqual('/');
-          expect($browserUrl.calls.length).toEqual(1);
+          expect($browserUrl).toHaveBeenCalledTimes(1);
         });
       });
     });
@@ -778,7 +800,7 @@ describe('$location', function() {
         initService({html5Mode: true, supportHistory: true});
         mockUpBrowser({initialUrl:'http://server/app/', baseHref:'/app/'});
         inject(function($rootScope, $injector, $browser) {
-          var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+          var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').and.callThrough();
 
           var $location = $injector.get('$location');
           updatePathOnLocationChangeSuccessTo('/Home');
@@ -787,7 +809,7 @@ describe('$location', function() {
 
           expect($browser.url()).toEqual('http://server/app/Home');
           expect($location.path()).toEqual('/Home');
-          expect($browserUrl.calls.length).toEqual(1);
+          expect($browserUrl).toHaveBeenCalledTimes(1);
         });
       });
 
@@ -795,7 +817,7 @@ describe('$location', function() {
         initService({html5Mode: true, supportHistory: true});
         mockUpBrowser({initialUrl:'http://server/app/', baseHref:'/app/'});
         inject(function($rootScope, $injector, $browser) {
-          var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+          var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').and.callThrough();
 
           var $location = $injector.get('$location');
           updatePathOnLocationChangeSuccessTo('/');
@@ -804,7 +826,7 @@ describe('$location', function() {
 
           expect($browser.url()).toEqual('http://server/app/');
           expect($location.path()).toEqual('/');
-          expect($browserUrl.calls.length).toEqual(0);
+          expect($browserUrl).not.toHaveBeenCalled();
         });
       });
 
@@ -812,7 +834,7 @@ describe('$location', function() {
         initService({html5Mode: true, supportHistory: true});
         mockUpBrowser({initialUrl:'http://server/app/', baseHref:'/app/'});
         inject(function($rootScope, $injector, $browser) {
-          var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+          var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').and.callThrough();
 
           var $location = $injector.get('$location');
           updatePathOnLocationChangeSuccessTo('/Home');
@@ -821,7 +843,7 @@ describe('$location', function() {
 
           expect($browser.url()).toEqual('http://server/app/Home');
           expect($location.path()).toEqual('/Home');
-          expect($browserUrl.calls.length).toEqual(1);
+          expect($browserUrl).toHaveBeenCalledTimes(1);
         });
       });
 
@@ -829,7 +851,7 @@ describe('$location', function() {
         initService({html5Mode: true, supportHistory: true});
         mockUpBrowser({initialUrl:'http://server/app/', baseHref:'/app/'});
         inject(function($rootScope, $injector, $browser) {
-          var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+          var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').and.callThrough();
 
           var $location = $injector.get('$location');
           updatePathOnLocationChangeSuccessTo('/');
@@ -838,7 +860,7 @@ describe('$location', function() {
 
           expect($browser.url()).toEqual('http://server/app/');
           expect($location.path()).toEqual('/');
-          expect($browserUrl.calls.length).toEqual(0);
+          expect($browserUrl).not.toHaveBeenCalled();
         });
       });
     });
@@ -851,7 +873,7 @@ describe('$location', function() {
       initService({html5Mode:false,hashPrefix: '!',supportHistory: true});
       mockUpBrowser({initialUrl:'http://new.com/a/b#!', baseHref:'/a/b'});
       inject(function($window, $browser, $location, $rootScope) {
-        spyOn($location, '$$parse').andCallThrough();
+        spyOn($location, '$$parse').and.callThrough();
         $window.location.href = 'http://new.com/a/b#!/aaa';
         $browser.$$checkUrlChange();
         expect($location.absUrl()).toBe('http://new.com/a/b#!/aaa');
@@ -869,7 +891,7 @@ describe('$location', function() {
             NEW_URL = 'http://new.com/a/b#!/new';
 
         $rootScope.$apply(function() {
-          $window.location.href= NEW_URL;
+          $window.location.href = NEW_URL;
           $browser.$$checkUrlChange(); // simulate firing event from browser
           expect($location.absUrl()).toBe(OLD_URL); // should be async
         });
@@ -906,7 +928,7 @@ describe('$location', function() {
       initService({html5Mode:false,hashPrefix: '!',supportHistory: true});
       mockUpBrowser({initialUrl:'http://new.com/a/b#!', baseHref:'/a/b'});
       inject(function($rootScope, $browser, $location) {
-        var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+        var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').and.callThrough();
         $location.path('/new/path');
         expect($browserUrl).not.toHaveBeenCalled();
         $rootScope.$apply();
@@ -921,7 +943,7 @@ describe('$location', function() {
       initService({html5Mode:false,hashPrefix: '!',supportHistory: true});
       mockUpBrowser({initialUrl:'http://new.com/a/b#!', baseHref:'/a/b'});
       inject(function($rootScope, $browser, $location) {
-        var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+        var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').and.callThrough();
         $location.path('/new/path');
 
         $rootScope.$watch(function() {
@@ -939,12 +961,12 @@ describe('$location', function() {
       initService({html5Mode:false,hashPrefix: '!',supportHistory: true});
       mockUpBrowser({initialUrl:'http://new.com/a/b#!', baseHref:'/a/b'});
       inject(function($rootScope, $browser, $location) {
-        var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+        var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').and.callThrough();
         $location.path('/n/url').replace();
         $rootScope.$apply();
 
         expect($browserUrl).toHaveBeenCalledOnce();
-        expect($browserUrl.mostRecentCall.args).toEqual(['http://new.com/a/b#!/n/url', true, null]);
+        expect($browserUrl.calls.mostRecent().args).toEqual(['http://new.com/a/b#!/n/url', true, null]);
         expect($location.$$replace).toBe(false);
       });
     });
@@ -1025,12 +1047,12 @@ describe('$location', function() {
       initService({html5Mode:true, supportHistory: true});
       mockUpBrowser({initialUrl:'http://new.com/a/b/', baseHref:'/a/b/'});
       inject(function($rootScope, $location, $browser) {
-        var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+        var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').and.callThrough();
         $location.path('/n/url').state({a: 2}).replace();
         $rootScope.$apply();
 
         expect($browserUrl).toHaveBeenCalledOnce();
-        expect($browserUrl.mostRecentCall.args).toEqual(['http://new.com/a/b/n/url', true, {a: 2}]);
+        expect($browserUrl.calls.mostRecent().args).toEqual(['http://new.com/a/b/n/url', true, {a: 2}]);
         expect($location.$$replace).toBe(false);
         expect($location.$$state).toEqual({a: 2});
       });
@@ -1041,12 +1063,12 @@ describe('$location', function() {
       mockUpBrowser({initialUrl:'http://new.com/a/b/', baseHref:'/a/b/'});
 
       inject(function($rootScope, $location, $browser) {
-        var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+        var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').and.callThrough();
         $location.path('/n/url').state({a: 2}).replace().state({b: 3}).path('/o/url');
         $rootScope.$apply();
 
         expect($browserUrl).toHaveBeenCalledOnce();
-        expect($browserUrl.mostRecentCall.args).toEqual(['http://new.com/a/b/o/url', true, {b: 3}]);
+        expect($browserUrl.calls.mostRecent().args).toEqual(['http://new.com/a/b/o/url', true, {b: 3}]);
         expect($location.$$replace).toBe(false);
         expect($location.$$state).toEqual({b: 3});
       });
@@ -1057,12 +1079,12 @@ describe('$location', function() {
       mockUpBrowser({initialUrl:'http://new.com/a/b/', baseHref:'/a/b/'});
 
       inject(function($rootScope, $location, $browser) {
-        var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+        var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').and.callThrough();
         $location.state({a: 2}).replace().state({b: 3});
         $rootScope.$apply();
 
         expect($browserUrl).toHaveBeenCalledOnce();
-        expect($browserUrl.mostRecentCall.args).toEqual(['http://new.com/a/b/', true, {b: 3}]);
+        expect($browserUrl.calls.mostRecent().args).toEqual(['http://new.com/a/b/', true, {b: 3}]);
         expect($location.$$replace).toBe(false);
         expect($location.$$state).toEqual({b: 3});
       });
@@ -1141,12 +1163,12 @@ describe('$location', function() {
         $location.url('/foo').state({a: 2});
         $rootScope.$apply();
 
-        var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').andCallThrough();
+        var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').and.callThrough();
         $location.url('/bar');
         $rootScope.$apply();
 
         expect($browserUrl).toHaveBeenCalledOnce();
-        expect($browserUrl.mostRecentCall.args).toEqual(['http://new.com/a/b/bar', false, null]);
+        expect($browserUrl.calls.mostRecent().args).toEqual(['http://new.com/a/b/bar', false, null]);
       });
     });
 
@@ -1327,7 +1349,7 @@ describe('$location', function() {
       attrs = attrs ? ' ' + attrs + ' ' : '';
 
       if (typeof linkHref === 'string' && !relLink) {
-        if (linkHref[0] == '/') {
+        if (linkHref[0] === '/') {
           linkHref = 'http://host.com' + linkHref;
         } else if (!linkHref.match(/:\/\//)) {
           // fake the behavior of <base> tag
@@ -1375,7 +1397,7 @@ describe('$location', function() {
 
     afterEach(function() {
       dealoc(root);
-      dealoc(document.body);
+      dealoc(window.document.body);
     });
 
 
@@ -1566,10 +1588,38 @@ describe('$location', function() {
 
 
     it('should not rewrite links when rewriting links is disabled', function() {
-      configureTestLink({linkHref: 'link?a#b', html5Mode: {enabled: true, rewriteLinks:false}, supportHist: true});
+      configureTestLink({linkHref: 'link?a#b'});
       initService({html5Mode:{enabled: true, rewriteLinks:false},supportHistory:true});
       inject(
         initBrowser({ url: 'http://host.com/base/index.html', basePath: '/base/index.html' }),
+        setupRewriteChecks(),
+        function($browser) {
+          browserTrigger(link, 'click');
+          expectNoRewrite($browser);
+        }
+      );
+    });
+
+
+    it('should rewrite links when the specified rewriteLinks attr is present', function() {
+      configureTestLink({linkHref: 'link?a#b', attrs: 'do-rewrite'});
+      initService({html5Mode: {enabled: true, rewriteLinks: 'do-rewrite'}, supportHistory: true});
+      inject(
+        initBrowser({url: 'http://host.com/base/index.html', basePath: '/base/index.html'}),
+        setupRewriteChecks(),
+        function($browser) {
+          browserTrigger(link, 'click');
+          expectRewriteTo($browser, 'http://host.com/base/link?a#b');
+        }
+      );
+    });
+
+
+    it('should not rewrite links when the specified rewriteLinks attr is not present', function() {
+      configureTestLink({linkHref: 'link?a#b'});
+      initService({html5Mode: {enabled: true, rewriteLinks: 'do-rewrite'}, supportHistory: true});
+      inject(
+        initBrowser({url: 'http://host.com/base/index.html', basePath: '/base/index.html'}),
         setupRewriteChecks(),
         function($browser) {
           browserTrigger(link, 'click');
@@ -1670,7 +1720,7 @@ describe('$location', function() {
 
     it('should not rewrite when full link to different base path when history enabled on old browser',
         function() {
-      configureTestLink({linkHref: 'http://host.com/other_base/link', html5Mode: true, supportHist: false});
+      configureTestLink({linkHref: 'http://host.com/other_base/link'});
       inject(
         initBrowser({ url: 'http://host.com/base/index.html', basePath: '/base/index.html' }),
         setupRewriteChecks(),
@@ -1766,14 +1816,14 @@ describe('$location', function() {
         setupRewriteChecks(),
         function($browser) {
           var rightClick;
-          if (document.createEvent) {
-            rightClick = document.createEvent('MouseEvents');
+          if (window.document.createEvent) {
+            rightClick = window.document.createEvent('MouseEvents');
             rightClick.initMouseEvent('click', true, true, window, 1, 10, 10, 10,  10, false,
                                       false, false, false, 2, null);
 
             link.dispatchEvent(rightClick);
-          } else if (document.createEventObject) { // for IE
-            rightClick = document.createEventObject();
+          } else if (window.document.createEventObject) { // for IE
+            rightClick = window.document.createEventObject();
             rightClick.type = 'click';
             rightClick.cancelBubble = true;
             rightClick.detail = 1;
@@ -1822,38 +1872,6 @@ describe('$location', function() {
         // we need to do this otherwise we can't simulate events
         $document.find('body').append($rootElement);
 
-        var element = $compile('<a href="#/view1">v1</a><a href="#/view2">v2</a>')($rootScope);
-        $rootElement.append(element);
-        var av1 = $rootElement.find('a').eq(0);
-        var av2 = $rootElement.find('a').eq(1);
-
-
-        browserTrigger(av1, 'click');
-        expect($browser.url()).toEqual(base + '#/view1');
-
-        browserTrigger(av2, 'click');
-        expect($browser.url()).toEqual(base + '#/view2');
-
-        $rootElement.remove();
-      });
-    });
-
-
-    it('should not mess up hash urls when clicking on links in hashbang mode with a prefix',
-        function() {
-      var base;
-      module(function($locationProvider) {
-        return function($browser) {
-          window.location.hash = '!someHash';
-          $browser.url(base = window.location.href);
-          base = base.split('#')[0];
-          $locationProvider.hashPrefix('!');
-        };
-      });
-      inject(function($rootScope, $compile, $browser, $rootElement, $document, $location) {
-        // we need to do this otherwise we can't simulate events
-        $document.find('body').append($rootElement);
-
         var element = $compile('<a href="#!/view1">v1</a><a href="#!/view2">v2</a>')($rootScope);
         $rootElement.append(element);
         var av1 = $rootElement.find('a').eq(0);
@@ -1865,6 +1883,38 @@ describe('$location', function() {
 
         browserTrigger(av2, 'click');
         expect($browser.url()).toEqual(base + '#!/view2');
+
+        $rootElement.remove();
+      });
+    });
+
+
+    it('should not mess up hash urls when clicking on links in hashbang mode with a prefix',
+        function() {
+      var base;
+      module(function($locationProvider) {
+        return function($browser) {
+          window.location.hash = '!!someHash';
+          $browser.url(base = window.location.href);
+          base = base.split('#')[0];
+          $locationProvider.hashPrefix('!!');
+        };
+      });
+      inject(function($rootScope, $compile, $browser, $rootElement, $document, $location) {
+        // we need to do this otherwise we can't simulate events
+        $document.find('body').append($rootElement);
+
+        var element = $compile('<a href="#!!/view1">v1</a><a href="#!!/view2">v2</a>')($rootScope);
+        $rootElement.append(element);
+        var av1 = $rootElement.find('a').eq(0);
+        var av2 = $rootElement.find('a').eq(1);
+
+
+        browserTrigger(av1, 'click');
+        expect($browser.url()).toEqual(base + '#!!/view1');
+
+        browserTrigger(av2, 'click');
+        expect($browser.url()).toEqual(base + '#!!/view2');
       });
     });
 
@@ -1890,7 +1940,7 @@ describe('$location', function() {
         var event = {
           target: jqLite(window.document.body).find('a')[0],
           preventDefault: jasmine.createSpy('preventDefault'),
-          isDefaultPrevented: jasmine.createSpy().andReturn(false)
+          isDefaultPrevented: jasmine.createSpy().and.returnValue(false)
         };
 
 
@@ -1921,7 +1971,7 @@ describe('$location', function() {
         var event = {
           target: jqLite(window.document.body).find('a')[0],
           preventDefault: jasmine.createSpy('preventDefault'),
-          isDefaultPrevented: jasmine.createSpy().andReturn(false)
+          isDefaultPrevented: jasmine.createSpy().and.returnValue(false)
         };
 
 
@@ -1992,11 +2042,11 @@ describe('$location', function() {
       $rootScope.$apply();
 
       expect($log.info.logs.shift()).
-          toEqual(['before', 'http://server/#/somePath', 'http://server/', 'http://server/']);
+          toEqual(['before', 'http://server/#!/somePath', 'http://server/', 'http://server/']);
       expect($log.info.logs.shift()).
-          toEqual(['after', 'http://server/#/somePath', 'http://server/', 'http://server/#/somePath']);
+          toEqual(['after', 'http://server/#!/somePath', 'http://server/', 'http://server/#!/somePath']);
       expect($location.url()).toEqual('/somePath');
-      expect($browser.url()).toEqual('http://server/#/somePath');
+      expect($browser.url()).toEqual('http://server/#!/somePath');
     }));
 
 
@@ -2021,7 +2071,7 @@ describe('$location', function() {
       $rootScope.$apply();
 
       expect($log.info.logs.shift()).
-          toEqual(['before', 'http://server/#/somePath', 'http://server/', 'http://server/']);
+          toEqual(['before', 'http://server/#!/somePath', 'http://server/', 'http://server/']);
       expect($log.info.logs[1]).toBeUndefined();
       expect($location.url()).toEqual('');
       expect($browser.url()).toEqual('http://server/');
@@ -2031,7 +2081,7 @@ describe('$location', function() {
       inject(function($location, $browser, $rootScope, $log) {
         $rootScope.$on('$locationChangeStart', function(event, newUrl, oldUrl) {
           $log.info('before', newUrl, oldUrl, $browser.url());
-          if (newUrl === 'http://server/#/somePath') {
+          if (newUrl === 'http://server/#!/somePath') {
             $location.url('/redirectPath');
           }
         });
@@ -2043,15 +2093,15 @@ describe('$location', function() {
         $rootScope.$apply();
 
         expect($log.info.logs.shift()).
-          toEqual(['before', 'http://server/#/somePath', 'http://server/', 'http://server/']);
+          toEqual(['before', 'http://server/#!/somePath', 'http://server/', 'http://server/']);
         expect($log.info.logs.shift()).
-          toEqual(['before', 'http://server/#/redirectPath', 'http://server/', 'http://server/']);
+          toEqual(['before', 'http://server/#!/redirectPath', 'http://server/', 'http://server/']);
         expect($log.info.logs.shift()).
-          toEqual(['after', 'http://server/#/redirectPath', 'http://server/',
-                  'http://server/#/redirectPath']);
+          toEqual(['after', 'http://server/#!/redirectPath', 'http://server/',
+                  'http://server/#!/redirectPath']);
 
         expect($location.url()).toEqual('/redirectPath');
-        expect($browser.url()).toEqual('http://server/#/redirectPath');
+        expect($browser.url()).toEqual('http://server/#!/redirectPath');
       })
     );
 
@@ -2059,7 +2109,7 @@ describe('$location', function() {
       inject(function($location, $browser, $rootScope, $log) {
         $rootScope.$on('$locationChangeStart', function(event, newUrl, oldUrl) {
           $log.info('before', newUrl, oldUrl, $browser.url());
-          if (newUrl === 'http://server/#/somePath') {
+          if (newUrl === 'http://server/#!/somePath') {
             event.preventDefault();
             $location.url('/redirectPath');
           }
@@ -2072,15 +2122,15 @@ describe('$location', function() {
         $rootScope.$apply();
 
         expect($log.info.logs.shift()).
-          toEqual(['before', 'http://server/#/somePath', 'http://server/', 'http://server/']);
+          toEqual(['before', 'http://server/#!/somePath', 'http://server/', 'http://server/']);
         expect($log.info.logs.shift()).
-          toEqual(['before', 'http://server/#/redirectPath', 'http://server/', 'http://server/']);
+          toEqual(['before', 'http://server/#!/redirectPath', 'http://server/', 'http://server/']);
         expect($log.info.logs.shift()).
-          toEqual(['after', 'http://server/#/redirectPath', 'http://server/',
-                  'http://server/#/redirectPath']);
+          toEqual(['after', 'http://server/#!/redirectPath', 'http://server/',
+                  'http://server/#!/redirectPath']);
 
         expect($location.url()).toEqual('/redirectPath');
-        expect($browser.url()).toEqual('http://server/#/redirectPath');
+        expect($browser.url()).toEqual('http://server/#!/redirectPath');
       })
     );
 
@@ -2088,9 +2138,9 @@ describe('$location', function() {
       inject(function($location, $browser, $rootScope, $log) {
         $rootScope.$on('$locationChangeStart', function(event, newUrl, oldUrl) {
           $log.info('before', newUrl, oldUrl, $browser.url());
-          if (newUrl === 'http://server/#/somePath') {
+          if (newUrl === 'http://server/#!/somePath') {
             $location.url('/redirectPath');
-          } else if (newUrl === 'http://server/#/redirectPath') {
+          } else if (newUrl === 'http://server/#!/redirectPath') {
             $location.url('/redirectPath2');
           }
         });
@@ -2102,17 +2152,17 @@ describe('$location', function() {
         $rootScope.$apply();
 
         expect($log.info.logs.shift()).
-          toEqual(['before', 'http://server/#/somePath', 'http://server/', 'http://server/']);
+          toEqual(['before', 'http://server/#!/somePath', 'http://server/', 'http://server/']);
         expect($log.info.logs.shift()).
-          toEqual(['before', 'http://server/#/redirectPath', 'http://server/', 'http://server/']);
+          toEqual(['before', 'http://server/#!/redirectPath', 'http://server/', 'http://server/']);
         expect($log.info.logs.shift()).
-          toEqual(['before', 'http://server/#/redirectPath2', 'http://server/', 'http://server/']);
+          toEqual(['before', 'http://server/#!/redirectPath2', 'http://server/', 'http://server/']);
         expect($log.info.logs.shift()).
-          toEqual(['after', 'http://server/#/redirectPath2', 'http://server/',
-                  'http://server/#/redirectPath2']);
+          toEqual(['after', 'http://server/#!/redirectPath2', 'http://server/',
+                  'http://server/#!/redirectPath2']);
 
         expect($location.url()).toEqual('/redirectPath2');
-        expect($browser.url()).toEqual('http://server/#/redirectPath2');
+        expect($browser.url()).toEqual('http://server/#!/redirectPath2');
       })
     );
 
@@ -2131,13 +2181,13 @@ describe('$location', function() {
         });
 
 
-        $browser.url('http://server/#/somePath');
+        $browser.url('http://server/#!/somePath');
         $browser.poll();
 
         expect($log.info.logs.shift()).
-          toEqual(['start', 'http://server/#/somePath', 'http://server/']);
+          toEqual(['start', 'http://server/#!/somePath', 'http://server/']);
         expect($log.info.logs.shift()).
-          toEqual(['after', 'http://server/#/somePath', 'http://server/']);
+          toEqual(['after', 'http://server/#!/somePath', 'http://server/']);
       })
     );
 
@@ -2146,7 +2196,7 @@ describe('$location', function() {
         $location.url('/somepath');
         $rootScope.$apply();
 
-        expect($browser.url()).toEqual('http://server/#/somepath');
+        expect($browser.url()).toEqual('http://server/#!/somepath');
         expect($location.url()).toEqual('/somepath');
 
         $rootScope.$on('$locationChangeStart', function(event, newUrl, oldUrl) {
@@ -2160,9 +2210,9 @@ describe('$location', function() {
         $browser.poll();
 
         expect($log.info.logs.shift()).
-          toEqual(['start', 'http://server/', 'http://server/#/somepath']);
+          toEqual(['start', 'http://server/', 'http://server/#!/somepath']);
         expect($log.info.logs.shift()).
-          toEqual(['after', 'http://server/', 'http://server/#/somepath']);
+          toEqual(['after', 'http://server/', 'http://server/#!/somepath']);
       })
     );
 
@@ -2170,7 +2220,7 @@ describe('$location', function() {
       inject(function($location, $browser, $rootScope, $log) {
         $rootScope.$on('$locationChangeStart', function(event, newUrl, oldUrl) {
           $log.info('before', newUrl, oldUrl, $browser.url());
-          if (newUrl === 'http://server/#/somePath') {
+          if (newUrl === 'http://server/#!/somePath') {
             $location.url('/redirectPath');
           }
         });
@@ -2178,21 +2228,21 @@ describe('$location', function() {
           $log.info('after', newUrl, oldUrl, $browser.url());
         });
 
-        $browser.url('http://server/#/somePath');
+        $browser.url('http://server/#!/somePath');
         $browser.poll();
 
         expect($log.info.logs.shift()).
-          toEqual(['before', 'http://server/#/somePath', 'http://server/',
-                  'http://server/#/somePath']);
+          toEqual(['before', 'http://server/#!/somePath', 'http://server/',
+                  'http://server/#!/somePath']);
         expect($log.info.logs.shift()).
-          toEqual(['before', 'http://server/#/redirectPath', 'http://server/#/somePath',
-                  'http://server/#/somePath']);
+          toEqual(['before', 'http://server/#!/redirectPath', 'http://server/#!/somePath',
+                  'http://server/#!/somePath']);
         expect($log.info.logs.shift()).
-          toEqual(['after', 'http://server/#/redirectPath', 'http://server/#/somePath',
-                  'http://server/#/redirectPath']);
+          toEqual(['after', 'http://server/#!/redirectPath', 'http://server/#!/somePath',
+                  'http://server/#!/redirectPath']);
 
         expect($location.url()).toEqual('/redirectPath');
-        expect($browser.url()).toEqual('http://server/#/redirectPath');
+        expect($browser.url()).toEqual('http://server/#!/redirectPath');
       })
     );
 
@@ -2200,7 +2250,7 @@ describe('$location', function() {
       inject(function($location, $browser, $rootScope, $log) {
         $rootScope.$on('$locationChangeStart', function(event, newUrl, oldUrl) {
           $log.info('before', newUrl, oldUrl, $browser.url());
-          if (newUrl === 'http://server/#/somePath') {
+          if (newUrl === 'http://server/#!/somePath') {
             event.preventDefault();
             $location.url('/redirectPath');
           }
@@ -2209,30 +2259,30 @@ describe('$location', function() {
           $log.info('after', newUrl, oldUrl, $browser.url());
         });
 
-        $browser.url('http://server/#/somePath');
+        $browser.url('http://server/#!/somePath');
         $browser.poll();
 
         expect($log.info.logs.shift()).
-          toEqual(['before', 'http://server/#/somePath', 'http://server/',
-                  'http://server/#/somePath']);
+          toEqual(['before', 'http://server/#!/somePath', 'http://server/',
+                  'http://server/#!/somePath']);
         expect($log.info.logs.shift()).
-          toEqual(['before', 'http://server/#/redirectPath', 'http://server/#/somePath',
-                  'http://server/#/somePath']);
+          toEqual(['before', 'http://server/#!/redirectPath', 'http://server/#!/somePath',
+                  'http://server/#!/somePath']);
         expect($log.info.logs.shift()).
-          toEqual(['after', 'http://server/#/redirectPath', 'http://server/#/somePath',
-                  'http://server/#/redirectPath']);
+          toEqual(['after', 'http://server/#!/redirectPath', 'http://server/#!/somePath',
+                  'http://server/#!/redirectPath']);
 
         expect($location.url()).toEqual('/redirectPath');
-        expect($browser.url()).toEqual('http://server/#/redirectPath');
+        expect($browser.url()).toEqual('http://server/#!/redirectPath');
       })
     );
 
     it('should listen on click events on href and prevent browser default in hashbang mode', function() {
       module(function() {
         return function($rootElement, $compile, $rootScope) {
-          $rootElement.html('<a href="http://server/#/somePath">link</a>');
+          $rootElement.html('<a href="http://server/#!/somePath">link</a>');
           $compile($rootElement)($rootScope);
-          jqLite(document.body).append($rootElement);
+          jqLite(window.document.body).append($rootElement);
         };
       });
 
@@ -2265,7 +2315,7 @@ describe('$location', function() {
         return function($rootElement, $compile, $rootScope) {
           $rootElement.html('<a href="http://server/somePath">link</a>');
           $compile($rootElement)($rootScope);
-          jqLite(document.body).append($rootElement);
+          jqLite(window.document.body).append($rootElement);
         };
       });
 
@@ -2310,7 +2360,7 @@ describe('$location', function() {
         });
 
         // change through $browser
-        $browser.url(base + '#/myNewPath');
+        $browser.url(base + '#!/myNewPath');
         $browser.poll();
 
         expect(log).toEqual(['/myNewPath', '/', '/myNewPath']);
@@ -2321,7 +2371,7 @@ describe('$location', function() {
 
   describe('$locationProvider', function() {
     describe('html5Mode', function() {
-      it('should set enabled,  requireBase and rewriteLinks when called with object', function() {
+      it('should set enabled, requireBase and rewriteLinks when called with object', function() {
         module(function($locationProvider) {
           $locationProvider.html5Mode({enabled: true, requireBase: false, rewriteLinks: false});
           expect($locationProvider.html5Mode()).toEqual({
@@ -2335,12 +2385,12 @@ describe('$location', function() {
       });
 
 
-      it('should only overwrite existing properties if values are boolean', function() {
+      it('should only overwrite existing properties if values are of the correct type', function() {
         module(function($locationProvider) {
           $locationProvider.html5Mode({
             enabled: 'duh',
             requireBase: 'probably',
-            rewriteLinks: 'nope'
+            rewriteLinks: 0
           });
 
           expect($locationProvider.html5Mode()).toEqual({
@@ -2348,6 +2398,19 @@ describe('$location', function() {
             requireBase: true,
             rewriteLinks: true
           });
+        });
+
+        inject(function() {});
+      });
+
+
+      it('should support setting rewriteLinks to a string', function() {
+        module(function($locationProvider) {
+          $locationProvider.html5Mode({
+            rewriteLinks: 'yes-rewrite'
+          });
+
+          expect($locationProvider.html5Mode().rewriteLinks).toEqual('yes-rewrite');
         });
 
         inject(function() {});
@@ -2387,10 +2450,11 @@ describe('$location', function() {
 
 
   describe('LocationHtml5Url', function() {
-    var locationUrl, locationIndexUrl;
+    var locationUrl, locationUmlautUrl, locationIndexUrl;
 
     beforeEach(function() {
       locationUrl = new LocationHtml5Url('http://server/pre/', 'http://server/pre/', 'http://server/pre/path');
+      locationUmlautUrl = new LocationHtml5Url('http://särver/pre/', 'http://särver/pre/', 'http://särver/pre/path');
       locationIndexUrl = new LocationHtml5Url('http://server/pre/index.html', 'http://server/pre/', 'http://server/pre/path');
     });
 
@@ -2401,6 +2465,13 @@ describe('$location', function() {
       expect(parseLinkAndReturn(locationUrl, 'http://server/pre/otherPath')).toEqual('http://server/pre/otherPath');
       // Note: relies on the previous state!
       expect(parseLinkAndReturn(locationUrl, 'someIgnoredAbsoluteHref', '#test')).toEqual('http://server/pre/otherPath#test');
+
+      expect(parseLinkAndReturn(locationUmlautUrl, 'http://other')).toEqual(undefined);
+      expect(parseLinkAndReturn(locationUmlautUrl, 'http://särver/pre')).toEqual('http://särver/pre/');
+      expect(parseLinkAndReturn(locationUmlautUrl, 'http://särver/pre/')).toEqual('http://särver/pre/');
+      expect(parseLinkAndReturn(locationUmlautUrl, 'http://särver/pre/otherPath')).toEqual('http://särver/pre/otherPath');
+      // Note: relies on the previous state!
+      expect(parseLinkAndReturn(locationUmlautUrl, 'someIgnoredAbsoluteHref', '#test')).toEqual('http://särver/pre/otherPath#test');
 
       expect(parseLinkAndReturn(locationIndexUrl, 'http://server/pre')).toEqual('http://server/pre/');
       expect(parseLinkAndReturn(locationIndexUrl, 'http://server/pre/')).toEqual('http://server/pre/');
@@ -2420,7 +2491,7 @@ describe('$location', function() {
         expect(function() {
           $injector.get('$location');
         }).toThrowMinErr('$location', 'nobase',
-          "$location in HTML5 mode requires a <base> tag to be present!");
+          '$location in HTML5 mode requires a <base> tag to be present!');
       });
     });
 
@@ -2438,7 +2509,7 @@ describe('$location', function() {
         expect(function() {
           $injector.get('$location');
         }).not.toThrowMinErr('$location', 'nobase',
-          "$location in HTML5 mode requires a <base> tag to be present!");
+          '$location in HTML5 mode requires a <base> tag to be present!');
       });
     });
 
@@ -2452,16 +2523,16 @@ describe('$location', function() {
     var locationUrl;
 
     it('should rewrite URL', function() {
-      /* jshint scripturl: true */
       locationUrl = new LocationHashbangUrl('http://server/pre/', 'http://server/pre/', '#');
 
       expect(parseLinkAndReturn(locationUrl, 'http://other')).toEqual(undefined);
       expect(parseLinkAndReturn(locationUrl, 'http://server/pre/')).toEqual('http://server/pre/');
       expect(parseLinkAndReturn(locationUrl, 'http://server/pre/#otherPath')).toEqual('http://server/pre/#/otherPath');
+      // eslint-disable-next-line no-script-url
       expect(parseLinkAndReturn(locationUrl, 'javascript:void(0)')).toEqual(undefined);
     });
 
-    it("should not set hash if one was not originally specified", function() {
+    it('should not set hash if one was not originally specified', function() {
       locationUrl = new LocationHashbangUrl('http://server/pre/index.html', 'http://server/pre/', '#');
 
       locationUrl.$$parse('http://server/pre/index.html');
@@ -2469,7 +2540,7 @@ describe('$location', function() {
       expect(locationUrl.absUrl()).toBe('http://server/pre/index.html');
     });
 
-    it("should parse hash if one was specified", function() {
+    it('should parse hash if one was specified', function() {
       locationUrl = new LocationHashbangUrl('http://server/pre/index.html', 'http://server/pre/', '#');
 
       locationUrl.$$parse('http://server/pre/index.html#/foo/bar');
@@ -2478,7 +2549,7 @@ describe('$location', function() {
     });
 
 
-    it("should prefix hash url with / if one was originally missing", function() {
+    it('should prefix hash url with / if one was originally missing', function() {
       locationUrl = new LocationHashbangUrl('http://server/pre/index.html', 'http://server/pre/', '#');
 
       locationUrl.$$parse('http://server/pre/index.html#not-starting-with-slash');
@@ -2536,6 +2607,18 @@ describe('$location', function() {
 
     it('should throw on url(urlString, stateObject)', function() {
       expectThrowOnStateChange(locationUrl);
+    });
+
+    it('should not throw when base path is another domain', function() {
+      initService({html5Mode: true, hashPrefix: '!', supportHistory: true});
+      inject(
+        initBrowser({url: 'http://domain.com/base/', basePath: 'http://otherdomain.com/base/'}),
+        function($location) {
+          expect(function() {
+            $location.absUrl();
+          }).not.toThrow();
+        }
+      );
     });
   });
 

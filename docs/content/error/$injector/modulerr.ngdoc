@@ -6,6 +6,9 @@
 This error occurs when a module fails to load due to some exception. The error
 message above should provide additional context.
 
+A common reason why the module fails to load is that you've forgotten to
+include the file with the defined module or that the file couldn't be loaded.
+
 ### Using `ngRoute`
 
 In AngularJS `1.2.0` and later, `ngRoute` has been moved to its own module.

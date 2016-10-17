@@ -1,6 +1,6 @@
 'use strict';
 
-describe("angular.scenario.dsl", function() {
+describe('angular.scenario.dsl', function() {
   var element;
   var $window, $root;
   var eventLog;
@@ -668,22 +668,26 @@ describe("angular.scenario.dsl", function() {
     });
 
     describe('Input', function() {
-      it('should change value in text input', inject(function($compile) {
-        runs(function() {
-          element = $compile('<input ng-model="test.input" value="something">')($root);
-          doc.append(element);
-          var chain = $root.dsl.input('test.input');
-          chain.enter('foo');
-          expect(_jQuery('input[ng-model="test.input"]').val()).toEqual('foo');
+      it('should change value in text input', function(done) {
+        inject(function($compile) {
+          var job = createAsync(done);
+          job
+          .runs(function() {
+            element = $compile('<input ng-model="test.input" value="something">')($root);
+            doc.append(element);
+            var chain = $root.dsl.input('test.input');
+            chain.enter('foo');
+            expect(_jQuery('input[ng-model="test.input"]').val()).toEqual('foo');
+          })
+          // cleanup the event queue
+          .waits(0)
+          .runs(function() {
+            expect($root.test.input).toBe('foo');
+          })
+          .done();
+          job.start();
         });
-
-        // cleanup the event queue
-        waits(0);
-
-        runs(function() {
-          expect($root.test.input).toBe('foo');
-        });
-      }));
+      });
 
       it('should change value in text input in dash form', function() {
         doc.append('<input ng-model="test.input" value="something">');
@@ -761,7 +765,7 @@ describe("angular.scenario.dsl", function() {
         it('should return value in text input', function() {
           doc.append('<input ng-model="test.input" value="something">');
           $root.dsl.input('test.input').val();
-          expect($root.futureResult).toEqual("something");
+          expect($root.futureResult).toEqual('something');
         });
       });
     });

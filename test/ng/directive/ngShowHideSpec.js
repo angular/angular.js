@@ -116,7 +116,7 @@ describe('ngShow / ngHide animations', function() {
 
   beforeEach(function() {
     // we need to run animation on attached elements;
-    body = jqLite(document.body);
+    body = jqLite(window.document.body);
   });
 
   afterEach(function() {

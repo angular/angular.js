@@ -1,277 +1,168 @@
 @ngdoc tutorial
-@name 5 - XHRs & Dependency Injection
+@name 5 - Filtering Repeaters
 @step 5
 @description
 
 <ul doc-tutorial-nav="5"></ul>
 
 
-Enough of building an app with three phones in a hard-coded dataset! Let's fetch a larger dataset
-from our server using one of Angular's built-in {@link guide/services services} called {@link
-ng.$http $http}. We will use Angular's {@link guide/di dependency
-injection (DI)} to provide the service to the `PhoneListCtrl` controller.
+We did a lot of work in laying a foundation for the app in the previous steps, so now we'll do
+something simple; we will add full-text search (yes, it will be simple!). We will also write an
+end-to-end (E2E) test, because a good E2E test is a good friend. It stays with your app, keeps an
+eye on it, and quickly detects regressions.
 
-* There is now a list of 20 phones, loaded from the server.
+* The app now has a search box. Notice that the phone list on the page changes depending on what a
+  user types into the search box.
+
 
 <div doc-tutorial-reset="5"></div>
 
 
-## Data
-The `app/phones/phones.json` file in your project is a dataset that contains a larger list of phones
-stored in the JSON format.
+## Component Controller
 
-Following is a sample of the file:
+We made no changes to the component's controller.
 
-```js
-[
- {
-  "age": 13,
-  "id": "motorola-defy-with-motoblur",
-  "name": "Motorola DEFY\u2122 with MOTOBLUR\u2122",
-  "snippet": "Are you ready for everything life throws your way?"
-  ...
- },
-...
-]
+
+## Component Template
+
+<br />
+**`app/phone-list/phone-list.template.html`:**
+
+```html
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-2">
+        <!--Sidebar content-->
+
+        Search: <input ng-model="$ctrl.query" />
+
+      </div>
+      <div class="col-md-10">
+        <!--Body content-->
+
+        <ul class="phones">
+          <li ng-repeat="phone in $ctrl.phones | filter:$ctrl.query">
+            <span>{{phone.name}}</span>
+            <p>{{phone.snippet}}</p>
+          </li>
+        </ul>
+
+      </div>
+    </div>
+  </div>
 ```
 
+We added a standard HTML `<input>` tag and used Angular's {@link ng.filter:filter filter} function
+to process the input for the {@link ngRepeat ngRepeat} directive.
 
-## Controller
+By virtue of the {@link ngModel ngModel} directive, this lets a user enter search criteria and
+immediately see the effects of their search on the phone list. This new code demonstrates the
+following:
 
-We'll use Angular's {@link ng.$http $http} service in our controller to make an HTTP
-request to your web server to fetch the data in the `app/phones/phones.json` file. `$http` is just
-one of several built-in {@link guide/services Angular services} that handle common operations
-in web apps. Angular injects these services for you where you need them.
+* Data-binding: This is one of the core features in Angular. When the page loads, Angular binds the
+  value of the input box to the data model variable specified with `ngModel` and keeps the two in
+  sync.
 
-Services are managed by Angular's {@link guide/di DI subsystem}. Dependency injection
-helps to make your web apps both well-structured (e.g., separate components for presentation, data,
-and control) and loosely coupled (dependencies between components are not resolved by the
-components themselves, but by the DI subsystem).
+  In this code, the data that a user types into the input box (bound to **`$ctrl.query`**) is
+  immediately available as a filter input in the list repeater
+  (`phone in $ctrl.phones | filter:`**`$ctrl.query`**). When changes to the data model cause the
+  repeater's input to change, the repeater efficiently updates the DOM to reflect the current state
+  of the model.
 
-__`app/js/controllers.js:`__
+  <img  class="diagram" src="img/tutorial/tutorial_05.png">
+
+* Use of the `filter` filter: The {@link ng.filter:filter filter} function uses the `$ctrl.query`
+  value to create a new array that contains only those records that match the query.
+
+  `ngRepeat` automatically updates the view in response to the changing number of phones returned
+  by the `filter` filter. The process is completely transparent to the developer.
+
+
+# Testing
+
+In previous steps, we learned how to write and run unit tests. Unit tests are perfect for testing
+controllers and other parts of our application written in JavaScript, but they can't easily
+test templates, DOM manipulation or interoperability of components and services. For these, an
+end-to-end (E2E) test is a much better choice.
+
+The search feature was fully implemented via templates and data-binding, so we'll write our first
+E2E test, to verify that the feature works.
+
+<br />
+**`e2e-tests/scenarios.js`:**
 
 ```js
-var phonecatApp = angular.module('phonecatApp', []);
+describe('PhoneCat Application', function() {
 
-phonecatApp.controller('PhoneListCtrl', function ($scope, $http) {
-  $http.get('phones/phones.json').success(function(data) {
-    $scope.phones = data;
+  describe('phoneList', function() {
+
+    beforeEach(function() {
+      browser.get('index.html');
+    });
+
+    it('should filter the phone list as a user types into the search box', function() {
+      var phoneList = element.all(by.repeater('phone in $ctrl.phones'));
+      var query = element(by.model('$ctrl.query'));
+
+      expect(phoneList.count()).toBe(3);
+
+      query.sendKeys('nexus');
+      expect(phoneList.count()).toBe(1);
+
+      query.clear();
+      query.sendKeys('motorola');
+      expect(phoneList.count()).toBe(2);
+    });
+
   });
 
-  $scope.orderProp = 'age';
 });
 ```
 
-`$http` makes an HTTP GET request to our web server, asking for `phones/phones.json` (the url is
-relative to our `index.html` file). The server responds by providing the data in the json file.
-(The response might just as well have been dynamically generated by a backend server. To the
-browser and our app, they both look the same. For the sake of simplicity, we used a json file in this
-tutorial.)
-
-The `$http` service returns a {@link ng.$q promise object} with a `success`
-method. We call this method to handle the asynchronous response and assign the phone data to the
-scope controlled by this controller, as a model called `phones`. Notice that Angular detected the
-json response and parsed it for us!
-
-To use a service in Angular, you simply declare the names of the dependencies you need as arguments
-to the controller's constructor function, as follows:
-
-    phonecatApp.controller('PhoneListCtrl', function ($scope, $http) {...}
-
-Angular's dependency injector provides services to your controller when the controller is being
-constructed. The dependency injector also takes care of creating any transitive dependencies the
-service may have (services often depend upon other services).
-
-Note that the names of arguments are significant, because the injector uses these to look up the
-dependencies.
+This test verifies that the search box and the repeater are correctly wired together. Notice how
+easy it is to write E2E tests in Angular. Although this example is for a simple test, it really is
+that easy to set up any functional, readable, E2E test.
 
 
-<img  class="diagram" src="img/tutorial/tutorial_05.png">
+## Running E2E Tests with Protractor
 
+Even though the syntax of this test looks very much like our controller unit test written with
+Jasmine, the E2E test uses APIs of [Protractor][protractor]. Read about the Protractor APIs in the
+[Protractor API Docs][protractor-docs].
 
-### `$` Prefix Naming Convention
+Much like Karma is the test runner for unit tests, we use Protractor to run E2E tests. Try it with
+`npm run protractor`. E2E tests take time, so unlike with unit tests, Protractor will exit after the
+tests run and will not automatically rerun the test suite on every file change.
+To rerun the test suite, execute `npm run protractor` again.
 
-You can create your own services, and in fact we will do exactly that in step 11. As a naming
-convention, Angular's built-in services, Scope methods and a few other Angular APIs have a `$`
-prefix in front of the name.
-
-The `$` prefix is there to namespace Angular-provided services.
-To prevent collisions it's best to avoid naming your services and models anything that begins with a `$`.
-
-If you inspect a Scope, you may also notice some properties that begin with `$$`. These
-properties are considered private, and should not be accessed or modified.
-
-
-### A Note on Minification
-
-Since Angular infers the controller's dependencies from the names of arguments to the controller's
-constructor function, if you were to [minify](http://goo.gl/SAnnsm) the JavaScript code for
-`PhoneListCtrl` controller, all of its function arguments would be minified as well, and the
-dependency injector would not be able to identify services correctly.
-
-We can overcome this problem by annotating the function with the names of the dependencies, provided
-as strings, which will not get minified. There are two ways to provide these injection annotations:
-
-* Create a `$inject` property on the controller function which holds an array of strings.
-  Each string in the array is the name of the service to inject for the corresponding parameter.
-  In our example, we would write:
-
-  ```js
-      function PhoneListCtrl($scope, $http) {...}
-      PhoneListCtrl.$inject = ['$scope', '$http'];
-      phonecatApp.controller('PhoneListCtrl', PhoneListCtrl);
-  ```
-
-* Use an inline annotation where, instead of just providing the function, you provide an array.
-  This array contains a list of the service names, followed by the function itself.
-
-  ```js
-      function PhoneListCtrl($scope, $http) {...}
-      phonecatApp.controller('PhoneListCtrl', ['$scope', '$http', PhoneListCtrl]);
-  ```
-
-Both of these methods work with any function that can be injected by Angular, so it's up to your
-project's style guide to decide which one you use.
-
-When using the second method, it is common to provide the constructor function inline as an
-anonymous function when registering the controller:
-
-```js
-    phonecatApp.controller('PhoneListCtrl', ['$scope', '$http', function($scope, $http) {...}]);
-```
-
-From this point onward, we're going to use the inline method in the tutorial. With that in mind,
-let's add the annotations to our `PhoneListCtrl`:
-
-__`app/js/controllers.js:`__
-
-```js
-var phonecatApp = angular.module('phonecatApp', []);
-
-phonecatApp.controller('PhoneListCtrl', ['$scope', '$http',
-  function ($scope, $http) {
-    $http.get('phones/phones.json').success(function(data) {
-      $scope.phones = data;
-    });
-
-    $scope.orderProp = 'age';
-  }]);
-```
-
-## Test
-
-__`test/unit/controllersSpec.js`:__
-
-Because we started using dependency injection and our controller has dependencies, constructing the
-controller in our tests is a bit more complicated. We could use the `new` operator and provide the
-constructor with some kind of fake `$http` implementation. However, Angular provides a mock `$http`
-service that we can use in unit tests.  We configure "fake" responses to server requests by calling
-methods on a service called `$httpBackend`:
-
-```js
-describe('PhoneCat controllers', function() {
-
-  describe('PhoneListCtrl', function(){
-    var scope, ctrl, $httpBackend;
-
-    // Load our app module definition before each test.
-    beforeEach(module('phonecatApp'));
-
-    // The injector ignores leading and trailing underscores here (i.e. _$httpBackend_).
-    // This allows us to inject a service but then attach it to a variable
-    // with the same name as the service in order to avoid a name conflict.
-    beforeEach(inject(function(_$httpBackend_, $rootScope, $controller) {
-      $httpBackend = _$httpBackend_;
-      $httpBackend.expectGET('phones/phones.json').
-          respond([{name: 'Nexus S'}, {name: 'Motorola DROID'}]);
-
-      scope = $rootScope.$new();
-      ctrl = $controller('PhoneListCtrl', {$scope: scope});
-    }));
-```
-
-Note: Because we loaded Jasmine and `angular-mocks.js` in our test environment, we got two helper
-methods {@link angular.mock.module module} and {@link angular.mock.inject inject} that we'll
-use to access and configure the injector.
-
-We created the controller in the test environment, as follows:
-
-* We used the `inject` helper method to inject instances of
-{@link ng.$rootScope $rootScope},
-{@link ng.$controller $controller} and
-{@link ng.$httpBackend $httpBackend} services into the Jasmine's `beforeEach`
-function. These instances come from an injector which is recreated from scratch for every single
-test. This guarantees that each test starts from a well known starting point and each test is
-isolated from the work done in other tests.
-
-* We created a new scope for our controller by calling `$rootScope.$new()`
-
-* We called the injected `$controller` function passing the name of the `PhoneListCtrl` controller
-and the created scope as parameters.
-
-Because our code now uses the `$http` service to fetch the phone list data in our controller, before
-we create the `PhoneListCtrl` child scope, we need to tell the testing harness to expect an
-incoming request from the controller. To do this we:
-
-* Request `$httpBackend` service to be injected into our `beforeEach` function. This is a mock
-version of the service that in a production environment facilitates all XHR and JSONP requests.
-The mock version of this service allows you to write tests without having to deal with
-native APIs and the global state associated with them — both of which make testing a nightmare.
-
-* Use the `$httpBackend.expectGET` method to train the `$httpBackend` service to expect an incoming
-HTTP request and tell it what to respond with. Note that the responses are not returned until we call
-the `$httpBackend.flush` method.
-
-Now we will make assertions to verify that the `phones` model doesn't exist on `scope` before
-the response is received:
-
-```js
-    it('should create "phones" model with 2 phones fetched from xhr', function() {
-      expect(scope.phones).toBeUndefined();
-      $httpBackend.flush();
-
-      expect(scope.phones).toEqual([{name: 'Nexus S'},
-                                   {name: 'Motorola DROID'}]);
-    });
-```
-
-* We flush the request queue in the browser by calling `$httpBackend.flush()`. This causes the
-promise returned by the `$http` service to be resolved with the trained response. See 
-'Flushing HTTP requests' in the {@link ngMock.$httpBackend mock $httpBackend} documentation for 
-a full explanation of why this is necessary.
-
-* We make the assertions, verifying that the phone model now exists on the scope.
-
-Finally, we verify that the default value of `orderProp` is set correctly:
-
-```js
-    it('should set the default value of orderProp model', function() {
-      expect(scope.orderProp).toBe('age');
-    });
-```
-
-You should now see the following output in the Karma tab:
-
-<pre>Chrome 22.0: Executed 2 of 2 SUCCESS (0.028 secs / 0.007 secs)</pre>
-
+<div class="alert alert-info">
+  **Note:** In order for protractor to access and run tests against your application, it must be
+  served via a web server. In a different terminal/command line window, run `npm start` to fire up
+  the web server.
+</div>
 
 
 # Experiments
 
-* At the bottom of `index.html`, add a `<pre>{{phones | filter:query | orderBy:orderProp | json}}</pre>` 
-binding to see the list of phones displayed in json format.  
+<div></div>
 
-* In the `PhoneListCtrl` controller, pre-process the http response by limiting the number of phones
-to the first 5 in the list. Use the following code in the `$http` callback:
+* Display the current value of the `query` model by adding a `{{$ctrl.query}}` binding into the
+  `phone-list.template.html` template and see how it changes, when you type in the input box.
 
-         $scope.phones = data.splice(0, 5);
+  You might also try to add the `{{$ctrl.query}}` binding to `index.html`. However, when you reload
+  the page, you won't see the expected result. This is because the `query` model lives in the scope
+  defined by the `<phone-list>` component.<br />
+  Component isolation at work!
 
 
 # Summary
 
-Now that you have learned how easy it is to use Angular services (thanks to Angular's dependency
-injection), go to {@link step_06 step 6}, where you will add some
-thumbnail images of phones and some links.
+We have now added full-text search and included a test to verify that it works! Now let's go on to
+{@link step_06 step 6} to learn how to add sorting capabilities to the PhoneCat application.
 
 
 <ul doc-tutorial-nav="5"></ul>
+
+
+[protractor]: https://github.com/angular/protractor
+[protractor-docs]: https://angular.github.io/protractor/#/api

@@ -100,12 +100,12 @@ $provide.value("$locale", {
     ],
     "fullDate": "EEEE, d MMMM, y",
     "longDate": "y MMMM d",
-    "medium": "y MMM d hh:mm:ss a",
+    "medium": "y MMM d HH:mm:ss",
     "mediumDate": "y MMM d",
-    "mediumTime": "hh:mm:ss a",
-    "short": "dd/MM/y hh:mm a",
+    "mediumTime": "HH:mm:ss",
+    "short": "dd/MM/y HH:mm",
     "shortDate": "dd/MM/y",
-    "shortTime": "hh:mm a"
+    "shortTime": "HH:mm"
   },
   "NUMBER_FORMATS": {
     "CURRENCY_SYM": "Bs",
@@ -137,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "qu-bo",
+  "localeID": "qu_BO",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

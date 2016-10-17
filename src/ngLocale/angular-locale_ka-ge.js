@@ -82,8 +82,8 @@ $provide.value("$locale", {
     ],
     "fullDate": "EEEE, dd MMMM, y",
     "longDate": "d MMMM, y",
-    "medium": "d MMM, y HH:mm:ss",
-    "mediumDate": "d MMM, y",
+    "medium": "d MMM. y HH:mm:ss",
+    "mediumDate": "d MMM. y",
     "mediumTime": "HH:mm:ss",
     "short": "dd.MM.yy HH:mm",
     "shortDate": "dd.MM.yy",
@@ -119,6 +119,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "ka-ge",
+  "localeID": "ka_GE",
   "pluralCat": function(n, opt_precision) {  if (n == 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

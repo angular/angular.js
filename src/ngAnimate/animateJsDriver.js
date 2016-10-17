@@ -1,6 +1,6 @@
 'use strict';
 
-var $$AnimateJsDriverProvider = ['$$animationProvider', function($$animationProvider) {
+var $$AnimateJsDriverProvider = ['$$animationProvider', /** @this */ function($$animationProvider) {
   $$animationProvider.drivers.push('$$animateJsDriver');
   this.$get = ['$$animateJs', '$$AnimateRunner', function($$animateJs, $$AnimateRunner) {
     return function initDriverFn(animationDetails) {

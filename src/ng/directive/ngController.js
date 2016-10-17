@@ -86,10 +86,11 @@
  *      .controller('SettingsController1', SettingsController1);
  *
  *    function SettingsController1() {
- *      this.name = "John Smith";
+ *      this.name = 'John Smith';
  *      this.contacts = [
  *        {type: 'phone', value: '408 555 1212'},
- *        {type: 'email', value: 'john.smith@example.org'} ];
+ *        {type: 'email', value: 'john.smith@example.org'}
+ *      ];
  *    }
  *
  *    SettingsController1.prototype.greet = function() {
@@ -169,10 +170,11 @@
  *     .controller('SettingsController2', ['$scope', SettingsController2]);
  *
  *   function SettingsController2($scope) {
- *     $scope.name = "John Smith";
+ *     $scope.name = 'John Smith';
  *     $scope.contacts = [
  *       {type:'phone', value:'408 555 1212'},
- *       {type:'email', value:'john.smith@example.org'} ];
+ *       {type:'email', value:'john.smith@example.org'}
+ *     ];
  *
  *     $scope.greet = function() {
  *       alert($scope.name);

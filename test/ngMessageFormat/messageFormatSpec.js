@@ -24,10 +24,10 @@ describe('$$ngMessageFormat', function() {
       this.gender = gender;
     }
 
-    var alice   = new Person("Alice", "female"),
-        bob     = new Person("Bob", "male"),
-        charlie = new Person("Charlie", "male"),
-        harry   = new Person("Harry Potter", "male");
+    var alice   = new Person('Alice', 'female'),
+        bob     = new Person('Bob', 'male'),
+        charlie = new Person('Charlie', 'male'),
+        harry   = new Person('Harry Potter', 'male');
 
     function initScope($scope) {
       $scope.recipients = [alice, bob, charlie];
@@ -55,40 +55,40 @@ describe('$$ngMessageFormat', function() {
       }
 
       it('should suppress falsy objects', function() {
-        assertMustache("{{undefined}}", "");
-        assertMustache("{{null}}", "");
-        assertMustache("{{a.b}}", "");
+        assertMustache('{{undefined}}', '');
+        assertMustache('{{null}}', '');
+        assertMustache('{{a.b}}', '');
       });
 
       it('should jsonify objects', function() {
-        assertMustache("{{ {} }}", "{}");
-        assertMustache("{{ true }}", "true");
-        assertMustache("{{ false }}", "false");
-        assertMustache("{{ 1 }}", "1");
-        assertMustache("{{ '1' }}", "1");
-        assertMustache("{{ sender }}", '{"name":"Harry Potter","gender":"male"}');
+        assertMustache('{{ {} }}', '{}');
+        assertMustache('{{ true }}', 'true');
+        assertMustache('{{ false }}', 'false');
+        assertMustache('{{ 1 }}', '1');
+        assertMustache('{{ \'1\' }}', '1');
+        assertMustache('{{ sender }}', '{"name":"Harry Potter","gender":"male"}');
       });
 
       it('should return function that can be called with no context', inject(function($interpolate) {
-        expect($interpolate("{{sender.name}}")()).toEqual("");
+        expect($interpolate('{{sender.name}}')()).toEqual('');
       }));
 
       describe('watchable', function() {
         it('ckck', function() {
           var calls = [];
-          $rootScope.$watch($interpolate("{{::name}}"), function(val) {
+          $rootScope.$watch($interpolate('{{::name}}'), function(val) {
             calls.push(val);
           });
 
           $rootScope.$apply();
           expect(calls.length).toBe(1);
 
-          $rootScope.name = "foo";
+          $rootScope.name = 'foo';
           $rootScope.$apply();
           expect(calls.length).toBe(2);
           expect(calls[1]).toBe('foo');
 
-          $rootScope.name = "bar";
+          $rootScope.name = 'bar';
           $rootScope.$apply();
           expect(calls.length).toBe(2);
         });
@@ -100,7 +100,7 @@ describe('$$ngMessageFormat', function() {
           $rootScope.$digest();
           expect($rootScope.$countWatchers()).toBe(0);
           expect(spy).toHaveBeenCalledWith('foo', 'foo', $rootScope);
-          expect(spy.calls.length).toBe(1);
+          expect(spy).toHaveBeenCalledTimes(1);
         });
 
         it('should stop watching strings with only constant expressions after first execution', function() {
@@ -109,7 +109,7 @@ describe('$$ngMessageFormat', function() {
           $rootScope.$digest();
           expect($rootScope.$countWatchers()).toBe(0);
           expect(spy).toHaveBeenCalledWith('foo 42', 'foo 42', $rootScope);
-          expect(spy.calls.length).toBe(1);
+          expect(spy).toHaveBeenCalledTimes(1);
         });
 
 
@@ -117,96 +117,96 @@ describe('$$ngMessageFormat', function() {
 
       describe('plural', function() {
         it('no interpolation', function() {
-          var text = "" +
-            "{{recipients.length, plural,\n" +
-            "    =0    {You gave no gifts}\n" +
-            "    =1    {You gave one person a gift}\n" +
+          var text = '' +
+            '{{recipients.length, plural,\n' +
+            '    =0    {You gave no gifts}\n' +
+            '    =1    {You gave one person a gift}\n' +
             // "=1" should override "one" for exact value.
-            "    one   {YOU SHOULD NEVER SEE THIS MESSAGE}\n" +
-            "    other {You gave some people gifts}\n" +
-            "}}";
+            '    one   {YOU SHOULD NEVER SEE THIS MESSAGE}\n' +
+            '    other {You gave some people gifts}\n' +
+            '}}';
           var parsedFn = $interpolate(text, /*mustHaveExpression=*/true);
           expect(parsedFn.expressions.length).toBe(1);
-          expect(parsedFn.expressions[0]).toEqual("recipients.length");
+          expect(parsedFn.expressions[0]).toEqual('recipients.length');
 
-          $rootScope.recipients.length=2;
-          expect(parsedFn($rootScope)).toEqual("You gave some people gifts");
+          $rootScope.recipients.length = 2;
+          expect(parsedFn($rootScope)).toEqual('You gave some people gifts');
 
-          $rootScope.recipients.length=1;
-          expect(parsedFn($rootScope)).toEqual("You gave one person a gift");
+          $rootScope.recipients.length = 1;
+          expect(parsedFn($rootScope)).toEqual('You gave one person a gift');
 
-          $rootScope.recipients.length=0;
-          expect(parsedFn($rootScope)).toEqual("You gave no gifts");
+          $rootScope.recipients.length = 0;
+          expect(parsedFn($rootScope)).toEqual('You gave no gifts');
         });
 
         it('with interpolation', function() {
-          var text = "" +
-            "{{recipients.length, plural,\n" +
-            "    =0    {{{sender.name}} gave no gifts}\n" +
-            "    =1    {{{sender.name}} gave one gift to {{recipients[0].name}}}\n" +
+          var text = '' +
+            '{{recipients.length, plural,\n' +
+            '    =0    {{{sender.name}} gave no gifts}\n' +
+            '    =1    {{{sender.name}} gave one gift to {{recipients[0].name}}}\n' +
             // "=1" should override "one" for exact value.
-            "    one   {YOU SHOULD NEVER SEE THIS MESSAGE}\n" +
-            "    other {{{sender.name}} gave them a gift}\n" +
-            "}}";
+            '    one   {YOU SHOULD NEVER SEE THIS MESSAGE}\n' +
+            '    other {{{sender.name}} gave them a gift}\n' +
+            '}}';
           var parsedFn = $interpolate(text, /*mustHaveExpression=*/true);
           expect(parsedFn.expressions.length).toBe(1);
-          expect(parsedFn.expressions[0]).toEqual("recipients.length");
+          expect(parsedFn.expressions[0]).toEqual('recipients.length');
 
-          $rootScope.recipients.length=2;
-          expect(parsedFn($rootScope)).toEqual("Harry Potter gave them a gift");
+          $rootScope.recipients.length = 2;
+          expect(parsedFn($rootScope)).toEqual('Harry Potter gave them a gift');
 
-          $rootScope.recipients.length=1;
-          expect(parsedFn($rootScope)).toEqual("Harry Potter gave one gift to Alice");
+          $rootScope.recipients.length = 1;
+          expect(parsedFn($rootScope)).toEqual('Harry Potter gave one gift to Alice');
 
-          $rootScope.recipients.length=0;
-          expect(parsedFn($rootScope)).toEqual("Harry Potter gave no gifts");
+          $rootScope.recipients.length = 0;
+          expect(parsedFn($rootScope)).toEqual('Harry Potter gave no gifts');
         });
 
         it('with offset, interpolation, "#" symbol with and without escaping', function() {
-          var text = "" +
-            "{{recipients.length, plural, offset:1\n" +
+          var text = '' +
+            '{{recipients.length, plural, offset:1\n' +
             // NOTE: It's nonsensical to use "#" for "=0" with a positive offset.
-            "    =0    {{{sender.name}} gave no gifts (\\#=#)}\n" +
-            "    =1    {{{sender.name}} gave one gift to {{recipients[0].name}} (\\#=#)}\n" +
-            "    one   {{{sender.name}} gave {{recipients[0].name}} and one other person a gift (\\#=#)}\n" +
-            "    other {{{sender.name}} gave {{recipients[0].name}} and # other people a gift (\\#=#)}\n" +
-            "}}";
+            '    =0    {{{sender.name}} gave no gifts (\\#=#)}\n' +
+            '    =1    {{{sender.name}} gave one gift to {{recipients[0].name}} (\\#=#)}\n' +
+            '    one   {{{sender.name}} gave {{recipients[0].name}} and one other person a gift (\\#=#)}\n' +
+            '    other {{{sender.name}} gave {{recipients[0].name}} and # other people a gift (\\#=#)}\n' +
+            '}}';
           var parsedFn = $interpolate(text, /*mustHaveExpression=*/true);
           expect(parsedFn.expressions.length).toBe(1);
-          expect(parsedFn.expressions[0]).toEqual("recipients.length");
+          expect(parsedFn.expressions[0]).toEqual('recipients.length');
 
-          $rootScope.recipients.length=3;
+          $rootScope.recipients.length = 3;
           // "#" should get replaced with the value of "recipients.length - offset"
-          expect(parsedFn($rootScope)).toEqual("Harry Potter gave Alice and 2 other people a gift (#=2)");
+          expect(parsedFn($rootScope)).toEqual('Harry Potter gave Alice and 2 other people a gift (#=2)');
 
-          $rootScope.recipients.length=2;
-          expect(parsedFn($rootScope)).toEqual("Harry Potter gave Alice and one other person a gift (#=1)");
+          $rootScope.recipients.length = 2;
+          expect(parsedFn($rootScope)).toEqual('Harry Potter gave Alice and one other person a gift (#=1)');
 
-          $rootScope.recipients.length=1;
-          expect(parsedFn($rootScope)).toEqual("Harry Potter gave one gift to Alice (#=0)");
+          $rootScope.recipients.length = 1;
+          expect(parsedFn($rootScope)).toEqual('Harry Potter gave one gift to Alice (#=0)');
 
-          $rootScope.recipients.length=0;
-          expect(parsedFn($rootScope)).toEqual("Harry Potter gave no gifts (#=-1)");
+          $rootScope.recipients.length = 0;
+          expect(parsedFn($rootScope)).toEqual('Harry Potter gave no gifts (#=-1)');
         });
       });
 
       it('nested plural and select', function() {
-        var text = "" +
-          "{{recipients.length, plural,\n" +
-          "    =0 {You gave no gifts}\n" +
-          "    =1 {{{recipients[0].gender, select,\n" +
-          "            male {You gave him a gift. -{{sender.name}}}\n" +
-          "            female {You gave her a gift. -{{sender.name}}}\n" +
-          "            other {You gave them a gift. -{{sender.name}}}\n" +
-          "        }}\n" +
-          "       }\n" +
-          "    other {You gave {{recipients.length}} people gifts. -{{sender.name}}}\n" +
-          "}}";
+        var text = '' +
+          '{{recipients.length, plural,\n' +
+          '    =0 {You gave no gifts}\n' +
+          '    =1 {{{recipients[0].gender, select,\n' +
+          '            male {You gave him a gift. -{{sender.name}}}\n' +
+          '            female {You gave her a gift. -{{sender.name}}}\n' +
+          '            other {You gave them a gift. -{{sender.name}}}\n' +
+          '        }}\n' +
+          '       }\n' +
+          '    other {You gave {{recipients.length}} people gifts. -{{sender.name}}}\n' +
+          '}}';
         var parsedFn = $interpolate(text, /*mustHaveExpression=*/true);
         expect(parsedFn.expressions.length).toBe(1);
-        expect(parsedFn.expressions[0]).toEqual("recipients.length");
+        expect(parsedFn.expressions[0]).toEqual('recipients.length');
         var result = parsedFn($rootScope);
-        expect(result).toEqual("You gave 3 people gifts. -Harry Potter");
+        expect(result).toEqual('You gave 3 people gifts. -Harry Potter');
       });
     });
 
@@ -217,11 +217,11 @@ describe('$$ngMessageFormat', function() {
       }
 
       it('should interpolate a plain string', function() {
-        assertInterpolation(" Hello, world! ", " Hello, world! ");
+        assertInterpolation(' Hello, world! ', ' Hello, world! ');
       });
 
       it('should interpolate a simple expression', function() {
-        assertInterpolation("Hello, {{sender.name}}!", "Hello, Harry Potter!");
+        assertInterpolation('Hello, {{sender.name}}!', 'Hello, Harry Potter!');
       });
     });
   });
@@ -311,6 +311,30 @@ describe('$$ngMessageFormat', function() {
     }));
 
 
+    it('should use custom toString when present', inject(function($interpolate, $rootScope) {
+       var context = {
+        a: {
+          toString: function() {
+            return 'foo';
+          }
+        }
+      };
+
+      expect($interpolate('{{ a }}')(context)).toEqual('foo');
+    }));
+
+    it('should NOT use toString on array objects', inject(function($interpolate) {
+      expect($interpolate('{{a}}')({ a: [] })).toEqual('[]');
+    }));
+
+
+    it('should NOT use toString on Date objects', inject(function($interpolate) {
+      var date = new Date(2014, 10, 10);
+      expect($interpolate('{{a}}')({ a: date })).toBe(JSON.stringify(date));
+      expect($interpolate('{{a}}')({ a: date })).not.toEqual(date.toString());
+    }));
+
+
     it('should return interpolation function', inject(function($interpolate, $rootScope) {
       var interpolateFn = $interpolate('Hello {{name}}!');
 
@@ -325,12 +349,12 @@ describe('$$ngMessageFormat', function() {
 
 
     it('should ignore undefined model', inject(function($interpolate) {
-      expect($interpolate("Hello {{'World'}}{{foo}}")({})).toBe('Hello World');
+      expect($interpolate('Hello {{\'World\'}}{{foo}}')({})).toBe('Hello World');
     }));
 
 
     it('should interpolate with undefined context', inject(function($interpolate) {
-      expect($interpolate("Hello, world!{{bloop}}")()).toBe("Hello, world!");
+      expect($interpolate('Hello, world!{{bloop}}')()).toBe('Hello, world!');
     }));
 
     describe('watching', function() {
@@ -408,7 +432,7 @@ describe('$$ngMessageFormat', function() {
           $rootScope.$digest();
           expect($rootScope.$countWatchers()).toBe(0);
           expect(spy).toHaveBeenCalledWith('foo', 'foo', $rootScope);
-          expect(spy.calls.length).toBe(1);
+          expect(spy).toHaveBeenCalledTimes(1);
         })
       );
 
@@ -419,7 +443,7 @@ describe('$$ngMessageFormat', function() {
           $rootScope.$digest();
           expect($rootScope.$countWatchers()).toBe(0);
           expect(spy).toHaveBeenCalledWith('foo 42', 'foo 42', $rootScope);
-          expect(spy.calls.length).toBe(1);
+          expect(spy).toHaveBeenCalledTimes(1);
         })
       );
     });
@@ -500,7 +524,7 @@ describe('$$ngMessageFormat', function() {
 
       it('should NOT interpolate non-trusted expressions', inject(function($interpolate, $rootScope) {
         var scope = $rootScope.$new();
-        scope.foo = "foo";
+        scope.foo = 'foo';
 
         expect(function() {
           $interpolate('{{foo}}', true, sce.CSS)(scope);
@@ -509,7 +533,7 @@ describe('$$ngMessageFormat', function() {
 
       it('should NOT interpolate mistyped expressions', inject(function($interpolate, $rootScope) {
         var scope = $rootScope.$new();
-        scope.foo = sce.trustAsCss("foo");
+        scope.foo = sce.trustAsCss('foo');
 
         expect(function() {
           $interpolate('{{foo}}', true, sce.HTML)(scope);
@@ -517,12 +541,12 @@ describe('$$ngMessageFormat', function() {
       }));
 
       it('should interpolate trusted expressions in a regular context', inject(function($interpolate) {
-        var foo = sce.trustAsCss("foo");
+        var foo = sce.trustAsCss('foo');
         expect($interpolate('{{foo}}', true)({foo: foo})).toBe('foo');
       }));
 
       it('should interpolate trusted expressions in a specific trustedContext', inject(function($interpolate) {
-        var foo = sce.trustAsCss("foo");
+        var foo = sce.trustAsCss('foo');
         expect($interpolate('{{foo}}', true, sce.CSS)({foo: foo})).toBe('foo');
       }));
 
@@ -530,15 +554,15 @@ describe('$$ngMessageFormat', function() {
       // instance, you can construct evil JS code by putting together pieces of JS strings that are by
       // themselves safe to execute in isolation.)
       it('should NOT interpolate trusted expressions with multiple parts', inject(function($interpolate) {
-        var foo = sce.trustAsCss("foo");
-        var bar = sce.trustAsCss("bar");
+        var foo = sce.trustAsCss('foo');
+        var bar = sce.trustAsCss('bar');
         expect(function() {
           return $interpolate('{{foo}}{{bar}}', true, sce.CSS)({foo: foo, bar: bar});
         }).toThrowMinErr(
-                  "$interpolate", "noconcat", "Error while interpolating: {{foo}}{{bar}}\n" +
-                  "Strict Contextual Escaping disallows interpolations that concatenate multiple " +
-                  "expressions when a trusted value is required.  See " +
-                  "http://docs.angularjs.org/api/ng.$sce");
+                  '$interpolate', 'noconcat', 'Error while interpolating: {{foo}}{{bar}}\n' +
+                  'Strict Contextual Escaping disallows interpolations that concatenate multiple ' +
+                  'expressions when a trusted value is required.  See ' +
+                  'http://docs.angularjs.org/api/ng.$sce');
       }));
     });
 
@@ -560,50 +584,50 @@ describe('$$ngMessageFormat', function() {
 
     describe('parseBindings', function() {
       it('should Parse Text With No Bindings', inject(function($interpolate) {
-        expect($interpolate("a").expressions).toEqual([]);
+        expect($interpolate('a').expressions).toEqual([]);
       }));
 
       it('should Parse Empty Text', inject(function($interpolate) {
-        expect($interpolate("").expressions).toEqual([]);
+        expect($interpolate('').expressions).toEqual([]);
       }));
 
       it('should Parse Inner Binding', inject(function($interpolate) {
-        var interpolateFn = $interpolate("a{{b}}C"),
+        var interpolateFn = $interpolate('a{{b}}C'),
             expressions = interpolateFn.expressions;
         expect(expressions).toEqual(['b']);
         expect(interpolateFn({b: 123})).toEqual('a123C');
       }));
 
       it('should Parse Ending Binding', inject(function($interpolate) {
-        var interpolateFn = $interpolate("a{{b}}"),
+        var interpolateFn = $interpolate('a{{b}}'),
           expressions = interpolateFn.expressions;
         expect(expressions).toEqual(['b']);
         expect(interpolateFn({b: 123})).toEqual('a123');
       }));
 
       it('should Parse Begging Binding', inject(function($interpolate) {
-        var interpolateFn = $interpolate("{{b}}c"),
+        var interpolateFn = $interpolate('{{b}}c'),
           expressions = interpolateFn.expressions;
         expect(expressions).toEqual(['b']);
         expect(interpolateFn({b: 123})).toEqual('123c');
       }));
 
       it('should Parse Loan Binding', inject(function($interpolate) {
-        var interpolateFn = $interpolate("{{b}}"),
+        var interpolateFn = $interpolate('{{b}}'),
           expressions = interpolateFn.expressions;
         expect(expressions).toEqual(['b']);
         expect(interpolateFn({b: 123})).toEqual('123');
       }));
 
       it('should Parse Two Bindings', inject(function($interpolate) {
-        var interpolateFn = $interpolate("{{b}}{{c}}"),
+        var interpolateFn = $interpolate('{{b}}{{c}}'),
           expressions = interpolateFn.expressions;
         expect(expressions).toEqual(['b', 'c']);
         expect(interpolateFn({b: 111, c: 222})).toEqual('111222');
       }));
 
       it('should Parse Two Bindings With Text In Middle', inject(function($interpolate) {
-        var interpolateFn = $interpolate("{{b}}x{{c}}"),
+        var interpolateFn = $interpolate('{{b}}x{{c}}'),
           expressions = interpolateFn.expressions;
         expect(expressions).toEqual(['b', 'c']);
         expect(interpolateFn({b: 111, c: 222})).toEqual('111x222');
@@ -624,21 +648,21 @@ describe('$$ngMessageFormat', function() {
         expect(function() {
             $interpolate('constant/{{var}}', true, isTrustedContext);
           }).toThrowMinErr(
-              "$interpolate", "noconcat", "Error while interpolating: constant/{{var}}\nStrict " +
-              "Contextual Escaping disallows interpolations that concatenate multiple expressions " +
-              "when a trusted value is required.  See http://docs.angularjs.org/api/ng.$sce");
+              '$interpolate', 'noconcat', 'Error while interpolating: constant/{{var}}\nStrict ' +
+              'Contextual Escaping disallows interpolations that concatenate multiple expressions ' +
+              'when a trusted value is required.  See http://docs.angularjs.org/api/ng.$sce');
         expect(function() {
           $interpolate('{{var}}/constant', true, isTrustedContext);
         }).toThrowMinErr(
-            "$interpolate", "noconcat", "Error while interpolating: {{var}}/constant\nStrict " +
-              "Contextual Escaping disallows interpolations that concatenate multiple expressions " +
-              "when a trusted value is required.  See http://docs.angularjs.org/api/ng.$sce");
+            '$interpolate', 'noconcat', 'Error while interpolating: {{var}}/constant\nStrict ' +
+              'Contextual Escaping disallows interpolations that concatenate multiple expressions ' +
+              'when a trusted value is required.  See http://docs.angularjs.org/api/ng.$sce');
         expect(function() {
             $interpolate('{{foo}}{{bar}}', true, isTrustedContext);
           }).toThrowMinErr(
-              "$interpolate", "noconcat", "Error while interpolating: {{foo}}{{bar}}\nStrict " +
-              "Contextual Escaping disallows interpolations that concatenate multiple expressions " +
-              "when a trusted value is required.  See http://docs.angularjs.org/api/ng.$sce");
+              '$interpolate', 'noconcat', 'Error while interpolating: {{foo}}{{bar}}\nStrict ' +
+              'Contextual Escaping disallows interpolations that concatenate multiple expressions ' +
+              'when a trusted value is required.  See http://docs.angularjs.org/api/ng.$sce');
       }));
 
       it('should interpolate a multi-part expression when isTrustedContext is false', inject(function($interpolate) {

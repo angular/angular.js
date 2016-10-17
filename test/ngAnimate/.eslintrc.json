@@ -1,0 +1,18 @@
+{
+  "rules": {
+    "new-cap": "off"
+  },
+  "globals": {
+    "mergeAnimationDetails": false,
+    "prepareAnimationOptions": false,
+    "applyAnimationStyles": false,
+    "applyAnimationFromStyles": false,
+    "applyAnimationToStyles": false,
+    "applyAnimationClassesFactory": false,
+    "TRANSITIONEND_EVENT": false,
+    "TRANSITION_PROP": false,
+    "ANIMATION_PROP": false,
+    "ANIMATIONEND_EVENT": false,
+    "ANIMATE_TIMER_KEY": false
+  }
+}

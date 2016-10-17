@@ -2,21 +2,20 @@
 @name Developer Guide
 @description
 
-# Guide to AngularJS Documentation
+# Guide to Angular 1 Documentation
 
-Everything you need to know about AngularJS
+On this page, you will find a list of official Angular resources on various topics.
 
-* {@link guide/introduction What is AngularJS?}
+Just starting out with Angular 1? Try working through our step by step tutorial or try
+building on our seed project.
+
+* {@link tutorial/index Official Angular 1 Tutorial}
+* [Angular Seed](https://github.com/angular/angular-seed)
+
+Ready to find out more about Angular 1?
+
+* {@link guide/introduction What is Angular 1?}
 * {@link guide/concepts Conceptual Overview}
-
-## Tutorials
-
-* {@link tutorial/index Official AngularJS Tutorial}
-* [10 Reasons Why You Should Use AngularJS](http://www.sitepoint.com/10-reasons-use-angularjs/)
-* [10 Reasons Why Developers Should Learn AngularJS](http://wintellect.com/blogs/jlikness/10-reasons-web-developers-should-learn-angularjs)
-* [Design Principles of AngularJS (video)](https://www.youtube.com/watch?v=HCR7i5F5L8c)
-* [Fundamentals in 60 Minutes (video)](http://www.youtube.com/watch?v=i9MHigUZKEM)
-* [For folks with a jQuery background](http://stackoverflow.com/questions/14994391/how-do-i-think-in-angularjs-if-i-have-a-jquery-background)
 
 ## Core Concepts
 
@@ -26,131 +25,68 @@ In Angular applications, you move the job of filling page templates with data fr
 
 * {@link guide/databinding Data binding}
 * {@link guide/expression Expressions}
+* {@link guide/interpolation Interpolation}
 * {@link guide/directive Directives}
 * {@link ngRoute.$route Views and routes (see the example)}
 * {@link guide/filter Filters}
-* {@link guide/forms Forms} and [Concepts of AngularJS Forms](http://mrbool.com/the-concepts-of-angularjs-forms/29117)
+* {@link guide/compiler HTML compiler}
+* {@link guide/forms Forms}
 
 ### Application Structure
 
-* **Blog post: **[When to use directives, controllers or services](http://kirkbushell.me/when-to-use-directives-controllers-or-services-in-angular/)
 * **App wiring:** {@link guide/di Dependency injection}
 * **Exposing model to templates:** {@link guide/scope Scopes}
+* **Bootstrap:** {@link guide/bootstrap Bootstrapping an app}
 * **Communicating with servers:** {@link ng.$http $http}, {@link ngResource.$resource $resource}
 
-### Other AngularJS Features
+### Other Features
 
-* **Animation:** {@link guide/animations Core concepts}, {@link ngAnimate ngAnimate API}, and [Animation in AngularJS 1.2](http://www.yearofmoo.com/2013/08/remastered-animation-in-angularjs-1-2.html)
+* **Animation:** {@link guide/animations Core concepts}, {@link ngAnimate ngAnimate API}
 * **Security:** {@link guide/security Security Docs}, {@link ng.$sce Strict Contextual Escaping}, {@link ng.directive:ngCsp Content Security Policy}, {@link ngSanitize.$sanitize $sanitize}, [video](https://www.youtube.com/watch?v=18ifoT-Id54)
 * **Internationalization and Localization:** {@link guide/i18n Angular Guide to i18n and l10n}, {@link ng.filter:date date filter}, {@link ng.filter:currency currency filter}, [Creating multilingual support](http://www.novanet.no/blog/hallstein-brotan/dates/2013/10/creating-multilingual-support-using-angularjs/)
-* **Mobile:** {@link ngTouch Touch events}
+* **Touch events:** {@link ngTouch Touch events}
 * **Accessibility:** {@link guide/accessibility ngAria}
 
 ### Testing
 
-* **Unit testing:** [Using Karma (video)](http://www.youtube.com/watch?v=YG5DEzaQBIc), {@link guide/unit-testing Unit testing}, {@link guide/services#unit-testing Testing services}, [Karma in Webstorm](http://blog.jetbrains.com/webstorm/2013/10/running-javascript-tests-with-karma-in-webstorm-7/)
-* **Scenario testing:** [Protractor](https://github.com/angular/protractor)
+* **Unit testing:** [Karma](http://karma-runner.github.io), {@link guide/unit-testing Unit testing}, {@link guide/services#unit-testing Testing services},
+* **End-to-End Testing:** [Protractor](https://github.com/angular/protractor), {@link guide/e2e-testing e2e testing guide}
 
-## Specific Topics
 
-* **Login: **[Google example](https://developers.google.com/+/photohunt/python), [AngularJS Facebook library](https://github.com/pc035860/angular-easyfb), [Facebook example](http://blog.brunoscopelliti.com/facebook-authentication-in-your-angularjs-web-app), [authentication strategy](http://blog.brunoscopelliti.com/deal-with-users-authentication-in-an-angularjs-web-app), [unix-style authorization](http://frederiknakstad.com/authentication-in-single-page-applications-with-angular-js/)
-* **Mobile:** [Angular on Mobile Guide](http://www.ng-newsletter.com/posts/angular-on-mobile.html), [PhoneGap](http://devgirl.org/2013/06/10/quick-start-guide-phonegap-and-angularjs/)
-* **Other Languages:** [CoffeeScript](http://www.coffeescriptlove.com/2013/08/angularjs-and-coffeescript-tutorials.html), [Dart](https://github.com/angular/angular.dart.tutorial/wiki)
-* **Realtime: **[Socket.io](http://www.creativebloq.com/javascript/angularjs-collaboration-board-socketio-2132885), [OmniBinder](https://github.com/jeffbcross/omnibinder)
-* **Visualization:** [SVG](http://gaslight.co/blog/angular-backed-svgs), [D3.js](http://www.ng-newsletter.com/posts/d3-on-angular.html)
-* **Local Storage and session:** [ngStorage](https://github.com/gsklee/ngStorage)
+## Community Resources
 
-## Tools
+We have set up a guide to many resources provided by the community, where you can find lots
+of additional information and material on these topics, a list of complimentary libraries, and much more.
 
-* **Getting Started:** [Comparison of the options for starting a new project](http://www.dancancro.com/comparison-of-angularjs-application-starters/)
-* **Debugging:** [Batarang](https://chrome.google.com/webstore/detail/angularjs-batarang/ighdmehidhipcmcojjgiloacoafjmpfk?hl=en)
-* **Testing:** [Karma](http://karma-runner.github.io), [Protractor](https://github.com/angular/protractor)
-* **Editor support:** [Webstorm](http://plugins.jetbrains.com/plugin/6971) (and [video](http://www.youtube.com/watch?v=LJOyrSh1kDU)), [Sublime Text](https://github.com/angular-ui/AngularJS-sublime-package), [Visual Studio](http://madskristensen.net/post/angularjs-intellisense-in-visual-studio-2012)
-* **Workflow:** [Yeoman.io](https://github.com/yeoman/generator-angular) and [Angular Yeoman Tutorial](http://www.sitepoint.com/kickstart-your-angularjs-development-with-yeoman-grunt-and-bower/)
+* {@link guide/external-resources External Angular 1 resources}
 
-## Complementary Libraries
-
-This is a short list of libraries with specific support and documentation for working with Angular.  You can find a full list of all known Angular external libraries at [ngmodules.org](http://ngmodules.org/).
-
-* **Internationalization:** [angular-translate](http://angular-translate.github.io), [angular-gettext](http://angular-gettext.rocketeer.be/), [angular-localization](http://doshprompt.github.io/angular-localization/)
-* **RESTful services:** [Restangular](https://github.com/mgonto/restangular)
-* **SQL and NoSQL backends:** [BreezeJS](http://www.breezejs.com/), [AngularFire](http://angularfire.com/)
-* **UI Widgets: **[KendoUI](http://kendo-labs.github.io/angular-kendo/#/), [UI Bootstrap](http://angular-ui.github.io/bootstrap/), [Wijmo](http://wijmo.com/tag/angularjs-2/), [ngTagsInput](https://github.com/mbenford/ngTagsInput)
-* **Advanced Routing:** [UI-Router](https://github.com/angular-ui/ui-router)
-* **Maps:** [UI-Map (Google Maps)](https://github.com/angular-ui/ui-map)
-
-## Deployment
-
-### General
-
-* **Docs Page:** {@link guide/production Running an AngularJS App in Production}
-* **Javascript minification: **[Background](http://thegreenpizza.github.io/2013/05/25/building-minification-safe-angular.js-applications/), [ng-annotate automation tool](https://github.com/olov/ng-annotate)
-* **Analytics and Logging:** [Angularyitcs (Google Analytics)](http://ngmodules.org/modules/angularytics), [Angulartics (Analytics)](https://github.com/luisfarzati/angulartics), [Logging Client-Side Errors](http://www.bennadel.com/blog/2542-Logging-Client-Side-Errors-With-AngularJS-And-Stacktrace-js.htm)
-* **SEO:** [By hand](http://www.yearofmoo.com/2012/11/angularjs-and-seo.html), [prerender.io](http://prerender.io/), [Brombone](http://www.brombone.com/), [SEO.js](http://getseojs.com/), [SEO4Ajax](http://www.seo4ajax.com/)
-
-### Server-Specific
-
-* **Django:** [Tutorial](http://blog.mourafiq.com/post/55034504632/end-to-end-web-app-with-django-rest-framework), [Integrating AngularJS with Django](http://django-angular.readthedocs.org/en/latest/integration.html), [Getting Started with Django Rest Framework and AngularJS](http://blog.kevinastone.com/getting-started-with-django-rest-framework-and-angularjs.html)
-* **FireBase:** [AngularFire](http://angularfire.com/), [Realtime Apps with AngularJS and FireBase (video)](http://www.youtube.com/watch?v=C7ZI7z7qnHU)
-* **Google Cloud Platform: **[with Cloud Endpoints](https://cloud.google.com/developers/articles/angularjs-cloud-endpoints-recipe-for-building-modern-web-applications/), [with Go](https://github.com/GoogleCloudPlatform/appengine-angular-gotodos)
-* **Hood.ie:** [60 Minutes to Awesome](http://www.roberthorvick.com/2013/06/30/todomvc-angularjs-hood-ie-60-minutes-to-awesome/)
-* **MEAN Stack: **[Blog post](http://blog.mongodb.org/post/49262866911/the-mean-stack-mongodb-expressjs-angularjs-and), [Setup](http://thecodebarbarian.wordpress.com/2013/07/22/introduction-to-the-mean-stack-part-one-setting-up-your-tools/), [GDL Video](https://developers.google.com/live/shows/913996610)
-* **Rails: **[Tutorial](http://coderberry.me/blog/2013/04/22/angularjs-on-rails-4-part-1/), [AngularJS with Rails4](https://shellycloud.com/blog/2013/10/how-to-integrate-angularjs-with-rails-4), [angularjs-rails](https://github.com/hiravgandhi/angularjs-rails)
-* **PHP: **[Building a RESTful web service](http://blog.brunoscopelliti.com/building-a-restful-web-service-with-angularjs-and-php-more-power-with-resource), [End to End with Laravel 4 (video)](http://www.youtube.com/watch?v=hqAyiqUs93c)
-* **Meteor: **[angular-meteor package](https://github.com/Urigo/angular-meteor)
-
-## Learning Resources
-
-###Books
-* [AngularJS: Up and Running](http://www.amazon.com/AngularJS-Running-Enhanced-Productivity-Structured/dp/1491901942) by Brad Green and Shyam Seshadri
-* [Mastering Web App Development](http://www.amazon.com/Mastering-Web-Application-Development-AngularJS/dp/1782161821) by Pawel Kozlowski and Pete Bacon Darwin
-* [AngularJS Directives](http://www.amazon.com/AngularJS-Directives-Alex-Vanston/dp/1783280336) by Alex Vanston
-* [Recipes With AngularJS](http://www.amazon.co.uk/Recipes-Angular-js-Frederik-Dietz-ebook/dp/B00DK95V48) by Frederik Dietz
-* [Developing an AngularJS Edge](http://www.amazon.com/Developing-AngularJS-Edge-Christopher-Hiller-ebook/dp/B00CJLFF8K) by Christopher Hiller
-* [ng-book: The Complete Book on AngularJS](http://ng-book.com/) by Ari Lerner
-* [AngularJS : Novice to Ninja](http://www.amazon.in/AngularJS-Novice-Ninja-Sandeep-Panda/dp/0992279453) by Sandeep Panda
-* [AngularJS UI Development](http://www.amazon.com/AngularJS-UI-Development-Amit-Ghart-ebook/dp/B00OXVAK7A) by Amit Gharat and Matthias Nehlsen
-* [Responsive Web Design with AngularJS](http://www.amazon.com/Responsive-Design-AngularJS-Sandeep-Kumar/dp/178439842X) by Sandeep Kumar Patel
-
-###Videos:
-* [egghead.io](http://egghead.io/)
-* [Angular on YouTube](http://youtube.com/angularjs)
-
-### Courses
-* **Free online:**
-  [thinkster.io](http://thinkster.io),
-  [CodeAcademy](http://www.codecademy.com/courses/javascript-advanced-en-2hJ3J/0/1),
-  [CodeSchool](https://www.codeschool.com/courses/shaping-up-with-angular-js)
-* **Paid online:**
-  [Pluralsite (3 courses)](http://www.pluralsight.com/training/Courses/Find?highlight=true&searchTerm=angularjs),
-  [Tuts+](https://tutsplus.com/course/easier-js-apps-with-angular/),
-  [lynda.com](http://www.lynda.com/AngularJS-tutorials/Up-Running-AngularJS/133318-2.html),
-  [WintellectNOW (4 lessons)](http://www.wintellectnow.com/Course/Detail/mastering-angularjs)
-* **Paid onsite:**
-  [angularbootcamp.com](http://angularbootcamp.com/)
 
 ## Getting Help
 
 The recipe for getting help on your unique issue is to create an example that could work (even if it doesn't) in a shareable example on [Plunker](http://plnkr.co/), [JSFiddle](http://jsfiddle.net/), or similar site and then post to one of the following:
 
 * [Stackoverflow.com](http://stackoverflow.com/search?q=angularjs)
-* [AngularJS mailing list](https://groups.google.com/forum/#!forum/angular)
-* [AngularJS IRC channel](http://webchat.freenode.net/?channels=angularjs&uio=d4)
+* [Angular 1 mailing list](https://groups.google.com/forum/#!forum/angular)
+* [Angular 1 IRC channel](http://webchat.freenode.net/?channels=angularjs&uio=d4)
 
-## Social Channels
+## Official Communications
 
-* **Daily updates:** [Google+](https://plus.google.com/u/0/+AngularJS) or [Twitter](https://twitter.com/angularjs)
-* **Weekly newsletter:** [ng-newsletter](http://www.ng-newsletter.com/)
-* **Meetups: **[meetup.com](http://www.meetup.com/find/?keywords=angularJS&radius=Infinity&userFreeform=San+Francisco%2C+CA&mcId=z94108&mcName=San+Francisco%2C+CA&sort=member_count&eventFilter=mysugg)
-* **Official news and releases: **[AngularJS Blog](http://blog.angularjs.org/)
+Official announcements, news and releases are posted to our blog, G+ and Twitter:
 
-## Contributing to AngularJS
+* [Angular Blog](http://blog.angularjs.org/)
+* [Google+](https://plus.google.com/u/0/+AngularJS)
+* [Twitter](https://twitter.com/angularjs)
+* [Angular on YouTube](http://youtube.com/angularjs)
 
-Though we have a core group of core contributors at Google, Angular is an open source project with hundreds of contributors.  We'd love you to be one of them.  When you're ready, please read the {@link misc/contribute Guide for contributing to AngularJS}.
+## Contributing to Angular 1
 
-## Final Bits
+Though we have a core group of core contributors at Google, Angular is an open source project with hundreds of contributors.
+We'd love you to be one of them.  When you're ready, please read the {@link misc/contribute Guide for contributing to Angular}.
 
-Didn't find what you're looking for here?  Check out [AngularJS-Learning](https://github.com/jmcunningham/AngularJS-Learning) for an even more comprehensive list of links to videos, tutorials, and blog posts.
+## Something Missing?
 
-If you have awesome AngularJS resources that belong on this page, please tell us about them on [Google+](https://plus.google.com/u/0/+AngularJS) or [Twitter](https://twitter.com/angularjs).
+Didn't find what you're looking for here? Check out the {@link guide/external-resources External Angular 1 resources guide}.
+
+If you have awesome Angular 1 resources that belong on that page, please tell us about them on
+[Google+](https://plus.google.com/u/0/+AngularJS) or [Twitter](https://twitter.com/angularjs).
 

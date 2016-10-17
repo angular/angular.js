@@ -1,0 +1,20 @@
+@ngdoc error
+@name $http:badjsonp
+@fullName Bad JSONP Request Configuration
+@description
+
+This error occurs when the URL generated from the configuration object contains a parameter with the
+same name as the configured `jsonpCallbackParam` property; or when it contains a parameter whose
+value is `JSON_CALLBACK`.
+
+`$http` JSONP requests need to attach a callback query parameter to the URL. The name of this
+parameter is specified in the configuration object (or in the defaults) via the `jsonpCallbackParam`
+property. You must not provide your own parameter with this name in the configuratio of the request.
+
+In previous versions of Angular, you specified where to add the callback parameter value via the
+`JSON_CALLBACK` placeholder. This is no longer allowed.
+
+To resolve this error, remove any parameters that have the same name as the `jsonpCallbackParam`;
+and/or remove any parameters that have a value of `JSON_CALLBACK`.
+
+For more information, see the {@link ng.$http#jsonp `$http.jsonp()`} method API documentation.

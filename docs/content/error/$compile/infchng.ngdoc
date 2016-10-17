@@ -1,0 +1,30 @@
+@ngdoc error
+@name $compile:infchng
+@fullName Unstable `$onChanges` hooks
+@description
+
+This error occurs when the application's model becomes unstable because some `$onChanges` hooks are causing updates which then trigger
+further calls to `$onChanges` that can never complete.
+Angular detects this situation and prevents an infinite loop from causing the browser to become unresponsive.
+
+For example, the situation can occur by setting up a `$onChanges()` hook which triggers an event on the component, which subsequently
+triggers the component's bound inputs to be updated:
+
+```html
+<c1 prop="a" on-change="a = -a"></c1>
+```
+
+```js
+function Controller1() {}
+Controller1.$onChanges = function() {
+  this.onChange();
+};
+
+mod.component('c1', {
+  controller: Controller1,
+  bindings: {'prop': '<', onChange: '&'}
+}
+```
+
+The maximum number of allowed iterations of the `$onChanges` hooks is controlled via TTL setting which can be configured via
+{@link ng.$compileProvider#onChangesTtl `$compileProvider.onChangesTtl`}.

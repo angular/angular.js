@@ -4,8 +4,8 @@ var PLURAL_CATEGORY = {ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "
 $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": [
-      "\u0434\u0430 \u043f\u0430\u043b\u0443\u0434\u043d\u044f",
-      "\u043f\u0430\u0441\u043b\u044f \u043f\u0430\u043b\u0443\u0434\u043d\u044f"
+      "\u0434\u0430 \u043f\u0430\u045e\u0434\u043d\u044f",
+      "\u043f\u0430\u0441\u043b\u044f \u043f\u0430\u045e\u0434\u043d\u044f"
     ],
     "DAY": [
       "\u043d\u044f\u0434\u0437\u0435\u043b\u044f",
@@ -17,8 +17,8 @@ $provide.value("$locale", {
       "\u0441\u0443\u0431\u043e\u0442\u0430"
     ],
     "ERANAMES": [
-      "\u0434\u0430 \u043d.\u044d.",
-      "\u043d.\u044d."
+      "\u0434\u0430 \u043d\u0430\u0448\u0430\u0439 \u044d\u0440\u044b",
+      "\u043d\u0430\u0448\u0430\u0439 \u044d\u0440\u044b"
     ],
     "ERAS": [
       "\u0434\u0430 \u043d.\u044d.",
@@ -90,7 +90,7 @@ $provide.value("$locale", {
     "shortTime": "HH.mm"
   },
   "NUMBER_FORMATS": {
-    "CURRENCY_SYM": "BYR",
+    "CURRENCY_SYM": "p.",
     "DECIMAL_SEP": ",",
     "GROUP_SEP": "\u00a0",
     "PATTERNS": [
@@ -111,14 +111,15 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "-\u00a4",
-        "negSuf": "",
-        "posPre": "\u00a4",
-        "posSuf": ""
+        "negPre": "-",
+        "negSuf": "\u00a0\u00a4",
+        "posPre": "",
+        "posSuf": "\u00a0\u00a4"
       }
     ]
   },
   "id": "be",
+  "localeID": "be",
   "pluralCat": function(n, opt_precision) {  if (n % 10 == 1 && n % 100 != 11) {    return PLURAL_CATEGORY.ONE;  }  if (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14)) {    return PLURAL_CATEGORY.FEW;  }  if (n % 10 == 0 || n % 10 >= 5 && n % 10 <= 9 || n % 100 >= 11 && n % 100 <= 14) {    return PLURAL_CATEGORY.MANY;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

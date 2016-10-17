@@ -30,7 +30,7 @@ To use an Angular service, you add it as a dependency for the component (control
 filter or directive) that depends on the service. Angular's {@link di dependency injection}
 subsystem takes care of the rest.
 
-<example module="myServiceModule">
+<example module="myServiceModule" name="services-usage">
   <file name="index.html">
     <div id="simple" ng-controller="MyController">
       <p>Let's try this simple notify service, injected into the controller...</p>
@@ -43,7 +43,7 @@ subsystem takes care of the rest.
   <file name="script.js">
     angular.
      module('myServiceModule', []).
-      controller('MyController', ['$scope','notify', function ($scope, notify) {
+      controller('MyController', ['$scope', 'notify', function($scope, notify) {
         $scope.callNotify = function(msg) {
           notify(msg);
         };
@@ -52,8 +52,8 @@ subsystem takes care of the rest.
         var msgs = [];
         return function(msg) {
           msgs.push(msg);
-          if (msgs.length == 3) {
-            win.alert(msgs.join("\n"));
+          if (msgs.length === 3) {
+            win.alert(msgs.join('\n'));
             msgs = [];
           }
         };
@@ -138,9 +138,13 @@ batchModule.factory('batchLog', ['$interval', '$log', function($interval, $log) 
  */
 batchModule.factory('routeTemplateMonitor', ['$route', 'batchLog', '$rootScope',
   function($route, batchLog, $rootScope) {
-    $rootScope.$on('$routeChangeSuccess', function() {
-      batchLog($route.current ? $route.current.template : null);
-    });
+    return {
+      startMonitoring: function() {
+        $rootScope.$on('$routeChangeSuccess', function() {
+          batchLog($route.current ? $route.current.template : null);
+        });
+      }
+    };
   }]);
 
 ```

@@ -1,11 +1,11 @@
-"use strict";
+'use strict';
 
 module.exports = function defaultDeployment(getVersion) {
   return {
     name: 'default',
     examples: {
       commonFiles: {
-        scripts: [ '../../../angular.min.js' ]
+        scripts: ['../../../angular.min.js']
       },
       dependencyPath: '../../../'
     },
@@ -18,7 +18,6 @@ module.exports = function defaultDeployment(getVersion) {
       '../angular-touch.min.js',
       '../angular-animate.min.js',
       'components/marked-' + getVersion('marked', 'node_modules', 'package.json') + '/lib/marked.js',
-      'js/angular-bootstrap/bootstrap.min.js',
       'js/angular-bootstrap/dropdown-toggle.min.js',
       'components/lunr.js-' + getVersion('lunr.js') + '/lunr.min.js',
       'components/google-code-prettify-' + getVersion('google-code-prettify') + '/src/prettify.js',

@@ -39,7 +39,8 @@ angular.scenario.output = angular.scenario.output || function(name, fn) {
  */
 angular.scenario.dsl = angular.scenario.dsl || function(name, fn) {
   angular.scenario.dsl[name] = function() {
-    /* jshint -W040 *//* The dsl binds `this` for us when calling chained functions */
+    // The dsl binds `this` for us when calling chained functions
+    /** @this */
     function executeStatement(statement, args) {
       var result = statement.apply(this, args);
       if (angular.isFunction(result) || result instanceof angular.scenario.Future) {
@@ -59,7 +60,7 @@ angular.scenario.dsl = angular.scenario.dsl || function(name, fn) {
       return chain;
     }
     var statement = fn.apply(this, arguments);
-    return function() {
+    return /** @this */ function() {
       return executeStatement.call(this, statement, arguments);
     };
   };
@@ -104,7 +105,7 @@ angular.scenario.matcher = angular.scenario.matcher || function(name, fn) {
  */
 angular.scenario.setUpAndRun = function(config) {
   var href = window.location.href;
-  var body = _jQuery(document.body);
+  var body = _jQuery(window.document.body);
   var output = [];
   var objModel = new angular.scenario.ObjectModel($runner);
 
@@ -113,7 +114,7 @@ angular.scenario.setUpAndRun = function(config) {
   }
 
   angular.forEach(angular.scenario.output, function(fn, name) {
-    if (!output.length || output.indexOf(name) != -1) {
+    if (!output.length || output.indexOf(name) !== -1) {
       var context = body.append('<div></div>').find('div:last');
       context.attr('id', name);
       fn.call({}, context, $runner, objModel);
@@ -142,6 +143,7 @@ angular.scenario.setUpAndRun = function(config) {
       console.log(formatException(error));
     } else {
       // Do something for IE
+      // eslint-disable-next-line no-alert
       alert(error);
     }
   });
@@ -272,9 +274,9 @@ _jQuery.fn.bindings = function(windowJquery, bindExp) {
     match = function(actualExp) {
       if (actualExp) {
         actualExp = actualExp.replace(/\s/g, '');
-        if (actualExp == bindExp) return true;
+        if (actualExp === bindExp) return true;
         if (actualExp.indexOf(bindExp) === 0) {
-          return actualExp.charAt(bindExp.length) == '|';
+          return actualExp.charAt(bindExp.length) === '|';
         }
       }
     };
@@ -301,11 +303,11 @@ _jQuery.fn.bindings = function(windowJquery, bindExp) {
     result.push('' + value);
   }
 
-  selection.each(function() {
+  selection.each(/* @this Node */ function() {
     var element = windowJquery(this),
         bindings;
-    if (bindings = element.data('$binding')) {
-      for (var expressions = [], binding, j=0, jj=bindings.length; j < jj; j++) {
+    if ((bindings = element.data('$binding'))) {
+      for (var expressions = [], binding, j = 0, jj = bindings.length; j < jj; j++) {
         binding = bindings[j];
 
         if (binding.expressions) {

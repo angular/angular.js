@@ -1,6 +1,6 @@
 'use strict';
 
-
+/** @this */
 function $TimeoutProvider() {
   this.$get = ['$rootScope', '$browser', '$q', '$$q', '$exceptionHandler',
        function($rootScope,   $browser,   $q,   $$q,   $exceptionHandler) {
@@ -56,8 +56,7 @@ function $TimeoutProvider() {
         } catch (e) {
           deferred.reject(e);
           $exceptionHandler(e);
-        }
-        finally {
+        } finally {
           delete deferreds[promise.$$timeoutId];
         }
 
@@ -85,6 +84,8 @@ function $TimeoutProvider() {
       */
     timeout.cancel = function(promise) {
       if (promise && promise.$$timeoutId in deferreds) {
+        // Timeout cancels should not report an unhandled promise.
+        deferreds[promise.$$timeoutId].promise.catch(noop);
         deferreds[promise.$$timeoutId].reject('canceled');
         delete deferreds[promise.$$timeoutId];
         return $browser.defer.cancel(promise.$$timeoutId);

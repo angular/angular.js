@@ -53,7 +53,7 @@ $provide.value("$locale", {
       "\u0641\u0628\u0631",
       "\u0645\u0627\u0631",
       "\u0627\u067e\u0631",
-      "\u0645\u0640\u06cc",
+      "\u0645\u06cc",
       "\u062c\u0648\u0646",
       "\u062c\u0648\u0644",
       "\u0627\u06af\u0633",
@@ -119,6 +119,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "uz-arab-af",
+  "localeID": "uz_Arab_AF",
   "pluralCat": function(n, opt_precision) {  if (n == 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

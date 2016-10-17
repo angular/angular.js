@@ -26,7 +26,7 @@
  *
  * @example
  * Enter a name in the Live Preview text box; the greeting below the text box changes instantly.
-   <example module="bindExample">
+   <example module="bindExample" name="ng-bind">
      <file name="index.html">
        <script>
          angular.module('bindExample', [])
@@ -60,7 +60,7 @@ var ngBindDirective = ['$compile', function($compile) {
         $compile.$$addBindingInfo(element, attr.ngBind);
         element = element[0];
         scope.$watch(attr.ngBind, function ngBindWatchAction(value) {
-          element.textContent = isUndefined(value) ? '' : value;
+          element.textContent = stringify(value);
         });
       };
     }
@@ -86,7 +86,7 @@ var ngBindDirective = ['$compile', function($compile) {
  *
  * @example
  * Try it here: enter text in text box and watch the greeting change.
-   <example module="bindExample">
+   <example module="bindExample" name="ng-bind-template">
      <file name="index.html">
        <script>
          angular.module('bindExample', [])
@@ -159,7 +159,7 @@ var ngBindTemplateDirective = ['$interpolate', '$compile', function($interpolate
  *
  * @example
 
-   <example module="bindHtmlExample" deps="angular-sanitize.js">
+   <example module="bindHtmlExample" deps="angular-sanitize.js" name="ng-bind-html">
      <file name="index.html">
        <div ng-controller="ExampleController">
         <p ng-bind-html="myHTML"></p>
@@ -188,8 +188,9 @@ var ngBindHtmlDirective = ['$sce', '$parse', '$compile', function($sce, $parse, 
     restrict: 'A',
     compile: function ngBindHtmlCompile(tElement, tAttrs) {
       var ngBindHtmlGetter = $parse(tAttrs.ngBindHtml);
-      var ngBindHtmlWatch = $parse(tAttrs.ngBindHtml, function getStringValue(value) {
-        return (value || '').toString();
+      var ngBindHtmlWatch = $parse(tAttrs.ngBindHtml, function sceValueOf(val) {
+        // Unwrap the value to compare the actual inner safe value, not the wrapper object.
+        return $sce.valueOf(val);
       });
       $compile.$$addBindingClass(tElement);
 
@@ -197,9 +198,9 @@ var ngBindHtmlDirective = ['$sce', '$parse', '$compile', function($sce, $parse, 
         $compile.$$addBindingInfo(element, attr.ngBindHtml);
 
         scope.$watch(ngBindHtmlWatch, function ngBindHtmlWatchAction() {
-          // we re-evaluate the expr because we want a TrustedValueHolderType
-          // for $sce, not a string
-          element.html($sce.getTrustedHtml(ngBindHtmlGetter(scope)) || '');
+          // The watched value is the unwrapped value. To avoid re-escaping, use the direct getter.
+          var value = ngBindHtmlGetter(scope);
+          element.html($sce.getTrustedHtml(value) || '');
         });
       };
     }

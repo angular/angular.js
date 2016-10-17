@@ -42,7 +42,7 @@ $provide.value("$locale", {
       "KD",
       "KB"
     ],
-    "FIRSTDAYOFWEEK": 0,
+    "FIRSTDAYOFWEEK": 6,
     "MONTH": [
       "Amajjii",
       "Guraandhala",
@@ -100,12 +100,12 @@ $provide.value("$locale", {
     ],
     "fullDate": "EEEE, MMMM d, y",
     "longDate": "dd MMMM y",
-    "medium": "dd-MMM-y h:mm:ss a",
+    "medium": "dd-MMM-y HH:mm:ss",
     "mediumDate": "dd-MMM-y",
-    "mediumTime": "h:mm:ss a",
-    "short": "dd/MM/yy h:mm a",
+    "mediumTime": "HH:mm:ss",
+    "short": "dd/MM/yy HH:mm",
     "shortDate": "dd/MM/yy",
-    "shortTime": "h:mm a"
+    "shortTime": "HH:mm"
   },
   "NUMBER_FORMATS": {
     "CURRENCY_SYM": "Ksh",
@@ -137,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "om-ke",
+  "localeID": "om_KE",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

@@ -35,12 +35,12 @@ $provide.value("$locale", {
       "sobota"
     ],
     "ERANAMES": [
-      "pred na\u0161im \u0161tetjem",
+      "pred Kristusom",
       "na\u0161e \u0161tetje"
     ],
     "ERAS": [
-      "pr. n. \u0161t.",
-      "po Kr."
+      "pr. Kr.",
+      "po n. \u0161t."
     ],
     "FIRSTDAYOFWEEK": 0,
     "MONTH": [
@@ -137,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "sl",
+  "localeID": "sl",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (vf.v == 0 && i % 100 == 1) {    return PLURAL_CATEGORY.ONE;  }  if (vf.v == 0 && i % 100 == 2) {    return PLURAL_CATEGORY.TWO;  }  if (vf.v == 0 && i % 100 >= 3 && i % 100 <= 4 || vf.v != 0) {    return PLURAL_CATEGORY.FEW;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

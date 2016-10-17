@@ -19,8 +19,10 @@ ngRouteModule.directive('ngView', ngViewFillContentFactory);
  * Requires the {@link ngRoute `ngRoute`} module to be installed.
  *
  * @animations
- * enter - animation is used to bring new content into the browser.
- * leave - animation is used to animate existing content away.
+ * | Animation                        | Occurs                              |
+ * |----------------------------------|-------------------------------------|
+ * | {@link ng.$animate#enter enter}  | when the new element is inserted to the DOM |
+ * | {@link ng.$animate#leave leave}  | when the old element is removed from to the DOM  |
  *
  * The enter and leave animation occur concurrently.
  *
@@ -134,17 +136,17 @@ ngRouteModule.directive('ngView', ngViewFillContentFactory);
               $locationProvider.html5Mode(true);
           }])
           .controller('MainCtrl', ['$route', '$routeParams', '$location',
-            function($route, $routeParams, $location) {
+            function MainCtrl($route, $routeParams, $location) {
               this.$route = $route;
               this.$location = $location;
               this.$routeParams = $routeParams;
           }])
-          .controller('BookCtrl', ['$routeParams', function($routeParams) {
-            this.name = "BookCtrl";
+          .controller('BookCtrl', ['$routeParams', function BookCtrl($routeParams) {
+            this.name = 'BookCtrl';
             this.params = $routeParams;
           }])
-          .controller('ChapterCtrl', ['$routeParams', function($routeParams) {
-            this.name = "ChapterCtrl";
+          .controller('ChapterCtrl', ['$routeParams', function ChapterCtrl($routeParams) {
+            this.name = 'ChapterCtrl';
             this.params = $routeParams;
           }]);
 
@@ -154,15 +156,15 @@ ngRouteModule.directive('ngView', ngViewFillContentFactory);
         it('should load and compile correct template', function() {
           element(by.linkText('Moby: Ch1')).click();
           var content = element(by.css('[ng-view]')).getText();
-          expect(content).toMatch(/controller\: ChapterCtrl/);
-          expect(content).toMatch(/Book Id\: Moby/);
-          expect(content).toMatch(/Chapter Id\: 1/);
+          expect(content).toMatch(/controller: ChapterCtrl/);
+          expect(content).toMatch(/Book Id: Moby/);
+          expect(content).toMatch(/Chapter Id: 1/);
 
           element(by.partialLinkText('Scarlet')).click();
 
           content = element(by.css('[ng-view]')).getText();
-          expect(content).toMatch(/controller\: BookCtrl/);
-          expect(content).toMatch(/Book Id\: Scarlet/);
+          expect(content).toMatch(/controller: BookCtrl/);
+          expect(content).toMatch(/Book Id: Scarlet/);
         });
       </file>
     </example>

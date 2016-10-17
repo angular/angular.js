@@ -36,11 +36,11 @@ $provide.value("$locale", {
     ],
     "ERANAMES": [
       "\u0642\u0628\u0644 \u0645\u0633\u06cc\u062d",
-      "\u0639\u06cc\u0633\u0648\u06cc \u0633\u0646"
+      "\u0639\u06cc\u0633\u0648\u06cc"
     ],
     "ERAS": [
-      "\u0642 \u0645",
-      "\u0639\u06cc\u0633\u0648\u06cc \u0633\u0646"
+      "\u0642\u0628\u0644 \u0645\u0633\u06cc\u062d",
+      "\u0639\u06cc\u0633\u0648\u06cc"
     ],
     "FIRSTDAYOFWEEK": 6,
     "MONTH": [
@@ -137,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "ur",
+  "localeID": "ur",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

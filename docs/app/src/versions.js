@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 angular.module('versions', [])
 
@@ -6,8 +6,12 @@ angular.module('versions', [])
   $scope.docs_version  = NG_VERSIONS[0];
   $scope.docs_versions = NG_VERSIONS;
 
-  for(var i=0, minor = NaN; i < NG_VERSIONS.length; i++) {
+  for (var i = 0, minor = NaN; i < NG_VERSIONS.length; i++) {
     var version = NG_VERSIONS[i];
+    if (version.isSnapshot) {
+      version.isLatest = true;
+      continue;
+    }
     // NaN will give false here
     if (minor <= version.minor) {
       continue;
@@ -25,7 +29,7 @@ angular.module('versions', [])
         url = '';
     if (version.isOldDocsUrl) {
       url = version.docsUrl;
-    }else{
+    } else {
       url = version.docsUrl + currentPagePath;
     }
     $window.location = url;

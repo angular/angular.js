@@ -34,8 +34,10 @@
  * and `leave` effects.
  *
  * @animations
- * enter - happens just after the `ngIf` contents change and a new DOM element is created and injected into the `ngIf` container
- * leave - happens just before the `ngIf` contents are removed from the DOM
+ * | Animation                        | Occurs                               |
+ * |----------------------------------|-------------------------------------|
+ * | {@link ng.$animate#enter enter}  | just after the `ngIf` contents change and a new DOM element is created and injected into the `ngIf` container |
+ * | {@link ng.$animate#leave leave}  | just before the `ngIf` contents are removed from the DOM |
  *
  * @element ANY
  * @scope
@@ -45,7 +47,7 @@
  *     element is added to the DOM tree.
  *
  * @example
-  <example module="ngAnimate" deps="angular-animate.js" animations="true">
+  <example module="ngAnimate" deps="angular-animate.js" animations="true" name="ng-if">
     <file name="index.html">
       <label>Click me: <input type="checkbox" ng-model="checked" ng-init="checked=true" /></label><br/>
       Show when checked:
@@ -76,7 +78,7 @@
     </file>
   </example>
  */
-var ngIfDirective = ['$animate', function($animate) {
+var ngIfDirective = ['$animate', '$compile', function($animate, $compile) {
   return {
     multiElement: true,
     transclude: 'element',
@@ -92,7 +94,7 @@ var ngIfDirective = ['$animate', function($animate) {
             if (!childScope) {
               $transclude(function(clone, newScope) {
                 childScope = newScope;
-                clone[clone.length++] = document.createComment(' end ngIf: ' + $attr.ngIf + ' ');
+                clone[clone.length++] = $compile.$$createComment('end ngIf', $attr.ngIf);
                 // Note: We only need the first/last node of the cloned nodes.
                 // However, we need to keep the reference to the jqlite wrapper as it might be changed later
                 // by a directive with templateUrl when its template arrives.

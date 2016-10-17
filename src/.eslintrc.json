@@ -1,0 +1,178 @@
+{
+  "root": true,
+  "extends": "../.eslintrc-browser.json",
+
+  "globals": {
+    /* auto/injector.js */
+    "createInjector": false,
+
+    /* angular.js */
+    "angular": false,
+    "msie": false,
+    "jqLite": false,
+    "jQuery": false,
+    "slice": false,
+    "splice": false,
+    "push": false,
+    "toString": false,
+    "ngMinErr": false,
+    "_angular": false,
+    "angularModule": false,
+    "nodeName_": false,
+    "uid": false,
+    "toDebugString": false,
+
+    "REGEX_STRING_REGEXP" : false,
+    "lowercase": false,
+    "uppercase": false,
+    "manualLowercase": false,
+    "manualUppercase": false,
+    "isArrayLike": false,
+    "forEach": false,
+    "forEachSorted": false,
+    "reverseParams": false,
+    "nextUid": false,
+    "setHashKey": false,
+    "extend": false,
+    "toInt": false,
+    "inherit": false,
+    "merge": false,
+    "noop": false,
+    "identity": false,
+    "valueFn": false,
+    "isUndefined": false,
+    "isDefined": false,
+    "isObject": false,
+    "isString": false,
+    "isNumber": false,
+    "isNumberNaN": false,
+    "isDate": false,
+    "isArray": false,
+    "isFunction": false,
+    "isRegExp": false,
+    "isWindow": false,
+    "isScope": false,
+    "isFile": false,
+    "isFormData": false,
+    "isBlob": false,
+    "isBoolean": false,
+    "isPromiseLike": false,
+    "hasCustomToString": false,
+    "trim": false,
+    "escapeForRegexp": false,
+    "isElement": false,
+    "makeMap": false,
+    "includes": false,
+    "arrayRemove": false,
+    "copy": false,
+    "shallowCopy": false,
+    "equals": false,
+    "csp": false,
+    "concat": false,
+    "sliceArgs": false,
+    "bind": false,
+    "toJsonReplacer": false,
+    "toJson": false,
+    "fromJson": false,
+    "convertTimezoneToLocal": false,
+    "timezoneToOffset": false,
+    "startingTag": false,
+    "tryDecodeURIComponent": false,
+    "parseKeyValue": false,
+    "toKeyValue": false,
+    "encodeUriSegment": false,
+    "encodeUriQuery": false,
+    "angularInit": false,
+    "bootstrap": false,
+    "getTestability": false,
+    "snake_case": false,
+    "bindJQuery": false,
+    "assertArg": false,
+    "assertArgFn": false,
+    "assertNotHasOwnProperty": false,
+    "getter": false,
+    "getBlockNodes": false,
+    "createMap": false,
+    "VALIDITY_STATE_PROPERTY": false,
+    "reloadWithDebugInfo": false,
+    "stringify": false,
+
+    "NODE_TYPE_ELEMENT": false,
+    "NODE_TYPE_ATTRIBUTE": false,
+    "NODE_TYPE_TEXT": false,
+    "NODE_TYPE_COMMENT": false,
+    "NODE_TYPE_DOCUMENT": false,
+    "NODE_TYPE_DOCUMENT_FRAGMENT": false,
+
+    "defaultHttpResponseTransform": false,
+
+    /* filters.js */
+    "getFirstThursdayOfYear": false,
+
+    /* AngularPublic.js */
+    "version": false,
+    "publishExternalAPI": false,
+
+    /* minErr.js */
+    "minErr": false,
+
+    /* loader.js */
+    "setupModuleLoader": false,
+
+    /* jqLite.js */
+    "BOOLEAN_ATTR": false,
+    "ALIASED_ATTR": false,
+    "jqNextId": false,
+    "fnCamelCaseReplace": false,
+    "jqLitePatchJQueryRemove": false,
+    "JQLite": false,
+    "jqLiteClone": false,
+    "jqLiteDealoc": false,
+    "jqLiteOff": false,
+    "jqLiteRemoveData": false,
+    "jqLiteExpandoStore": false,
+    "jqLiteData": false,
+    "jqLiteHasClass": false,
+    "jqLiteRemoveClass": false,
+    "jqLiteAddClass": false,
+    "jqLiteAddNodes": false,
+    "jqLiteController": false,
+    "jqLiteInheritedData": false,
+    "jqLiteBuildFragment": false,
+    "jqLiteParseHTML": false,
+    "jqLiteWrapNode": false,
+    "getBooleanAttrName": false,
+    "getAliasedAttrName": false,
+    "createEventHandler": false,
+    "JQLitePrototype": false,
+    "jqLiteIsTextNode": false,
+    "jqLiteDocumentLoaded": false,
+
+    /* apis.js */
+    "hashKey": false,
+    "HashMap": false,
+
+    /* urlUtils.js */
+    "urlResolve": false,
+    "urlIsSameOrigin": false,
+
+    /* ng/controller.js */
+    "identifierForController": false,
+
+    /* ng/compile.js */
+    "directiveNormalize": false,
+
+    /* ng/directive/directives.js */
+    "ngDirective": false,
+
+    /* ng/directive/input.js */
+    "VALID_CLASS": false,
+    "INVALID_CLASS": false,
+    "PRISTINE_CLASS": false,
+    "DIRTY_CLASS": false,
+
+    /* ng/directive/form.js */
+    "nullFormCtrl": false
+
+  }
+}

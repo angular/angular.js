@@ -59,6 +59,8 @@
 /**
  * @ngdoc service
  * @name $rootScope
+ * @this
+ *
  * @description
  *
  * Every application has a single root {@link ng.$rootScope.Scope scope}.
@@ -109,8 +111,12 @@ function $RootScopeProvider() {
         // all this scopes children
         //
         // See issue https://github.com/angular/angular.js/issues/10706
-        $scope.$$childHead && cleanUpScope($scope.$$childHead);
-        $scope.$$nextSibling && cleanUpScope($scope.$$nextSibling);
+        if ($scope.$$childHead) {
+          cleanUpScope($scope.$$childHead);
+        }
+        if ($scope.$$nextSibling) {
+          cleanUpScope($scope.$$nextSibling);
+        }
       }
 
       // The code below works around IE9 and V8's memory leaks
@@ -262,7 +268,7 @@ function $RootScopeProvider() {
         // prototypically. In all other cases, this property needs to be set
         // when the parent scope is destroyed.
         // The listener needs to be added after the parent is set
-        if (isolate || parent != this) child.$on('$destroy', destroyChildScope);
+        if (isolate || parent !== this) child.$on('$destroy', destroyChildScope);
 
         return child;
       },
@@ -430,8 +436,8 @@ function $RootScopeProvider() {
        * A variant of {@link ng.$rootScope.Scope#$watch $watch()} where it watches an array of `watchExpressions`.
        * If any one expression in the collection changes the `listener` is executed.
        *
-       * - The items in the `watchExpressions` array are observed via standard $watch operation and are examined on every
-       *   call to $digest() to see if any items changes.
+       * - The items in the `watchExpressions` array are observed via the standard `$watch` operation. Their return
+       *   values are examined for changes on every call to `$digest`.
        * - The `listener` is called whenever any expression in the `watchExpressions` array changes.
        *
        * @param {Array.<string|Function(scope)>} watchExpressions Array of expressions that will be individually
@@ -612,6 +618,7 @@ function $RootScopeProvider() {
               oldItem = oldValue[i];
               newItem = newValue[i];
 
+              // eslint-disable-next-line no-self-compare
               bothNaN = (oldItem !== oldItem) && (newItem !== newItem);
               if (!bothNaN && (oldItem !== newItem)) {
                 changeDetected++;
@@ -634,6 +641,7 @@ function $RootScopeProvider() {
                 oldItem = oldValue[key];
 
                 if (key in oldValue) {
+                  // eslint-disable-next-line no-self-compare
                   bothNaN = (oldItem !== oldItem) && (newItem !== newItem);
                   if (!bothNaN && (oldItem !== newItem)) {
                     changeDetected++;
@@ -744,13 +752,13 @@ function $RootScopeProvider() {
        *
        */
       $digest: function() {
-        var watch, value, last,
+        var watch, value, last, fn, get,
             watchers,
             length,
             dirty, ttl = TTL,
             next, current, target = this,
             watchLog = [],
-            logIdx, logMsg, asyncTask;
+            logIdx, asyncTask;
 
         beginPhase('$digest');
         // Check for changes to browser url that happened in sync before the call to $digest
@@ -769,15 +777,19 @@ function $RootScopeProvider() {
           dirty = false;
           current = target;
 
-          while (asyncQueue.length) {
+          // It's safe for asyncQueuePosition to be a local variable here because this loop can't
+          // be reentered recursively. Calling $digest from a function passed to $applyAsync would
+          // lead to a '$digest already in progress' error.
+          for (var asyncQueuePosition = 0; asyncQueuePosition < asyncQueue.length; asyncQueuePosition++) {
             try {
-              asyncTask = asyncQueue.shift();
+              asyncTask = asyncQueue[asyncQueuePosition];
               asyncTask.scope.$eval(asyncTask.expression, asyncTask.locals);
             } catch (e) {
               $exceptionHandler(e);
             }
             lastDirtyWatch = null;
           }
+          asyncQueue.length = 0;
 
           traverseScopesLoop:
           do { // "traverse the scopes" loop
@@ -790,15 +802,16 @@ function $RootScopeProvider() {
                   // Most common watches are on primitives, in which case we can short
                   // circuit it with === operator, only when === fails do we use .equals
                   if (watch) {
-                    if ((value = watch.get(current)) !== (last = watch.last) &&
+                    get = watch.get;
+                    if ((value = get(current)) !== (last = watch.last) &&
                         !(watch.eq
                             ? equals(value, last)
-                            : (typeof value === 'number' && typeof last === 'number'
-                               && isNaN(value) && isNaN(last)))) {
+                            : (isNumberNaN(value) && isNumberNaN(last)))) {
                       dirty = true;
                       lastDirtyWatch = watch;
                       watch.last = watch.eq ? copy(value, null) : value;
-                      watch.fn(value, ((last === initWatchVal) ? value : last), current);
+                      fn = watch.fn;
+                      fn(value, ((last === initWatchVal) ? value : last), current);
                       if (ttl < 5) {
                         logIdx = 4 - ttl;
                         if (!watchLog[logIdx]) watchLog[logIdx] = [];
@@ -846,13 +859,15 @@ function $RootScopeProvider() {
 
         clearPhase();
 
-        while (postDigestQueue.length) {
+        // postDigestQueuePosition isn't local here because this loop can be reentered recursively.
+        while (postDigestQueuePosition < postDigestQueue.length) {
           try {
-            postDigestQueue.shift()();
+            postDigestQueue[postDigestQueuePosition++]();
           } catch (e) {
             $exceptionHandler(e);
           }
         }
+        postDigestQueue.length = postDigestQueuePosition = 0;
       },
 
 
@@ -910,8 +925,8 @@ function $RootScopeProvider() {
 
         // sever all the references to parent scopes (after this cleanup, the current scope should
         // not be retained by any of our references and should be eligible for garbage collection)
-        if (parent && parent.$$childHead == this) parent.$$childHead = this.$$nextSibling;
-        if (parent && parent.$$childTail == this) parent.$$childTail = this.$$prevSibling;
+        if (parent && parent.$$childHead === this) parent.$$childHead = this.$$nextSibling;
+        if (parent && parent.$$childTail === this) parent.$$childTail = this.$$prevSibling;
         if (this.$$prevSibling) this.$$prevSibling.$$nextSibling = this.$$nextSibling;
         if (this.$$nextSibling) this.$$nextSibling.$$prevSibling = this.$$prevSibling;
 
@@ -998,7 +1013,7 @@ function $RootScopeProvider() {
           });
         }
 
-        asyncQueue.push({scope: this, expression: expr, locals: locals});
+        asyncQueue.push({scope: this, expression: $parse(expr), locals: locals});
       },
 
       $$postDigest: function(fn) {
@@ -1065,6 +1080,7 @@ function $RootScopeProvider() {
             $rootScope.$digest();
           } catch (e) {
             $exceptionHandler(e);
+            // eslint-disable-next-line no-unsafe-finally
             throw e;
           }
         }
@@ -1089,7 +1105,10 @@ function $RootScopeProvider() {
        */
       $applyAsync: function(expr) {
         var scope = this;
-        expr && applyAsyncQueue.push($applyAsyncExpression);
+        if (expr) {
+          applyAsyncQueue.push($applyAsyncExpression);
+        }
+        expr = $parse(expr);
         scheduleApplyAsync();
 
         function $applyAsyncExpression() {
@@ -1305,6 +1324,8 @@ function $RootScopeProvider() {
     var asyncQueue = $rootScope.$$asyncQueue = [];
     var postDigestQueue = $rootScope.$$postDigestQueue = [];
     var applyAsyncQueue = $rootScope.$$applyAsyncQueue = [];
+
+    var postDigestQueuePosition = 0;
 
     return $rootScope;
 

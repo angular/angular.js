@@ -20,7 +20,7 @@ var ZERO_CHAR = '0';
  *
  *
  * @example
-   <example module="currencyExample">
+   <example module="currencyExample" name="currency-filter">
      <file name="index.html">
        <script>
          angular.module('currencyExample', [])
@@ -31,7 +31,7 @@ var ZERO_CHAR = '0';
        <div ng-controller="ExampleController">
          <input type="number" ng-model="amount" aria-label="amount"> <br>
          default currency symbol ($): <span id="currency-default">{{amount | currency}}</span><br>
-         custom currency identifier (USD$): <span id="currency-custom">{{amount | currency:"USD$"}}</span>
+         custom currency identifier (USD$): <span id="currency-custom">{{amount | currency:"USD$"}}</span><br>
          no fractions (0): <span id="currency-no-fractions">{{amount | currency:"USD$":0}}</span>
        </div>
      </file>
@@ -42,7 +42,7 @@ var ZERO_CHAR = '0';
          expect(element(by.id('currency-no-fractions')).getText()).toBe('USD$1,235');
        });
        it('should update', function() {
-         if (browser.params.browser == 'safari') {
+         if (browser.params.browser === 'safari') {
            // Safari does not understand the minus key. See
            // https://github.com/angular/protractor/issues/481
            return;
@@ -85,7 +85,7 @@ function currencyFilter($locale) {
  * Formats a number as text.
  *
  * If the input is null or undefined, it will just be returned.
- * If the input is infinite (Infinity/-Infinity) the Infinity symbol '∞' is returned.
+ * If the input is infinite (Infinity or -Infinity), the Infinity symbol '∞' or '-∞' is returned, respectively.
  * If the input is not a number an empty string is returned.
  *
  *
@@ -93,10 +93,12 @@ function currencyFilter($locale) {
  * @param {(number|string)=} fractionSize Number of decimal places to round the number to.
  * If this is not provided then the fraction size is computed from the current locale's number
  * formatting pattern. In the case of the default locale, it will be 3.
- * @returns {string} Number rounded to fractionSize and places a “,” after each third digit.
+ * @returns {string} Number rounded to `fractionSize` appropriately formatted based on the current
+ *                   locale (e.g., in the en_US locale it will have "." as the decimal separator and
+ *                   include "," group separators after each third digit).
  *
  * @example
-   <example module="numberFilterExample">
+   <example module="numberFilterExample" name="number-filter">
      <file name="index.html">
        <script>
          angular.module('numberFilterExample', [])
@@ -175,16 +177,16 @@ function parse(numStr) {
   }
 
   // Count the number of leading zeros.
-  for (i = 0; numStr.charAt(i) == ZERO_CHAR; i++);
+  for (i = 0; numStr.charAt(i) === ZERO_CHAR; i++) { /* empty */ }
 
-  if (i == (zeros = numStr.length)) {
+  if (i === (zeros = numStr.length)) {
     // The digits are all zero.
     digits = [0];
     numberOfIntegerDigits = 1;
   } else {
     // Count the number of trailing zeros
     zeros--;
-    while (numStr.charAt(zeros) == ZERO_CHAR) zeros--;
+    while (numStr.charAt(zeros) === ZERO_CHAR) zeros--;
 
     // Trailing zeros are insignificant so ignore them
     numberOfIntegerDigits -= i;
@@ -221,18 +223,37 @@ function roundNumber(parsedNumber, fractionSize, minFrac, maxFrac) {
     var digit = digits[roundAt];
 
     if (roundAt > 0) {
-      digits.splice(roundAt);
+      // Drop fractional digits beyond `roundAt`
+      digits.splice(Math.max(parsedNumber.i, roundAt));
+
+      // Set non-fractional digits beyond `roundAt` to 0
+      for (var j = roundAt; j < digits.length; j++) {
+        digits[j] = 0;
+      }
     } else {
       // We rounded to zero so reset the parsedNumber
+      fractionLen = Math.max(0, fractionLen);
       parsedNumber.i = 1;
-      digits.length = roundAt = fractionSize + 1;
-      for (var i=0; i < roundAt; i++) digits[i] = 0;
+      digits.length = Math.max(1, roundAt = fractionSize + 1);
+      digits[0] = 0;
+      for (var i = 1; i < roundAt; i++) digits[i] = 0;
     }
 
-    if (digit >= 5) digits[roundAt - 1]++;
+    if (digit >= 5) {
+      if (roundAt - 1 < 0) {
+        for (var k = 0; k > roundAt; k--) {
+          digits.unshift(0);
+          parsedNumber.i++;
+        }
+        digits.unshift(1);
+        parsedNumber.i++;
+      } else {
+        digits[roundAt - 1]++;
+      }
+    }
 
     // Pad out with zeros to get the required fraction length
-    for (; fractionLen < fractionSize; fractionLen++) digits.push(0);
+    for (; fractionLen < Math.max(0, fractionSize); fractionLen++) digits.push(0);
 
 
     // Do any carrying, e.g. a digit was rounded up to 10
@@ -296,7 +317,7 @@ function formatNumber(number, pattern, groupSep, decimalSep, fractionSize) {
 
     // extract decimals digits
     if (integerLen > 0) {
-      decimals = digits.splice(integerLen);
+      decimals = digits.splice(integerLen, digits.length);
     } else {
       decimals = digits;
       digits = [0];
@@ -304,11 +325,11 @@ function formatNumber(number, pattern, groupSep, decimalSep, fractionSize) {
 
     // format the integer digits with grouping separators
     var groups = [];
-    if (digits.length > pattern.lgSize) {
-      groups.unshift(digits.splice(-pattern.lgSize).join(''));
+    if (digits.length >= pattern.lgSize) {
+      groups.unshift(digits.splice(-pattern.lgSize, digits.length).join(''));
     }
     while (digits.length > pattern.gSize) {
-      groups.unshift(digits.splice(-pattern.gSize).join(''));
+      groups.unshift(digits.splice(-pattern.gSize, digits.length).join(''));
     }
     if (digits.length) {
       groups.unshift(digits.join(''));
@@ -331,11 +352,15 @@ function formatNumber(number, pattern, groupSep, decimalSep, fractionSize) {
   }
 }
 
-function padNumber(num, digits, trim) {
+function padNumber(num, digits, trim, negWrap) {
   var neg = '';
-  if (num < 0) {
-    neg =  '-';
-    num = -num;
+  if (num < 0 || (negWrap && num <= 0)) {
+    if (negWrap) {
+      num = -num + 1;
+    } else {
+      num = -num;
+      neg = '-';
+    }
   }
   num = '' + num;
   while (num.length < digits) num = ZERO_CHAR + num;
@@ -346,22 +371,23 @@ function padNumber(num, digits, trim) {
 }
 
 
-function dateGetter(name, size, offset, trim) {
+function dateGetter(name, size, offset, trim, negWrap) {
   offset = offset || 0;
   return function(date) {
     var value = date['get' + name]();
     if (offset > 0 || value > -offset) {
       value += offset;
     }
-    if (value === 0 && offset == -12) value = 12;
-    return padNumber(value, size, trim);
+    if (value === 0 && offset === -12) value = 12;
+    return padNumber(value, size, trim, negWrap);
   };
 }
 
-function dateStrGetter(name, shortForm) {
+function dateStrGetter(name, shortForm, standAlone) {
   return function(date, formats) {
     var value = date['get' + name]();
-    var get = uppercase(shortForm ? ('SHORT' + name) : name);
+    var propPrefix = (standAlone ? 'STANDALONE' : '') + (shortForm ? 'SHORT' : '');
+    var get = uppercase(propPrefix + name);
 
     return formats[get][value];
   };
@@ -369,7 +395,7 @@ function dateStrGetter(name, shortForm) {
 
 function timeZoneGetter(date, formats, offset) {
   var zone = -1 * offset;
-  var paddedZone = (zone >= 0) ? "+" : "";
+  var paddedZone = (zone >= 0) ? '+' : '';
 
   paddedZone += padNumber(Math[zone > 0 ? 'floor' : 'ceil'](zone / 60), 2) +
                 padNumber(Math.abs(zone % 60), 2);
@@ -416,13 +442,14 @@ function longEraGetter(date, formats) {
 }
 
 var DATE_FORMATS = {
-  yyyy: dateGetter('FullYear', 4),
-    yy: dateGetter('FullYear', 2, 0, true),
-     y: dateGetter('FullYear', 1),
+  yyyy: dateGetter('FullYear', 4, 0, false, true),
+    yy: dateGetter('FullYear', 2, 0, true, true),
+     y: dateGetter('FullYear', 1, 0, false, true),
   MMMM: dateStrGetter('Month'),
    MMM: dateStrGetter('Month', true),
     MM: dateGetter('Month', 2, 1),
      M: dateGetter('Month', 1, 1),
+  LLLL: dateStrGetter('Month', false, true),
     dd: dateGetter('Date', 2),
      d: dateGetter('Date', 1),
     HH: dateGetter('Hours', 2),
@@ -448,7 +475,7 @@ var DATE_FORMATS = {
      GGGG: longEraGetter
 };
 
-var DATE_FORMATS_SPLIT = /((?:[^yMdHhmsaZEwG']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|d+|H+|h+|m+|s+|a|Z|G+|w+))(.*)/,
+var DATE_FORMATS_SPLIT = /((?:[^yMLdHhmsaZEwG']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|L+|d+|H+|h+|m+|s+|a|Z|G+|w+))(.*)/,
     NUMBER_STRING = /^\-?\d+$/;
 
 /**
@@ -468,6 +495,7 @@ var DATE_FORMATS_SPLIT = /((?:[^yMdHhmsaZEwG']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|
  *   * `'MMM'`: Month in year (Jan-Dec)
  *   * `'MM'`: Month in year, padded (01-12)
  *   * `'M'`: Month in year (1-12)
+ *   * `'LLLL'`: Stand-alone month in year (January-December)
  *   * `'dd'`: Day in month, padded (01-31)
  *   * `'d'`: Day in month (1-31)
  *   * `'EEEE'`: Day in Week,(Sunday-Saturday)
@@ -519,7 +547,7 @@ var DATE_FORMATS_SPLIT = /((?:[^yMdHhmsaZEwG']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|
  * @returns {string} Formatted string or the input if input is not recognized as date/millis.
  *
  * @example
-   <example>
+   <example name="filter-date">
      <file name="index.html">
        <span ng-non-bindable>{{1288323623006 | date:'medium'}}</span>:
            <span>{{1288323623006 | date:'medium'}}</span><br>
@@ -552,7 +580,7 @@ function dateFilter($locale) {
                      // 1        2       3         4          5          6          7          8  9     10      11
   function jsonStringToDate(string) {
     var match;
-    if (match = string.match(R_ISO8601_STR)) {
+    if ((match = string.match(R_ISO8601_STR))) {
       var date = new Date(0),
           tzHour = 0,
           tzMin  = 0,
@@ -607,13 +635,13 @@ function dateFilter($locale) {
 
     var dateTimezoneOffset = date.getTimezoneOffset();
     if (timezone) {
-      dateTimezoneOffset = timezoneToOffset(timezone, date.getTimezoneOffset());
+      dateTimezoneOffset = timezoneToOffset(timezone, dateTimezoneOffset);
       date = convertTimezoneToLocal(date, timezone, true);
     }
     forEach(parts, function(value) {
       fn = DATE_FORMATS[value];
       text += fn ? fn(date, $locale.DATETIME_FORMATS, dateTimezoneOffset)
-                 : value.replace(/(^'|'$)/g, '').replace(/''/g, "'");
+                 : value === '\'\'' ? '\'' : value.replace(/(^'|'$)/g, '').replace(/''/g, '\'');
     });
 
     return text;
@@ -638,15 +666,15 @@ function dateFilter($locale) {
  *
  *
  * @example
-   <example>
+   <example name="filter-json">
      <file name="index.html">
        <pre id="default-spacing">{{ {'name':'value'} | json }}</pre>
        <pre id="custom-spacing">{{ {'name':'value'} | json:4 }}</pre>
      </file>
      <file name="protractor.js" type="protractor">
        it('should jsonify filtered objects', function() {
-         expect(element(by.id('default-spacing')).getText()).toMatch(/\{\n  "name": ?"value"\n}/);
-         expect(element(by.id('custom-spacing')).getText()).toMatch(/\{\n    "name": ?"value"\n}/);
+         expect(element(by.id('default-spacing')).getText()).toMatch(/\{\n {2}"name": ?"value"\n}/);
+         expect(element(by.id('custom-spacing')).getText()).toMatch(/\{\n {4}"name": ?"value"\n}/);
        });
      </file>
    </example>

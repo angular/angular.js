@@ -11,7 +11,6 @@
   formDirective,
   scriptDirective,
   selectDirective,
-  styleDirective,
   optionDirective,
   ngBindDirective,
   ngBindHtmlDirective,
@@ -65,6 +64,7 @@
   $ControllerProvider,
   $DateProvider,
   $DocumentProvider,
+  $$IsDocumentHiddenProvider,
   $ExceptionHandlerProvider,
   $FilterProvider,
   $$ForceReflowProvider,
@@ -76,8 +76,10 @@
   $HttpParamSerializerJQLikeProvider,
   $HttpBackendProvider,
   $xhrFactoryProvider,
+  $jsonpCallbacksProvider,
   $LocationProvider,
   $LogProvider,
+  $ModelOptionsProvider,
   $ParseProvider,
   $RootScopeProvider,
   $QProvider,
@@ -113,10 +115,12 @@
  * - `codeName` – `{string}` – Code name of the release, such as "jiggling-armfat".
  */
 var version = {
-  full: '"NG_VERSION_FULL"',    // all of these placeholder strings will be replaced by grunt's
-  major: "NG_VERSION_MAJOR",    // package task
-  minor: "NG_VERSION_MINOR",
-  dot: "NG_VERSION_DOT",
+  // These placeholder strings will be replaced by grunt's `build` task.
+  // They need to be double- or single-quoted.
+  full: '"NG_VERSION_FULL"',
+  major: 'NG_VERSION_MAJOR',
+  minor: 'NG_VERSION_MINOR',
+  dot: 'NG_VERSION_DOT',
   codeName: '"NG_VERSION_CODENAME"'
 };
 
@@ -148,11 +152,14 @@ function publishExternalAPI(angular) {
     'isDate': isDate,
     'lowercase': lowercase,
     'uppercase': uppercase,
-    'callbacks': {counter: 0},
+    'callbacks': {$$counter: 0},
     'getTestability': getTestability,
+    'reloadWithDebugInfo': reloadWithDebugInfo,
     '$$minErr': minErr,
     '$$csp': csp,
-    'reloadWithDebugInfo': reloadWithDebugInfo
+    '$$encodeUriSegment': encodeUriSegment,
+    '$$encodeUriQuery': encodeUriQuery,
+    '$$stringify': stringify
   });
 
   angularModule = setupModuleLoader(window);
@@ -171,7 +178,6 @@ function publishExternalAPI(angular) {
             form: formDirective,
             script: scriptDirective,
             select: selectDirective,
-            style: styleDirective,
             option: optionDirective,
             ngBind: ngBindDirective,
             ngBindHtml: ngBindHtmlDirective,
@@ -227,6 +233,7 @@ function publishExternalAPI(angular) {
         $cacheFactory: $CacheFactoryProvider,
         $controller: $ControllerProvider,
         $document: $DocumentProvider,
+        $$isDocumentHidden: $$IsDocumentHiddenProvider,
         $exceptionHandler: $ExceptionHandlerProvider,
         $filter: $FilterProvider,
         $$forceReflow: $$ForceReflowProvider,
@@ -237,8 +244,10 @@ function publishExternalAPI(angular) {
         $httpParamSerializerJQLike: $HttpParamSerializerJQLikeProvider,
         $httpBackend: $HttpBackendProvider,
         $xhrFactory: $xhrFactoryProvider,
+        $jsonpCallbacks: $jsonpCallbacksProvider,
         $location: $LocationProvider,
         $log: $LogProvider,
+        $modelOptions: $ModelOptionsProvider,
         $parse: $ParseProvider,
         $rootScope: $RootScopeProvider,
         $q: $QProvider,

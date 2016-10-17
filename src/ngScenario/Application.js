@@ -35,7 +35,7 @@ angular.scenario.Application.prototype.getFrame_ = function() {
 angular.scenario.Application.prototype.getWindow_ = function() {
   var contentWindow = this.getFrame_().prop('contentWindow');
   if (!contentWindow) {
-    throw 'Frame window is not accessible.';
+    throw new Error('Frame window is not accessible.');
   }
   return contentWindow;
 };
@@ -64,7 +64,7 @@ angular.scenario.Application.prototype.navigateTo = function(url, loadFn, errorF
     self.context.find('#test-frames').append('<iframe>');
     frame = self.getFrame_();
 
-    frame.load(function() {
+    frame.on('load', function() {
       frame.off();
       try {
         var $window = self.getWindow_();
@@ -97,7 +97,7 @@ angular.scenario.Application.prototype.navigateTo = function(url, loadFn, errorF
     }).attr('src', url);
 
     // for IE compatibility set the name *after* setting the frame url
-    frame[0].contentWindow.name = "NG_DEFER_BOOTSTRAP!";
+    frame[0].contentWindow.name = 'NG_DEFER_BOOTSTRAP!';
   }
   self.context.find('> h2 a').attr('href', url).text(url);
 };
@@ -113,13 +113,13 @@ angular.scenario.Application.prototype.executeAction = function(action) {
   var self = this;
   var $window = this.getWindow_();
   if (!$window.document) {
-    throw 'Sandbox Error: Application document not accessible.';
+    throw new Error('Sandbox Error: Application document not accessible.');
   }
   if (!$window.angular) {
     return action.call(this, $window, _jQuery($window.document));
   }
 
-  if (!!this.rootElement) {
+  if (this.rootElement) {
     executeWithElement(this.rootElement);
   } else {
     angularInit($window.document, angular.bind(this, executeWithElement));

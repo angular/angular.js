@@ -71,7 +71,7 @@ $provide.value("$locale", {
       "\u0444\u0435\u0432.",
       "\u043c\u0430\u0440.",
       "\u0430\u043f\u0440.",
-      "\u043c\u0430\u044f",
+      "\u043c\u0430\u0439\u044b",
       "\u0438\u044e\u043d\u044b",
       "\u0438\u044e\u043b\u044b",
       "\u0430\u0432\u0433.",
@@ -137,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "os-ge",
+  "localeID": "os_GE",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

@@ -39,8 +39,8 @@ $provide.value("$locale", {
       "d.C."
     ],
     "ERAS": [
-      "aC",
-      "dC"
+      "a.C.",
+      "d.C."
     ],
     "FIRSTDAYOFWEEK": 0,
     "MONTH": [
@@ -81,18 +81,18 @@ $provide.value("$locale", {
       "dic"
     ],
     "STANDALONEMONTH": [
-      "Gennaio",
-      "Febbraio",
-      "Marzo",
-      "Aprile",
-      "Maggio",
-      "Giugno",
-      "Luglio",
-      "Agosto",
-      "Settembre",
-      "Ottobre",
-      "Novembre",
-      "Dicembre"
+      "gennaio",
+      "febbraio",
+      "marzo",
+      "aprile",
+      "maggio",
+      "giugno",
+      "luglio",
+      "agosto",
+      "settembre",
+      "ottobre",
+      "novembre",
+      "dicembre"
     ],
     "WEEKENDRANGE": [
       5,
@@ -100,8 +100,8 @@ $provide.value("$locale", {
     ],
     "fullDate": "EEEE, d MMMM y",
     "longDate": "d MMMM y",
-    "medium": "d-MMM-y HH:mm:ss",
-    "mediumDate": "d-MMM-y",
+    "medium": "d MMM y HH:mm:ss",
+    "mediumDate": "d MMM y",
     "mediumTime": "HH:mm:ss",
     "short": "dd.MM.yy HH:mm",
     "shortDate": "dd.MM.yy",
@@ -137,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "it-ch",
+  "localeID": "it_CH",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

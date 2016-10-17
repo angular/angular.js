@@ -21,8 +21,8 @@ $provide.value("$locale", {
       "\u043c\u0430\u043d\u0430\u0439 \u044d\u0440\u0438\u043d\u0438\u0439"
     ],
     "ERAS": [
-      "\u041c\u042d\u04e8",
-      "\u041c\u042d"
+      "\u043c.\u044d.\u04e9",
+      "\u043c.\u044d."
     ],
     "FIRSTDAYOFWEEK": 6,
     "MONTH": [
@@ -119,6 +119,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "mn",
+  "localeID": "mn",
   "pluralCat": function(n, opt_precision) {  if (n == 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

@@ -22,8 +22,8 @@ function getVF(n, opt_precision) {
 $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": [
-      "AM",
-      "PM"
+      "\u0414\u041f",
+      "\u041f\u041f"
     ],
     "DAY": [
       "\u0432\u043e\u0441\u043a\u0440\u0435\u0441\u0435\u043d\u044c\u0435",
@@ -35,8 +35,8 @@ $provide.value("$locale", {
       "\u0441\u0443\u0431\u0431\u043e\u0442\u0430"
     ],
     "ERANAMES": [
-      "\u0434\u043e \u043d. \u044d.",
-      "\u043d. \u044d."
+      "\u0434\u043e \u0420\u043e\u0436\u0434\u0435\u0441\u0442\u0432\u0430 \u0425\u0440\u0438\u0441\u0442\u043e\u0432\u0430",
+      "\u043e\u0442 \u0420\u043e\u0436\u0434\u0435\u0441\u0442\u0432\u0430 \u0425\u0440\u0438\u0441\u0442\u043e\u0432\u0430"
     ],
     "ERAS": [
       "\u0434\u043e \u043d. \u044d.",
@@ -69,11 +69,11 @@ $provide.value("$locale", {
     "SHORTMONTH": [
       "\u044f\u043d\u0432.",
       "\u0444\u0435\u0432\u0440.",
-      "\u043c\u0430\u0440\u0442\u0430",
+      "\u043c\u0430\u0440.",
       "\u0430\u043f\u0440.",
       "\u043c\u0430\u044f",
-      "\u0438\u044e\u043d\u044f",
-      "\u0438\u044e\u043b\u044f",
+      "\u0438\u044e\u043d.",
+      "\u0438\u044e\u043b.",
       "\u0430\u0432\u0433.",
       "\u0441\u0435\u043d\u0442.",
       "\u043e\u043a\u0442.",
@@ -137,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "ru-kz",
+  "localeID": "ru_KZ",
   "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (vf.v == 0 && i % 10 == 1 && i % 100 != 11) {    return PLURAL_CATEGORY.ONE;  }  if (vf.v == 0 && i % 10 >= 2 && i % 10 <= 4 && (i % 100 < 12 || i % 100 > 14)) {    return PLURAL_CATEGORY.FEW;  }  if (vf.v == 0 && i % 10 == 0 || vf.v == 0 && i % 10 >= 5 && i % 10 <= 9 || vf.v == 0 && i % 100 >= 11 && i % 100 <= 14) {    return PLURAL_CATEGORY.MANY;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

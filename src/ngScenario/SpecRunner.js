@@ -106,8 +106,8 @@ angular.scenario.SpecRunner.prototype.addFuture = function(name, behavior, line)
  */
 angular.scenario.SpecRunner.prototype.addFutureAction = function(name, behavior, line) {
   var self = this;
-  var NG = /\[ng\\\:/;
-  return this.addFuture(name, function(done) {
+  var NG = /\[ng\\:/;
+  return this.addFuture(name, /** @this */ function(done) {
     this.application.executeAction(function($window, $document) {
 
       //TODO(esprehn): Refactor this so it doesn't need to be in here.
@@ -125,6 +125,7 @@ angular.scenario.SpecRunner.prototype.addFutureAction = function(name, behavior,
           });
         }
         if (!result.length) {
+          // eslint-disable-next-line no-throw-literal
           throw {
             type: 'selector',
             message: 'Selector ' + selector + ' did not match any elements.'

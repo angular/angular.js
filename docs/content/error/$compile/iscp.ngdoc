@@ -3,7 +3,7 @@
 @fullName Invalid Isolate Scope Definition
 @description
 
-When declaring isolate scope the scope definition object must be in specific format which starts with mode character (`@&=`) with an optional local name.
+When declaring isolate scope the scope definition object must be in specific format which starts with mode character (`@&=<`), after which comes an optional `?`, and it ends with an optional local name.
 
 ```
 myModule.directive('directiveName', function factory() {
@@ -12,9 +12,11 @@ myModule.directive('directiveName', function factory() {
     scope: {
       'attrName': '@', // OK
       'attrName2': '=localName', // OK
-      'attrName3': 'name',    // ERROR: missing mode @&=
-      'attrName4': ' = name', // ERROR: extra spaces
-      'attrName5': 'name=',   // ERROR: must be prefixed with @&=
+      'attrName3': '<?localName', // OK
+      'attrName4': ' = name', // OK
+      'attrName5': 'name',    // ERROR: missing mode @&=
+      'attrName6': 'name=',   // ERROR: must be prefixed with @&=
+      'attrName7': '=name?',  // ERROR: ? must come directly after the mode
     }
     ...
   }

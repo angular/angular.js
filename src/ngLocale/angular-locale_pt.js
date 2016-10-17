@@ -17,8 +17,8 @@ $provide.value("$locale", {
       "s\u00e1bado"
     ],
     "ERANAMES": [
-      "Antes de Cristo",
-      "Ano do Senhor"
+      "antes de Cristo",
+      "depois de Cristo"
     ],
     "ERAS": [
       "a.C.",
@@ -119,6 +119,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "pt",
+  "localeID": "pt",
   "pluralCat": function(n, opt_precision) {  if (n >= 0 && n <= 2 && n != 2) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

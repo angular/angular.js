@@ -53,13 +53,13 @@ initialization.
 
 Angular initializes automatically upon `DOMContentLoaded` event or when the `angular.js` script is
 evaluated if at that time `document.readyState` is set to `'complete'`. At this point Angular looks
-for the {@link ng.directive:ngApp `ng-app`} directive which designates your application root.
-If the {@link ng.directive:ngApp `ng-app`} directive is found then Angular will:
+for the {@link ng.directive:ngApp `ngApp`} directive which designates your application root.
+If the {@link ng.directive:ngApp `ngApp`} directive is found then Angular will:
 
   * load the {@link guide/module module} associated with the directive.
   * create the application {@link auto.$injector injector}
   * compile the DOM treating the {@link ng.directive:ngApp
-    `ng-app`} directive as the root of the compilation. This allows you to tell it to treat only a
+    `ngApp`} directive as the root of the compilation. This allows you to tell it to treat only a
     portion of the DOM as an Angular application.
 
 
@@ -115,7 +115,7 @@ Here is an example of manually initializing Angular:
         $scope.greetMe = 'World';
       }]);
 
-    angular.element(document).ready(function() {
+    angular.element(function() {
       angular.bootstrap(document, ['myApp']);
     });
   </script>
@@ -142,6 +142,17 @@ This is the sequence that your code should follow:
   2. Call {@link angular.bootstrap} to {@link compiler compile} the element into an
   executable, bi-directionally bound application.
 
+## Things to keep in mind
+
+There a few things to keep in mind regardless of automatic or manual bootstrapping:
+
+- While it's possible to bootstrap more than one AngularJS application per page, we don't actively
+  test against this scenario. It's possible that you'll run into problems, especially with complex apps, so
+  caution is advised.
+- Do not bootstrap your app on an element with a directive that uses {@link ng.$compile#transclusion transclusion}, such as
+  {@link ng.ngIf `ngIf`}, {@link ng.ngInclude `ngInclude`} and {@link ngRoute.ngView `ngView`}.
+  Doing this misplaces the app {@link ng.$rootElement `$rootElement`} and the app's {@link auto.$injector injector},
+  causing animations to stop working and making the injector inaccessible from outside the app.
 
 ## Deferred Bootstrap
 

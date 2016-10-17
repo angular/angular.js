@@ -1,7 +1,5 @@
 'use strict';
 
-/* global sanitizeText: false */
-
 /**
  * @ngdoc filter
  * @name linky
@@ -32,7 +30,7 @@
    <span ng-bind-html="linky_expression | linky"></span>
  *
  * @example
-   <example module="linkyExample" deps="angular-sanitize.js">
+   <example module="linkyExample" deps="angular-sanitize.js" name="linky-filter">
      <file name="index.html">
        <div ng-controller="ExampleController">
        Snippet: <textarea ng-model="snippet" cols="60" rows="3"></textarea>
@@ -80,10 +78,10 @@
        angular.module('linkyExample', ['ngSanitize'])
          .controller('ExampleController', ['$scope', function($scope) {
            $scope.snippet =
-             'Pretty text with some links:\n'+
-             'http://angularjs.org/,\n'+
-             'mailto:us@somewhere.org,\n'+
-             'another@somewhere.org,\n'+
+             'Pretty text with some links:\n' +
+             'http://angularjs.org/,\n' +
+             'mailto:us@somewhere.org,\n' +
+             'another@somewhere.org,\n' +
              'and one more: ftp://127.0.0.1/.';
            $scope.snippetWithSingleURL = 'http://angularjs.org/';
          }]);
@@ -135,11 +133,19 @@ angular.module('ngSanitize').filter('linky', ['$sanitize', function($sanitize) {
       MAILTO_REGEXP = /^mailto:/i;
 
   var linkyMinErr = angular.$$minErr('linky');
+  var isDefined = angular.isDefined;
+  var isFunction = angular.isFunction;
+  var isObject = angular.isObject;
   var isString = angular.isString;
 
   return function(text, target, attributes) {
     if (text == null || text === '') return text;
     if (!isString(text)) throw linkyMinErr('notstring', 'Expected string but received: {0}', text);
+
+    var attributesFn =
+      isFunction(attributes) ? attributes :
+      isObject(attributes) ? function getAttributesObject() {return attributes;} :
+      function getEmptyAttributesObject() {return {};};
 
     var match;
     var raw = text;
@@ -169,19 +175,14 @@ angular.module('ngSanitize').filter('linky', ['$sanitize', function($sanitize) {
     }
 
     function addLink(url, text) {
-      var key;
+      var key, linkAttributes = attributesFn(url);
       html.push('<a ');
-      if (angular.isFunction(attributes)) {
-        attributes = attributes(url);
+
+      for (key in linkAttributes) {
+        html.push(key + '="' + linkAttributes[key] + '" ');
       }
-      if (angular.isObject(attributes)) {
-        for (key in attributes) {
-          html.push(key + '="' + attributes[key] + '" ');
-        }
-      } else {
-        attributes = {};
-      }
-      if (angular.isDefined(target) && !('target' in attributes)) {
+
+      if (isDefined(target) && !('target' in linkAttributes)) {
         html.push('target="',
                   target,
                   '" ');

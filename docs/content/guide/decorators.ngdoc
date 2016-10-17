@@ -1,0 +1,504 @@
+@ngdoc overview
+@name Decorators
+@sortOrder 345
+@description
+
+# Decorators in AngularJS
+
+<div class="alert alert-warning">
+  **NOTE:** This guide is targeted towards developers who are already familiar with AngularJS basics.
+  If you're just getting started, we recommend the {@link tutorial/ tutorial} first.
+</div>
+
+## What are decorators?
+
+Decorators are a design pattern that is used to separate modification or *decoration* of a class without modifying the
+original source code. In Angular, decorators are functions that allow a service, directive or filter to be modified
+prior to its usage.
+
+## How to use decorators
+
+There are two ways to register decorators
+
+- `$provide.decorator`, and
+- `module.decorator`
+
+Each provide access to a `$delegate`, which is the instantiated service/directive/filter, prior to being passed to the
+service that required it.
+
+### $provide.decorator
+
+The {@link api/auto/service/$provide#decorator decorator function} allows access to a $delegate of the service once it
+has been instantiated. For example:
+
+```js
+angular.module('myApp', [])
+
+.config([ '$provide', function($provide) {
+
+  $provide.decorator('$log', [
+    '$delegate',
+    function $logDecorator($delegate) {
+
+      var originalWarn = $delegate.warn;
+      $delegate.warn = function decoratedWarn(msg) {
+        msg = 'Decorated Warn: ' + msg;
+        originalWarn.apply($delegate, arguments);
+      };
+
+      return $delegate;
+    }
+  ]);
+}]);
+```
+
+After the `$log` service has been instantiated the decorator is fired. The decorator function has a `$delegate` object
+injected to provide access to the service that matches the selector in the decorator. This `$delegate` will be the
+service you are decorating. The return value of the function *provided to the decorator* will take place of the service,
+directive, or filter being decorated.
+
+<hr>
+
+The `$delegate` may be either modified or completely replaced. Given a service `myService` with a method `someFn`, the
+following could all be viable solutions:
+
+
+#### Completely Replace the $delegate
+```js
+angular.module('myApp', [])
+
+.config([ '$provide', function($provide) {
+
+  $provide.decorator('myService', [
+    '$delegate',
+    function myServiceDecorator($delegate) {
+
+      var myDecoratedService = {
+        // new service object to replace myService
+      };
+      return myDecoratedService;
+    }
+  ]);
+}]);
+```
+
+#### Patch the $delegate
+```js
+angular.module('myApp', [])
+
+.config([ '$provide', function($provide) {
+
+  $provide.decorator('myService', [
+    '$delegate',
+    function myServiceDecorator($delegate) {
+
+      var someFn = $delegate.someFn;
+
+      function aNewFn() {
+        // new service function
+        someFn.apply($delegate, arguments);
+      }
+
+      $delegate.someFn = aNewFn;
+      return $delegate;
+    }
+  ]);
+}]);
+```
+
+#### Augment the $delegate
+```js
+angular.module('myApp', [])
+
+.config([ '$provide', function($provide) {
+
+  $provide.decorator('myService', [
+    '$delegate',
+    function myServiceDecorator($delegate) {
+
+      function helperFn() {
+        // an additional fn to add to the service
+      }
+
+      $delegate.aHelpfulAddition = helperFn;
+      return $delegate;
+    }
+  ]);
+}]);
+```
+
+<div class="alert alert-info">
+  Note that whatever is returned by the decorator function will replace that which is being decorated. For example, a
+  missing return statement will wipe out the entire object being decorated.
+</div>
+
+<hr>
+
+Decorators have different rules for different services. This is because services are registered in different ways.
+Services are selected by name, however filters and directives are selected by appending `"Filter"` or `"Directive"` to
+the end of the name. The `$delegate` provided is dictated by the type of service.
+
+| Service Type | Selector                      | $delegate                                                             |
+|--------------|-------------------------------|-----------------------------------------------------------------------|
+| Service      | `serviceName`                 | The `object` or `function` returned by the service                    |
+| Directive    | `directiveName + 'Directive'` | An `Array.<DirectiveObject>`<sub>{@link guide/decorators#drtvArray 1}</sub> |
+| Filter       | `filterName + 'Filter'`       | The `function` returned by the filter                                 |
+
+<small id="drtvArray">1. Multiple directives may be registered to the same selector/name</small>
+
+<div class="alert alert-warning">
+  **NOTE:** Developers should take care in how and why they are modifying the `$delegate` for the service. Not only
+  should expectations for the consumer be kept, but some functionality (such as directive registration) does not take
+  place after decoration, but during creation/registration of the original service. This means, for example, that
+  an action such as pushing a directive object to a directive `$delegate` will likely result in unexpected behavior.
+
+  Furthermore, great care should be taken when decorating core services, directives, or filters as this may unexpectedly
+  or adversely affect the functionality of the framework.
+</div>
+
+### module.decorator
+
+This {@link api/ng/type/angular.Module#decorator function} is the same as the `$provide.decorator` function except it is
+exposed through the module API. This allows you to separate your decorator patterns from your module config blocks.
+
+Like with `$provide.decorator`, the `module.decorator` function runs during the config phase of the app. That means
+you can define a `module.decorator` before the decorated service is defined.
+
+Since you can apply multiple decorators, it is noteworthy that decorator application always follows order
+of declaration:
+
+- If a service is decorated by both `$provide.decorator` and `module.decorator`, the decorators are applied in order:
+
+```js
+angular
+  .module('theApp', [])
+  .factory('theFactory', theFactoryFn)
+  .config(function($provide) {
+    $provide.decorator('theFactory', provideDecoratorFn); // runs first
+  })
+  .decorator('theFactory', moduleDecoratorFn); // runs seconds
+```
+
+- If the service has been declared multiple times, a decorator will decorate the service that has been declared
+last:
+
+```js
+angular
+  .module('theApp', [])
+  .factory('theFactory', theFactoryFn)
+  .decorator('theFactory', moduleDecoratorFn)
+  .factory('theFactory', theOtherFactoryFn);
+
+// `theOtherFactoryFn` is selected as 'theFactory' provider and it is decorated via `moduleDecoratorFn`.
+```
+
+## Example Applications
+
+The following sections provide examples each of a service decorator, a directive decorator, and a filter decorator.
+
+### Service Decorator Example
+
+This example shows how we can replace the $log service with our own to display log messages.
+
+<example module="myServiceDecorator" name="service-decorator">
+  <file name="script.js">
+    angular.module('myServiceDecorator', []).
+
+      controller('Ctrl', [
+        '$scope',
+        '$log',
+        '$timeout',
+        function($scope, $log, $timeout) {
+          var types = ['error', 'warn', 'log', 'info' ,'debug'], i;
+
+          for (i = 0; i < types.length; i++) {
+            $log[types[i]](types[i] + ': message ' + (i + 1));
+          }
+
+          $timeout(function() {
+            $log.info('info: message logged in timeout');
+          });
+        }
+      ]).
+
+      directive('myLog', [
+        '$log',
+        function($log) {
+          return {
+            restrict: 'E',
+            template: '<ul id="myLog"><li ng-repeat="l in myLog" class="{{l.type}}">{{l.message}}</li></ul>',
+            scope: {},
+            compile: function() {
+              return function(scope) {
+                scope.myLog = $log.stack;
+              };
+            }
+          };
+        }
+      ]).
+
+      config([
+        '$provide',
+        function($provide) {
+
+          $provide.decorator('$log', [
+            '$delegate',
+            function logDecorator($delegate) {
+
+              var myLog = {
+                warn: function(msg) {
+                  log(msg, 'warn');
+                },
+                error: function(msg) {
+                  log(msg, 'error');
+                },
+                info: function(msg) {
+                  log(msg, 'info');
+                },
+                debug: function(msg) {
+                  log(msg, 'debug');
+                },
+                log: function(msg) {
+                  log(msg, 'log');
+                },
+                stack: []
+              };
+
+              function log(msg, type) {
+                myLog.stack.push({ type: type, message: msg.toString() });
+                if (console && console[type]) console[type](msg);
+              }
+
+              return myLog;
+
+            }
+          ]);
+
+        }
+      ]);
+  </file>
+
+  <file name="index.html">
+    <div ng-controller="Ctrl">
+      <h1>Logs</h1>
+      <my-log></my-log>
+    </div>
+  </file>
+
+  <file name="style.css">
+    li.warn { color: yellow; }
+    li.error { color: red; }
+    li.info { color: blue }
+    li.log { color: black }
+    li.debug { color: green }
+  </file>
+
+  <file name="protractor.js" type="protractor">
+    it('should display log messages in dom', function() {
+      element.all(by.repeater('l in myLog')).count().then(function(count) {
+        expect(count).toEqual(6);
+      });
+    });
+  </file>
+</example>
+
+### Directive Decorator Example
+
+Failed interpolated expressions in `ng-href` attributes can easily go unnoticed. We can decorate `ngHref` to warn us of
+those conditions.
+
+<example module="urlDecorator" name="directive-decorator">
+  <file name="script.js">
+    angular.module('urlDecorator', []).
+
+      controller('Ctrl', ['$scope', function($scope) {
+        $scope.id = 3;
+        $scope.warnCount = 0; // for testing
+      }]).
+
+      config(['$provide', function($provide) {
+
+        // matchExpressions looks for interpolation markup in the directive attribute, extracts the expressions
+        // from that markup (if they exist) and returns an array of those expressions
+        function matchExpressions(str) {
+          var exps = str.match(/{{([^}]+)}}/g);
+
+          // if there isn't any, get out of here
+          if (exps === null) return;
+
+          exps = exps.map(function(exp) {
+            var prop = exp.match(/[^{}]+/);
+            return prop === null ? null : prop[0];
+          });
+
+          return exps;
+        }
+
+        // remember: directives must be selected by appending 'Directive' to the directive selector
+        $provide.decorator('ngHrefDirective', [
+          '$delegate',
+          '$log',
+          '$parse',
+          function($delegate, $log, $parse) {
+
+            // store the original link fn
+            var originalLinkFn = $delegate[0].link;
+
+            // replace the compile fn
+            $delegate[0].compile = function(tElem, tAttr) {
+
+              // store the original exp in the directive attribute for our warning message
+              var originalExp = tAttr.ngHref;
+
+              // get the interpolated expressions
+              var exps = matchExpressions(originalExp);
+
+              // create and store the getters using $parse
+              var getters = exps.map(function(exp) {
+                return exp && $parse(exp);
+              });
+
+              return function newLinkFn(scope, elem, attr) {
+                // fire the originalLinkFn
+                originalLinkFn.apply($delegate[0], arguments);
+
+                // observe the directive attr and check the expressions
+                attr.$observe('ngHref', function(val) {
+
+                  // if we have getters and getters is an array...
+                  if (getters && angular.isArray(getters)) {
+
+                    // loop through the getters and process them
+                    angular.forEach(getters, function(g, idx) {
+
+                      // if val is truthy, then the warning won't log
+                      var val = angular.isFunction(g) ? g(scope) : true;
+                      if (!val) {
+                        $log.warn('NgHref Warning: "' + exps[idx] + '" in the expression "' + originalExp +
+                          '" is falsy!');
+
+                        scope.warnCount++; // for testing
+                      }
+
+                    });
+
+                  }
+
+                });
+
+              };
+
+            };
+
+            // get rid of the old link function since we return a link function in compile
+            delete $delegate[0].link;
+
+            // return the $delegate
+            return $delegate;
+
+          }
+
+        ]);
+
+      }]);
+  </file>
+
+  <file name="index.html">
+    <div ng-controller="Ctrl">
+      <a ng-href="/products/{{ id }}/view" id="id3">View Product {{ id }}</a>
+      - <strong>id === 3</strong>, so no warning<br>
+      <a ng-href="/products/{{ id + 5 }}/view" id="id8">View Product {{ id + 5 }}</a>
+      - <strong>id + 5 === 8</strong>, so no warning<br>
+      <a ng-href="/products/{{ someOtherId }}/view" id="someOtherId">View Product {{ someOtherId }}</a>
+      - <strong style="background-color: #ffff00;">someOtherId === undefined</strong>, so warn<br>
+      <a ng-href="/products/{{ someOtherId + 5 }}/view" id="someOtherId5">View Product {{ someOtherId + 5 }}</a>
+      - <strong>someOtherId + 5 === 5</strong>, so no warning<br>
+      <div>Warn Count: {{ warnCount }}</div>
+    </div>
+  </file>
+
+  <file name="protractor.js" type="protractor">
+    it('should warn when an expression in the interpolated value is falsy', function() {
+      var id3 = element(by.id('id3'));
+      var id8 = element(by.id('id8'));
+      var someOther = element(by.id('someOtherId'));
+      var someOther5 = element(by.id('someOtherId5'));
+
+      expect(id3.getText()).toEqual('View Product 3');
+      expect(id3.getAttribute('href')).toContain('/products/3/view');
+
+      expect(id8.getText()).toEqual('View Product 8');
+      expect(id8.getAttribute('href')).toContain('/products/8/view');
+
+      expect(someOther.getText()).toEqual('View Product');
+      expect(someOther.getAttribute('href')).toContain('/products//view');
+
+      expect(someOther5.getText()).toEqual('View Product 5');
+      expect(someOther5.getAttribute('href')).toContain('/products/5/view');
+
+      expect(element(by.binding('warnCount')).getText()).toEqual('Warn Count: 1');
+    });
+  </file>
+</example>
+
+### Filter Decorator Example
+
+Let's say we have created an app that uses the default format for many of our `Date` filters. Suddenly requirements have
+changed (that never happens) and we need all of our default dates to be `'shortDate'` instead of `'mediumDate'`.
+
+<example module="filterDecorator" name="filter-decorator">
+  <file name="script.js">
+    angular.module('filterDecorator', []).
+
+      controller('Ctrl', ['$scope', function($scope) {
+        $scope.genesis = new Date(2010, 0, 5);
+        $scope.ngConf = new Date(2016, 4, 4);
+      }]).
+
+      config(['$provide', function($provide) {
+
+        $provide.decorator('dateFilter', [
+          '$delegate',
+          function dateDecorator($delegate) {
+
+            // store the original filter
+            var originalFilter = $delegate;
+
+            // return our filter
+            return shortDateDefault;
+
+            // shortDateDefault sets the format to shortDate if it is falsy
+            function shortDateDefault(date, format, timezone) {
+              if (!format) format = 'shortDate';
+
+              // return the result of the original filter
+              return originalFilter(date, format, timezone);
+            }
+
+          }
+
+        ]);
+
+      }]);
+  </file>
+
+  <file name="index.html">
+    <div ng-controller="Ctrl">
+      <div id="genesis">Initial Commit default to short date: {{ genesis | date }}</div>
+      <div>ng-conf 2016 default short date: {{ ngConf | date }}</div>
+      <div id="ngConf">ng-conf 2016 with full date format: {{ ngConf | date:'fullDate' }}</div>
+    </div>
+  </file>
+
+  <file name="protractor.js" type="protractor">
+    it('should default date filter to short date format', function() {
+      expect(element(by.id('genesis')).getText())
+        .toMatch(/Initial Commit default to short date: \d{1,2}\/\d{1,2}\/\d{2}/);
+    });
+
+    it('should still allow dates to be formatted', function() {
+      expect(element(by.id('ngConf')).getText())
+        .toMatch(/ng-conf 2016 with full date format: [A-Za-z]+, [A-Za-z]+ \d{1,2}, \d{4}/);
+    });
+  </file>
+</example>

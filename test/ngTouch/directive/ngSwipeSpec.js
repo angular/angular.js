@@ -8,7 +8,7 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
     if (restrictBrowsers) {
       // TODO(braden): Once we have other touch-friendly browsers on CI, allow them here.
       // Currently Firefox and IE refuse to fire touch events.
-      var chrome = /chrome/.test(navigator.userAgent.toLowerCase());
+      var chrome = /chrome/.test(window.navigator.userAgent.toLowerCase());
       if (!chrome) {
         return;
       }
