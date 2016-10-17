@@ -2450,10 +2450,11 @@ describe('$location', function() {
 
 
   describe('LocationHtml5Url', function() {
-    var locationUrl, locationIndexUrl;
+    var locationUrl, locationUmlautUrl, locationIndexUrl;
 
     beforeEach(function() {
       locationUrl = new LocationHtml5Url('http://server/pre/', 'http://server/pre/', 'http://server/pre/path');
+      locationUmlautUrl = new LocationHtml5Url('http://särver/pre/', 'http://särver/pre/', 'http://särver/pre/path');
       locationIndexUrl = new LocationHtml5Url('http://server/pre/index.html', 'http://server/pre/', 'http://server/pre/path');
     });
 
@@ -2464,6 +2465,13 @@ describe('$location', function() {
       expect(parseLinkAndReturn(locationUrl, 'http://server/pre/otherPath')).toEqual('http://server/pre/otherPath');
       // Note: relies on the previous state!
       expect(parseLinkAndReturn(locationUrl, 'someIgnoredAbsoluteHref', '#test')).toEqual('http://server/pre/otherPath#test');
+
+      expect(parseLinkAndReturn(locationUmlautUrl, 'http://other')).toEqual(undefined);
+      expect(parseLinkAndReturn(locationUmlautUrl, 'http://särver/pre')).toEqual('http://särver/pre/');
+      expect(parseLinkAndReturn(locationUmlautUrl, 'http://särver/pre/')).toEqual('http://särver/pre/');
+      expect(parseLinkAndReturn(locationUmlautUrl, 'http://särver/pre/otherPath')).toEqual('http://särver/pre/otherPath');
+      // Note: relies on the previous state!
+      expect(parseLinkAndReturn(locationUmlautUrl, 'someIgnoredAbsoluteHref', '#test')).toEqual('http://särver/pre/otherPath#test');
 
       expect(parseLinkAndReturn(locationIndexUrl, 'http://server/pre')).toEqual('http://server/pre/');
       expect(parseLinkAndReturn(locationIndexUrl, 'http://server/pre/')).toEqual('http://server/pre/');
