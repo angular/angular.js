@@ -16,8 +16,8 @@ describe('ngAnimate $animateCss', function() {
   }
 
   function getPossiblyPrefixedStyleValue(element, styleProp) {
-    var value = element.css(prefix + styleProp);
-    if (isUndefined(value)) value = element.css(styleProp);
+    var value = element.css(styleProp);
+    if (isUndefined(value)) value = element.css('-webkit-' + styleProp);
 
     return value;
   }
@@ -40,11 +40,10 @@ describe('ngAnimate $animateCss', function() {
     color: 'blue'
   };
 
-  var ss, prefix, triggerAnimationStartFrame;
+  var ss, triggerAnimationStartFrame;
   beforeEach(module(function() {
     return function($document, $sniffer, $$rAF, $animate) {
-      prefix = '-' + $sniffer.vendorPrefix.toLowerCase() + '-';
-      ss = createMockStyleSheet($document, prefix);
+      ss = createMockStyleSheet($document);
 
       $animate.enabled(true);
       triggerAnimationStartFrame = function() {
@@ -873,8 +872,8 @@ describe('ngAnimate $animateCss', function() {
 
           angular.element($document[0].body).append($rootElement);
 
-          ss.addRule('.ng-enter-stagger', prefix + 'animation-delay:0.2s');
-          ss.addRule('.transition-animation', 'transition:2s 5s linear all;');
+          ss.addPossiblyPrefixedRule('.ng-enter-stagger', 'animation-delay:0.2s');
+          ss.addPossiblyPrefixedRule('.transition-animation', 'transition:2s 5s linear all;');
 
           for (var i = 0; i < 5; i++) {
             var element = angular.element('<div class="transition-animation"></div>');
@@ -2508,7 +2507,7 @@ describe('ngAnimate $animateCss', function() {
           }
         }, function(testDetailsFactory) {
           inject(function($animateCss, $rootElement) {
-            var testDetails = testDetailsFactory(prefix);
+            var testDetails = testDetailsFactory();
 
             ss.addPossiblyPrefixedRule('.ng-enter', testDetails.css);
             var options = {

@@ -172,39 +172,6 @@ describe('$sniffer', function() {
   });
 
 
-  describe('vendorPrefix', function() {
-    it('should return the correct vendor prefix based on the browser', function() {
-      inject(function($sniffer, $window) {
-        var expectedPrefix;
-        var ua = $window.navigator.userAgent.toLowerCase();
-        if (/edge/i.test(ua)) {
-          expectedPrefix = 'Ms';
-        } else if (/chrome/i.test(ua) || /safari/i.test(ua) || /webkit/i.test(ua)) {
-          expectedPrefix = 'Webkit';
-        } else if (/firefox/i.test(ua)) {
-          expectedPrefix = 'Moz';
-        } else if (/ie/i.test(ua) || /trident/i.test(ua)) {
-          expectedPrefix = 'Ms';
-        }
-        expect($sniffer.vendorPrefix).toBe(expectedPrefix);
-      });
-    });
-
-
-    it('should still work for an older version of Webkit', function() {
-      var mockDocument = {
-        body: {
-          style: {
-            WebkitOpacity: '0'
-          }
-        }
-      };
-
-      expect(sniffer({}, mockDocument).vendorPrefix).toBe('webkit');
-    });
-  });
-
-
   describe('animations', function() {
     it('should be either true or false', inject(function($sniffer) {
       expect($sniffer.animations).toBeDefined();
@@ -222,13 +189,12 @@ describe('$sniffer', function() {
     });
 
 
-    it('should be true with vendor-specific animations', function() {
+    it('should be true with -webkit-prefixed animations', function() {
       var animationStyle = 'some_animation 2s linear';
       var mockDocument = {
         body: {
           style: {
-            WebkitAnimation: animationStyle,
-            MozAnimation: animationStyle
+            webkitAnimation: animationStyle
           }
         }
       };
@@ -299,13 +265,12 @@ describe('$sniffer', function() {
     });
 
 
-    it('should be true with vendor-specific transitions', function() {
+    it('should be true with -webkit-prefixed transitions', function() {
       var transitionStyle = '1s linear all';
       var mockDocument = {
         body: {
           style: {
-            WebkitTransition: transitionStyle,
-            MozTransition: transitionStyle
+            webkitTransition: transitionStyle
           }
         }
       };
