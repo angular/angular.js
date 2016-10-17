@@ -2757,35 +2757,37 @@ describe('input', function() {
           expect($rootScope.value).toBeUndefined();
         });
 
-        it('should correctly validate even in cases where `(x*y % x !== 0)`', function() {
-          $rootScope.step = 0.1;
-          var inputElm = helper.compileInput(
-              '<input type="number" ng-model="value" ' + attrHtml + ' />');
-          var ngModel = inputElm.controller('ngModel');
+        it('should correctly validate even in cases where the JS floating point arithmetic fails',
+          function() {
+            $rootScope.step = 0.1;
+            var inputElm = helper.compileInput(
+                '<input type="number" ng-model="value" ' + attrHtml + ' />');
+            var ngModel = inputElm.controller('ngModel');
 
-          expect(inputElm.val()).toBe('');
-          expect(inputElm).toBeValid();
-          expect($rootScope.value).toBeUndefined();
+            expect(inputElm.val()).toBe('');
+            expect(inputElm).toBeValid();
+            expect($rootScope.value).toBeUndefined();
 
-          helper.changeInputValueTo('0.3');
-          expect(inputElm).toBeValid();
-          expect($rootScope.value).toBe(0.3);
+            helper.changeInputValueTo('0.3');
+            expect(inputElm).toBeValid();
+            expect($rootScope.value).toBe(0.3);
 
-          helper.changeInputValueTo('2.9999999999999996');
-          expect(inputElm).toBeInvalid();
-          expect(ngModel.$error.step).toBe(true);
-          expect($rootScope.value).toBeUndefined();
+            helper.changeInputValueTo('2.9999999999999996');
+            expect(inputElm).toBeInvalid();
+            expect(ngModel.$error.step).toBe(true);
+            expect($rootScope.value).toBeUndefined();
 
-          // 0.5 % 0.1 === 0.09999999999999998
-          helper.changeInputValueTo('0.5');
-          expect(inputElm).toBeValid();
-          expect($rootScope.value).toBe(0.5);
+            // 0.5 % 0.1 === 0.09999999999999998
+            helper.changeInputValueTo('0.5');
+            expect(inputElm).toBeValid();
+            expect($rootScope.value).toBe(0.5);
 
-          // 3.5 % 0.1 === 0.09999999999999981
-          helper.changeInputValueTo('3.5');
-          expect(inputElm).toBeValid();
-          expect($rootScope.value).toBe(3.5);
-        });
+            // 3.5 % 0.1 === 0.09999999999999981
+            helper.changeInputValueTo('3.5');
+            expect(inputElm).toBeValid();
+            expect($rootScope.value).toBe(3.5);
+          }
+        );
       });
     });
 
@@ -3651,33 +3653,35 @@ describe('input', function() {
           expect($rootScope.value).toBeUndefined();
         });
 
-        it('should correctly validate even in cases where `(x*y % x !== 0)`', function() {
-          var inputElm = helper.compileInput('<input type="range" ng-model="value" step="0.1" />');
-          var ngModel = inputElm.controller('ngModel');
+        it('should correctly validate even in cases where the JS floating point arithmetic fails',
+          function() {
+            var inputElm = helper.compileInput('<input type="range" ng-model="value" step="0.1" />');
+            var ngModel = inputElm.controller('ngModel');
 
-          expect(inputElm.val()).toBe('');
-          expect(inputElm).toBeValid();
-          expect($rootScope.value).toBeUndefined();
+            expect(inputElm.val()).toBe('');
+            expect(inputElm).toBeValid();
+            expect($rootScope.value).toBeUndefined();
 
-          helper.changeInputValueTo('0.3');
-          expect(inputElm).toBeValid();
-          expect($rootScope.value).toBe(0.3);
+            helper.changeInputValueTo('0.3');
+            expect(inputElm).toBeValid();
+            expect($rootScope.value).toBe(0.3);
 
-          helper.changeInputValueTo('2.9999999999999996');
-          expect(inputElm).toBeInvalid();
-          expect(ngModel.$error.step).toBe(true);
-          expect($rootScope.value).toBeUndefined();
+            helper.changeInputValueTo('2.9999999999999996');
+            expect(inputElm).toBeInvalid();
+            expect(ngModel.$error.step).toBe(true);
+            expect($rootScope.value).toBeUndefined();
 
-          // 0.5 % 0.1 === 0.09999999999999998
-          helper.changeInputValueTo('0.5');
-          expect(inputElm).toBeValid();
-          expect($rootScope.value).toBe(0.5);
+            // 0.5 % 0.1 === 0.09999999999999998
+            helper.changeInputValueTo('0.5');
+            expect(inputElm).toBeValid();
+            expect($rootScope.value).toBe(0.5);
 
-          // 3.5 % 0.1 === 0.09999999999999981
-          helper.changeInputValueTo('3.5');
-          expect(inputElm).toBeValid();
-          expect($rootScope.value).toBe(3.5);
-        });
+            // 3.5 % 0.1 === 0.09999999999999981
+            helper.changeInputValueTo('3.5');
+            expect(inputElm).toBeValid();
+            expect($rootScope.value).toBe(3.5);
+          }
+        );
       }
     });
   });
