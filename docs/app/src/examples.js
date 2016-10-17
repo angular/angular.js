@@ -181,8 +181,9 @@ angular.module('examples', [])
           filePromises.push($http.get(exampleFolder + '/' + filename, { transformResponse: [] })
             .then(function(response) {
 
-              // Plunkr needs an index file that's simply named index.html
-              if (filename === 'index-plnkr.html') {
+              // The manifests provide the production index file but Plunkr wants
+              // a straight index.html
+              if (filename === 'index-production.html') {
                 filename = 'index.html';
               }
 
