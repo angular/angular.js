@@ -3949,6 +3949,17 @@ describe('input', function() {
     });
 
 
+    it('should use non-strict comparison between model and value', function() {
+      $rootScope.selected = false;
+      var inputElm = helper.compileInput('<input type="radio" ng-model="selected" ng-value="false">' +
+                   '<input type="radio" ng-model="selected" ng-value="\'\'">' +
+                   '<input type="radio" ng-model="selected" ng-value="0">');
+
+      expect(inputElm[0].checked).toBe(true);
+      expect(inputElm[1].checked).toBe(true);
+      expect(inputElm[2].checked).toBe(true);
+    });
+
     it('should watch the expression', function() {
       var inputElm = helper.compileInput('<input type="radio" ng-model="selected" ng-value="value">');
 
