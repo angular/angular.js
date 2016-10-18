@@ -50,7 +50,7 @@ URLs point to the `app/img/phones/` directory.
     <a href="#/phones/{{phone.id}}" class="thumb">
       <img ng-src="{{phone.imageUrl}}" alt="{{phone.name}}" />
     </a>
-    <a href="#/phones/{{phone.id}}">{{phone.name}}</a>
+    <a href="#!/phones/{{phone.id}}">{{phone.name}}</a>
     <p>{{phone.snippet}}</p>
   </li>
 </ul>
