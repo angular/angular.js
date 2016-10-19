@@ -4381,16 +4381,14 @@ describe('$compile', function() {
           it('should reinitialize watchers on attribute change', function() {
             var constructorSpy = jasmine.createSpy('constructor');
 
-            class TestDirective {
-              constructor() {
-                this.constructorProp = true;
-                this.constructorSpy = constructorSpy;
-              }
-
-              $onChanges(changes) {
-                this.constructorSpy(this.constructorProp);
-              }
+            function TestDirective() {
+              this.constructorProp = true;
+              this.constructorSpy = constructorSpy;
             }
+            
+            TestDirective.prototype.$onChanges = function(changes) {
+              this.constructorSpy(this.constructorProp);
+            };
 
             module(function($compileProvider) {
               $compileProvider.component('test', {
