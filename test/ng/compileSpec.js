@@ -4378,6 +4378,46 @@ describe('$compile', function() {
             });
           });
 
+          it('should reinitialize watchers on attribute change', function() {
+            var constructorSpy = jasmine.createSpy('constructor');
+
+            class TestDirective {
+              constructor() {
+                this.constructorProp = true;
+                this.constructorSpy = constructorSpy;
+              }
+
+              $onChanges(changes) {
+                this.constructorSpy(this.constructorProp);
+              }
+            }
+
+            module(function($compileProvider) {
+              $compileProvider.component('test', {
+                bindings: {prop: '<', attr: '@'},
+                controller: TestDirective
+              });
+            });
+
+            inject(function($compile, $rootScope) {
+              var template = '<test prop="a" attr="{{b}}"></test>';
+              $rootScope.a = 'foo';
+              $rootScope.b = NaN;
+
+              element = $compile(template)($rootScope);
+              $rootScope.$digest();
+              expect(constructorSpy).toHaveBeenCalledWith(true);
+
+              constructorSpy.calls.reset();
+              $rootScope.$apply('a = "bar"');
+              expect(constructorSpy).toHaveBeenCalledWith(true);
+
+              constructorSpy.calls.reset();
+              $rootScope.$apply('b = 42');
+              expect(constructorSpy).toHaveBeenCalledWith(true);
+            });
+          });
+
 
           it('should not call `$onChanges` twice even when the initial value is `NaN`', function() {
             var onChangesSpy = jasmine.createSpy('$onChanges');
