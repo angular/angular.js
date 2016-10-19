@@ -4416,7 +4416,6 @@ describe('$compile', function() {
             });
           });
 
-
           it('should not call `$onChanges` twice even when the initial value is `NaN`', function() {
             var onChangesSpy = jasmine.createSpy('$onChanges');
 
