@@ -653,6 +653,13 @@ ul.events > li {
   max-width: 100%;
 }
 
+@media only screen and (min-width: 769px) {
+  [ng-include="partialPath"].ng-hide {
+    display: block !important;
+    visibility: hidden;
+  }
+}
+
 @media only screen and (min-width: 769px) and (max-width: 991px) {
   .main-body-grid {
     margin-top: 160px;
