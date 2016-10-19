@@ -3607,7 +3607,7 @@ describe('input', function() {
           $rootScope.step = 10;
           $rootScope.value = 10;
           var inputElm = helper.compileInput(
-              '<input type="range" ng-model="value" min="{{min}}" step="{{step}}"" />');
+              '<input type="range" ng-model="value" min="{{min}}" step="{{step}}" />');
           var ngModel = inputElm.controller('ngModel');
 
           expect(inputElm.val()).toBe('10');
