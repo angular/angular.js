@@ -4069,7 +4069,7 @@ describe('$compile', function() {
         });
 
         describe('$doCheck', function() {
-          it('should call `$doCheck`, if provided, for each digest cycle, after $onChanges and $onInit', function() {
+          it('should call `$doCheck`, if provided, for each digest cycle, after and $onInit', function() {
             var log = [];
 
             function TestController() { }
