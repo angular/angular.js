@@ -4378,6 +4378,37 @@ describe('$compile', function() {
             });
           });
 
+          it('should clean up `@`-binding observers when re-assigning bindings', function() {
+            var constructorSpy = jasmine.createSpy('constructor');
+            var prototypeSpy = jasmine.createSpy('prototype');
+
+            function TestController() {
+              return {$onChanges: constructorSpy};
+            }
+            TestController.prototype.$onChanges = prototypeSpy;
+
+            module(function($compileProvider) {
+              $compileProvider.component('test', {
+                bindings: {attr: '@'},
+                controller: TestController
+              });
+            });
+
+            inject(function($compile, $rootScope) {
+              var template = '<test attr="{{a}}"></test>';
+              $rootScope.a = 'foo';
+
+              element = $compile(template)($rootScope);
+              $rootScope.$digest();
+              expect(constructorSpy).toHaveBeenCalled();
+              expect(prototypeSpy).not.toHaveBeenCalled();
+
+              constructorSpy.calls.reset();
+              $rootScope.$apply('a = "bar"');
+              expect(constructorSpy).toHaveBeenCalled();
+              expect(prototypeSpy).not.toHaveBeenCalled();
+            });
+          });
 
           it('should not call `$onChanges` twice even when the initial value is `NaN`', function() {
             var onChangesSpy = jasmine.createSpy('$onChanges');
