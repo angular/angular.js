@@ -4385,7 +4385,7 @@ describe('$compile', function() {
               this.constructorProp = true;
               this.constructorSpy = constructorSpy;
             }
-            
+
             TestDirective.prototype.$onChanges = function(changes) {
               this.constructorSpy(this.constructorProp);
             };
