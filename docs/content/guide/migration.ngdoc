@@ -1125,7 +1125,11 @@ and "$dependentProvider" would have actually accomplished something and changed 
 app. This is no longer possible within a single module.
 
 
+### Filters (`orderBy`)
 
+- due to [a097aa95](https://github.com/angular/angular.js/commit/a097aa95b7c78beab6d1b7d521c25f7d9d7843d9),
+  `orderBy` now treats `null` values (which in JavaScript have type `object`) as having a string
+  represenation of `'null'`.
 
 
 ### Animation (`ngAnimate`)
@@ -1224,7 +1228,6 @@ or simply use:
 
 - due to [eaa1d00b](https://github.com/angular/angular.js/commit/eaa1d00b24008f590b95ad099241b4003688cdda),
   As communicated before, IE8 is no longer supported.
-
 
 
 
