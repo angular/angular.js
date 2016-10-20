@@ -4380,39 +4380,34 @@ describe('$compile', function() {
 
           it('should reinitialize watchers on attribute change', function() {
             var constructorSpy = jasmine.createSpy('constructor');
+            var prototypeSpy = jasmine.createSpy('prototype');
 
             function TestDirective() {
-              this.constructorProp = true;
-              this.constructorSpy = constructorSpy;
+              return {$onChanges: constructorSpy};
             }
 
-            TestDirective.prototype.$onChanges = function(changes) {
-              this.constructorSpy(this.constructorProp);
-            };
+            TestDirective.prototype.$onChanges = prototypeSpy;
 
             module(function($compileProvider) {
               $compileProvider.component('test', {
-                bindings: {prop: '<', attr: '@'},
+                bindings: {attr: '@'},
                 controller: TestDirective
               });
             });
 
             inject(function($compile, $rootScope) {
-              var template = '<test prop="a" attr="{{b}}"></test>';
+              var template = '<test attr="{{a}}"></test>';
               $rootScope.a = 'foo';
-              $rootScope.b = NaN;
 
               element = $compile(template)($rootScope);
               $rootScope.$digest();
-              expect(constructorSpy).toHaveBeenCalledWith(true);
+              expect(constructorSpy).toHaveBeenCalled();
+              expect(prototypeSpy).not.toHaveBeenCalled();
 
               constructorSpy.calls.reset();
               $rootScope.$apply('a = "bar"');
-              expect(constructorSpy).toHaveBeenCalledWith(true);
-
-              constructorSpy.calls.reset();
-              $rootScope.$apply('b = 42');
-              expect(constructorSpy).toHaveBeenCalledWith(true);
+              expect(constructorSpy).toHaveBeenCalled();
+              expect(prototypeSpy).not.toHaveBeenCalled();
             });
           });
 
