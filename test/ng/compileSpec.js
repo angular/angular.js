@@ -5453,7 +5453,7 @@ describe('$compile', function() {
 
                     this.$onChanges = function(changes) {
                       if (changes.input) {
-                        log.push(['$onChanges', changes.input]);
+                        log.push(['$onChanges', copy(changes.input)]);
                       }
                     };
                   }
@@ -5478,6 +5478,53 @@ describe('$compile', function() {
                   'constructor',
                   ['$onChanges', jasmine.objectContaining({ currentValue: 'outer' })],
                   '$onInit'
+                ]);
+              });
+            });
+
+            it('should not update isolate again after $onInit if outer object reference has not changed', function() {
+              module('owComponentTest');
+              inject(function() {
+                $rootScope.name = ['outer'];
+                compile('<ow-component input="name"></ow-component>');
+
+                expect($rootScope.name).toEqual(['outer']);
+                expect(component.input).toEqual('$onInit');
+
+                $rootScope.name[0] = 'inner';
+                $rootScope.$digest();
+
+                expect($rootScope.name).toEqual(['inner']);
+                expect(component.input).toEqual('$onInit');
+
+                expect(log).toEqual([
+                  'constructor',
+                  ['$onChanges', jasmine.objectContaining({ currentValue: ['outer'] })],
+                  '$onInit'
+                ]);
+              });
+            });
+
+            it('should update isolate again after $onInit if outer object reference changes even if equal', function() {
+              module('owComponentTest');
+              inject(function() {
+                $rootScope.name = ['outer'];
+                compile('<ow-component input="name"></ow-component>');
+
+                expect($rootScope.name).toEqual(['outer']);
+                expect(component.input).toEqual('$onInit');
+
+                $rootScope.name = ['outer'];
+                $rootScope.$digest();
+
+                expect($rootScope.name).toEqual(['outer']);
+                expect(component.input).toEqual(['outer']);
+
+                expect(log).toEqual([
+                  'constructor',
+                  ['$onChanges', jasmine.objectContaining({ currentValue: ['outer'] })],
+                  '$onInit',
+                  ['$onChanges', jasmine.objectContaining({ previousValue: ['outer'], currentValue: ['outer'] })]
                 ]);
               });
             });
