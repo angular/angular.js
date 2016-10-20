@@ -86,6 +86,9 @@
  *
  * **Note:** If you notice numbers not being sorted as expected, make sure they are actually being
  *           saved as numbers and not strings.
+ * **Note:** If null or undefined values are not being sorted as expected, convert them to the empty
+ *           string before sorting. This is because of rule number 1 above which sorts `null` as `'null'`
+ *           and `undefined` as `'undefined'`.
  *
  * @param {Array|ArrayLike} collection - The collection (array or array-like object) to sort.
  * @param {(Function|string|Array.<Function|string>)=} expression - A predicate (or list of

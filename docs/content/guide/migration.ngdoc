@@ -1226,6 +1226,16 @@ or simply use:
   As communicated before, IE8 is no longer supported.
 
 
+### Filters (`orderBy`)
+
+- due to [a097aa95](https://github.com/angular/angular.js/commit/a097aa95b7c78beab6d1b7d521c25f7d9d7843d9),
+  the default orderBy comparator sorts null values (strings, objects, etc.) as if they were the string `'null'`:
+  a null string will be sorted as if it started with the letter N.  To sort nonexistent items to the last (or first,
+  if sort order is reversed) positions in the sort results, the sort predicate should use the empty string instead
+  of null. Similarly, predicate values that are `undefined` will be sorted as if they were strings starting with
+  the letter U.
+
+
 
 
 
