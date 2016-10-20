@@ -5676,7 +5676,7 @@ describe('$compile', function() {
             }));
 
 
-            it('should deep-watch array literals', inject(function() {
+            it('should watch input values to array literals', inject(function() {
               $rootScope.name = 'georgios';
               $rootScope.obj = {name: 'pete'};
               compile('<div><span my-component ow-ref="[{name: name}, obj]">');
@@ -5690,7 +5690,7 @@ describe('$compile', function() {
             }));
 
 
-            it('should deep-watch object literals', inject(function() {
+            it('should watch input values object literals', inject(function() {
               $rootScope.name = 'georgios';
               $rootScope.obj = {name: 'pete'};
               compile('<div><span my-component ow-ref="{name: name, item: obj}">');
