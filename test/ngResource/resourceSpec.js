@@ -29,9 +29,6 @@ describe('basic usage', function() {
         }
       }
 
-    },
-    {
-      cancellable: true
     });
     callback = jasmine.createSpy('callback');
   }));
@@ -740,7 +737,7 @@ describe('basic usage', function() {
     expect(person2).toEqual(jasmine.any(Person));
   });
 
-  it('should not include $promise, $resolved when resource is toJson\'ed', function() {
+  it('should not include $promise and $resolved when resource is toJson\'ed', function() {
     $httpBackend.expect('GET', '/CreditCard/123').respond({id: 123, number: '9876'});
     var cc = CreditCard.get({id: 123});
     $httpBackend.flush();
@@ -757,14 +754,22 @@ describe('basic usage', function() {
   });
 
   it('should not include $cancelRequest when resource is toJson\'ed', function() {
-    $httpBackend.expect('GET', '/CreditCard/123').respond({id: 123, number: '9876'});
-    var cc = CreditCard.get({id: 123});
+    $httpBackend.whenGET('/CreditCard').respond({});
+
+    var CreditCard = $resource('/CreditCard', {}, {
+      get: {
+        method: 'GET',
+        cancellable: true
+      }
+    });
+
+    var creditCard = CreditCard.get();
+
+    expect(creditCard.$cancelRequest).toBeDefined();
+
     $httpBackend.flush();
 
-    expect(cc.$cancelRequest).toBeDefined();
-
-    var json = cc.toJSON();
-
+    var json = creditCard.toJSON();
     expect(json.$cancelRequest).not.toBeDefined();
   });
 
