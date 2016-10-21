@@ -9,6 +9,14 @@ var versionInfo = require('./lib/versions/version-info');
 var path = require('path');
 var e2e = require('./test/e2e/tools');
 
+var semver = require('semver');
+var fs = require('fs');
+
+var useNodeVersion = fs.readFileSync('.nvmrc', 'utf8');
+if (!semver.satisfies(process.version, useNodeVersion)) {
+  throw new Error('Invalid node version; please use node v' + useNodeVersion);
+}
+
 module.exports = function(grunt) {
   //grunt plugins
   require('load-grunt-tasks')(grunt);
