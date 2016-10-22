@@ -86,6 +86,8 @@
  *
  * **Note:** If you notice numbers not being sorted as expected, make sure they are actually being
  *           saved as numbers and not strings.
+ * **Note:** The above algorithm converts `null` values (normally of type `object`) to the string
+ *           `'null'` (so has type `string`). This may cause unexpected sort order.
  *
  * @param {Array|ArrayLike} collection - The collection (array or array-like object) to sort.
  * @param {(Function|string|Array.<Function|string>)=} expression - A predicate (or list of

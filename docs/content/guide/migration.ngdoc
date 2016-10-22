@@ -1226,6 +1226,12 @@ or simply use:
   As communicated before, IE8 is no longer supported.
 
 
+### Filters (`orderBy`)
+
+- due to [a097aa95](https://github.com/angular/angular.js/commit/a097aa95b7c78beab6d1b7d521c25f7d9d7843d9),
+  the default orderBy comparator now treats null values as the string 'null'
+
+
 
 
 
