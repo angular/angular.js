@@ -4,6 +4,7 @@
 @description
 
 Occurs when an expression is missing tokens at the end of the expression.
-For example, forgetting a closing bracket in an expression will trigger this error.
+
+For example, forgetting a closing bracket in an expression will trigger this error. Also remember to properly escape quotes.
 
 To resolve, learn more about {@link guide/expression Angular expressions}, identify the error and fix the expression's syntax.
