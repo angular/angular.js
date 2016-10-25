@@ -32,11 +32,10 @@ which drives many of these changes.
 
 ## Migrating from 1.4 to 1.5
 
-Angular 1.5 takes a big step towards preparing developers for a smoother transition to Angular 2 in
-the future. Architecturing your applications using components, multi-slot transclusion, one-way
+Angular 1.5 takes a big step towards preparing developers for a smooth transition to Angular 2 in
+the future. Architecting your applications using components, multi-slot transclusion, one-way
 bindings in isolate scopes, using lifecycle hooks in directive controllers and relying on native ES6
 features (such as classes and arrow functions) are now all possible with Angular 1.5.
-
 
 This release includes numerous bug and security fixes, as well as performance improvements to core
 services, directives, filters and helper functions. Existing applications can start enjoying the
@@ -46,8 +45,8 @@ benefits of such changes in `$compile`, `$parse`, `$animate`, `$animateCss`, `$s
 New features have been added to more than a dozen services, directives and filters across 8 modules.
 Among them, a few stand out:
 
-* `angular.component()`: Introducing "components", a special sort of directive that are easy to
-  configure and promote best practices (plus can bring Angular 1 applications closer to Angular 2's
+* `angular.component()`: Introducing "components", a special sort of directive that is easy to
+  configure and promote best practices (in addition, it moves Angular 1 applications closer to Angular 2's
   style of architecture).
 * Multi-slot transclusion: Enabling the design of more powerful and complex UI elements with a much
   simpler configuration and reduced boilerplate.
