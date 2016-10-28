@@ -1778,7 +1778,7 @@ the built-in pattern validator:
             /**
              * The built-in directive will call our overwritten validator
              * (see below). We just need to update the regex.
-             * The preLink fn guaranetees our observer is called first.
+             * The preLink fn guarantees our observer is called first.
              */
             if (isString(regex) && regex.length > 0) {
               regex = new RegExp('^' + regex + '$');
@@ -1894,7 +1894,7 @@ the built-in pattern validator:
             /**
              * The built-in directive will call our overwritten validator
              * (see below). We just need to update the regex.
-             * The preLink fn guaranetees our observer is called first.
+             * The preLink fn guarantees our observer is called first.
              */
             if (isString(regex) && regex.length > 0) {
               regex = new RegExp('^' + regex + '$');
@@ -3768,7 +3768,7 @@ behavior is undefined.
   ([96c61fe7](https://github.com/angular/angular.js/commit/96c61fe756d7d3db011818bf0925e3d86ffff8ce),
    [#10278](https://github.com/angular/angular.js/issues/10278))
 - **orderBy:**
-  - make object-to-primtiive behavior work for objects with null prototype
+  - make object-to-primitive behavior work for objects with null prototype
   ([3aa57528](https://github.com/angular/angular.js/commit/3aa5752894419b4638d5c934879258fa6a1c0d07))
   - maintain order in array of objects when predicate is not provided
   ([8bfeddb5](https://github.com/angular/angular.js/commit/8bfeddb5d671017f4a21b8b46334ac816710b143),
@@ -5925,7 +5925,7 @@ Closes #7336
 
 
 Previously, it was possible for an action passed to $watch
-to be a string, interpreted as an angular expresison. This is no longer supported.
+to be a string, interpreted as an angular expression. This is no longer supported.
 The action now has to be a function.
 Passing an action to $watch is still optional.
 
@@ -7826,7 +7826,7 @@ The animation mock module has been renamed from `mock.animate` to `ngAnimateMock
   After:
 
   ```
-  // POST, PUT and PATCH default headers must be specified seperately,
+  // POST, PUT and PATCH default headers must be specified separately,
   // as they do not share data.
   $httpProvider.defaults.headers.post =
     $httpProvider.defaults.headers.put =
@@ -8612,7 +8612,7 @@ There are no breaking changes in this release (promise!)
   ([31c56f54](https://github.com/angular/angular.js/commit/31c56f540045b5270f5b8e235873da855caf3486),
    [#4145](https://github.com/angular/angular.js/issues/4145),
    [#3964](https://github.com/angular/angular.js/issues/3964))
-  - **ngTransclude:** detect ngTranslude usage without a transclusion directive
+  - **ngTransclude:** detect ngTransclude usage without a transclusion directive
   ([5a1a6b86](https://github.com/angular/angular.js/commit/5a1a6b86a8dbcd8aa4fe9c59fad8d005eead686c),
    [#3759](https://github.com/angular/angular.js/issues/3759))
 
@@ -8680,7 +8680,7 @@ There are no breaking changes in this release (promise!)
   - ensure transition-property is not changed when only keyframe animations are in use
   ([2df3c9f5](https://github.com/angular/angular.js/commit/2df3c9f58def9584455f7c4bfdabbd12aab58bf9),
    [#3933](https://github.com/angular/angular.js/issues/3933))
-  - avoid completing the animation asynchronously unless CSS transtiions/animations are present
+  - avoid completing the animation asynchronously unless CSS transitions/animations are present
   ([2a63dfa6](https://github.com/angular/angular.js/commit/2a63dfa6cc7889888f4296fff2944e74ff30b3af),
    [#4023](https://github.com/angular/angular.js/issues/4023),
    [#3940](https://github.com/angular/angular.js/issues/3940))
@@ -10322,7 +10322,7 @@ This release also contains all bug fixes available in [1.0.2](#1.0.2).
 
 ## Features
 
-- **$http:** support custom reponseType
+- **$http:** support custom responseType
   ([e0a54f6b](https://github.com/angular/angular.js/commit/e0a54f6b206dc2b6595f2bc3a17c5932e7477545),
   [#1013](https://github.com/angular/angular.js/issues/1013))
 - **$interpolate:**
@@ -10469,14 +10469,14 @@ This release also contains all bug fixes available in [1.0.2](#1.0.2).
   - allow defining route async dependencies as promises and defer route change until all promises
     are resolved
     ([885fb0dd](https://github.com/angular/angular.js/commit/885fb0dd0743859a8985c23e4d0c1855a2be711e))
-  - rename template -> tempalteUrl and add support for inline templates
+  - rename template -> templateUrl and add support for inline templates
     ([0a6e464a](https://github.com/angular/angular.js/commit/0a6e464a93d9a1e76a624b356054ce9ca4015f55))
 - **$compile:** simplify isolate scope bindings and introduce true two-way data-binding between
   parent scope and isolate scope
   ([c3a41ff9](https://github.com/angular/angular.js/commit/c3a41ff9fefe894663c4d4f40a83794521deb14f))
 - **$injector:** provide API for retrieving function annotations
   ([4361efb0](https://github.com/angular/angular.js/commit/4361efb03b79e71bf0cea92b94ff377ed718bad4))
-- **$location:** add $locatonChange[start|success] event - since events are cancelable, it's now
+- **$location:** add $locationChange[start|success] event - since events are cancelable, it's now
   possible to cancel route and location changes.
   ([92a2e180](https://github.com/angular/angular.js/commit/92a2e1807657c69e1372106b0727675a30f4cbd7))
 - **$rootElement:** expose application root element as $rootElement service
@@ -10799,7 +10799,7 @@ This release also contains all bug fixes available in [1.0.2](#1.0.2).
     ([06d09550](https://github.com/angular/angular.js/commit/06d0955074f79de553cc34fbf945045dc458e064))
   - **booleanAttrs:** always convert the model to boolean before setting the element property
     ([dcb8e076](https://github.com/angular/angular.js/commit/dcb8e0767fbf0a7a55f3b0045fd01b2532ea5441))
-  - **form:** preperly clean up when invalid widget is removed
+  - **form:** properly clean up when invalid widget is removed
     ([21b77ad5](https://github.com/angular/angular.js/commit/21b77ad5c231ab0e05eb89f22005f7ed8d40a6c1))
   - **ngHref:** copy even if no binding
     ([2f5dba48](https://github.com/angular/angular.js/commit/2f5dba488e855bcdbb9304aa809efcb9de7b43e9))
@@ -10941,7 +10941,7 @@ We removed two useless features:
   ([ee5a5352](https://github.com/angular/angular.js/commit/ee5a5352fd4b94cedee6ef20d4bf2d43ce77e00b),
    [#806](https://github.com/angular/angular.js/issues/806))
 - **directives:**
-  - **select:** multiselect failes to update view on selection insert
+  - **select:** multiselect fails to update view on selection insert
     ([6ecac8e7](https://github.com/angular/angular.js/commit/6ecac8e71a84792a434d21db2c245b3648c55f18))
   - **ngForm:** alias name||ngForm
     ([823adb23](https://github.com/angular/angular.js/commit/823adb231995e917bc060bfa49453e2a96bac2b6))

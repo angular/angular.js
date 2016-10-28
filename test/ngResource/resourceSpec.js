@@ -1266,7 +1266,7 @@ describe('basic usage', function() {
         expect(user).toEqualData([{id: 1, name: 'user1'}]);
       });
 
-      it('should work with the action is overriden', function() {
+      it('should work with the action is overridden', function() {
         $httpBackend.expect('GET', '/users.json').respond([{id: 1, name: 'user1'}]);
         var UserService = $resource('/users/:user_id', {user_id: '@id'}, {
           query: {
@@ -1327,7 +1327,7 @@ describe('basic usage', function() {
         expect(user).toEqualData({id: 1, name: 'user1'});
       });
 
-      it('should work with the action is overriden', function() {
+      it('should work with the action is overridden', function() {
         $httpBackend.expect('GET', '/users/1.json').respond({id: 1, name: 'user1'});
         var UserService = $resource('/users/:user_id', {user_id: '@id'}, {
           get: {

@@ -79,9 +79,9 @@ describe('$swipe', function() {
 
   });
 
-  swipeTests('touch', /* restrictBrowers */ true, 'touchstart', 'touchmove', 'touchend');
-  swipeTests('pointer', /* restrictBrowers */ true, 'pointerdown', 'pointermove', 'pointerup');
-  swipeTests('mouse', /* restrictBrowers */ false, 'mousedown',  'mousemove', 'mouseup');
+  swipeTests('touch', /* restrictBrowsers */ true, 'touchstart', 'touchmove', 'touchend');
+  swipeTests('pointer', /* restrictBrowsers */ true, 'pointerdown', 'pointermove', 'pointerup');
+  swipeTests('mouse', /* restrictBrowsers */ false, 'mousedown',  'mousemove', 'mouseup');
 
   // Wrapper to abstract over using touch events or mouse events.
   function swipeTests(description, restrictBrowsers, startEvent, moveEvent, endEvent) {

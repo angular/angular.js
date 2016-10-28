@@ -324,7 +324,7 @@ modularity.
 
 The takeaway here is:
 
-* Always be explicit about the dependecies of a sub-module. Do not rely on dependencies inherited
+* Always be explicit about the dependencies of a sub-module. Do not rely on dependencies inherited
   from a parent module (because that parent module might not be there some day).
 
 <div class="alert alert-success">
