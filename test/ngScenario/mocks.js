@@ -12,7 +12,7 @@ angular.scenario.testing.MockAngular.prototype.reset = function() {
 };
 
 angular.scenario.testing.MockAngular.prototype.poll = function() {
-  this.log.push('$brower.poll()');
+  this.log.push('$browser.poll()');
   return this;
 };
 

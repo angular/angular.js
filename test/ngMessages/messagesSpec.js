@@ -322,7 +322,7 @@ describe('ngMessages', function() {
     expect(element.hasClass('ng-inactive')).toBe(false);
   }));
 
-  it('should automatically re-render the messages when other directives dynmically change them',
+  it('should automatically re-render the messages when other directives dynamically change them',
     inject(function($rootScope, $compile) {
 
     element = $compile('<div ng-messages="col">' +

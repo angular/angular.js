@@ -1020,7 +1020,6 @@ describe('$http', function() {
       });
     });
 
-
     describe('callbacks', function() {
 
       it('should $apply after success callback', function() {

@@ -384,7 +384,7 @@ By default, any `ngAnimate` enabled directives will assume any transition / anim
 element are part of an `ngAnimate` animation. This can lead to problems when the styles are actually
 for animations that are independent of `ngAnimate`.
 
-For example, an element acts as a loading spinner. It has an inifinite css animation on it, and also an
+For example, an element acts as a loading spinner. It has an infinite css animation on it, and also an
 {@link ngIf `ngIf`} directive, for which no animations are defined:
 
 ```css
