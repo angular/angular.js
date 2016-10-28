@@ -32,8 +32,8 @@ Here is a table of the main concepts used in the Component Router.
 | Routing Component     | An Angular component with a RouteConfig and an associated Router. |
 | RouteDefinition       | Defines how the router should navigate to a component based on a URL pattern. |
 | ngOutlet              | The directive (`<ng-outlet>`) that marks where the router should display a view. |
-| ngLink                | The directive (`ng-link="..."`) for binding a clickable HTML element to a route, via a Link Paramaters Array. |
-| Link Parameters Array | An array that the router inteprets into a routing instruction. We can bind a RouterLink to that array or pass the array as an argument to the Router.navigate method. |
+| ngLink                | The directive (`ng-link="..."`) for binding a clickable HTML element to a route, via a Link Parameters Array. |
+| Link Parameters Array | An array that the router interprets into a routing instruction. We can bind a RouterLink to that array or pass the array as an argument to the Router.navigate method. |
 
 
 ## Component-based Applications
@@ -929,7 +929,7 @@ function HeroListComponent(heroService) {
 }
 ```
 
-Finally, we can use this information to higlight the current hero in the template.
+Finally, we can use this information to highlight the current hero in the template.
 
 ```html
 <div ng-repeat="hero in $ctrl.heroes"

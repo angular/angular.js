@@ -949,7 +949,7 @@ describe('$http', function() {
         $http({ method: 'JSONP', url: $sce.trustAsResourceUrl('http://example.org/path')});
       });
 
-      it('jsonp() should accept explictly trusted urls', function() {
+      it('jsonp() should accept explicitly trusted urls', function() {
         $httpBackend.expect('JSONP', '/url?callback=JSON_CALLBACK').respond('');
         $http({method: 'JSONP', url: $sce.trustAsResourceUrl('/url')});
 

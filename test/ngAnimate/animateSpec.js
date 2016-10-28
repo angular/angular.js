@@ -2174,7 +2174,7 @@ describe('animations', function() {
       }
     }));
 
-    it('should use RAF if there are detected callbacks within the hierachy of the element being animated',
+    it('should use RAF if there are detected callbacks within the hierarchy of the element being animated',
       inject(function($animate, $rootScope, $rootElement, $$rAF) {
 
       var runner;

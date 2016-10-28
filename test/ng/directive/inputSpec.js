@@ -2082,7 +2082,7 @@ describe('input', function() {
       var dates = [
         // Validate date
         ['00:00:00.0000+01:01', false],             // date must be specified
-        ['2010.06.15T00:00:00.0000+01:01', false],  // date must use dash seperator
+        ['2010.06.15T00:00:00.0000+01:01', false],  // date must use dash separator
         ['x2010-06-15T00:00:00.0000+01:01', false], // invalid leading characters
 
         // Validate year
@@ -2110,9 +2110,9 @@ describe('input', function() {
 
         // Validate time
         ['2010-01-01', false],                      // time must be specified
-        ['2010-01-0101:00:00.0000+01:01', false],   // missing date time seperator
-        ['2010-01-01V01:00:00.0000+01:01', false],  // invalid date time seperator
-        ['2010-01-01T01-00-00.0000+01:01', false],  // time must use colon seperator
+        ['2010-01-0101:00:00.0000+01:01', false],   // missing date time separator
+        ['2010-01-01V01:00:00.0000+01:01', false],  // invalid date time separator
+        ['2010-01-01T01-00-00.0000+01:01', false],  // time must use colon separator
 
         // Validate hour
         ['2010-01-01T01:00:00.0000+01:01', true],   // hour has two digits
@@ -2141,7 +2141,7 @@ describe('input', function() {
         // Validate milliseconds
         ['2010-01-01T01:00:00+01:01', false],       // millisecond must be specified
         ['2010-01-01T01:00:00.-0000+01:01', false], // millisecond must be positive
-        ['2010-01-01T01:00:00:0000+01:01', false],  // millisecond must use period seperator
+        ['2010-01-01T01:00:00:0000+01:01', false],  // millisecond must use period separator
         ['2010-01-01T01:00:00.+01:01', false],      // millisecond has too few digits
 
         // Validate timezone
@@ -2163,9 +2163,9 @@ describe('input', function() {
 
         // Validate timezone minute offset
         ['2010-06-15T00:00:00.0000+00:-01', false], // timezone minute offset must be positive
-        ['2010-06-15T00:00:00.0000+00.01', false],  // timezone minute offset must use colon seperator
-        ['2010-06-15T00:00:00.0000+0101', false],   // timezone minute offset must use colon seperator
-        ['2010-06-15T00:00:00.0000+010', false],    // timezone minute offset must use colon seperator
+        ['2010-06-15T00:00:00.0000+00.01', false],  // timezone minute offset must use colon separator
+        ['2010-06-15T00:00:00.0000+0101', false],   // timezone minute offset must use colon separator
+        ['2010-06-15T00:00:00.0000+010', false],    // timezone minute offset must use colon separator
         ['2010-06-15T00:00:00.0000+00', false],     // timezone minute offset has too few digits
         ['2010-06-15T00:00:00.0000+00:', false],    // timezone minute offset has too few digits
         ['2010-06-15T00:00:00.0000+00:0', false],   // timezone minute offset has too few digits

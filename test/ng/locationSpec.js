@@ -650,7 +650,7 @@ describe('$location', function() {
         expect(locationUrl.absUrl()).toEqual('http://host.com?q=1%2F2%203&q=4%2F5%206');
       });
 
-      it('should rewrite params when specifing a single param in search', function() {
+      it('should rewrite params when specifying a single param in search', function() {
         var locationUrl = new LocationHtml5Url('http://host.com', 'http://host.com');
         locationUrl.$$parse('http://host.com');
         locationUrl.search({'q': '1/2 3'});

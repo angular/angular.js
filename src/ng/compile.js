@@ -402,7 +402,7 @@
  *        * defines the parent to which the `cloneLinkingFn` will add the cloned elements.
  *        * default: `$element.parent()` resp. `$element` for `transclude:'element'` resp. `transclude:true`.
  *        * only needed for transcludes that are allowed to contain non html elements (e.g. SVG elements)
- *          and when the `cloneLinkinFn` is passed,
+ *          and when the `cloneLinkingFn` is passed,
  *          as those elements need to created and cloned in a special way when they are defined outside their
  *          usual containers (e.g. like `<svg>`).
  *        * See also the `directive.templateNamespace` property.
@@ -2222,7 +2222,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
     }
 
     /**
-     * Given a node with an directive-start it collects all of the siblings until it finds
+     * Given a node with a directive-start it collects all of the siblings until it finds
      * directive-end.
      * @param node
      * @param attrStart
