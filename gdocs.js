@@ -39,7 +39,7 @@ if (flag === '--login') {
 }
 
 function help() {
-  console.log('Synopsys');
+  console.log('Synopsis');
   console.log('gdocs.js --login <username>');
   console.log('gdocs.js --fetch [<docs collection>]');
   process.exit(-1);

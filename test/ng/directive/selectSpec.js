@@ -309,7 +309,7 @@ describe('select', function() {
         scope.robot = '';
         compile('<select ng-model="robot">' +
                   '<option ng-repeat="opt in dynamicOptions" value="{{opt.val}}">{{opt.display}}</option>' +
-                '</selec>');
+                '</select>');
         expect(element).toEqualSelect(['? string: ?']);
 
 
@@ -344,7 +344,7 @@ describe('select', function() {
         compile('<select ng-model="robot">' +
                   '<option value="">--static-select--</option>' +
                   '<option ng-repeat="opt in dynamicOptions" value="{{opt.val}}">{{opt.display}}</option>' +
-                '</selec>');
+                '</select>');
         scope.$digest();
         expect(element).toEqualSelect([unknownValue('x')], '');
 
