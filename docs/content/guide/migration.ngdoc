@@ -33,7 +33,7 @@ which drives many of these changes.
 ## Migrating from 1.4 to 1.5
 
 Angular 1.5 takes a big step towards preparing developers for a smoother transition to Angular 2 in
-the future. Architecturing your applications using components, multi-slot transclusion, one-way
+the future. Architecting your applications using components, multi-slot transclusion, one-way
 bindings in isolate scopes, using lifecycle hooks in directive controllers and relying on native ES6
 features (such as classes and arrow functions) are now all possible with Angular 1.5.
 
@@ -605,7 +605,7 @@ The new API on `$cookies` is as follows:
  * `getAll`
  * `remove`
 
-You must explictly use the methods above in order to access cookie data. This also means that
+You must explicitly use the methods above in order to access cookie data. This also means that
 you can no longer watch the properties on `$cookies` to detect changes
 that occur on the browsers cookies.
 
@@ -1129,7 +1129,7 @@ app. This is no longer possible within a single module.
 
 - due to [a097aa95](https://github.com/angular/angular.js/commit/a097aa95b7c78beab6d1b7d521c25f7d9d7843d9),
   `orderBy` now treats `null` values (which in JavaScript have type `object`) as having a string
-  represenation of `'null'`.
+  representation of `'null'`.
 
 
 ### Animation (`ngAnimate`)

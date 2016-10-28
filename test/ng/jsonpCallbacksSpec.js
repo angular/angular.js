@@ -71,7 +71,7 @@ describe('$jsonpCallbacks', function() {
   });
 
 
-  describe('removeCallback(calbackPath)', function() {
+  describe('removeCallback(callbackPath)', function() {
 
     it('should remove the callback', inject(function($window, $jsonpCallbacks) {
       var path = $jsonpCallbacks.createCallback('http://some.dummy.com/jsonp/request');

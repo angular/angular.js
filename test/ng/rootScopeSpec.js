@@ -545,7 +545,7 @@ describe('Scope', function() {
 
         listener.calls.reset();
         $rootScope.foo = 'bar';
-        $rootScope.$digest(); //triger
+        $rootScope.$digest(); //trigger
         expect(listener).toHaveBeenCalledOnce();
 
         listener.calls.reset();

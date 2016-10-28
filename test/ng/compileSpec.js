@@ -591,7 +591,7 @@ describe('$compile', function() {
 
     it('should not blow up when elements with no childNodes property are compiled', inject(
         function($compile, $rootScope) {
-      // it turns out that when a browser plugin is bound to an DOM element (typically <object>),
+      // it turns out that when a browser plugin is bound to a DOM element (typically <object>),
       // the plugin's context rather than the usual DOM apis are exposed on this element, so
       // childNodes might not exist.
 
@@ -2574,7 +2574,7 @@ describe('$compile', function() {
         }));
 
 
-        it('should correctly create the scope hierachy', inject(
+        it('should correctly create the scope hierarchy', inject(
           function($rootScope, $compile, log) {
             element = $compile(
                 '<div>' + //1
@@ -3016,7 +3016,7 @@ describe('$compile', function() {
               })
           );
 
-          it('sholdn\'t add module name to multidir isolated scope message if directive is defined directly with $compileProvider', inject(
+          it('shouldn\'t add module name to multidir isolated scope message if directive is defined directly with $compileProvider', inject(
             function($rootScope, $compile) {
               expect(function() {
                 $compile('<div class="anonym-module-scope-directive; fake-i-scope"></div>');
@@ -4500,7 +4500,7 @@ describe('$compile', function() {
           });
 
 
-          it('should cope with changes occuring inside `$onChanges()` hooks', function() {
+          it('should cope with changes occurring inside `$onChanges()` hooks', function() {
             var log = [];
             function OuterController() {}
             OuterController.prototype.$onChanges = function(change) {
@@ -4931,7 +4931,7 @@ describe('$compile', function() {
         });
 
 
-        it('should ignore optional "="-bound property if value is the emptry string', function() {
+        it('should ignore optional "="-bound property if value is the empty string', function() {
           module(function($compileProvider) {
             $compileProvider.directive('testDir', valueFn({
               scope: {prop: '=?'},
@@ -7964,7 +7964,7 @@ describe('$compile', function() {
 
 
 
-        it('should instantiate controllers in the parent->child order when transluction, templateUrl and replacement ' +
+        it('should instantiate controllers in the parent->child order when transclusion, templateUrl and replacement ' +
             'are in the mix', function() {
           // When a child controller is in the transclusion that replaces the parent element that has a directive with
           // a controller, we should ensure that we first instantiate the parent and only then stuff that comes from the
@@ -8058,7 +8058,7 @@ describe('$compile', function() {
         });
 
 
-        it('should instantiate controllers in the parent->child->baby order when nested transluction, templateUrl and ' +
+        it('should instantiate controllers in the parent->child->baby order when nested transclusion, templateUrl and ' +
             'replacement are in the mix', function() {
           // similar to the test above, except that we have one more layer of nesting and nested transclusion
 
@@ -8615,7 +8615,7 @@ describe('$compile', function() {
           });
 
 
-          it('should clear contents of the ng-translude element before appending transcluded content' +
+          it('should clear contents of the ng-transclude element before appending transcluded content' +
             ' if transcluded content exists', function() {
             module(function() {
               directive('trans', function() {
@@ -8632,7 +8632,7 @@ describe('$compile', function() {
             });
           });
 
-          it('should NOT clear contents of the ng-translude element before appending transcluded content' +
+          it('should NOT clear contents of the ng-transclude element before appending transcluded content' +
             ' if transcluded content does NOT exist', function() {
             module(function() {
               directive('trans', function() {
@@ -9789,7 +9789,7 @@ describe('$compile', function() {
           });
 
 
-          it('should terminate compilation only for element trasclusion', function() {
+          it('should terminate compilation only for element transclusion', function() {
             module(function() {
               directive('elementTrans', function(log) {
                 return {

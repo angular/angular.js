@@ -1781,7 +1781,7 @@ describe('ngMock', function() {
             expect(callback).toHaveBeenCalledOnceWith(200, 'path', '', '');
           }
         );
-        they('should match colon deliminated parameters in ' + routeShortcut + ' $prop method', methods,
+        they('should match colon delimited parameters in ' + routeShortcut + ' $prop method', methods,
           function() {
             hb[routeShortcut](this, '/route/:id/path/:s_id').respond('path');
             hb(this, '/route/123/path/456', undefined, callback);
@@ -2856,7 +2856,7 @@ describe('sharedInjector', function() {
 
   // we use the 'module' and 'inject' globals from ngMock
 
-  it('allowes me to mutate a single instace of a module (proving it has been shared)', ngMockTest(function() {
+  it('allows me to mutate a single instance of a module (proving it has been shared)', ngMockTest(function() {
     sdescribe('test state is shared', function() {
       angular.module('sharedInjectorTestModuleA', [])
         .factory('testService', function() {

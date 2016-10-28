@@ -120,13 +120,13 @@ can be used with `ngAttr` instead. The following is a list of known problematic 
 ### Dynamically changing an interpolated value
 
 You should avoid dynamically changing the content of an interpolated string (e.g. attribute value
-or text node). Your changes are likely to be overwriten, when the original string gets evaluated.
+or text node). Your changes are likely to be overwritten, when the original string gets evaluated.
 This restriction applies to both directly changing the content via JavaScript or indirectly using a
 directive.
 
 For example, you should not use interpolation in the value of the `style` attribute (e.g.
 `style="color: {{ 'orange' }}; font-weight: {{ 'bold' }};"`) **and** at the same time use a
-directive that changes the content of that attributte, such as `ngStyle`.
+directive that changes the content of that attribute, such as `ngStyle`.
 
 ### Embedding interpolation markup inside expressions
 
