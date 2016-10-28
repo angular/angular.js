@@ -215,7 +215,7 @@ describe('browser', function() {
   });
 
   describe('outstanding requests', function() {
-    it('should process callbacks immedietly with no outstanding requests', function() {
+    it('should process callbacks immediately with no outstanding requests', function() {
       var callback = jasmine.createSpy('callback');
       browser.notifyWhenNoOutstandingRequests(callback);
       expect(callback).toHaveBeenCalled();
@@ -224,7 +224,7 @@ describe('browser', function() {
 
 
   describe('defer', function() {
-    it('should execute fn asynchroniously via setTimeout', function() {
+    it('should execute fn asynchronously via setTimeout', function() {
       var callback = jasmine.createSpy('deferred');
 
       browser.defer(callback);

@@ -433,7 +433,7 @@ describe('q', function() {
 
     describe('promise', function() {
       describe('then', function() {
-        it('should allow registration of a success callback without an errback or progressback ' +
+        it('should allow registration of a success callback without an errback or progressBack ' +
           'and resolve', function() {
           var promise = createPromise();
           promise.then(success());
@@ -473,7 +473,7 @@ describe('q', function() {
         });
 
 
-        it('should allow registration of an progressback without a success callback and resolve',
+        it('should allow registration of a progressBack without a success callback and resolve',
             function() {
           var promise = createPromise();
           promise.then(null, null, progress());
@@ -483,7 +483,7 @@ describe('q', function() {
         });
 
 
-        it('should allow registration of an progressback without a error callback and reject',
+        it('should allow registration of a progressBack without a error callback and reject',
             function() {
           var promise = createPromise();
           promise.then(null, null, progress());
@@ -1146,7 +1146,7 @@ describe('q', function() {
 
 
       describe('then', function() {
-        it('should allow registration of a success callback without an errback or progressback ' +
+        it('should allow registration of a success callback without an errback or progressBack ' +
           'and resolve', function() {
           promise.then(success());
           syncResolve(deferred, 'foo');
@@ -1162,7 +1162,7 @@ describe('q', function() {
         });
 
 
-        it('should allow registration of a success callback without an progressback and notify',
+        it('should allow registration of a success callback without a progressBack and notify',
             function() {
           promise.then(success());
           syncNotify(deferred, 'doing');
@@ -1194,7 +1194,7 @@ describe('q', function() {
         });
 
 
-        it('should allow registration of an progressback without a success or error callback and ' +
+        it('should allow registration of a progressBack without a success or error callback and ' +
           'notify', function() {
           promise.then(null, null, progress());
           syncNotify(deferred, 'doing');
@@ -1202,7 +1202,7 @@ describe('q', function() {
         });
 
 
-        it('should allow registration of an progressback without a success callback and resolve',
+        it('should allow registration of a progressBack without a success callback and resolve',
             function() {
           promise.then(null, null, progress());
           syncResolve(deferred, 'done');
@@ -1210,7 +1210,7 @@ describe('q', function() {
         });
 
 
-        it('should allow registration of an progressback without a error callback and reject',
+        it('should allow registration of a progressBack without a error callback and reject',
             function() {
           promise.then(null, null, progress());
           syncReject(deferred, 'oops!');
@@ -1641,7 +1641,7 @@ describe('q', function() {
 
 
     describe('notification', function() {
-      it('should call the progressback when the value is a promise and gets notified',
+      it('should call the progressBack when the value is a promise and gets notified',
           function() {
         q.when(deferred.promise, success(), error(), progress());
         expect(logStr()).toBe('');
@@ -1692,7 +1692,7 @@ describe('q', function() {
       });
 
 
-      it('should not require progressback and propagate notification', function() {
+      it('should not require progressBack and propagate notification', function() {
         q.when(deferred.promise).
           then(success(), error(), progress());
         expect(logStr()).toBe('');
@@ -1806,7 +1806,7 @@ describe('q', function() {
       });
 
 
-      it('should not call progressback after promise gets fulfilled, even if original promise ' +
+      it('should not call progressBack after promise gets fulfilled, even if original promise ' +
           'gets notified multiple times', function() {
         var evilPromise = {
           then: function(success, error, progress) {
@@ -2098,7 +2098,7 @@ describe('q', function() {
       });
 
 
-      it('should log exceptions throw in a progressack and stop propagation, but shoud NOT reject ' +
+      it('should log exceptions thrown in a progressBack and stop propagation, but should NOT reject ' +
         'the promise', function() {
           promise.then(success(), error(), progress(1, 'failed', true)).then(null, error(1), progress(2));
           syncNotify(deferred, '10%');

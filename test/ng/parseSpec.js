@@ -591,7 +591,7 @@ describe('parser', function() {
     });
 
 
-    it('should not confuse `this`, `$locals`, `undefined`, `true`, `false`, `null` when used as identfiers', function() {
+    it('should not confuse `this`, `$locals`, `undefined`, `true`, `false`, `null` when used as identifiers', function() {
       forEach(['this', '$locals', 'undefined', 'true', 'false', 'null'], function(identifier) {
         expect(createAst('foo.' + identifier)).toEqual(
           {
@@ -701,7 +701,7 @@ describe('parser', function() {
     });
 
 
-    it('should associate binary operators with the same precendence left-to-right', function() {
+    it('should associate binary operators with the same precedence left-to-right', function() {
       var operatorsByPrecedence = [['*', '/', '%'], ['+', '-'], ['<', '>', '<=', '>='], ['==','!=','===','!==']];
       forEach(operatorsByPrecedence, function(operators) {
         forEach(operators, function(op1) {
@@ -733,7 +733,7 @@ describe('parser', function() {
     });
 
 
-    it('should give higher prcedence to member calls than to unary expressions', function() {
+    it('should give higher precedence to member calls than to unary expressions', function() {
       forEach(['!', '+', '-'], function(operator) {
         expect(createAst(operator + 'foo()')).toEqual(
           {

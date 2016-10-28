@@ -274,7 +274,7 @@ describe('validators', function() {
     });
 
 
-    it('should validate when the model is initalized as a number', function() {
+    it('should validate when the model is initialized as a number', function() {
       $rootScope.value = 12345;
       var inputElm = helper.compileInput('<input type="text" name="input" ng-model="value" minlength="3" />');
       expect($rootScope.value).toBe(12345);
@@ -462,7 +462,7 @@ describe('validators', function() {
     });
 
 
-    it('should validate when the model is initalized as a number', function() {
+    it('should validate when the model is initialized as a number', function() {
       $rootScope.value = 12345;
       var inputElm = helper.compileInput('<input type="text" name="input" ng-model="value" maxlength="10" />');
       expect($rootScope.value).toBe(12345);
