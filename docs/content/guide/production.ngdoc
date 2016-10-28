@@ -88,7 +88,7 @@ Nowadays most of the Angular projects are using only element and attribute direc
 and in such projects there is no need to compile comments and classes.
 
 If you are sure that your project only uses element and attribute directives,
-and you are not using any 3rd part library that uses
+and you are not using any 3rd party library that uses
 directives inside element classes or html comments,
 you can disable the compilation of directives on element classes and comments
 for the whole application.
