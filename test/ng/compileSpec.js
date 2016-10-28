@@ -11935,13 +11935,13 @@ describe('$compile', function() {
       testReplaceElementCleanup({});
     });
     it('should clean data of elements removed for directive templateUrl', function() {
-      testReplaceElementCleanup({asyncTmeplate: true});
+      testReplaceElementCleanup({asyncTemplate: true});
     });
     it('should clean data of elements transcluded into directive template', function() {
       testReplaceElementCleanup({transclude: true});
     });
     it('should clean data of elements transcluded into directive templateUrl', function() {
-      testReplaceElementCleanup({transclude: true, asyncTmeplate: true});
+      testReplaceElementCleanup({transclude: true, asyncTemplate: true});
     });
     it('should clean data of elements replaced with directive template', function() {
       testReplaceElementCleanup({replace: true});

@@ -192,7 +192,7 @@ describe('injector', function() {
 
 
     it('should create $inject', function() {
-      var extraParans = angular.noop;
+      var extraParams = angular.noop;
       /* eslint-disable space-before-function-paren */
       // keep the multi-line to make sure we can handle it
       function $f_n0 /*
@@ -203,7 +203,7 @@ describe('injector', function() {
                  function(a, b) {}
                  */
           _c,
-          /* {some type} */ d) { extraParans(); }
+          /* {some type} */ d) { extraParams(); }
       /* eslint-enable */
       expect(annotate($f_n0)).toEqual(['$a', 'b_', '_c',  'd']);
       expect($f_n0.$inject).toEqual(['$a', 'b_', '_c',  'd']);
