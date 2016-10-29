@@ -423,6 +423,34 @@ describe('ngInclude', function() {
     });
 
 
+    it('should not trigger a digest when the include is changed', function() {
+
+      inject(function($$rAF, $templateCache, $rootScope, $compile, $timeout) {
+        var spy = spyOn($rootScope, '$digest').and.callThrough();
+
+        $templateCache.put('myUrl', 'my template content');
+        $templateCache.put('myOtherUrl', 'my other template content');
+
+        $rootScope.url = 'myUrl';
+        element = jqLite('<div><ng-include src="url"></ng-include></div>');
+        element = $compile(element)($rootScope);
+        $rootScope.$digest();
+        // The animation completion is async even without actual animations
+        $$rAF.flush();
+        expect(element.text()).toEqual('my template content');
+
+        $rootScope.$apply('url = "myOtherUrl"');
+        spy.calls.reset();
+        expect(element.text()).toEqual('my other template content');
+        $$rAF.flush();
+
+        expect(spy).not.toHaveBeenCalled();
+        // A digest may have been triggered asynchronously, so check the queue
+        $timeout.verifyNoPendingTasks();
+      });
+    });
+
+
     describe('autoscroll', function() {
       var autoScrollSpy;
 
@@ -759,6 +787,7 @@ describe('ngInclude', function() {
       module(function($provide) {
         $provide.decorator('$animate', function($delegate, $$q) {
           var emptyPromise = $$q.defer().promise;
+          emptyPromise.done = noop;
 
           $delegate.leave = function() {
             return emptyPromise;
