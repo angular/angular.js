@@ -141,7 +141,7 @@ different currencies and also pay the invoice.
           <b>Total:</b>
           <span ng-repeat="c in invoice.currencies">
             {{invoice.total(c) | currency:c}}
-          </span>
+          </span><br>
           <button class="btn" ng-click="invoice.pay()">Pay</button>
         </div>
       </div>
@@ -242,7 +242,7 @@ Let's refactor our example and move the currency conversion into a service in an
           <b>Total:</b>
           <span ng-repeat="c in invoice.currencies">
             {{invoice.total(c) | currency:c}}
-          </span>
+          </span><br>
           <button class="btn" ng-click="invoice.pay()">Pay</button>
         </div>
       </div>
@@ -318,13 +318,21 @@ The following example shows how this is done with Angular:
         this.pay = function pay() {
           window.alert('Thanks!');
         };
+      }])
+
+      .config(['$sceDelegateProvider', function($sceDelegateProvider) {
+        // Add the yahoo finance api to the list of trusted resource urls (required for JSONP)
+        $sceDelegateProvider.resourceUrlWhitelist([
+          'self',
+          'https://query.yahooapis.com/v1/public/**'
+        ]);
       }]);
   </file>
   <file name="finance3.js">
     angular.module('finance3', [])
       .factory('currencyConverter', ['$http', function($http) {
         var YAHOO_FINANCE_URL_PATTERN =
-              '//query.yahooapis.com/v1/public/yql?q=select * from ' +
+              'https://query.yahooapis.com/v1/public/yql?q=select * from ' +
               'yahoo.finance.xchange where pair in ("PAIRS")&format=json&' +
               'env=store://datatables.org/alltableswithkeys';
         var currencies = ['USD', 'EUR', 'CNY'];
@@ -371,7 +379,7 @@ The following example shows how this is done with Angular:
           <b>Total:</b>
           <span ng-repeat="c in invoice.currencies">
             {{invoice.total(c) | currency:c}}
-          </span>
+          </span><br>
           <button class="btn" ng-click="invoice.pay()">Pay</button>
         </div>
       </div>
