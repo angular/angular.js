@@ -54,12 +54,14 @@ describe('ngSwitch', function() {
     $rootScope.name = 'shyam';
     $rootScope.$apply();
     expect(element.text()).toEqual('first:shyam, first too:shyam');
+
     $rootScope.select = 2;
     $rootScope.$apply();
     expect(element.text()).toEqual('second:shyam');
     $rootScope.name = 'misko';
     $rootScope.$apply();
     expect(element.text()).toEqual('second:misko');
+
     $rootScope.select = true;
     $rootScope.$apply();
     expect(element.text()).toEqual('true:misko');
@@ -301,7 +303,66 @@ describe('ngSwitch', function() {
   }));
 
 
+  it('should not trigger a digest after an element is removed', inject(function($$rAF, $compile, $rootScope, $timeout) {
+    var spy = spyOn($rootScope, '$digest').and.callThrough();
+
+    $rootScope.select = 1;
+    element = $compile(
+      '<div ng-switch="select">' +
+        '<div ng-switch-when="1">first</div>' +
+        '<div ng-switch-when="2">second</div>' +
+      '</div>')($rootScope);
+    $rootScope.$apply();
+
+    expect(element.text()).toEqual('first');
+
+    $rootScope.select = 2;
+    $rootScope.$apply();
+    spy.calls.reset();
+    expect(element.text()).toEqual('second');
+    // If ngSwitch re-introduces code that triggers a digest after an element is removed (in an
+    // animation .then callback), flushing the queue ensures the callback will be called, and the test
+    // fails
+    $$rAF.flush();
+
+    expect(spy).not.toHaveBeenCalled();
+    // A digest may have been triggered asynchronously, so check the queue
+    $timeout.verifyNoPendingTasks();
+  }));
+
+
+  it('should handle changes to the switch value in a digest loop with multiple value matches',
+    inject(function($compile, $rootScope) {
+      var scope = $rootScope.$new();
+      scope.value = 'foo';
+
+      scope.$watch('value', function() {
+        if (scope.value === 'bar') {
+          scope.$evalAsync(function() {
+            scope.value = 'baz';
+          });
+        }
+      });
+
+      element = $compile(
+        '<div ng-switch="value">' +
+          '<div ng-switch-when="foo">FOO 1</div>' +
+          '<div ng-switch-when="foo">FOO 2</div>' +
+          '<div ng-switch-when="bar">BAR</div>' +
+          '<div ng-switch-when="baz">BAZ</div>' +
+        '</div>')(scope);
+
+      scope.$apply();
+      expect(element.text()).toBe('FOO 1FOO 2');
+
+      scope.$apply('value = "bar"');
+      expect(element.text()).toBe('BAZ');
+    })
+  );
+
+
   describe('ngSwitchWhen separator', function() {
+
     it('should be possible to define a separator', inject(function($rootScope, $compile) {
       element = $compile(
         '<div ng-switch="mode">' +
@@ -315,9 +376,11 @@ describe('ngSwitch', function() {
       expect(element.children().length).toBe(2);
       expect(element.text()).toBe('Block1|Block2|');
       $rootScope.$apply('mode = "b"');
+
       expect(element.children().length).toBe(1);
       expect(element.text()).toBe('Block1|');
       $rootScope.$apply('mode = "c"');
+
       expect(element.children().length).toBe(1);
       expect(element.text()).toBe('Block3|');
     }));
@@ -336,9 +399,11 @@ describe('ngSwitch', function() {
       expect(element.children().length).toBe(2);
       expect(element.text()).toBe('Block1|Block2|');
       $rootScope.$apply('mode = ""');
+
       expect(element.children().length).toBe(1);
       expect(element.text()).toBe('Block1|');
       $rootScope.$apply('mode = "c"');
+
       expect(element.children().length).toBe(1);
       expect(element.text()).toBe('Block3|');
     }));
@@ -357,9 +422,11 @@ describe('ngSwitch', function() {
       expect(element.children().length).toBe(2);
       expect(element.text()).toBe('Block1|Block2|');
       $rootScope.$apply('mode = "b"');
+
       expect(element.children().length).toBe(1);
       expect(element.text()).toBe('Block1|');
       $rootScope.$apply('mode = "c"');
+
       expect(element.children().length).toBe(1);
       expect(element.text()).toBe('Block3|');
     }));
@@ -378,9 +445,11 @@ describe('ngSwitch', function() {
       expect(element.children().length).toBe(2);
       expect(element.text()).toBe('Block1|Block2|');
       $rootScope.$apply('mode = "b|a"');
+
       expect(element.children().length).toBe(1);
       expect(element.text()).toBe('Block1|');
       $rootScope.$apply('mode = "c"');
+
       expect(element.children().length).toBe(1);
       expect(element.text()).toBe('Block3|');
     }));
@@ -399,9 +468,11 @@ describe('ngSwitch', function() {
       expect(element.children().length).toBe(2);
       expect(element.text()).toBe('Block1|Block2|');
       $rootScope.$apply('mode = "b"');
+
       expect(element.children().length).toBe(1);
       expect(element.text()).toBe('Block1|');
       $rootScope.$apply('mode = "c"');
+
       expect(element.children().length).toBe(1);
       expect(element.text()).toBe('Block3|');
     }));

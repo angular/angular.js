@@ -185,6 +185,23 @@ describe('ngIf', function() {
       expect(element.children().length).toBe(0);
       expect(element.text()).toBe('');
     }));
+
+    it('should not trigger a digest when the element is removed', inject(function($$rAF, $rootScope, $timeout) {
+      var spy = spyOn($rootScope, '$digest').and.callThrough();
+
+      $scope.hello = true;
+      makeIf('hello');
+      expect(element.children().length).toBe(1);
+      $scope.$apply('hello = false');
+      spy.calls.reset();
+      expect(element.children().length).toBe(0);
+      // The animation completion is async even without actual animations
+      $$rAF.flush();
+
+      expect(spy).not.toHaveBeenCalled();
+      // A digest may have been triggered asynchronously, so check the queue
+      $timeout.verifyNoPendingTasks();
+    }));
   });
 
   describe('and transcludes', function() {
@@ -319,6 +336,7 @@ describe('ngIf', function() {
       module(function($provide) {
         $provide.decorator('$animate', function($delegate, $$q) {
           var emptyPromise = $$q.defer().promise;
+          emptyPromise.done = noop;
 
           $delegate.leave = function() {
             return emptyPromise;
