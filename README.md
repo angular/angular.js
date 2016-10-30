@@ -2,7 +2,7 @@ AngularJS [![Build Status](https://travis-ci.org/angular/angular.js.svg?branch=m
 =========
 
 AngularJS lets you write client-side web applications as if you had a smarter browser.  It lets you
-use good old HTML (or HAML, Jade and friends!) as your template language and lets you extend HTML’s
+use good old HTML (or HAML, Jade/Pug and friends!) as your template language and lets you extend HTML’s
 syntax to express your application’s components clearly and succinctly.  It automatically
 synchronizes data from your UI (view) with your JavaScript objects (model) through 2-way data
 binding. To help you structure your application better and make it easy to test, AngularJS teaches
