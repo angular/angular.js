@@ -241,7 +241,7 @@ Must be one of the following:
   semi-colons, etc)
 * **refactor**: A code change that neither fixes a bug nor adds a feature
 * **perf**: A code change that improves performance
-* **test**: Adding missing tests
+* **test**: Adding missing or correcting existing tests
 * **chore**: Changes to the build process or auxiliary tools and libraries such as documentation
   generation
 
@@ -264,7 +264,7 @@ The body should include the motivation for the change and contrast this with pre
 
 ### Footer
 The footer should contain any information about **Breaking Changes** and is also the place to
-reference GitHub issues that this commit **Closes**.
+[reference GitHub issues that this commit closes][closing-issues].
 
 **Breaking Changes** should start with the word `BREAKING CHANGE:` with a space or two newlines. The rest of the commit message is then used for this.
 
@@ -287,6 +287,7 @@ You can find out more detailed information about contributing in the
 
 [Google Closure I18N library]: https://github.com/google/closure-library/tree/master/closure/goog/i18n
 [angular-dev]: https://groups.google.com/forum/?fromgroups#!forum/angular-dev
+[closing-issues]: https://help.github.com/articles/closing-issues-via-commit-messages/
 [coc]: https://github.com/angular/code-of-conduct/blob/master/CODE_OF_CONDUCT.md
 [commit-message-format]: https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/edit#
 [contribute]: http://docs.angularjs.org/misc/contribute
