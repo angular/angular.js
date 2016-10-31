@@ -141,7 +141,7 @@ different currencies and also pay the invoice.
           <b>Total:</b>
           <span ng-repeat="c in invoice.currencies">
             {{invoice.total(c) | currency:c}}
-          </span>
+          </span><br>
           <button class="btn" ng-click="invoice.pay()">Pay</button>
         </div>
       </div>
@@ -242,7 +242,7 @@ Let's refactor our example and move the currency conversion into a service in an
           <b>Total:</b>
           <span ng-repeat="c in invoice.currencies">
             {{invoice.total(c) | currency:c}}
-          </span>
+          </span><br>
           <button class="btn" ng-click="invoice.pay()">Pay</button>
         </div>
       </div>
@@ -337,7 +337,7 @@ The following example shows how this is done with Angular:
         var refresh = function() {
           var url = YAHOO_FINANCE_URL_PATTERN.
                      replace('PAIRS', 'USD' + currencies.join('","USD'));
-          return $http.jsonp(url).then(function(response) {
+          return $http.get(url).then(function(response) {
             var newUsdToForeignRates = {};
             angular.forEach(response.data.query.results.rate, function(rate) {
               var currency = rate.id.substring(3,6);
@@ -371,7 +371,7 @@ The following example shows how this is done with Angular:
           <b>Total:</b>
           <span ng-repeat="c in invoice.currencies">
             {{invoice.total(c) | currency:c}}
-          </span>
+          </span><br>
           <button class="btn" ng-click="invoice.pay()">Pay</button>
         </div>
       </div>
