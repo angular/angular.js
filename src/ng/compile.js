@@ -1379,7 +1379,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
    *
    * The default value is true in Angular 1.5.x but will switch to false in Angular 1.6.x.
    */
-  var preAssignBindingsEnabled = true;
+  var preAssignBindingsEnabled = false;
   this.preAssignBindingsEnabled = function(enabled) {
     if (isDefined(enabled)) {
       preAssignBindingsEnabled = enabled;

@@ -171,7 +171,9 @@ describe('$compile', function() {
 
     it('should allow preAssignBindingsEnabled to be configured', function() {
       module(function($compileProvider) {
-        expect($compileProvider.preAssignBindingsEnabled()).toBe(true); // the default
+        expect($compileProvider.preAssignBindingsEnabled()).toBe(false); // the default
+        $compileProvider.preAssignBindingsEnabled(true);
+        expect($compileProvider.preAssignBindingsEnabled()).toBe(true);
         $compileProvider.preAssignBindingsEnabled(false);
         expect($compileProvider.preAssignBindingsEnabled()).toBe(false);
       });
