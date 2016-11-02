@@ -544,6 +544,72 @@ describe('ngAnimate integration tests', function() {
         expect(child).not.toHaveClass('blue');
       });
     });
+
+    it('should remove a temporary class when the animation starts, then re-add it when it is triggered', function() {
+
+      var elementClassList = [];
+
+      var hasTempClass = {
+        beforeCssAnimationStart: null,
+        afterCssAnimationStart: null,
+        afterCssAnimationTriggered: null,
+        afterCssAnimationFinished: null
+      };
+
+      module(function($provide) {
+        $provide.decorator('$animateCss', function($delegate) {
+          var decorated = function() {
+            var element = arguments[0];
+            var animator = $delegate.apply(this, arguments);
+            var startFn = animator.start;
+
+            animator.start = function() {
+              hasTempClass.beforeCssAnimationStart = element[0].classList.contains('temp-class');
+              var runner = startFn.apply(this, arguments);
+              hasTempClass.afterCssAnimationStart = element[0].classList.contains('temp-class');
+              return runner;
+            };
+
+            return animator;
+          };
+
+          return decorated;
+        });
+      });
+
+      inject(function($animate, $compile, $rootScope, $rootElement, $$rAF) {
+        element = jqLite('<div class="animate-me"></div>');
+        $compile(element)($rootScope);
+
+        var className = 'klass';
+        var parent = jqLite('<div></div>');
+        html(parent);
+
+        parent.append(element);
+
+        ss.addRule('.animate-me', 'transition:2s linear all;');
+
+        var runner = $animate.addClass(element, className, {
+          tempClasses: 'temp-class'
+        });
+
+        $rootScope.$digest();
+        $animate.flush();
+
+        hasTempClass.afterCssAnimationTriggered = element[0].classList.contains('temp-class');
+
+        browserTrigger(element, 'transitionend', { timeStamp: Date.now(), elapsedTime: 2 });
+        $animate.flush();
+
+        $rootScope.$digest();
+        hasTempClass.afterCssAnimationFinished = element[0].classList.contains('temp-class');
+
+        expect(hasTempClass.beforeCssAnimationStart).toBe(true);
+        expect(hasTempClass.afterCssAnimationStart).toBe(false);
+        expect(hasTempClass.afterCssAnimationTriggered).toBe(true);
+        expect(hasTempClass.afterCssAnimationFinished).toBe(false);
+      });
+    });
   });
 
   describe('JS animations', function() {

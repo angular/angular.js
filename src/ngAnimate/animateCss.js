@@ -692,6 +692,13 @@ var $AnimateCssProvider = ['$animateProvider', /** @this */ function($animatePro
 
           runner = new $$AnimateRunner(runnerHost);
 
+          if (options.tempClasses) {
+            // Since animateCss waits for an animation frame to start the actual
+            // animation, the temp class styles might be visible for a very short time.
+            // Removing and re-adding before the actual start solves this problem.
+            $$jqLite.removeClass(element, options.tempClasses);
+          }
+
           waitUntilQuiet(start);
 
           // we don't have access to pause/resume the animation
@@ -833,6 +840,11 @@ var $AnimateCssProvider = ['$animateProvider', /** @this */ function($animatePro
         if (!node.parentNode) {
           close();
           return;
+        }
+
+        if (options.tempClasses) {
+          $$jqLite.addClass(element, options.tempClasses);
+          options.tempClasses = null;
         }
 
         // even though we only pause keyframe animations here the pause flag
