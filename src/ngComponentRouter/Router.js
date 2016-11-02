@@ -26,7 +26,7 @@
  *  <!-- IE required polyfills, in this exact order -->
  *  <script src="https://cdnjs.cloudflare.com/ajax/libs/es6-shim/0.33.3/es6-shim.min.js"></script>
  *  <script src="https://cdnjs.cloudflare.com/ajax/libs/systemjs/0.19.20/system-polyfills.js"></script>
- *  <script src="https://npmcdn.com/angular2/es6/dev/src/testing/shims_for_IE.js"></script>
+ *  <script src="https://unpkg.com/angular2/es6/dev/src/testing/shims_for_IE.js"></script>
  *  ```
  *
  * Then load the module in your application by adding it as a dependent module:
