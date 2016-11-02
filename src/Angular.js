@@ -97,9 +97,6 @@
   NODE_TYPE_DOCUMENT,
   NODE_TYPE_DOCUMENT_FRAGMENT
 */
-/* global
-  console
-*/
 
 ////////////////////////////////////
 
@@ -1626,8 +1623,8 @@ function angularInit(element, bootstrap) {
   });
   if (appElement) {
     if (!isAutoBootstrapAllowed) {
-      console.error('Angular: disabling automatic bootstrap. <script> protocol indicates an ' +
-          'extension, document.location.href does not match.');
+      window.console.error('Angular: disabling automatic bootstrap. <script> protocol indicates ' +
+          'an extension, document.location.href does not match.');
       return;
     }
     config.strictDi = getNgAttribute(appElement, 'strict-di') !== null;
