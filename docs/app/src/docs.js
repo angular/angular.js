@@ -8,8 +8,6 @@ angular.module('DocsController', [])
   function($scope, $rootScope, $location, $window, $cookies,
               NG_PAGES, NG_NAVIGATION, NG_VERSION) {
 
-  $scope.docsVersion = NG_VERSION.isSnapshot ? 'snapshot' : NG_VERSION.version;
-
   $scope.navClass = function(navItem) {
     return {
       active: navItem.href && this.currentPage && this.currentPage.path,
@@ -60,8 +58,8 @@ angular.module('DocsController', [])
    Initialize
    ***********************************/
 
-  $scope.versionNumber = angular.version.full;
-  $scope.version = angular.version.full + '  ' + angular.version.codeName;
+  $scope.versionNumber = NG_VERSION.full;
+  $scope.version = NG_VERSION.full + ' ' + NG_VERSION.codeName;
   $scope.loading = 0;
 
 
