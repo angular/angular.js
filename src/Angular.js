@@ -749,6 +749,46 @@ function arrayRemove(array, value) {
   return index;
 }
 
+// A minimal ES6 Map implementation.
+// Should be bug/feature equivelent to the native implementations of supported browsers.
+// See https://kangax.github.io/compat-table/es6/#test-Map
+function ES6MapShim() {
+  this._keys = [];
+  this._values = [];
+  this._lastKey = NaN;
+  this._lastIndex = -1;
+}
+ES6MapShim.prototype = {
+  _idx: function(key) {
+    if (key === this._lastKey) {
+      return this._lastIndex;
+    }
+    return (this._lastIndex = (this._keys.indexOf(this._lastKey = key)));
+  },
+  get: function(key) {
+    var idx = this._idx(key);
+    if (idx !== -1) {
+      return this._values[idx];
+    }
+  },
+  set: function(key, value) {
+    var idx = this._idx(key);
+    if (idx === -1) {
+      idx = this._lastIndex = this._keys.length;
+      this._lastKey = key;
+    }
+    this._keys[idx] = key;
+    this._values[idx] = value;
+
+    // Support: IE11
+    // Do not `return this` to simulate the partial IE11 implementation
+  }
+};
+
+var ES6Map = isFunction(window.Map) && toString.call(window.Map.prototype) === '[object Map]'
+  ? window.Map
+  : ES6MapShim;
+
 /**
  * @ngdoc function
  * @name angular.copy
@@ -815,8 +855,7 @@ function arrayRemove(array, value) {
   </example>
  */
 function copy(source, destination) {
-  var stackSource = [];
-  var stackDest = [];
+  var stack;
 
   if (destination) {
     if (isTypedArray(destination) || isArrayBuffer(destination)) {
@@ -837,14 +876,14 @@ function copy(source, destination) {
       });
     }
 
-    stackSource.push(source);
-    stackDest.push(destination);
     return copyRecurse(source, destination);
   }
 
   return copyElement(source);
 
   function copyRecurse(source, destination) {
+    (stack || (stack = new ES6Map())).set(source, destination);
+
     var h = destination.$$hashKey;
     var key;
     if (isArray(source)) {
@@ -882,9 +921,9 @@ function copy(source, destination) {
     }
 
     // Already copied values
-    var index = stackSource.indexOf(source);
-    if (index !== -1) {
-      return stackDest[index];
+    var existingCopy = stack && stack.get(source);
+    if (existingCopy) {
+      return existingCopy;
     }
 
     if (isWindow(source) || isScope(source)) {
@@ -892,20 +931,15 @@ function copy(source, destination) {
         'Can\'t copy! Making copies of Window or Scope instances is not supported.');
     }
 
-    var needsRecurse = false;
     var destination = copyType(source);
 
     if (destination === undefined) {
-      destination = isArray(source) ? [] : Object.create(getPrototypeOf(source));
-      needsRecurse = true;
+      destination = copyRecurse(source, isArray(source) ? [] : Object.create(getPrototypeOf(source)));
+    } else if (stack) {
+      stack.set(source, destination);
     }
 
-    stackSource.push(source);
-    stackDest.push(destination);
-
-    return needsRecurse
-      ? copyRecurse(source, destination)
-      : destination;
+    return destination;
   }
 
   function copyType(source) {
