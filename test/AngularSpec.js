@@ -1682,6 +1682,27 @@ describe('angular', function() {
 
       dealoc(appElement);
     });
+
+    it('should not bootstrap from an extension into a non-extension document', function() {
+      var src = 'resource://something';
+      // Fake a minimal document object (the actual document.currentScript is readonly).
+      var fakeDoc = {
+        currentScript: { getAttribute: function() { return src; } },
+        location: {protocol: 'http:'},
+        createElement: document.createElement.bind(document)
+      };
+      expect(allowAutoBootstrap(fakeDoc)).toBe(false);
+
+      src = 'file://whatever';
+      expect(allowAutoBootstrap(fakeDoc)).toBe(true);
+    });
+
+    it('should not bootstrap if bootstrapping is disabled', function() {
+      isAutoBootstrapAllowed = false;
+      angularInit(jqLite('<div ng-app></div>')[0], bootstrapSpy);
+      expect(bootstrapSpy).not.toHaveBeenCalled();
+      isAutoBootstrapAllowed = true;
+    });
   });
 
 

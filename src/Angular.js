@@ -1444,6 +1444,26 @@ function getNgAttribute(element, ngAttr) {
   return null;
 }
 
+function allowAutoBootstrap(document) {
+  if (!document.currentScript) {
+    return true;
+  }
+  var src = document.currentScript.getAttribute('src');
+  var link = document.createElement('a');
+  link.href = src;
+  var scriptProtocol = link.protocol;
+  var docLoadProtocol = document.location.protocol;
+  if ((scriptProtocol === 'resource:' ||
+       scriptProtocol === 'chrome-extension:') &&
+      docLoadProtocol !== scriptProtocol) {
+    return false;
+  }
+  return true;
+}
+
+// Cached as it has to run during loading so that document.currentScript is available.
+var isAutoBootstrapAllowed = allowAutoBootstrap(window.document);
+
 /**
  * @ngdoc directive
  * @name ngApp
@@ -1602,6 +1622,11 @@ function angularInit(element, bootstrap) {
     }
   });
   if (appElement) {
+    if (!isAutoBootstrapAllowed) {
+      window.console.error('Angular: disabling automatic bootstrap. <script> protocol indicates ' +
+          'an extension, document.location.href does not match.');
+      return;
+    }
     config.strictDi = getNgAttribute(appElement, 'strict-di') !== null;
     bootstrap(appElement, module ? [module] : [], config);
   }
