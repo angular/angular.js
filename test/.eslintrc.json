@@ -104,6 +104,8 @@
     "getBlockNodes": false,
     "createMap": false,
     "VALIDITY_STATE_PROPERTY": true,
+    "allowAutoBootstrap": false,
+    "isAutoBootstrapAllowed": false,
 
     /* AngularPublic.js */
     "version": false,
