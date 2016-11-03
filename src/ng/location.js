@@ -30,20 +30,25 @@ function parseAbsoluteUrl(absoluteUrl, locationObj) {
   locationObj.$$port = toInt(parsedUrl.port) || DEFAULT_PORTS[parsedUrl.protocol] || null;
 }
 
+function countLeadingSlashes(url) {
+  for (var i = 0; url.charAt(i) === '/'; i++) { /* noop */}
+  return i;
+}
 
-function parseAppUrl(relativeUrl, locationObj) {
-  var prefixed = (relativeUrl.charAt(0) !== '/');
-  if (prefixed) {
-    relativeUrl = '/' + relativeUrl;
-  }
-  var match = urlResolve(relativeUrl);
-  locationObj.$$path = decodeURIComponent(prefixed && match.pathname.charAt(0) === '/' ?
-      match.pathname.substring(1) : match.pathname);
+function parseAppUrl(url, locationObj) {
+  var slashCount = countLeadingSlashes(url);
+  var slashes = url.substr(0, slashCount);
+
+  // We need to pass a url with a single leading slash to the `urlResolve` function
+  // so we strip off all the slashes and put just one special one back on
+  var match = urlResolve('/' + url.substr(slashCount));
+  // Then we put the slashes back on (removing the special one)
+  locationObj.$$path = decodeURIComponent(slashes + match.pathname.substr(1));
   locationObj.$$search = parseKeyValue(match.search);
   locationObj.$$hash = decodeURIComponent(match.hash);
 
-  // make sure path starts with '/';
-  if (locationObj.$$path && locationObj.$$path.charAt(0) !== '/') {
+  // fix up if we were passed a url with none or multiple leading slashes
+  if (locationObj.$$path && slashCount !== 1) {
     locationObj.$$path = '/' + locationObj.$$path;
   }
 }
