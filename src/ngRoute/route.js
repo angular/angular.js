@@ -105,6 +105,8 @@ function $RouteProvider() {
    *      - `{Array.<Object>}` - route parameters extracted from the current
    *        `$location.path()` by applying the current route
    *
+   *      One of `template` or `templateUrl` is required.
+   *
    *    - `templateUrl` – `{(string|Function)=}` – path or function that returns a path to an html
    *      template that should be used by {@link ngRoute.directive:ngView ngView}.
    *
@@ -112,6 +114,8 @@ function $RouteProvider() {
    *
    *      - `{Array.<Object>}` - route parameters extracted from the current
    *        `$location.path()` by applying the current route
+   *
+   *      One of `templateUrl` or `template` is required.
    *
    *    - `resolve` - `{Object.<string, Function>=}` - An optional map of dependencies which should
    *      be injected into the controller. If any of these dependencies are promises, the router
