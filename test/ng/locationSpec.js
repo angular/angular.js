@@ -389,7 +389,7 @@ describe('$location', function() {
 
 
     it('should throw error when invalid server url given', function() {
-      var locationUrl = new LocationHtml5Url('http://server.org/base/abc', 'http://server.org/base/', '/base');
+      var locationUrl = new LocationHtml5Url('http://server.org/base/abc', 'http://server.org/base/');
 
       expect(function() {
         locationUrl.$$parse('http://other.server.org/path#/path');
@@ -398,7 +398,7 @@ describe('$location', function() {
 
 
     it('should throw error when invalid base url given', function() {
-      var locationUrl = new LocationHtml5Url('http://server.org/base/abc', 'http://server.org/base/', '/base');
+      var locationUrl = new LocationHtml5Url('http://server.org/base/abc', 'http://server.org/base/');
 
       expect(function() {
         locationUrl.$$parse('http://server.org/path#/path');
@@ -2453,9 +2453,9 @@ describe('$location', function() {
     var locationUrl, locationUmlautUrl, locationIndexUrl;
 
     beforeEach(function() {
-      locationUrl = new LocationHtml5Url('http://server/pre/', 'http://server/pre/', 'http://server/pre/path');
-      locationUmlautUrl = new LocationHtml5Url('http://särver/pre/', 'http://särver/pre/', 'http://särver/pre/path');
-      locationIndexUrl = new LocationHtml5Url('http://server/pre/index.html', 'http://server/pre/', 'http://server/pre/path');
+      locationUrl = new LocationHtml5Url('http://server/pre/', 'http://server/pre/');
+      locationUmlautUrl = new LocationHtml5Url('http://särver/pre/', 'http://särver/pre/');
+      locationIndexUrl = new LocationHtml5Url('http://server/pre/index.html', 'http://server/pre/');
     });
 
     it('should rewrite URL', function() {
