@@ -979,6 +979,9 @@ forEach({
 
   after: function(element, newElement) {
     var index = element, parent = element.parentNode;
+    if (!parent) {
+      return;
+    }
     newElement = new JQLite(newElement);
 
     for (var i = 0, ii = newElement.length; i < ii; i++) {
