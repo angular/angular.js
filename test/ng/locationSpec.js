@@ -2480,6 +2480,19 @@ describe('$location', function() {
       expect(parseLinkAndReturn(locationUrl, 'someIgnoredAbsoluteHref', '#test')).toEqual('http://server/pre/otherPath#test');
     });
 
+    it('should complain if the path starts with double slashes', function() {
+      expect(function() {
+        parseLinkAndReturn(locationUrl, 'http://server/pre///other/path');
+      }).toThrowMinErr('$location', 'badpath');
+
+      expect(function() {
+        parseLinkAndReturn(locationUrl, 'http://server/pre/\\\\other/path');
+      }).toThrowMinErr('$location', 'badpath');
+
+      expect(function() {
+        parseLinkAndReturn(locationUrl, 'http://server/pre//\\//other/path');
+      }).toThrowMinErr('$location', 'badpath');
+    });
 
     it('should complain if no base tag present', function() {
       module(function($locationProvider) {
