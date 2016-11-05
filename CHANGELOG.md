@@ -101,7 +101,7 @@ To migrate the code follow the examples below:
 
 BEFORE:
 
-```
+```js
 /* 1 */
 elem.data('my-key', 2);
 elem.data('myKey', 3);
@@ -119,7 +119,7 @@ elem.data('foo-bar'); // 1
 
 AFTER:
 
-```
+```js
 /* 1 */
 // Rename one of the keys as they would now map to the same data slot.
 elem.data('my-key', 2);
@@ -152,7 +152,7 @@ Before:
 
 HTML:
 
-```
+```html
 // All five versions used to be equivalent.
 <div ng-style={background_color: 'blue'}></div>
 <div ng-style={'background:color': 'blue'}></div>
@@ -163,7 +163,7 @@ HTML:
 
 JS:
 
-```
+```js
 // All five versions used to be equivalent.
 elem.css('background_color', 'blue');
 elem.css('background:color', 'blue');
@@ -183,7 +183,7 @@ After:
 
 HTML:
 
-```
+```html
 // Previous five versions are no longer equivalent but these two still are.
 <div ng-style={'background-color': 'blue'}></div>
 <div ng-style={backgroundColor: 'blue'}></div>
@@ -191,7 +191,7 @@ HTML:
 
 JS:
 
-```
+```js
 // Previous five versions are no longer equivalent but these two still are.
 elem.css('background-color', 'blue');
 elem.css('backgroundColor', 'blue');
@@ -212,19 +212,19 @@ To migrate the code follow the example below:
 
 Before:
 
-```
+```js
 elem.attr(booleanAttrName, '');
 ```
 
 After:
 
-```
+```js
 elem.attr(booleanAttrName, false);
 ```
 
 or:
 
-```
+```js
 elem.attr(booleanAttrName, null);
 ```
 
@@ -238,13 +238,13 @@ To migrate the code follow the example below:
 
 Before:
 
-```
+```js
 elem.attr(attributeName, null);
 ```
 
 After:
 
-```
+```js
 elem.attr(attributeName, "null");
 ```
 
@@ -260,7 +260,7 @@ Before:
 
 HTML:
 
-```
+```html
     <select multiple>
         <option>value 1</option>
         <option>value 2</option>
@@ -269,7 +269,7 @@ HTML:
 
 JavaScript:
 
-```
+```js
     var value = $element.val();
     if (value) {
         /* do something */
@@ -280,7 +280,7 @@ After:
 
 HTML:
 
-```
+```html
     <select multiple>
         <option>value 1</option>
         <option>value 2</option>
@@ -289,7 +289,7 @@ HTML:
 
 JavaScript:
 
-```
+```js
     var value = $element.val();
     if (value.length > 0) {
         /* do something */
@@ -326,12 +326,14 @@ NgModelController and FormController methods without context.
 
 For example
 
-`$scope.$watch('something', myNgModelCtrl.$render)`
+```js
+$scope.$watch('something', myNgModelCtrl.$render)
+```
 
 will no longer work because the `$render` method is passed without any context.
 This must now be replaced with
 
-```
+```js
 $scope.$watch('something', function() {
   myNgModelCtrl.$render();
 })
@@ -490,14 +492,14 @@ the `$http.defaults.jsonpCallbackParam` property, which is `"callback"` by defau
 
 Before this change:
 
-```
+```js
 $http.json('trusted/url?callback=JSON_CALLBACK');
 $http.json('other/trusted/url', {params: {cb:'JSON_CALLBACK'}});
 ```
 
 After this change:
 
-```
+```js
 $http.json('trusted/url');
 $http.json('other/trusted/url', {jsonpCallbackParam:'cb'});
 ```
@@ -512,13 +514,13 @@ method.**
 
 You configure this list in a module configuration block:
 
-```
+```js
 appModule.config(['$sceDelegateProvider', function($sceDelegateProvider) {
   $sceDelegateProvider.resourceUrlWhiteList([
     // Allow same origin resource loads.
     'self',
     // Allow JSONP calls that match this pattern
-    'https://some.dataserver.com/**.jsonp?**`
+    'https://some.dataserver.com/**.jsonp?**'
   ]);
 }]);
 ```
@@ -529,7 +531,7 @@ method**
 You can pass a trusted object instead of a string as a URL to the `$http`
 service:
 
-```
+```js
 var promise = $http.jsonp($sce.trustAsResourceUrl(url));
 ```
 
@@ -600,7 +602,7 @@ property in the `ngModelOptions` to prevent it from inheriting from the ancestor
 
 For example if you had the following HTML:
 
-```
+```html
 <form ng-model-options="{updateOn: 'blur'}">
   <input ng-model="...">
 </form>
@@ -611,7 +613,7 @@ After this change the input will inherit the option to update on blur.
 If you want the original behaviour then you will need to specify the option
 on the input as well:
 
-```
+```html
 <form ng-model-options="{updateOn: 'blur'}">
   <input ng-model="..." ng-model-options="{updateOn: 'default'}">
 </form>
@@ -754,14 +756,14 @@ A common cases where stray white-space can cause problems is when
 attribute values are compared, for example in an $observer:
 
 Before:
-```
+```js
 $attrs.$observe('myAttr', function(newVal) {
   if (newVal === 'false') ...
 });
 ```
 
 To migrate, the attribute value should be trimmed manually:
-```
+```js
 $attrs.$observe('myAttr', function(newVal) {
   if (newVal.trim() === 'false') ...
 });
@@ -1049,7 +1051,7 @@ a "!" prefix. For example, rather than `mydomain.com/#/a/b/c` will become
 If you actually wanted to have no hash-prefix then you should configure
 this by adding a configuration block to you application:
 
-```
+```js
 appModule.config(['$locationProvider', function($locationProvider) {
   $locationProvider.hashPrefix('');
 }]);
