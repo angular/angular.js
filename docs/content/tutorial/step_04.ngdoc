@@ -83,7 +83,7 @@ Based on what we have discussed so far, here is our directory/file layout for th
     phone-list/
       phone-list.component.js
       phone-list.component.spec.js
-    app.js
+    app.module.js
 ```
 
 
