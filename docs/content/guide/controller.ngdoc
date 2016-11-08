@@ -253,10 +253,10 @@ scopes being created for our view:
 
 - The root scope
 - The `MainController` scope, which contains `timeOfDay` and `name` properties
-- The `ChildController` scope, which inherits the `timeOfDay` property but overrides (hides) the `name`
-property from the previous
-- The `GrandChildController` scope, which overrides (hides) both the `timeOfDay` property defined in `MainController`
-and the `name` property defined in `ChildController`
+- The `ChildController` scope, which inherits the `timeOfDay` property but overrides (shadows) the
+  `name` property from the previous scope
+- The `GrandChildController` scope, which overrides (shadows) both the `timeOfDay` property defined
+  in `MainController` and the `name` property defined in `ChildController`
 
 Inheritance works with methods in the same way as it does with properties. So in our previous
 examples, all of the properties could be replaced with methods that return string values.
