@@ -38,7 +38,7 @@
  * <div ng-repeat="(key, value) in myObj"> ... </div>
  * ```
  *
- * However, there are a limitations compared to array iteration:
+ * However, there are a few limitations compared to array iteration:
  *
  * - The JavaScript specification does not define the order of keys
  *   returned for an object, so Angular relies on the order returned by the browser
