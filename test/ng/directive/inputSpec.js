@@ -3965,9 +3965,7 @@ describe('input', function() {
       expect($rootScope.color).toBe('blue');
     });
 
-
-    // We generally use strict comparison. This tests behavior we cannot change without a BC
-    it('should use non-strict comparison the evaluate checked-ness', function() {
+    it('should treat the value as a string when evaluating checked-ness', function() {
       var inputElm = helper.compileInput(
           '<input type="radio" ng-model="model" value="0" />');
 
@@ -3975,7 +3973,7 @@ describe('input', function() {
       expect(inputElm[0].checked).toBe(true);
 
       $rootScope.$apply('model = 0');
-      expect(inputElm[0].checked).toBe(true);
+      expect(inputElm[0].checked).toBe(false);
     });
 
 
@@ -4226,6 +4224,18 @@ describe('input', function() {
 
       browserTrigger(inputElm[2], 'click');
       expect($rootScope.selected).toBe(1);
+    });
+
+
+    it('should use strict comparison between model and value', function() {
+      $rootScope.selected = false;
+      var inputElm = helper.compileInput('<input type="radio" ng-model="selected" ng-value="false">' +
+                   '<input type="radio" ng-model="selected" ng-value="\'\'">' +
+                   '<input type="radio" ng-model="selected" ng-value="0">');
+
+      expect(inputElm[0].checked).toBe(true);
+      expect(inputElm[1].checked).toBe(false);
+      expect(inputElm[2].checked).toBe(false);
     });
 
 

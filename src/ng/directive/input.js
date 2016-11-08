@@ -1811,9 +1811,7 @@ function radioInputType(scope, element, attr, ctrl) {
     if (doTrim) {
       value = trim(value);
     }
-    // Strict comparison would cause a BC
-    // eslint-disable-next-line eqeqeq
-    element[0].checked = (value == ctrl.$viewValue);
+    element[0].checked = (value === ctrl.$viewValue);
   };
 
   attr.$observe('value', ctrl.$render);
