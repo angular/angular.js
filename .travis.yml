@@ -36,6 +36,9 @@ addons:
     packages:
       - g++-4.8
 
+before_install:
+  - npm update -g npm
+
 install:
   # Check the size of caches
   - du -sh ./node_modules ./bower_components/ ./docs/bower_components/ || true
