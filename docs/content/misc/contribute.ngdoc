@@ -37,6 +37,7 @@ and included in your [PATH](http://docs.oracle.com/javase/tutorial/essential/env
 * [Grunt](http://gruntjs.com): We use Grunt as our build system. Install the grunt command-line tool globally with:
 
   ```shell
+  npm install grunt --save-dev
   npm install -g grunt-cli
   ```
 
