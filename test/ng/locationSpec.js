@@ -2453,9 +2453,9 @@ describe('$location', function() {
     var locationUrl, locationUmlautUrl, locationIndexUrl;
 
     beforeEach(function() {
-      locationUrl = new LocationHtml5Url('http://server/pre/', 'http://server/pre/', 'http://server/pre/path');
-      locationUmlautUrl = new LocationHtml5Url('http://särver/pre/', 'http://särver/pre/', 'http://särver/pre/path');
-      locationIndexUrl = new LocationHtml5Url('http://server/pre/index.html', 'http://server/pre/', 'http://server/pre/path');
+      locationUrl = new LocationHtml5Url('http://server/pre/', 'http://server/pre/', '#!');
+      locationUmlautUrl = new LocationHtml5Url('http://särver/pre/', 'http://särver/pre/', '#!');
+      locationIndexUrl = new LocationHtml5Url('http://server/pre/index.html', 'http://server/pre/', '#!');
     });
 
     it('should rewrite URL', function() {
@@ -2478,6 +2478,10 @@ describe('$location', function() {
       expect(parseLinkAndReturn(locationIndexUrl, 'http://server/pre/otherPath')).toEqual('http://server/pre/otherPath');
       // Note: relies on the previous state!
       expect(parseLinkAndReturn(locationUrl, 'someIgnoredAbsoluteHref', '#test')).toEqual('http://server/pre/otherPath#test');
+    });
+
+    it('should cope with double slashes in the path', function() {
+      expect(parseLinkAndReturn(locationUrl, 'http://server/pre///other/path')).toEqual('http://server/pre///other/path');
     });
 
 
