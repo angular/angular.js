@@ -7,3 +7,6 @@ AngularJS often asserts that certain values will be present and truthy using a
 helper function. If the assertion fails, this error is thrown. To fix this problem,
 make sure that the value the assertion expects is defined and matches the type mentioned in the
 error.
+
+This problem also can be caused whenever you created a new controller and forgot to include it in the document like so:
+<script src="js/controllers/YourBrandNewController.js"></script>
