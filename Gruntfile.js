@@ -28,6 +28,8 @@ module.exports = function(grunt) {
   NG_VERSION.cdn = versionInfo.cdnVersion;
   var dist = 'angular-' + NG_VERSION.full;
 
+  var NG_VERSIONS = versionInfo.previousVersions;
+
   if (versionInfo.cdnVersion == null) {
     throw new Error('Unable to read CDN version, are you offline or has the CDN not been properly pushed?');
   }
@@ -309,7 +311,8 @@ module.exports = function(grunt) {
 
     write: {
       versionTXT: {file: 'build/version.txt', val: NG_VERSION.full},
-      versionJSON: {file: 'build/version.json', val: JSON.stringify(NG_VERSION)}
+      versionJSON: {file: 'build/version.json', val: JSON.stringify(NG_VERSION)},
+      versionsJSON: {file: 'build/versions.json', val: JSON.stringify(NG_VERSIONS.concat([NG_VERSION]))}
     },
 
     bump: {
