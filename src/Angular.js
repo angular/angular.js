@@ -601,7 +601,7 @@ function isDate(value) {
  * @kind function
  *
  * @description
- * Determines if a reference is an `Array`.
+ * Determines if a reference is an `Array`. Alias of Array.isArray.
  *
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is an `Array`.
