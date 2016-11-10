@@ -227,7 +227,7 @@ function isArrayLike(obj) {
    ```js
      var values = {name: 'misko', gender: 'male'};
      var log = [];
-     angular.forEach(values, function(value, key) {
+     angular.forEach(values, function(key, value) {
        this.push(key + ': ' + value);
      }, log);
      expect(log).toEqual(['name: misko', 'gender: male']);
