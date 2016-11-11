@@ -6,8 +6,13 @@ describe('DocsController', function() {
   angular.module('fake', [])
     .value('$cookies', {})
     .value('NG_PAGES', {})
-    .value('NG_NAVIGATION', {})
-    .value('NG_VERSION', {});
+    .value('NG_NAVIGATION', {});
+
+  angular.module('currentVersionData', [])
+    .value('CURRENT_NG_VERSION', {});
+
+  angular.module('allVersionsData', [])
+    .value('ALL_NG_VERSIONS', {});
 
   beforeEach(module('fake', 'DocsController'));
   beforeEach(inject(function($rootScope, $controller) {
