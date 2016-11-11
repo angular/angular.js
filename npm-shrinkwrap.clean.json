@@ -8808,7 +8808,66 @@
       }
     },
     "shelljs": {
-      "version": "0.3.0"
+      "version": "0.7.5",
+      "dependencies": {
+        "glob": {
+          "version": "7.1.1",
+          "dependencies": {
+            "fs.realpath": {
+              "version": "1.0.0"
+            },
+            "inflight": {
+              "version": "1.0.6",
+              "dependencies": {
+                "wrappy": {
+                  "version": "1.0.2"
+                }
+              }
+            },
+            "inherits": {
+              "version": "2.0.3"
+            },
+            "minimatch": {
+              "version": "3.0.3",
+              "dependencies": {
+                "brace-expansion": {
+                  "version": "1.1.6",
+                  "dependencies": {
+                    "balanced-match": {
+                      "version": "0.4.2"
+                    },
+                    "concat-map": {
+                      "version": "0.0.1"
+                    }
+                  }
+                }
+              }
+            },
+            "once": {
+              "version": "1.4.0",
+              "dependencies": {
+                "wrappy": {
+                  "version": "1.0.2"
+                }
+              }
+            },
+            "path-is-absolute": {
+              "version": "1.0.1"
+            }
+          }
+        },
+        "interpret": {
+          "version": "1.0.1"
+        },
+        "rechoir": {
+          "version": "0.6.2",
+          "dependencies": {
+            "resolve": {
+              "version": "1.1.7"
+            }
+          }
+        }
+      }
     },
     "sorted-object": {
       "version": "1.0.0"
