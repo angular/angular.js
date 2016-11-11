@@ -1,12 +1,12 @@
 'use strict';
 
-angular.module('DocsController', [])
+angular.module('DocsController', ['currentVersionData'])
 
 .controller('DocsController', [
           '$scope', '$rootScope', '$location', '$window', '$cookies',
-              'NG_PAGES', 'NG_NAVIGATION', 'NG_VERSION',
+              'NG_PAGES', 'NG_NAVIGATION', 'CURRENT_NG_VERSION',
   function($scope, $rootScope, $location, $window, $cookies,
-              NG_PAGES, NG_NAVIGATION, NG_VERSION) {
+              NG_PAGES, NG_NAVIGATION, CURRENT_NG_VERSION) {
 
   $scope.navClass = function(navItem) {
     return {
@@ -58,8 +58,8 @@ angular.module('DocsController', [])
    Initialize
    ***********************************/
 
-  $scope.versionNumber = NG_VERSION.full;
-  $scope.version = NG_VERSION.full + ' ' + NG_VERSION.codeName;
+  $scope.versionNumber = CURRENT_NG_VERSION.full;
+  $scope.version = CURRENT_NG_VERSION.full + ' ' + CURRENT_NG_VERSION.codeName;
   $scope.loading = 0;
 
 
