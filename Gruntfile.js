@@ -346,7 +346,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask('minify', ['bower', 'clean', 'build', 'minall']);
   grunt.registerTask('webserver', ['connect:devserver']);
-  grunt.registerTask('package', ['bower', 'validate-angular-files', 'clean', 'buildall', 'minall', 'collect-errors', 'docs', 'copy', 'write', 'compress']);
+  grunt.registerTask('package', ['bower', 'validate-angular-files', 'clean', 'buildall', 'minall', 'collect-errors', 'write', 'docs', 'copy', 'compress']);
   grunt.registerTask('ci-checks', ['ddescribe-iit', 'merge-conflict', 'eslint']);
   grunt.registerTask('default', ['package']);
 };

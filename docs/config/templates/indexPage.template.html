@@ -165,13 +165,7 @@
       <section class="sup-header">
         <div class="container main-grid main-header-grid">
           <div class="grid-left">
-            <div ng-controller="DocsVersionsCtrl" class="picker version-picker">
-              <select ng-options="v as (v.isSnapshot ? v.branch : ('v' + v.version)) group by getGroupName(v) for v in docs_versions"
-                      ng-model="docs_version"
-                      ng-change="jumpToDocsVersion(docs_version)"
-                      class="docs-version-jump">
-              </select>
-            </div>
+            <version-picker></version-picker>
           </div>
           <div class="grid-right">
             <ul class="nav-breadcrumb">
