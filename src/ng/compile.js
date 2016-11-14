@@ -943,6 +943,103 @@
  *
  * For information on how the compiler works, see the
  * {@link guide/compiler Angular HTML Compiler} section of the Developer Guide.
+ *
+ * @knownIssue
+ *
+ * ### Double Compilation
+ *
+ * Double compilation occurs when an already compiled part of the DOM gets compiled again. This is
+ * not an intended use case and can lead to misbehaving directives, performance issues, and memory
+ * leaks.
+ * A common scenario where this happens is a directive that calls `$compile` in a directive link
+ * function on the directive element:
+ *
+ * ```
+  angular.module('app').directive('addInput', function($compile) {
+    return {
+      link: function(scope, element, attrs) {
+        var newEl = angular.element('<input ng-model="$ctrl.value">');
+        attrs.$set('addInput', null) // To stop infinite compile loop
+        element.append(newEl);
+        $compile(element)(scope); // Double compilation
+      }
+    }
+  })
+  ```
+ * At first glance, it looks like removing the original `addInput` attribute is all there is needed
+ * to make this example work.
+ * However, if the directive element or its children have other directives attached, they will be compiled and
+ * linked again, because the compiler doesn't keep track of which directives have been assigned to which
+ * elements.
+ *
+ * This can cause unpredictable behavior, e.g. `ngModel` $formatters and $parsers will be
+ * attached again to the ngModelController. It can also degrade performance, as
+ * watchers for text interpolation are added twice to the scope.
+ *
+ * Double compilation should therefore avoided. In the above example, the better way is to only
+ * compile the new element:
+ * ```
+  angular.module('app').directive('addInput', function($compile) {
+    return {
+      link: function(scope, element, attrs) {
+        var newEl = angular.element('<input ng-model="$ctrl.value">');
+        $compile(newEl)(scope); // Only compile the new element
+        element.append(newEl);
+      }
+    }
+  })
+  ```
+ *
+ * Another scenario is adding a directive programmatically to a compiled element and then executing
+ * compile again.
+ * ```html
+ * <input ng-model="$ctrl.value" add-options>
+ * ```
+ *
+  ```
+  angular.module('app').directive('addOptions', function($compile) {
+    return {
+      link: function(scope, element, attrs) {
+        attrs.$set('addInput', null) // To stop infinite compile loop
+        attrs.$set('ngModelOptions', '{debounce: 1000}');
+        $compile(element)(scope); // Double compilation
+      }
+    }
+  });
+  ```
+ *
+ * In that case, it is necessary to intercept the *initial* compilation of the element:
+ *
+ * 1. give your directive the `terminal` property and a higher priority than directives
+ * that should not be compiled twice. In the example, the compiler will only compile directives
+ * which have a priority of 100 or higher.
+ * 2. inside this directive's compile function, remove the original directive attribute from the element,
+ * and add any other directive attributes. Removing the attribute is necessary, because otherwise the
+ * compilation would result in an infinite loop.
+ * 3. compile the element but restrict the maximum priority, so that any already compiled directives
+ * are not compiled twice.
+ * 4. in the link function, link the compiled element with the element's scope
+ *
+ * ```
+  angular.module('app').directive('addOptions', function($compile) {
+    return {
+      priority: 100, // ngModel has priority 1
+      terminal: true,
+      template: '<input ng-model="$ctrl.value">',
+      compile: function(templateElement, templateAttributes) {
+        templateAttributes.$set('addOptions', null);
+        templateAttributes.$set('ngModelOptions', '{debounce: 1000}');
+
+        var compiled = $compile(templateElement, null, 100);
+
+        return function linkFn(scope) {
+          compiled(scope) // Link compiled element to scope
+        }
+      }
+    }
+  });
+  ```
+ *
  */
 
 var $compileMinErr = minErr('$compile');
