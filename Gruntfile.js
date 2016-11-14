@@ -319,6 +319,17 @@ module.exports = function(grunt) {
         createTag: false,
         push: false
       }
+    },
+
+    sri: {
+      modules: {
+        options: {
+          dest: 'build/sri.json'
+        },
+        src: [
+          'build/*.js'
+        ]
+      }
     }
   });
 
@@ -346,7 +357,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask('minify', ['bower', 'clean', 'build', 'minall']);
   grunt.registerTask('webserver', ['connect:devserver']);
-  grunt.registerTask('package', ['bower', 'validate-angular-files', 'clean', 'buildall', 'minall', 'collect-errors', 'docs', 'copy', 'write', 'compress']);
+  grunt.registerTask('package', ['bower', 'validate-angular-files', 'clean', 'buildall', 'minall', 'collect-errors', 'docs', 'copy', 'write', 'compress', 'sri']);
   grunt.registerTask('ci-checks', ['ddescribe-iit', 'merge-conflict', 'eslint']);
   grunt.registerTask('default', ['package']);
 };

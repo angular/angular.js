@@ -47,6 +47,7 @@
     "grunt-eslint": "^19.0.0",
     "grunt-merge-conflict": "~0.0.1",
     "grunt-shell": "^1.3.0",
+    "grunt-sri": "0.0.5",
     "gulp": "~3.8.0",
     "gulp-concat": "^2.4.1",
     "gulp-eslint": "^3.0.1",
