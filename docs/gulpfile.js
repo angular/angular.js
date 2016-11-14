@@ -22,7 +22,10 @@ var bowerFolder = 'bower_components';
 
 var src = 'app/src/**/*.js';
 var ignoredFiles = '!src/angular.bind.js';
-var assets = 'app/assets/**/*';
+var assets = [
+  'app/assets/**/*',
+  '../build/version.json'
+];
 
 
 var getMergedEslintConfig = function(filepath) {
@@ -98,8 +101,8 @@ gulp.task('assets', ['bower'], function() {
   var JS_EXT = /\.js$/;
   return merge(
     gulp.src(['img/**/*']).pipe(gulp.dest(outputFolder + '/img')),
-    gulp.src([assets]).pipe(gulp.dest(outputFolder)),
-    gulp.src([assets])
+    gulp.src(assets).pipe(gulp.dest(outputFolder)),
+    gulp.src(assets)
       .pipe(foreach(function(stream, file) {
         if (JS_EXT.test(file.relative)) {
           var minFile = file.relative.replace(JS_EXT, '.min.js');

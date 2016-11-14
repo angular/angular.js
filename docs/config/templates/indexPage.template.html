@@ -166,9 +166,9 @@
         <div class="container main-grid main-header-grid">
           <div class="grid-left">
             <div ng-controller="DocsVersionsCtrl" class="picker version-picker">
-              <select ng-options="v as (v.isSnapshot ? v.branch : ('v' + v.version)) group by getGroupName(v) for v in docs_versions"
-                      ng-model="docs_version"
-                      ng-change="jumpToDocsVersion(docs_version)"
+              <select ng-options="v as v.label group by v.group for v in version.all"
+                      ng-model="version.current"
+                      ng-change="jumpToDocsVersion(version.current)"
                       class="docs-version-jump">
               </select>
             </div>
