@@ -7,7 +7,6 @@
   UNTOUCHED_CLASS: true,
   TOUCHED_CLASS: true,
   PENDING_CLASS: true,
-  $ModelOptionsProvider: true,
   addSetValidityMethod: true,
   setupValidity: true
 */
@@ -223,8 +222,8 @@ is set to `true`. The parse error is stored in `ngModel.$error.parse`.
  *
  *
  */
-NgModelController.$inject = ['$scope', '$exceptionHandler', '$attrs', '$element', '$parse', '$animate', '$timeout', '$q', '$interpolate', '$modelOptions'];
-function NgModelController($scope, $exceptionHandler, $attr, $element, $parse, $animate, $timeout, $q, $interpolate, $modelOptions) {
+NgModelController.$inject = ['$scope', '$exceptionHandler', '$attrs', '$element', '$parse', '$animate', '$timeout', '$q', '$interpolate'];
+function NgModelController($scope, $exceptionHandler, $attr, $element, $parse, $animate, $timeout, $q, $interpolate) {
   this.$viewValue = Number.NaN;
   this.$modelValue = Number.NaN;
   this.$$rawModelValue = undefined; // stores the parsed modelValue / model set from scope regardless of validity.
@@ -244,7 +243,6 @@ function NgModelController($scope, $exceptionHandler, $attr, $element, $parse, $
   this.$pending = undefined; // keep pending keys here
   this.$name = $interpolate($attr.name || '', false)($scope);
   this.$$parentForm = nullFormCtrl;
-  this.$options = $modelOptions;
 
   this.$$parsedNgModel = $parse($attr.ngModel);
   this.$$parsedNgModelAssign = this.$$parsedNgModel.assign;
@@ -269,8 +267,9 @@ function NgModelController($scope, $exceptionHandler, $attr, $element, $parse, $
 }
 
 NgModelController.prototype = {
-  $$initGetterSetters: function() {
-    if (this.$options.getOption('getterSetter')) {
+  $$setOptions: function(options) {
+    this.$options = options;
+    if (options && options.getterSetter) {
       var invokeModelGetter = this.$$parse(this.$$attr.ngModel + '()'),
           invokeModelSetter = this.$$parse(this.$$attr.ngModel + '($$$p)');
 
@@ -544,7 +543,7 @@ NgModelController.prototype = {
     var prevValid = this.$valid;
     var prevModelValue = this.$modelValue;
 
-    var allowInvalid = this.$options.getOption('allowInvalid');
+    var allowInvalid = this.$options && this.$options.allowInvalid;
 
     var that = this;
     this.$$runValidators(modelValue, viewValue, function(allValid) {
@@ -709,7 +708,7 @@ NgModelController.prototype = {
       this.$modelValue = this.$$ngModelGet(this.$$scope);
     }
     var prevModelValue = this.$modelValue;
-    var allowInvalid = this.$options.getOption('allowInvalid');
+    var allowInvalid = this.$options && this.$options.allowInvalid;
     this.$$rawModelValue = modelValue;
 
     if (allowInvalid) {
@@ -801,18 +800,25 @@ NgModelController.prototype = {
    */
   $setViewValue: function(value, trigger) {
     this.$viewValue = value;
-    if (this.$options.getOption('updateOnDefault')) {
+    if (!this.$options || this.$options.updateOnDefault) {
       this.$$debounceViewValueCommit(trigger);
     }
   },
 
   $$debounceViewValueCommit: function(trigger) {
-    var debounceDelay = this.$options.getOption('debounce');
+    var debounceDelay = 0,
+        options = this.$options,
+        debounce;
 
-    if (isNumber(debounceDelay[trigger])) {
-      debounceDelay = debounceDelay[trigger];
-    } else if (isNumber(debounceDelay['default'])) {
-      debounceDelay = debounceDelay['default'];
+    if (options && isDefined(options.debounce)) {
+      debounce = options.debounce;
+      if (isNumber(debounce)) {
+        debounceDelay = debounce;
+      } else if (isNumber(debounce[trigger])) {
+        debounceDelay = debounce[trigger];
+      } else if (isNumber(debounce['default'])) {
+        debounceDelay = debounce['default'];
+      }
     }
 
     this.$$timeout.cancel(this.$$pendingDebounce);
@@ -1110,14 +1116,9 @@ var ngModelDirective = ['$rootScope', function($rootScope) {
       return {
         pre: function ngModelPreLink(scope, element, attr, ctrls) {
           var modelCtrl = ctrls[0],
-              formCtrl = ctrls[1] || modelCtrl.$$parentForm,
-              optionsCtrl = ctrls[2];
+              formCtrl = ctrls[1] || modelCtrl.$$parentForm;
 
-          if (optionsCtrl) {
-            modelCtrl.$options = optionsCtrl.$options;
-          }
-
-          modelCtrl.$$initGetterSetters();
+          modelCtrl.$$setOptions(ctrls[2] && ctrls[2].$options);
 
           // notify others, especially parent forms
           formCtrl.$addControl(modelCtrl);
@@ -1134,8 +1135,8 @@ var ngModelDirective = ['$rootScope', function($rootScope) {
         },
         post: function ngModelPostLink(scope, element, attr, ctrls) {
           var modelCtrl = ctrls[0];
-          if (modelCtrl.$options.getOption('updateOn')) {
-            element.on(modelCtrl.$options.getOption('updateOn'), function(ev) {
+          if (modelCtrl.$options && modelCtrl.$options.updateOn) {
+            element.on(modelCtrl.$options.updateOn, function(ev) {
               modelCtrl.$$debounceViewValueCommit(ev && ev.type);
             });
           }
@@ -1160,47 +1161,17 @@ var ngModelDirective = ['$rootScope', function($rootScope) {
 }];
 
 
+
+var DEFAULT_REGEXP = /(\s+|^)default(\s+|$)/;
+
 /**
  * @ngdoc directive
  * @name ngModelOptions
  *
  * @description
- * This directive allows you to modify the behaviour of ngModel and input directives within your
- * application. You can specify an ngModelOptions directive on any element and the settings affect
- * the ngModel and input directives on all descendent elements.
- *
- * The ngModelOptions settings are found by evaluating the value of the ngModelOptions attribute as
- * an Angular expression. This expression should evaluate to an object, whose properties contain
- * the settings.
- *
- * If a setting is not specified as a property on the object for a particular ngModelOptions directive
- * then it will inherit that setting from the first ngModelOptions directive found by traversing up the
- * DOM tree. If there is no ancestor element containing an ngModelOptions directive then the settings in
- * {@link $modelOptions} will be used.
- *
- * For example given the following fragment of HTML
- *
- *
- * ```html
- * <div ng-model-options="{ allowInvalid: true }">
- *   <form ng-model-options="{ updateOn: 'blur' }">
- *     <input ng-model-options="{ updateOn: 'default' }" />
- *   </form>
- * </div>
- * ```
- *
- * the `input` element will have the following settings
- *
- * ```js
- * { allowInvalid: true, updateOn: 'default' }
- * ```
- *
- *
- * ## Triggering and debouncing model updates
- *
- * The `updateOn` and `debounce` properties allow you to specify a custom list of events that will
- * trigger a model update and/or a debouncing delay so that the actual update only takes place when
- * a timer expires; this timer will be reset after another change takes place.
+ * Allows tuning how model updates are done. Using `ngModelOptions` you can specify a custom list of
+ * events that will trigger a model update and/or a debouncing delay so that the actual update only
+ * takes place when a timer expires; this timer will be reset after another change takes place.
  *
  * Given the nature of `ngModelOptions`, the value displayed inside input fields in the view might
  * be different from the value in the actual model. This means that if you update the model you
@@ -1216,135 +1187,7 @@ var ngModelDirective = ['$rootScope', function($rootScope) {
  * `submit` event. Note that `ngClick` events will occur before the model is updated. Use `ngSubmit`
  * to have access to the updated model.
  *
- * The following example shows how to override immediate updates. Changes on the inputs within the
- * form will update the model only when the control loses focus (blur event). If `escape` key is
- * pressed while the input field is focused, the value is reset to the value in the current model.
- *
- * <example name="ngModelOptions-directive-blur" module="optionsExample">
- *   <file name="index.html">
- *     <div ng-controller="ExampleController">
- *       <form name="userForm">
- *         <label>
-   *         Name:
- *           <input type="text" name="userName"
- *                  ng-model="user.name"
- *                  ng-model-options="{ updateOn: 'blur' }"
- *                  ng-keyup="cancel($event)" />
- *         </label><br />
- *         <label>
- *           Other data:
- *           <input type="text" ng-model="user.data" />
- *         </label><br />
- *       </form>
- *       <pre>user.name = <span ng-bind="user.name"></span></pre>
- *     </div>
- *   </file>
- *   <file name="app.js">
- *     angular.module('optionsExample', [])
- *       .controller('ExampleController', ['$scope', function($scope) {
- *         $scope.user = { name: 'say', data: '' };
- *
- *         $scope.cancel = function(e) {
- *           if (e.keyCode === 27) {
- *             $scope.userForm.userName.$rollbackViewValue();
- *           }
- *         };
- *       }]);
- *   </file>
- *   <file name="protractor.js" type="protractor">
- *     var model = element(by.binding('user.name'));
- *     var input = element(by.model('user.name'));
- *     var other = element(by.model('user.data'));
- *
- *     it('should allow custom events', function() {
- *       input.sendKeys(' hello');
- *       input.click();
- *       expect(model.getText()).toEqual('say');
- *       other.click();
- *       expect(model.getText()).toEqual('say hello');
- *     });
- *
- *     it('should $rollbackViewValue when model changes', function() {
- *       input.sendKeys(' hello');
- *       expect(input.getAttribute('value')).toEqual('say hello');
- *       input.sendKeys(protractor.Key.ESCAPE);
- *       expect(input.getAttribute('value')).toEqual('say');
- *       other.click();
- *       expect(model.getText()).toEqual('say');
- *     });
- *   </file>
- * </example>
- *
- * The next example shows how to debounce model changes. Model will be updated only 1 sec after last change.
- * If the `Clear` button is pressed, any debounced action is canceled and the value becomes empty.
- *
- * <example name="ngModelOptions-directive-debounce" module="optionsExample">
- *   <file name="index.html">
- *     <div ng-controller="ExampleController">
- *       <form name="userForm">
- *         Name:
- *         <input type="text" name="userName"
- *                ng-model="user.name"
- *                ng-model-options="{ debounce: 1000 }" />
- *         <button ng-click="userForm.userName.$rollbackViewValue(); user.name=''">Clear</button><br />
- *       </form>
- *       <pre>user.name = <span ng-bind="user.name"></span></pre>
- *     </div>
- *   </file>
- *   <file name="app.js">
- *     angular.module('optionsExample', [])
- *       .controller('ExampleController', ['$scope', function($scope) {
- *         $scope.user = { name: 'say' };
- *       }]);
- *   </file>
- * </example>
- *
- * ## Model updates and validation
- *
- * The default behaviour in `ngModel` is that the model value is set to `undefined` when the
- * validation determines that the value is invalid. By setting the `allowInvalid` property to true,
- * the model will still be updated even if the value is invalid.
- *
- *
- * ## Connecting to the scope
- *
- * By setting the `getterSetter` property to true you are telling ngModel that the `ngModel` expression
- * on the scope refers to a "getter/setter" function rather than the value itself.
- *
- * The following example shows how to bind to getter/setters:
- *
- * <example name="ngModelOptions-directive-getter-setter" module="getterSetterExample">
- *   <file name="index.html">
- *     <div ng-controller="ExampleController">
- *       <form name="userForm">
- *         <label>
- *           Name:
- *           <input type="text" name="userName"
- *                  ng-model="user.name"
- *                  ng-model-options="{ getterSetter: true }" />
- *         </label>
- *       </form>
- *       <pre>user.name = <span ng-bind="user.name()"></span></pre>
- *     </div>
- *   </file>
- *   <file name="app.js">
- *     angular.module('getterSetterExample', [])
- *       .controller('ExampleController', ['$scope', function($scope) {
- *         var _name = 'Brian';
- *         $scope.user = {
- *           name: function(newName) {
- *             return angular.isDefined(newName) ? (_name = newName) : _name;
- *           }
- *         };
- *       }]);
- *   </file>
- * </example>
- *
- *
- * ## Specifying timezones
- *
- * You can specify the timezone that date/time input directives expect by providing its name in the
- * `timezone` property.
+ * `ngModelOptions` has an effect on the element it's declared on and its descendants.
  *
  * @param {Object} ngModelOptions options to apply to the current model. Valid keys are:
  *   - `updateOn`: string specifying which event should the input be bound to. You can set several
@@ -1357,131 +1200,148 @@ var ngModelDirective = ['$rootScope', function($rootScope) {
  *   - `allowInvalid`: boolean value which indicates that the model can be set with values that did
  *     not validate correctly instead of the default behavior of setting the model to undefined.
  *   - `getterSetter`: boolean value which determines whether or not to treat functions bound to
- *     `ngModel` as getters/setters.
+       `ngModel` as getters/setters.
  *   - `timezone`: Defines the timezone to be used to read/write the `Date` instance in the model for
  *     `<input type="date" />`, `<input type="time" />`, ... . It understands UTC/GMT and the
  *     continental US time zone abbreviations, but for general use, use a time zone offset, for
  *     example, `'+0430'` (4 hours, 30 minutes east of the Greenwich meridian)
  *     If not specified, the timezone of the browser will be used.
  *
+ * @example
+
+  The following example shows how to override immediate updates. Changes on the inputs within the
+  form will update the model only when the control loses focus (blur event). If `escape` key is
+  pressed while the input field is focused, the value is reset to the value in the current model.
+
+  <example name="ngModelOptions-directive-blur" module="optionsExample">
+    <file name="index.html">
+      <div ng-controller="ExampleController">
+        <form name="userForm">
+          <label>Name:
+            <input type="text" name="userName"
+                   ng-model="user.name"
+                   ng-model-options="{ updateOn: 'blur' }"
+                   ng-keyup="cancel($event)" />
+          </label><br />
+          <label>Other data:
+            <input type="text" ng-model="user.data" />
+          </label><br />
+        </form>
+        <pre>user.name = <span ng-bind="user.name"></span></pre>
+        <pre>user.data = <span ng-bind="user.data"></span></pre>
+      </div>
+    </file>
+    <file name="app.js">
+      angular.module('optionsExample', [])
+        .controller('ExampleController', ['$scope', function($scope) {
+          $scope.user = { name: 'John', data: '' };
+
+          $scope.cancel = function(e) {
+            if (e.keyCode === 27) {
+              $scope.userForm.userName.$rollbackViewValue();
+            }
+          };
+        }]);
+    </file>
+    <file name="protractor.js" type="protractor">
+      var model = element(by.binding('user.name'));
+      var input = element(by.model('user.name'));
+      var other = element(by.model('user.data'));
+
+      it('should allow custom events', function() {
+        input.sendKeys(' Doe');
+        input.click();
+        expect(model.getText()).toEqual('John');
+        other.click();
+        expect(model.getText()).toEqual('John Doe');
+      });
+
+      it('should $rollbackViewValue when model changes', function() {
+        input.sendKeys(' Doe');
+        expect(input.getAttribute('value')).toEqual('John Doe');
+        input.sendKeys(protractor.Key.ESCAPE);
+        expect(input.getAttribute('value')).toEqual('John');
+        other.click();
+        expect(model.getText()).toEqual('John');
+      });
+    </file>
+  </example>
+
+  This one shows how to debounce model changes. Model will be updated only 1 sec after last change.
+  If the `Clear` button is pressed, any debounced action is canceled and the value becomes empty.
+
+  <example name="ngModelOptions-directive-debounce" module="optionsExample">
+    <file name="index.html">
+      <div ng-controller="ExampleController">
+        <form name="userForm">
+          <label>Name:
+            <input type="text" name="userName"
+                   ng-model="user.name"
+                   ng-model-options="{ debounce: 1000 }" />
+          </label>
+          <button ng-click="userForm.userName.$rollbackViewValue(); user.name=''">Clear</button>
+          <br />
+        </form>
+        <pre>user.name = <span ng-bind="user.name"></span></pre>
+      </div>
+    </file>
+    <file name="app.js">
+      angular.module('optionsExample', [])
+        .controller('ExampleController', ['$scope', function($scope) {
+          $scope.user = { name: 'Igor' };
+        }]);
+    </file>
+  </example>
+
+  This one shows how to bind to getter/setters:
+
+  <example name="ngModelOptions-directive-getter-setter" module="getterSetterExample">
+    <file name="index.html">
+      <div ng-controller="ExampleController">
+        <form name="userForm">
+          <label>Name:
+            <input type="text" name="userName"
+                   ng-model="user.name"
+                   ng-model-options="{ getterSetter: true }" />
+          </label>
+        </form>
+        <pre>user.name = <span ng-bind="user.name()"></span></pre>
+      </div>
+    </file>
+    <file name="app.js">
+      angular.module('getterSetterExample', [])
+        .controller('ExampleController', ['$scope', function($scope) {
+          var _name = 'Brian';
+          $scope.user = {
+            name: function(newName) {
+              // Note that newName can be undefined for two reasons:
+              // 1. Because it is called as a getter and thus called with no arguments
+              // 2. Because the property should actually be set to undefined. This happens e.g. if the
+              //    input is invalid
+              return arguments.length ? (_name = newName) : _name;
+            }
+          };
+        }]);
+    </file>
+  </example>
  */
-var ngModelOptionsDirective = ['$modelOptions', function($modelOptions) {
+var ngModelOptionsDirective = function() {
   return {
     restrict: 'A',
-    // ngModelOptions needs to run before ngModel and input directives
-    priority: 10,
-    require: ['ngModelOptions', '?^^ngModelOptions'],
-    controller: function NgModelOptionsController() {},
-    link: {
-      pre: function ngModelOptionsPreLinkFn(scope, element, attrs, ctrls) {
-        var optionsCtrl = ctrls[0];
-        var parentOptions = ctrls[1] ? ctrls[1].$options : $modelOptions;
-        optionsCtrl.$options = parentOptions.createChild(scope.$eval(attrs.ngModelOptions));
+    controller: ['$scope', '$attrs', function NgModelOptionsController($scope, $attrs) {
+      var that = this;
+      this.$options = copy($scope.$eval($attrs.ngModelOptions));
+      // Allow adding/overriding bound events
+      if (isDefined(this.$options.updateOn)) {
+        this.$options.updateOnDefault = false;
+        // extract "default" pseudo-event from list of events that can trigger a model update
+        this.$options.updateOn = trim(this.$options.updateOn.replace(DEFAULT_REGEXP, function() {
+          that.$options.updateOnDefault = true;
+          return ' ';
+        }));
+      } else {
+        this.$options.updateOnDefault = true;
       }
-    }
+    }]
   };
-}];
-
-
-/**
- * @ngdoc provider
- * @name $modelOptionsProvider
- * @description
- *
- * Here, you can change the default settings from which {@link ngModelOptions}
- * directives inherit.
- *
- * See the {@link ngModelOptions} directive for a list of the available options.
- */
-function $ModelOptionsProvider() {
-  return {
-    /**
-     * @ngdoc property
-     * @name $modelOptionsProvider#defaultOptions
-     * @type {Object}
-     * @description
-     * The default options to fall back on when there are no more ngModelOption
-     * directives as ancestors.
-     * Use this property to specify the defaultOptions for the application as a whole.
-     *
-     * The initial default options are:
-     *
-     * * `updateOn`: `default`
-     * * `debounce`: `0`
-     * * `allowInvalid`: `undefined`
-     * * `getterSetter`: `undefined`
-     * * `timezone`: 'undefined'
-     */
-    defaultOptions: {
-      updateOn: 'default',
-      debounce: 0
-    },
-
-    /**
-     * @ngdoc service
-     * @name $modelOptions
-     * @type ModelOptions
-     * @description
-     *
-     * This service provides the application wide default {@link ModelOptions} options that
-     * will be used by {@link ngModel} directives if no {@link ngModelOptions} directive is
-     * specified.
-     */
-    $get: function() {
-      return new ModelOptions(this.defaultOptions);
-    }
-  };
-}
-
-
-/**
- * @ngdoc type
- * @name ModelOptions
- * @description
- * A container for the options set by the {@link ngModelOptions} directive
- * and the {@link $modelOptions} service.
- */
-var DEFAULT_REGEXP = /(\s+|^)default(\s+|$)/;
-function ModelOptions(options, parentOptions) {
-
-  // Extend the parent's options with these new ones
-  var _options = extend({}, parentOptions, options);
-
-  // do extra processing on the options
-
-  // updateOn and updateOnDefault
-  if (isDefined(_options.updateOn) && _options.updateOn.trim()) {
-    _options.updateOnDefault = false;
-    // extract "default" pseudo-event from list of events that can trigger a model update
-    _options.updateOn = trim(_options.updateOn.replace(DEFAULT_REGEXP, function() {
-      _options.updateOnDefault = true;
-      return ' ';
-    }));
-  } else if (parentOptions) {
-    _options.updateOn = parentOptions.updateOn;
-    _options.updateOnDefault = parentOptions.updateOnDefault;
-  } else {
-    _options.updateOnDefault = true;
-  }
-
-
-  /**
-   * @ngdoc method
-   * @name ModelOptions#getOption
-   * @param {string} name the name of the option to retrieve
-   * @returns {*} the value of the option
-   * @description
-   * Returns the value of the given option
-   */
-  this.getOption = function(name) { return _options[name]; };
-
-  /**
-   * @ngdoc method
-   * @name ModelOptions#createChild
-   * @param {Object} options a hash of options for the new child that will override the parent's options
-   * @return {ModelOptions} a new `ModelOptions` object initialized with the given options.
-   */
-  this.createChild = function(options) {
-    return new ModelOptions(options, _options);
-  };
-}
+};
