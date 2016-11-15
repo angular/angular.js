@@ -294,7 +294,7 @@ module.exports = function(grunt) {
           stderr: true,
           failOnError: true
         },
-        command: path.normalize('./node_modules/.bin/promises-aplus-tests tmp/promises-aplus-adapter++.js')
+        command: path.normalize('./node_modules/.bin/promises-aplus-tests tmp/promises-aplus-adapter++.js --timeout 2000')
       }
     },
 
