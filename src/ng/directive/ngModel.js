@@ -459,7 +459,6 @@ NgModelController.prototype = {
    *           if (rollback) {
    *             $scope.myForm[value].$rollbackViewValue();
    *           }
-   *           $scope.model[value] = '';
    *         }
    *       };
    *     }]);
