@@ -469,25 +469,51 @@ describe('ngModelOptions', function() {
         var inputElm = helper.compileInput(
             '<input type="text" ng-model="name" name="alias" ' +
               'ng-model-options="{' +
-                'updateOn: \'default blur\', ' +
+                'updateOn: \'default blur mouseup\', ' +
                 'debounce: { default: 10000, blur: 5000 }' +
               '}"' +
             '/>');
 
         helper.changeInputValueTo('a');
-        expect($rootScope.checkbox).toBeUndefined();
+        expect($rootScope.name).toBeUndefined();
         $timeout.flush(6000);
-        expect($rootScope.checkbox).toBeUndefined();
+        expect($rootScope.name).toBeUndefined();
         $timeout.flush(4000);
         expect($rootScope.name).toEqual('a');
+
         helper.changeInputValueTo('b');
         browserTrigger(inputElm, 'blur');
         $timeout.flush(4000);
         expect($rootScope.name).toEqual('a');
         $timeout.flush(2000);
         expect($rootScope.name).toEqual('b');
+
+        helper.changeInputValueTo('c');
+        browserTrigger(helper.inputElm, 'mouseup');
+        // counter-intuitively `default` in `debounce` is a catch-all
+        expect($rootScope.name).toEqual('b');
+        $timeout.flush(10000);
+        expect($rootScope.name).toEqual('c');
       });
 
+
+      it('should trigger immediately for the event if not listed in the debounce list',
+        function() {
+        var inputElm = helper.compileInput(
+            '<input type="text" ng-model="name" name="alias" ' +
+              'ng-model-options="{' +
+                'updateOn: \'default blur foo\', ' +
+                'debounce: { blur: 5000 }' +
+              '}"' +
+            '/>');
+
+        helper.changeInputValueTo('a');
+        expect($rootScope.name).toEqual('a');
+
+        helper.changeInputValueTo('b');
+        browserTrigger(inputElm, 'foo');
+        expect($rootScope.name).toEqual('b');
+      });
 
       it('should allow selecting different debounce timeouts for each event on checkboxes', function() {
         var inputElm = helper.compileInput('<input type="checkbox" ng-model="checkbox" ' +
