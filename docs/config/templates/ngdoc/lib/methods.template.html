@@ -1,4 +1,6 @@
 {% import "lib/macros.html" as lib -%}
+{% import "lib/deprecated.html" as x -%}
+
 {%- if doc.methods %}
 <h2>Methods</h2>
 <ul class="methods">
@@ -6,6 +8,8 @@
   <li id="{$ method.name $}">
     <h3>{$ lib.functionSyntax(method) $}</h3>
     <div>{$ method.description | marked $}</div>
+
+    {$ x.deprecatedBlock(method) $}
 
     {% if method.params %}
     <h4>Parameters</h4>
