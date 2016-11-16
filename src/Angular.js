@@ -815,8 +815,7 @@ function arrayRemove(array, value) {
   </example>
  */
 function copy(source, destination) {
-  var stackSource = [];
-  var stackDest = [];
+  var stack;
 
   if (destination) {
     if (isTypedArray(destination) || isArrayBuffer(destination)) {
@@ -837,14 +836,14 @@ function copy(source, destination) {
       });
     }
 
-    stackSource.push(source);
-    stackDest.push(destination);
     return copyRecurse(source, destination);
   }
 
   return copyElement(source);
 
   function copyRecurse(source, destination) {
+    (stack || (stack = new NgMap())).set(source, destination);
+
     var h = destination.$$hashKey;
     var key;
     if (isArray(source)) {
@@ -882,9 +881,9 @@ function copy(source, destination) {
     }
 
     // Already copied values
-    var index = stackSource.indexOf(source);
-    if (index !== -1) {
-      return stackDest[index];
+    var existingCopy = stack && stack.get(source);
+    if (existingCopy) {
+      return existingCopy;
     }
 
     if (isWindow(source) || isScope(source)) {
@@ -892,20 +891,15 @@ function copy(source, destination) {
         'Can\'t copy! Making copies of Window or Scope instances is not supported.');
     }
 
-    var needsRecurse = false;
     var destination = copyType(source);
 
     if (destination === undefined) {
-      destination = isArray(source) ? [] : Object.create(getPrototypeOf(source));
-      needsRecurse = true;
+      destination = copyRecurse(source, isArray(source) ? [] : Object.create(getPrototypeOf(source)));
+    } else if (stack) {
+      stack.set(source, destination);
     }
 
-    stackSource.push(source);
-    stackDest.push(destination);
-
-    return needsRecurse
-      ? copyRecurse(source, destination)
-      : destination;
+    return destination;
   }
 
   function copyType(source) {

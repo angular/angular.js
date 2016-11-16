@@ -150,7 +150,7 @@
 
     /* apis.js */
     "hashKey": false,
-    "HashMap": false,
+    "NgMap": false,
 
     /* urlUtils.js */
     "urlResolve": false,
