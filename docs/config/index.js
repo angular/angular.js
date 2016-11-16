@@ -52,10 +52,12 @@ module.exports = new Package('angularjs', [
 
 
 .config(function(parseTagsProcessor) {
+  parseTagsProcessor.tagDefinitions.push(require('./tag-defs/deprecated')); // this will override the jsdoc version
   parseTagsProcessor.tagDefinitions.push(require('./tag-defs/tutorial-step'));
   parseTagsProcessor.tagDefinitions.push(require('./tag-defs/sortOrder'));
   parseTagsProcessor.tagDefinitions.push(require('./tag-defs/installation'));
   parseTagsProcessor.tagDefinitions.push(require('./tag-defs/this'));
+
 })
 
 
@@ -69,7 +71,6 @@ module.exports = new Package('angularjs', [
   templateFinder.templateFolders.length = 0;
   templateFinder.templateFolders.unshift(path.resolve(packagePath, 'templates/examples'));
   templateFinder.templateFolders.unshift(path.resolve(packagePath, 'templates/ngdoc'));
-  templateFinder.templateFolders.unshift(path.resolve(packagePath, 'templates/git'));
   templateFinder.templateFolders.unshift(path.resolve(packagePath, 'templates/app'));
   renderDocsProcessor.extraData.git = gitData;
 })
