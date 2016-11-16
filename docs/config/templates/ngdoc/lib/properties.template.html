@@ -1,4 +1,6 @@
 {% import "lib/macros.html" as lib -%}
+{% import "lib/deprecated.html" as x -%}
+
 {%- if doc.properties %}
 <h2>Properties</h2>
 <ul class="properties">
@@ -6,6 +8,7 @@
   <li id="{$ property.name $}">
     <h3>{$ property.name | code $}</h3>
     {$ lib.typeInfo(property) $}
+    {$ x.deprecatedBlock(property) $}
   </li>
   {% endfor -%}
 </ul>

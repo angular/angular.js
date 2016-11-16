@@ -1,4 +1,6 @@
 {% import "lib/macros.html" as lib -%}
+{% import "lib/deprecated.html" as x -%}
+
 {%- if doc.events %}
 <h2>Events</h2>
 <ul class="events">
@@ -6,6 +8,9 @@
   <li id="{$ event.name $}">
     <h3>{$ event.name $}</h3>
     <div>{$ event.description | marked $}</div>
+
+    {$ x.deprecatedBlock(event) $}
+
     {%- if event.eventType == 'listen' %}
     <div class="inline">
       <h4>Listen on: {$ event.eventTarget $}</h4>

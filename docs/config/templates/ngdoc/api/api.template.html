@@ -1,6 +1,11 @@
 {% extends "base.template.html" %}
+{% import "lib/deprecated.html" as x -%}
 
 {% block content %}
+
+<a href='https://github.com/{$ git.info.owner $}/{$ git.info.repo $}/tree/{$ git.version.isSnapshot and 'master' or git.version.raw $}/{$ doc.fileInfo.projectRelativePath $}#L{$ doc.startingLine $}' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
 
 {% block header %}
 <header class="api-profile-header">
@@ -8,11 +13,13 @@
   <ol class="api-profile-header-structure naked-list step-list">
     {% block related_components %}{% endblock %}
     <li>
-      - {$ doc.docType $} in module {$ doc.moduleDoc.id | link(doc.moduleDoc.name, doc.moduleDoc) $}
+      - {$ doc.docType $} in module <a href="{$ doc.moduleDoc.path $}">{$ doc.moduleDoc.name $}</a>
     </li>
   </ol>
 </header>
 {% endblock %}
+
+{$ x.deprecatedBlock(doc) $}
 
 {% block description %}
 <div class="api-profile-description">
@@ -27,13 +34,6 @@
   {$ issue | marked $}
 </div>
 {% endfor -%}
-{% endif %}
-
-{% if doc.deprecated %}
-<fieldset class="deprecated">
-  <legend>Deprecated API</legend>
-  {$ doc.deprecated| marked $}
-</fieldset>
 {% endif %}
 
 <div>
