@@ -818,7 +818,7 @@ NgModelController.prototype = {
 
     this.$$timeout.cancel(this.$$pendingDebounce);
     var that = this;
-    if (debounceDelay) {
+    if (debounceDelay > 0) { // this fails if debounceDelay is an object
       this.$$pendingDebounce = this.$$timeout(function() {
         that.$commitViewValue();
       }, debounceDelay);
