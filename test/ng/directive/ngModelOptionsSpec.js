@@ -164,6 +164,22 @@ describe('ngModelOptions', function() {
         dealoc(container);
       });
 
+      it('should correctly inherit default and another specified event for `updateOn`', function() {
+        var container = $compile(
+                  '<div ng-model-options="{updateOn: \'default blur\'}">' +
+                    '<input ng-model-options="{\'*\': \'$inherit\'}">' +
+                  '</div>')($rootScope);
+
+        var input = container.find('input');
+        var inputOptions = input.controller('ngModelOptions').$options;
+
+        expect(inputOptions.getOption('updateOn')).toEqual('blur');
+        expect(inputOptions.getOption('updateOnDefault')).toEqual(true);
+
+        dealoc(container);
+      });
+
+
       it('should make a copy of the options object', function() {
         $rootScope.options = {updateOn: 'default'};
         var inputElm = helper.compileInput(

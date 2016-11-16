@@ -1,13 +1,8 @@
 'use strict';
 
-var ngModelOptionsDefaults = {
-  updateOn: 'default',
-  debounce: 0,
-  getterSetter: false,
-  allowInvalid: false,
-  timezone: null
-};
-
+/* exported $defaultModelOptions */
+var $defaultModelOptions;
+var DEFAULT_REGEXP = /(\s+|^)default(\s+|$)/;
 
 /**
  * @ngdoc type
@@ -15,15 +10,9 @@ var ngModelOptionsDefaults = {
  * @description
  * A container for the options set by the {@link ngModelOptions} directive
  */
-function ModelOptions(options, parentOptions) {
-  this.$$parentOptions = parentOptions;
-  this.$$options = extend({}, options); // make a shallow copy
-  this.$$extendParent();
-  defaults(this.$$options, ngModelOptionsDefaults);
-  this.$$processOptions();
+function ModelOptions(options) {
+  this.$$options = options;
 }
-
-var DEFAULT_REGEXP = /(\s+|^)default(\s+|$)/;
 
 ModelOptions.prototype = {
 
@@ -46,52 +35,50 @@ ModelOptions.prototype = {
    * @return {ModelOptions} a new `ModelOptions` object initialized with the given options.
    */
   createChild: function(options) {
-    return new ModelOptions(options, this.$$options);
-  },
-
-  $$extendParent: function() {
     var inheritAll = false;
 
+    // make a shallow copy
+    options = extend({}, options);
+
     // Inherit options from the parent if specified by the value `"$inherit"`
-    forEach(this.$$options, /* @this */function(option, key) {
+    forEach(options, /* @this */ function(option, key) {
       if (option === '$inherit') {
         if (key === '*') {
           inheritAll = true;
         } else {
-          this.$$options[key] = this.$$parentOptions[key];
+          options[key] = this.$$options[key];
         }
+      } else if (key === 'updateOn') {
+        options.updateOnDefault = false;
+        options[key] = trim(option.replace(DEFAULT_REGEXP, function() {
+          options.updateOnDefault = true;
+          return ' ';
+        }));
       }
     }, this);
 
-    // We have a property of the form: `"*": "$inherit"`
     if (inheritAll) {
-      delete this.$$options['*'];
-      defaults(this.$$options, this.$$parentOptions);
+      // We have a property of the form: `"*": "$inherit"`
+      delete options['*'];
+      defaults(options, this.$$options);
     }
-  },
 
-  $$processOptions: function() {
-    var options = this.$$options;
-    // updateOn and updateOnDefault
-    if (isDefined(options.updateOn) && options.updateOn.trim()) {
-      options.updateOnDefault = false;
-      // extract "default" pseudo-event from list of events that can trigger a model update
-      options.updateOn = trim(options.updateOn.replace(DEFAULT_REGEXP, function() {
-        options.updateOnDefault = true;
-        return ' ';
-      }));
-    } else if (this.$$parentOptions) {
-      options.updateOn = this.$$parentOptions.updateOn;
-      options.updateOnDefault = this.$$parentOptions.updateOnDefault;
-    } else {
-      options.updateOnDefault = true;
-    }
+    // Finally add in any missing defaults
+    defaults(options, $defaultModelOptions.$$options);
+
+    return new ModelOptions(options);
   }
 };
 
 
-/* exported $defaultModelOptions */
-var $defaultModelOptions = new ModelOptions(ngModelOptionsDefaults);
+$defaultModelOptions = new ModelOptions({
+  updateOn: '',
+  updateOnDefault: true,
+  debounce: 0,
+  getterSetter: false,
+  allowInvalid: false,
+  timezone: null
+});
 
 
 /**
@@ -154,7 +141,7 @@ var $defaultModelOptions = new ModelOptions(ngModelOptionsDefaults);
  * { allowInvalid: true, updateOn: 'default', debounce: 200 }
  * ```
  *
- * Notice that the `debounce` setting now inherits The value from the outer `<div>` element.
+ * Notice that the `debounce` setting now inherits the value from the outer `<div>` element.
  *
  * If you are creating a reusable component then you should be careful when using `"*": "$inherit"`
  * since you may inadvertently inherit a setting in the future that changes the behavior of your component.
