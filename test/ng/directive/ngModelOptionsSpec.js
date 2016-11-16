@@ -180,6 +180,31 @@ describe('ngModelOptions', function() {
       });
 
 
+      it('should `updateOnDefault` as well if we have `updateOn: "$inherit"`', function() {
+        var container = $compile(
+                  '<div ng-model-options="{updateOn: \'keyup\'}">' +
+                    '<input ng-model-options="{updateOn: \'$inherit\'}">' +
+                    '<div ng-model-options="{updateOn: \'default blur\'}">' +
+                      '<input ng-model-options="{updateOn: \'$inherit\'}">' +
+                    '</div>' +
+                  '</div>')($rootScope);
+
+        var input1 = container.find('input').eq(0);
+        var inputOptions1 = input1.controller('ngModelOptions').$options;
+
+        expect(inputOptions1.getOption('updateOn')).toEqual('keyup');
+        expect(inputOptions1.getOption('updateOnDefault')).toEqual(false);
+
+        var input2 = container.find('input').eq(1);
+        var inputOptions2 = input2.controller('ngModelOptions').$options;
+
+        expect(inputOptions2.getOption('updateOn')).toEqual('blur');
+        expect(inputOptions2.getOption('updateOnDefault')).toEqual(true);
+
+        dealoc(container);
+      });
+
+
       it('should make a copy of the options object', function() {
         $rootScope.options = {updateOn: 'default'};
         var inputElm = helper.compileInput(

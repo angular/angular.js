@@ -47,13 +47,21 @@ ModelOptions.prototype = {
           inheritAll = true;
         } else {
           options[key] = this.$$options[key];
+          // `updateOn` is special so we must also inherit the `updateOnDefault` option
+          if (key === 'updateOn') {
+            options.updateOnDefault = this.$$options.updateOnDefault;
+          }
         }
-      } else if (key === 'updateOn') {
-        options.updateOnDefault = false;
-        options[key] = trim(option.replace(DEFAULT_REGEXP, function() {
-          options.updateOnDefault = true;
-          return ' ';
-        }));
+      } else {
+        if (key === 'updateOn') {
+          // If the `updateOn` property contains the `default` event then we have to remove
+          // it from the event list and set the `updateOnDefault` flag.
+          options.updateOnDefault = false;
+          options[key] = trim(option.replace(DEFAULT_REGEXP, function() {
+            options.updateOnDefault = true;
+            return ' ';
+          }));
+        }
       }
     }, this);
 
