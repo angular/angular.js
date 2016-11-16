@@ -1,7 +1,7 @@
 'use strict';
 
-/* exported $defaultModelOptions */
-var $defaultModelOptions;
+/* exported defaultModelOptions */
+var defaultModelOptions;
 var DEFAULT_REGEXP = /(\s+|^)default(\s+|$)/;
 
 /**
@@ -72,14 +72,14 @@ ModelOptions.prototype = {
     }
 
     // Finally add in any missing defaults
-    defaults(options, $defaultModelOptions.$$options);
+    defaults(options, defaultModelOptions.$$options);
 
     return new ModelOptions(options);
   }
 };
 
 
-$defaultModelOptions = new ModelOptions({
+defaultModelOptions = new ModelOptions({
   updateOn: '',
   updateOnDefault: true,
   debounce: 0,
@@ -335,7 +335,7 @@ var ngModelOptionsDirective = function() {
     link: {
       pre: function ngModelOptionsPreLinkFn(scope, element, attrs, ctrls) {
         var optionsCtrl = ctrls[0];
-        var parentOptions = ctrls[1] ? ctrls[1].$options : $defaultModelOptions;
+        var parentOptions = ctrls[1] ? ctrls[1].$options : defaultModelOptions;
         optionsCtrl.$options = parentOptions.createChild(scope.$eval(attrs.ngModelOptions));
       }
     }

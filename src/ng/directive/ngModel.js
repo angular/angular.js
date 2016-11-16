@@ -9,7 +9,7 @@
   PENDING_CLASS: true,
   addSetValidityMethod: true,
   setupValidity: true,
-  $defaultModelOptions: false
+  defaultModelOptions: false
 */
 
 
@@ -245,7 +245,7 @@ function NgModelController($scope, $exceptionHandler, $attr, $element, $parse, $
   this.$pending = undefined; // keep pending keys here
   this.$name = $interpolate($attr.name || '', false)($scope);
   this.$$parentForm = nullFormCtrl;
-  this.$options = $defaultModelOptions;
+  this.$options = defaultModelOptions;
 
   this.$$parsedNgModel = $parse($attr.ngModel);
   this.$$parsedNgModelAssign = this.$$parsedNgModel.assign;
