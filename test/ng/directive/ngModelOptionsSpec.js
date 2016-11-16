@@ -2,18 +2,18 @@
 
 /* globals
     generateInputCompilerHelper: false,
-    $defaultModelOptions: false
+    defaultModelOptions: false
  */
 describe('ngModelOptions', function() {
 
-  describe('$defaultModelOptions', function() {
+  describe('defaultModelOptions', function() {
     it('should provide default values', function() {
-      expect($defaultModelOptions.getOption('updateOn')).toEqual('');
-      expect($defaultModelOptions.getOption('updateOnDefault')).toEqual(true);
-      expect($defaultModelOptions.getOption('debounce')).toBe(0);
-      expect($defaultModelOptions.getOption('getterSetter')).toBe(false);
-      expect($defaultModelOptions.getOption('allowInvalid')).toBe(false);
-      expect($defaultModelOptions.getOption('timezone')).toBe(null);
+      expect(defaultModelOptions.getOption('updateOn')).toEqual('');
+      expect(defaultModelOptions.getOption('updateOnDefault')).toEqual(true);
+      expect(defaultModelOptions.getOption('debounce')).toBe(0);
+      expect(defaultModelOptions.getOption('getterSetter')).toBe(false);
+      expect(defaultModelOptions.getOption('allowInvalid')).toBe(false);
+      expect(defaultModelOptions.getOption('timezone')).toBe(null);
     });
   });
 
@@ -31,18 +31,18 @@ describe('ngModelOptions', function() {
     }));
 
 
-    describe('should fall back to `$defaultModelOptions`', function() {
+    describe('should fall back to `defaultModelOptions`', function() {
       it('if there is no `ngModelOptions` directive', function() {
         var inputElm = helper.compileInput(
             '<input type="text" ng-model="name" name="alias" />');
 
         var inputOptions = $rootScope.form.alias.$options;
-        expect(inputOptions.getOption('updateOn')).toEqual($defaultModelOptions.getOption('updateOn'));
-        expect(inputOptions.getOption('updateOnDefault')).toEqual($defaultModelOptions.getOption('updateOnDefault'));
-        expect(inputOptions.getOption('debounce')).toEqual($defaultModelOptions.getOption('debounce'));
-        expect(inputOptions.getOption('getterSetter')).toEqual($defaultModelOptions.getOption('getterSetter'));
-        expect(inputOptions.getOption('allowInvalid')).toEqual($defaultModelOptions.getOption('allowInvalid'));
-        expect(inputOptions.getOption('timezone')).toEqual($defaultModelOptions.getOption('timezone'));
+        expect(inputOptions.getOption('updateOn')).toEqual(defaultModelOptions.getOption('updateOn'));
+        expect(inputOptions.getOption('updateOnDefault')).toEqual(defaultModelOptions.getOption('updateOnDefault'));
+        expect(inputOptions.getOption('debounce')).toEqual(defaultModelOptions.getOption('debounce'));
+        expect(inputOptions.getOption('getterSetter')).toEqual(defaultModelOptions.getOption('getterSetter'));
+        expect(inputOptions.getOption('allowInvalid')).toEqual(defaultModelOptions.getOption('allowInvalid'));
+        expect(inputOptions.getOption('timezone')).toEqual(defaultModelOptions.getOption('timezone'));
       });
 
 
@@ -51,9 +51,9 @@ describe('ngModelOptions', function() {
             '<input type="text" ng-model="name" name="alias" ng-model-options="{ updateOn: \'blur\' }"/>');
 
         var inputOptions = $rootScope.form.alias.$options;
-        expect(inputOptions.getOption('debounce')).toEqual($defaultModelOptions.getOption('debounce'));
+        expect(inputOptions.getOption('debounce')).toEqual(defaultModelOptions.getOption('debounce'));
         expect(inputOptions.getOption('updateOnDefault')).toBe(false);
-        expect(inputOptions.getOption('updateOnDefault')).not.toEqual($defaultModelOptions.getOption('updateOnDefault'));
+        expect(inputOptions.getOption('updateOnDefault')).not.toEqual(defaultModelOptions.getOption('updateOnDefault'));
       });
 
 
@@ -63,9 +63,9 @@ describe('ngModelOptions', function() {
                                 '</form>')($rootScope);
         var inputOptions = $rootScope.form.alias.$options;
 
-        expect(inputOptions.getOption('debounce')).toEqual($defaultModelOptions.getOption('debounce'));
+        expect(inputOptions.getOption('debounce')).toEqual(defaultModelOptions.getOption('debounce'));
         expect(inputOptions.getOption('updateOnDefault')).toBe(false);
-        expect(inputOptions.getOption('updateOnDefault')).not.toEqual($defaultModelOptions.getOption('updateOnDefault'));
+        expect(inputOptions.getOption('updateOnDefault')).not.toEqual(defaultModelOptions.getOption('updateOnDefault'));
         dealoc(form);
       });
     });
