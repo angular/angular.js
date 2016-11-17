@@ -469,6 +469,10 @@ describe('$compile', function() {
       }));
 
       // NOTE: This test may be redundant.
+      // Support: Edge 14+
+      // An `<svg>` element inside a `<foreignObject>` element on MS Edge has no
+      // size, causing the included `<circle>` element to also have no size and thus fails an
+      // assertion (relying on the element having a non-zero size).
       if (!isEdge) {
         it('should handle custom svg containers that transclude to foreignObject' +
            ' that transclude to custom svg containers that transclude to custom elements', inject(function() {
