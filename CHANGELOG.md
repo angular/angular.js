@@ -526,7 +526,7 @@ appModule.config(['$sceDelegateProvider', function($sceDelegateProvider) {
 ```
 
 **Explicitly trusting the URL via the `$sce.trustAsResourceUrl(url)`
-method**
+method.**
 
 You can pass a trusted object instead of a string as a URL to the `$http`
 service:
@@ -604,7 +604,7 @@ For example if you had the following HTML:
 
 ```html
 <form ng-model-options="{updateOn: 'blur'}">
-  <input ng-model="...">
+  <input ng-model="..." ng-model-options="{allowInvalid: true}">
 </form>
 ```
 
@@ -615,7 +615,7 @@ on the input as well:
 
 ```html
 <form ng-model-options="{updateOn: 'blur'}">
-  <input ng-model="..." ng-model-options="{updateOn: 'default'}">
+  <input ng-model="..." ng-model-options="{updateOn: 'default', allowInvalid: true}">
 </form>
 ```
 
@@ -886,7 +886,7 @@ directive attributes).
 
 All owned properties of the `params` object that are not used to replace URL params, will be passed
 to `$http` as `config.params` (to be used as query parameters in the URL), even if
-`Object.prototype` has a property with same name. E.g.:
+`Object.prototype` has a property with the same name. E.g.:
 
 Before:
 

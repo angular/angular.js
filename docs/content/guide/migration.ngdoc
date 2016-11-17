@@ -42,18 +42,21 @@ and `select`.
 The most notable changes are:
 
 - Aligning jqLite with the latest version of jQuery (3.x).
-- Implementing long awaited features, such as support for inputs of type `range` or the ability to
+- Implementing long awaited features, such as support for inputs of type `range` and the ability to
   bind to any type of values using `ngRepeat` with `select`.
-- Disabling (by default) the pre-assignment of bindings on controller instances.
-- Changing the default `$location` hash-prefix to `!`.
+- Disabling (by default) the pre-assignment of bindings on controller instances, which helps with
+  support for native ES6 classes.
+- Changing the default `$location` hash-prefix to `'!'`, as the previous empty string default was
+  unconventional and confusing.
 - Reporting possibly unhandled promise rejections that would otherwise go unnoticed.
 
-Another major change is the removal of the Expression Sandbox. This should not affect applications
+Another major change is the removal of the **Expression Sandbox**. This should not affect applications
 (other than a very slight performance boost), but we strongly recommend reading the
 [Sandbox Removal Blog Post](http://angularjs.blogspot.com/2016/09/angular-16-expression-sandbox-removal.html)
 to understand the implications behind the removal and whether any action is required on your part.
 
 
+<br />
 You may also notice that this release comes with a longer-than-usual list of breaking changes. Don't
 let this dishearten you though, since most of them are pretty minor - often not expected to affect
 real applications. These breaking changes were necessary in order to:
@@ -64,62 +67,79 @@ real applications. These breaking changes were necessary in order to:
 - Make the behavior of existing features more consistent and predictable.
 
 
+<br />
 To give you a heads-up, here is a brief summary of the breaking changes that are expected to have
 the highest impact. Make sure you look them up in the full list below or check out the corresponding
 commits for more info.
 
-- **input[type=range]**: Due to [913016](https://github.com/angular/angular.js/commit/9130166767c4792c5d32d08a918fc7becf32c9a6)
-  and the built-in support for range inputs, the behavior of such elements when bound to `ngModel`
-  will be different than before.
+- **$location** now uses `'!'` as the default hash-prefix for hash-bang URLs, instead of the empty
+  string. ([Details](guide/migration#commit-aa077e8))
 
-- **ngModelOptions**: Due to [87a2ff](https://github.com/angular/angular.js/commit/87a2ff76af5d0a9268d8eb84db5755077d27c84c),
-  if a setting is not applied on `ngModelOptions`, it will be inherited from the nearest
-  `ngModelOptions` ancestor. Previously, it would default to `undefined`.
-  The programmatic API for `ngModelOptions` has also changed.
+- **$compile** will (by default) not pre-assign bindings on controller instances.
+  ([Details](guide/migration#commit-bcd0d4))
 
-- **ngTransclude**: Due to [32aa7e](https://github.com/angular/angular.js/commit/32aa7e7395527624119e3917c54ee43b4d219301),
-  if you only provide whitespace as the transclusion content, it will be assumed to be empty and the
-  fallback content will be used instead. Previously, whitespace only transclusion would be treated as
-  the transclusion being "not empty", which meant that fallback content was not used in that case.
-
-- **$location**: Due to [aa077e8](https://github.com/angular/angular.js/commit/aa077e81129c740041438688dff2e8d20c3d7b52),
-  the default hash-prefix used for `$location` hash-bang URLs has changed from the empty string
-  (`''`) to the bang (`'!'`).
-
-- **jqLite**:
-    - Due to [fc0c11](https://github.com/angular/angular.js/commit/fc0c11db845d53061430b7f05e773dcb3fb5b860),
-      jqLite will camelCase the keys passed to the `.data()` method, in the same way as jQuery 3+
-      does; i.e. single hyphens followed by a lowercase letter will be converted to an uppercase
-      letter. Previously, keys passed to `.data()` were left untouched.
-
-    - Due to [73050c](https://github.com/angular/angular.js/commit/73050cdda04675bfa6705dc841ddbbb6919eb048),
-      the way jqLite camelCases keys passed to `.css()` is aligned with jQuery. Previously, when
-      using Angular without jQuery, `.css()` would camelCase keys more aggressively. Now, only a
-      single hyphen followed by a lowercase letter is getting transformed. This change also affects
-      other APIs that rely on the `.css()` method, such as `ngStyle`.
-
-    - Due to [3faf45](https://github.com/angular/angular.js/commit/3faf4505732758165083c9d21de71fa9b6983f4a),
-      calling `.attr(attrName, '')` (with `attrName` being a boolean attribute) will no longer
-      remove the attribute, but set it to its lowercase name as happens for every non-empty string.
-      Previously, calling `.attr(attrName, '')` would remove the boolean attribute.
-
-    - Due to [d882fd](https://github.com/angular/angular.js/commit/d882fde2e532216e7cf424495db1ccb5be1789f8),
-      calling the `.val()` getter on a jqLite element representing a `<select multiple>` element
-      with no options chosen will return an empty array. Previously, it would return `null`.
-
-- **ngAria/ngModel**: Due to [975a61](https://github.com/angular/angular.js/commit/975a6170efceb2a5e6377c57329731c0636eb8c8),
-  custom `checkbox`-shaped controls (e.g. checkboxes, menuitemcheckboxes), no longer have a custom
-  `$isEmpty()` method on their `NgModelController` that checks for `value === false`. Unless
-  overwritten, the default `$isEmpty()` method will be used, which treats `undefined`, `null`, `NaN`
-  and `''` as "empty".
+- **jqLite** is more aligned to jQuery 3, which required the following changes
+  (see [details](guide/migration#migrate1.5to1.6-ng-misc-jqLite) below):
+  - Keys passed to `.data()` and `.css()` are now camelCased in the same as jQuery does it.
+  - Setting boolean attributes to empty string no longer removes the attribute.
+  - Calling `.val()` on a multiple select will always return an array, even if no option is
+    selected.
 
 
-Below is the full list of breaking changes:
+
+- **input[type=radio]** now uses strict comparison (`===`) to determine its "checked" status.
+  ([Details](guide/migration#commit-5ac7da))
+
+- The improved support for **input[type=range]** means that the behaviour of range inputs (when
+  bound to `ngModel`) has changed. ([Details](guide/migration#commit-913016))
+
+- **ngTransclude** now treats whitespace-only transclusion content as empty and uses the fallback
+  content instead. ([Details](guide/migration#commit-32aa7e))
+
+- **ngAria/ngModel** no longer overrides the default `$inEmpty()` method for custom
+  `checkbox`-shaped controls. ([Details](guide/migration#commit-975a61))
 
 
 <br />
-### Core: Directives
+Below is the full list of breaking changes:
 
+- Core:
+  - [Directives](guide/migration#migrate1.5to1.6-ng-directives)
+    - [form](guide/migration#migrate1.5to1.6-ng-directives-form)
+    - [input[radio]](guide/migration#migrate1.5to1.6-ng-directives-input[radio])
+    - [input[range]](guide/migration#migrate1.5to1.6-ng-directives-input[range])
+    - [ngBind](guide/migration#migrate1.5to1.6-ng-directives-ngBind)
+    - [ngModel](guide/migration#migrate1.5to1.6-ng-directives-ngModel)
+    - [ngModelOptions](guide/migration#migrate1.5to1.6-ng-directives-ngModelOptions)
+    - [ngTransclude](guide/migration#migrate1.5to1.6-ng-directives-ngTransclude)
+    - [select](guide/migration#migrate1.5to1.6-ng-directives-select)
+  - [Services](guide/migration#migrate1.5to1.6-ng-services)
+    - [$compile](guide/migration#migrate1.5to1.6-ng-services-$compile)
+    - [$http](guide/migration#migrate1.5to1.6-ng-services-$http)
+    - [$interpolate](guide/migration#migrate1.5to1.6-ng-services-$interpolate)
+    - [$location](guide/migration#migrate1.5to1.6-ng-services-$location)
+    - [$q](guide/migration#migrate1.5to1.6-ng-services-$q)
+  - [Miscellaneous](guide/migration#migrate1.5to1.6-ng-misc)
+    - [jqLite](guide/migration#migrate1.5to1.6-ng-misc-jqLite)
+    - [decorator()](guide/migration#migrate1.5to1.6-ng-misc-decorator)
+- Modules:
+  - [ngAria](guide/migration#migrate1.5to1.6-ngAria)
+    - [$aria](guide/migration#migrate1.5to1.6-ngAria-$aria)
+    - [ngClick](guide/migration#migrate1.5to1.6-ngAria-ngClick)
+    - [ngModel](guide/migration#migrate1.5to1.6-ngAria-ngModel)
+  - [ngMock](guide/migration#migrate1.5to1.6-ngMock)
+    - [$httpBackend](guide/migration#migrate1.5to1.6-ngMock-$httpBackend)
+  - [ngResource](guide/migration#migrate1.5to1.6-ngResource)
+    - [$resource](guide/migration#migrate1.5to1.6-ngResource-$resource)
+  - [ngRoute](guide/migration#migrate1.5to1.6-ngRoute)
+    - [$route](guide/migration#migrate1.5to1.6-ngRoute-$route)
+
+
+<br />
+<a name="migrate1.5to1.6-ng-directives"></a>
+### Core: _Directives_
+
+<a name="migrate1.5to1.6-ng-directives-form"></a>
 #### **form**:
 
 <minor />
@@ -138,9 +158,35 @@ $scope.$watch('something', function() {
 or you can use `Function.prototype.bind` or `angular.bind`.
 
 
+<a name="migrate1.5to1.6-ng-directives-input[radio]"></a>
+#### **input[type=radio]**:
+
+<major />
+<a name="commit-5ac7da"></a>
+Due to [5ac7da](https://github.com/angular/angular.js/commit/5ac7daea72ec31cf337d1d21b13f0d17ff33994f),
+the "checked" status of radio inputs is now determined by doing a strict comparison (`===`) between
+the value of the input and the `ngModelController.$viewValue`. Previously, this was a non-strict
+comparison (`==`).
+
+This means in the following examples the radio is no longer checked:
+
+```html
+<!-- this.selected = 0 -->
+<input type="radio" ng-model="$ctrl.selected" value="0" />
+
+<!-- this.selected = 0; this.value = false; -->
+<input type="radio" ng-model="$ctrl.selected" ng-value="$ctrl.value" />
+```
+
+If your code relied on the non-strict comparison, you need to convert the values so that they
+continue to match with strict comparison.
+
+
+<a name="migrate1.5to1.6-ng-directives-input[range]"></a>
 #### **input[type=range]**:
 
 <major />
+<a name="commit-913016"></a>
 Due to [913016](https://github.com/angular/angular.js/commit/9130166767c4792c5d32d08a918fc7becf32c9a6)
 and the built-in support for range inputs, the behavior of such elements when bound to `ngModel`
 will be different than before:
@@ -160,6 +206,7 @@ will be different than before:
   validation etc).
 
 
+<a name="migrate1.5to1.6-ng-directives-ngBind"></a>
 #### **ngBind**:
 
 <minor />
@@ -204,6 +251,7 @@ If you want the output of `toString()`, you can call it manually on the value in
 ```
 
 
+<a name="migrate1.5to1.6-ng-directives-ngModel"></a>
 #### **ngModel**:
 
 <minor />
@@ -223,7 +271,7 @@ $scope.$watch('something', function() {
 <minor />
 Due to [7bc71a](https://github.com/angular/angular.js/commit/7bc71adc63bb6bb609b44dd2d3ea8fb0cd3f300b),
 the values returned by synchronous validators are always treated as boolean. Previously, only a
-literal `false` return value would cause the validation to fail. Now, all falsy values will cause
+literal `false` return value would cause the validation to fail. Now, _all_ falsy values will cause
 the validation to fail, as one would naturally expect.
 
 Specifically, the values `0`, `null`, `NaN` and `''` (the empty string) used to cause the validation
@@ -236,44 +284,39 @@ for most applications anyway), then this change does not affect you. If not, mak
 return a boolean value (`true/false`) indicating whether the input is valid or not.
 
 
+<a name="migrate1.5to1.6-ng-directives-ngModelOptions"></a>
 #### **ngModelOptions**:
 
-<major />
-Due to [87a2ff](https://github.com/angular/angular.js/commit/87a2ff76af5d0a9268d8eb84db5755077d27c84c),
-if a setting is not applied on `ngModelOptions`, it will be inherited from the nearest
-`ngModelOptions` ancestor. Previously, it would default to `undefined`.
+<minor />
+Due to [296cfc](https://github.com/angular/angular.js/commit/296cfce40c25e9438bfa46a0eb27240707a10ffa),
+the programmatic API for `ngModelOptions` has changed. You must now read options via the
+`ngModelController.$options.getOption(name)` method, rather than accessing the option directly as a
+property of the `ngModelContoller.$options` object. One benefit of these changes, though, is that
+the `ngModelControler.$options` property is now guaranteed to be defined so there is no need to
+check before accessing.
 
-It is possible that an `ngModelOptions` directive that does not set a property, has an ancestor
-`ngModelOptions` that does set this property to a value other than `undefined`. This would cause the
-`ngModel` and input controls below this `ngModelOptions` directive to display different behaviour.
-If this is not desired, you can explictly set the property in the `ngModelOptions` to prevent it
-from inheriting from the ancestor. For example if you had the following HTML:
-
-```html
-<form ng-model-options="{updateOn: 'blur'}">
-  <input ng-model="..." />
-</form>
-```
-
-Then before this change the input would update on the default event not blur. After this change the
-input will inherit the option to update on blur. If you want the original behaviour then you will
-need to specify the option on the input as well:
-
-```html
-<form ng-model-options="{updateOn: 'blur'}">
-  <input ng-model="..." ng-model-options="{updateOn: 'default'}" />
-</form>
-```
-
-The programmatic API for `ngModelOptions` has also changed. You must now read options via the
-`getOption` method, rather than accessing the option directly as a property of the options object.
 This does not affect the usage in templates and only affects custom directives that might have been
-reading options for their own purposes.
+reading options for their own purposes. If you were programmatically accessing the options, you need
+to change your code as follows:
+
+Before:
+
+```js
+var myOption = ngModelController.$options && ngModelController.$options['my-option'];
+```
+
+After:
+
+```js
+var myOption = ngModelController.$options.getOption('my-option');
+```
 
 
+<a name="migrate1.5to1.6-ng-directives-ngTransclude"></a>
 #### **ngTransclude**:
 
 <major />
+<a name="commit-32aa7e"></a>
 Due to [32aa7e](https://github.com/angular/angular.js/commit/32aa7e7395527624119e3917c54ee43b4d219301),
 if you only provide whitespace as the transclusion content, it will be assumed to be empty and the
 fallback content will be used instead. Previously, whitespace only transclusion would be treated as
@@ -282,6 +325,7 @@ you actually want whitespace to appear as the transcluded content, then you can 
 by adding a comment to the whitespace.
 
 
+<a name="migrate1.5to1.6-ng-directives-select"></a>
 #### **select**:
 
 <tests-only />
@@ -309,10 +353,88 @@ if the option does not provide a value attribute.
 
 
 <br />
-### ServiceCore: s
+<a name="migrate1.5to1.6-ng-services"></a>
+### Core: _Services_
 
+<a name="migrate1.5to1.6-ng-services-$compile"></a>
 #### **$compile**:
 
+<major />
+<a name="commit-bcd0d4"></a>
+Due to [bcd0d4](https://github.com/angular/angular.js/commit/bcd0d4d896d0dfdd988ff4f849c1d40366125858),
+pre-assigning bindings on controller instances is disabled by default. It is still possible to turn
+it back on, which should help during the migration. Pre-assigning bindings has been deprecated and
+will be removed in a future version, so we strongly recommend migrating your applications to not
+rely on it as soon as possible.
+
+Initialization logic that relies on relies on bindings being present should be put in the
+controller's `$onInit()` method, which is guarranteed to always be called _after_ the bindings have
+been assigned.
+
+Before:
+
+```js
+.component('myComponent', {
+  bindings: {value: '<'},
+  controller: function() {
+    // `this.value` might or might not be initialized,
+    // based on whether `preAssignBindingsEnabled` is true or false.
+    this.doubleValue = this.value * 2;
+  }
+})
+```
+
+After:
+
+```js
+.component('myComponent', {
+  bindings: {value: '<'},
+  controller: function() {
+    this.$onInit = function() {
+      // `this.value` will always be initialized,
+      // regardless of the value of `preAssignBindingsEnabled`.
+      this.doubleValue = this.value * 2;
+    };
+  }
+})
+```
+
+If you need to, you can re-enabled this feature with the following configuration block:
+
+```js
+.config(function($compileProvider) {
+  $compileProvider.preAssignBindingsEnabled(true);
+})
+```
+
+**Note:**
+This will re-enable the feature for the whole application, so only do it if you are in control of
+the whole application. If you are writing a library, you need to change your code as shown above.
+Furthermore, if your library also targets versions before 1.5 (which do not support the `$onInit()`
+lifecycle hook), you may need to manually call `$onInit()` from your constructor:
+
+```js
+.directive('myComponent', function() {
+  return {
+    scope: {value: '<'},
+    controller: function() {
+      // Put initialization logic inside `$onInit()`
+      // to make sure bindings have been initialized.
+      this.$onInit = function() {
+        this.doubleValue = this.value * 2;
+      };
+
+      // Prior to v1.5, we need to call `$onInit()` manually.
+      // (Bindings will always be pre-assigned in these versions.)
+      if (angular.version.major === 1 && angular.version.minor < 5) {
+        this.$onInit();
+      }
+    }
+  };
+})
+```
+
+<hr />
 <minor />
 Due to [13c252](https://github.com/angular/angular.js/commit/13c2522baf7c8f616b2efcaab4bffd54c8736591),
 on **IE11 only**, consecutive text nodes will always get merged. Previously, they would not get
@@ -363,6 +485,14 @@ Note that `$parse` trims expressions automatically, so attributes with expressio
 bindings) should not be affected by this change.
 
 <hr />
+<minor />
+Due to [13c252](https://github.com/angular/angular.js/commit/13c2522baf7c8f616b2efcaab4bffd54c8736591),
+on **IE11 only**, consecutive text nodes will always get merged. Previously, they would not get
+merged if they had no parent. The new behavior, which fixes an IE11 bug affecting interpolation
+under certain circumstances, might in some edge-cases have unexpected side effects that you should
+be aware of. Please, check the commit message for more details.
+
+<hr />
 <tests-only />
 Due to [b89c21](https://github.com/angular/angular.js/commit/b89c2181a9a165e06c027390164e08635ec449f4),
 using interpolation in any `on*` event attribute (e.g. `<button onclick="{{myVar}}">`) will now
@@ -371,6 +501,7 @@ time. This change is not expected to affect any applications, as it is related t
 that should not make it to production apps in the first place.
 
 
+<a name="migrate1.5to1.6-ng-services-$http"></a>
 #### **$http**:
 
 <tests-only />
@@ -502,7 +633,7 @@ trust a URL:
     }]);
     ```
 
-2. **Explicitly trusting the URL via the `$sce.trustAsResourceUrl(url)` method**
+2. **Explicitly trusting the URL via the `$sce.trustAsResourceUrl(url)` method.**
    You can pass a trusted object instead of a string as a URL to the `$http` service:
 
     ```js
@@ -510,11 +641,12 @@ trust a URL:
     ```
 
 
+<a name="migrate1.5to1.6-ng-services-$interpolate"></a>
 #### **$interpolate**:
 
 <minor />
 Due to [a5fd2e](https://github.com/angular/angular.js/commit/a5fd2e4c0376676fa317e09a8d8be4966b82cbfe),
-when converting values to strings, interpolation now uses a custom `toString()`` function on objects
+when converting values to strings, interpolation now uses a custom `toString()` function on objects
 that are not Number, Array or Date (custom means that the `toString` function is not the same as
 `Object.prototype.toString`). Otherwise, interpolation uses `JSON.stringify()` as usual. If an
 object has a custom `toString()` function, but you still want the output of `JSON.stringify()`, you
@@ -533,9 +665,11 @@ After:
 ```
 
 
+<a name="migrate1.5to1.6-ng-services-$location"></a>
 #### **$location**:
 
 <major />
+<a name="commit-aa077e8"></a>
 Due to [aa077e8](https://github.com/angular/angular.js/commit/aa077e81129c740041438688dff2e8d20c3d7b52),
 the default hash-prefix used for `$location` hash-bang URLs has changed from the empty string (`''`)
 to the bang (`'!'`). If your application does not use HTML5 mode or is being run on browsers that do
@@ -553,11 +687,12 @@ appModule.config(['$locationProvider', function($locationProvider) {
 ```
 
 
+<a name="migrate1.5to1.6-ng-services-$q"></a>
 #### **$q**:
 
 <minor />
 Due to [e13eea](https://github.com/angular/angular.js/commit/e13eeabd7e34a78becec06cfbe72c23f2dcb85f9),
-a error thrown from a promise's `onFulfilled` or `onRejection` handlers is treated exactly the same
+an error thrown from a promise's `onFulfilled` or `onRejection` handlers is treated exactly the same
 as a regular rejection. Previously, it would also be passed to the `$exceptionHandler()` (in
 addition to rejecting the promise with the error as reason).
 
@@ -579,8 +714,10 @@ messages in `$exceptionHandler`) will need to handle rejected promises.
 
 
 <br />
-### MiscellaneouCore: s
+<a name="migrate1.5to1.6-ng-misc"></a>
+### Core: _Miscellaneous_
 
+<a name="migrate1.5to1.6-ng-misc-jqLite"></a>
 #### **jqLite**:
 
 <major />
@@ -707,8 +844,8 @@ E.g.: `.attr(attrName, false)`
 <minor />
 Due to [4e3624](https://github.com/angular/angular.js/commit/4e3624552284d0e725bf6262b2e468cd2c7682fa),
 calling `.attr(attrName, null)` will remove the attribute. Previously, it would set the
-`attrName` attribute value to the string `'null'`. If you want to set the attribute value to
-`'null'`, you have to explicitly call `.attr(attrName, 'null')`.
+`attrName` attribute value to the string `'null'`. If you want to set the attribute value to the
+string `'null'`, you have to explicitly call `.attr(attrName, 'null')`.
 
 <hr />
 <major />
@@ -739,6 +876,7 @@ if (value.length > 0) { /* do something */ }
 ```
 
 
+<a name="migrate1.5to1.6-ng-misc-decorator"></a>
 #### **decorator()**:
 
 <minor />
@@ -771,8 +909,10 @@ After this change, the order in which `'theFactory'` is decorated will be differ
 
 
 <br />
+<a name="migrate1.5to1.6-ngAria"></a>
 ### ngAria
 
+<a name="migrate1.5to1.6-ngAria-$aria"></a>
 #### **$aria**:
 
 <minor />
@@ -780,10 +920,11 @@ Due to [ad41ba](https://github.com/angular/angular.js/commit/ad41baa1fdc057db3fe
 if you were explicitly setting the value of the `bindKeypress` flag, you need to change your code to
 use `bindKeydown` instead.
 
-Before: `$ariaProvider.config({bindKeypress: xyz})`
+Before: `$ariaProvider.config({bindKeypress: xyz})`<br />
 After: `$ariaProvider.config({bindKeydown: xyz})`
 
 
+<a name="migrate1.5to1.6-ngAria-ngClick"></a>
 #### **ngClick**:
 
 <minor />
@@ -820,9 +961,11 @@ expecting your custom buttons to automatically respond to the `keypress` event (
 you need to change the tests to trigger `keydown` events instead.
 
 
+<a name="migrate1.5to1.6-ngAria-ngModel"></a>
 #### **ngModel**:
 
 <major />
+<a name="commit-975a61"></a>
 Due to [975a61](https://github.com/angular/angular.js/commit/975a6170efceb2a5e6377c57329731c0636eb8c8),
 custom `checkbox`-shaped controls (e.g. checkboxes, menuitemcheckboxes), no longer have a custom
 `$isEmpty()` method on their `NgModelController` that checks for `value === false`. Unless
@@ -830,7 +973,7 @@ overwritten, the default `$isEmpty()` method will be used, which treats `undefin
 and `''` as "empty".
 
 **Note:** The `$isEmpty()` method is used to determine if the checkbox is checked ("not empty" means
-          "checked") and thus it can indirectly affect other things, such as the control's validity
+          "checked"). Thus it can indirectly affect other things, such as the control's validity
           with respect to the `required` validator (e.g. "empty" + "required" --> "invalid").
 
 Before:
@@ -897,8 +1040,10 @@ directive attributes).
 
 
 <br />
+<a name="migrate1.5to1.6-ngMock"></a>
 ### ngMock
 
+<a name="migrate1.5to1.6-ngMock-$httpBackend"></a>
 #### **$httpBackend**:
 
 <tests-only />
@@ -920,15 +1065,17 @@ but this lead to invalid tests passing unexpectedly.
 
 
 <br />
+<a name="migrate1.5to1.6-ngResource"></a>
 ### ngResource
 
+<a name="migrate1.5to1.6-ngResource-$resource"></a>
 #### **$resource**:
 
 <minor />
 Due to [acb545](https://github.com/angular/angular.js/commit/acb545ec3ebf099db68561033645941c900973b5),
 all own properties of the `params` object that are not used to replace URL params, will be passed to
 `$http` as `config.params` (to be used as query parameters in the URL). Previously, parameters where
-omitted if `Object.prototype` had a property with same name. E.g.:
+omitted if `Object.prototype` had a property with the same name. E.g.:
 
 Before:
 
@@ -952,7 +1099,7 @@ Foo.get({id: 42, bar: 'baz', toString: 'hmm'});
 <hr />
 <tests-only />
 Due to [2456ab](https://github.com/angular/angular.js/commit/2456ab63a613902d21c151445f9c697a76ab43b3),
-semicolon has been added to the list delimiters that are not encoded in URL params. Although it
+semicolon has been added to the list of delimiters that are not encoded in URL params. Although it
 shouldn't matter in practice (since both the encoded and the unencoded `;` character would be
 interpreted identically by the server), this change could break some tests: For example, where
 `$httpBackend` was set up to expect an encoded `;` character, but the request is made to the URL
@@ -960,8 +1107,10 @@ with an unencoded `;` character.
 
 
 <br />
+<a name="migrate1.5to1.6-ngRoute"></a>
 ### ngRoute
 
+<a name="migrate1.5to1.6-ngRoute-$route"></a>
 #### **$route**:
 
 <tests-only />
