@@ -386,7 +386,7 @@ Double compilation occurs when an already compiled part of the DOM gets compiled
 undesired effect and can lead to misbehaving directives, performance issues, and memory
 leaks.
 A common scenario where this happens is a directive that calls `$compile` in a directive link
-function on the directive element. In the following example, a directive adds a mouseover behavior
+function on the directive element. In the following **faulty example**, a directive adds a mouseover behavior
 to a button with `ngClick` on it:
 
 ```
@@ -423,11 +423,10 @@ angular.module('app').directive('addMouseover', function($compile) {
   return {
     link: function(scope, element, attrs) {
       var newEl = angular.element('<span ng-show="showHint"> My Hint</span>');
-      element.on('mouseenter mouseout', function() {
+      element.on('mouseenter mouseleave', function() {
         scope.$apply('showHint = !showHint');
       });
 
-      attrs.$set('addMouseover', null);
       element.append(newEl);
       $compile(newEl)(scope); // Only compile the new element
     }
@@ -436,7 +435,7 @@ angular.module('app').directive('addMouseover', function($compile) {
 ```
 
 Another scenario is adding a directive programmatically to a compiled element and then executing
-compile again.
+compile again. See the following **faulty example**:
 
 ```html
 <input ng-model="$ctrl.value" add-options>
@@ -459,11 +458,9 @@ In that case, it is necessary to intercept the *initial* compilation of the elem
   1. Give your directive the `terminal` property and a higher priority than directives
   that should not be compiled twice. In the example, the compiler will only compile directives
   which have a priority of 100 or higher.
-  2. Inside this directive's compile function, remove the original directive attribute from the element,
-  and add any other directive attributes. Removing the attribute is necessary, because otherwise the
-  compilation would result in an infinite loop.
-  3. Compile the element but restrict the maximum priority, so that any already compiled directives
-  are not compiled twice.
+  2. Inside this directive's compile function, add any other directive attributes to the template.
+  3. Compile the element, but restrict the maximum priority, so that any already compiled directives
+  (including the `addOptions` directive) are not compiled again.
   4. In the link function, link the compiled element with the element's scope
 
 ```
@@ -471,7 +468,6 @@ angular.module('app').directive('addOptions', function($compile) {
   return {
     priority: 100, // ngModel has priority 1
     terminal: true,
-    template: '<input ng-model="$ctrl.value">',
     compile: function(templateElement, templateAttributes) {
       templateAttributes.$set('ngModelOptions', '{debounce: 1000}');
 
