@@ -811,7 +811,12 @@ var $AnimateCssProvider = ['$animateProvider', /** @this */ function($animatePro
 
         /* Firefox (or possibly just Gecko) likes to not round values up
          * when a ms measurement is used for the animation */
-        var elapsedTime = parseFloat(ev.elapsedTime.toFixed(ELAPSED_TIME_MAX_DECIMAL_PLACES));
+
+        /**
+         * External plugins can emit event without elapsedTime -
+         * in this case will set elapsedTime to maxDuration to finish the animation immediately 
+         */
+        var elapsedTime = ev && ev.elapsedTime ? parseFloat(ev.elapsedTime.toFixed(ELAPSED_TIME_MAX_DECIMAL_PLACES)) : maxDuration;
 
         /* $manualTimeStamp is a mocked timeStamp value which is set
          * within browserTrigger(). This is only here so that tests can
