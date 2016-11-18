@@ -50,9 +50,9 @@ The most notable changes are:
   unconventional and confusing.
 - Reporting possibly unhandled promise rejections that would otherwise go unnoticed.
 
-Another major change is the removal of the **Expression Sandbox**. This should not affect applications
-(other than a very slight performance boost), but we strongly recommend reading the
-[Sandbox Removal Blog Post](http://angularjs.blogspot.com/2016/09/angular-16-expression-sandbox-removal.html)
+Another major change is the removal of the **Expression Sandbox**. This should not require changes
+to your application (and may give it a small performance boost), but we strongly recommend reading
+the [Sandbox Removal Blog Post](http://angularjs.blogspot.com/2016/09/angular-16-expression-sandbox-removal.html)
 to understand the implications behind the removal and whether any action is required on your part.
 
 
