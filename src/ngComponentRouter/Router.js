@@ -1,12 +1,14 @@
 /**
  * @ngdoc module
  * @name ngComponentRouter
- * @installation
+ * @deprecated
+ * In an effort to keep synchronized with router changes in Angular 2, this implementation of the
+ * Component Router (ngComponentRouter module) has been deprecated and will not receive further updates.
  *
- * <div class="alert alert-info">
- * **Deprecation Notice:** In an effort to keep synchronized with router changes in Angular 2, this implementation of the Component Router (ngComponentRouter module) has been deprecated and will not receive further updates.
- * We are investigating backporting the Angular 2 Router to Angular 1, but alternatively, use the {@link ngRoute} module or community developed projects (e.g. [ui-router](https://github.com/angular-ui/ui-router)).
- * </div>
+ * We are investigating backporting the Angular 2 Router to Angular 1, but alternatively, use the
+ * {@link ngRoute} module or community developed projects (e.g. [ui-router](https://github.com/angular-ui/ui-router)).
+ *
+ * @installation
  *
  * Currently, the **Component Router** module must be installed via `npm`, it is not yet available
  * on Bower or the Google CDN.
