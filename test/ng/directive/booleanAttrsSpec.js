@@ -182,6 +182,7 @@ describe('ngSrc', function() {
   }));
 
 
+  // Support: IE 9-11 only
   if (msie) {
     it('should update the element property as well as the attribute', inject(
         function($compile, $rootScope, $sce) {
@@ -283,8 +284,9 @@ describe('ngHref', function() {
     expect(element.attr('href')).toEqual(undefined);
   }));
 
-  if (msie) {
-    // IE11/10/Edge fail when setting a href to a URL containing a % that isn't a valid escape sequence
+  // Support: IE 9-11 only, Edge 12-14+
+  if (msie || /\bEdge\/[\d\.]+\b/.test(window.navigator.userAgent)) {
+    // IE/Edge fail when setting a href to a URL containing a % that isn't a valid escape sequence
     // See https://github.com/angular/angular.js/issues/13388
     it('should throw error if ng-href contains a non-escaped percent symbol', inject(function($rootScope, $compile) {
       element = $compile('<a ng-href="http://www.google.com/{{\'a%link\'}}">')($rootScope);

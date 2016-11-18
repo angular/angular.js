@@ -58,6 +58,7 @@ var originUrl = urlResolve(window.location.href);
 function urlResolve(url) {
   var href = url;
 
+  // Support: IE 9-11 only
   if (msie) {
     // Normalize before parse.  Refer Implementation Notes on why this is
     // done in two steps on IE.

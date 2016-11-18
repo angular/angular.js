@@ -1959,6 +1959,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       for (var i = 0; i < nodeList.length; i++) {
         attrs = new Attributes();
 
+        // Support: IE 11 only
         // Workaround for #11781 and #14924
         if (msie === 11) {
           mergeConsecutiveTextNodes(nodeList, i, notLiveList);

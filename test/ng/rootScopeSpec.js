@@ -13,9 +13,7 @@ describe('Scope', function() {
 
 
     it('should expose the constructor', inject(function($rootScope) {
-      if (msie < 11) return;
-      // eslint-disable-next-line no-proto
-      expect($rootScope.__proto__).toBe($rootScope.constructor.prototype);
+      expect(Object.getPrototypeOf($rootScope)).toBe($rootScope.constructor.prototype);
     }));
 
 
@@ -125,7 +123,9 @@ describe('Scope', function() {
       function Listener() {
         expect(this).toBeUndefined();
       }
-      if (msie < 10) return;
+      // Support: IE 9 only
+      // IE 9 doesn't support strict mode so its `this` will always be defined.
+      if (msie === 9) return;
       $rootScope.$watch(Getter, Listener);
       $rootScope.$digest();
     }));
@@ -1227,6 +1227,7 @@ describe('Scope', function() {
     }));
 
 
+    // Support: IE 9 only
     if (msie === 9) {
       // See issue https://github.com/angular/angular.js/issues/10706
       it('should completely disconnect all child scopes on IE9', inject(function($rootScope) {

@@ -105,6 +105,7 @@ function $RootScopeProvider() {
 
     function cleanUpScope($scope) {
 
+      // Support: IE 9 only
       if (msie === 9) {
         // There is a memory leak in IE9 if all child scopes are not disconnected
         // completely when a scope is destroyed. So this code will recurse up through

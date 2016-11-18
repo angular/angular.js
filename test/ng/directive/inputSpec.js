@@ -135,6 +135,7 @@ describe('input', function() {
 
 
   describe('IE placeholder input events', function() {
+    // Support: IE 9-11 only
     //IE fires an input event whenever a placeholder visually changes, essentially treating it as a value
     //Events:
     //  placeholder attribute change: *input*

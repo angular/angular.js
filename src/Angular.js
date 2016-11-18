@@ -169,6 +169,7 @@ var
     angularModule,
     uid               = 0;
 
+// Support: IE 9-11 only
 /**
  * documentMode is an IE-only property
  * http://msdn.microsoft.com/en-us/library/ie/cc196988(v=vs.85).aspx
@@ -1279,6 +1280,7 @@ function fromJson(json) {
 
 var ALL_COLONS = /:/g;
 function timezoneToOffset(timezone, fallback) {
+  // Support: IE 9-11 only, Edge 13-14+
   // IE/Edge do not "understand" colon (`:`) in timezone
   timezone = timezone.replace(ALL_COLONS, '');
   var requestedTimezoneOffset = Date.parse('Jan 01, 1970 00:00:00 ' + timezone) / 60000;

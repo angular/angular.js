@@ -39,8 +39,11 @@ describe('$location', function() {
     /* global urlParsingNode: true */
     var urlParsingNodePlaceholder;
 
-    beforeEach(inject(function($sniffer) {
-      if (msie) return;
+    beforeEach(function() {
+      // Support: non-Windows browsers
+      // These tests expect a Windows environment which we can only guarantee
+      // on IE & Edge.
+      if (msie || /\bEdge\/[\d\.]+\b/.test(window.navigator.userAgent)) return;
 
       urlParsingNodePlaceholder = urlParsingNode;
 
@@ -57,13 +60,14 @@ describe('$location', function() {
         search: '',
         setAttribute: angular.noop
       };
-    }));
+    });
 
-    afterEach(inject(function($sniffer) {
-      if (msie) return;
+    afterEach(function() {
+      // Support: non-Windows browsers
+      if (msie || /\bEdge\/[\d\.]+\b/.test(window.navigator.userAgent)) return;
       //reset urlParsingNode
       urlParsingNode = urlParsingNodePlaceholder;
-    }));
+    });
 
 
     it('should not include the drive name in path() on WIN', function() {

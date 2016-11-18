@@ -357,8 +357,11 @@ beforeEach(function() {
 
     toBeMarkedAsSelected: function() {
       // Selected is special because the element property and attribute reflect each other's state.
+
+      // Support: IE 9 only
       // IE9 will wrongly report hasAttribute('selected') === true when the property is
       // undefined or null, and the dev tools show that no attribute is set
+
       return {
         compare: function(actual) {
           var errors = [];
@@ -366,6 +369,7 @@ beforeEach(function() {
             errors.push('Expected option property "selected" to be truthy');
           }
 
+          // Support: IE 9 only
           if (msie !== 9 && actual.hasAttribute('selected') === false) {
             errors.push('Expected option to have attribute "selected"');
           }
@@ -383,6 +387,7 @@ beforeEach(function() {
             errors.push('Expected option property "selected" to be falsy');
           }
 
+          // Support: IE 9 only
           if (msie !== 9 && actual.hasAttribute('selected')) {
             errors.push('Expected option not to have attribute "selected"');
           }

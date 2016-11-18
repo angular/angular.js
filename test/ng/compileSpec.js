@@ -469,6 +469,10 @@ describe('$compile', function() {
       }));
 
       // NOTE: This test may be redundant.
+      // Support: Edge 14+
+      // An `<svg>` element inside a `<foreignObject>` element on MS Edge has no
+      // size, causing the included `<circle>` element to also have no size and thus fails an
+      // assertion (relying on the element having a non-zero size).
       if (!isEdge) {
         it('should handle custom svg containers that transclude to foreignObject' +
            ' that transclude to custom svg containers that transclude to custom elements', inject(function() {
@@ -1127,7 +1131,8 @@ describe('$compile', function() {
           expect(element).toHaveClass('class_2');
         }));
 
-        if (!msie || msie > 11) {
+        // Support: IE 9-11 only
+        if (!msie) {
           // style interpolation not working on IE (including IE11).
           it('should handle interpolated css style from replacing directive', inject(
             function($compile, $rootScope) {
@@ -10698,6 +10703,8 @@ describe('$compile', function() {
           expect(element.text()).toBe('102030');
           expect(newWatcherCount).toBe(3);
 
+          // Support: IE 11 only
+          // See #11781 and #14924
           if (msie === 11) {
             expect(element.find('ng-transclude').contents().length).toBe(1);
           }
@@ -10719,9 +10726,10 @@ describe('$compile', function() {
       expect(element.attr('src')).toEqual('http://example.com/image2.png');
     }));
 
+    // Support: IE 9 only
     // IE9 rejects the video / audio tag with "Error: Not implemented" and the source tag with
     // "Unable to get value of the property 'childNodes': object is null or undefined"
-    if (!msie || msie > 9) {
+    if (msie !== 9) {
       they('should NOT require trusted values for $prop src', ['video', 'audio'],
       function(tag) {
         inject(function($rootScope, $compile, $sce) {
@@ -11154,7 +11162,9 @@ describe('$compile', function() {
     }));
   });
 
-  if (!msie || msie >= 11) {
+  // Support: IE 9-10 only
+  // IEs <11 don't support srcdoc
+  if (!msie || msie === 11) {
     describe('iframe[srcdoc]', function() {
       it('should NOT set iframe contents for untrusted values', inject(function($compile, $rootScope, $sce) {
         element = $compile('<iframe srcdoc="{{html}}"></iframe>')($rootScope);
