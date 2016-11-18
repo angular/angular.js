@@ -812,7 +812,10 @@ NgModelController.prototype = {
 
     if (isNumber(debounceDelay[trigger])) {
       debounceDelay = debounceDelay[trigger];
+    } else if (isNumber(debounceDelay['*'])) {
+      debounceDelay = debounceDelay['*'];
     } else if (isNumber(debounceDelay['default'])) {
+      // for backwards compatibility we fallback on the `default` trigger
       debounceDelay = debounceDelay['default'];
     }
 

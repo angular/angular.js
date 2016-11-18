@@ -515,6 +515,24 @@ describe('ngModelOptions', function() {
         expect($rootScope.name).toEqual('b');
       });
 
+
+      it('should allow a default debounce to be specified for unlisted trigger events', function() {
+        var inputElm = helper.compileInput(
+            '<input type="text" ng-model="name" name="alias" ' +
+              'ng-model-options="{' +
+                'updateOn: \'default blur foo\', ' +
+                'debounce: { default: 2000, blur: 5000, \'*\': 500 }' +
+              '}"' +
+            '/>');
+
+        helper.changeInputValueTo('a');
+        browserTrigger(inputElm, 'foo');
+        expect($rootScope.name).toBeUndefined();
+        $timeout.flush(500);
+        expect($rootScope.name).toEqual('a');
+      });
+
+
       it('should allow selecting different debounce timeouts for each event on checkboxes', function() {
         var inputElm = helper.compileInput('<input type="checkbox" ng-model="checkbox" ' +
           'ng-model-options="{ ' +

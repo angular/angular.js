@@ -313,7 +313,10 @@ defaultModelOptions = new ModelOptions({
  *   - `debounce`: integer value which contains the debounce model update value in milliseconds. A
  *     value of 0 triggers an immediate update. If an object is supplied instead, you can specify a
  *     custom value for each event. For example:
- *     `ng-model-options="{ updateOn: 'default blur', debounce: { 'default': 500, 'blur': 0 } }"`
+ *     `ng-model-options="{ updateOn: 'default blur', debounce: { 'default': 500, 'blur': 0 } }"`.
+ *     You can also use `"*"` as a catch-all debounce for all unspecified events. For example:
+ *     `ng-model-options="{ updateOn: 'default blur keyup', debounce: { 'default': 500, '*': 100 } }"`
+ *     will debounce the `blur` and `keyup` events by 100ms.
  *   - `allowInvalid`: boolean value which indicates that the model can be set with values that did
  *     not validate correctly instead of the default behavior of setting the model to undefined.
  *   - `getterSetter`: boolean value which determines whether or not to treat functions bound to
