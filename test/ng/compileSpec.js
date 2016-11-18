@@ -11163,8 +11163,8 @@ describe('$compile', function() {
   });
 
   // Support: IE 9-10 only
-  // IE <=11 don't support srcdoc
-  if (!msie || msie >= 11) {
+  // IEs <11 don't support srcdoc
+  if (!msie || msie === 11) {
     describe('iframe[srcdoc]', function() {
       it('should NOT set iframe contents for untrusted values', inject(function($compile, $rootScope, $sce) {
         element = $compile('<iframe srcdoc="{{html}}"></iframe>')($rootScope);

@@ -125,7 +125,7 @@ describe('Scope', function() {
       }
       // Support: IE 9 only
       // IE 9 doesn't support strict mode so its `this` will always be defined.
-      if (msie < 10) return;
+      if (msie === 9) return;
       $rootScope.$watch(Getter, Listener);
       $rootScope.$digest();
     }));
