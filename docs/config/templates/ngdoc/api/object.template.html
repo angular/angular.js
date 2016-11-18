@@ -1,0 +1,23 @@
+{% import "lib/macros.html" as lib %}
+{% extends "api/api.template.html" %}
+
+{% block additional %}
+
+  {% if doc.params or doc.returns or doc.this or doc.kind == 'function' -%}
+    <h2 id="usage">Usage</h2>
+    {% if doc.usage %}
+      {$ doc.usage | code $}
+    {% else %}
+      {$ lib.functionSyntax(doc) $}
+    {% endif %}
+
+    {% include "lib/params.template.html" %}
+    {% include "lib/this.template.html" %}
+    {% include "lib/returns.template.html" %}
+  {%- endif %}
+
+  {% include "lib/methods.template.html" %}
+  {% include "lib/events.template.html" %}
+  {% include "lib/properties.template.html" %}
+
+{% endblock %}

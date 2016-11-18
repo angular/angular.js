@@ -1,0 +1,62 @@
+{% extends "base.template.html" %}
+
+{% block content %}
+
+{% block header %}
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">{$ doc.name $}</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    {% block related_components %}{% endblock %}
+    <li>
+      - {$ doc.docType $} in module {$ doc.moduleDoc.id | link(doc.moduleDoc.name, doc.moduleDoc) $}
+    </li>
+  </ol>
+</header>
+{% endblock %}
+
+{% block description %}
+<div class="api-profile-description">
+  {$ doc.description | marked $}
+</div>
+{% endblock %}
+
+{% if doc.knownIssues %}
+<h2 id="known-issues">Known Issues</h2>
+{% for issue in doc.knownIssues -%}
+<div class="known-issue">
+  {$ issue | marked $}
+</div>
+{% endfor -%}
+{% endif %}
+
+{% if doc.deprecated %}
+<fieldset class="deprecated">
+  <legend>Deprecated API</legend>
+  {$ doc.deprecated| marked $}
+</fieldset>
+{% endif %}
+
+<div>
+  {% block dependencies %}
+  {%- if doc.requires %}
+  <h2 id="dependencies">Dependencies</h2>
+  <ul>
+    {% for require in doc.requires %}<li>{$ require | link $}</li>{% endfor %}
+  </ul>
+  {% endif -%}
+  {% endblock %}
+
+  {% block additional %}
+  {% endblock %}
+
+  {% block examples %}
+  {%- if doc.examples %}
+  <h2 id="example">Example</h2>
+  {%- for example in doc.examples -%}
+    {$ example | marked $}
+  {%- endfor -%}
+  {% endif -%}
+  {% endblock %}
+</div>
+
+{% endblock %}

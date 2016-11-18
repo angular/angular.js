@@ -1,0 +1,32 @@
+{% import "lib/macros.html" as lib -%}
+{%- if doc.events %}
+<h2>Events</h2>
+<ul class="events">
+  {%- for event in doc.events %}
+  <li id="{$ event.name $}">
+    <h3>{$ event.name $}</h3>
+    <div>{$ event.description | marked $}</div>
+    {%- if event.eventType == 'listen' %}
+    <div class="inline">
+      <h4>Listen on: {$ event.eventTarget $}</h4>
+    </div>
+    {%- else %}
+    <div class="inline">
+      <h4>Type:</h4>
+      <div class="type">{$ event.eventType $}</div>
+    </div>
+    <div class="inline">
+      <h4>Target:</h4>
+      <div class="target">{$ event.eventTarget $}</div>
+    </div>
+    {% endif -%}
+    {%- if event.params %}
+    <section class="api-section">
+      <h3>Parameters</h3>
+      {$ lib.paramTable(event.params) $}
+    </section>
+    {%- endif -%}
+  </li>
+  {% endfor -%}
+</ul>
+{% endif -%}

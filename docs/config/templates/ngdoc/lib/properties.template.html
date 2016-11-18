@@ -1,0 +1,12 @@
+{% import "lib/macros.html" as lib -%}
+{%- if doc.properties %}
+<h2>Properties</h2>
+<ul class="properties">
+  {%- for property in doc.properties %}
+  <li id="{$ property.name $}">
+    <h3>{$ property.name | code $}</h3>
+    {$ lib.typeInfo(property) $}
+  </li>
+  {% endfor -%}
+</ul>
+{%- endif -%}
