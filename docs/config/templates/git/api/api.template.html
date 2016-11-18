@@ -28,7 +28,7 @@
 <h2 id="known-issues">Known Issues</h2>
 {% for issue in doc.knownIssues -%}
 <div class="known-issue">
-  {$ issue | marked $}  {% if not loop.last %}<hr>{% endif %}
+  {$ issue | marked $}
 </div>
 {% endfor -%}
 {% endif %}

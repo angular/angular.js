@@ -65,7 +65,12 @@ module.exports = new Package('angularjs', [
 
 
 .config(function(templateFinder, renderDocsProcessor, gitData) {
-  templateFinder.templateFolders.unshift(path.resolve(packagePath, 'templates'));
+  // We are completely overwriting the folders
+  templateFinder.templateFolders.length = 0;
+  templateFinder.templateFolders.unshift(path.resolve(packagePath, 'templates/examples'));
+  templateFinder.templateFolders.unshift(path.resolve(packagePath, 'templates/ngdoc'));
+  templateFinder.templateFolders.unshift(path.resolve(packagePath, 'templates/git'));
+  templateFinder.templateFolders.unshift(path.resolve(packagePath, 'templates/app'));
   renderDocsProcessor.extraData.git = gitData;
 })
 
