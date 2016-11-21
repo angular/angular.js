@@ -1,3 +1,130 @@
+
+<a name="1.6.0-rc.1"></a>
+# 1.6.0-rc.1 proximity-warning (2016-11-21)
+
+## New Features
+
+- **ngModelOptions:** allow options to be inherited from ancestor `ngModelOptions` ([296cfc](https://github.com/angular/angular.js/commit/296cfce40c25e9438bfa46a0eb27240707a10ffa) [#10922](https://github.com/angular/angular.js/issues/10922))
+- **$compile:** set `preAssignBindingsEnabled` to false by default ([bcd0d4](https://github.com/angular/angular.js/commit/bcd0d4d896d0dfdd988ff4f849c1d40366125858) [#15352](https://github.com/angular/angular.js/issues/15352))
+
+## Bug Fixes
+
+- **ngModelOptions:** handle debounce of `updateOn` triggers that are not in debounce list ([789790](https://github.com/angular/angular.js/commit/789790feee4d6c5b1f5d5b18ecb0ccf6edd36fb3))
+- **ngMock/$controller:** respect `$compileProvider.preAssignBindingsEnabled()` ([7d9a79](https://github.com/angular/angular.js/commit/7d9a791c6a8c80d29d6c84afa287c81f2a307439))
+- **$location:** throw if the path starts with double (back)slashes ([4aa953](https://github.com/angular/angular.js/commit/4aa9534b0fea732d6492a2863c3ee7e077c8d004))
+- **core:** do not auto-bootstrap when loaded from an extension. ([0ff10e](https://github.com/angular/angular.js/commit/0ff10e1b56c6b7c4ac465e35c96a5886e294bac5))
+- **input[radio]:** use strict comparison when evaluating checked-ness ([5ac7da](https://github.com/angular/angular.js/commit/5ac7daea72ec31cf337d1d21b13f0d17ff33994f) [#15288](https://github.com/angular/angular.js/issues/15288))
+- **docsApp:** show correct version number in api index ([433c87](https://github.com/angular/angular.js/commit/433c8714f3d065a9a842502579b65d0388dd47ec))
+
+## Reverts
+
+- **ngModelOptions:** allow options to be inherited from ancestor ngModelOptions ([fb0225](https://github.com/angular/angular.js/commit/fb0225a36afb08ab14a808a2fd2d2f39c13fce32))
+
+
+## Performance Improvements
+- **ngOptions:** avoid calls to `element.value` ([3b7f29](https://github.com/angular/angular.js/commit/3b7f29ff63e8bf02327a1430dcc2a4c83915a206))
+
+
+
+## Breaking Changes
+
+- **feat($compile): set preAssignBindingsEnabled to false by default ([bcd0d4](https://github.com/angular/angular.js/commit/bcd0d4d896d0dfdd988ff4f849c1d40366125858))**:
+
+Previously, `$compileProvider.preAssignBindingsEnabled` was
+set to true by default. This means bindings were pre-assigned in component
+constructors. In Angular 1.5+ the place to put the initialization logic
+relying on bindings being present is the controller `$onInit` method.
+
+To migrate follow the example below:
+
+Before:
+
+```js
+angular.module('myApp', [])
+  .component('myComponent', {
+    bindings: {value: '<'},
+    controller: function() {
+      this.doubleValue = this.value * 2;
+    }
+  });
+```
+
+After:
+
+```js
+angular.module('myApp', [])
+  .component('myComponent', {
+    bindings: {value: '<'},
+    controller: function() {
+      this.$onInit = function() {
+        this.doubleValue = this.value * 2;
+      };
+    }
+  });
+```
+
+If you don't have time to migrate the code at the moment, you can flip the
+setting back to true:
+```js
+angular.module('myApp', [])
+  .config(function($compileProvider) {
+    $compileProvider.preAssignBindingsEnabled(true);
+  })
+  .component('myComponent', {
+    bindings: {value: '<'},
+    controller: function() {
+      this.doubleValue = this.value * 2;
+    }
+  });
+```
+Don't do this if you're writing a library, though, as you shouldn't change
+global configuration then.
+
+
+- **fix(input[radio]): use strict comparison when evaluating checked-ness ([5ac7da](https://github.com/angular/angular.js/commit/5ac7daea72ec31cf337d1d21b13f0d17ff33994f))**:
+
+When using input[radio], the checked status is now determined by doing
+a strict comparison between the value of the input and the ngModel.$viewValue.
+Previously, this was a non-strict comparison (==).
+
+This means in the following examples the radio is no longer checked:
+
+```
+  <!-- this.selected = 0 -->
+  <input type="radio" ng-model="$ctrl.selected" value="0" >
+
+  <!-- this.selected = 0; this.value = false; -->
+  <input type="radio" ng-model="$ctrl.selected" ng-value="$ctrl.value" >
+```
+
+The migration strategy is to convert values that matched with non-strict
+conversion so that they will match with strict conversion.
+
+
+- **feat(ngModelOptions): allow options to be inherited from ancestor `ngModelOptions` ([296cfc](https://github.com/angular/angular.js/commit/296cfce40c25e9438bfa46a0eb27240707a10ffa))**:
+
+The programmatic API for `ngModelOptions` has changed. You must now read options
+via the `ngModelController.$options.getOption(name)` method, rather than accessing the
+option directly as a property of the `ngModelContoller.$options` object. This does not
+affect the usage in templates and only affects custom directives that might have been
+reading options for their own purposes.
+
+One benefit of these changes, though, is that the `ngModelControler.$options` property
+is now guaranteed to be defined so there is no need to check before accessing.
+
+So, previously:
+
+```
+var myOption = ngModelController.$options && ngModelController.$options['my-option'];
+```
+
+and now:
+
+```
+var myOption = ngModelController.$options.getOption('my-option');
+```
+
+
 <a name="1.6.0-rc.0"></a>
 # 1.6.0-rc.0 bracing-vortex (2016-10-26)
 
