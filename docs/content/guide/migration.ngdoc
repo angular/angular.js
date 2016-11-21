@@ -1109,7 +1109,7 @@ After:
 ```js
 var Foo = $resource('/foo/:id');
 Foo.get({id: 42, bar: 'baz', toString: 'hmm'});
-    // URL: /foo/42?bar=baz&amp;toString=hmm
+    // URL: /foo/42?bar=baz&toString=hmm
     // Note that `toString` _is_ included in the query, as expected :)
 ```
 
