@@ -86,7 +86,7 @@ Please read the [Sandbox Removal Blog Post](http://angularjs.blogspot.com/2016/0
 ## Breaking Changes
 
 ### **jqLite** due to:
-- **[fc0c11](https://github.com/angular/angular.js/commit/fc0c11db845d53061430b7f05e773dcb3fb5b860))**: camelCase keys in `jqLite#data`
+- **[fc0c11](https://github.com/angular/angular.js/commit/fc0c11db845d53061430b7f05e773dcb3fb5b860)**: camelCase keys in `jqLite#data`
 
 Previously, keys passed to the data method were left untouched.
 Now they are internally camelCased similarly to how jQuery handles it, i.e.
@@ -302,7 +302,7 @@ JavaScript:
 - **[7bc71a](https://github.com/angular/angular.js/commit/7bc71adc63bb6bb609b44dd2d3ea8fb0cd3f300b)**: treat synchronous validators as boolean always
 
 Previously, only a literal `false` return would resolve as the
-synchronous validator failing. Now, all traditionally false JavaScript values
+synchronous validator failing. Now, all falsy JavaScript values
 are treated as failing the validator, as one would naturally expect.
 
 Specifically, the values `0` (the number zero), `null`, `NaN` and `''` (the
@@ -903,7 +903,7 @@ After:
 ```js
 var Foo = $resource('/foo/:id');
 Foo.get({id: 42, bar: 'baz', toString: 'hmm'});
-    // URL: /foo/42?bar=baz&amp;toString=hmm
+    // URL: /foo/42?bar=baz&toString=hmm
     // Note that `toString` _is_ included in the query, as expected :)
 ```
 
