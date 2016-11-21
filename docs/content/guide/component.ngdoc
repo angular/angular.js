@@ -32,7 +32,7 @@ Components can be registered using the `.component()` method of an Angular modul
 
 <example name="heroComponentSimple" module="heroApp">
 <file name="index.js">
-  angular.module('heroApp', []).controller('MainCtrl', function MainCtrl() {
+  angular.module('heroApp', []).component('MainCtrl', function MainCtrl() {
     this.hero = {
       name: 'Spawn'
     };
