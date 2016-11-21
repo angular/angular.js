@@ -17,7 +17,7 @@ describe('$cacheFactory', function() {
   it('should complain if the cache id is being reused', inject(function($cacheFactory) {
     $cacheFactory('cache1');
     expect(function() { $cacheFactory('cache1'); }).
-      toThrowMinErr("$cacheFactory", "iid", "CacheId 'cache1' is already taken!");
+      toThrowMinErr('$cacheFactory', 'iid', 'CacheId \'cache1\' is already taken!');
   }));
 
 
@@ -108,7 +108,7 @@ describe('$cacheFactory', function() {
       }));
 
 
-      it("should return value from put", inject(function($cacheFactory) {
+      it('should return value from put', inject(function($cacheFactory) {
         var obj = {};
         expect(cache.put('k1', obj)).toBe(obj);
       }));

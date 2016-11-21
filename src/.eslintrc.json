@@ -45,6 +45,7 @@
     "isObject": false,
     "isString": false,
     "isNumber": false,
+    "isNumberNaN": false,
     "isDate": false,
     "isArray": false,
     "isFunction": false,

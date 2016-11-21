@@ -40,8 +40,8 @@ function adjustMatcher(matcher) {
           'Illegal sequence *** in string matcher.  String: {0}', matcher);
     }
     matcher = escapeForRegexp(matcher).
-                  replace('\\*\\*', '.*').
-                  replace('\\*', '[^:/.?&;]*');
+                  replace(/\\\*\\\*/g, '.*').
+                  replace(/\\\*/g, '[^:/.?&;]*');
     return new RegExp('^' + matcher + '$');
   } else if (isRegExp(matcher)) {
     // The only other type of matcher allowed is a Regexp.
@@ -537,7 +537,7 @@ function $SceDelegateProvider() {
  * | `$sce.HTML`         | For HTML that's safe to source into the application.  The {@link ng.directive:ngBindHtml ngBindHtml} directive uses this context for bindings. If an unsafe value is encountered and the {@link ngSanitize $sanitize} module is present this will sanitize the value instead of throwing an error. |
  * | `$sce.CSS`          | For CSS that's safe to source into the application.  Currently unused.  Feel free to use it in your own directives. |
  * | `$sce.URL`          | For URLs that are safe to follow as links.  Currently unused (`<a href=` and `<img src=` sanitize their urls and don't constitute an SCE context. |
- * | `$sce.RESOURCE_URL` | For URLs that are not only safe to follow as links, but whose contents are also safe to include in your application.  Examples include `ng-include`, `src` / `ngSrc` bindings for tags other than `IMG` (e.g. `IFRAME`, `OBJECT`, etc.)  <br><br>Note that `$sce.RESOURCE_URL` makes a stronger statement about the URL than `$sce.URL` does and therefore contexts requiring values trusted for `$sce.RESOURCE_URL` can be used anywhere that values trusted for `$sce.URL` are required. |
+ * | `$sce.RESOURCE_URL` | For URLs that are not only safe to follow as links, but whose contents are also safe to include in your application.  Examples include `ng-include`, `src` / `ngSrc` bindings for tags other than `IMG`, `VIDEO`, `AUDIO`, `SOURCE`, and `TRACK` (e.g. `IFRAME`, `OBJECT`, etc.)  <br><br>Note that `$sce.RESOURCE_URL` makes a stronger statement about the URL than `$sce.URL` does and therefore contexts requiring values trusted for `$sce.RESOURCE_URL` can be used anywhere that values trusted for `$sce.URL` are required. |
  * | `$sce.JS`           | For JavaScript that is safe to execute in your application's context.  Currently unused.  Feel free to use it in your own directives. |
  *
  * ## Format of items in {@link ng.$sceDelegateProvider#resourceUrlWhitelist resourceUrlWhitelist}/{@link ng.$sceDelegateProvider#resourceUrlBlacklist Blacklist} <a name="resourceUrlPatternItem"></a>
@@ -612,7 +612,7 @@ function $SceDelegateProvider() {
  *     .controller('AppController', ['$http', '$templateCache', '$sce',
  *       function AppController($http, $templateCache, $sce) {
  *         var self = this;
- *         $http.get("test_data.json", {cache: $templateCache}).success(function(userComments) {
+ *         $http.get('test_data.json', {cache: $templateCache}).success(function(userComments) {
  *           self.userComments = userComments;
  *         });
  *         self.explicitlyTrustedHtml = $sce.trustAsHtml(
@@ -1054,13 +1054,13 @@ function $SceProvider() {
 
     forEach(SCE_CONTEXTS, function(enumValue, name) {
       var lName = lowercase(name);
-      sce[camelCase("parse_as_" + lName)] = function(expr) {
+      sce[camelCase('parse_as_' + lName)] = function(expr) {
         return parse(enumValue, expr);
       };
-      sce[camelCase("get_trusted_" + lName)] = function(value) {
+      sce[camelCase('get_trusted_' + lName)] = function(value) {
         return getTrusted(enumValue, value);
       };
-      sce[camelCase("trust_as_" + lName)] = function(value) {
+      sce[camelCase('trust_as_' + lName)] = function(value) {
         return trustAs(enumValue, value);
       };
     });

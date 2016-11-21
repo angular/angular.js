@@ -16,7 +16,7 @@
  * String, etc).
  *
  * The `expression` can be a single predicate, or a list of predicates each serving as a tie-breaker
- * for the preceeding one. The `expression` is evaluated against each item and the output is used
+ * for the preceding one. The `expression` is evaluated against each item and the output is used
  * for comparing with other items.
  *
  * You can change the sorting order by setting `reverse` to `true`. By default, items are sorted in
@@ -86,6 +86,9 @@
  *
  * **Note:** If you notice numbers not being sorted as expected, make sure they are actually being
  *           saved as numbers and not strings.
+ * **Note:** For the purpose of sorting, `null` values are treated as the string `'null'` (i.e.
+ *           `type: 'string'`, `value: 'null'`). This may cause unexpected sort order relative to
+ *           other values.
  *
  * @param {Array|ArrayLike} collection - The collection (array or array-like object) to sort.
  * @param {(Function|string|Array.<Function|string>)=} expression - A predicate (or list of

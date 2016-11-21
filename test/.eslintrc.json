@@ -59,6 +59,7 @@
     "isObject": false,
     "isString": false,
     "isNumber": false,
+    "isNumberNaN": false,
     "isDate": false,
     "isArray": false,
     "isFunction": false,
@@ -103,6 +104,8 @@
     "getBlockNodes": false,
     "createMap": false,
     "VALIDITY_STATE_PROPERTY": true,
+    "allowAutoBootstrap": false,
+    "isAutoBootstrapAllowed": false,
 
     /* AngularPublic.js */
     "version": false,

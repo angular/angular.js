@@ -205,7 +205,7 @@ module.exports = function(grunt) {
         dest: 'build/angular-parse-ext.js',
         src: util.wrap(files['angularModules']['ngParseExt'], 'module')
       },
-      "promises-aplus-adapter": {
+      'promises-aplus-adapter': {
         dest:'tmp/promises-aplus-adapter++.js',
         src:['src/ng/q.js', 'lib/promises-aplus/promises-aplus-test-adapter.js']
       }
@@ -294,7 +294,7 @@ module.exports = function(grunt) {
           stderr: true,
           failOnError: true
         },
-        command: path.normalize('./node_modules/.bin/promises-aplus-tests tmp/promises-aplus-adapter++.js')
+        command: path.normalize('./node_modules/.bin/promises-aplus-tests tmp/promises-aplus-adapter++.js --timeout 2000')
       }
     },
 
@@ -338,7 +338,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask('minify', ['bower', 'clean', 'build', 'minall']);
   grunt.registerTask('webserver', ['connect:devserver']);
-  grunt.registerTask('package', ['bower', 'validate-angular-files', 'clean', 'buildall', 'minall', 'collect-errors', 'docs', 'copy', 'write', 'compress']);
+  grunt.registerTask('package', ['bower', 'validate-angular-files', 'clean', 'buildall', 'minall', 'collect-errors', 'write', 'docs', 'copy', 'compress']);
   grunt.registerTask('ci-checks', ['ddescribe-iit', 'merge-conflict', 'eslint']);
   grunt.registerTask('default', ['package']);
 };

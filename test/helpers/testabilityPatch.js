@@ -156,15 +156,15 @@ function jqLiteCacheSize() {
  * @param {boolean=} showNgClass
  */
 function sortedHtml(element, showNgClass) {
-  var html = "";
+  var html = '';
   forEach(jqLite(element), function toString(node) {
 
-    if (node.nodeName === "#text") {
+    if (node.nodeName === '#text') {
       html += node.nodeValue.
         replace(/&(\w+[&;\W])?/g, function(match, entity) {return entity ? match : '&amp;';}).
         replace(/</g, '&lt;').
         replace(/>/g, '&gt;');
-    } else if (node.nodeName === "#comment") {
+    } else if (node.nodeName === '#comment') {
       html += '<!--' + node.nodeValue + '-->';
     } else {
       html += '<' + (node.nodeName || '?NOT_A_NODE?').toLowerCase();

@@ -141,7 +141,7 @@ describe('$http', function() {
             return {
               request: function(config) {
                 expect(config.url).toEqual('/url');
-                expect(config.data).toEqual({one: "two"});
+                expect(config.data).toEqual({one: 'two'});
                 expect(config.headers.foo).toEqual('bar');
                 run = true;
                 return config;
@@ -1020,7 +1020,6 @@ describe('$http', function() {
       });
     });
 
-
     describe('callbacks', function() {
 
       it('should $apply after success callback', function() {
@@ -1093,7 +1092,7 @@ describe('$http', function() {
 
 
           it('should transform object with date into json', function() {
-            $httpBackend.expect('POST', '/url', {"date": new Date(Date.UTC(2013, 11, 25))}).respond('');
+            $httpBackend.expect('POST', '/url', {'date': new Date(Date.UTC(2013, 11, 25))}).respond('');
             $http({method: 'POST', url: '/url', data: {date: new Date(Date.UTC(2013, 11, 25))}});
           });
 
@@ -1732,7 +1731,7 @@ describe('$http', function() {
           expect(callback.calls.mostRecent().args[0]).toBe('content');
 
           // Invalidate cache entry.
-          $http.defaults.cache.remove("/url");
+          $http.defaults.cache.remove('/url');
 
           // After cache entry removed, a request should be sent to server.
           $httpBackend.expect('GET', '/url').respond(200, 'content');

@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 var path = require('canonical-path');
 var packagePath = __dirname;
@@ -52,10 +52,12 @@ module.exports = new Package('angularjs', [
 
 
 .config(function(parseTagsProcessor) {
+  parseTagsProcessor.tagDefinitions.push(require('./tag-defs/deprecated')); // this will override the jsdoc version
   parseTagsProcessor.tagDefinitions.push(require('./tag-defs/tutorial-step'));
   parseTagsProcessor.tagDefinitions.push(require('./tag-defs/sortOrder'));
   parseTagsProcessor.tagDefinitions.push(require('./tag-defs/installation'));
   parseTagsProcessor.tagDefinitions.push(require('./tag-defs/this'));
+
 })
 
 
@@ -65,7 +67,11 @@ module.exports = new Package('angularjs', [
 
 
 .config(function(templateFinder, renderDocsProcessor, gitData) {
-  templateFinder.templateFolders.unshift(path.resolve(packagePath, 'templates'));
+  // We are completely overwriting the folders
+  templateFinder.templateFolders.length = 0;
+  templateFinder.templateFolders.unshift(path.resolve(packagePath, 'templates/examples'));
+  templateFinder.templateFolders.unshift(path.resolve(packagePath, 'templates/ngdoc'));
+  templateFinder.templateFolders.unshift(path.resolve(packagePath, 'templates/app'));
   renderDocsProcessor.extraData.git = gitData;
 })
 

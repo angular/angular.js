@@ -103,7 +103,7 @@ describe('angular.scenario.Runner', function() {
     $window.describe('describe', function() {
       $window.it('1', function() {
         var scope = $window.dslScope();
-        scope.test = "foo";
+        scope.test = 'foo';
         expect($window.dslScope().test).toBeUndefined();
       });
       $window.it('2', function() {

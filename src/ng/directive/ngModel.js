@@ -271,7 +271,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
         }
       };
     } else if (!parsedNgModel.assign) {
-      throw ngModelMinErr('nonassign', "Expression '{0}' is non-assignable. Element: {1}",
+      throw ngModelMinErr('nonassign', 'Expression \'{0}\' is non-assignable. Element: {1}',
           $attr.ngModel, startingTag($element));
     }
   };
@@ -446,12 +446,12 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    *
    * @description
    * Cancel an update and reset the input element's value to prevent an update to the `$modelValue`,
-   * which may be caused by a pending debounced event or because the input is waiting for a some
+   * which may be caused by a pending debounced event or because the input is waiting for some
    * future event.
    *
    * If you have an input that uses `ng-model-options` to set up debounced updates or updates that
-   * depend on special events such as blur, you can have a situation where there is a period when
-   * the `$viewValue` is out of sync with the ngModel's `$modelValue`.
+   * depend on special events such as `blur`, there can be a period when the `$viewValue` is out of
+   * sync with the ngModel's `$modelValue`.
    *
    * In this case, you can use `$rollbackViewValue()` to manually cancel the debounced / future update
    * and reset the input to the last committed view value.
@@ -469,7 +469,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    *     angular.module('cancel-update-example', [])
    *
    *     .controller('CancelUpdateController', ['$scope', function($scope) {
-   *       $scope.model = {};
+   *       $scope.model = {value1: '', value2: ''};
    *
    *       $scope.setEmpty = function(e, value, rollback) {
    *         if (e.keyCode === 27) {
@@ -484,8 +484,8 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    *   </file>
    *   <file name="index.html">
    *     <div ng-controller="CancelUpdateController">
-   *        <p>Both of these inputs are only updated if they are blurred. Hitting escape should
-   *        empty them. Follow these steps and observe the difference:</p>
+   *       <p>Both of these inputs are only updated if they are blurred. Hitting escape should
+   *       empty them. Follow these steps and observe the difference:</p>
    *       <ol>
    *         <li>Type something in the input. You will see that the model is not yet updated</li>
    *         <li>Press the Escape key.
@@ -502,17 +502,17 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    *
    *       <form name="myForm" ng-model-options="{ updateOn: 'blur' }">
    *         <div>
-   *        <p id="inputDescription1">Without $rollbackViewValue():</p>
-   *         <input name="value1" aria-describedby="inputDescription1" ng-model="model.value1"
-   *                ng-keydown="setEmpty($event, 'value1')">
-   *         value1: "{{ model.value1 }}"
+   *           <p id="inputDescription1">Without $rollbackViewValue():</p>
+   *           <input name="value1" aria-describedby="inputDescription1" ng-model="model.value1"
+   *                  ng-keydown="setEmpty($event, 'value1')">
+   *           value1: "{{ model.value1 }}"
    *         </div>
    *
    *         <div>
-   *        <p id="inputDescription2">With $rollbackViewValue():</p>
-   *         <input name="value2" aria-describedby="inputDescription2" ng-model="model.value2"
-   *                ng-keydown="setEmpty($event, 'value2', true)">
-   *         value2: "{{ model.value2 }}"
+   *           <p id="inputDescription2">With $rollbackViewValue():</p>
+   *           <input name="value2" aria-describedby="inputDescription2" ng-model="model.value2"
+   *                  ng-keydown="setEmpty($event, 'value2', true)">
+   *           value2: "{{ model.value2 }}"
    *         </div>
    *       </form>
    *     </div>
@@ -548,7 +548,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
    */
   this.$validate = function() {
     // ignore $validate before model is initialized
-    if (isNumber(ctrl.$modelValue) && isNaN(ctrl.$modelValue)) {
+    if (isNumberNaN(ctrl.$modelValue)) {
       return;
     }
 
@@ -640,7 +640,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
         var promise = validator(modelValue, viewValue);
         if (!isPromiseLike(promise)) {
           throw ngModelMinErr('nopromise',
-            "Expected asynchronous validator to return a promise but got '{0}' instead.", promise);
+            'Expected asynchronous validator to return a promise but got \'{0}\' instead.', promise);
         }
         setValidity(name, undefined);
         validatorPromises.push(promise.then(function() {
@@ -719,7 +719,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
         }
       }
     }
-    if (isNumber(ctrl.$modelValue) && isNaN(ctrl.$modelValue)) {
+    if (isNumberNaN(ctrl.$modelValue)) {
       // ctrl.$modelValue has not been touched yet...
       ctrl.$modelValue = ngModelGet($scope);
     }

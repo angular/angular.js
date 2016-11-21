@@ -19,8 +19,7 @@ Advantages of Components:
 
 When not to use Components:
 
-- for directives that rely on DOM manipulation, adding event listeners etc, because the compile
-and link functions are unavailable
+- for directives that need to perform actions in compile and pre-link functions, because they aren't available
 - when you need advanced directive definition options like priority, terminal, multi-element
 - when you want a directive that is triggered by an attribute or CSS class, rather than an element
 

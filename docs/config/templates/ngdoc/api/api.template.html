@@ -1,4 +1,5 @@
 {% extends "base.template.html" %}
+{% import "lib/deprecated.html" as x -%}
 
 {% block content %}
 
@@ -18,6 +19,8 @@
 </header>
 {% endblock %}
 
+{$ x.deprecatedBlock(doc) $}
+
 {% block description %}
 <div class="api-profile-description">
   {$ doc.description | marked $}
@@ -28,16 +31,9 @@
 <h2 id="known-issues">Known Issues</h2>
 {% for issue in doc.knownIssues -%}
 <div class="known-issue">
-  {$ issue | marked $}  {% if not loop.last %}<hr>{% endif %}
+  {$ issue | marked $}
 </div>
 {% endfor -%}
-{% endif %}
-
-{% if doc.deprecated %}
-<fieldset class="deprecated">
-  <legend>Deprecated API</legend>
-  {$ doc.deprecated| marked $}
-</fieldset>
 {% endif %}
 
 <div>

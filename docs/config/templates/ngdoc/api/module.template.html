@@ -1,9 +1,12 @@
 {% extends "base.template.html" %}
+{% import "lib/deprecated.html" as x %}
 
 {% block content %}
 <h1>
   {% if doc.title %}{$ doc.title | marked $}{% else %}{$ doc.name | code $}{% endif %}
 </h1>
+
+{$ x.deprecatedBlock(doc) $}
 
 <h2>Installation</h2>
 {% if doc.installation or doc.installation == '' %}

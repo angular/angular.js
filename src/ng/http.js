@@ -195,7 +195,7 @@ function parseHeaders(headers) {
  * @param {(string|Object)} headers Headers to provide access to.
  * @returns {function(string=)} Returns a getter function which if called with:
  *
- *   - if called with single an argument returns a single header value or null
+ *   - if called with an argument returns a single header value or null
  *   - if called with no arguments returns an object containing all headers.
  */
 function headersGetter(headers) {
@@ -345,6 +345,8 @@ function $HttpProvider() {
    * @ngdoc method
    * @name $httpProvider#useLegacyPromiseExtensions
    * @description
+   *
+   * _Deprecated_ - This method will be removed in v1.6.0 along with the legacy promise methods.
    *
    * Configure `$http` service to return promises without the shorthand methods `success` and `error`.
    * This should be used to make sure that applications work without these methods.
@@ -512,7 +514,7 @@ function $HttpProvider() {
      * object, which currently contains this default configuration:
      *
      * - `$httpProvider.defaults.headers.common` (headers that are common for all requests):
-     *   - `Accept: application/json, text/plain, * / *`
+     *   - <code>Accept: application/json, text/plain, \*&#65279;/&#65279;\*</code>
      * - `$httpProvider.defaults.headers.post`: (header defaults for POST requests)
      *   - `Content-Type: application/json`
      * - `$httpProvider.defaults.headers.put` (header defaults for PUT requests)
@@ -895,7 +897,7 @@ function $HttpProvider() {
               $scope.status = response.status;
               $scope.data = response.data;
             }, function(response) {
-              $scope.data = response.data || "Request failed";
+              $scope.data = response.data || 'Request failed';
               $scope.status = response.status;
           });
         };
@@ -1139,7 +1141,7 @@ function $HttpProvider() {
      *
      * @description
      * Shortcut method to perform `JSONP` request.
-     * If you would like to customise where and how the callbacks are stored then try overriding
+     * If you would like to customize where and how the callbacks are stored then try overriding
      * or decorating the {@link $jsonpCallbacks} service.
      *
      * @param {string} url Relative or absolute URL specifying the destination of the request.

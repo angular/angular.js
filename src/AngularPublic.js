@@ -113,10 +113,12 @@
  * - `codeName` – `{string}` – Code name of the release, such as "jiggling-armfat".
  */
 var version = {
-  full: '"NG_VERSION_FULL"',    // all of these placeholder strings will be replaced by grunt's
-  major: "NG_VERSION_MAJOR",    // package task
-  minor: "NG_VERSION_MINOR",
-  dot: "NG_VERSION_DOT",
+  // These placeholder strings will be replaced by grunt's `build` task.
+  // They need to be double- or single-quoted.
+  full: '"NG_VERSION_FULL"',
+  major: 'NG_VERSION_MAJOR',
+  minor: 'NG_VERSION_MINOR',
+  dot: 'NG_VERSION_DOT',
   codeName: '"NG_VERSION_CODENAME"'
 };
 

@@ -9,7 +9,7 @@ describe('Filter: limitTo', function() {
 
   beforeEach(inject(function($filter) {
     items = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
-    str = "tuvwxyz";
+    str = 'tuvwxyz';
     number = 100.045;
     arrayLike = {
       0: 'a',
@@ -31,10 +31,10 @@ describe('Filter: limitTo', function() {
   it('should return the first X items when X is positive', function() {
     expect(limitTo(items, 3)).toEqual(['a', 'b', 'c']);
     expect(limitTo(items, '3')).toEqual(['a', 'b', 'c']);
-    expect(limitTo(str, 3)).toEqual("tuv");
-    expect(limitTo(str, '3')).toEqual("tuv");
-    expect(limitTo(number, 3)).toEqual("100");
-    expect(limitTo(number, '3')).toEqual("100");
+    expect(limitTo(str, 3)).toEqual('tuv');
+    expect(limitTo(str, '3')).toEqual('tuv');
+    expect(limitTo(number, 3)).toEqual('100');
+    expect(limitTo(number, '3')).toEqual('100');
     expect(limitTo(arrayLike, 3)).toEqual(['a', 'b', 'c']);
     expect(limitTo(arrayLike, '3')).toEqual(['a', 'b', 'c']);
   });
@@ -42,8 +42,8 @@ describe('Filter: limitTo', function() {
   it('should return the first X items beginning from index Y when X and Y are positive', function() {
     expect(limitTo(items, 3, '3')).toEqual(['d', 'e', 'f']);
     expect(limitTo(items, '3', 3)).toEqual(['d', 'e', 'f']);
-    expect(limitTo(str, 3, 3)).toEqual("wxy");
-    expect(limitTo(str, '3', '3')).toEqual("wxy");
+    expect(limitTo(str, 3, 3)).toEqual('wxy');
+    expect(limitTo(str, '3', '3')).toEqual('wxy');
     expect(limitTo(arrayLike, 3, 3)).toEqual(['d', 'e', 'f']);
     expect(limitTo(arrayLike, '3', '3')).toEqual(['d', 'e', 'f']);
   });
@@ -51,8 +51,8 @@ describe('Filter: limitTo', function() {
   it('should return the first X items beginning from index Y when X is positive and Y is negative', function() {
     expect(limitTo(items, 3, '-3')).toEqual(['f', 'g', 'h']);
     expect(limitTo(items, '3', -3)).toEqual(['f', 'g', 'h']);
-    expect(limitTo(str, 3, -3)).toEqual("xyz");
-    expect(limitTo(str, '3', '-3')).toEqual("xyz");
+    expect(limitTo(str, 3, -3)).toEqual('xyz');
+    expect(limitTo(str, '3', '-3')).toEqual('xyz');
     expect(limitTo(arrayLike, 3, '-3')).toEqual(['f', 'g', 'h']);
     expect(limitTo(arrayLike, '3', -3)).toEqual(['f', 'g', 'h']);
   });
@@ -60,10 +60,10 @@ describe('Filter: limitTo', function() {
   it('should return the last X items when X is negative', function() {
     expect(limitTo(items, -3)).toEqual(['f', 'g', 'h']);
     expect(limitTo(items, '-3')).toEqual(['f', 'g', 'h']);
-    expect(limitTo(str, -3)).toEqual("xyz");
-    expect(limitTo(str, '-3')).toEqual("xyz");
-    expect(limitTo(number, -3)).toEqual("045");
-    expect(limitTo(number, '-3')).toEqual("045");
+    expect(limitTo(str, -3)).toEqual('xyz');
+    expect(limitTo(str, '-3')).toEqual('xyz');
+    expect(limitTo(number, -3)).toEqual('045');
+    expect(limitTo(number, '-3')).toEqual('045');
     expect(limitTo(arrayLike, -3)).toEqual(['f', 'g', 'h']);
     expect(limitTo(arrayLike, '-3')).toEqual(['f', 'g', 'h']);
   });
@@ -71,8 +71,8 @@ describe('Filter: limitTo', function() {
   it('should return the last X items until index Y when X and Y are negative', function() {
     expect(limitTo(items, -3, '-3')).toEqual(['c', 'd', 'e']);
     expect(limitTo(items, '-3', -3)).toEqual(['c', 'd', 'e']);
-    expect(limitTo(str, -3, -3)).toEqual("uvw");
-    expect(limitTo(str, '-3', '-3')).toEqual("uvw");
+    expect(limitTo(str, -3, -3)).toEqual('uvw');
+    expect(limitTo(str, '-3', '-3')).toEqual('uvw');
     expect(limitTo(arrayLike, -3, '-3')).toEqual(['c', 'd', 'e']);
     expect(limitTo(arrayLike, '-3', -3)).toEqual(['c', 'd', 'e']);
   });
@@ -80,8 +80,8 @@ describe('Filter: limitTo', function() {
   it('should return the last X items until index Y when X is negative and Y is positive', function() {
     expect(limitTo(items, -3, '4')).toEqual(['b', 'c', 'd']);
     expect(limitTo(items, '-3', 4)).toEqual(['b', 'c', 'd']);
-    expect(limitTo(str, -3, 4)).toEqual("uvw");
-    expect(limitTo(str, '-3', '4')).toEqual("uvw");
+    expect(limitTo(str, -3, 4)).toEqual('uvw');
+    expect(limitTo(str, '-3', '4')).toEqual('uvw');
     expect(limitTo(arrayLike, -3, '4')).toEqual(['b', 'c', 'd']);
     expect(limitTo(arrayLike, '-3', 4)).toEqual(['b', 'c', 'd']);
   });
@@ -107,8 +107,8 @@ describe('Filter: limitTo', function() {
   });
 
   it('should return an empty string when X = 0', function() {
-    expect(limitTo(str, 0)).toEqual("");
-    expect(limitTo(str, '0')).toEqual("");
+    expect(limitTo(str, 0)).toEqual('');
+    expect(limitTo(str, '0')).toEqual('');
   });
 
   it('should return entire string when X cannot be parsed', function() {
@@ -193,15 +193,15 @@ describe('Filter: limitTo', function() {
   });
 
   it('should return an empty string if Y exceeds input length', function() {
-    expect(limitTo(str, '3', 12)).toEqual("");
-    expect(limitTo(str, -3, '12')).toEqual("");
+    expect(limitTo(str, '3', 12)).toEqual('');
+    expect(limitTo(str, -3, '12')).toEqual('');
   });
 
   it('should start at 0 if Y is negative and exceeds input length', function() {
     expect(limitTo(items, 4, '-12')).toEqual(['a', 'b', 'c', 'd']);
     expect(limitTo(items, '-4', -12)).toEqual(['e', 'f', 'g', 'h']);
-    expect(limitTo(str, 4, '-12')).toEqual("tuvw");
-    expect(limitTo(str, '-4', -12)).toEqual("wxyz");
+    expect(limitTo(str, 4, '-12')).toEqual('tuvw');
+    expect(limitTo(str, '-4', -12)).toEqual('wxyz');
     expect(limitTo(arrayLike, 4, '-12')).toEqual(['a', 'b', 'c', 'd']);
     expect(limitTo(arrayLike, '-4', -12)).toEqual(['e', 'f', 'g', 'h']);
   });
@@ -209,8 +209,8 @@ describe('Filter: limitTo', function() {
   it('should return the entire string beginning from Y if X is positive and X+Y exceeds input length', function() {
     expect(limitTo(items, 7, 3)).toEqual(['d', 'e', 'f', 'g', 'h']);
     expect(limitTo(items, 7, -3)).toEqual(['f', 'g', 'h']);
-    expect(limitTo(str, 6, 3)).toEqual("wxyz");
-    expect(limitTo(str, 6, -3)).toEqual("xyz");
+    expect(limitTo(str, 6, 3)).toEqual('wxyz');
+    expect(limitTo(str, 6, -3)).toEqual('xyz');
     expect(limitTo(arrayLike, 7, 3)).toEqual(['d', 'e', 'f', 'g', 'h']);
     expect(limitTo(arrayLike, 7, -3)).toEqual(['f', 'g', 'h']);
   });
@@ -218,8 +218,8 @@ describe('Filter: limitTo', function() {
   it('should return the entire string until index Y if X is negative and X+Y exceeds input length', function() {
     expect(limitTo(items, -7, 3)).toEqual(['a', 'b', 'c']);
     expect(limitTo(items, -7, -3)).toEqual(['a', 'b', 'c', 'd', 'e']);
-    expect(limitTo(str, -6, 3)).toEqual("tuv");
-    expect(limitTo(str, -6, -3)).toEqual("tuvw");
+    expect(limitTo(str, -6, 3)).toEqual('tuv');
+    expect(limitTo(str, -6, -3)).toEqual('tuvw');
     expect(limitTo(arrayLike, -7, 3)).toEqual(['a', 'b', 'c']);
     expect(limitTo(arrayLike, -7, -3)).toEqual(['a', 'b', 'c', 'd', 'e']);
   });
@@ -230,7 +230,7 @@ describe('Filter: limitTo', function() {
     }
     var argsObj = getArguments({name: 'Misko'}, {name: 'Igor'}, {name: 'Brad'});
 
-    var nodeList = jqLite("<p><span>Misko</span><span>Igor</span><span>Brad</span></p>")[0].childNodes;
+    var nodeList = jqLite('<p><span>Misko</span><span>Igor</span><span>Brad</span></p>')[0].childNodes;
 
     expect(limitTo(argsObj, 2).length).toBe(2);
     expect(limitTo('abc', 1).length).toBe(1);

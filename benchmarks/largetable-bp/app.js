@@ -23,9 +23,9 @@ app.controller('DataController', function DataController($scope, $rootScope) {
   $scope.numberOfBindings = totalRows * totalColumns * 2 + totalRows + 1;
   $scope.numberOfWatches = '?';
 
-  /* @this */
+  /** @this */
   function iGetter() { return this.i; }
-  /* @this */
+  /** @this */
   function jGetter() { return this.j; }
 
   for (var i = 0; i < totalRows; i++) {

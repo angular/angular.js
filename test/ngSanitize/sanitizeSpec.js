@@ -22,7 +22,7 @@ describe('HTML', function() {
 
     var handler, start, text, comment;
     beforeEach(function() {
-      text = "";
+      text = '';
       start = null;
       handler = {
         start: function(tag, attrs) {
@@ -128,6 +128,17 @@ describe('HTML', function() {
 
   it('should remove attrs', function() {
     expectHTML('a<div style="abc">b</div>c').toEqual('a<div>b</div>c');
+  });
+
+  it('should handle large datasets', function() {
+    // Large is non-trivial to quantify, but handling ~100,000 should be sufficient for most purposes.
+    var largeNumber = 17; // 2^17 = 131,072
+    var result = '<div>b</div>';
+    // Ideally we would use repeat, but that isn't supported in IE.
+    for (var i = 0; i < largeNumber; i++) {
+      result += result;
+    }
+    expectHTML('a' + result + 'c').toEqual('a' + result + 'c');
   });
 
   it('should remove style', function() {
@@ -341,13 +352,13 @@ describe('HTML', function() {
       expect(html).toEqual('<div rel="!@#$%^&amp;*()_+-={}[]:&#34;;\'&lt;&gt;?,./`~ &#10;&#0;&#13;&#295;">');
     });
 
-    it('should ignore missformed elements', function() {
+    it('should ignore misformed elements', function() {
       writer.start('d>i&v', {});
       expect(html).toEqual('');
     });
 
     it('should ignore unknown attributes', function() {
-      writer.start('div', {unknown:""});
+      writer.start('div', {unknown:''});
       expect(html).toEqual('<div>');
     });
 
@@ -497,7 +508,7 @@ describe('HTML', function() {
         expect('&#106 &#97;&#118;&#97;&#115;&#99;&#114;&#105;&#112;&#116;&#58;').not.toBeValidUrl();
       });
 
-      it('should ignore decimal with leading 0 encodede javascript:', function() {
+      it('should ignore decimal with leading 0 encoded javascript:', function() {
         expect('&#0000106&#0000097&#0000118&#0000097&#0000115&#0000099&#0000114&#0000105&#0000112&#0000116&#0000058').not.toBeValidUrl();
         expect('&#0000106 &#0000097&#0000118&#0000097&#0000115&#0000099&#0000114&#0000105&#0000112&#0000116&#0000058').not.toBeValidUrl();
         expect('&#0000106; &#0000097&#0000118&#0000097&#0000115&#0000099&#0000114&#0000105&#0000112&#0000116&#0000058').not.toBeValidUrl();

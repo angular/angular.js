@@ -104,6 +104,7 @@
     "no-spaced-func": "error",
     "no-trailing-spaces": "error",
     "no-unneeded-ternary": "error",
+    "quotes": ["error", "single"],
     "semi-spacing": "error",
     "semi": "error",
     "space-before-blocks": ["error", "always"],

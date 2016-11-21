@@ -64,7 +64,7 @@ describe('$log', function() {
     }
   ));
 
-  describe("IE logging behavior", function() {
+  describe('IE logging behavior', function() {
     function removeApplyFunctionForIE() {
       log.apply = log.call =
         warn.apply = warn.call =
@@ -79,7 +79,7 @@ describe('$log', function() {
         debug: debug};
     }
 
-    it("should work in IE where console.error doesn't have an apply method", inject(
+    it('should work in IE where console.error doesn\'t have an apply method', inject(
       removeApplyFunctionForIE,
       function($log) {
         $log.log.apply($log);
@@ -91,7 +91,7 @@ describe('$log', function() {
       })
     );
 
-    it("should not attempt to log the second argument in IE if it is not specified", inject(
+    it('should not attempt to log the second argument in IE if it is not specified', inject(
       function() {
         log = function(arg1, arg2) { logger += 'log;' + arg2; };
         warn = function(arg1, arg2) { logger += 'warn;' + arg2; };
@@ -111,11 +111,11 @@ describe('$log', function() {
     );
   });
 
-  describe("$log.debug", function() {
+  describe('$log.debug', function() {
 
     beforeEach(initService(false));
 
-    it("should skip debugging output if disabled", inject(
+    it('should skip debugging output if disabled', inject(
       function() {
         $window.console = {log: log,
                            warn: warn,

@@ -238,7 +238,8 @@ function $AnchorScrollProvider() {
     }
 
     function scroll(hash) {
-      hash = isString(hash) ? hash : $location.hash();
+      // Allow numeric hashes
+      hash = isString(hash) ? hash : isNumber(hash) ? hash.toString() : $location.hash();
       var elm;
 
       // empty hash, scroll to the top of the page

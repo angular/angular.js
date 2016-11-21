@@ -25,14 +25,14 @@ describe('$location', function() {
       //temporarily overriding the DOM element
       //with output from IE, if not in IE
       urlParsingNode = {
-        hash: "#/C:/",
-        host: "",
-        hostname: "",
-        href: "file:///C:/base#!/C:/foo",
-        pathname: "/C:/foo",
-        port: "",
-        protocol: "file:",
-        search: "",
+        hash: '#/C:/',
+        host: '',
+        hostname: '',
+        href: 'file:///C:/base#!/C:/foo',
+        pathname: '/C:/foo',
+        port: '',
+        protocol: 'file:',
+        search: '',
         setAttribute: angular.noop
       };
     }));
@@ -367,7 +367,7 @@ describe('$location', function() {
 
 
     it('should throw error when invalid server url given', function() {
-      var locationUrl = new LocationHtml5Url('http://server.org/base/abc', 'http://server.org/base/', '/base');
+      var locationUrl = new LocationHtml5Url('http://server.org/base/abc', 'http://server.org/base/');
 
       expect(function() {
         locationUrl.$$parse('http://other.server.org/path#/path');
@@ -376,7 +376,7 @@ describe('$location', function() {
 
 
     it('should throw error when invalid base url given', function() {
-      var locationUrl = new LocationHtml5Url('http://server.org/base/abc', 'http://server.org/base/', '/base');
+      var locationUrl = new LocationHtml5Url('http://server.org/base/abc', 'http://server.org/base/');
 
       expect(function() {
         locationUrl.$$parse('http://server.org/path#/path');
@@ -628,7 +628,7 @@ describe('$location', function() {
         expect(locationUrl.absUrl()).toEqual('http://host.com?q=1%2F2%203&q=4%2F5%206');
       });
 
-      it('should rewrite params when specifing a single param in search', function() {
+      it('should rewrite params when specifying a single param in search', function() {
         var locationUrl = new LocationHtml5Url('http://host.com', 'http://host.com');
         locationUrl.$$parse('http://host.com');
         locationUrl.search({'q': '1/2 3'});
@@ -1566,10 +1566,38 @@ describe('$location', function() {
 
 
     it('should not rewrite links when rewriting links is disabled', function() {
-      configureTestLink({linkHref: 'link?a#b', html5Mode: {enabled: true, rewriteLinks:false}, supportHist: true});
+      configureTestLink({linkHref: 'link?a#b'});
       initService({html5Mode:{enabled: true, rewriteLinks:false},supportHistory:true});
       inject(
         initBrowser({ url: 'http://host.com/base/index.html', basePath: '/base/index.html' }),
+        setupRewriteChecks(),
+        function($browser) {
+          browserTrigger(link, 'click');
+          expectNoRewrite($browser);
+        }
+      );
+    });
+
+
+    it('should rewrite links when the specified rewriteLinks attr is present', function() {
+      configureTestLink({linkHref: 'link?a#b', attrs: 'do-rewrite'});
+      initService({html5Mode: {enabled: true, rewriteLinks: 'do-rewrite'}, supportHistory: true});
+      inject(
+        initBrowser({url: 'http://host.com/base/index.html', basePath: '/base/index.html'}),
+        setupRewriteChecks(),
+        function($browser) {
+          browserTrigger(link, 'click');
+          expectRewriteTo($browser, 'http://host.com/base/link?a#b');
+        }
+      );
+    });
+
+
+    it('should not rewrite links when the specified rewriteLinks attr is not present', function() {
+      configureTestLink({linkHref: 'link?a#b'});
+      initService({html5Mode: {enabled: true, rewriteLinks: 'do-rewrite'}, supportHistory: true});
+      inject(
+        initBrowser({url: 'http://host.com/base/index.html', basePath: '/base/index.html'}),
         setupRewriteChecks(),
         function($browser) {
           browserTrigger(link, 'click');
@@ -1670,7 +1698,7 @@ describe('$location', function() {
 
     it('should not rewrite when full link to different base path when history enabled on old browser',
         function() {
-      configureTestLink({linkHref: 'http://host.com/other_base/link', html5Mode: true, supportHist: false});
+      configureTestLink({linkHref: 'http://host.com/other_base/link'});
       inject(
         initBrowser({ url: 'http://host.com/base/index.html', basePath: '/base/index.html' }),
         setupRewriteChecks(),
@@ -2321,7 +2349,7 @@ describe('$location', function() {
 
   describe('$locationProvider', function() {
     describe('html5Mode', function() {
-      it('should set enabled,  requireBase and rewriteLinks when called with object', function() {
+      it('should set enabled, requireBase and rewriteLinks when called with object', function() {
         module(function($locationProvider) {
           $locationProvider.html5Mode({enabled: true, requireBase: false, rewriteLinks: false});
           expect($locationProvider.html5Mode()).toEqual({
@@ -2335,12 +2363,12 @@ describe('$location', function() {
       });
 
 
-      it('should only overwrite existing properties if values are boolean', function() {
+      it('should only overwrite existing properties if values are of the correct type', function() {
         module(function($locationProvider) {
           $locationProvider.html5Mode({
             enabled: 'duh',
             requireBase: 'probably',
-            rewriteLinks: 'nope'
+            rewriteLinks: 0
           });
 
           expect($locationProvider.html5Mode()).toEqual({
@@ -2348,6 +2376,19 @@ describe('$location', function() {
             requireBase: true,
             rewriteLinks: true
           });
+        });
+
+        inject(function() {});
+      });
+
+
+      it('should support setting rewriteLinks to a string', function() {
+        module(function($locationProvider) {
+          $locationProvider.html5Mode({
+            rewriteLinks: 'yes-rewrite'
+          });
+
+          expect($locationProvider.html5Mode().rewriteLinks).toEqual('yes-rewrite');
         });
 
         inject(function() {});
@@ -2387,11 +2428,12 @@ describe('$location', function() {
 
 
   describe('LocationHtml5Url', function() {
-    var locationUrl, locationIndexUrl;
+    var locationUrl, locationUmlautUrl, locationIndexUrl;
 
     beforeEach(function() {
-      locationUrl = new LocationHtml5Url('http://server/pre/', 'http://server/pre/', 'http://server/pre/path');
-      locationIndexUrl = new LocationHtml5Url('http://server/pre/index.html', 'http://server/pre/', 'http://server/pre/path');
+      locationUrl = new LocationHtml5Url('http://server/pre/', 'http://server/pre/');
+      locationUmlautUrl = new LocationHtml5Url('http://särver/pre/', 'http://särver/pre/');
+      locationIndexUrl = new LocationHtml5Url('http://server/pre/index.html', 'http://server/pre/');
     });
 
     it('should rewrite URL', function() {
@@ -2402,6 +2444,13 @@ describe('$location', function() {
       // Note: relies on the previous state!
       expect(parseLinkAndReturn(locationUrl, 'someIgnoredAbsoluteHref', '#test')).toEqual('http://server/pre/otherPath#test');
 
+      expect(parseLinkAndReturn(locationUmlautUrl, 'http://other')).toEqual(undefined);
+      expect(parseLinkAndReturn(locationUmlautUrl, 'http://särver/pre')).toEqual('http://särver/pre/');
+      expect(parseLinkAndReturn(locationUmlautUrl, 'http://särver/pre/')).toEqual('http://särver/pre/');
+      expect(parseLinkAndReturn(locationUmlautUrl, 'http://särver/pre/otherPath')).toEqual('http://särver/pre/otherPath');
+      // Note: relies on the previous state!
+      expect(parseLinkAndReturn(locationUmlautUrl, 'someIgnoredAbsoluteHref', '#test')).toEqual('http://särver/pre/otherPath#test');
+
       expect(parseLinkAndReturn(locationIndexUrl, 'http://server/pre')).toEqual('http://server/pre/');
       expect(parseLinkAndReturn(locationIndexUrl, 'http://server/pre/')).toEqual('http://server/pre/');
       expect(parseLinkAndReturn(locationIndexUrl, 'http://server/pre/otherPath')).toEqual('http://server/pre/otherPath');
@@ -2409,6 +2458,19 @@ describe('$location', function() {
       expect(parseLinkAndReturn(locationUrl, 'someIgnoredAbsoluteHref', '#test')).toEqual('http://server/pre/otherPath#test');
     });
 
+    it('should complain if the path starts with double slashes', function() {
+      expect(function() {
+        parseLinkAndReturn(locationUrl, 'http://server/pre///other/path');
+      }).toThrowMinErr('$location', 'badpath');
+
+      expect(function() {
+        parseLinkAndReturn(locationUrl, 'http://server/pre/\\\\other/path');
+      }).toThrowMinErr('$location', 'badpath');
+
+      expect(function() {
+        parseLinkAndReturn(locationUrl, 'http://server/pre//\\//other/path');
+      }).toThrowMinErr('$location', 'badpath');
+    });
 
     it('should complain if no base tag present', function() {
       module(function($locationProvider) {
@@ -2420,7 +2482,7 @@ describe('$location', function() {
         expect(function() {
           $injector.get('$location');
         }).toThrowMinErr('$location', 'nobase',
-          "$location in HTML5 mode requires a <base> tag to be present!");
+          '$location in HTML5 mode requires a <base> tag to be present!');
       });
     });
 
@@ -2438,7 +2500,7 @@ describe('$location', function() {
         expect(function() {
           $injector.get('$location');
         }).not.toThrowMinErr('$location', 'nobase',
-          "$location in HTML5 mode requires a <base> tag to be present!");
+          '$location in HTML5 mode requires a <base> tag to be present!');
       });
     });
 
@@ -2461,7 +2523,7 @@ describe('$location', function() {
       expect(parseLinkAndReturn(locationUrl, 'javascript:void(0)')).toEqual(undefined);
     });
 
-    it("should not set hash if one was not originally specified", function() {
+    it('should not set hash if one was not originally specified', function() {
       locationUrl = new LocationHashbangUrl('http://server/pre/index.html', 'http://server/pre/', '#');
 
       locationUrl.$$parse('http://server/pre/index.html');
@@ -2469,7 +2531,7 @@ describe('$location', function() {
       expect(locationUrl.absUrl()).toBe('http://server/pre/index.html');
     });
 
-    it("should parse hash if one was specified", function() {
+    it('should parse hash if one was specified', function() {
       locationUrl = new LocationHashbangUrl('http://server/pre/index.html', 'http://server/pre/', '#');
 
       locationUrl.$$parse('http://server/pre/index.html#/foo/bar');
@@ -2478,7 +2540,7 @@ describe('$location', function() {
     });
 
 
-    it("should prefix hash url with / if one was originally missing", function() {
+    it('should prefix hash url with / if one was originally missing', function() {
       locationUrl = new LocationHashbangUrl('http://server/pre/index.html', 'http://server/pre/', '#');
 
       locationUrl.$$parse('http://server/pre/index.html#not-starting-with-slash');

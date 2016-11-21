@@ -33,7 +33,7 @@ angular.mock.$Browser = function() {
   var self = this;
 
   this.isMock = true;
-  self.$$url = "http://server/";
+  self.$$url = 'http://server/';
   self.$$lastUrl = self.$$url; // used by url polling fn
   self.pollFns = [];
 
@@ -250,14 +250,14 @@ angular.mock.$ExceptionHandlerProvider = function() {
           } else {
             errors.push([].slice.call(arguments, 0));
           }
-          if (mode === "rethrow") {
+          if (mode === 'rethrow') {
             throw e;
           }
         };
         handler.errors = errors;
         break;
       default:
-        throw new Error("Unknown mode '" + mode + "', only 'log'/'rethrow' modes are allowed!");
+        throw new Error('Unknown mode \'' + mode + '\', only \'log\'/\'rethrow\' modes are allowed!');
     }
   };
 
@@ -407,8 +407,8 @@ angular.mock.$LogProvider = function() {
         });
       });
       if (errors.length) {
-        errors.unshift("Expected $log to be empty! Either a message was logged unexpectedly, or " +
-          "an expected log message was not checked and removed:");
+        errors.unshift('Expected $log to be empty! Either a message was logged unexpectedly, or ' +
+          'an expected log message was not checked and removed:');
         errors.push('');
         throw new Error(errors.join('\n---------\n'));
       }
@@ -642,8 +642,8 @@ angular.mock.TzDate = function(offset, timestamp) {
     if (isNaN(timestamp)) {
       // eslint-disable-next-line no-throw-literal
       throw {
-        name: "Illegal Argument",
-        message: "Arg '" + tsStr + "' passed into TzDate constructor is not a valid date string"
+        name: 'Illegal Argument',
+        message: 'Arg \'' + tsStr + '\' passed into TzDate constructor is not a valid date string'
       };
     }
   } else {
@@ -749,7 +749,7 @@ angular.mock.TzDate = function(offset, timestamp) {
 
   angular.forEach(unimplementedMethods, function(methodName) {
     self[methodName] = function() {
-      throw new Error("Method '" + methodName + "' is not implemented in the TzDate mock");
+      throw new Error('Method \'' + methodName + '\' is not implemented in the TzDate mock');
     };
   });
 
@@ -1964,7 +1964,7 @@ function MockHttpExpectation(method, url, data, headers, keys) {
       var obj = {}, key_value, key,
           queryStr = u.indexOf('?') > -1
           ? u.substring(u.indexOf('?') + 1)
-          : "";
+          : '';
 
       angular.forEach(queryStr.split('&'), function(keyValue) {
         if (keyValue) {
@@ -2159,6 +2159,10 @@ angular.mock.$RootElementProvider = function() {
  * A decorator for {@link ng.$controller} with additional `bindings` parameter, useful when testing
  * controllers of directives that use {@link $compile#-bindtocontroller- `bindToController`}.
  *
+ * Depending on the value of
+ * {@link ng.$compileProvider#preAssignBindingsEnabled `preAssignBindingsEnabled()`}, the properties
+ * will be bound before or after invoking the constructor.
+ *
  *
  * ## Example
  *
@@ -2177,18 +2181,24 @@ angular.mock.$RootElementProvider = function() {
  * // Controller definition ...
  *
  * myMod.controller('MyDirectiveController', ['$log', function($log) {
- *   $log.info(this.name);
+ *   this.log = function() {
+ *     $log.info(this.name);
+ *   };
  * }]);
  *
  *
  * // In a test ...
  *
  * describe('myDirectiveController', function() {
- *   it('should write the bound name to the log', inject(function($controller, $log) {
- *     var ctrl = $controller('MyDirectiveController', { /* no locals &#42;/ }, { name: 'Clark Kent' });
- *     expect(ctrl.name).toEqual('Clark Kent');
- *     expect($log.info.logs).toEqual(['Clark Kent']);
- *   }));
+ *   describe('log()', function() {
+ *     it('should write the bound name to the log', inject(function($controller, $log) {
+ *       var ctrl = $controller('MyDirectiveController', { /* no locals &#42;/ }, { name: 'Clark Kent' });
+ *       ctrl.log();
+ *
+ *       expect(ctrl.name).toEqual('Clark Kent');
+ *       expect($log.info.logs).toEqual(['Clark Kent']);
+ *     }));
+ *   });
  * });
  *
  * ```
@@ -2207,37 +2217,54 @@ angular.mock.$RootElementProvider = function() {
  *    to work correctly.
  *
  * @param {Object} locals Injection locals for Controller.
- * @param {Object=} bindings Properties to add to the controller before invoking the constructor. This is used
- *                           to simulate the `bindToController` feature and simplify certain kinds of tests.
+ * @param {Object=} bindings Properties to add to the controller instance. This is used to simulate
+ *                           the `bindToController` feature and simplify certain kinds of tests.
  * @return {Object} Instance of given controller.
  */
-angular.mock.$ControllerDecorator = ['$delegate', function($delegate) {
-  return function(expression, locals, later, ident) {
-    if (later && typeof later === 'object') {
-      var instantiate = $delegate(expression, locals, true, ident);
-      angular.extend(instantiate.instance, later);
+function createControllerDecorator(compileProvider) {
+  angular.mock.$ControllerDecorator = ['$delegate', function($delegate) {
+    return function(expression, locals, later, ident) {
+      if (later && typeof later === 'object') {
+        var preAssignBindingsEnabled = compileProvider.preAssignBindingsEnabled();
 
-      var instance = instantiate();
-      if (instance !== instantiate.instance) {
-        angular.extend(instance, later);
+        var instantiate = $delegate(expression, locals, true, ident);
+        if (preAssignBindingsEnabled) {
+          angular.extend(instantiate.instance, later);
+        }
+
+        var instance = instantiate();
+        if (!preAssignBindingsEnabled || instance !== instantiate.instance) {
+          angular.extend(instance, later);
+        }
+
+        return instance;
       }
+      return $delegate(expression, locals, later, ident);
+    };
+  }];
 
-      return instance;
-    }
-    return $delegate(expression, locals, later, ident);
-  };
-}];
+  return angular.mock.$ControllerDecorator;
+}
 
 /**
  * @ngdoc service
  * @name $componentController
  * @description
- * A service that can be used to create instances of component controllers.
- * <div class="alert alert-info">
+ * A service that can be used to create instances of component controllers. Useful for unit-testing.
+ *
  * Be aware that the controller will be instantiated and attached to the scope as specified in
  * the component definition object. If you do not provide a `$scope` object in the `locals` param
  * then the helper will create a new isolated scope as a child of `$rootScope`.
- * </div>
+ *
+ * If you are using `$element` or `$attrs` in the controller, make sure to provide them as `locals`.
+ * The `$element` must be a jqLite-wrapped DOM element, and `$attrs` should be an object that
+ * has all properties / functions that you are using in the controller. If this is getting too complex,
+ * you should compile the component instead and access the component's controller via the
+ * {@link angular.element#methods `controller`} function.
+ *
+ * See also the section on {@link guide/component#unit-testing-component-controllers unit-testing component controllers}
+ * in the guide.
+ *
  * @param {string} componentName the name of the component whose controller we want to instantiate
  * @param {Object} locals Injection locals for Controller.
  * @param {Object=} bindings Properties to add to the controller before invoking the constructor. This is used
@@ -2326,11 +2353,11 @@ angular.module('ngMock', ['ng']).provider({
   $httpBackend: angular.mock.$HttpBackendProvider,
   $rootElement: angular.mock.$RootElementProvider,
   $componentController: angular.mock.$ComponentControllerProvider
-}).config(['$provide', function($provide) {
+}).config(['$provide', '$compileProvider', function($provide, $compileProvider) {
   $provide.decorator('$timeout', angular.mock.$TimeoutDecorator);
   $provide.decorator('$$rAF', angular.mock.$RAFDecorator);
   $provide.decorator('$rootScope', angular.mock.$RootScopeDecorator);
-  $provide.decorator('$controller', angular.mock.$ControllerDecorator);
+  $provide.decorator('$controller', createControllerDecorator($compileProvider));
 }]);
 
 /**
@@ -2854,14 +2881,14 @@ angular.mock.$RootScopeDecorator = ['$delegate', function($delegate) {
    */
   module.sharedInjector = function() {
     if (!(module.$$beforeAllHook && module.$$afterAllHook)) {
-      throw Error("sharedInjector() cannot be used unless your test runner defines beforeAll/afterAll");
+      throw Error('sharedInjector() cannot be used unless your test runner defines beforeAll/afterAll');
     }
 
     var initialized = false;
 
     module.$$beforeAllHook(/** @this */ function() {
       if (injectorState.shared) {
-        injectorState.sharedError = Error("sharedInjector() cannot be called inside a context that has already called sharedInjector()");
+        injectorState.sharedError = Error('sharedInjector() cannot be called inside a context that has already called sharedInjector()');
         throw injectorState.sharedError;
       }
       initialized = true;
@@ -2883,7 +2910,7 @@ angular.mock.$RootScopeDecorator = ['$delegate', function($delegate) {
     if (injectorState.shared && currentSpec && currentSpec !== this) {
       var state = currentSpec;
       currentSpec = this;
-      angular.forEach(["$injector","$modules","$providerInjector", "$injectorStrict"], function(k) {
+      angular.forEach(['$injector','$modules','$providerInjector', '$injectorStrict'], function(k) {
         currentSpec[k] = state[k];
         state[k] = null;
       });
@@ -2974,7 +3001,7 @@ angular.mock.$RootScopeDecorator = ['$delegate', function($delegate) {
    * These are ignored by the injector when the reference name is resolved.
    *
    * For example, the parameter `_myService_` would be resolved as the reference `myService`.
-   * Since it is available in the function body as _myService_, we can then assign it to a variable
+   * Since it is available in the function body as `_myService_`, we can then assign it to a variable
    * defined in an outer scope.
    *
    * ```
@@ -3073,7 +3100,7 @@ angular.mock.$RootScopeDecorator = ['$delegate', function($delegate) {
         if (strictDi) {
           // If strictDi is enabled, annotate the providerInjector blocks
           angular.forEach(modules, function(moduleFn) {
-            if (typeof moduleFn === "function") {
+            if (typeof moduleFn === 'function') {
               angular.injector.$$annotate(moduleFn);
             }
           });

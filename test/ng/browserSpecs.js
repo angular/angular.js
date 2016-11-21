@@ -215,7 +215,7 @@ describe('browser', function() {
   });
 
   describe('outstanding requests', function() {
-    it('should process callbacks immedietly with no outstanding requests', function() {
+    it('should process callbacks immediately with no outstanding requests', function() {
       var callback = jasmine.createSpy('callback');
       browser.notifyWhenNoOutstandingRequests(callback);
       expect(callback).toHaveBeenCalled();
@@ -224,7 +224,7 @@ describe('browser', function() {
 
 
   describe('defer', function() {
-    it('should execute fn asynchroniously via setTimeout', function() {
+    it('should execute fn asynchronously via setTimeout', function() {
       var callback = jasmine.createSpy('deferred');
 
       browser.defer(callback);
@@ -337,7 +337,7 @@ describe('browser', function() {
       expect(locationReplace).not.toHaveBeenCalled();
     });
 
-    it("should retain the # character when the only change is clearing the hash fragment, to prevent page reload", function() {
+    it('should retain the # character when the only change is clearing the hash fragment, to prevent page reload', function() {
       sniffer.history = true;
 
       browser.url('http://server/#123');
@@ -384,8 +384,8 @@ describe('browser', function() {
     });
 
     it('should decode single quotes to work around FF bug 407273', function() {
-      fakeWindow.location.href = "http://ff-bug/?single%27quote";
-      expect(browser.url()).toBe("http://ff-bug/?single'quote");
+      fakeWindow.location.href = 'http://ff-bug/?single%27quote';
+      expect(browser.url()).toBe('http://ff-bug/?single\'quote');
     });
 
     it('should not set URL when the URL is already set', function() {
@@ -733,7 +733,7 @@ describe('browser', function() {
     });
 
 
-    it("should stop calling callbacks when application has been torn down", function() {
+    it('should stop calling callbacks when application has been torn down', function() {
       sniffer.history = true;
       browser.onUrlChange(callback);
       fakeWindow.location.href = 'http://server/new';

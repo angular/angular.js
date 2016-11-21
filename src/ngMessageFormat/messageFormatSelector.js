@@ -17,7 +17,7 @@ function MessageSelectorBase(expressionFn, choices) {
   var self = this;
   this.expressionFn = expressionFn;
   this.choices = choices;
-  if (choices["other"] === undefined) {
+  if (choices['other'] === undefined) {
     throw $interpolateMinErr('reqother', '“other” is a required option.');
   }
   this.parsedFn = function(context) { return self.getResult(context); };
@@ -91,7 +91,7 @@ SelectMessageProto.prototype = MessageSelectorBase.prototype;
 
 SelectMessage.prototype = new SelectMessageProto();
 SelectMessage.prototype.categorizeValue = function categorizeSelectValue(value) {
-  return (this.choices[value] !== undefined) ? value : "other";
+  return (this.choices[value] !== undefined) ? value : 'other';
 };
 
 /**
@@ -111,11 +111,11 @@ PluralMessageProto.prototype = MessageSelectorBase.prototype;
 PluralMessage.prototype = new PluralMessageProto();
 PluralMessage.prototype.categorizeValue = function categorizePluralValue(value) {
   if (isNaN(value)) {
-    return "other";
+    return 'other';
   } else if (this.choices[value] !== undefined) {
     return value;
   } else {
     var category = this.pluralCat(value - this.offset);
-    return (this.choices[category] !== undefined) ? category : "other";
+    return (this.choices[category] !== undefined) ? category : 'other';
   }
 };

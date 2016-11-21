@@ -1,10 +1,10 @@
 'use strict';
 
-describe("doc.angularjs.org", function() {
+describe('doc.angularjs.org', function() {
 
-  describe("API pages", function() {
+  describe('API pages', function() {
 
-    it("should display links to code on GitHub", function() {
+    it('should display links to code on GitHub', function() {
       browser.get('build/docs/index.html#!/api/ng/service/$http');
       expect(element(by.css('.improve-docs')).getAttribute('href')).toMatch(/https?:\/\/github\.com\/angular\/angular\.js\/edit\/.+\/src\/ng\/http\.js/);
 
@@ -38,7 +38,7 @@ describe("doc.angularjs.org", function() {
       expect(code.getText()).toContain('guest!!!');
     });
 
-    it("should trim indentation from code blocks", function() {
+    it('should trim indentation from code blocks', function() {
       browser.get('build/docs/index.html#!/api/ng/type/$rootScope.Scope');
 
       var codeBlocks = element.all(by.css('pre > code.lang-js'));

@@ -827,21 +827,15 @@ describe('ngModel', function() {
 
 
       it('should only validate to true if all validations are true', function() {
-        var curry = function(v) {
-          return function() {
-            return v;
-          };
-        };
-
         ctrl.$modelValue = undefined;
-        ctrl.$validators.a = curry(true);
-        ctrl.$validators.b = curry(true);
-        ctrl.$validators.c = curry(false);
+        ctrl.$validators.a = valueFn(true);
+        ctrl.$validators.b = valueFn(true);
+        ctrl.$validators.c = valueFn(false);
 
         ctrl.$validate();
         expect(ctrl.$valid).toBe(false);
 
-        ctrl.$validators.c = curry(true);
+        ctrl.$validators.c = valueFn(true);
 
         ctrl.$validate();
         expect(ctrl.$valid).toBe(true);
@@ -849,16 +843,10 @@ describe('ngModel', function() {
 
 
       it('should register invalid validations on the $error object', function() {
-        var curry = function(v) {
-          return function() {
-            return v;
-          };
-        };
-
         ctrl.$modelValue = undefined;
-        ctrl.$validators.unique = curry(false);
-        ctrl.$validators.tooLong = curry(false);
-        ctrl.$validators.notNumeric = curry(true);
+        ctrl.$validators.unique = valueFn(false);
+        ctrl.$validators.tooLong = valueFn(false);
+        ctrl.$validators.notNumeric = valueFn(true);
 
         ctrl.$validate();
 
@@ -906,8 +894,8 @@ describe('ngModel', function() {
 
         expect(function() {
           scope.$apply('value = "123"');
-        }).toThrowMinErr("ngModel", "nopromise",
-          "Expected asynchronous validator to return a promise but got 'true' instead.");
+        }).toThrowMinErr('ngModel', 'nopromise',
+          'Expected asynchronous validator to return a promise but got \'true\' instead.');
       }));
 
 
@@ -1362,7 +1350,7 @@ describe('ngModel', function() {
       expect(element.hasClass('ng-valid-email')).toBe(true);
       expect(element.hasClass('ng-invalid-email')).toBe(false);
 
-      $rootScope.$apply("value = 'invalid-email'");
+      $rootScope.$apply('value = \'invalid-email\'');
       expect(element).toBeInvalid();
       expect(element).toBePristine();
       expect(element.hasClass('ng-valid-email')).toBe(false);
@@ -1922,7 +1910,7 @@ describe('ngModelOptions attributes', function() {
           'ng-model-options="{ updateOn: \'blur\'}"' +
         '/>');
 
-    $rootScope.$apply("color = 'white'");
+    $rootScope.$apply('color = \'white\'');
     browserTrigger(inputElm[2], 'click');
     expect($rootScope.color).toBe('white');
 
@@ -1944,7 +1932,7 @@ describe('ngModelOptions attributes', function() {
           'ng-model-options="{ updateOn: \'blur default\' }"' +
         '/>');
 
-    $rootScope.$apply("color = 'white'");
+    $rootScope.$apply('color = \'white\'');
     browserTrigger(inputElm[2], 'click');
     expect($rootScope.color).toBe('blue');
   });
@@ -2187,7 +2175,7 @@ describe('ngModelOptions attributes', function() {
         'ng-model-options="{ updateOn: \'blur\' }" />');
 
     helper.changeInputValueTo('a');
-    $rootScope.$apply("name = 'b'");
+    $rootScope.$apply('name = \'b\'');
     browserTrigger(inputElm, 'blur');
     expect($rootScope.name).toBe('b');
   });

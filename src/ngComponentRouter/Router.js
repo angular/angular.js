@@ -1,12 +1,14 @@
 /**
  * @ngdoc module
  * @name ngComponentRouter
- * @installation
+ * @deprecated
+ * In an effort to keep synchronized with router changes in Angular 2, this implementation of the
+ * Component Router (ngComponentRouter module) has been deprecated and will not receive further updates.
  *
- * <div class="alert alert-info">
- * **Deprecation Notice:** In an effort to keep synchronized with router changes in Angular 2, this implementation of the Component Router (ngComponentRouter module) has been deprecated and will not receive further updates.
- * We are investigating backporting the Angular 2 Router to Angular 1, but alternatively, use the {@link ngRoute} module or community developed projects (e.g. [ui-router](https://github.com/angular-ui/ui-router)).
- * </div>
+ * We are investigating backporting the Angular 2 Router to Angular 1, but alternatively, use the
+ * {@link ngRoute} module or community developed projects (e.g. [ui-router](https://github.com/angular-ui/ui-router)).
+ *
+ * @installation
  *
  * Currently, the **Component Router** module must be installed via `npm`, it is not yet available
  * on Bower or the Google CDN.
@@ -26,7 +28,7 @@
  *  <!-- IE required polyfills, in this exact order -->
  *  <script src="https://cdnjs.cloudflare.com/ajax/libs/es6-shim/0.33.3/es6-shim.min.js"></script>
  *  <script src="https://cdnjs.cloudflare.com/ajax/libs/systemjs/0.19.20/system-polyfills.js"></script>
- *  <script src="https://npmcdn.com/angular2/es6/dev/src/testing/shims_for_IE.js"></script>
+ *  <script src="https://unpkg.com/angular2/es6/dev/src/testing/shims_for_IE.js"></script>
  *  ```
  *
  * Then load the module in your application by adding it as a dependent module:

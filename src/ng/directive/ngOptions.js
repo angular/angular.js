@@ -17,8 +17,9 @@ var ngOptionsMinErr = minErr('ngOptions');
  * elements for the `<select>` element using the array or object obtained by evaluating the
  * `ngOptions` comprehension expression.
  *
- * In many cases, `ngRepeat` can be used on `<option>` elements instead of `ngOptions` to achieve a
- * similar result. However, `ngOptions` provides some benefits such as reducing memory and
+ * In many cases, {@link ng.directive:ngRepeat ngRepeat} can be used on `<option>` elements
+ * instead of `ngOptions` to achieve a similar result.
+ * However, `ngOptions` provides some benefits such as reducing memory and
  * increasing speed by not creating a new scope for each repeated instance, as well as providing
  * more flexibility in how the `<select>`'s model is assigned via the `select` **`as`** part of the
  * comprehension expression. `ngOptions` should be used when the `<select>` model needs to be bound
@@ -254,9 +255,9 @@ var ngOptionsDirective = ['$compile', '$document', '$parse', function($compile, 
     var match = optionsExp.match(NG_OPTIONS_REGEXP);
     if (!(match)) {
       throw ngOptionsMinErr('iexp',
-        "Expected expression in form of " +
-        "'_select_ (as _label_)? for (_key_,)?_value_ in _collection_'" +
-        " but got '{0}'. Element: {1}",
+        'Expected expression in form of ' +
+        '\'_select_ (as _label_)? for (_key_,)?_value_ in _collection_\'' +
+        ' but got \'{0}\'. Element: {1}',
         optionsExp, startingTag(selectElement));
     }
 
@@ -398,7 +399,7 @@ var ngOptionsDirective = ['$compile', '$document', '$parse', function($compile, 
           getViewValueFromOption: function(option) {
             // If the viewValue could be an object that may be mutated by the application,
             // we need to make a copy and not return the reference to the value on the option.
-            return trackBy ? angular.copy(option.viewValue) : option.viewValue;
+            return trackBy ? copy(option.viewValue) : option.viewValue;
           }
         };
       }
@@ -623,7 +624,7 @@ var ngOptionsDirective = ['$compile', '$document', '$parse', function($compile, 
           element.label = option.label;
           element.textContent = option.label;
         }
-        if (option.value !== element.value) element.value = option.selectValue;
+        element.value = option.selectValue;
       }
 
       function updateOptions() {

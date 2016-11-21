@@ -57,9 +57,9 @@ var objectValueOf = OBJECT_CTOR_PROTO.valueOf;
 
 
 function ensureSafeMemberName(name, fullExpression) {
-  if (name === "__defineGetter__" || name === "__defineSetter__"
-      || name === "__lookupGetter__" || name === "__lookupSetter__"
-      || name === "__proto__") {
+  if (name === '__defineGetter__' || name === '__defineSetter__'
+      || name === '__lookupGetter__' || name === '__lookupSetter__'
+      || name === '__proto__') {
     throw $parseMinErr('isecfld',
         'Attempting to access a disallowed field in Angular expressions! '
         + 'Expression: {0}', fullExpression);
@@ -149,7 +149,7 @@ function ensureSafeAssignContext(obj, fullExpression) {
 
 var OPERATORS = createMap();
 forEach('+ - * / % === !== == != < > <= >= && || ! = |'.split(' '), function(operator) { OPERATORS[operator] = true; });
-var ESCAPE = {"n":"\n", "f":"\f", "r":"\r", "t":"\t", "v":"\v", "'":"'", '"':'"'};
+var ESCAPE = {'n':'\n', 'f':'\f', 'r':'\r', 't':'\t', 'v':'\v', '\'':'\'', '"':'"'};
 
 
 /////////////////////////////////////////
@@ -172,7 +172,7 @@ Lexer.prototype = {
 
     while (this.index < this.text.length) {
       var ch = this.text.charAt(this.index);
-      if (ch === '"' || ch === "'") {
+      if (ch === '"' || ch === '\'') {
         this.readString(ch);
       } else if (this.isNumber(ch) || ch === '.' && this.isNumber(this.peek())) {
         this.readNumber();
@@ -211,7 +211,7 @@ Lexer.prototype = {
   },
 
   isNumber: function(ch) {
-    return ('0' <= ch && ch <= '9') && typeof ch === "string";
+    return ('0' <= ch && ch <= '9') && typeof ch === 'string';
   },
 
   isWhitespace: function(ch) {
@@ -436,6 +436,10 @@ AST.prototype = {
   assignment: function() {
     var result = this.ternary();
     if (this.expect('=')) {
+      if (!isAssignable(result)) {
+        throw $parseMinErr('lval', 'Trying to assign a value to a non l-value');
+      }
+
       result = { type: AST.AssignmentExpression, left: result, right: this.assignment(), operator: '='};
     }
     return result;
@@ -635,7 +639,7 @@ AST.prototype = {
           this.consume(':');
           property.value = this.expression();
         } else {
-          this.throwError("invalid key", this.peek());
+          this.throwError('invalid key', this.peek());
         }
         properties.push(property);
       } while (this.expect(','));
@@ -1148,9 +1152,6 @@ ASTCompiler.prototype = {
     case AST.AssignmentExpression:
       right = this.nextId();
       left = {};
-      if (!isAssignable(ast.left)) {
-        throw $parseMinErr('lval', 'Trying to assign a value to a non l-value');
-      }
       this.recurse(ast.left, undefined, left, function() {
         self.if_(self.notNull(left.context), function() {
           self.recurse(ast.right, right);
@@ -1360,7 +1361,7 @@ ASTCompiler.prototype = {
   },
 
   escape: function(value) {
-    if (isString(value)) return "'" + value.replace(this.stringEscapeRegex, this.stringEscapeFn) + "'";
+    if (isString(value)) return '\'' + value.replace(this.stringEscapeRegex, this.stringEscapeFn) + '\'';
     if (isNumber(value)) return value.toString();
     if (value === true) return 'true';
     if (value === false) return 'false';
@@ -1900,7 +1901,7 @@ function $ParseProvider() {
   * representation. It is expected for the function to return `true` or `false`, whether that
   * character is allowed or not.
   *
-  * Since this function will be called extensivelly, keep the implementation of these functions fast,
+  * Since this function will be called extensively, keep the implementation of these functions fast,
   * as the performance of these functions have a direct impact on the expressions parsing speed.
   *
   * @param {function=} identifierStart The function that will decide whether the given character is
@@ -2080,7 +2081,7 @@ function $ParseProvider() {
       var unwatch, lastValue;
       unwatch = scope.$watch(function oneTimeWatch(scope) {
         return parsedExpression(scope);
-      }, /* @this */ function oneTimeListener(value, old, scope) {
+      }, /** @this */ function oneTimeListener(value, old, scope) {
         lastValue = value;
         if (isFunction(listener)) {
           listener.apply(this, arguments);
@@ -2100,7 +2101,7 @@ function $ParseProvider() {
       var unwatch, lastValue;
       unwatch = scope.$watch(function oneTimeWatch(scope) {
         return parsedExpression(scope);
-      }, /* @this */ function oneTimeListener(value, old, scope) {
+      }, /** @this */ function oneTimeListener(value, old, scope) {
         lastValue = value;
         if (isFunction(listener)) {
           listener.call(this, value, old, scope);

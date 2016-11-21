@@ -26,10 +26,10 @@ for other directives to augment its behavior.
   <file name="index.html">
     <div ng-controller="ExampleController">
       <form novalidate class="simple-form">
-        Name: <input type="text" ng-model="user.name" /><br />
-        E-mail: <input type="email" ng-model="user.email" /><br />
-        Gender: <input type="radio" ng-model="user.gender" value="male" />male
-        <input type="radio" ng-model="user.gender" value="female" />female<br />
+        <label>Name: <input type="text" ng-model="user.name" /></label><br />
+        <label>E-mail: <input type="email" ng-model="user.email" /></label><br />
+        Gender: <label><input type="radio" ng-model="user.gender" value="male" />male</label>
+        <label><input type="radio" ng-model="user.gender" value="female" />female</label><br />
         <input type="button" ng-click="reset()" value="Reset" />
         <input type="submit" ng-click="update(user)" value="Save" />
       </form>
@@ -88,10 +88,10 @@ and failing to satisfy its validity.
   <file name="index.html">
     <div ng-controller="ExampleController">
       <form novalidate class="css-form">
-        Name: <input type="text" ng-model="user.name" required /><br />
-        E-mail: <input type="email" ng-model="user.email" required /><br />
-        Gender: <input type="radio" ng-model="user.gender" value="male" />male
-        <input type="radio" ng-model="user.gender" value="female" />female<br />
+        <label>Name: <input type="text" ng-model="user.name" required /></label><br />
+        <label>E-mail: <input type="email" ng-model="user.email" required /></label><br />
+        Gender: <label><input type="radio" ng-model="user.gender" value="male" />male</label>
+        <label><input type="radio" ng-model="user.gender" value="female" />female</label><br />
         <input type="button" ng-click="reset()" value="Reset" />
         <input type="submit" ng-click="update(user)" value="Save" />
       </form>
@@ -154,15 +154,17 @@ didn't interact with a control
   <file name="index.html">
     <div ng-controller="ExampleController">
       <form name="form" class="css-form" novalidate>
-        Name:
-        <input type="text" ng-model="user.name" name="uName" required="" />
+        <label>Name:
+          <input type="text" ng-model="user.name" name="uName" required="" />
+        </label>
         <br />
         <div ng-show="form.$submitted || form.uName.$touched">
           <div ng-show="form.uName.$error.required">Tell us your name.</div>
         </div>
 
-        E-mail:
-        <input type="email" ng-model="user.email" name="uEmail" required="" />
+        <label>E-mail:
+          <input type="email" ng-model="user.email" name="uEmail" required="" />
+        </label>
         <br />
         <div ng-show="form.$submitted || form.uEmail.$touched">
           <span ng-show="form.uEmail.$error.required">Tell us your email.</span>
@@ -170,12 +172,14 @@ didn't interact with a control
         </div>
 
         Gender:
-        <input type="radio" ng-model="user.gender" value="male" />male
-        <input type="radio" ng-model="user.gender" value="female" />female
+        <label><input type="radio" ng-model="user.gender" value="male" />male</label>
+        <label><input type="radio" ng-model="user.gender" value="female" />female</label>
         <br />
+        <label>
         <input type="checkbox" ng-model="user.agree" name="userAgree" required="" />
 
         I agree:
+        </label>
         <input ng-show="user.agree" type="text" ng-model="user.agreeSign" required="" />
         <br />
         <div ng-show="form.$submitted || form.userAgree.$touched">
@@ -236,10 +240,11 @@ will update the model only when the control loses focus (blur event).
   <file name="index.html">
     <div ng-controller="ExampleController">
       <form>
-        Name:
-        <input type="text" ng-model="user.name" ng-model-options="{ updateOn: 'blur' }" /><br />
+        <label>Name:
+          <input type="text" ng-model="user.name" ng-model-options="{ updateOn: 'blur' }" /></label><br />
+        <label>
         Other data:
-        <input type="text" ng-model="user.data" /><br />
+        <input type="text" ng-model="user.data" /></label><br />
       </form>
       <pre>username = "{{user.name}}"</pre>
       <pre>userdata = "{{user.data}}"</pre>
@@ -282,8 +287,8 @@ after last change.
   <file name="index.html">
     <div ng-controller="ExampleController">
       <form>
-        Name:
-        <input type="text" ng-model="user.name" ng-model-options="{ debounce: 250 }" /><br />
+        <label>Name:
+        <input type="text" ng-model="user.name" ng-model-options="{ debounce: 250 }" /></label><br />
       </form>
       <pre>username = "{{user.name}}"</pre>
     </div>
@@ -335,17 +340,19 @@ In the following example we create two directives:
   <file name="index.html">
     <form name="form" class="css-form" novalidate>
       <div>
+        <label>
         Size (integer 0 - 10):
         <input type="number" ng-model="size" name="size"
-               min="0" max="10" integer />{{size}}<br />
+               min="0" max="10" integer />{{size}}</label><br />
         <span ng-show="form.size.$error.integer">The value is not a valid integer!</span>
         <span ng-show="form.size.$error.min || form.size.$error.max">
           The value must be in range 0 to 10!</span>
       </div>
 
       <div>
+        <label>
         Username:
-        <input type="text" ng-model="name" name="name" username />{{name}}<br />
+        <input type="text" ng-model="name" name="name" username />{{name}}</label><br />
         <span ng-show="form.name.$pending.username">Checking if this name is available...</span>
         <span ng-show="form.name.$error.username">This username is already taken!</span>
       </div>
@@ -425,8 +432,10 @@ Note that you can alternatively use `ng-pattern` to further restrict the validat
   <file name="index.html">
     <form name="form" class="css-form" novalidate>
       <div>
-        Overwritten Email:
-        <input type="email" ng-model="myEmail" overwrite-email name="overwrittenEmail" />
+        <label>
+          Overwritten Email:
+          <input type="email" ng-model="myEmail" overwrite-email name="overwrittenEmail" />
+        </label>
         <span ng-show="form.overwrittenEmail.$error.email">This email format is invalid!</span><br>
         Model: {{myEmail}}
         </div>

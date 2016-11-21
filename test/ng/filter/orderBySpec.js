@@ -112,10 +112,10 @@ describe('Filter: orderBy', function() {
 
     it('should support string predicates with names containing non-identifier characters', function() {
       /* eslint-disable no-floating-decimal */
-      expect(orderBy([{"Tip %": .25}, {"Tip %": .15}, {"Tip %": .40}], '"Tip %"'))
-        .toEqualData([{"Tip %": .15}, {"Tip %": .25}, {"Tip %": .40}]);
-      expect(orderBy([{"원": 76000}, {"원": 31000}, {"원": 156000}], '"원"'))
-        .toEqualData([{"원": 31000}, {"원": 76000}, {"원": 156000}]);
+      expect(orderBy([{'Tip %': .25}, {'Tip %': .15}, {'Tip %': .40}], '"Tip %"'))
+        .toEqualData([{'Tip %': .15}, {'Tip %': .25}, {'Tip %': .40}]);
+      expect(orderBy([{'원': 76000}, {'원': 31000}, {'원': 156000}], '"원"'))
+        .toEqualData([{'원': 31000}, {'원': 76000}, {'원': 156000}]);
       /* eslint-enable */
     });
 
@@ -123,7 +123,7 @@ describe('Filter: orderBy', function() {
     it('should throw if quoted string predicate is quoted incorrectly', function() {
       /* eslint-disable no-floating-decimal */
       expect(function() {
-        return orderBy([{"Tip %": .15}, {"Tip %": .25}, {"Tip %": .40}], '"Tip %\'');
+        return orderBy([{'Tip %': .15}, {'Tip %': .25}, {'Tip %': .40}], '"Tip %\'');
       }).toThrow();
       /* eslint-enable */
     });
@@ -266,7 +266,7 @@ describe('Filter: orderBy', function() {
 
 
     describe('(built-in comparator)', function() {
-      it('should compare numbers numarically', function() {
+      it('should compare numbers numerically', function() {
         var items = [100, 3, 20];
         var expr = null;
         var sorted = [3, 20, 100];
@@ -451,7 +451,7 @@ describe('Filter: orderBy', function() {
             return (isNerd1 && isNerd2) ? 0 : (isNerd1) ? -1 : 1;
           }
 
-          // No "nerd"; alpabetical order
+          // No "nerd"; alphabetical order
           return (v1 === v2) ? 0 : (v1 < v2) ? -1 : 1;
         };
 
@@ -601,8 +601,8 @@ describe('Filter: orderBy', function() {
 
     it('shouldSortArrayInReverse', function() {
       expect(orderBy([{a:15}, {a:2}], 'a', true)).toEqualData([{a:15}, {a:2}]);
-      expect(orderBy([{a:15}, {a:2}], 'a', "T")).toEqualData([{a:15}, {a:2}]);
-      expect(orderBy([{a:15}, {a:2}], 'a', "reverse")).toEqualData([{a:15}, {a:2}]);
+      expect(orderBy([{a:15}, {a:2}], 'a', 'T')).toEqualData([{a:15}, {a:2}]);
+      expect(orderBy([{a:15}, {a:2}], 'a', 'reverse')).toEqualData([{a:15}, {a:2}]);
     });
 
 
@@ -653,10 +653,10 @@ describe('Filter: orderBy', function() {
 
     it('should support string predicates with names containing non-identifier characters', function() {
       /* eslint-disable no-floating-decimal */
-      expect(orderBy([{"Tip %": .25}, {"Tip %": .15}, {"Tip %": .40}], '"Tip %"'))
-        .toEqualData([{"Tip %": .15}, {"Tip %": .25}, {"Tip %": .40}]);
-      expect(orderBy([{"원": 76000}, {"원": 31000}, {"원": 156000}], '"원"'))
-        .toEqualData([{"원": 31000}, {"원": 76000}, {"원": 156000}]);
+      expect(orderBy([{'Tip %': .25}, {'Tip %': .15}, {'Tip %': .40}], '"Tip %"'))
+        .toEqualData([{'Tip %': .15}, {'Tip %': .25}, {'Tip %': .40}]);
+      expect(orderBy([{'원': 76000}, {'원': 31000}, {'원': 156000}], '"원"'))
+        .toEqualData([{'원': 31000}, {'원': 76000}, {'원': 156000}]);
       /* eslint-enable */
     });
 
@@ -664,7 +664,7 @@ describe('Filter: orderBy', function() {
     it('should throw if quoted string predicate is quoted incorrectly', function() {
       /* eslint-disable no-floating-decimal */
       expect(function() {
-        return orderBy([{"Tip %": .15}, {"Tip %": .25}, {"Tip %": .40}], '"Tip %\'');
+        return orderBy([{'Tip %': .15}, {'Tip %': .25}, {'Tip %': .40}], '"Tip %\'');
       }).toThrow();
       /* eslint-enable */
     });

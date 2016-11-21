@@ -1,0 +1,9 @@
+{% macro deprecatedBlock(doc) %}{% if doc.deprecated %}
+<div class="alert alert-danger deprecation">
+  <div class="title"><strong>Deprecated:</strong>
+    {% if doc.deprecated.sinceVersion %}<span class="since">(since {$ doc.deprecated.sinceVersion $}) </span>{% endif %}
+    {% if doc.deprecated.removeVersion %}<span class="remove">(to be removed in {$ doc.deprecated.removeVersion $}) </span>{% endif %}
+  </div>
+  {$ doc.deprecated.description | marked $}
+</div>
+{% endif %}{% endmacro %}

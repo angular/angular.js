@@ -1,6 +1,6 @@
 'use strict';
 
-describe("angular.scenario.dsl", function() {
+describe('angular.scenario.dsl', function() {
   var element;
   var $window, $root;
   var eventLog;
@@ -765,7 +765,7 @@ describe("angular.scenario.dsl", function() {
         it('should return value in text input', function() {
           doc.append('<input ng-model="test.input" value="something">');
           $root.dsl.input('test.input').val();
-          expect($root.futureResult).toEqual("something");
+          expect($root.futureResult).toEqual('something');
         });
       });
     });

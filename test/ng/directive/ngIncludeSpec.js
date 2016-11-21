@@ -268,7 +268,7 @@ describe('ngInclude', function() {
 
   it('should discard pending xhr callbacks if a new template is requested before the current ' +
       'finished loading', inject(function($rootScope, $compile, $httpBackend) {
-    element = jqLite("<div><ng:include src='templateUrl'></ng:include></div>");
+    element = jqLite('<div><ng:include src=\'templateUrl\'></ng:include></div>');
     var log = {};
 
     $rootScope.templateUrl = 'myUrl1';
@@ -539,7 +539,7 @@ describe('ngInclude', function() {
         function($rootScope, $animate, $timeout) {
           expect(autoScrollSpy).not.toHaveBeenCalled();
 
-          $rootScope.$apply("tpl = 'template.html'");
+          $rootScope.$apply('tpl = \'template.html\'');
           expect($animate.queue.shift().event).toBe('enter');
 
           $animate.flush();
@@ -591,7 +591,7 @@ describe('ngInclude and transcludes', function() {
     });
   });
 
-  it("should compile its content correctly (although we remove it later)", function() {
+  it('should compile its content correctly (although we remove it later)', function() {
     var testElement;
     module(function() {
       directive('test', function() {
