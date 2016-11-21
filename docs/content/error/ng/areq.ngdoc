@@ -7,3 +7,5 @@ AngularJS often asserts that certain values will be present and truthy using a
 helper function. If the assertion fails, this error is thrown. To fix this problem,
 make sure that the value the assertion expects is defined and matches the type mentioned in the
 error.
+
+eg: If its a new controller file make sure its defined properly and included in your loaded page.
