@@ -1337,6 +1337,48 @@ describe('ngModel', function() {
       });
 
     });
+
+    describe('override ModelOptions', function() {
+      it('should replace the previous model options', function() {
+        var $options = ctrl.$options;
+        ctrl.$overrideModelOptions({});
+        expect(ctrl.$options).not.toBe($options);
+      });
+
+      it('should set the given options', function() {
+        var $options = ctrl.$options;
+        ctrl.$overrideModelOptions({ debounce: 1000, updateOn: 'blur' });
+        expect(ctrl.$options.getOption('debounce')).toEqual(1000);
+        expect(ctrl.$options.getOption('updateOn')).toEqual('blur');
+        expect(ctrl.$options.getOption('updateOnDefault')).toBe(false);
+      });
+
+      it('should inherit from a parent model options if specified', inject(function($compile, $rootScope) {
+        var element = $compile(
+          '<form name="form" ng-model-options="{debounce: 1000, updateOn: \'blur\'}">' +
+          '  <input ng-model="value" name="input">' +
+          '</form>')($rootScope);
+        var ctrl = $rootScope.form.input;
+        ctrl.$overrideModelOptions({ debounce: 2000, '*': '$inherit' });
+        expect(ctrl.$options.getOption('debounce')).toEqual(2000);
+        expect(ctrl.$options.getOption('updateOn')).toEqual('blur');
+        expect(ctrl.$options.getOption('updateOnDefault')).toBe(false);
+        dealoc(element);
+      }));
+
+      it('should not inherit from a parent model options if not specified', inject(function($compile, $rootScope) {
+        var element = $compile(
+          '<form name="form" ng-model-options="{debounce: 1000, updateOn: \'blur\'}">' +
+          '  <input ng-model="value" name="input">' +
+          '</form>')($rootScope);
+        var ctrl = $rootScope.form.input;
+        ctrl.$overrideModelOptions({ debounce: 2000 });
+        expect(ctrl.$options.getOption('debounce')).toEqual(2000);
+        expect(ctrl.$options.getOption('updateOn')).toEqual('');
+        expect(ctrl.$options.getOption('updateOnDefault')).toBe(true);
+        dealoc(element);
+      }));
+    });
   });
 
 
