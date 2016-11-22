@@ -7,6 +7,7 @@
 - **ngModelOptions:** allow options to be inherited from ancestor `ngModelOptions` ([296cfc](https://github.com/angular/angular.js/commit/296cfce40c25e9438bfa46a0eb27240707a10ffa) [#10922](https://github.com/angular/angular.js/issues/10922))
 - **$compile:** set `preAssignBindingsEnabled` to false by default ([bcd0d4](https://github.com/angular/angular.js/commit/bcd0d4d896d0dfdd988ff4f849c1d40366125858) [#15352](https://github.com/angular/angular.js/issues/15352))
 
+
 ## Bug Fixes
 
 - **ngModelOptions:** handle debounce of `updateOn` triggers that are not in debounce list ([789790](https://github.com/angular/angular.js/commit/789790feee4d6c5b1f5d5b18ecb0ccf6edd36fb3))
@@ -14,7 +15,7 @@
 - **$location:** throw if the path starts with double (back)slashes ([4aa953](https://github.com/angular/angular.js/commit/4aa9534b0fea732d6492a2863c3ee7e077c8d004))
 - **core:** do not auto-bootstrap when loaded from an extension. ([0ff10e](https://github.com/angular/angular.js/commit/0ff10e1b56c6b7c4ac465e35c96a5886e294bac5))
 - **input[radio]:** use strict comparison when evaluating checked-ness ([5ac7da](https://github.com/angular/angular.js/commit/5ac7daea72ec31cf337d1d21b13f0d17ff33994f) [#15288](https://github.com/angular/angular.js/issues/15288))
-- **docsApp:** show correct version number in api index ([433c87](https://github.com/angular/angular.js/commit/433c8714f3d065a9a842502579b65d0388dd47ec))
+
 
 ## Reverts
 
@@ -23,7 +24,6 @@
 
 ## Performance Improvements
 - **ngOptions:** avoid calls to `element.value` ([3b7f29](https://github.com/angular/angular.js/commit/3b7f29ff63e8bf02327a1430dcc2a4c83915a206))
-
 
 
 ## Breaking Changes
@@ -469,6 +469,8 @@ $scope.$watch('something', function() {
 or possibly by using `Function.prototype.bind` or `angular.bind`.
 
 
+### `aria/ngModel` due to:
+
 - **[975a61](https://github.com/angular/angular.js/commit/975a6170efceb2a5e6377c57329731c0636eb8c8)**: do not overwrite the default `$isEmpty()` method for checkboxes
 
 Custom `checkbox`-shaped controls (e.g. checkboxes, menuitemcheckboxes), no longer have a custom
@@ -854,7 +856,7 @@ The breaking change should be rare, as it relates to incorrect API use that shou
 production apps in the first place.
 
 
-- **fix($compile): secure `link[href]` as a `RESOURCE_URL`s in `$sce`. ([04cad4](https://github.com/angular/angular.js/commit/04cad41d26ebaf44b5ee0c29a152d61f235f3efa))**:
+- **[04cad4](https://github.com/angular/angular.js/commit/04cad41d26ebaf44b5ee0c29a152d61f235f3efa)**: secure `link[href]` as a `RESOURCE_URL` in `$sce`
 
 `link[href]` attributes are now protected via `$sce`, which prevents interpolated
 values that fail the `RESOURCE_URL` context tests from being used in interpolation.
