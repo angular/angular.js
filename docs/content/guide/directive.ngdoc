@@ -8,7 +8,8 @@
 <div class="alert alert-warning">
 **Note:** this guide is targeted towards developers who are already familiar with AngularJS basics.
 If you're just getting started, we recommend the {@link tutorial/ tutorial} first.
-If you're looking for the **directives API**, we recently moved it to {@link ng.$compile `$compile`}.
+If you're looking for the **directives API**, you can find it in the
+{@link ng.$compile `$compile` API docs}.
 </div>
 
 
@@ -58,7 +59,7 @@ The following `<input>` element also **matches** `ngModel`:
 <input data-ng-model="foo">
 ```
 
-And the following <person> element **matches** the `person` directive:
+And the following `<person>` element **matches** the `person` directive:
 
 ```html
 <person>{{name}}</person>
@@ -335,9 +336,7 @@ Let's change our directive to use `restrict: 'E'`:
   </file>
 </example>
 
-For more on the
-{@link ng.$compile#directive-definition-object `restrict`}
-property, see the
+For more on the `restrict` property, see the
 {@link ng.$compile#directive-definition-object API docs}.
 
 <div class="alert alert-info">
@@ -450,8 +449,8 @@ scope: {
 The **scope option** is an object that contains a property for each isolate scope binding.  In this
 case it has just one property:
 
-- Its name (`customerInfo`) corresponds to the
-directive's **isolate scope** property `customerInfo`.
+- Its name (`customerInfo`) corresponds to the directive's **isolate scope** property,
+  `customerInfo`.
 - Its value (`=info`) tells `$compile` to bind to the `info` attribute.
 
 <div class="alert alert-warning">
@@ -517,8 +516,8 @@ that you explicitly pass in.
 
 <div class="alert alert-warning">
 **Note:** Normally, a scope prototypically inherits from its parent. An isolated scope does not.
-See the {@link $compile#directive-definition-object
-"Directive Definition Object - scope"} section for more information about isolate scopes.
+See the {@link $compile#directive-definition-object "Directive Definition Object - scope"} section
+for more information about isolate scopes.
 </div>
 
 <div class="alert alert-success">
