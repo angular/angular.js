@@ -116,10 +116,10 @@ var SelectController =
   };
 
 
-  self.registerOption = function(optionScope, optionElement, optionAttrs, interpolateValueFn, interpolateTextFn) {
+  self.registerOption = function(optionScope, optionElement, optionAttrs, hasDynamicValueAttr, interpolateTextFn) {
 
-    if (interpolateValueFn) {
-      // The value attribute is interpolated
+    if (hasDynamicValueAttr) {
+      // either "value" is interpolated directly, or set by ngValue
       var oldVal;
       optionAttrs.$observe('value', function valueAttributeObserveAction(newVal) {
         if (isDefined(oldVal)) {
@@ -165,7 +165,9 @@ var SelectController =
  * When an item in the `<select>` menu is selected, the value of the selected option will be bound
  * to the model identified by the `ngModel` directive. With static or repeated options, this is
  * the content of the `value` attribute or the textContent of the `<option>`, if the value attribute is missing.
- * If you want dynamic value attributes, you can use interpolation inside the value attribute.
+ * For dynamic options, use interpolation inside the `value` attribute or the `textContent`. Using
+ * {@link ngValue ngValue} is also possible (as it sets the `value` attribute), and will take
+ * precedence over `value` and `textContent`.
  *
  * <div class="alert alert-warning">
  * Note that the value of a `select` directive used without `ngOptions` is always a string.
@@ -456,13 +458,19 @@ var optionDirective = ['$interpolate', function($interpolate) {
     restrict: 'E',
     priority: 100,
     compile: function(element, attr) {
-      if (isDefined(attr.value)) {
-        // If the value attribute is defined, check if it contains an interpolation
-        var interpolateValueFn = $interpolate(attr.value, true);
+      var hasDynamicValueAttr, interpolateTextFn;
+
+      if (isDefined(attr.ngValue)) {
+        // If ngValue is defined, then the value attr will be set to the result of the expression,
+        // and the selectCtrl must set up an observer
+        hasDynamicValueAttr = true;
+      } else if (isDefined(attr.value)) {
+        // If the value attr contains an interpolation, the selectCtrl must set up an observer
+        hasDynamicValueAttr = $interpolate(attr.value, true);
       } else {
         // If the value attribute is not defined then we fall back to the
         // text content of the option element, which may be interpolated
-        var interpolateTextFn = $interpolate(element.text(), true);
+        interpolateTextFn = $interpolate(element.text(), true);
         if (!interpolateTextFn) {
           attr.$set('value', element.text());
         }
@@ -477,7 +485,7 @@ var optionDirective = ['$interpolate', function($interpolate) {
               parent.parent().data(selectCtrlName); // in case we are in optgroup
 
         if (selectCtrl) {
-          selectCtrl.registerOption(scope, element, attr, interpolateValueFn, interpolateTextFn);
+          selectCtrl.registerOption(scope, element, attr, hasDynamicValueAttr, interpolateTextFn);
         }
       };
     }
