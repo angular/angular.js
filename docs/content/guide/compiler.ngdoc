@@ -461,7 +461,7 @@ In that case, it is necessary to intercept the *initial* compilation of the elem
   2. Inside this directive's compile function, add any other directive attributes to the template.
   3. Compile the element, but restrict the maximum priority, so that any already compiled directives
   (including the `addOptions` directive) are not compiled again.
-  4. In the link function, link the compiled element with the element's scope
+  4. In the link function, link the compiled element with the element's scope.
 
 ```
 angular.module('app').directive('addOptions', function($compile) {
