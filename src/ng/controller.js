@@ -61,7 +61,8 @@ function $ControllerProvider() {
    * @description If called, allows `$controller` to find controller constructors on `window`
    *
    * @deprecated
-   * removeVersion="v1.7"
+   * sinceVersion="v1.3.0"
+   * removeVersion="v1.7.0"
    * This method of finding controllers has been deprecated.
    */
   this.allowGlobals = function() {

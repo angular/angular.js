@@ -5,6 +5,7 @@ angular.module('ngCookies').
  * @ngdoc service
  * @name $cookieStore
  * @deprecated
+ * sinceVersion="v1.4.0"
  * Please use the {@link ngCookies.$cookies `$cookies`} service instead.
  *
  * @requires $cookies
