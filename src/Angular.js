@@ -1455,12 +1455,20 @@ function allowAutoBootstrap(document) {
   link.href = src;
   var scriptProtocol = link.protocol;
   var docLoadProtocol = document.location.protocol;
-  if ((scriptProtocol === 'resource:' ||
-       scriptProtocol === 'chrome-extension:') &&
-      docLoadProtocol !== scriptProtocol) {
-    return false;
+  if (docLoadProtocol === scriptProtocol) {
+    return true;
   }
-  return true;
+  switch(scriptProtocol) {
+    case 'http:':
+    case 'https:':
+    case 'ftp:':
+    case 'blob:':
+    case 'file:':
+    case 'data:':
+      return true;
+    default:
+      return false;
+  }
 }
 
 // Cached as it has to run during loading so that document.currentScript is available.
