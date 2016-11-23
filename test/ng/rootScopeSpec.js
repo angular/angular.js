@@ -498,6 +498,78 @@ describe('Scope', function() {
       expect(watch2).toHaveBeenCalled();
     }));
 
+
+    it('should not skip watchers when adding new watchers during digest',
+      inject(function($rootScope) {
+        var log = [];
+
+        var watchFn1 = function() { log.push(1); };
+        var watchFn2 = function() { log.push(2); };
+        var watchFn3 = function() { log.push(3); };
+        var addWatcherOnce = function(newValue, oldValue) {
+          if (newValue === oldValue) {
+            $rootScope.$watch(watchFn3);
+          }
+        };
+
+        $rootScope.$watch(watchFn1, addWatcherOnce);
+        $rootScope.$watch(watchFn2);
+
+        $rootScope.$digest();
+
+        expect(log).toEqual([1, 2, 3, 1, 2, 3]);
+      })
+    );
+
+
+    it('should not run the current watcher twice when removing a watcher during digest',
+      inject(function($rootScope) {
+        var log = [];
+        var removeWatcher3;
+
+        var watchFn3 = function() { log.push(3); };
+        var watchFn2 = function() { log.push(2); };
+        var watchFn1 = function() { log.push(1); };
+        var removeWatcherOnce = function(newValue, oldValue) {
+          if (newValue === oldValue) {
+            removeWatcher3();
+          }
+        };
+
+        $rootScope.$watch(watchFn1, removeWatcherOnce);
+        $rootScope.$watch(watchFn2);
+        removeWatcher3 = $rootScope.$watch(watchFn3);
+
+        $rootScope.$digest();
+
+        expect(log).toEqual([1, 2, 1, 2]);
+      })
+    );
+
+
+    it('should not skip watchers when removing itself during digest',
+      inject(function($rootScope) {
+        var log = [];
+        var removeWatcher1;
+
+        var watchFn3 = function() { log.push(3); };
+        var watchFn2 = function() { log.push(2); };
+        var watchFn1 = function() { log.push(1); };
+        var removeItself = function() {
+          removeWatcher1();
+        };
+
+        removeWatcher1 = $rootScope.$watch(watchFn1, removeItself);
+        $rootScope.$watch(watchFn2);
+        $rootScope.$watch(watchFn3);
+
+        $rootScope.$digest();
+
+        expect(log).toEqual([1, 2, 3, 2, 3]);
+      })
+    );
+
+
     it('should not infinitely digest when current value is NaN', inject(function($rootScope) {
       $rootScope.$watch(function() { return NaN;});
 
@@ -598,7 +670,7 @@ describe('Scope', function() {
 
         $rootScope.$digest();
 
-        expect(log).toEqual(['watch1', 'watchAction1', 'watch1', 'watch3', 'watchAction3',
+        expect(log).toEqual(['watch1', 'watchAction1', 'watch3', 'watchAction3',
                              'watch1', 'watch3']);
         scope.$destroy();
         log.reset();
@@ -895,8 +967,7 @@ describe('Scope', function() {
           $rootScope.$watch(log.fn('w5'), log.fn('w5action'));
         });
         $rootScope.$digest();
-        expect(log).toEqual(['w1', 'w2', 'w3', 'w4', 'w4action',
-                             'w1', 'w2', 'w3', 'w4', 'w5', 'w5action',
+        expect(log).toEqual(['w1', 'w2', 'w3', 'w4', 'w4action', 'w5', 'w5action',
                              'w1', 'w2', 'w3', 'w4', 'w5']);
       }));
 
