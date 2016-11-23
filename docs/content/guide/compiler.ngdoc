@@ -394,7 +394,7 @@ angular.module('app').directive('addMouseover', function($compile) {
   return {
     link: function(scope, element, attrs) {
       var newEl = angular.element('<span ng-show="showHint"> My Hint</span>');
-      element.on('mouseenter mouseout', function() {
+      element.on('mouseenter mouseleave', function() {
         scope.$apply('showHint = !showHint');
       });
 
