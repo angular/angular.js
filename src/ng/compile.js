@@ -943,6 +943,16 @@
  *
  * For information on how the compiler works, see the
  * {@link guide/compiler Angular HTML Compiler} section of the Developer Guide.
+ *
+ * @knownIssue
+ *
+ * ### Double Compilation
+ *
+   Double compilation occurs when an already compiled part of the DOM gets
+   compiled again. This is an undesired effect and can lead to misbehaving directives, performance issues,
+   and memory leaks. Refer to the Compiler Guide {@link guide/compiler#double-compilation-and-how-to-avoid-it
+   section on double compilation} for an in-depth explanation and ways to avoid it.
+ *
  */
 
 var $compileMinErr = minErr('$compile');
