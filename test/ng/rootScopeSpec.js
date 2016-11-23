@@ -522,7 +522,7 @@ describe('Scope', function() {
     );
 
 
-    it('should not skip watchers when removing a watcher during digest',
+    it('should not run the current watcher twice when removing a watcher during digest',
       inject(function($rootScope) {
         var log = [];
         var removeWatcher3;
