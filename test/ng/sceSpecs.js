@@ -211,7 +211,7 @@ describe('SCE', function() {
       expect($sce.parseAsJs('"string"')()).toBe('string');
     }));
 
-    it('should be possible to do one-time binding', function() {
+    it('should be possible to do one-time binding on a non-concatenable context', function() {
       module(provideLog);
       inject(function($sce, $rootScope, log) {
         $rootScope.$watch($sce.parseAsHtml('::foo'), function(value) {
@@ -231,6 +231,31 @@ describe('SCE', function() {
         log.reset();
 
         $rootScope.foo = $sce.trustAs($sce.HTML, 'anotherTrustedValue');
+        $rootScope.$digest();
+        expect(log).toEqual(''); // watcher no longer active
+      });
+    });
+
+    it('should be possible to do one-time binding on a concatenable context', function() {
+      module(provideLog);
+      inject(function($sce, $rootScope, log) {
+        $rootScope.$watch($sce.parseAsUrl('::foo'), function(value) {
+          log(value + '');
+        });
+
+        $rootScope.$digest();
+        expect(log).toEqual('undefined'); // initial listener call
+        log.reset();
+
+        $rootScope.foo = $sce.trustAs($sce.URL, 'trustedValue');
+        expect($rootScope.$$watchers.length).toBe(1);
+        $rootScope.$digest();
+
+        expect($rootScope.$$watchers.length).toBe(0);
+        expect(log).toEqual('trustedValue');
+        log.reset();
+
+        $rootScope.foo = $sce.trustAs($sce.URL, 'anotherTrustedValue');
         $rootScope.$digest();
         expect(log).toEqual(''); // watcher no longer active
       });
@@ -492,6 +517,18 @@ describe('SCE', function() {
     ));
   });
 
+  describe('URL-context sanitization', function() {
+    it('sanitizes string-valued', inject(function($sce) {
+      /* jshint scripturl:true */
+      expect($sce.getTrustedUrl('weird:foo')).toEqual('unsafe:weird:foo');
+    }));
+
+    it('does not sanitize trusted types', inject(function($sce) {
+      /* jshint scripturl:true */
+      expect($sce.getTrustedUrl($sce.trustAsUrl('weird:foo'))).toEqual('weird:foo');
+    }));
+  });
+
   describe('sanitizing html', function() {
     describe('when $sanitize is NOT available', function() {
       it('should throw an exception for getTrusted(string) values', inject(function($sce) {
@@ -502,9 +539,23 @@ describe('SCE', function() {
 
     describe('when $sanitize is available', function() {
       beforeEach(function() { module('ngSanitize'); });
+
       it('should sanitize html using $sanitize', inject(function($sce) {
         expect($sce.getTrustedHtml('a<xxx><B>b</B></xxx>c')).toBe('a<b>b</b>c');
       }));
+
+      // Note: that test only passes if HTML is added to the concatenable contexts list.
+      // See isConcatenableSecureContext in interpolate.js for that.
+      //
+      // if (!msie || msie >= 11) {
+      //   it('can set dynamic srcdocs with concatenations and sanitize the result',
+      //       inject(function($compile, $rootScope) {
+      //     var element = $compile('<iframe srcdoc="&lt;b&gt;&lt;script&gt;{{html}}"></iframe>')($rootScope);
+      //     $rootScope.html = 'no</script>yes</b>';
+      //     $rootScope.$digest();
+      //     expect(angular.lowercase(element.attr('srcdoc'))).toEqual('<b>yes</b>');
+      //   }));
+      // }
     });
   });
 });

@@ -118,7 +118,7 @@ describe('boolean attr directives', function() {
 describe('ngSrc', function() {
   it('should interpolate the expression and bind to src with raw same-domain value',
       inject(function($compile, $rootScope) {
-        var element = $compile('<div ng-src="{{id}}"></div>')($rootScope);
+        var element = $compile('<img ng-src="{{id}}"></img>')($rootScope);
 
         $rootScope.$digest();
         expect(element.attr('src')).toBeUndefined();
@@ -133,7 +133,7 @@ describe('ngSrc', function() {
 
 
   it('should interpolate the expression and bind to src with a trusted value', inject(function($compile, $rootScope, $sce) {
-    var element = $compile('<div ng-src="{{id}}"></div>')($rootScope);
+    var element = $compile('<iframe ng-src="{{id}}"></iframe>')($rootScope);
 
     $rootScope.$digest();
     expect(element.attr('src')).toBeUndefined();
@@ -147,14 +147,27 @@ describe('ngSrc', function() {
   }));
 
 
-  it('should NOT interpolate a multi-part expression for non-img src attribute', inject(function($compile, $rootScope) {
+  it('should NOT interpolate a multi-part expression for non-URL context src attribute', inject(function($compile, $rootScope) {
     expect(function() {
-      var element = $compile('<div ng-src="some/{{id}}"></div>')($rootScope);
+      var element = $compile('<iframe ng-src="some/{{id}}"></iframe>')($rootScope);
+      $rootScope.$apply(function() {
+        $rootScope.id = 1;
+      });
       dealoc(element);
     }).toThrowMinErr(
           '$interpolate', 'noconcat', 'Error while interpolating: some/{{id}}\nStrict ' +
           'Contextual Escaping disallows interpolations that concatenate multiple expressions ' +
           'when a trusted value is required.  See http://docs.angularjs.org/api/ng.$sce');
+
+  }));
+
+ it('should interpolate a multi-part expression for img src attribute (URL context)', inject(function($compile, $rootScope) {
+    var element = $compile('<img ng-src="some/{{id}}"></img>')($rootScope);
+    expect(element.attr('src')).toBe(undefined);  // URL concatenations are all-or-nothing
+    $rootScope.$apply(function() {
+      $rootScope.id = 1;
+    });
+    expect(element.attr('src')).toEqual('some/1');
   }));
 
 
@@ -171,7 +184,7 @@ describe('ngSrc', function() {
 
   it('should NOT interpolate a wrongly typed expression', inject(function($compile, $rootScope, $sce) {
     expect(function() {
-      var element = $compile('<div ng-src="{{id}}"></div>')($rootScope);
+      var element = $compile('<iframe ng-src="{{id}}"></iframe>')($rootScope);
       $rootScope.$apply(function() {
         $rootScope.id = $sce.trustAsUrl('http://somewhere');
       });
@@ -182,40 +195,38 @@ describe('ngSrc', function() {
   }));
 
 
-  if (msie) {
-    it('should update the element property as well as the attribute', inject(
-        function($compile, $rootScope, $sce) {
-          // on IE, if "ng:src" directive declaration is used and "src" attribute doesn't exist
-          // then calling element.setAttribute('src', 'foo') doesn't do anything, so we need
-          // to set the property as well to achieve the desired effect
+  it('should update the element property as well as the attribute', inject(
+      function($compile, $rootScope, $sce) {
+        // on IE, if "ng:src" directive declaration is used and "src" attribute doesn't exist
+        // then calling element.setAttribute('src', 'foo') doesn't do anything, so we need
+        // to set the property as well to achieve the desired effect
 
-          var element = $compile('<div ng-src="{{id}}"></div>')($rootScope);
+        var element = $compile('<img ng-src="{{id}}"></img>')($rootScope);
 
-          $rootScope.$digest();
-          expect(element.prop('src')).toBeUndefined();
-          dealoc(element);
+        $rootScope.$digest();
+        expect(element.prop('src')).toBe('');
+        dealoc(element);
 
-          element = $compile('<div ng-src="some/"></div>')($rootScope);
+        element = $compile('<img ng-src="some/"></img>')($rootScope);
 
-          $rootScope.$digest();
-          expect(element.prop('src')).toEqual('some/');
-          dealoc(element);
+        $rootScope.$digest();
+        expect(element.prop('src')).toContain('some/');
+        dealoc(element);
 
-          element = $compile('<div ng-src="{{id}}"></div>')($rootScope);
-          $rootScope.$apply(function() {
-            $rootScope.id = $sce.trustAsResourceUrl('http://somewhere');
-          });
-          expect(element.prop('src')).toEqual('http://somewhere');
+        element = $compile('<img ng-src="{{id}}"></img>')($rootScope);
+        $rootScope.$apply(function() {
+          $rootScope.id = $sce.trustAsResourceUrl('http://somewhere');
+        });
+        expect(element.prop('src')).toEqual('http://somewhere/');
 
-          dealoc(element);
-        }));
-  }
+        dealoc(element);
+      }));
 });
 
 
 describe('ngSrcset', function() {
   it('should interpolate the expression and bind to srcset', inject(function($compile, $rootScope) {
-    var element = $compile('<div ng-srcset="some/{{id}} 2x"></div>')($rootScope);
+    var element = $compile('<img ng-srcset="some/{{id}} 2x"></div>')($rootScope);
 
     $rootScope.$digest();
     expect(element.attr('srcset')).toBeUndefined();
@@ -239,7 +250,7 @@ describe('ngHref', function() {
 
 
   it('should interpolate the expression and bind to href', inject(function($compile, $rootScope) {
-    element = $compile('<div ng-href="some/{{id}}"></div>')($rootScope);
+    element = $compile('<a ng-href="some/{{id}}"></div>')($rootScope);
     $rootScope.$digest();
     expect(element.attr('href')).toEqual('some/');
 
@@ -287,9 +298,8 @@ describe('ngHref', function() {
     // IE11/10/Edge fail when setting a href to a URL containing a % that isn't a valid escape sequence
     // See https://github.com/angular/angular.js/issues/13388
     it('should throw error if ng-href contains a non-escaped percent symbol', inject(function($rootScope, $compile) {
-      element = $compile('<a ng-href="http://www.google.com/{{\'a%link\'}}">')($rootScope);
-
       expect(function() {
+        element = $compile('<a ng-href="http://www.google.com/{{\'a%link\'}}">')($rootScope);
         $rootScope.$digest();
       }).toThrow();
     }));

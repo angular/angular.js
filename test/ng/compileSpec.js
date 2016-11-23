@@ -10774,16 +10774,34 @@ describe('$compile', function() {
       expect(element.attr('title')).toBe('javascript:doEvilStuff()');
     }));
 
-    it('should use $$sanitizeUriProvider for reconfiguration of the src whitelist', function() {
+    it('should not have endless digests when given arrays in concatenable context', inject(function($compile, $rootScope) {
+      /* jshint scripturl:true */
+      // Any non-resource-url href is URL context
+      element = $compile('<foo href="{{testUrl}}"></foo><foo href="{{::testUrl}}"></foo>' +
+        '<foo href="http://example.com/{{testUrl}}"></foo><foo href="http://example.com/{{::testUrl}}"></foo>')($rootScope);
+      $rootScope.testUrl = [1];
+      $rootScope.$digest();
+
+      $rootScope.testUrl = [];
+      $rootScope.$digest();
+
+      $rootScope.testUrl = {a:'b'};
+      $rootScope.$digest();
+
+      $rootScope.testUrl = {};
+      $rootScope.$digest();
+    }));
+
+    it('should use $$sanitizeUriProvider for reconfiguration of the URL whitelist', function() {
       module(function($compileProvider, $$sanitizeUriProvider) {
         var newRe = /javascript:/,
           returnVal;
-        expect($compileProvider.imgSrcSanitizationWhitelist()).toBe($$sanitizeUriProvider.imgSrcSanitizationWhitelist());
+        expect($compileProvider.uriSanitizationWhitelist()).toBe($$sanitizeUriProvider.uriSanitizationWhitelist());
 
-        returnVal = $compileProvider.imgSrcSanitizationWhitelist(newRe);
+        returnVal = $compileProvider.uriSanitizationWhitelist(newRe);
         expect(returnVal).toBe($compileProvider);
-        expect($$sanitizeUriProvider.imgSrcSanitizationWhitelist()).toBe(newRe);
-        expect($compileProvider.imgSrcSanitizationWhitelist()).toBe(newRe);
+        expect($$sanitizeUriProvider.uriSanitizationWhitelist()).toBe(newRe);
+        expect($compileProvider.uriSanitizationWhitelist()).toBe(newRe);
       });
       inject(function() {
         // needed to the module definition above is run...
@@ -10802,7 +10820,48 @@ describe('$compile', function() {
         $$sanitizeUri.and.returnValue('someSanitizedUrl');
         $rootScope.$apply();
         expect(element.attr('src')).toBe('someSanitizedUrl');
-        expect($$sanitizeUri).toHaveBeenCalledWith($rootScope.testUrl, true);
+        expect($$sanitizeUri).toHaveBeenCalledWith($rootScope.testUrl);
+      });
+    });
+
+
+    it('should sanitize concatenated trusted values', function() {
+      /* jshint scripturl:true */
+      var $$sanitizeUri = jasmine.createSpy('$$sanitizeUri');
+      module(function($provide) {
+        $provide.value('$$sanitizeUri', $$sanitizeUri);
+      });
+      inject(function($compile, $rootScope, $sce) {
+        $$sanitizeUri.and.returnValue('someSanitizedUrl');
+        element = $compile('<img src="{{testUrl}}ponies"></img>')($rootScope);
+        $rootScope.testUrl = $sce.trustAsUrl('javascript:foo();');
+        $rootScope.$digest();
+        expect(element.attr('src')).toEqual('someSanitizedUrl');
+
+        element = $compile('<img src="http://{{testUrl}}"></img>')($rootScope);
+        $rootScope.testUrl = $sce.trustAsUrl('javascript:foo();');
+        $rootScope.$digest();
+        expect(element.attr('src')).toEqual('someSanitizedUrl');
+      });
+    });
+
+    it('should not use $$sanitizeUri with trusted values', function() {
+      /* jshint scripturl:true */
+      var $$sanitizeUri = jasmine.createSpy('$$sanitizeUri');
+      module(function($provide) {
+        $provide.value('$$sanitizeUri', $$sanitizeUri);
+      });
+      inject(function($compile, $rootScope, $sce) {
+
+        element = $compile('<img src="{{testUrl}}"></img>')($rootScope);
+        // Assigning javascript:foo to src makes at least IE9-11 complain, so use another
+        // protocol name.
+        $rootScope.testUrl = $sce.trustAsUrl('someUnsafeThing:foo();');
+
+        $$sanitizeUri.and.throwError('Should not have been called');
+        $rootScope.$apply();
+
+        expect(element.attr('src')).toEqual('someUnsafeThing:foo();');
       });
     });
   });
@@ -10839,6 +10898,22 @@ describe('$compile', function() {
       $rootScope.testUrl = $sce.trustAsUrl('http://example.com/image2.png');
       $rootScope.$digest();
       expect(element.attr('srcset')).toEqual('http://example.com/image2.png');
+
+    }));
+
+    // Limitation of the approach used for srcset. Use trustAsHtml and ng-bind-html to bypass it.
+    it('does not work with trusted values', inject(function($rootScope, $compile, $sce) {
+      /* jshint scripturl:true */
+      element = $compile('<img srcset="{{testUrl}}"></img>')($rootScope);
+      $rootScope.testUrl = $sce.trustAsUrl('javascript:something');
+      $rootScope.$digest();
+      expect(element.attr('srcset')).toEqual('unsafe:javascript:something');
+
+      element = $compile('<img srcset="{{testUrl}},{{testUrl}}"></img>')($rootScope);
+      $rootScope.testUrl = $sce.trustAsUrl('javascript:something');
+      $rootScope.$digest();
+      expect(element.attr('srcset')).toEqual(
+          'unsafe:javascript:something ,unsafe:javascript:something');
     }));
 
     it('should use $$sanitizeUri', function() {
@@ -10847,13 +10922,24 @@ describe('$compile', function() {
         $provide.value('$$sanitizeUri', $$sanitizeUri);
       });
       inject(function($compile, $rootScope) {
+        /* jshint scripturl:true */
         element = $compile('<img srcset="{{testUrl}}"></img>')($rootScope);
         $rootScope.testUrl = 'someUrl';
 
         $$sanitizeUri.and.returnValue('someSanitizedUrl');
         $rootScope.$apply();
         expect(element.attr('srcset')).toBe('someSanitizedUrl');
-        expect($$sanitizeUri).toHaveBeenCalledWith($rootScope.testUrl, true);
+        expect($$sanitizeUri).toHaveBeenCalledWith($rootScope.testUrl);
+
+        element = $compile('<img srcset="{{testUrl}}, {{testUrl}}"></img>')($rootScope);
+        $rootScope.testUrl = 'javascript:yay';
+        $rootScope.$apply();
+        expect(element.attr('srcset')).toEqual('someSanitizedUrl ,someSanitizedUrl');
+
+        element = $compile('<img srcset="java{{testUrl}}"></img>')($rootScope);
+        $rootScope.testUrl = 'script:yay, javascript:nay';
+        $rootScope.$apply();
+        expect(element.attr('srcset')).toEqual('someSanitizedUrl ,someSanitizedUrl');
       });
     });
 
@@ -10914,16 +11000,16 @@ describe('$compile', function() {
       expect(element.attr('title')).toBe('javascript:doEvilStuff()');
     }));
 
-    it('should use $$sanitizeUriProvider for reconfiguration of the href whitelist', function() {
+    it('should use $$sanitizeUriProvider for reconfiguration of the uri whitelist', function() {
       module(function($compileProvider, $$sanitizeUriProvider) {
         var newRe = /javascript:/,
           returnVal;
-        expect($compileProvider.aHrefSanitizationWhitelist()).toBe($$sanitizeUriProvider.aHrefSanitizationWhitelist());
+        expect($compileProvider.uriSanitizationWhitelist()).toBe($$sanitizeUriProvider.uriSanitizationWhitelist());
 
-        returnVal = $compileProvider.aHrefSanitizationWhitelist(newRe);
+        returnVal = $compileProvider.uriSanitizationWhitelist(newRe);
         expect(returnVal).toBe($compileProvider);
-        expect($$sanitizeUriProvider.aHrefSanitizationWhitelist()).toBe(newRe);
-        expect($compileProvider.aHrefSanitizationWhitelist()).toBe(newRe);
+        expect($$sanitizeUriProvider.uriSanitizationWhitelist()).toBe(newRe);
+        expect($compileProvider.uriSanitizationWhitelist()).toBe(newRe);
       });
       inject(function() {
         // needed to the module definition above is run...
@@ -10942,7 +11028,7 @@ describe('$compile', function() {
         $$sanitizeUri.and.returnValue('someSanitizedUrl');
         $rootScope.$apply();
         expect(element.attr('href')).toBe('someSanitizedUrl');
-        expect($$sanitizeUri).toHaveBeenCalledWith($rootScope.testUrl, false);
+        expect($$sanitizeUri).toHaveBeenCalledWith($rootScope.testUrl);
       });
     });
 
@@ -10958,7 +11044,7 @@ describe('$compile', function() {
         $$sanitizeUri.and.returnValue('someSanitizedUrl');
         $rootScope.$apply();
         expect(element.attr('href')).toBe('someSanitizedUrl');
-        expect($$sanitizeUri).toHaveBeenCalledWith($rootScope.testUrl, false);
+        expect($$sanitizeUri).toHaveBeenCalledWith($rootScope.testUrl);
       });
     });
 
@@ -10974,7 +11060,7 @@ describe('$compile', function() {
         $$sanitizeUri.and.returnValue('someSanitizedUrl');
         $rootScope.$apply();
         expect(element.find('a').prop('href').baseVal).toBe('someSanitizedUrl');
-        expect($$sanitizeUri).toHaveBeenCalledWith($rootScope.testUrl, false);
+        expect($$sanitizeUri).toHaveBeenCalledWith($rootScope.testUrl);
       });
     });
 
@@ -10991,7 +11077,7 @@ describe('$compile', function() {
         $$sanitizeUri.and.returnValue('someSanitizedUrl');
         $rootScope.$apply();
         expect(element.find('a').prop('href').baseVal).toBe('someSanitizedUrl');
-        expect($$sanitizeUri).toHaveBeenCalledWith($rootScope.testUrl, false);
+        expect($$sanitizeUri).toHaveBeenCalledWith($rootScope.testUrl);
       });
     });
   });
@@ -11159,9 +11245,9 @@ describe('$compile', function() {
       it('should NOT set iframe contents for untrusted values', inject(function($compile, $rootScope, $sce) {
         element = $compile('<iframe srcdoc="{{html}}"></iframe>')($rootScope);
         $rootScope.html = '<div onclick="">hello</div>';
-        expect(function() { $rootScope.$digest(); }).toThrowMinErr('$interpolate', 'interr', new RegExp(
-            /Can't interpolate: {{html}}\n/.source +
-            /[^[]*\[\$sce:unsafe\] Attempting to use an unsafe value in a safe context./.source));
+        expect(function() { $rootScope.$digest(); }).toThrowMinErr(
+          '$interpolate', 'interr', 'Can\'t interpolate: {{html}}\nError: [$sce:unsafe] ' +
+          'Attempting to use an unsafe value in a safe context.');
       }));
 
       it('should NOT set html for wrongly typed values', inject(function($rootScope, $compile, $sce) {
