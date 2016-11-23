@@ -1223,5 +1223,69 @@ describe('select', function() {
                 '</select>');
       }).toThrowMinErr('ng','badname', 'hasOwnProperty is not a valid "option value" name');
     });
+
+    describe('with ngValue', function() {
+
+      describe('setting the model to the result of the expression', function() {
+
+        it('should take precedence when the option value is interpolated', function() {
+          scope.Option2Value = 'Option 2 Value';
+          scope.Option2NgValue = 'Option 2 ngValue';
+
+          compile('<select ng-model="selected">' +
+            '<option>Option1 Text</option>' +
+            '<option ng-value="Option2NgValue" value="{{Option2Value}}">Option2 Text</option>' +
+          '</select>');
+
+          scope.$digest();
+          expect(scope.selected).toBeUndefined();
+
+          browserTrigger(element.find('option').eq(2));
+
+          expect(scope.selected).toBe('Option 2 ngValue');
+          dealoc(element);
+        });
+
+        it('should take precedence when the option text is interpolated', function() {
+          scope.Option2Text = 'Option 2 Text';
+          scope.Option2NgValue = 'Option 2 ngValue';
+
+          compile('<select ng-model="selected">' +
+            '<option>Option1 Text</option>' +
+            '<option ng-value="Option2NgValue">{{Option2Text}}</option>' +
+          '</select>');
+
+          scope.$digest();
+          expect(scope.selected).toBeUndefined();
+
+          browserTrigger(element.find('option').eq(2));
+
+          expect(scope.selected).toBe('Option 2 ngValue');
+          dealoc(element);
+        });
+
+        it('should take precedence when the option text contains more than one interpolation', function() {
+          scope.Option2Text1 = 'Option 2 Text Part 1';
+          scope.Option2Text2 = 'Option 2 Text Part 2';
+          scope.Option2NgValue = 'Option 2 ngValue';
+
+          compile('<select ng-model="selected">' +
+            '<option>Option1 Text</option>' +
+            '<option ng-value="Option2NgValue">{{Option2Text1}} {{Option2Text2}}</option>' +
+          '</select>');
+
+          scope.$digest();
+          expect(scope.selected).toBeUndefined();
+
+          browserTrigger(element.find('option').eq(2));
+
+          expect(scope.selected).toBe('Option 2 ngValue');
+          dealoc(element);
+        });
+
+      });
+
+    });
+
   });
 });
