@@ -1,3 +1,25 @@
+
+<a name="1.6.0-rc.2"></a>
+# 1.6.0-rc.2 safety-insurance (2016-11-24)
+
+
+## Security Fixes
+- **bootstrap:** explicitly whitelist URL schemes for bootstrap. (#15427)
+  ([7f1b8b](https://github.com/angular/angular.js/commit/7f1b8bdfe1043871c5ead2ec602efc41e0de5e53))
+
+## Bug Fixes
+- **$sce:** fix `adjustMatcher` to replace multiple '*' and '**'
+  ([991a2b](https://github.com/angular/angular.js/commit/991a2b30e00aed1d312e29555e356a795f9e3d62))
+
+
+## Performance Improvements
+- ***:** don't trigger digests after enter/leave of structural directives
+  ([f4fb6e](https://github.com/angular/angular.js/commit/f4fb6e0983a6a700dc4a246a913504550b55f1e9)
+  [#15322](https://github.com/angular/angular.js/issues/15322))
+
+
+
+
 <a name="1.5.9"></a>
 # 1.5.9 timeturning-lockdown (2016-11-24)
 
