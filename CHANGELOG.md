@@ -1,3 +1,61 @@
+<a name="1.5.9"></a>
+# 1.5.9 timeturning-lockdown (2016-11-24)
+
+This is an interim release primarily to publish some security fixes, in particular a modification to
+ensure that Angular 1 can pass the linter checks for Mozilla add-ons.
+
+## Security Fixes
+- **bootstrap:**
+  - do not auto-bootstrap when loaded from an extension
+  ([6ce291](https://github.com/angular/angular.js/commit/6ce2913d99bb0dade6027ba9733295d0aa13b242))
+  - explicitly whitelist URL schemes for bootstrap (#15427)
+  ([4edd2d](https://github.com/angular/angular.js/commit/4edd2d95c11819ece2dda6e65f95f32638fda218))
+- **$location:** throw if the path starts with double (back)slashes
+  ([353e3a](https://github.com/angular/angular.js/commit/353e3a6cd8b3a785b5f73a38236155621048522f))
+- **$sniffer:** don't use `history.pushState` in sandboxed Chrome Packaged Apps
+([367da5](https://github.com/angular/angular.js/commit/367da583bc12e6f5f01edf757305409cf63fb1f4))
+- **$parse:**
+  - block assigning to fields of a constructor prototype
+    ([d7e31b](https://github.com/angular/angular.js/commit/d7e31b5dc71253edb22190a5850034934e7b778a)
+    [#14939](https://github.com/angular/angular.js/issues/14939))
+  - correctly escape unsafe identifier characters
+    ([b01460](https://github.com/angular/angular.js/commit/b014607030835358ed7887e9fd1724cdada56690))
+- **$compile:**
+  - ensure that hidden input values are correct after history.back
+    ([6a2488](https://github.com/angular/angular.js/commit/6a24885771cf8c140b5d2895e92b321e60d86b55))
+  - lower the $sce context for `src` on video, audio, source, track
+    ([68fb70](https://github.com/angular/angular.js/commit/68fb70ed295119d7b00c670d796c1b4186091adb))
+
+
+## New Features
+- **input:**
+  - add support for binding to `input[range]`
+    ([2e7121](https://github.com/angular/angular.js/commit/2e7121b8e4dcac23f28e2375e775ca56b6baf252))
+  - make support for `input[range]` opt-in
+    ([07b876](https://github.com/angular/angular.js/commit/07b8761233aaa3d719d94698296295e51c2a1077))
+  - fix `step` validation for `input[number][ng-range-input]`
+    ([64f6a6](https://github.com/angular/angular.js/commit/64f6a616d401febc3f06309ed5a5efa46b131717)
+    [#15257](https://github.com/angular/angular.js/issues/15257))
+- **ngMock/$httpBackend:** flush requests in any order
+    ([098b6f](https://github.com/angular/angular.js/commit/098b6f519a53f6348127cd4ce09bca1423cbeb1a))
+
+
+## Bug Fixes
+- **$httpBackend:** complete the request on timeout
+  ([549edc](https://github.com/angular/angular.js/commit/549edc9d0123d50657d5a03ba0c547cb0f91727f)
+  [#14969](https://github.com/angular/angular.js/issues/14969))
+- **ngOptions:** remove selected attribute from unselected options
+  ([d31b3a](https://github.com/angular/angular.js/commit/d31b3a65b65b73ab077026fc028ddf5b6232fba2)
+  [#14892](https://github.com/angular/angular.js/issues/14892))
+
+
+## Performance Improvements
+- **$parse:** improve performance of assignment expressions
+  ([f83c3d](https://github.com/angular/angular.js/commit/f83c3dea23f910aed25dcf9b85fadf7f11a2a366))
+- **$compile:** add provider option to turn off compilation of css class and comment directives
+  ([775c24](https://github.com/angular/angular.js/commit/775c247085765e08845ae45ed19dd0120c61acc1))
+
+
 
 <a name="1.6.0-rc.1"></a>
 # 1.6.0-rc.1 proximity-warning (2016-11-21)
