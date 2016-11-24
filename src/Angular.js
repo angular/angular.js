@@ -1458,7 +1458,7 @@ function allowAutoBootstrap(document) {
   if (docLoadProtocol === scriptProtocol) {
     return true;
   }
-  switch(scriptProtocol) {
+  switch (scriptProtocol) {
     case 'http:':
     case 'https:':
     case 'ftp:':
