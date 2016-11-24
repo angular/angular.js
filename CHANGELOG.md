@@ -8,7 +8,7 @@
   ([7f1b8b](https://github.com/angular/angular.js/commit/7f1b8bdfe1043871c5ead2ec602efc41e0de5e53))
 
 ## Bug Fixes
-- **$sce:** fix `adjustMatcher` to replace multiple '*' and '**'
+- **$sce:** fix `adjustMatcher` to replace multiple '*' and '**' (#7897)
   ([991a2b](https://github.com/angular/angular.js/commit/991a2b30e00aed1d312e29555e356a795f9e3d62))
 
 
