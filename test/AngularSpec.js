@@ -1697,7 +1697,41 @@ describe('angular', function() {
       dealoc(appElement);
     });
 
+    it('should bootstrap from an extension into an extension document for same-origin documents only', function() {
+      if (msie) return;  // IE does not support document.currentScript (nor extensions with protocol), so skip test.
+
+      // Extension URLs are browser-specific, so we must choose a scheme that is supported by the browser to make
+      // sure that the URL is properly parsed.
+      var extensionScheme;
+      var userAgent = window.navigator.userAgent;
+      if (/Firefox\//.test(userAgent)) {
+        extensionScheme = 'moz-extension';
+      } else if (/Edge\//.test(userAgent)) {
+        extensionScheme = 'ms-browser-extension';
+      } else if (/Chrome\//.test(userAgent)) {
+        extensionScheme = 'chrome-extension';
+      } else if (/Safari\//.test(userAgent)) {
+        extensionScheme = 'safari-extension';
+      } else {
+        extensionScheme = 'browserext';  // Upcoming standard scheme.
+      }
+
+      var src = extensionScheme + '://something';
+      // Fake a minimal document object (the actual document.currentScript is readonly).
+      var fakeDoc = {
+        currentScript: { getAttribute: function() { return src; } },
+        location: {protocol: extensionScheme + ':', origin: extensionScheme + '://something'},
+        createElement: document.createElement.bind(document)
+      };
+      expect(allowAutoBootstrap(fakeDoc)).toBe(true);
+
+      src = extensionScheme + '://something-else';
+      expect(allowAutoBootstrap(fakeDoc)).toBe(false);
+    });
+
     it('should not bootstrap from an extension into a non-extension document', function() {
+      if (msie) return;  // IE does not support document.currentScript (nor extensions with protocol), so skip test.
+
       var src = 'resource://something';
       // Fake a minimal document object (the actual document.currentScript is readonly).
       var fakeDoc = {

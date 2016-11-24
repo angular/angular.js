@@ -1452,12 +1452,14 @@ function allowAutoBootstrap(document) {
   var src = document.currentScript.getAttribute('src');
   var link = document.createElement('a');
   link.href = src;
-  var scriptProtocol = link.protocol;
-  var docLoadProtocol = document.location.protocol;
-  if (docLoadProtocol === scriptProtocol) {
+  if (document.location.origin === link.origin) {
+    // Same-origin resources are always allowed, even for non-whitelisted schemes.
     return true;
   }
-  switch (scriptProtocol) {
+  // Disabled bootstrapping unless angular.js was loaded from a known scheme used on the web.
+  // This is to prevent angular.js bundled with browser extensions from being used to bypass the
+  // content security policy in web pages and other browser extensions.
+  switch (link.protocol) {
     case 'http:':
     case 'https:':
     case 'ftp:':
