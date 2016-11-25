@@ -418,7 +418,7 @@ describe('injector', function() {
       expect(function() {
         createInjector(['IDontExist'], {});
       }).toThrowMinErr('$injector', 'modulerr',
-        /\[\$injector:nomod\] Module 'IDontExist' is not available! You either misspelled the module name or forgot to load it/);
+        /\[\$injector:nomod] Module 'IDontExist' is not available! You either misspelled the module name or forgot to load it/);
     });
 
 
@@ -782,7 +782,7 @@ describe('injector', function() {
           createInjector([
             {}
           ], {});
-        }).toThrowMinErr('$injector', 'modulerr', /Failed to instantiate module \{\} due to:\n.*\[ng:areq\] Argument 'module' is not a function, got Object/);
+        }).toThrowMinErr('$injector', 'modulerr', /Failed to instantiate module \{\} due to:\n.*\[ng:areq] Argument 'module' is not a function, got Object/);
       });
 
 

@@ -1588,7 +1588,7 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
 
     url = url
       .replace(/([().])/g, '\\$1')
-      .replace(/(\/)?:(\w+)([\?\*])?/g, function(_, slash, key, option) {
+      .replace(/(\/)?:(\w+)([?*])?/g, function(_, slash, key, option) {
         var optional = option === '?' ? option : null;
         var star = option === '*' ? option : null;
         keys.push({ name: key, optional: !!optional });
@@ -1602,7 +1602,7 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
           + ')'
           + (optional || '');
       })
-      .replace(/([\/$\*])/g, '\\$1');
+      .replace(/([/$*])/g, '\\$1');
 
     ret.regexp = new RegExp('^' + url, 'i');
     return ret;

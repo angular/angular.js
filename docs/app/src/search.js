@@ -72,7 +72,7 @@ angular.module('search', [])
 
 .controller('Error404SearchCtrl', ['$scope', '$location', 'docsSearch',
         function($scope, $location, docsSearch) {
-  docsSearch($location.path().split(/[\/\.:]/).pop()).then(function(results) {
+  docsSearch($location.path().split(/[/.:]/).pop()).then(function(results) {
     $scope.results = {};
     angular.forEach(results, function(result) {
       var area = $scope.results[result.area] || [];

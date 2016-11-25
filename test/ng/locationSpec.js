@@ -43,7 +43,7 @@ describe('$location', function() {
       // Support: non-Windows browsers
       // These tests expect a Windows environment which we can only guarantee
       // on IE & Edge.
-      if (msie || /\bEdge\/[\d\.]+\b/.test(window.navigator.userAgent)) return;
+      if (msie || /\bEdge\/[\d.]+\b/.test(window.navigator.userAgent)) return;
 
       urlParsingNodePlaceholder = urlParsingNode;
 
@@ -64,7 +64,7 @@ describe('$location', function() {
 
     afterEach(function() {
       // Support: non-Windows browsers
-      if (msie || /\bEdge\/[\d\.]+\b/.test(window.navigator.userAgent)) return;
+      if (msie || /\bEdge\/[\d.]+\b/.test(window.navigator.userAgent)) return;
       //reset urlParsingNode
       urlParsingNode = urlParsingNodePlaceholder;
     });

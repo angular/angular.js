@@ -34,7 +34,7 @@ module.exports = function generateKeywordsProcessor(log, readFilesProcessor) {
       var areasToSearch;
 
       // Keywords start with "ng:" or one of $, _ or a letter
-      var KEYWORD_REGEX = /^((ng:|[\$_a-z])[\w\-_]+)/;
+      var KEYWORD_REGEX = /^((ng:|[$_a-z])[\w\-_]+)/;
 
       // Load up the keywords to ignore, if specified in the config
       if (this.ignoreWordsFile) {
@@ -67,7 +67,7 @@ module.exports = function generateKeywordsProcessor(log, readFilesProcessor) {
 
     function extractWords(text, words, keywordMap) {
 
-      var tokens = text.toLowerCase().split(/[\.\s,`'"#]+/mg);
+      var tokens = text.toLowerCase().split(/[.\s,`'"#]+/mg);
       _.forEach(tokens, function(token) {
         var match = token.match(KEYWORD_REGEX);
         if (match) {
