@@ -86,7 +86,7 @@ ensure that Angular 1 can pass the linter checks for Mozilla add-ons.
 
 - **ngModelOptions:** allow options to be inherited from ancestor `ngModelOptions` ([296cfc](https://github.com/angular/angular.js/commit/296cfce40c25e9438bfa46a0eb27240707a10ffa) [#10922](https://github.com/angular/angular.js/issues/10922))
 - **$compile:** set `preAssignBindingsEnabled` to false by default ([bcd0d4](https://github.com/angular/angular.js/commit/bcd0d4d896d0dfdd988ff4f849c1d40366125858) [#15352](https://github.com/angular/angular.js/issues/15352))
-- **input[type=number]:** support `step` ([e1da4bed8](https://github.com/angular/angular.js/commit/e1da4bed8e291003d485a8ad346ab80bed8ae2e3) [#10597](https://github.com/angular/angular.js/issues/10597))
+
 
 ## Bug Fixes
 
@@ -270,12 +270,14 @@ Please read the [Sandbox Removal Blog Post](http://angularjs.blogspot.com/2016/0
   - JSONP callback must be specified by `jsonpCallbackParam` config ([fb6634](https://github.com/angular/angular.js/commit/fb663418710736161a6b5da49c345e92edf58dcb) [#15161](https://github.com/angular/angular.js/issues/15161) [#11352](https://github.com/angular/angular.js/issues/11352))
   - JSONP requests now require a trusted resource URL ([6476af](https://github.com/angular/angular.js/commit/6476af83cd0418c84e034a955b12a842794385c4) [#11352](https://github.com/angular/angular.js/issues/11352))
 - **ngModelOptions:** allow options to be inherited from ancestor `ngModelOptions` ([87a2ff](https://github.com/angular/angular.js/commit/87a2ff76af5d0a9268d8eb84db5755077d27c84c) [#10922](https://github.com/angular/angular.js/issues/10922))
-- **input:** add support for binding to `input[type=range]` ([913016](https://github.com/angular/angular.js/commit/9130166767c4792c5d32d08a918fc7becf32c9a6) [#5892](https://github.com/angular/angular.js/issues/5892) [#14870](https://github.com/angular/angular.js/issues/14870))
+- **input:**
+  - add support for binding to `input[type=range]` ([913016](https://github.com/angular/angular.js/commit/9130166767c4792c5d32d08a918fc7becf32c9a6) [#5892](https://github.com/angular/angular.js/issues/5892) [#14870](https://github.com/angular/angular.js/issues/14870))
+  - add support for `step` to `input[type=number]` ([e1da4be](https://github.com/angular/angular.js/commit/e1da4bed8e291003d485a8ad346ab80bed8ae2e3) [#10597](https://github.com/angular/angular.js/issues/10597))
+  - allow `ngTrim` to work for `input[type=radio]` ([47724b](https://github.com/angular/angular.js/commit/47724baffe050269385b3481e9a9cf4ab3944b4b))
 - **ngRoute:** allow `ngView` to be included in an asynchronously loaded template ([c13c66](https://github.com/angular/angular.js/commit/c13c666728c1a1485ef18e92d7cb35118ce39609) [#1213](https://github.com/angular/angular.js/issues/1213))
 - **select:** support values of any type added with `ngValue` ([f02b70](https://github.com/angular/angular.js/commit/f02b707b5e4a5ffd1e1a20d910754cfabfc19622) [#9842](https://github.com/angular/angular.js/issues/9842))
 - **$interpolate:** use custom `toString()` function if present ([a5fd2e](https://github.com/angular/angular.js/commit/a5fd2e4c0376676fa317e09a8d8be4966b82cbfe) [#7317](https://github.com/angular/angular.js/issues/7317) [#11406](https://github.com/angular/angular.js/issues/11406))
 - **$route:** implement `resolveRedirectTo` ([e98656](https://github.com/angular/angular.js/commit/e9865654b39c71be71034c38581a8c7bd16bc716) [#5150](https://github.com/angular/angular.js/issues/5150))
-- **input[type=radio]:** allow `ngTrim` to work for `input[type=radio]` ([47724b](https://github.com/angular/angular.js/commit/47724baffe050269385b3481e9a9cf4ab3944b4b))
 - **$q:** report promises with non rejection callback ([c9dffd](https://github.com/angular/angular.js/commit/c9dffde1cb167660120753181cb6d01dc1d1b3d0) [#13653](https://github.com/angular/angular.js/issues/13653) [#7992](https://github.com/angular/angular.js/issues/7992))
 - **$location:** default hashPrefix to `'!'` ([aa077e](https://github.com/angular/angular.js/commit/aa077e81129c740041438688dff2e8d20c3d7b52) [#13812](https://github.com/angular/angular.js/issues/13812))
 
@@ -1284,6 +1286,37 @@ to a valid value, the input will in turn set the model to this new valid value v
   - this behavior is supported when the model changes and when the min/max attributes change in a way
     that prompts the browser to update the input value.
 - browsers that do not support `input[type=range]` (IE9) handle the input like a number input (with validation etc.)
+
+
+### `input[type=number]` due to:
+
+- **[e1da4be](https://github.com/angular/angular.js/commit/e1da4bed8e291003d485a8ad346ab80bed8ae2e3)**: add support for `step` to `input[type=number]`
+
+Number inputs that use `ngModel` and specify a `step` constraint (via `step`/`ngStep` attributes)
+will now have a new validator (`step`), which will verify that the current value is valid under the
+`step` constraint (according to the [spec](https://www.w3.org/TR/html5/forms.html#the-step-attribute)).
+Previously, the `step` constraint was ignored by `ngModel`, treating values as valid even when there
+was a step-mismatch.
+
+If you want to restore the previous behavior (use the `step` attribute while disabling step
+validation), you can overwrite the built-in `step` validator with a custom directive. For example:
+
+```js
+// For all `input` elements...
+.directive('input', function() {
+  return {
+    restrict: 'E',
+    require: '?ngModel',
+    link: function (scope, elem, attrs, ngModelCtrl) {
+      // ...that are of type "number" and have `ngModel`...
+      if ((attrs.type === 'number') && ngModelCtrl) {
+        // ...remove the `step` validator.
+        delete ngModelCtrl.$validators.step;
+      }
+    }
+  };
+})
+```
 
 
 

@@ -114,6 +114,7 @@ Below is the full list of breaking changes:
 - Core:
   - [Directives](guide/migration#migrate1.5to1.6-ng-directives)
     - [form](guide/migration#migrate1.5to1.6-ng-directives-form)
+    - [input[number]](guide/migration#migrate1.5to1.6-ng-directives-input[number])
     - [input[radio]](guide/migration#migrate1.5to1.6-ng-directives-input[radio])
     - [input[range]](guide/migration#migrate1.5to1.6-ng-directives-input[range])
     - [ngBind](guide/migration#migrate1.5to1.6-ng-directives-ngBind)
@@ -164,6 +165,38 @@ $scope.$watch('something', function() {
 ```
 
 or you can use `Function.prototype.bind` or `angular.bind`.
+
+
+<a name="migrate1.5to1.6-ng-directives-input[number]"></a>
+#### **input[type=number]**:
+
+<minor />
+**Due to [e1da4be](https://github.com/angular/angular.js/commit/e1da4bed8e291003d485a8ad346ab80bed8ae2e3)**,
+number inputs that use `ngModel` and specify a `step` constraint (via `step`/`ngStep` attributes)
+will now have a new validator (`step`), which will verify that the current value is valid under the
+`step` constraint (according to the [spec](https://www.w3.org/TR/html5/forms.html#the-step-attribute)).
+Previously, the `step` constraint was ignored by `ngModel`, treating values as valid even when there
+was a step-mismatch.
+
+If you want to restore the previous behavior (use the `step` attribute while disabling step
+validation), you can overwrite the built-in `step` validator with a custom directive. For example:
+
+```js
+// For all `input` elements...
+.directive('input', function() {
+  return {
+    restrict: 'E',
+    require: '?ngModel',
+    link: function (scope, elem, attrs, ngModelCtrl) {
+      // ...that are of type "number" and have `ngModel`...
+      if ((attrs.type === 'number') && ngModelCtrl) {
+        // ...remove the `step` validator.
+        delete ngModelCtrl.$validators.step;
+      }
+    }
+  };
+})
+```
 
 
 <a name="migrate1.5to1.6-ng-directives-input[radio]"></a>
