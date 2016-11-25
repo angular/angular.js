@@ -1298,9 +1298,8 @@ will now have a new validator (`step`), which will verify that the current value
 Previously, the `step` constraint was ignored by `ngModel`, treating values as valid even when there
 was a step-mismatch.
 
-If you want to restore the previous behavior (disabling `step` validation), but still want to be
-able to use the `step` attribute, you can overwrite the built-in `step` validator by using a custom
-directive. For example:
+If you want to restore the previous behavior (use the `step` attribute while disabling step
+validation), you can overwrite the built-in `step` validator with a custom directive. For example:
 
 ```js
 // For all `input` elements...
