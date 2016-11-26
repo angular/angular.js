@@ -13,9 +13,9 @@ var cdnUrl = googleCdnUrl + versionInfo.cdnVersion;
 // The currentVersion may not be available on the cdn (e.g. if built locally, or hasn't been pushed
 // yet). This will lead to a 404, but this is preferable to loading a version with which the example
 // might not work (possibly in subtle ways).
-var examplesCdnUrl = versionInfo.isSnapshot ?
+var examplesCdnUrl = versionInfo.currentVersion.isSnapshot ?
   (angularCodeUrl + 'snapshot') :
-  (googleCdnUrl + (versionInfo.version || versionInfo.currentVersion));
+  (googleCdnUrl + (versionInfo.currentVersion.version || versionInfo.currentVersion));
 
 module.exports = function productionDeployment(getVersion) {
   return {
