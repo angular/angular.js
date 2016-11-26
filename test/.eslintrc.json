@@ -117,6 +117,7 @@
 
     /* minerr.js */
     "minErr": false,
+    "noMinErr": false,
 
     /* loader.js */
     "setupModuleLoader": false,

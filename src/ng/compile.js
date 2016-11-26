@@ -1566,7 +1566,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           // Reset the queue to trigger a new schedule next time there is a change
           onChangesQueue = undefined;
           if (errors.length) {
-            throw errors;
+            throw noMinErr('', '', errors);
           }
         });
       } finally {

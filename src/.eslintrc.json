@@ -120,6 +120,7 @@
 
     /* minErr.js */
     "minErr": false,
+    "noMinErr": false,
 
     /* loader.js */
     "setupModuleLoader": false,

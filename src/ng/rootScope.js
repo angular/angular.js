@@ -1192,7 +1192,7 @@ function $RootScopeProvider() {
           } catch (e) {
             $exceptionHandler(e);
             // eslint-disable-next-line no-unsafe-finally
-            throw e;
+            throw noMinErr('', '', e);
           }
         }
       },
