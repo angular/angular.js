@@ -59,7 +59,7 @@ Karma to run against a number of browsers, which is useful for being confident t
 works on all browsers you need to support. Karma is executed on the command line and will display
 the results of your tests on the command line once they have run in the browser.
 
-Karma is a NodeJS application, and should be installed through npm. Full installation instructions
+Karma is a NodeJS application, and should be installed through npm/yarn. Full installation instructions
 are available on [the Karma website](http://karma-runner.github.io/0.12/intro/installation.html).
 
 ### Jasmine
@@ -461,7 +461,7 @@ describe("Deep Thought", function() {
   }));
 
   it("has calculated the answer correctly", inject(function(DeepThought) {
-    // Because of sharedInjector, we have access to the instance of the DeepThought service 
+    // Because of sharedInjector, we have access to the instance of the DeepThought service
     // that was provided to the beforeAll() hook. Therefore we can test the generated answer
     expect(DeepThought.answer).toBe(42);
   }));
