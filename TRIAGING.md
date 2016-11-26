@@ -95,7 +95,7 @@ You can mention him in the relevant thread like this: `@btford`.
 
 > Thanks for submitting this issue!
 > Unfortunately, we don't think this functionality belongs in core.
-> The good news is that you could easily implement this as a third-party module and publish it on Bower and/or npm.
+> The good news is that you could easily implement this as a third-party module and publish it on Bower and/or to the npm repository.
 
 
 ## Assigning Work

@@ -209,7 +209,9 @@ We have very precise rules over how our git commit messages can be formatted.  T
 readable messages** that are easy to follow when looking through the **project history**.  But also,
 we use the git commit messages to **generate the AngularJS change log**.
 
-The commit message formatting can be added using a typical git workflow or through the use of a CLI wizard ([Commitizen](https://github.com/commitizen/cz-cli)). To use the wizard, run `npm run commit` in your terminal after staging your changes in git.
+The commit message formatting can be added using a typical git workflow or through the use of a CLI
+wizard ([Commitizen](https://github.com/commitizen/cz-cli)). To use the wizard, run `yarn run commit`
+in your terminal after staging your changes in git.
 
 ### Commit Message Format
 Each commit message consists of a **header**, a **body** and a **footer**.  The header has a special
@@ -229,7 +231,8 @@ Any line of the commit message cannot be longer 100 characters! This allows the 
 to read on GitHub as well as in various git tools.
 
 ### Revert
-If the commit reverts a previous commit, it should begin with `revert: `, followed by the header of the reverted commit. In the body it should say: `This reverts commit <hash>.`, where the hash is the SHA of the commit being reverted.
+If the commit reverts a previous commit, it should begin with `revert: `, followed by the header of the reverted commit.
+In the body it should say: `This reverts commit <hash>.`, where the hash is the SHA of the commit being reverted.
 
 ### Type
 Must be one of the following:
@@ -266,7 +269,8 @@ The body should include the motivation for the change and contrast this with pre
 The footer should contain any information about **Breaking Changes** and is also the place to
 [reference GitHub issues that this commit closes][closing-issues].
 
-**Breaking Changes** should start with the word `BREAKING CHANGE:` with a space or two newlines. The rest of the commit message is then used for this.
+**Breaking Changes** should start with the word `BREAKING CHANGE:` with a space or two newlines.
+The rest of the commit message is then used for this.
 
 A detailed explanation can be found in this [document][commit-message-format].
 

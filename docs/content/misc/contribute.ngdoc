@@ -5,7 +5,7 @@
 # Building and Testing AngularJS
 
 This document describes how to set up your development environment to build and test AngularJS, and
-explains the basic mechanics of using `git`, `node`, `npm`, `grunt`, and `bower`.
+explains the basic mechanics of using `git`, `node`, `yarn`, `grunt`, and `bower`.
 
 See the [contributing guidelines](https://github.com/angular/angular.js/blob/master/CONTRIBUTING.md)
 for how to contribute your own code to AngularJS.
@@ -24,20 +24,27 @@ Before you can build AngularJS, you must install and configure the following dep
 machine:
 
 * [Git](http://git-scm.com/): The [Github Guide to
-Installing Git](https://help.github.com/articles/set-up-git) is a good source of information.
+  Installing Git](https://help.github.com/articles/set-up-git) is a good source of information.
 
-* [Node.js v4.x](http://nodejs.org): We use Node to generate the documentation, run a
-development web server, run tests, and generate distributable files. Depending on your system, you can install Node either from source or as a
-pre-packaged bundle. (Currently our build does not work properly on Node v5 or greater - please use v4.x.)
+* [Node.js v6.x (LTS)](http://nodejs.org): We use Node to generate the documentation, run a
+  development web server, run tests, and generate distributable files. Depending on your system,
+  you can install Node either from source or as a pre-packaged bundle.
+
+  We recommend using [nvm](https://github.com/creationix/nvm) to manage and install Node.js,
+  which makes it easy to change the version of Node.js per project.
+
+* [Yarn](https://yarnpkg.com): We use Yarn to install our Node.js module dependencies (rather than using npm).
+  There are detailed installation instructions available at https://yarnpkg.com/en/docs/install.
 
 * [Java](http://www.java.com): We minify JavaScript using our
-[Closure Tools](https://developers.google.com/closure/) jar. Make sure you have Java (version 7 or higher) installed
-and included in your [PATH](http://docs.oracle.com/javase/tutorial/essential/environment/paths.html) variable.
+  [Closure Tools](https://developers.google.com/closure/) jar. Make sure you have Java (version 7 or higher)
+  installed and included in your [PATH](http://docs.oracle.com/javase/tutorial/essential/environment/paths.html)
+  variable.
 
 * [Grunt](http://gruntjs.com): We use Grunt as our build system. Install the grunt command-line tool globally with:
 
   ```shell
-  npm install -g grunt-cli
+  yarn global add grunt-cli
   ```
 
 ## Forking Angular on Github
@@ -62,12 +69,9 @@ cd angular.js
 git remote add upstream "https://github.com/angular/angular.js.git"
 
 # Install node.js dependencies:
-npm install
+yarn install
 
-# Install bower components:
-bower install
-
-# Build AngularJS:
+# Build AngularJS (which will install `bower` dependencies automatically):
 grunt package
 ```
 
@@ -78,11 +82,11 @@ Administrator). This is because `grunt package` creates some symbolic links.
 </div>
 
 <div class="alert alert-warning">
-**Note:** If you're using Linux, and npm install fails with the message
-'Please try running this command again as root/Administrator.', you may need to globally install grunt and bower:
+**Note:** If you're using Linux, and `yarn install` fails with the message
+'Please try running this command again as root/Administrator.', you may need to globally install `grunt` and `bower`:
 <ul>
-<li>sudo npm install -g grunt-cli</li>
-<li>sudo npm install -g bower</li>
+<li>sudo yarn global add grunt-cli</li>
+<li>sudo yarn global add bower</li>
 </ul>
 
 </div>

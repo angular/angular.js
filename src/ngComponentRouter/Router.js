@@ -10,11 +10,11 @@
  *
  * @installation
  *
- * Currently, the **Component Router** module must be installed via `npm`, it is not yet available
+ * Currently, the **Component Router** module must be installed via `npm`/`yarn`, it is not yet available
  * on Bower or the Google CDN.
  *
  * ```bash
- * npm install @angular/router@0.2.0 --save
+ * yarn add @angular/router@0.2.0
  * ```
  *
  * Include `angular_1_router.js` in your HTML:
