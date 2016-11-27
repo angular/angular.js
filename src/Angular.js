@@ -122,9 +122,33 @@ var REGEX_STRING_REGEXP = /^\/(.+)\/([a-z]*)$/;
 // This is used so that it's possible for internal tests to create mock ValidityStates.
 var VALIDITY_STATE_PROPERTY = 'validity';
 
+
 var hasOwnProperty = Object.prototype.hasOwnProperty;
 
+/**
+ * @ngdoc function
+ * @name angular.lowercase
+ * @module ng
+ * @kind function
+ * @deprecated
+ *
+ * @description Converts the specified string to lowercase.
+ * @param {string} string String to be converted to lowercase.
+ * @returns {string} Lowercased string.
+ */
 var lowercase = function(string) {return isString(string) ? string.toLowerCase() : string;};
+
+/**
+ * @ngdoc function
+ * @name angular.uppercase
+ * @module ng
+ * @kind function
+ * @deprecated
+ *
+ * @description Converts the specified string to uppercase.
+ * @param {string} string String to be converted to uppercase.
+ * @returns {string} Uppercased string.
+ */
 var uppercase = function(string) {return isString(string) ? string.toUpperCase() : string;};
 
 
