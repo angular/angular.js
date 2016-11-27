@@ -215,7 +215,7 @@ You can see the complete application running below.
 
 
     function HeroService($q) {
-      var heroesPromise = $q.when([
+      var heroesPromise = $q.resolve([
         { id: 11, name: 'Mr. Nice' },
         { id: 12, name: 'Narco' },
         { id: 13, name: 'Bombasto' },
@@ -308,7 +308,7 @@ You can see the complete application running below.
 
 
     function CrisisService($q) {
-      var crisesPromise = $q.when([
+      var crisesPromise = $q.resolve([
         {id: 1, name: 'Princess Held Captive'},
         {id: 2, name: 'Dragon Burning Cities'},
         {id: 3, name: 'Giant Asteroid Heading For Earth'},
@@ -415,7 +415,7 @@ You can see the complete application running below.
 
     function DialogService($q) {
       this.confirm = function(message) {
-        return $q.when(window.confirm(message || 'Is it OK?'));
+        return $q.resolve(window.confirm(message || 'Is it OK?'));
       };
     }
   </file>
@@ -714,7 +714,7 @@ making an actual server request, perhaps over HTTP.
 
 ```js
 function HeroService($q) {
-  var heroesPromise = $q.when([
+  var heroesPromise = $q.resolve([
     { id: 11, name: 'Mr. Nice' },
     ...
   ]);
@@ -991,7 +991,7 @@ have made. The result of the prompt is a promise that can be used in a `$routerC
 
 function DialogService($q) {
   this.confirm = function(message) {
-    return $q.when(window.confirm(message || 'Is it OK?'));
+    return $q.resolve(window.confirm(message || 'Is it OK?'));
   };
 }
 ```
