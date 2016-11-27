@@ -1274,6 +1274,11 @@ and was not consistent with other filters (e.g. `filter`).
 Objects considered array-like include: arrays, array subclasses, strings, NodeLists,
 jqLite/jQuery collections
 
+#### Helper Functions:
+
+The {@link angular.lowercase `angular.lowercase`} and {@link angular.uppercase `angular.uppercase`} functions have been **deprecated** and will be removed
+in version 1.7.0. It is recommended to use [String.prototype.toLowerCase](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String/toLowerCase) and [String.prototype.toUpperCase](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String/toUpperCase) functions instead.
+
 
 ### ngAria
 

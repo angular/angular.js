@@ -2028,6 +2028,8 @@ This version of AngularJS is problematic due to a issue during its release. Plea
 
 - The `ngTouch` module's `ngClick` directive has been deprecated and disabled by default. See the breaking
 changes section for more information
+- The `angular.lowercase` and `angular.uppercase` functions have been deprecated and will be removed
+in version 1.7.0. It is recommended to use [String.prototype.toLowerCase](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String/toLowerCase) and [String.prototype.toUpperCase](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String/toUpperCase) functions instead.
 
 ## Bug Fixes
 
