@@ -58,7 +58,7 @@ describe('$http', function() {
             return {
               requestError: function(error) {
                 savedConfig.url += error;
-                return $q.when(savedConfig);
+                return $q.resolve(savedConfig);
               }
             };
           });
@@ -269,7 +269,7 @@ describe('$http', function() {
           $provide.factory('myInterceptor', function($q, $rootScope) {
             return {
               request: function(config) {
-                return $q.when('/intercepted').then(function(intercepted) {
+                return $q.resolve('/intercepted').then(function(intercepted) {
                   config.url = intercepted;
                   return config;
                 });
