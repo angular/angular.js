@@ -176,17 +176,17 @@ describe('ngBind*', function() {
         element = $compile('<div ng-bind-html="html"></div>')($rootScope);
         $rootScope.html = '<div onclick="">hello</div>';
         $rootScope.$digest();
-        expect(angular.lowercase(element.html())).toEqual('<div onclick="">hello</div>');
+        expect(lowercase(element.html())).toEqual('<div onclick="">hello</div>');
       }));
 
       it('should update html', inject(function($rootScope, $compile, $sce) {
         element = $compile('<div ng-bind-html="html"></div>')($rootScope);
         $rootScope.html = 'hello';
         $rootScope.$digest();
-        expect(angular.lowercase(element.html())).toEqual('hello');
+        expect(lowercase(element.html())).toEqual('hello');
         $rootScope.html = 'goodbye';
         $rootScope.$digest();
-        expect(angular.lowercase(element.html())).toEqual('goodbye');
+        expect(lowercase(element.html())).toEqual('goodbye');
       }));
 
       it('should one-time bind if the expression starts with two colons', inject(function($rootScope, $compile) {
@@ -220,17 +220,17 @@ describe('ngBind*', function() {
         element = $compile('<div ng-bind-html="html"></div>')($rootScope);
         $rootScope.html = $sce.trustAsHtml('<div onclick="">hello</div>');
         $rootScope.$digest();
-        expect(angular.lowercase(element.html())).toEqual('<div onclick="">hello</div>');
+        expect(lowercase(element.html())).toEqual('<div onclick="">hello</div>');
       }));
 
       it('should update html', inject(function($rootScope, $compile, $sce) {
         element = $compile('<div ng-bind-html="html"></div>')($rootScope);
         $rootScope.html = $sce.trustAsHtml('hello');
         $rootScope.$digest();
-        expect(angular.lowercase(element.html())).toEqual('hello');
+        expect(lowercase(element.html())).toEqual('hello');
         $rootScope.html = $sce.trustAsHtml('goodbye');
         $rootScope.$digest();
-        expect(angular.lowercase(element.html())).toEqual('goodbye');
+        expect(lowercase(element.html())).toEqual('goodbye');
       }));
 
       it('should not cause infinite recursion for trustAsHtml object watches',
@@ -243,7 +243,7 @@ describe('ngBind*', function() {
           return $sce.trustAsHtml('<div onclick="">hello</div>');
         };
         $rootScope.$digest();
-        expect(angular.lowercase(element.html())).toEqual('<div onclick="">hello</div>');
+        expect(lowercase(element.html())).toEqual('<div onclick="">hello</div>');
       }));
 
       it('should handle custom $sce objects', function() {
@@ -266,10 +266,10 @@ describe('ngBind*', function() {
           var html = 'hello';
           $rootScope.getHtml = function() { return $sce.trustAsHtml(html); };
           $rootScope.$digest();
-          expect(angular.lowercase(element.html())).toEqual('hello');
+          expect(lowercase(element.html())).toEqual('hello');
           html = 'goodbye';
           $rootScope.$digest();
-          expect(angular.lowercase(element.html())).toEqual('goodbye');
+          expect(lowercase(element.html())).toEqual('goodbye');
         });
       });
 
@@ -280,7 +280,7 @@ describe('ngBind*', function() {
           element = $compile('<div ng-bind-html="html"></div>')($rootScope);
           $rootScope.html = '<div onclick="">hello</div>';
           $rootScope.$digest();
-          expect(angular.lowercase(element.html())).toEqual('<div>hello</div>');
+          expect(lowercase(element.html())).toEqual('<div>hello</div>');
         }));
       });
     });

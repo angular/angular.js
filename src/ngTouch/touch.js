@@ -27,7 +27,7 @@ var ngTouch = angular.module('ngTouch', []);
 ngTouch.provider('$touch', $TouchProvider);
 
 function nodeName_(element) {
-  return angular.lowercase(element.nodeName || (element[0] && element[0].nodeName));
+  return angular.$$lowercase(element.nodeName || (element[0] && element[0].nodeName));
 }
 
 /**
