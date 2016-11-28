@@ -662,6 +662,10 @@ ul.events > li {
   max-width: 100%;
 }
 
+.deprecation {
+  margin-top: 15px;
+}
+
 .deprecation .title {
   float: left;
   margin-right: 5px;
