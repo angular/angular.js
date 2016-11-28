@@ -467,8 +467,8 @@ to display list and detail views of Heroes and Crises.
 
 ## Install the libraries
 
-It is easier to use [yarn](https://yarnpkg.com) to install the **Component Router** module.
-For this guide we will also install AngularJS itself via yarn:
+It is easier to use [Yarn](https://yarnpkg.com) or [npm](https://www.npmjs.com) to install the
+**Component Router** module. For this guide we will also install AngularJS itself via Yarn:
 
 ```bash
 yarn init

@@ -10,7 +10,7 @@
  *
  * @installation
  *
- * Currently, the **Component Router** module must be installed via `npm`/`yarn`, it is not yet available
+ * Currently, the **Component Router** module must be installed via `npm`/`yarn`, it is not available
  * on Bower or the Google CDN.
  *
  * ```bash
