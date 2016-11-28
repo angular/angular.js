@@ -30,8 +30,8 @@ machine:
   development web server, run tests, and generate distributable files. Depending on your system,
   you can install Node either from source or as a pre-packaged bundle.
 
-  We recommend using [nvm](https://github.com/creationix/nvm) to manage and install Node.js,
-  which makes it easy to change the version of Node.js per project.
+  We recommend using [nvm](https://github.com/creationix/nvm) (or [nvm-windows](https://github.com/coreybutler/nvm-windows))
+  to manage and install Node.js, which makes it easy to change the version of Node.js per project.
 
 * [Yarn](https://yarnpkg.com): We use Yarn to install our Node.js module dependencies (rather than using npm).
   There are detailed installation instructions available at https://yarnpkg.com/en/docs/install.
