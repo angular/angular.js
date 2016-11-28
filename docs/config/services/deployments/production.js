@@ -15,7 +15,7 @@ var cdnUrl = googleCdnUrl + versionInfo.cdnVersion;
 // might not work (possibly in subtle ways).
 var examplesCdnUrl = versionInfo.currentVersion.isSnapshot ?
   (angularCodeUrl + 'snapshot') :
-  (googleCdnUrl + (versionInfo.version || versionInfo.currentVersion));
+  (googleCdnUrl + (versionInfo.currentVersion.version || versionInfo.currentVersion));
 
 module.exports = function productionDeployment(getVersion) {
   return {
