@@ -77,6 +77,8 @@ AngularJS was designed to be compatible with other security measures like Conten
 (CSP), HTTPS (SSL/TLS) and server-side authentication and authorization that greatly reduce the
 possible attack vectors and we highly recommend their use.
 
+Please read {@link security} for more detailed information about securing Angular apps.
+
 
 ### Can I download the source, build, and host the AngularJS environment locally?
 
