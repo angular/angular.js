@@ -16,8 +16,7 @@
   "scripts": {
     "commit": "git-cz",
     "test-i18n": "jasmine-node i18n/spec",
-    "test-i18n-ucd": "jasmine-node i18n/ucd/spec",
-    "gulp": "gulp"
+    "test-i18n-ucd": "jasmine-node i18n/ucd/spec"
   },
   "devDependencies": {
     "angular-benchpress": "0.x.x",
