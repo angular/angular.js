@@ -71,6 +71,7 @@
     "log4js": "^0.6.27",
     "marked": "~0.3.0",
     "node-html-encoder": "0.0.2",
+    "npm-run": "^4.1.0",
     "promises-aplus-tests": "~2.1.0",
     "protractor": "^4.0.10",
     "q": "~1.0.0",
