@@ -284,10 +284,9 @@ module.exports = function(grunt) {
     },
 
     shell: {
-      'npm-install': {
-        command: 'node scripts/npm/check-node-modules.js'
+      'install-node-dependencies': {
+        command: 'yarn'
       },
-
       'promises-aplus-tests': {
         options: {
           stdout: false,
@@ -314,12 +313,9 @@ module.exports = function(grunt) {
     }
   });
 
-  // global beforeEach task
   if (!process.env.TRAVIS) {
-    grunt.task.run('shell:npm-install');
+    grunt.task.run('shell:install-node-dependencies');
   }
-
-
 
   //alias tasks
   grunt.registerTask('test', 'Run unit, docs and e2e tests with Karma', ['eslint', 'package', 'test:unit', 'test:promises-aplus', 'tests:docs', 'test:protractor']);

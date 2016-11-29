@@ -9,12 +9,11 @@
     "url": "https://github.com/angular/angular.js.git"
   },
   "engines": {
-    "node": "<5",
-    "npm": "~2.5"
+    "node": "^6.9.1",
+    "yarn": "^0.17.9",
+    "grunt": "^1.2.0"
   },
   "scripts": {
-    "preinstall": "node scripts/npm/check-node-modules.js --purge",
-    "postinstall": "node scripts/npm/copy-npm-shrinkwrap.js",
     "commit": "git-cz",
     "test-i18n": "jasmine-node i18n/spec",
     "test-i18n-ucd": "jasmine-node i18n/ucd/spec",
