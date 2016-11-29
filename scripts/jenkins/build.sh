@@ -4,7 +4,7 @@ echo "#################################"
 echo "####  Jenkins Build  ############"
 echo "#################################"
 
-source scripts/jenkins/set-node-version.sh
+source scripts/jenkins/init-node.sh
 
 # Enable tracing and exit on first failure
 set -xe
@@ -21,23 +21,22 @@ rm -f angular.js.size
 
 
 # BUILD #
-npm install -g grunt-cli
-npm install --color false
-grunt ci-checks package --no-color
+yarn
+node_modules/.bin/grunt ci-checks package --no-color
 
 mkdir -p test_out
 
 # UNIT TESTS #
-grunt test:unit --browsers="$BROWSERS" --reporters=dots,junit --no-colors --no-color
+node_modules/.bin/grunt test:unit --browsers="$BROWSERS" --reporters=dots,junit --no-colors --no-color
 
 # END TO END TESTS #
-grunt test:ci-protractor
+node_modules/.bin/grunt test:ci-protractor
 
 # DOCS APP TESTS #
-grunt test:docs --browsers="$BROWSERS" --reporters=dots,junit --no-colors --no-color
+node_modules/.bin/grunt test:docs --browsers="$BROWSERS" --reporters=dots,junit --no-colors --no-color
 
 # Promises/A+ TESTS #
-grunt test:promises-aplus --no-color
+node_modules/.bin/grunt test:promises-aplus --no-color
 
 
 # CHECK SIZE #

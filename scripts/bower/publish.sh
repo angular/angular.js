@@ -15,7 +15,7 @@ function init {
   BUILD_DIR=$(resolveDir ../../build)
   NEW_VERSION=$(cat $BUILD_DIR/version.txt)
   PROJECT_DIR=$(resolveDir ../..)
-  # get the npm dist-tag from a custom property (distTag) in package.json
+  # get the dist-tag for this release from a custom property (distTag) in package.json
   DIST_TAG=$(readJsonProp "$PROJECT_DIR/package.json" "distTag")
 }
 
@@ -96,10 +96,10 @@ function publish {
     git push origin master
     git push origin v$NEW_VERSION
 
-    # don't publish every build to npm
+    # don't publish every build to the npm repository
     if [ "${NEW_VERSION/+sha}" = "$NEW_VERSION" ] ; then
-      echo "-- Publishing to npm as $DIST_TAG"
-      npm publish --tag=$DIST_TAG
+      echo "-- Publishing to the npm repository as $DIST_TAG"
+      yarn publish --tag=$DIST_TAG
     fi
 
     cd $SCRIPT_DIR
