@@ -332,7 +332,7 @@ describe('$httpBackend', function() {
 
   describe('JSONP', function() {
 
-    var SCRIPT_URL = /([^\?]*)\?cb=(.*)/;
+    var SCRIPT_URL = /([^?]*)\?cb=(.*)/;
 
 
     it('should add script tag for JSONP request', function() {

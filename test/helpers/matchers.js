@@ -60,7 +60,7 @@ beforeEach(function() {
       // This function escapes all special regex characters.
       // We use it to create matching regex from arbitrary strings.
       // http://stackoverflow.com/questions/3446170/escape-string-for-use-in-javascript-regex
-      return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
+      return str.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&');
     }
 
     function test(exception) {

@@ -4089,7 +4089,7 @@ describe('parser', function() {
   forEach([true, false], function(cspEnabled) {
     describe('custom identifiers (csp: ' + cspEnabled + ')', function() {
       var isIdentifierStartRe = /[#a-z]/;
-      var isIdentifierContinueRe = /[\-a-z]/;
+      var isIdentifierContinueRe = /[-a-z]/;
       var isIdentifierStartFn;
       var isIdentifierContinueFn;
       var scope;

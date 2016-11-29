@@ -8218,7 +8218,7 @@ describe('$compile', function() {
             inject(function($compile) {
               expect(function() {
                 $compile('<div first="" second=""></div>');
-              }).toThrowMinErr('$compile', 'multidir', /Multiple directives \[first, second\] asking for transclusion on: <div .+/);
+              }).toThrowMinErr('$compile', 'multidir', /Multiple directives \[first, second] asking for transclusion on: <div .+/);
             });
           });
 
@@ -9535,7 +9535,7 @@ describe('$compile', function() {
             inject(function($compile) {
               expect(function() {
                 $compile('<div first second></div>');
-              }).toThrowMinErr('$compile', 'multidir', /Multiple directives \[first, second\] asking for transclusion on: <div .+/);
+              }).toThrowMinErr('$compile', 'multidir', /Multiple directives \[first, second] asking for transclusion on: <div .+/);
             });
           });
 
@@ -9559,7 +9559,7 @@ describe('$compile', function() {
               $compile('<div template first></div>');
               expect(function() {
                 $httpBackend.flush();
-              }).toThrowMinErr('$compile', 'multidir', /Multiple directives \[first, second\] asking for transclusion on: <p .+/);
+              }).toThrowMinErr('$compile', 'multidir', /Multiple directives \[first, second] asking for transclusion on: <p .+/);
             });
           });
 
@@ -9580,7 +9580,7 @@ describe('$compile', function() {
             inject(function($compile) {
               expect(function() {
                 $compile('<div template first></div>');
-              }).toThrowMinErr('$compile', 'multidir', /Multiple directives \[first, second\] asking for transclusion on: <p .+/);
+              }).toThrowMinErr('$compile', 'multidir', /Multiple directives \[first, second] asking for transclusion on: <p .+/);
             });
           });
 
@@ -10914,7 +10914,7 @@ describe('$compile', function() {
         $rootScope.html = '<div onclick="">hello</div>';
         expect(function() { $rootScope.$digest(); }).toThrowMinErr('$interpolate', 'interr', new RegExp(
             /Can't interpolate: {{html}}\n/.source +
-            /[^[]*\[\$sce:unsafe\] Attempting to use an unsafe value in a safe context./.source));
+            /[^[]*\[\$sce:unsafe] Attempting to use an unsafe value in a safe context./.source));
       }));
 
       it('should NOT set html for wrongly typed values', inject(function($rootScope, $compile, $sce) {
@@ -10922,7 +10922,7 @@ describe('$compile', function() {
         $rootScope.html = $sce.trustAsCss('<div onclick="">hello</div>');
         expect(function() { $rootScope.$digest(); }).toThrowMinErr('$interpolate', 'interr', new RegExp(
             /Can't interpolate: \{\{html}}\n/.source +
-            /[^[]*\[\$sce:unsafe\] Attempting to use an unsafe value in a safe context./.source));
+            /[^[]*\[\$sce:unsafe] Attempting to use an unsafe value in a safe context./.source));
       }));
 
       it('should set html for trusted values', inject(function($rootScope, $compile, $sce) {

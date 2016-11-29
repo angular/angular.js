@@ -184,7 +184,7 @@ function sortedHtml(element, showNgClass) {
         }
 
         var attr = attributes[i];
-        if (attr.name.match(/^ng[:\-]/) ||
+        if (attr.name.match(/^ng[:-]/) ||
             (attr.value || attr.value === '') &&
             attr.value !== 'null' &&
             attr.value !== 'auto' &&
@@ -241,7 +241,7 @@ function sortedHtml(element, showNgClass) {
         var tmp = style;
         style = [];
         forEach(tmp, function(value) {
-          if (!value.match(/^max[^\-]/)) {
+          if (!value.match(/^max[^-]/)) {
             style.push(value);
           }
         });

@@ -427,7 +427,7 @@ function shallowClearAndCopy(src, dst) {
  */
 angular.module('ngResource', ['ng']).
   provider('$resource', function ResourceProvider() {
-    var PROTOCOL_AND_DOMAIN_REGEX = /^https?:\/\/[^\/]*/;
+    var PROTOCOL_AND_DOMAIN_REGEX = /^https?:\/\/[^/]*/;
 
     var provider = this;
 

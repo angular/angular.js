@@ -63,7 +63,7 @@ angular.module('DocsController', ['currentVersionData'])
   $scope.loading = 0;
 
 
-  var INDEX_PATH = /^(\/|\/index[^\.]*.html)$/;
+  var INDEX_PATH = /^(\/|\/index[^.]*.html)$/;
   if (!$location.path() || INDEX_PATH.test($location.path())) {
     $location.path('/api').replace();
   }

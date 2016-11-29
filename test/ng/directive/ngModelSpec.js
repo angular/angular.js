@@ -1315,7 +1315,7 @@ describe('ngModel', function() {
 
 
   describe('CSS classes', function() {
-    var EMAIL_REGEXP = /^[a-z0-9!#$%&'*+\/=?^_`{|}~.-]+@[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)*$/i;
+    var EMAIL_REGEXP = /^[a-z0-9!#$%&'*+/=?^_`{|}~.-]+@[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)*$/i;
 
     it('should set ng-empty or ng-not-empty when the view value changes',
           inject(function($compile, $rootScope, $sniffer) {
