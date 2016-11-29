@@ -10,26 +10,63 @@ var path = require('path');
 var e2e = require('./test/e2e/tools');
 
 var semver = require('semver');
-var fs = require('fs');
+var exec = require('shelljs').exec;
+var pkg = require(__dirname + '/package.json');
 
-var useNodeVersion = fs.readFileSync('.nvmrc', 'utf8');
-if (!semver.satisfies(process.version, useNodeVersion)) {
-  throw new Error('Invalid node version; please use node v' + useNodeVersion);
+// Node.js version checks
+if (!semver.satisfies(process.version, pkg.engines.node)) {
+  reportOrFail('Invalid node version (' + process.version + '). ' +
+               'Please use a version that satisfies ' + pkg.engines.node);
 }
 
+// Yarn version checks
+var expectedYarnVersion = pkg.engines.yarn;
+var currentYarnVersion = exec('yarn --version', {silent: true}).stdout.trim();
+if (!semver.satisfies(currentYarnVersion, expectedYarnVersion)) {
+  reportOrFail('Invalid yarn version (' + currentYarnVersion + '). ' +
+               'Please use a version that satisfies ' + expectedYarnVersion);
+}
+
+// Grunt CLI version checks
+var expectedGruntVersion = pkg.engines.grunt;
+var currentGruntVersions = exec('grunt --version', {silent: true}).stdout;
+var match = /^grunt-cli v(.+)$/m.exec(currentGruntVersions);
+if (!match) {
+  reportOrFail('Unable to compute the current grunt-cli version. We found:\n' +
+               currentGruntVersions);
+} else {
+  if (!semver.satisfies(match[1], expectedGruntVersion)) {
+  reportOrFail('Invalid grunt-cli version (' + match[1] + '). ' +
+               'Please use a version that satisfies ' + expectedGruntVersion);
+  }
+}
+
+// Ensure Node.js dependencies have been installed
+if (!process.env.TRAVIS && !process.env.JENKINS_HOME) {
+  var yarnOutput = exec('yarn install');
+  if (yarnOutput.code !== 0) {
+    throw new Error('Yarn install failed: ' + yarnOutput.stderr);
+  }
+}
+
+
 module.exports = function(grunt) {
-  //grunt plugins
+
+  // this loads all the node_modules that start with `grunt-` as plugins
   require('load-grunt-tasks')(grunt);
 
+  // load additional grunt tasks
   grunt.loadTasks('lib/grunt');
   grunt.loadNpmTasks('angular-benchpress');
 
+  // compute version related info for this build
   var NG_VERSION = versionInfo.currentVersion;
   NG_VERSION.cdn = versionInfo.cdnVersion;
   var dist = 'angular-' + NG_VERSION.full;
 
   if (versionInfo.cdnVersion == null) {
-    throw new Error('Unable to read CDN version, are you offline or has the CDN not been properly pushed?');
+    throw new Error('Unable to read CDN version, are you offline or has the CDN not been properly pushed?\n' +
+                    'Perhaps you want to set the NG1_BUILD_NO_REMOTE_VERSION_REQUESTS environment variable?');
   }
 
   //config
@@ -321,10 +358,6 @@ module.exports = function(grunt) {
     }
   });
 
-  if (!process.env.TRAVIS) {
-    grunt.task.run('shell:install-node-dependencies');
-  }
-
   //alias tasks
   grunt.registerTask('test', 'Run unit, docs and e2e tests with Karma', ['eslint', 'package', 'test:unit', 'test:promises-aplus', 'tests:docs', 'test:protractor']);
   grunt.registerTask('test:jqlite', 'Run the unit tests with Karma' , ['tests:jqlite']);
@@ -346,3 +379,14 @@ module.exports = function(grunt) {
   grunt.registerTask('ci-checks', ['ddescribe-iit', 'merge-conflict', 'eslint']);
   grunt.registerTask('default', ['package']);
 };
+
+
+function reportOrFail(message) {
+  if (process.env.TRAVIS || process.env.JENKINS_HOME) {
+    throw new Error(message);
+  } else {
+    console.log('===============================================================================');
+    console.log(message);
+    console.log('===============================================================================');
+  }
+}
