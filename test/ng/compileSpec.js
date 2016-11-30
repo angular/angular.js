@@ -442,30 +442,70 @@ describe('$compile', function() {
     }));
 
     if (supportsForeignObject()) {
+      // Supports: Chrome 53-57+
+      // Since Chrome 53-57+, the reported size of `<foreignObject>` elements and their descendants
+      // is affected by global display settings (e.g. font size) and browser settings (e.g. default
+      // zoom level). In order to avoid false negatives, we compare against the size of the
+      // equivalent, hand-written SVG instead of fixed widths/heights.
+      var HAND_WRITTEN_SVG =
+        '<svg width="400" height="400">' +
+          '<foreignObject width="100" height="100">' +
+            '<div style="position:absolute;width:20px;height:20px">test</div>' +
+          '</foreignObject>' +
+        '</svg>';
+
       it('should handle foreignObject', inject(function() {
-        element = jqLite('<div><svg-container>' +
-            '<foreignObject width="100" height="100"><div class="test" style="position:absolute;width:20px;height:20px">test</div></foreignObject>' +
-            '</svg-container></div>');
+        element = jqLite(
+          '<div>' +
+            // By hand (for reference)
+            HAND_WRITTEN_SVG +
+            // By directive
+            '<svg-container>' +
+              '<foreignObject width="100" height="100">' +
+                '<div style="position:absolute;width:20px;height:20px">test</div>' +
+              '</foreignObject>' +
+            '</svg-container>' +
+          '</div>');
         $compile(element.contents())($rootScope);
         document.body.appendChild(element[0]);
 
-        var testElem = element.find('div');
-        expect(isHTMLElement(testElem[0])).toBe(true);
-        var bounds = testElem[0].getBoundingClientRect();
-        expect(bounds.width === 20 && bounds.height === 20).toBe(true);
+        var referenceElem = element.find('div')[0];
+        var testElem = element.find('div')[1];
+        var referenceBounds = referenceElem.getBoundingClientRect();
+        var testBounds = testElem.getBoundingClientRect();
+
+        expect(isHTMLElement(testElem)).toBe(true);
+        expect(referenceBounds.width).toBeGreaterThan(0);
+        expect(referenceBounds.height).toBeGreaterThan(0);
+        expect(testBounds.width).toBe(referenceBounds.width);
+        expect(testBounds.height).toBe(referenceBounds.height);
       }));
 
       it('should handle custom svg containers that transclude to foreignObject that transclude html', inject(function() {
-        element = jqLite('<div><svg-container>' +
-            '<my-foreign-object><div class="test" style="width:20px;height:20px">test</div></my-foreign-object>' +
-            '</svg-container></div>');
+        element = jqLite(
+          '<div>' +
+            // By hand (for reference)
+            HAND_WRITTEN_SVG +
+            // By directive
+            '<svg-container>' +
+              '<my-foreign-object>' +
+                '<div style="width:20px;height:20px">test</div>' +
+              '</my-foreign-object>' +
+            '</svg-container>' +
+          '</div>');
         $compile(element.contents())($rootScope);
         document.body.appendChild(element[0]);
 
-        var testElem = element.find('div');
-        expect(isHTMLElement(testElem[0])).toBe(true);
-        var bounds = testElem[0].getBoundingClientRect();
-        expect(bounds.width === 20 && bounds.height === 20).toBe(true);
+        var referenceElem = element.find('div')[0];
+        var testElem = element.find('div')[1];
+        var referenceBounds = referenceElem.getBoundingClientRect();
+        var testBounds = testElem.getBoundingClientRect();
+
+        expect(isHTMLElement(testElem)).toBe(true);
+        expect(referenceBounds.width).toBeGreaterThan(0);
+        expect(referenceBounds.height).toBeGreaterThan(0);
+        expect(testBounds.width).toBe(referenceBounds.width);
+        expect(testBounds.height).toBe(referenceBounds.height);
       }));
 
       // NOTE: This test may be redundant.
