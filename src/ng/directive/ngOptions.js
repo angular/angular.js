@@ -452,7 +452,7 @@ var ngOptionsDirective = ['$compile', '$document', '$parse', function($compile, 
       var removeEmptyOption = function() {
         if (!providedEmptyOption) {
           emptyOption.remove();
-        } else {
+        } else if (emptyOption[0].nodeType === NODE_TYPE_ELEMENT) {
           emptyOption.removeAttr('selected');
         }
       };

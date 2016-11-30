@@ -2557,6 +2557,22 @@ describe('ngOptions', function() {
       expect(linkLog).toEqual(['linkCompileContents', 'linkNgOptions']);
     });
 
+    it('should select the correct option after linking when the ngIf expression is initially falsy', function() {
+      scope.values = [
+        {name:'black'},
+        {name:'white'},
+        {name:'red'}
+      ];
+      scope.selected = scope.values[2];
+
+      expect(function() {
+        createSingleSelect('<option ng-if="isBlank" value="">blank</option>');
+        scope.$apply();
+      }).not.toThrow();
+
+      expect(element.find('option')[2]).toBeMarkedAsSelected();
+      expect(linkLog).toEqual(['linkNgOptions']);
+    });
 
     it('should not throw with a directive that replaces', inject(function($templateCache, $httpBackend) {
       $templateCache.put('select_template.html', '<select ng-options="option as option for option in selectable_options"> <option value="">This is a test</option> </select>');
