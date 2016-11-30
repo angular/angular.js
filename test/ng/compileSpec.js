@@ -452,7 +452,12 @@ describe('$compile', function() {
         var testElem = element.find('div');
         expect(isHTMLElement(testElem[0])).toBe(true);
         var bounds = testElem[0].getBoundingClientRect();
-        expect(bounds.width === 20 && bounds.height === 20).toBe(true);
+
+        // Support: Chrome 53-54+ (Windows 10)
+        // `<foreignObject>` and its children are reported by `getBoundingClientRect()`
+        // as 25% larger in each dimension than they actually are.
+        expect(bounds.width).toBeGreaterThanOrEqual(20);
+        expect(bounds.height).toBeGreaterThanOrEqual(20);
       }));
 
       it('should handle custom svg containers that transclude to foreignObject that transclude html', inject(function() {
@@ -465,7 +470,12 @@ describe('$compile', function() {
         var testElem = element.find('div');
         expect(isHTMLElement(testElem[0])).toBe(true);
         var bounds = testElem[0].getBoundingClientRect();
-        expect(bounds.width === 20 && bounds.height === 20).toBe(true);
+
+        // Support: Chrome 53-54+ (Windows 10)
+        // `<foreignObject>` and its children are reported by `getBoundingClientRect()`
+        // as 25% larger in each dimension than they actually are.
+        expect(bounds.width).toBeGreaterThanOrEqual(20);
+        expect(bounds.height).toBeGreaterThanOrEqual(20);
       }));
 
       // NOTE: This test may be redundant.
