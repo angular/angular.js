@@ -9,3 +9,32 @@ assertion expects is defined and matches the type mentioned in the error.
 
 If the type is `undefined`, make sure any newly added controllers/directives/services are properly
 defined and included in the script(s) loaded by your page.
+
+You can get this error if you accidentally miss to include your AngularJS Controller / Directive / Services file inside your ng-app HTML page.
+
+```
+<html ng-app>
+  <head>
+    <script src="sampleController.js"></script> <!-- If this inclusion of the controller file is missed out -->
+
+    ...
+
+  </head>
+  <body ng-controller="GreetingController" >
+
+    ...
+
+    <script src="angular.js"></script>
+  </body>
+</html>
+```
+And defined that controller function in a file called 'sampleController.js'
+
+```
+var myApp = angular.module('myApp',[]);
+
+myApp.controller('GreetingController', ['$scope', function($scope) {
+  $scope.greeting = 'Hola!';
+}]);
+
+```
