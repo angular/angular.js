@@ -820,6 +820,10 @@ function copy(source, destination) {
   var stackDest = [];
 
   if (destination) {
+    if (toString.call(destination) !== toString.call(source)) {
+      throw ngMinErr('cpi', 'Can\'t copy! Source({0} type) and destination({1} type) aren\'t the same type.',
+          toString.call(source), toString.call(destination));
+    }
     if (isTypedArray(destination) || isArrayBuffer(destination)) {
       throw ngMinErr('cpta', 'Can\'t copy! TypedArray destination cannot be mutated.');
     }
