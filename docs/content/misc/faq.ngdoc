@@ -98,6 +98,10 @@ but we don't actively test changes against it. You can also expect browsers to w
 a large part of their codebase with a browser we test, such as Opera > version 12
 (uses the Blink engine), or the various Firefox derivatives.
 
+Note: AngularJS 1.3 is dropping support for IE8. Read more about it on our blog. AngularJS 1.2 
+will continue to support IE8, but the core team does not plan to spend time addressing issues 
+specific to IE8 or earlier.
+
 
 ### What's Angular's performance like?
 
