@@ -95,8 +95,9 @@ var NG_HIDE_IN_PROGRESS_CLASS = 'ng-hide-animate';
  * | {@link $animate#removeClass removeClass}  `.ng-hide`  | after the `ngShow` expression evaluates to a truthy value and just before contents are set to visible |
  *
  * @element ANY
- * @param {expression} ngShow If the {@link guide/expression expression} is truthy
- *     then the element is shown or hidden respectively.
+ * @param {expression} ngShow If the {@link guide/expression expression} is truthy or falsy
+ *     then the element is shown or hidden respectively. 
+ *     Falsy values include (case insensitive) `'f'`, `'0'`, `'false'`, `'no'`, `'n'` and `'[]'`.
  *
  * @example
   <example module="ngAnimate" deps="angular-animate.js" animations="true" name="ng-show">
@@ -262,8 +263,9 @@ var ngShowDirective = ['$animate', function($animate) {
  *
  *
  * @element ANY
- * @param {expression} ngHide If the {@link guide/expression expression} is truthy then
- *     the element is shown or hidden respectively.
+ * @param {expression} ngHide If the {@link guide/expression expression} is truthy or falsy
+ *     then the element is hidden or shown respectively. 
+ *     Falsy values include (case insensitive) `'f'`, `'0'`, `'false'`, `'no'`, `'n'` and `'[]'`.
  *
  * @example
   <example module="ngAnimate" deps="angular-animate.js" animations="true" name="ng-hide">
