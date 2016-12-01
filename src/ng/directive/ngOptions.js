@@ -509,7 +509,7 @@ var ngOptionsDirective = ['$compile', '$document', '$parse', function($compile, 
             option.element.selected = false;
           });
 
-          if (value) {
+          if (value && Array.isArray(value)) {
             value.forEach(function(item) {
               var option = options.getOptionFromViewValue(item);
               if (option) option.element.selected = true;
