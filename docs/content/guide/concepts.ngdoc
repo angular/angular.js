@@ -61,7 +61,7 @@ The loaded, transformed and rendered DOM is then called the <a name="view"></a>*
 
 The first kind of new markup are the <a name="directive">{@link directive directives}</a>.
 They apply special behavior to attributes or elements in the HTML. In the example above we use the
-{@link ng.directive:ngApp `ng-app`} attribute, which is linked to a directive that automatically
+{@link ng.directive:ngApp `ng-init`} attribute, which is linked to a directive that automatically
 initializes our application. Angular also defines a directive for the {@link ng.directive:input `input`}
 element that adds extra behavior to the element. The {@link ng.directive:ngModel `ng-model`} directive
 stores/updates the value of the input field into/from a variable.
