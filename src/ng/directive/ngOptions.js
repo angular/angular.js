@@ -600,7 +600,6 @@ var ngOptionsDirective = ['$compile', '$document', '$parse', function($compile, 
           // options that are added by ngIf etc. (rendering of the node is async because of
           // lazy transclusion)
           selectCtrl.registerOption = function(optionScope, optionEl) {
-            console.log('register');
             if (optionEl.val() === '') {
               emptyOptionRendered = true;
               emptyOption = optionEl;
@@ -613,7 +612,8 @@ var ngOptionsDirective = ['$compile', '$document', '$parse', function($compile, 
                 emptyOptionRendered = false;
               });
             }
-          }
+          };
+
         } else {
           emptyOption.removeClass('ng-scope');
           emptyOptionRendered = true;

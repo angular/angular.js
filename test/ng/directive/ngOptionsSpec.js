@@ -2557,6 +2557,7 @@ describe('ngOptions', function() {
       expect(linkLog).toEqual(['linkCompileContents', 'linkNgOptions']);
     });
 
+
     it('should select the correct option after linking when the ngIf expression is initially falsy', function() {
       scope.values = [
         {name:'black'},
