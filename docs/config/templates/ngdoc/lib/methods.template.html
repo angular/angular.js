@@ -26,6 +26,13 @@
     {$ lib.typeInfo(method.returns) $}
     {% endif %}
 
+    {%- if method.examples %}
+    <h4 id="{$ doc.name $}.{$ method.name $}-examples">Examples</h4>
+    {%- for example in method.examples -%}
+      {$ example | marked $}
+    {%- endfor -%}
+    {% endif -%}
+
   </li>
   {% endfor -%}
 </ul>
