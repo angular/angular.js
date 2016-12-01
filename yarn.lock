@@ -525,6 +525,10 @@ boom@2.x.x:
   dependencies:
     hoek "2.x.x"
 
+bootstrap@3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/bootstrap/-/bootstrap-3.1.1.tgz#17e14ed261c0fcd9b52ea9aa6420f6d51cd5fa77"
+
 bootstrap@^3.2.0:
   version "3.3.7"
   resolved "https://registry.yarnpkg.com/bootstrap/-/bootstrap-3.3.7.tgz#5a389394549f23330875a3b150656574f8a9eb71"
@@ -2588,6 +2592,10 @@ glogg@^1.0.0:
   dependencies:
     sparkles "^1.0.0"
 
+google-code-prettify@1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/google-code-prettify/-/google-code-prettify-1.0.1.tgz#72ed730414769db2ecc470f4ec413174ccb76327"
+
 got@^0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/got/-/got-0.3.0.tgz#888ec66ca4bc735ab089dbe959496d0f79485493"
@@ -3483,6 +3491,10 @@ jodid25519@^1.0.0:
   dependencies:
     jsbn "~0.1.0"
 
+jquery@^3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.1.1.tgz#347c1c21c7e004115e0a4da32cece041fad3c8a3"
+
 js-tokens@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/js-tokens/-/js-tokens-2.0.0.tgz#79903f5563ee778cc1162e6dcf1a0027c97f9cb5"
@@ -4041,6 +4053,10 @@ lru-queue@0.1:
   dependencies:
     es5-ext "~0.10.2"
 
+lunr@^0.7.2:
+  version "0.7.2"
+  resolved "https://registry.yarnpkg.com/lunr/-/lunr-0.7.2.tgz#79a30e932e216cba163541ee37a3607c12cd7281"
+
 map-cache@^0.2.0:
   version "0.2.2"
   resolved "https://registry.yarnpkg.com/map-cache/-/map-cache-0.2.2.tgz#c32abd0bd6525d9b051645bb4f26ac5dc98a0dbf"
@@ -4563,6 +4579,10 @@ once@~1.3.0, once@~1.3.3:
 onetime@^1.0.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/onetime/-/onetime-1.1.0.tgz#a1f7838f8314c516f05ecefcbc4ccfe04b4ed789"
+
+open-sans-fontface@^1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/open-sans-fontface/-/open-sans-fontface-1.4.0.tgz#03cc6d1bf5e6a8b5b47910888562f722c5dd3428"
 
 opn@^4.0.0:
   version "4.0.2"
