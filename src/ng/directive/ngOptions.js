@@ -429,6 +429,7 @@ var ngOptionsDirective = ['$compile', '$document', '$parse', function($compile, 
       }
 
       var providedEmptyOption = !!emptyOption;
+      var emptyOptionRendered = false;
 
       var unknownOption = jqLite(optionTemplate.cloneNode(false));
       unknownOption.val('?');
@@ -445,14 +446,16 @@ var ngOptionsDirective = ['$compile', '$document', '$parse', function($compile, 
           selectElement.prepend(emptyOption);
         }
         selectElement.val('');
-        emptyOption.prop('selected', true); // needed for IE
-        emptyOption.attr('selected', true);
+        if (emptyOptionRendered) {
+          emptyOption.prop('selected', true); // needed for IE
+          emptyOption.attr('selected', true);
+        }
       };
 
       var removeEmptyOption = function() {
         if (!providedEmptyOption) {
           emptyOption.remove();
-        } else if (emptyOption[0].nodeType === NODE_TYPE_ELEMENT) {
+        } else if (emptyOptionRendered) {
           emptyOption.removeAttr('selected');
         }
       };
@@ -587,9 +590,35 @@ var ngOptionsDirective = ['$compile', '$document', '$parse', function($compile, 
         // compile the element since there might be bindings in it
         $compile(emptyOption)(scope);
 
-        // remove the class, which is added automatically because we recompile the element and it
-        // becomes the compilation root
-        emptyOption.removeClass('ng-scope');
+        if (emptyOption[0].nodeType === NODE_TYPE_COMMENT) {
+          // This means the empty option has currently no actual DOM node, probably because
+          // it has been modified by a transclusion directive.
+
+          emptyOptionRendered = false;
+
+          // Redefine the registerOption function, which will catch
+          // options that are added by ngIf etc. (rendering of the node is async because of
+          // lazy transclusion)
+          selectCtrl.registerOption = function(optionScope, optionEl) {
+            console.log('register');
+            if (optionEl.val() === '') {
+              emptyOptionRendered = true;
+              emptyOption = optionEl;
+              emptyOption.removeClass('ng-scope');
+              // This ensures the new empty option is selected if previously no option was selected
+              ngModelCtrl.$render();
+
+              optionEl.on('$destroy', function() {
+                emptyOption = undefined;
+                emptyOptionRendered = false;
+              });
+            }
+          }
+        } else {
+          emptyOption.removeClass('ng-scope');
+          emptyOptionRendered = true;
+        }
+
       } else {
         emptyOption = jqLite(optionTemplate.cloneNode(false));
       }

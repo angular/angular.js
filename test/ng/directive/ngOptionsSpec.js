@@ -2574,6 +2574,78 @@ describe('ngOptions', function() {
       expect(linkLog).toEqual(['linkNgOptions']);
     });
 
+
+    it('should add / remove the "selected" attribute on empty option which has an initially falsy ngIf expression', function() {
+      scope.values = [
+        {name:'black'},
+        {name:'white'},
+        {name:'red'}
+      ];
+      scope.selected = scope.values[2];
+
+      createSingleSelect('<option ng-if="isBlank" value="">blank</option>');
+      scope.$apply();
+
+      expect(element.find('option')[2]).toBeMarkedAsSelected();
+
+      scope.$apply('isBlank = true');
+      expect(element.find('option')[0].value).toBe('');
+      expect(element.find('option')[0]).not.toBeMarkedAsSelected();
+
+      scope.$apply('selected = null');
+      expect(element.find('option')[0].value).toBe('');
+      expect(element.find('option')[0]).toBeMarkedAsSelected();
+
+      scope.selected = scope.values[1];
+      scope.$apply();
+      expect(element.find('option')[0].value).toBe('');
+      expect(element.find('option')[0]).not.toBeMarkedAsSelected();
+      expect(element.find('option')[2]).toBeMarkedAsSelected();
+    });
+
+
+    it('should add / remove the "selected" attribute on empty option which has an initially truthy ngIf expression when no option is selected', function() {
+      scope.values = [
+        {name:'black'},
+        {name:'white'},
+        {name:'red'}
+      ];
+      scope.isBlank = true;
+
+      createSingleSelect('<option ng-if="isBlank" value="">blank</option>');
+      scope.$apply();
+
+      expect(element.find('option')[0].value).toBe('');
+      expect(element.find('option')[0]).toBeMarkedAsSelected();
+
+      scope.selected = scope.values[2];
+      scope.$apply();
+      expect(element.find('option')[0]).not.toBeMarkedAsSelected();
+      expect(element.find('option')[3]).toBeMarkedAsSelected();
+    });
+
+
+    it('should add the "selected" attribute on empty option which has an initially falsy ngIf expression when no option is selected', function() {
+      scope.values = [
+        {name:'black'},
+        {name:'white'},
+        {name:'red'}
+      ];
+
+      createSingleSelect('<option ng-if="isBlank" value="">blank</option>');
+      scope.$apply();
+
+      expect(element.find('option')[0]).not.toBeMarkedAsSelected();
+
+      scope.isBlank = true;
+      scope.$apply();
+
+      expect(element.find('option')[0].value).toBe('');
+      expect(element.find('option')[0]).toBeMarkedAsSelected();
+      expect(element.find('option')[1]).not.toBeMarkedAsSelected();
+    });
+
+
     it('should not throw with a directive that replaces', inject(function($templateCache, $httpBackend) {
       $templateCache.put('select_template.html', '<select ng-options="option as option for option in selectable_options"> <option value="">This is a test</option> </select>');
 
