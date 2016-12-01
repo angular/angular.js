@@ -32,6 +32,14 @@ var SelectController =
   // to create it in <select> and IE barfs otherwise.
   self.unknownOption = jqLite(window.document.createElement('option'));
 
+  // The empty option is an option with the value '' that te application developer can
+  // provide inside the select. When the model changes to a value that doesn't match an option,
+  // it is selected - so if an empty option is provided, no unknown option is generated.
+  // However, the empty option is not removed when the model matches an option. It is always selectable
+  // and indicates that a "null" selection has been made.
+  self.hasEmptyOption = false;
+  self.emptyOption = undefined;
+
   self.renderUnknownOption = function(val) {
     var unknownVal = self.generateUnknownOptionValue(val);
     self.unknownOption.val(unknownVal);
@@ -55,13 +63,6 @@ var SelectController =
     if (self.unknownOption.parent()) self.unknownOption.remove();
   };
 
-  // The empty option is an option with the value '' that te application developer can
-  // provide inside the select. When the model changes to a value that doesn't match an option,
-  // it is selected - so if an empty option is provided, no unknown option is generated.
-  // However, the empty option is not removed when the model matches an option. It is always selectable
-  // and indicates that a "null" selection has been made.
-  self.emptyOption = undefined;
-
   self.selectEmptyOption = function() {
     if (self.emptyOption) {
       $element.val('');
@@ -70,7 +71,7 @@ var SelectController =
   };
 
   self.unselectEmptyOption = function() {
-    if (self.emptyOption) {
+    if (self.hasEmptyOption) {
       self.emptyOption.removeAttr('selected');
     }
   };
@@ -132,6 +133,7 @@ var SelectController =
 
     assertNotHasOwnProperty(value, '"option value"');
     if (value === '') {
+      self.hasEmptyOption = true;
       self.emptyOption = element;
     }
     var count = optionsMap.get(value) || 0;
@@ -148,6 +150,7 @@ var SelectController =
       if (count === 1) {
         optionsMap.remove(value);
         if (value === '') {
+          self.hasEmptyOption = false;
           self.emptyOption = undefined;
         }
       } else {

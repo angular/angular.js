@@ -420,6 +420,7 @@ var ngOptionsDirective = ['$compile', '$document', '$parse', function($compile, 
       // option when the viewValue does not match any of the option values.
       for (var i = 0, children = selectElement.children(), ii = children.length; i < ii; i++) {
         if (children[i].value === '') {
+          selectCtrl.hasEmptyOption = true;
           selectCtrl.emptyOption = children.eq(i);
           break;
         }
@@ -556,9 +557,35 @@ var ngOptionsDirective = ['$compile', '$document', '$parse', function($compile, 
         // compile the element since there might be bindings in it
         $compile(selectCtrl.emptyOption)(scope);
 
-        // remove the class, which is added automatically because we recompile the element and it
-        // becomes the compilation root
-        selectCtrl.emptyOption.removeClass('ng-scope');
+        if (selectCtrl.emptyOption[0].nodeType === NODE_TYPE_COMMENT) {
+          // This means the empty option has currently no actual DOM node, probably because
+          // it has been modified by a transclusion directive.
+          selectCtrl.hasEmptyOption = false;
+
+          // Redefine the registerOption function, which will catch
+          // options that are added by ngIf etc. (rendering of the node is async because of
+          // lazy transclusion)
+          selectCtrl.registerOption = function(optionScope, optionEl) {
+            if (optionEl.val() === '') {
+              selectCtrl.hasEmptyOption = true;
+              selectCtrl.emptyOption = optionEl;
+              selectCtrl.emptyOption.removeClass('ng-scope');
+              // This ensures the new empty option is selected if previously no option was selected
+              ngModelCtrl.$render();
+
+              optionEl.on('$destroy', function() {
+                selectCtrl.hasEmptyOption = false;
+                selectCtrl.emptyOption = undefined;
+              });
+            }
+          };
+
+        } else {
+          // remove the class, which is added automatically because we recompile the element and it
+          // becomes the compilation root
+          selectCtrl.emptyOption.removeClass('ng-scope');
+        }
+
       }
 
       selectElement.empty();
