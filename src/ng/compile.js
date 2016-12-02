@@ -1803,7 +1803,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             : function denormalizeTemplate(template) {
               return template.replace(/\{\{/g, startSymbol).replace(/}}/g, endSymbol);
         },
-        NG_ATTR_BINDING = /^ngAttr[A-Z]/;
+        NG_SPECIAL_ATTR = /^ng(Attr|Bindon)[A-Z]/;
     var MULTI_ELEMENT_DIR_RE = /^(.+)Start$/;
 
     compile.$$addBindingInfo = debugInfoEnabled ? function $$addBindingInfo($element, binding) {
@@ -2139,8 +2139,8 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
               directiveNormalize(nodeName), 'E', maxPriority, ignoreDirective);
 
           // iterate over the attributes
-          for (var attr, name, nName, ngAttrName, value, isNgAttr, nAttrs = node.attributes,
-                   j = 0, jj = nAttrs && nAttrs.length; j < jj; j++) {
+          for (var attr, name, nName, ngAttrName, value, isNgAttr, isSpecialAttr, isNgBindon,
+            nAttrs = node.attributes, j = 0, jj = nAttrs && nAttrs.length; j < jj; j++) {
             var attrStartName = false;
             var attrEndName = false;
 
@@ -2150,10 +2150,14 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
             // support ngAttr attribute binding
             ngAttrName = directiveNormalize(name);
-            isNgAttr = NG_ATTR_BINDING.test(ngAttrName);
-            if (isNgAttr) {
+
+            isSpecialAttr = NG_SPECIAL_ATTR.exec(ngAttrName);
+            isNgAttr = isSpecialAttr && isSpecialAttr[1] === 'Attr';
+            isNgBindon = isSpecialAttr && isSpecialAttr[1] === 'Bindon';
+
+            if (isSpecialAttr) {
               name = name.replace(PREFIX_REGEXP, '')
-                .substr(8).replace(/_(.)/g, function(match, letter) {
+                .substr(isNgAttr ? 8 : 10).replace(/_(.)/g, function(match, letter) {
                   return letter.toUpperCase();
                 });
             }
@@ -2173,6 +2177,12 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                   attrs[nName] = true; // presence means true
                 }
             }
+
+            if (isNgBindon) {
+              attrs[nName] = value;
+              attrs[nName + 'Change'] = value + '=$event';
+            }
+
             addAttrInterpolateDirective(node, directives, value, nName, isNgAttr);
             addDirective(directives, nName, 'A', maxPriority, ignoreDirective, attrStartName,
                           attrEndName);

@@ -147,6 +147,21 @@ components should follow a few simple conventions:
         });
       }
     ```
+  - A two-way binding can be simulated by using both a one-way binding as well as an output event.
+    ```js
+      bindings: {
+        hero: '<',
+        heroChange: '&'
+      }
+    ```
+    ```html
+      <hero-detail hero="$ctrl.hero" hero-change="$ctrl.hero = $event"></hero-detail>
+    ```
+  - Since that can be rather verbose, especially with repeated properties, we provide syntactic sugar for that pattern
+    via `ng-bindon-` attributes which expand to match the example above.
+    ```html
+      <hero-detail ng-bindon-hero="$ctrl.hero"></hero-detail>
+    ```
 
 - **Components have a well-defined lifecycle**
 Each component can implement "lifecycle hooks". These are methods that will be called at certain points in the life

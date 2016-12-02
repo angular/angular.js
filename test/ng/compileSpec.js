@@ -11441,6 +11441,36 @@ describe('$compile', function() {
     });
   });
 
+  describe('ngBindon attributes', function() {
+    it('should expand `ng-bindon-foo` to both an input and an output expression', function() {
+      module(function($compileProvider) {
+        $compileProvider.component('test', {
+          bindings: {
+            foo: '<',
+            fooChange: '&'
+          }
+        });
+      });
+
+      inject(function($compile, $rootScope) {
+        $rootScope.bar = 0;
+
+        element = $compile('<test ng-bindon-foo="bar"></test>')($rootScope);
+        var testController = element.controller('test');
+        $rootScope.$digest();
+
+        expect(testController.foo).toBe(0);
+        $rootScope.$apply('bar=1');
+        expect(testController.foo).toBe(1);
+        $rootScope.$apply(function() {
+          testController.fooChange({ $event: 2 });
+        });
+
+        expect($rootScope.bar).toBe(2);
+        expect(testController.foo).toBe(2);
+      });
+    });
+  });
 
   describe('when an attribute has an underscore-separated name', function() {
 
