@@ -76,9 +76,11 @@ var SelectController =
     }
   };
 
+  var scopeDestroyed = false;
   $scope.$on('$destroy', function() {
     // disable unknown option so that we don't do work when the whole select is being destroyed
     self.renderUnknownOption = noop;
+    scopeDestroyed = true;
   });
 
   // Read the value of the select control, the implementation of this changes depending
@@ -182,6 +184,8 @@ var SelectController =
     updateScheduled = true;
 
     $scope.$$postDigest(function() {
+      if (scopeDestroyed) return;
+
       updateScheduled = false;
       self.ngModelCtrl.$setViewValue(self.readValue());
       if (renderAfter) self.ngModelCtrl.$render();
