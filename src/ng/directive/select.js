@@ -182,6 +182,8 @@ var SelectController =
     updateScheduled = true;
 
     $scope.$$postDigest(function() {
+      if ($scope.$$destroyed) return;
+
       updateScheduled = false;
       self.ngModelCtrl.$setViewValue(self.readValue());
       if (renderAfter) self.ngModelCtrl.$render();

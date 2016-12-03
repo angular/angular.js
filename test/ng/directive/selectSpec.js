@@ -7,7 +7,7 @@ describe('select', function() {
     formElement = jqLite('<form name="form">' + html + '</form>');
     element = formElement.find('select');
     $compile(formElement)(scope);
-    scope.$apply();
+    scope.$digest();
   }
 
   function compileRepeatedOptions() {
@@ -767,6 +767,20 @@ describe('select', function() {
         expect(element).toEqualSelect([unknownValue()], '1', '2', '3');
       }
     );
+
+
+    it('should not throw when removing the element and all its children', function() {
+      var template =
+        '<select ng-model="mySelect" ng-if="visible">' +
+          '<option value="">--- Select ---</option>' +
+        '</select>';
+      scope.visible = true;
+
+      compile(template);
+
+      // It should not throw when removing the element
+      scope.$apply('visible = false');
+    });
   });
 
 
