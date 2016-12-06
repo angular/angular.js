@@ -415,9 +415,9 @@ it back on, which should help during the migration. Pre-assigning bindings has b
 will be removed in a future version, so we strongly recommend migrating your applications to not
 rely on it as soon as possible.
 
-Initialization logic that relies on relies on bindings being present should be put in the
-controller's `$onInit()` method, which is guarranteed to always be called _after_ the bindings have
-been assigned.
+Initialization logic that relies on bindings being present should be put in the controller's
+`$onInit()` method, which is guarranteed to always be called _after_ the bindings have been
+assigned.
 
 Before:
 
