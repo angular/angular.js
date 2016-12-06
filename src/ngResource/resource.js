@@ -642,7 +642,7 @@ angular.module('ngResource', ['ng']).
         };
 
         forEach(actions, function(action, name) {
-          var hasBody = /^(POST|PUT|PATCH)$/i.test(action.method) || action.hasBody === true;
+          var hasBody = action.hasBody === true || (action.hasBody !== false && /^(POST|PUT|PATCH)$/i.test(action.method));
           var numericTimeout = action.timeout;
           var cancellable = isDefined(action.cancellable) ?
               action.cancellable : route.defaults.cancellable;
