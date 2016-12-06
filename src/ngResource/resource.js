@@ -193,8 +193,8 @@ function shallowClearAndCopy(src, dst) {
  *   - **`interceptor`** - `{Object=}` - The interceptor object has two optional methods -
  *     `response` and `responseError`. Both `response` and `responseError` interceptors get called
  *     with `http response` object. See {@link ng.$http $http interceptors}.
- *   - **`hasBody`** - `{boolean}` - allows to specify if a request body is to be used (not
- *     required for POST,PUT,PATCH and can't disable body inclusion on this methods).
+ *   - **`hasBody`** - `{boolean}` - allows to specify if a request body should be included or not.
+ *     If not specified POST,PUT and PATCH will have a request body.
  *
  * @param {Object} options Hash with custom settings that should extend the
  *   default `$resourceProvider` behavior.  The supported options are:
