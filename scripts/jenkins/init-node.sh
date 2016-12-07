@@ -9,9 +9,10 @@ nvm install
 # clean out and install yarn
 rm -rf ~/.yarn
 curl -o- -L https://raw.githubusercontent.com/yarnpkg/yarn/2a0afc73210c7a82082585283e518eeb88ca19ae/scripts/install-latest.sh | bash -s -- --version 0.17.9
+export PATH="$HOME/.yarn/bin:$PATH"
 
-# Ensure we have the correct global grunt installed
-yarn global add grunt-cli@1.2.0 --exact
+echo testing grunt version
+yarn run grunt -- --version
 
 # Ensure that we have the local dependencies installed
 yarn install

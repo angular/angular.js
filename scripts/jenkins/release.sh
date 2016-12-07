@@ -38,7 +38,7 @@ function build {
   source ./init-node.sh
   cd ../..
 
-  grunt  ci-checks package --no-color
+  yarn run grunt -- ci-checks package --no-color
 
   cd $SCRIPT_DIR
 }
