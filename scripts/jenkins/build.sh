@@ -21,21 +21,21 @@ rm -f angular.js.size
 
 
 # BUILD #
-grunt ci-checks package --no-color
+yarn run grunt -- ci-checks package --no-color
 
 mkdir -p test_out
 
 # UNIT TESTS #
-grunt test:unit --browsers="$BROWSERS" --reporters=dots,junit --no-colors --no-color
+yarn run grunt -- test:unit --browsers="$BROWSERS" --reporters=dots,junit --no-colors --no-color
 
 # END TO END TESTS #
-grunt test:ci-protractor
+yarn run grunt -- test:ci-protractor
 
 # DOCS APP TESTS #
-grunt test:docs --browsers="$BROWSERS" --reporters=dots,junit --no-colors --no-color
+yarn run grunt -- test:docs --browsers="$BROWSERS" --reporters=dots,junit --no-colors --no-color
 
 # Promises/A+ TESTS #
-grunt test:promises-aplus --no-color
+yarn run grunt -- test:promises-aplus --no-color
 
 
 # CHECK SIZE #
