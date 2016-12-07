@@ -144,6 +144,9 @@ describe('$log', function() {
   describe('$log.error', function() {
     var e, $log, errorArgs;
 
+    function TestErrorPrototype() {}
+    TestErrorPrototype.prototype = Error.prototype;
+
     function TestError() {
       Error.prototype.constructor.apply(this, arguments);
       this.message = undefined;
@@ -151,7 +154,7 @@ describe('$log', function() {
       this.line = undefined;
       this.stack = undefined;
     }
-    TestError.prototype = Object.create(Error.prototype);
+    TestError.prototype = new TestErrorPrototype();
     TestError.prototype.constructor = TestError;
 
     beforeEach(function() {
