@@ -193,7 +193,7 @@ describe('ngAnimate $$animateJs', function() {
     });
   });
 
-  it('should always run the provided animation in atleast one RAF frame if defined', function() {
+  it('should always run the provided animation in at least one RAF frame if defined', function() {
     var before, after, endCalled;
     module(function($animateProvider) {
       $animateProvider.register('.the-end', function() {
@@ -322,6 +322,23 @@ describe('ngAnimate $$animateJs', function() {
       $rootScope.$digest();
       expect(done).toBe(false);
       expect(cancelled).toBe(true);
+    });
+  });
+
+  it('should apply `tempClasses` when starting the animation', function() {
+    module(function($animateProvider) {
+      $animateProvider.register('.foo-element', function() {
+        return {foo: noop};
+      });
+    });
+    inject(function($$animateJs) {
+      var element = jqLite('<div class="foo-element"></div>');
+      var animator = $$animateJs(element, 'foo', 'foo-element', {tempClasses: 'temp'});
+
+      expect(element).not.toHaveClass('temp');
+
+      animator.start();
+      expect(element).toHaveClass('temp');
     });
   });
 

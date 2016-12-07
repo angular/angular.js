@@ -1641,6 +1641,26 @@ describe('ngAnimate $animateCss', function() {
       expect(element).toHaveClass('super-active');
     }));
 
+    it('should apply `tempClasses` when starting the animation',
+      inject(function($animateCss, $document, $rootElement) {
+
+      var element = angular.element('<div></div>');
+      $rootElement.append(element);
+      $document.find('body').append($rootElement);
+
+      $animateCss(element, {
+        event: 'super',
+        duration: 1000,
+        to: fakeStyle,
+        tempClasses: 'foo'
+      }).start();
+
+      expect(element).not.toHaveClass('foo');
+
+      triggerAnimationStartFrame();
+      expect(element).toHaveClass('foo');
+    }));
+
     describe('structural animations', function() {
       they('should decorate the element with the ng-$prop CSS class',
         ['enter', 'leave', 'move'], function(event) {

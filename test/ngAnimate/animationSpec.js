@@ -863,9 +863,10 @@ describe('$$animation', function() {
         jqLite($document[0].body).append($rootElement);
         $rootElement.append(parent);
 
-        mockedDriverFn = function(element, method, options, domOperation) {
+        mockedDriverFn = function(details) {
           return {
             start: function() {
+              details.element.addClass(details.options.tempClasses);
               runner = new $$AnimateRunner();
               return runner;
             }
@@ -874,7 +875,7 @@ describe('$$animation', function() {
       };
     }));
 
-    it('should temporarily assign the provided CSS class for the duration of the animation',
+    it('should temporarily assign the provided CSS classes for the duration of the animation',
       inject(function($rootScope, $$animation) {
 
       parent.append(element);
@@ -888,6 +889,26 @@ describe('$$animation', function() {
       expect(element).toHaveClass('fudge');
 
       runner.end();
+      $rootScope.$digest();
+
+      expect(element).not.toHaveClass('temporary');
+      expect(element).not.toHaveClass('fudge');
+    }));
+
+    it('should remove the temporary CSS classes if the animation gets cancelled',
+      inject(function($$animation, $rootScope) {
+
+      parent.append(element);
+
+      $$animation(element, 'enter', {
+        tempClasses: 'temporary fudge'
+      });
+      $rootScope.$digest();
+
+      expect(element).toHaveClass('temporary');
+      expect(element).toHaveClass('fudge');
+
+      runner.cancel();
       $rootScope.$digest();
 
       expect(element).not.toHaveClass('temporary');
@@ -910,10 +931,8 @@ describe('$$animation', function() {
     }));
 
 
-    it('should apply the `ng-animate` and temporary CSS classes before the driver is invoked', function() {
+    it('should apply the `ng-animate` CSS class before the driver is invoked', function() {
       var capturedElementClasses;
-
-      parent.append(element);
 
       module(function($provide) {
         $provide.factory('mockedTestDriver', function() {
@@ -932,7 +951,29 @@ describe('$$animation', function() {
         $rootScope.$digest();
 
         expect(capturedElementClasses).toMatch(/\bng-animate\b/);
-        expect(capturedElementClasses).toMatch(/\btemp-class-name\b/);
+      });
+    });
+
+    it('should not apply `tempClasses` before the driver is invoked', function() {
+      var capturedElementClasses;
+
+      module(function($provide) {
+        $provide.factory('mockedTestDriver', function($$jqLite) {
+          return function(details) {
+            capturedElementClasses = details.element.attr('class');
+          };
+        });
+      });
+
+      inject(function($$animation, $rootScope) {
+        parent.append(element);
+
+        $$animation(element, 'enter', {
+          tempClasses: 'temp-class-name'
+        });
+        $rootScope.$digest();
+
+        expect(capturedElementClasses).not.toMatch(/\btemp-class-name\b/);
       });
     });
 

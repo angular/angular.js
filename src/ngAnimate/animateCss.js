@@ -835,6 +835,11 @@ var $AnimateCssProvider = ['$animateProvider', /** @this */ function($animatePro
           return;
         }
 
+        if (options.tempClasses) {
+          $$jqLite.addClass(element, options.tempClasses);
+          options.tempClasses = null;
+        }
+
         // even though we only pause keyframe animations here the pause flag
         // will still happen when transitions are used. Only the transition will
         // not be paused since that is not possible. If the animation ends when
