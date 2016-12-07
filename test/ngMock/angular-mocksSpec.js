@@ -936,9 +936,10 @@ describe('ngMock', function() {
         })();
 
         function testCaller() {
-          return inject(function() {
-            throw new Error();
-          });
+          // Assigning to a local variable first, prevents Safari 10+ from inlining
+          // the function call and having it appear as anonymous in the stack trace.
+          var fn = inject(function() { throw new Error(); });
+          return fn;
         }
         var throwErrorFromInjectCallback = testCaller();
 
