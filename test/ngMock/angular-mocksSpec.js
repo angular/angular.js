@@ -920,50 +920,121 @@ describe('ngMock', function() {
         }).toThrow('test message');
       }));
 
-      describe('error stack trace when called outside of spec context', function() {
-        // - Chrome, Firefox, Edge, Opera give us the stack trace as soon as an Error is created
-        // - IE10+, PhantomJS give us the stack trace only once the error is thrown
-        // - IE9 does not provide stack traces
-        var stackTraceSupported = (function() {
-          var error = new Error();
-          if (!error.stack) {
-            try {
-              throw error;
-            } catch (e) {}
-          }
-
-          return !!error.stack;
-        })();
-
-        function testCaller() {
-          return inject(function() {
-            throw new Error();
-          });
+      // - Chrome, Firefox, Edge, Opera give us the stack trace as soon as an Error is created
+      // - IE10+, PhantomJS give us the stack trace only once the error is thrown
+      // - IE9 does not provide stack traces
+      var stackTraceSupported = (function() {
+        var error = new Error();
+        if (!error.stack) {
+          try {
+            throw error;
+          } catch (e) {}
         }
-        var throwErrorFromInjectCallback = testCaller();
 
-        if (stackTraceSupported) {
-          describe('on browsers supporting stack traces', function() {
-            it('should update thrown Error stack trace with inject call location', function() {
+        return !!error.stack;
+      })();
+
+      // function returned by inject(), when called outside of test spec
+      // context, may have stored state so do not reuse the result from this
+      // call in multiple test specs
+      function testInjectCaller(injectionFunctionCount) {
+        var shouldThrow = [];
+        // using an extra named function wrapper around the Error throw avoids
+        // stack trace constructed by some browsers (e.g. FireFox) from
+        // containing the name of the external caller function
+        function injectionFunction(index) {
+          return function() {
+            if (shouldThrow[index])
+              throw new Error();
+          };
+        }
+        var injectionFunctions = [];
+        for (var i = 0; i < (injectionFunctionCount || 1); ++i) {
+          injectionFunctions.push(injectionFunction(i));
+        }
+        var injectingCall = inject.apply(window, injectionFunctions);
+        injectingCall.setThrow = function(index, value) {
+          if (!isDefined(value)) {
+            value = index;
+            index = 0;
+          }
+          shouldThrow[index] = value;
+        };
+        return injectingCall;
+      }
+
+      if (!stackTraceSupported) {
+        describe('on browsers not supporting stack traces', function() {
+          describe('when called outside of test spec context', function() {
+            var injectingCall = testInjectCaller();
+
+            it('should not add stack trace information to thrown injection Error', function() {
+              injectingCall.setThrow(true);
               try {
-                throwErrorFromInjectCallback();
-              } catch (e) {
-                expect(e.stack).toMatch('testCaller');
-              }
-            });
-          });
-        } else {
-          describe('on browsers not supporting stack traces', function() {
-            it('should not add stack trace information to thrown Error', function() {
-              try {
-                throwErrorFromInjectCallback();
+                injectingCall();
               } catch (e) {
                 expect(e.stack).toBeUndefined();
               }
             });
           });
-        }
-      });
+        });
+      }
+
+      if (stackTraceSupported) {
+        describe('on browsers supporting stack traces', function() {
+          describe('when called outside of test spec context and initial inject callback invocation fails', function() {
+            var throwingInjectingCall = testInjectCaller();
+            throwingInjectingCall.setThrow(true);
+
+            // regression test for issue #13591 when run on IE10+ or PhantomJS
+            it('should update thrown Error stack trace with inject call location', function() {
+              try {
+                throwingInjectingCall();
+              } catch (e) {
+                expect(e.stack).toMatch('testInjectCaller');
+              }
+            });
+          });
+
+          describe('when called outside of test spec context', function() {
+            var injectingCall = testInjectCaller();
+
+            // regression test for issue #13594
+            // regression test for issue #13591 when run on IE10+ or PhantomJS
+            it('should update thrown Error stack when repeated inject callback invocations fail', function() {
+              injectingCall.setThrow(false);
+              injectingCall();  // initial call that will not throw
+              injectingCall.setThrow(true);
+              try {
+                injectingCall();  // non-initial call, but first failing one
+              } catch (e) {
+                expect(e.stack).toMatch('testInjectCaller');
+              }
+              try {
+                injectingCall();  // repeated failing call
+              } catch (e) {
+                expect(e.stack).toMatch('testInjectCaller');
+              }
+            });
+          });
+
+          describe('when called outside of test spec context with multiple injected functions', function() {
+            var injectingCall = testInjectCaller(2);
+
+            // regression test for issue #13594
+            // regression test for issue #13591 when run on IE10+ or PhantomJS
+            it('should update thrown Error stack when second injected function fails', function() {
+              injectingCall.setThrow(0, false);
+              injectingCall.setThrow(1, true);
+              try {
+                injectingCall();
+              } catch (e) {
+                expect(e.stack).toMatch('testInjectCaller');
+              }
+            });
+          });
+        });
+      }
     });
   });
 
