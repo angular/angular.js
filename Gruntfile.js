@@ -174,6 +174,10 @@ module.exports = function(grunt) {
           minify: true
         }
       },
+      "angular-no-css": {
+        dest: 'build/angular-no-css.js',
+        src: util.wrap([files['angularSrc']], 'angular')
+      },
       loader: {
         dest: 'build/angular-loader.js',
         src: util.wrap(files['angularLoader'], 'loader')
@@ -216,6 +220,7 @@ module.exports = function(grunt) {
 
     min: {
       angular: 'build/angular.js',
+      "angular-no-css": 'build/angular-no-css.js',
       animate: 'build/angular-animate.js',
       cookies: 'build/angular-cookies.js',
       loader: 'build/angular-loader.js',
