@@ -1129,9 +1129,9 @@ function parseKeyValue(/**string*/keyValue) {
   forEach((keyValue || "").split('&'), function(keyValue) {
     if ( keyValue ) {
       key_value = keyValue.replace(/\+/g,'%20').split('=');
-      key = tryDecodeURIComponent(key_value[0]);
+      key = tryDecodeURIComponent(key_value.shift());
       if ( isDefined(key) ) {
-        var val = isDefined(key_value[1]) ? tryDecodeURIComponent(key_value[1]) : true;
+        var val = key_value.length > 0 ? tryDecodeURIComponent(key_value.join('=')) : true;
         if (!hasOwnProperty.call(obj, key)) {
           obj[key] = val;
         } else if(isArray(obj[key])) {
