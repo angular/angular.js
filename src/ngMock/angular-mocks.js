@@ -2502,7 +2502,8 @@ angular.module('ngMockE2E', ['ng']).config(['$provide', function($provide) {
  * @param {string} method HTTP method.
  * @param {string|RegExp|function(string)} url HTTP url or function that receives a url
  *   and returns true if the url matches the current definition.
- * @param {(string|RegExp)=} data HTTP request body.
+ * @param {(string|RegExp|function(string))=} data HTTP request body or function that receives
+ *   data string and returns true if the data is as expected.
  * @param {(Object|function(Object))=} headers HTTP headers or function that receives http header
  *   object and returns true if the headers match the current definition.
  * @param {(Array)=} keys Array of keys to assign to regex matches in request url described on
@@ -2585,7 +2586,8 @@ angular.module('ngMockE2E', ['ng']).config(['$provide', function($provide) {
  *
  * @param {string|RegExp|function(string)} url HTTP url or function that receives a url
  *   and returns true if the url matches the current definition.
- * @param {(string|RegExp)=} data HTTP request body.
+ * @param {(string|RegExp|function(string))=} data HTTP request body or function that receives
+ *   data string and returns true if the data is as expected.
  * @param {(Object|function(Object))=} headers HTTP headers.
  * @param {(Array)=} keys Array of keys to assign to regex matches in request url described on
  *   {@link ngMock.$httpBackend $httpBackend mock}.
@@ -2603,7 +2605,8 @@ angular.module('ngMockE2E', ['ng']).config(['$provide', function($provide) {
  *
  * @param {string|RegExp|function(string)} url HTTP url or function that receives a url
  *   and returns true if the url matches the current definition.
- * @param {(string|RegExp)=} data HTTP request body.
+ * @param {(string|RegExp|function(string))=} data HTTP request body or function that receives
+ *   data string and returns true if the data is as expected.
  * @param {(Object|function(Object))=} headers HTTP headers.
  * @param {(Array)=} keys Array of keys to assign to regex matches in request url described on
  *   {@link ngMock.$httpBackend $httpBackend mock}.
@@ -2621,7 +2624,8 @@ angular.module('ngMockE2E', ['ng']).config(['$provide', function($provide) {
  *
  * @param {string|RegExp|function(string)} url HTTP url or function that receives a url
  *   and returns true if the url matches the current definition.
- * @param {(string|RegExp)=} data HTTP request body.
+ * @param {(string|RegExp|function(string))=} data HTTP request body or function that receives
+ *   data string and returns true if the data is as expected.
  * @param {(Object|function(Object))=} headers HTTP headers.
  * @param {(Array)=} keys Array of keys to assign to regex matches in request url described on
  *   {@link ngMock.$httpBackend $httpBackend mock}.
