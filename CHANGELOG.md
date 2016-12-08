@@ -1,5 +1,5 @@
 <a name="1.6.0"></a>
-# 1.6.0 XXXXX-YYYYY (2016-12-08)
+# 1.6.0 rainbow-tsunami (2016-12-08)
 
 **Here are the full changes for the release of 1.6.0 that are not already released in the 1.5.x branch,
 consolidating all the changes shown in the previous 1.6.0 release candidates.**
