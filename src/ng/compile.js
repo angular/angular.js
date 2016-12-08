@@ -997,11 +997,11 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
     function createBoundTranscludeFn(scope, transcludeFn, previousBoundTranscludeFn) {
 
-      var boundTranscludeFn = function(transcludedScope, cloneFn, controllers) {
+      var boundTranscludeFn = function(transcludedScope, cloneFn, controllers, containingScope) {
         var scopeCreated = false;
 
         if (!transcludedScope) {
-          transcludedScope = scope.$new();
+          transcludedScope = scope.$new(false, containingScope);
           transcludedScope.$$transcluded = true;
           scopeCreated = true;
         }
@@ -1630,7 +1630,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             transcludeControllers = elementControllers;
           }
 
-          return boundTranscludeFn(scope, cloneAttachFn, transcludeControllers);
+          return boundTranscludeFn(scope, cloneAttachFn, transcludeControllers, scopeToChild);
         }
       }
     }
@@ -1792,6 +1792,8 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                 boundTranscludeFn = linkQueue.shift(),
                 linkNode = $compileNode[0];
 
+            if (scope.$$destroyed) continue;
+
             if (beforeTemplateLinkNode !== beforeTemplateCompileNode) {
               var oldClasses = beforeTemplateLinkNode.className;
 
@@ -1822,6 +1824,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
       return function delayedNodeLinkFn(ignoreChildLinkFn, scope, node, rootElement, boundTranscludeFn) {
         var childBoundTranscludeFn = boundTranscludeFn;
+        if (scope.$$destroyed) return;
         if (linkQueue) {
           linkQueue.push(scope);
           linkQueue.push(node);
