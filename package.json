@@ -53,7 +53,7 @@
     "gulp-uglify": "^1.0.1",
     "gulp-util": "^3.0.1",
     "jasmine-node": "^2.0.0",
-    "jasmine-reporters": "~1.0.1",
+    "jasmine-reporters": "^2.2.0",
     "jshint-stylish": "~1.0.0",
     "karma": "^0.13.19",
     "karma-browserstack-launcher": "^0.1.8",

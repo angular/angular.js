@@ -5,7 +5,7 @@ exports.config = {
 
   baseUrl: 'http://localhost:8000/',
 
-  framework: 'jasmine',
+  framework: 'jasmine2',
 
   capabilities: {
     // Fix element scrolling behavior in Firefox for fixed header elements (like angularjs.org has)
