@@ -11,8 +11,8 @@ rm -rf ~/.yarn
 curl -o- -L https://raw.githubusercontent.com/yarnpkg/yarn/2a0afc73210c7a82082585283e518eeb88ca19ae/scripts/install-latest.sh | bash -s -- --version 0.17.9
 export PATH="$HOME/.yarn/bin:$PATH"
 
-echo testing grunt version
-yarn run grunt -- --version
-
 # Ensure that we have the local dependencies installed
 yarn install
+
+echo testing grunt version
+yarn run grunt -- --version
