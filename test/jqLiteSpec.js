@@ -2182,6 +2182,12 @@ describe('jqLite', function() {
       span.after('abc');
       expect(root.html().toLowerCase()).toEqual('<span></span>abc');
     });
+
+
+    it('should not throw when the element has no parent', function() {
+      var span = jqLite('<span></span>');
+      expect(function() { span.after('abc'); }).not.toThrow();
+    });
   });
 
 
