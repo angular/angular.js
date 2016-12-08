@@ -2827,6 +2827,7 @@ describe('ngOptions', function() {
       expect(scope.selected).toEqual(['0']);
     });
 
+
     it('should deselect all options when model is emptied', function() {
       createMultiSelect();
       scope.$apply(function() {
@@ -2840,6 +2841,86 @@ describe('ngOptions', function() {
       });
 
       expect(element.find('option')[0].selected).toEqual(false);
+    });
+
+
+    it('should not re-set the `selected` property if it already has the correct value', function() {
+      scope.values = [{name: 'A'}, {name: 'B'}];
+      createMultiSelect();
+
+      var options = element.find('option');
+      var optionsSetSelected = [];
+      var _selected = [];
+
+      // Set up spies
+      forEach(options, function(option, i) {
+        optionsSetSelected[i] = jasmine.createSpy('optionSetSelected' + i);
+        _selected[i] = option.selected;
+        Object.defineProperty(option, 'selected', {
+          get: function() { return _selected[i]; },
+          set: optionsSetSelected[i].and.callFake(function(value) { _selected[i] = value; })
+        });
+      });
+
+      // Select `optionA`
+      scope.$apply('selected = [values[0]]');
+
+      expect(optionsSetSelected[0]).toHaveBeenCalledOnceWith(true);
+      expect(optionsSetSelected[1]).not.toHaveBeenCalled();
+      expect(options[0].selected).toBe(true);
+      expect(options[1].selected).toBe(false);
+      optionsSetSelected[0].calls.reset();
+      optionsSetSelected[1].calls.reset();
+
+      // Select `optionB` (`optionA` remains selected)
+      scope.$apply('selected.push(values[1])');
+
+      expect(optionsSetSelected[0]).not.toHaveBeenCalled();
+      expect(optionsSetSelected[1]).toHaveBeenCalledOnceWith(true);
+      expect(options[0].selected).toBe(true);
+      expect(options[1].selected).toBe(true);
+      optionsSetSelected[0].calls.reset();
+      optionsSetSelected[1].calls.reset();
+
+      // Unselect `optionA` (`optionB` remains selected)
+      scope.$apply('selected.shift()');
+
+      expect(optionsSetSelected[0]).toHaveBeenCalledOnceWith(false);
+      expect(optionsSetSelected[1]).not.toHaveBeenCalled();
+      expect(options[0].selected).toBe(false);
+      expect(options[1].selected).toBe(true);
+      optionsSetSelected[0].calls.reset();
+      optionsSetSelected[1].calls.reset();
+
+      // Reselect `optionA` (`optionB` remains selected)
+      scope.$apply('selected.push(values[0])');
+
+      expect(optionsSetSelected[0]).toHaveBeenCalledOnceWith(true);
+      expect(optionsSetSelected[1]).not.toHaveBeenCalled();
+      expect(options[0].selected).toBe(true);
+      expect(options[1].selected).toBe(true);
+      optionsSetSelected[0].calls.reset();
+      optionsSetSelected[1].calls.reset();
+
+      // Unselect `optionB` (`optionA` remains selected)
+      scope.$apply('selected.shift()');
+
+      expect(optionsSetSelected[0]).not.toHaveBeenCalled();
+      expect(optionsSetSelected[1]).toHaveBeenCalledOnceWith(false);
+      expect(options[0].selected).toBe(true);
+      expect(options[1].selected).toBe(false);
+      optionsSetSelected[0].calls.reset();
+      optionsSetSelected[1].calls.reset();
+
+      // Unselect `optionA`
+      scope.$apply('selected.length = 0');
+
+      expect(optionsSetSelected[0]).toHaveBeenCalledOnceWith(false);
+      expect(optionsSetSelected[1]).not.toHaveBeenCalled();
+      expect(options[0].selected).toBe(false);
+      expect(options[1].selected).toBe(false);
+      optionsSetSelected[0].calls.reset();
+      optionsSetSelected[1].calls.reset();
     });
   });
 
