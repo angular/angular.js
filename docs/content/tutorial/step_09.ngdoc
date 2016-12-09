@@ -194,7 +194,7 @@ angular.module('phonecatApp', [
 ```
 
 Now, in addition to the core services and directives, we can also configure the `$route` service
-(using it's provider) for our application. In order to be able to quickly locate the configuration
+(using its provider) for our application. In order to be able to quickly locate the configuration
 code, we put it into a separate file and used the `.config` suffix.
 
 <br />
