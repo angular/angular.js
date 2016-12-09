@@ -88,22 +88,11 @@ NgMapShim.prototype = {
   }
 };
 
-// Support: Mobile Safari < 9
-function isNotSafari8BuggyImplementation(Map) {
-  // Although we don't need the tested feature (`.keys().next()`), its absence indicates a buggy
-  // implementation, such as the one of [Mobile] Safari 8, which sometimes leads to failures
-  // (e.g. failing to get a value associated with a jqLite collection).
-  var m = new Map();
-  return isFunction(m.keys) && isFunction(m.keys().next);
-}
-
-var NgMap = isFunction(window.Map) && toString.call(window.Map.prototype) === '[object Map]' &&
-            isNotSafari8BuggyImplementation(window.Map) ?
-                window.Map :
-                NgMapShim;
-
 var $$MapProvider = [/** @this */function() {
   this.$get = [function() {
-    return NgMap;
+    // For now, always use `NgMapShim`, even if `window.Map` is available. Some native
+    // implementations are still buggy (often in subtle ways) and can cause hard-to-debug failures.
+    // When native `Map` implementations get more stable, we can reconsider.
+    return NgMapShim;
   }];
 }];
