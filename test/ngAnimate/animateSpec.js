@@ -1407,7 +1407,7 @@ describe('animations', function() {
         expect(capturedAnimation[1]).toBe('leave');
 
         // $$hashKey causes comparison issues
-        expect(element.parent()[0]).toEqual(parent[0]);
+        expect(element.parent()[0]).toBe(parent[0]);
 
         options = capturedAnimation[2];
         expect(options.addClass).toEqual('pink');
