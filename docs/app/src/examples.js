@@ -159,10 +159,11 @@ angular.module('examples', [])
 
       };
 
-      // Initialize the example data, so it's ready when clicking the open button.
-      // Otherwise pop-up blockers will prevent a new window from opening
-      ctrl.prepareExampleData(ctrl.example.path);
-
+      ctrl.$onInit = function() {
+        // Initialize the example data, so it's ready when clicking the open button.
+        // Otherwise pop-up blockers will prevent a new window from opening
+        ctrl.prepareExampleData(ctrl.example.path);
+      };
     }]
   };
 }])
