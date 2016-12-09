@@ -74,6 +74,7 @@ function $RootScopeProvider() {
   var $rootScopeMinErr = minErr('$rootScope');
   var lastDirtyWatch = null;
   var applyAsyncId = null;
+  var watchId = 0;
 
   this.digestTtl = function(value) {
     if (arguments.length) {
@@ -81,6 +82,10 @@ function $RootScopeProvider() {
     }
     return TTL;
   };
+
+  function nextWatchId() {
+    return ++watchId;
+  }
 
   function createChildScopeClass(parent) {
     function ChildScope() {
@@ -391,6 +396,8 @@ function $RootScopeProvider() {
        * @param {boolean=} [objectEquality=false] Compare for object equality using {@link angular.equals} instead of
        *     comparing for reference equality.
        * @returns {function()} Returns a deregistration function for this listener.
+       *          The property `restore` of the returning function is a function that allows restoring the
+       *          watcher once it was deregistered.
        */
       $watch: function(watchExp, listener, objectEquality, prettyPrintExpression) {
         var get = $parse(watchExp);
@@ -405,7 +412,8 @@ function $RootScopeProvider() {
               last: initWatchVal,
               get: get,
               exp: prettyPrintExpression || watchExp,
-              eq: !!objectEquality
+              eq: !!objectEquality,
+              id: nextWatchId()
             };
 
         lastDirtyWatch = null;
@@ -422,12 +430,23 @@ function $RootScopeProvider() {
         array.unshift(watcher);
         incrementWatchersCount(this, 1);
 
-        return function deregisterWatch() {
-          if (arrayRemove(array, watcher) >= 0) {
+        return extend(function deregisterWatch() {
+          var index = binarySearch(array, watcher.id);
+          if (index >= 0) {
+            array.splice(index, 1);
+            lastDirtyWatch = null;
             incrementWatchersCount(scope, -1);
           }
-          lastDirtyWatch = null;
-        };
+        }, {
+          restore: function() {
+            var index = binarySearch(array, watcher.id);
+            if (index < 0) {
+              array.splice(-index - 1, 0, watcher);
+              lastDirtyWatch = null;
+              incrementWatchersCount(scope, 1);
+            }
+          }
+        });
       },
 
       /**
@@ -469,9 +488,13 @@ function $RootScopeProvider() {
           self.$evalAsync(function() {
             if (shouldCall) listener(newValues, newValues, self);
           });
-          return function deregisterWatchGroup() {
+          return extend(function deregisterWatchGroup() {
             shouldCall = false;
-          };
+          }, {
+            restore: function() {
+              shouldCall = true;
+            }
+          });
         }
 
         if (watchExpressions.length === 1) {
@@ -506,11 +529,17 @@ function $RootScopeProvider() {
           }
         }
 
-        return function deregisterWatchGroup() {
-          while (deregisterFns.length) {
-            deregisterFns.shift()();
+        return extend(function deregisterWatchGroup() {
+          forEach(deregisterFns, function(deregisterFn) {
+            deregisterFn();
+          });
+        }, {
+          restore: function() {
+            forEach(deregisterFns, function(deregisterFn) {
+              deregisterFn.restore();
+            });
           }
-        };
+        });
       },
 
 
@@ -1385,5 +1414,24 @@ function $RootScopeProvider() {
         });
       }
     }
+
+    // Array is ordered in descending order by id
+    function binarySearch(array, id) {
+      var low = 0;
+      var mid;
+      var high = array.length - 1;
+      var value;
+      while (low <= high) {
+        // jshint bitwise: false
+        mid = (low + high) >>> 1;
+        // jshint bitwise: true
+        value = array[mid].id;
+        if (value > id) low = mid + 1;
+        else if (value < id) high = mid - 1;
+        else return mid;
+      }
+      return -(low + 1);
+    }
+
   }];
 }
