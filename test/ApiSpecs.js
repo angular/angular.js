@@ -68,55 +68,42 @@ describe('api', function() {
     });
   });
 
-  describe('HashMap', function() {
+  describe('NgMapShim', function() {
     it('should do basic crud', function() {
-      var map = new HashMap();
-      var key = {};
-      var value1 = {};
-      var value2 = {};
-      map.put(key, value1);
-      map.put(key, value2);
-      expect(map.get(key)).toBe(value2);
-      expect(map.get({})).toBeUndefined();
-      expect(map.remove(key)).toBe(value2);
-      expect(map.get(key)).toBeUndefined();
+      var map = new NgMapShim();
+      var keys = [{}, {}, {}];
+      var values = [{}, {}, {}];
+
+      map.set(keys[0], values[1]);
+      map.set(keys[0], values[0]);
+      expect(map.get(keys[0])).toBe(values[0]);
+      expect(map.get(keys[1])).toBeUndefined();
+
+      map.set(keys[1], values[1]);
+      map.set(keys[2], values[2]);
+      expect(map.delete(keys[0])).toBe(true);
+      expect(map.delete(keys[0])).toBe(false);
+
+      expect(map.get(keys[0])).toBeUndefined();
+      expect(map.get(keys[1])).toBe(values[1]);
+      expect(map.get(keys[2])).toBe(values[2]);
     });
 
-    it('should init from an array', function() {
-      var map = new HashMap(['a','b']);
-      expect(map.get('a')).toBe(0);
-      expect(map.get('b')).toBe(1);
-      expect(map.get('c')).toBeUndefined();
-    });
+    it('should be able to deal with `NaN` keys', function() {
+      var map = new NgMapShim();
 
-    it('should maintain hashKey for object keys', function() {
-      var map = new HashMap();
-      var key = {};
-      map.get(key);
-      expect(key.$$hashKey).toBeDefined();
-    });
+      map.set('NaN', 'foo');
+      map.set(NaN, 'bar');
+      map.set(NaN, 'baz');
 
-    it('should maintain hashKey for function keys', function() {
-      var map = new HashMap();
-      var key = function() {};
-      map.get(key);
-      expect(key.$$hashKey).toBeDefined();
-    });
+      expect(map.get('NaN')).toBe('foo');
+      expect(map.get(NaN)).toBe('baz');
 
-    it('should share hashKey between HashMap by default', function() {
-      var map1 = new HashMap(), map2 = new HashMap();
-      var key1 = {}, key2 = {};
-      map1.get(key1);
-      map2.get(key2);
-      expect(key1.$$hashKey).not.toEqual(key2.$$hashKey);
-    });
+      expect(map.delete(NaN)).toBe(true);
+      expect(map.get(NaN)).toBeUndefined();
+      expect(map.get('NaN')).toBe('foo');
 
-    it('should maintain hashKey per HashMap if flag is passed', function() {
-      var map1 = new HashMap([], true), map2 = new HashMap([], true);
-      var key1 = {}, key2 = {};
-      map1.get(key1);
-      map2.get(key2);
-      expect(key1.$$hashKey).toEqual(key2.$$hashKey);
+      expect(map.delete(NaN)).toBe(false);
     });
   });
 });

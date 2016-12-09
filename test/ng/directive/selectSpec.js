@@ -1529,8 +1529,8 @@ describe('select', function() {
               'number:1',
               'boolean:true',
               'object:null',
+              'object:3',
               'object:4',
-              'object:5',
               'number:NaN'
             );
 
@@ -1555,7 +1555,7 @@ describe('select', function() {
             browserTrigger(element, 'change');
 
             var arrayVal = ['a'];
-            arrayVal.$$hashKey = 'object:5';
+            arrayVal.$$hashKey = 'object:4';
 
             expect(scope.selected).toEqual([
               'string',
@@ -1563,7 +1563,7 @@ describe('select', function() {
               1,
               true,
               null,
-              {prop: 'value', $$hashKey: 'object:4'},
+              {prop: 'value', $$hashKey: 'object:3'},
               arrayVal,
               NaN
             ]);
@@ -1876,10 +1876,10 @@ describe('select', function() {
           scope.$digest();
 
           optionElements = element.find('option');
-          expect(element.val()).toBe(prop === 'ngValue' ? 'object:4' : 'C');
+          expect(element.val()).toBe(prop === 'ngValue' ? 'object:3' : 'C');
           expect(optionElements.length).toEqual(3);
           expect(optionElements[2].selected).toBe(true);
-          expect(scope.obj.value).toEqual(prop === 'ngValue' ? {name: 'C', $$hashKey: 'object:4'} : 'C');
+          expect(scope.obj.value).toEqual(prop === 'ngValue' ? {name: 'C', $$hashKey: 'object:3'} : 'C');
       });
 
 
@@ -2188,9 +2188,9 @@ describe('select', function() {
             expect(optionElements.length).toEqual(4);
             expect(scope.obj.value).toEqual(prop === 'ngValue' ?
               [
-                {name: 'A', $$hashKey: 'object:4', disabled: true},
-                {name: 'C', $$hashKey: 'object:6'},
-                {name: 'D', $$hashKey: 'object:7', disabled: true}
+                {name: 'A', $$hashKey: 'object:3', disabled: true},
+                {name: 'C', $$hashKey: 'object:5'},
+                {name: 'D', $$hashKey: 'object:6', disabled: true}
               ] :
               ['A', 'C', 'D']
             );
@@ -2242,13 +2242,13 @@ describe('select', function() {
             scope.$digest();
 
             optionElements = element.find('option');
-            expect(element.val()).toEqual(prop === 'ngValue' ? ['object:4', 'object:5'] : ['B', 'C']);
+            expect(element.val()).toEqual(prop === 'ngValue' ? ['object:4', 'object:7'] : ['B', 'C']);
             expect(optionElements.length).toEqual(3);
             expect(optionElements[1].selected).toBe(true);
             expect(optionElements[2].selected).toBe(true);
             expect(scope.obj.value).toEqual(prop === 'ngValue' ?
               [{ name: 'B', $$hashKey: 'object:4'},
-                {name: 'C', $$hashKey: 'object:5'}] :
+                {name: 'C', $$hashKey: 'object:7'}] :
               ['B', 'C']);
         });
 

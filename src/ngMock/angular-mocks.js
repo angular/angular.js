@@ -2985,12 +2985,6 @@ angular.mock.$RootScopeDecorator = ['$delegate', function($delegate) {
       delete fn.$inject;
     });
 
-    angular.forEach(currentSpec.$modules, function(module) {
-      if (module && module.$$hashKey) {
-        module.$$hashKey = undefined;
-      }
-    });
-
     currentSpec.$injector = null;
     currentSpec.$modules = null;
     currentSpec.$providerInjector = null;
