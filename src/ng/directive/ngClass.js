@@ -8,32 +8,33 @@
 
 function classDirective(name, selector) {
   name = 'ngClass' + name;
-  return ['$animate', function($animate) {
+  return ['$animate','$parse', function($animate,$parse) {
     return {
       restrict: 'AC',
       link: function(scope, element, attr) {
-        var oldVal;
+        var oldClasses;
 
-        scope.$watch(attr[name], ngClassWatchAction, true);
+        var classFn = $parse(attr[name], arrayClasses);
+        scope.$watch(classFn, ngClassWatchAction, true);
 
         attr.$observe('class', function(value) {
-          ngClassWatchAction(scope.$eval(attr[name]));
+          ngClassWatchAction(classFn(scope));
         });
 
 
         if (name !== 'ngClass') {
           scope.$watch('$index', function($index, old$index) {
-            /* eslint-disable no-bitwise */
+            // eslint-disable-next-line no-bitwise
             var mod = $index & 1;
+            // eslint-disable-next-line no-bitwise
             if (mod !== (old$index & 1)) {
-              var classes = arrayClasses(scope.$eval(attr[name]));
               if (mod === selector) {
-                addClasses(classes);
+                ngClassWatchAction(classFn(scope));
               } else {
-                removeClasses(classes);
+                removeClasses(oldClasses);
+                oldClasses = [];
               }
             }
-            /* eslint-enable */
           });
         }
 
@@ -80,18 +81,13 @@ function classDirective(name, selector) {
         function ngClassWatchAction(newVal) {
           // eslint-disable-next-line no-bitwise
           if (selector === true || (scope.$index & 1) === selector) {
-            var newClasses = arrayClasses(newVal || []);
-            if (!oldVal) {
+            var newClasses = (newVal || []).join(' ').split(' ');
+            if (!oldClasses) {
               addClasses(newClasses);
-            } else if (!equals(newVal,oldVal)) {
-              var oldClasses = arrayClasses(oldVal);
+            } else if (!arrayEqualClasses(oldClasses, newClasses)) {
               updateClasses(oldClasses, newClasses);
             }
-          }
-          if (isArray(newVal)) {
-            oldVal = newVal.map(function(v) { return shallowCopy(v); });
-          } else {
-            oldVal = shallowCopy(newVal);
+            oldClasses = shallowCopy(newClasses);
           }
         }
       }
@@ -112,24 +108,46 @@ function classDirective(name, selector) {
     }
 
     function arrayClasses(classVal) {
-      var classes = [];
+      var classes;
       if (isArray(classVal)) {
-        forEach(classVal, function(v) {
-          classes = classes.concat(arrayClasses(v));
-        });
-        return classes;
-      } else if (isString(classVal)) {
-        return classVal.split(' ');
+        classes = classVal.map(classNames);
       } else if (isObject(classVal)) {
-        forEach(classVal, function(v, k) {
-          if (v) {
-            classes = classes.concat(k.split(' '));
+        classes = [];
+        forEach(classVal, function(val, key) {
+          if (val) {
+            classes.push(key);
+          } else if (isUndefined(val)) {
+            // This case is for one time binding:
+            // ::expression are evaluated until no undefineds are found
+            // if no undefined is placed inside the array,
+            // it would assume that the value is fully computed and will fail
+            classes.push(val);
           }
         });
-        return classes;
+      } else if (isString(classVal)) {
+        classes = [classVal];
+      } else {
+        classes = classVal;
       }
-      return classVal;
+
+      return classes;
     }
+
+    function classNames(values) {
+      if (isObject(values)) {
+        return Object.keys(values).filter(function(k) {
+          return values[k];
+        }).join(' ');
+      } else {
+        return values;
+      }
+    }
+
+    function arrayEqualClasses(a1, a2) {
+      return a1 === a2 ||
+        isArray(a1) && isArray(a2) && a1.join(' ') === a2.join(' ');
+    }
+
   }];
 }
 
