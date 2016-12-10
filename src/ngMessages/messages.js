@@ -629,8 +629,8 @@ angular.module('ngMessages', [], function initAngularHelpers() {
    * @scope
    *
    * @description
-   * `ngMessageExp` is the same as {@link module:ngMessage `ngMessage`} but instead
-   * of a DOM attribute, accepts an expression to be evaluated for the message key.
+   * `ngMessageExp` is the same as {@link directive:ngMessage `ngMessage`} but instead
+   * of a static value, accepts an expression to be evaluated for the message key.
    *
    * @usage
    * ```html
