@@ -391,8 +391,7 @@ function generateInputCompilerHelper(helper) {
       };
 
       helper.changeInputValueTo = function(value) {
-        helper.inputElm.val(value);
-        browserTrigger(helper.inputElm, $sniffer.hasEvent('input') ? 'input' : 'change');
+        helper.changeGivenInputTo(helper.inputElm, value);
       };
 
       helper.changeGivenInputTo = function(inputElm, value) {
