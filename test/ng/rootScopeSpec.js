@@ -2142,6 +2142,25 @@ describe('Scope', function() {
         $browser.defer.flush(100000);
         expect(log).toEqual(['eval-ed 1!', 'eval-ed 2!']);
       });
+
+      it('should not have execution affected by an explicit $digest call', function() {
+        var scope1 = $rootScope.$new();
+        var scope2 = $rootScope.$new();
+
+        scope1.$watch('value', function(value) {
+          scope1.result = value;
+        });
+
+        scope1.$evalAsync(function() {
+          scope1.value = 'bar';
+        });
+
+        scope2.$digest();
+
+        $browser.defer.flush(0);
+
+        expect(scope1.result).toBe('bar');
+      });
     });
 
     it('should not pass anything as `this` to scheduled functions', inject(function($rootScope) {
