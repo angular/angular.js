@@ -338,8 +338,7 @@ var ngModelOptionsDirective = function() {
  }
   NgModelOptionsController.prototype = {
     $onInit: function() {
-      var parentCtrl = this.parentOptionsCtrl;
-      var parentOptions = parentCtrl ? parentCtrl.$options : defaultModelOptions;
+      var parentOptions = this.parentCtrl ? this.parentCtrl.$options : defaultModelOptions;
       var modelOptionsDefinition = this.$$scope.$eval(this.$$attrs.ngModelOptions);
 
       this.$options = parentOptions.createChild(modelOptionsDefinition);
@@ -350,7 +349,7 @@ var ngModelOptionsDirective = function() {
     restrict: 'A',
     // ngModelOptions needs to run before ngModel and input directives
     priority: 10,
-    require: {parentOptionsCtrl: '?^^ngModelOptions'},
+    require: {parentCtrl: '?^^ngModelOptions'},
     bindToController: true,
     controller: NgModelOptionsController
   };
