@@ -2787,6 +2787,13 @@ describe('input', function() {
             helper.changeInputValueTo('3.5');
             expect(inputElm).toBeValid();
             expect($rootScope.value).toBe(3.5);
+
+            // 1.16 % 0.01 === 0.009999999999999896
+            // 1.16 * 100  === 115.99999999999999
+            $rootScope.step = 0.01;
+            helper.changeInputValueTo('1.16');
+            expect(inputElm).toBeValid();
+            expect($rootScope.value).toBe(1.16);
           }
         );
       });
@@ -3681,6 +3688,13 @@ describe('input', function() {
             helper.changeInputValueTo('3.5');
             expect(inputElm).toBeValid();
             expect($rootScope.value).toBe(3.5);
+
+            // 1.16 % 0.01 === 0.009999999999999896
+            // 1.16 * 100  === 115.99999999999999
+            $rootScope.step = 0.01;
+            helper.changeInputValueTo('1.16');
+            expect(inputElm).toBeValid();
+            expect($rootScope.value).toBe(1.16);
           }
         );
       }
