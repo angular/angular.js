@@ -2787,6 +2787,13 @@ describe('input', function() {
             helper.changeInputValueTo('3.5');
             expect(inputElm).toBeValid();
             expect($rootScope.value).toBe(3.5);
+
+            // 1.16 % 0.01 === 0.009999999999999896
+            // 1.16 * 100  === 115.99999999999999
+            $rootScope.step = 0.01;
+            helper.changeInputValueTo('1.16');
+            expect(inputElm).toBeValid();
+            expect($rootScope.value).toBe(1.16);
           }
         );
       });
@@ -3656,7 +3663,9 @@ describe('input', function() {
 
         it('should correctly validate even in cases where the JS floating point arithmetic fails',
           function() {
-            var inputElm = helper.compileInput('<input type="range" ng-model="value" step="0.1" />');
+            $rootScope.step = 0.1;
+            var inputElm = helper.compileInput(
+                '<input type="range" ng-model="value" step="{{step}}" />');
             var ngModel = inputElm.controller('ngModel');
 
             expect(inputElm.val()).toBe('');
@@ -3681,6 +3690,13 @@ describe('input', function() {
             helper.changeInputValueTo('3.5');
             expect(inputElm).toBeValid();
             expect($rootScope.value).toBe(3.5);
+
+            // 1.16 % 0.01 === 0.009999999999999896
+            // 1.16 * 100  === 115.99999999999999
+            $rootScope.step = 0.01;
+            helper.changeInputValueTo('1.16');
+            expect(inputElm).toBeValid();
+            expect($rootScope.value).toBe(1.16);
           }
         );
       }
