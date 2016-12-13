@@ -239,6 +239,7 @@ function $QProvider() {
    *
    * @description
    * Retrieves or overrides whether to generate an error when a rejected promise is not handled.
+   * This feature is enabled by default.
    *
    * @param {boolean=} value Whether to generate an error when a rejected promise is not handled.
    * @returns {boolean|ng.$qProvider} Current value when called without a new value or self for
