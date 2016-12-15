@@ -181,10 +181,7 @@ var $$AnimateQueueProvider = ['$animateProvider', /** @this */ function($animate
       return this === arg || !!(this.compareDocumentPosition(arg) & 16);
     };
 
-    function findCallbacks(parent, element, event) {
-      var targetNode = getDomNode(element);
-      var targetParentNode = getDomNode(parent);
-
+    function findCallbacks(targetParentNode, targetNode, event) {
       var matches = [];
       var entries = callbackRegistry[event];
       if (entries) {
@@ -311,12 +308,9 @@ var $$AnimateQueueProvider = ['$animateProvider', /** @this */ function($animate
       // the input data when running `$animateCss`.
       var options = copy(initialOptions);
 
-      var node, parent;
       element = stripCommentsFromElement(element);
-      if (element) {
-        node = getDomNode(element);
-        parent = element.parent();
-      }
+      var node = getDomNode(element);
+      var parentNode = node && node.parentNode;
 
       options = prepareAnimationOptions(options);
 
@@ -381,7 +375,7 @@ var $$AnimateQueueProvider = ['$animateProvider', /** @this */ function($animate
       // there is no point in traversing the same collection of parent ancestors if a followup
       // animation will be run on the same element that already did all that checking work
       if (!skipAnimations && (!hasExistingAnimation || existingAnimation.state !== PRE_DIGEST_STATE)) {
-        skipAnimations = !areAnimationsAllowed(node, getDomNode(parent), event);
+        skipAnimations = !areAnimationsAllowed(node, parentNode, event);
       }
 
       if (skipAnimations) {
@@ -557,7 +551,7 @@ var $$AnimateQueueProvider = ['$animateProvider', /** @this */ function($animate
 
       function notifyProgress(runner, event, phase, data) {
         runInNextPostDigestOrNow(function() {
-          var callbacks = findCallbacks(parent, element, event);
+          var callbacks = findCallbacks(parentNode, node, event);
           if (callbacks.length) {
             // do not optimize this call here to RAF because
             // we don't know how heavy the callback code here will
