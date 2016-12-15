@@ -459,6 +459,28 @@ describe('animations', function() {
       expect(commentNode[0].parentNode).not.toBe(parentNode);
     }));
 
+    it('enter() should animate a transcluded clone with `templateUrl`', function() {
+      module(function($compileProvider) {
+        $compileProvider.directive('foo', function() {
+          return {templateUrl: 'foo.html'};
+        });
+      });
+
+      inject(function($animate, $compile, $rootScope, $templateCache) {
+        parent.append(jqLite('<foo ng-if="showFoo"></foo>'));
+        $templateCache.put('foo.html', '<div>FOO</div>');
+        $compile(parent)($rootScope);
+
+        expect(capturedAnimation).toBeNull();
+
+        $rootScope.$apply('showFoo = true');
+
+        expect(parent.text()).toBe('parentFOO');
+        expect(capturedAnimation[0].html()).toBe('<div>FOO</div>');
+        expect(capturedAnimation[1]).toBe('enter');
+      });
+    });
+
     it('enter() should issue an enter animation and fire the DOM operation right away before the animation kicks off', inject(function($animate, $rootScope) {
       expect(parent.children().length).toBe(0);
 
@@ -2437,7 +2459,6 @@ describe('animations', function() {
 
         return function($rootElement, $q, $animate, $$AnimateRunner, $document) {
           defaultFakeAnimationRunner = new $$AnimateRunner();
-          $animate.enabled(true);
 
           element = jqLite('<div class="element">element</div>');
           parent = jqLite('<div class="parent1">parent</div>');
@@ -2445,7 +2466,6 @@ describe('animations', function() {
 
           $rootElement.append(parent);
           $rootElement.append(parent2);
-          jqLite($document[0].body).append($rootElement);
         };
       }));
 
