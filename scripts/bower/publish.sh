@@ -99,7 +99,7 @@ function publish {
     # don't publish every build to the npm repository
     if [ "${NEW_VERSION/+sha}" = "$NEW_VERSION" ] ; then
       echo "-- Publishing to the npm repository as $DIST_TAG"
-      yarn publish --tag=$DIST_TAG
+      npm publish --tag=$DIST_TAG
     fi
 
     cd $SCRIPT_DIR
