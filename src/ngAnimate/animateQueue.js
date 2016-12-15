@@ -393,7 +393,7 @@ var $$AnimateQueueProvider = ['$animateProvider', /** @this */ function($animate
       }
 
       if (isStructural) {
-        closeChildAnimations(element);
+        closeChildAnimations(node);
       }
 
       var newAnimation = {
@@ -585,8 +585,7 @@ var $$AnimateQueueProvider = ['$animateProvider', /** @this */ function($animate
       }
     }
 
-    function closeChildAnimations(element) {
-      var node = getDomNode(element);
+    function closeChildAnimations(node) {
       var children = node.querySelectorAll('[' + NG_ANIMATE_ATTR_NAME + ']');
       forEach(children, function(child) {
         var state = parseInt(child.getAttribute(NG_ANIMATE_ATTR_NAME), 10);
