@@ -381,7 +381,7 @@ var $$AnimateQueueProvider = ['$animateProvider', /** @this */ function($animate
       // there is no point in traversing the same collection of parent ancestors if a followup
       // animation will be run on the same element that already did all that checking work
       if (!skipAnimations && (!hasExistingAnimation || existingAnimation.state !== PRE_DIGEST_STATE)) {
-        skipAnimations = !areAnimationsAllowed(element, parent, event);
+        skipAnimations = !areAnimationsAllowed(node, getDomNode(parent), event);
       }
 
       if (skipAnimations) {
@@ -610,10 +610,6 @@ var $$AnimateQueueProvider = ['$animateProvider', /** @this */ function($animate
       activeAnimationsLookup.remove(node);
     }
 
-    function isMatchingElement(nodeOrElmA, nodeOrElmB) {
-      return getDomNode(nodeOrElmA) === getDomNode(nodeOrElmB);
-    }
-
     /**
      * This fn returns false if any of the following is true:
      * a) animations on any parent element are disabled, and animations on the element aren't explicitly allowed
@@ -621,54 +617,54 @@ var $$AnimateQueueProvider = ['$animateProvider', /** @this */ function($animate
      * c) the element is not a child of the body
      * d) the element is not a child of the $rootElement
      */
-    function areAnimationsAllowed(element, parentElement, event) {
-      var bodyElement = jqLite($document[0].body);
-      var bodyElementDetected = isMatchingElement(element, bodyElement) || element[0].nodeName === 'HTML';
-      var rootElementDetected = isMatchingElement(element, $rootElement);
-      var parentAnimationDetected = false;
-      var animateChildren;
-      var elementDisabled = disabledElementsLookup.get(getDomNode(element));
+    function areAnimationsAllowed(node, parentNode, event) {
+      var bodyNode = $document[0].body;
+      var rootNode = getDomNode($rootElement);
 
-      var parentHost = jqLite.data(element[0], NG_ANIMATE_PIN_DATA);
+      var bodyNodeDetected = (node === bodyNode) || node.nodeName === 'HTML';
+      var rootNodeDetected = (node === rootNode);
+      var parentAnimationDetected = false;
+      var elementDisabled = disabledElementsLookup.get(node);
+      var animateChildren;
+
+      var parentHost = jqLite.data(node, NG_ANIMATE_PIN_DATA);
       if (parentHost) {
-        parentElement = parentHost;
+        parentNode = getDomNode(parentHost);
       }
 
-      parentElement = getDomNode(parentElement);
-
-      while (parentElement) {
-        if (!rootElementDetected) {
+      while (parentNode) {
+        if (!rootNodeDetected) {
           // angular doesn't want to attempt to animate elements outside of the application
           // therefore we need to ensure that the rootElement is an ancestor of the current element
-          rootElementDetected = isMatchingElement(parentElement, $rootElement);
+          rootNodeDetected = (parentNode === rootNode);
         }
 
-        if (parentElement.nodeType !== ELEMENT_NODE) {
+        if (parentNode.nodeType !== ELEMENT_NODE) {
           // no point in inspecting the #document element
           break;
         }
 
-        var details = activeAnimationsLookup.get(parentElement) || {};
+        var details = activeAnimationsLookup.get(parentNode) || {};
         // either an enter, leave or move animation will commence
         // therefore we can't allow any animations to take place
         // but if a parent animation is class-based then that's ok
         if (!parentAnimationDetected) {
-          var parentElementDisabled = disabledElementsLookup.get(parentElement);
+          var parentNodeDisabled = disabledElementsLookup.get(parentNode);
 
-          if (parentElementDisabled === true && elementDisabled !== false) {
+          if (parentNodeDisabled === true && elementDisabled !== false) {
             // disable animations if the user hasn't explicitly enabled animations on the
             // current element
             elementDisabled = true;
             // element is disabled via parent element, no need to check anything else
             break;
-          } else if (parentElementDisabled === false) {
+          } else if (parentNodeDisabled === false) {
             elementDisabled = false;
           }
           parentAnimationDetected = details.structural;
         }
 
         if (isUndefined(animateChildren) || animateChildren === true) {
-          var value = jqLite.data(parentElement, NG_ANIMATE_CHILDREN_DATA);
+          var value = jqLite.data(parentNode, NG_ANIMATE_CHILDREN_DATA);
           if (isDefined(value)) {
             animateChildren = value;
           }
@@ -677,33 +673,33 @@ var $$AnimateQueueProvider = ['$animateProvider', /** @this */ function($animate
         // there is no need to continue traversing at this point
         if (parentAnimationDetected && animateChildren === false) break;
 
-        if (!bodyElementDetected) {
+        if (!bodyNodeDetected) {
           // we also need to ensure that the element is or will be a part of the body element
           // otherwise it is pointless to even issue an animation to be rendered
-          bodyElementDetected = isMatchingElement(parentElement, bodyElement);
+          bodyNodeDetected = (parentNode === bodyNode);
         }
 
-        if (bodyElementDetected && rootElementDetected) {
+        if (bodyNodeDetected && rootNodeDetected) {
           // If both body and root have been found, any other checks are pointless,
           // as no animation data should live outside the application
           break;
         }
 
-        if (!rootElementDetected) {
-          // If no rootElement is detected, check if the parentElement is pinned to another element
-          parentHost = jqLite.data(parentElement, NG_ANIMATE_PIN_DATA);
+        if (!rootNodeDetected) {
+          // If `rootNode` is not detected, check if `parentNode` is pinned to another element
+          parentHost = jqLite.data(parentNode, NG_ANIMATE_PIN_DATA);
           if (parentHost) {
             // The pin target element becomes the next parent element
-            parentElement = getDomNode(parentHost);
+            parentNode = getDomNode(parentHost);
             continue;
           }
         }
 
-        parentElement = parentElement.parentNode;
+        parentNode = parentNode.parentNode;
       }
 
       var allowAnimation = (!parentAnimationDetected || animateChildren) && elementDisabled !== true;
-      return allowAnimation && rootElementDetected && bodyElementDetected;
+      return allowAnimation && rootNodeDetected && bodyNodeDetected;
     }
 
     function markElementAnimationState(element, state, details) {
