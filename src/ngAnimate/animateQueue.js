@@ -36,9 +36,9 @@ var $$AnimateQueueProvider = ['$animateProvider', /** @this */ function($animate
     }
   }
 
-  function isAllowed(ruleType, element, currentAnimation, previousAnimation) {
+  function isAllowed(ruleType, currentAnimation, previousAnimation) {
     return rules[ruleType].some(function(fn) {
-      return fn(element, currentAnimation, previousAnimation);
+      return fn(currentAnimation, previousAnimation);
     });
   }
 
@@ -48,40 +48,40 @@ var $$AnimateQueueProvider = ['$animateProvider', /** @this */ function($animate
     return and ? a && b : a || b;
   }
 
-  rules.join.push(function(element, newAnimation, currentAnimation) {
+  rules.join.push(function(newAnimation, currentAnimation) {
     // if the new animation is class-based then we can just tack that on
     return !newAnimation.structural && hasAnimationClasses(newAnimation);
   });
 
-  rules.skip.push(function(element, newAnimation, currentAnimation) {
+  rules.skip.push(function(newAnimation, currentAnimation) {
     // there is no need to animate anything if no classes are being added and
     // there is no structural animation that will be triggered
     return !newAnimation.structural && !hasAnimationClasses(newAnimation);
   });
 
-  rules.skip.push(function(element, newAnimation, currentAnimation) {
+  rules.skip.push(function(newAnimation, currentAnimation) {
     // why should we trigger a new structural animation if the element will
     // be removed from the DOM anyway?
     return currentAnimation.event === 'leave' && newAnimation.structural;
   });
 
-  rules.skip.push(function(element, newAnimation, currentAnimation) {
+  rules.skip.push(function(newAnimation, currentAnimation) {
     // if there is an ongoing current animation then don't even bother running the class-based animation
     return currentAnimation.structural && currentAnimation.state === RUNNING_STATE && !newAnimation.structural;
   });
 
-  rules.cancel.push(function(element, newAnimation, currentAnimation) {
+  rules.cancel.push(function(newAnimation, currentAnimation) {
     // there can never be two structural animations running at the same time
     return currentAnimation.structural && newAnimation.structural;
   });
 
-  rules.cancel.push(function(element, newAnimation, currentAnimation) {
+  rules.cancel.push(function(newAnimation, currentAnimation) {
     // if the previous animation is already running, but the new animation will
     // be triggered, but the new animation is structural
     return currentAnimation.state === RUNNING_STATE && newAnimation.structural;
   });
 
-  rules.cancel.push(function(element, newAnimation, currentAnimation) {
+  rules.cancel.push(function(newAnimation, currentAnimation) {
     // cancel the animation if classes added / removed in both animation cancel each other out,
     // but only if the current animation isn't structural
 
@@ -408,7 +408,7 @@ var $$AnimateQueueProvider = ['$animateProvider', /** @this */ function($animate
       };
 
       if (hasExistingAnimation) {
-        var skipAnimationFlag = isAllowed('skip', element, newAnimation, existingAnimation);
+        var skipAnimationFlag = isAllowed('skip', newAnimation, existingAnimation);
         if (skipAnimationFlag) {
           if (existingAnimation.state === RUNNING_STATE) {
             close();
@@ -418,7 +418,7 @@ var $$AnimateQueueProvider = ['$animateProvider', /** @this */ function($animate
             return existingAnimation.runner;
           }
         }
-        var cancelAnimationFlag = isAllowed('cancel', element, newAnimation, existingAnimation);
+        var cancelAnimationFlag = isAllowed('cancel', newAnimation, existingAnimation);
         if (cancelAnimationFlag) {
           if (existingAnimation.state === RUNNING_STATE) {
             // this will end the animation right away and it is safe
@@ -440,7 +440,7 @@ var $$AnimateQueueProvider = ['$animateProvider', /** @this */ function($animate
           // a joined animation means that this animation will take over the existing one
           // so an example would involve a leave animation taking over an enter. Then when
           // the postDigest kicks in the enter will be ignored.
-          var joinAnimationFlag = isAllowed('join', element, newAnimation, existingAnimation);
+          var joinAnimationFlag = isAllowed('join', newAnimation, existingAnimation);
           if (joinAnimationFlag) {
             if (existingAnimation.state === RUNNING_STATE) {
               normalizeAnimationDetails(element, newAnimation);
