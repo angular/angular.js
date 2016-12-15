@@ -474,7 +474,7 @@ var $$AnimateQueueProvider = ['$animateProvider', /** @this */ function($animate
 
       if (!isValidAnimation) {
         close();
-        clearElementAnimationState(element);
+        clearElementAnimationState(node);
         return runner;
       }
 
@@ -523,7 +523,7 @@ var $$AnimateQueueProvider = ['$animateProvider', /** @this */ function($animate
           // isn't allowed to animate from here then we need to clear the state of the element
           // so that any future animations won't read the expired animation data.
           if (!isValidAnimation) {
-            clearElementAnimationState(element);
+            clearElementAnimationState(node);
           }
 
           return;
@@ -547,7 +547,7 @@ var $$AnimateQueueProvider = ['$animateProvider', /** @this */ function($animate
           close(!status);
           var animationDetails = activeAnimationsLookup.get(node);
           if (animationDetails && animationDetails.counter === counter) {
-            clearElementAnimationState(getDomNode(element));
+            clearElementAnimationState(node);
           }
           notifyProgress(runner, event, 'close', {});
         });
@@ -603,8 +603,7 @@ var $$AnimateQueueProvider = ['$animateProvider', /** @this */ function($animate
       });
     }
 
-    function clearElementAnimationState(element) {
-      var node = getDomNode(element);
+    function clearElementAnimationState(node) {
       node.removeAttribute(NG_ANIMATE_ATTR_NAME);
       activeAnimationsLookup.remove(node);
     }
