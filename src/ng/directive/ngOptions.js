@@ -505,11 +505,11 @@ var ngOptionsDirective = ['$compile', '$document', '$parse', function($compile, 
 
       } else {
 
-        selectCtrl.writeValue = function writeNgOptionsMultiple(value) {
+        selectCtrl.writeValue = function writeNgOptionsMultiple(values) {
           // Only set `<option>.selected` if necessary, in order to prevent some browsers from
           // scrolling to `<option>` elements that are outside the `<select>` element's viewport.
 
-          var selectedOptions = value && value.map(getAndUpdateSelectedOption) || [];
+          var selectedOptions = values && values.map(getAndUpdateSelectedOption) || [];
 
           options.items.forEach(function(option) {
             if (option.element.selected && !includes(selectedOptions, option)) {
