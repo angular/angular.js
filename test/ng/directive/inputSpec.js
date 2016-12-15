@@ -3663,7 +3663,9 @@ describe('input', function() {
 
         it('should correctly validate even in cases where the JS floating point arithmetic fails',
           function() {
-            var inputElm = helper.compileInput('<input type="range" ng-model="value" step="0.1" />');
+            $rootScope.step = 0.1;
+            var inputElm = helper.compileInput(
+                '<input type="range" ng-model="value" step="{{step}}" />');
             var ngModel = inputElm.controller('ngModel');
 
             expect(inputElm.val()).toBe('');
