@@ -4464,6 +4464,7 @@ support asynchronous loading of resources.)
 
 - **$compile:** Lazily compile the `transclude` function
   ([652b83eb](https://github.com/angular/angular.js/commit/652b83eb226131d131a44453520a569202aa4aac))
+  See https://github.com/angular/angular.js/issues/14343#issuecomment-229037252 for more information.
 
 
 ## Breaking Changes
