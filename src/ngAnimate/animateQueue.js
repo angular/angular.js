@@ -302,13 +302,13 @@ var $$AnimateQueueProvider = ['$animateProvider', /** @this */ function($animate
 
     return $animate;
 
-    function queueAnimation(element, event, initialOptions) {
+    function queueAnimation(originalElement, event, initialOptions) {
       // we always make a copy of the options since
       // there should never be any side effects on
       // the input data when running `$animateCss`.
       var options = copy(initialOptions);
 
-      element = stripCommentsFromElement(element);
+      var element = stripCommentsFromElement(originalElement);
       var node = getDomNode(element);
       var parentNode = node && node.parentNode;
 
@@ -479,6 +479,15 @@ var $$AnimateQueueProvider = ['$animateProvider', /** @this */ function($animate
       markElementAnimationState(node, PRE_DIGEST_STATE, newAnimation);
 
       $rootScope.$$postDigest(function() {
+        // It is possible that the DOM nodes inside `originalElement` have been replaced. This can
+        // happen if the animated element is a transcluded clone and also has a `templateUrl`
+        // directive on it. Therefore, we must recreate `element` in order to interact with the
+        // actual DOM nodes.
+        // Note: We still need to use the old `node` for certain things, such as looking up in
+        //       HashMaps where it was used as the key.
+
+        element = stripCommentsFromElement(originalElement);
+
         var animationDetails = activeAnimationsLookup.get(node);
         var animationCancelled = !animationDetails;
         animationDetails = animationDetails || {};
