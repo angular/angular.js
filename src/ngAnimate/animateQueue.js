@@ -209,11 +209,11 @@ var $$AnimateQueueProvider = ['$animateProvider', /** @this */ function($animate
       });
     }
 
-    function cleanupEventListeners(phase, element) {
-      if (phase === 'close' && !element[0].parentNode) {
+    function cleanupEventListeners(phase, node) {
+      if (phase === 'close' && !node.parentNode) {
         // If the element is not attached to a parentNode, it has been removed by
         // the domOperation, and we can safely remove the event callbacks
-        $animate.off(element);
+        $animate.off(node);
       }
     }
 
@@ -567,10 +567,10 @@ var $$AnimateQueueProvider = ['$animateProvider', /** @this */ function($animate
               forEach(callbacks, function(callback) {
                 callback(element, phase, data);
               });
-              cleanupEventListeners(phase, element);
+              cleanupEventListeners(phase, node);
             });
           } else {
-            cleanupEventListeners(phase, element);
+            cleanupEventListeners(phase, node);
           }
         });
         runner.progress(event, phase, data);
