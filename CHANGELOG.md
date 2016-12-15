@@ -1,3 +1,98 @@
+<a name="1.5.10"></a>
+# 1.5.10 asynchronous-synchronization (2016-12-15)
+
+
+## Bug Fixes
+- **$compile:**
+  - don't throw tplrt error when there is whitespace around a top-level comment
+    ([12752f](https://github.com/angular/angular.js/commit/12752f66ac425ab38a5ee574a4bfbf3516adc42c)
+    [#15108](https://github.com/angular/angular.js/issues/15108))
+  - clean up `@`-binding observers when re-assigning bindings
+    ([f3cb6e](https://github.com/angular/angular.js/commit/f3cb6e309aa1f676e5951ac745fa886d3581c2f4)
+    [#15268](https://github.com/angular/angular.js/issues/15268))
+  - set attribute value even if `ngAttr*` contains no interpolation
+    ([229799](https://github.com/angular/angular.js/commit/22979904fb754c59e9f6ee5d8763e3b8de0e18c2)
+    [#15133](https://github.com/angular/angular.js/issues/15133))
+  - `bindToController` should work without `controllerAs`
+    ([944989](https://github.com/angular/angular.js/commit/9449893763a4fd95ee8ff78b53c6966a874ec9ae)
+    [#15088](https://github.com/angular/angular.js/issues/15088))
+  - do not overwrite values set in `$onInit()` for `<`-bound literals
+    ([07e1ba](https://github.com/angular/angular.js/commit/07e1ba365fb5e8a049be732bd7b62f71e0aa1672)
+    [#15118](https://github.com/angular/angular.js/issues/15118))
+  - avoid calling `$onChanges()` twice for `NaN` initial values
+    ([0cf5be](https://github.com/angular/angular.js/commit/0cf5be52642f7e9d81a708b3005042eac6492572))
+- **$location:** prevent infinite digest with IDN urls in Edge
+  ([4bf892](https://github.com/angular/angular.js/commit/4bf89218130d434771089fdfe643490b8d2ee259)
+  [#15217](https://github.com/angular/angular.js/issues/15217))
+- **$rootScope:** correctly handle adding/removing watchers during `$digest`
+  ([a9708d](https://github.com/angular/angular.js/commit/a9708de84b50f06eacda33834d5bbdfc97c97f37)
+  [#15422](https://github.com/angular/angular.js/issues/15422))
+- **$sce:** fix `adjustMatcher` to replace multiple `*` and `**`
+  ([78eecb](https://github.com/angular/angular.js/commit/78eecb43dbb0500358d333aea8955bd0646a7790))
+- **jqLite:** silently ignore `after()` if element has no parent
+  ([77ed85](https://github.com/angular/angular.js/commit/77ed85bcd3be057a5a79231565ac7accc6d644c6)
+  [#15331](https://github.com/angular/angular.js/issues/15331))
+- **input[radio]:** use non-strict comparison for checkedness
+  ([593a50](https://github.com/angular/angular.js/commit/593a5034841b3b7661d3bcbdd06b7a9d0876fd34))
+- **select, ngOptions:**
+  - let `ngValue` take precedence over option text with multiple interpolations
+    ([5b7ec8](https://github.com/angular/angular.js/commit/5b7ec8c84e88ee08aacaf9404853eda0016093f5)
+    [#15413](https://github.com/angular/angular.js/issues/15413))
+  - don't add comment nodes as empty options
+    ([1d29c9](https://github.com/angular/angular.js/commit/1d29c91c3429de96e4103533752700d1266741be)
+    [#15454](https://github.com/angular/angular.js/issues/15454))
+- **ngClassOdd/Even:** add/remove the correct classes when expression/`$index` change simultaneously
+  ([e3d020](https://github.com/angular/angular.js/commit/e3d02070ab8a02c818dcc5114db6fba9d3f385d6))
+- **$resource:** allow params in `hostname` (except for IPv6 addresses)
+  ([7f45b5](https://github.com/angular/angular.js/commit/7f45b5fee79e2cb87d65bdd015d455304cec1ee4)
+  [#14542](https://github.com/angular/angular.js/issues/14542))
+- **$sanitize:** reduce stack height in IE <= 11
+  ([862dc2](https://github.com/angular/angular.js/commit/862dc2532f8126a4a71fd3d957884ba6f11f591c)
+  [#14928](https://github.com/angular/angular.js/issues/14928))
+- **ngMock/$controller:** respect `$compileProvider.preAssignBindingsEnabled()`
+  ([75c83f](https://github.com/angular/angular.js/commit/75c83ff3195931859a099f7a95bf81d32abf2eb3))
+
+
+## New Features
+- **bootstrap:** do not bootstrap from unknown schemes with a different origin
+  ([bdeb33](https://github.com/angular/angular.js/commit/bdeb3392a8719131ab2b993f2a881c43a2860f92)
+  [#15428](https://github.com/angular/angular.js/issues/15428))
+- **$anchorScroll:** convert numeric hash targets to string
+  ([a52640](https://github.com/angular/angular.js/commit/a5264090b66ad0cf9a93de84bb7b307868c0edef)
+  [#14680](https://github.com/angular/angular.js/issues/14680))
+- **$compile:**
+  - add `preAssignBindingsEnabled` option
+    ([f86576](https://github.com/angular/angular.js/commit/f86576def44005f180a66e3aa12d6cc73c1ac72c))
+  - throw error when directive name or factory function is invalid
+    ([5c9399](https://github.com/angular/angular.js/commit/5c9399d18ae5cd79e6cf6fc4377d66df00f6fcc7)
+    [#15056](https://github.com/angular/angular.js/issues/15056))
+- **$controller:** throw when requested controller is not registered
+  ([9ae793](https://github.com/angular/angular.js/commit/9ae793d8a69afe84370b601e07fc375fc18a576a)
+  [#14980](https://github.com/angular/angular.js/issues/14980))
+- **$location:** add support for selectively rewriting links based on attribute
+  ([a4a222](https://github.com/angular/angular.js/commit/a4a22266f127d3b9a6818e6f4754f048e253f693))
+- **$resource:** pass `status`/`statusText` to success callbacks
+  ([a8da25](https://github.com/angular/angular.js/commit/a8da25c74d2c1f6265f0fafd95bf72c981d9d678)
+  [#8341](https://github.com/angular/angular.js/issues/8841)
+  [#8841](https://github.com/angular/angular.js/issues/8841))
+- **ngSwitch:** allow multiple case matches via optional attribute `ngSwitchWhenSeparator`
+  ([0e1651](https://github.com/angular/angular.js/commit/0e1651bfd28ba73ebd0e4943d85af48c4506e02c)
+  [#3410](https://github.com/angular/angular.js/issues/3410)
+  [#3516](https://github.com/angular/angular.js/issues/3516))
+
+
+## Performance Improvements
+- **all:** don't trigger digests after enter/leave of structural directives
+  ([c57779](https://github.com/angular/angular.js/commit/c57779d8725493c5853dceda0105dafd5c0e3a7c)
+  [#15322](https://github.com/angular/angular.js/issues/15322))
+- **$compile:** validate `directive.restrict` property on directive init
+  ([31d464](https://github.com/angular/angular.js/commit/31d464feef38b1cc950da6c8dccd0f194ebfc68b))
+- **ngOptions:** avoid calls to `element.value`
+  ([e269ad](https://github.com/angular/angular.js/commit/e269ad1244bc50fee9218f7c18fab3e9ab063aab))
+- **jqLite:** move bind/unbind definitions out of the loop
+  ([7717b9](https://github.com/angular/angular.js/commit/7717b96e950a5916a5f12fd611c73d3b06a8d717))
+
+
 <a name="1.6.0"></a>
 # 1.6.0 rainbow-tsunami (2016-12-08)
 
