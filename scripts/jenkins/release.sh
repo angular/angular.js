@@ -35,9 +35,8 @@ function init {
 }
 
 function build {
-  source ./init-node.sh
   cd ../..
-
+  source scripts/jenkins/init-node.sh
   yarn run grunt -- ci-checks package --no-color
 
   cd $SCRIPT_DIR
