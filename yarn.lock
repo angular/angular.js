@@ -1589,9 +1589,9 @@ detective@^4.0.0:
     acorn "^3.1.0"
     defined "^1.0.0"
 
-dgeni-packages@^0.16.0:
-  version "0.16.0"
-  resolved "https://registry.yarnpkg.com/dgeni-packages/-/dgeni-packages-0.16.0.tgz#f48f5e8785eb0ca0e95b3250a8df020c30717c68"
+dgeni-packages@^0.16.2:
+  version "0.16.2"
+  resolved "https://registry.yarnpkg.com/dgeni-packages/-/dgeni-packages-0.16.2.tgz#700bfcf0413418a336d20439b82a9464970b598c"
   dependencies:
     canonical-path "0.0.2"
     catharsis "^0.8.1"
@@ -1604,10 +1604,9 @@ dgeni-packages@^0.16.0:
     lodash "^4.13.1"
     marked "^0.3.2"
     minimatch "^3.0.2"
+    mkdirp-promise "^5.0.0"
     node-html-encoder "0.0.2"
     nunjucks "^2.4.2"
-    q "~1.4.1"
-    q-io "~1.13.2"
     semver "^5.2.0"
     shelljs "^0.7.0"
     spdx-license-list "^2.1.0"
@@ -2468,7 +2467,16 @@ glob@7.0.5, glob@^7.0.0, glob@^7.0.3, glob@^7.0.5, glob@~7.0.0:
     once "^1.3.0"
     path-is-absolute "^1.0.0"
 
-glob@^4.0.5, glob@^4.3.1, glob@~4.3.0:
+glob@^4.0.5, glob@~4.0.2:
+  version "4.0.6"
+  resolved "https://registry.yarnpkg.com/glob/-/glob-4.0.6.tgz#695c50bdd4e2fb5c5d370b091f388d3707e291a7"
+  dependencies:
+    graceful-fs "^3.0.2"
+    inherits "2"
+    minimatch "^1.0.0"
+    once "^1.3.0"
+
+glob@^4.3.1, glob@~4.3.0:
   version "4.3.5"
   resolved "https://registry.yarnpkg.com/glob/-/glob-4.3.5.tgz#80fbb08ca540f238acce5d11d1e9bc41e75173d3"
   dependencies:
@@ -2515,15 +2523,6 @@ glob@~3.1.21:
     graceful-fs "~1.2.0"
     inherits "1"
     minimatch "~0.2.11"
-
-glob@~4.0.2:
-  version "4.0.6"
-  resolved "https://registry.yarnpkg.com/glob/-/glob-4.0.6.tgz#695c50bdd4e2fb5c5d370b091f388d3707e291a7"
-  dependencies:
-    graceful-fs "^3.0.2"
-    inherits "2"
-    minimatch "^1.0.0"
-    once "^1.3.0"
 
 global-modules@^0.2.3:
   version "0.2.3"
@@ -3939,11 +3938,11 @@ lodash@3.10.1, lodash@^3.10.1, lodash@^3.8.0, lodash@~3.10.1:
   version "3.10.1"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-3.10.1.tgz#5bf45e8e49ba4189e17d482789dfd15bd140b7b6"
 
-lodash@4.15.0, lodash@^4.0.0, lodash@^4.13.1, lodash@^4.14.0, lodash@^4.3.0, lodash@^4.5.0, lodash@^4.7.0, lodash@^4.8.0:
+lodash@4.15.0, lodash@^4.0.0, lodash@^4.3.0, lodash@^4.5.0, lodash@^4.7.0, lodash@^4.8.0:
   version "4.15.0"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.15.0.tgz#3162391d8f0140aa22cf8f6b3c34d6b7f63d3aa9"
 
-lodash@4.16.2:
+lodash@4.16.2, lodash@^4.13.1, lodash@^4.14.0:
   version "4.16.2"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.16.2.tgz#3e626db827048a699281a8a125226326cfc0e652"
 
@@ -4191,6 +4190,10 @@ minimist@1.2.0, minimist@^1.1.0, minimist@^1.1.3, minimist@^1.2.0:
 minimist@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/minimist/-/minimist-0.2.0.tgz#4dffe525dae2b864c66c2e23c6271d7afdecefce"
+
+mkdirp-promise@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/mkdirp-promise/-/mkdirp-promise-5.0.0.tgz#b8bc7d6eab71c2b2e37cb06ea48a459d14366ea2"
 
 mkdirp@0.3.0:
   version "0.3.0"
@@ -4963,19 +4966,19 @@ pump@^0.3.5:
     end-of-stream "~1.0.0"
     once "~1.2.0"
 
-punycode@1.3.2:
+punycode@1.3.2, punycode@>=0.2.0:
   version "1.3.2"
   resolved "https://registry.yarnpkg.com/punycode/-/punycode-1.3.2.tgz#9653a036fb7c1ee42342f2325cceefea3926c48d"
-
-punycode@>=0.2.0, punycode@~1.2.3:
-  version "1.2.4"
-  resolved "https://registry.yarnpkg.com/punycode/-/punycode-1.2.4.tgz#54008ac972aec74175def9cba6df7fa9d3918740"
 
 punycode@^1.4.1:
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/punycode/-/punycode-1.4.1.tgz#c0d5a63b2718800ad8e1eb0fa5269c84dd41845e"
 
-q-io@^1.10.9, q-io@~1.13.2:
+punycode@~1.2.3:
+  version "1.2.4"
+  resolved "https://registry.yarnpkg.com/punycode/-/punycode-1.2.4.tgz#54008ac972aec74175def9cba6df7fa9d3918740"
+
+q-io@^1.10.9:
   version "1.13.2"
   resolved "https://registry.yarnpkg.com/q-io/-/q-io-1.13.2.tgz#eea130d481ddb5e1aa1bc5a66855f7391d06f003"
   dependencies:
@@ -5104,7 +5107,7 @@ read@~1.0.4:
   dependencies:
     mute-stream "~0.0.4"
 
-readable-stream@1.1, "readable-stream@>=1.1.13-1 <1.2.0-0", readable-stream@^1.0.27-1, readable-stream@^1.0.33-1, readable-stream@^1.1.13, readable-stream@^1.1.13-1, readable-stream@~1.1.8, readable-stream@~1.1.9:
+readable-stream@1.1, "readable-stream@>=1.1.13-1 <1.2.0-0", readable-stream@^1.0.27-1, readable-stream@^1.1.13, readable-stream@^1.1.13-1, readable-stream@~1.1.8, readable-stream@~1.1.9:
   version "1.1.13"
   resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-1.1.13.tgz#f6eef764f514c89e2b9e23146a75ba106756d23e"
   dependencies:
@@ -5113,7 +5116,7 @@ readable-stream@1.1, "readable-stream@>=1.1.13-1 <1.2.0-0", readable-stream@^1.0
     isarray "0.0.1"
     string_decoder "~0.10.x"
 
-"readable-stream@>=1.0.33-1 <1.1.0-0", readable-stream@~1.0.0, readable-stream@~1.0.17, readable-stream@~1.0.2, readable-stream@~1.0.26, readable-stream@~1.0.31:
+"readable-stream@>=1.0.33-1 <1.1.0-0", readable-stream@^1.0.33-1, readable-stream@~1.0.0, readable-stream@~1.0.17, readable-stream@~1.0.2, readable-stream@~1.0.26, readable-stream@~1.0.31:
   version "1.0.34"
   resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-1.0.34.tgz#125820e34bc842d2f2aaafafe4c2916ee32c157c"
   dependencies:
