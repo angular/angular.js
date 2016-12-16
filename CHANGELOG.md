@@ -43,9 +43,6 @@
     [#15454](https://github.com/angular/angular.js/issues/15454))
 - **ngClassOdd/Even:** add/remove the correct classes when expression/`$index` change simultaneously
   ([e3d020](https://github.com/angular/angular.js/commit/e3d02070ab8a02c818dcc5114db6fba9d3f385d6))
-- **$resource:** allow params in `hostname` (except for IPv6 addresses)
-  ([7f45b5](https://github.com/angular/angular.js/commit/7f45b5fee79e2cb87d65bdd015d455304cec1ee4)
-  [#14542](https://github.com/angular/angular.js/issues/14542))
 - **$sanitize:** reduce stack height in IE <= 11
   ([862dc2](https://github.com/angular/angular.js/commit/862dc2532f8126a4a71fd3d957884ba6f11f591c)
   [#14928](https://github.com/angular/angular.js/issues/14928))
