@@ -88,7 +88,8 @@ commits for more info.
 
 - **jqLite** is more aligned to jQuery 3, which required the following changes
   (see [details](guide/migration#migrate1.5to1.6-ng-misc-jqLite) below):
-  - Keys passed to `.data()` and `.css()` are now camelCased in the same as jQuery does it.
+  - Keys passed to `.data()` and `.css()` are now camelCased in the same way as the jQuery methods
+    do.
   - Setting boolean attributes to empty string no longer removes the attribute.
   - Calling `.val()` on a multiple select will always return an array, even if no option is
     selected.
