@@ -1,6 +1,6 @@
 'use strict';
 angular.module("ngLocale", [], ["$provide", function($provide) {
-var PLURAL_CATEGORY = {ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "many", OTHER: "other"};
+var PLURAL_CATEGORY = {ZERO: "geen", ONE: "een", TWO: "twee", FEW: "paar", MANY: "veel", OTHER: "andere"};
 function getDecimals(n) {
   n = n + '';
   var i = n.indexOf('.');
@@ -22,8 +22,8 @@ function getVF(n, opt_precision) {
 $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": [
-      "a.m.",
-      "p.m."
+      "s ochtends",
+      "s middags"
     ],
     "DAY": [
       "zondag",
@@ -42,7 +42,7 @@ $provide.value("$locale", {
       "v.Chr.",
       "n.Chr."
     ],
-    "FIRSTDAYOFWEEK": 0,
+    "FIRSTDAYOFWEEK": 1,
     "MONTH": [
       "januari",
       "februari",
@@ -95,10 +95,10 @@ $provide.value("$locale", {
       "december"
     ],
     "WEEKENDRANGE": [
-      5,
-      6
+      6,
+      0
     ],
-    "fullDate": "EEEE d MMMM y",
+    "fullDate": "d MMMM y",
     "longDate": "d MMMM y",
     "medium": "d MMM y HH:mm:ss",
     "mediumDate": "d MMM y",
