@@ -187,7 +187,7 @@ angular.module('phoneDetail', ['core.phone']);
       controller: ['$routeParams', 'Phone',
         function PhoneDetailController($routeParams, Phone) {
           var self = this;
-          self.phone = Phone.get({phoneId: $routeParams.phoneId}, function(phone) {
+          this.phone = Phone.get({phoneId: $routeParams.phoneId}, function(phone) {
             self.setImage(phone.images[0]);
           });
 
