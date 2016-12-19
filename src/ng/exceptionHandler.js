@@ -36,7 +36,7 @@
  * methods) does not delegate errors to the {@link ng.$exceptionHandler $exceptionHandler}
  * (unless executed during a digest).
  * 
- * Also note, that the serive is misnamed '$exceptionHandler' for legacy reasons, because JavaScript
+ * Also note, that the service is misnamed '$exceptionHandler' for legacy reasons, because JavaScript
  * has no exceptions: only Errors.
  * If you wish, you can manually delegate exceptions, e.g.
  * `try { ... } catch(e) { $exceptionHandler(e); }`
