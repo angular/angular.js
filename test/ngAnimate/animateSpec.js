@@ -257,28 +257,22 @@ describe('animations', function() {
 
     it('should throw a minErr if a regex value is used which partially contains or fully matches the `ng-animate` CSS class',
       module(function($animateProvider) {
-        var errorMessage = '$animateProvider.classNameFilter(regex) prohibits accepting a regex ' +
-                           'value which matches/contains the "ng-animate" CSS class.';
+        expect(setFilter(/ng-animate/)).toThrowMinErr('$animate', 'nongcls');
+        expect(setFilter(/first ng-animate last/)).toThrowMinErr('$animate', 'nongcls');
+        expect(setFilter(/first ng-animate ng-animate-special last/)).toThrowMinErr('$animate', 'nongcls');
+        expect(setFilter(/(ng-animate)/)).toThrowMinErr('$animate', 'nongcls');
+        expect(setFilter(/(foo|ng-animate|bar)/)).toThrowMinErr('$animate', 'nongcls');
+        expect(setFilter(/(foo|)ng-animate(|bar)/)).toThrowMinErr('$animate', 'nongcls');
 
-        assertError(/ng-animate/, true);
-        assertError(/first ng-animate last/, true);
-        assertError(/ng-animate-special/, false);
-        assertError(/first ng-animate-special last/, false);
-        assertError(/first ng-animate ng-animate-special last/, true);
-        assertError(/(ng-animate)/, true);
-        assertError(/(foo|ng-animate|bar)/, true);
-        assertError(/(foo|)ng-animate(|bar)/, true);
+        expect(setFilter(/ng-animater/)).not.toThrow();
+        expect(setFilter(/my-ng-animate/)).not.toThrow();
+        expect(setFilter(/first ng-animater last/)).not.toThrow();
+        expect(setFilter(/first my-ng-animate last/)).not.toThrow();
 
-        function assertError(regex, bool) {
-          var expectation = expect(function() {
+        function setFilter(regex) {
+          return function() {
             $animateProvider.classNameFilter(regex);
-          });
-
-          if (bool) {
-            expectation.toThrowMinErr('$animate', 'nongcls', errorMessage);
-          } else {
-            expectation.not.toThrow();
-          }
+          };
         }
       })
     );
