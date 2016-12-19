@@ -173,7 +173,10 @@ angular.module('phoneList', ['core.phone']);
 **`app/phone-detail/phone-detail.module.js`:**
 
 ```js
-angular.module('phoneDetail', ['core.phone']);
+angular.module('phoneDetail', [
+  'ngRoute',
+  'core.phone'
+]);
 ```
 
 <br />
