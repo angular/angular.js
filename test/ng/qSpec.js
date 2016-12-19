@@ -181,15 +181,13 @@ describe('q', function() {
   };
 
 
-  function exceptionHandler(reason) {
-    exceptionHandlerCalls.push(reason);
+  function exceptionHandler(exception, reason) {
+    if (typeof reason === 'undefined') {
+      exceptionHandlerCalls.push({ reason: exception });
+    } else {
+      exceptionHandlerCalls.push({ reason: reason, exception: exception });
+    }
   }
-
-
-  function exceptionHandlerStr() {
-    return exceptionHandlerCalls.join('; ');
-  }
-
 
   beforeEach(function() {
     q = qFactory(mockNextTick.nextTick, exceptionHandler, true);
@@ -2167,45 +2165,98 @@ describe('q', function() {
 
 
   describe('when exceptionHandler is called', function() {
-    it('should log an unhandled rejected promise', function() {
-      var defer = q.defer();
-      defer.reject('foo');
-      mockNextTick.flush();
-      expect(exceptionHandlerStr()).toBe('Possibly unhandled rejection: foo');
-    });
+    function CustomError() { }
+    CustomError.prototype = Object.create(Error.prototype);
+
+    var errorEg = new Error('Fail');
+    var errorStr = toDebugString(errorEg);
+
+    var customError = new CustomError('Custom');
+    var customErrorStr = toDebugString(customError);
+
+    var nonErrorObj = { isATest: 'this is' };
+    var nonErrorObjStr = toDebugString(nonErrorObj);
+
+    var fixtures = [
+      {
+        type: 'Error object',
+        value: errorEg,
+        expected: {
+          exception: errorEg,
+          reason: 'Possibly unhandled rejection: ' + errorStr
+        }
+      },
+      {
+        type: 'custom Error object',
+        value: customError,
+        expected: {
+          exception: customError,
+          reason: 'Possibly unhandled rejection: ' + customErrorStr
+        }
+      },
+      {
+        type: 'non-Error object',
+        value: nonErrorObj,
+        expected: {
+          reason: 'Possibly unhandled rejection: ' + nonErrorObjStr
+        }
+      },
+      {
+        type: 'string primitive',
+        value: 'foo',
+        expected: {
+          reason: 'Possibly unhandled rejection: foo'
+        }
+      }
+    ];
+    forEach(fixtures, function(fixture) {
+      var type = fixture.type;
+      var value = fixture.value;
+      var expected = fixture.expected;
+
+      describe('with ' + type, function() {
+
+        it('should log an unhandled rejected promise', function() {
+          var defer = q.defer();
+          defer.reject(value);
+          mockNextTick.flush();
+          expect(exceptionHandlerCalls).toEqual([expected]);
+        });
 
 
-    it('should not log an unhandled rejected promise if disabled', function() {
-      var defer = q_no_error.defer();
-      defer.reject('foo');
-      expect(exceptionHandlerStr()).toBe('');
-    });
+        it('should not log an unhandled rejected promise if disabled', function() {
+          var defer = q_no_error.defer();
+          defer.reject(value);
+          expect(exceptionHandlerCalls).toEqual([]);
+        });
 
 
-    it('should log a handled rejected promise on a promise without rejection callbacks', function() {
-      var defer = q.defer();
-      defer.promise.then(noop);
-      defer.reject('foo');
-      mockNextTick.flush();
-      expect(exceptionHandlerStr()).toBe('Possibly unhandled rejection: foo');
-    });
+        it('should log a handled rejected promise on a promise without rejection callbacks', function() {
+          var defer = q.defer();
+          defer.promise.then(noop);
+          defer.reject(value);
+          mockNextTick.flush();
+          expect(exceptionHandlerCalls).toEqual([expected]);
+        });
 
 
-    it('should not log a handled rejected promise', function() {
-      var defer = q.defer();
-      defer.promise.catch(noop);
-      defer.reject('foo');
-      mockNextTick.flush();
-      expect(exceptionHandlerStr()).toBe('');
-    });
+        it('should not log a handled rejected promise', function() {
+          var defer = q.defer();
+          defer.promise.catch(noop);
+          defer.reject(value);
+          mockNextTick.flush();
+          expect(exceptionHandlerCalls).toEqual([]);
+        });
 
 
-    it('should not log a handled rejected promise that is handled in a future tick', function() {
-      var defer = q.defer();
-      defer.promise.catch(noop);
-      defer.resolve(q.reject('foo'));
-      mockNextTick.flush();
-      expect(exceptionHandlerStr()).toBe('');
+        it('should not log a handled rejected promise that is handled in a future tick', function() {
+          var defer = q.defer();
+          defer.promise.catch(noop);
+          defer.resolve(q.reject(value));
+          mockNextTick.flush();
+          expect(exceptionHandlerCalls).toEqual([]);
+        });
+      });
     });
   });
 });
