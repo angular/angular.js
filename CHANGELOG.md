@@ -14899,7 +14899,7 @@ with the `$route` service
 
 ### Docs
 - rewrite of several major portions of angular.service.*, angular.Array.*, angular.Object.* docs
-- added support for [sitemap]((http://docs.angularjs.org/sitemap.xml) to make the docs indexable by
+- added support for [sitemap](http://docs.angularjs.org/sitemap.xml) to make the docs indexable by
   search crawlers
 - transition of Developer Guide docs from the wiki into docs.angularjs.org
 - lots of improvements related to formatting of the content of docs.anguarjs.org
