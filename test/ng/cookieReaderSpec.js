@@ -103,3 +103,30 @@ describe('$$cookieReader', function() {
 
 });
 
+
+describe('$$cookieReader with mock $document', function() {
+
+  var $$cookieReader, mockDocument;
+
+  beforeEach(function() {
+    mockDocument = {};
+    module(function($provide) {
+      $provide.constant('$document', [mockDocument]);
+    });
+    inject(function(_$$cookieReader_) {
+      $$cookieReader = _$$cookieReader_;
+    });
+  });
+
+  describe('getAll via $$cookieReader()', function() {
+
+    it('should return an empty object if cookies cannot be read', function() {
+      var cookieSpy = jasmine.createSpy('cookie').and.throwError('Can\'t touch this!');
+      Object.defineProperty(mockDocument, 'cookie', { get: cookieSpy });
+      expect($$cookieReader()).toEqual({});
+      expect(cookieSpy).toHaveBeenCalled();
+    });
+
+  });
+
+});
