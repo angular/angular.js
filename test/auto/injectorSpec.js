@@ -191,6 +191,21 @@ describe('injector', function() {
     });
 
 
+    it('should not use inherited $inject', function() {
+      function base() {}
+      base.$inject = ['a'];
+      function derived(b) {}
+      if (Object.setPrototypeOf) {
+        Object.setPrototypeOf(derived, base);
+      } else {
+        /* eslint-disable no-proto */
+        derived.__proto__ = base;
+        /* eslint-enable */
+      }
+      expect(annotate(derived)).toEqual(['b']);
+    });
+
+
     it('should create $inject', function() {
       var extraParams = angular.noop;
       /* eslint-disable space-before-function-paren */
