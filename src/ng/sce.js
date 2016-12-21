@@ -235,6 +235,7 @@ function $SceDelegateProvider() {
     }
 
     function isResourceUrlAllowedByPolicy(url) {
+      // The urlResolve step should take care of baseURI if it's set.
       var parsedUrl = urlResolve(url.toString());
       var i, n, allowed = false;
       // Ensure that at least one item from the whitelist allows this url.
