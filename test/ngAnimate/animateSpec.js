@@ -168,7 +168,7 @@ describe('animations', function() {
       inject(function($animate, $rootScope) {
         $animate.enter(element, parent);
         $rootScope.$digest();
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
         expect(element[0].parentNode).toEqual(parent[0]);
 
         hidden = false;
@@ -188,7 +188,7 @@ describe('animations', function() {
 
         $animate.enter(element, parent);
         $rootScope.$digest();
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
 
         element.addClass('only-allow-this-animation');
 
@@ -208,7 +208,7 @@ describe('animations', function() {
 
         $animate.enter(svgElement, parent);
         $rootScope.$digest();
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
 
         svgElement.attr('class', 'element only-allow-this-animation-svg');
 
@@ -290,7 +290,7 @@ describe('animations', function() {
         $animate.leave(element);
         $rootScope.$digest();
 
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
         expect(element[0].parentNode).toBeFalsy();
       });
     });
@@ -314,9 +314,9 @@ describe('animations', function() {
 
         $animate.enter(element, parent);
 
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
         $rootScope.$digest();
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
       }));
 
       it('should disable all animations on the given element',
@@ -328,15 +328,15 @@ describe('animations', function() {
         expect($animate.enabled(element)).toBeFalsy();
 
         $animate.addClass(element, 'red');
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
         $rootScope.$digest();
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
 
         $animate.enabled(element, true);
         expect($animate.enabled(element)).toBeTruthy();
 
         $animate.addClass(element, 'blue');
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
         $rootScope.$digest();
         expect(capturedAnimation).toBeTruthy();
       }));
@@ -347,14 +347,14 @@ describe('animations', function() {
         $animate.enabled(parent, false);
 
         $animate.enter(element, parent);
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
         $rootScope.$digest();
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
 
         $animate.enabled(parent, true);
 
         $animate.enter(element, parent);
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
         $rootScope.$digest();
         expect(capturedAnimation).toBeTruthy();
       }));
@@ -370,11 +370,11 @@ describe('animations', function() {
 
         $animate.addClass(element, 'red');
         $rootScope.$digest();
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
 
         $animate.addClass(child, 'red');
         $rootScope.$digest();
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
 
         $animate.enabled(element, true);
 
@@ -402,7 +402,7 @@ describe('animations', function() {
       $rootScope.items = [1,2,3,4,5];
       $rootScope.$digest();
 
-      expect(capturedAnimation).toBeFalsy();
+      expect(capturedAnimation).toBeNull();
     }));
 
     it('should not attempt to perform an animation on a text node element',
@@ -414,7 +414,7 @@ describe('animations', function() {
       $animate.addClass(textNode, 'some-class');
       $rootScope.$digest();
 
-      expect(capturedAnimation).toBeFalsy();
+      expect(capturedAnimation).toBeNull();
     }));
 
     it('should not attempt to perform an animation on an empty jqLite collection',
@@ -426,7 +426,7 @@ describe('animations', function() {
         $animate.addClass(emptyNode, 'some-class');
         $rootScope.$digest();
 
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
       })
     );
 
@@ -439,7 +439,7 @@ describe('animations', function() {
 
       $animate.leave(textNode);
       $rootScope.$digest();
-      expect(capturedAnimation).toBeFalsy();
+      expect(capturedAnimation).toBeNull();
       expect(textNode[0].parentNode).not.toBe(parentNode);
     }));
 
@@ -455,7 +455,7 @@ describe('animations', function() {
 
       $animate.leave(commentNode);
       $rootScope.$digest();
-      expect(capturedAnimation).toBeFalsy();
+      expect(capturedAnimation).toBeNull();
       expect(commentNode[0].parentNode).not.toBe(parentNode);
     }));
 
@@ -667,13 +667,13 @@ describe('animations', function() {
 
         $animate.removeClass(element, 'something-to-remove');
         $rootScope.$digest();
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
 
         element.addClass('something-to-add');
 
         $animate.addClass(element, 'something-to-add');
         $rootScope.$digest();
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
       }));
     });
 
@@ -689,7 +689,7 @@ describe('animations', function() {
           parent.append(element);
           $animate.animate(element, null, toStyle);
           $rootScope.$digest();
-          expect(capturedAnimation).toBeFalsy();
+          expect(capturedAnimation).toBeNull();
         });
       });
 
@@ -700,7 +700,7 @@ describe('animations', function() {
         parent.append(element);
         $animate.animate(element, fromStyle);
         $rootScope.$digest();
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
       }));
 
       it('should perform an animation if only from styles are provided as well as any valid classes',
@@ -712,7 +712,7 @@ describe('animations', function() {
         var options = { removeClass: 'goop' };
         $animate.animate(element, fromStyle, null, null, options);
         $rootScope.$digest();
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
 
         fromStyle = { color: 'blue' };
         options = { addClass: 'goop' };
@@ -816,11 +816,11 @@ describe('animations', function() {
 
         var elm1 = $compile('<div class="animated"></div>')($rootScope);
 
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
         $animate.addClass(elm1, 'klass2');
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
         $rootScope.$digest();
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
       }));
 
       it('should skip animations if the element is attached to the $rootElement, but not apart of the body',
@@ -834,22 +834,22 @@ describe('animations', function() {
         newParent.append($rootElement);
         $rootElement.append(elm1);
 
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
         $animate.addClass(elm1, 'klass2');
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
         $rootScope.$digest();
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
       }));
 
       it('should skip the animation if the element is removed from the DOM before the post digest kicks in',
         inject(function($animate, $rootScope) {
 
         $animate.enter(element, parent);
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
 
         element.remove();
         $rootScope.$digest();
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
       }));
 
       it('should be blocked when there is an ongoing structural parent animation occurring',
@@ -857,7 +857,7 @@ describe('animations', function() {
 
         parent.append(element);
 
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
         $animate.move(parent, parent2);
         $rootScope.$digest();
 
@@ -867,7 +867,7 @@ describe('animations', function() {
 
         $animate.addClass(element, 'blue');
         $rootScope.$digest();
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
       }));
 
       it('should disable all child animations for atleast one turn when a structural animation is issued',
@@ -917,7 +917,7 @@ describe('animations', function() {
 
         parent.append(element);
 
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
         $animate.addClass(parent, 'rogers');
         $rootScope.$digest();
 
@@ -940,7 +940,7 @@ describe('animations', function() {
           $animate.addClass(element, 'rumlow');
           $animate.move(parent, null, parent2);
 
-          expect(capturedAnimation).toBeFalsy();
+          expect(capturedAnimation).toBeNull();
           expect(capturedAnimationHistory.length).toBe(0);
           $rootScope.$digest();
 
@@ -1193,12 +1193,12 @@ describe('animations', function() {
         inject(function($animate, $rootScope) {
 
         $animate.enter(element, parent);
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
 
         $animate.addClass(element, 'red');
         expect(element).not.toHaveClass('red');
 
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
         $rootScope.$digest();
 
         expect(capturedAnimation[1]).toBe('enter');
@@ -1227,7 +1227,7 @@ describe('animations', function() {
         $animate.removeClass(element, 'red');
         $rootScope.$digest();
 
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
 
         $animate.addClass(element, 'blue');
         $rootScope.$digest();
@@ -1344,7 +1344,7 @@ describe('animations', function() {
         $animate.removeClass(element, 'four');
 
         $rootScope.$digest();
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
       }));
 
       it('but not skip the animation if it is a structural animation and if there are no classes to be animated',
@@ -1632,7 +1632,7 @@ describe('animations', function() {
 
         $animate.addClass(animateElement, 'red');
         $rootScope.$digest();
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
 
         // Pin the element to the app root to enable animations
         $animate.pin(pinElement, $rootElement);
@@ -1676,13 +1676,13 @@ describe('animations', function() {
 
         $animate.addClass(animateElement, 'red');
         $rootScope.$digest();
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
 
         $animate.pin(pinElement, pinTargetElement);
 
         $animate.addClass(animateElement, 'blue');
         $rootScope.$digest();
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
 
         dealoc(pinElement);
       });
@@ -1720,7 +1720,7 @@ describe('animations', function() {
 
         $animate.addClass(animateElement, 'blue');
         $rootScope.$digest();
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
 
         $animate.enabled(pinHostElement, true);
 
