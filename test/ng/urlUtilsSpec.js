@@ -45,8 +45,8 @@ describe('urlUtils', function() {
 
 
     it('should follow document.baseURI', inject(function($document) {
-      $document[0].body.appendChild($document[0].createElement('base'));
-      $document[0].body.lastChild.href = 'http://example.com/';
+      $document[0].head.appendChild($document[0].createElement('base'));
+      $document[0].head.lastChild.href = 'http://example.com/';
       expectIsSameOrigin('path', true);
       var origin = urlResolve($document[0].location.href);
 
@@ -55,6 +55,7 @@ describe('urlUtils', function() {
 
       // But the baseURI should.
       expectIsSameOrigin('http://example.com/path', true);
+      $document[0].head.lastChild.href = null;
     }));
   });
 });
