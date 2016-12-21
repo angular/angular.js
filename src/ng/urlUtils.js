@@ -7,7 +7,13 @@
 // exactly the behavior needed here.  There is little value is mocking these out for this
 // service.
 var urlParsingNode = window.document.createElement('a');
-var originUrl = urlResolve(window.location.href);
+
+// We use the baseURI instead of the location. The behavior of relative URIs is more intuitive
+// this way when mixed with a base tag, and the $sce security checks will rely on this. Also note
+// that baseURI can evolve over time, so we need to reevaluate.
+var getOriginUrl = function() {
+  return urlResolve(window.document.baseURI);
+};
 
 
 /**
@@ -85,6 +91,8 @@ function urlResolve(url) {
 
 /**
  * Parse a request URL and determine whether this is a same-origin request as the application document.
+ * We rely on document.baseURI to determine our origin, to make applications that use base behave as
+ * expected with relative URIs.
  *
  * @param {string|object} requestUrl The url of the request as a string that will be resolved
  * or a parsed URL object.
@@ -92,6 +100,6 @@ function urlResolve(url) {
  */
 function urlIsSameOrigin(requestUrl) {
   var parsed = (isString(requestUrl)) ? urlResolve(requestUrl) : requestUrl;
-  return (parsed.protocol === originUrl.protocol &&
-          parsed.host === originUrl.host);
+  return (parsed.protocol === getOriginUrl().protocol &&
+          parsed.host === getOriginUrl().host);
 }
