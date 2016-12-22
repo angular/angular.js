@@ -100,7 +100,7 @@ function annotate(fn, strictDi, name) {
       last;
 
   if (typeof fn === 'function') {
-    if (!($inject = fn.$inject)) {
+    if (!($inject = fn.hasOwnProperty('$inject'))) {
       $inject = [];
       if (fn.length) {
         if (strictDi) {
