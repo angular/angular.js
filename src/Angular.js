@@ -219,8 +219,7 @@ function isArrayLike(obj) {
 
   // NodeList objects (with `item` method) and
   // other objects with suitable length characteristics are array-like
-  return isNumber(length) &&
-    (length >= 0 && ((length - 1) in obj || obj instanceof Array) || typeof obj.item === 'function');
+  return isNumber(length) && (length >= 0 && (length - 1) in obj || typeof obj.item === 'function');
 
 }
 
@@ -635,12 +634,14 @@ function isDate(value) {
  * @kind function
  *
  * @description
- * Determines if a reference is an `Array`. Alias of Array.isArray.
+ * Determines if a reference is an `Array`.
  *
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is an `Array`.
  */
-var isArray = Array.isArray;
+function isArray(arr) {
+  return Array.isArray(arr) || arr instanceof Array;
+}
 
 /**
  * @description

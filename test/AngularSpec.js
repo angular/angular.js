@@ -1254,6 +1254,37 @@ describe('angular', function() {
     });
   });
 
+  describe('isArray', function() {
+
+    it('should return true if passed an `Array`', function() {
+      expect(isArray([])).toBe(true);
+    });
+
+    it('should return true if passed an `Array` from a different window context', function() {
+      var iframe = document.createElement('iframe');
+      document.body.appendChild(iframe);  // No `contentWindow` if not attached to the DOM.
+      var arr = new iframe.contentWindow.Array();
+      document.body.removeChild(iframe);  // Clean up.
+
+      expect(arr instanceof Array).toBe(false);
+      expect(isArray(arr)).toBe(true);
+    });
+
+    it('should return true if passed an object prototypically inherited from `Array`', function() {
+      function FooArray() {}
+      FooArray.prototype = [];
+
+      expect(isArray(new FooArray())).toBe(true);
+    });
+
+    it('should return false if passed non-array objects', function() {
+      expect(isArray(document.body.childNodes)).toBe(false);
+      expect(isArray({length: 0})).toBe(false);
+      expect(isArray({length: 2, 0: 'one', 1: 'two'})).toBe(false);
+    });
+
+  });
+
   describe('isArrayLike', function() {
 
     it('should return false if passed a number', function() {
