@@ -1,3 +1,38 @@
+<a name="1.6.1"></a>
+# 1.6.1 promise-rectification (2016-12-23)
+
+
+## Bug Fixes
+- **$q:** Add traceback to unhandled promise rejections
+  ([174cb4](https://github.com/angular/angular.js/commit/174cb4a8c81e25581da5b452c2bb43b0fa377a9b)
+  [#14631](https://github.com/angular/angular.js/issues/14631))
+- **$$cookieReader:** correctly handle forbidden access to `document.cookie`
+  ([33f769](https://github.com/angular/angular.js/commit/33f769b0a1214055c16fb59adad4897bf53d62bf)
+  [#15523](https://github.com/angular/angular.js/issues/15523))
+- **ngOptions:** do not unset the `selected` property unless necessary
+  ([bc4844](https://github.com/angular/angular.js/commit/bc4844d3b297d80aecef89aa1b32615024decedc)
+  [#15477](https://github.com/angular/angular.js/issues/15477))
+- **ngModelOptions:** work correctly when on the template of `replace` directives
+  ([5f8ed6](https://github.com/angular/angular.js/commit/5f8ed63f2ab02ffb9c21bf9c29d27c851d162e26)
+  [#15492](https://github.com/angular/angular.js/issues/15492))
+- **ngClassOdd/Even:** add/remove the correct classes when expression/`$index` change simultaneously
+  ([d52864](https://github.com/angular/angular.js/commit/d528644fe3e9ffd43999e7fc67806059f9e1083e))
+- **jqLite:** silently ignore `after()` if element has no parent
+  ([3d68b9](https://github.com/angular/angular.js/commit/3d68b9502848ff6714ef89bfb95b8e70ae34eff6)
+  [#15331](https://github.com/angular/angular.js/issues/15331),
+  [#15475](https://github.com/angular/angular.js/issues/15475))
+- **$rootScope:** when adding/removing watchers during $digest
+  ([163aca](https://github.com/angular/angular.js/commit/163aca336d7586a45255787af41b14b2a12361dd)
+  [#15422](https://github.com/angular/angular.js/issues/15422))
+
+
+## Performance Improvements
+- **ngClass:** avoid unnecessary `.data()` accesses, deep-watching and copies
+  ([1d3b65](https://github.com/angular/angular.js/commit/1d3b65adc2c22ff662159ef910089cf10d1edb7b)
+  [#14404](https://github.com/angular/angular.js/issues/14404))
+
+
+
 <a name="1.5.10"></a>
 # 1.5.10 asynchronous-synchronization (2016-12-15)
 
