@@ -947,9 +947,9 @@ change-case@3.0.0:
     upper-case "^1.1.1"
     upper-case-first "^1.1.0"
 
-changez-angular@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/changez-angular/-/changez-angular-2.1.0.tgz#927f7f5b7227eadabed79e1b2c0924c83984f7a3"
+changez-angular@^2.1.2:
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/changez-angular/-/changez-angular-2.1.2.tgz#9f32fc5439a949eee426087dd5d108bc4bf6de23"
   dependencies:
     changez "^2.1.0"
     nunjucks-date "^1.2.0"
@@ -2468,7 +2468,16 @@ glob@7.0.5, glob@^7.0.0, glob@^7.0.3, glob@^7.0.5, glob@~7.0.0:
     once "^1.3.0"
     path-is-absolute "^1.0.0"
 
-glob@^4.0.5, glob@^4.3.1, glob@~4.3.0:
+glob@^4.0.5, glob@~4.0.2:
+  version "4.0.6"
+  resolved "https://registry.yarnpkg.com/glob/-/glob-4.0.6.tgz#695c50bdd4e2fb5c5d370b091f388d3707e291a7"
+  dependencies:
+    graceful-fs "^3.0.2"
+    inherits "2"
+    minimatch "^1.0.0"
+    once "^1.3.0"
+
+glob@^4.3.1, glob@~4.3.0:
   version "4.3.5"
   resolved "https://registry.yarnpkg.com/glob/-/glob-4.3.5.tgz#80fbb08ca540f238acce5d11d1e9bc41e75173d3"
   dependencies:
@@ -2515,15 +2524,6 @@ glob@~3.1.21:
     graceful-fs "~1.2.0"
     inherits "1"
     minimatch "~0.2.11"
-
-glob@~4.0.2:
-  version "4.0.6"
-  resolved "https://registry.yarnpkg.com/glob/-/glob-4.0.6.tgz#695c50bdd4e2fb5c5d370b091f388d3707e291a7"
-  dependencies:
-    graceful-fs "^3.0.2"
-    inherits "2"
-    minimatch "^1.0.0"
-    once "^1.3.0"
 
 global-modules@^0.2.3:
   version "0.2.3"
@@ -3939,11 +3939,11 @@ lodash@3.10.1, lodash@^3.10.1, lodash@^3.8.0, lodash@~3.10.1:
   version "3.10.1"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-3.10.1.tgz#5bf45e8e49ba4189e17d482789dfd15bd140b7b6"
 
-lodash@4.15.0, lodash@^4.0.0, lodash@^4.13.1, lodash@^4.14.0, lodash@^4.3.0, lodash@^4.5.0, lodash@^4.7.0, lodash@^4.8.0:
+lodash@4.15.0, lodash@^4.0.0, lodash@^4.13.1, lodash@^4.3.0, lodash@^4.5.0, lodash@^4.7.0, lodash@^4.8.0:
   version "4.15.0"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.15.0.tgz#3162391d8f0140aa22cf8f6b3c34d6b7f63d3aa9"
 
-lodash@4.16.2:
+lodash@4.16.2, lodash@^4.14.0:
   version "4.16.2"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.16.2.tgz#3e626db827048a699281a8a125226326cfc0e652"
 
@@ -4963,17 +4963,17 @@ pump@^0.3.5:
     end-of-stream "~1.0.0"
     once "~1.2.0"
 
-punycode@1.3.2:
+punycode@1.3.2, punycode@>=0.2.0:
   version "1.3.2"
   resolved "https://registry.yarnpkg.com/punycode/-/punycode-1.3.2.tgz#9653a036fb7c1ee42342f2325cceefea3926c48d"
-
-punycode@>=0.2.0, punycode@~1.2.3:
-  version "1.2.4"
-  resolved "https://registry.yarnpkg.com/punycode/-/punycode-1.2.4.tgz#54008ac972aec74175def9cba6df7fa9d3918740"
 
 punycode@^1.4.1:
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/punycode/-/punycode-1.4.1.tgz#c0d5a63b2718800ad8e1eb0fa5269c84dd41845e"
+
+punycode@~1.2.3:
+  version "1.2.4"
+  resolved "https://registry.yarnpkg.com/punycode/-/punycode-1.2.4.tgz#54008ac972aec74175def9cba6df7fa9d3918740"
 
 q-io@^1.10.9, q-io@~1.13.2:
   version "1.13.2"
@@ -5104,7 +5104,7 @@ read@~1.0.4:
   dependencies:
     mute-stream "~0.0.4"
 
-readable-stream@1.1, "readable-stream@>=1.1.13-1 <1.2.0-0", readable-stream@^1.0.27-1, readable-stream@^1.0.33-1, readable-stream@^1.1.13, readable-stream@^1.1.13-1, readable-stream@~1.1.8, readable-stream@~1.1.9:
+readable-stream@1.1, "readable-stream@>=1.1.13-1 <1.2.0-0", readable-stream@^1.0.27-1, readable-stream@^1.1.13, readable-stream@^1.1.13-1, readable-stream@~1.1.8, readable-stream@~1.1.9:
   version "1.1.13"
   resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-1.1.13.tgz#f6eef764f514c89e2b9e23146a75ba106756d23e"
   dependencies:
@@ -5113,7 +5113,7 @@ readable-stream@1.1, "readable-stream@>=1.1.13-1 <1.2.0-0", readable-stream@^1.0
     isarray "0.0.1"
     string_decoder "~0.10.x"
 
-"readable-stream@>=1.0.33-1 <1.1.0-0", readable-stream@~1.0.0, readable-stream@~1.0.17, readable-stream@~1.0.2, readable-stream@~1.0.26, readable-stream@~1.0.31:
+"readable-stream@>=1.0.33-1 <1.1.0-0", readable-stream@^1.0.33-1, readable-stream@~1.0.0, readable-stream@~1.0.17, readable-stream@~1.0.2, readable-stream@~1.0.26, readable-stream@~1.0.31:
   version "1.0.34"
   resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-1.0.34.tgz#125820e34bc842d2f2aaafafe4c2916ee32c157c"
   dependencies:
