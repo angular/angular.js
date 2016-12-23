@@ -28,8 +28,8 @@ for other directives to augment its behavior.
       <form novalidate class="simple-form">
         <label>Name: <input type="text" ng-model="user.name" /></label><br />
         <label>E-mail: <input type="email" ng-model="user.email" /></label><br />
-        Gender: <label><input type="radio" ng-model="user.gender" value="male" />male</label>
-        <label><input type="radio" ng-model="user.gender" value="female" />female</label><br />
+        Best Editor: <label><input type="radio" ng-model="user.preference" value="vi" />vi</label>
+        <label><input type="radio" ng-model="user.preference" value="emacs" />emacs</label><br />
         <input type="button" ng-click="reset()" value="Reset" />
         <input type="submit" ng-click="update(user)" value="Save" />
       </form>
