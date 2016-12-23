@@ -636,6 +636,7 @@ angular.module('ngResource', ['ng']).
           var data = extend({}, this);
           delete data.$promise;
           delete data.$resolved;
+          delete data.$cancelRequest;
           return data;
         };
 
