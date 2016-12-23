@@ -947,9 +947,9 @@ change-case@3.0.0:
     upper-case "^1.1.1"
     upper-case-first "^1.1.0"
 
-changez-angular@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/changez-angular/-/changez-angular-2.1.0.tgz#927f7f5b7227eadabed79e1b2c0924c83984f7a3"
+changez-angular@^2.1.2:
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/changez-angular/-/changez-angular-2.1.2.tgz#9f32fc5439a949eee426087dd5d108bc4bf6de23"
   dependencies:
     changez "^2.1.0"
     nunjucks-date "^1.2.0"
@@ -3938,11 +3938,11 @@ lodash@3.10.1, lodash@^3.10.1, lodash@^3.8.0, lodash@~3.10.1:
   version "3.10.1"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-3.10.1.tgz#5bf45e8e49ba4189e17d482789dfd15bd140b7b6"
 
-lodash@4.15.0, lodash@^4.0.0, lodash@^4.3.0, lodash@^4.5.0, lodash@^4.7.0, lodash@^4.8.0:
+lodash@4.15.0, lodash@^4.0.0, lodash@^4.13.1, lodash@^4.3.0, lodash@^4.5.0, lodash@^4.7.0, lodash@^4.8.0:
   version "4.15.0"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.15.0.tgz#3162391d8f0140aa22cf8f6b3c34d6b7f63d3aa9"
 
-lodash@4.16.2, lodash@^4.13.1, lodash@^4.14.0:
+lodash@4.16.2, lodash@^4.14.0:
   version "4.16.2"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.16.2.tgz#3e626db827048a699281a8a125226326cfc0e652"
 
