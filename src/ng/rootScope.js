@@ -876,6 +876,10 @@ function $RootScopeProvider() {
           }
         }
         postDigestQueue.length = postDigestQueuePosition = 0;
+
+        // Check for changes to browser url that happened during the $digest
+        // (for which no event is fired; e.g. via `history.pushState()`)
+        $browser.$$checkUrlChange();
       },
 
 
