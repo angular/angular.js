@@ -54,7 +54,7 @@ We will keep this in mind though, as we add more features.
 So, now that we learned we should put everything in its own file, our `app/` directory will soon be
 full with dozens of files and specs (remember we keep our unit test files next to the corresponding
 source code files). What's more important, logically related files will not be grouped together; it
-will be really difficult of locate all files related to a specific section of the application and
+will be really difficult to locate all files related to a specific section of the application and
 make a change or fix a bug.
 
 So, what shall we do?
