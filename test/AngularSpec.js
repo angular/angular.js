@@ -1684,7 +1684,8 @@ describe('angular', function() {
     });
 
     it('should bootstrap from an extension into an extension document for same-origin documents only', function() {
-      if (msie) return;  // IE does not support document.currentScript (nor extensions with protocol), so skip test.
+      // IE does not support `document.currentScript` (nor extensions with protocol), so skip test.
+      if (msie) return;
 
       // Extension URLs are browser-specific, so we must choose a scheme that is supported by the browser to make
       // sure that the URL is properly parsed.
@@ -1715,8 +1716,28 @@ describe('angular', function() {
       expect(allowAutoBootstrap(fakeDoc)).toBe(false);
     });
 
+    it('should bootstrap from a script with an empty or missing `src` attribute', function() {
+      // IE does not support `document.currentScript` (nor extensions with protocol), so skip test.
+      if (msie) return;
+
+      // Fake a minimal document object (the actual document.currentScript is readonly).
+      var src;
+      var fakeDoc = {
+        createElement: document.createElement.bind(document),
+        currentScript: {getAttribute: function() { return src; }},
+        location: {origin: 'some-value', protocol: 'http:'}
+      };
+
+      src = null;
+      expect(allowAutoBootstrap(fakeDoc)).toBe(true);
+
+      src = '';
+      expect(allowAutoBootstrap(fakeDoc)).toBe(true);
+    });
+
     it('should not bootstrap from an extension into a non-extension document', function() {
-      if (msie) return;  // IE does not support document.currentScript (nor extensions with protocol), so skip test.
+      // IE does not support `document.currentScript` (nor extensions with protocol), so skip test.
+      if (msie) return;
 
       var src = 'resource://something';
       // Fake a minimal document object (the actual document.currentScript is readonly).
