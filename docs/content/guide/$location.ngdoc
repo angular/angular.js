@@ -555,7 +555,7 @@ In these examples we use `<base href="/base/index.html" />`. The inputs represen
 
 </example>
 
-####Browser in HTML5 Fallback mode (Hashbang mode)
+#### Browser in HTML5 Fallback mode (Hashbang mode)
 <example module="hashbang-mode" name="location-hashbang-mode">
   <file name="index.html">
     <div ng-controller="LocationController">
