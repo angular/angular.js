@@ -1479,12 +1479,16 @@ function getNgAttribute(element, ngAttr) {
 }
 
 function allowAutoBootstrap(document) {
-  if (!document.currentScript) {
+  var script = document.currentScript;
+  var src = script && script.getAttribute('src');
+
+  if (!src) {
     return true;
   }
-  var src = document.currentScript.getAttribute('src');
+
   var link = document.createElement('a');
   link.href = src;
+
   if (document.location.origin === link.origin) {
     // Same-origin resources are always allowed, even for non-whitelisted schemes.
     return true;
