@@ -464,6 +464,38 @@ describe('SCE', function() {
             '$sce', 'insecurl', 'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: foo');
         }
       ));
+
+      describe('when the document base URL has changed', function() {
+        var baseElem = document.createElement('BASE');
+        var cfg = {whitelist: ['self'], blacklist: []};
+        baseElem.setAttribute('href', '//foo.example.com/path/');
+        beforeAll(function() {
+          document.head.appendChild(baseElem);
+        });
+        afterAll(function() {;
+          document.head.removeChild(baseElem);
+        });
+        function expectAllowed($sce, url) {
+          expect($sce.getTrustedResourceUrl(url)).toEqual(url);
+        }
+
+        function expectBlocked($sce, url) {
+          expect(function() { $sce.getTrustedResourceUrl(url); }).toThrowMinErr(
+            '$sce', 'insecurl', 'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: ' + url);
+        }
+
+        it('should allow relative URLs', runTest(cfg, function($sce) {
+          expectAllowed($sce, 'foo');
+        }));
+
+        it('should allow absolute URLs', runTest(cfg, function($sce) {
+          expectAllowed($sce, '//foo.example.com/bar');
+        }));
+
+        it('should still block some URLs', runTest(cfg, function($sce) {
+          expectBlocked($sce, '//bad.example.com');
+        }));
+      });
     });
 
     it('should have blacklist override the whitelist', runTest(
