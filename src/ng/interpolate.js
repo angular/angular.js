@@ -90,7 +90,7 @@ function $InterpolateProvider() {
     if (value) {
       endSymbol = value;
       return this;
-    } 
+    }
     return endSymbol;
   };
 
