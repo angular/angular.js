@@ -1039,11 +1039,21 @@ describe('$location', function() {
     });
 
     it('should update $location when browser state changes', function() {
-      initService({html5Mode:true, supportHistory: true});
-      mockUpBrowser({initialUrl:'http://new.com/a/b/', baseHref:'/a/b/'});
-      inject(function($location, $window) {
+      initService({html5Mode: true, supportHistory: true});
+      mockUpBrowser({initialUrl: 'http://new.com/a/b/', baseHref: '/a/b/'});
+      inject(function($location, $rootScope, $window) {
         $window.history.pushState({b: 3});
+        $rootScope.$digest();
+
         expect($location.state()).toEqual({b: 3});
+
+        $window.history.pushState({b: 4}, null, $window.location.href + 'c?d=e#f');
+        $rootScope.$digest();
+
+        expect($location.path()).toBe('/c');
+        expect($location.search()).toEqual({d: 'e'});
+        expect($location.hash()).toBe('f');
+        expect($location.state()).toEqual({b: 4});
       });
     });
 
@@ -2666,12 +2676,10 @@ describe('$location', function() {
           replaceState: function(state, title, url) {
             win.history.state = copy(state);
             if (url) win.location.href = url;
-            jqLite(win).triggerHandler('popstate');
           },
           pushState: function(state, title, url) {
             win.history.state = copy(state);
             if (url) win.location.href = url;
-            jqLite(win).triggerHandler('popstate');
           }
         };
         win.addEventListener = angular.noop;
