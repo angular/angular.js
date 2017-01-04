@@ -417,7 +417,7 @@ will be removed in a future version, so we strongly recommend migrating your app
 rely on it as soon as possible.
 
 Initialization logic that relies on bindings being present should be put in the controller's
-`$onInit()` method, which is guarranteed to always be called _after_ the bindings have been
+`$onInit()` method, which is guaranteed to always be called _after_ the bindings have been
 assigned.
 
 Before:
@@ -502,7 +502,7 @@ running at `https://docs.angularjs.org` then the following will fail:
 <link href="{{ 'http://mydomain.org/unsafe.css' }}" rel="stylesheet" />
 ```
 
-By default, only URLs with the same domain and prototocl as the application document are considered
+By default, only URLs with the same domain and protocol as the application document are considered
 safe in the `RESOURCE_URL` context. To use URLs from other domains and/or protocols, you may either
 whitelist them or wrap them into a trusted value by calling `$sce.trustAsResourceUrl(url)`.
 
@@ -1170,7 +1170,7 @@ with an unencoded `;` character.
 Previously, in cases where `ngView` was loaded asynchronously, `$route` (and its dependencies) might
 also have been instantiated asynchronously.
 
-Although this is not expected to have unwanted side-effects in normal application bebavior, it may
+Although this is not expected to have unwanted side-effects in normal application behavior, it may
 affect your unit tests: When testing a module that (directly or indirectly) depends on `ngRoute`, a
 request will be made for the default route's template. If not properly "trained", `$httpBackend`
 will complain about this unexpected request. You can restore the previous behavior (and avoid
@@ -2606,7 +2606,7 @@ See [38deedd6](https://github.com/angular/angular.js/commit/38deedd6e3d806eb8262
 
 ### Interpolations inside DOM event handlers are now disallowed
 
-DOM event handlers execute arbitrary Javascript code. Using an interpolation for such handlers
+DOM event handlers execute arbitrary JavaScript code. Using an interpolation for such handlers
 means that the interpolated value is a JS string that is evaluated. Storing or generating such
 strings is error prone and leads to XSS vulnerabilities. On the other hand, `ngClick` and other
 Angular specific event handlers evaluate Angular expressions in non-window (Scope) context which

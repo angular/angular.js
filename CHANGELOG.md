@@ -1051,7 +1051,7 @@ previous behaviour simply add a comment:
 **Note:** Everything described below affects **IE11 only**.
 
 Previously, consecutive text nodes would not get merged if they had no parent. They will now, which
-might have unexpectd side effects in the following cases:
+might have unexpected side effects in the following cases:
 
 1. Passing an array or jqLite/jQuery collection of parent-less text nodes to `$compile` directly:
 
@@ -1205,7 +1205,7 @@ In cases where `ngView` was loaded asynchronously, `$route` (and its dependencie
 might also have been instantiated asynchronously. After this change, `$route` (and its dependencies)
 will - by default - be instantiated early on.
 
-Although this is not expected to have unwanted side-effects in normal application bebavior, it may
+Although this is not expected to have unwanted side-effects in normal application behavior, it may
 affect your unit tests: When testing a module that (directly or indirectly) depends on `ngRoute`, a
 request will be made for the default route's template. If not properly "trained", `$httpBackend`
 will complain about this unexpected request.
@@ -2438,7 +2438,7 @@ affects custom directives that might have been reading options for their own pur
 **Note:** Everything described below affects **IE11 only**.
 
 Previously, consecutive text nodes would not get merged if they had no parent. They will now, which
-might have unexpectd side effects in the following cases:
+might have unexpected side effects in the following cases:
 
 1. Passing an array or jqLite/jQuery collection of parent-less text nodes to `$compile` directly:
 
@@ -2588,7 +2588,7 @@ In cases where `ngView` was loaded asynchronously, `$route` (and its dependencie
 might also have been instantiated asynchronously. After this change, `$route` (and its dependencies)
 will - by default - be instantiated early on.
 
-Although this is not expected to have unwanted side-effects in normal application bebavior, it may
+Although this is not expected to have unwanted side-effects in normal application behavior, it may
 affect your unit tests: When testing a module that (directly or indirectly) depends on `ngRoute`, a
 request will be made for the default route's template. If not properly "trained", `$httpBackend`
 will complain about this unexpected request.
@@ -12303,7 +12303,7 @@ Contains only these fixes cherry-picked from [v1.2.0rc1](#1.2.0rc1).
   - due to [39841f2e](https://github.com/angular/angular.js/commit/39841f2ec9b17b3b2920fd1eb548d444251f4f56),
   Interpolations inside DOM event handlers are disallowed.
 
-    DOM event handlers execute arbitrary Javascript code. Using an interpolation for such handlers means that the interpolated value is a JS string that is evaluated.  Storing or generating such strings is error prone and leads to XSS vulnerabilities. On the other hand, `ngClick` and other Angular specific event handlers evaluate Angular expressions in non-window (Scope) context which makes them much safer.
+    DOM event handlers execute arbitrary JavaScript code. Using an interpolation for such handlers means that the interpolated value is a JS string that is evaluated.  Storing or generating such strings is error prone and leads to XSS vulnerabilities. On the other hand, `ngClick` and other Angular specific event handlers evaluate Angular expressions in non-window (Scope) context which makes them much safer.
 
     To migrate the code follow the example below:
 
