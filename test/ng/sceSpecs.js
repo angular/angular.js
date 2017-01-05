@@ -466,14 +466,14 @@ describe('SCE', function() {
       ));
 
       describe('when the document base URL has changed', function() {
-        var baseElem = document.createElement('BASE');
+        var baseElem = window.document.createElement('BASE');
         var cfg = {whitelist: ['self'], blacklist: []};
         baseElem.setAttribute('href', '//foo.example.com/path/');
         beforeAll(function() {
-          document.head.appendChild(baseElem);
+          window.document.head.appendChild(baseElem);
         });
-        afterAll(function() {;
-          document.head.removeChild(baseElem);
+        afterAll(function() {
+          window.document.head.removeChild(baseElem);
         });
         function expectAllowed($sce, url) {
           expect($sce.getTrustedResourceUrl(url)).toEqual(url);
