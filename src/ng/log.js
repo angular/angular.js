@@ -60,7 +60,7 @@ function $LogProvider() {
   this.debugEnabled = function(flag) {
     if (isDefined(flag)) {
       debug = flag;
-    return this;
+      return this;
     } else {
       return debug;
     }
