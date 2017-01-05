@@ -165,7 +165,8 @@ var $$AnimateQueueProvider = ['$animateProvider', /** @this */ function($animate
     var classNameFilter = $animateProvider.classNameFilter();
     var isAnimatableClassName = !classNameFilter
               ? function() { return true; }
-              : function(className) {
+              : function(node, options) {
+                var className = [node.getAttribute('class'), options.addClass, options.removeClass].join(' ');
                 return classNameFilter.test(className);
               };
 
@@ -353,8 +354,7 @@ var $$AnimateQueueProvider = ['$animateProvider', /** @this */ function($animate
         return runner;
       }
 
-      var className = [node.getAttribute('class'), options.addClass, options.removeClass].join(' ');
-      if (!isAnimatableClassName(className)) {
+      if (!isAnimatableClassName(node, options)) {
         close();
         return runner;
       }
