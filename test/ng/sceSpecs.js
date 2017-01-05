@@ -468,7 +468,7 @@ describe('SCE', function() {
       describe('when the document base URL has changed', function() {
         var baseElem = window.document.createElement('BASE');
         var cfg = {whitelist: ['self'], blacklist: []};
-        baseElem.setAttribute('href', location.protocol + '//foo.example.com/path/');
+        baseElem.setAttribute('href', window.location.protocol + '//foo.example.com/path/');
         beforeAll(function() {
           window.document.head.appendChild(baseElem);
         });
