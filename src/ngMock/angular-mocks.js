@@ -37,8 +37,9 @@ angular.mock.$Browser = function() {
   self.pollFns = [];
 
   // TODO(vojta): remove this temporary api
-  self.$$completeOutstandingRequest = angular.noop;
-  self.$$incOutstandingRequestCount = angular.noop;
+  self.$$outstandingRequestCount = 0;
+  self.$$completeOutstandingRequest = function() { self.$$outstandingRequestCount--; };
+  self.$$incOutstandingRequestCount = function() { self.$$outstandingRequestCount++; };
 
 
   // register url polling fn
