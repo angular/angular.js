@@ -49,6 +49,10 @@
  * by tag name / CSS selector. For lookups by tag name, try instead `angular.element(document).find(...)`
  * or `$document.find()`, or use the standard DOM APIs, e.g. `document.querySelectorAll()`.</div>
  *
+ * <div class="alert">**Note:** Keep in mind that this function is just a selector, it will
+ * not find elements by tag name for you. Try instead `angular.element(document).find()`
+ * or `$document.find()`</div>
+ *
  * ## Angular's jqLite
  * jqLite provides only the following jQuery methods:
  *
