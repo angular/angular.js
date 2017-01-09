@@ -680,8 +680,9 @@ function $RouteProvider() {
       } else if (nextRoute || lastRoute) {
         forceReload = false;
         $route.current = nextRoute;
-
         var nextRoutePromise = $q.resolve(nextRoute);
+
+        $browser.$$incOutstandingRequestCount();
 
         nextRoutePromise.
           then(getRedirectionData).
@@ -696,15 +697,22 @@ function $RouteProvider() {
                     nextRoute.locals = locals;
                     angular.copy(nextRoute.params, $routeParams);
                   }
+
                   $rootScope.$broadcast('$routeChangeSuccess', nextRoute, lastRoute);
                 }
               });
-          }).catch(function(error) {
+          }).
+          catch(function(error) {
             if (nextRoute === $route.current) {
               $rootScope.$broadcast('$routeChangeError', nextRoute, lastRoute, error);
             }
-          });
+          }).
+          finally(decrementRequestCount);
       }
+    }
+
+    function decrementRequestCount() {
+      $browser.$$completeOutstandingRequest(noop);
     }
 
     function getRedirectionData(route) {
@@ -779,7 +787,6 @@ function $RouteProvider() {
 
     function resolveLocals(route) {
       if (route) {
-        $browser.$$incOutstandingRequestCount();
         var locals = angular.extend({}, route.resolve);
         angular.forEach(locals, function(value, key) {
           locals[key] = angular.isString(value) ?
@@ -790,9 +797,7 @@ function $RouteProvider() {
         if (angular.isDefined(template)) {
           locals['$template'] = template;
         }
-        return $q.all(locals).finally(function(locals) {
-          $browser.$$completeOutstandingRequest(noop);
-        });
+        return $q.all(locals);
       }
     }
 
