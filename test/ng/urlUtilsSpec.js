@@ -24,11 +24,13 @@ describe('urlUtils', function() {
   });
 
   describe('isSameOrigin', function() {
+
+    function expectIsSameOrigin(url, expectedValue) {
+      expect(urlIsSameOrigin(url)).toBe(expectedValue);
+      expect(urlIsSameOrigin(urlResolve(url))).toBe(expectedValue);
+    }
+
     it('should support various combinations of urls - both string and parsed', inject(function($document) {
-      function expectIsSameOrigin(url, expectedValue) {
-        expect(urlIsSameOrigin(url)).toBe(expectedValue);
-        expect(urlIsSameOrigin(urlResolve(url))).toBe(expectedValue);
-      }
       expectIsSameOrigin('path', true);
       var origin = urlResolve($document[0].location.href);
       expectIsSameOrigin('//' + origin.host + '/path', true);
@@ -39,6 +41,21 @@ describe('urlUtils', function() {
       // Should not match when the ports are different.
       // This assumes that the test is *not* running on port 22 (very unlikely).
       expectIsSameOrigin('//' + origin.hostname + ':22/path', false);
+    }));
+
+
+    it('should follow document.baseURI', inject(function($document) {
+      $document[0].head.appendChild($document[0].createElement('base'));
+      $document[0].head.lastChild.href = 'http://example.com/';
+      expectIsSameOrigin('path', true);
+      var origin = urlResolve($document[0].location.href);
+
+      // Real origin shouldn't be considered okay anymore.
+      expectIsSameOrigin('//' + origin.host + '/path', false);
+
+      // But the baseURI should.
+      expectIsSameOrigin('http://example.com/path', true);
+      $document[0].head.lastChild.href = null;
     }));
   });
 });
