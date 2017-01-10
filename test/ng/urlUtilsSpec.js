@@ -23,11 +23,17 @@ describe('urlUtils', function() {
     });
   });
 
-  describe('isSameOrigin', function() {
+  describe('isSameOrigin and urlIsSameOriginAsBaseUrl', function() {
     it('should support various combinations of urls - both string and parsed', inject(function($document) {
       function expectIsSameOrigin(url, expectedValue) {
         expect(urlIsSameOrigin(url)).toBe(expectedValue);
         expect(urlIsSameOrigin(urlResolve(url))).toBe(expectedValue);
+
+        // urlIsSameOriginAsBaseUrl() should behave the same as urlIsSameOrigin() by default.
+        // Behavior when there is a non-default base URL or when the base URL changes dynamically
+        // is tested in the end-to-end tests in e2e/tests/base-tag.spec.js.
+        expect(urlIsSameOriginAsBaseUrl(url)).toBe(expectedValue);
+        expect(urlIsSameOriginAsBaseUrl(urlResolve(url))).toBe(expectedValue);
       }
       expectIsSameOrigin('path', true);
       var origin = urlResolve($document[0].location.href);
