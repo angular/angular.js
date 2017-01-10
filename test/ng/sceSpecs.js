@@ -466,34 +466,28 @@ describe('SCE', function() {
       ));
 
       describe('when the document base URL has changed', function() {
-        var baseElem = window.document.createElement('BASE');
+        var baseElem;
         var cfg = {whitelist: ['self'], blacklist: []};
-        baseElem.setAttribute('href', window.location.protocol + '//foo.example.com/path/');
-        beforeAll(function() {
+        beforeEach(function() {
+          baseElem = window.document.createElement('BASE');
+          baseElem.setAttribute('href', window.location.protocol + '//foo.example.com/path/');
           window.document.head.appendChild(baseElem);
         });
-        afterAll(function() {
+        afterEach(function() {
           window.document.head.removeChild(baseElem);
         });
-        function expectAllowed($sce, url) {
-          expect($sce.getTrustedResourceUrl(url)).toEqual(url);
-        }
-
-        function expectBlocked($sce, url) {
-          expect(function() { $sce.getTrustedResourceUrl(url); }).toThrowMinErr(
-            '$sce', 'insecurl', 'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: ' + url);
-        }
 
         it('should allow relative URLs', runTest(cfg, function($sce) {
-          expectAllowed($sce, 'foo');
+          expect($sce.getTrustedResourceUrl('foo')).toEqual('foo');
         }));
 
         it('should allow absolute URLs', runTest(cfg, function($sce) {
-          expectAllowed($sce, '//foo.example.com/bar');
+          expect($sce.getTrustedResourceUrl('//foo.example.com/bar')).toEqual('//foo.example.com/bar');
         }));
 
         it('should still block some URLs', runTest(cfg, function($sce) {
-          expectBlocked($sce, '//bad.example.com');
+          expect(function() { $sce.getTrustedResourceUrl('//bad.example.com'); }).toThrowMinErr(
+            '$sce', 'insecurl', 'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: //bad.example.com');
         }));
       });
     });

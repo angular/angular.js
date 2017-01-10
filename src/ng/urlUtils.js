@@ -97,7 +97,7 @@ function urlIsSameOrigin(requestUrl) {
 /**
  * Parse a request URL and determine whether it is same-origin as the current document base URL.
  *
- * Note: The base URL is usually the same the document location (`location.href`) but can
+ * Note: The base URL is usually the same as the document location (`location.href`) but can
  * be overriden by using the `<base>` tag.
  *
  * @param {string|object} requestUrl The url of the request as a string that will be resolved
