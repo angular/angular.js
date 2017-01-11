@@ -11169,6 +11169,22 @@ describe('$compile', function() {
     }));
   });
 
+  describe('base[href]', function() {
+    it('should be a RESOURCE_URL context', inject(function($compile, $rootScope, $sce) {
+      element = $compile('<base href="{{testUrl}}"/>')($rootScope);
+
+      $rootScope.testUrl = $sce.trustAsResourceUrl('https://example.com/');
+      $rootScope.$apply();
+      expect(element.attr('href')).toContain('https://example.com/');
+
+      $rootScope.testUrl = 'https://not.example.com/';
+      expect(function() { $rootScope.$apply(); }).toThrowMinErr(
+          '$interpolate', 'interr', 'Can\'t interpolate: {{testUrl}}\nError: [$sce:insecurl] Blocked ' +
+          'loading resource from url not allowed by $sceDelegate policy.  URL: ' +
+          'https://not.example.com/');
+    }));
+  });
+
   describe('form[action]', function() {
     it('should pass through action attribute for the same domain', inject(function($compile, $rootScope, $sce) {
       element = $compile('<form action="{{testUrl}}"></form>')($rootScope);
