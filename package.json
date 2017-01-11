@@ -32,7 +32,7 @@
     "cross-spawn": "^4.0.0",
     "cz-conventional-changelog": "1.1.4",
     "dgeni": "^0.4.0",
-    "dgeni-packages": "^0.16.2",
+    "dgeni-packages": "^0.16.4",
     "event-stream": "~3.1.0",
     "glob": "^6.0.1",
     "grunt": "^1.0.1",
