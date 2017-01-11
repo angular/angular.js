@@ -2082,4 +2082,58 @@ describe('$route', function() {
       expect(function() { $route.updateParams(); }).toThrowMinErr('ngRoute', 'norout');
     }));
   });
+
+  describe('testability', function() {
+    it('should wait for route promises before calling callbacks', function() {
+      var deferred;
+
+      module(function($provide, $routeProvider) {
+        $routeProvider.when('/path', { template: '', resolve: {
+          a: function($q) {
+            deferred = $q.defer();
+            return deferred.promise;
+          }
+        } });
+      });
+
+      inject(function($location, $route, $rootScope, $httpBackend, $$testability) {
+        $location.path('/path');
+        $rootScope.$digest();
+
+        var callback = jasmine.createSpy('callback');
+        $$testability.whenStable(callback);
+        expect(callback).not.toHaveBeenCalled();
+
+        deferred.resolve();
+        $rootScope.$digest();
+        expect(callback).toHaveBeenCalled();
+      });
+    });
+
+    it('should call callback after route promises are rejected', function() {
+      var deferred;
+
+      module(function($provide, $routeProvider) {
+        $routeProvider.when('/path', { template: '', resolve: {
+          a: function($q) {
+            deferred = $q.defer();
+            return deferred.promise;
+          }
+        } });
+      });
+
+      inject(function($location, $route, $rootScope, $httpBackend, $$testability) {
+        $location.path('/path');
+        $rootScope.$digest();
+
+        var callback = jasmine.createSpy('callback');
+        $$testability.whenStable(callback);
+        expect(callback).not.toHaveBeenCalled();
+
+        deferred.reject();
+        $rootScope.$digest();
+        expect(callback).toHaveBeenCalled();
+      });
+    });
+  });
 });

@@ -7,6 +7,7 @@
 var isArray;
 var isObject;
 var isDefined;
+var noop;
 
 /**
  * @ngdoc module
@@ -54,6 +55,7 @@ function $RouteProvider() {
   isArray = angular.isArray;
   isObject = angular.isObject;
   isDefined = angular.isDefined;
+  noop = angular.noop;
 
   function inherit(parent, extra) {
     return angular.extend(Object.create(parent), extra);
@@ -350,7 +352,8 @@ function $RouteProvider() {
                '$injector',
                '$templateRequest',
                '$sce',
-      function($rootScope, $location, $routeParams, $q, $injector, $templateRequest, $sce) {
+               '$browser',
+      function($rootScope, $location, $routeParams, $q, $injector, $templateRequest, $sce, $browser) {
 
     /**
      * @ngdoc service
@@ -677,8 +680,9 @@ function $RouteProvider() {
       } else if (nextRoute || lastRoute) {
         forceReload = false;
         $route.current = nextRoute;
-
         var nextRoutePromise = $q.resolve(nextRoute);
+
+        $browser.$$incOutstandingRequestCount();
 
         nextRoutePromise.
           then(getRedirectionData).
@@ -693,15 +697,22 @@ function $RouteProvider() {
                     nextRoute.locals = locals;
                     angular.copy(nextRoute.params, $routeParams);
                   }
+
                   $rootScope.$broadcast('$routeChangeSuccess', nextRoute, lastRoute);
                 }
               });
-          }).catch(function(error) {
+          }).
+          catch(function(error) {
             if (nextRoute === $route.current) {
               $rootScope.$broadcast('$routeChangeError', nextRoute, lastRoute, error);
             }
-          });
+          }).
+          finally(decrementRequestCount);
       }
+    }
+
+    function decrementRequestCount() {
+      $browser.$$completeOutstandingRequest(noop);
     }
 
     function getRedirectionData(route) {
