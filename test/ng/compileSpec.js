@@ -5149,7 +5149,6 @@ describe('$compile', function() {
             expect(componentScope.attrAlias).toEqual(componentScope.attr);
           }));
 
-            expect(componentScope.$attrAlias).toEqual(' some other text ');
           it('should set up the interpolation before it reaches the link function', inject(function() {
             $rootScope.name = 'misko';
             compile('<div><span my-component attr="hello {{name}}" $attr$="hi {{name}}">');
