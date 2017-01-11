@@ -4772,7 +4772,7 @@ describe('$compile', function() {
                 optExpr: '&?',
                 exprAlias: '&expr',
                 $exprAlias: '&$expr$',
-                constructor: '&?',
+                constructor: '&?'
               },
               link: function(scope) {
                 componentScope = scope;
