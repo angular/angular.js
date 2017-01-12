@@ -148,7 +148,6 @@
     /* urlUtils.js */
     "urlResolve": false,
     "urlIsSameOrigin": false,
-    "urlIsSameOriginAsBaseUrl": true,
 
     /* karma */
     "dump": false,
