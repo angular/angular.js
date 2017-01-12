@@ -11,7 +11,7 @@ describe('ngRoute promises', function() {
 
   it('should time out if the promise takes long enough', function() {
     // Don't try this at home kids, I'm a protractor dev
-    browser.manage().timeouts().setScriptTimeout(1500);
+    browser.manage().timeouts().setScriptTimeout(1000);
     browser.waitForAngular().then(function() {
       fail('waitForAngular() should have timed out, but didn\'t');
     }, function(error) {

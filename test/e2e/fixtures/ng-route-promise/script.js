@@ -25,7 +25,7 @@ angular.
       return {
         letters: function($q) {
           return $q(function(resolve) {
-            window.setTimeout(resolve, 1000, ['a', 'b', 'c', 'd', 'e']);
+            window.setTimeout(resolve, 2000, ['a', 'b', 'c', 'd', 'e']);
           });
         }
       };
