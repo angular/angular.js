@@ -2432,13 +2432,15 @@ describe('ngMock', function() {
 
 describe('ngMockE2E', function() {
   describe('$httpBackend', function() {
-    var hb, realHttpBackend, callback;
+    var hb, realHttpBackend, realHttpBackendBrowser, callback;
 
     beforeEach(function() {
       callback = jasmine.createSpy('callback');
       angular.module('ng').config(function($provide) {
         realHttpBackend = jasmine.createSpy('real $httpBackend');
-        $provide.value('$httpBackend', realHttpBackend);
+        $provide.factory('$httpBackend', ['$browser', function($browser) {
+          return realHttpBackend.and.callFake(function() { realHttpBackendBrowser = $browser; });
+        }]);
       });
       module('ngMockE2E');
       inject(function($injector) {
@@ -2476,6 +2478,14 @@ describe('ngMockE2E', function() {
 
         expect(realHttpBackend).not.toHaveBeenCalled();
         expect(callback).toHaveBeenCalledOnceWith(200, 'passThrough override', '', '');
+      }));
+
+      it('should pass through to an httpBackend that uses the same $browser service', inject(function($browser) {
+        hb.when('GET', /\/passThrough\/.*/).passThrough();
+        hb('GET', '/passThrough/23');
+
+        expect(realHttpBackend).toHaveBeenCalledOnce();
+        expect(realHttpBackendBrowser).toBe($browser);
       }));
     });
 
