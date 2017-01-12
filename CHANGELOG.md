@@ -1,3 +1,26 @@
+<a name="1.5.11"></a>
+# 1.5.11 princely-quest (2017-01-13)
+
+
+## Bug Fixes
+- **$compile:** allow the usage of "$" in isolate scope property alias
+  ([e75fbc](https://github.com/angular/angular.js/commit/e75fbc494e6a0da6a9231b40bb0382431b62be07),
+  [#15586](https://github.com/angular/angular.js/issues/15586),
+  [#15594](https://github.com/angular/angular.js/issues/15594))
+- **angularInit:** allow auto-bootstraping from inline script
+  ([41aa91](https://github.com/angular/angular.js/commit/41aa9125b9aaf771addb250642f524a4e6f9d8d3),
+  [#15567](https://github.com/angular/angular.js/issues/15567),
+  [#15571](https://github.com/angular/angular.js/issues/15571))
+- **$resource:** delete `$cancelRequest()` in `toJSON()`
+  ([4f3858](https://github.com/angular/angular.js/commit/4f3858e7c371f87534397f45b9d002add33b00cc),
+  [#15244](https://github.com/angular/angular.js/issues/15244))
+- **$$cookieReader:** correctly handle forbidden access to `document.cookie`
+  ([6933cf](https://github.com/angular/angular.js/commit/6933cf64fe51f54b10d1639f2b95bab3c1178df9),
+  [#15523](https://github.com/angular/angular.js/issues/15523),
+  [#15532](https://github.com/angular/angular.js/issues/15532))
+
+
+
 <a name="1.6.1"></a>
 # 1.6.1 promise-rectification (2016-12-23)
 
