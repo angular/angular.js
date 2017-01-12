@@ -2142,7 +2142,7 @@ var ngValueDirective = function() {
    *  makes it possible to use ngValue as a sort of one-way bind.
    */
   function updateElementValue(element, attr, value) {
-    element.prop('value', value);
+    element.prop('value', angular.isUndefined(value) ? null : value);
     attr.$set('value', value);
   }
 

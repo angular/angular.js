@@ -4211,6 +4211,22 @@ describe('input', function() {
       expect(inputElm[0].getAttribute('value')).toBe('something');
     });
 
+    it('should update the dom "value" "" and attribute to null when the binding is set to undefind', function() {
+      var inputElm = helper.compileInput('<input type="text" ng-value="value">');
+
+      $rootScope.$apply('value = \'something\'');
+
+      expect(inputElm[0].value).toBe('something');
+      expect(inputElm[0].getAttribute('value')).toBe('something');
+      
+      $rootScope.$apply(function() {
+        delete $rootScope.value;
+      });
+      
+      expect(inputElm[0].value).toBe('');
+      expect(inputElm[0].getAttribute('value')).toBe(null);
+    });
+
     they('should update the $prop "value" property and attribute after the bound expression changes', {
       input: '<input type="text" ng-value="value">',
       textarea: '<textarea ng-value="value"></textarea>'
