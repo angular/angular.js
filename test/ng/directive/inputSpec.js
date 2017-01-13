@@ -4211,7 +4211,7 @@ describe('input', function() {
       expect(inputElm[0].getAttribute('value')).toBe('something');
     });
 
-    it('should update the dom "value" to "" and attribute to null when the binding is set to undefined', function() {
+    it('should clear the "dom" value property and attribute when the value is undefined', function() {
       var inputElm = helper.compileInput('<input type="text" ng-value="value">');
 
       $rootScope.$apply('value = "something"');
