@@ -4214,7 +4214,7 @@ describe('input', function() {
     it('should update the dom "value" to "" and attribute to null when the binding is set to undefined', function() {
       var inputElm = helper.compileInput('<input type="text" ng-value="value">');
 
-      $rootScope.$apply('value = \'something\'');
+      $rootScope.$apply('value = "something"');
 
       expect(inputElm[0].value).toBe('something');
       expect(inputElm[0].getAttribute('value')).toBe('something');
@@ -4224,7 +4224,11 @@ describe('input', function() {
       });
 
       expect(inputElm[0].value).toBe('');
-      expect(inputElm[0].getAttribute('value')).toBe(null);
+      // Support: IE 9-11
+      // In IE it is not possible to remove the `value` attribute from an input element.
+      if (!msie) {
+        expect(inputElm[0].getAttribute('value')).toBeNull();
+      }
     });
 
     they('should update the $prop "value" property and attribute after the bound expression changes', {
