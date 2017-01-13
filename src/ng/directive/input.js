@@ -2142,6 +2142,8 @@ var ngValueDirective = function() {
    *  makes it possible to use ngValue as a sort of one-way bind.
    */
   function updateElementValue(element, attr, value) {
+    // Support: IE9 only
+    // In IE9 values are converted to string (e.g. `input.value = null` results in `input.value === 'null'`).
     var propValue = isDefined(value) ? value : (msie === 9) ? '' : null;
     element.prop('value', propValue);
     attr.$set('value', value);
