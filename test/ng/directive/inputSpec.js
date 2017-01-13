@@ -4218,11 +4218,11 @@ describe('input', function() {
 
       expect(inputElm[0].value).toBe('something');
       expect(inputElm[0].getAttribute('value')).toBe('something');
-      
+
       $rootScope.$apply(function() {
         delete $rootScope.value;
       });
-      
+
       expect(inputElm[0].value).toBe('');
       expect(inputElm[0].getAttribute('value')).toBe(null);
     });
