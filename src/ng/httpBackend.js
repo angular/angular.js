@@ -108,9 +108,14 @@ function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDoc
         completeRequest(callback, -1, null, null, '');
       };
 
+      var requestTimeout = function() {
+        // Set standard request timeout status code: 408
+        completeRequest(callback, 408, null, null, '');
+      };
+
       xhr.onerror = requestError;
       xhr.onabort = requestError;
-      xhr.ontimeout = requestError;
+      xhr.ontimeout = requestTimeout;
 
       forEach(eventHandlers, function(value, key) {
           xhr.addEventListener(key, value);
