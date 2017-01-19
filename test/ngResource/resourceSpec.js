@@ -1721,6 +1721,76 @@ describe('handling rejections', function() {
       expect($exceptionHandler.errors[0]).toMatch(/^Possibly unhandled rejection/);
     })
   );
+
+
+  it('should not swallow exceptions in success callback when error callback is provided',
+    function() {
+      $httpBackend.expect('GET', '/CreditCard/123').respond(null);
+      var CreditCard = $resource('/CreditCard/:id');
+      var cc = CreditCard.get({id: 123},
+          function(res) { throw new Error('should be caught'); },
+          function() {});
+
+      $httpBackend.flush();
+      expect($exceptionHandler.errors.length).toBe(1);
+      expect($exceptionHandler.errors[0]).toMatch(/^Error: should be caught/);
+    }
+  );
+
+
+  it('should not swallow exceptions in success callback when error callback is not provided',
+    function() {
+      $httpBackend.expect('GET', '/CreditCard/123').respond(null);
+      var CreditCard = $resource('/CreditCard/:id');
+      var cc = CreditCard.get({id: 123},
+          function(res) { throw new Error('should be caught'); });
+
+      $httpBackend.flush();
+      expect($exceptionHandler.errors.length).toBe(1);
+      expect($exceptionHandler.errors[0]).toMatch(/^Error: should be caught/);
+    }
+  );
+
+
+  it('should not swallow exceptions in success callback when error callback is provided and has responseError interceptor',
+    function() {
+      $httpBackend.expect('GET', '/CreditCard/123').respond(null);
+      var CreditCard = $resource('/CreditCard/:id:', null, {
+        get: {
+          method: 'GET',
+          interceptor: {responseError: function() {}}
+        }
+      });
+
+      var cc = CreditCard.get({id: 123},
+          function(res) { throw new Error('should be caught'); },
+          function() {});
+
+      $httpBackend.flush();
+      expect($exceptionHandler.errors.length).toBe(1);
+      expect($exceptionHandler.errors[0]).toMatch(/^Error: should be caught/);
+    }
+  );
+
+
+  it('should not swallow exceptions in success callback when error callback is not provided and has responseError interceptor',
+    function() {
+      $httpBackend.expect('GET', '/CreditCard/123').respond(null);
+      var CreditCard = $resource('/CreditCard/:id', null, {
+        get: {
+          method: 'GET',
+          interceptor: {responseError: function() {}}
+        }
+      });
+
+      var cc = CreditCard.get({id: 123},
+          function(res) { throw new Error('should be caught'); });
+
+      $httpBackend.flush();
+      expect($exceptionHandler.errors.length).toBe(1);
+      expect($exceptionHandler.errors[0]).toMatch(/^Error: should be caught/);
+    }
+  );
 });
 
 describe('cancelling requests', function() {
