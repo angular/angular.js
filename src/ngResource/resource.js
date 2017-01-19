@@ -590,11 +590,12 @@ angular.module('ngResource', ['ng']).
             url = url.replace(/\/+$/, '') || '/';
           }
 
-          // then replace collapse `/.` if found in the last URL path segment before the query
-          // E.g. `http://url.com/id./format?q=x` becomes `http://url.com/id.format?q=x`
+          // Collapse `/.` if found in the last URL path segment before the query.
+          // E.g. `http://url.com/id/.format?q=x` becomes `http://url.com/id.format?q=x`.
           url = url.replace(/\/\.(?=\w+($|\?))/, '.');
-          // replace escaped `/\.` with `/.`
-          config.url = protocolAndIpv6 + url.replace(/\/\\\./, '/.');
+          // Replace escaped `/\.` with `/.`.
+          // (If `\.` comes from a param value, it will be encoded as `%5C.`.)
+          config.url = protocolAndIpv6 + url.replace(/\/(\\|%5C)\./, '/.');
 
 
           // set params - delegate param encoding to $http
