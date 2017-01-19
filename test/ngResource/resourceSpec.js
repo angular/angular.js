@@ -1456,6 +1456,18 @@ describe('basic usage', function() {
         $httpBackend.expect('POST', '/users/.json').respond();
         $resource('/users/\\.json').save({});
       });
+      it('should work with save() if dynamic params', function() {
+        $httpBackend.expect('POST', '/users/.json').respond();
+        $resource('/users/:json', {json: '\\.json'}).save({});
+      });
+      it('should work with query() if dynamic params', function() {
+        $httpBackend.expect('GET', '/users/.json').respond();
+        $resource('/users/:json', {json: '\\.json'}).query();
+      });
+      it('should work with get() if dynamic params', function() {
+        $httpBackend.expect('GET', '/users/.json').respond();
+        $resource('/users/:json', {json: '\\.json'}).get();
+      });
     });
   });
 
