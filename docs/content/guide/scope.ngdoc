@@ -184,7 +184,7 @@ To examine the scope in the debugger:
     variable.
 
   3. To retrieve the associated scope in console execute: `angular.element($0).scope()` or just type $scope
-
+Note: In order to make $scope to work you should use something like mentioned in this post on Stackoverflow.com . http://stackoverflow.com/questions/41734353/scope-not-working-on-console
 
 ## Scope Events Propagation
 
