@@ -594,7 +594,7 @@ angular.module('ngResource', ['ng']).
           // E.g. `http://url.com/id./format?q=x` becomes `http://url.com/id.format?q=x`
           url = url.replace(/\/\.(?=\w+($|\?))/, '.');
           // replace escaped `/\.` with `/.`
-          config.url = protocolAndIpv6 + url.replace(/\/\\\./, '/.');
+          config.url = protocolAndIpv6 + url.replace(/\/(\\|%5C)\./, '/.');
 
 
           // set params - delegate param encoding to $http
