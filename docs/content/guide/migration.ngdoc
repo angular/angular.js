@@ -90,6 +90,7 @@ commits for more info.
   (see [details](guide/migration#migrate1.5to1.6-ng-misc-jqLite) below):
   - Keys passed to `.data()` and `.css()` are now camelCased in the same way as the jQuery methods
     do.
+  - Getting/setting boolean attributes no longer takes the corresponding properties into account.
   - Setting boolean attributes to empty string no longer removes the attribute.
   - Calling `.val()` on a multiple select will always return an array, even if no option is
     selected.
@@ -879,6 +880,48 @@ elem.css('backgroundColor', 'blue');
 // Only these two versions are still equivalent to the five shown above.
 var bgColor = elem.css('background-color');
 var bgColor = elem.css('backgroundColor');
+```
+
+<hr />
+<major />
+**Due to [7ceb5f](https://github.com/angular/angular.js/commit/7ceb5f6fcc43d35d1b66c3151ce6a71c60309304)**,
+getting/setting boolean attributes will no longer take the corresponding properties into account.
+Previously, all boolean attributes were reflected into the corresponding property when calling a
+setter and from the corresponding property when calling a getter, even on elements that don't treat
+those attributes in a special way. Now Angular doesn't do it by itself, but relies on browsers to
+know when to reflect the property. Note that this browser-level conversion differs between browsers;
+if you need to dynamically change the state of an element, you should modify the property, not the
+attribute. See https://jquery.com/upgrade-guide/1.9/#attr-versus-prop- for a more detailed
+description about a related change in jQuery 1.9.
+
+This change aligns jqLite with jQuery 3. To migrate the code follow the example below:
+
+Before:
+
+```css
+/* CSS */
+
+input[checked="checked"] { ... }
+```
+```js
+// JS
+
+elem1.attr('checked', 'checked');
+elem2.attr('checked', false);
+```
+
+After:
+
+```css
+/* CSS */
+
+input:checked { ... }
+```
+```js
+// JS
+
+elem1.prop('checked', true);
+elem2.prop('checked', false);
 ```
 
 <hr />
