@@ -45,6 +45,25 @@ describe('$sniffer', function() {
     });
 
 
+    it('should be true on NW.js apps (which look similar to Chrome Packaged Apps)', function() {
+      var mockWindow = {
+        history: {
+          pushState: noop
+        },
+        chrome: {
+          app: {
+            runtime: {}
+          }
+        },
+        nw: {
+          process: {}
+        }
+      };
+
+      expect(sniffer(mockWindow).history).toBe(true);
+    });
+
+
     it('should be false on Chrome Packaged Apps', function() {
       // Chrome Packaged Apps are not allowed to access `window.history.pushState`.
       // In Chrome, `window.app` might be available in "normal" webpages, but `window.app.runtime`
