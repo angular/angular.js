@@ -25,7 +25,10 @@ function $SnifferProvider() {
         // (see https://developer.chrome.com/apps/api_index). If sandboxed, they can be detected by
         // the presence of an extension runtime ID and the absence of other Chrome runtime APIs
         // (see https://developer.chrome.com/apps/manifest/sandbox).
+        // (NW.js apps have access to Chrome APIs, but do support `history`.)
+        isNw = $window.nw && $window.nw.process,
         isChromePackagedApp =
+            !isNw &&
             $window.chrome &&
             ($window.chrome.app && $window.chrome.app.runtime ||
                 !$window.chrome.app && $window.chrome.runtime && $window.chrome.runtime.id),
