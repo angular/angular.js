@@ -2316,6 +2316,34 @@ describe('select', function() {
 
       });
 
+      it('should keep the ngModel value when the selected option is recreated by ngRepeat', function() {
+
+          scope.options = ['A', 'B', 'C'];
+          scope.obj = {
+            value: 'B'
+          };
+
+          compile(
+            '<select ng-model="obj.value">' +
+              '<option ng-repeat="option in options" value="{{option}}">{{option}}</option>' +
+            '</select>'
+          );
+
+          var optionElements = element.find('option');
+          expect(optionElements.length).toEqual(3);
+          expect(optionElements[0].value).toBe('A');
+          expect(optionElements[1]).toBeMarkedAsSelected();
+
+          scope.$apply(function() {
+            scope.options = ['B', 'C', 'D'];
+          });
+
+          optionElements = element.find('option');
+          expect(optionElements.length).toEqual(3);
+          expect(optionElements[0].value).toBe('B');
+          expect(optionElements[0]).toBeMarkedAsSelected();
+      });
+
     });
 
 
