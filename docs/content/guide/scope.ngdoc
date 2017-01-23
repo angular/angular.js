@@ -109,12 +109,12 @@ to test the behavior without being distracted by the rendering details.
 ## Scope Hierarchies
 
 Each Angular application has exactly one {@link ng.$rootScope root scope}, but
-may have several child scopes.
+may have many child scopes.
 
-The application can have multiple scopes, because some {@link guide/directive directives} create
-new child scopes (refer to directive documentation to see which directives create new scopes).
-When new scopes are created, they are added as children of their parent scope. This creates a tree
-structure which parallels the DOM where they're attached.
+The application can have multiple scopes, because some {@link guide/directive directives} and all
+components create new child scopes (refer to directive documentation to see which directives create
+new scopes). When new scopes are created, they are added as children of their parent scope. This
+creates a tree structure which parallels the DOM where they're attached.
 
 When Angular evaluates `{{name}}`, it first looks at the scope associated with the given
 element for the `name` property. If no such property is found, it searches the parent scope
