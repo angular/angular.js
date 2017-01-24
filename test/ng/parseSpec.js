@@ -3119,6 +3119,39 @@ describe('parser', function() {
           expect(objB.value).toBe(scope.input);
         }));
 
+        it('should watch ES6 object computed property changes', function() {
+          var count = 0;
+          var values = [];
+
+          scope.$watch('{[a]: true}', function(val) {
+            count++;
+            values.push(val);
+          }, true);
+
+          scope.$digest();
+          expect(count).toBe(1);
+          expect(values[0]).toEqual({'undefined': true});
+
+          scope.$digest();
+          expect(count).toBe(1);
+          expect(values[0]).toEqual({'undefined': true});
+
+          scope.a = true;
+          scope.$digest();
+          expect(count).toBe(2);
+          expect(values[1]).toEqual({'true': true});
+
+          scope.a = 'abc';
+          scope.$digest();
+          expect(count).toBe(3);
+          expect(values[2]).toEqual({'abc': true});
+
+          scope.a = undefined;
+          scope.$digest();
+          expect(count).toBe(4);
+          expect(values[3]).toEqual({'undefined': true});
+        });
+
         it('should support watching literals', inject(function($parse) {
           var lastVal = NaN;
           var callCount = 0;
