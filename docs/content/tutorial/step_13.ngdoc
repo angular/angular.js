@@ -18,8 +18,8 @@ In this step, we will change the way our application fetches data.
 
 ## Dependencies
 
-The RESTful functionality is provided by Angular in the {@link ngResource ngResource} module, which
-is distributed separately from the core Angular framework.
+The RESTful functionality is provided by AngularJS in the {@link ngResource ngResource} module, which
+is distributed separately from the core AngularJS framework.
 
 Since we are using [Bower][bower] to install client-side dependencies, this step updates the
 `bower.json` configuration file to include the new dependency:
@@ -46,7 +46,7 @@ Since we are using [Bower][bower] to install client-side dependencies, this step
 ```
 
 The new dependency `"angular-resource": "1.5.x"` tells bower to install a version of the
-angular-resource module that is compatible with version 1.5.x of Angular. We must tell bower to
+angular-resource module that is compatible with version 1.5.x of AngularJS. We must tell bower to
 download and install this dependency.
 
 ```
@@ -59,7 +59,7 @@ npm install
 </div>
 
 <div class="alert alert-warning">
-  **Warning:** If a new version of Angular has been released since you last ran `npm install`, then
+  **Warning:** If a new version of AngularJS has been released since you last ran `npm install`, then
   you may have a problem with the `bower install` due to a conflict between the versions of
   angular.js that need to be installed. If you run into this issue, simply delete your
   `app/bower_components` directory and then run `npm install`.
@@ -141,7 +141,7 @@ need to load the `angular-resource.js` file, which contains the `ngResource` mod
 ## Component Controllers
 
 We can now simplify our component controllers (`PhoneListController` and `PhoneDetailController`) by
-factoring out the lower-level `$http` service, replacing it with the new `Phone` service. Angular's
+factoring out the lower-level `$http` service, replacing it with the new `Phone` service. AngularJS's
 `$resource` service is easier to use than `$http` for interacting with data sources exposed as
 RESTful resources. It is also easier now to understand what the code in our controllers is doing.
 
@@ -222,7 +222,7 @@ An important thing to notice in the code above is that we don't pass any callbac
 invoking methods of our `Phone` service. Although it looks as if the results were returned
 synchronously, that is not the case at all. What is returned synchronously is a "future" — an
 object, which will be filled with data, when the XHR response is received. Because of the
-data-binding in Angular, we can use this future and bind it to our template. Then, when the data
+data-binding in AngularJS, we can use this future and bind it to our template. Then, when the data
 arrives, the view will be updated automatically.
 
 Sometimes, relying on the future object and data-binding alone is not sufficient to do everything
@@ -251,13 +251,13 @@ expected "future" objects/arrays.
 
 The {@link ngResource.$resource $resource} service augments the response object with extra methods
 &mdash; e.g. for updating and deleting the resource &mdash; and properties (some of which are only
-meant to be accessed by Angular). If we were to use Jasmine's standard `.toEqual()` matcher, our
+meant to be accessed by AngularJS). If we were to use Jasmine's standard `.toEqual()` matcher, our
 tests would fail, because the test values would not match the responses exactly.
 
 To solve the  problem, we instruct Jasmine to use a [custom equality tester][jasmine-equality] for
 comparing objects. We specify {@link angular.equals angular.equals} as our equality tester, which
 ignores functions and `$`-prefixed properties, such as those added by the `$resource` service.<br />
-(Remember that Angular uses the `$` prefix for its proprietary API.)
+(Remember that AngularJS uses the `$` prefix for its proprietary API.)
 
 <br />
 **`app/core/phone/phone.service.spec.js`:**

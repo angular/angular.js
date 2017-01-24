@@ -5,13 +5,13 @@
 
 # Bootstrap
 
-This page explains the Angular initialization process and how you can manually initialize Angular
+This page explains the AngularJS initialization process and how you can manually initialize AngularJS
 if necessary.
 
 
-## Angular `<script>` Tag
+## AngularJS `<script>` Tag
 
-This example shows the recommended path for integrating Angular with what we call automatic
+This example shows the recommended path for integrating AngularJS with what we call automatic
 initialization.
 
 
@@ -35,7 +35,7 @@ initialization.
     * Choose: `angular-[version].min.js` for a compressed and obfuscated file, suitable for use in
       production.
   2. Place `ng-app` to the root of your application, typically on the `<html>` tag if you want
-    angular to auto-bootstrap your application.
+    AngularJS to auto-bootstrap your application.
 
         <html ng-app>
 
@@ -51,16 +51,16 @@ initialization.
 
 <img class="pull-right" style="padding-left: 3em;" src="img/guide/concepts-startup.png">
 
-Angular initializes automatically upon `DOMContentLoaded` event or when the `angular.js` script is
-evaluated if at that time `document.readyState` is set to `'complete'`. At this point Angular looks
+AngularJS initializes automatically upon `DOMContentLoaded` event or when the `angular.js` script is
+evaluated if at that time `document.readyState` is set to `'complete'`. At this point AngularJS looks
 for the {@link ng.directive:ngApp `ngApp`} directive which designates your application root.
-If the {@link ng.directive:ngApp `ngApp`} directive is found then Angular will:
+If the {@link ng.directive:ngApp `ngApp`} directive is found then AngularJS will:
 
   * load the {@link guide/module module} associated with the directive.
   * create the application {@link auto.$injector injector}
   * compile the DOM treating the {@link ng.directive:ngApp
     `ngApp`} directive as the root of the compilation. This allows you to tell it to treat only a
-    portion of the DOM as an Angular application.
+    portion of the DOM as an AngularJS application.
 
 
 ```html
@@ -96,9 +96,9 @@ for more.
 
 If you need to have more control over the initialization process, you can use a manual
 bootstrapping method instead. Examples of when you'd need to do this include using script loaders
-or the need to perform an operation before Angular compiles a page.
+or the need to perform an operation before AngularJS compiles a page.
 
-Here is an example of manually initializing Angular:
+Here is an example of manually initializing AngularJS:
 
 ```html
 <!doctype html>

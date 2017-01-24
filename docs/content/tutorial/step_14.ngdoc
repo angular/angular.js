@@ -21,8 +21,8 @@ the template code we created earlier.
 
 ## Dependencies
 
-The animation functionality is provided by Angular in the `ngAnimate` module, which is distributed
-separately from the core Angular framework. In addition we will use [jQuery][jquery] in this project
+The animation functionality is provided by AngularJS in the `ngAnimate` module, which is distributed
+separately from the core AngularJS framework. In addition we will use [jQuery][jquery] in this project
 to do extra JavaScript animations.
 
 Since we are using [Bower][bower] to install client-side dependencies, this step updates the
@@ -52,9 +52,9 @@ Since we are using [Bower][bower] to install client-side dependencies, this step
 ```
 
 * `"angular-animate": "1.5.x"` tells bower to install a version of the angular-animate module that
-  is compatible with version 1.5.x of Angular.
+  is compatible with version 1.5.x of AngularJS.
 * `"jquery": "2.2.x"` tells bower to install the latest patch release of the 2.2 version of jQuery.
-  Note that this is not an Angular library; it is the standard jQuery library. We can use bower to
+  Note that this is not an AngularJS library; it is the standard jQuery library. We can use bower to
   install a wide range of 3rd party libraries.
 
 Now, we must tell bower to download and install these dependencies.
@@ -69,7 +69,7 @@ npm install
 </div>
 
 <div class="alert alert-warning">
-  **Warning:** If a new version of Angular has been released since you last ran `npm install`, then
+  **Warning:** If a new version of AngularJS has been released since you last ran `npm install`, then
   you may have a problem with the `bower install` due to a conflict between the versions of
   angular.js that need to be installed. If you run into this issue, simply delete your
   `app/bower_components` directory and then run `npm install`.
@@ -115,9 +115,9 @@ code necessary to make your application "animation aware".
 ```
 
 <div class="alert alert-error">
-  **Important:** Be sure to use jQuery version 2.1 or newer, when using Angular 1.5; jQuery 1.x is
+  **Important:** Be sure to use jQuery version 2.1 or newer, when using AngularJS 1.5 or newer; jQuery 1.x is
   not officially supported.
-  In order for Angular to detect jQuery and take advantage of it, make sure to include `jquery.js`
+  In order for AngularJS to detect jQuery and take advantage of it, make sure to include `jquery.js`
   before `angular.js`.
 </div>
 
@@ -481,7 +481,7 @@ In this case, we are interested in a class getting added to/removed from a `.pho
 specify callbacks for the `addClass` and `removeClass` events. When the `selected` class is added to
 an element (via the `ngClass` directive), the `addClass` JavaScript callback will be executed with
 `element` passed in as a parameter. The last parameter passed in is the `done` callback function. We
-call `done()` to let Angular know that our custom JavaScript animation has ended. The `removeClass`
+call `done()` to let AngularJS know that our custom JavaScript animation has ended. The `removeClass`
 callback works the same way, but instead gets executed when a class is removed.
 
 Note that we are using [jQuery][jquery]'s `animate()` helper to implement the animation. jQuery
@@ -494,7 +494,7 @@ this is achieved using `element.css()` and `element.animate()`. As a result the 
 positioned with an offset of **500px** and then both elements &mdash; the previous and the new
 &mdash; are animated together by shifting each one up by **500px**. The outcome is a conveyor-belt
 like animation. After the `animate()` function has completed the animation, it calls `done` to
-notify Angular.
+notify AngularJS.
 
 You may have noticed that each animation callback returns a function. This is an **optional**
 function, which (if provided) will be called when the animation ends, either because it ran to

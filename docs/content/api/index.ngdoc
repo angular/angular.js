@@ -11,14 +11,14 @@ These components are {@link guide/directive directives}, {@link guide/services s
 There is also a {@link guide/index guide} with articles on various topics, and a list of external resources.
 
 <div class="alert alert-info">
-**Angular Prefixes `$` and `$$`**:
+**AngularJS Prefixes `$` and `$$`**:
 
 To prevent accidental name collisions with your code,
-Angular prefixes names of public objects with `$` and names of private objects with `$$`.
+AngularJS prefixes names of public objects with `$` and names of private objects with `$$`.
 Please do not use the `$` or `$$` prefix in your code.
 </div>
 
-## Angular Modules
+## AngularJS Modules
 
 
 ## {@link ng ng (core module)}
@@ -83,7 +83,7 @@ This module is provided by default and contains the core components of AngularJS
     </td>
     <td>
       <p>
-        The core global API functions are attached to the angular object. These core functions are useful for low level JavaScript operations within your application.
+        The core global API functions are attached to the `angular` object. These core functions are useful for low level JavaScript operations within your application.
       </p>
       <p>
         Some examples include:
@@ -130,7 +130,7 @@ Use ngRoute to enable URL routing to your application. The ngRoute module suppor
 
 ## {@link ngAnimate ngAnimate}
 
-Use ngAnimate to enable animation features within your application. Various core ng directives will provide
+Use ngAnimate to enable animation features within your application. Various core AngularJS directives will provide
 animation hooks into your application when ngAnimate is included. Animations are defined by using CSS transitions/animations
 or JavaScript callbacks.
 

@@ -71,7 +71,7 @@ angular.module('ngCookies', ['ng']).
      * Provides read/write access to browser's cookies.
      *
      * <div class="alert alert-info">
-     * Up until Angular 1.3, `$cookies` exposed properties that represented the
+     * Up until AngularJS 1.3, `$cookies` exposed properties that represented the
      * current browser cookie values. In version 1.4, this behavior has changed, and
      * `$cookies` now provides a standard api of getters, setters etc.
      * </div>

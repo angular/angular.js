@@ -315,7 +315,7 @@
             <SpBefore>0</SpBefore>
             <HorzAlign>1</HorzAlign>
           </Para>
-          <Text><cp IX="0"/><pp IX="0"/>Angular Scopes</Text>
+          <Text><cp IX="0"/><pp IX="0"/>AngularJS Scopes</Text>
         </Shape>
         <Shape ID="4" Type="Shape" Name="Rectangle Fill:Chalk.4">
           <XForm>
@@ -1805,7 +1805,7 @@
             <SpBefore>0</SpBefore>
             <HorzAlign>0</HorzAlign>
           </Para>
-          <Text><cp IX="0"/><pp IX="0"/>Angular Scope</Text>
+          <Text><cp IX="0"/><pp IX="0"/>AngularJS Scope</Text>
         </Shape>
         <Shape ID="21" Type="Shape" Name="Rectangle No Fill No Fill.21">
           <XForm>
@@ -1981,7 +1981,7 @@
             <SpBefore>0</SpBefore>
             <HorzAlign>0</HorzAlign>
           </Para>
-          <Text><cp IX="0"/><pp IX="0"/>&lt;ul 
+          <Text><cp IX="0"/><pp IX="0"/>&lt;ul
   ng:init=&quot;name=&apos;Hank&apos;;
               names=[&apos;Igor&apos;,...]&quot;&gt;</Text>
         </Shape>

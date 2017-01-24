@@ -12,7 +12,7 @@ for how to contribute your own code to AngularJS.
 
 
 1. {@link misc/contribute#installing-dependencies Installing Dependencies}
-2. {@link misc/contribute#forking-angular-on-github Forking Angular on Github}
+2. {@link misc/contribute#forking-angular-on-github Forking AngularJS on Github}
 3. {@link misc/contribute#building-angularjs Building AngularJS}
 4. {@link misc/contribute#running-a-local-development-web-server Running a Local Development Web Server}
 5. {@link misc/contribute#running-the-unit-test-suite Running the Unit Test Suite}
@@ -47,7 +47,7 @@ machine:
   yarn global add grunt-cli
   ```
 
-## Forking Angular on Github
+## Forking AngularJS on Github
 
 To create a Github account, follow the instructions [here](https://github.com/signup/free).
 Afterwards, go ahead and [fork](http://help.github.com/forking) the [main AngularJS repository](https://github.com/angular/angular.js).
@@ -97,11 +97,11 @@ directories:
 * `angular-<version>.zip` — The complete zip file, containing all of the release build
 artifacts.
 
-* `angular.js` — The non-minified `angular` script.
+* `angular.js` — The non-minified AngularJS script.
 
-* `angular.min.js` —  The minified `angular` script.
+* `angular.min.js` —  The minified AngularJS script.
 
-* `angular-scenario.js` — The `angular` End2End test runner.
+* `angular-scenario.js` — The AngularJS End2End test runner.
 
 * `docs/` — A directory that contains all of the files needed to run `docs.angularjs.org`.
 
@@ -176,7 +176,7 @@ grunt --help
 
 ## Running the End-to-end Test Suite
 
-Angular's end to end tests are run with Protractor. Simply run:
+AngularJS's end to end tests are run with Protractor. Simply run:
 
 ```shell
 grunt test:e2e

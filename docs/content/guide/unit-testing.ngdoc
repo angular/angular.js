@@ -8,7 +8,7 @@
 JavaScript is a dynamically typed language which comes with great power of expression, but it also
 comes with almost no help from the compiler. For this reason we feel very strongly that any code
 written in JavaScript needs to come with a strong set of tests. We have built many features into
-Angular which make testing your Angular applications easy. With Angular, there is no excuse for not testing.
+AngularJS which make testing your AngularJS applications easy. With AngularJS, there is no excuse for not testing.
 
 ## Separation of Concerns
 
@@ -25,7 +25,7 @@ typical project. The reason is that the developers often mix concerns resulting 
 piece of code which does everything. It makes an XHR request, it sorts the response data, and then it
 manipulates the DOM.
 
-With Angular, we try to make it easy for you to do the right thing. For your XHR requests, we
+With AngularJS, we try to make it easy for you to do the right thing. For your XHR requests, we
 provide dependency injection, so your requests can be simulated. For the DOM, we abstract it, so you can
 test your model without having to manipulate the DOM directly. Your tests can then
 assert that the data has been sorted without having to create or look at the state of the DOM or to
@@ -33,22 +33,22 @@ wait for any XHR requests to return data. The individual sort function can be te
 
 ## With great power comes great responsibility
 
-Angular is written with testability in mind, but it still requires that you do the right thing.
+AngularJS is written with testability in mind, but it still requires that you do the right thing.
 We tried to make the right thing easy, but if you ignore these guidelines you may end up with an
 untestable application.
 
 ## Dependency Injection
 
-Angular comes with {@link di dependency injection} built-in, which makes testing components much
+AngularJS comes with {@link di dependency injection} built-in, which makes testing components much
 easier, because you can pass in a component's dependencies and stub or mock them as you wish.
 
 Components that have their dependencies injected allow them to be easily mocked on a test by
 test basis, without having to mess with any global variables that could inadvertently affect
 another test.
 
-## Additional tools for testing Angular applications
+## Additional tools for testing AngularJS applications
 
-For testing Angular applications there are certain tools that you should use that will make testing much
+For testing AngularJS applications there are certain tools that you should use that will make testing much
 easier to set up and run.
 
 ### Karma
@@ -65,7 +65,7 @@ are available on [the Karma website](http://karma-runner.github.io/0.12/intro/in
 ### Jasmine
 
 [Jasmine](http://jasmine.github.io/1.3/introduction.html) is a behavior driven development framework for
-JavaScript that has become the most popular choice for testing Angular applications. Jasmine
+JavaScript that has become the most popular choice for testing AngularJS applications. Jasmine
 provides functions to help with structuring your tests and also making assertions. As your tests
 grow, keeping them well structured and documented is vital, and Jasmine helps achieve this.
 
@@ -109,15 +109,15 @@ what they are. To use Jasmine with Karma, we use the
 
 ### angular-mocks
 
-Angular also provides the {@link ngMock} module, which provides mocking for your tests. This is used
-to inject and mock Angular services within unit tests. In addition, it is able to extend other
+AngularJS also provides the {@link ngMock} module, which provides mocking for your tests. This is used
+to inject and mock AngularJS services within unit tests. In addition, it is able to extend other
 modules so they are synchronous. Having tests synchronous keeps them much cleaner and easier to work
 with. One of the most useful parts of ngMock is {@link ngMock.$httpBackend}, which lets us mock XHR
 requests in tests, and return sample data instead.
 
 ## Testing a Controller
 
-Because Angular separates logic from the view layer, it keeps controllers easy to test. Let's take a
+Because AngularJS separates logic from the view layer, it keeps controllers easy to test. Let's take a
 look at how we might test the controller below, which provides `$scope.grade`, which sets a property
 on the scope based on the length of the password.
 
@@ -282,13 +282,13 @@ describe('length filter', function() {
 ```
 
 ## Testing Directives
-Directives in angular are responsible for encapsulating complex functionality within custom HTML tags,
+Directives in AngularJS are responsible for encapsulating complex functionality within custom HTML tags,
 attributes, classes or comments. Unit tests are very important for directives because the components
 you create with directives may be used throughout your application and in many different contexts.
 
 ### Simple HTML Element Directive
 
-Let's start with an angular app with no dependencies.
+Let's start with an AngularJS app with no dependencies.
 
 ```js
 var app = angular.module('myApp', []);

@@ -8,4 +8,4 @@ extension in your interpolation expression.  The different choices have to be un
 
 For more information about the MessageFormat syntax in interpolation
 expressions, please refer to MessageFormat extensions section at
-{@link guide/i18n#MessageFormat Angular i18n MessageFormat}
+{@link guide/i18n#MessageFormat AngularJS i18n MessageFormat}

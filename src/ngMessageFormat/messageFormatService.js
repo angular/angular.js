@@ -20,7 +20,7 @@
  *
  * ## What is  ngMessageFormat?
  *
- * The ngMessageFormat module extends the Angular {@link ng.$interpolate `$interpolate`} service
+ * The ngMessageFormat module extends the AngularJS {@link ng.$interpolate `$interpolate`} service
  * with a syntax for handling pluralization and gender specific messages, which is based on the
  * [ICU MessageFormat syntax][ICU].
  *

@@ -23,8 +23,8 @@ To that end, we will explain why and how we:
 
 <div class="alert alert-info">
   We will keep it short, not going into great detail on every good practice and convention. These
-  principles are explained in great detail in the [Angular Style Guide][styleguide], which also
-  contains many more techniques for effectively organizing Angular codebases.
+  principles are explained in great detail in the [AngularJS Style Guide][styleguide], which also
+  contains many more techniques for effectively organizing AngularJS codebases.
 </div>
 
 
@@ -166,7 +166,7 @@ angular.module('phonecatApp', [
 ]);
 ```
 
-By passing `phoneList` inside the dependencies array when defining the `phonecatApp` module, Angular
+By passing `phoneList` inside the dependencies array when defining the `phonecatApp` module, AngularJS
 will make all entities registered on `phoneList` available on `phonecatApp` as well.
 
 <div class="alert alert-info">
@@ -182,7 +182,7 @@ will make all entities registered on `phoneList` available on `phonecatApp` as w
 
 <div class="alert alert-warning">
   Note that files defining a module (i.e. `.module.js`) need to be included before other files that
-  add features (e.g. components, controllers, services, filters) to that module. 
+  add features (e.g. components, controllers, services, filters) to that module.
 </div>
 
 
@@ -219,7 +219,7 @@ angular.
   });
 ```
 
-At runtime, when Angular needs to create an instance of the `phoneList` component, it will make an
+At runtime, when AngularJS needs to create an instance of the `phoneList` component, it will make an
 HTTP request to get the template from `app/phone-list/phone-list.template.html`.
 
 <div class="alert alert-info">
@@ -231,7 +231,7 @@ HTTP request to get the template from `app/phone-list/phone-list.template.html`.
 <div class="alert alert-warning">
   <p>
     Using an external template like this, will result in more HTTP requests to the server (one for
-    each external template). Although Angular takes care not to make extraneous requests (e.g.
+    each external template). Although AngularJS takes care not to make extraneous requests (e.g.
     fetching the templates lazily, caching the results, etc), additional requests do have a cost
     (especially on mobile devices and data-plan connections).
   </p>
@@ -239,7 +239,7 @@ HTTP request to get the template from `app/phone-list/phone-list.template.html`.
     Luckily, there are ways to avoid the extra costs (while still keeping your templates external).
     A detailed discussion of the subject is outside the scope of this tutorial, but you can take a
     look at the {@link ng.$templateRequest $templateRequest} and
-    {@link ng.$templateCache $templateCache} services for more info on how Angular manages external
+    {@link ng.$templateCache $templateCache} services for more info on how AngularJS manages external
     templates.
   </p>
 </div>

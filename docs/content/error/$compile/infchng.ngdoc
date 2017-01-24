@@ -5,7 +5,7 @@
 
 This error occurs when the application's model becomes unstable because some `$onChanges` hooks are causing updates which then trigger
 further calls to `$onChanges` that can never complete.
-Angular detects this situation and prevents an infinite loop from causing the browser to become unresponsive.
+AngularJS detects this situation and prevents an infinite loop from causing the browser to become unresponsive.
 
 For example, the situation can occur by setting up a `$onChanges()` hook which triggers an event on the component, which subsequently
 triggers the component's bound inputs to be updated:

@@ -419,7 +419,7 @@ describe('input', function() {
 
             scope.field = 'fake field';
             scope.$watch('field', function() {
-              // We need to use _originalTrigger since trigger is modified by Angular Scenario.
+              // We need to use _originalTrigger since trigger is modified by AngularJS Scenario.
               inputElm._originalTrigger('change');
             });
             scope.$apply();

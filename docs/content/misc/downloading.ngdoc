@@ -2,26 +2,26 @@
 @name Downloading
 @description
 
-# Including Angular scripts from the Google CDN
+# Including AngularJS scripts from the Google CDN
 The quickest way to get started is to point your html `<script>` tag to a
 [Google CDN](https://developers.google.com/speed/libraries/#angularjs) URL.
 This way, you don't have to download anything or maintain a local copy.
 
-There are two types of Angular script URLs you can point to, one for development and one for
+There are two types of AngularJS script URLs you can point to, one for development and one for
 production:
 
 * __angular.js__ — This is the human-readable, non-minified version, suitable for web development.
 * __angular.min.js__ — This is the minified version, which we strongly suggest you use in
   production.
 
-To point your code to an angular script on the Google CDN server, use the following template. This 
+To point your code to an AngularJS script on the Google CDN server, use the following template. This
 example points to the minified version 1.5.6:
 
 ```html
   <!doctype html>
   <html ng-app>
     <head>
-      <title>My Angular App</title>
+      <title>My AngularJS App</title>
       <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
     </head>
     <body>
@@ -32,22 +32,22 @@ example points to the minified version 1.5.6:
 <div class="alert alert-info">
   Note that only versions 1.0.1 and above are available on the CDN. If you need an earlier version
   (which you shouldn't) you can use the https://code.angularjs.org/ URL, which was the previous
-  recommended location for hosted code source. If you're still using the Angular server you should 
+  recommended location for hosted code source. If you're still using the AngularJS server you should
   switch to the CDN version for even faster loading times.
 </div>
 
 <br />
-# Downloading and hosting angular files locally
-This option is for those who want to work with Angular offline, or those who want to host the
-Angular files on their own servers.
+# Downloading and hosting AngularJS files locally
+This option is for those who want to work with AngularJS offline, or those who want to host the
+AngularJS files on their own servers.
 
 If you navigate to https://code.angularjs.org/, you'll see a directory listing with all of the
-Angular versions since we started releasing versioned build artifacts. Each directory contains all
+AngularJS versions since we started releasing versioned build artifacts. Each directory contains all
 artifacts that we released for a particular version. Download the version you want and have fun.
 
 <div class="alert alert-warning">
   You can ignore directories starting with `2.` (e.g. `2.0.0-beta.17`) — they are not related to
-  AngularJS. They contain build artifacts from [Angular 2](https://angular.io) versions.
+  AngularJS. They contain build artifacts from [Angular](https://angular.io) versions.
 </div>
 
 <br />
@@ -72,10 +72,10 @@ development) come in two flavors — one suitable for development, the other for
 <br />
 The set of files included in each version directory are:
 
-* __`angular.zip`__ — This is a zip archive that contains all of the files released for this Angular
+* __`angular.zip`__ — This is a zip archive that contains all of the files released for this AngularJS
   version. Use this file to get everything in a single download.
 
-* __`angular.js`__ — The core Angular framework. This is all you need to get your Angular app
+* __`angular.js`__ — The core AngularJS framework. This is all you need to get your AngularJS app
   running.
 
 * __`angular-csp.css`__ — You only need this file if you are using
@@ -86,14 +86,14 @@ The set of files included in each version directory are:
   apps even easier. Your unit/integration test harness should load this file after `angular.js` is
   loaded.
 
-* __`angular-loader.js`__ — Module loader for Angular modules. If you are loading multiple 
-  script files containing Angular modules, you can load them asynchronously and in any order as long
+* __`angular-loader.js`__ — Module loader for AngularJS modules. If you are loading multiple
+  script files containing AngularJS modules, you can load them asynchronously and in any order as long
   as you load this file first. Often the contents of this file are copy&pasted into the `index.html`
   to avoid even the initial request to `angular-loader[.min].js`.
   See [angular-seed](https://github.com/angular/angular-seed/blob/master/app/index-async.html) for
   an example of usage.
 
-* __Additional Angular modules:__ Optional modules with additional functionality. These files
+* __Additional AngularJS modules:__ Optional modules with additional functionality. These files
   should be loaded after the core `angular[.min].js` file:
   * __`angular-animate.js`__ — Enable animation support. ({@link module:ngAnimate API docs})
   * __`angular-aria.js`__ — Make your apps [accessible](http://www.w3.org/TR/wai-aria/) to users of
@@ -104,11 +104,11 @@ The set of files included in each version directory are:
       messages in interpolated text. ({@link module:ngMessageFormat API docs})
   * __`angular-messages.js`__ — Enhanced support for displaying validation messages.
       ({@link module:ngMessages API docs})
-  * __`angular-parse-ext.js`__ — Allow Unicode characters in identifiers inside Angular expressions.
+  * __`angular-parse-ext.js`__ — Allow Unicode characters in identifiers inside AngularJS expressions.
       ({@link module:ngParseExt API docs})
   * __`angular-resource.js`__ — Easy interaction with RESTful services.
       ({@link module:ngResource API docs})
-  * __`angular-route.js`__ — Routing and deep-linking services and directives for Angular apps.
+  * __`angular-route.js`__ — Routing and deep-linking services and directives for AngularJS apps.
       ({@link module:ngRoute API docs})
   * __`angular-sanitize.js`__ — Functionality to sanitize HTML. ({@link module:ngSanitize API docs})
   * __`angular-touch.js`__ — Touch events and other helpers for touch-enabled devices.
@@ -120,4 +120,4 @@ The set of files included in each version directory are:
   importantly, view the docs offline.
 
 * __`i18n/`__ - This directory contains [locale specific](https://docs.angularjs.org/guide/i18n)
-  `ngLocale` Angular modules to override the defaults defined in the main `ng` module.
+  `ngLocale` AngularJS modules to override the defaults defined in the main `ng` module.

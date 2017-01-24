@@ -5,17 +5,17 @@
 
 # Understanding Components
 
-In Angular, a Component is a special kind of {@link guide/directive directive} that uses a simpler
+In AngularJS, a Component is a special kind of {@link guide/directive directive} that uses a simpler
 configuration which is suitable for a component-based application structure.
 
-This makes it easier to write an app in a way that's similar to using Web Components or using Angular
-2's style of application architecture.
+This makes it easier to write an app in a way that's similar to using Web Components or using the new Angular's
+style of application architecture.
 
 Advantages of Components:
 - simpler configuration than plain directives
 - promote sane defaults and best practices
 - optimized for component-based architecture
-- writing component directives will make it easier to upgrade to Angular 2
+- writing component directives will make it easier to upgrade to Angular
 
 When not to use Components:
 
@@ -25,7 +25,7 @@ When not to use Components:
 
 ## Creating and configuring a Component
 
-Components can be registered using the `.component()` method of an Angular module (returned by {@link module `angular.module()`}). The method takes two arguments:
+Components can be registered using the `.component()` method of an AngularJS module (returned by {@link module `angular.module()`}). The method takes two arguments:
 
   * The name of the Component (as string).
   * The Component config object. (Note that, unlike the `.directive()` method, this method does **not** take a factory function.)
@@ -95,14 +95,14 @@ a component-based architecture. But what makes a component beyond the options th
 the component helper has?
 
 - **Components only control their own View and Data:**
-Components should never modify any data or DOM that is out of their own scope. Normally, in Angular
+Components should never modify any data or DOM that is out of their own scope. Normally, in AngularJS
 it is possible to modify data anywhere in the application through scope inheritance and watches. This
 is practical, but can also lead to problems when it is not clear which part of the application is
 responsible for modifying the data. That is why component directives use an isolate scope, so a whole
 class of scope manipulation is not possible.
 
 - **Components have a well-defined public API - Inputs and Outputs:**
-However, scope isolation only goes so far, because Angular uses two-way binding. So if you pass
+However, scope isolation only goes so far, because AngularJS uses two-way binding. So if you pass
 an object to a component like this - `bindings: {item: '='}`, and modify one of its properties, the
 change will be reflected in the parent component. For components however, only the component that owns
 the data should modify it, to make it easy to reason about what data is changed, and when. For that reason,
@@ -163,7 +163,7 @@ of the component. The following hook methods can be implemented:
     changes. Any actions that you wish to take in response to the changes that you detect must be
     invoked from this hook; implementing this has no effect on when `$onChanges` is called. For example, this hook
     could be useful if you wish to perform a deep equality check, or to check a Date object, changes to which would not
-    be detected by Angular's change detector and thus not trigger `$onChanges`. This hook is invoked with no arguments;
+    be detected by AngularJS's change detector and thus not trigger `$onChanges`. This hook is invoked with no arguments;
     if detecting changes, you must store the previous value(s) for comparison to the current values.
   * `$onDestroy()` - Called on a controller when its containing scope is destroyed. Use this hook for releasing
     external resources, watches and event handlers.
@@ -172,8 +172,8 @@ of the component. The following hook methods can be implemented:
     Note that child elements that contain `templateUrl` directives will not have been compiled and linked since
     they are waiting for their template to load asynchronously and their own compilation and linking has been
     suspended until that occurs.
-    This hook can be considered analogous to the `ngAfterViewInit` and `ngAfterContentInit` hooks in Angular 2.
-    Since the compilation process is rather different in Angular 1 there is no direct mapping and care should
+    This hook can be considered analogous to the `ngAfterViewInit` and `ngAfterContentInit` hooks in Angular.
+    Since the compilation process is rather different in AngularJS there is no direct mapping and care should
     be taken when upgrading.
 
 By implementing these methods, your component can hook into its lifecycle.
