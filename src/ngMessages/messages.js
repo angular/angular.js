@@ -195,7 +195,7 @@ var jqLite;
  *
  * Feel free to use other structural directives such as ng-if and ng-switch to further control
  * what messages are active and when. Be careful, if you place ng-message on the same element
- * as these structural directives, Angular may not be able to determine if a message is active
+ * as these structural directives, AngularJS may not be able to determine if a message is active
  * or not. Therefore it is best to place the ng-message on a child element of the structural
  * directive.
  *
@@ -260,7 +260,7 @@ var jqLite;
  * {@link ngAnimate Click here} to learn how to use JavaScript animations or to learn more about ngAnimate.
  */
 angular.module('ngMessages', [], function initAngularHelpers() {
-  // Access helpers from angular core.
+  // Access helpers from AngularJS core.
   // Do it inside a `config` block to ensure `window.angular` is available.
   forEach = angular.forEach;
   isArray = angular.isArray;
@@ -307,7 +307,7 @@ angular.module('ngMessages', [], function initAngularHelpers() {
    * </ng-messages>
    * ```
    *
-   * @param {string} ngMessages an angular expression evaluating to a key/value object
+   * @param {string} ngMessages an AngularJS expression evaluating to a key/value object
    *                 (this is typically the $error object on an ngModel instance).
    * @param {string=} ngMessagesMultiple|multiple when set, all messages will be displayed with true
    *

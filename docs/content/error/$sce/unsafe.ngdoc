@@ -5,10 +5,10 @@
 
 The value provided for use in a specific context was not found to be safe/trusted for use.
 
-Angular's {@link ng.$sce Strict Contextual Escaping (SCE)} mode
+AngularJS's {@link ng.$sce Strict Contextual Escaping (SCE)} mode
 (enabled by default), requires bindings in certain
 contexts to result in a value that is trusted as safe for use in such a context.  (e.g. loading an
-Angular template from a URL requires that the URL is one considered safe for loading resources.)
+AngularJS template from a URL requires that the URL is one considered safe for loading resources.)
 
 This helps prevent XSS and other security issues.  Read more at
 {@link ng.$sce Strict Contextual Escaping (SCE)}

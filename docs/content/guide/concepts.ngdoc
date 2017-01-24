@@ -54,20 +54,20 @@ Try out the Live Preview above, and then let's walk through the example and desc
 
 <img class="pull-right" style="padding-left: 3em; padding-bottom: 1em;" src="img/guide/concepts-databinding1.png">
 
-This looks like normal HTML, with some new markup. In Angular, a file like this is called a
-<a name="template">{@link templates template}</a>. When Angular starts your application, it parses and
+This looks like normal HTML, with some new markup. In AngularJS, a file like this is called a
+<a name="template">{@link templates template}</a>. When AngularJS starts your application, it parses and
 processes this new markup from the template using the <a name="compiler">{@link compiler compiler}</a>.
 The loaded, transformed and rendered DOM is then called the <a name="view"></a>*view*.
 
 The first kind of new markup are the <a name="directive">{@link directive directives}</a>.
 They apply special behavior to attributes or elements in the HTML. In the example above we use the
 {@link ng.directive:ngApp `ng-app`} attribute, which is linked to a directive that automatically
-initializes our application. Angular also defines a directive for the {@link ng.directive:input `input`}
+initializes our application. AngularJS also defines a directive for the {@link ng.directive:input `input`}
 element that adds extra behavior to the element. The {@link ng.directive:ngModel `ng-model`} directive
 stores/updates the value of the input field into/from a variable.
 
 <div class="alert alert-info">
-**Custom directives to access the DOM**: In Angular, the only place where an application should access the DOM is
+**Custom directives to access the DOM**: In AngularJS, the only place where an application should access the DOM is
  within directives. This is important because artifacts that access the DOM are hard to test.
  If you need to access the DOM directly you should write a custom directive for this. The
  {@link directive directives guide} explains how to do this.
@@ -76,12 +76,12 @@ stores/updates the value of the input field into/from a variable.
 The second kind of new markup are the double curly braces `{{ expression | filter }}`:
 When the compiler encounters this markup, it will replace it with the evaluated value of the markup.
 An <a name="expression">{@link expression expression}</a> in a template is a JavaScript-like code snippet that allows
-Angular to read and write variables. Note that those variables are not global variables.
+AngularJS to read and write variables. Note that those variables are not global variables.
 Just like variables in a JavaScript function live in a scope,
-Angular provides a <a name="scope">{@link scope scope}</a> for the variables accessible to expressions.
+AngularJS provides a <a name="scope">{@link scope scope}</a> for the variables accessible to expressions.
 The values that are stored in variables on the scope are referred to as the <a name="model"></a>*model*
 in the rest of the documentation.
-Applied to the example above, the markup directs Angular to "take the data we got from the input widgets
+Applied to the example above, the markup directs AngularJS to "take the data we got from the input widgets
 and multiply them together".
 
 The example above also contains a <a name="filter">{@link guide/filter filter}</a>.
@@ -89,7 +89,7 @@ A filter formats the value of an expression for display to the user.
 In the example above, the filter {@link ng.filter:currency `currency`} formats a number
 into an output that looks like money.
 
-The important thing in the example is that Angular provides _live_ bindings:
+The important thing in the example is that AngularJS provides _live_ bindings:
 Whenever the input values change, the value of the expressions are automatically
 recalculated and the DOM is updated with their values.
 The concept behind this is <a name="databinding">{@link databinding two-way data binding}</a>.
@@ -157,9 +157,9 @@ expressions and directives.
 
 Besides the new file that contains the controller code, we also added an
 {@link ng.directive:ngController `ng-controller`} directive to the HTML.
-This directive tells Angular that the new `InvoiceController` is responsible for the element with the directive
+This directive tells AngularJS that the new `InvoiceController` is responsible for the element with the directive
 and all of the element's children.
-The syntax `InvoiceController as invoice` tells Angular to instantiate the controller
+The syntax `InvoiceController as invoice` tells AngularJS to instantiate the controller
 and save it in the variable `invoice` in the current scope.
 
 We also changed all expressions in the page to read and write variables within that
@@ -260,22 +260,22 @@ get a hold of the now separated function?
 This is where <a name="di">{@link di Dependency Injection}</a> comes into play.
 Dependency Injection (DI) is a software design pattern that
 deals with how objects and functions get created and how they get a hold of their dependencies.
-Everything within Angular (directives, filters, controllers,
-services, ...) is created and wired using dependency injection. Within Angular,
+Everything within AngularJS (directives, filters, controllers,
+services, ...) is created and wired using dependency injection. Within AngularJS,
 the DI container is called the <a name="injector">{@link di injector}</a>.
 
 To use DI, there needs to be a place where all the things that should work together are registered.
-In Angular, this is the purpose of the <a name="module">{@link module modules}</a>.
-When Angular starts, it will use the configuration of the module with the name defined by the `ng-app` directive,
+In AngularJS, this is the purpose of the <a name="module">{@link module modules}</a>.
+When AngularJS starts, it will use the configuration of the module with the name defined by the `ng-app` directive,
 including the configuration of all modules that this module depends on.
 
 In the example above:
-The template contains the directive `ng-app="invoice2"`. This tells Angular
+The template contains the directive `ng-app="invoice2"`. This tells AngularJS
 to use the `invoice2` module as the main module for the application.
 The code snippet `angular.module('invoice2', ['finance2'])`  specifies that the `invoice2` module depends on the
-`finance2` module. By this, Angular uses the `InvoiceController` as well as the `currencyConverter` service.
+`finance2` module. By this, AngularJS uses the `InvoiceController` as well as the `currencyConverter` service.
 
-Now that Angular knows of all the parts of the application, it needs to create them.
+Now that AngularJS knows of all the parts of the application, it needs to create them.
 In the previous section we saw that controllers are created using a constructor function.
 For services, there are multiple ways to specify how they are created
 (see the {@link services service guide}).
@@ -284,24 +284,24 @@ In the example above, we are using an anonymous function as the factory function
 This function should return the `currencyConverter` service instance.
 
 Back to the initial question: How does the `InvoiceController` get a reference to the `currencyConverter` function?
-In Angular, this is done by simply defining arguments on the constructor function. With this, the injector
+In AngularJS, this is done by simply defining arguments on the constructor function. With this, the injector
 is able to create the objects in the right order and pass the previously created objects into the
 factories of the objects that depend on them.
-In our example, the `InvoiceController` has an argument named `currencyConverter`. By this, Angular knows about the
+In our example, the `InvoiceController` has an argument named `currencyConverter`. By this, AngularJS knows about the
 dependency between the controller and the service and calls the controller with the service instance as argument.
 
 The last thing that changed in the example between the previous section and this section is that we
 now pass an array to the `module.controller` function, instead of a plain function. The array first
 contains the names of the service dependencies that the controller needs. The last entry
 in the array is the controller constructor function.
-Angular uses this array syntax to define the dependencies so that the DI also works after minifying
+AngularJS uses this array syntax to define the dependencies so that the DI also works after minifying
 the code, which will most probably rename the argument name of the controller constructor function
 to something shorter like `a`.
 
 ## Accessing the backend
 
 Let's finish our example by fetching the exchange rates from the Yahoo Finance API.
-The following example shows how this is done with Angular:
+The following example shows how this is done with AngularJS:
 
 <example name="guide-concepts-3" ng-app-included="true">
   <file name="invoice3.js">
@@ -380,7 +380,7 @@ The following example shows how this is done with Angular:
 
 What changed?
 Our `currencyConverter` service of the `finance` module now uses the {@link ng.$http `$http`}, a
-built-in service provided by Angular for accessing a server backend. `$http` is a wrapper around
+built-in service provided by AngularJS for accessing a server backend. `$http` is a wrapper around
 [`XMLHttpRequest`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest)
 and [JSONP](http://en.wikipedia.org/wiki/JSONP) transports.
 

@@ -48,7 +48,7 @@ changes to `$location` are reflected into the browser address bar.
   </tr>
 
   <tr>
-    <td class="head">integration with angular application life-cycle</td>
+    <td class="head">integration with AngularJS application life-cycle</td>
     <td>none</td>
     <td>knows about all internal life-cycle phases, integrates with {@link ng.$rootScope.Scope#$watch $watch}, ...</td>
   </tr>
@@ -224,7 +224,7 @@ facilitate the browser URL change and history management.
 ## Hashbang mode (default mode)
 
 In this mode, `$location` uses Hashbang URLs in all browsers.
-Angular also does not intercept and rewrite links in this mode. I.e. links work
+AngularJS also does not intercept and rewrite links in this mode. I.e. links work
 as expected and also perform full page reloads when other parts of the url
 than the hash fragment was changed.
 
@@ -267,7 +267,7 @@ having to worry about whether the browser displaying your app supports the histo
 - Opening a regular URL in a legacy browser -> redirects to a hashbang URL
 - Opening hashbang URL in a modern browser -> rewrites to a regular URL
 
-Note that in this mode, Angular intercepts all links (subject to the "Html link rewriting" rules below)
+Note that in this mode, AngularJS intercepts all links (subject to the "Html link rewriting" rules below)
 and updates the url in a way that never performs a full page reload.
 
 
@@ -353,7 +353,7 @@ Note that [attribute name normalization](guide/directive#normalization) does not
 
 ### Relative links
 
-Be sure to check all relative links, images, scripts etc. Angular requires you to specify the url
+Be sure to check all relative links, images, scripts etc. AngularJS requires you to specify the url
 base in the head of your main html file (`<base href="/my-base/index.html">`) unless `html5Mode.requireBase`
 is set to `false` in the html5Mode definition object passed to `$locationProvider.html5Mode()`. With
 that, relative urls will always be resolved to this base url, even if the initial url of the
@@ -368,7 +368,7 @@ to anchors on the same page without needing to know on which page the user curre
 
 Using this mode requires URL rewriting on server side, basically you have to rewrite all your links
 to entry point of your application (e.g. index.html). Requiring a `<base>` tag is also important for
-this case, as it allows Angular to differentiate between the part of the url that is the application
+this case, as it allows AngularJS to differentiate between the part of the url that is the application
 base and the path that should be handled by the application.
 
 ### Base href constraints
@@ -718,14 +718,14 @@ use a lower level API, {@link ng.$window $window.location.href}.
 
 ## Using $location outside of the scope life-cycle
 
-`$location` knows about Angular's {@link ng.$rootScope.Scope scope} life-cycle. When a URL changes in
+`$location` knows about AngularJS's {@link ng.$rootScope.Scope scope} life-cycle. When a URL changes in
 the browser it updates the `$location` and calls `$apply` so that all
 {@link ng.$rootScope.Scope#$watch $watchers} /
 {@link ng.$compile.directive.Attributes#$observe $observers} are notified.
 When you change the `$location` inside the `$digest` phase everything is ok; `$location` will
 propagate this change into browser and will notify all the {@link ng.$rootScope.Scope#$watch $watchers} /
 {@link ng.$compile.directive.Attributes#$observe $observers}.
-When you want to change the `$location` from outside Angular (for example, through a DOM Event or
+When you want to change the `$location` from outside AngularJS (for example, through a DOM Event or
 during testing) - you must call `$apply` to propagate the changes.
 
 ## $location.path() and ! or / prefixes
@@ -777,7 +777,7 @@ describe('serviceUnderTest', function() {
 
 # Migrating from earlier AngularJS releases
 
-In earlier releases of Angular, `$location` used `hashPath` or `hashSearch` to process path and
+In earlier releases of AngularJS, `$location` used `hashPath` or `hashSearch` to process path and
 search methods. With this release, the `$location` service processes path and search methods and
 then uses the information it obtains to compose hashbang URLs (such as
 `http://server.com/#!/path?search=a`), when necessary.

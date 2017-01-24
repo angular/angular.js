@@ -40,7 +40,7 @@ URL of the subcontext:
 </head>
 ```
 
-Before Angular 1.3 we didn't have this hard requirement and it was easy to write apps that worked
+Before AngularJS 1.3 we didn't have this hard requirement and it was easy to write apps that worked
 when deployed in the root context but were broken when moved to a sub-context because in the
 sub-context all absolute urls would resolve to the root context of the app. To prevent this,
 use relative URLs throughout your app:

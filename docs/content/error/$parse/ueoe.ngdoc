@@ -8,5 +8,5 @@ Occurs when an expression is missing tokens at the end of the expression.
 For example, forgetting to close a bracket or failing to properly escape quotes in an expression
 will trigger this error.
 
-To resolve, learn more about {@link guide/expression Angular expressions}, identify the error and 
+To resolve, learn more about {@link guide/expression AngularJS expressions}, identify the error and
 fix the expression's syntax.

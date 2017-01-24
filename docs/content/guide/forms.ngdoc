@@ -303,7 +303,7 @@ after last change.
 
 ## Custom Validation
 
-Angular provides basic implementation for most common HTML5 {@link ng.directive:input input}
+AngularJS provides basic implementation for most common HTML5 {@link ng.directive:input input}
 types: ({@link input[text] text}, {@link input[number] number}, {@link input[url] url},
 {@link input[email] email}, {@link input[date] date}, {@link input[radio] radio}, {@link input[checkbox] checkbox}),
 as well as some directives for validation (`required`, `pattern`, `minlength`, `maxlength`,
@@ -314,7 +314,7 @@ the {@link ngModel.NgModelController `ngModelController`}. To get a hold of the 
 you require it in the directive as shown in the example below.
 
 Each function in the `$validators` object receives the `modelValue` and the `viewValue`
-as parameters. Angular will then call `$setValidity` internally with the function's return value
+as parameters. AngularJS will then call `$setValidity` internally with the function's return value
 (`true`: valid, `false`: invalid). The validation functions are executed every time an input
 is changed (`$setViewValue` is called) or whenever the bound `model` changes.
 Validation happens after successfully running `$parsers` and `$formatters`, respectively.
@@ -422,7 +422,7 @@ In the following example we create two directives:
 
 ## Modifying built-in validators
 
-Since Angular itself uses `$validators`, you can easily replace or remove built-in validators,
+Since AngularJS itself uses `$validators`, you can easily replace or remove built-in validators,
 should you find it necessary. The following example shows you how to overwrite the email validator
 in `input[email]` from a custom directive so that it requires a specific top-level domain,
 `example.com` to be present.
@@ -451,10 +451,10 @@ Note that you can alternatively use `ng-pattern` to further restrict the validat
       return {
         require: '?ngModel',
         link: function(scope, elm, attrs, ctrl) {
-          // only apply the validator if ngModel is present and Angular has added the email validator
+          // only apply the validator if ngModel is present and AngularJS has added the email validator
           if (ctrl && ctrl.$validators.email) {
 
-            // this will overwrite the default Angular email validator
+            // this will overwrite the default AngularJS email validator
             ctrl.$validators.email = function(modelValue) {
               return ctrl.$isEmpty(modelValue) || EMAIL_REGEXP.test(modelValue);
             };
@@ -467,7 +467,7 @@ Note that you can alternatively use `ng-pattern` to further restrict the validat
 
 
 ## Implementing custom form controls (using `ngModel`)
-Angular implements all of the basic HTML form controls ({@link ng.directive:input input},
+AngularJS implements all of the basic HTML form controls ({@link ng.directive:input input},
 {@link ng.directive:select select}, {@link ng.directive:textarea textarea}),
 which should be sufficient for most cases. However, if you need more flexibility,
 you can write your own form control as a directive.

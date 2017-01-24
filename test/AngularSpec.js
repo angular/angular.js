@@ -1761,7 +1761,7 @@ describe('angular', function() {
   });
 
 
-  describe('angular service', function() {
+  describe('AngularJS service', function() {
     it('should override services', function() {
       module(function($provide) {
         $provide.value('fake', 'old');

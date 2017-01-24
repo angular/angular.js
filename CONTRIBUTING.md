@@ -15,7 +15,7 @@ today! Here are the guidelines we'd like you to follow:
 
 ## <a name="coc"></a> Code of Conduct
 
-Help us keep Angular open and inclusive. Please read and follow our [Code of Conduct][coc].
+Help us keep AngularJS open and inclusive. Please read and follow our [Code of Conduct][coc].
 
 ## <a name="question"></a> Got a Question or Problem?
 
@@ -29,7 +29,7 @@ If you find a bug in the source code or a mistake in the documentation, you can 
 submitting an issue to our [GitHub Repository][github]. Even better you can submit a Pull Request
 with a fix.
 
-**Localization Issues:** Angular.js uses the [Google Closure I18N library] to generate
+**Localization Issues:** AngularJS uses the [Google Closure I18N library] to generate
 its own I18N files (the ngLocale module). This means that any changes to these files would be lost
 the next time that we import the library.
 Since the Closure library i18n data is itself auto-generated from the data of the
@@ -81,7 +81,7 @@ quickly:
 
 * **Overview of the Issue** - if an error is being thrown a non-minified stack trace helps
 * **Motivation for or Use Case** - explain why this is a bug for you
-* **Angular Version(s)** - is it a regression?
+* **AngularJS Version(s)** - is it a regression?
 * **Browsers and Operating System** - is this a problem with all browsers or only specific ones?
 * **Reproduce the Error** - provide a live example (using [Plunker][plunker] or
   [JSFiddle][jsfiddle]) or an unambiguous set of steps.
@@ -108,7 +108,7 @@ Before you submit your pull request consider the following guidelines:
 
 * Create your patch, **including appropriate test cases**.
 * Follow our [Coding Rules](#rules).
-* Run the full Angular test suite, as described in the [developer documentation][dev-doc],
+* Run the full AngularJS test suite, as described in the [developer documentation][dev-doc],
   and ensure that all tests pass.
 * Commit your changes using a descriptive commit message that follows our
   [commit message conventions](#commit) and passes our commit message presubmit hook
@@ -132,11 +132,11 @@ Before you submit your pull request consider the following guidelines:
     git push origin my-fix-branch
     ```
 
-In GitHub, send a pull request to `angular:master`.
+In GitHub, send a pull request to `angular.js:master`.
 If we suggest changes, then:
 
 * Make the required updates.
-* Re-run the Angular test suite to ensure tests are still passing.
+* Re-run the AngularJS test suite to ensure tests are still passing.
 * Commit your changes to your branch (e.g. `my-fix-branch`).
 * Push the changes to your GitHub repository (this will update your Pull Request).
 
@@ -189,10 +189,10 @@ To ensure consistency throughout the source code, keep these rules in mind as yo
 * All features or bug fixes **must be tested** by one or more [specs][unit-testing].
 * All public API methods **must be documented** with ngdoc, an extended version of jsdoc (we added
   support for markdown and templating via @ngdoc tag). To see how we document our APIs, please check
-  out the existing ngdocs and see [this wiki page][ngDocs].
+  out the existing source code and see [this wiki page][ngDocs].
 * With the exceptions listed below, we follow the rules contained in
   [Google's JavaScript Style Guide][js-style-guide]:
-    * **Do not use namespaces**: Instead,  wrap the entire angular code base in an anonymous closure and
+    * **Do not use namespaces**: Instead,  wrap the entire AngularJS code base in an anonymous closure and
       export our API explicitly rather than implicitly.
     * Wrap all code at **100 characters**.
     * Instead of complex inheritance hierarchies, we **prefer simple objects**. We use prototypal

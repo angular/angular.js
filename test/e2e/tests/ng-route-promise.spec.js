@@ -15,7 +15,7 @@ describe('ngRoute promises', function() {
     browser.waitForAngular().then(function() {
       fail('waitForAngular() should have timed out, but didn\'t');
     }, function(error) {
-      expect(error.message).toContain('Timed out waiting for asynchronous Angular tasks to finish');
+      expect(error.message).toContain('Timed out waiting for asynchronous AngularJS tasks to finish');
     });
   });
 

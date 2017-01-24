@@ -104,7 +104,7 @@ angular.scenario.Application.prototype.navigateTo = function(url, loadFn, errorF
 
 /**
  * Executes a function in the context of the tested application. Will wait
- * for all pending angular xhr requests before executing.
+ * for all pending AngularJS xhr requests before executing.
  *
  * @param {function()} action The callback to execute. function($window, $document)
  *  $document is a jQuery wrapped document.

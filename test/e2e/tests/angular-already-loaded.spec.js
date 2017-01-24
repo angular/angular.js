@@ -1,6 +1,6 @@
 'use strict';
 
-describe('App where angular is loaded more than once', function() {
+describe('App where angAngularJSular is loaded more than once', function() {
   beforeEach(function() {
     loadFixture('angular-already-loaded');
   });

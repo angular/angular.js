@@ -6,7 +6,7 @@
 # Providers
 
 Each web application you build is composed of objects that collaborate to get stuff done. These
-objects need to be instantiated and wired together for the app to work. In Angular apps most of
+objects need to be instantiated and wired together for the app to work. In AngularJS apps most of
 these objects are instantiated and wired together automatically by the {@link auto.$injector
 injector service}.
 
@@ -14,7 +14,7 @@ The injector creates two types of objects, **services** and **specialized object
 
 Services are objects whose API is defined by the developer writing the service.
 
-Specialized objects conform to a specific Angular framework API. These objects are one of
+Specialized objects conform to a specific AngularJS framework API. These objects are one of
 controllers, directives, filters or animations.
 
 The injector needs to know how to create these objects. You tell it by registering a "recipe" for
@@ -35,11 +35,11 @@ In order for the injector to know how to create and wire together all of these o
 a registry of "recipes". Each recipe has an identifier of the object and the description of how to
 create this object.
 
-Each recipe belongs to an {@link angular.Module Angular module}. An Angular module is a bag
+Each recipe belongs to an {@link angular.Module AngularJS module}. An AngularJS module is a bag
 that holds one or more recipes. And since manually keeping track of module dependencies is no fun,
 a module can contain information about dependencies on other modules as well.
 
-When an Angular application starts with a given application module, Angular creates a new instance
+When an AngularJS application starts with a given application module, AngularJS creates a new instance
 of injector, which in turn creates a registry of recipes as a union of all recipes defined in the
 core "ng" module, application module and its dependencies. The injector then consults the recipe
 registry when it needs to create an object for your application.
@@ -55,10 +55,10 @@ var myApp = angular.module('myApp', []);
 myApp.value('clientId', 'a12345654321x');
 ```
 
-Notice how we created an Angular module called `myApp`, and specified that this module definition
+Notice how we created an AngularJS module called `myApp`, and specified that this module definition
 contains a "recipe" for constructing the `clientId` service, which is a simple string in this case.
 
-And this is how you would display it via Angular's data-binding:
+And this is how you would display it via AngularJS's data-binding:
 
 
 ```javascript
@@ -95,7 +95,7 @@ The Factory recipe constructs a new service using a function with zero or more a
 are dependencies on other services). The return value of this function is the service instance
 created by this recipe.
 
-Note: All services in Angular are singletons. That means that the injector uses each recipe at most
+Note: All services in AngularJS are singletons. That means that the injector uses each recipe at most
 once to create the object. The injector then caches the reference for all future needs.
 
 Since a Factory is a more powerful version of the Value recipe, the same service can be constructed with it.
@@ -246,7 +246,7 @@ Notice that the unicorn provider is injected into the config function. This inje
 provider injector which is different from the regular instance injector, in that it instantiates
 and wires (injects) all provider instances only.
 
-During application bootstrap, before Angular goes off creating all services, it configures and
+During application bootstrap, before AngularJS goes off creating all services, it configures and
 instantiates all providers. We call this the configuration phase of the application life-cycle.
 During this phase, services aren't accessible because they haven't been created yet.
 
@@ -256,7 +256,7 @@ creating services starts. We call this part of the application life-cycle the ru
 
 ## Constant Recipe
 
-We've just learned how Angular splits the life-cycle into configuration phase and run phase and how
+We've just learned how AngularJS splits the life-cycle into configuration phase and run phase and how
 you can provide configuration to your application via the config function. Since the config
 function runs in the configuration phase when no services are available, it doesn't have access
 even to simple value objects created via the Value recipe.
@@ -308,7 +308,7 @@ myApp.controller('DemoController', ["clientId", "planetName", function DemoContr
 
 Earlier we mentioned that we also have special purpose objects that are different from services.
 These objects extend the framework as plugins and therefore must implement interfaces specified by
-Angular. These interfaces are Controller, Directive, Filter and Animation.
+AngularJS. These interfaces are Controller, Directive, Filter and Animation.
 
 The instructions for the injector to create these special objects (with the exception of the
 Controller objects) use the Factory recipe behind the scenes.
@@ -340,7 +340,7 @@ We can then use the component like this:
 </html>
 ```
 
-Using Factory recipes, you can also define Angular's filters and animations, but the controllers
+Using Factory recipes, you can also define AngularJS's filters and animations, but the controllers
 are a bit special. You create a controller as a custom type that declares its dependencies as
 arguments for its constructor function. This constructor is then registered with a module. Let's
 take a look at the `DemoController`, created in one of the early examples:

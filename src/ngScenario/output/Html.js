@@ -4,7 +4,7 @@
  * User Interface for the Scenario Runner.
  *
  * TODO(esprehn): This should be refactored now that ObjectModel exists
- *  to use angular bindings for the UI.
+ *  to use AngularJS bindings for the UI.
  */
 angular.scenario.output('html', function(context, runner, model) {
   var specUiMap = {},

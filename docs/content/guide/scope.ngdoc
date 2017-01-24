@@ -16,8 +16,8 @@ watch {@link guide/expression expressions} and propagate events.
     model mutations.
 
   - Scopes provide APIs ({@link ng.$rootScope.Scope#$apply $apply}) to
-    propagate any model changes through the system into the view from outside of the "Angular
-    realm" (controllers, services, Angular event handlers).
+    propagate any model changes through the system into the view from outside of the "AngularJS
+    realm" (controllers, services, AngularJS event handlers).
 
   - Scopes can be nested to limit access to the properties of application components while providing
     access to shared model properties. Nested scopes are either "child scopes" or "isolate scopes".
@@ -108,7 +108,7 @@ to test the behavior without being distracted by the rendering details.
 
 ## Scope Hierarchies
 
-Each Angular application has exactly one {@link ng.$rootScope root scope}, but
+Each AngularJS application has exactly one {@link ng.$rootScope root scope}, but
 may have several child scopes.
 
 The application can have multiple scopes, because some {@link guide/directive directives} create
@@ -116,7 +116,7 @@ new child scopes (refer to directive documentation to see which directives creat
 When new scopes are created, they are added as children of their parent scope. This creates a tree
 structure which parallels the DOM where they're attached.
 
-When Angular evaluates `{{name}}`, it first looks at the scope associated with the given
+When AngularJS evaluates `{{name}}`, it first looks at the scope associated with the given
 element for the `name` property. If no such property is found, it searches the parent scope
 and so on until the root scope is reached. In JavaScript this behavior is known as prototypical
 inheritance, and child scopes prototypically inherit from their parents.
@@ -141,7 +141,7 @@ a diagram depicting the scope boundaries.
     angular.module('scopeExample', [])
       .controller('GreetController', ['$scope', '$rootScope', function($scope, $rootScope) {
         $scope.name = 'World';
-        $rootScope.department = 'Angular';
+        $rootScope.department = 'AngularJS';
       }])
       .controller('ListController', ['$scope', function($scope) {
         $scope.names = ['Igor', 'Misko', 'Vojta'];
@@ -158,7 +158,7 @@ a diagram depicting the scope boundaries.
 
 <img class="center" src="img/guide/concepts-scope.png">
 
-Notice that Angular automatically places `ng-scope` class on elements where scopes are
+Notice that AngularJS automatically places `ng-scope` class on elements where scopes are
 attached. The `<style>` definition in this example highlights in red the new scope locations. The
 child scopes are necessary because the repeater evaluates `{{name}}` expression, but
 depending on which scope the expression is evaluated it produces different result. Similarly the
@@ -173,7 +173,7 @@ purposes. (It is unlikely that one would need to retrieve scopes in this way ins
 application.) The location where the root scope is attached to the DOM is defined by the location
 of {@link ng.directive:ngApp `ng-app`} directive. Typically
 `ng-app` is placed on the `<html>` element, but it can be placed on other elements as well, if,
-for example, only a portion of the view needs to be controlled by Angular.
+for example, only a portion of the view needs to be controlled by AngularJS.
 
 To examine the scope in the debugger:
 
@@ -230,11 +230,11 @@ The normal flow of a browser receiving an event is that it executes a correspond
 callback. Once the callback completes the browser re-renders the DOM and returns to waiting for
 more events.
 
-When the browser calls into JavaScript the code executes outside the Angular execution context,
-which means that Angular is unaware of model modifications. To properly process model
-modifications the execution has to enter the Angular execution context using the {@link
+When the browser calls into JavaScript the code executes outside the AngularJS execution context,
+which means that AngularJS is unaware of model modifications. To properly process model
+modifications the execution has to enter the AngularJS execution context using the {@link
 ng.$rootScope.Scope#$apply `$apply`} method. Only model modifications which
-execute inside the `$apply` method will be properly accounted for by Angular. For example if a
+execute inside the `$apply` method will be properly accounted for by AngularJS. For example if a
 directive listens on DOM events, such as {@link
 ng.directive:ngClick `ng-click`} it must evaluate the
 expression inside the `$apply` method.
@@ -264,14 +264,14 @@ the `$digest` phase. This delay is desirable, since it coalesces multiple model 
   3. **Model mutation**
 
      For mutations to be properly observed, you should make them only within the {@link
-     ng.$rootScope.Scope#$apply scope.$apply()}. Angular APIs do this
+     ng.$rootScope.Scope#$apply scope.$apply()}. AngularJS APIs do this
      implicitly, so no extra `$apply` call is needed when doing synchronous work in controllers,
      or asynchronous work with {@link ng.$http $http}, {@link ng.$timeout $timeout}
      or {@link ng.$interval $interval} services.
 
   4. **Mutation observation**
 
-     At the end of `$apply`, Angular performs a {@link ng.$rootScope.Scope#$digest
+     At the end of `$apply`, AngularJS performs a {@link ng.$rootScope.Scope#$digest
      $digest} cycle on the root scope, which then propagates throughout all child scopes. During
      the `$digest` cycle, all `$watch`ed expressions or functions are checked for model mutation
      and if a mutation is detected, the `$watch` listener is called.
@@ -334,7 +334,7 @@ information.
 
 ### Scope `$watch` Performance Considerations
 
-Dirty checking the scope for property changes is a common operation in Angular and for this reason
+Dirty checking the scope for property changes is a common operation in AngularJS and for this reason
 the dirty checking function must be efficient. Care should be taken that the dirty checking
 function does not do any DOM access, as DOM access is orders of magnitude slower than property
 access on JavaScript object.
@@ -354,7 +354,7 @@ Dirty checking can be done with three strategies: By reference, by collection co
 ## Integration with the browser event loop
 <img class="pull-right" style="padding-left: 3em; padding-bottom: 1em;" src="img/guide/concepts-runtime.png">
 
-The diagram and the example below describe how Angular interacts with the browser's event loop.
+The diagram and the example below describe how AngularJS interacts with the browser's event loop.
 
   1. The browser's event-loop waits for an event to arrive. An event is a user interaction, timer event,
      or network event (response from a server).
@@ -363,19 +363,19 @@ The diagram and the example below describe how Angular interacts with the browse
   3. Once the callback executes, the browser leaves the JavaScript context and
      re-renders the view based on DOM changes.
 
-Angular modifies the normal JavaScript flow by providing its own event processing loop. This
-splits the JavaScript into classical and Angular execution context. Only operations which are
-applied in the Angular execution context will benefit from Angular data-binding, exception handling,
-property watching, etc... You can also use $apply() to enter the Angular execution context from JavaScript. Keep in
+AngularJS modifies the normal JavaScript flow by providing its own event processing loop. This
+splits the JavaScript into classical and AngularJS execution context. Only operations which are
+applied in the AngularJS execution context will benefit from AngularJS data-binding, exception handling,
+property watching, etc... You can also use $apply() to enter the AngularJS execution context from JavaScript. Keep in
 mind that in most places (controllers, services) $apply has already been called for you by the
 directive which is handling the event. An explicit call to $apply is needed only when
 implementing custom event callbacks, or when working with third-party library callbacks.
 
-  1. Enter the Angular execution context by calling {@link guide/scope scope}`.`{@link
+  1. Enter the AngularJS execution context by calling {@link guide/scope scope}`.`{@link
      ng.$rootScope.Scope#$apply $apply}`(stimulusFn)`, where `stimulusFn` is
-     the work you wish to do in the Angular execution context.
-  2. Angular executes the `stimulusFn()`, which typically modifies application state.
-  3. Angular enters the {@link ng.$rootScope.Scope#$digest $digest} loop. The
+     the work you wish to do in the AngularJS execution context.
+  2. AngularJS executes the `stimulusFn()`, which typically modifies application state.
+  3. AngularJS enters the {@link ng.$rootScope.Scope#$digest $digest} loop. The
      loop is made up of two smaller loops which process {@link
      ng.$rootScope.Scope#$evalAsync $evalAsync} queue and the {@link
      ng.$rootScope.Scope#$watch $watch} list. The {@link
@@ -391,8 +391,8 @@ implementing custom event callbacks, or when working with third-party library ca
   5. The {@link ng.$rootScope.Scope#$watch $watch} list is a set of expressions
      which may have changed since last iteration. If a change is detected then the `$watch`
      function is called which typically updates the DOM with the new value.
-  6. Once the Angular {@link ng.$rootScope.Scope#$digest $digest} loop finishes,
-     the execution leaves the Angular and JavaScript context. This is followed by the browser
+  6. Once the AngularJS {@link ng.$rootScope.Scope#$digest $digest} loop finishes,
+     the execution leaves the AngularJS and JavaScript context. This is followed by the browser
      re-rendering the DOM to reflect any changes.
 
 
@@ -411,12 +411,12 @@ user enters text into the text field.
      2. The {@link ng.directive:input input} directive
         captures the change to the input's value and calls {@link
         ng.$rootScope.Scope#$apply $apply}`("name = 'X';")` to update the
-        application model inside the Angular execution context.
-     3. Angular applies the `name = 'X';` to the model.
+        application model inside the AngularJS execution context.
+     3. AngularJS applies the `name = 'X';` to the model.
      4. The {@link ng.$rootScope.Scope#$digest $digest} loop begins
      5. The {@link ng.$rootScope.Scope#$watch $watch} list detects a change
         on the `name` property and notifies the {@link ng.$interpolate interpolation},
         which in turn updates the DOM.
-     6. Angular exits the execution context, which in turn exits the `keydown` event and with it
+     6. AngularJS exits the execution context, which in turn exits the `keydown` event and with it
         the JavaScript execution context.
      7. The browser re-renders the view with the updated text.

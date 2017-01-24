@@ -92,7 +92,7 @@ var ngTouchClickDirectiveFactory = ['$parse', '$timeout', '$rootElement',
   //
   // This is an ugly, terrible hack!
   // Yeah, tell me about it. The alternatives are using the slow click events, or making our users
-  // deal with the ghost clicks, so I consider this the least of evils. Fortunately Angular
+  // deal with the ghost clicks, so I consider this the least of evils. Fortunately AngularJS
   // encapsulates this ugly logic away from the user.
   //
   // Why not just put click handlers on the element?
