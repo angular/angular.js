@@ -6,8 +6,8 @@
 # Component Router
 
 <div class="alert alert-info">
-**Deprecation Notice:** In an effort to keep synchronized with router changes in Angular, this implementation of the Component Router (ngComponentRouter module) has been deprecated and will not receive further updates.
-We are investigating backporting the Angular Router to AngularJS, but alternatively, use the {@link ngRoute} module or community developed projects (e.g. [ui-router](https://github.com/angular-ui/ui-router)).
+**Deprecation Notice:** In an effort to keep synchronized with router changes in the new Angular, this implementation of the Component Router (ngComponentRouter module) has been deprecated and will not receive further updates.
+We are investigating backporting the new Angular Router to AngularJS, but alternatively, use the {@link ngRoute} module or community developed projects (e.g. [ui-router](https://github.com/angular-ui/ui-router)).
 </div>
 
 This guide describes the Component Router for AngularJS.
@@ -15,7 +15,7 @@ This guide describes the Component Router for AngularJS.
 <div class="alert alert-info">
   If you are looking for information about the old router for AngularJS have a look at the {@link ngRoute} module.
 
-  If you are looking for information about the Component Router for Angular then
+  If you are looking for information about the Component Router for the new Angular then
   check out the [Angular Router Guide](https://angular.io/docs/ts/latest/guide/router.html).
 </div>
 
@@ -815,7 +815,7 @@ This hero is then attached to the **Component** so that it can be accessed in th
 
 **How do I get hold of the current router for my component?**
 
-Each component has its own Router. Unlike in Angular, we cannot use the dependency injector to get hold of a component's Router.
+Each component has its own Router. Unlike in the new Angular, we cannot use the dependency injector to get hold of a component's Router.
 We can only inject the `$rootRouter`. Instead we use the fact that the `ng-outlet` directive binds the current router to a `$router`
 attribute on our component.
 

@@ -146,8 +146,8 @@
  *   they are waiting for their template to load asynchronously and their own compilation and linking has been
  *   suspended until that occurs.
  *
- * #### Comparison with Angular life-cycle hooks
- * Angular also uses life-cycle hooks for its components. While the AngularJS life-cycle hooks are similar there are
+ * #### Comparison with life-cycle hooks in the new Angular
+ * The new Angular also uses life-cycle hooks for its components. While the AngularJS life-cycle hooks are similar there are
  * some differences that you should be aware of, especially when it comes to moving your code from AngularJS to Angular:
  *
  * * AngularJS hooks are prefixed with `$`, such as `$onInit`. Angular hooks are prefixed with `ng`, such as `ngOnInit`.
