@@ -68,12 +68,12 @@ We made the following changes to the `phone-list.template.html` template:
   input for the repeater. `orderBy` is a filter that takes an input array, copies it and reorders
   the copy which is then returned.
 
-  Angular creates a two way data-binding between the select element and the `$ctrl.orderProp` model.
+  AngularJS creates a two way data-binding between the select element and the `$ctrl.orderProp` model.
   `$ctrl.orderProp` is then used as the input for the `orderBy` filter.
 
 As we discussed in the section about data-binding and the repeater in {@link step_05 step 5},
 whenever the model changes (for example because a user changes the order with the select drop-down
-menu), Angular's data-binding will cause the view to automatically update. No bloated DOM
+menu), AngularJS's data-binding will cause the view to automatically update. No bloated DOM
 manipulation code is necessary!
 
 
@@ -222,7 +222,7 @@ You can now rerun `npm run protractor` to see the tests run.
 <div></div>
 
 * In the `phoneList` component's controller, remove the statement that sets the `orderProp` value
-  and you'll see that Angular will temporarily add a new blank ("unknown") option to the drop-down
+  and you'll see that AngularJS will temporarily add a new blank ("unknown") option to the drop-down
   list and the ordering will default to unordered/natural order.
 
 * Add a `{{$ctrl.orderProp}}` binding into the `phone-list.template.html` template to display its
@@ -235,7 +235,7 @@ You can now rerun `npm run protractor` to see the tests run.
 # Summary
 
 Now that you have added list sorting and tested the application, go to {@link step_07 step 7} to
-learn about Angular services and how Angular uses dependency injection.
+learn about AngularJS services and how AngularJS uses dependency injection.
 
 
 <ul doc-tutorial-nav="6"></ul>

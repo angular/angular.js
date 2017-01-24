@@ -52,14 +52,14 @@ We made no changes to the component's controller.
   </div>
 ```
 
-We added a standard HTML `<input>` tag and used Angular's {@link ng.filter:filter filter} function
+We added a standard HTML `<input>` tag and used AngularJS's {@link ng.filter:filter filter} function
 to process the input for the {@link ngRepeat ngRepeat} directive.
 
 By virtue of the {@link ngModel ngModel} directive, this lets a user enter search criteria and
 immediately see the effects of their search on the phone list. This new code demonstrates the
 following:
 
-* Data-binding: This is one of the core features in Angular. When the page loads, Angular binds the
+* Data-binding: This is one of the core features in AngularJS. When the page loads, AngularJS binds the
   value of the input box to the data model variable specified with `ngModel` and keeps the two in
   sync.
 
@@ -120,7 +120,7 @@ describe('PhoneCat Application', function() {
 ```
 
 This test verifies that the search box and the repeater are correctly wired together. Notice how
-easy it is to write E2E tests in Angular. Although this example is for a simple test, it really is
+easy it is to write E2E tests in AngularJS. Although this example is for a simple test, it really is
 that easy to set up any functional, readable, E2E test.
 
 

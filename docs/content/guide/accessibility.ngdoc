@@ -6,7 +6,7 @@
 
 # Accessibility with ngAria
 
-The goal of ngAria is to improve Angular's default accessibility by enabling common
+The goal of ngAria is to improve AngularJS's default accessibility by enabling common
 [ARIA](http://www.w3.org/TR/wai-aria/) attributes that convey state or semantic information for
 assistive technologies used by persons with disabilities.
 
@@ -109,11 +109,11 @@ attributes (if they have not been explicitly specified by the developer):
           function isEmpty(value) {
             return !value;
           }
-          
+
           function render() {
             elem[ctrl.$viewValue ? 'addClass' : 'removeClass']('checked');
           }
-     
+
           function toggleCheckbox() {
             ctrl.$setViewValue(!ctrl.$viewValue);
             ctrl.$render();
@@ -420,7 +420,7 @@ tell ngAria to ignore the attribute globally.
 
 ## Common Accessibility Patterns
 
-Accessibility best practices that apply to web apps in general also apply to Angular.
+Accessibility best practices that apply to web apps in general also apply to AngularJS.
 
  * **Text alternatives**: Add alternate text content to make visual information accessible using
  [these W3C guidelines](http://www.w3.org/TR/html-alt-techniques/). The appropriate technique

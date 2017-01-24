@@ -84,7 +84,7 @@ the current route by the `$route` service.
 ## Component Template
 
 The inline, TBD placeholder template has been replaced with a full blown external template,
-including lists and bindings that comprise the phone details. Note how we use the Angular
+including lists and bindings that comprise the phone details. Note how we use the AngularJS
 `{{expression}}` markup and `ngRepeat` to project phone data from our model into the view.
 
 <br />

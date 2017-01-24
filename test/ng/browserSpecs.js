@@ -805,7 +805,7 @@ describe('browser', function() {
       });
     }
 
-    describe('update $location when it was changed outside of Angular in sync ' +
+    describe('update $location when it was changed outside of AngularJS in sync ' +
        'before $digest was called', function() {
 
       it('should work with no history support, no html5Mode', function() {
@@ -924,12 +924,12 @@ describe('browser', function() {
 
       inject(function($location, $rootScope) {
 
-        // Change the hash within Angular and check that we don't infinitely digest
+        // Change the hash within AngularJS and check that we don't infinitely digest
         $location.hash('newHash');
         expect(function() { $rootScope.$digest(); }).not.toThrow();
         expect($location.absUrl()).toEqual('http://server/#newHash');
 
-        // Now change the hash from outside Angular and check that $location updates correctly
+        // Now change the hash from outside AngularJS and check that $location updates correctly
         fakeWindow.location.hash = '#otherHash';
 
         // simulate next tick - since this browser doesn't update synchronously

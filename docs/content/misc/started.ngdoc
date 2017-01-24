@@ -4,10 +4,10 @@
 
 # Getting Started
 
-We want you to have an easy time while starting to use Angular.  We've put together the following steps on your path to
-becoming an Angular expert.
+We want you to have an easy time while starting to use AngularJS.  We've put together the following steps on your path to
+becoming an AngularJS expert.
 
-1. Read the {@link guide/concepts conceptual overview}.<br/>Understand Angular's vocabulary and how all the Angular
+1. Read the {@link guide/concepts conceptual overview}.<br/>Understand AngularJS's vocabulary and how all the AngularJS
    components work together.
 1. Do the {@link tutorial/ AngularJS Tutorial}.<br/>Walk end-to-end through building an application complete with tests
    on top of a node.js web server.  Covers every major AngularJS feature and shows you how to set up your development

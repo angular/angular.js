@@ -7,7 +7,7 @@
 
 
 In this step, you will learn how to create a layout template and how to build an application that
-has multiple views by adding routing, using an Angular module called {@link ngRoute ngRoute}.
+has multiple views by adding routing, using an AngularJS module called {@link ngRoute ngRoute}.
 
 * When you now navigate to `/index.html`, you are redirected to `/index.html#!/phones` and the phone
   list appears in the browser.
@@ -20,8 +20,8 @@ has multiple views by adding routing, using an Angular module called {@link ngRo
 
 ## Dependencies
 
-The routing functionality added in this step is provided by Angular in the `ngRoute` module, which
-is distributed separately from the core Angular framework.
+The routing functionality added in this step is provided by AngularJS in the `ngRoute` module, which
+is distributed separately from the core AngularJS framework.
 
 Since we are using [Bower][bower] to install client-side dependencies, this step updates the
 `bower.json` configuration file to include the new dependency:
@@ -47,7 +47,7 @@ Since we are using [Bower][bower] to install client-side dependencies, this step
 ```
 
 The new dependency `"angular-route": "1.5.x"` tells bower to install a version of the angular-route
-module that is compatible with version 1.5.x of Angular. We must tell bower to download and install
+module that is compatible with version 1.5.x of AngularJS. We must tell bower to download and install
 this dependency.
 
 ```
@@ -60,7 +60,7 @@ npm install
 </div>
 
 <div class="alert alert-warning">
-  **Warning:** If a new version of Angular has been released since you last ran `npm install`, then
+  **Warning:** If a new version of AngularJS has been released since you last ran `npm install`, then
   you may have a problem with the `bower install` due to a conflict between the versions of
   angular.js that need to be installed. If you run into this issue, simply delete your
   `app/bower_components` directory and then run `npm install`.
@@ -79,7 +79,7 @@ This is a template that is common for all views in our application. Other "parti
 then included into this layout template depending on the current "route" — the view that is
 currently displayed to the user.
 
-Application routes in Angular are declared via the {@link ngRoute.$routeProvider $routeProvider},
+Application routes in AngularJS are declared via the {@link ngRoute.$routeProvider $routeProvider},
 which is the provider of the {@link ngRoute.$route $route} service. This service makes it easy to
 wire together controllers, view templates, and the current URL location in the browser. Using this
 feature, we can implement [deep linking][deep-linking], which lets us utilize the browser's history
@@ -105,7 +105,7 @@ feature, we can implement [deep linking][deep-linking], which lets us utilize th
 As you {@link step_07 noticed}, {@link guide/di dependency injection} (DI) is at the core of
 AngularJS, so it's important for you to understand a thing or two about how it works.
 
-When the application bootstraps, Angular creates an injector that will be used to find and inject
+When the application bootstraps, AngularJS creates an injector that will be used to find and inject
 all of the services that are required by your application. The injector itself doesn't know anything
 about what the `$http` or `$route` services do. In fact, the injector doesn't even know about the
 existence of these services, unless it is configured with proper module definitions.
@@ -126,12 +126,12 @@ service, the `$routeProvider` exposes APIs that allow you to define routes for y
   `$routeProvider` into `PhoneListController` at runtime.
 </div>
 
-Angular modules solve the problem of removing global variables from the application and provide a
-way of configuring the injector. As opposed to AMD or require.js modules, Angular modules don't try
+AngularJS modules solve the problem of removing global variables from the application and provide a
+way of configuring the injector. As opposed to AMD or require.js modules, AngularJS modules don't try
 to solve the problem of script load ordering or lazy script fetching. These goals are totally
 independent and both module systems can live side-by-side and fulfill their goals.
 
-To deepen your understanding on Angular's DI, see [Understanding Dependency Injection][wiki-di].
+To deepen your understanding on AngularJS's DI, see [Understanding Dependency Injection][wiki-di].
 
 
 ## Template
@@ -164,7 +164,7 @@ into the layout template. This makes it a perfect fit for our `index.html` templ
 We have added four new `<script>` tags in our `index.html` file to load some extra JavaScript files
 into our application:
 
-* `angular-route.js`: Defines the Angular `ngRoute` module, which provides us with routing.
+* `angular-route.js`: Defines the AngularJS `ngRoute` module, which provides us with routing.
 * `app.config.js`: Configures the providers available to our main module (see
   [below](tutorial/step_09#configuring-a-module)).
 * `phone-detail.module.js`: Defines a new module containing a `phoneDetail` component.
@@ -241,7 +241,7 @@ application routes.
 Our routes are defined as follows:
 
 * `when('/phones')`: Determines the view that will be shown, when the URL hash fragment is
-  `/phones`. According to the specified template, Angular will create an instance of the `phoneList`
+  `/phones`. According to the specified template, AngularJS will create an instance of the `phoneList`
   component to manage the view. Note that this is the same markup that we used to have in the
   `index.html` file.
 
@@ -328,7 +328,7 @@ The takeaway here is:
   from a parent module (because that parent module might not be there some day).
 
 <div class="alert alert-success">
-  Declaring the same dependency in multiple modules does not incur extra "cost", because Angular
+  Declaring the same dependency in multiple modules does not incur extra "cost", because AngularJS
   will still load each dependency once. For more info on modules and their dependencies take a look
   at the [Modules](guide/module) section of the Developer Guide.
 </div>

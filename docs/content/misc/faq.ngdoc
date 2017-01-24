@@ -8,7 +8,7 @@
 
 ### Why is this project called "AngularJS"? Why is the namespace called "ng"?
 
-Because HTML has Angular brackets and "ng" sounds like "Angular".
+Because HTML has AngularJS brackets and "ng" sounds like "AngularJS".
 
 
 ### Is AngularJS a library, framework, plugin or a browser extension?
@@ -94,7 +94,8 @@ When adding new code to AngularJS, we have a very stringent commit policy:
 - Commit messages must be written in a specific manner that allows us to parse them and extract the changes
 for release notes ([see the contributing guidelines](https://github.com/angular/angular.js/blob/master/CONTRIBUTING.md))
 
-The AngularJS code base has a very large set of unit tests and end-to-end tests. This means that a breaking change will require one or more tests to be changed to allow the
+The AngularJS code base has a very large set of unit tests and end-to-end tests. This means that
+a breaking change will require one or more tests to be changed to allow the
 tests to pass. So when a commit includes tests that are being removed or modified, this is a flag that the
 code might include a breaking change. When reviewing the commit we can then decide whether there really is
 a breaking change and if it is appropriate for the branch to which it is being merged. If so, then we
@@ -108,8 +109,8 @@ not used at Google or without sufficient test coverage, have a chance of making 
 
 ### Is AngularJS a templating system?
 
-At the highest level, Angular does look like just another templating system. But there is one
-important reason why the Angular templating system is different, that makes it very good fit for
+At the highest level, AngularJS does look like just another templating system. But there is one
+important reason why the AngularJS templating system is different, that makes it very good fit for
 application development: bidirectional data binding. The template is compiled in the browser and
 the compilation step produces a live view. This means you, the developers, don't need to write
 code to constantly sync the view with the model and the model with the view as in other
@@ -118,7 +119,7 @@ templating systems.
 
 ### Do I need to worry about security holes in AngularJS?
 
-Like any other technology, AngularJS is not impervious to attack. Angular does, however, provide
+Like any other technology, AngularJS is not impervious to attack. AngularJS does, however, provide
 built-in protection from basic security holes, including cross-site scripting and HTML injection
 attacks. AngularJS does round-trip escaping on all strings for you and even offers XSRF protection
 for server-side communication.
@@ -127,7 +128,7 @@ AngularJS was designed to be compatible with other security measures like Conten
 (CSP), HTTPS (SSL/TLS) and server-side authentication and authorization that greatly reduce the
 possible attack vectors and we highly recommend their use.
 
-Please read {@link security} for more detailed information about securing Angular apps.
+Please read {@link security} for more detailed information about securing AngularJS apps.
 
 
 ### Can I download the source, build, and host the AngularJS environment locally?

@@ -15,7 +15,7 @@ services, filters, directives, etc.
 Most applications have a main method that instantiates and wires together the different parts of
 the application.
 
-Angular apps don't have a main method. Instead modules declaratively specify how an application
+AngularJS apps don't have a main method. Instead modules declaratively specify how an application
 should be bootstrapped. There are several advantages to this approach:
 
   * The declarative process is easier to understand.
@@ -199,7 +199,7 @@ angular.module('myModule', []).
 
 ### Run Blocks
 
-Run blocks are the closest thing in Angular to the main method. A run block is the code which
+Run blocks are the closest thing in AngularJS to the main method. A run block is the code which
 needs to run to kickstart the application. It is executed after all of the services have been
 configured and the injector has been created. Run blocks typically contain code which is hard
 to unit-test, and for this reason should be declared in isolated modules, so that they can be
@@ -209,7 +209,7 @@ ignored in the unit-tests.
 
 Modules are a way of managing $injector configuration, and have nothing to do with loading of
 scripts into a VM. There are existing projects which deal with script loading, which may be used
-with Angular. Because modules do nothing at load time they can be loaded into the VM in any order
+with AngularJS. Because modules do nothing at load time they can be loaded into the VM in any order
 and thus script loaders can take advantage of this property and parallelize the loading process.
 
 ### Creation versus Retrieval
@@ -238,7 +238,7 @@ Small, structured modules help keep unit tests concise and focused.
 
 <div class="did you know...">
 Each module can only be loaded once per injector.
-Usually an Angular app has only one injector and modules are only loaded once.
+Usually an AngularJS app has only one injector and modules are only loaded once.
 Each test has its own injector and modules are loaded multiple times.
 </div>
 

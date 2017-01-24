@@ -2,26 +2,26 @@
 @name Developer Guide
 @description
 
-# Guide to Angular 1 Documentation
+# Guide to AngularJS Documentation
 
-On this page, you will find a list of official Angular resources on various topics.
+On this page, you will find a list of official AngularJS resources on various topics.
 
-Just starting out with Angular 1? Try working through our step by step tutorial or try
+Just starting out with AngularJS? Try working through our step by step tutorial or try
 building on our seed project.
 
-* {@link tutorial/index Official Angular 1 Tutorial}
-* [Angular Seed](https://github.com/angular/angular-seed)
+* {@link tutorial/index Official AngularJS Tutorial}
+* [AngularJS Seed](https://github.com/angular/angular-seed)
 
-Ready to find out more about Angular 1?
+Ready to find out more about AngularJS?
 
-* {@link guide/introduction What is Angular 1?}
+* {@link guide/introduction What is AngularJS?}
 * {@link guide/concepts Conceptual Overview}
 
 ## Core Concepts
 
 ### Templates
 
-In Angular applications, you move the job of filling page templates with data from the server to the client.  The result is a system better structured for dynamic page updates.  Below are the core features you'll use.
+In AngularJS applications, you move the job of filling page templates with data from the server to the client.  The result is a system better structured for dynamic page updates.  Below are the core features you'll use.
 
 * {@link guide/databinding Data binding}
 * {@link guide/expression Expressions}
@@ -43,7 +43,7 @@ In Angular applications, you move the job of filling page templates with data fr
 
 * **Animation:** {@link guide/animations Core concepts}, {@link ngAnimate ngAnimate API}
 * **Security:** {@link guide/security Security Docs}, {@link ng.$sce Strict Contextual Escaping}, {@link ng.directive:ngCsp Content Security Policy}, {@link ngSanitize.$sanitize $sanitize}, [video](https://www.youtube.com/watch?v=18ifoT-Id54)
-* **Internationalization and Localization:** {@link guide/i18n Angular Guide to i18n and l10n}, {@link ng.filter:date date filter}, {@link ng.filter:currency currency filter}, [Creating multilingual support](http://www.novanet.no/blog/hallstein-brotan/dates/2013/10/creating-multilingual-support-using-angularjs/)
+* **Internationalization and Localization:** {@link guide/i18n AngularJS Guide to i18n and l10n}, {@link ng.filter:date date filter}, {@link ng.filter:currency currency filter}, [Creating multilingual support](http://www.novanet.no/blog/hallstein-brotan/dates/2013/10/creating-multilingual-support-using-angularjs/)
 * **Touch events:** {@link ngTouch Touch events}
 * **Accessibility:** {@link guide/accessibility ngAria}
 
@@ -58,7 +58,7 @@ In Angular applications, you move the job of filling page templates with data fr
 We have set up a guide to many resources provided by the community, where you can find lots
 of additional information and material on these topics, a list of complimentary libraries, and much more.
 
-* {@link guide/external-resources External Angular 1 resources}
+* {@link guide/external-resources External AngularJS resources}
 
 
 ## Getting Help
@@ -66,27 +66,27 @@ of additional information and material on these topics, a list of complimentary 
 The recipe for getting help on your unique issue is to create an example that could work (even if it doesn't) in a shareable example on [Plunker](http://plnkr.co/), [JSFiddle](http://jsfiddle.net/), or similar site and then post to one of the following:
 
 * [Stackoverflow.com](http://stackoverflow.com/search?q=angularjs)
-* [Angular 1 mailing list](https://groups.google.com/forum/#!forum/angular)
-* [Angular 1 IRC channel](http://webchat.freenode.net/?channels=angularjs&uio=d4)
+* [AngularJS mailing list](https://groups.google.com/forum/#!forum/angular)
+* [AngularJS IRC channel](http://webchat.freenode.net/?channels=angularjs&uio=d4)
 
 ## Official Communications
 
 Official announcements, news and releases are posted to our blog, G+ and Twitter:
 
-* [Angular Blog](http://blog.angularjs.org/)
+* [AngularJS Blog](http://blog.angularjs.org/)
 * [Google+](https://plus.google.com/u/0/+AngularJS)
 * [Twitter](https://twitter.com/angularjs)
-* [Angular on YouTube](http://youtube.com/angularjs)
+* [AngularJS on YouTube](http://youtube.com/angularjs)
 
-## Contributing to Angular 1
+## Contributing to AngularJS
 
-Though we have a core group of core contributors at Google, Angular is an open source project with hundreds of contributors.
-We'd love you to be one of them.  When you're ready, please read the {@link misc/contribute Guide for contributing to Angular}.
+Though we have a core group of core contributors at Google, AngularJS is an open source project with hundreds of contributors.
+We'd love you to be one of them.  When you're ready, please read the {@link misc/contribute Guide for contributing to AngularJS}.
 
 ## Something Missing?
 
-Didn't find what you're looking for here? Check out the {@link guide/external-resources External Angular 1 resources guide}.
+Didn't find what you're looking for here? Check out the {@link guide/external-resources External AngularJS resources guide}.
 
-If you have awesome Angular 1 resources that belong on that page, please tell us about them on
+If you have awesome AngularJS resources that belong on that page, please tell us about them on
 [Google+](https://plus.google.com/u/0/+AngularJS) or [Twitter](https://twitter.com/angularjs).
 

@@ -5,10 +5,10 @@
 
 AngularJS' {@link ng.$sce Strict Contextual Escaping (SCE)} mode (enabled by default) has blocked loading a resource from an insecure URL.
 
-Typically, this would occur if you're attempting to load an Angular template from an untrusted source.
+Typically, this would occur if you're attempting to load an AngularJS template from an untrusted source.
 It's also possible that a custom directive threw this error for a similar reason.
 
-Angular only loads templates from trusted URLs (by calling {@link ng.$sce#getTrustedResourceUrl $sce.getTrustedResourceUrl} on the template URL).
+AngularJS only loads templates from trusted URLs (by calling {@link ng.$sce#getTrustedResourceUrl $sce.getTrustedResourceUrl} on the template URL).
 
 By default, only URLs that belong to the same origin are trusted. These are urls with the same domain, protocol and port as the application document.
 

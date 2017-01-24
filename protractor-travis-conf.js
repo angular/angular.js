@@ -59,7 +59,7 @@ function capabilitiesForBrowserStack(capabilities) {
     'browserstack.tunnelIdentifier': process.env.TRAVIS_JOB_NUMBER,
     'tunnelIdentifier': process.env.TRAVIS_JOB_NUMBER,
 
-    'name': 'Angular E2E',
+    'name': 'AngularJS E2E',
     'build': process.env.TRAVIS_BUILD_NUMBER,
 
     'browserName': capabilities.browserName,
@@ -73,7 +73,7 @@ function capabilitiesForSauceLabs(capabilities) {
   return {
     'tunnel-identifier': process.env.TRAVIS_JOB_NUMBER,
 
-    'name': 'Angular E2E',
+    'name': 'AngularJS E2E',
     'build': process.env.TRAVIS_BUILD_NUMBER,
 
     'browserName': capabilities.browserName,

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Script for updating the Angular bower repos from current local build.
+# Script for updating the AngularJS bower repos from current local build.
 
 echo "#################################"
 echo "#### Update bower ###############"

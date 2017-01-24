@@ -1,5 +1,5 @@
 @ngdoc tutorial
-@name 2 - Angular Templates
+@name 2 - AngularJS Templates
 @step 2
 @description
 
@@ -9,9 +9,9 @@
 Now, it's time to make the web page dynamic — with AngularJS. We will also add a test that verifies
 the code for the controller we are going to add.
 
-There are many ways to structure the code for an application. For Angular applications, we encourage
+There are many ways to structure the code for an application. For AngularJS applications, we encourage
 the use of the [Model-View-Controller (MVC) design pattern][mvc-pattern] to decouple the code and
-separate concerns. With that in mind, let's use a little Angular and JavaScript to add models,
+separate concerns. With that in mind, let's use a little AngularJS and JavaScript to add models,
 views, and controllers to our app.
 
 * The list of three phones is now generated dynamically from data
@@ -21,11 +21,11 @@ views, and controllers to our app.
 
 ## View and Template
 
-In Angular, the **view** is a projection of the model through the HTML **template**. This means that
-whenever the model changes, Angular refreshes the appropriate binding points, which updates the
+In AngularJS, the **view** is a projection of the model through the HTML **template**. This means that
+whenever the model changes, AngularJS refreshes the appropriate binding points, which updates the
 view.
 
-The view is constructed by Angular from this template.
+The view is constructed by AngularJS from this template.
 
 <br />
 **`app/index.html`:**
@@ -51,10 +51,10 @@ The view is constructed by Angular from this template.
 ```
 
 We replaced the hard-coded phone list with the {@link ngRepeat ngRepeat} directive and two
-{@link guide/expression Angular expressions}:
+{@link guide/expression AngularJS expressions}:
 
-* The `ng-repeat="phone in phones"` attribute on the `<li>` tag is an Angular repeater directive.
-  The repeater tells Angular to create a `<li>` element for each phone in the list, using the `<li>`
+* The `ng-repeat="phone in phones"` attribute on the `<li>` tag is an AngularJS repeater directive.
+  The repeater tells AngularJS to create a `<li>` element for each phone in the list, using the `<li>`
   tag as the template.
 * The expressions wrapped in curly braces (`{{phone.name}}` and `{{phone.snippet}}`) will be
   replaced by the values of the expressions.
@@ -67,7 +67,7 @@ We have also added a new directive, called {@link ngController ngController}, wh
   are referring to our application model, which is set up in our `PhoneListController` controller.
 
 <div class="alert alert-info">
-  Note: We have specified an {@link angular.Module Angular Module} to load using
+  Note: We have specified an {@link angular.Module AngularJS Module} to load using
   `ng-app="phonecatApp"`, where `phonecatApp` is the name of our module. This module will contain
   the `PhoneListController`.
 </div>
@@ -104,7 +104,7 @@ phonecatApp.controller('PhoneListController', function PhoneListController($scop
 
 ```
 
-Here we declared a controller called `PhoneListController` and registered it in an Angular module,
+Here we declared a controller called `PhoneListController` and registered it in an AngularJS module,
 `phonecatApp`. Notice that our `ngApp` directive (on the `<html>` tag) now specifies the
 `phonecatApp` module name as the module to load when bootstrapping the application.
 
@@ -123,19 +123,19 @@ view. We connected the dots between the presentation, data, and logic components
 
 ### Scope
 
-The concept of a scope in Angular is crucial. A scope can be seen as the glue which allows the
-template, model, and controller to work together. Angular uses scopes, along with the information
+The concept of a scope in AngularJS is crucial. A scope can be seen as the glue which allows the
+template, model, and controller to work together. AngularJS uses scopes, along with the information
 contained in the template, data model, and controller, to keep models and views separate, but in
 sync. Any changes made to the model are reflected in the view; any changes that occur in the view
 are reflected in the model.
 
-To learn more about Angular scopes, see the {@link ng.$rootScope.Scope angular scope documentation}.
+To learn more about AngularJS scopes, see the {@link ng.$rootScope.Scope AngularJS scope documentation}.
 
 <img class="diagram" src="img/tutorial/tutorial_02.png">
 
 <div class="alert alert-warning">
   <p>
-    Angular scopes prototypically inherit from their parent scope, all the way up to the *root scope*
+    AngularJS scopes prototypically inherit from their parent scope, all the way up to the *root scope*
     of the application. As a result, assigning values directly on the scope makes it easy to share
     data across different parts of the page and create interactive applications.
     While this approach works for prototypes and smaller applications, it quickly leads to tight
@@ -150,7 +150,7 @@ To learn more about Angular scopes, see the {@link ng.$rootScope.Scope angular s
 
 # Testing
 
-The "Angular way" of separating controller from the view, makes it easy to test code as it is being
+The "AngularJS way" of separating controller from the view, makes it easy to test code as it is being
 developed. If our controller were available on the global namespace, we could simply instantiate it
 with a mock scope object:
 
@@ -170,8 +170,8 @@ describe('PhoneListController', function() {
 
 The test instantiates `PhoneListController` and verifies that the phones array property on the
 scope contains three records. This example demonstrates how easy it is to create a unit test for
-code in Angular. Since testing is such a critical part of software development, we make it easy to
-create tests in Angular so that developers are encouraged to write them.
+code in AngularJS. Since testing is such a critical part of software development, we make it easy to
+create tests in AngularJS so that developers are encouraged to write them.
 
 
 ## Testing non-global Controllers
@@ -179,7 +179,7 @@ create tests in Angular so that developers are encouraged to write them.
 In practice, you will not want to have your controller functions in the global namespace. Instead,
 you can see that we have registered it via a constructor function on the `phonecatApp` module.
 
-In this case Angular provides a service, `$controller`, which will retrieve your controller by name.
+In this case AngularJS provides a service, `$controller`, which will retrieve your controller by name.
 Here is the same test using `$controller`:
 
 <br />
@@ -200,8 +200,8 @@ describe('PhoneListController', function() {
 });
 ```
 
-* Before each test we tell Angular to load the `phonecatApp` module.
-* We ask Angular to `inject` the `$controller` service into our test function.
+* Before each test we tell AngularJS to load the `phonecatApp` module.
+* We ask AngularJS to `inject` the `$controller` service into our test function.
 * We use `$controller` to create an instance of the `PhoneListController`.
 * With this instance, we verify that the phones array property on the scope contains three records.
 
@@ -224,9 +224,9 @@ describe('PhoneListController', function() {
 
 ## Writing and Running Tests
 
-Many Angular developers prefer the syntax of
+Many AngularJS developers prefer the syntax of
 [Jasmine's Behavior-Driven Development (BDD) framework][jasmine-home], when writing tests. Although
-Angular does not require you to use Jasmine, we wrote all of the tests in this tutorial in Jasmine
+AngularJS does not require you to use Jasmine, we wrote all of the tests in this tutorial in Jasmine
 v2.4. You can learn about Jasmine on the [Jasmine home page][jasmine-home] and at the
 [Jasmine docs][jasmine-docs].
 

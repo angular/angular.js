@@ -10,11 +10,10 @@
 We are investigating backporting the new Angular Router to AngularJS, but alternatively, use the {@link ngRoute} module or community developed projects (e.g. [ui-router](https://github.com/angular-ui/ui-router)).
 </div>
 
-This guide describes the new Component Router for AngularJS 1.5.
+This guide describes the Component Router for AngularJS.
 
 <div class="alert alert-info">
   If you are looking for information about the default router for AngularJS have a look at the {@link ngRoute} module.
-
   If you are looking for information about the Component Router for the new Angular then
   check out the [Angular Router Guide](https://angular.io/docs/ts/latest/guide/router.html).
 </div>
@@ -28,7 +27,7 @@ Here is a table of the main concepts used in the Component Router.
 | Router                | Displays the Routing Components for the active Route. Manages navigation from one component to the next. |
 | RootRouter            | The top level Router that interacts with the current URL location |
 | RouteConfig           | Configures a Router with RouteDefinitions, each mapping a URL path to a component. |
-| Routing Component     | An Angular component with a RouteConfig and an associated Router. |
+| Routing Component     | An AngularJS component with a RouteConfig and an associated Router. |
 | RouteDefinition       | Defines how the router should navigate to a component based on a URL pattern. |
 | ngOutlet              | The directive (`<ng-outlet>`) that marks where the router should display a view. |
 | ngLink                | The directive (`ng-link="..."`) for binding a clickable HTML element to a route, via a Link Parameters Array. |
@@ -477,7 +476,7 @@ yarn add angular@1.5.x @angular/router@0.2.0
 
 #### Load the scripts
 
-Just like any Angular application, we load the JavaScript files into our `index.html`:
+Just like any AngularJS application, we load the JavaScript files into our `index.html`:
 
 ```html
   <script src="/node_modules/angular/angular.js"></script>
@@ -528,7 +527,7 @@ Configure the top level routed `App` Component.
 
 Create a very simple App Component to test that the application is working.
 
-We are using the Angular 1.5 {@link $compileProvider#component `.component()`} helper method to create
+We are using the AngularJS {@link $compileProvider#component `.component()`} helper method to create
 all the **Components** in our application. It is perfectly suited to this task.
 
 ```js
@@ -549,7 +548,7 @@ must have a base URL.
 
 #### Bootstrap AngularJS
 
-Bootstrap the Angular application and add the top level App Component.
+Bootstrap the AngularJS application and add the top level App Component.
 
 ```html
 <body ng-app="app">
@@ -625,7 +624,7 @@ directive and a **Route Config** that defines a set of child **Routes** which de
 
 ### HeroesComponent
 
-Create a new file `heroes.js`, which defines a new Angular module for the **Components** of this feature
+Create a new file `heroes.js`, which defines a new AngularJS module for the **Components** of this feature
 and registers the Heroes **Component**.
 
 ```js
@@ -815,7 +814,7 @@ This hero is then attached to the **Component** so that it can be accessed in th
 
 **How do I get hold of the current router for my component?**
 
-Each component has its own Router. Unlike in Angular 2, we cannot use the dependency injector to get hold of a component's Router.
+Each component has its own Router. Unlike in the new Angular, we cannot use the dependency injector to get hold of a component's Router.
 We can only inject the `$rootRouter`. Instead we use the fact that the `ng-outlet` directive binds the current router to a `$router`
 attribute on our component.
 

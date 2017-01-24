@@ -330,7 +330,7 @@
             <SpBefore>0</SpBefore>
             <HorzAlign>1</HorzAlign>
           </Para>
-          <Text><cp IX="0"/><pp IX="0"/>Angular Scope Object</Text>
+          <Text><cp IX="0"/><pp IX="0"/>AngularJS Scope Object</Text>
         </Shape>
         <Shape ID="4" Type="Shape" Name="Graphic.4">
           <XForm>
@@ -753,7 +753,7 @@
                 <SpBefore>0</SpBefore>
                 <HorzAlign>0</HorzAlign>
               </Para>
-              <Text><cp IX="0"/><pp IX="0"/>Angular Scope</Text>
+              <Text><cp IX="0"/><pp IX="0"/>AngularJS Scope</Text>
             </Shape>
           </Shapes>
         </Shape>
@@ -1051,8 +1051,8 @@
             <SpBefore>0</SpBefore>
             <HorzAlign>0</HorzAlign>
           </Para>
-          <Text><cp IX="0"/><pp IX="0"/>&lt;input 
-  name=&quot;foo&quot; 
+          <Text><cp IX="0"/><pp IX="0"/>&lt;input
+  name=&quot;foo&quot;
   value=&quot;bar&quot; &gt;</Text>
         </Shape>
         <Shape ID="14" Type="Shape" Name="Graphic.14">
@@ -2116,7 +2116,7 @@
             <SpBefore>0</SpBefore>
             <HorzAlign>0</HorzAlign>
           </Para>
-          <Text><cp IX="0"/><pp IX="0"/>Angular creates model as property on scope object.</Text>
+          <Text><cp IX="0"/><pp IX="0"/>AngularJS creates model as property on scope object.</Text>
         </Shape>
       </Shapes>
       <Connects>

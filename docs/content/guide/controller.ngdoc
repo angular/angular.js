@@ -102,7 +102,7 @@ myApp.controller('DoubleController', ['$scope', function($scope) {
 }]);
 ```
 
-Once the Controller has been attached to the DOM, the `double` method can be invoked in an Angular
+Once the Controller has been attached to the DOM, the `double` method can be invoked in an AngularJS
 expression in the template:
 
 ```js
@@ -113,12 +113,13 @@ expression in the template:
 
 As discussed in the {@link concepts Concepts} section of this guide, any
 objects (or primitives) assigned to the scope become model properties. Any methods assigned to
-the scope are available in the template/view, and can be invoked via angular expressions
+the scope are available in the template/view, and can be invoked via AngularJS expressions
 and `ng` event handler directives (e.g. {@link ng.directive:ngClick ngClick}).
+
 
 ## Simple Spicy Controller Example
 
-To illustrate further how Controller components work in Angular, let's create a little app with the
+To illustrate further how Controller components work in AngularJS, let's create a little app with the
 following components:
 
 - A {@link templates template} with two buttons and a simple message

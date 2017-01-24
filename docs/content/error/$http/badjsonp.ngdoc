@@ -11,7 +11,7 @@ value is `JSON_CALLBACK`.
 parameter is specified in the configuration object (or in the defaults) via the `jsonpCallbackParam`
 property. You must not provide your own parameter with this name in the configuratio of the request.
 
-In previous versions of Angular, you specified where to add the callback parameter value via the
+In previous versions of AngularJS, you specified where to add the callback parameter value via the
 `JSON_CALLBACK` placeholder. This is no longer allowed.
 
 To resolve this error, remove any parameters that have the same name as the `jsonpCallbackParam`;

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Script for removing tags from the Angular bower repos
+# Script for removing tags from the AngularJS bower repos
 
 echo "#################################"
 echo "#### Untag bower ################"

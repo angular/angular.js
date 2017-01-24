@@ -49,6 +49,7 @@ If you find a bug in the source code, you can help us by submitting an issue to 
 **Special Note for Localization Issues:** AngularJS uses the [Google Closure I18N library] to
 generate its own I18N files (the ngLocale module). This means that any changes to these files
 would be lost the next time that we import the library.
+
 Since the Closure library i18n data is itself auto-generated from the data of the
 [Common Locale Data Repository (CLDR)] project, errors in the data should
 be reported there. See also the [Closure guide to i18n changes].
@@ -164,7 +165,6 @@ restarted.
   * Re-run the AngularJS test suite to ensure tests are still passing.
   * Commit your changes to your branch (e.g. `my-fix-branch`).
   * Push the changes to your GitHub repository (this will update your Pull Request).
-
     You can also amend the initial commits and force push them to the branch.
 
     ```shell

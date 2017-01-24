@@ -81,7 +81,7 @@ include them in our layout template.
     ...
 ```
 
-The syntax for using filters in Angular templates is as follows:
+The syntax for using filters in AngularJS templates is as follows:
 
 ```
 {{expression | filter}}
@@ -150,7 +150,7 @@ Chrome 49.0: Executed 4 of 4 SUCCESS (0.091 secs / 0.075 secs)
 
 <div></div>
 
-* Let's experiment with some of the {@link api/ng/filter built-in Angular filters}.
+* Let's experiment with some of the {@link api/ng/filter built-in AngularJS filters}.
   Add the following bindings to `index.html`:
 
   * `{{'lower cap string' | uppercase}}`
@@ -170,7 +170,7 @@ Chrome 49.0: Executed 4 of 4 SUCCESS (0.091 secs / 0.075 secs)
 # Summary
 
 Now that we have learned how to write and test a custom filter, let's go to {@link step_12 step 12}
-to learn how we can use Angular to enhance the phone details page further.
+to learn how we can use AngularJS to enhance the phone details page further.
 
 
 <ul doc-tutorial-nav="11"></ul>

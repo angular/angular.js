@@ -13,7 +13,7 @@ angular.module('ngCookies').
  * @description
  * Provides a key-value (string-object) storage, that is backed by session cookies.
  * Objects put or retrieved from this storage are automatically serialized or
- * deserialized by angular's toJson/fromJson.
+ * deserialized by AngularJS's `toJson`/`fromJson`.
  *
  * Requires the {@link ngCookies `ngCookies`} module to be installed.
  *

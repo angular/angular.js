@@ -13,9 +13,9 @@ other locale-specific bits (such as date or currency formats) out of the applica
 application means providing translations and localized formats for the abstracted bits.
 
 
-## How does Angular support i18n/l10n?
+## How does AngularJS support i18n/l10n?
 
-Angular supports i18n/l10n for {@link ng.filter:date date}, {@link ng.filter:number number} and
+AngularJS supports i18n/l10n for {@link ng.filter:date date}, {@link ng.filter:number number} and
 {@link ng.filter:currency currency} filters.
 
 Localizable pluralization is supported via the {@link ng.directive:ngPluralize `ngPluralize`
@@ -23,11 +23,11 @@ directive}.  Additionally, you can use {@link guide/i18n#messageformat-extension
 `$interpolate` for localizable pluralization and gender support in all interpolations via the
 `ngMessageFormat` module.
 
-All localizable Angular components depend on locale-specific rule sets managed by the {@link
+All localizable AngularJS components depend on locale-specific rule sets managed by the {@link
 ng.$locale `$locale` service}.
 
-There are a few examples that showcase how to use Angular filters with various locale rule sets in the
-[`i18n/e2e` directory](https://github.com/angular/angular.js/tree/master/i18n/e2e) of the Angular
+There are a few examples that showcase how to use AngularJS filters with various locale rule sets in the
+[`i18n/e2e` directory](https://github.com/angular/angular.js/tree/master/i18n/e2e) of the AngularJS
 source code.
 
 
@@ -41,20 +41,20 @@ also valid. See the [ICU](http://userguide.icu-project.org/locale) website for m
 about using locale IDs.
 
 
-## Supported locales in Angular
+## Supported locales in AngularJS
 
-Angular separates number and datetime format rule sets into different files, each file for a
+AngularJS separates number and datetime format rule sets into different files, each file for a
 particular locale. You can find a list of currently supported locales
 [here](https://github.com/angular/angular.js/tree/master/src/ngLocale)
 
 
-## Providing locale rules to Angular
+## Providing locale rules to AngularJS
 
-There are two approaches to providing locale rules to Angular:
+There are two approaches to providing locale rules to AngularJS:
 
 ### 1. Pre-bundled rule sets
 
-You can pre-bundle the desired locale file with Angular by concatenating the content of the
+You can pre-bundle the desired locale file with AngularJS by concatenating the content of the
 locale-specific file to the end of `angular.js` or `angular.min.js` file.
 
 For example on *nix, to create an angular.js file that contains localization rules for german
@@ -63,7 +63,7 @@ locale, you can do the following:
 `cat angular.js i18n/angular-locale_de-de.js > angular_de-de.js`
 
 When the application containing `angular_de-de.js` script instead of the generic angular.js script
-starts, Angular is automatically pre-configured with localization rules for the german locale.
+starts, AngularJS is automatically pre-configured with localization rules for the german locale.
 
 ### 2. Including a locale script in `index.html`
 
@@ -93,12 +93,12 @@ an extra script needs to be loaded.
 
 ## Caveats
 
-Although Angular makes i18n convenient, there are several things you need to be conscious of as you
+Although AngularJS makes i18n convenient, there are several things you need to be conscious of as you
 develop your app.
 
 ### Currency symbol
 
-Angular's {@link ng.filter:currency currency filter} allows you to use the default currency symbol
+AngularJS's {@link ng.filter:currency currency filter} allows you to use the default currency symbol
 from the {@link ng.$locale locale service}, or you can provide the filter with a custom currency
 symbol.
 
@@ -122,7 +122,7 @@ This is problematic because $1000 is not the same as ¥1000.
 In this case, you need to override the default currency symbol by providing the
 {@link ng.filter:currency} currency filter with a currency symbol as a parameter.
 
-If we change the above to `{{ 1000 | currency:"USD$"}}`, Angular will always show a balance of
+If we change the above to `{{ 1000 | currency:"USD$"}}`, AngularJS will always show a balance of
 `USD$1000` regardless of locale.
 
 ### Translation length
@@ -135,16 +135,16 @@ as expected even when their contents vary greatly in content size.
 
 ### Timezones
 
-The Angular datetime filter uses the time zone settings of the browser. The same
+The AngularJS datetime filter uses the time zone settings of the browser. The same
 application will show different time information depending on the time zone settings of the
-computer that the application is running on. Neither JavaScript nor Angular currently supports
+computer that the application is running on. Neither JavaScript nor AngularJS currently supports
 displaying the date with a timezone specified by the developer.
 
 
 <a name="MessageFormat"></a>
 ## MessageFormat extensions
 
-You can write localizable plural and gender based messages in Angular interpolation expressions and
+You can write localizable plural and gender based messages in AngularJS interpolation expressions and
 `$interpolate` calls.
 
 This syntax extension is provided by way of the `ngMessageFormat` module that your application can
@@ -271,7 +271,7 @@ actual message text that occurs in curly braces.  Whitespace is generally used t
 Here, `NUMERIC_EXPRESSION` is an expression that evaluates to a numeric value based on which the
 displayed message should change based on pluralization rules.
 
-Following the Angular expression, you would denote the plural extension syntax by the `, plural,`
+Following the AngularJS expression, you would denote the plural extension syntax by the `, plural,`
 syntax element.  The spaces there are optional.
 
 This is followed by a list of selection keyword and corresponding message pairs.  The "other"
@@ -303,7 +303,7 @@ later.)
 #### Messages
 
 Messages immediately follow a selection keyword and are optionally preceded by whitespace.  They are
-written in single curly braces (`{}`).  They may contain Angular interpolation syntax inside them.
+written in single curly braces (`{}`).  They may contain AngularJS interpolation syntax inside them.
 In addition, the `#` symbol is a placeholder for the actual numeric value of the expression.
 
 ### Simple plural example
@@ -316,7 +316,7 @@ In addition, the `#` symbol is a placeholder for the actual numeric value of the
 }}
 ```
 
-Because these messages can themselves contain Angular expressions, you could also write this as
+Because these messages can themselves contain AngularJS expressions, you could also write this as
 follows:
 
 ```text
@@ -342,7 +342,7 @@ explain this with an example.
 }}
 ```
 
-When an `offset` is specified, the matching works as follows.  First, the exact value of the Angular
+When an `offset` is specified, the matching works as follows.  First, the exact value of the AngularJS
 expression is matched against the exact matches (i.e. `=N` selectors) to find a match.  If there is
 one, that message is used.  If there was no match, then the offset value is subtracted from the
 value of the expression and locale specific pluralization rules are applied to this new value to
@@ -379,10 +379,10 @@ The syntax for gender based message selection looks like the following:
 Please note that whitespace (including newline) is generally insignificant except as part of the
 actual message text that occurs in curly braces.  Whitespace is generally used to aid readability.
 
-Here, `EXPRESSION` is an Angular expression that evaluates to the gender of the person that
+Here, `EXPRESSION` is an AngularJS expression that evaluates to the gender of the person that
 is used to select the message that should be displayed.
 
-The Angular expression is followed by `, select,` where the spaces are optional.
+The AngularJS expression is followed by `, select,` where the spaces are optional.
 
 This is followed by a list of selection keyword and corresponding message pairs.  The "other"
 keyword and corresponding message are **required** but you may have as few or as many of the other
@@ -392,13 +392,13 @@ matching is **case-sensitive**.
 #### Selection Keywords
 
 Selection keywords are simple words like "male" and "female".  The keyword, "other", and its
-corresponding message are required while others are optional.  It is used when the Angular
+corresponding message are required while others are optional.  It is used when the AngularJS
 expression does not match (case-insensitively) any of the other keywords specified.
 
 #### Messages
 
 Messages immediately follow a selection keyword and are optionally preceded by whitespace.  They are
-written in single curly braces (`{}`).  They may contain Angular interpolation syntax inside them.
+written in single curly braces (`{}`).  They may contain AngularJS interpolation syntax inside them.
 
 ### Simple gender example
 
@@ -412,8 +412,8 @@ written in single curly braces (`{}`).  They may contain Angular interpolation s
 
 ### Nesting
 
-As mentioned in the syntax for plural and select, the embedded messages can contain Angular
-interpolation syntax.  Since you can use MessageFormat extensions in Angular interpolation, this
+As mentioned in the syntax for plural and select, the embedded messages can contain AngularJS
+interpolation syntax.  Since you can use MessageFormat extensions in AngularJS interpolation, this
 allows you to nest plural and gender expressions in any order.
 
 Please note that if these are intended to reach a translator and be translated, it is recommended
@@ -450,7 +450,7 @@ This syntax extension, while based on MessageFormat, has been designed to be bac
 with existing AngularJS interpolation expressions.  The key rule is simply this: **All
 interpolations are done inside double curlies.** The top level comma operator after an expression
 inside the double curlies causes MessageFormat extensions to be recognized.  Such a top level comma
-is otherwise illegal in an Angular expression and is used by MessageFormat to specify the function
+is otherwise illegal in an AngularJS expression and is used by MessageFormat to specify the function
 (such as plural/select) and it's related syntax.
 
 To understand the extension, take a look at the ICU MessageFormat syntax as specified by the ICU

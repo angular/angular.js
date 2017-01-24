@@ -596,8 +596,8 @@
             <SpBefore>0</SpBefore>
             <HorzAlign>0</HorzAlign>
           </Para>
-          <Text><cp IX="0"/><pp IX="0"/>&lt;input 
-  name=&quot;foo&quot; 
+          <Text><cp IX="0"/><pp IX="0"/>&lt;input
+  name=&quot;foo&quot;
 &gt;</Text>
         </Shape>
         <Shape ID="7" Type="Shape" Name="Squashed Rectangle Fill:Chalk.7">
@@ -1264,7 +1264,7 @@
             <SpBefore>0</SpBefore>
             <HorzAlign>0</HorzAlign>
           </Para>
-          <Text><cp IX="0"/><pp IX="0"/>Angular creates model as property on scope object.</Text>
+          <Text><cp IX="0"/><pp IX="0"/>AngularJS creates model as property on scope object.</Text>
         </Shape>
         <Shape ID="15" Type="Shape" Name="Rectangle Fill:Chalk.15">
           <XForm>
@@ -1628,7 +1628,7 @@
             <SpBefore>0</SpBefore>
             <HorzAlign>0</HorzAlign>
           </Para>
-          <Text><cp IX="0"/><pp IX="0"/>&lt;body 
+          <Text><cp IX="0"/><pp IX="0"/>&lt;body
  ng:controller=
  &quot;MyController&quot;&gt;</Text>
         </Shape>
@@ -2177,7 +2177,7 @@
             <SpBefore>0</SpBefore>
             <HorzAlign>0</HorzAlign>
           </Para>
-          <Text><cp IX="0"/><pp IX="0"/>Angular <cp IX="1"/>applies<cp IX="2"/> controller function to scope object.</Text>
+          <Text><cp IX="0"/><pp IX="0"/>AngularJS <cp IX="1"/>applies<cp IX="2"/> controller function to scope object.</Text>
         </Shape>
         <Shape ID="27" Type="Group" Name="Group.27">
           <XForm>
@@ -2561,7 +2561,7 @@
                     <SpBefore>0</SpBefore>
                     <HorzAlign>0</HorzAlign>
                   </Para>
-                  <Text><cp IX="0"/><pp IX="0"/>Angular Scope</Text>
+                  <Text><cp IX="0"/><pp IX="0"/>AngularJS Scope</Text>
                 </Shape>
               </Shapes>
             </Shape>

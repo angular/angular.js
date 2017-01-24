@@ -6,19 +6,19 @@
 # PhoneCat Tutorial App
 
 A great way to get introduced to AngularJS is to work through this tutorial, which walks you through
-the construction of an Angular web app. The app you will build is a catalog that displays a list
+the construction of an AngularJS web app. The app you will build is a catalog that displays a list
 of Android devices, lets you filter the list to see only devices that interest you, and then view
 details for any device.
 
 <img class="diagram" src="img/tutorial/catalog_screen.png" width="488" height="413"
     alt="demo application running in the browser">
 
-Follow the tutorial to see how Angular makes browsers smarter — without the use of native
+Follow the tutorial to see how AngularJS makes browsers smarter — without the use of native
 extensions or plug-ins:
 
 * See examples of how to use client-side data binding to build dynamic views of data that change
   immediately in response to user actions.
-* See how Angular keeps your views in sync with your data without the need for DOM manipulation.
+* See how AngularJS keeps your views in sync with your data without the need for DOM manipulation.
 * Learn a better, easier way to test your web apps, with Karma and Protractor.
 * Learn how to use dependency injection and services to make common web tasks, such as getting data
   into your app, easier.
@@ -30,9 +30,9 @@ When you finish the tutorial you will be able to:
 * Create and run unit tests, with Karma.
 * Create and run end-to-end tests, with Protractor.
 * Move application logic out of the template and into components and controllers.
-* Get data from a server using Angular services.
+* Get data from a server using AngularJS services.
 * Apply animations to your application, using the `ngAnimate` module.
-* Structure your Angular applications in a modular way that scales well for larger projects.
+* Structure your AngularJS applications in a modular way that scales well for larger projects.
 * Identify resources for learning more about AngularJS.
 
 The tutorial guides you through the entire process of building a simple application, including
@@ -54,7 +54,7 @@ If you just want to _read_ the tutorial, you can go straight to the first step:
 ## Working with the Code
 
 You can follow along with this tutorial and hack on the code in the comfort of your own computer.
-This way, you can get hands-on practice of really writing Angular code and also on using the
+This way, you can get hands-on practice of really writing AngularJS code and also on using the
 recommended testing tools.
 
 The tutorial relies on the use of the [Git][git] versioning system for source code management.
@@ -182,7 +182,7 @@ bower install
 
 ### Running the Development Web Server
 
-While Angular applications are purely client-side code, and it is possible to open them in a web
+While AngularJS applications are purely client-side code, and it is possible to open them in a web
 browser directly from the file system, it is better to serve them from an HTTP web server. In
 particular, for security reasons, most modern browsers will not allow JavaScript to make server
 requests if the page is loaded directly from the file system.
@@ -199,7 +199,7 @@ You can now browse to the application at http://localhost:8000/index.html.
 
 <div class="alert alert-info">
   To serve the web app on a different IP address or port, edit the "start" script within
-  `package.json`. You can use `-a` to set the address and `-p` to set the port. You also need to 
+  `package.json`. You can use `-a` to set the address and `-p` to set the port. You also need to
   update the `baseUrl` configuration property in `e2e-test/protractor.conf.js`.
 </div>
 
@@ -284,9 +284,9 @@ a new commit of changes to a remote repository.
 <br />
 **Firewall / Proxy issues**
 
-Git and other tools, often use the `git:` protocol for accessing files in remote repositories. 
-Some firewall configurations are blocking `git://` URLs, which leads to errors when trying to clone 
-repositories or download dependencies. (For example corporate firewalls are "notorious" for blocking 
+Git and other tools, often use the `git:` protocol for accessing files in remote repositories.
+Some firewall configurations are blocking `git://` URLs, which leads to errors when trying to clone
+repositories or download dependencies. (For example corporate firewalls are "notorious" for blocking
 `git:`.)
 
 If you run into this issue, you can force the use of `https:` instead, by running the following
@@ -304,8 +304,8 @@ In that case, you can delete the `node_modules/` directory and run `npm install`
 <br />
 **Protractor dependencies**
 
-Under the hood, Protractor uses the [Selenium Standalone Server][selenium], which in turn requires 
-the [Java Development Kit (JDK)][jdk] to be installed on your local machine. Check this by running 
+Under the hood, Protractor uses the [Selenium Standalone Server][selenium], which in turn requires
+the [Java Development Kit (JDK)][jdk] to be installed on your local machine. Check this by running
 `java -version` from the command line.
 
 If JDK is not already installed, you can download it [here][jdk-download].
@@ -313,8 +313,8 @@ If JDK is not already installed, you can download it [here][jdk-download].
 <br />
 **Error running the web server**
 
-The web server is configured to use port 8000. If the port is already in use (for example by another 
-instance of a running web server) you will get an `EADDRINUSE` error. Make sure the port is 
+The web server is configured to use port 8000. If the port is already in use (for example by another
+instance of a running web server) you will get an `EADDRINUSE` error. Make sure the port is
 available, before running `npm start`.
 
 <hr />

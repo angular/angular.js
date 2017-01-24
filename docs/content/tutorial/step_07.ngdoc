@@ -7,8 +7,8 @@
 
 
 Enough of building an app with three phones in a hard-coded dataset! Let's fetch a larger dataset
-from our server using one of Angular's built-in {@link guide/services services} called
-{@link ng.$http $http}. We will use Angular's {@link guide/di dependency injection (DI)} to provide
+from our server using one of AngularJS's built-in {@link guide/services services} called
+{@link ng.$http $http}. We will use AngularJS's {@link guide/di dependency injection (DI)} to provide
 the service to the `phoneList` component's controller.
 
 * There is now a list of 20 phones, loaded from the server.
@@ -40,12 +40,12 @@ Following is a sample of the file:
 
 ## Component Controller
 
-We will use Angular's {@link ng.$http $http} service in our controller for making an HTTP request to
+We will use AngularJS's {@link ng.$http $http} service in our controller for making an HTTP request to
 our web server to fetch the data in the `app/phones/phones.json` file. `$http` is just one of
-several built-in {@link guide/services Angular services} that handle common operations in web
-applications. Angular injects these services for you, right where you need them.
+several built-in {@link guide/services AngularJS services} that handle common operations in web
+applications. AngularJS injects these services for you, right where you need them.
 
-Services are managed by Angular's {@link guide/di DI subsystem}. Dependency injection helps to make
+Services are managed by AngularJS's {@link guide/di DI subsystem}. Dependency injection helps to make
 your web applications both well-structured (e.g. separate entities for presentation, data, and
 control) and loosely coupled (dependencies between entities are not resolved by the entities
 themselves, but by the DI subsystem). As a result, applications are easier to test as well.
@@ -77,21 +77,21 @@ in this tutorial.)
 
 The `$http` service returns a {@link ng.$q promise object}, which has a `then()` method. We call
 this method to handle the asynchronous response and assign the phone data to the controller, as a
-property called `phones`. Notice that Angular detected the JSON response and parsed it for us into 
+property called `phones`. Notice that AngularJS detected the JSON response and parsed it for us into
 the `data` property of the `response` object passed to our callback!
 
 Since we are making the assignment of the `phones` property in a callback function, where the `this`
 value is not defined, we also introduce a local variable called `self` that points back to the
 controller instance.
 
-To use a service in Angular, you simply declare the names of the dependencies you need as arguments
+To use a service in AngularJS, you simply declare the names of the dependencies you need as arguments
 to the controller's constructor function, as follows:
 
 ```js
 function PhoneListController($http) {...}
 ```
 
-Angular's dependency injector provides services to your controller, when the controller is being
+AngularJS's dependency injector provides services to your controller, when the controller is being
 constructed. The dependency injector also takes care of creating any transitive dependencies the
 service may have (services often depend upon other services).
 
@@ -104,10 +104,10 @@ dependencies.
 ### `$`-prefix Naming Convention
 
 You can create your own services, and in fact we will do exactly that a few steps down the road. As
-a naming convention, Angular's built-in services, Scope methods and a few other Angular APIs have a
+a naming convention, AngularJS's built-in services, Scope methods and a few other AngularJS APIs have a
 `$` prefix in front of the name.
 
-The `$` prefix is there to namespace Angular-provided services. To prevent collisions it's best to
+The `$` prefix is there to namespace AngularJS-provided services. To prevent collisions it's best to
 avoid naming your services and models anything that begins with a `$`.
 
 If you inspect a Scope, you may also notice some properties that begin with `$$`. These properties
@@ -116,7 +116,7 @@ are considered private, and should not be accessed or modified.
 
 ### A Note on Minification
 
-Since Angular infers the controller's dependencies from the names of arguments to the controller's
+Since AngularJS infers the controller's dependencies from the names of arguments to the controller's
 constructor function, if you were to [minify][minification] the JavaScript code for the
 `PhoneListController` controller, all of its function arguments would be minified as well, and the
 dependency injector would not be able to identify services correctly.
@@ -145,7 +145,7 @@ as strings, which will not get minified. There are two ways to provide these inj
       .component('phoneList', {..., controller: ['$http', PhoneListController]});
   ```
 
-Both of these methods work with any function that can be injected by Angular, so it's up to your
+Both of these methods work with any function that can be injected by AngularJS, so it's up to your
 project's style guide to decide which one you use.
 
 When using the second method, it is common to provide the constructor function inline, when
@@ -184,7 +184,7 @@ let's add the annotations to our `PhoneListController`:
 
 Because we started using dependency injection and our controller has dependencies, constructing the
 controller in our tests is a bit more complicated. We could use the `new` operator and provide the
-constructor with some kind of fake `$http` implementation. However, Angular provides a mock `$http`
+constructor with some kind of fake `$http` implementation. However, AngularJS provides a mock `$http`
 service that we can use in unit tests.  We configure "fake" responses to server requests by calling
 methods on a service called `$httpBackend`:
 
@@ -249,7 +249,7 @@ request from the controller. To do this we:
   incoming HTTP request and tell it what to respond with. Note that the responses are not returned
   until we call the `$httpBackend.flush()` method.
 
-Now we will make assertions to verify that the `phones` property doesn't exist on the controller 
+Now we will make assertions to verify that the `phones` property doesn't exist on the controller
 before the response is received:
 
 ```js
@@ -301,7 +301,7 @@ Chrome 49.0: Executed 2 of 2 SUCCESS (0.133 secs / 0.097 secs)
 
 # Summary
 
-Now that you have learned how easy it is to use Angular services (thanks to Angular's dependency
+Now that you have learned how easy it is to use AngularJS services (thanks to AngularJS's dependency
 injection), go to {@link step_08 step 8}, where you will add some thumbnail images of phones and
 some links.
 

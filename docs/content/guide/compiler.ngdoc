@@ -10,15 +10,15 @@
 
 If you're just getting started, we recommend the {@link tutorial/ tutorial} first.
 If you just want to create custom directives, we recommend the {@link guide/directive directives guide}.
-If you want a deeper look into Angular's compilation process, you're in the right place.
+If you want a deeper look into AngularJS's compilation process, you're in the right place.
 </div>
 
 
 ## Overview
 
-Angular's {@link ng.$compile HTML compiler} allows the developer to teach the
+AngularJS's {@link ng.$compile HTML compiler} allows the developer to teach the
 browser new HTML syntax. The compiler allows you to attach behavior to any HTML element or attribute
-and even create new HTML elements or attributes with custom behavior. Angular calls these behavior
+and even create new HTML elements or attributes with custom behavior. AngularJS calls these behavior
 extensions {@link ng.$compileProvider#directive directives}.
 
 HTML has a lot of constructs for formatting the HTML for static documents in a declarative fashion.
@@ -31,7 +31,7 @@ However, the declarative language is also limited, as it does not allow you to t
 syntax. For example, there is no easy way to get the browser to align the text at 1/3 the position
 instead of 1/2. What is needed is a way to teach the browser new HTML syntax.
 
-Angular comes pre-bundled with common directives which are useful for building any app. We also
+AngularJS comes pre-bundled with common directives which are useful for building any app. We also
 expect that you will create directives that are specific to your app. These extensions become a
 Domain Specific Language for building your application.
 
@@ -41,7 +41,7 @@ involved.
 
 ## Compiler
 
-Compiler is an Angular service which traverses the DOM looking for attributes. The compilation
+Compiler is an AngularJS service which traverses the DOM looking for attributes. The compilation
 process happens in two phases.
 
   1. **Compile:** traverse the DOM and collect all of the directives. The result is a linking
@@ -142,16 +142,16 @@ This means that any changes to the data need to be re-merged with the template a
 3. managing the whole update process
 4. lack of behavior expressiveness
 
-Angular is different. The Angular compiler consumes the DOM, not string templates.
+AngularJS is different. The AngularJS compiler consumes the DOM, not string templates.
 The result is a linking function, which when combined with a scope model results in a live view. The
 view and scope model bindings are transparent. The developer does not need to make any special calls to update
 the view. And because `innerHTML` is not used, you won't accidentally clobber user input.
-Furthermore, Angular directives can contain not just text bindings, but behavioral constructs as
+Furthermore, AngularJS directives can contain not just text bindings, but behavioral constructs as
 well.
 
 <img src="img/Two_Way_Data_Binding.png">
 
-The Angular approach produces a stable DOM. The DOM element instance bound to a model
+The AngularJS approach produces a stable DOM. The DOM element instance bound to a model
 item instance does not change for the lifetime of the binding. This means that the code can get
 hold of the elements and register event handlers and know that the reference will not be destroyed
 by template data merge.
@@ -160,7 +160,7 @@ by template data merge.
 
 ## How directives are compiled
 
-It's important to note that Angular operates on DOM nodes rather than strings. Usually, you don't
+It's important to note that AngularJS operates on DOM nodes rather than strings. Usually, you don't
 notice this restriction because when a page loads, the web browser parses HTML into the DOM automatically.
 
 HTML compilation happens in three phases:
@@ -186,7 +186,7 @@ The result of this is a live binding between the scope and the DOM. So at this p
 a model on the compiled scope will be reflected in the DOM.
 
 Below is the corresponding code using the `$compile` service.
-This should help give you an idea of what Angular does internally.
+This should help give you an idea of what AngularJS does internally.
 
 ```js
   var $compile = ...; // injected into your code

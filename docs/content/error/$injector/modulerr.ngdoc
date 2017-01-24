@@ -15,7 +15,7 @@ In AngularJS `1.2.0` and later, `ngRoute` has been moved to its own module.
 If you are getting this error after upgrading to `1.2.x` or later, be sure that you've
 installed {@link ngRoute `ngRoute`}.
 
-### Monkey-patching Angular's `ng` module
+### Monkey-patching AngularJS's `ng` module
 
 This error can also occur if you have tried to add your own components to the `ng` module.
 This has never been supported and from `1.3.0` it will actually trigger this error.

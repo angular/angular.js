@@ -5,7 +5,7 @@
 
 # Interpolation and data-binding
 
-Interpolation markup with embedded {@link guide/expression expressions} is used by Angular to
+Interpolation markup with embedded {@link guide/expression expressions} is used by AngularJS to
 provide data-binding to text nodes and attribute values.
 
 An example of interpolation is shown below:
@@ -40,7 +40,7 @@ a custom `toString()` function on the object, and uses that. Custom means that
 Attributes such as `disabled` are called `boolean` attributes, because their presence means `true` and
 their absence means `false`. We cannot use normal attribute bindings with them, because the HTML
 specification does not require browsers to preserve the values of boolean attributes. This means that
-if we put an Angular interpolation expression into such an attribute then the binding information
+if we put an AngularJS interpolation expression into such an attribute then the binding information
 would be lost, because the browser ignores the attribute value.
 
 In the following example, the interpolation information would be ignored and the browser would simply
@@ -51,7 +51,7 @@ interpret the attribute as present, meaning that the button would always be disa
   <button disabled="{{isDisabled}}">Disabled</button>
 ```
 
-For this reason, Angular provides special `ng`-prefixed directives for the following boolean attributes:
+For this reason, AngularJS provides special `ng`-prefixed directives for the following boolean attributes:
 {@link ngDisabled `disabled`}, {@link ngRequired `required`}, {@link ngSelected `selected`},
 {@link ngChecked `checked`}, {@link ngReadonly `readOnly`} , and {@link ngOpen `open`}.
 
@@ -75,7 +75,7 @@ For example, considering this template:
 </svg>
 ```
 
-We would expect Angular to be able to bind to this, but when we check the console we see
+We would expect AngularJS to be able to bind to this, but when we check the console we see
 something like `Error: Invalid value for attribute cx="{{cx}}"`. Because of the SVG DOM API's
 restrictions, you cannot simply write `cx="{{cx}}"`.
 
@@ -131,7 +131,7 @@ directive that changes the content of that attribute, such as `ngStyle`.
 ### Embedding interpolation markup inside expressions
 
 <div class="alert alert-danger">
-**Note:** Angular directive attributes take either expressions *or* interpolation markup with embedded expressions.
+**Note:** AngularJS directive attributes take either expressions *or* interpolation markup with embedded expressions.
 It is considered **bad practice** to embed interpolation markup inside an expression:
 </div>
 
@@ -165,4 +165,4 @@ If another directive accesses attribute data before interpolation has run, it wi
 interpolation markup and not data.
 - It impacts performance, as interpolation adds another watcher to the scope.
 - Since this is not recommended usage, we do not test for this, and changes to
-Angular core may break your code.
+AngularJS core may break your code.

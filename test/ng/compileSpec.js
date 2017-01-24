@@ -8975,7 +8975,7 @@ describe('$compile', function() {
             expect(privateData.events.click).toBeDefined();
             expect(privateData.events.click[0]).toBeDefined();
 
-            //Ensure the angular $destroy event is still sent
+            //Ensure the AngularJS $destroy event is still sent
             var destroyCount = 0;
             element.find('div').on('$destroy', function() { destroyCount++; });
 
@@ -8989,7 +8989,7 @@ describe('$compile', function() {
 
           it('should work without external libraries (except jQuery)', testCleanup);
 
-          it('should work with another library patching jqLite/jQuery.cleanData after Angular', function() {
+          it('should work with another library patching jqLite/jQuery.cleanData after AngularJS', function() {
             var cleanedCount = 0;
             var currentCleanData = jqLite.cleanData;
             jqLite.cleanData = function(elems) {

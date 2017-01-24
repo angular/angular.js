@@ -467,7 +467,7 @@ You can also use one of the other
 strategies to disable animations}.
 
 
-## Enable animations outside of the application DOM tree: {@link ng.$animate#pin $animate.pin()}
+### Enable animations for elements outside of the AngularJS application DOM tree: {@link ng.$animate#pin $animate.pin()}
 
 Before animating, `ngAnimate` checks if the animated element is inside the application DOM tree. If
 not, no animation is run. Usually, this is not a problem since most apps use the `html` or `body`

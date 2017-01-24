@@ -128,7 +128,7 @@ describe('angular.scenario.dsl', function() {
         expect($root.futureResult).toEqual('http://futureUrl/');
       });
 
-      it('should complete if angular is missing from app frame', function() {
+      it('should complete if AngularJS is missing from app frame', function() {
         delete $window.angular;
         $root.dsl.browser().navigateTo('http://myurl');
         expect($window.location).toEqual('http://myurl');

@@ -5,16 +5,16 @@
 
 # Templates
 
-In Angular, templates are written with HTML that contains Angular-specific elements and attributes.
-Angular combines the template with information from the model and controller to render the dynamic
+In AngularJS, templates are written with HTML that contains AngularJS-specific elements and attributes.
+AngularJS combines the template with information from the model and controller to render the dynamic
 view that a user sees in the browser.
 
-These are the types of Angular elements and attributes you can use:
+These are the types of AngularJS elements and attributes you can use:
 
 * {@link guide/directive Directive} — An attribute or element that
   augments an existing DOM element or represents a reusable DOM component.
 * {@link ng.$interpolate Markup} — The double curly brace notation `{{ }}` to bind expressions
-  to elements is built-in Angular markup.
+  to elements is built-in AngularJS markup.
 * {@link guide/filter Filter} — Formats data for display.
 * {@link forms Form controls} — Validates user input.
 
@@ -35,13 +35,13 @@ curly-brace {@link expression expression} bindings:
 </html>
 ```
 
-In a simple app, the template consists of HTML, CSS, and Angular directives contained
+In a simple app, the template consists of HTML, CSS, and AngularJS directives contained
 in just one HTML file (usually `index.html`).
 
 In a more complex app, you can display multiple views within one main page using "partials" –
 segments of template located in separate HTML files. You can use the
 {@link ngRoute.directive:ngView ngView} directive to load partials based on configuration passed
-to the {@link ngRoute.$route $route} service. The {@link tutorial/ angular tutorial} shows this
+to the {@link ngRoute.$route $route} service. The {@link tutorial/ AngularJS tutorial} shows this
 technique in steps seven and eight.
 
 
