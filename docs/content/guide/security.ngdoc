@@ -14,7 +14,7 @@ keep in mind as you build your application.
 Email us at [security@angularjs.org](mailto:security@angularjs.org) to report any potential
 security issues in AngularJS.
 
-Please keep in mind the points below about Angular's expression language.
+Please keep in mind the points below about AngularJS's expression language.
 
 
 ## Use the latest AngularJS possible
@@ -25,19 +25,19 @@ of upcoming security patches and other updates.
 
 Be ready to update rapidly when new security-centric patches are available.
 
-Those that stray from Angular standards (such as modifying Angular's core) may have difficulty updating,
+Those that stray from AngularJS standards (such as modifying AngularJS's core) may have difficulty updating,
 so keeping to AngularJS standards is not just a functionality issue, it's also critical in order to
 facilitate rapid security updates.
 
 
-## Angular Templates and Expressions
+## AngularJS Templates and Expressions
 
-**If an attacker has access to control Angular templates or expressions, they can exploit an Angular application
+**If an attacker has access to control AngularJS templates or expressions, they can exploit an AngularJS application
 via an XSS attack, regardless of the version.**
 
 There are a number of ways that templates and expressions can be controlled:
 
-* **Generating Angular templates on the server containing user-provided content**. This is the most common pitfall
+* **Generating AngularJS templates on the server containing user-provided content**. This is the most common pitfall
   where you are generating HTML via some server-side engine such as PHP, Java or ASP.NET.
 * **Passing an expression generated from user-provided content in calls to the following methods on a {@link scope scope}**:
   * `$watch(userContent, ...)`
@@ -55,14 +55,14 @@ There are a number of ways that templates and expressions can be controlled:
   `{{ value | orderBy : userContent }}`
 
 ### Sandbox removal
-Each version of Angular 1 up to, but not including 1.6, contained an expression sandbox, which reduced the surface area of
-the vulnerability but never removed it. **In Angular 1.6 we removed this sandbox as developers kept relying upon it as a security
-feature even though it was always possible to access arbitrary JavaScript code if one could control the Angular templates
+Each version of AngularJS 1 up to, but not including 1.6, contained an expression sandbox, which reduced the surface area of
+the vulnerability but never removed it. **In AngularJS 1.6 we removed this sandbox as developers kept relying upon it as a security
+feature even though it was always possible to access arbitrary JavaScript code if one could control the AngularJS templates
 or expressions of applications.**
 
-Control of the Angular templates makes applications vulnerable even if there was a completely secure sandbox:
+Control of the AngularJS templates makes applications vulnerable even if there was a completely secure sandbox:
 * https://ryhanson.com/stealing-session-tokens-on-plunker-with-an-angular-expression-injection/ in this blog post the author shows
-  a (now closed) vulnerability in the Plunker application due to server-side rendering inside an Angular template.
+  a (now closed) vulnerability in the Plunker application due to server-side rendering inside an AngularJS template.
 * https://ryhanson.com/angular-expression-injection-walkthrough/ in this blog post the author describes an attack, which does not
   rely upon an expression sandbox bypass, that can be made because the sample application is rendering a template on the server that
   contains user entered content.
@@ -75,9 +75,9 @@ Control of the Angular templates makes applications vulnerable even if there was
 * Consider using {@link ng.directive:ngCsp CSP} (but don't rely only on CSP)
 
 **You can use suitably sanitized server-side templating to dynamically generate CSS, URLs, etc, but not for generating templates that are
-bootstrapped/compiled by Angular.**
+bootstrapped/compiled by AngularJS.**
 
-**If you must continue to allow user-provided content in an Angular template then the safest option is to ensure that it is only
+**If you must continue to allow user-provided content in an AngularJS template then the safest option is to ensure that it is only
 present in the part of the template that is made inert via the {@link ngNonBindable} directive.**
 
 
@@ -85,7 +85,7 @@ present in the part of the template that is made inert via the {@link ngNonBinda
 
 Whenever your application makes requests to a server there are potential security issues that need
 to be blocked. Both server and the client must cooperate in order to eliminate these threats.
-Angular comes pre-configured with strategies that address these issues, but for this to work backend
+AngularJS comes pre-configured with strategies that address these issues, but for this to work backend
 server cooperation is required.
 
 
@@ -97,7 +97,7 @@ For more information please visit {@link $http#cross-site-request-forgery-xsrf-p
 ### JSON Hijacking Protection
 
 Protection from JSON Hijacking is provided if the server prefixes all JSON requests with following string `")]}',\n"`.
-Angular will automatically strip the prefix before processing it as JSON.
+AngularJS will automatically strip the prefix before processing it as JSON.
 For more information please visit {@link $http#json-vulnerability-protection JSON Hijacking Protection}.
 
 Bear in mind that calling `$http.jsonp`, like in [our Yahoo! finance example](https://docs.angularjs.org/guide/concepts#accessing-the-backend),
@@ -124,7 +124,7 @@ For more information please visit {@link $sce} and {@link ngSanitize.$sanitize}.
 
 ## Using Local Caches
 
-There are various places that the browser can store (or cache) data. Within Angular there are objects created by
+There are various places that the browser can store (or cache) data. Within AngularJS there are objects created by
 the {@link $cacheFactory}. These objects, such as {@link $templateCache} are used to store and retrieve data,
 primarily used by {@link $http} and the {@link script} directive to cache templates and other data.
 

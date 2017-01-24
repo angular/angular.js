@@ -33,7 +33,7 @@ which drives many of these changes.
 
 ## Migrating from 1.5 to 1.6
 
-Angular 1.6 fixes numerous bugs and adds new features, both in core and in external modules.
+AngularJS 1.6 fixes numerous bugs and adds new features, both in core and in external modules.
 In addition, it includes several security and performance improvements in commonly used services,
 such as `$compile`, `$injector`, `$parse`, `$animate`, and directives, such as `input`, `ngModel`
 and `select`.
@@ -611,7 +611,7 @@ HTTP requests now update the outstanding request count synchronously. Previously
 would not have been updated until the request to the server was actually in flight. Now the request
 count is updated before any async interceptor is called.
 
-The new behavior will also allow end-2-end tests to more correctly detect when Angular is stable,
+The new behavior will also allow end-2-end tests to more correctly detect when AngularJS is stable,
 but there is a chance it may change the observed behaviour in cases where an async request
 interceptor is being used.
 
@@ -824,11 +824,11 @@ elem.data('foo-bar'); // 2
 <major />
 **Due to [73050c](https://github.com/angular/angular.js/commit/73050cdda04675bfa6705dc841ddbbb6919eb048)**,
 the way jqLite camelCases keys passed to `.css()` is aligned with jQuery. Previously, when using
-Angular without jQuery, `.css()` would camelCase keys more aggressively. Now, only a single hyphen
+AngularJS without jQuery, `.css()` would camelCase keys more aggressively. Now, only a single hyphen
 followed by a lowercase letter is getting transformed. This change also affects other APIs that rely
 on the `.css()` method, such as `ngStyle`.
 
-If you are using Angular with jQuery, your application is not affected by this change. If you are
+If you are using AngularJS with jQuery, your application is not affected by this change. If you are
 not using jQuery, then you need to update your code as shown in the following examples:
 
 Before:
@@ -888,7 +888,7 @@ var bgColor = elem.css('backgroundColor');
 getting/setting boolean attributes will no longer take the corresponding properties into account.
 Previously, all boolean attributes were reflected into the corresponding property when calling a
 setter and from the corresponding property when calling a getter, even on elements that don't treat
-those attributes in a special way. Now Angular doesn't do it by itself, but relies on browsers to
+those attributes in a special way. Now AngularJS doesn't do it by itself, but relies on browsers to
 know when to reflect the property. Note that this browser-level conversion differs between browsers;
 if you need to dynamically change the state of an element, you should modify the property, not the
 attribute. See https://jquery.com/upgrade-guide/1.9/#attr-versus-prop- for a more detailed
@@ -1237,10 +1237,10 @@ the `$route` service will no longer instantiate controllers nor call `resolve` o
 
 ## Migrating from 1.4 to 1.5
 
-Angular 1.5 takes a big step towards preparing developers for a smoother transition to Angular 2 in
+AngularJS 1.5 takes a big step towards preparing developers for a smoother transition to Angular in
 the future. Architecting your applications using components, multi-slot transclusion, one-way
 bindings in isolate scopes, using lifecycle hooks in directive controllers and relying on native ES6
-features (such as classes and arrow functions) are now all possible with Angular 1.5.
+features (such as classes and arrow functions) are now all possible with AngularJS 1.5.
 
 
 This release includes numerous bug and security fixes, as well as performance improvements to core
@@ -1252,7 +1252,7 @@ New features have been added to more than a dozen services, directives and filte
 Among them, a few stand out:
 
 * `angular.component()`: Introducing "components", a special sort of directive that are easy to
-  configure and promote best practices (plus can bring Angular 1 applications closer to Angular 2's
+  configure and promote best practices (plus can bring AngularJS applications closer to Angular's
   style of architecture).
 * Multi-slot transclusion: Enabling the design of more powerful and complex UI elements with a much
   simpler configuration and reduced boilerplate.
@@ -1430,7 +1430,7 @@ angular.module('myApp').config(function($touchProvider) {
 ```
 
 Going forward, we recommend using [FastClick](https://github.com/ftlabs/fastclick) or perhaps one of
-the [Angular 3rd party touch-related modules](http://ngmodules.org/tags/touch) that provide similar
+the [AngularJS 3rd party touch-related modules](http://ngmodules.org/tags/touch) that provide similar
 functionality.
 
 Also note that modern browsers already remove the 300ms delay under some circumstances:
@@ -1454,7 +1454,7 @@ For more info on the topic, you can take a look at this
 
 ## Migrating from 1.3 to 1.4
 
-Angular 1.4 fixes major animation issues and introduces a new API for `ngCookies`. Further, there
+AngularJS 1.4 fixes major animation issues and introduces a new API for `ngCookies`. Further, there
 are changes to `ngMessages`, `$compile`, `ngRepeat`, `ngOptions `and some fixes to core filters:
 `limitTo` and `filter`.
 
@@ -1490,7 +1490,7 @@ possibilities, can be achieved by injecting `$animateCss` into a
 JavaScript-defined animation and creating custom CSS-based animations
 from there.
 
-By using `$animateCss` inside of a JavaScript animation in Angular 1.4, we can trigger custom CSS-based animations
+By using `$animateCss` inside of a JavaScript animation in AngularJS 1.4, we can trigger custom CSS-based animations
 directly from our JavaScript code.
 
 ```js
@@ -1659,7 +1659,7 @@ the `select` directive will now use strict comparison of the `ngModel` scope val
 values to determine which option is selected. This means non-string scope values (such as `Number` or `Boolean`)
 will not be matched against equivalent option strings (such as the strings `"123"`, `"true"` or `"false"`).
 
-In Angular 1.3.x, setting `scope.x = 200` would select the option with the value 200 in the following `select`:
+In AngularJS 1.3.x, setting `scope.x = 200` would select the option with the value 200 in the following `select`:
 
 ```
 <select ng-model="x">
@@ -1668,7 +1668,7 @@ In Angular 1.3.x, setting `scope.x = 200` would select the option with the value
 </select>
 ```
 
-In Angular 1.4.x, the 'unknown option' will be selected.
+In AngularJS 1.4.x, the 'unknown option' will be selected.
 
 To remedy this, you can initialize the model as a string: `scope.x = '200'`, or if you want to
 keep the model as a `Number`, you can do the conversion via `$formatters` and `$parsers` on `ngModel`:
@@ -1688,11 +1688,11 @@ ngModelCtrl.$formatters.push(function(value) {
 
 Due to [94533e57](https://github.com/angular/angular.js/commit/94533e570673e6b2eb92073955541fa289aabe02),
 the `name` attribute of `form` elements can now only contain characters that can be evaluated as part
-of an Angular expression. This is because Angular uses the value of `name` as an assignable expression
+of an AngularJS expression. This is because AngularJS uses the value of `name` as an assignable expression
 to set the form on the `$scope`. For example, `name="myForm"` assigns the form to `$scope.myForm` and
 `name="myObj.myForm"` assigns it to `$scope.myObj.myForm`.
 
-Previously, it was possible to also use names such `name="my:name"`, because Angular used a special setter
+Previously, it was possible to also use names such `name="my:name"`, because AngularJS used a special setter
 function for the form name. Now the general, more robust `$parse` setter is used.
 
 The easiest way to migrate your code is therefore to remove all special characters from the `name` attribute.
@@ -1920,30 +1920,30 @@ angular.module('myModule').config(['$controllerProvider', function($controllerPr
 }]);
 ```
 
-### Angular Expression Parsing (`$parse` + `$interpolate`)
+### AngularJS Expression Parsing (`$parse` + `$interpolate`)
 
 - due to [77ada4c8](https://github.com/angular/angular.js/commit/77ada4c82d6b8fc6d977c26f3cdb48c2f5fbe5a5),
 
-You can no longer invoke .bind, .call or .apply on a function in angular expressions.
+You can no longer invoke .bind, .call or .apply on a function in AngularJS expressions.
 This is to disallow changing the behaviour of existing functions
 in an unforeseen fashion.
 
   - due to [6081f207](https://github.com/angular/angular.js/commit/6081f20769e64a800ee8075c168412b21f026d99),
 
-The (deprecated) __proto__ property does not work inside angular expressions
+The (deprecated) __proto__ property does not work inside AngularJS expressions
 anymore.
 
 
 - due to [48fa3aad](https://github.com/angular/angular.js/commit/48fa3aadd546036c7e69f71046f659ab1de244c6),
 
-This prevents the use of __{define,lookup}{Getter,Setter}__ inside angular
+This prevents the use of __{define,lookup}{Getter,Setter}__ inside AngularJS
 expressions. If you really need them for some reason, please wrap/bind them to make them
 less dangerous, then make them available through the scope object.
 
 
 - due to [528be29d](https://github.com/angular/angular.js/commit/528be29d1662122a34e204dd607e1c0bd9c16bbc),
 
-This prevents the use of `Object` inside angular expressions.
+This prevents the use of `Object` inside AngularJS expressions.
 If you need Object.keys, make it accessible in the scope.
 
 
@@ -1978,7 +1978,7 @@ expression parser; there are six of them: false, null, undefined, NaN, 0 and "".
 
 
 
-### Miscellaneous Angular helpers
+### Miscellaneous AngularJS helpers
 
 - **Angular.copy:** due to [b59b04f9](https://github.com/angular/angular.js/commit/b59b04f98a0b59eead53f6a53391ce1bbcbe9b57),
 
@@ -2026,13 +2026,13 @@ jQuery. We don't expect that app code actually depends on this accidental featur
 
 - **jqLite:** due to [d71dbb1a](https://github.com/angular/angular.js/commit/d71dbb1ae50f174680533492ce4c7db3ff74df00),
   the jQuery `detach()` method does not trigger the `$destroy` event.
-  If you want to destroy Angular data attached to the element, use `remove()`.
+  If you want to destroy AngularJS data attached to the element, use `remove()`.
 
 
 
 
 
-### Angular HTML Compiler (`$compile`)
+### AngularJS HTML Compiler (`$compile`)
 
 
 - due to [2ee29c5d](https://github.com/angular/angular.js/commit/2ee29c5da81ffacdc1cabb438f5d125d5e116cb9),
@@ -2060,7 +2060,7 @@ to request both an isolate and a non-isolate scope and fix your code.
 
 
 - due to [eec6394a](https://github.com/angular/angular.js/commit/eec6394a342fb92fba5270eee11c83f1d895e9fb), The `replace` flag for defining directives that
-  replace the element that they are on will be removed in the next major angular version.
+  replace the element that they are on will be removed in the next major AngularJS version.
   This feature has difficult semantics (e.g. how attributes are merged) and leads to more
   problems compared to what it solves. Also, with Web Components it is normal to have
   custom elements in the DOM.
@@ -2283,7 +2283,7 @@ More details on the new interceptors API (which has been around as of v1.1.4) ca
 
 
 - **$httpBackend:** due to [6680b7b9](https://github.com/angular/angular.js/commit/6680b7b97c0326a80bdccaf0a35031e4af641e0e), the JSONP behavior for erroneous and empty responses changed:
-    Previously, a JSONP response was regarded as erroneous if it was empty. Now Angular is listening to the
+    Previously, a JSONP response was regarded as erroneous if it was empty. Now AngularJS is listening to the
     correct events to detect errors, i.e. even empty responses can be successful.
 
 
@@ -2577,7 +2577,7 @@ See [04cebcc1](https://github.com/angular/angular.js/commit/04cebcc133c8b433a3ac
 With the exception of `<a>` and `<img>` elements, you cannot bind more than one expression to the
 `src` or `action` attribute of elements.
 
-This is one of several improvements to security introduces by Angular 1.2.
+This is one of several improvements to security introduces by AngularJS 1.2.
 
 Concatenating expressions makes it hard to understand whether some combination of concatenated
 values are unsafe to use and potentially subject to XSS vulnerabilities. To simplify the task of
@@ -2652,7 +2652,7 @@ See [38deedd6](https://github.com/angular/angular.js/commit/38deedd6e3d806eb8262
 DOM event handlers execute arbitrary JavaScript code. Using an interpolation for such handlers
 means that the interpolated value is a JS string that is evaluated. Storing or generating such
 strings is error prone and leads to XSS vulnerabilities. On the other hand, `ngClick` and other
-Angular specific event handlers evaluate Angular expressions in non-window (Scope) context which
+AngularJS specific event handlers evaluate AngularJS expressions in non-window (Scope) context which
 makes them much safer.
 
 To migrate the code follow the example below:
@@ -2979,7 +2979,7 @@ See [1adf29af](https://github.com/angular/angular.js/commit/1adf29af13890d612868
 ### Isolate scope only exposed to directives with `scope` property
 
 If you declare a scope option on a directive, that directive will have an
-[isolate scope](https://github.com/angular/angular.js/wiki/Understanding-Scopes). In Angular 1.0, if a
+[isolate scope](https://github.com/angular/angular.js/wiki/Understanding-Scopes). In AngularJS 1.0, if a
 directive with an isolate scope is used on an element, all directives on that same element have access
 to the same isolate scope. For example, say we have the following directives:
 
@@ -3010,12 +3010,12 @@ Now what happens if we use both directives on the same element?
 <div isolate-scope non-isolate-scope></div>
 ```
 
-In Angular 1.0, the nonIsolateScope directive will have access to the isolateScope directive’s scope. The
-log statements will print the same id, because the scope is the same. But in Angular 1.2, the nonIsolateScope
+In AngularJS 1.0, the nonIsolateScope directive will have access to the isolateScope directive’s scope. The
+log statements will print the same id, because the scope is the same. But in AngularJS 1.2, the nonIsolateScope
 will not use the same scope as isolateScope. Instead, it will inherit the parent scope. The log statements
 will print different id’s.
 
-If your code depends on the Angular 1.0 behavior (non-isolate directive needs to access state
+If your code depends on the AngularJS 1.0 behavior (non-isolate directive needs to access state
 from within the isolate scope), change the isolate directive to use scope locals to pass these explicitly:
 
 **Before**
@@ -3070,13 +3070,13 @@ See [79223eae](https://github.com/angular/angular.js/commit/79223eae502283889334
 
 This change introduces the notion of "private" properties (properties
 whose names begin and/or end with an underscore) on the scope chain.
-These properties will not be available to Angular expressions (i.e. {{
+These properties will not be available to AngularJS expressions (i.e. {{
 }} interpolation in templates and strings passed to `$parse`)  They are
 freely available to JavaScript code (as before).
 
 **Motivation**
 
-Angular expressions execute in a limited context. They do not have
+AngularJS expressions execute in a limited context. They do not have
 direct access to the global scope, `window`, `document` or the Function
 constructor. However, they have direct access to names/properties on
 the scope chain. It has been a long standing best practice to keep
@@ -3085,17 +3085,17 @@ controller.) That's easier said than done for two reasons:
 
 1. JavaScript does not have a notion of private properties so if you need
 someone on the scope chain for JavaScript use, you also expose it to
-Angular expressions
+AngularJS expressions
 2. The new `controller as` syntax that's now in increased usage exposes the
 entire controller on the scope chain greatly increasing the exposed surface.
 
-Though Angular expressions are written and controlled by the developer, they:
+Though AngularJS expressions are written and controlled by the developer, they:
 
 1. Typically deal with user input
 2. Don't get the kind of test coverage that JavaScript code would
 
 This commit provides a way, via a naming convention, to allow restricting properties from
-controllers/scopes. This means Angular expressions can access only those properties that
+controllers/scopes. This means AngularJS expressions can access only those properties that
 are actually needed by the expressions.
 
 See [3d6a89e8](https://github.com/angular/angular.js/commit/3d6a89e8888b14ae5cb5640464e12b7811853c7e).
@@ -3114,7 +3114,7 @@ See [d87fa004](https://github.com/angular/angular.js/commit/d87fa0042375b025b98c
 ### Uncommon region-specific local files were removed from i18n
 
 AngularJS uses the Google Closure library's locale files. The following locales were removed from
-Closure, so Angular is not able to continue to support them:
+Closure, so AngularJS is not able to continue to support them:
 
 `chr`, `cy`, `el-polyton`, `en-zz`, `fr-rw`, `fr-sn`, `fr-td`, `fr-tg`, `haw`, `it-ch`, `ln-cg`,
 `mo`, `ms-bn`, `nl-aw`, `nl-be`, `pt-ao`, `pt-gw`, `pt-mz`, `pt-st`, `ro-md`, `ru-md`, `ru-ua`,

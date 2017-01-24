@@ -20,7 +20,7 @@
 
 
 
-**Which versions of Angular, and which browser / OS are affected by this issue? Did this work in previous versions of Angular? Please also test with the latest stable and snapshot (https://code.angularjs.org/snapshot/) versions.**
+**Which versions of AngularJS, and which browser / OS are affected by this issue? Did this work in previous versions of AngularJS? Please also test with the latest stable and snapshot (https://code.angularjs.org/snapshot/) versions.**
 
 
 

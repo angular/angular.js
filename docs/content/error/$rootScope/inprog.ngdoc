@@ -10,17 +10,17 @@ the error.
 
 ## Background
 
-Angular uses a dirty-checking digest mechanism to monitor and update values of the scope during
+AngularJS uses a dirty-checking digest mechanism to monitor and update values of the scope during
 the processing of your application.  The digest works by checking all the values that are being
 watched against their previous value and running any watch handlers that have been defined for those
 values that have changed.
 
 This digest mechanism is triggered by calling `$digest` on a scope object.  Normally you do not need
 to trigger a digest manually, because every external action that can trigger changes in your
-application, such as mouse events, timeouts or server responses, wrap the Angular application code
+application, such as mouse events, timeouts or server responses, wrap the AngularJS application code
 in a block of code that will run `$digest` when the code completes.
 
-You wrap Angular code in a block that will be followed by a `$digest` by calling `$apply` on a scope
+You wrap AngularJS code in a block that will be followed by a `$digest` by calling `$apply` on a scope
 object.  So, in pseudo-code, the process looks like this:
 
 ```
@@ -45,20 +45,20 @@ $apply = function(fn) {
 
 ## Digest Phases
 
-Angular keeps track of what phase of processing we are in, the relevant ones being `$apply` and
+AngularJS keeps track of what phase of processing we are in, the relevant ones being `$apply` and
 `$digest`.  Trying to reenter a `$digest` or `$apply` while one of them is already in progress is
-typically a sign of programming error that needs to be fixed. So Angular will throw this error when
+typically a sign of programming error that needs to be fixed. So AngularJS will throw this error when
 that occurs.
 
 In most situations it should be well defined whether a piece of code will be run inside an `$apply`,
 in which case you should not be calling `$apply` or `$digest`, or it will be run outside, in which
-case you should wrap any code that will be interacting with Angular scope or services, in a call to
+case you should wrap any code that will be interacting with AngularJS scope or services, in a call to
 `$apply`.
 
-As an example, all Controller code should expect to be run within Angular, so it should have no need
+As an example, all Controller code should expect to be run within AngularJS, so it should have no need
 to call `$apply` or `$digest`.  Conversely, code that is being trigger directly as a call back to
 some external event, from the DOM or 3rd party library, should expect that it is never called from
-within Angular, and so any Angular application code that it calls should first be wrapped in a call
+within AngularJS, and so any AngularJS application code that it calls should first be wrapped in a call
 to $apply.
 
 ## Common Causes
@@ -84,8 +84,8 @@ function MyController($scope, thirdPartyComponent) {
 }
 ```
 
-We expect that our callback will be called asynchronously, and so from outside Angular. Therefore, we
-correctly wrap our application code that interacts with Angular in a call to `$apply`.
+We expect that our callback will be called asynchronously, and so from outside AngularJS. Therefore, we
+correctly wrap our application code that interacts with AngularJS in a call to `$apply`.
 
 The problem comes if `getData()` decides to call the callback handler synchronously; perhaps it has
 the data already cached in memory and so it immediately calls the callback to return the data,
@@ -116,7 +116,7 @@ that the code will be called in a single `$apply` block.
 ### Triggering Events Programmatically
 
 The other situation that often leads to this error is when you trigger code (such as a DOM event)
-programmatically (from within Angular), which is normally called by an external trigger.
+programmatically (from within AngularJS), which is normally called by an external trigger.
 
 For example, consider a directive that will set focus on an input control when a value in the scope
 is true:
@@ -161,7 +161,7 @@ In this second scenario, we are already inside a `$digest` when the ngFocus dire
 call to `$apply()`, causing this error to be thrown.
 
 It is possible to workaround this problem by moving the call to set the focus outside of the digest,
-by using `$timeout(fn, 0, false)`, where the `false` value tells Angular not to wrap this `fn` in an
+by using `$timeout(fn, 0, false)`, where the `false` value tells AngularJS not to wrap this `fn` in an
 `$apply` block:
 
 ```
@@ -203,7 +203,7 @@ Once you have identified this call you work your way up the stack to see what th
 called from within an `$apply`/`$digest`.  It may be a simple oversight or maybe it fits with the
 sync/async scenario described earlier.
 
-* If the second call was made inside an Angular directive then it is likely that it matches the second
+* If the second call was made inside an AngularJS directive then it is likely that it matches the second
 programmatic event trigger scenario described earlier.  In this case you may need to look further up
 the tree to what triggered the event in the first place.
 
@@ -259,11 +259,11 @@ $get.g.$apply angular.js:12742                   <--- $apply
 q angular.js:320
 ```
 
-We can see (even though the Angular code is minified) that there were two calls to `$apply`, first
+We can see (even though the AngularJS code is minified) that there were two calls to `$apply`, first
 on line `19833`, then on line `12738` of `angular.js`.
 
 It is this second call that caused the error.  If we look at the angular.js code, we can see that
-this call is made by an Angular directive.
+this call is made by an AngularJS directive.
 
 ```
 var ngEventDirectives = {};
@@ -308,5 +308,5 @@ We can now see that the second `$apply` was caused by us programmatically trigge
 `$timeout` as described above.
 
 ## Further Reading
-To learn more about Angular processing model please check out the
+To learn more about AngularJS processing model please check out the
 {@link guide/concepts concepts doc} as well as the {@link ng.$rootScope.Scope api} doc.

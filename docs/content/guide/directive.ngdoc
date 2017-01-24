@@ -24,9 +24,9 @@ name, comment or CSS class) that tell AngularJS's **HTML compiler** ({@link ng.$
 to attach a specified behavior to that DOM element (e.g. via event listeners), or even to transform
 the DOM element and its children.
 
-Angular comes with a set of these directives built-in, like `ngBind`, `ngModel`, and `ngClass`.
-Much like you create controllers and services, you can create your own directives for Angular to use.
-When Angular {@link guide/bootstrap bootstraps} your application, the
+AngularJS comes with a set of these directives built-in, like `ngBind`, `ngModel`, and `ngClass`.
+Much like you create controllers and services, you can create your own directives for AngularJS to use.
+When AngularJS {@link guide/bootstrap bootstraps} your application, the
 {@link guide/compiler HTML compiler} traverses the DOM matching directives against the DOM elements.
 
 <div class="alert alert-info">
@@ -41,7 +41,7 @@ mirrors the process of compiling source code in
 
 ## Matching Directives
 
-Before we can write a directive, we need to know how Angular's {@link guide/compiler HTML compiler}
+Before we can write a directive, we need to know how AngularJS's {@link guide/compiler HTML compiler}
 determines when to use a given directive.
 
 Similar to the terminology used when an [element **matches** a selector](https://developer.mozilla.org/en-US/docs/Web/API/Element.matches), we say an element **matches** a
@@ -67,7 +67,7 @@ And the following `<person>` element **matches** the `person` directive:
 
 ### Normalization
 
-Angular **normalizes** an element's tag and attribute name to determine which elements match which
+AngularJS **normalizes** an element's tag and attribute name to determine which elements match which
 directives. We typically refer to directives by their case-sensitive
 [camelCase](http://en.wikipedia.org/wiki/CamelCase) **normalized** name (e.g. `ngModel`).
 However, since HTML is case-insensitive, we refer to directives in the DOM by lower-case
@@ -122,7 +122,7 @@ The other forms shown above are accepted for legacy reasons but we advise you to
 
 `$compile` can match directives based on element names, attributes, class names, as well as comments.
 
-All of the Angular-provided directives match attribute name, tag name, comments, or class name.
+All of the AngularJS-provided directives match attribute name, tag name, comments, or class name.
 The following demonstrates the various ways a directive (`myDir` in this case) can be referenced
 from within a template:
 
@@ -172,7 +172,7 @@ and compilation process.
 directive names. For instance, if you created a `<carousel>` directive, it would be problematic if HTML7
 introduced the same element. A two or three letter prefix (e.g. `btfCarousel`) works well. Similarly, do
 not prefix your own directives with `ng` or they might conflict with directives included in a future
-version of Angular.
+version of AngularJS.
 </div>
 
 For the following examples, we'll use the prefix `my` (e.g. `myCustomer`).
@@ -251,7 +251,7 @@ using `templateUrl` instead:
 </example>
 
 `templateUrl` can also be a function which returns the URL of an HTML template to be loaded and
-used for the directive. Angular will call the `templateUrl` function with two parameters: the
+used for the directive. AngularJS will call the `templateUrl` function with two parameters: the
 element that the directive was called on, and an `attr` object associated with that element.
 
 <div class="alert alert-warning">
@@ -538,7 +538,7 @@ directive logic will be put.
  `link` takes a function with the following signature,
 `function link(scope, element, attrs, controller, transcludeFn) { ... }`, where:
 
-* `scope` is an Angular scope object.
+* `scope` is an AngularJS scope object.
 * `element` is the jqLite-wrapped element that this directive matches.
 * `attrs` is a hash object with key-value pairs of normalized attribute names and their
   corresponding attribute values.
@@ -608,7 +608,7 @@ function.
 We register an event `element.on('$destroy', ...)`. What fires this `$destroy` event?
 
 There are a few special events that AngularJS emits. When a DOM node that has been compiled
-with Angular's compiler is destroyed, it emits a `$destroy` event. Similarly, when an AngularJS
+with AngularJS's compiler is destroyed, it emits a `$destroy` event. Similarly, when an AngularJS
 scope is destroyed, it broadcasts a `$destroy` event to listening scopes.
 
 By listening to this event, you can remove event listeners that might cause memory leaks.

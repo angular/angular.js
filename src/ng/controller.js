@@ -19,7 +19,7 @@ function identifierForController(controller, ident) {
  * @this
  *
  * @description
- * The {@link ng.$controller $controller service} is used by Angular to create new
+ * The {@link ng.$controller $controller service} is used by AngularJS to create new
  * controllers.
  *
  * This provider allows controller registration via the

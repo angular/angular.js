@@ -564,7 +564,7 @@ describe('jqLite', function() {
         var div = jqLite('<div><span>text</span></div>'),
             span = div.find('span');
 
-        span.data('name', 'angular');
+        span.data('name', 'AngularJS');
         span.remove();
         expect(span.data('name')).toBeUndefined();
       });
@@ -2295,7 +2295,7 @@ describe('jqLite', function() {
     });
 
     it('should pass in a dummy event', function() {
-      // we need the event to have at least preventDefault because angular will call it on
+      // we need the event to have at least preventDefault because AngularJS will call it on
       // all anchors with no href automatically
 
       var element = jqLite('<a>poke</a>'),

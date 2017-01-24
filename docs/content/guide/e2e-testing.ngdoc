@@ -7,7 +7,7 @@
 
 <div class="alert alert-danger">
 **Note:** In the past, end-to-end testing could be done with a deprecated tool called
-[Angular Scenario Runner](http://code.angularjs.org/1.2.16/docs/guide/e2e-testing). That tool
+[AngularJS Scenario Runner](http://code.angularjs.org/1.2.16/docs/guide/e2e-testing). That tool
 is now in maintenance mode.
 </div>
 
@@ -19,7 +19,7 @@ these problems.
 
 We have built [Protractor](https://github.com/angular/protractor), an end
 to end test runner which simulates user interactions that will help you verify the health of your
-Angular application.
+AngularJS application.
 
 ## Using Protractor
 
@@ -76,7 +76,7 @@ filter the list of items.
 
 ## Example
 See the [angular-seed](https://github.com/angular/angular-seed) project for more examples, or look
-at the embedded examples in the Angular documentation (For example, {@link $http $http}
+at the embedded examples in the AngularJS documentation (For example, {@link $http $http}
 has an end-to-end test in the example under the `protractor.js` tag).
 
 ## Caveats

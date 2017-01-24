@@ -3,9 +3,9 @@
 @sortOrder 150
 @description
 
-# External Angular 1 Resources
+# External AngularJS Resources
 
-This is a collection of external, 3rd party resources for learning and developing Angular.
+This is a collection of external, 3rd party resources for learning and developing AngularJS.
 
 ## Articles, Videos, and Projects
 
@@ -21,7 +21,7 @@ This is a collection of external, 3rd party resources for learning and developin
 
 #### Application Structure & Style Guides
 
-* [Angular Styleguide](https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md)
+* [AngularJS Styleguide](https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md)
 * [Architecture, file structure, components, one-way dataflow and best practices](https://github.com/toddmotto/angular-styleguide)
 * [When to use directives, controllers or services](http://kirkbushell.me/when-to-use-directives-controllers-or-services-in-angular/)
 * [Service vs Factory](http://blog.thoughtram.io/angular/2015/07/07/service-vs-factory-once-and-for-all.html)
@@ -32,8 +32,8 @@ This is a collection of external, 3rd party resources for learning and developin
 
 #### Mobile
 
-* [Angular on Mobile Guide](http://www.ng-newsletter.com/posts/angular-on-mobile.html)
-* [Angular and Cordova](http://devgirl.org/2013/06/10/quick-start-guide-phonegap-and-angularjs/)
+* [AngularJS on Mobile Guide](http://www.ng-newsletter.com/posts/angular-on-mobile.html)
+* [AngularJS and Cordova](http://devgirl.org/2013/06/10/quick-start-guide-phonegap-and-angularjs/)
 * [Ionic Framework](http://ionicframework.com/)
 
 #### Deployment
@@ -75,12 +75,12 @@ This is a collection of external, 3rd party resources for learning and developin
 * **Getting Started:** [Comparison of the options for starting a new project](http://www.dancancro.com/comparison-of-angularjs-application-starters/)
 * **Debugging:** [Batarang](https://chrome.google.com/webstore/detail/angularjs-batarang/ighdmehidhipcmcojjgiloacoafjmpfk?hl=en)
 * **Editor support:** [Webstorm](http://plugins.jetbrains.com/plugin/6971) (and [video](http://www.youtube.com/watch?v=LJOyrSh1kDU)), [Sublime Text](https://github.com/angular-ui/AngularJS-sublime-package), [Visual Studio](http://madskristensen.net/post/angularjs-intellisense-in-visual-studio-2012), [Atom](https://github.com/angular-ui/AngularJS-Atom), [Vim](https://github.com/burnettk/vim-angular)
-* **Workflow:** [Yeoman.io](https://github.com/yeoman/generator-angular) and [Angular Yeoman Tutorial](http://www.sitepoint.com/kickstart-your-angularjs-development-with-yeoman-grunt-and-bower/)
+* **Workflow:** [Yeoman.io](https://github.com/yeoman/generator-angular) and [AngularJS Yeoman Tutorial](http://www.sitepoint.com/kickstart-your-angularjs-development-with-yeoman-grunt-and-bower/)
 
 ## Complementary Libraries
 
-This is a list of libraries that enhance Angular, add common UI components or integrate with other libraries.
-You can find a larger list of Angular external libraries at [ngmodules.org](http://ngmodules.org/).
+This is a list of libraries that enhance AngularJS, add common UI components or integrate with other libraries.
+You can find a larger list of AngularJS external libraries at [ngmodules.org](http://ngmodules.org/).
 
 * **Advanced Routing:** [UI-Router](https://github.com/angular-ui/ui-router)
 * **Authentication:** [Http Auth Interceptor](https://github.com/witoldsz/angular-http-auth)
@@ -98,21 +98,21 @@ You can find a larger list of Angular external libraries at [ngmodules.org](http
   - Data Modeling [JS-Data-Angular](https://github.com/js-data/js-data-angular)
 * **Fileupload:**
   - [ng-file-upload](https://github.com/danialfarid/ng-file-upload)
-  - [blueimp-fileupload for Angular](https://blueimp.github.io/jQuery-File-Upload/angularjs.html)
+  - [blueimp-fileupload for AngularJS](https://blueimp.github.io/jQuery-File-Upload/angularjs.html)
 * **General UI Libraries:**
-  - [Angular Material](https://material.angularjs.org/latest/)
-  - [Angular UI Bootstrap](http://angular-ui.github.io/)
+  - [AngularJS Material](https://material.angularjs.org/latest/)
+  - [AngularJS UI Bootstrap](http://angular-ui.github.io/)
   - [AngularStrap for Bootstrap 3](http://mgcrea.github.io/angular-strap/)
   - [KendoUI](http://kendo-labs.github.io/angular-kendo/#/)
   - [Wijmo](http://wijmo.com/tag/angularjs-2/)
 * **Specific UI Elements:**
   - [ngInfiniteScroll](https://sroze.github.io/ngInfiniteScroll/)
   - [ngTable](https://github.com/esvit/ng-table)
-  - [Angular UI Grid](http://angular-ui.github.io/grid)
+  - [AngularJS UI Grid](http://angular-ui.github.io/grid)
   - [Toaster Notifications](https://github.com/jirikavi/AngularJS-Toaster)
   - [textAngular Rich Text Editor / contenteditable](http://textangular.com/) (Rich Text Editor /
     binding to contenteditable)
-  - [Angular UI Map (Google Maps)](https://github.com/angular-ui/ui-map)
+  - [AngularJS UI Map (Google Maps)](https://github.com/angular-ui/ui-map)
 
 ## General Learning Resources
 

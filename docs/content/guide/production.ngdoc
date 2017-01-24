@@ -78,13 +78,13 @@ For more information, see the
 ## Disable comment and css class directives
 
 By default AngularJS compiles and executes all directives inside comments and element classes.
-In order to perform this task, angular compiler must look for directives by:
+In order to perform this task, the AngularJS compiler must look for directives by:
 
 - Parse all your application element classes.
 
 - Parse all your application html comments.
 
-Nowadays most of the Angular projects are using only element and attribute directives,
+Nowadays most of the AngularJS projects are using only element and attribute directives,
 and in such projects there is no need to compile comments and classes.
 
 If you are sure that your project only uses element and attribute directives,

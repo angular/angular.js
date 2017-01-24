@@ -5,11 +5,11 @@
 
 # Understanding Controllers
 
-In Angular, a Controller is defined by a JavaScript **constructor function** that is used to augment the
-{@link scope Angular Scope}.
+In AngularJS, a Controller is defined by a JavaScript **constructor function** that is used to augment the
+{@link scope AngularJS Scope}.
 
 When a Controller is attached to the DOM via the {@link ng.directive:ngController ng-controller}
-directive, Angular will instantiate a new Controller object, using the specified Controller's
+directive, AngularJS will instantiate a new Controller object, using the specified Controller's
 **constructor function**. A new **child scope** will be created and made available as an injectable
 parameter to the Controller's constructor function as `$scope`.
 
@@ -24,18 +24,18 @@ Use controllers to:
 Do not use controllers to:
 
 - Manipulate DOM — Controllers should contain only business logic.
-  Putting any presentation logic into Controllers significantly affects its testability. Angular
+  Putting any presentation logic into Controllers significantly affects its testability. AngularJS
   has {@link databinding databinding} for most cases and {@link guide/directive directives} to
   encapsulate manual DOM manipulation.
-- Format input — Use {@link forms angular form controls} instead.
-- Filter output — Use {@link guide/filter angular filters} instead.
-- Share code or state across controllers — Use {@link services angular
+- Format input — Use {@link forms AngularJS form controls} instead.
+- Filter output — Use {@link guide/filter AngularJS filters} instead.
+- Share code or state across controllers — Use {@link services AngularJS
 services} instead.
 - Manage the life-cycle of other components (for example, to create service instances).
 
 ## Setting up the initial state of a `$scope` object
 
-Typically, when you create an application you need to set up the initial state for the Angular
+Typically, when you create an application you need to set up the initial state for the AngularJS
 `$scope`. You set up the initial state of a scope by attaching properties to the `$scope` object.
 The properties contain the **view model** (the model that will be presented by the view).  All the
 `$scope` properties will be available to the {@link templates template} at the point in the DOM where the Controller
@@ -52,13 +52,13 @@ myApp.controller('GreetingController', ['$scope', function($scope) {
 }]);
 ```
 
-We create an {@link module Angular Module}, `myApp`, for our application. Then we add the controller's
+We create an {@link module AngularJS Module}, `myApp`, for our application. Then we add the controller's
 constructor function to the module using the `.controller()` method. This keeps the controller's
 constructor function out of the global scope.
 
 <div class="alert alert-info">
 We have used an **inline injection annotation** to explicitly specify the dependency
-of the Controller on the `$scope` service provided by Angular. See the guide on
+of the Controller on the `$scope` service provided by AngularJS. See the guide on
 {@link guide/di Dependency Injection} for more information.
 </div>
 
@@ -88,7 +88,7 @@ myApp.controller('DoubleController', ['$scope', function($scope) {
 }]);
 ```
 
-Once the Controller has been attached to the DOM, the `double` method can be invoked in an Angular
+Once the Controller has been attached to the DOM, the `double` method can be invoked in an AngularJS
 expression in the template:
 
 ```js
@@ -99,7 +99,7 @@ expression in the template:
 
 As discussed in the {@link concepts Concepts} section of this guide, any
 objects (or primitives) assigned to the scope become model properties. Any methods assigned to
-the scope are available in the template/view, and can be invoked via angular expressions
+the scope are available in the template/view, and can be invoked via AngularJS expressions
 and `ng` event handler directives (e.g. {@link ng.directive:ngClick ngClick}).
 
 ## Using Controllers Correctly
@@ -113,7 +113,7 @@ This is discussed in the {@link di Dependency Injection}  and  {@link services
 Services} sections of this guide.
 
 
-# Associating Controllers with Angular Scope Objects
+# Associating Controllers with AngularJS Scope Objects
 
 You can associate Controllers with scope objects implicitly via the {@link ng.directive:ngController ngController
 directive} or {@link ngRoute.$route $route service}.
@@ -121,7 +121,7 @@ directive} or {@link ngRoute.$route $route service}.
 
 ## Simple Spicy Controller Example
 
-To illustrate further how Controller components work in Angular, let's create a little app with the
+To illustrate further how Controller components work in AngularJS, let's create a little app with the
 following components:
 
 - A {@link templates template} with two buttons and a simple message

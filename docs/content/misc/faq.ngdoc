@@ -8,7 +8,7 @@
 
 ### Why is this project called "AngularJS"? Why is the namespace called "ng"?
 
-Because HTML has Angular brackets and "ng" sounds like "Angular".
+Because HTML has AngularJS brackets and "ng" sounds like "AngularJS".
 
 
 ### Is AngularJS a library, framework, plugin or a browser extension?
@@ -22,22 +22,22 @@ So it's definitely not a plugin or some other native browser extension.
 
 ### What is the AngularJS versioning strategy?
 
-In Angular 1 we do not allow intentional breaking changes to appear in versions where only the "patch"
+In AngularJS we do not allow intentional breaking changes to appear in versions where only the "patch"
 number changes. For example between 1.3.12 and 1.3.13 there can be no breaking changes. We do allow
 breaking changes happen between "minor" number changes. For example between 1.3.15 and 1.4.0 there
-will be a number of breaking changes. We also allow breaking changes between beta releases of Angular.
+will be a number of breaking changes. We also allow breaking changes between beta releases of AngularJS.
 For example between 1.4.0-beta.4 and 1.4.0-beta.5 there may be breaking changes. We try hard to minimize
 these kinds of change only to those where there is a strong use case such as a strongly requested feature
 improvement, a considerable simplification of the code or a measurable performance improvement.
 
-When adding new code to branches of Angular, have a very stringent commit policy:
+When adding new code to branches of AngularJS, have a very stringent commit policy:
 
 - Every commit must contain tests and documentation updates alongside the code changes and that all the
 tests must pass;
 - Commit messages must be written in a specific manner that allows us to parse them and extract the changes
 for release notes.
 
-The Angular code base has a very large set of unit tests (over 4000) and end to end tests, which are pretty
+The AngularJS code base has a very large set of unit tests (over 4000) and end to end tests, which are pretty
 comprehensive. This means that a breaking change will require one or more tests to be changed to allow the
 tests to pass. So when a commit includes tests that are being removed or modified, this is a flag that the
 code might include a breaking change. When reviewing the commit we can then decide whether there really is
@@ -53,13 +53,13 @@ Lastly, when we are making a release we generate updates to the changelog direct
 generated update contains a highlighted section that contains all the breaking changes that have been
 extracted from the commits. We can quickly see in the new changelog exactly what commits contain breaking
 changes and so can application developers when they are deciding whether to update to a new version of
-Angular.
+AngularJS.
 
 
 ### Is AngularJS a templating system?
 
-At the highest level, Angular does look like just another templating system. But there is one
-important reason why the Angular templating system is different, that makes it very good fit for
+At the highest level, AngularJS does look like just another templating system. But there is one
+important reason why the AngularJS templating system is different, that makes it very good fit for
 application development: bidirectional data binding. The template is compiled in the browser and
 the compilation step produces a live view. This means you, the developers, don't need to write
 code to constantly sync the view with the model and the model with the view as in other
@@ -68,7 +68,7 @@ templating systems.
 
 ### Do I need to worry about security holes in AngularJS?
 
-Like any other technology, AngularJS is not impervious to attack. Angular does, however, provide
+Like any other technology, AngularJS is not impervious to attack. AngularJS does, however, provide
 built-in protection from basic security holes, including cross-site scripting and HTML injection
 attacks. AngularJS does round-trip escaping on all strings for you and even offers XSRF protection
 for server-side communication.
@@ -77,7 +77,7 @@ AngularJS was designed to be compatible with other security measures like Conten
 (CSP), HTTPS (SSL/TLS) and server-side authentication and authorization that greatly reduce the
 possible attack vectors and we highly recommend their use.
 
-Please read {@link security} for more detailed information about securing Angular apps.
+Please read {@link security} for more detailed information about securing AngularJS apps.
 
 
 ### Can I download the source, build, and host the AngularJS environment locally?
@@ -86,7 +86,7 @@ Yes. See instructions in {@link downloading}.
 
 
 
-### What browsers does Angular work with?
+### What browsers does AngularJS work with?
 
 We run our extensive test suite against the following browsers: the latest versions of Chrome,
 Firefox, Safari, and Safari for iOs, as well as Internet Explorer versions 9-11. See {@link guide/ie
@@ -99,7 +99,7 @@ a large part of their codebase with a browser we test, such as Opera > version 1
 (uses the Blink engine), or the various Firefox derivatives.
 
 
-### What's Angular's performance like?
+### What's AngularJS's performance like?
 
 The startup time heavily depends on your network connection, state of the cache, browser used and
 available hardware, but typically we measure bootstrap time in tens or hundreds of milliseconds.
@@ -114,40 +114,40 @@ illustration, we typically build snappy apps with hundreds or thousands of activ
 The size of the file is ~50KB compressed and minified.
 
 
-### Can I use the open-source Closure Library with Angular?
+### Can I use the open-source Closure Library with AngularJS?
 
 Yes, you can use widgets from the [Closure Library](https://developers.google.com/closure/library/)
-in Angular.
+in AngularJS.
 
 
-### Does Angular use the jQuery library?
+### Does AngularJS use the jQuery library?
 
-Yes, Angular can use [jQuery](http://jquery.com/) if it's present in your app when the
-application is being bootstrapped. If jQuery is not present in your script path, Angular falls back
+Yes, AngularJS can use [jQuery](http://jquery.com/) if it's present in your app when the
+application is being bootstrapped. If jQuery is not present in your script path, AngularJS falls back
 to its own implementation of the subset of jQuery that we call {@link angular.element  jQLite}.
 
-Angular 1.3 only supports jQuery 2.1 or above. jQuery 1.7 and newer might work correctly with Angular
+AngularJS 1.3 only supports jQuery 2.1 or above. jQuery 1.7 and newer might work correctly with AngularJS
 but we don't guarantee that.
 
 
-### What is testability like in Angular?
+### What is testability like in AngularJS?
 
 Very testable and designed this way from the ground up. It has an integrated dependency injection
 framework, provides mocks for many heavy dependencies (server-side communication). See
 {@link ngMock} for details.
 
 
-### How can I learn more about Angular?
+### How can I learn more about AngularJS?
 
 Watch the July 17, 2012 talk
 "[AngularJS Intro + Dependency Injection](http://www.youtube.com/watch?v=1CpiB3Wk25U)".
 
 
-### How is Angular licensed?
+### How is AngularJS licensed?
 
 The [MIT License](https://github.com/angular/angular.js/blob/master/LICENSE).
 
-### Can I download and use the Angular logo artwork?
+### Can I download and use the AngularJS logo artwork?
 
 Yes! You can find design files in our github repository, under "[angular.js/images/logo](https://github.com/angular/angular.js/tree/master/images/logo)"
 The logo design is licensed under a "[Creative Commons Attribution-ShareAlike 3.0 Unported License](http://creativecommons.org/licenses/by-sa/3.0/)". If you have some other use in mind, contact us.
@@ -168,7 +168,7 @@ For a smaller order, or for other countries, we suggest downloading the logo art
 
 ## Common Pitfalls
 
-The Angular support channel (#angularjs on Freenode) sees a number of recurring pitfalls that new users of Angular fall into.
+The AngularJS support channel (#angularjs on Freenode) sees a number of recurring pitfalls that new users of AngularJS fall into.
 This document aims to point them out before you discover them the hard way.
 
 ### DOM Manipulation
@@ -179,13 +179,13 @@ Use built-in directives, or write your own where necessary, to do your DOM manip
 See below about duplicating functionality.
 
 If you're struggling to break the habit, consider removing jQuery from your app.
-Really. Angular has the $http service and powerful directives that make it almost always unnecessary.
-Angular's bundled jQLite has a handful of the features most commonly used in writing Angular directives, especially binding to events.
+Really. AngularJS has the $http service and powerful directives that make it almost always unnecessary.
+AngularJS's bundled jQLite has a handful of the features most commonly used in writing AngularJS directives, especially binding to events.
 
 ### Trying to duplicate functionality that already exists
 
 There's a good chance that your app isn't the first to require certain functionality.
-There are a few pieces of Angular that are particularly likely to be reimplemented out of old habits.
+There are a few pieces of AngularJS that are particularly likely to be reimplemented out of old habits.
 
 **ng-repeat**
 
@@ -198,7 +198,7 @@ Store the data from the server in an array on your `$scope`, and bind it to the 
 **ng-show**
 
 `ng-show` gets this frequently too.
-Conditionally showing and hiding things using jQuery is a common pattern in other apps, but Angular has a better way.
+Conditionally showing and hiding things using jQuery is a common pattern in other apps, but AngularJS has a better way.
 `ng-show` (and `ng-hide`) conditionally show and hide elements based on boolean expressions.
 Describe the conditions for showing and hiding an element in terms of `$scope` variables:
 
@@ -211,7 +211,7 @@ Note especially the powerful `ng-switch` that should be used instead of several 
 
 `ng-class` is the last of the big three.
 Conditionally applying classes to elements is another thing commonly done manually using jQuery.
-Angular, of course, has a better way.
+AngularJS, of course, has a better way.
 You can give `ng-class` a whitespace-separated set of class names, and then it's identical to ordinary `class`.
 That's not very exciting, so there's a second syntax:
 
@@ -225,22 +225,22 @@ Note also the handy `ng-class-even` and `ng-class-odd`, and the related though s
 
 ### `$watch` and `$apply`
 
-Angular's two-way data binding is the root of all awesome in Angular.
+AngularJS's two-way data binding is the root of all awesome in AngularJS.
 However, it's not magic, and there are some situations where you need to give it a nudge in the right direction.
 
-When you bind a value to an element in Angular using `ng-model`, `ng-repeat`, etc., Angular creates a `$watch` on that value.
+When you bind a value to an element in AngularJS using `ng-model`, `ng-repeat`, etc., AngularJS creates a `$watch` on that value.
 Then whenever a value on a scope changes, all `$watch`es observing that element are executed, and everything updates.
 
 Sometimes, usually when you're writing a custom directive, you will have to define your own `$watch` on a scope value to make the directive react to changes.
 
 On the flip side, sometimes you change a scope value in some code, but the app doesn't react to it.
-Angular checks for scope variable changes after pieces of your code have finished running; for example, when `ng-click` calls a function on your scope, Angular will check for changes and react.
-However, some code is outside of Angular and you'll have to call `scope.$apply()` yourself to trigger the update.
+AngularJS checks for scope variable changes after pieces of your code have finished running; for example, when `ng-click` calls a function on your scope, AngularJS will check for changes and react.
+However, some code is outside of AngularJS and you'll have to call `scope.$apply()` yourself to trigger the update.
 This is most commonly seen in event handlers in custom directives.
 
 ### Combining `ng-repeat` with other directives
 
-`ng-repeat` is extremely useful, one of the most powerful directives in Angular.
+`ng-repeat` is extremely useful, one of the most powerful directives in AngularJS.
 However the transformation it applies to the DOM is substantial.
 Therefore applying other directives (such as `ng-show`, `ng-controller` and others) to the same element as `ng-repeat` generally leads to problems.
 
@@ -249,7 +249,7 @@ If you want to apply a directive to each inner piece of the repeat, put it on a 
 
 ### `$rootScope` exists, but it can be used for evil
 
-Scopes in Angular form a hierarchy, prototypically inheriting from a root scope at the top of the tree.
+Scopes in AngularJS form a hierarchy, prototypically inheriting from a root scope at the top of the tree.
 Usually this can be ignored, since most views have a controller, and therefore a scope, of their own.
 
 Occasionally there are pieces of data that you want to make global to the whole app.

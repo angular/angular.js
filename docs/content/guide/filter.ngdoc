@@ -6,7 +6,7 @@
 # Filters
 
 Filters format the value of an expression for display to the user. They can be used in view
-templates, controllers or services. Angular comes with a collection of
+templates, controllers or services. AngularJS comes with a collection of
 [built-in filters](api/ng/filter), but it is easy to define your own as well.
 
 The underlying API is the {@link ng.$filterProvider}.
@@ -44,7 +44,7 @@ as inputs. Filters that receive [Objects](https://developer.mozilla.org/en-US/do
 as input are executed on each `$digest`, as it would be too costly to track if the inputs have changed.
 
 2. Filters that are marked as `$stateful` are also executed on each $digest.
-See {@link guide/filter#stateful-filters Stateful filters} for more information. Note that no Angular
+See {@link guide/filter#stateful-filters Stateful filters} for more information. Note that no AngularJS
 core filters are $stateful.
 
 
@@ -110,12 +110,12 @@ function.
 
 The filter function should be a [pure function](http://en.wikipedia.org/wiki/Pure_function), which
 means that it should always return the same result given the same input arguments and should not affect
-external state, for example, other Angular services. Angular relies on this contract and will by default
+external state, for example, other AngularJS services. AngularJS relies on this contract and will by default
 execute a filter only when the inputs to the function change.
 {@link guide/filter#stateful-filters Stateful filters} are possible, but less performant.
 
 <div class="alert alert-warning">
-**Note:** Filter names must be valid angular {@link expression} identifiers, such as `uppercase` or `orderBy`.
+**Note:** Filter names must be valid AngularJS {@link expression} identifiers, such as `uppercase` or `orderBy`.
 Names with special characters, such as hyphens and dots, are not allowed.  If you wish to namespace
 your filters, then you can use capitalization (`myappSubsectionFilterx`) or underscores
 (`myapp_subsection_filterx`).
@@ -162,7 +162,7 @@ text upper-case.
 ### Stateful filters
 
 It is strongly discouraged to write filters that are stateful, because the execution of those can't
-be optimized by Angular, which often leads to performance issues. Many stateful filters can be
+be optimized by AngularJS, which often leads to performance issues. Many stateful filters can be
 converted into stateless filters just by exposing the hidden state as a model and turning it into an
 argument for the filter.
 

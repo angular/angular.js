@@ -15,12 +15,12 @@ var $parseMinErr = minErr('$parse');
 
 var objectValueOf = {}.constructor.prototype.valueOf;
 
-// Sandboxing Angular Expressions
+// Sandboxing AngularJS Expressions
 // ------------------------------
-// Angular expressions are no longer sandboxed. So it is now even easier to access arbitrary JS code by
+// AngularJS expressions are no longer sandboxed. So it is now even easier to access arbitrary JS code by
 // various means such as obtaining a reference to native JS functions like the Function constructor.
 //
-// As an example, consider the following Angular expression:
+// As an example, consider the following AngularJS expression:
 //
 //   {}.toString.constructor('alert("evil JS code")')
 //
@@ -1636,15 +1636,15 @@ function getValueOf(value) {
  *
  * @description
  *
- * Converts Angular {@link guide/expression expression} into a function.
+ * Converts AngularJS {@link guide/expression expression} into a function.
  *
  * ```js
  *   var getter = $parse('user.name');
  *   var setter = getter.assign;
- *   var context = {user:{name:'angular'}};
+ *   var context = {user:{name:'AngularJS'}};
  *   var locals = {user:{name:'local'}};
  *
- *   expect(getter(context)).toEqual('angular');
+ *   expect(getter(context)).toEqual('AngularJS');
  *   setter(context, 'newValue');
  *   expect(context.user.name).toEqual('newValue');
  *   expect(getter(context, locals)).toEqual('local');
@@ -1710,7 +1710,7 @@ function $ParseProvider() {
   *
   * @description
   *
-  * Allows defining the set of characters that are allowed in Angular expressions. The function
+  * Allows defining the set of characters that are allowed in AngularJS expressions. The function
   * `identifierStart` will get called to know if a given character is a valid character to be the
   * first character for an identifier. The function `identifierContinue` will get called to know if
   * a given character is a valid character to be a follow-up identifier character. The functions
