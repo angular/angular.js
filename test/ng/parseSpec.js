@@ -3872,20 +3872,19 @@ describe('parser', function() {
         it('should watch ES6 object computed property changes', function() {
           var count = 0;
           var values = [];
-          var firstValue = {'undefined': true};
 
-          scope.$watch('{[a]: true}', function(val, oldVal) {
+          scope.$watch('{[a]: true}', function(val) {
             count++;
             values.push(val);
           }, true);
 
           scope.$digest();
           expect(count).toBe(1);
-          expect(values[0]).toEqual(firstValue);
+          expect(values[0]).toEqual({'undefined': true});
 
           scope.$digest();
           expect(count).toBe(1);
-          expect(values[0]).toEqual(firstValue);
+          expect(values[0]).toEqual({'undefined': true});
 
           scope.a = true;
           scope.$digest();
