@@ -1388,7 +1388,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
    *
    * If disabled (false), the compiler calls the constructor first before assigning bindings.
    *
-   * The default value is true in AngularJS.5.x but will switch to false in AngularJS.6.x.
+   * The default value is true in AngularJS 1.5.x but will switch to false in AngularJS 1.6.x.
    */
   var preAssignBindingsEnabled = false;
   this.preAssignBindingsEnabled = function(enabled) {
