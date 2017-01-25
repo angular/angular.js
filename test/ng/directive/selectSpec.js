@@ -2339,11 +2339,15 @@ describe('select', function() {
             scope.options = [{ name: 'B'}, { name: 'C'}, { name: 'D'}];
           });
 
+          var previouslySelectedOptionElement = optionElements[1];
           optionElements = element.find('option');
           expect(optionElements.length).toEqual(3);
+
           expect(optionElements[0].value).toBe('B');
           expect(optionElements[0]).toBeMarkedAsSelected();
           expect(scope.obj.value).toBe('B');
+          // Ensure the assumption that the element is re-created is true
+          expect(previouslySelectedOptionElement).not.toBe(optionElements[0]);
       });
 
     });
