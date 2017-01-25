@@ -46,14 +46,13 @@ describe('injector', function() {
   it('should resolve dependency graph and instantiate all services just once', function() {
     var log = [];
 
-//          s1
-//        /  | \
-//       /  s2  \
-//      /  / | \ \
-//     /s3 < s4 > s5
-//    //
-//   s6
-
+    //          s1
+    //        /  | \
+    //       /  s2  \
+    //      /  / | \ \
+    //     /s3 < s4 > s5
+    //    //
+    //   s6
 
     providers('s1', function() { log.push('s1'); return {}; }, {$inject: ['s2', 's5', 's6']});
     providers('s2', function() { log.push('s2'); return {}; }, {$inject: ['s3', 's4', 's5']});

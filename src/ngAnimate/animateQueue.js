@@ -100,15 +100,15 @@ var $$AnimateQueueProvider = ['$animateProvider', /** @this */ function($animate
     return hasMatchingClasses(nA, cR) || hasMatchingClasses(nR, cA);
   });
 
-  this.$get = ['$$rAF', '$rootScope', '$rootElement', '$document', '$$HashMap',
+  this.$get = ['$$rAF', '$rootScope', '$rootElement', '$document', '$$Map',
                '$$animation', '$$AnimateRunner', '$templateRequest', '$$jqLite', '$$forceReflow',
                '$$isDocumentHidden',
-       function($$rAF,   $rootScope,   $rootElement,   $document,   $$HashMap,
+       function($$rAF,   $rootScope,   $rootElement,   $document,   $$Map,
                 $$animation,   $$AnimateRunner,   $templateRequest,   $$jqLite,   $$forceReflow,
                 $$isDocumentHidden) {
 
-    var activeAnimationsLookup = new $$HashMap();
-    var disabledElementsLookup = new $$HashMap();
+    var activeAnimationsLookup = new $$Map();
+    var disabledElementsLookup = new $$Map();
     var animationsEnabled = null;
 
     function postDigestTaskFactory() {
@@ -291,7 +291,7 @@ var $$AnimateQueueProvider = ['$animateProvider', /** @this */ function($animate
               bool = !disabledElementsLookup.get(node);
             } else {
               // (element, bool) - Element setter
-              disabledElementsLookup.put(node, !bool);
+              disabledElementsLookup.set(node, !bool);
             }
           }
         }
@@ -599,7 +599,7 @@ var $$AnimateQueueProvider = ['$animateProvider', /** @this */ function($animate
               animationDetails.runner.end();
               /* falls through */
             case PRE_DIGEST_STATE:
-              activeAnimationsLookup.remove(child);
+              activeAnimationsLookup.delete(child);
               break;
           }
         }
@@ -608,7 +608,7 @@ var $$AnimateQueueProvider = ['$animateProvider', /** @this */ function($animate
 
     function clearElementAnimationState(node) {
       node.removeAttribute(NG_ANIMATE_ATTR_NAME);
-      activeAnimationsLookup.remove(node);
+      activeAnimationsLookup.delete(node);
     }
 
     /**
@@ -713,7 +713,7 @@ var $$AnimateQueueProvider = ['$animateProvider', /** @this */ function($animate
       var newValue = oldValue
           ? extend(oldValue, details)
           : details;
-      activeAnimationsLookup.put(node, newValue);
+      activeAnimationsLookup.set(node, newValue);
     }
   }];
 }];

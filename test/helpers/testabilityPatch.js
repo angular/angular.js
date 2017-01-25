@@ -54,17 +54,16 @@ beforeEach(function() {
 afterEach(function() {
   var count, cache;
 
-  // both of these nodes are persisted across tests
-  // and therefore the hashCode may be cached
-  var node = window.document.querySelector('html');
-  if (node) {
-    node.$$hashKey = null;
-  }
-  var bod = window.document.body;
-  if (bod) {
-    bod.$$hashKey = null;
-  }
-  window.document.$$hashKey = null;
+  // These Nodes are persisted across tests.
+  // They used to be assigned a `$$hashKey` when animated, which we needed to clear after each test
+  // to avoid affecting other tests. This is no longer the case, so we are just ensuring that there
+  // is indeed no `$$hachKey` on them.
+  var doc = window.document;
+  var html = doc.querySelector('html');
+  var body = doc.body;
+  expect(doc.$$hashKey).toBeFalsy();
+  expect(html && html.$$hashKey).toBeFalsy();
+  expect(body && body.$$hashKey).toBeFalsy();
 
   if (this.$injector) {
     var $rootScope = this.$injector.get('$rootScope');
