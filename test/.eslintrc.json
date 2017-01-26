@@ -25,6 +25,8 @@
 
     /* angular.js */
     "angular": false,
+    "minErrConfig": false,
+    "errorHandlingConfig": false,
     "msie": false,
     "jqLite": false,
     "jQuery": false,
@@ -37,6 +39,7 @@
     "nodeName_": false,
     "uid": false,
     "toDebugString": false,
+    "serializeObject": false,
 
     "lowercase": false,
     "uppercase": false,

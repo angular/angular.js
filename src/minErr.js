@@ -35,18 +35,20 @@ function minErr(module, ErrorConstructor) {
   return function() {
     var SKIP_INDEXES = 2;
 
-    var templateArgs = arguments,
-      code = templateArgs[0],
+    var code = arguments[0],
       message = '[' + (module ? module + ':' : '') + code + '] ',
-      template = templateArgs[1],
-      paramPrefix, i;
+      template = arguments[1],
+      paramPrefix, i,
+      templateArgs = sliceArgs(arguments, SKIP_INDEXES).map(function(arg) {
+        return toDebugString(arg, minErrConfig.objectMaxDepth);
+      });
+
 
     message += template.replace(/\{\d+\}/g, function(match) {
-      var index = +match.slice(1, -1),
-        shiftedIndex = index + SKIP_INDEXES;
+      var index = +match.slice(1, -1);
 
-      if (shiftedIndex < templateArgs.length) {
-        return toDebugString(templateArgs[shiftedIndex]);
+      if (index < templateArgs.length) {
+        return templateArgs[index];
       }
 
       return match;
@@ -55,9 +57,8 @@ function minErr(module, ErrorConstructor) {
     message += '\nhttp://errors.angularjs.org/"NG_VERSION_FULL"/' +
       (module ? module + '/' : '') + code;
 
-    for (i = SKIP_INDEXES, paramPrefix = '?'; i < templateArgs.length; i++, paramPrefix = '&') {
-      message += paramPrefix + 'p' + (i - SKIP_INDEXES) + '=' +
-        encodeURIComponent(toDebugString(templateArgs[i]));
+    for (i = 0, paramPrefix = '?'; i < templateArgs.length; i++, paramPrefix = '&') {
+      message += paramPrefix + 'p' + i + '=' + encodeURIComponent(templateArgs[i]);
     }
 
     return new ErrorConstructor(message);
