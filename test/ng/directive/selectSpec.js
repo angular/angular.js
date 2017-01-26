@@ -2341,8 +2341,8 @@ describe('select', function() {
 
           var previouslySelectedOptionElement = optionElements[1];
           optionElements = element.find('option');
-          expect(optionElements.length).toEqual(3);
 
+          expect(optionElements.length).toEqual(3);
           expect(optionElements[0].value).toBe('B');
           expect(optionElements[0]).toBeMarkedAsSelected();
           expect(scope.obj.value).toBe('B');
