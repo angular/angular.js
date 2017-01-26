@@ -602,6 +602,31 @@ describe('angular', function() {
       expect(copy(new Number(NaN)).valueOf()).toBeNaN();
       /* eslint-enable */
     });
+
+    it('should copy source until reaching a given max depth', function() {
+      var source = {a1: 1, b1: {b2: {b3: 1}}, c1: [1, {c2: 1}], d1: {d2: 1}};
+      var dest;
+
+      dest =  copy(source, {}, 1);
+      expect(dest).toEqual({a1:1, b1:'...', c1:'...', d1:'...'});
+
+      dest =  copy(source, {}, 2);
+      expect(dest).toEqual({a1:1, b1:{b2:'...'}, c1:[1,'...'], d1:{d2:1}});
+
+      dest =  copy(source, {}, 3);
+      expect(dest).toEqual({a1: 1, b1: {b2: {b3: 1}}, c1: [1, {c2: 1}], d1: {d2: 1}});
+
+      dest =  copy(source, {}, 4);
+      expect(dest).toEqual({a1: 1, b1: {b2: {b3: 1}}, c1: [1, {c2: 1}], d1: {d2: 1}});
+    });
+
+    they('should copy source and ignore max depth when maxDepth = $prop',
+      [NaN, null, undefined, true, false, -1, 0], function(maxDepth) {
+        var source = {a1: 1, b1: {b2: {b3: 1}}, c1: [1, {c2: 1}], d1: {d2: 1}};
+        var dest =  copy(source, {}, maxDepth);
+        expect(dest).toEqual({a1: 1, b1: {b2: {b3: 1}}, c1: [1, {c2: 1}], d1: {d2: 1}});
+      }
+    );
   });
 
   describe('extend', function() {
