@@ -108,7 +108,8 @@ var ngOptionsMinErr = minErr('ngOptions');
  * expression evaluates to `items[0].subItem.id` (which is undefined). As a result, the model value
  * is not matched against any `<option>` and the `<select>` appears as having no selected value.
  *
- * here is the fixed version of the broken example above.
+ * The solution is to use `$value` variable which provides uniform access to each `item` and
+ * `ngModel` value.  Here is the fixed version of the broken example above.
  *
  * ```html
  * <select ng-options="item.subItem as item.label for item in items track by $value.id" ng-model="selected"></select>
