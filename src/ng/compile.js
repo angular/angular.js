@@ -3537,7 +3537,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
               }
               recordChanges(scopeName, newValue, oldValue);
               destination[scopeName] = newValue;
-            }, deepWatch);
+            });
 
             removeWatchCollection.push(removeWatch);
             break;

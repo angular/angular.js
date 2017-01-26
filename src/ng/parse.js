@@ -1822,7 +1822,7 @@ function $ParseProvider() {
             oldInputValueOf = newInputValue && getValueOf(newInputValue);
           }
           return lastResult;
-        }, listener, objectEquality, prettyPrintExpression);
+        }, listener, objectEquality || parsedExpression.literal, prettyPrintExpression);
       }
 
       var oldInputValueOfValues = [];
@@ -1848,7 +1848,7 @@ function $ParseProvider() {
         }
 
         return lastResult;
-      }, listener, objectEquality, prettyPrintExpression);
+      }, listener, objectEquality || parsedExpression.literal, prettyPrintExpression);
     }
 
     function oneTimeWatchDelegate(scope, listener, objectEquality, parsedExpression, prettyPrintExpression) {

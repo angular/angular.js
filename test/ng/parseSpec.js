@@ -3118,6 +3118,29 @@ describe('parser', function() {
           scope.$digest();
           expect(objB.value).toBe(scope.input);
         }));
+
+        it('should support watching literals', inject(function($parse) {
+          var lastVal = NaN;
+          var callCount = 0;
+          var listener = function(val) { callCount++; lastVal = val; };
+
+          scope.$watch('{val: val}', listener);
+
+          scope.$apply('val = 1');
+          expect(callCount).toBe(1);
+          expect(lastVal).toEqual({val: 1});
+
+          scope.$apply('val = []');
+          expect(callCount).toBe(2);
+          expect(lastVal).toEqual({val: []});
+
+          scope.$apply('val = []');
+          expect(callCount).toBe(2);
+
+          scope.$apply('val.push(1)');
+          expect(callCount).toBe(3);
+          expect(lastVal).toEqual({val: [1]});
+        }));
       });
 
       describe('locals', function() {
