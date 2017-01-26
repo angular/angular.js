@@ -2316,6 +2316,40 @@ describe('select', function() {
 
       });
 
+      it('should keep the ngModel value when the selected option is recreated by ngRepeat', function() {
+          scope.options = [{ name: 'A'}, { name: 'B'}, { name: 'C'}];
+          scope.obj = {
+            value: 'B'
+          };
+
+          compile(
+            '<select ng-model="obj.value">' +
+              '<option ng-repeat="option in options" value="{{option.name}}">{{option.name}}</option>' +
+            '</select>'
+          );
+
+          var optionElements = element.find('option');
+          expect(optionElements.length).toEqual(3);
+          expect(optionElements[0].value).toBe('A');
+          expect(optionElements[1]).toBeMarkedAsSelected();
+          expect(scope.obj.value).toBe('B');
+
+          scope.$apply(function() {
+            // Only when new objects are used, ngRepeat re-creates the element from scratch
+            scope.options = [{ name: 'B'}, { name: 'C'}, { name: 'D'}];
+          });
+
+          var previouslySelectedOptionElement = optionElements[1];
+          optionElements = element.find('option');
+
+          expect(optionElements.length).toEqual(3);
+          expect(optionElements[0].value).toBe('B');
+          expect(optionElements[0]).toBeMarkedAsSelected();
+          expect(scope.obj.value).toBe('B');
+          // Ensure the assumption that the element is re-created is true
+          expect(previouslySelectedOptionElement).not.toBe(optionElements[0]);
+      });
+
     });
 
 

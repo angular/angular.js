@@ -281,7 +281,7 @@ var SelectController =
       var removeValue = optionAttrs.value;
 
       self.removeOption(removeValue);
-      self.ngModelCtrl.$render();
+      scheduleRender();
 
       if (self.multiple && currentValue && currentValue.indexOf(removeValue) !== -1 ||
           currentValue === removeValue
