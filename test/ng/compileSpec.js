@@ -4306,6 +4306,78 @@ describe('$compile', function() {
           });
 
 
+          it('should trigger `$onChanges` for literal expressions when expression input value changes (simple value)', function() {
+            var log = [];
+            function TestController() { }
+            TestController.prototype.$onChanges = function(change) { log.push(change); };
+
+            angular.module('my', [])
+              .component('c1', {
+                controller: TestController,
+                bindings: { 'prop1': '<' }
+              });
+
+            module('my');
+            inject(function($compile, $rootScope) {
+              element = $compile('<c1 prop1="[val]"></c1>')($rootScope);
+
+              $rootScope.$apply('val = 1');
+              expect(log.pop()).toEqual({prop1: jasmine.objectContaining({previousValue: [undefined], currentValue: [1]})});
+
+              $rootScope.$apply('val = 2');
+              expect(log.pop()).toEqual({prop1: jasmine.objectContaining({previousValue: [1], currentValue: [2]})});
+            });
+          });
+
+
+          it('should trigger `$onChanges` for literal expressions when expression input value changes (complex value)', function() {
+            var log = [];
+            function TestController() { }
+            TestController.prototype.$onChanges = function(change) { log.push(change); };
+
+            angular.module('my', [])
+              .component('c1', {
+                controller: TestController,
+                bindings: { 'prop1': '<' }
+              });
+
+            module('my');
+            inject(function($compile, $rootScope) {
+              element = $compile('<c1 prop1="[val]"></c1>')($rootScope);
+
+              $rootScope.$apply('val = [1]');
+              expect(log.pop()).toEqual({prop1: jasmine.objectContaining({previousValue: [undefined], currentValue: [[1]]})});
+
+              $rootScope.$apply('val = [2]');
+              expect(log.pop()).toEqual({prop1: jasmine.objectContaining({previousValue: [[1]], currentValue: [[2]]})});
+            });
+          });
+
+
+          it('should trigger `$onChanges` for literal expressions when expression input value changes instances, even when equal', function() {
+            var log = [];
+            function TestController() { }
+            TestController.prototype.$onChanges = function(change) { log.push(change); };
+
+            angular.module('my', [])
+              .component('c1', {
+                controller: TestController,
+                bindings: { 'prop1': '<' }
+              });
+
+            module('my');
+            inject(function($compile, $rootScope) {
+              element = $compile('<c1 prop1="[val]"></c1>')($rootScope);
+
+              $rootScope.$apply('val = [1]');
+              expect(log.pop()).toEqual({prop1: jasmine.objectContaining({previousValue: [undefined], currentValue: [[1]]})});
+
+              $rootScope.$apply('val = [1]');
+              expect(log.pop()).toEqual({prop1: jasmine.objectContaining({previousValue: [[1]], currentValue: [[1]]})});
+            });
+          });
+
+
           it('should pass the original value as `previousValue` even if there were multiple changes in a single digest', function() {
             var log = [];
             function TestController() { }
@@ -5832,7 +5904,7 @@ describe('$compile', function() {
             }));
 
 
-            it('should deep-watch array literals', inject(function() {
+            it('should watch input values to array literals', inject(function() {
               $rootScope.name = 'georgios';
               $rootScope.obj = {name: 'pete'};
               compile('<div><span my-component ow-ref="[{name: name}, obj]">');
@@ -5846,7 +5918,7 @@ describe('$compile', function() {
             }));
 
 
-            it('should deep-watch object literals', inject(function() {
+            it('should watch input values object literals', inject(function() {
               $rootScope.name = 'georgios';
               $rootScope.obj = {name: 'pete'};
               compile('<div><span my-component ow-ref="{name: name, item: obj}">');
