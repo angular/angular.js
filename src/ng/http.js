@@ -1270,7 +1270,7 @@ function $HttpProvider() {
             if (isArray(cachedResp)) {
               resolvePromise(cachedResp[1], cachedResp[0], shallowCopy(cachedResp[2]), cachedResp[3], cachedResp[4]);
             } else {
-              resolvePromise(cachedResp, 200, {}, 'OK', 'Request Completed');
+              resolvePromise(cachedResp, 200, {}, 'OK', 'success');
             }
           }
         } else {
