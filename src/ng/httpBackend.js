@@ -100,21 +100,21 @@ function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDoc
             response,
             xhr.getAllResponseHeaders(),
             statusText,
-            'Request Completed');
+            'success');
       };
 
       var requestError = function() {
         // The response is always empty
         // See https://xhr.spec.whatwg.org/#request-error-steps and https://fetch.spec.whatwg.org/#concept-network-error
-        completeRequest(callback, -1, null, null, '', 'Request Error');
+        completeRequest(callback, -1, null, null, '', 'error');
       };
 
       var requestAborted = function() {
-        completeRequest(callback, -1, null, null, '', 'Request Aborted');
+        completeRequest(callback, -1, null, null, '', 'abort');
       };
 
       var requestTimedOut = function() {
-        completeRequest(callback, -1, null, null, '', 'Request Timed Out');
+        completeRequest(callback, -1, null, null, '', 'timeout');
       };
 
       xhr.onerror = requestError;
