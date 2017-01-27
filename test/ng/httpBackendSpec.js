@@ -90,7 +90,7 @@ describe('$httpBackend', function() {
   });
 
   it('should call completion function with xhr.statusText if present', function() {
-    callback.and.callFake(function(status, response, headers, statusText, xhrStatus) {
+    callback.and.callFake(function(status, response, headers, statusText) {
       expect(statusText).toBe('OK');
     });
 
@@ -102,7 +102,7 @@ describe('$httpBackend', function() {
   });
 
   it('should call completion function with empty string if not present', function() {
-    callback.and.callFake(function(status, response, headers, statusText, xhrStatus) {
+    callback.and.callFake(function(status, response, headers, statusText) {
       expect(statusText).toBe('');
     });
 
@@ -160,7 +160,7 @@ describe('$httpBackend', function() {
       expect(response).toBe(null);
       expect(headers).toBe(null);
       expect(statusText).toBe('');
-      expect(xhrStatus).toBe('Request Aborted');
+      expect(xhrStatus).toBe('abort');
     });
     $backend('GET', '/url', null, callback, {}, 2000);
     xhr = MockXhr.$$lastInstance;
@@ -180,7 +180,7 @@ describe('$httpBackend', function() {
       expect(response).toBe(null);
       expect(headers).toBe(null);
       expect(statusText).toBe('');
-      expect(xhrStatus).toBe('Request Timed Out');
+      expect(xhrStatus).toBe('timeout');
     });
     $backend('GET', '/url', null, callback, {});
     xhr = MockXhr.$$lastInstance;
