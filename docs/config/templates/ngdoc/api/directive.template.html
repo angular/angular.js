@@ -61,12 +61,12 @@
   </div>
   {% endblock -%}
 
+  {% include "lib/params.template.html" %}
+  {% include "lib/events.template.html" %}
+
   {%- if doc.animations %}
   <h2 id="animations">Animations</h2>
   {$ doc.animations | marked $}
   {$ 'module:ngAnimate.$animate' | link('Click here', doc) $} to learn more about the steps involved in the animation.
   {%- endif -%}
-
-  {% include "lib/params.template.html" %}
-  {% include "lib/events.template.html" %}
 {% endblock %}
