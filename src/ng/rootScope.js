@@ -490,9 +490,8 @@ function $RootScopeProvider() {
         }
 
         forEach(watchExpressions, function(expr, i) {
-          var unwatchFn = self.$watch(expr, function watchGroupSubAction(value, oldValue) {
+          var unwatchFn = self.$watch(expr, function watchGroupSubAction(value) {
             newValues[i] = value;
-            oldValues[i] = oldValue;
             if (!changeReactionScheduled) {
               changeReactionScheduled = true;
               self.$evalAsync(watchGroupAction);
@@ -504,11 +503,17 @@ function $RootScopeProvider() {
         function watchGroupAction() {
           changeReactionScheduled = false;
 
-          if (firstRun) {
-            firstRun = false;
-            listener(newValues, newValues, self);
-          } else {
-            listener(newValues, oldValues, self);
+          try {
+            if (firstRun) {
+              firstRun = false;
+              listener(newValues, newValues, self);
+            } else {
+              listener(newValues, oldValues, self);
+            }
+          } finally {
+            for (var i = 0; i < watchExpressions.length; i++) {
+              oldValues[i] = newValues[i];
+            }
           }
         }
 
