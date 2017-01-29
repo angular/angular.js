@@ -1097,6 +1097,94 @@ describe('Scope', function() {
       expect(log).toEqual('');
     });
 
+    it('should remove all watchers once one-time/constant bindings are stable', function() {
+      //empty
+      scope.$watchGroup([], noop);
+      //single one-time
+      scope.$watchGroup(['::a'], noop);
+      //multi one-time
+      scope.$watchGroup(['::a', '::b'], noop);
+      //single constant
+      scope.$watchGroup(['1'], noop);
+      //multi constant
+      scope.$watchGroup(['1', '2'], noop);
+
+      expect(scope.$$watchersCount).not.toBe(0);
+      scope.$apply('a = b = 1');
+      expect(scope.$$watchersCount).toBe(0);
+    });
+
+    it('should maintain correct new/old values with one time bindings', function() {
+      var newValues;
+      var oldValues;
+      scope.$watchGroup(['a', '::b', 'b', '4'], function(n, o) {
+        newValues = n.slice();
+        oldValues = o.slice();
+      });
+
+      scope.$apply();
+      expect(newValues).toEqual(oldValues);
+      expect(oldValues).toEqual([undefined, undefined, undefined, 4]);
+
+      scope.$apply('a = 1');
+      expect(newValues).toEqual([1, undefined, undefined, 4]);
+      expect(oldValues).toEqual([undefined, undefined, undefined, 4]);
+
+      scope.$apply('b = 2');
+      expect(newValues).toEqual([1, 2, 2, 4]);
+      expect(oldValues).toEqual([1, undefined, undefined, 4]);
+
+      scope.$apply('b = 3');
+      expect(newValues).toEqual([1, 2, 3, 4]);
+      expect(oldValues).toEqual([1, 2, 2, 4]);
+
+      scope.$apply('b = 4');
+      expect(newValues).toEqual([1, 2, 4, 4]);
+      expect(oldValues).toEqual([1, 2, 3, 4]);
+    });
+  });
+
+  describe('$watchGroup with logging $exceptionHandler', function() {
+    it('should maintain correct new/old values even when listener throws', function() {
+      module(function($exceptionHandlerProvider) {
+        $exceptionHandlerProvider.mode('log');
+      });
+
+      inject(function($rootScope, $exceptionHandler) {
+        var newValues;
+        var oldValues;
+        $rootScope.$watchGroup(['a', '::b', 'b', '4'], function(n, o) {
+          newValues = n.slice();
+          oldValues = o.slice();
+          throw 'test';
+        });
+
+        $rootScope.$apply();
+        expect(newValues).toEqual(oldValues);
+        expect(oldValues).toEqual([undefined, undefined, undefined, 4]);
+        expect($exceptionHandler.errors.length).toBe(1);
+
+        $rootScope.$apply('a = 1');
+        expect(newValues).toEqual([1, undefined, undefined, 4]);
+        expect(oldValues).toEqual([undefined, undefined, undefined, 4]);
+        expect($exceptionHandler.errors.length).toBe(2);
+
+        $rootScope.$apply('b = 2');
+        expect(newValues).toEqual([1, 2, 2, 4]);
+        expect(oldValues).toEqual([1, undefined, undefined, 4]);
+        expect($exceptionHandler.errors.length).toBe(3);
+
+        $rootScope.$apply('b = 3');
+        expect(newValues).toEqual([1, 2, 3, 4]);
+        expect(oldValues).toEqual([1, 2, 2, 4]);
+        expect($exceptionHandler.errors.length).toBe(4);
+
+        $rootScope.$apply('b = 4');
+        expect(newValues).toEqual([1, 2, 4, 4]);
+        expect(oldValues).toEqual([1, 2, 3, 4]);
+        expect($exceptionHandler.errors.length).toBe(5);
+      });
+    });
   });
 
   describe('$destroy', function() {
