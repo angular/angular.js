@@ -338,6 +338,12 @@ var ngClassDirective = classDirective('', true);
  * This directive can be applied only within the scope of an
  * {@link ng.directive:ngRepeat ngRepeat}.
  *
+ * @animations
+ * | Animation                        | Occurs                              |
+ * |----------------------------------|-------------------------------------|
+ * | {@link ng.$animate#addClass addClass}       | just before the class is applied to the element   |
+ * | {@link ng.$animate#removeClass removeClass} | just before the class is removed from the element |
+ *
  * @element ANY
  * @param {expression} ngClassOdd {@link guide/expression Expression} to eval. The result
  *   of the evaluation can be a string representing space delimited class names or an array.
@@ -370,6 +376,51 @@ var ngClassDirective = classDirective('', true);
        });
      </file>
    </example>
+ *
+ *  <hr />
+ * @example
+ * An example on how to implement animations using ngClassOdd:
+ *
+   <example module="ngAnimate" deps="angular-animate.js" animations="true" name="ng-class-odd-animate">
+     <file name="index.html">
+       <ol ng-init="names=['John', 'Mary', 'Cate', 'Suz'];odd=false">
+         <li ng-repeat="name in names">
+           <span ng-class-odd="{ 'odd' : odd }"">
+            {{name}}
+           </span>
+         </li>
+       </ol>
+       <button ng-click="odd = !odd">Toggle</button>
+     </file>
+     <file name="style.css">
+       span {
+        color: #000000;
+       }
+       span.odd {
+        color: #ff0000;
+        font-size:3em;
+       }
+       span.odd-add,
+       span.odd-remove {
+          transition: linear 0.5s;
+        }
+     </file>
+     <file name="protractor.js" type="protractor">
+       it('should not have odd class by default', function() {
+        expect(element(by.repeater('name in names').row(0).column('name')).getAttribute('class')).not.
+           toMatch(/odd/);
+       });
+
+       it('should have odd class when button was clicked', function() {
+        var button = element(by.css('button'));
+
+        button.click();
+
+        expect(element(by.repeater('name in names').row(0).column('name')).getAttribute('class')).
+           toMatch(/odd/);
+       });
+     </file>
+   </example>
  */
 var ngClassOddDirective = classDirective('Odd', 0);
 
@@ -385,6 +436,12 @@ var ngClassOddDirective = classDirective('Odd', 0);
  *
  * This directive can be applied only within the scope of an
  * {@link ng.directive:ngRepeat ngRepeat}.
+ *
+ * @animations
+ * | Animation                        | Occurs                              |
+ * |----------------------------------|-------------------------------------|
+ * | {@link ng.$animate#addClass addClass}       | just before the class is applied to the element   |
+ * | {@link ng.$animate#removeClass removeClass} | just before the class is removed from the element |
  *
  * @element ANY
  * @param {expression} ngClassEven {@link guide/expression Expression} to eval. The
@@ -414,6 +471,51 @@ var ngClassOddDirective = classDirective('Odd', 0);
          expect(element(by.repeater('name in names').row(0).column('name')).getAttribute('class')).
            toMatch(/odd/);
          expect(element(by.repeater('name in names').row(1).column('name')).getAttribute('class')).
+           toMatch(/even/);
+       });
+     </file>
+   </example>
+ *
+ *  <hr />
+ * @example
+ * An example on how to implement animations using ngClassEven:
+ *
+   <example module="ngAnimate" deps="angular-animate.js" animations="true" name="ng-class-even-animate">
+     <file name="index.html">
+       <ol ng-init="names=['John', 'Mary', 'Cate', 'Suz'];even=false">
+         <li ng-repeat="name in names">
+           <span ng-class-even="{ 'even' : even }"">
+            {{name}}
+           </span>
+         </li>
+       </ol>
+       <button ng-click="even = !even">Toggle</button>
+     </file>
+     <file name="style.css">
+       span {
+        color: #000000;
+       }
+       span.even {
+        color: #0000ff;
+        font-size:3em;
+       }
+       span.even-add,
+       span.even-remove {
+        transition: linear 0.5s;
+       }
+     </file>
+     <file name="protractor.js" type="protractor">
+       it('should not have even class by default', function() {
+        expect(element(by.repeater('name in names').row(1).column('name')).getAttribute('class')).not.
+           toMatch(/even/);
+       });
+
+       it('should have even class when button was clicked', function() {
+        var button = element(by.css('button'));
+
+        button.click();
+
+        expect(element(by.repeater('name in names').row(1).column('name')).getAttribute('class')).
            toMatch(/even/);
        });
      </file>
