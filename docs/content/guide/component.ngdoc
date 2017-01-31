@@ -78,6 +78,7 @@ It's also possible to add components via {@link $compileProvider#component} in a
 | link functions    | Yes                  | No       |
 | multiElement      | Yes                  | No       |
 | priority          | Yes                  | No       |
+| replace           | Yes (deprecated)     | No       |
 | require           | Yes                  | Yes      |
 | restrict          | Yes                  | No (restricted to elements only)      |
 | scope             | Yes (default: false) | No (scope is always isolate)      |
