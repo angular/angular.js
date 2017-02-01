@@ -32,6 +32,7 @@ module.exports = function debugDeployment(getVersion) {
       'components/bootstrap-' + getVersion('bootstrap') + '/css/bootstrap.css',
       'components/open-sans-fontface-' + getVersion('open-sans-fontface') + '/open-sans.css',
       'css/prettify-theme.css',
+      'css/angular-topnav.css',
       'css/docs.css',
       'css/animations.css'
     ]

@@ -53,13 +53,13 @@ h1,h2,h3,h4,h5,h6 {
 }
 
 .header .brand {
-  padding-top: 6px;
   padding-bottom: 0px;
 }
 
 .header .brand img {
-  margin-top: 5px;
-  height: 30px;
+  margin-top: 0;
+  height: auto;
+  vertical-align: top;
 }
 
 .docs-search {
@@ -80,6 +80,11 @@ h1,h2,h3,h4,h5,h6 {
 .docs-search > .search-icon {
   font-size: 15px;
   margin-right: 10px;
+}
+
+.navbar .navbar-search i {
+  top: 13px;
+  font-size: 12px;
 }
 
 .docs-search > .search-query:focus {
@@ -297,6 +302,7 @@ iframe.example {
 }
 
 .search-results-container {
+  position: relative;
   padding-bottom: 1em;
   border-top: 1px solid #111;
   background: #181818;
@@ -435,15 +441,17 @@ iframe.example {
   background: #f1f1f1;
 }
 
-.sup-header {
+#navbar-sub {
   padding-top: 10px;
   padding-bottom: 5px;
   background: rgba(245,245,245,0.88);
   box-shadow: 0 0 2px #999;
+  z-index: 1028;
+  top: 83px;
 }
 
 .main-body-grid {
-  margin-top: 120px;
+  margin-top: 144px;
   position: relative;
 }
 
@@ -454,7 +462,7 @@ iframe.example {
 
 .main-body-grid > .grid-left {
   position: fixed;
-  top: 120px;
+  top: 144px;
   bottom: 0;
   overflow: auto;
 }
@@ -826,4 +834,87 @@ ul.events > li {
 
 iframe[name="example-anchoringExample"] {
   height: 400px;
+}
+
+/*
+  angular-topnav.css and bootstrap overrides
+ */
+
+.navbar .navbar-inner .container {
+  padding: 0 16px;
+  width: auto;
+  height: auto;
+}
+
+.navbar .nav > li {
+  float: left;
+}
+
+.navbar-nav .open .dropdown-menu {
+  position: absolute;
+  float: left;
+}
+
+.navbar-nav .open .dropdown-menu > li > a {
+  line-height: 48px;
+}
+
+#navbar-main .navbar-inner, #navbar-notice .navbar-inner {
+  box-shadow: none;
+}
+
+#navbar-sub .container {
+  max-width: 970px;
+}
+
+.nav .open > a, .nav .open > a:hover, .nav .open > a:focus {
+  background-color: inherit;
+}
+
+@media handheld and (max-width:800px), screen and (max-device-width:800px), screen and (max-width:800px) {
+  .navbar {
+    min-height: auto;
+  }
+
+  .search-results-container {
+    top: 32px;
+    overflow: auto;
+    max-height: 85vh;
+    padding-bottom: 0;
+    position: static;
+  }
+
+  .search-close {
+    right: 1px;
+    margin-left: 0;
+    top: 41px;
+    padding: 5px 10px;
+    border-top-right-radius: 0;
+    border-top-left-radius: 0;
+    box-shadow: none;
+    width: auto;
+    bottom: auto;
+    left: auto;
+  }
+
+  .navbar-nav .open .dropdown-menu > li > a, .navbar-nav .open .dropdown-menu .dropdown-header {
+    padding: 0 8px;
+  }
+
+  .homepage #navbar-notice {
+    top: 72px;
+  }
+
+  #navbar-notice .navbar-inner {
+    box-shadow: 0 0 3px rgba(0, 0, 0, .12), 0 3px 3px rgba(0, 0, 0, .24)
+  }
+
+  #navbar-sub {
+    position: relative;
+    top: 17px;
+    margin-top: 80px;
+    padding-bottom: 0;
+    margin-bottom: 0;
+  }
+
 }
