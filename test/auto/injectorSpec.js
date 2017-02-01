@@ -284,14 +284,6 @@ describe('injector', function() {
           // eslint-disable-next-line no-eval
           expect(annotate(eval('a => b => b'))).toEqual(['a']);
         });
-
-        // Support: Chrome 50-51 only
-        // TODO (gkalpak): Remove when Chrome v52 is released.
-        // it('should be able to inject fat-arrow function', function() {
-        //   inject(($injector) => {
-        //     expect($injector).toBeDefined();
-        //   });
-        // });
       }
 
       if (support.classes) {
@@ -324,19 +316,6 @@ describe('injector', function() {
             expect(instance).toEqual(jasmine.any(Clazz));
           });
         }
-
-        // Support: Chrome 50-51 only
-        // TODO (gkalpak): Remove when Chrome v52 is released.
-        // it('should be able to invoke classes', function() {
-        //   class Test {
-        //     constructor($injector) {
-        //       this.$injector = $injector;
-        //     }
-        //   }
-        //   var instance = injector.invoke(Test, null, null, 'Test');
-
-        //   expect(instance.$injector).toBe(injector);
-        // });
       }
     });
 
