@@ -232,27 +232,27 @@ than the hash fragment was changed.
 ### Example
 
 ```js
-it('should show example', inject(
-  function($locationProvider) {
+it('should show example', function() {
+  module(function($locationProvider) {
     $locationProvider.html5Mode(false);
     $locationProvider.hashPrefix('!');
-  },
-  function($location) {
+  });
+  inject(function($location) {
     // open http://example.com/base/index.html#!/a
-    $location.absUrl() === 'http://example.com/base/index.html#!/a'
-    $location.path() === '/a'
+    expect($location.absUrl()).toBe('http://example.com/base/index.html#!/a');
+    expect($location.path()).toBe('/a');
 
-    $location.path('/foo')
-    $location.absUrl() === 'http://example.com/base/index.html#!/foo'
+    $location.path('/foo');
+    expect($location.absUrl()).toBe('http://example.com/base/index.html#!/foo');
 
-    $location.search() === {}
+    expect($location.search()).toEqual({});
     $location.search({a: 'b', c: true});
-    $location.absUrl() === 'http://example.com/base/index.html#!/foo?a=b&c'
+    expect($location.absUrl()).toBe('http://example.com/base/index.html#!/foo?a=b&c');
 
     $location.path('/new').search('x=y');
-    $location.absUrl() === 'http://example.com/base/index.html#!/new?x=y'
-  }
-));
+    expect($location.absUrl()).toBe('http://example.com/base/index.html#!/new?x=y');
+  });
+});
 ```
 
 ## HTML5 mode
@@ -274,40 +274,50 @@ and updates the url in a way that never performs a full page reload.
 ### Example
 
 ```js
-it('should show example', inject(
-  function($locationProvider) {
+it('should show example', function() {
+  module(function($locationProvider) {
     $locationProvider.html5Mode(true);
     $locationProvider.hashPrefix('!');
-  },
-  function($location) {
+  });
+  inject(function($location) {
     // in browser with HTML5 history support:
     // open http://example.com/#!/a -> rewrite to http://example.com/a
     // (replacing the http://example.com/#!/a history record)
-    $location.path() === '/a'
+    expect($location.path()).toBe('/a');
 
     $location.path('/foo');
-    $location.absUrl() === 'http://example.com/foo'
+    expect($location.absUrl()).toBe('http://example.com/foo');
 
-    $location.search() === {}
+    expect($location.search()).toEqual({});
     $location.search({a: 'b', c: true});
-    $location.absUrl() === 'http://example.com/foo?a=b&c'
+    expect($location.absUrl()).toBe('http://example.com/foo?a=b&c');
 
     $location.path('/new').search('x=y');
-    $location.url() === 'new?x=y'
-    $location.absUrl() === 'http://example.com/new?x=y'
+    expect($location.url()).toBe('/new?x=y');
+    expect($location.absUrl()).toBe('http://example.com/new?x=y');
+  });
+});
 
+it('should show example (when browser doesn\'t support HTML5 mode', function() {
+  module(function($provide, $locationProvider) {
+    $locationProvider.html5Mode(true);
+    $locationProvider.hashPrefix('!');
+    $provide.value('$sniffer', {history: false});
+  });
+  inject(initBrowser({ url: 'http://example.com/new?x=y', basePath: '/' }),
+    function($location) {
     // in browser without html5 history support:
     // open http://example.com/new?x=y -> redirect to http://example.com/#!/new?x=y
     // (again replacing the http://example.com/new?x=y history item)
-    $location.path() === '/new'
-    $location.search() === {x: 'y'}
+    expect($location.path()).toBe('/new');
+    expect($location.search()).toEqual({x: 'y'});
 
     $location.path('/foo/bar');
-    $location.path() === '/foo/bar'
-    $location.url() === '/foo/bar?x=y'
-    $location.absUrl() === 'http://example.com/#!/foo/bar?x=y'
-  }
-));
+    expect($location.path()).toBe('/foo/bar');
+    expect($location.url()).toBe('/foo/bar?x=y');
+    expect($location.absUrl()).toBe('http://example.com/#!/foo/bar?x=y');
+  });
+});
 ```
 
 ### Fallback for legacy browsers
