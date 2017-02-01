@@ -241,7 +241,7 @@ An expression that starts with `::` is considered a one-time expression. One-tim
 will stop recalculating once they are stable, which happens after the first digest if the expression
 result is a non-undefined value (see value stabilization algorithm below).
 
-<example module="oneTimeBidingExampleApp" name="expression-one-time">
+<example module="oneTimeBindingExampleApp" name="expression-one-time">
   <file name="index.html">
     <div ng-controller="EventController">
       <button ng-click="clickMe($event)">Click Me</button>
@@ -250,7 +250,7 @@ result is a non-undefined value (see value stabilization algorithm below).
     </div>
   </file>
   <file name="script.js">
-    angular.module('oneTimeBidingExampleApp', []).
+    angular.module('oneTimeBindingExampleApp', []).
       controller('EventController', ['$scope', function($scope) {
         var counter = 0;
         var names = ['Igor', 'Misko', 'Chirayu', 'Lucas'];
@@ -265,24 +265,24 @@ result is a non-undefined value (see value stabilization algorithm below).
   </file>
   <file name="protractor.js" type="protractor">
     it('should freeze binding after its value has stabilized', function() {
-      var oneTimeBiding = element(by.id('one-time-binding-example'));
+      var oneTimeBinding = element(by.id('one-time-binding-example'));
       var normalBinding = element(by.id('normal-binding-example'));
 
-      expect(oneTimeBiding.getText()).toEqual('One time binding:');
+      expect(oneTimeBinding.getText()).toEqual('One time binding:');
       expect(normalBinding.getText()).toEqual('Normal binding:');
       element(by.buttonText('Click Me')).click();
 
-      expect(oneTimeBiding.getText()).toEqual('One time binding: Igor');
+      expect(oneTimeBinding.getText()).toEqual('One time binding: Igor');
       expect(normalBinding.getText()).toEqual('Normal binding: Igor');
       element(by.buttonText('Click Me')).click();
 
-      expect(oneTimeBiding.getText()).toEqual('One time binding: Igor');
+      expect(oneTimeBinding.getText()).toEqual('One time binding: Igor');
       expect(normalBinding.getText()).toEqual('Normal binding: Misko');
 
       element(by.buttonText('Click Me')).click();
       element(by.buttonText('Click Me')).click();
 
-      expect(oneTimeBiding.getText()).toEqual('One time binding: Igor');
+      expect(oneTimeBinding.getText()).toEqual('One time binding: Igor');
       expect(normalBinding.getText()).toEqual('Normal binding: Lucas');
     });
   </file>
