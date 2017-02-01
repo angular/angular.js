@@ -122,7 +122,7 @@ The same approach to animation can be used using JavaScript code (**jQuery is us
 ```js
 myModule.animation('.repeated-item', function() {
   return {
-    enter : function(element, done) {
+    enter: function(element, done) {
       element.css('opacity',0);
       jQuery(element).animate({
         opacity: 1
@@ -137,7 +137,7 @@ myModule.animation('.repeated-item', function() {
         }
       }
     },
-    leave : function(element, done) {
+    leave: function(element, done) {
       element.css('opacity', 1);
       jQuery(element).animate({
         opacity: 0
@@ -152,7 +152,7 @@ myModule.animation('.repeated-item', function() {
         }
       }
     },
-    move : function(element, done) {
+    move: function(element, done) {
       element.css('opacity', 0);
       jQuery(element).animate({
         opacity: 1
@@ -169,8 +169,8 @@ myModule.animation('.repeated-item', function() {
     },
 
     // you can also capture these animation events
-    addClass : function(element, className, done) {},
-    removeClass : function(element, className, done) {}
+    addClass: function(element, className, done) {},
+    removeClass: function(element, className, done) {}
   }
 });
 ```
