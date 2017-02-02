@@ -2663,6 +2663,14 @@ describe('$location', function() {
       expect(locationUrl.url()).toBe('');
       expect(locationUrl.absUrl()).toBe('http://server/next/index.html');
     });
+
+    it('should rewrite different base URL', function() {
+      location = new LocationHashbangUrl('http://server/pre/index.html', '#');
+
+      location.$$parse('http://server/next/index.html');
+      expect(location.url()).toBe('');
+      expect(location.absUrl()).toBe('http://server/next/index.html');
+    });
   });
 
 
