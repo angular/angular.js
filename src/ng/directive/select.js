@@ -607,8 +607,17 @@ var selectDirective = function() {
         // Write value now needs to set the selected property of each matching option
         selectCtrl.writeValue = function writeMultipleValue(value) {
           forEach(element.find('option'), function(option) {
-            option.selected = !!value && (includes(value, option.value) ||
-                                          includes(value, selectCtrl.selectValueMap[option.value]));
+            var shouldBeSelected = !!value && (includes(value, option.value) ||
+                                               includes(value, selectCtrl.selectValueMap[option.value]));
+            var currentlySelected = option.selected;
+
+            // IE and Edge will de-select selected options when you set the selected property again, e.g.
+            // when you add to the selection via shift+click/UP/DOWN
+            // Therefore, only set it if necessary
+            if ((shouldBeSelected && !currentlySelected) || (!shouldBeSelected && currentlySelected)) {
+              option.selected = shouldBeSelected;
+            }
+
           });
         };
 
