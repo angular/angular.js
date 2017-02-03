@@ -18,7 +18,7 @@ function serializeObject(obj) {
 }
 
 function toDebugString(obj) {
-  if (typeof obj === 'function') {
+  if (isFunction(obj)) {
     return obj.toString().replace(/ \{[\s\S]*$/, '');
   } else if (isUndefined(obj)) {
     return 'undefined';
