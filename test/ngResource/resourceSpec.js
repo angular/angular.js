@@ -1711,13 +1711,13 @@ describe('handling rejections', function() {
   );
 
 
-  it('should throw exception in success callback when error callback provided and no responseErrorInterceptor', function () {
+  it('should throw exception in success callback when error callback provided and no responseErrorInterceptor', function() {
     $httpBackend.expect('GET', '/CreditCard/123').respond({ id: 123, number: '9876' });
     var CreditCard = $resource('/CreditCard/:id:verb', { id: '@id.key' });
     var cc = CreditCard.get({ id: 123 },
-      function (res) {
+      function(res) {
         throw new Error('should be caught');
-      }, function () { });
+      }, function() { });
 
     $httpBackend.flush();
     expect($exceptionHandler.errors.length).toBe(1);
@@ -1725,11 +1725,11 @@ describe('handling rejections', function() {
   });
 
 
-  it('should throw exception in success callback when error callback not provided and no responseErrorInterceptor', function () {
+  it('should throw exception in success callback when error callback not provided and no responseErrorInterceptor', function() {
     $httpBackend.expect('GET', '/CreditCard/123').respond({ id: 123, number: '9876' });
     var CreditCard = $resource('/CreditCard/:id:verb', { id: '@id.key' });
     var cc = CreditCard.get({ id: 123 },
-      function (res) {
+      function(res) {
         throw new Error('should be caught');
       });
 
@@ -1739,21 +1739,21 @@ describe('handling rejections', function() {
   });
 
 
-  it('should throw exception in success callback when error callback provided and has responseErrorInterceptor', function () {
-    inject(function ($q) {
+  it('should throw exception in success callback when error callback provided and has responseErrorInterceptor', function() {
+    inject(function($q) {
 
       $httpBackend.expect('GET', '/CreditCard/123').respond({ id: 123, number: '9876' });
       var CreditCard = $resource('/CreditCard/:id:verb', { id: '@id.key' }, {
         'get': {
           method: 'GET',
-          interceptor: { responseError: function () { return $q.reject({}); } }
+          interceptor: { responseError: function() { return $q.reject({}); } }
         }
       });
 
       var cc = CreditCard.get({ id: 123 },
-        function (res) {
+        function(res) {
           throw new Error('should be caught');
-        }, function () { });
+        }, function() { });
 
       $httpBackend.flush();
       expect($exceptionHandler.errors.length).toBe(1);
@@ -1762,18 +1762,18 @@ describe('handling rejections', function() {
   });
 
 
-  it('should throw exception in success callback when error callback not provided and has responseErrorInterceptor', function () {
-    inject(function ($q) {
+  it('should throw exception in success callback when error callback not provided and has responseErrorInterceptor', function() {
+    inject(function($q) {
 
       $httpBackend.expect('GET', '/CreditCard/123').respond({ id: 123, number: '9876' });
       var CreditCard = $resource('/CreditCard/:id:verb', { id: '@id.key' }, {
         'get': {
           method: 'GET',
-          interceptor: { responseError: function () { return $q.reject({}); } }
+          interceptor: { responseError: function() { return $q.reject({}); } }
         }
       });
       var cc = CreditCard.get({ id: 123 },
-        function (res) {
+        function(res) {
           throw new Error('should be caught');
         });
 
