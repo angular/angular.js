@@ -140,4 +140,151 @@ describe('event directives', function() {
     }));
 
   });
+
+  describe('hooks', function() {
+
+    describe('interceptor hook', function() {
+
+      describe('execution', function() {
+        beforeEach(function() {
+          var that = this;
+          module(function($compileProvider) {
+            that.spy = jasmine.createSpy('interceptor').andCallFake(function(e) {
+            });
+
+            $compileProvider.directive('testInterceptor', function() {
+              return {
+                restrict: 'A',
+                require: 'ngClick',
+                link: function(scope, element, attrs, ngClick) {
+                  ngClick.$interceptors.push(that.spy);
+                }
+              };
+            });
+          });
+        });
+
+        it('should be called before the event handler', function() {
+          var that = this;
+          inject(function($rootScope, $compile) {
+            var element = $compile('<button test-interceptor ng-click="call()">Click</button>')($rootScope);
+            $rootScope.call = jasmine.createSpy('call').andCallFake(function() {
+              $rootScope.value = 'newValue';
+            });
+
+            element.triggerHandler('click');
+            expect(that.spy).toHaveBeenCalled();
+            expect($rootScope.call).toHaveBeenCalled();
+          });
+        });
+      });
+
+      describe('cancellation', function() {
+        beforeEach(function() {
+          var that = this;
+          module(function($compileProvider) {
+            that.spy = jasmine.createSpy('interceptor').andCallFake(function(e) {
+              return false;
+            });
+
+            $compileProvider.directive('testInterceptor', function() {
+              return {
+                restrict: 'A',
+                require: 'ngClick',
+                link: function(scope, element, attrs, ngClick) {
+                  ngClick.$interceptors.push(that.spy);
+                }
+              };
+            });
+          });
+        });
+
+        it('should only cancel calling event handler by returning false', function() {
+          var that = this;
+          inject(function($rootScope, $compile) {
+            var element = $compile('<button test-interceptor ng-click="call()">Click</button>')($rootScope);
+            $rootScope.call = jasmine.createSpy('call').andCallFake(function() {
+              $rootScope.value = 'newValue';
+            });
+
+            element.triggerHandler('click');
+            expect(that.spy).toHaveBeenCalled();
+            expect($rootScope.call).not.toHaveBeenCalled();
+          });
+        });
+      });
+
+      describe('handler function', function() {
+        beforeEach(function() {
+          var that = this;
+          module(function($compileProvider) {
+            that.spy = jasmine.createSpy('interceptor');
+            $compileProvider.directive('testInterceptor', function() {
+              return {
+                restrict: 'A',
+                require: 'ngClick',
+                link: function(scope, element, attrs, ngClick) {
+                  ngClick.$interceptors.push(that.spy);
+                }
+              };
+            });
+          });
+        });
+
+        it('should have access to the event', function() {
+          var that = this;
+          inject(function($rootScope, $compile) {
+            var element = $compile('<button test-interceptor ng-click="call()">Click</button>')($rootScope);
+            $rootScope.call = jasmine.createSpy('call').andCallFake(function() {
+              $rootScope.value = 'newValue';
+            });
+
+            element.triggerHandler('click');
+
+            expect(that.spy).toHaveBeenCalled();
+            var arg = that.spy.calls[0].args[0];
+            expect(arg).not.toBeUndefined();
+            expect(arg.target).toEqual(element[0]);
+          });
+        });
+      });
+    });
+
+    describe('result watch hook', function() {
+      describe('handler function', function() {
+        beforeEach(function() {
+          var that = this;
+          module(function($compileProvider) {
+            that.spy = jasmine.createSpy('resultWatcher');
+            $compileProvider.directive('testResultWatcher', function() {
+              return {
+                restrict: 'A',
+                require: 'ngClick',
+                link: function(scope, element, attrs, ngClick) {
+                  ngClick.$callResultWatchers.push(that.spy);
+                }
+              };
+            });
+          });
+        });
+
+        it('should be called with the return value of the event handler', function() {
+          var that = this;
+          inject(function($rootScope, $compile) {
+            var element = $compile('<button test-result-watcher ng-click="call()">Click</button>')($rootScope);
+            $rootScope.call = jasmine.createSpy('call').andCallFake(function() {
+              return 'cake';
+            });
+
+            element.triggerHandler('click');
+
+            expect(that.spy).toHaveBeenCalled();
+            expect($rootScope.call).toHaveBeenCalled();
+            expect(that.spy.calls[0].args[0]).toEqual('cake');
+          });
+        });
+      });
+    });
+  });
+
 });
