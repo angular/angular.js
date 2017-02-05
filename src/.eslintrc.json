@@ -69,6 +69,7 @@
     "arrayRemove": false,
     "copy": false,
     "shallowCopy": false,
+    "simpleCompare": false,
     "equals": false,
     "csp": false,
     "concat": false,
