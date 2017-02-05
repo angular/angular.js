@@ -1098,13 +1098,21 @@ describe('select', function() {
         scope.selection = ['A'];
       });
 
+      var optionElements = element.find('option');
+
       expect(element).toEqualSelect(['A'], 'B');
+      expect(optionElements[0]).toBeMarkedAsSelected();
+      expect(optionElements[1]).not.toBeMarkedAsSelected();
 
       scope.$apply(function() {
         scope.selection.push('B');
       });
 
+      optionElements = element.find('option');
+
       expect(element).toEqualSelect(['A'], ['B']);
+      expect(optionElements[0]).toBeMarkedAsSelected();
+      expect(optionElements[1]).toBeMarkedAsSelected();
     });
 
     it('should work with optgroups', function() {
