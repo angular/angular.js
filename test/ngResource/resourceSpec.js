@@ -1725,7 +1725,7 @@ describe('handling rejections', function() {
 
   it('should not swallow exceptions in success callback when error callback is provided',
     function() {
-      $httpBackend.expect('GET', '/CreditCard/123').respond(null);
+      $httpBackend.expectGET('/CreditCard/123').respond(null);
       var CreditCard = $resource('/CreditCard/:id');
       var cc = CreditCard.get({id: 123},
           function(res) { throw new Error('should be caught'); },
@@ -1740,7 +1740,7 @@ describe('handling rejections', function() {
 
   it('should not swallow exceptions in success callback when error callback is not provided',
     function() {
-      $httpBackend.expect('GET', '/CreditCard/123').respond(null);
+      $httpBackend.expectGET('/CreditCard/123').respond(null);
       var CreditCard = $resource('/CreditCard/:id');
       var cc = CreditCard.get({id: 123},
           function(res) { throw new Error('should be caught'); });
@@ -1754,8 +1754,8 @@ describe('handling rejections', function() {
 
   it('should not swallow exceptions in success callback when error callback is provided and has responseError interceptor',
     function() {
-      $httpBackend.expect('GET', '/CreditCard/123').respond(null);
-      var CreditCard = $resource('/CreditCard/:id:', null, {
+      $httpBackend.expectGET('/CreditCard/123').respond(null);
+      var CreditCard = $resource('/CreditCard/:id', null, {
         get: {
           method: 'GET',
           interceptor: {responseError: function() {}}
@@ -1775,7 +1775,7 @@ describe('handling rejections', function() {
 
   it('should not swallow exceptions in success callback when error callback is not provided and has responseError interceptor',
     function() {
-      $httpBackend.expect('GET', '/CreditCard/123').respond(null);
+      $httpBackend.expectGET('/CreditCard/123').respond(null);
       var CreditCard = $resource('/CreditCard/:id', null, {
         get: {
           method: 'GET',
