@@ -2635,25 +2635,6 @@ describe('parser', function() {
           expect(log).toEqual('');
         }));
 
-        it('should work with expensive checks', inject(function($parse, $rootScope, log) {
-          var fn = $parse('::foo', null, true);
-          $rootScope.$watch(fn, function(value, old) { if (value !== old) log(value); });
-
-          $rootScope.$digest();
-          expect($rootScope.$$watchers.length).toBe(1);
-
-          $rootScope.foo = 'bar';
-          $rootScope.$digest();
-          expect($rootScope.$$watchers.length).toBe(0);
-          expect(log).toEqual('bar');
-          log.reset();
-
-          $rootScope.foo = 'man';
-          $rootScope.$digest();
-          expect($rootScope.$$watchers.length).toBe(0);
-          expect(log).toEqual('');
-        }));
-
         it('should have a stable value if at the end of a $digest it has a defined value', inject(function($parse, $rootScope, log) {
           var fn = $parse('::foo');
           $rootScope.$watch(fn, function(value, old) { if (value !== old) log(value); });
