@@ -109,12 +109,14 @@ to test the behavior without being distracted by the rendering details.
 ## Scope Hierarchies
 
 Each AngularJS application has exactly one {@link ng.$rootScope root scope}, but
-may have several child scopes.
+may have any number of child scopes.
 
-The application can have multiple scopes, because some {@link guide/directive directives} create
-new child scopes (refer to directive documentation to see which directives create new scopes).
-When new scopes are created, they are added as children of their parent scope. This creates a tree
-structure which parallels the DOM where they're attached.
+The application can have multiple scopes, because {@link guide/directive directives} can create new
+child scopes. When new scopes are created, they are added as children of their parent scope. This
+creates a tree structure which parallels the DOM where they're attached.
+
+The section {@link guide/scope#directives-that-create-scopes Directives that Create Scopes} has more
+info about which directives create scopes.
 
 When AngularJS evaluates `{{name}}`, it first looks at the scope associated with the given
 element for the `name` property. If no such property is found, it searches the parent scope
@@ -185,6 +187,9 @@ To examine the scope in the debugger:
 
   3. To retrieve the associated scope in console execute: `angular.element($0).scope()`
 
+<div class="alert alert-warning">
+  The `scope()` function is only available when {@link ng.$compileProvider#debugInfoEnabled `$compileProvider.debugInfoEnabled()`} is true (which is the default).
+</div>
 
 ## Scope Events Propagation
 
@@ -309,12 +314,16 @@ correctly.
 
 In most cases, {@link ng.$compileProvider#directive directives} and scopes interact
 but do not create new instances of scope. However, some directives, such as {@link
-ng.directive:ngController ng-controller} and {@link
-ng.directive:ngRepeat ng-repeat}, create new child scopes
-and attach the child scope to the corresponding DOM element. You can retrieve a scope for any DOM
-element by using an `angular.element(aDomElement).scope()` method call.
-See the {@link guide/directive#isolating-the-scope-of-a-directive
-directives guide} for more information about isolate scopes.
+ng.directive:ngController ng-controller} and {@link ng.directive:ngRepeat ng-repeat},
+create new child scopes and attach the child scope to the corresponding DOM element.
+
+A special type of scope is the `isolate` scope, which does not inherit prototypically from the parent scope.
+This type of scope is useful for component directives that should be isolated from their parent scope.
+See the {@link guide/directive#isolating-the-scope-of-a-directive directives guide} for
+more information about isolate scopes in custom directives.
+
+Note also that component directives, which are created with the
+{@link api/ng/type/angular.Module#component .component()} helper always create an isolate scope.
 
 ### Controllers and Scopes
 
