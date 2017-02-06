@@ -12,7 +12,7 @@ for how to contribute your own code to AngularJS.
 
 
 1. {@link misc/contribute#installing-dependencies Installing Dependencies}
-2. {@link misc/contribute#forking-angular-on-github Forking AngularJS on Github}
+2. {@link misc/contribute#forking-angularjs-on-github Forking AngularJS on Github}
 3. {@link misc/contribute#building-angularjs Building AngularJS}
 4. {@link misc/contribute#running-a-local-development-web-server Running a Local Development Web Server}
 5. {@link misc/contribute#running-the-unit-test-suite Running the Unit Test Suite}
