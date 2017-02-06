@@ -1444,9 +1444,9 @@ describe('Scope', function() {
       expect(childScope.$$asyncQueue).toBe($rootScope.$$asyncQueue);
       expect(isolateScope.$$asyncQueue).toBeUndefined();
       expect($rootScope.$$asyncQueue).toEqual([
-        {scope: $rootScope, expression: $parse('rootExpression'), locals: undefined},
-        {scope: childScope, expression: $parse('childExpression'), locals: undefined},
-        {scope: isolateScope, expression: $parse('isolateExpression'), locals: undefined}
+        {scope: $rootScope, fn: $parse('rootExpression'), locals: undefined},
+        {scope: childScope, fn: $parse('childExpression'), locals: undefined},
+        {scope: isolateScope, fn: $parse('isolateExpression'), locals: undefined}
       ]);
     }));
 
@@ -1499,6 +1499,14 @@ describe('Scope', function() {
         expect(log).toEqual(['eval-ed 1!', 'eval-ed 2!']);
       });
     });
+
+    it('should not pass anything as `this` to scheduled functions', inject(function($rootScope) {
+      var this1 = {};
+      var this2 = (function() { return this; })();
+      $rootScope.$evalAsync(function() { this1 = this; });
+      $rootScope.$digest();
+      expect(this1).toEqual(this2);
+    }));
   });
 
 
