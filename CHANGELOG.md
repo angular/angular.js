@@ -1,3 +1,80 @@
+<a name="1.6.2"></a>
+# 1.6.2 llamacorn-lovehug (2017-02-07)
+
+
+## Bug Fixes
+- **$compile:**
+  - do not swallow thrown errors in testsg
+  ([0377c6](https://github.com/angular/angular.js/commit/0377c6f0e890cb4ed3eb020b96720b4b34f75df3),
+  [#15629](https://github.com/angular/angular.js/issues/15629),
+  [#15631](https://github.com/angular/angular.js/issues/15631))
+  - allow the usage of "$" in isolate scope property alias
+  ([7f2af3](https://github.com/angular/angular.js/commit/7f2af3f923e7a3f85c8862d0ed57d21c72eae904),
+  [#15594](https://github.com/angular/angular.js/issues/15594))
+- **$location:** correctly handle external URL change during `$digest`
+  ([b60761](https://github.com/angular/angular.js/commit/b607618342d6c4fab364966fe05f152be6bd4d5f),
+  [#11075](https://github.com/angular/angular.js/issues/11075),
+  [#12571](https://github.com/angular/angular.js/issues/12571),
+  [#15556](https://github.com/angular/angular.js/issues/15556),
+  [#15561](https://github.com/angular/angular.js/issues/15561))
+- **$browser:** detect external changes in `history.state`
+  ([fa50fb](https://github.com/angular/angular.js/commit/fa50fbaf57b3437be7a410ecaba7008dbe0ef239))
+- **$resource:**
+  - do not swallow errors in `success` callback
+  ([27146e](https://github.com/angular/angular.js/commit/27146e8a7fad54c1342179b6d291b1b5c2ebe816),
+  [#15624](https://github.com/angular/angular.js/issues/15624),
+  [#15628](https://github.com/angular/angular.js/issues/15628))
+  - correctly unescape `/\.` even if `\.` comes from a param value
+  ([419a48](https://github.com/angular/angular.js/commit/419a4813e354496bdf0df44e3f8afaa198df1ab1),
+  [#15627](https://github.com/angular/angular.js/issues/15627))
+  - delete `$cancelRequest()` in `toJSON()`
+  ([086c5d](https://github.com/angular/angular.js/commit/086c5d0354db8cb3d106b9ff966fb48d6fb46ef8),
+  [#15244](https://github.com/angular/angular.js/issues/15244))
+- **$animate:** correctly animate transcluded clones with `templateUrl`
+  ([f01212](https://github.com/angular/angular.js/commit/f01212ab5287ac7a154da7d75037ed444e81eb34),
+  [#15510](https://github.com/angular/angular.js/issues/15510),
+  [#15514](https://github.com/angular/angular.js/issues/15514))
+- **$route:** make asynchronous tasks count as pending requests
+  ([eb968c](https://github.com/angular/angular.js/commit/eb968c4a6884838db05369a04459066424c5bba8),
+  [#14159](https://github.com/angular/angular.js/issues/14159))
+- **$parse:** make sure ES6 object computed properties are watched
+  ([5e418b](https://github.com/angular/angular.js/commit/5e418b1145a1045da598c7863e785d647ea83850),
+  [#15678](https://github.com/angular/angular.js/issues/15678))
+- **$sniffer:** allow `history` for NW.js apps
+  ([4a593d](https://github.com/angular/angular.js/commit/4a593db79ba1e21a6aa600a82cf6d757cad94d01),
+  [#15474](https://github.com/angular/angular.js/issues/15474),
+  [#15633](https://github.com/angular/angular.js/issues/15633))
+- **input:** fix `step` validation for `input[type=number/range]`
+  ([c95a67](https://github.com/angular/angular.js/commit/c95a6737fbd277e40c064bd9f68f383bf119505c),
+  [#15504](https://github.com/angular/angular.js/issues/15504),
+  [#15506](https://github.com/angular/angular.js/issues/15506))
+- **select:** keep `ngModel` when selected option is recreated by `ngRepeat`
+  ([131af8](https://github.com/angular/angular.js/commit/131af8272d269a541d04cb522c264a91e0ec8b6a),
+  [#15630](https://github.com/angular/angular.js/issues/15630),
+  [#15632](https://github.com/angular/angular.js/issues/15632))
+- **ngValue:** correctly update the `value` property when `value` is undefined
+  ([05aab6](https://github.com/angular/angular.js/commit/05aab660ce74f526f2110d3b5faf9a5b4f4e664b)
+  [#15603](https://github.com/angular/angular.js/issues/15603),
+  [#15605](https://github.com/angular/angular.js/issues/15605))
+- **angularInit:** allow auto-bootstraping from inline script
+  ([bb464d](https://github.com/angular/angular.js/commit/bb464d16b434b9e2de2fecf80c192d4741cba879),
+  [#15567](https://github.com/angular/angular.js/issues/15567),
+  [#15571](https://github.com/angular/angular.js/issues/15571))
+- **ngMockE2E:** ensure that mocked `$httpBackend` uses correct `$browser`
+  ([bd63b2](https://github.com/angular/angular.js/commit/bd63b2235cd410251cb83eebd9a47d3102830b6b),
+  [#15593](https://github.com/angular/angular.js/issues/15593))
+
+
+## New Features
+- **ngModel:** add `$overrideModelOptions` support
+  ([2546c2](https://github.com/angular/angular.js/commit/2546c29f811b68eea4d68be7fa1c8f7bb562dc11),
+  [#15415](https://github.com/angular/angular.js/issues/15415))
+- **$parse:** allow watching array/object literals with non-primitive values
+  ([25f008](https://github.com/angular/angular.js/commit/25f008f541d68b09efd7b428b648c6d4899e6972),
+  [#15301](https://github.com/angular/angular.js/issues/15301))
+
+
+
 <a name="1.5.11"></a>
 # 1.5.11 princely-quest (2017-01-13)
 
