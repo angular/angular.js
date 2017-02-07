@@ -79,4 +79,17 @@ describe('$jsonpCallbacks', function() {
       expect($window.angular.callbacks._0).toBeUndefined();
     }));
   });
+
+  describe('mocked $window', function() {
+
+    beforeEach(module(function($provide) {
+      $provide.value('$window', {});
+    }));
+
+    it('should not throw when $window.angular does not exist', inject(function($injector) {
+      expect(function() {
+        $injector.get('$jsonpCallbacks');
+      }).not.toThrow();
+    }));
+  });
 });
