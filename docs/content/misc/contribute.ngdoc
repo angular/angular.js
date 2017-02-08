@@ -140,13 +140,13 @@ tests once on Chrome run:
 grunt test:unit
 ```
 
-To run the tests on other browsers (Chrome, ChromeCanary, Firefox, Opera and Safari are pre-configured) use:
+To run the tests on other browsers (Chrome, ChromeCanary, Firefox and Safari are pre-configured) use:
 
 ```shell
-grunt test:unit --browsers=Opera,Firefox
+grunt test:unit --browsers=Chrome,Firefox
 ```
 
-Note there should be _no spaces between browsers_. `Opera, Firefox` is INVALID.
+Note there should be _no spaces between browsers_. `Chrome, Firefox` is INVALID.
 
 During development, however, it's more productive to continuously run unit tests every time the source or test files
 change. To execute tests in this mode run:
