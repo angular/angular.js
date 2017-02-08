@@ -923,7 +923,7 @@ describe('ngMock', function() {
       }));
 
       describe('error stack trace when called outside of spec context', function() {
-        // - Chrome, Firefox, Edge, Opera give us the stack trace as soon as an Error is created
+        // - Chrome, Firefox, Edge give us the stack trace as soon as an Error is created
         // - IE10+, PhantomJS give us the stack trace only once the error is thrown
         // - IE9 does not provide stack traces
         var stackTraceSupported = (function() {
