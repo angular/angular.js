@@ -255,8 +255,8 @@ function Browser(window, document, $log, $sniffer) {
   self.onUrlChange = function(callback) {
     // TODO(vojta): refactor to use node's syntax for events
     if (!urlChangeInit) {
-      // We listen on both (hashchange/popstate) when available, as some browsers (e.g. Opera)
-      // don't fire popstate when user change the address bar and don't fire hashchange when url
+      // We listen on both (hashchange/popstate) when available, as some browsers don't
+      // fire popstate when user changes the address bar and don't fire hashchange when url
       // changed by push/replaceState
 
       // html5 history api - popstate event
