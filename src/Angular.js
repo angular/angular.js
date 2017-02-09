@@ -1032,17 +1032,23 @@ function copy(source, destination, maxDepth) {
       case '[object Blob]':
         return new source.constructor([source], {type: source.type});
       case '[object Map]':
-        var copied = new source.constructor();
-        source.forEach(function(value, key){
-          copied.set(key, value);
+        // If we're in this case we know the environment supports Map
+        /* eslint-disable no-undef */
+        var copiedMap = new Map();
+        /* eslint-enable */
+        source.forEach(function(value, key) {
+          copiedMap.set(key, value);
         });
-        return copied;
+        return copiedMap;
       case '[object Set]':
-        var copied = new source.constructor();
-        source.forEach(function(value){
-          copied.add(value);
-        })
-        return copied;
+        // If we're in this case we know the environment supports Set
+        /* eslint-disable no-undef */
+        var copiedSet = new Set();
+        /* eslint-enable */
+        source.forEach(function(value) {
+          copiedSet.add(value);
+        });
+        return copiedSet;
     }
 
     if (isFunction(source.cloneNode)) {

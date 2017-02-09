@@ -3,7 +3,7 @@
 // Lots of typed array globals are used in this file and ESLint is
 // not smart enough to understand the `typeof !== 'undefined'` guards.
 /* globals Blob, Uint8ClampedArray, Uint16Array, Uint32Array, Int8Array, Int16Array, Int32Array,
-Float32Array, Float64Array,  */
+Float32Array, Float64Array, Map, Set  */
 
 describe('angular', function() {
   var element, document;
@@ -250,7 +250,7 @@ describe('angular', function() {
     });
 
     it('should handle Map objects', function() {
-      if (typeof Map !== 'undefined'){
+      if (typeof Map !== 'undefined') {
         var src = new Map();
         src.set('foo', 'bar');
         var dst = copy(src);
@@ -262,7 +262,7 @@ describe('angular', function() {
     });
 
     it('should handle Set objects', function() {
-      if (typeof Set !== 'undefined'){
+      if (typeof Set !== 'undefined') {
         var src = new Set();
         src.add('foo');
         var dst = copy(src);
