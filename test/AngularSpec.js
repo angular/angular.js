@@ -249,6 +249,30 @@ describe('angular', function() {
       }
     });
 
+    it('should handle Map objects', function() {
+      if (typeof Map !== 'undefined'){
+        var src = new Map();
+        src.set('foo', 'bar');
+        var dst = copy(src);
+        expect(dst).not.toBe(src);
+        expect(dst.size).toBe(1);
+        expect(dst instanceof Map).toBeTruthy();
+        expect(dst.get('foo')).toBe('bar');
+      }
+    });
+
+    it('should handle Set objects', function() {
+      if (typeof Set !== 'undefined'){
+        var src = new Set();
+        src.add('foo');
+        var dst = copy(src);
+        expect(dst).not.toBe(src);
+        expect(dst.size).toBe(1);
+        expect(dst instanceof Set).toBeTruthy();
+        expect(dst.has('foo')).toBeTruthy();
+      }
+    });
+
     it('should handle Uint16Array subarray', function() {
       if (typeof Uint16Array !== 'undefined') {
         var arr = new Uint16Array(4);

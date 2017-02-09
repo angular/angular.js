@@ -1031,6 +1031,9 @@ function copy(source, destination, maxDepth) {
 
       case '[object Blob]':
         return new source.constructor([source], {type: source.type});
+      case '[object Map]':
+      case '[object Set]':
+        return new source.constructor(source);
     }
 
     if (isFunction(source.cloneNode)) {
