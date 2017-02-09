@@ -299,25 +299,44 @@ describe('ngHref', function() {
 
   if (isDefined(window.SVGElement)) {
     describe('SVGAElement', function() {
-      it('should interpolate the expression and bind to xlink:href', inject(function($compile, $rootScope) {
+      it('should interpolate the expression and bind to xlink:href and href', inject(function($compile, $rootScope) {
         element = $compile('<svg><a ng-href="some/{{id}}"></a></svg>')($rootScope);
         var child = element.children('a');
         $rootScope.$digest();
         expect(child.attr('xlink:href')).toEqual('some/');
+        expect(child.attr('href')).toEqual('some/');
 
         $rootScope.$apply(function() {
           $rootScope.id = 1;
         });
         expect(child.attr('xlink:href')).toEqual('some/1');
+        expect(child.attr('href')).toEqual('some/1');
       }));
 
 
-      it('should bind xlink:href even if no interpolation', inject(function($rootScope, $compile) {
+      it('should bind xlink:href and href even if no interpolation', inject(function($rootScope, $compile) {
         element = $compile('<svg><a ng-href="http://server"></a></svg>')($rootScope);
         var child = element.children('a');
         $rootScope.$digest();
         expect(child.attr('xlink:href')).toEqual('http://server');
+        expect(child.attr('href')).toEqual('http://server');
       }));
+
+      they('should set xlink:href and href to undefined when ng-href value is $prop', ['', 0, null, false, undefined],
+          function(value) {
+            var $compile, $rootScope;
+            inject(function(_$compile_, _$rootScope_) {
+              $compile = _$compile_;
+              $rootScope = _$rootScope_;
+            });
+
+            $rootScope.url = value;
+            element = $compile('<svg><a ng-href="{{url}}"></a></svg>')($rootScope);
+            var child = element.children('a');
+            expect(child.attr('xlink:href')).toBeUndefined();
+            expect(child.attr('href')).toBeUndefined();
+          }
+      );
     });
   }
 });

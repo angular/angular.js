@@ -399,6 +399,14 @@ forEach(ALIASED_ATTR, function(htmlAttr, ngAttr) {
   };
 });
 
+
+// Helper
+var updateAttribute = function(attr, name, value) {
+  attr.$set(name, value);
+  if (name === 'xlinkHref') {
+    attr.$set('href', value);
+  }
+};
 // ng-src, ng-srcset, ng-href are interpolated
 forEach(['src', 'srcset', 'href'], function(attrName) {
   var normalized = directiveNormalize('ng-' + attrName);
@@ -419,12 +427,12 @@ forEach(['src', 'srcset', 'href'], function(attrName) {
         attr.$observe(normalized, function(value) {
           if (!value) {
             if (attrName === 'href') {
-              attr.$set(name, null);
+              updateAttribute(attr, name, null);
             }
             return;
           }
 
-          attr.$set(name, value);
+          updateAttribute(attr, name, value);
 
           // Support: IE 9-11 only
           // On IE, if "ng:src" directive declaration is used and "src" attribute doesn't exist
