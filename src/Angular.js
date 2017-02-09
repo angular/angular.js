@@ -1032,8 +1032,17 @@ function copy(source, destination, maxDepth) {
       case '[object Blob]':
         return new source.constructor([source], {type: source.type});
       case '[object Map]':
+        var copied = new source.constructor();
+        source.forEach(function(value, key){
+          copied.set(key, value);
+        });
+        return copied;
       case '[object Set]':
-        return new source.constructor(source);
+        var copied = new source.constructor();
+        source.forEach(function(value){
+          copied.add(value);
+        })
+        return copied;
     }
 
     if (isFunction(source.cloneNode)) {
