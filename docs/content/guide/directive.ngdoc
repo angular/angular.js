@@ -84,7 +84,7 @@ For example, the following forms are all equivalent and match the {@link ngBind}
 <example module="docsBindExample" name="directive-bind">
   <file name="index.html">
     <div ng-controller="Controller">
-      Hello <input ng-model='name'> <hr/>
+      Hello <input ng-model='name'> <hr>
       <span ng-bind="name"></span> <br/>
       <span ng:bind="name"></span> <br/>
       <span ng_bind="name"></span> <br/>
@@ -594,7 +594,7 @@ We also want to remove the `$interval` if the directive is deleted so we don't i
   </file>
   <file name="index.html">
     <div ng-controller="Controller">
-      Date format: <input ng-model="format"> <hr/>
+      Date format: <input ng-model="format"> <hr>
       Current time is: <span my-current-time="format"></span>
     </div>
   </file>
