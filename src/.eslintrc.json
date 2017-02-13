@@ -17,7 +17,7 @@
     "toString": false,
     "minErrConfig": false,
     "errorHandlingConfig": false,
-    "isValidObjectMaxDepth": false,
+    "isValidNumberForMinErrConfig": false,
     "ngMinErr": false,
     "_angular": false,
     "angularModule": false,

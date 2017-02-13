@@ -8,7 +8,7 @@ function serializeObject(obj, maxDepth) {
   // There is no direct way to stringify object until reaching a specific depth
   // and a very deep object can cause a performance issue, so we copy the object
   // based on this specific depth and then stringify it.
-  if (isValidObjectMaxDepth(maxDepth)) {
+  if (isValidNumberForMinErrConfig(maxDepth)) {
     obj = copy(obj, null, maxDepth);
   }
   return JSON.stringify(obj, function(key, val) {

@@ -10,9 +10,20 @@ describe('minErr', function() {
     testError = minErr('test');
 
   var originalObjectMaxDepthInErrorMessage = minErrConfig.objectMaxDepth;
+  var originalUrlMaxLengthInErrorMessage = minErrConfig.urlMaxLength;
   afterEach(function() {
     minErrConfig.objectMaxDepth = originalObjectMaxDepthInErrorMessage;
+    minErrConfig.urlMaxLength = originalUrlMaxLengthInErrorMessage;
   });
+
+  function extractUrlFromErrorMessage(message) {
+    var match = message.match(/http[\s\S]*\?p0=/);
+    var urlStartAt = message.indexOf(match[0]);
+    if (urlStartAt < 0) {
+      throw new Error('Could not find url');
+    }
+    return message.slice(urlStartAt);
+  }
 
   it('should return an Error factory', function() {
     var myError = testError('test', 'Oops');
@@ -78,32 +89,28 @@ describe('minErr', function() {
 
     var myError = testError('26', 'a when objectMaxDepth is default=5 is {0}', a);
     expect(myError.message).toMatch(/a when objectMaxDepth is default=5 is {"b":{"c":{"d":{"e":{"f":"..."}}}}}/);
-    expect(errorHandlingConfig().objectMaxDepth).toBe(5);
+
 
     errorHandlingConfig({objectMaxDepth: 1});
     myError = testError('26', 'a when objectMaxDepth is set to 1 is {0}', a);
     expect(myError.message).toMatch(/a when objectMaxDepth is set to 1 is {"b":"..."}/);
-    expect(errorHandlingConfig().objectMaxDepth).toBe(1);
 
     errorHandlingConfig({objectMaxDepth: 2});
     myError = testError('26', 'a when objectMaxDepth is set to 2 is {0}', a);
     expect(myError.message).toMatch(/a when objectMaxDepth is set to 2 is {"b":{"c":"..."}}/);
-    expect(errorHandlingConfig().objectMaxDepth).toBe(2);
 
     errorHandlingConfig({objectMaxDepth: undefined});
     myError = testError('26', 'a when objectMaxDepth is set to undefined is {0}', a);
     expect(myError.message).toMatch(/a when objectMaxDepth is set to undefined is {"b":{"c":"..."}}/);
-    expect(errorHandlingConfig().objectMaxDepth).toBe(2);
   });
 
   they('should handle arguments that are objects and ignore max depth when objectMaxDepth = $prop',
     [NaN, null, true, false, -1, 0], function(maxDepth) {
-      var a = {b: {c: {d: 1}}};
+        var a = {b: {c: {d: {e: {f: {g: 1}}}}}};
 
       errorHandlingConfig({objectMaxDepth: maxDepth});
       var myError = testError('26', 'a is {0}', a);
-      expect(myError.message).toMatch(/a is {"b":{"c":{"d":1}}}/);
-      expect(errorHandlingConfig().objectMaxDepth).toBeNaN();
+      expect(myError.message).toMatch(/a is {"b":{"c":{"d":{"e":{"f":{"g":1}}}}}}/);
     }
   );
 
@@ -143,4 +150,31 @@ describe('minErr', function() {
     expect(testError('acode', 'aproblem', 'a', 'b', 'value with space').message)
       .toMatch(/^[\s\S]*\?p0=a&p1=b&p2=value%20with%20space$/);
   });
+
+  it('should slice error reference URL in the message if it exceeds url max length', function() {
+    var a = new Array(3000).join('a');
+    var myError = testError('26', 'a is {0}', a);
+    var url = extractUrlFromErrorMessage(myError.message);
+    expect(url.length).toBe(2000);
+
+    errorHandlingConfig({urlMaxLength: 500});
+    myError = testError('26', 'a is {0}', a);
+    url = extractUrlFromErrorMessage(myError.message);
+    expect(url.length).toBe(500);
+
+    errorHandlingConfig({urlMaxLength: undefined});
+    myError = testError('26', 'a is {0}', a);
+    url = extractUrlFromErrorMessage(myError.message);
+    expect(url.length).toBe(500);
+  });
+
+  they('should ignore url max length when urlMaxLength = $prop',
+      [NaN, null, true, false, -1, 0], function(maxLength) {
+        var a = new Array(3000).join('a');
+        errorHandlingConfig({urlMaxLength: maxLength});
+        var myError = testError('26', 'a is {0}', a);
+        var url = extractUrlFromErrorMessage(myError.message);
+        expect(url.length).toBeGreaterThan(3000);
+      }
+  );
 });

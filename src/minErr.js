@@ -51,13 +51,19 @@ function minErr(module, ErrorConstructor) {
       return match;
     });
 
-    message += '\nhttp://errors.angularjs.org/"NG_VERSION_FULL"/' +
+    var url = 'http://errors.angularjs.org/"NG_VERSION_FULL"/' +
       (module ? module + '/' : '') + code;
 
     for (i = 0, paramPrefix = '?'; i < templateArgs.length; i++, paramPrefix = '&') {
-      message += paramPrefix + 'p' + i + '=' + encodeURIComponent(templateArgs[i]);
+      url += paramPrefix + 'p' + i + '=' + encodeURIComponent(templateArgs[i]);
+
+      if (url.length > minErrConfig.urlMaxLength) {
+        url = url.substr(0, minErrConfig.urlMaxLength - 3) + '...';
+        break;
+      }
     }
 
+    message += '\n' + url;
     return new ErrorConstructor(message);
   };
 }
