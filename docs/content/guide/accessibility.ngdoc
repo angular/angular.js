@@ -71,7 +71,7 @@ attributes (if they have not been explicitly specified by the developer):
         Custom checkbox
       </custom-checkbox>
     </form>
-    <hr />
+    <hr>
     <b>Is checked:</b> {{ !!checked }}
   </file>
   <file name="script.js">
