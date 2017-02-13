@@ -185,7 +185,7 @@
        });
      </file>
    </example>
- * <hr />
+ * <hr>
  *
  * @example
  * ### Changing parameters dynamically
@@ -197,9 +197,9 @@
      <file name="index.html">
        <div ng-controller="ExampleController">
          <pre>Sort by = {{propertyName}}; reverse = {{reverse}}</pre>
-         <hr/>
+         <hr>
          <button ng-click="propertyName = null; reverse = false">Set to unsorted</button>
-         <hr/>
+         <hr>
          <table class="friends">
            <tr>
              <th>
@@ -316,7 +316,7 @@
        });
      </file>
    </example>
- * <hr />
+ * <hr>
  *
  * @example
  * ### Using `orderBy` inside a controller
@@ -329,9 +329,9 @@
      <file name="index.html">
        <div ng-controller="ExampleController">
          <pre>Sort by = {{propertyName}}; reverse = {{reverse}}</pre>
-         <hr/>
+         <hr>
          <button ng-click="sortBy(null)">Set to unsorted</button>
-         <hr/>
+         <hr>
          <table class="friends">
            <tr>
              <th>
@@ -450,7 +450,7 @@
        });
      </file>
    </example>
- * <hr />
+ * <hr>
  *
  * @example
  * ### Using a custom comparator

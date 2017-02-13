@@ -533,7 +533,7 @@
            animations="true">
     <file name="index.html">
       <a href="#!/">Home</a>
-      <hr />
+      <hr>
       <div class="view-container">
         <div ng-view class="view"></div>
       </div>

@@ -130,7 +130,7 @@ var NG_HIDE_IN_PROGRESS_CLASS = 'ng-hide-animate';
     </file>
   </example>
  *
- * <hr />
+ * <hr>
  * @example
  * A more complex example, featuring different show/hide animations:
  *
@@ -333,7 +333,7 @@ var ngShowDirective = ['$animate', function($animate) {
     </file>
   </example>
  *
- * <hr />
+ * <hr>
  * @example
  * A more complex example, featuring different show/hide animations:
  *

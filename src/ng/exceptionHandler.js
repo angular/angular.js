@@ -31,7 +31,7 @@
  *     }]);
  * ```
  *
- * <hr />
+ * <hr>
  * Note, that code executed in event-listeners (even those registered using jqLite's `on`/`bind`
  * methods) does not delegate exceptions to the {@link ng.$exceptionHandler $exceptionHandler}
  * (unless executed during a digest).
