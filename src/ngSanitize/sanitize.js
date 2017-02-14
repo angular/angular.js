@@ -379,7 +379,7 @@ function htmlParser( html, handler ) {
 }
 
 var hiddenPre=document.createElement("pre");
-var spaceRe = /^(\s*)([\s\S]*?)(\s*)$/;
+var spaceRe = /^([\s|\u00a0]*)([\s\S]*?)([\s|\u00a0]*)$/;
 /**
  * decodes all entities into regular string
  * @param value
@@ -387,12 +387,15 @@ var spaceRe = /^(\s*)([\s\S]*?)(\s*)$/;
  */
 function decodeEntities(value) {
   if (!value) { return ''; }
-
   // Note: IE8 does not preserve spaces at the start/end of innerHTML
   // so we must capture them and reattach them afterward
+  value = value.replace(/\&nbsp\;/g, '\u00a0');
+
   var parts = spaceRe.exec(value);
   var spaceBefore = parts[1];
   var spaceAfter = parts[3];
+  // IE8 does not encode &nbsp; as U+00A0 when setting it against innerHTML
+  // (see http://jsfiddle.net/caitp/w4r1dzwe/).
   var content = parts[2];
   if (content) {
     hiddenPre.innerHTML=content.replace(/</g,"&lt;");
