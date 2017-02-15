@@ -3644,10 +3644,6 @@ karma-junit-reporter@^1.2.0:
     path-is-absolute "^1.0.0"
     xmlbuilder "8.2.2"
 
-karma-ng-scenario@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/karma-ng-scenario/-/karma-ng-scenario-1.0.0.tgz#03315b27ee866f40443cf88bfebf7963f86543e1"
-
 karma-sauce-launcher@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/karma-sauce-launcher/-/karma-sauce-launcher-1.2.0.tgz#6f2558ddef3cf56879fa27540c8ae9f8bfd16bca"

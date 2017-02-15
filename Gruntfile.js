@@ -186,16 +186,6 @@ module.exports = function(grunt) {
     },
 
     build: {
-      scenario: {
-        dest: 'build/angular-scenario.js',
-        src: [
-          'bower_components/jquery/dist/jquery.js',
-          util.wrap([files['angularSrc'], files['angularScenario']], 'ngScenario/angular')
-        ],
-        styles: {
-          css: ['css/angular.css', 'css/angular-scenario.css']
-        }
-      },
       angular: {
         dest: 'build/angular.js',
         src: util.wrap([files['angularSrc']], 'angular'),
@@ -281,9 +271,7 @@ module.exports = function(grunt) {
       files: [
         'src/**/*.js',
         'test/**/*.js',
-        '!test/ngScenario/DescribeSpec.js',
         '!src/ng/directive/attrs.js', // legitimate xit here
-        '!src/ngScenario/**/*.js',
         '!test/helpers/privateMocks*.js'
       ],
       options: {

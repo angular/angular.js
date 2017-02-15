@@ -153,26 +153,8 @@ var angularFiles = {
     ]
   },
 
-  'angularScenario': [
-    'src/ngScenario/Scenario.js',
-    'src/ngScenario/Application.js',
-    'src/ngScenario/Describe.js',
-    'src/ngScenario/Future.js',
-    'src/ngScenario/ObjectModel.js',
-    'src/ngScenario/Runner.js',
-    'src/ngScenario/SpecRunner.js',
-    'src/ngScenario/dsl.js',
-    'src/ngScenario/matchers.js',
-    'src/ngScenario/output/Html.js',
-    'src/ngScenario/output/Json.js',
-    'src/ngScenario/output/Xml.js',
-    'src/ngScenario/output/Object.js'
-  ],
-
   'angularTest': [
     'test/helpers/*.js',
-    'test/ngScenario/*.js',
-    'test/ngScenario/output/*.js',
     'test/*.js',
     'test/auto/*.js',
     'test/ng/**/*.js',
@@ -193,20 +175,13 @@ var angularFiles = {
     'test/jquery_remove.js',
     '@angularSrc',
     '@angularSrcModules',
-    '@angularScenario',
     '@angularTest'
   ],
 
   'karmaExclude': [
     'test/jquery_alias.js',
     'src/angular-bootstrap.js',
-    'src/ngScenario/angular-bootstrap.js',
     'src/angular.bind.js'
-  ],
-
-  'karmaScenario': [
-    'build/angular-scenario.js',
-    'build/docs/docs-scenario.js'
   ],
 
   'karmaModules': [
@@ -231,13 +206,11 @@ var angularFiles = {
     'test/jquery_alias.js',
     '@angularSrc',
     '@angularSrcModules',
-    '@angularScenario',
     '@angularTest'
   ],
 
   'karmaJqueryExclude': [
     'src/angular-bootstrap.js',
-    'src/ngScenario/angular-bootstrap.js',
     'test/jquery_remove.js',
     'src/angular.bind.js'
   ]
