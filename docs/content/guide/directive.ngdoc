@@ -120,11 +120,13 @@ The other forms shown above are accepted for legacy reasons but we advise you to
 
 ### Directive types
 
-`$compile` can match directives based on element names, attributes, class names, as well as comments.
+`$compile` can match directives based on element names (E), attributes (A), class names (C),
+and comments (M).
 
-All of the AngularJS-provided directives match attribute name, tag name, comments, or class name.
-The following demonstrates the various ways a directive (`myDir` in this case) can be referenced
-from within a template:
+The built-in the AngularJS directives show in their documentation page which type of matching they support.
+
+The following demonstrates the various ways a directive (`myDir` in this case) that matches all
+4 types can be referenced from within a template.
 
 ```html
 <my-dir></my-dir>
@@ -132,6 +134,10 @@ from within a template:
 <!-- directive: my-dir exp -->
 <span class="my-dir: exp;"></span>
 ```
+
+A directive can specify which of the 4 matching types it supports in the
+{@link ng.$compile#-restrict- `restrict`} property of the directive definition object.
+The default is `EA`.
 
 <div class="alert alert-success">
 **Best Practice:** Prefer using directives via tag name and attributes over comment and class names.
