@@ -83,6 +83,7 @@
                  ng-blur="focus=false"
                  ng-change="search(q)"
                  ng-model="q"
+                 ng-model-options="{debounce: 150}"
                  docs-search-input
                  autocomplete="off">
             </form>
