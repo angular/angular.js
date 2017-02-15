@@ -174,7 +174,7 @@ function shallowClearAndCopy(src, dst) {
  *     set `transformResponse` to an empty array: `transformResponse: []`
  *   - **`cache`** – `{boolean|Cache}` – If true, a default $http cache will be used to cache the
  *     GET request, otherwise if a cache instance built with
- *     {@link ng.$cacheFactory $cacheFactory}, this cache will be used for
+ *     {@link ng.$cacheFactory $cacheFactory} is supplied, this cache will be used for
  *     caching.
  *   - **`timeout`** – `{number}` – timeout in milliseconds.<br />
  *     **Note:** In contrast to {@link ng.$http#usage $http.config}, {@link ng.$q promises} are
