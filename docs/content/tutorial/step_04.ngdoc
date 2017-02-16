@@ -23,9 +23,9 @@ To that end, we will explain why and how we:
 
 <div class="alert alert-info">
   We will keep it short, not going into great detail on every good practice and convention. These
-  principles are explained in great detail in the [AngularJS Style Guide 1][styleguide1],
+  principles are explained in great detail in the [AngularJS Style Guide 1][styleguide1], 
   [AngularJS Style Guide 2][styleguide2], [AngularJS Style Guide 3][styleguide3] which also
-  contains many more techniques for effectively organizing AngularJS codebases.
+  contain many more techniques for effectively organizing AngularJS codebases.
 </div>
 
 
