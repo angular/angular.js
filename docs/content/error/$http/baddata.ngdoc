@@ -1,0 +1,13 @@
+@ngdoc error
+@name $http:baddata
+@fullName Bad JSON Data
+@description
+
+This error occurs when the data parameter passed to the {@link ng.$http `defaultHttpResponseTransform`} service is not a valid JSON object.
+`defaultHttpResponseTransform` expects the first parameter as a valid JSON object if the second parameter of headers specifies a Content-Type of JSON.
+
+The error message should provide additional context such as the actual value of the parameter that was received.
+
+To resolve this error, make sure you pass a valid JSON data object to `defaultHttpResponseTransform`.
+
+For more information, see the {@link ng.$http `defaultHttpResponseTransform`} service API documentation.
