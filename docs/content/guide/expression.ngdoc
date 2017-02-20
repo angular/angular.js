@@ -125,19 +125,19 @@ identifier `$locals`.
 <example module="expressionExample" name="expression-locals">
   <file name="index.html">
     <div class="example2" ng-controller="ExampleController">
-      Name: <input ng-model="name" type="text"/>
-      <button ng-click="greet()">Greet</button>
-      <button ng-click="window.alert('Should not see me')">Won't greet</button>
+      Name: <input ng-model="name" type="text">
+      <button ng-click="salute()">Salute</button>
+      <button ng-click="window.alert('Should not see me')">Won't salute</button>
     </div>
   </file>
 
   <file name="script.js">
     angular.module('expressionExample', [])
       .controller('ExampleController', ['$window', '$scope', function($window, $scope) {
-        $scope.name = 'World';
+        $scope.name = 'Just Angular';
 
         $scope.greet = function() {
-          $window.alert('Hello ' + $scope.name);
+          $window.alert('Hi ' + $scope.name);
         };
       }]);
   </file>
@@ -148,14 +148,14 @@ identifier `$locals`.
         // Safari can't handle dialogs.
         return;
       }
-      element(by.css('[ng-click="greet()"]')).click();
+      element(by.css('[ng-click="salute()"]')).click();
 
       // We need to give the browser time to display the alert
       browser.wait(protractor.ExpectedConditions.alertIsPresent(), 1000);
 
       var alertDialog = browser.switchTo().alert();
 
-      expect(alertDialog.getText()).toEqual('Hello World');
+      expect(alertDialog.getText()).toEqual('Hi Just Angular');
 
       alertDialog.accept();
     });
