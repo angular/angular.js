@@ -176,6 +176,9 @@ function LocationHashbangUrl(appBase, hashPrefix) {
    * @private
    */
   this.$$parse = function(url) {
+    if (!url) {
+      url = appBase;
+    }
     var withoutBaseUrl = beginsWith(appBase, url) || beginsWith(appBaseNoFile, url);
     var withoutHashUrl = withoutBaseUrl.charAt(0) == '#'
         ? beginsWith(hashPrefix, withoutBaseUrl)
