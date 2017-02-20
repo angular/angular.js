@@ -244,7 +244,7 @@ result is a non-undefined value (see value stabilization algorithm below).
 <example module="oneTimeBindingExampleApp" name="expression-one-time">
   <file name="index.html">
     <div ng-controller="EventController">
-      <button ng-click="clickMe($event)">Click Me</button>
+      <button ng-click="clickMe()">Click Me</button>
       <p id="one-time-binding-example">One time binding: {{::name}}</p>
       <p id="normal-binding-example">Normal binding: {{name}}</p>
     </div>
@@ -257,7 +257,7 @@ result is a non-undefined value (see value stabilization algorithm below).
         /*
          * expose the event object to the scope
          */
-        $scope.clickMe = function(clickEvent) {
+        $scope.clickMe = function() {
           $scope.name = names[counter % names.length];
           counter++;
         };
