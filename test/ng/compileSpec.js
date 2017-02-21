@@ -11127,18 +11127,37 @@ describe('$compile', function() {
         $provide.value('$$sanitizeUri', $$sanitizeUri);
       });
       inject(function($compile, $rootScope) {
-        element = $compile('<svg><a xlink:href="" ng-href="{{ testUrl }}"></a></svg>')($rootScope);
-        $rootScope.testUrl = 'evilUrl';
+        element = $compile('<svg><a xlink:href="{{ testUrl }}"></a></svg>')($rootScope);
 
-        $$sanitizeUri.and.returnValue('someSanitizedUrl');
+        //both of these fail the RESOURCE_URL test, that shouldn't be run
+        $rootScope.testUrl = 'https://bad.example.org';
+        $$sanitizeUri.and.returnValue('https://clean.example.org');
+
         $rootScope.$apply();
-        expect(element.find('a').prop('href').baseVal).toBe('someSanitizedUrl');
+        expect(element.find('a').attr('xlink:href')).toBe('https://clean.example.org');
+        expect($$sanitizeUri).toHaveBeenCalledWith($rootScope.testUrl, false);
+      });
+    });
+
+    it('should use $$sanitizeUri when working with svg and xlink:href through ng-href', function() {
+      var $$sanitizeUri = jasmine.createSpy('$$sanitizeUri');
+      module(function($provide) {
+        $provide.value('$$sanitizeUri', $$sanitizeUri);
+      });
+      inject(function($compile, $rootScope) {
+        element = $compile('<svg><a xlink:href="" ng-href="{{ testUrl }}"></a></svg>')($rootScope);
+        //both of these fail the RESOURCE_URL test, that shouldn't be run
+        $rootScope.testUrl = 'https://bad.example.org';
+        $$sanitizeUri.and.returnValue('https://clean.example.org');
+
+        $rootScope.$apply();
+        expect(element.find('a').prop('href').baseVal).toBe('https://clean.example.org');
         expect($$sanitizeUri).toHaveBeenCalledWith($rootScope.testUrl, false);
       });
     });
 
 
-    it('should use $$sanitizeUri when working with svg and xlink:href', function() {
+    it('should use $$sanitizeUri when working with svg and xlink:href through ng-href', function() {
       var $$sanitizeUri = jasmine.createSpy('$$sanitizeUri');
       module(function($provide) {
         $provide.value('$$sanitizeUri', $$sanitizeUri);
@@ -11151,6 +11170,18 @@ describe('$compile', function() {
         $rootScope.$apply();
         expect(element.find('a').prop('href').baseVal).toBe('someSanitizedUrl');
         expect($$sanitizeUri).toHaveBeenCalledWith($rootScope.testUrl, false);
+      });
+    });
+
+
+    it('should have a RESOURCE_URL context for xlink:href by default', function() {
+      inject(function($compile, $rootScope) {
+        element = $compile('<svg><whatever xlink:href="{{ testUrl }}"></whatever></svg>')($rootScope);
+        $rootScope.testUrl = 'https://bad.example.org';
+
+        expect(function() {
+          $rootScope.$apply();
+        }).toThrowError(/\$sce:insecurl/);
       });
     });
   });
