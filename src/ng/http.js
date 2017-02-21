@@ -142,7 +142,7 @@ function defaultHttpResponseTransform(data, headers) {
           data = fromJson(tempData);
         } catch (e) {
           throw $httpMinErr('baddata', 'Data must be a valid JSON object. Received: "{0}". ' +
-          'Error occurred: "{1}"', data, e);
+          'Parse error: "{1}"', data, e);
         }
       }
     }

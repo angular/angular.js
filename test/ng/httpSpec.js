@@ -1446,12 +1446,12 @@ describe('$http', function() {
         it('should return JSON data with error message if JSON is invalid', function() {
           var errCallback = jasmine.createSpy('error');
           $httpBackend.expect('GET', '/url').respond('{abcd}', {'Content-Type': 'application/json'});
-            $http({method: 'GET', url: '/url'}).then(callback).catch(errCallback);
-            $httpBackend.flush();
+          $http.get('/url').then(callback).catch(errCallback);
+          $httpBackend.flush();
 
-            expect(callback).not.toHaveBeenCalled();
-            expect(errCallback).toHaveBeenCalledOnce();
-            expect(errCallback.calls.mostRecent().args[0]).toEqualMinErr('$http', 'baddata');
+          expect(callback).not.toHaveBeenCalled();
+          expect(errCallback).toHaveBeenCalledOnce();
+          expect(errCallback.calls.mostRecent().args[0]).toEqualMinErr('$http', 'baddata');
         });
       });
     });
