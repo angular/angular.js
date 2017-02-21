@@ -56,7 +56,7 @@
   ([05aab6](https://github.com/angular/angular.js/commit/05aab660ce74f526f2110d3b5faf9a5b4f4e664b)
   [#15603](https://github.com/angular/angular.js/issues/15603),
   [#15605](https://github.com/angular/angular.js/issues/15605))
-- **angularInit:** allow auto-bootstraping from inline script
+- **angularInit:** allow auto-bootstrapping from inline script
   ([bb464d](https://github.com/angular/angular.js/commit/bb464d16b434b9e2de2fecf80c192d4741cba879),
   [#15567](https://github.com/angular/angular.js/issues/15567),
   [#15571](https://github.com/angular/angular.js/issues/15571))
@@ -84,7 +84,7 @@
   ([e75fbc](https://github.com/angular/angular.js/commit/e75fbc494e6a0da6a9231b40bb0382431b62be07),
   [#15586](https://github.com/angular/angular.js/issues/15586),
   [#15594](https://github.com/angular/angular.js/issues/15594))
-- **angularInit:** allow auto-bootstraping from inline script
+- **angularInit:** allow auto-bootstrapping from inline script
   ([41aa91](https://github.com/angular/angular.js/commit/41aa9125b9aaf771addb250642f524a4e6f9d8d3),
   [#15567](https://github.com/angular/angular.js/issues/15567),
   [#15571](https://github.com/angular/angular.js/issues/15571))
