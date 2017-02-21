@@ -174,11 +174,12 @@ describe('$httpBackend', function() {
   });
 
   it('should complete the request on timeout', function() {
-    callback.and.callFake(function(status, response, headers, statusText) {
+    callback.and.callFake(function(status, response, headers, statusText, xhrStatus) {
       expect(status).toBe(-1);
       expect(response).toBe(null);
       expect(headers).toBe(null);
       expect(statusText).toBe('');
+      expect(xhrStatus).toBe('timeout');
     });
     $backend('GET', '/url', null, callback, {});
     xhr = MockXhr.$$lastInstance;
@@ -186,6 +187,60 @@ describe('$httpBackend', function() {
     expect(callback).not.toHaveBeenCalled();
 
     xhr.ontimeout();
+    expect(callback).toHaveBeenCalledOnce();
+  });
+
+  it('should complete the request on abort', function() {
+    callback.and.callFake(function(status, response, headers, statusText, xhrStatus) {
+      expect(status).toBe(-1);
+      expect(response).toBe(null);
+      expect(headers).toBe(null);
+      expect(statusText).toBe('');
+      expect(xhrStatus).toBe('abort');
+    });
+    $backend('GET', '/url', null, callback, {});
+    xhr = MockXhr.$$lastInstance;
+
+    expect(callback).not.toHaveBeenCalled();
+
+    xhr.onabort();
+    expect(callback).toHaveBeenCalledOnce();
+  });
+
+  it('should complete the request on error', function() {
+    callback.and.callFake(function(status, response, headers, statusText, xhrStatus) {
+      expect(status).toBe(-1);
+      expect(response).toBe(null);
+      expect(headers).toBe(null);
+      expect(statusText).toBe('');
+      expect(xhrStatus).toBe('error');
+    });
+    $backend('GET', '/url', null, callback, {});
+    xhr = MockXhr.$$lastInstance;
+
+    expect(callback).not.toHaveBeenCalled();
+
+    xhr.onerror();
+    expect(callback).toHaveBeenCalledOnce();
+  });
+
+  it('should complete the request on success', function() {
+    callback.and.callFake(function(status, response, headers, statusText, xhrStatus) {
+      expect(status).toBe(200);
+      expect(response).toBe('response');
+      expect(headers).toBe('');
+      expect(statusText).toBe('');
+      expect(xhrStatus).toBe('complete');
+    });
+    $backend('GET', '/url', null, callback, {});
+    xhr = MockXhr.$$lastInstance;
+
+    expect(callback).not.toHaveBeenCalled();
+
+    xhr.statusText = '';
+    xhr.response = 'response';
+    xhr.status = 200;
+    xhr.onload();
     expect(callback).toHaveBeenCalledOnce();
   });
 

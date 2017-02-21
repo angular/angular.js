@@ -1354,8 +1354,8 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
 
     return function() {
       return angular.isNumber(status)
-          ? [status, data, headers, statusText]
-          : [200, status, data, headers];
+          ? [status, data, headers, statusText, 'complete']
+          : [200, status, data, headers, 'complete'];
     };
   }
 
@@ -1391,14 +1391,14 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
         var response = wrapped.response(method, url, data, headers, wrapped.params(url));
         xhr.$$respHeaders = response[2];
         callback(copy(response[0]), copy(response[1]), xhr.getAllResponseHeaders(),
-                 copy(response[3] || ''));
+                 copy(response[3] || ''), copy(response[4]));
       }
 
       function handleTimeout() {
         for (var i = 0, ii = responses.length; i < ii; i++) {
           if (responses[i] === handleResponse) {
             responses.splice(i, 1);
-            callback(-1, undefined, '');
+            callback(-1, undefined, '', undefined, 'timeout');
             break;
           }
         }
