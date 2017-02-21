@@ -448,6 +448,28 @@ describe('$http', function() {
         expect(callback).toHaveBeenCalledOnce();
       });
 
+      it('should pass xhrStatus in response object when a request is successful', function() {
+        $httpBackend.expect('GET', '/url').respond(200, 'SUCCESS', {}, 'OK');
+        $http({url: '/url', method: 'GET'}).then(function(response) {
+          expect(response.xhrStatus).toBe('complete');
+          callback();
+        });
+
+        $httpBackend.flush();
+        expect(callback).toHaveBeenCalledOnce();
+      });
+
+      it('should pass xhrStatus in response object when a request fails', function() {
+        $httpBackend.expect('GET', '/url').respond(404, 'ERROR', {}, 'Not Found');
+        $http({url: '/url', method: 'GET'}).then(null, function(response) {
+          expect(response.xhrStatus).toBe('complete');
+          callback();
+        });
+
+        $httpBackend.flush();
+        expect(callback).toHaveBeenCalledOnce();
+      });
+
 
       it('should pass in the response object when a request failed', function() {
         $httpBackend.expect('GET', '/url').respond(543, 'bad error', {'request-id': '123'});
@@ -1623,6 +1645,17 @@ describe('$http', function() {
         expect(callback).toHaveBeenCalledOnce();
       }));
 
+      it('should cache xhrStatus as well', inject(function($rootScope) {
+        doFirstCacheRequest('GET', 201, null);
+        callback.and.callFake(function(response) {
+          expect(response.xhrStatus).toBe('complete');
+        });
+
+        $http({method: 'get', url: '/url', cache: cache}).then(callback);
+        $rootScope.$digest();
+        expect(callback).toHaveBeenCalledOnce();
+      }));
+
 
       it('should use cache even if second request was made before the first returned', function() {
         $httpBackend.expect('GET', '/url').respond(201, 'fake-response');
@@ -1788,6 +1821,7 @@ describe('$http', function() {
             function(response) {
               expect(response.data).toBeUndefined();
               expect(response.status).toBe(-1);
+              expect(response.xhrStatus).toBe('timeout');
               expect(response.headers()).toEqual(Object.create(null));
               expect(response.config.url).toBe('/some');
               callback();
