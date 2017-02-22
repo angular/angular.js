@@ -567,6 +567,26 @@ angular.module('myApp', [])
 Don't do this if you're writing a library, though, as you shouldn't change
 global configuration then.
 
+The same behaviour exists when you use the controllerAs pattern like e.g.
+```js
+  angular
+    .module('myApp')
+    .directive('myDirective', myDirective);
+
+  function myDirective() {
+    return {
+      restrict: 'E',
+      scope: {
+        value: '='
+      },
+      controller: 'myController',
+      controllerAs: 'vm',
+      bindToController: true,
+      templateUrl: 'myTemplate.html'
+    };
+  }
+```
+You want have access to  `vm.value` in your Controller.
 
 - **fix(input[radio]): use strict comparison when evaluating checked-ness
   ([5ac7da](https://github.com/angular/angular.js/commit/5ac7daea72ec31cf337d1d21b13f0d17ff33994f))**:
