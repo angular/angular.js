@@ -531,9 +531,10 @@
  * $sce#getTrustedResourceUrl $sce.getTrustedResourceUrl}.
  *
  *
- * #### `replace` (*DEPRECATED*)
- *
- * `replace` will be removed in next major release - i.e. v2.0).
+ * #### `replace`
+ * <div class="alert alert-danger">
+ * **Note:** `replace` is deprecated in AngularJS and has been removed in the new Angular (v2+).
+ * </div>
  *
  * Specifies what the template should replace. Defaults to `false`.
  *
@@ -983,6 +984,59 @@
    compiled again. This is an undesired effect and can lead to misbehaving directives, performance issues,
    and memory leaks. Refer to the Compiler Guide {@link guide/compiler#double-compilation-and-how-to-avoid-it
    section on double compilation} for an in-depth explanation and ways to avoid it.
+
+ * @knownIssue
+
+   ### Issues with `replace: true`
+ *
+ * <div class="alert alert-danger">
+ *   **Note**: {@link $compile#-replace- `replace: true`} is deprecated and not recommended to use,
+ *   mainly due to the issues listed here. It has been completely removed in the new Angular.
+ * </div>
+ *
+ * #### Attribute values are not merged
+ *
+ * When a `replace` directive encounters the same attribute on the original and the replace node,
+ * it will simply deduplicate the attribute and join the values with a space or with a `;` in case of
+ * the `style` attribute.
+ * ```html
+ * Original Node: <span class="original" style="color: red;"></span>
+ * Replace Template: <span class="replaced" style="background: blue;"></span>
+ * Result: <span class="original replaced" style="color: red; background: blue;"></span>
+ * ```
+ *
+ * That means attributes that contain AngularJS expressions will not be merged correctly, e.g.
+ * {@link ngShow} or {@link ngClass} will cause a {@link $parse} error:
+ *
+ * ```html
+ * Original Node: <span ng-class="{'something': something}" ng-show="!condition"></span>
+ * Replace Template: <span ng-class="{'else': else}" ng-show="otherCondition"></span>
+ * Result: <span ng-class="{'something': something} {'else': else}" ng-show="!condition otherCondition"></span>
+ * ```
+ *
+ * See issue [#5695](https://github.com/angular/angular.js/issues/5695).
+ *
+ * #### Directives are not deduplicated before compilation
+ *
+ * When the original node and the replace template declare the same directive(s), they will be
+ * {@link guide/compiler#double-compilation-and-how-to-avoid-it compiled twice} because the compiler
+ * does not deduplicate them. In many cases, this is not noticable, but e.g. {@link ngModel} will
+ * attach `$formatters` and `$parsers` twice.
+ *
+ * See issue [#2573](https://github.com/angular/angular.js/issues/2573).
+ *
+ * #### `transclude: element` in the replace template root can have
+ * unexpected effects
+ *
+ * When the replace template has a directive at the root node that uses
+ * {@link $compile#-transclude- `transclude: element`}, e.g.
+ * {@link ngIf} or {@link ngRepeat}, the DOM structure or scope inheritance can be incorrect.
+ * See the following issues:
+ *
+ * - Incorrect scope on replaced element:
+ * [#9837](https://github.com/angular/angular.js/issues/9837)
+ * - Different DOM between `template` and `templateUrl`:
+ * [#10612](https://github.com/angular/angular.js/issues/14326)
  *
  */
 
