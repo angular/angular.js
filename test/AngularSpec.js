@@ -1778,6 +1778,10 @@ describe('angular', function() {
 
           expect(allowAutoBootstrap(createFakeDoc({href: 'resource://something'}))).toBe(false);
           expect(allowAutoBootstrap(createFakeDoc({'xlink:href': 'resource://something'}))).toBe(false);
+
+          expect(allowAutoBootstrap(createFakeDoc({src: 'http://something', href: 'resource://something'}))).toBe(false);
+          expect(allowAutoBootstrap(createFakeDoc({href: 'http://something', 'xlink:href': 'resource://something'}))).toBe(false);
+          expect(allowAutoBootstrap(createFakeDoc({src: 'resource://something', href: 'http://something', 'xlink:href': 'http://something'}))).toBe(false);
         });
 
         it('should not bootstrap if the currentScript property has been clobbered', function() {
