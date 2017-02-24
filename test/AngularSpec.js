@@ -1773,6 +1773,13 @@ describe('angular', function() {
           expect(allowAutoBootstrap(createFakeDoc({src: 'resource://something', href: 'http://something', 'xlink:href': 'http://something'}))).toBe(false);
         });
 
+        it('should not bootstrap if the currentScript property has been clobbered', function() {
+
+          var img = document.createElement('img');
+          img.setAttribute('src', '');
+          expect(allowAutoBootstrap(createFakeDoc({}, 'http:', img))).toBe(false);
+        });
+
         it('should not bootstrap if bootstrapping is disabled', function() {
           isAutoBootstrapAllowed = false;
           angularInit(jqLite('<div ng-app></div>')[0], bootstrapSpy);

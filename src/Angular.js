@@ -1453,6 +1453,11 @@ function allowAutoBootstrap(document) {
     return true;
   }
 
+  // If the `currentScript` property has been clobbered just return false, since this indicates a probable attack
+  if (!(script instanceof window.HTMLScriptElement || script instanceof window.SVGScriptElement)) {
+    return false;
+  }
+
   var srcs = [script.getAttribute('src'), script.getAttribute('href'), script.getAttribute('xlink:href')];
 
   return srcs.every(function(src) {
