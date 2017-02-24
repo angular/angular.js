@@ -1532,6 +1532,12 @@ function getNgAttribute(element, ngAttr) {
 
 function allowAutoBootstrap(document) {
   var script = document.currentScript;
+
+  // If the `currentScript` property has been clobbered just return false, since this indicates a probable attack
+  if (!(script instanceof window.HTMLScriptElement || script instanceof window.SVGScriptElement)) {
+    return false;
+  }
+
   var src = script && script.getAttribute('src') || script.getAttribute('href') || script.getAttribute('xlink:href');
 
   if (!src) {
