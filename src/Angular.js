@@ -1532,7 +1532,7 @@ function getNgAttribute(element, ngAttr) {
 
 function allowAutoBootstrap(document) {
   var script = document.currentScript;
-  var src = script && script.getAttribute('src');
+  var src = script && script.getAttribute('src') || script.getAttribute('href') || script.getAttribute('xlink:href');
 
   if (!src) {
     return true;

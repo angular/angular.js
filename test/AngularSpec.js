@@ -1771,6 +1771,15 @@ describe('angular', function() {
           expect(allowAutoBootstrap(createFakeDoc({src: 'file://whatever'}))).toBe(true);
         });
 
+        it('should not bootstrap from an extension into a non-extension document, via SVG script', function() {
+
+          // SVG script tags don't use the `src` attribute to load their source.
+          // Instead they use `href` or the deprecated `xlink:href` attributes.
+
+          expect(allowAutoBootstrap(createFakeDoc({href: 'resource://something'}))).toBe(false);
+          expect(allowAutoBootstrap(createFakeDoc({'xlink:href': 'resource://something'}))).toBe(false);
+        });
+
         it('should not bootstrap if bootstrapping is disabled', function() {
           isAutoBootstrapAllowed = false;
           angularInit(jqLite('<div ng-app></div>')[0], bootstrapSpy);
