@@ -1533,6 +1533,11 @@ function getNgAttribute(element, ngAttr) {
 function allowAutoBootstrap(document) {
   var script = document.currentScript;
 
+  if (!script) {
+    // IE does not have `document.currentScript`
+    return true;
+  }
+
   // If the `currentScript` property has been clobbered just return false, since this indicates a probable attack
   if (!(script instanceof window.HTMLScriptElement || script instanceof window.SVGScriptElement)) {
     return false;

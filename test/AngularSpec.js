@@ -1784,7 +1784,7 @@ describe('angular', function() {
 
           var img = document.createElement('img');
           img.setAttribute('src', '');
-          expect(allowAutoBootstrap(createFakeDoc({}, 'http:', 'http://some-value', img))).toBe(false);
+          expect(allowAutoBootstrap(createFakeDoc({}, 'http:', img))).toBe(false);
         });
 
         it('should not bootstrap if bootstrapping is disabled', function() {
