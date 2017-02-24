@@ -1708,83 +1708,78 @@ describe('angular', function() {
       dealoc(appElement);
     });
 
-    it('should bootstrap from an extension into an extension document for same-origin documents only', function() {
-      // IE does not support `document.currentScript` (nor extensions with protocol), so skip test.
-      if (msie) return;
+    // IE does not support `document.currentScript` (nor extensions with protocol), so skip tests.
+    if (!msie) {
+      describe('auto bootstrap restrictions', function() {
 
-      // Extension URLs are browser-specific, so we must choose a scheme that is supported by the browser to make
-      // sure that the URL is properly parsed.
-      var extensionScheme;
-      var userAgent = window.navigator.userAgent;
-      if (/Firefox\//.test(userAgent)) {
-        extensionScheme = 'moz-extension';
-      } else if (/Edge\//.test(userAgent)) {
-        extensionScheme = 'ms-browser-extension';
-      } else if (/Chrome\//.test(userAgent)) {
-        extensionScheme = 'chrome-extension';
-      } else if (/Safari\//.test(userAgent)) {
-        extensionScheme = 'safari-extension';
-      } else {
-        extensionScheme = 'browserext';  // Upcoming standard scheme.
-      }
+        function createFakeDoc(attrs, protocol, currentScript) {
 
-      var src = extensionScheme + '://something';
-      // Fake a minimal document object (the actual document.currentScript is readonly).
-      var fakeDoc = {
-        currentScript: { getAttribute: function() { return src; } },
-        location: {protocol: extensionScheme + ':', origin: extensionScheme + '://something'},
-        createElement: document.createElement.bind(document)
-      };
-      expect(allowAutoBootstrap(fakeDoc)).toBe(true);
+          protocol = protocol || 'http:';
+          var origin = protocol + '//something';
 
-      src = extensionScheme + '://something-else';
-      expect(allowAutoBootstrap(fakeDoc)).toBe(false);
-    });
+          if (currentScript === undefined) {
+            currentScript = document.createElement('script');
+            Object.keys(attrs).forEach(function(key) { currentScript.setAttribute(key, attrs[key]); });
+          }
 
-    it('should bootstrap from a script with an empty or missing `src` attribute', function() {
-      // IE does not support `document.currentScript` (nor extensions with protocol), so skip test.
-      if (msie) return;
+          // Fake a minimal document object (the actual document.currentScript is readonly).
+          return {
+            currentScript: currentScript,
+            location: {protocol: protocol, origin: origin},
+            createElement: document.createElement.bind(document)
+          };
+        }
 
-      // Fake a minimal document object (the actual document.currentScript is readonly).
-      var src;
-      var fakeDoc = {
-        createElement: document.createElement.bind(document),
-        currentScript: {getAttribute: function() { return src; }},
-        location: {origin: 'some-value', protocol: 'http:'}
-      };
+        it('should bootstrap from an extension into an extension document for same-origin documents only', function() {
 
-      src = null;
-      expect(allowAutoBootstrap(fakeDoc)).toBe(true);
+          // Extension URLs are browser-specific, so we must choose a scheme that is supported by the browser to make
+          // sure that the URL is properly parsed.
+          var protocol;
+          var userAgent = window.navigator.userAgent;
+          if (/Firefox\//.test(userAgent)) {
+            protocol = 'moz-extension:';
+          } else if (/Edge\//.test(userAgent)) {
+            protocol = 'ms-browser-extension:';
+          } else if (/Chrome\//.test(userAgent)) {
+            protocol = 'chrome-extension:';
+          } else if (/Safari\//.test(userAgent)) {
+            protocol = 'safari-extension:';
+          } else {
+            protocol = 'browserext:';  // Upcoming standard scheme.
+          }
 
-      src = '';
-      expect(allowAutoBootstrap(fakeDoc)).toBe(true);
-    });
+          expect(allowAutoBootstrap(createFakeDoc({src: protocol + '//something'}, protocol))).toBe(true);
+          expect(allowAutoBootstrap(createFakeDoc({src: protocol + '//something-else'}, protocol))).toBe(false);
+        });
 
-    it('should not bootstrap from an extension into a non-extension document', function() {
-      // IE does not support `document.currentScript` (nor extensions with protocol), so skip test.
-      if (msie) return;
+        it('should bootstrap from a script with empty or no source (e.g. src, href or xlink:href attributes)', function() {
 
-      var src = 'resource://something';
-      // Fake a minimal document object (the actual document.currentScript is readonly).
-      var fakeDoc = {
-        currentScript: { getAttribute: function() { return src; } },
-        location: {protocol: 'http:'},
-        createElement: document.createElement.bind(document)
-      };
-      expect(allowAutoBootstrap(fakeDoc)).toBe(false);
+          expect(allowAutoBootstrap(createFakeDoc({src: null}))).toBe(true);
+          expect(allowAutoBootstrap(createFakeDoc({src: ''}))).toBe(true);
 
-      src = 'file://whatever';
-      expect(allowAutoBootstrap(fakeDoc)).toBe(true);
-    });
+          expect(allowAutoBootstrap(createFakeDoc({href: null}))).toBe(true);
+          expect(allowAutoBootstrap(createFakeDoc({href: ''}))).toBe(true);
 
-    it('should not bootstrap if bootstrapping is disabled', function() {
-      isAutoBootstrapAllowed = false;
-      angularInit(jqLite('<div ng-app></div>')[0], bootstrapSpy);
-      expect(bootstrapSpy).not.toHaveBeenCalled();
-      isAutoBootstrapAllowed = true;
-    });
+          expect(allowAutoBootstrap(createFakeDoc({'xlink:href': null}))).toBe(true);
+          expect(allowAutoBootstrap(createFakeDoc({'xlink:href': ''}))).toBe(true);
+        });
+
+
+        it('should not bootstrap from an extension into a non-extension document', function() {
+
+          expect(allowAutoBootstrap(createFakeDoc({src: 'resource://something'}))).toBe(false);
+          expect(allowAutoBootstrap(createFakeDoc({src: 'file://whatever'}))).toBe(true);
+        });
+
+        it('should not bootstrap if bootstrapping is disabled', function() {
+          isAutoBootstrapAllowed = false;
+          angularInit(jqLite('<div ng-app></div>')[0], bootstrapSpy);
+          expect(bootstrapSpy).not.toHaveBeenCalled();
+          isAutoBootstrapAllowed = true;
+        });
+      });
+    }
   });
-
 
   describe('AngularJS service', function() {
     it('should override services', function() {
