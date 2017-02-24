@@ -1712,10 +1712,10 @@ describe('angular', function() {
     if (!msie) {
       describe('auto bootstrap restrictions', function() {
 
-        function createFakeDoc(attrs, protocol, origin, currentScript) {
+        function createFakeDoc(attrs, protocol, currentScript) {
 
           protocol = protocol || 'http:';
-          origin = origin || 'http://some-value';
+          var origin = protocol + '//something';
 
           if (currentScript === undefined) {
             currentScript = document.createElement('script');
@@ -1734,22 +1734,22 @@ describe('angular', function() {
 
           // Extension URLs are browser-specific, so we must choose a scheme that is supported by the browser to make
           // sure that the URL is properly parsed.
-          var extensionScheme;
+          var protocol;
           var userAgent = window.navigator.userAgent;
           if (/Firefox\//.test(userAgent)) {
-            extensionScheme = 'moz-extension';
+            protocol = 'moz-extension:';
           } else if (/Edge\//.test(userAgent)) {
-            extensionScheme = 'ms-browser-extension';
+            protocol = 'ms-browser-extension:';
           } else if (/Chrome\//.test(userAgent)) {
-            extensionScheme = 'chrome-extension';
+            protocol = 'chrome-extension:';
           } else if (/Safari\//.test(userAgent)) {
-            extensionScheme = 'safari-extension';
+            protocol = 'safari-extension:';
           } else {
-            extensionScheme = 'browserext';  // Upcoming standard scheme.
+            protocol = 'browserext:';  // Upcoming standard scheme.
           }
 
-          expect(allowAutoBootstrap(createFakeDoc({src: extensionScheme + '://something'}, extensionScheme + ':', extensionScheme + '://something'))).toBe(true);
-          expect(allowAutoBootstrap(createFakeDoc({src: extensionScheme + '://something-else'}, extensionScheme + ':', extensionScheme + '://something'))).toBe(false);
+          expect(allowAutoBootstrap(createFakeDoc({src: protocol + '//something'}, protocol))).toBe(true);
+          expect(allowAutoBootstrap(createFakeDoc({src: protocol + '//something-else'}, protocol))).toBe(false);
         });
 
         it('should bootstrap from a script with empty or no source (e.g. src, href or xlink:href attributes)', function() {
