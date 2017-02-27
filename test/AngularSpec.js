@@ -1752,16 +1752,17 @@ describe('angular', function() {
           expect(allowAutoBootstrap(createFakeDoc({src: protocol + '//something-else'}, protocol))).toBe(false);
         });
 
-        it('should bootstrap from a script with empty or no source (e.g. src, href or xlink:href attributes)', function() {
+        it('should bootstrap from a script with no source (e.g. src, href or xlink:href attributes)', function() {
 
           expect(allowAutoBootstrap(createFakeDoc({src: null}))).toBe(true);
-          expect(allowAutoBootstrap(createFakeDoc({src: ''}))).toBe(true);
-
           expect(allowAutoBootstrap(createFakeDoc({href: null}))).toBe(true);
-          expect(allowAutoBootstrap(createFakeDoc({href: ''}))).toBe(true);
-
           expect(allowAutoBootstrap(createFakeDoc({'xlink:href': null}))).toBe(true);
-          expect(allowAutoBootstrap(createFakeDoc({'xlink:href': ''}))).toBe(true);
+        });
+
+        it('should not bootstrap from a script with an empty source (e.g. `src=""`)', function() {
+          expect(allowAutoBootstrap(createFakeDoc({src: ''}))).toBe(false);
+          expect(allowAutoBootstrap(createFakeDoc({href: ''}))).toBe(false);
+          expect(allowAutoBootstrap(createFakeDoc({'xlink:href': ''}))).toBe(false);
         });
 
 
