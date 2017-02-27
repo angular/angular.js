@@ -1543,15 +1543,19 @@ function allowAutoBootstrap(document) {
     return false;
   }
 
-  var srcs = [script.getAttribute('src'), script.getAttribute('href'), script.getAttribute('xlink:href')];
+  var attributes = script.attributes;
+  var srcs = [attributes.getNamedItem('src'), attributes.getNamedItem('href'), attributes.getNamedItem('xlink:href')];
 
   return srcs.every(function(src) {
     if (!src) {
       return true;
     }
+    if (!src.value) {
+      return false;
+    }
 
     var link = document.createElement('a');
-    link.href = src;
+    link.href = src.value;
 
     if (document.location.origin === link.origin) {
       // Same-origin resources are always allowed, even for non-whitelisted schemes.
