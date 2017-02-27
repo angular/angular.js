@@ -17,6 +17,7 @@
 
 
 angular.module('ngCookies', ['ng']).
+  info({ angularVersion: '"NG_VERSION_FULL"' }).
   /**
    * @ngdoc provider
    * @name $cookiesProvider
