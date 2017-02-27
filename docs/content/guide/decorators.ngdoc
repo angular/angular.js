@@ -485,7 +485,7 @@ changed (that never happens) and we need all of our default dates to be `'shortD
   <file name="index.html">
     <div ng-controller="Ctrl">
       <div id="genesis">Initial Commit default to short date: {{ genesis | date }}</div>
-      <div>ng-conf 2016 default short date: {{ ngConf | date }}</div>
+      <div>ng-conf 2017 default short date: {{ ngConf | date }}</div>
       <div id="ngConf">ng-conf 2017 with full date format: {{ ngConf | date:'fullDate' }}</div>
     </div>
   </file>
