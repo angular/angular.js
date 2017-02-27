@@ -790,6 +790,7 @@ angular.mock.TzDate.prototype = Date.prototype;
  * You need to require the `ngAnimateMock` module in your test suite for instance `beforeEach(module('ngAnimateMock'))`
  */
 angular.mock.animate = angular.module('ngAnimateMock', ['ng'])
+  .info({ angularVersion: '"NG_VERSION_FULL"' })
 
   .config(['$provide', function($provide) {
 
@@ -2404,7 +2405,7 @@ angular.module('ngMock', ['ng']).provider({
   $provide.decorator('$rootScope', angular.mock.$RootScopeDecorator);
   $provide.decorator('$controller', createControllerDecorator($compileProvider));
   $provide.decorator('$httpBackend', angular.mock.$httpBackendDecorator);
-}]);
+}]).info({ angularVersion: '"NG_VERSION_FULL"' });
 
 /**
  * @ngdoc module
@@ -2419,7 +2420,7 @@ angular.module('ngMock', ['ng']).provider({
  */
 angular.module('ngMockE2E', ['ng']).config(['$provide', function($provide) {
   $provide.decorator('$httpBackend', angular.mock.e2e.$httpBackendDecorator);
-}]);
+}]).info({ angularVersion: '"NG_VERSION_FULL"' });
 
 /**
  * @ngdoc service

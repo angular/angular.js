@@ -265,5 +265,6 @@ function publishExternalAPI(angular) {
         $$cookieReader: $$CookieReaderProvider
       });
     }
-  ]);
+  ])
+  .info({ angularVersion: '"NG_VERSION_FULL"' });
 }
