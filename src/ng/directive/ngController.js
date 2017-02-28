@@ -82,34 +82,31 @@
  *    </div>
  *   </file>
  *   <file name="app.js">
- *    angular.module('controllerAsExample', [])
- *      .controller('SettingsController1', SettingsController1);
- *
- *    function SettingsController1() {
- *      this.name = 'John Smith';
- *      this.contacts = [
+      class SettingsController1 {
+      constructor() {
+      this.name = 'John Smith';
+      this.contacts = [
  *        {type: 'phone', value: '408 555 1212'},
  *        {type: 'email', value: 'john.smith@example.org'}
  *      ];
- *    }
- *
- *    SettingsController1.prototype.greet = function() {
- *      alert(this.name);
- *    };
- *
- *    SettingsController1.prototype.addContact = function() {
+      }
+      greet() {
+      alert(this.name);
+      };
+      addContact() {
  *      this.contacts.push({type: 'email', value: 'yourname@example.org'});
- *    };
- *
- *    SettingsController1.prototype.removeContact = function(contactToRemove) {
- *     var index = this.contacts.indexOf(contactToRemove);
- *      this.contacts.splice(index, 1);
- *    };
- *
- *    SettingsController1.prototype.clearContact = function(contact) {
- *      contact.type = 'phone';
- *      contact.value = '';
- *    };
+      };
+      removeContact(contactToRemove) {
+       let index = this.contacts.indexOf(contactToRemove);
+ *     this.contacts.splice(index, 1);
+      };
+      clearContact(contact) {
+       contact.type = 'phone';
+ *     contact.value = '';
+      };
+      }
+ *    angular.module('controllerAsExample', [])
+ *      .controller('SettingsController1', SettingsController1);
  *   </file>
  *   <file name="protractor.js" type="protractor">
  *     it('should check controller as', function() {
