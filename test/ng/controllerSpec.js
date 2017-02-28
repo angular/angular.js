@@ -95,21 +95,6 @@ describe('$controller', function() {
     });
 
 
-    it('should instantiate a controller defined on window if allowGlobals is set',
-      inject(function($window) {
-        var scope = {};
-        var Foo = function() {};
-
-        $controllerProvider.allowGlobals();
-
-        $window.a = {Foo: Foo};
-
-        var foo = $controller('a.Foo', {$scope: scope});
-        expect(foo).toBeDefined();
-        expect(foo instanceof Foo).toBe(true);
-    }));
-
-
     it('should throw ctrlfmt if name contains spaces', function() {
       expect(function() {
         $controller('ctrl doom');
