@@ -111,7 +111,7 @@ The set of files included in each version directory are:
   * __`angular-route.js`__ — Routing and deep-linking services and directives for AngularJS apps.
       ({@link module:ngRoute API docs})
   * __`angular-sanitize.js`__ — Functionality to sanitize HTML. ({@link module:ngSanitize API docs})
-  * __`angular-touch.js`__ — Touch events and other helpers for touch-enabled devices.
+  * __`angular-touch.js`__ — Touch events for touch-enabled devices.
     ({@link module:ngTouch API docs})
 
 
