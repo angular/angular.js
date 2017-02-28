@@ -97,6 +97,43 @@ describe('basic usage', function() {
     $httpBackend.flush();
   });
 
+  it('should include a request body when calling custom delete with hasBody is true', function() {
+    var condition = {at: '2038-01-19 03:14:08'};
+    $httpBackend.expect('DELETE', '/fooresource', condition).respond({});
+
+    var r = $resource('/fooresource', {}, {
+      delete: {method: 'DELETE', hasBody: true}
+    });
+
+    var deleteResponse = r.delete(condition);
+
+    $httpBackend.flush();
+
+    expect(deleteResponse.$resolved).toBe(true);
+  });
+
+  it('should expect a body if hasBody is true', function() {
+    var username = 'yathos';
+    var loginRequest = {name: username, password: 'Smile'};
+    var user = {id: 1, name: username};
+
+    $httpBackend.expect('LOGIN', '/user/me', loginRequest).respond(user);
+
+    $httpBackend.expect('LOGOUT', '/user/me', null).respond(null);
+
+    var UserService = $resource('/user/me', {}, {
+      login: {method: 'LOGIN', hasBody: true},
+      logout: {method: 'LOGOUT', hasBody: false}
+    });
+
+    var loginResponse = UserService.login(loginRequest);
+    var logoutResponse = UserService.logout();
+
+    $httpBackend.flush();
+
+    expect(loginResponse.id).toBe(user.id);
+    expect(logoutResponse.$resolved).toBe(true);
+  });
 
   it('should build resource', function() {
     expect(typeof CreditCard).toBe('function');
