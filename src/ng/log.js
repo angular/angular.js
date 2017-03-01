@@ -124,7 +124,14 @@ function $LogProvider() {
 
     function formatError(arg) {
       if (arg instanceof Error) {
-        if (arg.stack) {
+        // Support: IE 9-11, Edge 12-14+
+        // IE/Edge display errors in such a way that it requires the user to click in 4 places
+        // to see the stack trace. There is no way to feature-detect it so there's a chance
+        // of the user agent sniffing to go wrong but since it's only about logging, this shouldn't
+        // break apps. Other browsers display errors in a sensible way and some of them map stack
+        // traces along source maps if available so it makes sense to let browsers display it
+        // as they want.
+        if (arg.stack && (msie || /\bEdge\//.test($window.navigator.userAgent))) {
           arg = (arg.message && arg.stack.indexOf(arg.message) === -1)
               ? 'Error: ' + arg.message + '\n' + arg.stack
               : arg.stack;
