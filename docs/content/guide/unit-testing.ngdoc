@@ -308,7 +308,7 @@ app.directive('aGreatEye', function () {
 
 This directive is used as a tag `<a-great-eye></a-great-eye>`. It replaces the entire tag with the
 template `<h1>lidless, wreathed in flame, {{1 + 1}} times</h1>`. Now we are going to write a jasmine unit test to
-verify this functionality. Note that the expression `{{1 + 1}}` times will also be evaluated in the rendered content.
+verify this functionality. Note that the expression `{{1 + 1}}` will also be evaluated in the rendered content.
 
 ```js
 describe('Unit testing great quotes', function() {
