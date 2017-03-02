@@ -67,6 +67,13 @@ describe('$log', function() {
     }
   ));
 
+  it('should work if $window.navigator not defined', inject(
+    function() {
+      delete $window.navigator;
+    },
+    function($log) {}
+  ));
+
   describe('IE logging behavior', function() {
     function removeApplyFunctionForIE() {
       log.apply = log.call =
