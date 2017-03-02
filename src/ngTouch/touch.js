@@ -47,24 +47,11 @@ function $TouchProvider() {
   * @kind object
   *
   * @description
-  * Provides the legacy {@link ngTouch.$touch#ngClickOverrideEnabled `ngClickOverrideEnabled`} method.
-  *
+  * The `$touch` service currently has no contents.
   */
   // eslint-disable-next-line no-invalid-this
   this.$get = function() {
-    return {
-      /**
-       * @ngdoc method
-       * @name  $touch#ngClickOverrideEnabled
-       *       *
-       * @returns {*} `false` as of AngularJS 1.7.0
-       *
-       * @kind function
-       */
-      ngClickOverrideEnabled: function() {
-        return false;
-      }
-    };
+    return {};
   };
 
 }
