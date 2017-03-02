@@ -188,11 +188,6 @@ myApp.service('unicornLauncher', ["apiToken", UnicornLauncher]);
 
 Much simpler!
 
-Note: Yes, we have called one of our service recipes 'Service'. We regret this and know that we'll
-be somehow punished for our misdeed. It's like we named one of our offspring 'Child'. Boy,
-that would mess with the teachers.
-
-
 ## Provider Recipe
 
 As already mentioned in the intro, the Provider recipe is the core recipe type and
