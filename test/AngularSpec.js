@@ -7,6 +7,7 @@ Float32Array, Float64Array,  */
 
 describe('angular', function() {
   var element, document;
+  var originalObjectMaxDepthInErrorMessage = minErrConfig.objectMaxDepth;
 
   beforeEach(function() {
     document = window.document;
@@ -14,6 +15,30 @@ describe('angular', function() {
 
   afterEach(function() {
     dealoc(element);
+    minErrConfig.objectMaxDepth = originalObjectMaxDepthInErrorMessage;
+  });
+
+  describe('errorHandlingConfig', function() {
+    it('should get default objectMaxDepth', function() {
+      expect(errorHandlingConfig().objectMaxDepth).toBe(5);
+    });
+
+    it('should set objectMaxDepth', function() {
+      errorHandlingConfig({objectMaxDepth: 3});
+      expect(errorHandlingConfig().objectMaxDepth).toBe(3);
+    });
+
+    it('should not change objectMaxDepth when undefined is supplied', function() {
+      errorHandlingConfig({objectMaxDepth: undefined});
+      expect(errorHandlingConfig().objectMaxDepth).toBe(originalObjectMaxDepthInErrorMessage);
+    });
+
+    they('should set objectMaxDepth to NaN when $prop is supplied',
+        [NaN, null, true, false, -1, 0], function(maxDepth) {
+          errorHandlingConfig({objectMaxDepth: maxDepth});
+          expect(errorHandlingConfig().objectMaxDepth).toBeNaN();
+        }
+    );
   });
 
   describe('case', function() {

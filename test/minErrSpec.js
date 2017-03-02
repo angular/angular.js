@@ -78,32 +78,27 @@ describe('minErr', function() {
 
     var myError = testError('26', 'a when objectMaxDepth is default=5 is {0}', a);
     expect(myError.message).toMatch(/a when objectMaxDepth is default=5 is {"b":{"c":{"d":{"e":{"f":"..."}}}}}/);
-    expect(errorHandlingConfig().objectMaxDepth).toBe(5);
 
     errorHandlingConfig({objectMaxDepth: 1});
     myError = testError('26', 'a when objectMaxDepth is set to 1 is {0}', a);
     expect(myError.message).toMatch(/a when objectMaxDepth is set to 1 is {"b":"..."}/);
-    expect(errorHandlingConfig().objectMaxDepth).toBe(1);
 
     errorHandlingConfig({objectMaxDepth: 2});
     myError = testError('26', 'a when objectMaxDepth is set to 2 is {0}', a);
     expect(myError.message).toMatch(/a when objectMaxDepth is set to 2 is {"b":{"c":"..."}}/);
-    expect(errorHandlingConfig().objectMaxDepth).toBe(2);
 
     errorHandlingConfig({objectMaxDepth: undefined});
     myError = testError('26', 'a when objectMaxDepth is set to undefined is {0}', a);
     expect(myError.message).toMatch(/a when objectMaxDepth is set to undefined is {"b":{"c":"..."}}/);
-    expect(errorHandlingConfig().objectMaxDepth).toBe(2);
   });
 
   they('should handle arguments that are objects and ignore max depth when objectMaxDepth = $prop',
     [NaN, null, true, false, -1, 0], function(maxDepth) {
-      var a = {b: {c: {d: 1}}};
+      var a = {b: {c: {d: {e: {f: {g: 1}}}}}};
 
       errorHandlingConfig({objectMaxDepth: maxDepth});
       var myError = testError('26', 'a is {0}', a);
-      expect(myError.message).toMatch(/a is {"b":{"c":{"d":1}}}/);
-      expect(errorHandlingConfig().objectMaxDepth).toBeNaN();
+      expect(myError.message).toMatch(/a is {"b":{"c":{"d":{"e":{"f":{"g":1}}}}}}/);
     }
   );
 
