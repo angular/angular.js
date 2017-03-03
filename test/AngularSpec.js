@@ -7,6 +7,8 @@ Float32Array, Float64Array,  */
 
 describe('angular', function() {
   var element, document;
+  var originalObjectMaxDepthInErrorMessage = minErrConfig.objectMaxDepth;
+  var originalUrlMaxLengthInErrorMessage = minErrConfig.urlMaxLength;
 
   beforeEach(function() {
     document = window.document;
@@ -14,6 +16,58 @@ describe('angular', function() {
 
   afterEach(function() {
     dealoc(element);
+    minErrConfig.objectMaxDepth = originalObjectMaxDepthInErrorMessage;
+    minErrConfig.urlMaxLength = originalUrlMaxLengthInErrorMessage;
+  });
+
+  describe('errorHandlingConfig', function() {
+    it('should get default objectMaxDepth', function() {
+      expect(errorHandlingConfig().objectMaxDepth).toBe(5);
+    });
+
+    it('should set objectMaxDepth only', function() {
+      errorHandlingConfig({objectMaxDepth: 3});
+      expect(errorHandlingConfig()).toEqual({
+         objectMaxDepth: 3,
+         urlMaxLength: originalUrlMaxLengthInErrorMessage
+      });
+    });
+
+    it('should not change objectMaxDepth when undefined is supplied', function() {
+      errorHandlingConfig({objectMaxDepth: undefined});
+      expect(errorHandlingConfig().objectMaxDepth).toBe(originalObjectMaxDepthInErrorMessage);
+    });
+
+    they('should set objectMaxDepth to NAN when $prop is supplied',
+        [NaN, null, true, false, -1, 0], function(maxDepth) {
+          errorHandlingConfig({objectMaxDepth: maxDepth});
+          expect(errorHandlingConfig().objectMaxDepth).toBeNaN();
+        }
+    );
+
+    it('should get default urlMaxLength', function() {
+      expect(errorHandlingConfig().urlMaxLength).toBe(2000);
+    });
+
+    it('should set urlMaxLength only', function() {
+      errorHandlingConfig({urlMaxLength: 500});
+      expect(errorHandlingConfig()).toEqual({
+        'objectMaxDepth': originalObjectMaxDepthInErrorMessage,
+        'urlMaxLength': 500
+      });
+    });
+
+    it('should not change urlMaxLength when undefined is supplied', function() {
+      errorHandlingConfig({urlMaxLength: undefined});
+      expect(errorHandlingConfig().urlMaxLength).toBe(originalUrlMaxLengthInErrorMessage);
+    });
+
+    they('should set urlMaxLength to NAN when $prop is supplied',
+        [NaN, null, true, false, -1, 0], function(maxLength) {
+          errorHandlingConfig({urlMaxLength: maxLength});
+          expect(errorHandlingConfig().urlMaxLength).toBeNaN();
+        }
+    );
   });
 
   describe('case', function() {

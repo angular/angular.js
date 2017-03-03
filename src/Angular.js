@@ -12,7 +12,7 @@
   toString,
   minErrConfig,
   errorHandlingConfig,
-  isValidObjectMaxDepth,
+  isValidNumberForMinErrConfig,
   ngMinErr,
   angularModule,
   uid,
@@ -129,7 +129,8 @@ var VALIDITY_STATE_PROPERTY = 'validity';
 var hasOwnProperty = Object.prototype.hasOwnProperty;
 
 var minErrConfig = {
-  objectMaxDepth: 5
+  objectMaxDepth: 5,
+  urlMaxLength: 2000
 };
 
  /**
@@ -143,6 +144,8 @@ var minErrConfig = {
  * current configuration if used as a getter. The following options are supported:
  *
  * - **objectMaxDepth**: The maximum depth to which objects are traversed when stringified for error messages.
+ * - **urlMaxLength**: The maximum length of the URL reference in the error messages.
+ * if the url exceeds the max length it will be truncated, so it will lack of information.
  *
  * Omitted or undefined options will leave the corresponding configuration values unchanged.
  *
@@ -152,11 +155,18 @@ var minErrConfig = {
  * * `objectMaxDepth`  **{Number}** - The max depth for stringifying objects. Setting to a
  *   non-positive or non-numeric value, removes the max depth limit.
  *   Default: 5
+ *
+ * * `urlMaxLength`  **{Number}** - The max length of the URL reference in the error messages. Setting to a
+ *   non-positive or non-numeric value, removes the url max length limit.
+ *   Default: 2000
  */
 function errorHandlingConfig(config) {
   if (isObject(config)) {
     if (isDefined(config.objectMaxDepth)) {
-      minErrConfig.objectMaxDepth = isValidObjectMaxDepth(config.objectMaxDepth) ? config.objectMaxDepth : NaN;
+      minErrConfig.objectMaxDepth = isValidNumberForMinErrConfig(config.objectMaxDepth) ? config.objectMaxDepth : NaN;
+    }
+    if (isDefined(config.urlMaxLength)) {
+      minErrConfig.urlMaxLength = isValidNumberForMinErrConfig(config.urlMaxLength) ? config.urlMaxLength : NaN;
     }
   } else {
     return minErrConfig;
@@ -165,11 +175,11 @@ function errorHandlingConfig(config) {
 
 /**
  * @private
- * @param {Number} maxDepth
+ * @param {Number} num
  * @return {boolean}
  */
-function isValidObjectMaxDepth(maxDepth) {
-  return isNumber(maxDepth) && maxDepth > 0;
+function isValidNumberForMinErrConfig(num) {
+  return isNumber(num) && num > 0;
 }
 
 /**
@@ -897,7 +907,7 @@ function arrayRemove(array, value) {
 function copy(source, destination, maxDepth) {
   var stackSource = [];
   var stackDest = [];
-  maxDepth = isValidObjectMaxDepth(maxDepth) ? maxDepth : NaN;
+  maxDepth = isValidNumberForMinErrConfig(maxDepth) ? maxDepth : NaN;
 
   if (destination) {
     if (isTypedArray(destination) || isArrayBuffer(destination)) {
