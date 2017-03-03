@@ -1674,7 +1674,8 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             (nodeName === 'img' && key === 'src') ||
             (nodeName === 'image' && key === 'xlinkHref')) {
           // sanitize a[href] and img[src] values
-          this[key] = value = $$sanitizeUri(value, key === 'src');
+          this[key] = value =
+              $$sanitizeUri(value, nodeName === 'img' || nodeName === 'image');
         } else if (nodeName === 'img' && key === 'srcset' && isDefined(value)) {
           // sanitize img[srcset] values
           var result = '';

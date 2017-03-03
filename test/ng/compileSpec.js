@@ -11127,15 +11127,20 @@ describe('$compile', function() {
         $provide.value('$$sanitizeUri', $$sanitizeUri);
       });
       inject(function($compile, $rootScope) {
-        element = $compile('<svg><a xlink:href="{{ testUrl }}"></a></svg>')($rootScope);
+        var elementA = $compile('<svg><a xlink:href="{{ testUrl + \'aTag\' }}"></a></svg>')($rootScope);
+        var elementImage = $compile('<svg><image xlink:href="{{ testUrl + \'imageTag\' }}"></image></svg>')($rootScope);
 
         //both of these fail the RESOURCE_URL test, that shouldn't be run
         $rootScope.testUrl = 'https://bad.example.org';
         $$sanitizeUri.and.returnValue('https://clean.example.org');
 
         $rootScope.$apply();
-        expect(element.find('a').attr('xlink:href')).toBe('https://clean.example.org');
-        expect($$sanitizeUri).toHaveBeenCalledWith($rootScope.testUrl, false);
+        expect(elementA.find('a').attr('xlink:href')).toBe('https://clean.example.org');
+        expect(elementImage.find('image').attr('xlink:href')).toBe('https://clean.example.org');
+        // <a> is navigational, so the second argument should be false to reach the aHref whitelist
+        expect($$sanitizeUri).toHaveBeenCalledWith($rootScope.testUrl + 'aTag' , false);
+        // <image> is media inclusion, it should use the imgSrc whitelist
+        expect($$sanitizeUri).toHaveBeenCalledWith($rootScope.testUrl + 'imageTag', true);
       });
     });
 
@@ -11172,7 +11177,6 @@ describe('$compile', function() {
         expect($$sanitizeUri).toHaveBeenCalledWith($rootScope.testUrl, false);
       });
     });
-
 
     it('should have a RESOURCE_URL context for xlink:href by default', function() {
       inject(function($compile, $rootScope) {
