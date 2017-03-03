@@ -193,11 +193,11 @@ function $SceDelegateProvider() {
    *
    * @return {Array} the currently set whitelist array.
    *
-   * The **default value** when no whitelist has been explicitly set is `['self']` allowing only
-   * same origin resource requests.
+   *     The **default value** when no whitelist has been explicitly set is `['self']` allowing only
+   *     same origin resource requests.
    *
    *     <div class="alert alert-warning">
-   *     **Note:** the default whitelist of 'self' is not recommanded if your app shares its origin
+   *     **Note:** the default whitelist of 'self' is not recommended if your app shares its origin
    *     with other apps! It is a good idea to limit it to only your application's directory.
    *     </div>
    *
@@ -335,7 +335,7 @@ function $SceDelegateProvider() {
      * @param {string} type The context in which this value is safe for use, e.g. `$sce.URL`,
      *     `$sce.RESOURCE_URL`, `$sce.HTML`, `$sce.JS` or `$sce.CSS`.
      *
-     * @param {*} value The value that that should be considered trusted.
+     * @param {*} value The value that should be considered trusted.
      * @return {*} A trusted representation of value, that can be used in the given context.
      */
     function trustAs(type, trustedValue) {
@@ -392,9 +392,9 @@ function $SceDelegateProvider() {
      * Takes any input, and either returns a value that's safe to use in the specified context, or
      * throws an exception.
      *
-     * In practice, there's several cases. When given a string, this run checks and sanitization to
-     * make it safe without prior assumptions. When given the result of a {@link
-     * ng.$sceDelegate#trustAs `$sceDelegate.trustAs`} call, this returns the originally supplied
+     * In practice, there are several cases. When given a string, this function runs checks
+     * and sanitization to make it safe without prior assumptions. When given the result of a {@link
+     * ng.$sceDelegate#trustAs `$sceDelegate.trustAs`} call, it returns the originally supplied
      * value if that value's context is valid for this call's context. Finally, this function can
      * also throw when there is no way to turn `maybeTrusted` in a safe value (e.g., no sanitization
      * is available or possible.)
@@ -402,7 +402,7 @@ function $SceDelegateProvider() {
      * @param {string} type The context in which this value is to be used (such as `$sce.HTML`).
      * @param {*} maybeTrusted The result of a prior {@link ng.$sceDelegate#trustAs
      *     `$sceDelegate.trustAs`} call, or anything else (which will not be considered trusted.)
-     * @return {*} A version of value that's safe to use in the given context, or throws an
+     * @return {*} A version of the value that's safe to use in the given context, or throws an
      *     exception if this is impossible.
      */
     function getTrusted(type, maybeTrusted) {
@@ -482,8 +482,9 @@ function $SceDelegateProvider() {
  *
  * To illustrate this, consider the `ng-bind-html` directive. It renders its value directly as HTML:
  * we call that the *context*. When given an untrusted input, AngularJS will attempt to sanitize it
- * before rendering if a sanitizer is available, and throw otherwise. To render the input as-is, you
- * will need to mark it as trusted for that context before attempting to bind it.
+ * before rendering if a sanitizer is available, and throw otherwise. To bypass sanitization and
+ * render the input as-is, you will need to mark it as trusted for that context before attempting
+ * to bind it.
  *
  * As of version 1.2, AngularJS ships with SCE enabled by default.
  *
@@ -515,7 +516,7 @@ function $SceDelegateProvider() {
  * context.  That trust is formalized with a function call. This means that as a developer, you
  * can assume all untrusted bindings are safe. Then, to audit your code for binding security issues,
  * you just need to ensure the values you mark as trusted indeed are safe - because they were
- * received from your server, sanitized by your library, etc.. You can organize your codebase to
+ * received from your server, sanitized by your library, etc. You can organize your codebase to
  * help with this - perhaps allowing only the files in a specific directory to do this.
  * Ensuring that the internal API exposed by that code doesn't markup arbitrary values as safe then
  * becomes a more manageable task.
@@ -575,7 +576,7 @@ function $SceDelegateProvider() {
  * If your expressions are constant literals, they're automatically trusted and you don't need to
  * call `$sce.trustAs` on them (e.g.
  * `<div ng-bind-html="'<b>implicitly trusted</b>'"></div>`) just works. The `$sceDelegate` will
- * also use the `$sanitize` injectable if it is available when binding untrusted values to
+ * also use the `$sanitize` service if it is available when binding untrusted values to
  * `$sce.HTML` context. AngularJS provides an implementation in `angular-sanitize.js`, and if you
  * wish to use it, you will also need to depend on the {@link ngSanitize `ngSanitize`} module in
  * your application.
@@ -917,8 +918,8 @@ function $SceProvider() {
      *
      * @param {*} value The value to mark as trusted for `$sce.CSS` context.
      * @return {*} A wrapped version of value that can be used as a trusted variant
-     *     of your `value` in CSS context. This context is currently unused, so there are almost no
-     *     reasons to use this function so far.
+     *     of your `value` in `$sce.CSS` context. This context is currently unused, so there are
+     *     almost no reasons to use this function so far.
      */
 
     /**
@@ -972,12 +973,12 @@ function $SceProvider() {
      * takes any input, and either returns a value that's safe to use in the specified context,
      * or throws an exception. This function is aware of trusted values created by the `trustAs`
      * function and its shorthands, and when contexts are appropriate, returns the unwrapped value
-     * as-is. Finally, this function can also throw when there is no way to turn maybeTrusted in a
+     * as-is. Finally, this function can also throw when there is no way to turn `maybeTrusted` in a
      * safe value (e.g., no sanitization is available or possible.)
      *
      * @param {string} type The context in which this value is to be used.
      * @param {*} maybeTrusted The result of a prior {@link ng.$sce#trustAs `$sce.trustAs`} call.
-     * @return {*} The value the was originally provided to {@link ng.$sce#trustAs `$sce.trustAs`}
+     * @return {*} The value that was originally provided to {@link ng.$sce#trustAs `$sce.trustAs`}
      *     if valid in this context. Otherwise, throws an exception.
      */
 
