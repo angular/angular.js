@@ -150,37 +150,21 @@ To learn more about AngularJS scopes, see the {@link ng.$rootScope.Scope Angular
 
 # Testing
 
-The "AngularJS way" of separating controller from the view, makes it easy to test code as it is being
-developed. If our controller were available on the global namespace, we could simply instantiate it
-with a mock scope object:
+## Testing Controllers
 
-<br />
-```js
-describe('PhoneListController', function() {
+The "AngularJS way" of separating the controller from the view makes it easy to test code as it is being
+developed. In the section "Model and Controller" we have registered our controller via a constructor
+function on the `phonecatApp` module.
 
-  it('should create a `phones` model with 3 phones', function() {
-    var scope = {};
-    var ctrl = new PhoneListController(scope);
+In tests, we use an AngularJS service, `$controller`, which will retrieve a controller by name. It
+also takes a second argument - a map of dependencies that should be injected.
 
-    expect(scope.phones.length).toBe(3);
-  });
+The following test instantiates `PhoneListController` with a mock scope object,
+and verifies that the phones array property on the scope contains three records.
 
-});
-```
-
-The test instantiates `PhoneListController` and verifies that the phones array property on the
-scope contains three records. This example demonstrates how easy it is to create a unit test for
+This example demonstrates how easy it is to create a unit test for
 code in AngularJS. Since testing is such a critical part of software development, we make it easy to
 create tests in AngularJS so that developers are encouraged to write them.
-
-
-## Testing non-global Controllers
-
-In practice, you will not want to have your controller functions in the global namespace. Instead,
-you can see that we have registered it via a constructor function on the `phonecatApp` module.
-
-In this case AngularJS provides a service, `$controller`, which will retrieve your controller by name.
-Here is the same test using `$controller`:
 
 <br />
 **`app/app.spec.js`:**

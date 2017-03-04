@@ -156,4 +156,35 @@ describe('module loader', function() {
   it('should expose `$$minErr` on the `angular` object', function() {
     expect(window.angular.$$minErr).toEqual(jasmine.any(Function));
   });
+
+  describe('Module', function() {
+    describe('info()', function() {
+      var theModule;
+
+      beforeEach(function() {
+        theModule = angular.module('theModule', []);
+      });
+
+      it('should default to an empty object', function() {
+        expect(theModule.info()).toEqual({});
+      });
+
+      it('should store the object passed as a param', function() {
+        theModule.info({ version: '1.2' });
+        expect(theModule.info()).toEqual({ version: '1.2' });
+      });
+
+      it('should throw if the parameter is not an object', function() {
+        expect(function() {
+          theModule.info('some text');
+        }).toThrowMinErr('ng', 'aobj');
+      });
+
+      it('should completely replace the previous info object', function() {
+        theModule.info({ value: 'X' });
+        theModule.info({ newValue: 'Y' });
+        expect(theModule.info()).toEqual({ newValue: 'Y' });
+      });
+    });
+  });
 });

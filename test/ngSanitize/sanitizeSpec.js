@@ -246,6 +246,26 @@ describe('HTML', function() {
       .toEqual('<p>text1text2</p>');
   });
 
+  it('should remove clobbered elements', function() {
+    inject(function($sanitize) {
+      expect(function() {
+        $sanitize('<form><input name="parentNode" /></form>');
+      }).toThrowMinErr('$sanitize', 'elclob');
+
+      expect(function() {
+        $sanitize('<form><div><div><input name="parentNode" /></div></div></form>');
+      }).toThrowMinErr('$sanitize', 'elclob');
+
+      expect(function() {
+        $sanitize('<form><input name="nextSibling" /></form>');
+      }).toThrowMinErr('$sanitize', 'elclob');
+
+      expect(function() {
+        $sanitize('<form><div><div><input name="nextSibling" /></div></div></form>');
+      }).toThrowMinErr('$sanitize', 'elclob');
+    });
+  });
+
 
   describe('SVG support', function() {
 

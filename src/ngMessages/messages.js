@@ -267,6 +267,7 @@ angular.module('ngMessages', [], function initAngularHelpers() {
   isString = angular.isString;
   jqLite = angular.element;
 })
+  .info({ angularVersion: '"NG_VERSION_FULL"' })
 
   /**
    * @ngdoc directive
