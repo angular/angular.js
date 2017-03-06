@@ -230,6 +230,10 @@ module.exports = function(grunt) {
         dest: 'build/angular-messages.js',
         src: util.wrap(files['angularModules']['ngMessages'], 'module')
       },
+      style: {
+        dest: 'build/angular-style.js',
+        src: util.wrap(files['angularModules']['ngStyle'], 'module')
+      },
       animate: {
         dest: 'build/angular-animate.js',
         src: util.wrap(files['angularModules']['ngAnimate'], 'module')
@@ -268,6 +272,7 @@ module.exports = function(grunt) {
       resource: 'build/angular-resource.js',
       route: 'build/angular-route.js',
       sanitize: 'build/angular-sanitize.js',
+      style: 'build/angular-style.js',
       aria: 'build/angular-aria.js',
       parseext: 'build/angular-parse-ext.js'
     },

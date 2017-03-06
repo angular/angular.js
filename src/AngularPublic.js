@@ -94,7 +94,8 @@
   $$RAFProvider,
   $WindowProvider,
   $$jqLiteProvider,
-  $$CookieReaderProvider
+  $$CookieReaderProvider,
+  $$StyleComponentProvider
 */
 
 
@@ -254,6 +255,7 @@ function publishExternalAPI(angular) {
         $sce: $SceProvider,
         $sceDelegate: $SceDelegateProvider,
         $sniffer: $SnifferProvider,
+        $$styleComponent: $$StyleComponentProvider,
         $templateCache: $TemplateCacheProvider,
         $templateRequest: $TemplateRequestProvider,
         $$testability: $$TestabilityProvider,

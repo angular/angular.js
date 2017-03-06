@@ -40,6 +40,7 @@ var angularFiles = {
     'src/ng/sanitizeUri.js',
     'src/ng/sce.js',
     'src/ng/sniffer.js',
+    'src/ng/styleComponent.js',
     'src/ng/templateRequest.js',
     'src/ng/testability.js',
     'src/ng/timeout.js',
@@ -139,6 +140,9 @@ var angularFiles = {
       'src/ngSanitize/sanitize.js',
       'src/ngSanitize/filter/linky.js'
     ],
+    'ngStyle': [
+      'src/ngStyle/style.js'
+    ],
     'ngMock': [
       'src/ngMock/angular-mocks.js',
       'src/ngMock/browserTrigger.js'
@@ -202,7 +206,8 @@ var angularFiles = {
     'test/jquery_alias.js',
     'src/angular-bootstrap.js',
     'src/ngScenario/angular-bootstrap.js',
-    'src/angular.bind.js'
+    'src/angular.bind.js',
+    'src/ngStyle/style.js'
   ],
 
   'karmaScenario': [
@@ -240,7 +245,8 @@ var angularFiles = {
     'src/angular-bootstrap.js',
     'src/ngScenario/angular-bootstrap.js',
     'test/jquery_remove.js',
-    'src/angular.bind.js'
+    'src/angular.bind.js',
+    'src/ngStyle/style.js'
   ]
 };
 
@@ -263,6 +269,7 @@ angularFiles['angularSrcModules'] = [].concat(
   angularFiles['angularModules']['ngResource'],
   angularFiles['angularModules']['ngRoute'],
   angularFiles['angularModules']['ngSanitize'],
+  angularFiles['angularModules']['ngStyle'],
   angularFiles['angularModules']['ngMock'],
   angularFiles['angularModules']['ngTouch'],
   angularFiles['angularModules']['ngAria']

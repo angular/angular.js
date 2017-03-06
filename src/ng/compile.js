@@ -1246,6 +1246,8 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         controllerAs: identifierForController(options.controller) || options.controllerAs || '$ctrl',
         template: makeInjectable(template),
         templateUrl: makeInjectable(options.templateUrl),
+        styles: options.styles,
+        styleUrls: options.styleUrls,
         transclude: options.transclude,
         scope: {},
         bindToController: options.bindings || {},
@@ -1490,9 +1492,9 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
   this.$get = [
             '$injector', '$interpolate', '$exceptionHandler', '$templateRequest', '$parse',
-            '$controller', '$rootScope', '$sce', '$animate', '$$sanitizeUri',
+            '$controller', '$rootScope', '$sce', '$animate', '$$sanitizeUri','$$styleComponent',
     function($injector,   $interpolate,   $exceptionHandler,   $templateRequest,   $parse,
-             $controller,   $rootScope,   $sce,   $animate,   $$sanitizeUri) {
+             $controller,   $rootScope,   $sce,   $animate,   $$sanitizeUri, $$styleComponent) {
 
     var SIMPLE_ATTR_NAME = /^\w/;
     var specialAttrHolder = window.document.createElement('div');
@@ -2540,6 +2542,12 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             childTranscludeFn.$$slots = slots;
           }
         }
+        
+        if (directive.styles) {
+            $$styleComponent.registerStyles(directiveName, directive.styles);
+        } else if (directive.styleUrls) {
+            $$styleComponent.registerStyleUrls(directiveName, directive.styleUrls);
+        }
 
         if (directive.template) {
           hasTemplate = true;
@@ -2713,6 +2721,13 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                                         newIsolateScopeDirective);
           if (scopeBindingInfo.removeWatches) {
             isolateScope.$on('$destroy', scopeBindingInfo.removeWatches);
+          }
+
+          if ($$styleComponent.isRegistered(directiveName)) {
+            $$styleComponent.loadStyles(directiveName);
+            isolateScope.$on('$destroy', function () {
+              $$styleComponent.unLoadStyles(controllerDirective.name);
+            });
           }
         }
 
@@ -3067,7 +3082,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           beforeTemplateCompileNode = $compileNode[0],
           origAsyncDirective = directives.shift(),
           derivedSyncDirective = inherit(origAsyncDirective, {
-            templateUrl: null, transclude: null, replace: null, $$originalDirective: origAsyncDirective
+            templateUrl: null, transclude: null, replace: null, styleUrls: null, styles: null, $$originalDirective: origAsyncDirective
           }),
           templateUrl = (isFunction(origAsyncDirective.templateUrl))
               ? origAsyncDirective.templateUrl($compileNode, tAttrs)
