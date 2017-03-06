@@ -98,11 +98,10 @@ describe('basic usage', function() {
   });
 
   it('should include a request body when calling custom method with hasBody is true', function() {
-    var instant = {name: 'info.txt', value: 'V2hlbiB0aGUgdGltZSBlbmRzLg=='};
-    var fid = 42;
-    var created = {fid: fid, filname: 'fooresource', value: 'V2hlbiB0aGUgdGltZSBlbmRzLg=='};
+    var instant = {name: 'info.txt'};
     var condition = {at: '2038-01-19 03:14:08'};
-    $httpBackend.expect('CREATE', '/fooresource', instant).respond(created);
+
+    $httpBackend.expect('CREATE', '/fooresource', instant).respond({fid: 42});
     $httpBackend.expect('DELETE', '/fooresource', condition).respond({});
 
     var r = $resource('/fooresource', {}, {
@@ -115,7 +114,7 @@ describe('basic usage', function() {
 
     $httpBackend.flush();
 
-    expect(creationResponse.fid).toBe(fid);
+    expect(creationResponse.fid).toBe(42);
     expect(deleteResponse.$resolved).toBe(true);
   });
 
