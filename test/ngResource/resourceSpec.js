@@ -97,19 +97,48 @@ describe('basic usage', function() {
     $httpBackend.flush();
   });
 
-  it('should include a request body when calling custom delete with hasBody is true', function() {
+  it('should include a request body when calling custom method with hasBody is true', function() {
+    var instant = {name: 'info.txt', value: 'V2hlbiB0aGUgdGltZSBlbmRzLg=='};
+    var fid = 42;
+    var created = {fid: fid, filname: 'fooresource', value: 'V2hlbiB0aGUgdGltZSBlbmRzLg=='};
     var condition = {at: '2038-01-19 03:14:08'};
+    $httpBackend.expect('CREATE', '/fooresource', instant).respond(created);
     $httpBackend.expect('DELETE', '/fooresource', condition).respond({});
 
     var r = $resource('/fooresource', {}, {
+      create: {method: 'CREATE', hasBody: true},
       delete: {method: 'DELETE', hasBody: true}
     });
 
+    var creationResponse = r.create(instant);
     var deleteResponse = r.delete(condition);
 
     $httpBackend.flush();
 
+    expect(creationResponse.fid).toBe(fid);
     expect(deleteResponse.$resolved).toBe(true);
+  });
+
+  it('should not include a request body if hasBody is false on POST, PUT and PATCH', function() {
+    $httpBackend.expect('POST', '/foo').respond({});
+    $httpBackend.expect('PUT', '/foo').respond({});
+    $httpBackend.expect('PATCH', '/foo').respond({});
+
+    var R = $resource('/foo', {}, {
+      post: {method: 'POST', hasBody: false},
+      put: {method: 'PUT', hasBody: false},
+      patch: {method: 'PATCH', hasBody: false}
+    });
+
+    var postResponse = R.post();
+    var putResponse = R.put();
+    var patchResponse = R.patch();
+
+    $httpBackend.flush();
+
+    expect(postResponse.$resolved).toBe(true);
+    expect(putResponse.$resolved).toBe(true);
+    expect(patchResponse.$resolved).toBe(true);
   });
 
   it('should expect a body if hasBody is true', function() {
