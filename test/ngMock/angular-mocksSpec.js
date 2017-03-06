@@ -2039,89 +2039,29 @@ describe('ngMock', function() {
 
   describe('$controllerDecorator', function() {
 
-    describe('with `preAssignBindingsEnabled(true)`', function() {
-
-      beforeEach(module(function($compileProvider) {
-        $compileProvider.preAssignBindingsEnabled(true);
-      }));
-
-
-      it('should support creating controller with bindings', function() {
-        var called = false;
-        var data = [
-          { name: 'derp1', id: 0 },
-          { name: 'testname', id: 1 },
-          { name: 'flurp', id: 2 }
-        ];
-        module(function($controllerProvider) {
-          $controllerProvider.register('testCtrl', function() {
-            expect(this.data).toBe(data);
-            called = true;
-          });
-        });
-        inject(function($controller, $rootScope) {
-          var ctrl = $controller('testCtrl', { scope: $rootScope }, { data: data });
-          expect(ctrl.data).toBe(data);
-          expect(called).toBe(true);
+    it('should support creating controller with bindings', function() {
+      var called = false;
+      var data = [
+        { name: 'derp1', id: 0 },
+        { name: 'testname', id: 1 },
+        { name: 'flurp', id: 2 }
+      ];
+      module(function($controllerProvider) {
+        $controllerProvider.register('testCtrl', function() {
+          expect(this.data).toBeUndefined();
+          called = true;
         });
       });
-
-
-      it('should support assigning bindings when a value is returned from the constructor',
-        function() {
-          var called = false;
-          var data = [
-            { name: 'derp1', id: 0 },
-            { name: 'testname', id: 1 },
-            { name: 'flurp', id: 2 }
-          ];
-          module(function($controllerProvider) {
-            $controllerProvider.register('testCtrl', function() {
-              expect(this.data).toBe(data);
-              called = true;
-              return {};
-            });
-          });
-          inject(function($controller, $rootScope) {
-            var ctrl = $controller('testCtrl', { scope: $rootScope }, { data: data });
-            expect(ctrl.data).toBe(data);
-            expect(called).toBe(true);
-          });
-        }
-      );
-
-
-      if (/chrome/.test(window.navigator.userAgent)) {
-        it('should support assigning bindings to class-based controller', function() {
-          var called = false;
-          var data = [
-            { name: 'derp1', id: 0 },
-            { name: 'testname', id: 1 },
-            { name: 'flurp', id: 2 }
-          ];
-          module(function($controllerProvider) {
-            // eslint-disable-next-line no-eval
-            var TestCtrl = eval('(class { constructor() { called = true; } })');
-            $controllerProvider.register('testCtrl', TestCtrl);
-          });
-          inject(function($controller, $rootScope) {
-            var ctrl = $controller('testCtrl', { scope: $rootScope }, { data: data });
-            expect(ctrl.data).toBe(data);
-            expect(called).toBe(true);
-          });
-        });
-      }
+      inject(function($controller, $rootScope) {
+        var ctrl = $controller('testCtrl', { scope: $rootScope }, { data: data });
+        expect(ctrl.data).toBe(data);
+        expect(called).toBe(true);
+      });
     });
 
 
-    describe('with `preAssignBindingsEnabled(false)`', function() {
-
-      beforeEach(module(function($compileProvider) {
-        $compileProvider.preAssignBindingsEnabled(false);
-      }));
-
-
-      it('should support creating controller with bindings', function() {
+    it('should support assigning bindings when a value is returned from the constructor',
+      function() {
         var called = false;
         var data = [
           { name: 'derp1', id: 0 },
@@ -2132,6 +2072,7 @@ describe('ngMock', function() {
           $controllerProvider.register('testCtrl', function() {
             expect(this.data).toBeUndefined();
             called = true;
+            return {};
           });
         });
         inject(function($controller, $rootScope) {
@@ -2139,54 +2080,30 @@ describe('ngMock', function() {
           expect(ctrl.data).toBe(data);
           expect(called).toBe(true);
         });
-      });
-
-
-      it('should support assigning bindings when a value is returned from the constructor',
-        function() {
-          var called = false;
-          var data = [
-            { name: 'derp1', id: 0 },
-            { name: 'testname', id: 1 },
-            { name: 'flurp', id: 2 }
-          ];
-          module(function($controllerProvider) {
-            $controllerProvider.register('testCtrl', function() {
-              expect(this.data).toBeUndefined();
-              called = true;
-              return {};
-            });
-          });
-          inject(function($controller, $rootScope) {
-            var ctrl = $controller('testCtrl', { scope: $rootScope }, { data: data });
-            expect(ctrl.data).toBe(data);
-            expect(called).toBe(true);
-          });
-        }
-      );
-
-
-      if (/chrome/.test(window.navigator.userAgent)) {
-        it('should support assigning bindings to class-based controller', function() {
-          var called = false;
-          var data = [
-            { name: 'derp1', id: 0 },
-            { name: 'testname', id: 1 },
-            { name: 'flurp', id: 2 }
-          ];
-          module(function($controllerProvider) {
-            // eslint-disable-next-line no-eval
-            var TestCtrl = eval('(class { constructor() { called = true; } })');
-            $controllerProvider.register('testCtrl', TestCtrl);
-          });
-          inject(function($controller, $rootScope) {
-            var ctrl = $controller('testCtrl', { scope: $rootScope }, { data: data });
-            expect(ctrl.data).toBe(data);
-            expect(called).toBe(true);
-          });
-        });
       }
-    });
+    );
+
+
+    if (/chrome/.test(window.navigator.userAgent)) {
+      it('should support assigning bindings to class-based controller', function() {
+        var called = false;
+        var data = [
+          { name: 'derp1', id: 0 },
+          { name: 'testname', id: 1 },
+          { name: 'flurp', id: 2 }
+        ];
+        module(function($controllerProvider) {
+          // eslint-disable-next-line no-eval
+          var TestCtrl = eval('(class { constructor() { called = true; } })');
+          $controllerProvider.register('testCtrl', TestCtrl);
+        });
+        inject(function($controller, $rootScope) {
+          var ctrl = $controller('testCtrl', { scope: $rootScope }, { data: data });
+          expect(ctrl.data).toBe(data);
+          expect(called).toBe(true);
+        });
+      });
+    }
   });
 
 
