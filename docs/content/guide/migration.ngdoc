@@ -1687,12 +1687,12 @@ ngModelCtrl.$formatters.push(function(value) {
 
 Due to [0e001084](https://github.com/angular/angular.js/commit/0e001084ffff8674efad289d37cb16cc4e46b50a),
 The `ngPattern` and `pattern` directives will validate the regex
-against the `viewValue` of `ngModel`, i.e. the value of the model
-before the $parsers are applied. Previously, the modelValue
+against the `$viewValue` of `ngModel`, i.e. the value of the model
+before the $parsers are applied. Previously, the `$modelValue`
 (the result of the $parsers) was validated.
 
 This fixes issues where `input[date]` and `input[number]` cannot
-be validated because the viewValue string is parsed into
+be validated because the `$viewValue` string is parsed into
 `Date` and `Number` respectively (starting with Angular 1.3).
 It also brings the directives in line with HTML5 constraint
 validation, which validates against the input value.
@@ -1702,7 +1702,7 @@ in Angular 1.2, the value that was validated by pattern could have
 been manipulated by the $parsers, as all validation was done
 inside this pipeline.
 
-If you rely on the pattern being validated against the modelValue,
+If you rely on the pattern being validated against the `$modelValue`,
 you must create your own validator directive that overwrites
 the built-in pattern validator:
 
