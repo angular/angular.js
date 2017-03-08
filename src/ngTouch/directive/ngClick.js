@@ -156,8 +156,8 @@ var ngTouchClickDirectiveFactory = ['$parse', '$timeout', '$rootElement',
     }
 
     // If we didn't find an allowable region, bust the click.
-    event.stopPropagation();
-    event.preventDefault();
+    // event.stopPropagation();
+    // event.preventDefault();
 
     // Blur focused form elements
     if (event.target && event.target.blur) {
