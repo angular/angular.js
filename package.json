@@ -1,5 +1,6 @@
 {
   "name": "angularjs",
+  "version": "1.2.24",
   "branchVersion": "1.2.*",
   "distTag": "ie8_compat",
   "repository": {
