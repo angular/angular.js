@@ -1,3 +1,65 @@
+<a name="1.6.3"></a>
+# 1.6.3 scriptalicious-bootstrapping (2017-03-08)
+
+
+## Security Related
+These fixes are relevant only to AngularJS apps that are part of a browser extension.
+
+- **Angular:**
+  - do not auto-bootstrap if the `src` exists but is empty
+  ([3536e8](https://github.com/angular/angular.js/commit/3536e83d8a085b02bd6dcec8324800b7e6c734e4))
+  - do not auto bootstrap if the currentScript has been clobbered
+  ([95f964](https://github.com/angular/angular.js/commit/95f964b827b6f5b5aab10af54f7831316c7a9935))
+  - do not auto-bootstrap if the script source is bad and inside SVG
+  ([c8f78a](https://github.com/angular/angular.js/commit/c8f78a8ca9debc33a6deaf951f344b8d372bf210))
+
+
+## Bug Fixes
+- **$log:** don't parse error stacks manually outside of IE/Edge
+  ([64e5af](https://github.com/angular/angular.js/commit/64e5afc4786fdfd850c6bdb488a5aa2b8b077f74),
+  [#15590](https://github.com/angular/angular.js/issues/15590),
+  [#15767](https://github.com/angular/angular.js/issues/15767))
+- **$sanitize:** prevent clobbered elements from freezing the browser
+  ([3bb1dd](https://github.com/angular/angular.js/commit/3bb1dd5d7f7dcde6fea5a3148f8f10e92f451e9d),
+  [#15699](https://github.com/angular/angular.js/issues/15699))
+- **$animate:**
+  - reset `classNameFilter` to `null` when a disallowed RegExp is used
+  ([a584fb](https://github.com/angular/angular.js/commit/a584fb6e1569fc1dd85e23b251a7c126edc2dd5b),
+  [#14913](https://github.com/angular/angular.js/issues/14913))
+  - improve detection on `ng-animate` in `classNameFilter` RegExp
+  ([1f1331](https://github.com/angular/angular.js/commit/1f13313f403381581e1c31c57ebfe7a96546c6e4),
+  [#14806](https://github.com/angular/angular.js/issues/14806))
+- **filterFilter:** don't throw if `key.charAt` is not a function
+  ([f27d19](https://github.com/angular/angular.js/commit/f27d19ed606bf05ba41698159ebbc5fbc195033e),
+  [#15644](https://github.com/angular/angular.js/issues/15644),
+  [#15660](https://github.com/angular/angular.js/issues/15660))
+- **select:**
+  - add attribute "selected" for select[multiple]
+  ([851367](https://github.com/angular/angular.js/commit/8513674911300b27d518383a905fde9b3f25f7ae))
+  - keep original selection when using shift to add options in IE/Edge
+  ([97b74a](https://github.com/angular/angular.js/commit/97b74ad6fbcbc4b63e37e9eb44962d6f8de83e8b),
+  [#15675](https://github.com/angular/angular.js/issues/15675),
+  [#15676](https://github.com/angular/angular.js/issues/15676))
+- **$jsonpCallbacks:** allow `$window` to be mocked in unit tests
+  ([5ca0de](https://github.com/angular/angular.js/commit/5ca0de64873c32ab2f540a3226e73c4175a15c50),
+  [#15685](https://github.com/angular/angular.js/issues/15685),
+  [#15686](https://github.com/angular/angular.js/issues/15686))
+
+
+## New Features
+- **info:** add `angularVersion` info to each module
+  ([1e582e](https://github.com/angular/angular.js/commit/1e582e4fa486f340150bba95927f1b26d9142de2))
+- **$injector:** add new `modules` property
+  ([742123](https://github.com/angular/angular.js/commit/7421235f247e5b7113345401bc5727cfbf81ddc2))
+- **Module:** add `info()` method
+  ([09ba69](https://github.com/angular/angular.js/commit/09ba69078de6ba52c70571b82b6205929f6facc5),
+  [#15225](https://github.com/angular/angular.js/issues/15225))
+- **errorHandlingConfig:** make the depth for object stringification in errors configurable
+  ([4a5eaf](https://github.com/angular/angular.js/commit/4a5eaf7bec85ceca8b934ebaff4d1834a1a09f57),
+  [#15402](https://github.com/angular/angular.js/issues/15402),
+  [#15433](https://github.com/angular/angular.js/issues/15433))
+
+
 <a name="1.6.2"></a>
 # 1.6.2 llamacorn-lovehug (2017-02-07)
 
