@@ -11388,7 +11388,7 @@ describe('$compile', function() {
         element = $compile('<iframe srcdoc="{{html}}"></iframe>')($rootScope);
         $rootScope.html = $sce.trustAsHtml('<div onclick="">hello</div>');
         $rootScope.$digest();
-        expect(angular.lowercase(element.attr('srcdoc'))).toEqual('<div onclick="">hello</div>');
+        expect(lowercase(element.attr('srcdoc'))).toEqual('<div onclick="">hello</div>');
       }));
     });
   }
