@@ -54,12 +54,13 @@ var ngTouchClickDirectiveFactory = ['$parse', '$timeout', '$rootElement',
   var MOVE_TOLERANCE = 12; // 12px seems to work in most mobile browsers.
   var PREVENT_DURATION = 2500; // 2.5 seconds maximum from preventGhostClick call to click
   var CLICKBUSTER_THRESHOLD = 25; // 25 pixels in any dimension is the limit for busting clicks.
+  var EVENT_REFIRE_THRESHOLD = 25; // 25ms is reasonable enough for accepting next event
 
   var ACTIVE_CLASS_NAME = 'ng-click-active';
   var lastPreventedTime;
   var touchCoordinates;
   var lastLabelClickCoordinates;
-
+  var lastEventTriggeredTime;
 
   // TAP EVENTS AND GHOST CLICKS
   //
@@ -279,10 +280,14 @@ var ngTouchClickDirectiveFactory = ['$parse', '$timeout', '$rootElement',
     // - On mobile browsers, the simulated "fast" click will call this.
     // - But the browser's follow-up slow click will be "busted" before it reaches this handler.
     // Therefore it's safe to use this directive on both mobile and desktop.
+    // Debounce the click event to make sure only one click event is fired within set threshold.
     element.on('click', function(event, touchend) {
-      scope.$apply(function() {
-        clickHandler(scope, {$event: (touchend || event)});
-      });
+      if(!lastEventTriggeredTime || (event.timeStamp - lastEventTriggeredTime > EVENT_REFIRE_THRESHOLD)){
+        lastEventTriggeredTime = event.timeStamp;
+        scope.$apply(function() {
+          clickHandler(scope, {$event: (touchend || event)});
+        });
+      }
     });
 
     element.on('mousedown', function(event) {
