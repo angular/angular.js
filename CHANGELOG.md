@@ -2,9 +2,7 @@
 # 1.6.3 scriptalicious-bootstrapping (2017-03-08)
 
 
-## Security Related
-These fixes are relevant only to AngularJS apps that are part of a browser extension.
-
+## Bug Fixes
 - **Angular:**
   - do not auto-bootstrap if the `src` exists but is empty
   ([3536e8](https://github.com/angular/angular.js/commit/3536e83d8a085b02bd6dcec8324800b7e6c734e4))
@@ -12,9 +10,6 @@ These fixes are relevant only to AngularJS apps that are part of a browser exten
   ([95f964](https://github.com/angular/angular.js/commit/95f964b827b6f5b5aab10af54f7831316c7a9935))
   - do not auto-bootstrap if the script source is bad and inside SVG
   ([c8f78a](https://github.com/angular/angular.js/commit/c8f78a8ca9debc33a6deaf951f344b8d372bf210))
-
-
-## Bug Fixes
 - **$log:** don't parse error stacks manually outside of IE/Edge
   ([64e5af](https://github.com/angular/angular.js/commit/64e5afc4786fdfd850c6bdb488a5aa2b8b077f74),
   [#15590](https://github.com/angular/angular.js/issues/15590),
@@ -34,7 +29,7 @@ These fixes are relevant only to AngularJS apps that are part of a browser exten
   [#15644](https://github.com/angular/angular.js/issues/15644),
   [#15660](https://github.com/angular/angular.js/issues/15660))
 - **select:**
-  - add attribute "selected" for select[multiple]
+  - add attribute "selected" for `select[multiple]`
   ([851367](https://github.com/angular/angular.js/commit/8513674911300b27d518383a905fde9b3f25f7ae))
   - keep original selection when using shift to add options in IE/Edge
   ([97b74a](https://github.com/angular/angular.js/commit/97b74ad6fbcbc4b63e37e9eb44962d6f8de83e8b),
