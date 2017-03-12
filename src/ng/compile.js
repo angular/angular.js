@@ -2542,7 +2542,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             childTranscludeFn.$$slots = slots;
           }
         }
-        
+
         if (directive.styles) {
             $$styleComponent.registerStyles(directiveName, directive.styles);
         } else if (directive.styleUrls) {
@@ -2725,7 +2725,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
           if ($$styleComponent.isRegistered(directiveName)) {
             $$styleComponent.loadStyles(directiveName);
-            isolateScope.$on('$destroy', function () {
+            isolateScope.$on('$destroy', function() {
               $$styleComponent.unLoadStyles(controllerDirective.name);
             });
           }
