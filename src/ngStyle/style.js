@@ -10,7 +10,6 @@ var $styleMinErr = angular.$$minErr('ngStyle');
 /**
  * @ngdoc module
  * @name ngStyle
- * @this
  *
  * @description
  *
@@ -366,10 +365,11 @@ function $StyleCacheProvider() {
     }];
 }
 
-///
-/// used by the applyDirectivesToNode function to add dynamicaly styles if decalared
-/// on the component definition object using the styleUrls property or styles.
-/// see component example to learn more
+//
+// used by the applyDirectivesToNode function to add dynamicaly styles if decalared
+// on the component definition object using the styleUrls property or styles.
+// see component example to learn more
+/** @this */
 function $$StyleComponentProvider() {
     var shouldRemoveComponentsStyles = false;
 
