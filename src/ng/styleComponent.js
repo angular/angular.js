@@ -12,15 +12,15 @@
  *
  * To see the functional implementation check out `src/ngStyle/style.js`.
  */
-  var $$StyleComponentProvider = /** @this */ function () {
+  var $$StyleComponentProvider = /** @this */ function() {
 
-    this.$get = [function () {
+    this.$get = [function() {
         return {
           registerStyles: noop,
           registerStyleUrls: noop,
           loadStyles: noop,
           unLoadStyles: noop,
-          isRegistered: function () { return false; }
+          isRegistered: function() { return false; }
         };
       }];
   };
