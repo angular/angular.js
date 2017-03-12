@@ -15,8 +15,8 @@ var $styleMinErr = angular.$$minErr('ngStyle');
  * # ngStyle
  *
  * The `ngStyle` module provides styles requset, styles caching and style management for
- * AngularJS apps. The module also provide new ability for components to add styles url or style text.  
- * 
+ * AngularJS apps. The module also provide new ability for components to add styles url or style text.
+ *
  * ## Example
  * See {@link ngRoute.$route#example $route} for an example of configuring and using `ngRoute`.
  *
@@ -44,7 +44,7 @@ ngStyleModule.provider('$$styleComponent', $$StyleComponentProvider);
 function $StyleProvider() {
 
     this.$get = ['$exceptionHandler', '$styleRequest', '$q',
-        function ($exceptionHandler, $styleRequest, $q) {
+        function($exceptionHandler, $styleRequest, $q) {
             var activeRequests = {};
 
             return {
@@ -63,15 +63,15 @@ function $StyleProvider() {
                  *
                  * ### Example
                  *   ```js
-                 * 
+                 *
                  *     // using path
                  *     $style.addStyleUrls('./path/to/css/file.css').then(function(stylesArray){
-                 *          
+                 *
                  *     });
                  *
                  *     // or using multiple pathes
                  *     $style.addStyleUrls(['./path/to/css/file1.css', './path/to/css/file2.css']).then(function(stylesArray){
-                 *          
+                 *
                  *     });
                  *
                  *   ```
@@ -92,9 +92,9 @@ function $StyleProvider() {
                  *
                  * ### Example
                  *   ```js
-                 *     // use id 
+                 *     // use id
                  *     $style.removeStyles('myElementId');
-                 * 
+                 *
                  *     // or you can use path
                  *     $style.removeStyles('./path/to/css/file.css');
                  *
@@ -126,7 +126,7 @@ function $StyleProvider() {
             };
 
             function getStyleElement(path) {
-                return document.getElementById(path);
+                return window.document.getElementById(path);
             }
 
             function addStyleUrls(path) {
@@ -139,7 +139,7 @@ function $StyleProvider() {
                     path = [path];
                 }
 
-                return loadStyleUrls(path).then(function (data) {
+                return loadStyleUrls(path).then(function(data) {
                     var styles = [], i, l, id, css;
 
                     for (i = 0, l = path.length; i < l; i++) {
@@ -154,7 +154,7 @@ function $StyleProvider() {
                     }
 
                     if (styles.length)
-                        angular.element(document.head).append(styles.join(''));
+                        angular.element(window.document.head).append(styles.join(''));
                 });
             }
 
@@ -166,16 +166,16 @@ function $StyleProvider() {
                 }
 
                 if (isArray(path)) {
-                    forEach(path, function (url) {
+                    forEach(path, function(url) {
                         if (!activeRequests[url]) {
                             activeRequests[url] = $styleRequest(url);
                         }
 
-                        this.push(activeRequests[url]);
+                        requests.push(activeRequests[url]);
                     }, requests);
 
-                    return $q.all(requests).finally(function () {
-                        forEach(path, function (url) {
+                    return $q.all(requests).finally(function() {
+                        forEach(path, function(url) {
                             delete activeRequests[url];
                         }, requests);
                     });
@@ -190,7 +190,7 @@ function $StyleProvider() {
                 if (isString(path)) {
                     path = [path];
                 }
-                forEach(path, function (url) {
+                forEach(path, function(url) {
                     elements.push(getStyleElement(url));
                 });
 
@@ -204,7 +204,7 @@ function $StyleProvider() {
                 }
 
                 if (isString(id) && isString(css) && !getStyleElement(id)) {
-                    angular.element(document.head).append('<style type="text/css" id="' + id + '">' + css + '</style>');
+                    angular.element(window.document.head).append('<style type="text/css" id="' + id + '">' + css + '</style>');
                 }
             }
         }];
@@ -236,14 +236,14 @@ function $StyleRequestProvider() {
      * The options to be passed to the {@link $http} service when making the request.
      * You can use this to override options such as the "Accept" header for template requests.
      *
-     * The {@link $styleRequest} will set the `cache` 
+     * The {@link $styleRequest} will set the `cache`
      *
      * @param {string=} value new value for the {@link $http} options.
      * @returns {string|self} Returns the {@link $http} options when used as getter and self if used as setter.
      *
      */
 
-    this.httpOptions = function (val) {
+    this.httpOptions = function(val) {
         if (val) {
             httpOptions = val;
             return this;
@@ -274,7 +274,7 @@ function $StyleRequestProvider() {
      * @property {number} totalPendingRequests total amount of pending template requests being downloaded.
      */
     this.$get = ['$exceptionHandler', '$styleCache', '$http', '$q', '$sce',
-        function ($exceptionHandler, $styleCache, $http, $q, $sce) {
+        function($exceptionHandler, $styleCache, $http, $q, $sce) {
 
             function handleRequestFn(styleUrl, ignoreRequestError) {
                 handleRequestFn.totalPendingRequests++;
@@ -287,10 +287,10 @@ function $StyleRequestProvider() {
                 httpOptions.transformResponse = null;
 
                 return $http.get(styleUrl, httpOptions)
-                    .finally(function () {
+                    .finally(function() {
                         handleRequestFn.totalPendingRequests--;
                     })
-                    .then(function (response) {
+                    .then(function(response) {
                         $styleCache.put(styleUrl, response.data);
                         return response.data;
                     }, handleError);
@@ -344,7 +344,7 @@ function $StyleRequestProvider() {
  * Or to retrieve multiple styles later, simply use it in your component:
  * ```js
  * myApp.component('myComponent', {
- *    styleUrls: ['styleId1.css', 'styleId2.css'] 
+ *    styleUrls: ['styleId1.css', 'styleId2.css']
  * });
  * ```
  *
@@ -359,13 +359,13 @@ function $StyleRequestProvider() {
  * Requires the {@link ngStyle `ngStyle`} module to be installed.
  */
 function $StyleCacheProvider() {
-    this.$get = ['$cacheFactory', function ($cacheFactory) {
+    this.$get = ['$cacheFactory', function($cacheFactory) {
         return $cacheFactory('styles');
     }];
 }
 
 ///
-/// used by the applyDirectivesToNode function to add dynamicaly styles if decalared 
+/// used by the applyDirectivesToNode function to add dynamicaly styles if decalared
 /// on the component definition object using the styleUrls property or styles.
 /// see component example to learn more
 function $$StyleComponentProvider() {
@@ -375,14 +375,14 @@ function $$StyleComponentProvider() {
      * @ngdoc method
      * @name $$StyleComponentProvider#shouldRemoveComponentsStyles
      * @description
-     * The value passed should decide whether remove style when no component existing 
+     * The value passed should decide whether remove style when no component existing
      * anymore in the view or not.
      *
      * @param {bool=} value new value.
      * @returns {string|self} Returns the value when used as getter and self if used as setter.
      *
      */
-    this.shouldRemoveComponentsStyles = function (val) {
+    this.shouldRemoveComponentsStyles = function(val) {
         if (!isUndefined(val)) {
             shouldRemoveComponentsStyles = !!val;
             return this;
@@ -394,7 +394,7 @@ function $$StyleComponentProvider() {
 
 
     this.$get = ['$style', '$q', '$exceptionHandler',
-        function ($style, $q, $exceptionHandler) {
+        function($style, $q, $exceptionHandler) {
             var componentStyles = {},
                 stylesUsage = {};
 
@@ -409,7 +409,7 @@ function $$StyleComponentProvider() {
                 loadStyles: loadStyles,
                 // unload component style once component its destroyed
                 unLoadStyles: unLoadStyles,
-                // 
+                //
                 isRegistered: isRegistered
             };
 
@@ -465,7 +465,7 @@ function $$StyleComponentProvider() {
                     incrementUrls(componentStyle.styleUrls);
 
                     if (shouldDoUrlLoading) {
-                        $style.addStyleUrls(componentStyle.styleUrls).finally(function () {
+                        $style.addStyleUrls(componentStyle.styleUrls).finally(function() {
                             removeComponentLoader(componentName);
                         });
                     }
@@ -495,7 +495,7 @@ function $$StyleComponentProvider() {
             // for each url styleUsage is incremented.
             function incrementUrls(urls) {
                 if (isArray(urls)) {
-                    forEach(urls, function (url) {
+                    forEach(urls, function(url) {
                         stylesUsage[url] = stylesUsage[url] || 0;
                         stylesUsage[url]++;
                     });
@@ -505,7 +505,7 @@ function $$StyleComponentProvider() {
             // decrement counter per url. once the style is not in use we remove it.
             function decrementUrls(urls) {
                 if (isArray(urls)) {
-                    forEach(urls, function (url) {
+                    forEach(urls, function(url) {
                         if (stylesUsage[url]) {
                             stylesUsage[url]--;
 
@@ -518,21 +518,20 @@ function $$StyleComponentProvider() {
                 }
             }
 
-            // since i didn't want to make huge changes in the applyDirectivesToNode method to 
+            // since i didn't want to make huge changes in the applyDirectivesToNode method to
             // support async style i did that trick to hide the component till we will get the style response.
             function setComponentLoader(componentName) {
-                return angular.element(document.head).append('<style type="text/css" id="' + componentName + '-loader">' + componentNormalize(componentName) + ':{display:none !important;}</style>');
+                return angular.element(window.document.head).append('<style type="text/css" id="' + componentName + '-loader">' + componentNormalize(componentName) + ':{display:none !important;}</style>');
             }
 
             // once the component styles are fetch or failed i am showing the component.
             function removeComponentLoader(componentName) {
-                angular.element(document.head.querySelector('#' + componentName + '-loader')).remove();
+                angular.element(window.document.head.querySelector('#' + componentName + '-loader')).remove();
             }
 
             // change the js component name to html tag name. for example `myCmp` will be `my-cmp`.
             function componentNormalize(name) {
-                return name.replace(/([A-Z])/g, "-$1").toLowerCase();
+                return name.replace(/([A-Z])/g, '-$1').toLowerCase();
             }
         }];
-
 }
