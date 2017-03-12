@@ -521,7 +521,8 @@ function $$StyleComponentProvider() {
             // since i didn't want to make huge changes in the applyDirectivesToNode method to
             // support async style i did that trick to hide the component till we will get the style response.
             function setComponentLoader(componentName) {
-                return angular.element(window.document.head).append('<style type="text/css" id="' + componentName + '-loader">' + componentNormalize(componentName) + ':{display:none !important;}</style>');
+                var styleTag = '<style type="text/css" id="' + componentName + '-loader">' + componentNormalize(componentName) + ':{display:none !important;}</style>';
+                return angular.element(window.document.head).append(styleTag);
             }
 
             // once the component styles are fetch or failed i am showing the component.
