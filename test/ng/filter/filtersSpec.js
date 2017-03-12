@@ -505,8 +505,7 @@ describe('filters', function() {
     });
 
     it('should allow newlines in format', function() {
-      expect(date(midnight, 'EEE\nMMM d\'\n\'yy/xxx\n')).
-                      toEqual('Fri\nSep 3\n10/xxx\n');
+      expect(date(midnight, 'EEE\nMMM d\'\n\'yy/xxx\n')).toEqual('Fri\nSep 3\n10/xxx\n');
     });
 
     it('should support various iso8061 date strings with timezone as input', function() {
