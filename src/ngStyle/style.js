@@ -10,6 +10,8 @@ var $styleMinErr = angular.$$minErr('ngStyle');
 /**
  * @ngdoc module
  * @name ngStyle
+ * @this
+ *
  * @description
  *
  * # ngStyle
