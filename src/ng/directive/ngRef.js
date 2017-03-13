@@ -177,9 +177,7 @@
  * </example>
  *
  */
-var ngRefDirective = function() {
-  var ngRefMinErr = minErr('ngRef');
-
+var ngRefDirective = ['$parse',function($parse) {
   return {
     priority: -1,
     restrict: 'A',
@@ -187,30 +185,25 @@ var ngRefDirective = function() {
       // gets the expected controller name, converts <data-some-thing> into "someThing"
       var controllerName = directiveNormalize(nodeName_(tElement));
 
-      // get the symbol name where to set the reference in the scope
-      var symbolName = tAttrs.ngRef;
-
-      if (symbolName && (!/^[$a-zA-Z_][$a-zA-Z0-9_]*$/.test(symbolName) ||
-          /^(null|undefined|this|\$parent|\$root|\$id)$/.test(symbolName))) {
-        throw ngRefMinErr('badident', 'alias \'{0}\' is invalid --- must be a valid JS identifier which is not a reserved name.',
-          symbolName);
-      }
+      // get the expression for value binding
+      var getter = $parse(tAttrs.ngRef);
+      var setter = getter.assign;
 
       return function(scope, element) {
         // gets the controller of the current component or the current DOM element
         var controller = element.data('$' + controllerName + 'Controller');
         var value = controller || element[0];
-        scope[symbolName] = value;
+        setter(scope, value);
 
-        // when the element is removed, remove it from the scope assignment (nullify it)
+        // when the element is removed, remove it (nullify it)
         element.on('$destroy', function() {
           // only remove it if value has not changed,
           // carefully because animations (and other procedures) may duplicate elements
-          if (scope[symbolName] === value) {
-            scope[symbolName] = null;
+          if (getter(scope) === value) {
+            setter(scope,  null);
           }
         });
       };
     }
   };
-};
+}];

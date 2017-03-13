@@ -107,33 +107,12 @@ describe('ngRef', function() {
       expect($rootScope.myComponent).toBe(enteringController);
     }));
 
-    it('should throw if alias identifier is not a simple identifier',
-      inject(function($exceptionHandler) {
-      forEach([
-        'null',
-        'this',
-        'undefined',
-        '$parent',
-        '$root',
-        '$id',
-        'obj[key]',
-        'obj["key"]',
-        'obj[\'key\']',
-        'obj.property',
-        'foo=6'
-      ], function(identifier) {
-        var escapedIdentifier = identifier.replace(/"/g, '&quot;');
-        var template = '<my-component ng-ref="' + escapedIdentifier + '"></my-component>';
-        var element = $compile(template)($rootScope);
+    it('should allow bind to a parent controller', function() {
+      $rootScope.$ctrl = {};
 
-        expect($exceptionHandler.errors.length).toEqual(1, identifier);
-        expect($exceptionHandler.errors.shift()[0]).toEqualMinErr('ngRef', 'badident',
-            'alias \'' + identifier + '\' is invalid --- must be a valid JS identifier ' +
-            'which is not a reserved name');
-
-        dealoc(element);
-      });
-    }));
+      $compile('<my-component ng-ref="$ctrl.myComponent"></my-component>')($rootScope);
+      expect($rootScope.$ctrl.myComponent).toBe(myComponentController);
+    });
 
   });
 
