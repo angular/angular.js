@@ -15,7 +15,7 @@ Advantages of Components:
 - simpler configuration than plain directives
 - promote sane defaults and best practices
 - optimized for component-based architecture
-- writing component directives will make it easier to upgrade to Angular
+- writing component directives will make it easier to upgrade to Angular 2.x
 
 When not to use Components:
 
