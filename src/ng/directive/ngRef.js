@@ -197,15 +197,16 @@ var ngRefDirective = function() {
       }
 
       return function(scope, element) {
-        // gets the controller of the current element (see jqLiteController for details)
+        // gets the controller of the current component or the current DOM element
         var controller = element.data('$' + controllerName + 'Controller');
-        scope[symbolName] = controller;
+        var value = controller || element[0];
+        scope[symbolName] = value;
 
         // when the element is removed, remove it from the scope assignment (nullify it)
         element.on('$destroy', function() {
-          // only remove it if controller has not changed,
-          // because it can happen that animations (and other procedures) may duplicate elements
-          if (scope[symbolName] === controller) {
+          // only remove it if value has not changed,
+          // carefully because animations (and other procedures) may duplicate elements
+          if (scope[symbolName] === value) {
             scope[symbolName] = null;
           }
         });

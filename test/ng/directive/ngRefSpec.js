@@ -137,6 +137,17 @@ describe('ngRef', function() {
 
   });
 
+  it('should bind the dom element if no component', inject(function($compile, $rootScope) {
+    $compile('<span ng-ref="mySpan">my text</span>')($rootScope);
+    expect($rootScope.mySpan.textContent).toBe('my text');
+  }));
+
+  it('should nullify the dom element value if it is destroyed', inject(function($compile, $rootScope) {
+    var element = $compile('<div><span ng-ref="mySpan">my text</span></div>')($rootScope);
+    element.children().remove();
+    expect($rootScope.mySpan).toBe(null);
+  }));
+
   it('should be compatible with directives on entities with controller', function() {
     var myDirectiveController;
 
