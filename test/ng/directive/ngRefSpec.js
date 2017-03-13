@@ -1,6 +1,6 @@
 'use strict';
 
-describe('ngAs', function() {
+describe('ngRef', function() {
 
   describe('given a component', function() {
 
@@ -15,112 +15,124 @@ describe('ngAs', function() {
       });
     }));
 
+    beforeEach(module(function($exceptionHandlerProvider) {
+      $exceptionHandlerProvider.mode('log');
+    }));
+
     beforeEach(inject(function(_$compile_, _$rootScope_) {
       $rootScope = _$rootScope_;
       $compile = _$compile_;
     }));
 
+    afterEach(inject(function($exceptionHandler) {
+      if ($exceptionHandler.errors.length) {
+        dump(jasmine.getEnv().currentSpec.getFullName());
+        dump('$exceptionHandler has errors');
+        dump($exceptionHandler.errors);
+        expect($exceptionHandler.errors).toBe([]);
+      }
+    }));
+
     it('should bind in the current scope the controller of a component', function() {
-      var $ctrl = {undamaged: true};
-      $rootScope.$ctrl = $ctrl;
+      $rootScope.$ctrl = 'undamaged';
 
-      $compile('<my-component ng-as="$ctrl.myComponent"></my-component>')($rootScope);
-      expect($rootScope.$ctrl).toBe($ctrl);
-      expect($rootScope.$ctrl.undamaged).toBe(true);
-      expect($ctrl.myComponent).toBe(myComponentController);
-    });
-
-    it('should be parametrized with any variable', function() {
-      $compile('<my-component ng-as="bar.myComponent"></my-component>')($rootScope);
-      expect($rootScope.bar.myComponent).toBe(myComponentController);
+      $compile('<my-component ng-ref="myComponent"></my-component>')($rootScope);
+      expect($rootScope.$ctrl).toBe('undamaged');
+      expect($rootScope.myComponent).toBe(myComponentController);
     });
 
     it('should work with non:normalized entity name', function() {
-      $compile('<my:component ng-as="$ctrl.myComponent1"></my:component>')($rootScope);
-      expect($rootScope.$ctrl.myComponent1).toBe(myComponentController);
+      $compile('<my:component ng-ref="myComponent1"></my:component>')($rootScope);
+      expect($rootScope.myComponent1).toBe(myComponentController);
     });
 
     it('should work with data-non-normalized entity name', function() {
-      $compile('<data-my-component ng-as="$ctrl.myComponent2"></data-my-component>')($rootScope);
-      expect($rootScope.$ctrl.myComponent2).toBe(myComponentController);
+      $compile('<data-my-component ng-ref="myComponent2"></data-my-component>')($rootScope);
+      expect($rootScope.myComponent2).toBe(myComponentController);
     });
 
     it('should work with x-non-normalized entity name', function() {
-      $compile('<x-my-component ng-as="$ctrl.myComponent3"></x-my-component>')($rootScope);
-      expect($rootScope.$ctrl.myComponent3).toBe(myComponentController);
+      $compile('<x-my-component ng-ref="myComponent3"></x-my-component>')($rootScope);
+      expect($rootScope.myComponent3).toBe(myComponentController);
     });
 
     it('should work with data-non-normalized attribute name', function() {
-      $compile('<my-component data-ng-as="$ctrl.myComponent1"></my-component>')($rootScope);
-      expect($rootScope.$ctrl.myComponent1).toBe(myComponentController);
+      $compile('<my-component data-ng-ref="myComponent1"></my-component>')($rootScope);
+      expect($rootScope.myComponent1).toBe(myComponentController);
     });
 
     it('should work with x-non-normalized attribute name', function() {
-      $compile('<my-component x-ng-as="$ctrl.myComponent2"></my-component>')($rootScope);
-      expect($rootScope.$ctrl.myComponent2).toBe(myComponentController);
+      $compile('<my-component x-ng-ref="myComponent2"></my-component>')($rootScope);
+      expect($rootScope.myComponent2).toBe(myComponentController);
+    });
+
+    it('should not leak to parent scopes', function() {
+      var template =
+        '<div ng-if="true">' +
+          '<my-component ng-ref="myComponent"></my-component>' +
+        '</div>';
+      $compile(template)($rootScope);
+      expect($rootScope.myComponent).toBe(undefined);
     });
 
     it('should nullify the variable once the component is destroyed', function() {
-      var template =
-        '<div ng-if="!nullified">' +
-          '<my-component ng-as="$ctrl.myComponent"></my-component>' +
-        '</div>';
-      $rootScope.$ctrl = {};
-      $compile(template)($rootScope);
-      $rootScope.$apply('nullified = false');
-      expect($rootScope.$ctrl.myComponent).toBe(myComponentController);
+      var template = '<div><my-component ng-ref="myComponent"></my-component></div>';
 
-      $rootScope.$apply('nullified = true');
-      expect($rootScope.$ctrl.myComponent).toBe(null);
-    });
-
-    it('should nullify the variable once the component is destroyed externally', function() {
-      var template = '<my-component ng-as="$ctrl.myComponent"></my-component>';
       var element = $compile(template)($rootScope);
-      var isolateScope = element.isolateScope();
-      expect($rootScope.$ctrl.myComponent).toBe(myComponentController);
+      expect($rootScope.myComponent).toBe(myComponentController);
 
-      element.remove();
+      var componentElement = element.children();
+      var isolateScope = componentElement.isolateScope();
+      componentElement.remove();
       isolateScope.$destroy();
-      expect($rootScope.$ctrl.myComponent).toBe(null);
-    });
-
-    it('should nullify be compatible with $element transclusion', function() {
-      var template = '<my-component ' +
-        'ng-as="$ctrl.myComponent" ' +
-        'ng-if="!nullified"' +
-        '></my-component>';
-      $rootScope.$ctrl = {};
-      $compile(template)($rootScope);
-
-      $rootScope.$apply('nullified = true');
-      expect($rootScope.$ctrl.myComponent).toBeUndefined();
-      $rootScope.$apply('nullified = false');
-      expect($rootScope.$ctrl.myComponent).toBe(myComponentController);
-      $rootScope.$apply('nullified = true');
-      expect($rootScope.$ctrl.myComponent).toBe(null);
+      expect($rootScope.myComponent).toBe(null);
     });
 
     it('should be compatible with entering/leaving components', inject(function($animate) {
-      var template = '<my-component ng-as="$ctrl.myComponent"></my-component>';
+      var template = '<my-component ng-ref="myComponent"></my-component>';
       $rootScope.$ctrl = {};
       var parent = $compile('<div></div>')($rootScope);
 
-      var leavingScope = $rootScope.$new();
-      var leaving = $compile(template)(leavingScope);
+      var leaving = $compile(template)($rootScope);
       var leavingController = myComponentController;
 
       $animate.enter(leaving, parent);
-      expect($rootScope.$ctrl.myComponent).toBe(leavingController);
+      expect($rootScope.myComponent).toBe(leavingController);
 
-      var enteringScope = $rootScope.$new();
       var entering = $compile(template)($rootScope);
       var enteringController = myComponentController;
 
       $animate.enter(entering, parent);
       $animate.leave(leaving, parent);
-      leavingScope.$destroy();
-      expect($rootScope.$ctrl.myComponent).toBe(enteringController);
+      expect($rootScope.myComponent).toBe(enteringController);
+    }));
+
+    it('should throw if alias identifier is not a simple identifier',
+      inject(function($exceptionHandler) {
+      forEach([
+        'null',
+        'this',
+        'undefined',
+        '$parent',
+        '$root',
+        '$id',
+        'obj[key]',
+        'obj["key"]',
+        'obj[\'key\']',
+        'obj.property',
+        'foo=6'
+      ], function(identifier) {
+        var escapedIdentifier = identifier.replace(/"/g, '&quot;');
+        var template = '<my-component ng-ref="' + escapedIdentifier + '"></my-component>';
+        var element = $compile(template)($rootScope);
+
+        expect($exceptionHandler.errors.length).toEqual(1, identifier);
+        expect($exceptionHandler.errors.shift()[0]).toEqualMinErr('ngRef', 'badident',
+            'alias \'' + identifier + '\' is invalid --- must be a valid JS identifier ' +
+            'which is not a reserved name');
+
+        dealoc(element);
+      });
     }));
 
   });
@@ -139,9 +151,9 @@ describe('ngAs', function() {
     });
 
     inject(function($compile, $rootScope) {
-      $compile('<my-directive ng-as="bar.myDirective"></my-directive>')($rootScope);
+      $compile('<my-directive ng-ref="myDirective"></my-directive>')($rootScope);
 
-      expect($rootScope.bar.myDirective).toBe(myDirectiveController);
+      expect($rootScope.myDirective).toBe(myDirectiveController);
     });
   });
 
@@ -158,7 +170,7 @@ describe('ngAs', function() {
     });
 
     inject(function($compile, $rootScope) {
-      var template = '<my-component ng-as="myComponent">{{myComponent.text}}</my-component>';
+      var template = '<my-component ng-ref="myComponent">{{myComponent.text}}</my-component>';
       var element = $compile(template)($rootScope);
       $rootScope.$apply();
       expect(element.text()).toBe('SUCCESS');
@@ -183,7 +195,7 @@ describe('ngAs', function() {
     inject(function($compile, $rootScope) {
       var template =
         '<div>' +
-          '<my-component ng-as="myComponent">' +
+          '<my-component ng-ref="myComponent">' +
             '{{myComponent.text}}' +
           '</my-component>' +
         '</div>';
@@ -194,7 +206,39 @@ describe('ngAs', function() {
     });
   });
 
-  it('should be compatible with transclude&destroy components', function() {
+  it('should be compatible with ngIf and transclusion on same element', function() {
+    module(function($compileProvider) {
+      $compileProvider.component('myComponent', {
+        template: '<ng-transclude></ng-transclude>',
+        transclude: true,
+        controller: function($scope) {
+          this.text = 'SUCCESS';
+        }
+      });
+    });
+
+    inject(function($compile, $rootScope) {
+      var template =
+        '<div>' +
+          '<my-component ng-if="present" ng-ref="myComponent" >' +
+              '{{myComponent.text}}' +
+          '</my-component>' +
+        '</div>';
+      var element = $compile(template)($rootScope);
+
+      $rootScope.$apply('present = false');
+      expect(element.text()).toBe('');
+      $rootScope.$apply('present = true');
+      expect(element.text()).toBe('SUCCESS');
+      $rootScope.$apply('present = false');
+      expect(element.text()).toBe('');
+      $rootScope.$apply('present = true');
+      expect(element.text()).toBe('SUCCESS');
+      dealoc(element);
+    });
+  });
+
+  it('should be compatible with element transclude&destroy components', function() {
     var myComponentController;
     module(function($compileProvider) {
       $compileProvider
@@ -223,24 +267,21 @@ describe('ngAs', function() {
     inject(function($compile, $rootScope) {
       var template =
         '<div>' +
-          '<my-transcluding-component ng-as="$ctrl.myComponent">' +
-            '{{$ctrl.myComponent.text}}' +
+          '<my-transcluding-component ng-ref="myComponent">' +
+            '{{myComponent.text}}' +
           '</my-transcluding-component>' +
         '</div>';
-      $rootScope.$ctrl = {};
       var element = $compile(template)($rootScope);
       $rootScope.$apply();
       expect(element.text()).toBe('');
-      expect($rootScope.$ctrl.myComponent).toBeUndefined();
 
       myComponentController.transclude('transcludedOk');
       $rootScope.$apply();
       expect(element.text()).toBe('transcludedOk');
-      expect($rootScope.$ctrl.myComponent).toBe(myComponentController);
 
       myComponentController.destroy();
       $rootScope.$apply();
-      expect($rootScope.$ctrl.myComponent).toBe(null);
+      expect(element.text()).toBe('');
     });
   });
 
@@ -263,7 +304,7 @@ describe('ngAs', function() {
     inject(function($compile, $rootScope) {
       var template =
         '<div>' +
-          '<my-directive ng-as="myDirective">' +
+          '<my-directive ng-ref="myDirective">' +
             '{{myDirective.text}}' +
           '</my-directive>' +
         '</div>';
@@ -285,7 +326,7 @@ describe('ngAs', function() {
     });
 
     inject(function($compile, $httpBackend, $rootScope) {
-      var template = '<div><http-component ng-as="controller"></http-component></div>';
+      var template = '<div><http-component ng-ref="controller"></http-component></div>';
       var element = $compile(template)($rootScope);
       $httpBackend.expect('GET', 'template.html').respond('ok');
       $rootScope.$apply();

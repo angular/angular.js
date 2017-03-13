@@ -1,0 +1,37 @@
+@ngdoc error
+@name ngRef:badident
+@fullName Invalid identifier expression
+@description
+
+Occurs when an invalid identifier is specified in an {@link ng.directive:ngRef ngRef} expression.
+
+The {@link ng.directive:ngRef ngRef} directive's symbol syntax is used to assign a reference for the component controller in scope.
+
+If the expression is not a simple identifier (such that you could declare it with `var {name}`, or if the expression is a reserved name,
+this error is thrown.
+
+Reserved names include:
+
+  - `null`
+  - `this`
+  - `undefined`
+  - `$parent`
+  - `$id`
+  - `$root`
+
+Invalid expressions might look like this:
+
+```html
+<my-component ng-ref="this"></my-component>
+<my-component ng-ref="some.objects["property"]"></my-component>
+<my-component ng-ref="$ctrl.propertyName"></my-component>
+<my-component ng-ref="resultOfSomeMethod()"></my-component>
+<my-component ng-ref="foo=6"></my-component>
+```
+
+Valid expressions might look like this:
+
+```html
+<my-component ng-ref="collections"></my-component>
+<my-component ng-ref="filteredCollection"></my-component>
+```
