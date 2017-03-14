@@ -1156,7 +1156,7 @@ You configure this list in a module configuration block:
 
 ```js
 appModule.config(['$sceDelegateProvider', function($sceDelegateProvider) {
-  $sceDelegateProvider.resourceUrlWhiteList([
+  $sceDelegateProvider.resourceUrlWhitelist([
     // Allow same origin resource loads.
     'self',
     // Allow JSONP calls that match this pattern
@@ -2567,7 +2567,7 @@ You configure this list in a module configuration block:
 
 ```js
 appModule.config(['$sceDelegateProvider', function($sceDelegateProvider) {
-  $sceDelegateProvider.resourceUrlWhiteList([
+  $sceDelegateProvider.resourceUrlWhitelist([
     // Allow same origin resource loads.
     'self',
     // Allow JSONP calls that match this pattern
