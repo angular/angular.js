@@ -5,7 +5,7 @@
 
 # Component Router
 
-<div class="alert alert-info">
+<div class="alert alert-danger">
 **Deprecation Notice:** In an effort to keep synchronized with router changes in the new Angular, this implementation of the Component Router (ngComponentRouter module) has been deprecated and will not receive further updates.
 We are investigating backporting the new Angular Router to AngularJS, but alternatively, use the {@link ngRoute} module or community developed projects (e.g. [ui-router](https://github.com/angular-ui/ui-router)).
 </div>
@@ -13,7 +13,7 @@ We are investigating backporting the new Angular Router to AngularJS, but altern
 This guide describes the Component Router for AngularJS.
 
 <div class="alert alert-info">
-  If you are looking for information about the old router for AngularJS have a look at the {@link ngRoute} module.
+  If you are looking for information about the default router for AngularJS have a look at the {@link ngRoute} module.
 
   If you are looking for information about the Component Router for the new Angular then
   check out the [Angular Router Guide](https://angular.io/docs/ts/latest/guide/router.html).
