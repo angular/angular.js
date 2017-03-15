@@ -360,7 +360,7 @@ function qFactory(nextTick, exceptionHandler, errorOnUnhandledRejections) {
           } else if (state.status === 1) {
             resolvePromise(promise, state.value);
           } else {
-            rejectPromise(promise, state.value);
+            rejectPromise(promise, state.value, state.error);
           }
         } catch (e) {
           rejectPromise(promise, e);
@@ -384,7 +384,7 @@ function qFactory(nextTick, exceptionHandler, errorOnUnhandledRejections) {
         if (toCheck.value instanceof Error) {
           exceptionHandler(toCheck.value, errorMessage);
         } else {
-          exceptionHandler(errorMessage);
+          exceptionHandler(toCheck.error, errorMessage);
         }
       }
     }
@@ -448,15 +448,20 @@ function qFactory(nextTick, exceptionHandler, errorOnUnhandledRejections) {
     }
   }
 
-  function rejectPromise(promise, reason) {
+  function rejectPromise(promise, reason, e) {
     if (promise.$$state.status) return;
-    $$reject(promise, reason);
+    $$reject(promise, reason, e);
   }
 
-  function $$reject(promise, reason) {
+  function $$reject(promise, reason, e) {
     promise.$$state.value = reason;
     promise.$$state.status = 2;
-    scheduleProcessQueue(promise.$$state);
+    if (e && e.reason === reason) {
+      promise.$$state.error = e;
+    } else {
+      promise.$$state.error = new Error(reason);
+      promise.$$state.error.reason = reason;
+    }
   }
 
   function notifyPromise(promise, progress) {
