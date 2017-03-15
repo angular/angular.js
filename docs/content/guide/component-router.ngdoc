@@ -5,19 +5,18 @@
 
 # Component Router
 
-<div class="alert alert-info">
-**Deprecation Notice:** In an effort to keep synchronized with router changes in Angular 2, this implementation of the Component Router (ngComponentRouter module) has been deprecated and will not receive further updates.
-We are investigating backporting the Angular 2 Router to Angular 1, but alternatively, use the {@link ngRoute} module or community developed projects (e.g. [ui-router](https://github.com/angular-ui/ui-router)).
+<div class="alert alert-danger">
+**Deprecation Notice:** In an effort to keep synchronized with router changes in the new Angular, this implementation of the Component Router (ngComponentRouter module) has been deprecated and will not receive further updates.
+We are investigating backporting the new Angular Router to AngularJS, but alternatively, use the {@link ngRoute} module or community developed projects (e.g. [ui-router](https://github.com/angular-ui/ui-router)).
 </div>
 
 This guide describes the new Component Router for AngularJS 1.5.
 
 <div class="alert alert-info">
-  If you are looking for information about the old router for AngularJS 1.4 and
-  earlier have a look at the {@link ngRoute} module.
+  If you are looking for information about the default router for AngularJS have a look at the {@link ngRoute} module.
 
-  If you are looking for information about the Component Router for Angular 2 then
-  check out the [Angular 2 Router Guide](https://angular.io/docs/ts/latest/guide/router.html).
+  If you are looking for information about the Component Router for the new Angular then
+  check out the [Angular Router Guide](https://angular.io/docs/ts/latest/guide/router.html).
 </div>
 
 ## Overview
