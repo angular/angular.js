@@ -55,6 +55,16 @@ extracted from the commits. We can quickly see in the new changelog exactly what
 changes and so can application developers when they are deciding whether to update to a new version of
 AngularJS.
 
+#### When are deprecated features removed from the library?
+Most of the time we remove a deprecated feature in a next minor version bump. For example, the
+`preAssignBindingsEnabled` `$compileProvider` method was defined in AngularJS `1.5.10`, deprecated in `1.6` and
+will be removed in `1.7`.
+
+In case of jqLite we apply a different strategy - we deprecate features that have an equivalent in jQuery that
+is also deprecated but we only remove the feature once it's removed from jQuery to improve compatibility between
+jqLite and jQuery. One such example is the `bind` method, deprecated in favor of `on` but unlikely to be removed
+from jqLite any time soon.
+
 
 ### Is AngularJS a templating system?
 
