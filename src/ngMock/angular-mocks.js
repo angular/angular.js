@@ -1133,6 +1133,8 @@ angular.mock.dump = function(object) {
     $http.get('/auth.py').then(function(response) {
       authToken = response.headers('A-Token');
       $scope.user = response.data;
+    }).catch(function() {
+      $scope.status = 'Failed...';
     });
 
     $scope.saveMessage = function(message) {
