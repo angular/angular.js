@@ -402,7 +402,7 @@ You can now rerun `npm run protractor` to see the tests run (and hopefully pass)
 
 <div></div>
 
-* Try to add a `{{$ctrl.phoneId}` binding in the template string for the phone details view:
+* Try to add a `{{$ctrl.phoneId}}` binding in the template string for the phone details view:
 
   ```js
   when('/phones/:phoneId', {
