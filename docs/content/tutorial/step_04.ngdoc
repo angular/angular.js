@@ -41,7 +41,7 @@ maintain. As we add more and more features, our files will get bigger and bigger
 difficult to navigate and find the code we are looking for.
 
 Instead we should put each feature/entity in its own file. Each stand-alone controller will be
-defined in its own file, each component will be defined in each own file, etc.
+defined in its own file, each component will be defined in its own file, etc.
 
 Luckily, we don't need to change anything with respect to that guideline in our code, since we have
 already defined our `phoneList` component in its own `phone-list.component.js` file. Good job!
