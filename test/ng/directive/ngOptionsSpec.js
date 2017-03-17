@@ -2548,6 +2548,10 @@ describe('ngOptions', function() {
       expect(element.find('option').length).toBe(1);
       option = element.find('option').eq(0);
       expect(option.text()).toBe('A');
+
+      scope.$apply('isBlank = true');
+
+      expect(element).toEqualSelect([''], 'object:4');
     });
 
 
