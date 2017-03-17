@@ -429,6 +429,9 @@ var ngOptionsDirective = ['$compile', '$document', '$parse', function($compile, 
         }
       }
 
+      // The empty option will be compiled and rendered before we first generate the options
+      selectElement.empty();
+
       var providedEmptyOption = !!selectCtrl.emptyOption;
 
       var unknownOption = jqLite(optionTemplate.cloneNode(false));
@@ -545,12 +548,10 @@ var ngOptionsDirective = ['$compile', '$document', '$parse', function($compile, 
 
       if (providedEmptyOption) {
 
-        // we need to remove it before calling selectElement.empty() because otherwise IE will
-        // remove the label from the element. wtf?
-        selectCtrl.emptyOption.remove();
-
         // compile the element since there might be bindings in it
         $compile(selectCtrl.emptyOption)(scope);
+
+        selectElement.prepend(selectCtrl.emptyOption);
 
         if (selectCtrl.emptyOption[0].nodeType === NODE_TYPE_COMMENT) {
           // This means the empty option has currently no actual DOM node, probably because
@@ -582,8 +583,6 @@ var ngOptionsDirective = ['$compile', '$document', '$parse', function($compile, 
         }
 
       }
-
-      selectElement.empty();
 
       // We need to do this here to ensure that the options object is defined
       // when we first hit it in writeNgOptionsValue
@@ -648,16 +647,6 @@ var ngOptionsDirective = ['$compile', '$document', '$parse', function($compile, 
         options = ngOptions.getOptions();
 
         var groupElementMap = {};
-
-        // Ensure that the empty option is always there if it was explicitly provided
-        if (providedEmptyOption) {
-
-          if (selectCtrl.unknownOption.parent().length) {
-            selectCtrl.unknownOption.after(selectCtrl.emptyOption);
-          } else {
-            selectElement.prepend(selectCtrl.emptyOption);
-          }
-        }
 
         options.items.forEach(function addOption(option) {
           var groupElement;
