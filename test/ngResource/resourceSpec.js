@@ -102,10 +102,6 @@ describe('basic usage', function() {
     var condition = {at: '2038-01-19 03:14:08'};
 
     $httpBackend.expect('CREATE', '/fooresource', instant).respond({fid: 42});
-    $httpBackend.expectPOST('/fooresource').respond(function(method, url, data) {
-      expect(data).not.toBeUndefined();
-      return [200, {id: 42}];
-    });
     $httpBackend.expect('DELETE', '/fooresource', condition).respond({});
 
     var r = $resource('/fooresource', {}, {
@@ -114,23 +110,23 @@ describe('basic usage', function() {
     });
 
     var creationResponse = r.create(instant);
-    var saveResponse = r.save(null, {id: -1});
     var deleteResponse = r.delete(condition);
 
     $httpBackend.flush();
 
     expect(creationResponse.fid).toBe(42);
-    expect(saveResponse.id).toBe(42);
     expect(deleteResponse.$resolved).toBe(true);
   });
 
   it('should not include a request body if hasBody is false on POST, PUT and PATCH', function() {
-    $httpBackend.expectPOST('/foo').respond(function(method, url, data) {
+    function verifyRequest(method, url, data) {
       expect(data).toBeUndefined();
       return [200, {id: 42}];
-    });
-    $httpBackend.expect('PUT', '/foo').respond({});
-    $httpBackend.expect('PATCH', '/foo').respond({});
+    }
+
+    $httpBackend.expect('POST', '/foo').respond(verifyRequest);
+    $httpBackend.expect('PUT', '/foo').respond(verifyRequest);
+    $httpBackend.expect('PATCH', '/foo').respond(verifyRequest);
 
     var R = $resource('/foo', {}, {
       post: {method: 'POST', hasBody: false},
