@@ -246,7 +246,7 @@ describe('HTML', function() {
       .toEqual('<p>text1text2</p>');
   });
 
-  it('should remove clobbered elements', function() {
+  it('should throw on clobbered elements', function() {
     inject(function($sanitize) {
       expect(function() {
         $sanitize('<form><input name="parentNode" /></form>');
