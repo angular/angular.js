@@ -281,7 +281,9 @@ function NgModelController($scope, $exceptionHandler, $attr, $element, $parse, $
 
   this.$$currentValidationRunId = 0;
 
-  this.$$scope = $scope;
+  // https://github.com/angular/angular.js/issues/15833
+  // Prevent `$$scope` from being iterated over by `copy` when NgModelController is deep watched
+  Object.defineProperty(this, '$$scope', {value: $scope});
   this.$$attr = $attr;
   this.$$element = $element;
   this.$$animate = $animate;
