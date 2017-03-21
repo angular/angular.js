@@ -976,7 +976,7 @@ function $SceProvider() {
      * @param {string} type The context in which this value is to be used.
      * @param {*} maybeTrusted The result of a prior {@link ng.$sce#trustAs
      *     `$sce.trustAs`} call, or anything else (which will not be considered trusted.)
-     * @return {*} A version of the value that's safe to use in the given context, or throws an 
+     * @return {*} A version of the value that's safe to use in the given context, or throws an
      *     exception if this is impossible.
      */
 
