@@ -141,8 +141,8 @@ describe('basic usage', function() {
     $httpBackend.flush();
 
     expect(postResponse.id).toBe(42);
-    expect(putResponse.$resolved).toBe(true);
-    expect(patchResponse.$resolved).toBe(true);
+    expect(putResponse.id).toBe(42);
+    expect(patchResponse.id).toBe(42);
   });
 
   it('should expect a body if hasBody is true', function() {
