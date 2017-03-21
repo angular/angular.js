@@ -3,41 +3,33 @@
 @fullName No matching slot in parent directive
 @description
 
-This error occurs when declaring a specific slot in a ng-transclude which does not map to the transclude property of the directive.
+This error occurs when declaring a specific slot in a ng-transclude which does not map to a specific slot defined in the transclude property of the directive.
 
+In this example the template has a declared slot missing from the transclude definition.
+This example will generate a noslot error.
 ```js
-// In this example the template has a declared slot missing from the transclude definition.
-// This example will generate a no slot error.
-
 var componentConfig = {
-  template: '<div style="border: 1px solid black;">' +
+  template: '<div>' +
                 '<div ng-transclude="slotProvided"></div>' +
                 '<div ng-transclude="noSlotProvided"></div>' +
             '</div>',
   transclude: {
   	// The key value pairs here are considered "slots" that are provided for components to slot into.
-    slotProvided: 'slottedComponent', // mandatory transclusion,
-    optionalSlot: '?optionalComponent',  // optional transclusion
-    // there is no slot provided for the transclude 'noSlotProvided' declared in the above template
+    slotProvided: 'slottedComponent', // mandatory transclusion
+    // There is no slot provided here for the transclude 'noSlotProvided' declared in the above template.
   }
 };
-
-angular
-  .module('doc')
-  .component('myComponent', componentConfig)
-
 ```
 
+If we the following change we will no longer get no slot error.
 ```js
-\\ if we the following change we will no longer get no slot error.
 var componentConfig = {
   template: '<div style="border: 1px solid black;">' +
                 '<div ng-transclude="slotProvided"></div>' +
                 '<div ng-transclude="noSlotProvided"></div>' +
             '</div>',
   transclude: {
-    slotProvided: 'slottedComponent', // mandatory transclusion,
-    optionalSlot: '?optionalComponent',  // optional transclusion,
+    slotProvided: 'slottedComponent',
     noSlotProvided: 'otherComponent' // now it is declared and the error should cease
   }
 };
