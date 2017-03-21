@@ -97,6 +97,76 @@ describe('basic usage', function() {
     $httpBackend.flush();
   });
 
+  it('should include a request body when calling custom method with hasBody is true', function() {
+    var instant = {name: 'info.txt'};
+    var condition = {at: '2038-01-19 03:14:08'};
+
+    $httpBackend.expect('CREATE', '/fooresource', instant).respond({fid: 42});
+    $httpBackend.expect('DELETE', '/fooresource', condition).respond({});
+
+    var r = $resource('/fooresource', {}, {
+      create: {method: 'CREATE', hasBody: true},
+      delete: {method: 'DELETE', hasBody: true}
+    });
+
+    var creationResponse = r.create(instant);
+    var deleteResponse = r.delete(condition);
+
+    $httpBackend.flush();
+
+    expect(creationResponse.fid).toBe(42);
+    expect(deleteResponse.$resolved).toBe(true);
+  });
+
+  it('should not include a request body if hasBody is false on POST, PUT and PATCH', function() {
+    function verifyRequest(method, url, data) {
+      expect(data).toBeUndefined();
+      return [200, {id: 42}];
+    }
+
+    $httpBackend.expect('POST', '/foo').respond(verifyRequest);
+    $httpBackend.expect('PUT', '/foo').respond(verifyRequest);
+    $httpBackend.expect('PATCH', '/foo').respond(verifyRequest);
+
+    var R = $resource('/foo', {}, {
+      post: {method: 'POST', hasBody: false},
+      put: {method: 'PUT', hasBody: false},
+      patch: {method: 'PATCH', hasBody: false}
+    });
+
+    var postResponse = R.post();
+    var putResponse = R.put();
+    var patchResponse = R.patch();
+
+    $httpBackend.flush();
+
+    expect(postResponse.id).toBe(42);
+    expect(putResponse.id).toBe(42);
+    expect(patchResponse.id).toBe(42);
+  });
+
+  it('should expect a body if hasBody is true', function() {
+    var username = 'yathos';
+    var loginRequest = {name: username, password: 'Smile'};
+    var user = {id: 1, name: username};
+
+    $httpBackend.expect('LOGIN', '/user/me', loginRequest).respond(user);
+
+    $httpBackend.expect('LOGOUT', '/user/me', null).respond(null);
+
+    var UserService = $resource('/user/me', {}, {
+      login: {method: 'LOGIN', hasBody: true},
+      logout: {method: 'LOGOUT', hasBody: false}
+    });
+
+    var loginResponse = UserService.login(loginRequest);
+    var logoutResponse = UserService.logout();
+
+    $httpBackend.flush();
+
+    expect(loginResponse.id).toBe(user.id);
+    expect(logoutResponse.$resolved).toBe(true);
+  });
 
   it('should build resource', function() {
     expect(typeof CreditCard).toBe('function');
@@ -321,11 +391,35 @@ describe('basic usage', function() {
   });
 
   it('should support IPv6 URLs', function() {
-    var R = $resource('http://[2620:0:861:ed1a::1]/:ed1a/', {}, {}, {stripTrailingSlashes: false});
-    $httpBackend.expect('GET', 'http://[2620:0:861:ed1a::1]/foo/').respond({});
-    $httpBackend.expect('GET', 'http://[2620:0:861:ed1a::1]/').respond({});
-    R.get({ed1a: 'foo'});
-    R.get({});
+    test('http://[2620:0:861:ed1a::1]',        {ed1a: 'foo'}, 'http://[2620:0:861:ed1a::1]');
+    test('http://[2620:0:861:ed1a::1]/',       {ed1a: 'foo'}, 'http://[2620:0:861:ed1a::1]/');
+    test('http://[2620:0:861:ed1a::1]/:ed1a',  {ed1a: 'foo'}, 'http://[2620:0:861:ed1a::1]/foo');
+    test('http://[2620:0:861:ed1a::1]/:ed1a',  {},            'http://[2620:0:861:ed1a::1]/');
+    test('http://[2620:0:861:ed1a::1]/:ed1a/', {ed1a: 'foo'}, 'http://[2620:0:861:ed1a::1]/foo/');
+    test('http://[2620:0:861:ed1a::1]/:ed1a/', {},            'http://[2620:0:861:ed1a::1]/');
+
+    // Helpers
+    function test(templateUrl, params, actualUrl) {
+      var R = $resource(templateUrl, null, null, {stripTrailingSlashes: false});
+      $httpBackend.expect('GET', actualUrl).respond(null);
+      R.get(params);
+    }
+  });
+
+  it('should support params in the `hostname` part of the URL', function() {
+    test('http://:hostname',            {hostname: 'foo.com'},              'http://foo.com');
+    test('http://:hostname/',           {hostname: 'foo.com'},              'http://foo.com/');
+    test('http://:l2Domain.:l1Domain',  {l1Domain: 'com', l2Domain: 'bar'}, 'http://bar.com');
+    test('http://:l2Domain.:l1Domain/', {l1Domain: 'com', l2Domain: 'bar'}, 'http://bar.com/');
+    test('http://127.0.0.:octet',       {octet: 42},                        'http://127.0.0.42');
+    test('http://127.0.0.:octet/',      {octet: 42},                        'http://127.0.0.42/');
+
+    // Helpers
+    function test(templateUrl, params, actualUrl) {
+      var R = $resource(templateUrl, null, null, {stripTrailingSlashes: false});
+      $httpBackend.expect('GET', actualUrl).respond(null);
+      R.get(params);
+    }
   });
 
   it('should support overriding provider default trailing-slash stripping configuration', function() {
@@ -636,10 +730,25 @@ describe('basic usage', function() {
 
   it('should bind default parameters', function() {
     $httpBackend.expect('GET', '/CreditCard/123.visa?minimum=0.05').respond({id: 123});
-    var Visa = CreditCard.bind({verb:'.visa', minimum:0.05});
-    var visa = Visa.get({id:123});
+    var Visa = CreditCard.bind({verb: '.visa', minimum: 0.05});
+    var visa = Visa.get({id: 123});
     $httpBackend.flush();
-    expect(visa).toEqualData({id:123});
+    expect(visa).toEqualData({id: 123});
+  });
+
+
+  it('should pass all original arguments when binding default params', function() {
+    $httpBackend.expect('GET', '/CancellableCreditCard/123.visa').respond({id: 123});
+
+    var CancellableCreditCard = $resource('/CancellableCreditCard/:id:verb', {},
+                                          {charge: {method: 'POST'}}, {cancellable: true});
+    var CancellableVisa = CancellableCreditCard.bind({verb: '.visa'});
+    var visa = CancellableVisa.get({id: 123});
+
+    $httpBackend.flush();
+
+    expect(visa.$charge).toEqual(jasmine.any(Function));
+    expect(visa.$cancelRequest).toEqual(jasmine.any(Function));
   });
 
 
@@ -737,6 +846,24 @@ describe('basic usage', function() {
     expect(json.$resolved).not.toBeDefined();
     expect(json).toEqual({id: 123, number: '9876', $myProp: 'still here'});
   });
+
+  it('should not include $cancelRequest when resource is toJson\'ed', function() {
+    $httpBackend.whenGET('/CreditCard').respond({});
+
+    var CreditCard = $resource('/CreditCard', {}, {
+      get: {
+        method: 'GET',
+        cancellable: true
+      }
+    });
+
+    var card = CreditCard.get();
+    var json = card.toJSON();
+
+    expect(card.$cancelRequest).toBeDefined();
+    expect(json.$cancelRequest).toBeUndefined();
+  });
+
 
   describe('promise api', function() {
 
@@ -1272,7 +1399,7 @@ describe('basic usage', function() {
         expect(user).toEqualData([{id: 1, name: 'user1'}]);
       });
 
-      it('should work with the action is overriden', function() {
+      it('should work with the action is overridden', function() {
         $httpBackend.expect('GET', '/users.json').respond([{id: 1, name: 'user1'}]);
         var UserService = $resource('/users/:user_id', {user_id: '@id'}, {
           query: {
@@ -1333,7 +1460,7 @@ describe('basic usage', function() {
         expect(user).toEqualData({id: 1, name: 'user1'});
       });
 
-      it('should work with the action is overriden', function() {
+      it('should work with the action is overridden', function() {
         $httpBackend.expect('GET', '/users/1.json').respond({id: 1, name: 'user1'});
         var UserService = $resource('/users/:user_id', {user_id: '@id'}, {
           get: {
@@ -1398,6 +1525,18 @@ describe('basic usage', function() {
       it('should work with save()', function() {
         $httpBackend.expect('POST', '/users/.json').respond();
         $resource('/users/\\.json').save({});
+      });
+      it('should work with save() if dynamic params', function() {
+        $httpBackend.expect('POST', '/users/.json').respond();
+        $resource('/users/:json', {json: '\\.json'}).save({});
+      });
+      it('should work with query() if dynamic params', function() {
+        $httpBackend.expect('GET', '/users/.json').respond();
+        $resource('/users/:json', {json: '\\.json'}).query();
+      });
+      it('should work with get() if dynamic params', function() {
+        $httpBackend.expect('GET', '/users/.json').respond();
+        $resource('/users/:json', {json: '\\.json'}).get();
       });
     });
   });
@@ -1535,9 +1674,9 @@ describe('errors', function() {
 
     expect(successSpy).not.toHaveBeenCalled();
     expect(failureSpy).toHaveBeenCalled();
-    expect(failureSpy.calls.mostRecent().args[0]).toMatch(
-        /^\[\$resource:badcfg\] Error in resource configuration for action `query`\. Expected response to contain an array but got an object \(Request: GET \/Customer\/123\)/
-      );
+    expect(failureSpy.calls.mostRecent().args[0]).toEqualMinErr('$resource', 'badcfg',
+        'Error in resource configuration for action `query`. ' +
+        'Expected response to contain an array but got an object (Request: GET /Customer/123)');
   });
 
   it('should fail if action expects an array but response is an object', function() {
@@ -1552,9 +1691,9 @@ describe('errors', function() {
 
     expect(successSpy).not.toHaveBeenCalled();
     expect(failureSpy).toHaveBeenCalled();
-    expect(failureSpy.calls.mostRecent().args[0]).toMatch(
-        /^\[\$resource:badcfg\] Error in resource configuration for action `get`\. Expected response to contain an object but got an array \(Request: GET \/Customer\/123\)/
-      );
+    expect(failureSpy.calls.mostRecent().args[0]).toEqualMinErr('$resource', 'badcfg',
+        'Error in resource configuration for action `get`. ' +
+        'Expected response to contain an object but got an array (Request: GET /Customer/123)');
   });
 });
 
@@ -1651,6 +1790,76 @@ describe('handling rejections', function() {
       expect($exceptionHandler.errors.length).toBe(1);
       expect($exceptionHandler.errors[0]).toMatch(/^Possibly unhandled rejection/);
     })
+  );
+
+
+  it('should not swallow exceptions in success callback when error callback is provided',
+    function() {
+      $httpBackend.expectGET('/CreditCard/123').respond(null);
+      var CreditCard = $resource('/CreditCard/:id');
+      var cc = CreditCard.get({id: 123},
+          function(res) { throw new Error('should be caught'); },
+          function() {});
+
+      $httpBackend.flush();
+      expect($exceptionHandler.errors.length).toBe(1);
+      expect($exceptionHandler.errors[0]).toMatch(/^Error: should be caught/);
+    }
+  );
+
+
+  it('should not swallow exceptions in success callback when error callback is not provided',
+    function() {
+      $httpBackend.expectGET('/CreditCard/123').respond(null);
+      var CreditCard = $resource('/CreditCard/:id');
+      var cc = CreditCard.get({id: 123},
+          function(res) { throw new Error('should be caught'); });
+
+      $httpBackend.flush();
+      expect($exceptionHandler.errors.length).toBe(1);
+      expect($exceptionHandler.errors[0]).toMatch(/^Error: should be caught/);
+    }
+  );
+
+
+  it('should not swallow exceptions in success callback when error callback is provided and has responseError interceptor',
+    function() {
+      $httpBackend.expectGET('/CreditCard/123').respond(null);
+      var CreditCard = $resource('/CreditCard/:id', null, {
+        get: {
+          method: 'GET',
+          interceptor: {responseError: function() {}}
+        }
+      });
+
+      var cc = CreditCard.get({id: 123},
+          function(res) { throw new Error('should be caught'); },
+          function() {});
+
+      $httpBackend.flush();
+      expect($exceptionHandler.errors.length).toBe(1);
+      expect($exceptionHandler.errors[0]).toMatch(/^Error: should be caught/);
+    }
+  );
+
+
+  it('should not swallow exceptions in success callback when error callback is not provided and has responseError interceptor',
+    function() {
+      $httpBackend.expectGET('/CreditCard/123').respond(null);
+      var CreditCard = $resource('/CreditCard/:id', null, {
+        get: {
+          method: 'GET',
+          interceptor: {responseError: function() {}}
+        }
+      });
+
+      var cc = CreditCard.get({id: 123},
+          function(res) { throw new Error('should be caught'); });
+
+      $httpBackend.flush();
+      expect($exceptionHandler.errors.length).toBe(1);
+      expect($exceptionHandler.errors[0]).toMatch(/^Error: should be caught/);
+    }
   );
 });
 

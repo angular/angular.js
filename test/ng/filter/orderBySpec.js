@@ -266,7 +266,7 @@ describe('Filter: orderBy', function() {
 
 
     describe('(built-in comparator)', function() {
-      it('should compare numbers numarically', function() {
+      it('should compare numbers numerically', function() {
         var items = [100, 3, 20];
         var expr = null;
         var sorted = [3, 20, 100];
@@ -451,7 +451,7 @@ describe('Filter: orderBy', function() {
             return (isNerd1 && isNerd2) ? 0 : (isNerd1) ? -1 : 1;
           }
 
-          // No "nerd"; alpabetical order
+          // No "nerd"; alphabetical order
           return (v1 === v2) ? 0 : (v1 < v2) ? -1 : 1;
         };
 

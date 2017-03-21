@@ -3,6 +3,19 @@
 describe('jqLite', function() {
   var scope, a, b, c, document;
 
+  // Checks if jQuery 2.1 is used.
+  function isJQuery21() {
+    if (_jqLiteMode) return false;
+    var jQueryVersionParts = _jQuery.fn.jquery.split('.');
+    return jQueryVersionParts[0] + '.' + jQueryVersionParts[1] === '2.1';
+  }
+
+  // Checks if jQuery 2.x is used.
+  function isJQuery2x() {
+    if (_jqLiteMode) return false;
+    var jQueryVersionParts = _jQuery.fn.jquery.split('.');
+    return jQueryVersionParts[0] === '2';
+  }
 
   beforeEach(module(provideLog));
 
@@ -83,30 +96,27 @@ describe('jqLite', function() {
     });
 
 
-    // This is not working correctly in jQuery prior to v3.0.
+    // This is not working correctly in jQuery prior to v2.2.
     // See https://github.com/jquery/jquery/issues/1987 for details.
     it('should properly handle dash-delimited node names', function() {
-      var jQueryVersion = window.jQuery && window.jQuery.fn.jquery.split('.')[0];
-      var jQuery3xOrNewer = jQueryVersion && (Number(jQueryVersion) >= 3);
+      if (isJQuery21()) return;
 
-      if (_jqLiteMode || jQuery3xOrNewer) {
-        var nodeNames = 'thead tbody tfoot colgroup caption tr th td div kung'.split(' ');
-        var nodeNamesTested = 0;
-        var nodes, customNodeName;
+      var nodeNames = 'thead tbody tfoot colgroup caption tr th td div kung'.split(' ');
+      var nodeNamesTested = 0;
+      var nodes, customNodeName;
 
-        forEach(nodeNames, function(nodeName) {
-          var customNodeName = nodeName + '-foo';
-          var nodes = jqLite('<' + customNodeName + '>Hello, world !</' + customNodeName + '>');
+      forEach(nodeNames, function(nodeName) {
+        var customNodeName = nodeName + '-foo';
+        var nodes = jqLite('<' + customNodeName + '>Hello, world !</' + customNodeName + '>');
 
-          expect(nodes.length).toBe(1);
-          expect(nodeName_(nodes)).toBe(customNodeName);
-          expect(nodes.html()).toBe('Hello, world !');
+        expect(nodes.length).toBe(1);
+        expect(nodeName_(nodes)).toBe(customNodeName);
+        expect(nodes.html()).toBe('Hello, world !');
 
-          nodeNamesTested++;
-        });
+        nodeNamesTested++;
+      });
 
-        expect(nodeNamesTested).toBe(10);
-      }
+      expect(nodeNamesTested).toBe(10);
     });
 
 
@@ -554,7 +564,7 @@ describe('jqLite', function() {
         var div = jqLite('<div><span>text</span></div>'),
             span = div.find('span');
 
-        span.data('name', 'angular');
+        span.data('name', 'AngularJS');
         span.remove();
         expect(span.data('name')).toBeUndefined();
       });
@@ -584,11 +594,44 @@ describe('jqLite', function() {
         }).not.toThrow();
       });
     });
+
+    describe('camelCasing keys', function() {
+      // jQuery 2.x has different behavior; skip the tests.
+      if (isJQuery2x()) return;
+
+      it('should camelCase the key in a setter', function() {
+        var element = jqLite(a);
+
+        element.data('a-B-c-d-42--e', 'z-x');
+        expect(element.data()).toEqual({'a-BCD-42-E': 'z-x'});
+      });
+
+      it('should camelCase the key in a getter', function() {
+        var element = jqLite(a);
+
+        element.data()['a-BCD-42-E'] = 'x-c';
+        expect(element.data('a-B-c-d-42--e')).toBe('x-c');
+      });
+
+      it('should camelCase the key in a mass setter', function() {
+        var element = jqLite(a);
+
+        element.data({'a-B-c-d-42--e': 'c-v', 'r-t-v': 42});
+        expect(element.data()).toEqual({'a-BCD-42-E': 'c-v', 'rTV': 42});
+      });
+
+      it('should ignore non-camelCase keys in the data in a getter', function() {
+        var element = jqLite(a);
+
+        element.data()['a-b'] = 'b-n';
+        expect(element.data('a-b')).toBe(undefined);
+      });
+    });
   });
 
 
   describe('attr', function() {
-    it('should read write and remove attr', function() {
+    it('should read, write and remove attr', function() {
       var selector = jqLite([a, b]);
 
       expect(selector.attr('prop', 'value')).toEqual(selector);
@@ -623,6 +666,43 @@ describe('jqLite', function() {
 
       select.attr('multiple', true);
       expect(select.attr('multiple')).toBe('multiple');
+    });
+
+    it('should not take properties into account when getting respective boolean attributes', function() {
+      // Use a div and not a select as the latter would itself reflect the multiple attribute
+      // to a property.
+      var div = jqLite('<div>');
+
+      div[0].multiple = true;
+      expect(div.attr('multiple')).toBe(undefined);
+
+      div.attr('multiple', 'multiple');
+      div[0].multiple = false;
+      expect(div.attr('multiple')).toBe('multiple');
+    });
+
+    it('should not set properties when setting respective boolean attributes', function() {
+      // jQuery 2.x has different behavior; skip the test.
+      if (isJQuery2x()) return;
+
+      // Use a div and not a select as the latter would itself reflect the multiple attribute
+      // to a property.
+      var div = jqLite('<div>');
+
+      // Check the initial state.
+      expect(div[0].multiple).toBe(undefined);
+
+      div.attr('multiple', 'multiple');
+      expect(div[0].multiple).toBe(undefined);
+
+      div.attr('multiple', '');
+      expect(div[0].multiple).toBe(undefined);
+
+      div.attr('multiple', false);
+      expect(div[0].multiple).toBe(undefined);
+
+      div.attr('multiple', null);
+      expect(div[0].multiple).toBe(undefined);
     });
 
     it('should normalize the case of boolean attributes', function() {
@@ -674,6 +754,47 @@ describe('jqLite', function() {
       expect(comment.attr('some-attribute','somevalue')).toEqual(comment);
       expect(comment.attr('some-attribute')).toBeUndefined();
     });
+
+    it('should remove the attribute for a null value', function() {
+      var elm = jqLite('<div attribute="value">a</div>');
+      elm.attr('attribute', null);
+      expect(elm[0].hasAttribute('attribute')).toBe(false);
+    });
+
+    it('should not remove the attribute for an empty string as a value', function() {
+      var elm = jqLite('<div attribute="value">a</div>');
+      elm.attr('attribute', '');
+      expect(elm[0].getAttribute('attribute')).toBe('');
+    });
+
+    it('should remove the boolean attribute for a false value', function() {
+      var elm = jqLite('<select multiple>');
+      elm.attr('multiple', false);
+      expect(elm[0].hasAttribute('multiple')).toBe(false);
+    });
+
+    it('should remove the boolean attribute for a null value', function() {
+      var elm = jqLite('<select multiple>');
+      elm.attr('multiple', null);
+      expect(elm[0].hasAttribute('multiple')).toBe(false);
+    });
+
+    it('should not remove the boolean attribute for an empty string as a value', function() {
+      var elm = jqLite('<select multiple>');
+      elm.attr('multiple', '');
+      expect(elm[0].getAttribute('multiple')).toBe('multiple');
+    });
+
+    it('should not fail on elements without the getAttribute method', function() {
+      forEach([window, document], function(node) {
+        expect(function() {
+          var elem = jqLite(node);
+          elem.attr('foo');
+          elem.attr('bar', 'baz');
+          elem.attr('bar');
+        }).not.toThrow();
+      });
+    });
   });
 
 
@@ -712,11 +833,9 @@ describe('jqLite', function() {
   describe('class', function() {
 
     it('should properly do  with SVG elements', function() {
-      // This is not working correctly in jQuery prior to v3.0.
+      // This is not working correctly in jQuery prior to v2.2.
       // See https://github.com/jquery/jquery/issues/2199 for details.
-      var jQueryVersion = window.jQuery && window.jQuery.fn.jquery.split('.')[0];
-      var jQuery3xOrNewer = jQueryVersion && (Number(jQueryVersion) >= 3);
-      if (!_jqLiteMode && !jQuery3xOrNewer) return;
+      if (isJQuery21()) return;
 
       var svg = jqLite('<svg><rect></rect></svg>');
       var rect = svg.children();
@@ -969,6 +1088,105 @@ describe('jqLite', function() {
       expect(jqA.css('z-index')).toBeOneOf('7', 7);
       expect(jqA.css('zIndex')).toBeOneOf('7', 7);
     });
+
+    it('should leave non-dashed strings alone', function() {
+      var jqA = jqLite(a);
+
+      jqA.css('foo', 'foo');
+      jqA.css('fooBar', 'bar');
+
+      expect(a.style.foo).toBe('foo');
+      expect(a.style.fooBar).toBe('bar');
+    });
+
+    it('should convert dash-separated strings to camelCase', function() {
+      var jqA = jqLite(a);
+
+      jqA.css('foo-bar', 'foo');
+      jqA.css('foo-bar-baz', 'bar');
+      jqA.css('foo:bar_baz', 'baz');
+
+      expect(a.style.fooBar).toBe('foo');
+      expect(a.style.fooBarBaz).toBe('bar');
+      expect(a.style['foo:bar_baz']).toBe('baz');
+    });
+
+    it('should convert leading dashes followed by a lowercase letter', function() {
+      var jqA = jqLite(a);
+
+      jqA.css('-foo-bar', 'foo');
+
+      expect(a.style.FooBar).toBe('foo');
+    });
+
+    it('should not convert slashes followed by a non-letter', function() {
+      // jQuery 2.x had different behavior; skip the test.
+      if (isJQuery2x()) return;
+
+      var jqA = jqLite(a);
+
+      jqA.css('foo-42- -a-B', 'foo');
+
+      expect(a.style['foo-42- A-B']).toBe('foo');
+    });
+
+    it('should convert the -ms- prefix to ms instead of Ms', function() {
+      var jqA = jqLite(a);
+
+      jqA.css('-ms-foo-bar', 'foo');
+      jqA.css('-moz-foo-bar', 'bar');
+      jqA.css('-webkit-foo-bar', 'baz');
+
+      expect(a.style.msFooBar).toBe('foo');
+      expect(a.style.MozFooBar).toBe('bar');
+      expect(a.style.WebkitFooBar).toBe('baz');
+    });
+
+    it('should not collapse sequences of dashes', function() {
+      var jqA = jqLite(a);
+
+      jqA.css('foo---bar-baz--qaz', 'foo');
+
+      expect(a.style['foo--BarBaz-Qaz']).toBe('foo');
+    });
+
+
+    it('should read vendor prefixes with the special -ms- exception', function() {
+      // jQuery uses getComputedStyle() in a css getter so these tests would fail there.
+      if (!_jqLiteMode) return;
+
+      var jqA = jqLite(a);
+
+      a.style.WebkitFooBar = 'webkit-uppercase';
+      a.style.webkitFooBar = 'webkit-lowercase';
+
+      a.style.MozFooBaz = 'moz-uppercase';
+      a.style.mozFooBaz = 'moz-lowercase';
+
+      a.style.MsFooQaz = 'ms-uppercase';
+      a.style.msFooQaz = 'ms-lowercase';
+
+      expect(jqA.css('-webkit-foo-bar')).toBe('webkit-uppercase');
+      expect(jqA.css('-moz-foo-baz')).toBe('moz-uppercase');
+      expect(jqA.css('-ms-foo-qaz')).toBe('ms-lowercase');
+    });
+
+    it('should write vendor prefixes with the special -ms- exception', function() {
+      var jqA = jqLite(a);
+
+      jqA.css('-webkit-foo-bar', 'webkit');
+      jqA.css('-moz-foo-baz', 'moz');
+      jqA.css('-ms-foo-qaz', 'ms');
+
+      expect(a.style.WebkitFooBar).toBe('webkit');
+      expect(a.style.webkitFooBar).not.toBeDefined();
+
+      expect(a.style.MozFooBaz).toBe('moz');
+      expect(a.style.mozFooBaz).not.toBeDefined();
+
+      expect(a.style.MsFooQaz).not.toBeDefined();
+      expect(a.style.msFooQaz).toBe('ms');
+    });
   });
 
 
@@ -1018,24 +1236,38 @@ describe('jqLite', function() {
           '<option>test 2</option>' +
         '</select>').val()).toEqual(['test 1']);
 
-      // In jQuery >= 3.0 .val() on select[multiple] with no selected options returns an
-      // empty array, not null.
-      // See https://github.com/jquery/jquery/issues/2562 for more details.
-      // jqLite will align with jQuery 3.0 behavior in Angular 1.6.
-      var val;
-      var jQueryVersion = window.jQuery && window.jQuery.fn.jquery.split('.')[0];
-      var jQuery3xOrNewer = jQueryVersion && (Number(jQueryVersion) >= 3);
-      if (!_jqLiteMode && jQuery3xOrNewer) {
-        val = [];
-      } else {
-        val = null;
-      }
-
+      // In jQuery < 3.0 .val() on select[multiple] with no selected options returns an
+      // null instead of an empty array.
       expect(jqLite(
         '<select multiple>' +
           '<option>test 1</option>' +
           '<option>test 2</option>' +
-        '</select>').val()).toEqual(val);
+        '</select>').val()).toEqualOneOf(null, []);
+    });
+
+    it('should get an empty array from a multi select if no elements are chosen', function() {
+      // In jQuery < 3.0 .val() on select[multiple] with no selected options returns an
+      // null instead of an empty array.
+      // See https://github.com/jquery/jquery/issues/2562 for more details.
+      if (isJQuery2x()) return;
+
+      expect(jqLite(
+        '<select multiple>' +
+          '<optgroup>' +
+            '<option>test 1</option>' +
+            '<option>test 2</option>' +
+          '</optgroup>' +
+          '<option>test 3</option>' +
+        '</select>').val()).toEqual([]);
+
+      expect(jqLite(
+        '<select multiple>' +
+          '<optgroup disabled>' +
+            '<option>test 1</option>' +
+            '<option>test 2</option>' +
+          '</optgroup>' +
+          '<option disabled>test 3</option>' +
+        '</select>').val()).toEqual([]);
     });
   });
 
@@ -1070,7 +1302,8 @@ describe('jqLite', function() {
 
   describe('on', function() {
     it('should bind to window on hashchange', function() {
-      if (jqLite.fn) return; // don't run in jQuery
+      if (!_jqLiteMode) return; // don't run in jQuery
+
       var eventFn;
       var window = {
         document: {},
@@ -1260,7 +1493,7 @@ describe('jqLite', function() {
       });
 
       it('should fire mouseenter when coming from outside the browser window', function() {
-        if (window.jQuery) return;
+        if (!_jqLiteMode) return;
 
         setup('<div>root<p>parent<span>child</span></p><ul></ul></div>', 'p', 'span');
 
@@ -1279,7 +1512,7 @@ describe('jqLite', function() {
       });
 
       it('should fire the mousenter on SVG elements', function() {
-        if (window.jQuery) return;
+        if (!_jqLiteMode) return;
 
         setup(
           '<div>' +
@@ -1301,29 +1534,28 @@ describe('jqLite', function() {
       });
     });
 
-    // Only run this test for jqLite and not normal jQuery
-    if (_jqLiteMode) {
-      it('should throw an error if eventData or a selector is passed', function() {
-        var elm = jqLite(a),
-            anObj = {},
-            aString = '',
-            aValue = 45,
-            callback = function() {};
+    it('should throw an error if eventData or a selector is passed', function() {
+      if (!_jqLiteMode) return;
 
-        expect(function() {
-          elm.on('click', anObj, callback);
-        }).toThrowMinErr('jqLite', 'onargs');
+      var elm = jqLite(a),
+          anObj = {},
+          aString = '',
+          aValue = 45,
+          callback = function() {};
 
-        expect(function() {
-          elm.on('click', null, aString, callback);
-        }).toThrowMinErr('jqLite', 'onargs');
+      expect(function() {
+        elm.on('click', anObj, callback);
+      }).toThrowMinErr('jqLite', 'onargs');
 
-        expect(function() {
-          elm.on('click', aValue, callback);
-        }).toThrowMinErr('jqLite', 'onargs');
+      expect(function() {
+        elm.on('click', null, aString, callback);
+      }).toThrowMinErr('jqLite', 'onargs');
 
-      });
-    }
+      expect(function() {
+        elm.on('click', aValue, callback);
+      }).toThrowMinErr('jqLite', 'onargs');
+
+    });
   });
 
 
@@ -1554,11 +1786,6 @@ describe('jqLite', function() {
 
 
     describe('native listener deregistration', function() {
-      var jQueryVersionString = window.jQuery && window.jQuery.fn.jquery;
-      var jQueryMajor = jQueryVersionString && Number(jQueryVersionString.split('.')[0]);
-      var jQueryMinor = jQueryVersionString && Number(jQueryVersionString.split('.')[1]);
-      var jQuery21 = jQueryMajor === 2 && jQueryMinor === 1;
-
       it('should deregister the native listener when all jqLite listeners for given type are gone ' +
          'after off("eventName", listener) call',  function() {
         var aElem = jqLite(a);
@@ -1571,7 +1798,7 @@ describe('jqLite', function() {
 
         // jQuery <2.2 passes the non-needed `false` useCapture parameter.
         // See https://github.com/jquery/jquery/issues/2199 for details.
-        if (jQuery21) {
+        if (isJQuery21()) {
           expect(addEventListenerSpy).toHaveBeenCalledOnceWith('click', jasmine.any(Function), false);
         } else {
           expect(addEventListenerSpy).toHaveBeenCalledOnceWith('click', jasmine.any(Function));
@@ -1580,7 +1807,7 @@ describe('jqLite', function() {
         expect(removeEventListenerSpy).not.toHaveBeenCalled();
 
         aElem.off('click', jqLiteListener);
-        if (jQuery21) {
+        if (isJQuery21()) {
           expect(removeEventListenerSpy).toHaveBeenCalledOnceWith('click', nativeListenerFn, false);
         } else {
           expect(removeEventListenerSpy).toHaveBeenCalledOnceWith('click', nativeListenerFn);
@@ -1596,7 +1823,7 @@ describe('jqLite', function() {
         var nativeListenerFn;
 
         aElem.on('click', function() {});
-        if (jQuery21) {
+        if (isJQuery21()) {
           expect(addEventListenerSpy).toHaveBeenCalledOnceWith('click', jasmine.any(Function), false);
         } else {
           expect(addEventListenerSpy).toHaveBeenCalledOnceWith('click', jasmine.any(Function));
@@ -1605,7 +1832,7 @@ describe('jqLite', function() {
         expect(removeEventListenerSpy).not.toHaveBeenCalled();
 
         aElem.off('click');
-        if (jQuery21) {
+        if (isJQuery21()) {
           expect(removeEventListenerSpy).toHaveBeenCalledOnceWith('click', nativeListenerFn, false);
         } else {
           expect(removeEventListenerSpy).toHaveBeenCalledOnceWith('click', nativeListenerFn);
@@ -1621,7 +1848,7 @@ describe('jqLite', function() {
         var nativeListenerFn;
 
         aElem.on('click', function() {});
-        if (jQuery21) {
+        if (isJQuery21()) {
           expect(addEventListenerSpy).toHaveBeenCalledOnceWith('click', jasmine.any(Function), false);
         } else {
           expect(addEventListenerSpy).toHaveBeenCalledOnceWith('click', jasmine.any(Function));
@@ -1630,7 +1857,7 @@ describe('jqLite', function() {
         addEventListenerSpy.calls.reset();
 
         aElem.on('dblclick', function() {});
-        if (jQuery21) {
+        if (isJQuery21()) {
           expect(addEventListenerSpy).toHaveBeenCalledOnceWith('dblclick', nativeListenerFn, false);
         } else {
           expect(addEventListenerSpy).toHaveBeenCalledOnceWith('dblclick', nativeListenerFn);
@@ -1640,7 +1867,7 @@ describe('jqLite', function() {
 
         aElem.off('click dblclick');
 
-        if (jQuery21) {
+        if (isJQuery21()) {
           expect(removeEventListenerSpy).toHaveBeenCalledWith('click', nativeListenerFn, false);
           expect(removeEventListenerSpy).toHaveBeenCalledWith('dblclick', nativeListenerFn, false);
         } else {
@@ -1659,7 +1886,7 @@ describe('jqLite', function() {
         var nativeListenerFn;
 
         aElem.on('click', function() {});
-        if (jQuery21) {
+        if (isJQuery21()) {
           expect(addEventListenerSpy).toHaveBeenCalledOnceWith('click', jasmine.any(Function), false);
         } else {
           expect(addEventListenerSpy).toHaveBeenCalledOnceWith('click', jasmine.any(Function));
@@ -1668,7 +1895,7 @@ describe('jqLite', function() {
         addEventListenerSpy.calls.reset();
 
         aElem.on('dblclick', function() {});
-        if (jQuery21) {
+        if (isJQuery21()) {
           expect(addEventListenerSpy).toHaveBeenCalledOnceWith('dblclick', nativeListenerFn, false);
         } else {
           expect(addEventListenerSpy).toHaveBeenCalledOnceWith('dblclick', nativeListenerFn);
@@ -1676,7 +1903,7 @@ describe('jqLite', function() {
 
         aElem.off();
 
-        if (jQuery21) {
+        if (isJQuery21()) {
           expect(removeEventListenerSpy).toHaveBeenCalledWith('click', nativeListenerFn, false);
           expect(removeEventListenerSpy).toHaveBeenCalledWith('dblclick', nativeListenerFn, false);
         } else {
@@ -1688,16 +1915,15 @@ describe('jqLite', function() {
     });
 
 
-    // Only run this test for jqLite and not normal jQuery
-    if (_jqLiteMode) {
-      it('should throw an error if a selector is passed', function() {
-        var aElem = jqLite(a);
-        aElem.on('click', noop);
-        expect(function() {
-          aElem.off('click', noop, '.test');
-        }).toThrowError(/\[jqLite:offargs\]/);
-      });
-    }
+    it('should throw an error if a selector is passed', function() {
+      if (!_jqLiteMode) return;
+
+      var aElem = jqLite(a);
+      aElem.on('click', noop);
+      expect(function() {
+        aElem.off('click', noop, '.test');
+      }).toThrowMinErr('jqLite', 'offargs');
+    });
   });
 
   describe('one', function() {
@@ -1956,6 +2182,14 @@ describe('jqLite', function() {
       span.after('abc');
       expect(root.html().toLowerCase()).toEqual('<span></span>abc');
     });
+
+
+    it('should not throw when the element has no parent', function() {
+      var span = jqLite('<span></span>');
+      expect(function() { span.after('abc'); }).not.toThrow();
+      expect(span.length).toBe(1);
+      expect(span[0].outerHTML).toBe('<span></span>');
+    });
   });
 
 
@@ -2061,7 +2295,7 @@ describe('jqLite', function() {
     });
 
     it('should pass in a dummy event', function() {
-      // we need the event to have at least preventDefault because angular will call it on
+      // we need the event to have at least preventDefault because AngularJS will call it on
       // all anchors with no href automatically
 
       var element = jqLite('<a>poke</a>'),
@@ -2173,25 +2407,35 @@ describe('jqLite', function() {
   });
 
 
-  describe('camelCase', function() {
+  describe('kebabToCamel', function() {
     it('should leave non-dashed strings alone', function() {
-      expect(camelCase('foo')).toBe('foo');
-      expect(camelCase('')).toBe('');
-      expect(camelCase('fooBar')).toBe('fooBar');
+      expect(kebabToCamel('foo')).toBe('foo');
+      expect(kebabToCamel('')).toBe('');
+      expect(kebabToCamel('fooBar')).toBe('fooBar');
     });
 
-
-    it('should covert dash-separated strings to camelCase', function() {
-      expect(camelCase('foo-bar')).toBe('fooBar');
-      expect(camelCase('foo-bar-baz')).toBe('fooBarBaz');
-      expect(camelCase('foo:bar_baz')).toBe('fooBarBaz');
+    it('should convert dash-separated strings to camelCase', function() {
+      expect(kebabToCamel('foo-bar')).toBe('fooBar');
+      expect(kebabToCamel('foo-bar-baz')).toBe('fooBarBaz');
+      expect(kebabToCamel('foo:bar_baz')).toBe('foo:bar_baz');
     });
 
+    it('should convert leading dashes followed by a lowercase letter', function() {
+      expect(kebabToCamel('-foo-bar')).toBe('FooBar');
+    });
 
-    it('should covert browser specific css properties', function() {
-      expect(camelCase('-moz-foo-bar')).toBe('MozFooBar');
-      expect(camelCase('-webkit-foo-bar')).toBe('webkitFooBar');
-      expect(camelCase('-webkit-foo-bar')).toBe('webkitFooBar');
+    it('should not convert dashes followed by a non-letter', function() {
+      expect(kebabToCamel('foo-42- -a-B')).toBe('foo-42- A-B');
+    });
+
+    it('should not convert browser specific css properties in a special way', function() {
+      expect(kebabToCamel('-ms-foo-bar')).toBe('MsFooBar');
+      expect(kebabToCamel('-moz-foo-bar')).toBe('MozFooBar');
+      expect(kebabToCamel('-webkit-foo-bar')).toBe('WebkitFooBar');
+    });
+
+    it('should not collapse sequences of dashes', function() {
+      expect(kebabToCamel('foo---bar-baz--qaz')).toBe('foo--BarBaz-Qaz');
     });
   });
 
@@ -2238,6 +2482,21 @@ describe('jqLite', function() {
 
       jqLite(mockWindow).triggerHandler('load');
       expect(onLoadCallback).toHaveBeenCalledOnce();
+    });
+  });
+
+
+  describe('bind/unbind', function() {
+    if (!_jqLiteMode) return;
+
+    it('should alias bind() to on()', function() {
+      var element = jqLite(a);
+      expect(element.bind).toBe(element.on);
+    });
+
+    it('should alias unbind() to off()', function() {
+      var element = jqLite(a);
+      expect(element.unbind).toBe(element.off);
     });
   });
 });

@@ -8,14 +8,14 @@
 
 In the previous step, we saw how a controller and a template worked together to convert a static
 HTML page into a dynamic view. This is a very common pattern in Single-Page Applications in general
-(and Angular applications in particular):
+(and AngularJS applications in particular):
 
 * Instead of creating a static HTML page on the server, the client-side code "takes over" and
   interacts dynamically with the view, updating it instantly to reflect changes in model data or
   state, usually as a result of user interaction (we'll see an example shortly in
   {@link step_05 step 5}).
 
-The **template** (the part of the view containing the bindings and presentation logic) acts as a 
+The **template** (the part of the view containing the bindings and presentation logic) acts as a
 blueprint for how our data should be organized and presented to the user.
 The **controller** provides the context in which the bindings are evaluated and applies behavior
 and logic to our template.
@@ -39,22 +39,22 @@ There are still a couple of areas we can do better:
 
 ## Components to the rescue!
 
-Since this combination (template + controller) is such a common and recurring pattern, Angular
+Since this combination (template + controller) is such a common and recurring pattern, AngularJS
 provides an easy and concise way to combine them together into reusable and isolated entities,
 known as _components_.
-Additionally, Angular will create a so called _isolate scope_ for each instance of our component,
+Additionally, AngularJS will create a so called _isolate scope_ for each instance of our component,
 which means no prototypal inheritance and no risk of our component affecting other parts of the
 application or vice versa.
 
 <div class="alert alert-info">
   <p>
     Since this is an introductory tutorial, we are not going to dive deep into all features provided
-    by Angular **components**. You can read more about components and their usage patterns in the
+    by AngularJS **components**. You can read more about components and their usage patterns in the
     [Components](guide/component) section of the Developer Guide.
   </p>
   <p>
     In fact, one could think of components as an opinionated and stripped-down version of their more
-    complex and verbose (but powerful) siblings, **directives**, which are Angular's way of teaching
+    complex and verbose (but powerful) siblings, **directives**, which are AngularJS's way of teaching
     HTML new tricks. You can read all about them in the [Directives](guide/directive) section of the
     Developer Guide.
   </p>
@@ -65,7 +65,7 @@ application or vice versa.
 </div>
 
 To create a component, we use the {@link angular.Module#component .component()} method of an
-{@link module Angular module}. We must provide the name of the component and the Component
+{@link module AngularJS module}. We must provide the name of the component and the Component
 Definition Object (CDO for short).
 
 Remember that (since components are also directives) the name of the component is in `camelCase`
@@ -73,7 +73,7 @@ Remember that (since components are also directives) the name of the component i
 referring to it in our HTML. (See [here][case-styles] for a description of different case styles.)
 
 In its simplest form, the CDO will just contain a template and a controller. (We can actually omit
-the controller and Angular will create a dummy controller for us. This is useful for simple
+the controller and AngularJS will create a dummy controller for us. This is useful for simple
 "presentational" components, that don't attach any behavior to the template.)
 
 Let's see an example:
@@ -89,7 +89,7 @@ Let's see an example:
     });
 ```
 
-Now, every time we include `<greet-user></greet-user>` in our view, Angular will expand it into a
+Now, every time we include `<greet-user></greet-user>` in our view, AngularJS will expand it into a
 DOM sub-tree constructed using the provided `template` and managed by an instance of the specified
 controller.
 
@@ -191,7 +191,7 @@ Voilà! The resulting output should look the same, but let's see what we have ga
   <p>**A note on file naming:**</p>
   <p>
     It is a good practice to distinguish different types of entities by suffix. In this tutorial, we
-    are using the `.component` suffix for components, so the definition of a `someComponent` 
+    are using the `.component` suffix for components, so the definition of a `someComponent`
     component would be in a file named `some-component.component.js`.
   </p>
 </div>
@@ -202,7 +202,7 @@ Voilà! The resulting output should look the same, but let's see what we have ga
 Although we have combined our controller with a template into a component, we still can (and should)
 unit test the controller separately, since this is where our application logic and data reside.
 
-In order to retrieve and instantiate a component's controller, Angular provides the
+In order to retrieve and instantiate a component's controller, AngularJS provides the
 {@link ngMock.$componentController $componentController} service.
 
 <div class="alert alert-info">

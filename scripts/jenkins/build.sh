@@ -4,7 +4,7 @@ echo "#################################"
 echo "####  Jenkins Build  ############"
 echo "#################################"
 
-source scripts/jenkins/set-node-version.sh
+source scripts/jenkins/init-node.sh
 
 # Enable tracing and exit on first failure
 set -xe
@@ -12,7 +12,7 @@ set -xe
 # This is the default set of browsers to use on the CI server unless overridden via env variable
 if [[ -z "$BROWSERS" ]]
 then
-  BROWSERS="Chrome,Firefox,Opera,/Users/jenkins/bin/safari.sh"
+  BROWSERS="Chrome,Firefox"
 fi
 
 # CLEAN #
@@ -21,23 +21,21 @@ rm -f angular.js.size
 
 
 # BUILD #
-npm install -g grunt-cli
-npm install --color false
-grunt ci-checks package --no-color
+yarn run grunt -- ci-checks package --no-color
 
 mkdir -p test_out
 
 # UNIT TESTS #
-grunt test:unit --browsers="$BROWSERS" --reporters=dots,junit --no-colors --no-color
+yarn run grunt -- test:unit --browsers="$BROWSERS" --reporters=dots,junit --no-colors --no-color
 
 # END TO END TESTS #
-grunt test:ci-protractor
+yarn run grunt -- test:ci-protractor
 
 # DOCS APP TESTS #
-grunt test:docs --browsers="$BROWSERS" --reporters=dots,junit --no-colors --no-color
+yarn run grunt -- test:docs --browsers="$BROWSERS" --reporters=dots,junit --no-colors --no-color
 
 # Promises/A+ TESTS #
-grunt test:promises-aplus --no-color
+yarn run grunt -- test:promises-aplus --no-color
 
 
 # CHECK SIZE #

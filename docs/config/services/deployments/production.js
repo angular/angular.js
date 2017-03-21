@@ -1,16 +1,30 @@
 'use strict';
 
 var versionInfo = require('../../../../lib/versions/version-info');
-var cdnUrl = '//ajax.googleapis.com/ajax/libs/angularjs/' + versionInfo.cdnVersion;
+
+var googleCdnUrl = '//ajax.googleapis.com/ajax/libs/angularjs/';
+var angularCodeUrl = '//code.angularjs.org/';
+
+var cdnUrl = googleCdnUrl + versionInfo.cdnVersion;
+
+// The plnkr examples must use the code.angularjs.org repo for the snapshot,
+// and the cdn for the tagged version and, if the build is not tagged, the currentVersion.
+//
+// The currentVersion may not be available on the cdn (e.g. if built locally, or hasn't been pushed
+// yet). This will lead to a 404, but this is preferable to loading a version with which the example
+// might not work (possibly in subtle ways).
+var examplesCdnUrl = versionInfo.currentVersion.isSnapshot ?
+  (angularCodeUrl + 'snapshot') :
+  (googleCdnUrl + (versionInfo.currentVersion.version || versionInfo.currentVersion));
 
 module.exports = function productionDeployment(getVersion) {
   return {
     name: 'production',
     examples: {
       commonFiles: {
-        scripts: [cdnUrl + '/angular.min.js']
+        scripts: [examplesCdnUrl + '/angular.min.js']
       },
-      dependencyPath: cdnUrl + '/'
+      dependencyPath: examplesCdnUrl + '/'
     },
     scripts: [
       cdnUrl + '/angular.min.js',
@@ -20,12 +34,13 @@ module.exports = function productionDeployment(getVersion) {
       cdnUrl + '/angular-sanitize.min.js',
       cdnUrl + '/angular-touch.min.js',
       cdnUrl + '/angular-animate.min.js',
-      'components/marked-' + getVersion('marked', 'node_modules', 'package.json') + '/lib/marked.js',
+      'components/marked-' + getVersion('marked') + '/lib/marked.js',
       'js/angular-bootstrap/dropdown-toggle.min.js',
-      'components/lunr.js-' + getVersion('lunr.js') + '/lunr.min.js',
+      'components/lunr-' + getVersion('lunr') + '/lunr.min.js',
       'components/google-code-prettify-' + getVersion('google-code-prettify') + '/src/prettify.js',
       'components/google-code-prettify-' + getVersion('google-code-prettify') + '/src/lang-css.js',
-      'js/versions-data.js',
+      'js/current-version-data.js',
+      'https://code.angularjs.org/snapshot/docs/js/all-versions-data.js',
       'js/pages-data.js',
       'js/nav-data.js',
       'js/docs.min.js'
@@ -34,6 +49,7 @@ module.exports = function productionDeployment(getVersion) {
       'components/bootstrap-' + getVersion('bootstrap') + '/css/bootstrap.min.css',
       'components/open-sans-fontface-' + getVersion('open-sans-fontface') + '/open-sans.css',
       'css/prettify-theme.css',
+      'css/angular-topnav.css',
       'css/docs.css',
       'css/animations.css'
     ]

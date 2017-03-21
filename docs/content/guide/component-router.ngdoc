@@ -6,18 +6,17 @@
 # Component Router
 
 <div class="alert alert-info">
-**Deprecation Notice:** In an effort to keep synchronized with router changes in Angular 2, this implementation of the Component Router (ngComponentRouter module) has been deprecated and will not receive further updates.
-We are investigating backporting the Angular 2 Router to Angular 1, but alternatively, use the {@link ngRoute} module or community developed projects (e.g. [ui-router](https://github.com/angular-ui/ui-router)).
+**Deprecation Notice:** In an effort to keep synchronized with router changes in the new Angular, this implementation of the Component Router (ngComponentRouter module) has been deprecated and will not receive further updates.
+We are investigating backporting the new Angular Router to AngularJS, but alternatively, use the {@link ngRoute} module or community developed projects (e.g. [ui-router](https://github.com/angular-ui/ui-router)).
 </div>
 
-This guide describes the new Component Router for AngularJS 1.5.
+This guide describes the Component Router for AngularJS.
 
 <div class="alert alert-info">
-  If you are looking for information about the old router for AngularJS 1.4 and
-  earlier have a look at the {@link ngRoute} module.
+  If you are looking for information about the old router for AngularJS have a look at the {@link ngRoute} module.
 
-  If you are looking for information about the Component Router for Angular 2 then
-  check out the [Angular 2 Router Guide](https://angular.io/docs/ts/latest/guide/router.html).
+  If you are looking for information about the Component Router for the new Angular then
+  check out the [Angular Router Guide](https://angular.io/docs/ts/latest/guide/router.html).
 </div>
 
 ## Overview
@@ -29,11 +28,11 @@ Here is a table of the main concepts used in the Component Router.
 | Router                | Displays the Routing Components for the active Route. Manages navigation from one component to the next. |
 | RootRouter            | The top level Router that interacts with the current URL location |
 | RouteConfig           | Configures a Router with RouteDefinitions, each mapping a URL path to a component. |
-| Routing Component     | An Angular component with a RouteConfig and an associated Router. |
+| Routing Component     | An AngularJS component with a RouteConfig and an associated Router. |
 | RouteDefinition       | Defines how the router should navigate to a component based on a URL pattern. |
 | ngOutlet              | The directive (`<ng-outlet>`) that marks where the router should display a view. |
-| ngLink                | The directive (`ng-link="..."`) for binding a clickable HTML element to a route, via a Link Paramaters Array. |
-| Link Parameters Array | An array that the router inteprets into a routing instruction. We can bind a RouterLink to that array or pass the array as an argument to the Router.navigate method. |
+| ngLink                | The directive (`ng-link="..."`) for binding a clickable HTML element to a route, via a Link Parameters Array. |
+| Link Parameters Array | An array that the router interprets into a routing instruction. We can bind a RouterLink to that array or pass the array as an argument to the Router.navigate method. |
 
 
 ## Component-based Applications
@@ -149,8 +148,8 @@ You can see the complete application running below.
     <h1 class="title">Component Router</h1>
     <app></app>
 
-    <!-- Load up the router library - normally you might use npm and host it locally -->
-    <script src="https://npmcdn.com/@angular/router@0.2.0/angular1/angular_1_router.js"></script>
+    <!-- Load up the router library - normally you might use npm/yarn and host it locally -->
+    <script src="https://unpkg.com/@angular/router@0.2.0/angular1/angular_1_router.js"></script>
   </file>
 
   <file name="app.js">
@@ -215,7 +214,7 @@ You can see the complete application running below.
 
 
     function HeroService($q) {
-      var heroesPromise = $q.when([
+      var heroesPromise = $q.resolve([
         { id: 11, name: 'Mr. Nice' },
         { id: 12, name: 'Narco' },
         { id: 13, name: 'Bombasto' },
@@ -308,7 +307,7 @@ You can see the complete application running below.
 
 
     function CrisisService($q) {
-      var crisesPromise = $q.when([
+      var crisesPromise = $q.resolve([
         {id: 1, name: 'Princess Held Captive'},
         {id: 2, name: 'Dragon Burning Cities'},
         {id: 3, name: 'Giant Asteroid Heading For Earth'},
@@ -415,7 +414,7 @@ You can see the complete application running below.
 
     function DialogService($q) {
       this.confirm = function(message) {
-        return $q.when(window.confirm(message || 'Is it OK?'));
+        return $q.resolve(window.confirm(message || 'Is it OK?'));
       };
     }
   </file>
@@ -467,19 +466,18 @@ to display list and detail views of Heroes and Crises.
 
 ## Install the libraries
 
-It is easier to use npm to install the **Component Router** module. For this guide we will also install
-AngularJS itself via npm:
+It is easier to use [Yarn](https://yarnpkg.com) or [npm](https://www.npmjs.com) to install the
+**Component Router** module. For this guide we will also install AngularJS itself via Yarn:
 
 ```bash
-npm init
-npm install angular@1.5.x --save
-npm install @angular/router@0.2.0 --save
+yarn init
+yarn add angular@1.5.x @angular/router@0.2.0
 ```
 
 
 ## Load the scripts
 
-Just like any Angular application, we load the JavaScript files into our `index.html`:
+Just like any AngularJS application, we load the JavaScript files into our `index.html`:
 
 ```html
   <script src="/node_modules/angular/angular.js"></script>
@@ -493,7 +491,7 @@ You also need to include ES6 shims for browsers that do not support ES6 code (In
  <!-- IE required polyfills, in this exact order -->
  <script src="https://cdnjs.cloudflare.com/ajax/libs/es6-shim/0.33.3/es6-shim.min.js"></script>
  <script src="https://cdnjs.cloudflare.com/ajax/libs/systemjs/0.19.20/system-polyfills.js"></script>
- <script src="https://npmcdn.com/angular2/es6/dev/src/testing/shims_for_IE.js"></script>
+ <script src="https://unpkg.com/angular2/es6/dev/src/testing/shims_for_IE.js"></script>
  ```
 
 ## Create the `app` module
@@ -530,7 +528,7 @@ Configure the top level routed `App` Component.
 
 Create a very simple App Component to test that the application is working.
 
-We are using the Angular 1.5 {@link $compileProvider#component `.component()`} helper method to create
+We are using the AngularJS {@link $compileProvider#component `.component()`} helper method to create
 all the **Components** in our application. It is perfectly suited to this task.
 
 ```js
@@ -551,7 +549,7 @@ must have a base URL.
 
 ## Bootstrap AngularJS
 
-Bootstrap the Angular application and add the top level App Component.
+Bootstrap the AngularJS application and add the top level App Component.
 
 ```html
 <body ng-app="app">
@@ -627,7 +625,7 @@ directive and a **Route Config** that defines a set of child **Routes** which de
 
 ## HeroesComponent
 
-Create a new file `heroes.js`, which defines a new Angular module for the **Components** of this feature
+Create a new file `heroes.js`, which defines a new AngularJS module for the **Components** of this feature
 and registers the Heroes **Component**.
 
 ```js
@@ -714,7 +712,7 @@ making an actual server request, perhaps over HTTP.
 
 ```js
 function HeroService($q) {
-  var heroesPromise = $q.when([
+  var heroesPromise = $q.resolve([
     { id: 11, name: 'Mr. Nice' },
     ...
   ]);
@@ -749,7 +747,7 @@ The **Lifecycle Hooks** that can be implemented as instance methods on the **Com
 
 * `$routerCanReuse` : called to to determine whether a **Component** can be reused across **Route Definitions**
   that match the same type of **Component**, or whether to destroy and instantiate a new **Component** every time.
-* `$routerOnActivate` / `$routeOnReuse` : called by the **Router** at the end of a successful navigation. Only
+* `$routerOnActivate` / `$routerOnReuse` : called by the **Router** at the end of a successful navigation. Only
   one of `$routerOnActivate` and `$routerOnReuse` will be called depending upon the result of a call to
   `$routerCanReuse`.
 * `$routerCanDeactivate` : called by the **Router** to determine if a **Component** can be removed as part of a
@@ -817,7 +815,7 @@ This hero is then attached to the **Component** so that it can be accessed in th
 
 **How do I get hold of the current router for my component?**
 
-Each component has its own Router. Unlike in Angular 2, we cannot use the dependency injector to get hold of a component's Router.
+Each component has its own Router. Unlike in the new Angular, we cannot use the dependency injector to get hold of a component's Router.
 We can only inject the `$rootRouter`. Instead we use the fact that the `ng-outlet` directive binds the current router to a `$router`
 attribute on our component.
 
@@ -929,7 +927,7 @@ function HeroListComponent(heroService) {
 }
 ```
 
-Finally, we can use this information to higlight the current hero in the template.
+Finally, we can use this information to highlight the current hero in the template.
 
 ```html
 <div ng-repeat="hero in $ctrl.heroes"
@@ -991,7 +989,7 @@ have made. The result of the prompt is a promise that can be used in a `$routerC
 
 function DialogService($q) {
   this.confirm = function(message) {
-    return $q.when(window.confirm(message || 'Is it OK?'));
+    return $q.resolve(window.confirm(message || 'Is it OK?'));
   };
 }
 ```

@@ -2,14 +2,14 @@
 
 set -e
 
+yarn global add grunt-cli@1.2.0
+
 mkdir -p $LOGS_DIR
 
 if [ $JOB != "ci-checks" ]; then
   echo "start_browser_provider"
   ./scripts/travis/start_browser_provider.sh
 fi
-
-npm install -g grunt-cli
 
 if [ $JOB != "ci-checks" ]; then
   grunt package

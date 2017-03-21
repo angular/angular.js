@@ -45,6 +45,25 @@ describe('$sniffer', function() {
     });
 
 
+    it('should be true on NW.js apps (which look similar to Chrome Packaged Apps)', function() {
+      var mockWindow = {
+        history: {
+          pushState: noop
+        },
+        chrome: {
+          app: {
+            runtime: {}
+          }
+        },
+        nw: {
+          process: {}
+        }
+      };
+
+      expect(sniffer(mockWindow).history).toBe(true);
+    });
+
+
     it('should be false on Chrome Packaged Apps', function() {
       // Chrome Packaged Apps are not allowed to access `window.history.pushState`.
       // In Chrome, `window.app` might be available in "normal" webpages, but `window.app.runtime`
@@ -90,6 +109,28 @@ describe('$sniffer', function() {
 
       expect(pushStateAccessCount).toBe(0);
     });
+
+    it('should not try to access `history.pushState` in sandboxed Chrome Packaged Apps',
+      function() {
+        var pushStateAccessCount = 0;
+
+        var mockHistory = Object.create(Object.prototype, {
+          pushState: {get: function() { pushStateAccessCount++; return noop; }}
+        });
+        var mockWindow = {
+          chrome: {
+            runtime: {
+              id: 'x'
+            }
+          },
+          history: mockHistory
+        };
+
+        sniffer(mockWindow);
+
+        expect(pushStateAccessCount).toBe(0);
+      }
+    );
   });
 
 
@@ -131,11 +172,12 @@ describe('$sniffer', function() {
 
 
     it('should claim that IE9 doesn\'t have support for "oninput"', function() {
+      // Support: IE 9-11 only
       // IE9 implementation is fubared, so it's better to pretend that it doesn't have the support
       // IE10+ implementation is fubared when mixed with placeholders
       mockDivElement = {oninput: noop};
 
-      expect($sniffer.hasEvent('input')).toBe(!(msie && msie <= 11));
+      expect($sniffer.hasEvent('input')).toBe(!msie);
     });
   });
 
@@ -146,39 +188,6 @@ describe('$sniffer', function() {
       forEach(Object.keys(csp), function(key) {
         expect(csp[key]).toEqual(false);
       });
-    });
-  });
-
-
-  describe('vendorPrefix', function() {
-    it('should return the correct vendor prefix based on the browser', function() {
-      inject(function($sniffer, $window) {
-        var expectedPrefix;
-        var ua = $window.navigator.userAgent.toLowerCase();
-        if (/edge/i.test(ua)) {
-          expectedPrefix = 'Ms';
-        } else if (/chrome/i.test(ua) || /safari/i.test(ua) || /webkit/i.test(ua)) {
-          expectedPrefix = 'Webkit';
-        } else if (/firefox/i.test(ua)) {
-          expectedPrefix = 'Moz';
-        } else if (/ie/i.test(ua) || /trident/i.test(ua)) {
-          expectedPrefix = 'Ms';
-        }
-        expect($sniffer.vendorPrefix).toBe(expectedPrefix);
-      });
-    });
-
-
-    it('should still work for an older version of Webkit', function() {
-      var mockDocument = {
-        body: {
-          style: {
-            WebkitOpacity: '0'
-          }
-        }
-      };
-
-      expect(sniffer({}, mockDocument).vendorPrefix).toBe('webkit');
     });
   });
 
@@ -200,13 +209,12 @@ describe('$sniffer', function() {
     });
 
 
-    it('should be true with vendor-specific animations', function() {
+    it('should be true with -webkit-prefixed animations', function() {
       var animationStyle = 'some_animation 2s linear';
       var mockDocument = {
         body: {
           style: {
-            WebkitAnimation: animationStyle,
-            MozAnimation: animationStyle
+            webkitAnimation: animationStyle
           }
         }
       };
@@ -277,13 +285,12 @@ describe('$sniffer', function() {
     });
 
 
-    it('should be true with vendor-specific transitions', function() {
+    it('should be true with -webkit-prefixed transitions', function() {
       var transitionStyle = '1s linear all';
       var mockDocument = {
         body: {
           style: {
-            WebkitTransition: transitionStyle,
-            MozTransition: transitionStyle
+            webkitTransition: transitionStyle
           }
         }
       };

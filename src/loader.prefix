@@ -1,8 +1,11 @@
 /**
  * @license AngularJS v"NG_VERSION_FULL"
- * (c) 2010-2016 Google, Inc. http://angularjs.org
+ * (c) 2010-2017 Google, Inc. http://angularjs.org
  * License: MIT
  */
 'use strict';
 (function() {
-    function isFunction(value) {return typeof value === 'function';};
+    function isFunction(value) {return typeof value === 'function';}
+    function isDefined(value) {return typeof value !== 'undefined';}
+    function isObject(value) {return value !== null && typeof value === 'object';}
+

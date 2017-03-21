@@ -322,7 +322,7 @@ describe('SCE', function() {
         runTest({whiteList: [{}]}, null)();
       }).toThrowMinErr('$injector', 'modulerr', new RegExp(
           /Failed to instantiate module function ?\(\$sceDelegateProvider\) due to:\n/.source +
-          /[^[]*\[\$sce:imatcher\] Matchers may only be "self", string patterns or RegExp objects/.source));
+          /[^[]*\[\$sce:imatcher] Matchers may only be "self", string patterns or RegExp objects/.source));
     });
 
     describe('adjustMatcher', function() {
@@ -333,6 +333,10 @@ describe('SCE', function() {
         // Adding ^ & $ onto a regex that already had them should also work.
         expect(adjustMatcher(/^a.*b$/).exec('a.b')).not.toBeNull();
         expect(adjustMatcher(/^a.*b$/).exec('-a.b-')).toBeNull();
+      });
+
+      it('should should match * and **', function() {
+        expect(adjustMatcher('*://*.example.com/**').exec('http://www.example.com/path')).not.toBeNull();
       });
     });
 
@@ -437,7 +441,7 @@ describe('SCE', function() {
           runTest({whiteList: ['http://***']}, null)();
         }).toThrowMinErr('$injector', 'modulerr', new RegExp(
              /Failed to instantiate module function ?\(\$sceDelegateProvider\) due to:\n/.source +
-             /[^[]*\[\$sce:iwcard\] Illegal sequence \*\*\* in string matcher\. {2}String: http:\/\/\*\*\*/.source));
+             /[^[]*\[\$sce:iwcard] Illegal sequence \*\*\* in string matcher\. {2}String: http:\/\/\*\*\*/.source));
       });
     });
 
@@ -460,6 +464,39 @@ describe('SCE', function() {
             '$sce', 'insecurl', 'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: foo');
         }
       ));
+
+      describe('when the document base URL has changed', function() {
+        var baseElem;
+        var cfg = {whitelist: ['self'], blacklist: []};
+
+        beforeEach(function() {
+          baseElem = window.document.createElement('BASE');
+          baseElem.setAttribute('href', window.location.protocol + '//foo.example.com/path/');
+          window.document.head.appendChild(baseElem);
+        });
+
+        afterEach(function() {
+          window.document.head.removeChild(baseElem);
+        });
+
+
+        it('should allow relative URLs', runTest(cfg, function($sce) {
+          expect($sce.getTrustedResourceUrl('foo')).toEqual('foo');
+        }));
+
+        it('should allow absolute URLs', runTest(cfg, function($sce) {
+          expect($sce.getTrustedResourceUrl('//foo.example.com/bar'))
+              .toEqual('//foo.example.com/bar');
+        }));
+
+        it('should still block some URLs', runTest(cfg, function($sce) {
+          expect(function() {
+            $sce.getTrustedResourceUrl('//bad.example.com');
+          }).toThrowMinErr('$sce', 'insecurl',
+              'Blocked loading resource from url not allowed by $sceDelegate policy.  ' +
+              'URL: //bad.example.com');
+        }));
+      });
     });
 
     it('should have blacklist override the whitelist', runTest(

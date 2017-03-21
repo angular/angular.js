@@ -976,7 +976,7 @@ describe('$$animation', function() {
         $$animationProvider.drivers[0] = 'dumbDriver';
         $provide.factory('dumbDriver', function($q) {
           return function stepFn() {
-            return $q.when(true);
+            return $q.resolve(true);
           };
         });
       });

@@ -1,7 +1,7 @@
 language: node_js
 sudo: false
 node_js:
-  - '4.4'
+  - '6'
 
 cache:
   directories:
@@ -36,19 +36,12 @@ addons:
     packages:
       - g++-4.8
 
-install:
-  # Check the size of caches
-  - du -sh ./node_modules ./bower_components/ ./docs/bower_components/ || true
-  # - npm config set registry http://23.251.144.68
-  # Disable the spinner, it looks bad on Travis
-  - npm config set spin false
-  # Log HTTP requests
-  - npm config set loglevel http
-  #- npm install -g npm@2.5
-  # Install npm dependencies and ensure that npm cache is not stale
-  - npm install
+before_install:
+  - curl -o- -L https://raw.githubusercontent.com/yarnpkg/yarn/2a0afc73210c7a82082585283e518eeb88ca19ae/scripts/install-latest.sh | bash -s -- --version 0.17.9
+  - export PATH=$HOME/.yarn/bin:$PATH
 
 before_script:
+  - du -sh ./node_modules ./bower_components/ ./docs/bower_components/ || true
   - ./scripts/travis/before_build.sh
 
 script:

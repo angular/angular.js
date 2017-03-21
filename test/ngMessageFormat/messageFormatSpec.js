@@ -10,7 +10,7 @@
  • parser error messages.
  • caching.
  • watched expressions.
- • test parsing angular expressions
+ • test parsing AngularJS expressions
  • test the different regexes
  • test the different starting rules
 */

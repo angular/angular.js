@@ -25,6 +25,8 @@
 
     /* angular.js */
     "angular": false,
+    "minErrConfig": false,
+    "errorHandlingConfig": false,
     "msie": false,
     "jqLite": false,
     "jQuery": false,
@@ -37,6 +39,7 @@
     "nodeName_": false,
     "uid": false,
     "toDebugString": false,
+    "serializeObject": false,
 
     "lowercase": false,
     "uppercase": false,
@@ -59,6 +62,7 @@
     "isObject": false,
     "isString": false,
     "isNumber": false,
+    "isNumberNaN": false,
     "isDate": false,
     "isArray": false,
     "isFunction": false,
@@ -103,6 +107,8 @@
     "getBlockNodes": false,
     "createMap": false,
     "VALIDITY_STATE_PROPERTY": true,
+    "allowAutoBootstrap": false,
+    "isAutoBootstrapAllowed": false,
 
     /* AngularPublic.js */
     "version": false,
@@ -117,7 +123,8 @@
     /* jqLite.js */
     "BOOLEAN_ATTR": false,
     "jqNextId": false,
-    "camelCase": false,
+    "kebabToCamel": false,
+    "fnCamelCaseReplace": false,
     "jqLitePatchJQueryRemove": false,
     "JQLite": false,
     "jqLiteClone": false,
@@ -139,11 +146,12 @@
 
     /* apis.js */
     "hashKey": false,
-    "HashMap": false,
+    "NgMapShim": false,
 
     /* urlUtils.js */
     "urlResolve": false,
     "urlIsSameOrigin": false,
+    "urlIsSameOriginAsBaseUrl": true,
 
     /* karma */
     "dump": false,

@@ -7,7 +7,7 @@ in its `contrib/externs` directory.
 The definitions contain externs for use with the Closure compiler (aka
 JSCompiler). Passing these files to the --externs parameter of a compiler
 pass allows using type annotations for AngularJS objects. For example,
-Angular's $scope objects can be annotated as:
+AngularJS's $scope objects can be annotated as:
 ```js
 /** @type {angular.Scope} */
 var scope = $scope;

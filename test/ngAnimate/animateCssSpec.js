@@ -16,8 +16,8 @@ describe('ngAnimate $animateCss', function() {
   }
 
   function getPossiblyPrefixedStyleValue(element, styleProp) {
-    var value = element.css(prefix + styleProp);
-    if (isUndefined(value)) value = element.css(styleProp);
+    var value = element.css(styleProp);
+    if (isUndefined(value)) value = element.css('-webkit-' + styleProp);
 
     return value;
   }
@@ -40,11 +40,10 @@ describe('ngAnimate $animateCss', function() {
     color: 'blue'
   };
 
-  var ss, prefix, triggerAnimationStartFrame;
+  var ss, triggerAnimationStartFrame;
   beforeEach(module(function() {
     return function($document, $sniffer, $$rAF, $animate) {
-      prefix = '-' + $sniffer.vendorPrefix.toLowerCase() + '-';
-      ss = createMockStyleSheet($document, prefix);
+      ss = createMockStyleSheet($document);
 
       $animate.enabled(true);
       triggerAnimationStartFrame = function() {
@@ -328,8 +327,7 @@ describe('ngAnimate $animateCss', function() {
         inject(function($animateCss) {
 
         element.attr('style', '');
-        ss.addRule('.ng-enter', '-webkit-animation:1.5s keyframe_animation;' +
-                                        'animation:1.5s keyframe_animation;');
+        ss.addPossiblyPrefixedRule('.ng-enter', 'animation:1.5s keyframe_animation;');
 
         animator = $animateCss(element, {
           event: 'enter',
@@ -349,8 +347,7 @@ describe('ngAnimate $animateCss', function() {
         inject(function($animateCss) {
 
         element.attr('style', '');
-        ss.addRule('.ng-enter', '-webkit-animation:1.5s keyframe_animation;' +
-                                        'animation:1.5s keyframe_animation;');
+        ss.addPossiblyPrefixedRule('.ng-enter', 'animation:1.5s keyframe_animation;');
 
         animator = $animateCss(element, {
           event: 'enter',
@@ -479,8 +476,8 @@ describe('ngAnimate $animateCss', function() {
         });
 
         it('should use the highest transition duration value detected in the CSS class', inject(function($animateCss) {
-          ss.addRule('.ng-enter', 'transition:1s linear all;' +
-                                  'transition-duration:10s, 15s, 20s;');
+          ss.addPossiblyPrefixedRule('.ng-enter', 'transition:1s linear all;' +
+                                                  'transition-duration:10s, 15s, 20s;');
 
           var animator = $animateCss(element, options);
           animator.start();
@@ -498,8 +495,8 @@ describe('ngAnimate $animateCss', function() {
         }));
 
         it('should use the highest transition delay value detected in the CSS class', inject(function($animateCss) {
-          ss.addRule('.ng-enter', 'transition:1s linear all;' +
-                                  'transition-delay:10s, 15s, 20s;');
+          ss.addPossiblyPrefixedRule('.ng-enter', 'transition:1s linear all;' +
+                                                  'transition-delay:10s, 15s, 20s;');
 
           var animator = $animateCss(element, options);
           animator.start();
@@ -519,7 +516,7 @@ describe('ngAnimate $animateCss', function() {
         it('should only close when both the animation delay and duration have passed',
           inject(function($animateCss) {
 
-          ss.addRule('.ng-enter', 'transition:10s 5s linear all;');
+          ss.addPossiblyPrefixedRule('.ng-enter', 'transition:10s 5s linear all;');
 
           var animator = $animateCss(element, options);
           animator.start();
@@ -536,8 +533,7 @@ describe('ngAnimate $animateCss', function() {
         }));
 
         it('should use the highest keyframe duration value detected in the CSS class', inject(function($animateCss) {
-          ss.addRule('.ng-enter', 'animation:animation 1s, animation 2s, animation 3s;' +
-                          '-webkit-animation:animation 1s, animation 2s, animation 3s;');
+          ss.addPossiblyPrefixedRule('.ng-enter', 'animation:animation 1s, animation 2s, animation 3s;');
 
           var animator = $animateCss(element, options);
           animator.start();
@@ -555,8 +551,7 @@ describe('ngAnimate $animateCss', function() {
         }));
 
         it('should use the highest keyframe delay value detected in the CSS class', inject(function($animateCss) {
-          ss.addRule('.ng-enter', 'animation:animation 1s 2s, animation 1s 10s, animation 1s 1000ms;' +
-                          '-webkit-animation:animation 1s 2s, animation 1s 10s, animation 1s 1000ms;');
+          ss.addPossiblyPrefixedRule('.ng-enter', 'animation:animation 1s 2s, animation 1s 10s, animation 1s 1000ms;');
 
           var animator = $animateCss(element, options);
           animator.start();
@@ -574,9 +569,8 @@ describe('ngAnimate $animateCss', function() {
         }));
 
         it('should use the highest keyframe duration value detected in the CSS class with respect to the animation-iteration-count property', inject(function($animateCss) {
-          ss.addRule('.ng-enter',
-                    'animation:animation 1s 2s 3, animation 1s 10s 2, animation 1s 1000ms infinite;' +
-            '-webkit-animation:animation 1s 2s 3, animation 1s 10s 2, animation 1s 1000ms infinite;');
+          ss.addPossiblyPrefixedRule('.ng-enter',
+                    'animation:animation 1s 2s 3, animation 1s 10s 2, animation 1s 1000ms infinite;');
 
           var animator = $animateCss(element, options);
           animator.start();
@@ -594,10 +588,9 @@ describe('ngAnimate $animateCss', function() {
         }));
 
         it('should use the highest duration value when both transitions and keyframes are used', inject(function($animateCss) {
-          ss.addRule('.ng-enter', 'transition:1s linear all;' +
-                                  'transition-duration:10s, 15s, 20s;' +
-                                  'animation:animation 1s, animation 2s, animation 3s 0s 7;' +
-                          '-webkit-animation:animation 1s, animation 2s, animation 3s 0s 7;');
+          ss.addPossiblyPrefixedRule('.ng-enter', 'transition:1s linear all;' +
+                                                  'transition-duration:10s, 15s, 20s;' +
+                                                  'animation:animation 1s, animation 2s, animation 3s 0s 7;');
 
           var animator = $animateCss(element, options);
           animator.start();
@@ -623,10 +616,9 @@ describe('ngAnimate $animateCss', function() {
         }));
 
         it('should use the highest delay value when both transitions and keyframes are used', inject(function($animateCss) {
-          ss.addRule('.ng-enter', 'transition:1s linear all;' +
-                                  'transition-delay:10s, 15s, 20s;' +
-                                  'animation:animation 1s 2s, animation 1s 16s, animation 1s 19s;' +
-                          '-webkit-animation:animation 1s 2s, animation 1s 16s, animation 1s 19s;');
+          ss.addPossiblyPrefixedRule('.ng-enter', 'transition:1s linear all;' +
+                                                  'transition-delay:10s, 15s, 20s;' +
+                                                  'animation:animation 1s 2s, animation 1s 16s, animation 1s 19s;');
 
           var animator = $animateCss(element, options);
           animator.start();
@@ -657,8 +649,8 @@ describe('ngAnimate $animateCss', function() {
 
           angular.element($document[0].body).append($rootElement);
 
-          ss.addRule('.ng-enter-stagger', 'transition-delay:0.2s');
-          ss.addRule('.ng-enter', 'transition:2s linear all');
+          ss.addPossiblyPrefixedRule('.ng-enter-stagger', 'transition-delay:0.2s');
+          ss.addPossiblyPrefixedRule('.ng-enter', 'transition:2s linear all');
 
           var elements = [];
           var i;
@@ -698,13 +690,13 @@ describe('ngAnimate $animateCss', function() {
 
           angular.element($document[0].body).append($rootElement);
 
-          ss.addRule('.red-add-stagger,' +
-                     '.blue-remove-stagger,' +
-                     '.green-add-stagger', 'transition-delay:0.2s');
+          ss.addPossiblyPrefixedRule('.red-add-stagger,' +
+                                     '.blue-remove-stagger,' +
+                                     '.green-add-stagger', 'transition-delay:0.2s');
 
-          ss.addRule('.red-add,' +
-                     '.blue-remove,' +
-                     '.green-add', 'transition:2s linear all');
+          ss.addPossiblyPrefixedRule('.red-add,' +
+                                     '.blue-remove,' +
+                                     '.green-add', 'transition:2s linear all');
 
           var elements = [];
           var i;
@@ -768,8 +760,8 @@ describe('ngAnimate $animateCss', function() {
 
           angular.element($document[0].body).append($rootElement);
 
-          ss.addRule('.ng-enter-stagger', 'transition-delay:0.2s');
-          ss.addRule('.ng-enter', 'transition:2s linear all;');
+          ss.addPossiblyPrefixedRule('.ng-enter-stagger', 'transition-delay:0.2s');
+          ss.addPossiblyPrefixedRule('.ng-enter', 'transition:2s linear all;');
 
           var element;
           var i;
@@ -828,7 +820,7 @@ describe('ngAnimate $animateCss', function() {
 
           angular.element($document[0].body).append($rootElement);
 
-          ss.addRule('.transition-animation', 'transition:2s 5s linear all;');
+          ss.addPossiblyPrefixedRule('.transition-animation', 'transition:2s 5s linear all;');
 
           for (var i = 0; i < 5; i++) {
             var element = angular.element('<div class="transition-animation"></div>');
@@ -847,8 +839,8 @@ describe('ngAnimate $animateCss', function() {
 
           angular.element($document[0].body).append($rootElement);
 
-          ss.addRule('.transition-animation', 'transition:2s 5s linear all;');
-          ss.addRule('.transition-animation.ng-enter-stagger',
+          ss.addPossiblyPrefixedRule('.transition-animation', 'transition:2s 5s linear all;');
+          ss.addPossiblyPrefixedRule('.transition-animation.ng-enter-stagger',
             'transition-duration:0s; transition-delay:0.2s;');
 
           var element, i, elms = [];
@@ -873,8 +865,8 @@ describe('ngAnimate $animateCss', function() {
 
           angular.element($document[0].body).append($rootElement);
 
-          ss.addRule('.ng-enter-stagger', prefix + 'animation-delay:0.2s');
-          ss.addRule('.transition-animation', 'transition:2s 5s linear all;');
+          ss.addPossiblyPrefixedRule('.ng-enter-stagger', 'animation-delay:0.2s');
+          ss.addPossiblyPrefixedRule('.transition-animation', 'transition:2s 5s linear all;');
 
           for (var i = 0; i < 5; i++) {
             var element = angular.element('<div class="transition-animation"></div>');
@@ -893,7 +885,7 @@ describe('ngAnimate $animateCss', function() {
 
           angular.element($document[0].body).append($rootElement);
 
-          ss.addRule('.ng-enter-stagger', 'transition-delay:0.2s');
+          ss.addPossiblyPrefixedRule('.ng-enter-stagger', 'transition-delay:0.2s');
           ss.addPossiblyPrefixedRule('.transition-animation', 'animation: 2s 5s my_animation;');
 
           for (var i = 0; i < 5; i++) {
@@ -951,8 +943,8 @@ describe('ngAnimate $animateCss', function() {
 
           angular.element($document[0].body).append($rootElement);
 
-          ss.addRule('.ng-enter-stagger', 'transition-delay:1s;');
-          ss.addRule('.ng-enter', 'transition:10s linear all;');
+          ss.addPossiblyPrefixedRule('.ng-enter-stagger', 'transition-delay:1s;');
+          ss.addPossiblyPrefixedRule('.ng-enter', 'transition:10s linear all;');
 
           var elm, i, elms = [];
           for (i = 0; i < 5; i++) {
@@ -978,8 +970,8 @@ describe('ngAnimate $animateCss', function() {
 
           angular.element($document[0].body).append($rootElement);
 
-          ss.addRule('.ng-enter-stagger', 'transition-delay:1s;');
-          ss.addRule('.ng-enter', 'transition:10s linear all; transition-delay:50s;');
+          ss.addPossiblyPrefixedRule('.ng-enter-stagger', 'transition-delay:1s;');
+          ss.addPossiblyPrefixedRule('.ng-enter', 'transition:10s linear all; transition-delay:50s;');
 
           var elm, i, elms = [];
           for (i = 0; i < 5; i++) {
@@ -1004,7 +996,7 @@ describe('ngAnimate $animateCss', function() {
           inject(function($animateCss, $document, $rootElement, $timeout) {
 
           angular.element($document[0].body).append($rootElement);
-          ss.addRule('.ng-enter', 'transition:2s linear all');
+          ss.addPossiblyPrefixedRule('.ng-enter', 'transition:2s linear all');
 
           var elm, i, elements = [];
           for (i = 0; i < 5; i++) {
@@ -1069,7 +1061,7 @@ describe('ngAnimate $animateCss', function() {
         it('should close off the animation after 150% of the animation time has passed',
           inject(function($animateCss, $document, $rootElement, $timeout) {
 
-          ss.addRule('.ng-enter', 'transition:10s linear all;');
+          ss.addPossiblyPrefixedRule('.ng-enter', 'transition:10s linear all;');
 
           var element = angular.element('<div></div>');
           $rootElement.append(element);
@@ -1092,7 +1084,7 @@ describe('ngAnimate $animateCss', function() {
         it('should close off the animation after 150% of the animation time has passed and consider the detected delay value',
           inject(function($animateCss, $document, $rootElement, $timeout) {
 
-          ss.addRule('.ng-enter', 'transition:10s linear all; transition-delay:30s;');
+          ss.addPossiblyPrefixedRule('.ng-enter', 'transition:10s linear all; transition-delay:30s;');
 
           var element = angular.element('<div></div>');
           $rootElement.append(element);
@@ -1115,7 +1107,7 @@ describe('ngAnimate $animateCss', function() {
         it('should still resolve the animation once expired',
           inject(function($animateCss, $document, $rootElement, $timeout, $animate, $rootScope) {
 
-          ss.addRule('.ng-enter', 'transition:10s linear all;');
+          ss.addPossiblyPrefixedRule('.ng-enter', 'transition:10s linear all;');
 
           var element = angular.element('<div></div>');
           $rootElement.append(element);
@@ -1140,7 +1132,7 @@ describe('ngAnimate $animateCss', function() {
         it('should not resolve/reject after passing if the animation completed successfully',
           inject(function($animateCss, $document, $rootElement, $timeout, $rootScope, $animate) {
 
-          ss.addRule('.ng-enter', 'transition:10s linear all;');
+          ss.addPossiblyPrefixedRule('.ng-enter', 'transition:10s linear all;');
 
           var element = angular.element('<div></div>');
           $rootElement.append(element);
@@ -1185,9 +1177,9 @@ describe('ngAnimate $animateCss', function() {
           var cancelSpy = spyOn($timeout, 'cancel').and.callThrough();
           var doneSpy = jasmine.createSpy();
 
-          ss.addRule('.elm', 'transition:1s linear all;');
+          ss.addPossiblyPrefixedRule('.elm', 'transition:1s linear all;');
           ss.addRule('.elm.red', 'background:red;');
-          ss.addRule('.elm.blue', 'transition:2s linear all; background:blue;');
+          ss.addPossiblyPrefixedRule('.elm.blue', 'transition:2s linear all; background:blue;');
           ss.addRule('.elm.green', 'background:green;');
 
           var element = angular.element('<div class="elm"></div>');
@@ -1239,7 +1231,7 @@ describe('ngAnimate $animateCss', function() {
           $rootElement.append(element);
           angular.element($document[0].body).append($rootElement);
 
-          ss.addRule('.red', 'transition:1s linear all;');
+          ss.addPossiblyPrefixedRule('.red', 'transition:1s linear all;');
 
           $animateCss(element, { addClass: 'red' }).start();
           triggerAnimationStartFrame();
@@ -1320,7 +1312,7 @@ describe('ngAnimate $animateCss', function() {
         it('should cancel the timeout when the animation is ended normally',
           inject(function($animateCss, $document, $rootElement, $timeout) {
 
-          ss.addRule('.ng-enter', 'transition:10s linear all;');
+          ss.addPossiblyPrefixedRule('.ng-enter', 'transition:10s linear all;');
 
           var element = angular.element('<div></div>');
           $rootElement.append(element);
@@ -1450,12 +1442,11 @@ describe('ngAnimate $animateCss', function() {
         function setStyles(event) {
           switch (event) {
             case TRANSITIONEND_EVENT:
-              ss.addRule('.ng-enter', 'transition: 10s linear all;');
+              ss.addPossiblyPrefixedRule('.ng-enter', 'transition: 10s linear all;');
               progress = transitionProgress;
               break;
             case ANIMATIONEND_EVENT:
-              ss.addRule('.ng-enter', '-webkit-animation: animation 10s;' +
-                                              'animation: animation 10s;');
+              ss.addPossiblyPrefixedRule('.ng-enter', 'animation: animation 10s;');
               progress = keyframeProgress;
               break;
           }
@@ -1627,8 +1618,7 @@ describe('ngAnimate $animateCss', function() {
         expect(animator.$$willAnimate).toBeFalsy();
 
         $$rAF.flush();
-        ss.addRule('.ng-enter', '-webkit-animation:3.5s keyframe_animation;' +
-                                        'animation:3.5s keyframe_animation;');
+        ss.addPossiblyPrefixedRule('.ng-enter', 'animation:3.5s keyframe_animation;');
         animator = $animateCss(element, options);
         expect(animator.$$willAnimate).toBeTruthy();
     }));
@@ -1754,7 +1744,7 @@ describe('ngAnimate $animateCss', function() {
           $rootElement.append(element);
           angular.element($document[0].body).append($rootElement);
 
-          ss.addRule('.cool-animation', 'transition:1.5s linear all;');
+          ss.addPossiblyPrefixedRule('.cool-animation', 'transition:1.5s linear all;');
           element.addClass('cool-animation');
 
           var data = {};
@@ -1784,7 +1774,7 @@ describe('ngAnimate $animateCss', function() {
           $rootElement.append(element);
           angular.element($document[0].body).append($rootElement);
 
-          ss.addRule('.cool-animation', 'transition:1.5s linear all;');
+          ss.addPossiblyPrefixedRule('.cool-animation', 'transition:1.5s linear all;');
           element.addClass('cool-animation');
 
           var data = {};
@@ -1825,7 +1815,7 @@ describe('ngAnimate $animateCss', function() {
           $rootElement.append(element);
           angular.element($document[0].body).append($rootElement);
 
-          ss.addRule('.cool-animation', 'transition:1.5s linear all;');
+          ss.addPossiblyPrefixedRule('.cool-animation', 'transition:1.5s linear all;');
           element.addClass('cool-animation');
 
           var data = {};
@@ -1974,10 +1964,10 @@ describe('ngAnimate $animateCss', function() {
           var element = angular.element('<div></div>');
 
           if (event === 'add') {
-            ss.addRule('.natural-class', 'transition:1s linear all;');
+            ss.addPossiblyPrefixedRule('.natural-class', 'transition:1s linear all;');
           } else {
-            ss.addRule('.natural-class', 'transition:0s linear none;');
-            ss.addRule('.base-class', 'transition:1s linear none;');
+            ss.addPossiblyPrefixedRule('.natural-class', 'transition:0s linear none;');
+            ss.addPossiblyPrefixedRule('.base-class', 'transition:1s linear none;');
 
             element.addClass('base-class');
             element.addClass('natural-class');
@@ -2007,7 +1997,7 @@ describe('ngAnimate $animateCss', function() {
         ['enter', 'leave', 'move'], function(event) {
         inject(function($animateCss, $rootElement, $document) {
 
-          ss.addRule('.blue.ng-' + event, 'transition:2s linear all;');
+          ss.addPossiblyPrefixedRule('.blue.ng-' + event, 'transition:2s linear all;');
 
           var element = angular.element('<div class="red"></div>');
           $rootElement.append(element);
@@ -2170,8 +2160,7 @@ describe('ngAnimate $animateCss', function() {
         it('should be applied to a CSS keyframe animation directly if keyframes are detected within the CSS class',
           inject(function($animateCss, $rootElement) {
 
-          ss.addRule('.ng-enter', '-webkit-animation:1.5s keyframe_animation;' +
-                                          'animation:1.5s keyframe_animation;');
+          ss.addPossiblyPrefixedRule('.ng-enter', 'animation:1.5s keyframe_animation;');
 
           var options = {
             duration: 5,
@@ -2189,8 +2178,7 @@ describe('ngAnimate $animateCss', function() {
         it('should remove all inline keyframe styling when an animation completes if a custom duration was applied',
           inject(function($animateCss, $rootElement) {
 
-          ss.addRule('.ng-enter', '-webkit-animation:1.5s keyframe_animation;' +
-                                          'animation:1.5s keyframe_animation;');
+          ss.addPossiblyPrefixedRule('.ng-enter', 'animation:1.5s keyframe_animation;');
 
           var options = {
             duration: 5,
@@ -2211,8 +2199,7 @@ describe('ngAnimate $animateCss', function() {
         it('should remove all inline keyframe delay styling when an animation completes if a custom duration was applied',
           inject(function($animateCss, $rootElement) {
 
-          ss.addRule('.ng-enter', '-webkit-animation:1.5s keyframe_animation;' +
-                                          'animation:1.5s keyframe_animation;');
+          ss.addPossiblyPrefixedRule('.ng-enter', 'animation:1.5s keyframe_animation;');
 
           var options = {
             delay: 5,
@@ -2235,8 +2222,7 @@ describe('ngAnimate $animateCss', function() {
         it('should not prepare the animation at all if a duration of zero is provided',
           inject(function($animateCss, $rootElement) {
 
-          ss.addRule('.ng-enter', '-webkit-transition:1s linear all;' +
-                                          'transition:1s linear all;');
+          ss.addPossiblyPrefixedRule('.ng-enter', 'transition:1s linear all;');
 
           var options = {
             duration: 0,
@@ -2252,9 +2238,8 @@ describe('ngAnimate $animateCss', function() {
         it('should apply a transition and keyframe duration directly if both transitions and keyframe classes are detected',
           inject(function($animateCss, $rootElement) {
 
-          ss.addRule('.ng-enter', '-webkit-animation:3s keyframe_animation;' +
-                                          'animation:3s keyframe_animation;' +
-                                          'transition:5s linear all;');
+          ss.addPossiblyPrefixedRule('.ng-enter', 'animation:3s keyframe_animation;' +
+                                                  'transition:5s linear all;');
 
           var options = {
             duration: 4,
@@ -2315,10 +2300,8 @@ describe('ngAnimate $animateCss', function() {
         it('should override the delay value present in the CSS class',
           inject(function($animateCss, $rootElement) {
 
-          ss.addRule('.ng-enter', '-webkit-transition:1s linear all;' +
-                                          'transition:1s linear all;' +
-                                  '-webkit-transition-delay:10s;' +
-                                          'transition-delay:10s;');
+          ss.addPossiblyPrefixedRule('.ng-enter', 'transition:1s linear all;' +
+                                                  'transition-delay:10s;');
 
           var element = angular.element('<div></div>');
           $rootElement.append(element);
@@ -2340,10 +2323,8 @@ describe('ngAnimate $animateCss', function() {
         it('should allow the delay value to zero if provided',
           inject(function($animateCss, $rootElement) {
 
-          ss.addRule('.ng-enter', '-webkit-transition:1s linear all;' +
-                                          'transition:1s linear all;' +
-                                  '-webkit-transition-delay:10s;' +
-                                          'transition-delay:10s;');
+          ss.addPossiblyPrefixedRule('.ng-enter', 'transition:1s linear all;' +
+                                                  'transition-delay:10s;');
 
           var element = angular.element('<div></div>');
           $rootElement.append(element);
@@ -2365,8 +2346,7 @@ describe('ngAnimate $animateCss', function() {
         it('should be applied to a CSS keyframe animation if detected within the CSS class',
           inject(function($animateCss, $rootElement) {
 
-          ss.addRule('.ng-enter', '-webkit-animation:1.5s keyframe_animation;' +
-                                          'animation:1.5s keyframe_animation;');
+          ss.addPossiblyPrefixedRule('.ng-enter', 'animation:1.5s keyframe_animation;');
 
           var options = {
             delay: 400,
@@ -2385,9 +2365,8 @@ describe('ngAnimate $animateCss', function() {
         it('should apply a transition and keyframe delay if both transitions and keyframe classes are detected',
           inject(function($animateCss, $rootElement) {
 
-          ss.addRule('.ng-enter', '-webkit-animation:3s keyframe_animation;' +
-                                          'animation:3s keyframe_animation;' +
-                                          'transition:5s linear all;');
+          ss.addPossiblyPrefixedRule('.ng-enter', 'animation:3s keyframe_animation;' +
+                                                  'transition:5s linear all;');
 
           var options = {
             delay: 10,
@@ -2420,9 +2399,8 @@ describe('ngAnimate $animateCss', function() {
           });
           inject(function($animateCss, $rootElement) {
             element.addClass('element');
-            ss.addRule('.element', '-webkit-animation:3s keyframe_animation;' +
-                                           'animation:3s keyframe_animation;' +
-                                           'transition:5s linear all;');
+            ss.addPossiblyPrefixedRule('.element', 'animation:3s keyframe_animation;' +
+                                                   'transition:5s linear all;');
 
             var options = {
               delay: 2,
@@ -2456,7 +2434,7 @@ describe('ngAnimate $animateCss', function() {
         it('should apply blocking before the animation starts, but then apply the detected delay when options.delay is true',
           inject(function($animateCss, $rootElement) {
 
-          ss.addRule('.ng-enter', 'transition:2s linear all; transition-delay: 1s;');
+          ss.addPossiblyPrefixedRule('.ng-enter', 'transition:2s linear all; transition-delay: 1s;');
 
           var options = {
             delay: true,
@@ -2508,7 +2486,7 @@ describe('ngAnimate $animateCss', function() {
           }
         }, function(testDetailsFactory) {
           inject(function($animateCss, $rootElement) {
-            var testDetails = testDetailsFactory(prefix);
+            var testDetails = testDetailsFactory();
 
             ss.addPossiblyPrefixedRule('.ng-enter', testDetails.css);
             var options = {
@@ -2835,7 +2813,7 @@ describe('ngAnimate $animateCss', function() {
         it('should always apply the from styles before the start function is called even if no transition is detected when started',
           inject(function($animateCss, $rootElement) {
 
-          ss.addRule('.my-class', 'transition: 0s linear color');
+          ss.addPossiblyPrefixedRule('.my-class', 'transition: 0s linear color');
 
           var options = {
             addClass: 'my-class',
@@ -2926,7 +2904,7 @@ describe('ngAnimate $animateCss', function() {
         it('should remove all inline transition delay styling when an animation completes',
           inject(function($animateCss, $rootElement) {
 
-          ss.addRule('.ng-enter', 'transition: 1s linear color');
+          ss.addPossiblyPrefixedRule('.ng-enter', 'transition: 1s linear color');
 
           var options = {
             event: 'enter',
@@ -3001,7 +2979,7 @@ describe('ngAnimate $animateCss', function() {
         it('should apply a transition duration if the existing transition duration\'s property value is not \'all\'',
           inject(function($animateCss, $rootElement) {
 
-          ss.addRule('.ng-enter', 'transition: 1s linear color');
+          ss.addPossiblyPrefixedRule('.ng-enter', 'transition: 1s linear color');
 
           var emptyObject = {};
           var options = {
@@ -3024,8 +3002,7 @@ describe('ngAnimate $animateCss', function() {
         it('should apply a transition duration and an animation duration if duration + styles options are provided for a matching keyframe animation',
           inject(function($animateCss, $rootElement) {
 
-          ss.addRule('.ng-enter', '-webkit-animation:3.5s keyframe_animation;' +
-                                          'animation:3.5s keyframe_animation;');
+          ss.addPossiblyPrefixedRule('.ng-enter', 'animation:3.5s keyframe_animation;');
 
           var emptyObject = {};
           var options = {
@@ -3057,7 +3034,7 @@ describe('ngAnimate $animateCss', function() {
         }));
 
         it('should apply easing to a transition animation if it exists', inject(function($animateCss) {
-          ss.addRule('.red', 'transition:1s linear all;');
+          ss.addPossiblyPrefixedRule('.red', 'transition:1s linear all;');
           var easing = 'ease-out';
           var animator = $animateCss(element, { addClass: 'red', easing: easing });
           animator.start();
@@ -3082,7 +3059,7 @@ describe('ngAnimate $animateCss', function() {
         it('should apply easing to both keyframes and transition animations if detected',
           inject(function($animateCss) {
 
-          ss.addRule('.red', 'transition: 1s linear all;');
+          ss.addPossiblyPrefixedRule('.red', 'transition: 1s linear all;');
           ss.addPossiblyPrefixedRule('.blue', 'animation: 1s my_keyframe;');
           var easing = 'ease-out';
           var animator = $animateCss(element, { addClass: 'red blue', easing: easing });
@@ -3163,8 +3140,7 @@ describe('ngAnimate $animateCss', function() {
       it('should round up long elapsedTime values to close off a CSS3 animation',
         inject(function($animateCss) {
 
-        ss.addRule('.millisecond-transition.ng-leave', '-webkit-transition:510ms linear all;' +
-                                                       'transition:510ms linear all;');
+        ss.addPossiblyPrefixedRule('.millisecond-transition.ng-leave', 'transition:510ms linear all;');
 
         element.addClass('millisecond-transition');
         var animator = $animateCss(element, {

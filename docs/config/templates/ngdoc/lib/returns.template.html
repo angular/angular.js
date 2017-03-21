@@ -1,0 +1,5 @@
+{% import "lib/macros.html" as lib -%}
+{% if doc.returns -%}
+<h3>Returns</h3>
+{$ lib.typeInfo(doc.returns) $}
+{%- endif %}

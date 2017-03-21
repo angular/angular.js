@@ -70,6 +70,7 @@ var angularFiles = {
     'src/ng/directive/ngInit.js',
     'src/ng/directive/ngList.js',
     'src/ng/directive/ngModel.js',
+    'src/ng/directive/ngModelOptions.js',
     'src/ng/directive/ngNonBindable.js',
     'src/ng/directive/ngOptions.js',
     'src/ng/directive/ngPluralize.js',
@@ -145,7 +146,6 @@ var angularFiles = {
     'ngTouch': [
       'src/ngTouch/touch.js',
       'src/ngTouch/swipe.js',
-      'src/ngTouch/directive/ngClick.js',
       'src/ngTouch/directive/ngSwipe.js'
     ],
     'ngAria': [

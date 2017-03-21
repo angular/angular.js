@@ -7,4 +7,4 @@ Occurs when an expression has a lexical error, for example a malformed number (0
 
 The error message contains a more precise error.
 
-To resolve, learn more about {@link guide/expression Angular expressions}, identify the error and fix the expression's syntax.
+To resolve, learn more about {@link guide/expression AngularJS expressions}, identify the error and fix the expression's syntax.

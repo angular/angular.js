@@ -15,7 +15,7 @@ today! Here are the guidelines we'd like you to follow:
 
 ## <a name="coc"></a> Code of Conduct
 
-Help us keep Angular open and inclusive. Please read and follow our [Code of Conduct][coc].
+Help us keep AngularJS open and inclusive. Please read and follow our [Code of Conduct][coc].
 
 ## <a name="question"></a> Got a Question or Problem?
 
@@ -29,7 +29,7 @@ If you find a bug in the source code or a mistake in the documentation, you can 
 submitting an issue to our [GitHub Repository][github]. Even better you can submit a Pull Request
 with a fix.
 
-**Localization Issues:** Angular.js uses the [Google Closure I18N library] to generate
+**Localization Issues:** AngularJS uses the [Google Closure I18N library] to generate
 its own I18N files (the ngLocale module). This means that any changes to these files would be lost
 the next time that we import the library.
 Since the Closure library i18n data is itself auto-generated from the data of the
@@ -81,7 +81,7 @@ quickly:
 
 * **Overview of the Issue** - if an error is being thrown a non-minified stack trace helps
 * **Motivation for or Use Case** - explain why this is a bug for you
-* **Angular Version(s)** - is it a regression?
+* **AngularJS Version(s)** - is it a regression?
 * **Browsers and Operating System** - is this a problem with all browsers or only specific ones?
 * **Reproduce the Error** - provide a live example (using [Plunker][plunker] or
   [JSFiddle][jsfiddle]) or an unambiguous set of steps.
@@ -108,7 +108,7 @@ Before you submit your pull request consider the following guidelines:
 
 * Create your patch, **including appropriate test cases**.
 * Follow our [Coding Rules](#rules).
-* Run the full Angular test suite, as described in the [developer documentation][dev-doc],
+* Run the full AngularJS test suite, as described in the [developer documentation][dev-doc],
   and ensure that all tests pass.
 * Commit your changes using a descriptive commit message that follows our
   [commit message conventions](#commit) and passes our commit message presubmit hook
@@ -132,11 +132,11 @@ Before you submit your pull request consider the following guidelines:
     git push origin my-fix-branch
     ```
 
-In GitHub, send a pull request to `angular:master`.
+In GitHub, send a pull request to `angular.js:master`.
 If we suggest changes, then:
 
 * Make the required updates.
-* Re-run the Angular test suite to ensure tests are still passing.
+* Re-run the AngularJS test suite to ensure tests are still passing.
 * Commit your changes to your branch (e.g. `my-fix-branch`).
 * Push the changes to your GitHub repository (this will update your Pull Request).
 
@@ -189,10 +189,10 @@ To ensure consistency throughout the source code, keep these rules in mind as yo
 * All features or bug fixes **must be tested** by one or more [specs][unit-testing].
 * All public API methods **must be documented** with ngdoc, an extended version of jsdoc (we added
   support for markdown and templating via @ngdoc tag). To see how we document our APIs, please check
-  out the existing ngdocs and see [this wiki page][ngDocs].
+  out the existing source code and see [this wiki page][ngDocs].
 * With the exceptions listed below, we follow the rules contained in
   [Google's JavaScript Style Guide][js-style-guide]:
-    * **Do not use namespaces**: Instead,  wrap the entire angular code base in an anonymous closure and
+    * **Do not use namespaces**: Instead,  wrap the entire AngularJS code base in an anonymous closure and
       export our API explicitly rather than implicitly.
     * Wrap all code at **100 characters**.
     * Instead of complex inheritance hierarchies, we **prefer simple objects**. We use prototypal
@@ -209,7 +209,9 @@ We have very precise rules over how our git commit messages can be formatted.  T
 readable messages** that are easy to follow when looking through the **project history**.  But also,
 we use the git commit messages to **generate the AngularJS change log**.
 
-The commit message formatting can be added using a typical git workflow or through the use of a CLI wizard ([Commitizen](https://github.com/commitizen/cz-cli)). To use the wizard, run `npm run commit` in your terminal after staging your changes in git.
+The commit message formatting can be added using a typical git workflow or through the use of a CLI
+wizard ([Commitizen](https://github.com/commitizen/cz-cli)). To use the wizard, run `yarn run commit`
+in your terminal after staging your changes in git.
 
 ### Commit Message Format
 Each commit message consists of a **header**, a **body** and a **footer**.  The header has a special
@@ -229,7 +231,8 @@ Any line of the commit message cannot be longer 100 characters! This allows the 
 to read on GitHub as well as in various git tools.
 
 ### Revert
-If the commit reverts a previous commit, it should begin with `revert: `, followed by the header of the reverted commit. In the body it should say: `This reverts commit <hash>.`, where the hash is the SHA of the commit being reverted.
+If the commit reverts a previous commit, it should begin with `revert: `, followed by the header of the reverted commit.
+In the body it should say: `This reverts commit <hash>.`, where the hash is the SHA of the commit being reverted.
 
 ### Type
 Must be one of the following:
@@ -241,13 +244,15 @@ Must be one of the following:
   semi-colons, etc)
 * **refactor**: A code change that neither fixes a bug nor adds a feature
 * **perf**: A code change that improves performance
-* **test**: Adding missing tests
+* **test**: Adding missing or correcting existing tests
 * **chore**: Changes to the build process or auxiliary tools and libraries such as documentation
   generation
 
 ### Scope
 The scope could be anything specifying place of the commit change. For example `$location`,
 `$browser`, `$compile`, `$rootScope`, `ngHref`, `ngClick`, `ngView`, etc...
+
+You can use `*` when the change affects more than a single scope.
 
 ### Subject
 The subject contains succinct description of the change:
@@ -262,9 +267,10 @@ The body should include the motivation for the change and contrast this with pre
 
 ### Footer
 The footer should contain any information about **Breaking Changes** and is also the place to
-reference GitHub issues that this commit **Closes**.
+[reference GitHub issues that this commit closes][closing-issues].
 
-**Breaking Changes** should start with the word `BREAKING CHANGE:` with a space or two newlines. The rest of the commit message is then used for this.
+**Breaking Changes** should start with the word `BREAKING CHANGE:` with a space or two newlines.
+The rest of the commit message is then used for this.
 
 A detailed explanation can be found in this [document][commit-message-format].
 
@@ -285,6 +291,7 @@ You can find out more detailed information about contributing in the
 
 [Google Closure I18N library]: https://github.com/google/closure-library/tree/master/closure/goog/i18n
 [angular-dev]: https://groups.google.com/forum/?fromgroups#!forum/angular-dev
+[closing-issues]: https://help.github.com/articles/closing-issues-via-commit-messages/
 [coc]: https://github.com/angular/code-of-conduct/blob/master/CODE_OF_CONDUCT.md
 [commit-message-format]: https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/edit#
 [contribute]: http://docs.angularjs.org/misc/contribute

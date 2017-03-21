@@ -90,22 +90,12 @@ describe('event directives', function() {
 
   });
 
-  describe('security', function() {
+  describe('DOM event object', function() {
     it('should allow access to the $event object', inject(function($rootScope, $compile) {
       var scope = $rootScope.$new();
       element = $compile('<button ng-click="e = $event">BTN</button>')(scope);
       element.triggerHandler('click');
       expect(scope.e.target).toBe(element[0]);
-    }));
-
-    it('should block access to DOM nodes (e.g. exposed via $event)', inject(function($rootScope, $compile) {
-      var scope = $rootScope.$new();
-      element = $compile('<button ng-click="e = $event.target">BTN</button>')(scope);
-      expect(function() {
-        element.triggerHandler('click');
-      }).toThrowMinErr(
-              '$parse', 'isecdom', 'Referencing DOM nodes in Angular expressions is disallowed! ' +
-              'Expression: e = $event.target');
     }));
   });
 

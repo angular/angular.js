@@ -32,6 +32,12 @@ beforeEach(function() {
     };
   }
 
+  function DOMTester(a, b) {
+    if (a && b && a.nodeType > 0 && b.nodeType > 0) {
+      return a === b;
+    }
+  }
+
   function isNgElementHidden(element) {
     // we need to check element.getAttribute for SVG nodes
     var hidden = true;
@@ -43,6 +49,41 @@ beforeEach(function() {
     return hidden;
   }
 
+  function MinErrMatcher(isNot, namespace, code, content, wording) {
+    var codeRegex = new RegExp('^' + escapeRegexp('[' + namespace + ':' + code + ']'));
+    var contentRegex = angular.isUndefined(content) || jasmine.isA_('RegExp', content) ?
+        content : new RegExp(escapeRegexp(content));
+
+    this.test = test;
+
+    function escapeRegexp(str) {
+      // This function escapes all special regex characters.
+      // We use it to create matching regex from arbitrary strings.
+      // http://stackoverflow.com/questions/3446170/escape-string-for-use-in-javascript-regex
+      return str.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&');
+    }
+
+    function test(exception) {
+      var exceptionMessage = (exception && exception.message) || exception || '';
+
+      var codeMatches = codeRegex.test(exceptionMessage);
+      var contentMatches = angular.isUndefined(contentRegex) || contentRegex.test(exceptionMessage);
+      var matches = codeMatches && contentMatches;
+
+      return {
+        pass: isNot ? !matches : matches,
+        message: message
+      };
+
+      function message() {
+        return 'Expected ' + wording.inputType + (isNot ? ' not' : '') + ' to ' +
+            wording.expectedAction + ' ' + namespace + 'MinErr(\'' + code + '\')' +
+            (contentRegex ? ' matching ' + contentRegex.toString() : '') +
+            (!exception ? '.' : ', but it ' + wording.actualAction + ': ' + exceptionMessage);
+      }
+    }
+  }
+
   jasmine.addMatchers({
     toBeEmpty: cssMatcher('ng-empty', 'ng-not-empty'),
     toBeNotEmpty: cssMatcher('ng-not-empty', 'ng-empty'),
@@ -52,6 +93,7 @@ beforeEach(function() {
     toBePristine: cssMatcher('ng-pristine', 'ng-dirty'),
     toBeUntouched: cssMatcher('ng-untouched', 'ng-touched'),
     toBeTouched: cssMatcher('ng-touched', 'ng-untouched'),
+
     toBeAPromise: function() {
       return {
         compare: generateCompare(false),
@@ -65,6 +107,7 @@ beforeEach(function() {
         };
       }
     },
+
     toBeShown: function() {
       return {
         compare: generateCompare(false),
@@ -81,6 +124,7 @@ beforeEach(function() {
         };
       }
     },
+
     toBeHidden: function() {
       return {
         compare: generateCompare(false),
@@ -111,12 +155,19 @@ beforeEach(function() {
           };
         }
       };
+    },
 
-      function DOMTester(a, b) {
-        if (a && b && a.nodeType > 0 && b.nodeType > 0) {
-          return a === b;
+    toEqualOneOf: function(util) {
+      return {
+        compare: function(actual) {
+          var expectedArgs = Array.prototype.slice.call(arguments, 1);
+          return {
+            pass: expectedArgs.some(function(expected) {
+              return util.equals(actual, expected, [DOMTester]);
+            })
+          };
         }
-      }
+      };
     },
 
     toEqualData: function() {
@@ -254,26 +305,34 @@ beforeEach(function() {
       }
     },
 
+    toEqualMinErr: function() {
+      return {
+        compare: generateCompare(false),
+        negativeCompare: generateCompare(true)
+      };
+
+      function generateCompare(isNot) {
+        return function(actual, namespace, code, content) {
+          var matcher = new MinErrMatcher(isNot, namespace, code, content, {
+            inputType: 'error',
+            expectedAction: 'equal',
+            actualAction: 'was'
+          });
+
+          return matcher.test(actual);
+        };
+      }
+    },
+
     toThrowMinErr: function() {
       return {
         compare: generateCompare(false),
         negativeCompare: generateCompare(true)
       };
+
       function generateCompare(isNot) {
         return function(actual, namespace, code, content) {
-          var result,
-            exception,
-            exceptionMessage = '',
-            escapeRegexp = function(str) {
-              // This function escapes all special regex characters.
-              // We use it to create matching regex from arbitrary strings.
-              // http://stackoverflow.com/questions/3446170/escape-string-for-use-in-javascript-regex
-              return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
-            },
-            codeRegex = new RegExp('^\\[' + escapeRegexp(namespace) + ':' + escapeRegexp(code) + '\\]'),
-            not = isNot ? 'not ' : '',
-            regex = jasmine.isA_('RegExp', content) ? content :
-                      angular.isDefined(content) ? new RegExp(escapeRegexp(content)) : undefined;
+          var exception;
 
           if (!angular.isFunction(actual)) {
             throw new Error('Actual is not a function');
@@ -285,45 +344,24 @@ beforeEach(function() {
             exception = e;
           }
 
-          if (exception) {
-            exceptionMessage = exception.message || exception;
-          }
+          var matcher = new MinErrMatcher(isNot, namespace, code, content, {
+            inputType: 'function',
+            expectedAction: 'throw',
+            actualAction: 'threw'
+          });
 
-          var message = function() {
-            return 'Expected function ' + not + 'to throw ' +
-              namespace + 'MinErr(\'' + code + '\')' +
-              (regex ? ' matching ' + regex.toString() : '') +
-              (exception ? ', but it threw ' + exceptionMessage : '.');
-          };
-
-          result = codeRegex.test(exceptionMessage);
-          if (!result) {
-            if (isNot) {
-              return { pass: !result, message: message };
-            } else {
-              return { pass: result, message: message };
-            }
-          }
-
-          if (angular.isDefined(regex)) {
-            if (isNot) {
-              return { pass: !regex.test(exceptionMessage), message: message };
-            } else {
-              return { pass: regex.test(exceptionMessage), message: message };
-            }
-          }
-          if (isNot) {
-            return { pass: !result, message: message };
-          } else {
-            return { pass: result, message: message };
-          }
+          return matcher.test(exception);
         };
       }
     },
+
     toBeMarkedAsSelected: function() {
       // Selected is special because the element property and attribute reflect each other's state.
+
+      // Support: IE 9 only
       // IE9 will wrongly report hasAttribute('selected') === true when the property is
       // undefined or null, and the dev tools show that no attribute is set
+
       return {
         compare: function(actual) {
           var errors = [];
@@ -331,6 +369,7 @@ beforeEach(function() {
             errors.push('Expected option property "selected" to be truthy');
           }
 
+          // Support: IE 9 only
           if (msie !== 9 && actual.hasAttribute('selected') === false) {
             errors.push('Expected option to have attribute "selected"');
           }
@@ -348,6 +387,7 @@ beforeEach(function() {
             errors.push('Expected option property "selected" to be falsy');
           }
 
+          // Support: IE 9 only
           if (msie !== 9 && actual.hasAttribute('selected')) {
             errors.push('Expected option not to have attribute "selected"');
           }

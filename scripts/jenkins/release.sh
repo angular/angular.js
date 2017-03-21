@@ -35,12 +35,9 @@ function init {
 }
 
 function build {
-  source ./set-node-version.sh
   cd ../..
-
-  npm install -g grunt-cli
-  npm install --color false
-  grunt ci-checks package --no-color
+  source scripts/jenkins/init-node.sh
+  yarn run grunt -- ci-checks package --no-color
 
   cd $SCRIPT_DIR
 }

@@ -18,8 +18,8 @@ describe('doc.angularjs.org', function() {
       var ngBindLink = element(by.css('.definition-table td a[href="api/ng/directive/ngClick"]'));
       ngBindLink.click();
 
-      var pageBody = element(by.css('h1'));
-      expect(pageBody.getText()).toEqual('ngClick');
+      var mainHeader = element(by.css('.main-body h1 '));
+      expect(mainHeader.getText()).toEqual('ngClick');
     });
 
 

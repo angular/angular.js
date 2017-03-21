@@ -122,7 +122,7 @@ The same approach to animation can be used using JavaScript code (**jQuery is us
 ```js
 myModule.animation('.repeated-item', function() {
   return {
-    enter : function(element, done) {
+    enter: function(element, done) {
       element.css('opacity',0);
       jQuery(element).animate({
         opacity: 1
@@ -137,7 +137,7 @@ myModule.animation('.repeated-item', function() {
         }
       }
     },
-    leave : function(element, done) {
+    leave: function(element, done) {
       element.css('opacity', 1);
       jQuery(element).animate({
         opacity: 0
@@ -152,7 +152,7 @@ myModule.animation('.repeated-item', function() {
         }
       }
     },
-    move : function(element, done) {
+    move: function(element, done) {
       element.css('opacity', 0);
       jQuery(element).animate({
         opacity: 1
@@ -169,8 +169,8 @@ myModule.animation('.repeated-item', function() {
     },
 
     // you can also capture these animation events
-    addClass : function(element, className, done) {},
-    removeClass : function(element, className, done) {}
+    addClass: function(element, className, done) {},
+    removeClass: function(element, className, done) {}
   }
 });
 ```
@@ -255,7 +255,7 @@ myModule.directive('my-directive', ['$animate', function($animate) {
 
 ## Animations on app bootstrap / page load
 
-By default, animations are disabled when the Angular app {@link guide/bootstrap bootstraps}. If you are using the {@link ngApp} directive,
+By default, animations are disabled when the AngularJS app {@link guide/bootstrap bootstraps}. If you are using the {@link ngApp} directive,
 this happens in the `DOMContentLoaded` event, so immediately after the page has been loaded.
 Animations are disabled, so that UI and content are instantly visible. Otherwise, with many animations on
 the page, the loading process may become too visually overwhelming, and the performance may suffer.
@@ -384,7 +384,7 @@ By default, any `ngAnimate` enabled directives will assume any transition / anim
 element are part of an `ngAnimate` animation. This can lead to problems when the styles are actually
 for animations that are independent of `ngAnimate`.
 
-For example, an element acts as a loading spinner. It has an inifinite css animation on it, and also an
+For example, an element acts as a loading spinner. It has an infinite css animation on it, and also an
 {@link ngIf `ngIf`} directive, for which no animations are defined:
 
 ```css
@@ -421,7 +421,7 @@ than any styles that are independent from ngAnimate.
 You can also use one of the two other {@link guide/animations#how-to-selectively-enable-disable-and-skip-animations strategies to disable animations}.
 
 
-### Enable animations for elements outside of the Angular application DOM tree: {@link ng.$animate#pin $animate.pin()}
+### Enable animations for elements outside of the AngularJS application DOM tree: {@link ng.$animate#pin $animate.pin()}
 
 Before animating, `ngAnimate` checks to see if the element being animated is inside the application DOM tree,
 and if it is not, no animation is run. Usually, this is not a problem as most apps use the `ngApp`
