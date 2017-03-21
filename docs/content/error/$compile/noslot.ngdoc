@@ -21,7 +21,7 @@ var componentConfig = {
 };
 ```
 
-If we the following change we will no longer get no slot error.
+If we make the following change we will no longer get no slot error.
 ```js
 var componentConfig = {
   template: '<div style="border: 1px solid black;">' +
