@@ -127,7 +127,7 @@ function adjustMatchers(matchers) {
  * @description
  *
  * The `$sceDelegateProvider` provider allows developers to configure the {@link ng.$sceDelegate
- * service, used as a delegate for {@link ng.$sce Strict Contextual Escaping (SCE)}.
+ * $sceDelegate service}, used as a delegate for {@link ng.$sce Strict Contextual Escaping (SCE)}.
  *
  * The `$sceDelegateProvider` allows one to get/set the whitelists and blacklists used to ensure
  * that the URLs used for sourcing AngularJS templates and other script-running URLs are safe (all
@@ -187,22 +187,21 @@ function $SceDelegateProvider() {
    * @param {Array=} whitelist When provided, replaces the resourceUrlWhitelist with the value
    *     provided.  This must be an array or null.  A snapshot of this array is used so further
    *     changes to the array are ignored.
-   *
    *     Follow {@link ng.$sce#resourceUrlPatternItem this link} for a description of the items
    *     allowed in this array.
    *
-   * @return {Array} the currently set whitelist array.
-   *
-   *     The **default value** when no whitelist has been explicitly set is `['self']` allowing only
-   *     same origin resource requests.
-   *
-   *     <div class="alert alert-warning">
-   *     **Note:** the default whitelist of 'self' is not recommended if your app shares its origin
-   *     with other apps! It is a good idea to limit it to only your application's directory.
-   *     </div>
+   * @return {Array} The currently set whitelist array.
    *
    * @description
    * Sets/Gets the whitelist of trusted resource URLs.
+   *
+   * The **default value** when no whitelist has been explicitly set is `['self']` allowing only
+   * same origin resource requests.
+   *
+   * <div class="alert alert-warning">
+   * **Note:** the default whitelist of 'self' is not recommended if your app shares its origin
+   * with other apps! It is a good idea to limit it to only your application's directory.
+   * </div>
    */
   this.resourceUrlWhitelist = function(value) {
     if (arguments.length) {
@@ -218,24 +217,21 @@ function $SceDelegateProvider() {
    *
    * @param {Array=} blacklist When provided, replaces the resourceUrlBlacklist with the value
    *     provided.  This must be an array or null.  A snapshot of this array is used so further
-   *     changes to the array are ignored.
-   *
+   *     changes to the array are ignored.</p><p>
    *     Follow {@link ng.$sce#resourceUrlPatternItem this link} for a description of the items
-   *     allowed in this array.
-   *
+   *     allowed in this array.</p><p>
    *     The typical usage for the blacklist is to **block
    *     [open redirects](http://cwe.mitre.org/data/definitions/601.html)** served by your domain as
    *     these would otherwise be trusted but actually return content from the redirected domain.
-   *
    *     Finally, **the blacklist overrides the whitelist** and has the final say.
    *
-   * @return {Array} the currently set blacklist array.
-   *
-   * The **default value** when no whitelist has been explicitly set is the empty array (i.e. there
-   * is no blacklist.)
+   * @return {Array} The currently set blacklist array.
    *
    * @description
    * Sets/Gets the blacklist of trusted resource URLs.
+   *
+   * The **default value** when no whitelist has been explicitly set is the empty array (i.e. there
+   * is no blacklist.)
    */
 
   this.resourceUrlBlacklist = function(value) {
@@ -750,7 +746,7 @@ function $SceProvider() {
    * @kind function
    *
    * @param {boolean=} value If provided, then enables/disables SCE application-wide.
-   * @return {boolean} true if SCE is enabled, false otherwise.
+   * @return {boolean} True if SCE is enabled, false otherwise.
    *
    * @description
    * Enables/disables SCE and returns the current value.
@@ -828,7 +824,7 @@ function $SceProvider() {
      * @name $sce#isEnabled
      * @kind function
      *
-     * @return {Boolean} true if SCE is enabled, false otherwise.  If you want to set the value, you
+     * @return {Boolean} True if SCE is enabled, false otherwise.  If you want to set the value, you
      *     have to do it at module config time on {@link ng.$sceProvider $sceProvider}.
      *
      * @description
@@ -858,12 +854,12 @@ function $SceProvider() {
      *
      * @param {string} type The SCE context in which this result will be used.
      * @param {string} expression String expression to compile.
-     * @return {function(context, locals)} a function which represents the compiled expression:
+     * @return {function(context, locals)} A function which represents the compiled expression:
      *
-     *     * `context` – `{object}` – an object against which any expressions embedded in the
-     *       strings are evaluated against (typically a scope object).
-     *     * `locals` – `{object=}` – local variables context object, useful for overriding values
-     *       in `context`.
+     *    * `context` – `{object}` – an object against which any expressions embedded in the
+     *      strings are evaluated against (typically a scope object).
+     *    * `locals` – `{object=}` – local variables context object, useful for overriding values
+     *      in `context`.
      */
     sce.parseAs = function sceParseAs(type, expr) {
       var parsed = $parse(expr);
@@ -958,7 +954,7 @@ function $SceProvider() {
      * Shorthand method.  `$sce.trustAsJs(value)` →
      *     {@link ng.$sceDelegate#trustAs `$sceDelegate.trustAs($sce.JS, value)`}
      *
-     * @param {*} value The value to mark as trusted for JS context.
+     * @param {*} value The value to mark as trusted for `$sce.JS` context.
      * @return {*} A wrapped version of value that can be used as a trusted variant of your `value`
      *     in `$sce.JS` context. That context is currently unused, so there are almost no reasons to
      *     use this function so far.
@@ -977,9 +973,10 @@ function $SceProvider() {
      * safe value (e.g., no sanitization is available or possible.)
      *
      * @param {string} type The context in which this value is to be used.
-     * @param {*} maybeTrusted The result of a prior {@link ng.$sce#trustAs `$sce.trustAs`} call.
-     * @return {*} The value that was originally provided to {@link ng.$sce#trustAs `$sce.trustAs`}
-     *     if valid in this context. Otherwise, throws an exception.
+     * @param {*} maybeTrusted The result of a prior {@link ng.$sce#trustAs
+     *     `$sce.trustAs`} call, or anything else (which will not be considered trusted.)
+     * @return {*} A version of the value that's safe to use in the given context, or throws an 
+     *     exception if this is impossible.
      */
 
     /**
@@ -1051,12 +1048,12 @@ function $SceProvider() {
      *     {@link ng.$sce#parseAs `$sce.parseAs($sce.HTML, value)`}
      *
      * @param {string} expression String expression to compile.
-     * @return {function(context, locals)} a function which represents the compiled expression:
+     * @return {function(context, locals)} A function which represents the compiled expression:
      *
-     *     * `context` – `{object}` – an object against which any expressions embedded in the
-     *       strings are evaluated against (typically a scope object).
-     *     * `locals` – `{object=}` – local variables context object, useful for overriding values
-     *       in `context`.
+     *    * `context` – `{object}` – an object against which any expressions embedded in the
+     *      strings are evaluated against (typically a scope object).
+     *    * `locals` – `{object=}` – local variables context object, useful for overriding values
+     *      in `context`.
      */
 
     /**
@@ -1068,12 +1065,12 @@ function $SceProvider() {
      *     {@link ng.$sce#parseAs `$sce.parseAs($sce.CSS, value)`}
      *
      * @param {string} expression String expression to compile.
-     * @return {function(context, locals)} a function which represents the compiled expression:
+     * @return {function(context, locals)} A function which represents the compiled expression:
      *
-     *     * `context` – `{object}` – an object against which any expressions embedded in the
-     *       strings are evaluated against (typically a scope object).
-     *     * `locals` – `{object=}` – local variables context object, useful for overriding values
-     *       in `context`.
+     *    * `context` – `{object}` – an object against which any expressions embedded in the
+     *      strings are evaluated against (typically a scope object).
+     *    * `locals` – `{object=}` – local variables context object, useful for overriding values
+     *      in `context`.
      */
 
     /**
@@ -1085,12 +1082,12 @@ function $SceProvider() {
      *     {@link ng.$sce#parseAs `$sce.parseAs($sce.URL, value)`}
      *
      * @param {string} expression String expression to compile.
-     * @return {function(context, locals)} a function which represents the compiled expression:
+     * @return {function(context, locals)} A function which represents the compiled expression:
      *
-     *     * `context` – `{object}` – an object against which any expressions embedded in the
-     *       strings are evaluated against (typically a scope object).
-     *     * `locals` – `{object=}` – local variables context object, useful for overriding values
-     *       in `context`.
+     *    * `context` – `{object}` – an object against which any expressions embedded in the
+     *      strings are evaluated against (typically a scope object).
+     *    * `locals` – `{object=}` – local variables context object, useful for overriding values
+     *      in `context`.
      */
 
     /**
@@ -1102,12 +1099,12 @@ function $SceProvider() {
      *     {@link ng.$sce#parseAs `$sce.parseAs($sce.RESOURCE_URL, value)`}
      *
      * @param {string} expression String expression to compile.
-     * @return {function(context, locals)} a function which represents the compiled expression:
+     * @return {function(context, locals)} A function which represents the compiled expression:
      *
-     *     * `context` – `{object}` – an object against which any expressions embedded in the
-     *       strings are evaluated against (typically a scope object).
-     *     * `locals` – `{object=}` – local variables context object, useful for overriding values
-     *       in `context`.
+     *    * `context` – `{object}` – an object against which any expressions embedded in the
+     *      strings are evaluated against (typically a scope object).
+     *    * `locals` – `{object=}` – local variables context object, useful for overriding values
+     *      in `context`.
      */
 
     /**
@@ -1119,12 +1116,12 @@ function $SceProvider() {
      *     {@link ng.$sce#parseAs `$sce.parseAs($sce.JS, value)`}
      *
      * @param {string} expression String expression to compile.
-     * @return {function(context, locals)} a function which represents the compiled expression:
+     * @return {function(context, locals)} A function which represents the compiled expression:
      *
-     *     * `context` – `{object}` – an object against which any expressions embedded in the
-     *       strings are evaluated against (typically a scope object).
-     *     * `locals` – `{object=}` – local variables context object, useful for overriding values
-     *       in `context`.
+     *    * `context` – `{object}` – an object against which any expressions embedded in the
+     *      strings are evaluated against (typically a scope object).
+     *    * `locals` – `{object=}` – local variables context object, useful for overriding values
+     *      in `context`.
      */
 
     // Shorthand delegations.
