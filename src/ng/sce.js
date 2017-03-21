@@ -223,6 +223,7 @@ function $SceDelegateProvider() {
    *     The typical usage for the blacklist is to **block
    *     [open redirects](http://cwe.mitre.org/data/definitions/601.html)** served by your domain as
    *     these would otherwise be trusted but actually return content from the redirected domain.
+   *     </p><p>
    *     Finally, **the blacklist overrides the whitelist** and has the final say.
    *
    * @return {Array} The currently set blacklist array.
