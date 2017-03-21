@@ -5944,6 +5944,30 @@ describe('$compile', function() {
         }));
 
 
+        // https://github.com/angular/angular.js/issues/15833
+        it('should work with ng-model inputs', function() {
+          var componentScope;
+
+          module(function($compileProvider) {
+            $compileProvider.directive('undi', function() {
+              return {
+                restrict: 'A',
+                scope: {
+                  undi: '<'
+                },
+                link: function($scope) { componentScope = $scope; }
+              };
+            });
+          });
+
+          inject(function($compile, $rootScope) {
+            element = $compile('<form name="f" undi="[f.i]"><input name="i" ng-model="a"/></form>')($rootScope);
+            $rootScope.$apply();
+            expect(componentScope.undi).toBeDefined();
+          });
+        });
+
+
         it('should not complain when the isolated scope changes', inject(function() {
           compile('<div><span my-component ow-ref="{name: name}">');
 
