@@ -485,9 +485,9 @@ var ngRepeatDirective = ['$parse', '$animate', '$compile', function($parse, $ani
             nextBlockOrder[index] = trackById;
           }
 
-          // setup lastBlockOrder, used to determine if block moved
+          // Set up lastBlockOrder. Used to determine if a block moved.
           for (key in lastBlockMap) {
-            lastBlockOrder.push(key);
+            lastBlockOrder[lastBlockMap[key].index] = key;
           }
 
           for (index = 0; index < nextLength; index++) {

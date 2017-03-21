@@ -1624,4 +1624,55 @@ describe('ngRepeat animations', function() {
       expect(item.element.text()).toBe('2');
     })
   );
+  it('should maintain the order when the track by expression evaluates to an integer',
+    inject(function($compile, $rootScope, $animate, $document, $sniffer, $timeout) {
+      if (!$sniffer.transitions) return;
+
+      var item;
+      var ss = createMockStyleSheet($document);
+
+      var items = [
+        {id: 1, name: 'A'},
+        {id: 2, name: 'B'},
+        {id: 4, name: 'C'},
+        {id: 3, name: 'D'}
+      ];
+
+      try {
+
+        $animate.enabled(true);
+
+        ss.addRule('.animate-me div',
+          'transition:1s linear all;');
+
+        element = $compile(html('<div class="animate-me">' +
+          '<div ng-repeat="item in items track by item.id">{{ item.name }}</div>' +
+          '</div>'))($rootScope);
+
+        $rootScope.items = [items[0], items[1], items[2]];
+        $rootScope.$digest();
+        expect(element.text()).toBe('ABC');
+
+        $rootScope.items.push(items[3]);
+        $rootScope.$digest();
+
+        expect(element.text()).toBe('ABCD'); // the original order should be preserved
+        $animate.flush();
+        $timeout.flush(1500); // 1s * 1.5 closing buffer
+        expect(element.text()).toBe('ABCD');
+
+        $rootScope.items = [items[0], items[1], items[3]];
+        $rootScope.$digest();
+
+        // The leaving item should maintain it's position until it is removed
+        expect(element.text()).toBe('ABCD');
+        $animate.flush();
+        $timeout.flush(1500); // 1s * 1.5 closing buffer
+        expect(element.text()).toBe('ABD');
+
+      } finally {
+        ss.destroy();
+      }
+    })
+  );
 });
