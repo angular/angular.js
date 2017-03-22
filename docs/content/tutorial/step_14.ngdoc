@@ -46,14 +46,14 @@ Since we are using [Bower][bower] to install client-side dependencies, this step
     "angular-resource": "1.5.x",
     "angular-route": "1.5.x",
     "bootstrap": "3.3.x",
-    "jquery": "2.2.x"
+    "jquery": "3.2.x"
   }
 }
 ```
 
 * `"angular-animate": "1.5.x"` tells bower to install a version of the angular-animate module that
   is compatible with version 1.5.x of AngularJS.
-* `"jquery": "2.2.x"` tells bower to install the latest patch release of the 2.2 version of jQuery.
+* `"jquery": "3.2.x"` tells bower to install the latest patch release of the 3.2 version of jQuery.
   Note that this is not an AngularJS library; it is the standard jQuery library. We can use bower to
   install a wide range of 3rd party libraries.
 
