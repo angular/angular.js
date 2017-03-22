@@ -44,9 +44,10 @@
  *
  *     The final result is an array of those elements that the predicate returned true for.
  *
- * @param {function(actual, expected)|true|false} [comparator] A predicate to further refine the
- *     search results of an object or string expression. It should be used to determine if the
- *     actual value from the array is equal to the expected value from the filter expression.
+ * @param {function(actual, expected)|true|false} [comparator] Comparator which is used in
+ *     determining if matches returned by the argument expression should be considered a match based
+ *     on the the expected value (from the filter expression) and actual value (from the object in
+ *     the array).
  *
  *   Can be one of:
  *
