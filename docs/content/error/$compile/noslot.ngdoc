@@ -3,9 +3,10 @@
 @fullName No matching slot in parent directive
 @description
 
-This error occurs when declaring a specific slot in a ng-transclude which does not map to a specific slot defined in the transclude property of the directive.
+This error occurs when declaring a specific slot in a {@link ng.ngTransclude `ngTransclude`} 
+which does not map to a specific slot defined in the transclude property of the directive.
 
-In this example the template has a declared slot missing from the transclude definition.
+In this example the template has declared a slot missing from the transclude definition.
 This example will generate a noslot error.
 ```js
 var componentConfig = {
@@ -21,7 +22,7 @@ var componentConfig = {
 };
 ```
 
-If we make the following change we will no longer get noslot error.
+If we make the following change we will no longer get the noslot error.
 ```js
 var componentConfig = {
   template: '<div>' +
