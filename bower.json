@@ -2,7 +2,7 @@
   "name": "angularjs",
   "license": "MIT",
   "devDependencies": {
-    "jquery": "3.1.0",
+    "jquery": "3.2.1",
     "jquery-2.2": "jquery#2.2.4",
     "jquery-2.1": "jquery#2.1.4",
     "closure-compiler": "https://dl.google.com/closure-compiler/compiler-20140814.zip",
