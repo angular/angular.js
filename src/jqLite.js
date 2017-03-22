@@ -303,11 +303,10 @@ function jqLiteClone(element) {
 }
 
 function jqLiteDealoc(element, onlyDescendants) {
-  if (!onlyDescendants && element.nodeType === NODE_TYPE_ELEMENT) jqLite.cleanData([element]);
+  if (!onlyDescendants && jqLiteAcceptsData(element)) jqLite.cleanData([element]);
 
   if (element.querySelectorAll) {
-    var descendants = element.querySelectorAll('*');
-    jqLite.cleanData(descendants);
+    jqLite.cleanData(element.querySelectorAll('*'));
   }
 }
 
