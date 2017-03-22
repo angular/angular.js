@@ -24,7 +24,7 @@ var componentConfig = {
 If we make the following change we will no longer get noslot error.
 ```js
 var componentConfig = {
-  template: '<div style="border: 1px solid black;">' +
+  template: '<div>' +
                 '<div ng-transclude="slotProvided"></div>' +
                 '<div ng-transclude="noSlotProvided"></div>' +
             '</div>',
