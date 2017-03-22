@@ -1867,6 +1867,8 @@ describe('parser', function() {
         expect(scope.$eval('+\'1\'')).toEqual(+'1');
         expect(scope.$eval('-\'1\'')).toEqual(-'1');
         expect(scope.$eval('+undefined')).toEqual(0);
+
+        // Note: don't change toEqual to toBe as toBe collapses 0 & -0.
         expect(scope.$eval('-undefined')).toEqual(-0);
         expect(scope.$eval('+null')).toEqual(+null);
         expect(scope.$eval('-null')).toEqual(-null);
