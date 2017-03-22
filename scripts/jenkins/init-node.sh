@@ -8,7 +8,7 @@ nvm install
 
 # clean out and install yarn
 rm -rf ~/.yarn
-curl -o- -L https://raw.githubusercontent.com/yarnpkg/yarn/2a0afc73210c7a82082585283e518eeb88ca19ae/scripts/install-latest.sh | bash -s -- --version 0.17.9
+curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 0.21.3
 export PATH="$HOME/.yarn/bin:$PATH"
 
 # Ensure that we have the local dependencies installed
