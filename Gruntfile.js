@@ -172,7 +172,6 @@ module.exports = function(grunt) {
           'test/**/*.js',
           'i18n/**/*.js',
           '!docs/app/assets/js/angular-bootstrap/**',
-          '!docs/bower_components/**',
           '!docs/config/templates/**',
           '!src/angular.bind.js',
           '!i18n/closure/**',
