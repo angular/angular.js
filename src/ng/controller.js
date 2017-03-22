@@ -54,7 +54,7 @@ function $ControllerProvider() {
     }
   };
 
-  this.$get = ['$injector', '$window', function($injector, $window) {
+  this.$get = ['$injector', function($injector) {
 
     /**
      * @ngdoc service
