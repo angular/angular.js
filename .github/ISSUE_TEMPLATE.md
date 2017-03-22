@@ -1,27 +1,36 @@
-***Note*: for support questions, please use one of these channels: https://github.com/angular/angular.js/blob/master/CONTRIBUTING.md#question. This repository's issues are reserved for feature requests and bug reports.**
+<!--
+IF YOU DON'T FILL OUT THE FOLLOWING INFORMATION WE MIGHT CLOSE YOUR ISSUE WITHOUT INVESTIGATION
+-->
 
-**Do you want to request a *feature* or report a *bug*?**
+<!--
+- For *SUPPORT QUESTIONS*, use one of the
+[support channels](https://github.com/angular/angular.js/blob/master/CONTRIBUTING.md#question).
+- Before submitting, please **SEARCH GITHUB** for a similar issue or PR. -->
 
+**I'm submitting a ...**
+<!-- (check one with "x") -->
+- [ ] bug report
+- [ ] feature request
+- [ ] other (Please do not submit support requests here (see above))
 
+**Current behavior:**
+<!-- Describe how the bug manifests / how the current features are insufficient. -->
 
-**What is the current behavior?**
+**Expected / new behavior:**
+<!-- Describe what the behavior would be without the bug / how the feature would improve AngularJS -->
 
+**Minimal reproduction of the problem with instructions:**
+<!--
+If the current behavior is a bug or you can illustrate your feature request better with an example,
+please provide the *STEPS TO REPRODUCE* and if possible a *MINIMAL DEMO* of the problem via
+https://plnkr.co or similar (you can use this template as a starting point: http://plnkr.co/edit/tpl:yBpEi4).
+-->
 
+**Angular version:** 1.x.y
+<!-- Check whether this is still an issue in the most recent stable or in the snapshot AngularJS version (https://code.angularjs.org/snapshot/) -->
 
-**If the current behavior is a bug, please provide the steps to reproduce and if possible a minimal demo of the problem via https://plnkr.co or similar (template: http://plnkr.co/edit/tpl:yBpEi4).**
+**Browser:** [all | Chrome XX | Firefox XX | IE XX | Safari XX | Mobile Chrome XX | Android X.X Web Browser | iOS XX Safari | iOS XX UIWebView | iOS XX WKWebView ]
+<!-- All browsers where this could be reproduced (and Operating System if relevant) -->
 
-
-
-**What is the expected behavior?**
-
-
-
-**What is the motivation / use case for changing the behavior?**
-
-
-
-**Which versions of AngularJS, and which browser / OS are affected by this issue? Did this work in previous versions of AngularJS? Please also test with the latest stable and snapshot (https://code.angularjs.org/snapshot/) versions.**
-
-
-
-**Other information (e.g. stacktraces, related issues, suggestions how to fix)**
+**Anything else:**
+<!-- e.g. stacktraces, related issues, suggestions how to fix -->
