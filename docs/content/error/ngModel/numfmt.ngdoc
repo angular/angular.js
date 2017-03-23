@@ -41,6 +41,7 @@ directive to convert it into the format the `input[number]` directive expects.
 
   .directive('stringToNumber', function() {
     return {
+      priority: 1,
       require: 'ngModel',
       link: function(scope, element, attrs, ngModel) {
         ngModel.$parsers.push(function(value) {
