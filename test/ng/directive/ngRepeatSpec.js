@@ -1488,13 +1488,7 @@ describe('ngRepeat animations', function() {
     $rootScope.items = ['1','3'];
     $rootScope.$digest();
 
-    while ($animate.queue.length) {
-      item = $animate.queue.shift();
-      if (item.event === 'leave') {
-        break;
-      }
-    }
-
+    item = $animate.queue.shift();
     expect(item.event).toBe('leave');
     expect(item.element.text()).toBe('2');
   }));
@@ -1579,7 +1573,7 @@ describe('ngRepeat animations', function() {
     })
   );
 
-  it('should fire off the move animation for filtered items',
+  it('should fire off the move animation for items whose position changed due to other items being filtered out',
     inject(function($compile, $rootScope, $animate) {
 
       var item;
@@ -1624,6 +1618,7 @@ describe('ngRepeat animations', function() {
       expect(item.element.text()).toBe('2');
     })
   );
+
   it('should maintain the order when the track by expression evaluates to an integer',
     inject(function($compile, $rootScope, $animate, $document, $sniffer, $timeout) {
       if (!$sniffer.transitions) return;
@@ -1664,7 +1659,7 @@ describe('ngRepeat animations', function() {
         $rootScope.items = [items[0], items[1], items[3]];
         $rootScope.$digest();
 
-        // The leaving item should maintain it's position until it is removed
+        // The leaving item should maintain its position until it is removed
         expect(element.text()).toBe('ABCD');
         $animate.flush();
         $timeout.flush(1500); // 1s * 1.5 closing buffer
