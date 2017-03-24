@@ -2688,82 +2688,86 @@ describe('parser', function() {
             expect($parse('::    ').literal).toBe(true);
           }));
 
-          it('should only become stable when all the properties of an object have defined values', inject(function($parse, $rootScope, log) {
-            var fn = $parse('::{foo: foo, bar: bar}');
-            $rootScope.$watch(fn, function(value) { log(value); }, true);
+          [true, false].forEach(function(isDeep) {
+            describe(isDeep ? 'deepWatch' : 'watch', function() {
+              it('should only become stable when all the properties of an object have defined values', inject(function($parse, $rootScope, log) {
+                var fn = $parse('::{foo: foo, bar: bar}');
+                $rootScope.$watch(fn, function(value) { log(value); }, isDeep);
 
-            expect(log.empty()).toEqual([]);
-            expect($rootScope.$$watchers.length).toBe(1);
+                expect(log.empty()).toEqual([]);
+                expect($rootScope.$$watchers.length).toBe(1);
 
-            $rootScope.$digest();
-            expect($rootScope.$$watchers.length).toBe(1);
-            expect(log.empty()).toEqual([{foo: undefined, bar: undefined}]);
+                $rootScope.$digest();
+                expect($rootScope.$$watchers.length).toBe(1);
+                expect(log.empty()).toEqual([{foo: undefined, bar: undefined}]);
 
-            $rootScope.foo = 'foo';
-            $rootScope.$digest();
-            expect($rootScope.$$watchers.length).toBe(1);
-            expect(log.empty()).toEqual([{foo: 'foo', bar: undefined}]);
+                $rootScope.foo = 'foo';
+                $rootScope.$digest();
+                expect($rootScope.$$watchers.length).toBe(1);
+                expect(log.empty()).toEqual([{foo: 'foo', bar: undefined}]);
 
-            $rootScope.foo = 'foobar';
-            $rootScope.bar = 'bar';
-            $rootScope.$digest();
-            expect($rootScope.$$watchers.length).toBe(0);
-            expect(log.empty()).toEqual([{foo: 'foobar', bar: 'bar'}]);
+                $rootScope.foo = 'foobar';
+                $rootScope.bar = 'bar';
+                $rootScope.$digest();
+                expect($rootScope.$$watchers.length).toBe(0);
+                expect(log.empty()).toEqual([{foo: 'foobar', bar: 'bar'}]);
 
-            $rootScope.foo = 'baz';
-            $rootScope.$digest();
-            expect($rootScope.$$watchers.length).toBe(0);
-            expect(log.empty()).toEqual([]);
-          }));
+                $rootScope.foo = 'baz';
+                $rootScope.$digest();
+                expect($rootScope.$$watchers.length).toBe(0);
+                expect(log.empty()).toEqual([]);
+              }));
 
-          it('should only become stable when all the elements of an array have defined values', inject(function($parse, $rootScope, log) {
-            var fn = $parse('::[foo,bar]');
-            $rootScope.$watch(fn, function(value) { log(value); }, true);
+              it('should only become stable when all the elements of an array have defined values', inject(function($parse, $rootScope, log) {
+                var fn = $parse('::[foo,bar]');
+                $rootScope.$watch(fn, function(value) { log(value); }, isDeep);
 
-            expect(log.empty()).toEqual([]);
-            expect($rootScope.$$watchers.length).toBe(1);
+                expect(log.empty()).toEqual([]);
+                expect($rootScope.$$watchers.length).toBe(1);
 
-            $rootScope.$digest();
-            expect($rootScope.$$watchers.length).toBe(1);
-            expect(log.empty()).toEqual([[undefined, undefined]]);
+                $rootScope.$digest();
+                expect($rootScope.$$watchers.length).toBe(1);
+                expect(log.empty()).toEqual([[undefined, undefined]]);
 
-            $rootScope.foo = 'foo';
-            $rootScope.$digest();
-            expect($rootScope.$$watchers.length).toBe(1);
-            expect(log.empty()).toEqual([['foo', undefined]]);
+                $rootScope.foo = 'foo';
+                $rootScope.$digest();
+                expect($rootScope.$$watchers.length).toBe(1);
+                expect(log.empty()).toEqual([['foo', undefined]]);
 
-            $rootScope.foo = 'foobar';
-            $rootScope.bar = 'bar';
-            $rootScope.$digest();
-            expect($rootScope.$$watchers.length).toBe(0);
-            expect(log.empty()).toEqual([['foobar', 'bar']]);
+                $rootScope.foo = 'foobar';
+                $rootScope.bar = 'bar';
+                $rootScope.$digest();
+                expect($rootScope.$$watchers.length).toBe(0);
+                expect(log.empty()).toEqual([['foobar', 'bar']]);
 
-            $rootScope.foo = 'baz';
-            $rootScope.$digest();
-            expect($rootScope.$$watchers.length).toBe(0);
-            expect(log.empty()).toEqual([]);
-          }));
+                $rootScope.foo = 'baz';
+                $rootScope.$digest();
+                expect($rootScope.$$watchers.length).toBe(0);
+                expect(log.empty()).toEqual([]);
+              }));
 
-          it('should only become stable when all the elements of an array have defined values at the end of a $digest', inject(function($parse, $rootScope, log) {
-            var fn = $parse('::[foo]');
-            $rootScope.$watch(fn, function(value) { log(value); }, true);
-            $rootScope.$watch('foo', function() { if ($rootScope.foo === 'bar') {$rootScope.foo = undefined; } });
+              it('should only become stable when all the elements of an array have defined values at the end of a $digest', inject(function($parse, $rootScope, log) {
+                var fn = $parse('::[foo]');
+                $rootScope.$watch(fn, function(value) { log(value); }, isDeep);
+                $rootScope.$watch('foo', function() { if ($rootScope.foo === 'bar') {$rootScope.foo = undefined; } });
 
-            $rootScope.foo = 'bar';
-            $rootScope.$digest();
-            expect($rootScope.$$watchers.length).toBe(2);
-            expect(log.empty()).toEqual([['bar'], [undefined]]);
+                $rootScope.foo = 'bar';
+                $rootScope.$digest();
+                expect($rootScope.$$watchers.length).toBe(2);
+                expect(log.empty()).toEqual([['bar'], [undefined]]);
 
-            $rootScope.foo = 'baz';
-            $rootScope.$digest();
-            expect($rootScope.$$watchers.length).toBe(1);
-            expect(log.empty()).toEqual([['baz']]);
+                $rootScope.foo = 'baz';
+                $rootScope.$digest();
+                expect($rootScope.$$watchers.length).toBe(1);
+                expect(log.empty()).toEqual([['baz']]);
 
-            $rootScope.bar = 'qux';
-            $rootScope.$digest();
-            expect($rootScope.$$watchers.length).toBe(1);
-            expect(log).toEqual([]);
-          }));
+                $rootScope.bar = 'qux';
+                $rootScope.$digest();
+                expect($rootScope.$$watchers.length).toBe(1);
+                expect(log).toEqual([]);
+              }));
+            });
+          });
         });
       });
 
