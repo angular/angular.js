@@ -779,6 +779,32 @@ describe('ngOptions', function() {
     expect(options[2]).not.toBeMarkedAsSelected();
   });
 
+
+  it('should render the initial options only one time', function() {
+    scope.values = ['black', 'white', 'red'];
+    // Insert a select element into the DOM without ng-options to suscribe to DOM change events
+    createSelect({
+      'ng-model': 'value'
+    });
+
+    // Add ngOptions as attribute before recompiling the select element
+    element.attr('ng-options', 'value for value in values');
+
+    var repaint = 0;
+    // Detect only when the childNodes count changes
+    var lastElementChildrenCount = -1;
+    element[0].addEventListener('DOMSubtreeModified', function(ev) {
+      var childrenCount = jqLite(ev.target).contents().length;
+      if (childrenCount !== lastElementChildrenCount) {
+        repaint++;
+        lastElementChildrenCount = childrenCount;
+        expect(repaint).toBeLessThan(2);
+      }
+    });
+
+    $compile(element)(scope);
+  });
+
   describe('disableWhen expression', function() {
 
     describe('on single select', function() {
