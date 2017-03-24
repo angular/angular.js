@@ -2641,6 +2641,25 @@ describe('ngOptions', function() {
       dealoc(element);
     }));
 
+
+    it('should remove all comments inside the select element except the initial falsy ngIf empty option', function() {
+      scope.values = [
+        {name:'black'},
+        {name:'white'},
+        {name:'red'}
+      ];
+      scope.isBlank = false;
+
+      createSingleSelect('<!-- test comment -->'
+                          + '<option ng-if="isBlank" value="">blank</option>'
+                          + '<!-- test comment 2 -->');
+      scope.$apply('isBlank = true');
+
+      expect(element.find('option')[0].value).toBe('');
+      expect(element.find('option')[0].textContent).toBe('blank');
+      expect(element.find('option')[1].textContent).toBe('black');
+    });
+
   });
 
 
