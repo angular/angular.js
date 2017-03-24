@@ -527,12 +527,37 @@ describe('$location', function() {
     it('should preserve query params in base', function() {
       var locationUrl = new LocationHashbangUrl('http://www.server.org:1234/base?base=param', 'http://www.server.org:1234/', '#');
       locationUrl.$$parse('http://www.server.org:1234/base?base=param#/path?a=b&c#hash');
-      expect(locationUrl.absUrl()).toBe('http://www.server.org:1234/base?base=param#/path?a=b&c#hash');
+      expect(locationUrl.absUrl()).toBe('http://www.server.org:1234/base?base=param#/path?base=param&a=b&c#hash');
 
+      expect(locationUrl.search()).toEqual({base: 'param', a: 'b', c: true});
       locationUrl.path('/new/path');
       locationUrl.search({one: 1});
       locationUrl.hash('hhh');
       expect(locationUrl.absUrl()).toBe('http://www.server.org:1234/base?base=param#/new/path?one=1#hhh');
+    });
+
+    it('should copy query params to fragment', function() {
+      var locationUrl = new LocationHashbangUrl('http://www.server.org:1234/base?base=param', 'http://www.server.org:1234/', '#');
+      locationUrl.$$parse('http://www.server.org:1234/base?base=param#/path');
+
+      expect(locationUrl.absUrl()).toBe('http://www.server.org:1234/base?base=param#/path?base=param');
+
+      expect(locationUrl.search()).toEqual({base: 'param'});
+      locationUrl.path('/new/path');
+      locationUrl.search({one: 1});
+      locationUrl.hash('hhh');
+      expect(locationUrl.absUrl()).toBe('http://www.server.org:1234/base?base=param#/new/path?one=1#hhh');
+
+      locationUrl.$$parse('http://www.server.org:1234/base?base=param#/path#trailingHash');
+
+      expect(locationUrl.absUrl()).toBe('http://www.server.org:1234/base?base=param#/path?base=param#trailingHash');
+
+      expect(locationUrl.search()).toEqual({base: 'param'});
+      locationUrl.path('/new/path');
+      locationUrl.search({one: 1});
+      locationUrl.hash('hhh');
+      expect(locationUrl.absUrl()).toBe('http://www.server.org:1234/base?base=param#/new/path?one=1#hhh');
+
     });
 
 

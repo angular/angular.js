@@ -70,6 +70,10 @@ function stripBaseUrl(base, url) {
   }
 }
 
+function findSearch(url) {
+  var index = url.indexOf('?');
+  return index === -1 ? false : url.substr(index + 1, url.indexOf('#') === -1 ? url.length : url.indexOf('#') - index - 1);
+}
 
 function stripHash(url) {
   var index = url.indexOf('#');
@@ -205,6 +209,27 @@ function LocationHashbangUrl(appBase, appBaseNoFile, hashPrefix) {
         // There was no hashbang prefix so we just have a hash fragment
         withoutHashUrl = withoutBaseUrl;
       }
+
+      // apply any search params from the actual url to the withoutHashUrl
+      // appBase will already have the hash taken off at this point.
+      var paramRewrittenUrl = withoutHashUrl;
+      var search = findSearch(appBase);
+      if (search !== false) {
+        var indexOfAppFragment = withoutHashUrl.indexOf('#');
+        if (indexOfAppFragment !== -1) {
+          paramRewrittenUrl = withoutHashUrl.substr(0, indexOfAppFragment) + '?' + search + withoutHashUrl.substr(indexOfAppFragment, withoutHashUrl.length);
+        } else {
+          paramRewrittenUrl = withoutHashUrl + '?' + search;
+        }
+        // we know that there is a query param before the hash, as in the RFC.
+        if (findSearch(withoutHashUrl) !== false) {
+          var indexOfAppPath = withoutHashUrl.indexOf('?');
+          if (indexOfAppPath !== -1) {
+            paramRewrittenUrl = withoutHashUrl.substr(0, indexOfAppPath + 1) + search + '&' + withoutHashUrl.substr(indexOfAppPath + 1, withoutHashUrl.length);
+          }
+        }
+      }
+      withoutHashUrl = paramRewrittenUrl;
 
     } else {
       // There was no hashbang path nor hash fragment:
