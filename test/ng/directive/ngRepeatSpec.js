@@ -1497,7 +1497,6 @@ describe('ngRepeat animations', function() {
     inject(function($compile, $rootScope, $animate, $document, $sniffer, $timeout) {
       if (!$sniffer.transitions) return;
 
-      var item;
       var ss = createMockStyleSheet($document);
 
       try {
@@ -1573,7 +1572,7 @@ describe('ngRepeat animations', function() {
     })
   );
 
-  it('should fire off the move animation for items whose position changed due to other items being filtered out',
+  it('should fire off the move animation for items that change position when other items are filtered out',
     inject(function($compile, $rootScope, $animate) {
 
       var item;
@@ -1623,7 +1622,6 @@ describe('ngRepeat animations', function() {
     inject(function($compile, $rootScope, $animate, $document, $sniffer, $timeout) {
       if (!$sniffer.transitions) return;
 
-      var item;
       var ss = createMockStyleSheet($document);
 
       var items = [
