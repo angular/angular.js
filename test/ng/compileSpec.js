@@ -8690,7 +8690,8 @@ describe('$compile', function() {
 
           it('should work without external libraries (except jQuery)', testCleanup);
 
-        if (jQuery) {  it('should work with another library patching jQuery.cleanData after Angular', function() {
+        if (jQuery) {
+          it('should work with another library patching jQuery.cleanData after Angular', function() {
             var cleanedCount = 0;
             var currentCleanData = jqLite.cleanData;
             jqLite.cleanData = function(elems) {
