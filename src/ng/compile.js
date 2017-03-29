@@ -375,7 +375,7 @@
  * initialized.
  *
  * <div class="alert alert-warning">
- * **Deprecation warning:** if `$compileProcvider.preAssignBindingsEnabled(true)` was fired, bindings for non-ES6 class
+ * **Deprecation warning:** if `$compileProcvider.preAssignBindingsEnabled(true)` was called, bindings for non-ES6 class
  * controllers are bound to `this` before the controller constructor is called but this use is now deprecated. Please
  * place initialization code that relies upon bindings inside a `$onInit` method on the controller, instead.
  * </div>
