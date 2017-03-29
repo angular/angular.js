@@ -1296,7 +1296,7 @@ Due to [b71d7c3f](https://github.com/angular/angular.js/commit/b71d7c3f3c04e65b0
 falsy values (`''`, `0`, `false` and `null`) are properly recognized as option group identifiers for
 options passed to `ngOptions`. Previously, all of these values were ignored and the option was not
 assigned to any group. `undefined` is still interpreted as "no group".
-If you have options with falsy group indentifiers that should still not be assigned to any group,
+If you have options with falsy group identifiers that should still not be assigned to any group,
 then you must filter the values before passing them to `ngOptions`, converting falsy values to
 `undefined`.
 
