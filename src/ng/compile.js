@@ -374,12 +374,6 @@
  * `$onInit`, which is called after all the controllers on an element have been constructed and had their bindings
  * initialized.
  *
- * <div class="alert alert-warning">
- * **Deprecation warning:** although bindings for non-ES6 class controllers are currently
- * bound to `this` before the controller constructor is called, this use is now deprecated. Please place initialization
- * code that relies upon bindings inside a `$onInit` method on the controller, instead.
- * </div>
- *
  * It is also possible to set `bindToController` to an object hash with the same format as the `scope` property.
  * This will set up the scope bindings to the controller directly. Note that `scope` can still be used
  * to define which kind of scope is created. By default, no scope is created. Use `scope: {}` to create an isolate
