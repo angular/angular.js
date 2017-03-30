@@ -50,6 +50,7 @@
     "isNumber": false,
     "isNumberNaN": false,
     "isDate": false,
+    "isError": false,
     "isArray": false,
     "isFunction": false,
     "isRegExp": false,
