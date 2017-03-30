@@ -1852,7 +1852,7 @@ function $ParseProvider() {
     }
 
     function oneTimeWatchDelegate(scope, listener, objectEquality, parsedExpression, prettyPrintExpression) {
-      var doneCriteria = parsedExpression.literal ? isAllDefined : isDefined;
+      var isDone = parsedExpression.literal ? isAllDefined : isDefined;
       var unwatch, lastValue;
       if (parsedExpression.inputs) {
         unwatch = inputsWatchDelegate(scope, oneTimeListener, objectEquality, parsedExpression, prettyPrintExpression);
@@ -1869,9 +1869,9 @@ function $ParseProvider() {
         if (isFunction(listener)) {
           listener(value, old, scope);
         }
-        if (doneCriteria(value)) {
+        if (isDone(value)) {
           scope.$$postDigest(function() {
-            if (doneCriteria(lastValue)) {
+            if (isDone(lastValue)) {
               unwatch();
             }
           });

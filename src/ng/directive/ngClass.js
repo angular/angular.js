@@ -91,9 +91,9 @@ function classDirective(name, selector) {
         }
 
         function ngClassWatchAction(newClassString) {
-          //When using a one-time binding the newClassString will return
-          //the pre-interceptor value until the one-time is complete
-          if (newClassString && typeof newClassString !== "string") {
+          // When using a one-time binding the newClassString will return
+          // the pre-interceptor value until the one-time is complete
+          if (!isString(newClassString)) {
             newClassString = toClassString(newClassString);
           }
 
