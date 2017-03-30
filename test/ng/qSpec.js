@@ -37,7 +37,7 @@ describe('q', function() {
   // The following private functions are used to help with logging for testing invocation of the
   // promise callbacks.
   function _argToString(arg) {
-    return (typeof arg === 'object' && !(arg instanceof Error)) ? toJson(arg) : '' + arg;
+    return (typeof arg === 'object' && !(isError(arg))) ? toJson(arg) : '' + arg;
   }
 
   function _argumentsToString(args) {
