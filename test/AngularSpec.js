@@ -1855,6 +1855,43 @@ describe('angular', function() {
     });
   });
 
+  describe('isError', function() {
+    function testErrorFromDifferentContext(createError) {
+      var iframe = document.createElement('iframe');
+      document.body.appendChild(iframe);
+      try {
+        var error = createError(iframe.contentWindow);
+        expect(isError(error)).toBe(true);
+      } finally {
+        iframe.parentElement.removeChild(iframe);
+      }
+    }
+
+    it('should not assume objects are errors', function() {
+      var fakeError = { message: 'A fake error', stack: 'no stack here'};
+      expect(isError(fakeError)).toBe(false);
+    });
+
+    it('should detect simple error instances', function() {
+      expect(isError(new Error())).toBe(true);
+    });
+
+    it('should detect errors from another context', function() {
+      testErrorFromDifferentContext(function(win) {
+        return new win.Error();
+      });
+    });
+
+    it('should detect DOMException errors from another context', function() {
+      testErrorFromDifferentContext(function(win) {
+        try {
+          win.document.querySelectorAll('');
+        } catch (e) {
+          return e;
+        }
+      });
+    });
+  });
 
   describe('isRegExp', function() {
     it('should return true for RegExp object', function() {
