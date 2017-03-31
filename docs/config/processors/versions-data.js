@@ -47,6 +47,14 @@ module.exports = function generateVersionDocProcessor(gitData) {
 
         var latestMap = {};
 
+        // When the docs are built on a tagged commit, yarn info won't include the latest release,
+        // so we add it manually based on the local version.json file.
+        var missesCurrentVersion = !currentVersion.isSnapshot && !versions.find(function(version) {
+          return version === currentVersion.version;
+        });
+
+        if (missesCurrentVersion) versions.push(currentVersion.version);
+
         versions = versions
             .filter(function(versionStr) {
               return blacklist.indexOf(versionStr) === -1;
@@ -70,6 +78,7 @@ module.exports = function generateVersionDocProcessor(gitData) {
             })
             .reverse();
 
+        // List the latest version for each branch
         var latest = sortObject(latestMap, reverse(semver.compare))
             .map(function(version) { return makeOption(version, 'Latest'); });
 
