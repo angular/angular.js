@@ -2872,6 +2872,40 @@ describe('parser', function() {
           expect(called).toBe(true);
         }));
 
+        it('should not invoke interceptorFns unless the input.valueOf changes even if the instance changes', inject(function($parse) {
+          var called = false;
+          function interceptor(v) {
+            called = true;
+            return v;
+          }
+          scope.$watch($parse('a', interceptor));
+          scope.a = new Date();
+          scope.$digest();
+          expect(called).toBe(true);
+
+          called = false;
+          scope.a = new Date(scope.a.valueOf());
+          scope.$digest();
+          expect(called).toBe(false);
+        }));
+
+        it('should invoke interceptorFns if input.valueOf changes even if the instance does not', inject(function($parse) {
+          var called = false;
+          function interceptor(v) {
+            called = true;
+            return v;
+          }
+          scope.$watch($parse('a', interceptor));
+          scope.a = new Date();
+          scope.$digest();
+          expect(called).toBe(true);
+
+          called = false;
+          scope.a.setTime(scope.a.getTime() + 1);
+          scope.$digest();
+          expect(called).toBe(true);
+        }));
+
         it('should invoke interceptors when the expression is `undefined`', inject(function($parse) {
           var called = false;
           function interceptor(v) {
@@ -3038,6 +3072,63 @@ describe('parser', function() {
           called = false;
           scope.$digest();
           expect(called).toBe(true);
+        }));
+
+        it('should not reevaluate literals with non-primitive input that does support valueOf()',
+            inject(function($parse) {
+
+          var date = scope.date = new Date();
+
+          var parsed = $parse('[date]');
+          var watcherCalls = 0;
+          scope.$watch(parsed, function(input) {
+            expect(input[0]).toBe(date);
+            watcherCalls++;
+          });
+
+          scope.$digest();
+          expect(watcherCalls).toBe(1);
+
+          scope.$digest();
+          expect(watcherCalls).toBe(1);
+        }));
+
+        it('should not reevaluate literals with non-primitive input that does support valueOf()' +
+            ' when the instance changes but valueOf() does not', inject(function($parse) {
+
+          scope.date = new Date(1234567890123);
+
+          var parsed = $parse('[date]');
+          var watcherCalls = 0;
+          scope.$watch(parsed, function(input) {
+            watcherCalls++;
+          });
+
+          scope.$digest();
+          expect(watcherCalls).toBe(1);
+
+          scope.date = new Date(1234567890123);
+          scope.$digest();
+          expect(watcherCalls).toBe(1);
+        }));
+
+        it('should reevaluate literals with non-primitive input that does support valueOf()' +
+            ' when the instance does not change but valueOf() does', inject(function($parse) {
+
+          scope.date = new Date(1234567890123);
+
+          var parsed = $parse('[date]');
+          var watcherCalls = 0;
+          scope.$watch(parsed, function(input) {
+            watcherCalls++;
+          });
+
+          scope.$digest();
+          expect(watcherCalls).toBe(1);
+
+          scope.date.setTime(scope.date.getTime() + 1);
+          scope.$digest();
+          expect(watcherCalls).toBe(2);
         }));
 
         it('should continue with the evaluation of the expression without invoking computed parts',
