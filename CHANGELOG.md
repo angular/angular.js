@@ -1,3 +1,38 @@
+<a name="1.6.4"></a>
+# 1.6.4 phenomenal-footnote (2017-03-31)
+
+
+## Bug Fixes
+- **$parse:**
+  - standardize one-time literal vs non-literal and interceptors
+  ([60394a](https://github.com/angular/angular.js/commit/60394a9d91dad8932fa900af7c8529837f1d4557),
+  [#15858](https://github.com/angular/angular.js/issues/15858))
+  - fix infinite digest errors when watching objects with .valueOf in literals
+  ([f5ddb1](https://github.com/angular/angular.js/commit/f5ddb10b56676c2ad912ce453acb87f0a7a94e01),
+  [#15867](https://github.com/angular/angular.js/issues/15867))
+- **ngModel:** prevent internal scope reference from being copied
+  ([e1f8a6](https://github.com/angular/angular.js/commit/e1f8a6e82bb8a70079ef3db9a891b1c08b5bae31),
+  [#15833](https://github.com/angular/angular.js/issues/15833))
+- **jqLite:** make jqLite invoke jqLite.cleanData as a method
+  ([9cde98](https://github.com/angular/angular.js/commit/9cde98cbc770f8d33fc074ba563b7ab6e2baaf8b),
+  [#15846](https://github.com/angular/angular.js/issues/15846))
+- **$http:** throw more informative error on invalid JSON response
+  ([df8887](https://github.com/angular/angular.js/commit/df88873bb79213057057adb47151b626a7ec0e5d),
+  [#15695](https://github.com/angular/angular.js/issues/15695),
+  [#15724](https://github.com/angular/angular.js/issues/15724))
+- **dateFilter:** correctly handle newlines in `format` string
+  ([982271](https://github.com/angular/angular.js/commit/9822711ad2a401c2449239edc13d18b301714757),
+  [#15794](https://github.com/angular/angular.js/issues/15794),
+  [#15792](https://github.com/angular/angular.js/issues/15792))
+
+
+## New Features
+- **$resource:** add `hasBody` action configuration option
+  ([a9f987](https://github.com/angular/angular.js/commit/a9f987a0c9653246ea471a89197907d94c0cea2a),
+  [#10128](https://github.com/angular/angular.js/issues/10128),
+  [#12181](https://github.com/angular/angular.js/issues/12181))
+
+
 <a name="1.6.3"></a>
 # 1.6.3 scriptalicious-bootstrapping (2017-03-08)
 
