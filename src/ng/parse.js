@@ -1900,7 +1900,7 @@ function $ParseProvider() {
       var watchDelegate = parsedExpression.$$watchDelegate;
       var useInputs = false;
 
-      var doneCriteria = parsedExpression.literal ? isAllDefined : isDefined;
+      var isDone = parsedExpression.literal ? isAllDefined : isDefined;
 
       function regularInterceptedExpression(scope, locals, assign, inputs) {
         var value = useInputs && inputs ? inputs[0] : parsedExpression(scope, locals, assign, inputs);
@@ -1912,7 +1912,7 @@ function $ParseProvider() {
         var result = interceptorFn(value, scope, locals);
         // we only return the interceptor's result if the
         // initial value is defined (for bind-once)
-        return doneCriteria(value) ? result : value;
+        return isDone(value) ? result : value;
       }
 
       var fn = parsedExpression.oneTime ? oneTimeInterceptedExpression : regularInterceptedExpression;
