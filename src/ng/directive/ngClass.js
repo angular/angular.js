@@ -14,13 +14,6 @@ function classDirective(name, selector) {
     return {
       restrict: 'AC',
       link: function(scope, element, attr) {
-        var expression = attr[name].trim();
-        var isOneTime = (expression.charAt(0) === ':') && (expression.charAt(1) === ':');
-
-        var watchInterceptor = isOneTime ? toFlatValue : toClassString;
-        var watchExpression = $parse(expression, watchInterceptor);
-        var watchAction = isOneTime ? ngClassOneTimeWatchAction : ngClassWatchAction;
-
         var classCounts = element.data('$classCounts');
         var oldModulo = true;
         var oldClassString;
@@ -43,7 +36,7 @@ function classDirective(name, selector) {
           scope.$watch(indexWatchExpression, ngClassIndexWatchAction);
         }
 
-        scope.$watch(watchExpression, watchAction, isOneTime);
+        scope.$watch($parse(attr[name], toClassString), ngClassWatchAction);
 
         function addClasses(classString) {
           classString = digestClassCounts(split(classString), 1);
@@ -85,9 +78,9 @@ function classDirective(name, selector) {
         }
 
         function ngClassIndexWatchAction(newModulo) {
-          // This watch-action should run before the `ngClass[OneTime]WatchAction()`, thus it
+          // This watch-action should run before the `ngClassWatchAction()`, thus it
           // adds/removes `oldClassString`. If the `ngClass` expression has changed as well, the
-          // `ngClass[OneTime]WatchAction()` will update the classes.
+          // `ngClassWatchAction()` will update the classes.
           if (newModulo === selector) {
             addClasses(oldClassString);
           } else {
@@ -97,15 +90,13 @@ function classDirective(name, selector) {
           oldModulo = newModulo;
         }
 
-        function ngClassOneTimeWatchAction(newClassValue) {
-          var newClassString = toClassString(newClassValue);
-
-          if (newClassString !== oldClassString) {
-            ngClassWatchAction(newClassString);
-          }
-        }
-
         function ngClassWatchAction(newClassString) {
+          // When using a one-time binding the newClassString will return
+          // the pre-interceptor value until the one-time is complete
+          if (!isString(newClassString)) {
+            newClassString = toClassString(newClassString);
+          }
+
           if (oldModulo === selector) {
             updateClasses(oldClassString, newClassString);
           }
@@ -151,34 +142,6 @@ function classDirective(name, selector) {
     }
 
     return classString;
-  }
-
-  function toFlatValue(classValue) {
-    var flatValue = classValue;
-
-    if (isArray(classValue)) {
-      flatValue = classValue.map(toFlatValue);
-    } else if (isObject(classValue)) {
-      var hasUndefined = false;
-
-      flatValue = Object.keys(classValue).filter(function(key) {
-        var value = classValue[key];
-
-        if (!hasUndefined && isUndefined(value)) {
-          hasUndefined = true;
-        }
-
-        return value;
-      });
-
-      if (hasUndefined) {
-        // Prevent the `oneTimeLiteralWatchInterceptor` from unregistering
-        // the watcher, by including at least one `undefined` value.
-        flatValue.push(undefined);
-      }
-    }
-
-    return flatValue;
   }
 }
 
