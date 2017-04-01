@@ -2326,6 +2326,38 @@ describe('Scope', function() {
           expect(result.name).toBe('some');
           expect(result.targetScope).toBe(child1);
         });
+
+
+        it('should not descend past scopes that stop propagation', inject(function($rootScope) {
+          child1.$on('myEvent', function(event) {
+            event.stopPropagation();
+          });
+
+          $rootScope.$broadcast('myEvent');
+          expect(log).toBe('0>1>2>21>211>22>23>3>');
+        }));
+
+        it('should continue to pass through and past sibling scopes to one that stopped propagation',
+            inject(function($rootScope) {
+          grandChild21.$on('myEvent', function(event) {
+            event.stopPropagation();
+          });
+
+          $rootScope.$broadcast('myEvent');
+          expect(log).toBe('0>1>11>2>21>22>23>3>');
+        }));
+
+        it('should allow multiple separate subtrees to stop propagation independently', inject(function($rootScope) {
+          var stopPropagation = function(event) {
+            event.stopPropagation();
+          };
+          child1.$on('myEvent', stopPropagation);
+          grandChild21.$on('myEvent', stopPropagation);
+          grandChild22.$on('myEvent', stopPropagation);
+
+          $rootScope.$broadcast('myEvent');
+          expect(log).toBe('0>1>2>21>22>23>3>');
+        }));
       });
 
 

@@ -1151,8 +1151,8 @@ function $RootScopeProvider() {
        *   - `currentScope` - `{Scope}`: the scope that is currently handling the event. Once the
        *     event propagates through the scope hierarchy, this property is set to null.
        *   - `name` - `{string}`: name of the event.
-       *   - `stopPropagation` - `{function=}`: calling `stopPropagation` function will cancel
-       *     further event propagation (available only for events that were `$emit`-ed).
+       *   - `stopPropagation` - `{function}`: calling `stopPropagation` function will cancel
+       *     further event propagation.
        *   - `preventDefault` - `{function}`: calling `preventDefault` sets `defaultPrevented` flag
        *     to true.
        *   - `defaultPrevented` - `{boolean}`: true if `preventDefault` was called.
@@ -1272,7 +1272,9 @@ function $RootScopeProvider() {
        * The event life cycle starts at the scope on which `$broadcast` was called. All
        * {@link ng.$rootScope.Scope#$on listeners} listening for `name` event on this scope get
        * notified. Afterwards, the event propagates to all direct and indirect scopes of the current
-       * scope and calls all registered listeners along the way. The event cannot be canceled.
+       * scope and calls all registered listeners along the way. If a scope requests the event stop propagation
+       * then it will not be propagated to any children of that scope, but will continue to propagate to siblings of the
+       * that scope and children of those siblings unless each sibling independently stops the event.
        *
        * Any exception emitted from the {@link ng.$rootScope.Scope#$on listeners} will be passed
        * onto the {@link ng.$exceptionHandler $exceptionHandler} service.
@@ -1284,10 +1286,14 @@ function $RootScopeProvider() {
       $broadcast: function(name, args) {
         var target = this,
             current = target,
+            stopPropagation = false,
             next = target,
             event = {
               name: name,
               targetScope: target,
+              stopPropagation: function() {
+                stopPropagation = true;
+              },
               preventDefault: function() {
                 event.defaultPrevented = true;
               },
@@ -1301,6 +1307,7 @@ function $RootScopeProvider() {
 
         //down while you can, then up and next sibling or up and next sibling until back at root
         while ((current = next)) {
+          stopPropagation = false;
           event.currentScope = current;
           listeners = current.$$listeners[name] || [];
           for (i = 0, length = listeners.length; i < length; i++) {
@@ -1322,8 +1329,8 @@ function $RootScopeProvider() {
           // Insanity Warning: scope depth-first traversal
           // yes, this code is a bit crazy, but it works and we have tests to prove it!
           // this piece should be kept in sync with the traversal in $digest
-          // (though it differs due to having the extra check for $$listenerCount)
-          if (!(next = ((current.$$listenerCount[name] && current.$$childHead) ||
+          // (though it differs due to having the extra check for $$listenerCount and stopPropagation)
+          if (!(next = ((current.$$listenerCount[name] && !stopPropagation && current.$$childHead) ||
               (current !== target && current.$$nextSibling)))) {
             while (current !== target && !(next = current.$$nextSibling)) {
               current = current.$parent;
