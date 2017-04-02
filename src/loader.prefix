@@ -5,7 +5,31 @@
  */
 'use strict';
 (function() {
+    // NOTE:
+    // These functions are copied here from `src/Angular.js`, because they are needed inside the
+    // `angular-loader.js` closure and need to be available before the main `angular.js` script has
+    // been loaded.
     function isFunction(value) {return typeof value === 'function';}
     function isDefined(value) {return typeof value !== 'undefined';}
+    function isNumber(value) {return typeof value === 'number';}
     function isObject(value) {return value !== null && typeof value === 'object';}
+    function isScope(obj) {return obj && obj.$evalAsync && obj.$watch;}
+    function isUndefined(value) {return typeof value === 'undefined';}
+    function isWindow(obj) {return obj && obj.window === obj;}
+    function sliceArgs(args, startIndex) {return Array.prototype.slice.call(args, startIndex || 0);}
+    function toJsonReplacer(key, value) {
+      var val = value;
+
+      if (typeof key === 'string' && key.charAt(0) === '$' && key.charAt(1) === '$') {
+        val = undefined;
+      } else if (isWindow(value)) {
+        val = '$WINDOW';
+      } else if (value &&  window.document === value) {
+        val = '$DOCUMENT';
+      } else if (isScope(value)) {
+        val = '$SCOPE';
+      }
+
+      return val;
+    }
 
