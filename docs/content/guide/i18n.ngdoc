@@ -281,18 +281,18 @@ categories as you need.
 #### Selection Keywords
 
 The selection keywords can be either exact matches or language dependent [plural
-categories](http://unicode.org/repos/cldr-tmp/trunk/diff/supplemental/language_plural_rules.html).
+categories](http://cldr.unicode.org/index/cldr-spec/plural-rules).
 
 Exact matches are written as the equal sign followed by the exact value. `=0`, `=1`, `=2` and
 `=123` are all examples of exact matches.  Note that there should be no space between the equal sign
 and the numeric value.
 
 Plural category matches are single words corresponding to the [plural
-categories](http://unicode.org/repos/cldr-tmp/trunk/diff/supplemental/language_plural_rules.html) of
-the CLDR plural category spec.  These categories vary by locale.  The "en" (English) locale, for
-example, defines just "one" and "other" while the "ga" (Irish) locale defines "one", "two", "few",
-"many" and "other".  Typically, you would just write the categories for your language.  During
-translation, the translators will add or remove more categories depending on the target locale.
+categories](http://cldr.unicode.org/index/cldr-spec/plural-rules) of the CLDR plural category spec.
+These categories vary by locale.  The "en" (English) locale, for example, defines just "one" and
+"other" while the "ga" (Irish) locale defines "one", "two", "few", "many" and "other".  Typically,
+you would just write the categories for your language.  During translation, the translators will add
+or remove more categories depending on the target locale.
 
 Exact matches always win over keyword matches.  Therefore, if you define both `=0` and `zero`, when
 the value of the expression is zero, the `=0` message is the one that will be selected.  (The
